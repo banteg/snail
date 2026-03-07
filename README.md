@@ -39,6 +39,8 @@ The archive subcommands add:
 
 Verified archive and asset format notes live in [`docs/asset-formats.md`](/Users/banteg/dev/banteg/snail-mail/docs/asset-formats.md).
 
+The rewrite direction and runtime goals live in [`docs/rewrite/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/README.md).
+
 Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
 
 - `.ogg` audio
@@ -47,11 +49,15 @@ Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/s
 - `.x2` text mesh or animation fragments
 - an embedded `BASS.DLL`
 
+The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly and renders `OBJECTS/FONT/FONT-MENU-HOVER.TGA` from the archive.
+The raylib build in this repo enables TGA support explicitly because upstream raylib ships with `SUPPORT_FILEFORMAT_TGA` disabled by default.
+
 ## Native Tools Already Available
 
 - `r2` and `rabin2` for PE inspection and disassembly
 - `binwalk` and `7z` for container probing
 - `objdump`, `strings`, and `file` for quick triage
+- `zig build run` for the native Zig + raylib rewrite scaffold
 
 ## Immediate Next Targets
 

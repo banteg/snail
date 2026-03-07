@@ -2,3 +2,5 @@ artifacts/
 .venv/
 .pytest_cache/
 __pycache__/
+.zig-cache/
+zig-out/
