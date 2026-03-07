@@ -1,0 +1,4 @@
+[mcp_servers.binary_ninja_mcp]
+command = "/Users/banteg/Library/Application Support/Binary Ninja/plugins/binary_ninja_mcp/.venv/bin/python"
+args = ["/Users/banteg/Library/Application Support/Binary Ninja/plugins/binary_ninja_mcp/bridge/binja_mcp_bridge.py"]
+timeout = 1800
