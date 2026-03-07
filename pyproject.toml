@@ -1,16 +1,23 @@
 [project]
-name = "snail-mail"
+name = "snail"
 version = "0.1.0"
-description = "Add your description here"
+description = "Reverse-engineering helpers for the Snail Mail game bundle"
 readme = "README.md"
 authors = [
     { name = "banteg", email = "4562643+banteg@users.noreply.github.com" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pefile>=2024.8.26",
+]
 
 [project.scripts]
-snail-mail = "snail_mail:main"
+snail = "snail:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
 
 [build-system]
 requires = ["uv_build>=0.9.18,<0.10.0"]
