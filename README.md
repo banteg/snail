@@ -60,6 +60,8 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `.tga` textures
 - `.ogg` audio as both one-shot sounds and music streams
 - `.x2` mesh rendering and animation playback
+- `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
+- `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus segment-grid previews
 
 The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
@@ -86,12 +88,15 @@ Interactive controls:
 - `1`: texture browser
 - `2`: audio browser
 - `3`: `.x2` model browser
+- `4`: object browser
+- `5`: level browser
 - `Left` / `Right`: cycle entries
-- `Up` / `Down`: jump by 10 entries
+- `Up` / `Down`: jump by 10 entries in texture, audio, model, and object modes
+- `Up` / `Down` in level mode: step through the selected level's segment list
 - `Space`: play current audio entry as a one-shot sound
 - `Enter`: play current audio entry as a music stream
 - `S`: stop audio preview
-- `F`: flip model `V` texture coordinates
+- `F`: flip `V` texture coordinates in model and object modes
 - `P`: pause or resume the current animation clip
 - `R`: restart the current animation clip
 
@@ -99,4 +104,4 @@ Interactive controls:
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- move from the archive browser toward object and level rendering
+- turn parsed level and segment data into actual placed track geometry and gameplay lanes

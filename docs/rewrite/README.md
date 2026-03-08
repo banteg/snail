@@ -113,6 +113,9 @@ The repo now includes a minimal Zig + raylib runtime scaffold:
 - [`build.zig`](/Users/banteg/dev/banteg/snail-mail/build.zig)
 - [`build.zig.zon`](/Users/banteg/dev/banteg/snail-mail/build.zig.zon)
 - [`zig/src/archive.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/archive.zig)
+- [`zig/src/object.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/object.zig)
+- [`zig/src/segment.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/segment.zig)
+- [`zig/src/level.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/level.zig)
 - [`zig/src/xanim.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/xanim.zig)
 - [`zig/src/main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
 
@@ -120,11 +123,13 @@ Current behavior:
 
 - the runtime opens a window
 - reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly
-- builds asset catalogs for the archive's `.tga`, `.ogg`, and `.x2` entries
+- builds asset catalogs for the archive's `.tga`, `.ogg`, `.x2`, `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` entries
 - browses original textures directly from archive memory
 - previews original OGGs as both one-shot sounds and music streams
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
 - parses [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
+- parses `_OBJECT.TXT` quads and renders object previews in 3D using sibling TGA textures from the archive
+- parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT` and previews the currently selected segment as a 2D grid with metadata
 
 Current note:
 
@@ -151,12 +156,15 @@ Interactive controls:
 - `1`: texture browser
 - `2`: audio browser
 - `3`: `.x2` model browser
+- `4`: object browser
+- `5`: level browser
 - `Left` / `Right`: cycle entries
-- `Up` / `Down`: jump by 10 entries
+- `Up` / `Down`: jump by 10 entries in texture, audio, model, and object modes
+- `Up` / `Down` in level mode: step through the selected level's segment list
 - `Space`: play current audio as a one-shot sound
 - `Enter`: play current audio as a music stream
 - `S`: stop audio preview
-- `F`: flip model `V` texture coordinates
+- `F`: flip `V` texture coordinates in model and object modes
 - `P`: pause or resume the active animation clip
 - `R`: restart the active animation clip
 

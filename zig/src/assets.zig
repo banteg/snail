@@ -8,6 +8,9 @@ pub const Catalog = struct {
     texture_entries: []archive.Entry,
     audio_entries: []archive.Entry,
     model_entries: []archive.Entry,
+    object_entries: []archive.Entry,
+    segment_entries: []archive.Entry,
+    level_entries: []archive.Entry,
 
     pub fn init(allocator: std.mem.Allocator, archive_path: []const u8) !Catalog {
         var dat = try archive.Archive.init(allocator, archive_path);
@@ -22,16 +25,31 @@ pub const Catalog = struct {
         const model_entries = try filterEntriesBySuffixAlloc(allocator, dat.entries, ".x2");
         errdefer allocator.free(model_entries);
 
+        const object_entries = try filterObjectEntriesAlloc(allocator, dat.entries);
+        errdefer allocator.free(object_entries);
+
+        const segment_entries = try filterEntriesByPrefixAndSuffixAlloc(allocator, dat.entries, "SEGMENTS/", ".txt");
+        errdefer allocator.free(segment_entries);
+
+        const level_entries = try filterEntriesByPrefixAndSuffixAlloc(allocator, dat.entries, "LEVELS/", ".txt");
+        errdefer allocator.free(level_entries);
+
         return .{
             .allocator = allocator,
             .dat = dat,
             .texture_entries = texture_entries,
             .audio_entries = audio_entries,
             .model_entries = model_entries,
+            .object_entries = object_entries,
+            .segment_entries = segment_entries,
+            .level_entries = level_entries,
         };
     }
 
     pub fn deinit(self: *Catalog) void {
+        self.allocator.free(self.level_entries);
+        self.allocator.free(self.segment_entries);
+        self.allocator.free(self.object_entries);
         self.allocator.free(self.model_entries);
         self.allocator.free(self.audio_entries);
         self.allocator.free(self.texture_entries);
@@ -48,6 +66,18 @@ pub const Catalog = struct {
 
     pub fn findModelIndex(self: *const Catalog, path: []const u8) ?usize {
         return findEntryIndexByPath(self.model_entries, path);
+    }
+
+    pub fn findObjectIndex(self: *const Catalog, path: []const u8) ?usize {
+        return findEntryIndexByPath(self.object_entries, path);
+    }
+
+    pub fn findSegmentIndex(self: *const Catalog, path: []const u8) ?usize {
+        return findEntryIndexByPath(self.segment_entries, path);
+    }
+
+    pub fn findLevelIndex(self: *const Catalog, path: []const u8) ?usize {
+        return findEntryIndexByPath(self.level_entries, path);
     }
 
     pub fn readEntryAlloc(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) ![]u8 {
@@ -164,6 +194,40 @@ fn filterEntriesBySuffixAlloc(
     return list.toOwnedSlice(allocator);
 }
 
+fn filterEntriesByPrefixAndSuffixAlloc(
+    allocator: std.mem.Allocator,
+    entries: []const archive.Entry,
+    prefix: []const u8,
+    suffix: []const u8,
+) ![]archive.Entry {
+    var list: std.ArrayList(archive.Entry) = .empty;
+    defer list.deinit(allocator);
+
+    for (entries) |entry| {
+        if (std.ascii.startsWithIgnoreCase(entry.path, prefix) and std.ascii.endsWithIgnoreCase(entry.path, suffix)) {
+            try list.append(allocator, entry);
+        }
+    }
+
+    return list.toOwnedSlice(allocator);
+}
+
+fn filterObjectEntriesAlloc(
+    allocator: std.mem.Allocator,
+    entries: []const archive.Entry,
+) ![]archive.Entry {
+    var list: std.ArrayList(archive.Entry) = .empty;
+    defer list.deinit(allocator);
+
+    for (entries) |entry| {
+        if (!std.ascii.startsWithIgnoreCase(entry.path, "OBJECTS/")) continue;
+        if (!std.ascii.endsWithIgnoreCase(entry.path, "/_OBJECT.TXT")) continue;
+        try list.append(allocator, entry);
+    }
+
+    return list.toOwnedSlice(allocator);
+}
+
 test "catalog groups archive entries by asset type" {
     var catalog = try Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
@@ -171,4 +235,7 @@ test "catalog groups archive entries by asset type" {
     try std.testing.expectEqual(@as(usize, 121), catalog.texture_entries.len);
     try std.testing.expectEqual(@as(usize, 153), catalog.audio_entries.len);
     try std.testing.expectEqual(@as(usize, 124), catalog.model_entries.len);
+    try std.testing.expectEqual(@as(usize, 4), catalog.object_entries.len);
+    try std.testing.expectEqual(@as(usize, 133), catalog.segment_entries.len);
+    try std.testing.expectEqual(@as(usize, 53), catalog.level_entries.len);
 }
