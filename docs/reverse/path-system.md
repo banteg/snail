@@ -71,11 +71,35 @@ Practical read:
 
 - `Salt:` is now best understood as live `salt.x` projectile or hazard placement, not a vague effect pool.
 - slugs are a separate runtime path:
-  - `sub_43dc80` allocates from the `8`-slot slug pool
+  - `spawn_slug_hazard` allocates from the `8`-slot slug pool
   - it uses sprite id `118`, which matches `Sprites/Slug000.tga`
   - the current static branch into slug spawning remains the tile-type-`18` path guarded by the high bit in `this + 76`
 
-What remains unresolved is not whether salt and slugs are separate systems. They are. The remaining gap is the exact authored meaning of the eligible tile-family branch that leads to salt placement.
+What remains unresolved is no longer the `&` glyph itself. The remaining gap is the fallback salt branch on runtime tile kinds `1` and `15` when the copied row-flag byte does not contain `0x08`.
+
+## Recovered Gameplay Glyph Spawners
+
+The post-track-build entity pass now has a clearer authored-glyph mapping than the earlier generic “special flagged tile” wording.
+
+High-confidence findings from `populate_track_runtime_entities` plus the asset bootstrap:
+
+- `$` becomes runtime tile `0x17` and dispatches to `spawn_track_health_pickup`
+  - that helper instantiates sprite id `0x39`
+  - sprite id `0x39` is registered from `Sprites/Health.tga`
+- `J` becomes runtime tile `0x19` and dispatches to `spawn_track_jetpack_pickup`
+  - that helper instantiates sprite id `0x7c`
+  - sprite id `0x7c` is registered from `Sprites/JetPack000.tga`
+- `s` becomes runtime tile `0x21` and dispatches directly to `spawn_track_garbage_hazard`
+- `&` becomes runtime tile `0x22` and dispatches directly to `spawn_salt_hazard`
+- `M` becomes runtime tile `0x12` and dispatches directly to `spawn_slug_hazard`
+- `+` becomes runtime tile `0x18`, but the current dispatch target is a nullsub
+  - no shipped extracted `SEGMENTS/*.TXT` row currently contains `+`
+  - current static evidence therefore treats `+` as a dead or reserved glyph in this build
+
+One useful corpus sanity check:
+
+- shipped `J` rows are concentrated in `JETPACK*.TXT`, `JETPACKOFF.TXT`, `REGISTER.TXT`, and `RICHTEST.TXT`
+- shipped `$` rows show up in pickup-heavy segments such as `CAGE2.TXT`, `FENCES.TXT`, and `TUTORIAL 10.TXT`
 
 ## Hardcoded Path Table
 
@@ -382,10 +406,10 @@ High-confidence rewrite behavior from `normalize_segment_glyph_for_track_flags`:
 |---|---:|---|---|
 | space | `0x00` | `0x00` | empty or neutral |
 | `#` | `0x01` | `0x20` | special flat tile |
-| `$` | `0x02` | `0x17` | special flagged tile |
-| `&` | `0x03` | `0x22` | special flagged tile |
+| `$` | `0x02` | `0x17` | health-pickup glyph |
+| `&` | `0x03` | `0x22` | salt-hazard glyph |
 | `(` | `0x04` | `0x16` | special height tile |
-| `+` | `0x05` | `0x18` | special flagged tile |
+| `+` | `0x05` | `0x18` | reserved or inactive glyph in current build |
 | `,` | `0x06` | `0x1c` | special flat tile with a small height offset |
 | `-` | `0x07` | `0x15` | special flagged tile |
 | `.` | `0x08` | `0x01` | flat visible tile |
@@ -397,15 +421,15 @@ High-confidence rewrite behavior from `normalize_segment_glyph_for_track_flags`:
 | `@` | `0x0e` | `0x00` | row guard, not a gameplay tile |
 | `F` | `0x0f` | `0x13` | special flagged tile |
 | `G` | `0x10` | `0x11` | special flagged tile |
-| `J` | `0x11` | `0x19` | special flagged tile |
-| `M` | `0x12` | `0x12` | special flagged tile |
+| `J` | `0x11` | `0x19` | jetpack-pickup glyph |
+| `M` | `0x12` | `0x12` | slug-hazard glyph |
 | `P` | `0x13` | `0x1e` | path attachment tile |
 | `p` | `0x13` | `0x1d` | path attachment tile |
 | `R` | `0x14` | `0x23` | special flat tile |
 | `[` | `0x15` | `0x05` | ramp-family tile |
 | `_` | `0x16` | `0x0f` | special flat tile |
 | `o` | `0x17` | `0x10` | special flat tile |
-| `s` | `0x18` | `0x21` | special flagged tile |
+| `s` | `0x18` | `0x21` | garbage-hazard glyph |
 | `{` | `0x19` | `0x02` or `0x08` | depends on the previous-row tile state |
 | `|` | `0x0c` | `0x0e` | aliases `=` |
 | `}` | `0x1a` | `0x04` or `0x0a` | depends on the previous-row tile state |
@@ -417,6 +441,13 @@ Useful follow-on facts from the same switch:
 - runtime tile ids `0x1d` and `0x1e` are the only direct outputs of `p` and `P`
 - `sample_track_floor_height_at_position` treats tile ids `0x02` through `0x0d` as ramp-like height families
 - tile ids `0x08`, `0x09`, and `0x0a` get a built-in `+0.5` vertical bias in the floor-height sampler
+- `populate_track_runtime_entities` now gives high-confidence gameplay meaning for several authored glyphs:
+  - `$` -> `spawn_track_health_pickup` -> sprite `0x39` / `Sprites/Health.tga`
+  - `J` -> `spawn_track_jetpack_pickup` -> sprite `0x7c` / `Sprites/JetPack000.tga`
+  - `s` -> `spawn_track_garbage_hazard`
+  - `&` -> `spawn_salt_hazard`
+  - `M` -> `spawn_slug_hazard`
+- `+` still dispatches through this switch, but the target is a nullsub and no shipped extracted segment currently uses the glyph
 
 ## First Confirmed Path Consumer
 

@@ -284,7 +284,7 @@ Current runtime use of parsed level fields:
 - `Random:` and `Length:` feed the later track-build path and determine whether the course uses authored segment order or randomized composition to a target length
 - `Track:` selects the active track texture set, and `Track:r` additionally randomizes the `Space*.txt` backdrop choice at level start
 - `Garbage:` is normalized to a `0..1` runtime scalar and later gates calls into the garbage-hazard spawner, which uses `Sprites/GarbageA-D.tga`
-- `Salt:` is normalized to a second `0..1` scalar and later gates a separate `40`-slot hazard or effect pool in the same entity-population pass
+- `Salt:` is normalized to a second `0..1` runtime scalar and later gates `spawn_salt_hazard`, which manages a live `40`-slot `salt.x` runtime pool
 - deeper runtime notes for track build, path attachments, and level-field consumers now live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md)
 
 Representative samples:
