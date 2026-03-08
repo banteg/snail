@@ -31,7 +31,7 @@ The remaining gaps are runtime-behavior questions:
 From the Windows machine, have all of these available:
 
 1. A checkout or copy of this repo.
-2. The original game files, especially [SnailMail.RWG](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+2. The original game files, especially [SnailMail_unwrapped.exe](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe).
 3. Frida CLI installed and working on Windows.
 4. The trace script at [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js).
 
@@ -40,14 +40,14 @@ Recommended quick checks:
 ```powershell
 frida --version
 Get-ChildItem .\tools\frida\snailmail-runtime-trace.js
-Get-ChildItem .\artifacts\bin\SnailMail.RWG
+Get-ChildItem .\artifacts\bin\SnailMail_unwrapped.exe
 ```
 
 ## Important Targeting Rules
 
-- Attach to `SnailMail.RWG`, not `SnailMail.exe`.
+- Attach to `SnailMail_unwrapped.exe`, not `SnailMail.exe`.
 - The script is written for the 32-bit RWG runtime.
-- The script resolves addresses relative to the loaded module base, so ASLR is fine as long as the module is really `SnailMail.RWG`.
+- The script resolves addresses relative to the loaded module base, so ASLR is fine as long as the module is really `SnailMail_unwrapped.exe`.
 - Keep captures short and focused. Several short NDJSON files are much better than one giant noisy trace.
 
 ## Current Hook Set
@@ -84,13 +84,13 @@ Run from the repo root on the Windows machine.
 Spawn the gameplay binary under Frida:
 
 ```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js
+frida -f .\artifacts\bin\SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
 If you need to attach to an already running process instead:
 
 ```powershell
-frida -n SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js
+frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
 The script now creates `C:\share\snail\frida\` itself and writes NDJSON there with a generated filename like `snailmail-trace-20260308-153000-1234.ndjson`.
@@ -306,6 +306,6 @@ The Windows agent should assume all of these are already established statically:
 ## If Something Goes Wrong
 
 - If no `module_ready` or `hooks_installed` event appears, you are probably attached to the wrong process.
-- If the game launches but no events appear, attach to `SnailMail.RWG` directly instead of the wrapper.
+- If the game launches but no events appear, attach to `SnailMail_unwrapped.exe` directly instead of the wrapper.
 - If output is too noisy, stop the run and switch to a shorter target level instead of letting one huge trace grow.
 - If the game crashes immediately under Frida, keep the failing NDJSON or console output anyway. Even a failed launch is useful if it happens consistently.

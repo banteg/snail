@@ -142,23 +142,23 @@ Regenerate the ranked lists after any parser or corpus changes instead of treati
 
 ## Windows Usage
 
-Attach to the real gameplay process, not the Reflexive wrapper. The easiest path is to start [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) directly on the Windows machine.
+Attach to the real gameplay process, not the Reflexive wrapper. The easiest path is to start [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) directly on the Windows machine.
 
 Spawn the game under Frida:
 
 ```bash
-frida -f C:\path\to\SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js
+frida -f C:\path\to\SnailMail_unwrapped.exe -l tools\frida\snailmail-runtime-trace.js
 ```
 
 Attach to an already running RWG process:
 
 ```bash
-frida -n SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js
+frida -n SnailMail_unwrapped.exe -l tools\frida\snailmail-runtime-trace.js
 ```
 
 Watch the first console line from the script. It prints the exact NDJSON path it opened under `C:\share\snail\frida\`.
 
-If you only have the wrapper path handy, do not attach to `SnailMail.exe` unless you have confirmed that `SnailMail.RWG` runs inside the same process. In the common case it is a separate process, so the script needs the RWG image directly.
+If you only have the wrapper path handy, do not attach to `SnailMail.exe` unless you have confirmed that `SnailMail_unwrapped.exe` runs inside the same process. In the common case it is a separate process, so the script needs the gameplay image directly.
 
 ## First Capture Plan
 
@@ -178,5 +178,5 @@ Use three focused capture runs instead of one long noisy trace:
 
 - The script assumes the current 2006 RWG image with preferred PE base `0x400000`.
 - It resolves all hook addresses relative to the actual loaded module base at runtime.
-- The hook set is designed for 32-bit Windows Frida because [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) is a 32-bit PE.
+- The hook set is designed for 32-bit Windows Frida because [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) is a 32-bit PE.
 - The current script does not decode every attachment-template field. It focuses on the row, tile type, world position, and attachment pointer so we can correlate dynamic behavior back to the existing static notes.

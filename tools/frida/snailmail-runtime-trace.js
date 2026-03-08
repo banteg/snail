@@ -1,6 +1,6 @@
 'use strict';
 
-const TARGET_MODULE_NAME = 'SnailMail.RWG';
+const TARGET_MODULE_NAME = 'SnailMail_unwrapped.exe';
 const PREFERRED_IMAGE_BASE = 0x400000;
 const MODULE_POLL_MS = 250;
 const TRACE_OUTPUT_DIR = 'C:\\share\\snail\\frida';
@@ -56,7 +56,7 @@ let traceFilePath = null;
 let traceFileError = null;
 
 const createDirectoryW = new SystemFunction(
-  Module.getExportByName('kernel32.dll', 'CreateDirectoryW'),
+  Process.getModuleByName('kernel32.dll').getExportByName('CreateDirectoryW'),
   'bool',
   ['pointer', 'pointer']
 );
@@ -171,7 +171,7 @@ function safeReadU8(base, offset) {
     return null;
   }
   try {
-    return Memory.readU8(p.add(offset || 0));
+    return p.add(offset || 0).readU8();
   } catch (_) {
     return null;
   }
@@ -183,7 +183,7 @@ function safeReadU32(base, offset) {
     return null;
   }
   try {
-    return Memory.readU32(p.add(offset || 0));
+    return p.add(offset || 0).readU32();
   } catch (_) {
     return null;
   }
@@ -195,7 +195,7 @@ function safeReadFloat(base, offset) {
     return null;
   }
   try {
-    return roundFloat(Memory.readFloat(p.add(offset || 0)));
+    return roundFloat(p.add(offset || 0).readFloat());
   } catch (_) {
     return null;
   }
@@ -207,7 +207,7 @@ function safeReadPointer(base, offset) {
     return null;
   }
   try {
-    return Memory.readPointer(p.add(offset || 0));
+    return p.add(offset || 0).readPointer();
   } catch (_) {
     return null;
   }
@@ -219,7 +219,7 @@ function safeReadCString(base, maxLength) {
     return null;
   }
   try {
-    return Memory.readCString(p, maxLength || 128);
+    return p.readCString(maxLength || 128);
   } catch (_) {
     return null;
   }
@@ -233,9 +233,9 @@ function safeReadVec3(base, offset) {
   const q = p.add(offset || 0);
   try {
     return {
-      x: roundFloat(Memory.readFloat(q)),
-      y: roundFloat(Memory.readFloat(q.add(4))),
-      z: roundFloat(Memory.readFloat(q.add(8))),
+      x: roundFloat(q.readFloat()),
+      y: roundFloat(q.add(4).readFloat()),
+      z: roundFloat(q.add(8).readFloat()),
     };
   } catch (_) {
     return null;
@@ -248,8 +248,8 @@ function floatArg(arg) {
     return null;
   }
   try {
-    Memory.writeU32(floatScratch, p.toUInt32());
-    return roundFloat(Memory.readFloat(floatScratch));
+    floatScratch.writeU32(p.toUInt32());
+    return roundFloat(floatScratch.readFloat());
   } catch (_) {
     return null;
   }
