@@ -142,18 +142,20 @@ Regenerate the ranked lists after any parser or corpus changes instead of treati
 
 ## Windows Usage
 
-Attach to the real gameplay process, not the Reflexive wrapper. The easiest path is to start [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) directly on the Windows machine.
+Attach to the real gameplay process, not the Reflexive wrapper. Start [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) from its own binary directory on the Windows machine so it can resolve adjacent game files correctly.
 
 Spawn the game under Frida:
 
 ```bash
-frida -f C:\path\to\SnailMail_unwrapped.exe -l tools\frida\snailmail-runtime-trace.js
+cd C:\path\to\repo\artifacts\bin
+frida -f .\SnailMail_unwrapped.exe -l ..\..\tools\frida\snailmail-runtime-trace.js
 ```
 
-Attach to an already running RWG process:
+If spawn still exits immediately, start the game normally from `artifacts\bin` and attach instead:
 
 ```bash
-frida -n SnailMail_unwrapped.exe -l tools\frida\snailmail-runtime-trace.js
+cd C:\path\to\repo
+frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
 Watch the first console line from the script. It prints the exact NDJSON path it opened under `C:\share\snail\frida\`.

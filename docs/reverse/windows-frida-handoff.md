@@ -79,17 +79,19 @@ Expected event names in the NDJSON:
 
 ## How To Run
 
-Run from the repo root on the Windows machine.
+Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
 
 Spawn the gameplay binary under Frida:
 
 ```powershell
-frida -f .\artifacts\bin\SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
+cd .\artifacts\bin
+frida -f .\SnailMail_unwrapped.exe -l ..\..\tools\frida\snailmail-runtime-trace.js
 ```
 
-If you need to attach to an already running process instead:
+If spawn still exits immediately, start the game normally from `artifacts\bin` and attach from the repo root instead:
 
 ```powershell
+cd C:\path\to\repo
 frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
