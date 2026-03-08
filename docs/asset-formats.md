@@ -172,6 +172,7 @@ Current RWG understanding:
 
 - `Path=<name>` resolves through a hardcoded string table inside `SnailMail.RWG`, not through a separate path-definition file in the archive
 - the recovered hardcoded table currently has `51` names, including `START`, `HALFPIPE`, `TWISTER*`, and `TOAD*` variants
+- RWG first normalizes some glyph classes through `normalize_segment_glyph_for_track_flags` and `lookup_table_43744c[char - 0x20]`, then classifies the normalized glyph alphabet through `lookup_table_437204[char - 0x20]` before assigning runtime tile ids
 - `P` and `p` path cells later consume the copied row `Path=` index and select one of the hardcoded path-template pairs rooted at runtime offsets `0xff2914` and `0xff29bc`
 - each path-template step is `0x150` bytes, which corresponds to two `0xa8`-byte template records per path id
 - the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records

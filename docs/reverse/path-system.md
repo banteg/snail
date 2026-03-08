@@ -21,8 +21,10 @@ High-confidence renamed functions in the current Binary Ninja database:
 - `try_enter_track_attachment_from_swept_motion` at `0x42c770`
 - `is_point_inside_track_attachment` at `0x42ca90`
 - `is_neighbor_cell_solid` at `0x434b60`
+- `populate_runtime_track_cells_from_segments` at `0x435eb0`
 - `select_track_tile_edge_variants` at `0x435a80`
 - `merge_track_tile_runs` at `0x435180`
+- `normalize_segment_glyph_for_track_flags` at `0x437270`
 - `rebuild_track_runtime_from_segments` at `0x437de0`
 - `update_player_track_movement_and_triggers` at `0x43b120`
 - `end_track_attachment_follow_state` at `0x43af60`
@@ -189,6 +191,60 @@ One useful clue from `allocate_challenge_parcels_on_track`:
 
 - the copied runtime field at `+0x5ccb64` is parcel id, not path index
 - challenge-mode parcel selection explicitly filters for runtime cells whose parcel id equals `0`
+
+## Confirmed Glyph Dispatch
+
+`populate_runtime_track_cells_from_segments` does not switch directly on raw segment glyphs.
+
+Instead it:
+
+1. calls `normalize_segment_glyph_for_track_flags`
+2. lets that helper rewrite some source glyph classes through `lookup_table_43744c[char - 0x20]`
+3. normalizes the resulting glyph through `lookup_table_437204[char - 0x20]`
+4. dispatches that case id through the switch rooted at `jump_table_437194`
+5. assigns the runtime tile type at `cell + 0x3bfb04`
+
+The table below is therefore a high-confidence normalized-glyph-to-runtime map for the shipped segment alphabet after `normalize_segment_glyph_for_track_flags` has done its substitutions.
+
+| Glyph | Dispatch Case | Runtime Tile Type | Notes |
+|---|---:|---|---|
+| space | `0x00` | `0x00` | empty or neutral |
+| `#` | `0x01` | `0x20` | special flat tile |
+| `$` | `0x02` | `0x17` | special flagged tile |
+| `&` | `0x03` | `0x22` | special flagged tile |
+| `(` | `0x04` | `0x16` | special height tile |
+| `+` | `0x05` | `0x18` | special flagged tile |
+| `,` | `0x06` | `0x1c` | special flat tile with a small height offset |
+| `-` | `0x07` | `0x15` | special flagged tile |
+| `.` | `0x08` | `0x01` | flat visible tile |
+| `0` | `0x09` | `0x00` or `0x0f` | depends on existing attachment flags |
+| `1` through `9` | `0x0a` | `0x00` or `0x0f` | same branch family as `0`, depends on existing attachment flags |
+| `<` | `0x0b` | `0x06` | ramp-family tile |
+| `=` | `0x0c` | `0x0e` | neutral or flat tile |
+| `>` | `0x0d` | `0x03` or `0x09` | depends on the previous-row tile state |
+| `@` | `0x0e` | `0x00` | row guard, not a gameplay tile |
+| `F` | `0x0f` | `0x13` | special flagged tile |
+| `G` | `0x10` | `0x11` | special flagged tile |
+| `J` | `0x11` | `0x19` | special flagged tile |
+| `M` | `0x12` | `0x12` | special flagged tile |
+| `P` | `0x13` | `0x1e` | path attachment tile |
+| `p` | `0x13` | `0x1d` | path attachment tile |
+| `R` | `0x14` | `0x23` | special flat tile |
+| `[` | `0x15` | `0x05` | ramp-family tile |
+| `_` | `0x16` | `0x0f` | special flat tile |
+| `o` | `0x17` | `0x10` | special flat tile |
+| `s` | `0x18` | `0x21` | special flagged tile |
+| `{` | `0x19` | `0x02` or `0x08` | depends on the previous-row tile state |
+| `|` | `0x0c` | `0x0e` | aliases `=` |
+| `}` | `0x1a` | `0x04` or `0x0a` | depends on the previous-row tile state |
+
+The invalid dispatch case is `0x1b`, which falls into the builder's `TrackError:%c in Segment %s` path.
+
+Useful follow-on facts from the same switch:
+
+- runtime tile ids `0x1d` and `0x1e` are the only direct outputs of `p` and `P`
+- `sample_track_floor_height_at_position` treats tile ids `0x02` through `0x0d` as ramp-like height families
+- tile ids `0x08`, `0x09`, and `0x0a` get a built-in `+0.5` vertical bias in the floor-height sampler
 
 ## First Confirmed Path Consumer
 
