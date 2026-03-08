@@ -175,6 +175,12 @@ Current RWG understanding:
 - `find_case_insensitive_substring` is the generic metadata matcher in the RWG parser, so tag matching is case-insensitive and substring-based rather than exact
 - that matcher explains why shipped text like `Ring=Powerup` and `Ring=Explosive` still matches the RWG parser's canonical probes `Ring=PowerUp` and `Ring=Explode`
 - RWG first normalizes some glyph classes through `normalize_segment_glyph_for_track_flags` and `lookup_table_43744c[char - 0x20]`, then classifies the normalized glyph alphabet through `lookup_table_437204[char - 0x20]` before assigning runtime tile ids
+- after the glyph-to-tile pass, RWG runs a renderer-facing cleanup pipeline with named cache buckets `Floor`, `Slide`, `Warn`, `Ramp`, and `Fringe`
+- that renderer pipeline uses helper families now recovered in the Binary Ninja database:
+  - `is_floor_cache_tile_family`
+  - `is_slide_cache_tile_family`
+  - `is_ramp_cache_tile_family`
+  - `is_open_neighbor_tile_family`
 - `P` and `p` path cells later consume the copied row `Path=` index and select one of the hardcoded path-template pairs rooted at runtime offsets `0xff2914` and `0xff29bc`
 - each path-template step is `0x150` bytes, which corresponds to two `0xa8`-byte template records per path id
 - most named path ids build the first `0xa8` record with a constructor family and then build the second record by mirroring it across X
@@ -216,10 +222,12 @@ Current RWG understanding:
   - `rebuild_track_runtime_from_segments` copies `Parcel` rows into runtime low-byte `0x01` plus `0x4000`, and fills `parcel_id` plus parcel offsets at `+0x5ccb64` and `+0x5ccb58/+0x5ccb5c/+0x5ccb60`
   - `rebuild_track_runtime_from_segments` copies `NoFall` rows into runtime mask `0x100`
   - `rebuild_track_runtime_from_segments` copies authored `JetPack=Off` rows into runtime mask `0x8000`
+  - `select_track_tile_edge_variants` later also sets runtime mask `0x8000` on certain adjacency-mask cases while choosing edge or corner art, so that lane is not JetPack-only by the end of the full build
+  - `build_track_render_caches` and `build_track_fringe_objects` then consume the same rebuilt cells through render-side helpers, so bits like `0x4000`, `0x20`, and low-byte `0x40` should not be treated as parser-level authored tags
   - `normalize_segment_glyph_for_track_flags` already consumes `NoFall` at runtime mask `0x100`, where it suppresses at least the `=` and `|` glyph remaps on flagged rows
   - a player jetpack update path later samples the current runtime cell and treats `BYTE1(cell_flags) & 0x80` as `Auto Shutoff Jetpack`
   - path-template propagation separately uses low-byte `0x40` and `0x80` as the primary and secondary attachment-follow lanes, with live pointers at `+0x5ccb6c` and `+0x5ccb70`
-  - so `JetPack=Off` and the secondary path-attachment lane are distinct at the full runtime-mask level even though both show up as byte-local `0x80` tests in different consumers
+  - so the secondary path-attachment lane is still separate at the full runtime-mask level, but runtime `0x8000` itself is shared between authored `JetPack=Off` and later edge-variant selection
   - `allocate_challenge_parcels_on_track` treats `(cell_flags & 0x01) != 0` plus `parcel_id == 0` as a random parcel candidate, which confirms `Parcel` is live gameplay state rather than dead parser residue
 - in the shipped corpus, ring-tagged segment files are isolated from `Path=` and `Parcel=` usage, which avoids the most obvious flag collisions
 - `RingSpeed=` exists in parser code but is unused in shipped extracted segments

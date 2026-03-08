@@ -25,6 +25,14 @@ High-confidence renamed functions in the current Binary Ninja database:
 - `try_enter_track_attachment_from_swept_motion` at `0x42c770`
 - `is_point_inside_track_attachment` at `0x42ca90`
 - `is_neighbor_cell_solid` at `0x434b60`
+- `build_track_fringe_objects` at `0x434be0`
+- `build_track_render_caches` at `0x433220`
+- `promote_track_tiles_to_fringe_variants` at `0x4355f0`
+- `harmonize_center_lane_floor_slide_variants` at `0x4356f0`
+- `is_slide_cache_tile_family` at `0x439a40`
+- `is_ramp_cache_tile_family` at `0x439a70`
+- `is_open_neighbor_tile_family` at `0x439ab0`
+- `is_floor_cache_tile_family` at `0x439ad0`
 - `populate_runtime_track_cells_from_segments` at `0x435eb0`
 - `select_track_tile_edge_variants` at `0x435a80`
 - `merge_track_tile_runs` at `0x435180`
@@ -47,10 +55,15 @@ The current track-runtime pipeline is:
 1. `load_segment_definitions` parses `SEGMENTS/*.TXT` into an internal segment catalog.
 2. `load_level_definitions` composes segment sequences and level rules from `LEVELS/*.TXT`.
 3. `rebuild_track_runtime_from_segments` normalizes the loaded cells into a runtime track:
-   - `select_track_tile_edge_variants`
-   - `merge_track_tile_runs`
    - `allocate_parcels_on_track`
-4. Later game code consumes the rebuilt track runtime for parcel placement and gameplay.
+   - `select_track_tile_edge_variants`
+   - `promote_track_tiles_to_fringe_variants`
+   - `harmonize_center_lane_floor_slide_variants`
+   - `merge_track_tile_runs`
+   - the still-unnamed neighborhood-marking pass at `0x4354f0`
+   - `build_track_fringe_objects`
+   - `build_track_render_caches`
+4. Later game code consumes the rebuilt track runtime for parcel placement, fringe objects, rendering, and gameplay.
 
 ## Salt And Slug Runtime Split
 
@@ -461,6 +474,47 @@ Useful follow-on facts from the same switch:
   - `M` -> `spawn_slug_hazard`
 - `+` still dispatches through this switch, but the target is a nullsub and no shipped extracted segment currently uses the glyph
 
+## Recovered Track Render Pipeline
+
+The post-build track renderer is now clearer than the earlier generic "tile cache" notes.
+
+High-confidence findings:
+
+- `rebuild_track_runtime_from_segments` calls the post-glyph passes in this order:
+  - `select_track_tile_edge_variants`
+  - `promote_track_tiles_to_fringe_variants`
+  - `harmonize_center_lane_floor_slide_variants`
+  - `merge_track_tile_runs`
+  - the still-unnamed helper at `0x4354f0`
+  - `build_track_fringe_objects`
+  - `build_track_render_caches`
+- `build_track_render_caches` prints the five cache names directly in its debug strings:
+  - `Floor`
+  - `Slide`
+  - `Warn`
+  - `Ramp`
+  - `Fringe`
+- the cache-family helpers now line up with those buckets:
+  - `is_floor_cache_tile_family` covers runtime tile ids `0x0f`, `0x10`, `0x12`, `0x13`, `0x17`, `0x18`, `0x19`, and `0x1a`
+  - `is_slide_cache_tile_family` covers runtime tile ids `0x01`, `0x14`, `0x15`, `0x1b`, `0x21`, and `0x22`
+  - `is_ramp_cache_tile_family` covers runtime tile ids `0x02` through `0x0d`
+- `is_open_neighbor_tile_family` is the renderer-side "not solid enough to block fringe" helper:
+  - it returns true for runtime tile ids `0x00`, `0x0e`, `0x1c`, `0x1d`, and `0x23`
+  - `is_neighbor_cell_solid` inverts that helper and also treats tile `0x16` as another explicit non-solid case
+- `promote_track_tiles_to_fringe_variants` runs right after edge selection and swaps certain base track visuals into fringe-specific variants when the neighbor tile belongs to the open-neighbor family
+- `build_track_fringe_objects` allocates up to four side objects around a runtime cell and chooses their art through direction-specific lookup tables
+  - its own debug string is `Used %i fringe bods`
+- `harmonize_center_lane_floor_slide_variants` is not a general mesh builder
+  - it only touches the center-adjacent columns `3` and `5`
+  - it swaps paired floor or slide visuals when those two center lanes need a matched transition
+  - it sets low-byte `0x40` on the cells it rewrites
+
+Practical read:
+
+- the track-builder pipeline has a real renderer-facing stage after glyph normalization, not just one monolithic "convert text to tiles" pass
+- `0x4000` is now best treated as part of that representative surface or cache-selection lane rather than as a parser-only authored flag
+- `0x20`, low-byte `0x40`, and the fringe-object pointers are heavily reused by the render passes, so they should not be flattened into gameplay-only semantics in the rewrite
+
 ## Recovered Ring Effect Dispatch
 
 The segment parser only told us which bits `Ring=<name>` sets on the per-row metadata byte. The runtime dispatch inside `populate_track_runtime_entities` now makes the next step visible.
@@ -501,25 +555,27 @@ One remaining caveat: mode `4` also lands on the `ParticleRing` family, but the 
 
 `RingSpeed=` also now has a clearer runtime interpretation. The parser stores a per-row float, and the authored ring modes `5` through `8` are the helper path that uses the row float argument to compute the orbit angular speed. No shipped extracted segment currently uses `RingSpeed=`, so the static link is stronger than the corpus evidence.
 
-## JetPack=Off And NoFall Are Confirmed Runtime Bits
+## NoFall Is Confirmed, JetPack=Off Seeds A Reused Runtime Bit
 
-`JetPack=Off` and `NoFall` are no longer just parser metadata.
+`NoFall` is no longer just parser metadata, and `JetPack=Off` definitely feeds a live runtime lane even though that lane is later reused.
 
 High-confidence findings:
 
 - `load_segment_definitions` stores `NoFall` in the second byte of the row-flags dword and `JetPack=Off` in that same byte's `0x80` lane
 - `rebuild_track_runtime_from_segments` copies those authored bits into runtime mask `0x100` for `NoFall` and runtime mask `0x8000` for `JetPack=Off`
+- `select_track_tile_edge_variants` later also sets runtime mask `0x8000` for adjacency-mask cases `5`, `6`, `9`, and `10` while choosing edge or corner tile variants
 - `get_track_runtime_cell_at_world_z` returns the current runtime cell by clamping world `z` into the row array
 - `update_player_track_movement_and_triggers` later checks runtime mask `0x100` on the current cell before applying one movement branch on `=` rows
 - a player update helper called from `update_player_track_movement_and_triggers` samples that current runtime cell and, if `BYTE1(cell_flags) & 0x80` is set, emits `Auto Shutoff Jetpack` and clamps the jetpack timer path
 
-That makes both `NoFall` and `JetPack=Off` confirmed live gameplay flags in the runtime, not dead authored residue.
+That makes `NoFall` a confirmed live gameplay flag in the runtime, not dead authored residue. It also proves that authored `JetPack=Off` reaches runtime mask `0x8000`, but not that every later `0x8000` consumer is seeing JetPack-only state.
 
 The remaining wrinkle is representation, not identity:
 
 - the hardcoded `Path=` template propagation uses low-byte `0x40` and `0x80` for the two attachment lanes
 - `JetPack=Off` uses second-byte `0x80`, which is runtime mask `0x8000`
-- so the apparent `0x80` overlap in some HLIL views is a byte-packing artifact, not a full-mask collision
+- `select_track_tile_edge_variants` also writes that same full runtime mask `0x8000`
+- so the apparent `0x80` overlap with path attachments is still a byte-packing artifact, but runtime `0x8000` itself is not unique to `JetPack=Off`
 - the safe parser-level interpretation is now straightforward: keep `Parcel`, `NoFall`, `JetPack=Off`, and `Path` as distinct authored tags in the rewrite and preserve their separate runtime lanes
 
 ## Packed Runtime Flags Around Parcel, NoFall, and Path
@@ -530,7 +586,7 @@ High-confidence findings:
 - the rebuilt runtime cells preserve those lanes as:
   - low-byte `0x01` plus `0x4000` for `Parcel`
   - `0x100` for `NoFall`
-  - `0x8000` for `JetPack=Off`
+  - `0x8000` seeded by authored `JetPack=Off`, then also reused by later edge-variant selection
 - `normalize_segment_glyph_for_track_flags` already consumes `NoFall` on the packed runtime word:
   - `=` only takes its parcel-style remap when `(flags & 0x100) == 0`
   - `|` only takes its parcel-style remap when `(flags & 0x100) == 0`
@@ -545,7 +601,7 @@ The practical read for the port is:
 
 - `Parcel` semantics are definitely live and feed both authored and random challenge parcel placement
 - `NoFall` should be modeled as its own authored flag that becomes runtime mask `0x100`
-- `JetPack=Off` should be modeled as its own authored flag that becomes runtime mask `0x8000`
+- `JetPack=Off` should be modeled as its own authored flag that seeds runtime mask `0x8000`, but the runtime lane should not be assumed JetPack-only after later visual normalization passes
 - `NoFall` is already proven to affect track-build normalization, not just later movement code
 - any rewrite that wants to preserve exact behavior should keep `Parcel`, `NoFall`, `JetPack=Off`, and path-attachment lanes distinct instead of flattening them into one generic flag bucket
 
@@ -599,7 +655,7 @@ The neighbor propagation step is now clearer too:
 - those two lanes store sampled path-object pointers at runtime offsets `+0x5ccb6c` and `+0x5ccb70`
 - `update_player_track_movement_and_triggers` later probes both lanes through `try_enter_track_attachment_from_swept_motion`
 
-So the attachment-follow checks on low-byte `0x40` and `0x80` are part of the path-follow system. They are separate from authored `JetPack=Off`, which lives in second-byte `0x80` and therefore full runtime mask `0x8000`.
+So the attachment-follow checks on low-byte `0x40` and `0x80` are part of the path-follow system. They are still separate from the second-byte `0x80` lane, but that full runtime mask `0x8000` is shared between authored `JetPack=Off` and later edge-variant selection.
 
 What is not pinned down yet:
 
