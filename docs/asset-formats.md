@@ -216,6 +216,7 @@ Current RWG understanding:
   - `rebuild_track_runtime_from_segments` copies `Parcel` rows into runtime low-byte `0x01` plus `0x4000`, and fills `parcel_id` plus parcel offsets at `+0x5ccb64` and `+0x5ccb58/+0x5ccb5c/+0x5ccb60`
   - `rebuild_track_runtime_from_segments` copies `NoFall` rows into runtime mask `0x100`
   - `rebuild_track_runtime_from_segments` copies authored `JetPack=Off` rows into runtime mask `0x8000`
+  - `normalize_segment_glyph_for_track_flags` already consumes `NoFall` at runtime mask `0x100`, where it suppresses at least the `=` and `|` glyph remaps on flagged rows
   - a player jetpack update path later samples the current runtime cell and treats `BYTE1(cell_flags) & 0x80` as `Auto Shutoff Jetpack`
   - path-template propagation separately uses low-byte `0x40` and `0x80` as the primary and secondary attachment-follow lanes, with live pointers at `+0x5ccb6c` and `+0x5ccb70`
   - so `JetPack=Off` and the secondary path-attachment lane are distinct at the full runtime-mask level even though both show up as byte-local `0x80` tests in different consumers

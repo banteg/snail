@@ -531,6 +531,9 @@ High-confidence findings:
   - low-byte `0x01` plus `0x4000` for `Parcel`
   - `0x100` for `NoFall`
   - `0x8000` for `JetPack=Off`
+- `normalize_segment_glyph_for_track_flags` already consumes `NoFall` on the packed runtime word:
+  - `=` only takes its parcel-style remap when `(flags & 0x100) == 0`
+  - `|` only takes its parcel-style remap when `(flags & 0x100) == 0`
 - `allocate_challenge_parcels_on_track` explicitly scans for cells where:
   - `(cell_flags & 0x01) != 0`
   - `parcel_id == 0`
@@ -543,6 +546,7 @@ The practical read for the port is:
 - `Parcel` semantics are definitely live and feed both authored and random challenge parcel placement
 - `NoFall` should be modeled as its own authored flag that becomes runtime mask `0x100`
 - `JetPack=Off` should be modeled as its own authored flag that becomes runtime mask `0x8000`
+- `NoFall` is already proven to affect track-build normalization, not just later movement code
 - any rewrite that wants to preserve exact behavior should keep `Parcel`, `NoFall`, `JetPack=Off`, and path-attachment lanes distinct instead of flattening them into one generic flag bucket
 
 ## First Confirmed Path Consumer
