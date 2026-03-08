@@ -9,7 +9,8 @@ import msgspec
 
 from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
-from .recon import inspect_path
+from .recon import inspect_path, sha256_bytes
+from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
 from .trace import build_trace_capture_plan, summarize_runtime_trace_file
 
 
@@ -40,6 +41,39 @@ def build_parser() -> argparse.ArgumentParser:
         "--write",
         type=Path,
         help="Write the JSON report to this path in addition to stdout.",
+    )
+
+    unwrap_parser = subparsers.add_parser(
+        "unwrap",
+        help="Decrypt a Reflexive-wrapped executable image and optionally compare it.",
+    )
+    unwrap_parser.add_argument(
+        "--wrapped",
+        type=Path,
+        default=Path("artifacts/bin/SnailMail.RWG"),
+        help="Path to the encrypted wrapped PE image.",
+    )
+    unwrap_parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path("artifacts/bin/ReflexiveArcade/RAW_002.wdt"),
+        help="Path to the encrypted Reflexive wrapper config blob.",
+    )
+    unwrap_parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("artifacts/bin/SnailMail_unwrapped.exe"),
+        help="Where to write the decrypted PE image.",
+    )
+    unwrap_parser.add_argument(
+        "--compare",
+        type=Path,
+        help="Optional path to a PE image to compare against the decrypted output.",
+    )
+    unwrap_parser.add_argument(
+        "--write-config",
+        type=Path,
+        help="Optional path to write the decrypted RAW_002.wdt text.",
     )
 
     archive_parser = subparsers.add_parser(
@@ -173,6 +207,46 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.write.parent.mkdir(parents=True, exist_ok=True)
             args.write.write_text(text + "\n", encoding="utf-8")
         print(text)
+        return 0
+
+    if args.command == "unwrap":
+        image = unwrap_reflexive_executable(args.wrapped, args.config)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_bytes(image)
+
+        report: dict[str, object] = {
+            "wrapped": str(args.wrapped),
+            "config": str(args.config),
+            "output": str(args.output),
+            "output_sha256": sha256_bytes(image),
+            "output_size": len(image),
+        }
+
+        config_text = decrypt_reflexive_wrapper_config(args.wrapped, args.config)
+        if args.write_config is not None:
+            args.write_config.parent.mkdir(parents=True, exist_ok=True)
+            args.write_config.write_text(config_text, encoding="utf-8")
+            report["config_output"] = str(args.write_config)
+
+        if args.compare is not None:
+            compare_bytes = args.compare.read_bytes()
+            differing_offsets = [
+                index
+                for index, (lhs, rhs) in enumerate(zip(image, compare_bytes))
+                if lhs != rhs
+            ]
+            size_mismatch = len(image) != len(compare_bytes)
+            report["compare"] = {
+                "path": str(args.compare),
+                "sha256": sha256_bytes(compare_bytes),
+                "size": len(compare_bytes),
+                "matches": not size_mismatch and not differing_offsets,
+                "diff_count": len(differing_offsets),
+                "size_mismatch": size_mismatch,
+                "first_differences": differing_offsets[:16],
+            }
+
+        print(json.dumps(report, indent=2, sort_keys=True))
         return 0
 
     if args.command == "archive" and args.archive_command == "manifest":
