@@ -133,7 +133,8 @@ Current behavior:
 - parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, preserves typed row metadata such as `Path`, `Ring`, `Parcel`, `JetPack=Off`, `3DModel`, `NoFall`, and the post-row `*` flag, and renders a sequential 3D track preview with semantic markers
 - resolves segment `3DModel=<name>.x` rows to matching `X/<NAME>.X2` meshes when those assets exist and instances them directly in the level preview
 - runs model animation and the new level runner on a fixed `1/60` simulation clock instead of wall-clock render time
-- includes a simple deterministic level runner that advances through the parsed track, samples row metadata, and exposes lane, cell, and attachment-hint state in the UI
+- includes a simple deterministic level runner that advances through the parsed track, samples row metadata, and exposes lane, cell, and attachment state in the UI
+- the level runner now distinguishes attachment probe rows from primary attachment-entry rows, mirroring the current runtime evidence that lowercase `p` mostly behaves like tile `29` probes while uppercase `P` is the normal tile `30` entry path
 
 Current note:
 

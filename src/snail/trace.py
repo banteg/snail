@@ -66,9 +66,9 @@ PATH_NAME_PREFIX_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*")
 
 
 class TraceVec3(msgspec.Struct, frozen=True):
-    x: float
-    y: float
-    z: float
+    x: float | None
+    y: float | None
+    z: float | None
 
 
 class TraceCell(msgspec.Struct, frozen=True):

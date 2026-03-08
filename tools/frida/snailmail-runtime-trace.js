@@ -664,7 +664,7 @@ function installHooks(module) {
   if (HOOKS.player_update) {
     Interceptor.attach(fromVa(module, VA.update_player_track_movement_and_triggers), {
       onEnter(args) {
-        this.player = fastcallArg0(args, this.context);
+        this.player = asPtr(this.context.ecx);
         this.before = summarizePlayer(this.player, getTrackCellRowIndex);
       },
       onLeave() {
@@ -775,17 +775,18 @@ function installHooks(module) {
 
   if (HOOKS.attachment_end) {
     Interceptor.attach(fromVa(module, VA.end_track_attachment_follow_state), {
-      onEnter(args) {
-        const player = fastcallArg0(args, this.context);
+      onEnter() {
+        const player = asPtr(this.context.ecx);
         const before = summarizePlayer(player, getTrackCellRowIndex);
+        const follow = summarizeFollowState(player !== null ? player.add(0x384) : null, getTrackCellRowIndex);
         emit('attachment_end', {
           player: before !== null ? before.ptr : hex(player),
           player_position: before !== null ? before.position : null,
-          cell: before !== null ? before.cell : null,
-          attachment_active: before !== null ? before.attachment_active : null,
-          follow_state: before !== null ? before.follow_state : null,
-          follow_sample_index: before !== null ? before.follow_sample_index : null,
-          follow_progress: before !== null ? before.follow_progress : null,
+          cell: follow !== null && follow.cell !== null ? follow.cell : before !== null ? before.cell : null,
+          attachment_active: follow !== null ? follow.active : before !== null ? before.attachment_active : null,
+          follow_state: follow !== null ? follow.ptr : before !== null ? before.follow_state : null,
+          follow_sample_index: follow !== null ? follow.sample_index : before !== null ? before.follow_sample_index : null,
+          follow_progress: follow !== null ? follow.progress : before !== null ? before.follow_progress : null,
         });
       },
     });

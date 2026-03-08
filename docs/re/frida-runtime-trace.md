@@ -32,6 +32,7 @@ Current hooks in the script:
 - `0x43b120` `update_player_track_movement_and_triggers`
   - emits sampled before and after player snapshots
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
+  - this is a `thiscall` method, so the script now reads the player object from `ecx`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
 - `0x420c40` `begin_track_attachment_follow_state`
@@ -40,6 +41,7 @@ Current hooks in the script:
   - emits sampled follow-state updates with current row, progress, and movement output
 - `0x43af60` `end_track_attachment_follow_state`
   - logs the point where the player drops back out of attachment-follow mode
+  - this is also a `thiscall` method, and the script now prefers the embedded follow-state cell over the transient player cell so exit rows stay meaningful
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
 - `0x43da80` `spawn_track_garbage_hazard`
@@ -130,6 +132,42 @@ The `trace plan` command uses the extracted corpus to rank good first-run target
 - high-garbage levels
 - high-salt levels
 - levels and segments with many `M` glyph rows, which are the current best static slug candidates
+
+## Latest March 8 Read
+
+The longer local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) is the current best dynamic baseline.
+
+Key facts from that run:
+
+- `attachment_probe`: `1628`
+- `attachment_begin`: `101`
+- `attachment_update`: `4096`
+- `attachment_end`: `44`
+- `floor_sample`: `4096`
+- `garbage_spawn`: `278`
+- `health_pickup`: `10`
+- `jetpack_pickup`: `2`
+- `ring_effect`: `29`
+- `salt_spawn`: `65`
+- `salt_update`: `4096`
+- `slug_spawn`: `180`
+
+Useful confirmed tile mappings from that capture:
+
+- attachment probes: runtime tile types `29` and `30`
+- actual attachment-follow updates: runtime tile type `30`
+- health pickups: runtime tile type `23`
+- jetpack pickups: runtime tile type `25`
+- slug spawns: runtime tile type `18`
+- garbage spawns: dominated by runtime tile types `1` and `33`
+- ring effects:
+  - effect kind `4` mostly appeared on runtime tile types `2`, `3`, and `4`
+  - effect kind `2` appeared on runtime tile types `8`, `9`, and `10`
+
+One important operational note:
+
+- that March 8 long capture predates the latest local `thiscall` fix for `player_update` and `attachment_end`
+- the next Windows recapture should therefore use the current repo version of the script, not an older copied copy
 
 ## Current Recommended Targets
 

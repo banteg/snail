@@ -86,6 +86,48 @@ The important practical rule is:
 - most named path slots build the first `0xa8` record with a constructor family, then build the second `0xa8` record by calling `mirror_path_template_pair_x(dst = base + 0xa8, src = base)`
 - `SUPERTRAMP` and `START` are the clear exceptions: both halves are built explicitly instead of through the mirror helper
 
+## Recovered Record Shape
+
+`mirror_path_template_pair_x` plus the recovered `SUPERTRAMP` constructor (`0x423f10`) now give a much clearer picture of one path-template record.
+
+High-confidence fields on the `0xa8`-byte record:
+
+- `+0x24`: nested render or mesh strip object
+- `+0x38`: attachment kind or constructor family id
+- `+0x3c`: mirror flag
+- `+0x40`: paired-side or variant selector
+- `+0x44`: sample count
+- `+0x4c`: float copy of the effective sample count
+- `+0x50`: scale or width-like constructor parameter
+- `+0x54`: subdivision count used for the generated strip mesh
+- `+0x58`: pointer to the primary sampled point array
+- `+0x5c`: pointer to the mirrored or secondary sampled point array
+- `+0x9c`: extra scalar copied by the mirror helper
+
+High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c` arrays:
+
+- record size: `0xa8`
+- `+0x30/+0x34/+0x38`: world position used by the follow-state update
+- `+0x80/+0x84/+0x88`: delta vector toward the next sample
+- `+0x8c`: delta length, which `update_track_attachment_follow_state` multiplies by the per-tick path factor
+- `+0x90/+0x94/+0x98`: orientation-like vector that gets mirrored on X
+- `+0x9c`: scalar initialized to `1.0` in the recovered `SUPERTRAMP` constructor
+- `+0xa0`: extra scalar copied verbatim by the mirror helper
+
+What the mirror helper actually does:
+
+- copies shared header fields like sample count and constructor parameters
+- mirrors X-oriented values in the sampled point arrays
+- copies the per-sample delta length at `+0x8c`
+- mirrors the generated strip mesh vertices and swaps winding-sensitive fields in the nested mesh object
+
+This matches the follow-state code path:
+
+- the live follow state stores a pointer to one of these records
+- `update_track_attachment_follow_state` advances `sample_index` and `progress`
+- the current sample's `+0x8c` length scales the incoming path factor
+- the sample's positions and delta vectors feed the interpolated output position
+
 ## Constructor Families
 
 | Index | Name | Constructor | Notes |
@@ -126,3 +168,4 @@ The important practical rule is:
 - named `Path=` rows choose hardcoded template pairs rather than archive-defined path files
 - most names are family variants built from one constructor plus an X-mirror pass
 - `WARP` remains the one public slot without a clean recovered constructor path
+- the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step

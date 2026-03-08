@@ -151,7 +151,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
                 "ptr": "0x5ccb40",
                 "row": 120,
                 "tile_type": 1,
-                "world": {"x": 0.0, "y": 0.0, "z": 120.0},
+                "world": {"x": None, "y": 0.0, "z": 120.0},
                 "attachment": "0x0",
                 "attachment_kind": None,
             },

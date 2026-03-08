@@ -40,6 +40,40 @@ Related helper:
 
 - `is_point_inside_track_attachment` is a cheaper point-membership predicate over the same sampled path object
 
+## March 8 Dynamic Capture
+
+The long local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) materially tightened the attachment picture.
+
+High-confidence dynamic facts from that run:
+
+- `attachment_probe` fired on runtime tile types `29` and `30`
+- `attachment_begin` fired `101` times, `100` of them on tile type `30`
+- `attachment_update` fired `4096` times and only reported tile type `30`
+- the active attachment rows in this capture were `4`, `91`, `128`, `165`, `442`, and `479`
+- the observed attachment kinds on those rows were:
+  - row `4` -> kind `36`
+  - rows `91`, `128`, `442`, `479` -> kind `16`
+  - row `165` -> kind `42`
+
+The same run also confirmed the follow-state update shape recovered from `update_track_attachment_follow_state`:
+
+- `follow_sample_index` advances monotonically until the current segment length is exhausted
+- `follow_progress` wraps back below `1.0` when the sample index increments
+- the traced `effect_scale` argument tracks the per-tick path factor that gets scaled by the current sample length
+
+Representative row `442` progression from the trace:
+
+- sample `0` progressed through `0.125`, `0.220`, `0.318`, ..., `0.952`
+- then wrapped to sample `1` at progress `0.066`
+- then continued through sample `1` and into sample `2`
+
+That matches the static control flow in `update_track_attachment_follow_state`, where the function adds the scaled path factor to the stored progress, advances the sample index on overflow, and interpolates against the neighboring sample records.
+
+Important caveat for this specific March 8 capture:
+
+- `attachment_end` still reflected the pre-fix hook and reported the sentinel player cell (`tile_type = 32`, row `-6558`) instead of the embedded follow-state cell
+- the local Frida script has now been corrected to read the player from `ecx` and prefer the follow-state cell on exit, so the next capture should produce a real end-row signal
+
 ## Practical Read
 
 This is the current high-confidence static evidence that:

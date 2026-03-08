@@ -926,7 +926,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 runner.current_cell,
                 runner.traversable_bounds.min,
                 runner.traversable_bounds.max,
-                if (runner.attachment_hint) "hint" else "none",
+                runner.attachment_hint.label(),
                 runner.annotationLabel() orelse "<none>",
             },
         );
@@ -947,8 +947,12 @@ fn drawLevelViewport(state: *const AppState) void {
     loaded_track_preview.draw(state.level_segment_index);
     if (state.level_runner) |runner| {
         const position = runner.worldPosition(&loaded_track_preview, 0.58);
-        const color: rl.Color = if (runner.attachment_hint) .gold else .lime;
-        rl.drawSphere(position, if (runner.attachment_hint) 0.22 else 0.18, color);
+        const color: rl.Color = switch (runner.attachment_hint) {
+            .none => .lime,
+            .probe => .orange,
+            .entry => .gold,
+        };
+        rl.drawSphere(position, if (runner.attachment_hint == .none) 0.18 else 0.22, color);
         rl.drawLine3D(
             .{ .x = position.x, .y = 0.04, .z = position.z },
             position,

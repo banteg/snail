@@ -12,6 +12,20 @@ pub const RunnerInput = struct {
     reset: bool = false,
 };
 
+pub const AttachmentHint = enum {
+    none,
+    probe,
+    entry,
+
+    pub fn label(self: AttachmentHint) []const u8 {
+        return switch (self) {
+            .none => "none",
+            .probe => "probe",
+            .entry => "entry",
+        };
+    }
+};
+
 pub const Runner = struct {
     lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -23,7 +37,7 @@ pub const Runner = struct {
     current_global_row: usize = 0,
     current_cell: u8 = ' ',
     current_annotation: ?segment.Annotation.Tag = null,
-    attachment_hint: bool = false,
+    attachment_hint: AttachmentHint = .none,
     path_center_lane: ?f32 = null,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
 
@@ -104,7 +118,7 @@ pub const Runner = struct {
             self.current_global_row = 0;
             self.current_cell = ' ';
             self.current_annotation = null;
-            self.attachment_hint = false;
+            self.attachment_hint = .none;
             self.path_center_lane = null;
             self.traversable_bounds = .{ .min = 0, .max = 0 };
             self.lane_center = 0.5;
@@ -122,7 +136,7 @@ pub const Runner = struct {
         const row_location = preview.locateRow(global_row) orelse {
             self.current_cell = ' ';
             self.current_annotation = null;
-            self.attachment_hint = false;
+            self.attachment_hint = .none;
             self.path_center_lane = null;
             return;
         };
@@ -134,11 +148,15 @@ pub const Runner = struct {
         self.current_annotation = if (row_location.row.annotation) |annotation| annotation.tag() else null;
 
         if (preview.pathBoundsForRow(row_location)) |path_bounds| {
-            self.attachment_hint = true;
+            self.attachment_hint = switch (self.current_cell) {
+                'P' => .entry,
+                'p' => .probe,
+                else => .probe,
+            };
             self.path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
             self.lane_center = self.path_center_lane.?;
         } else {
-            self.attachment_hint = false;
+            self.attachment_hint = .none;
             self.path_center_lane = null;
             self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
         }
@@ -180,7 +198,7 @@ test "runner discovers attachment hint rows in shipped corpus" {
     var found_attachment_hint = false;
     for (0..1024) |_| {
         runner.step(&preview, .{}, 1.0 / 60.0);
-        if (runner.attachment_hint) {
+        if (runner.attachment_hint != .none) {
             found_attachment_hint = true;
             break;
         }
