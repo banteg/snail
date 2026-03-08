@@ -909,7 +909,7 @@ fn drawGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
 }
 
 fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    drawLevelViewport(state);
+    drawGameplayLevelViewport(state);
 
     const hud_panel = if (art_layout) |layout|
         layout.mapRect(16.0, 14.0, 608.0, 84.0)
@@ -966,6 +966,10 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
         );
         rl.drawText(runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
     }
+
+    const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
+    rl.drawRectangle(window_width / 2 - 12, window_height / 2, 24, 2, crosshair_color);
+    rl.drawRectangle(window_width / 2, window_height / 2 - 12, 2, 24, crosshair_color);
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
@@ -1472,6 +1476,54 @@ fn drawLevelViewport(state: *const AppState) void {
     }
 }
 
+fn drawGameplayLevelViewport(state: *const AppState) void {
+    const loaded_track_preview = state.current_track_preview orelse return;
+    const runner = state.level_runner orelse {
+        drawLevelViewport(state);
+        return;
+    };
+
+    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    camera.begin();
+    defer rl.endMode3D();
+
+    const selected_segment_index = if (loaded_track_preview.locateRow(runner.current_global_row)) |row_location|
+        row_location.segment_index
+    else
+        0;
+    loaded_track_preview.draw(selected_segment_index);
+}
+
+fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) rl.Camera3D {
+    if (loaded_track_preview.total_rows == 0) {
+        return loaded_track_preview.previewCamera(0.0, 0);
+    }
+
+    const eye = runner.worldPosition(loaded_track_preview, 0.82);
+    const max_target_row_position = @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.5, 0.5);
+    const target_row_position = std.math.clamp(runner.row_position + 8.0, 0.5, max_target_row_position);
+    const target_global_row = @min(@as(usize, @intFromFloat(@floor(target_row_position))), loaded_track_preview.total_rows - 1);
+    const target_lane_index = if (loaded_track_preview.locateRow(target_global_row)) |row_location| blk: {
+        const bounds = loaded_track_preview.laneBoundsForRow(row_location);
+        break :blk std.math.clamp(runner.resolved_lane_index, bounds.min, bounds.max);
+    } else runner.resolved_lane_index;
+    const target_lane_center = @as(f32, @floatFromInt(target_lane_index)) + 0.5;
+    const target_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
+        target_global_row,
+        target_lane_index,
+        target_row_position,
+    ) orelse 0.0;
+    const target = loaded_track_preview.worldPositionForLane(target_lane_center, target_row_position, target_floor + 0.62);
+
+    return .{
+        .position = eye,
+        .target = target,
+        .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .fovy = 68.0,
+        .projection = .perspective,
+    };
+}
+
 fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
     rl.drawRectangleLines(x, y, width, height, .dark_gray);
 
@@ -1689,4 +1741,30 @@ test "parse args handles debug and smoke subcommands" {
 test "parse args rejects unknown commands" {
     try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"weird"}));
     try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"browser"}));
+}
+
+test "gameplay camera looks ahead of the runner" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
+
+    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    try std.testing.expect(camera.target.z > camera.position.z);
+    try std.testing.expect(camera.position.y > 0.0);
+    try std.testing.expect(camera.target.y >= 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 68.0), camera.fovy, 0.001);
 }

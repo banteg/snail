@@ -92,6 +92,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
 - a default `snail` path that now uses the original splash and main-menu background assets and can hand off `Adventure` or `Arcade` into a lightweight authored-level path
+- a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
