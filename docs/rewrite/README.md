@@ -116,6 +116,7 @@ The repo now includes a minimal Zig + raylib runtime scaffold:
 - [`zig/src/object.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/object.zig)
 - [`zig/src/segment.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/segment.zig)
 - [`zig/src/level.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/level.zig)
+- [`zig/src/track.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/track.zig)
 - [`zig/src/xanim.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/xanim.zig)
 - [`zig/src/main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
 
@@ -129,7 +130,7 @@ Current behavior:
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
 - parses [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
 - parses `_OBJECT.TXT` quads and renders object previews in 3D using sibling TGA textures from the archive
-- parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT` and previews the currently selected segment as a 2D grid with metadata
+- parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, lays segments out sequentially, and renders a 3D blockout with lane centerlines and simple annotation markers
 
 Current note:
 

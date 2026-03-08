@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const track = @import("track.zig");
 const object = @import("object.zig");
 const segment = @import("segment.zig");
 const level = @import("level.zig");
@@ -52,6 +53,7 @@ const AppState = struct {
     current_object: ?object.LoadedObject = null,
     current_level: ?level.Definition = null,
     current_segment: ?segment.Definition = null,
+    current_track_preview: ?track.LoadedLevelPreview = null,
 
     fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !AppState {
         var catalog = try assets.Catalog.init(allocator, archive_path);
@@ -107,6 +109,10 @@ const AppState = struct {
         if (self.current_level) |*loaded_level| {
             loaded_level.deinit();
             self.current_level = null;
+        }
+        if (self.current_track_preview) |*loaded_track_preview| {
+            loaded_track_preview.deinit();
+            self.current_track_preview = null;
         }
 
         if (self.current_texture) |*texture| {
@@ -355,10 +361,17 @@ const AppState = struct {
             loaded_segment.deinit();
             self.current_segment = null;
         }
+        if (self.current_track_preview) |*loaded_track_preview| {
+            loaded_track_preview.deinit();
+            self.current_track_preview = null;
+        }
         if (self.catalog.level_entries.len == 0) return;
 
         const entry = self.catalog.level_entries[self.level_index];
         self.current_level = try level.loadFromArchive(self.allocator, &self.catalog, entry);
+        if (self.current_level) |*loaded_level| {
+            self.current_track_preview = try track.LoadedLevelPreview.load(self.allocator, &self.catalog, loaded_level);
+        }
         self.level_segment_index = 0;
         try self.reloadLevelSegment();
     }
@@ -466,6 +479,8 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
         drawModelViewport(state);
     } else if (state.mode == .objects) {
         drawObjectViewport(state);
+    } else if (state.mode == .levels) {
+        drawLevelViewport(state);
     }
 
     rl.drawText("Snail Mail archive browser", 32, 24, 30, .ray_white);
@@ -745,6 +760,7 @@ fn drawObjectViewport(state: *const AppState) void {
 fn drawLevelPanel(state: *const AppState) !void {
     const level_entry = state.catalog.level_entries[state.level_index];
     const loaded_level = state.current_level orelse return;
+    const loaded_track_preview = state.current_track_preview orelse return;
     var track_value_buffer: [32]u8 = undefined;
     var parcels_value_buffer: [32]u8 = undefined;
     var quota_value_buffer: [32]u8 = undefined;
@@ -761,7 +777,7 @@ fn drawLevelPanel(state: *const AppState) !void {
             state.catalog.level_entries.len,
             loaded_level.name,
             loaded_level.mode,
-            loaded_level.segments.len,
+            loaded_track_preview.segments.len,
         },
     );
     rl.drawText(summary_text, 32, 194, 24, .ray_white);
@@ -827,19 +843,29 @@ fn drawLevelPanel(state: *const AppState) !void {
         var dim_buffer: [384]u8 = undefined;
         const dim_text = try std.fmt.bufPrintZ(
             &dim_buffer,
-            "Grid {d}x{d}  row annotations {d}  first {s}  last {s}",
+            "Grid {d}x{d}  row annotations {d}  preview rows {d}",
             .{
                 loaded_segment.width,
                 loaded_segment.height,
                 countAnnotatedRows(loaded_segment.rows),
-                if (loaded_level.first_segments.len > 0) loaded_level.first_segments[0] else "<none>",
-                if (loaded_level.last_segments.len > 0) loaded_level.last_segments[0] else "<none>",
+                loaded_track_preview.total_rows,
             },
         );
         rl.drawText(dim_text, 56, 620, 18, .light_gray);
     }
 
     drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
+}
+
+fn drawLevelViewport(state: *const AppState) void {
+    const loaded_track_preview = state.current_track_preview orelse return;
+    const camera = loaded_track_preview.previewCamera(@floatCast(rl.getTime()), state.level_segment_index);
+    camera.begin();
+    defer rl.endMode3D();
+
+    const grid_slices: i32 = @intCast(@max(loaded_track_preview.total_rows, 10));
+    rl.drawGrid(@min(grid_slices, 200), 1.0);
+    loaded_track_preview.draw(state.level_segment_index);
 }
 
 fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
