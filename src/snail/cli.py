@@ -6,6 +6,9 @@ from pathlib import Path
 from typing import Sequence
 
 from .archive import extract_archive, parse_archive_index, summarize_archive
+import msgspec
+
+from .formats import parse_text_asset
 from .recon import inspect_path
 
 
@@ -87,6 +90,26 @@ def build_parser() -> argparse.ArgumentParser:
         help="Only extract entries whose archive path starts with this prefix.",
     )
 
+    format_parser = subparsers.add_parser(
+        "format",
+        help="Parse Snail Mail text asset formats and print structured JSON.",
+    )
+    format_parser.add_argument(
+        "path",
+        help="Path to a decoded OBJECTS, SEGMENTS, or LEVELS text file.",
+    )
+    format_parser.add_argument(
+        "--kind",
+        choices=("auto", "object", "segment", "level"),
+        default="auto",
+        help="Force a format kind instead of auto-detecting from the path and contents.",
+    )
+    format_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the JSON report to this path in addition to stdout.",
+    )
+
     return parser
 
 
@@ -120,6 +143,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             prefix=args.prefix,
         )
         print(json.dumps(manifest, indent=2, sort_keys=True))
+        return 0
+
+    if args.command == "format":
+        parsed = parse_text_asset(Path(args.path), kind=args.kind)
+        builtins = msgspec.to_builtins(parsed)
+        text = json.dumps(builtins, indent=2, sort_keys=True)
+        if args.write is not None:
+            args.write.parent.mkdir(parents=True, exist_ok=True)
+            args.write.write_text(text + "\n", encoding="utf-8")
+        print(text)
         return 0
 
     parser.error(f"Unhandled command: {args.command}")

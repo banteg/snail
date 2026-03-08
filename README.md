@@ -20,6 +20,8 @@ uv run snail inspect artifacts/bin/SnailMail.dat
 uv run snail inspect --write reports/bundle.json
 uv run snail archive manifest
 uv run snail archive extract --output artifacts/extracted/SnailMail.dat
+uv run snail format artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT
+uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
 ```
 
 The command emits JSON with:
@@ -35,6 +37,10 @@ The archive subcommands add:
 - `archive manifest`: a decoded `SnailMail.dat` index summary with extension and root counts plus entry previews
 - `archive extract`: a real extractor for the archive, including payload decode and a generated `manifest.json`
 
+The format parser adds:
+
+- `format`: structured JSON for decoded `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` assets
+
 ## Asset Format Notes
 
 Verified archive and asset format notes live in [`docs/asset-formats.md`](/Users/banteg/dev/banteg/snail-mail/docs/asset-formats.md).
@@ -45,7 +51,7 @@ Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/s
 
 - `.ogg` audio
 - `.tga` textures
-- `.txt` scripts and object definitions
+- `.txt` object, segment, and level definitions
 - `.x2` text mesh or animation fragments
 - an embedded `BASS.DLL`
 

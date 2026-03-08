@@ -109,6 +109,109 @@ Current implementation note:
 - the Zig runtime already plays these interpolated `.x2` animations directly from the archive
 - `Trigger:` lists from `_ANIMATION.TXT` are still under investigation and are not yet applied during playback
 
+## OBJECTS/_OBJECT.TXT
+
+The decoded `OBJECTS/*/_OBJECT.TXT` files are small text mesh definitions separate from the `.x2` family.
+
+Observed structure:
+
+- a `[VERTEX START]` block of `index x y z` rows
+- a `[FACEQUAD START]` block of quad faces
+- each face row contains:
+  - face index
+  - four vertex indices
+  - four UV pairs
+  - a trailing texture name token such as `Letter`, `Lazer`, or `Barrier`
+
+Current corpus notes:
+
+- the extracted archive contains `4` `_OBJECT.TXT` files
+- all currently use `FACEQUAD`; no triangle-only object face block has been seen yet
+- texture names are logical material identifiers rather than full archive paths
+
+Representative samples:
+
+- [`OBJECTS/FONT3D/_OBJECT.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT)
+- [`OBJECTS/VAPOURLAZER/_OBJECT.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/OBJECTS/VAPOURLAZER/_OBJECT.TXT)
+
+## SEGMENTS/*.TXT
+
+The `SEGMENTS` files are grid-based track segment definitions.
+
+Observed structure:
+
+- `ID:<number>`
+- `Name:'<display name>'`
+- `Data:`
+- a fixed-width row grid after `Data:`
+
+Current corpus notes:
+
+- rows are `10` characters wide in the shipped files
+- segment heights vary by file
+- any text after column `10` is metadata attached to that row
+
+Observed row metadata forms include:
+
+- `Path=<name>`
+- `Ring=<name>`
+- `Parcel=<id>,(<x>,<y>,<z>)`
+- `JetPack=Off`
+- `3DModel=<mesh> (<x>,<y>,<z>)`
+- `No Fall` / `NoFall`
+
+Representative samples:
+
+- [`SEGMENTS/START.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT)
+- [`SEGMENTS/BIG JUMP.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/BIG%20JUMP.TXT)
+
+## LEVELS/*.TXT
+
+The `LEVELS` files define level rules and compose segment sequences.
+
+Observed scalar fields:
+
+- `Name`
+- `Mode`
+- `Track`
+- `Background`
+- `Fringe`
+- `Parcels`
+- `Quota`
+- `Speed`
+- `Slug` or `Garbage`
+- `Salt`
+- `Flags`
+- `Random`
+- `Length`
+
+Observed block fields:
+
+- `GalaxyText: { ... }`
+- `Segments Begin:` ... `Segments End:`
+- `First:`
+- `Last:`
+
+Segment entry lines inside `Segments Begin:` can be:
+
+- just a segment filename such as `Wibble.txt`
+- a filename plus metadata such as:
+  - `Angle=<degrees>`
+  - `Duration=<seconds>`
+  - `Sample="<voice clip>"`
+  - `Message="<tutorial text>"`
+
+Current parser behavior:
+
+- normalizes `Slug`, `Garbage`, and `garbage` into one `garbage` field
+- preserves tutorial messages exactly, including in-string marker characters like `>` and `{`
+- keeps per-segment metadata as structured attributes in addition to common convenience fields
+
+Representative samples:
+
+- [`LEVELS/ARCADE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
+- [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
+
 ## Tooling
 
 Use the repo CLI to inspect or extract the archive:
@@ -117,6 +220,9 @@ Use the repo CLI to inspect or extract the archive:
 uv run snail archive manifest
 uv run snail archive extract --output artifacts/extracted/SnailMail.dat
 uv run snail archive extract --prefix OBJECTS/FONT3D --output artifacts/extracted/font3d
+uv run snail format artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT
+uv run snail format artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT
+uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
 ```
 
 The extractor writes a decoded directory tree plus `manifest.json` into the output directory.
