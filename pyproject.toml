@@ -8,6 +8,8 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "construct>=2.10.70",
+    "msgspec>=0.20.0",
     "pefile>=2024.8.26",
 ]
 

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
 from datetime import UTC, datetime
 import hashlib
 import math
 from pathlib import Path
 from typing import Any
 
+import msgspec
 import pefile
 
 from .archive import parse_archive_index, summarize_archive
@@ -28,8 +28,7 @@ COMMON_SIGNATURES: dict[str, bytes] = {
 PE_PREFIX = b"MZ"
 
 
-@dataclass(frozen=True)
-class SignatureHit:
+class SignatureHit(msgspec.Struct, frozen=True):
     name: str
     offsets: list[int]
 

@@ -1,24 +1,39 @@
 from __future__ import annotations
 
 from collections import Counter
-from dataclasses import dataclass
+import json
 from pathlib import Path
-from struct import unpack_from
+
+from construct import Array, Int32ul, Struct as CStruct, this
+import msgspec
 
 
 ARCHIVE_PROBE_SIZE = 0x7C
-ARCHIVE_ENTRY_SIZE = 12
+
+ARCHIVE_PROBE = CStruct(
+    "entry_count" / Int32ul,
+    "first_path_offset" / Int32ul,
+    "index_size" / Int32ul,
+)
+ARCHIVE_RECORD = CStruct(
+    "path_offset" / Int32ul,
+    "data_offset" / Int32ul,
+    "size" / Int32ul,
+)
+ARCHIVE_INDEX = CStruct(
+    "entry_count" / Int32ul,
+    "records" / Array(this.entry_count, ARCHIVE_RECORD),
+)
+ARCHIVE_ENTRY_SIZE = ARCHIVE_RECORD.sizeof()
 
 
-@dataclass(frozen=True)
-class ArchiveEntry:
+class ArchiveEntry(msgspec.Struct, frozen=True):
     path: str
     data_offset: int
     size: int
 
 
-@dataclass(frozen=True)
-class ArchiveIndex:
+class ArchiveIndex(msgspec.Struct, frozen=True):
     source: Path
     entry_count: int
     index_size: int
@@ -79,8 +94,9 @@ def parse_archive_index(path: Path) -> ArchiveIndex:
             raise ValueError(f"{path} is too small to be a Snail Mail archive")
         xor_decode_in_place(probe)
 
-        entry_count = unpack_from("<I", probe, 0)[0]
-        index_size = unpack_from("<I", probe, 8)[0]
+        probe_data = ARCHIVE_PROBE.parse(probe[: ARCHIVE_PROBE.sizeof()])
+        entry_count = int(probe_data.entry_count)
+        index_size = int(probe_data.index_size)
         minimum_size = 4 + entry_count * ARCHIVE_ENTRY_SIZE
         if entry_count == 0 or index_size < minimum_size:
             raise ValueError(f"{path} does not look like a valid Snail Mail archive")
@@ -91,15 +107,14 @@ def parse_archive_index(path: Path) -> ArchiveIndex:
             raise ValueError(f"{path} ended before the decoded index was fully read")
         xor_decode_in_place(index_blob)
 
+    parsed_index = ARCHIVE_INDEX.parse(index_blob)
     entries: list[ArchiveEntry] = []
-    for entry_index in range(entry_count):
-        record_offset = 4 + entry_index * ARCHIVE_ENTRY_SIZE
-        path_offset, data_offset, size = unpack_from("<III", index_blob, record_offset)
+    for record in parsed_index.records:
         entries.append(
             ArchiveEntry(
-                path=_read_c_string(index_blob, path_offset),
-                data_offset=data_offset,
-                size=size,
+                path=_read_c_string(index_blob, int(record.path_offset)),
+                data_offset=int(record.data_offset),
+                size=int(record.size),
             )
         )
 
@@ -162,7 +177,5 @@ def extract_archive(
     manifest["written_bytes"] = written_bytes
 
     manifest_path = output_dir / "manifest.json"
-    import json
-
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return manifest
