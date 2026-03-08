@@ -2,10 +2,67 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 from pathlib import Path
+import re
 
 import msgspec
 
 from .formats import LevelDefinition, SegmentDefinition, parse_text_asset
+
+
+SEGMENT_PATH_INDEX_NAMES: tuple[str, ...] = (
+    "LOOPTHELOOP",
+    "LOOPTHELOOP2",
+    "LOOPTHELOOP4",
+    "LOOPTHELOOPT2",
+    "LOOPTHELOOPT3",
+    "LOOPTHELOOPT4",
+    "LOOPTHELOOPW",
+    "LOOPBOW",
+    "HILL",
+    "HILL4C",
+    "HILL4",
+    "VALLEY",
+    "VALLEY4C",
+    "VALLEY4",
+    "SBEND",
+    "CAGE2",
+    "HUMP",
+    "DUMP",
+    "HUMPSMALL",
+    "DUMPSMALL",
+    "DIP",
+    "SCREW",
+    "SLALOM",
+    "SLALOMBIG",
+    "WORM",
+    "LOOPOUT",
+    "LOOPOUT3",
+    "LOOPOUTBIG",
+    "SWEEP",
+    "SNAKE",
+    "WARP",
+    "SUPERTRAMP",
+    "SLALOMDOUBLE",
+    "P0",
+    "P1",
+    "P2",
+    "START",
+    "TURNOVER",
+    "TURNOVERDOUBLE",
+    "TURNUNDER",
+    "WIBBLE",
+    "INVERT",
+    "HALFPIPE",
+    "TWISTERA",
+    "TWISTERB",
+    "TWISTER2A",
+    "TWISTER2B",
+    "TOAD0",
+    "TOAD1",
+    "TOADPAIR0",
+    "TOADPAIR1",
+)
+PATH_NAME_PREFIX_RE = re.compile(r"^[A-Za-z][A-Za-z0-9]*")
 
 
 class TraceVec3(msgspec.Struct, frozen=True):
@@ -32,11 +89,19 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     game: str | None = None
     level_descriptor: str | None = None
     retval: int | None = None
+    mode_before: int | None = None
+    mode_after: int | None = None
+    active_level_flag_0: int | None = None
+    active_level_flag_1: int | None = None
+    active_level_present: bool | None = None
     selected_track_id: int | None = None
     active_level: str | None = None
     garbage_scalar: float | None = None
     salt_scalar: float | None = None
     path_name: str | None = None
+    path_name_raw: str | None = None
+    path_name_sanitized: str | None = None
+    path_name_from_index: str | None = None
     path_index: int | None = None
     template: str | None = None
     follow_state: str | None = None
@@ -62,6 +127,11 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
 
 class LevelRuntimeSample(msgspec.Struct, frozen=True):
     seq: int | None = None
+    mode_before: int | None = None
+    mode_after: int | None = None
+    active_level_flag_0: int | None = None
+    active_level_flag_1: int | None = None
+    active_level_present: bool | None = None
     selected_track_id: int | None = None
     garbage_scalar: float | None = None
     salt_scalar: float | None = None
@@ -172,6 +242,11 @@ def summarize_runtime_trace(
     levels = tuple(
         LevelRuntimeSample(
             seq=event.seq,
+            mode_before=event.mode_before,
+            mode_after=event.mode_after,
+            active_level_flag_0=event.active_level_flag_0,
+            active_level_flag_1=event.active_level_flag_1,
+            active_level_present=event.active_level_present,
             selected_track_id=event.selected_track_id,
             garbage_scalar=event.garbage_scalar,
             salt_scalar=event.salt_scalar,
@@ -187,12 +262,13 @@ def summarize_runtime_trace(
     for event in events:
         if event.event != "path_lookup":
             continue
-        if event.path_name:
-            path_name_counts[event.path_name] += 1
+        preferred_path_name = _preferred_path_name(event)
+        if preferred_path_name:
+            path_name_counts[preferred_path_name] += 1
         if event.path_index is not None and event.path_index >= 0:
             path_index_counts[event.path_index] += 1
-            if event.path_name:
-                path_index_names[event.path_index].add(event.path_name)
+            if preferred_path_name:
+                path_index_names[event.path_index].add(preferred_path_name)
 
     return RuntimeTraceSummary(
         source=source,
@@ -238,6 +314,31 @@ def summarize_runtime_trace(
 def summarize_runtime_trace_file(path: Path, *, preview_limit: int = 8) -> RuntimeTraceSummary:
     events = load_runtime_trace(path)
     return summarize_runtime_trace(events, source=path.resolve().as_posix(), preview_limit=preview_limit)
+
+
+def _preferred_path_name(event: RuntimeTraceEvent) -> str | None:
+    if event.path_name_from_index:
+        return event.path_name_from_index
+    if event.path_name_sanitized:
+        return event.path_name_sanitized
+    if event.path_index is not None:
+        canonical = _canonical_path_name_from_index(event.path_index)
+        if canonical is not None:
+            return canonical
+    return _sanitize_path_name(event.path_name_raw or event.path_name)
+
+
+def _canonical_path_name_from_index(path_index: int) -> str | None:
+    if 0 <= path_index < len(SEGMENT_PATH_INDEX_NAMES):
+        return SEGMENT_PATH_INDEX_NAMES[path_index]
+    return None
+
+
+def _sanitize_path_name(value: str | None) -> str | None:
+    if value is None:
+        return None
+    match = PATH_NAME_PREFIX_RE.match(value)
+    return match.group(0) if match is not None else None
 
 
 def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> RuntimeTracePlan:

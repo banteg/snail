@@ -21,9 +21,11 @@ The Frida script is intentionally narrow. It only hooks the points that answer t
 Current hooks in the script:
 
 - `0x437eb0` `normalize_level_runtime_fields`
-  - logs the normalized runtime `Garbage:` and `Salt:` scalars plus selected track id
+  - logs the normalized runtime `Garbage:` and `Salt:` scalars
+  - also records `mode_before`, `mode_after`, and the active-level flag bytes so tutorial-style runs do not get misreported as track id `7`
 - `0x429ae0` `find_segment_path_index_by_name`
   - logs `Path=<name>` to runtime index resolution
+  - emits a canonical path name from the recovered hardcoded table whenever the raw lookup buffer is not safely NUL-terminated
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
 - `0x420c40` `begin_track_attachment_follow_state`
@@ -63,6 +65,14 @@ Event names currently emitted:
 - `salt_spawn`
 - `salt_deactivate`
 - `slug_spawn`
+
+Important payload details:
+
+- `level_start.selected_track_id` is only populated when the active-level pointer flags are set
+- `level_start.mode_before` and `level_start.mode_after` are always recorded and are the correct fallback fields when the active-level pointer is absent
+- `path_lookup.path_name` is the preferred canonical name
+- `path_lookup.path_name_raw` keeps the raw pointer read for debugging
+- `path_lookup.path_name_from_index` is the table-derived name from the recovered `51`-entry path list
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 

@@ -27,6 +27,11 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "tid": 222,
             "event": "level_start",
             "seq": 1,
+            "mode_before": 7,
+            "mode_after": 3,
+            "active_level_flag_0": 1,
+            "active_level_flag_1": 0,
+            "active_level_present": True,
             "selected_track_id": 3,
             "active_level": "0x500000",
             "garbage_scalar": 0.65,
@@ -39,6 +44,9 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "event": "path_lookup",
             "seq": 1,
             "path_name": "START",
+            "path_name_raw": "Start\x80\x80Stop",
+            "path_name_sanitized": "Start",
+            "path_name_from_index": "START",
             "path_index": 36,
         },
         {
@@ -48,6 +56,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "event": "path_lookup",
             "seq": 2,
             "path_name": "START",
+            "path_name_from_index": "START",
             "path_index": 36,
         },
         {
@@ -147,6 +156,9 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert len(events) == 10
     assert summary.total_events == 10
     assert summary.event_counts["path_lookup"] == 2
+    assert summary.levels[0].mode_before == 7
+    assert summary.levels[0].mode_after == 3
+    assert summary.levels[0].active_level_present is True
     assert summary.levels[0].selected_track_id == 3
     assert summary.path_lookups_by_name == {"START": 2}
     assert summary.path_lookups_by_index[0].path_index == 36
@@ -161,6 +173,17 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert summary.salt_deactivations.count == 1
     assert summary.salt_deactivations.positions_preview[0].z == 221.3
     assert summary.slug_spawns.rows == {221: 1}
+
+
+def test_summarize_runtime_trace_uses_index_name_for_legacy_corrupted_path() -> None:
+    trace_path = Path("artifacts/frida/snailmail-trace-20260308-152743-11168.ndjson")
+    events = load_runtime_trace(trace_path)
+    summary = summarize_runtime_trace_file(trace_path, preview_limit=2)
+
+    assert events
+    path_index_summary = next(item for item in summary.path_lookups_by_index if item.path_index == 36)
+    assert path_index_summary.names == ("START",)
+    assert "START" in summary.path_lookups_by_name
 
 
 def test_build_trace_capture_plan_uses_real_corpus() -> None:

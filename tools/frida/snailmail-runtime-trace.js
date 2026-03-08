@@ -41,8 +41,64 @@ const VA = {
   get_track_cell_row_index: 0x447040,
 };
 
+const SEGMENT_PATH_INDEX_NAMES = [
+  'LOOPTHELOOP',
+  'LOOPTHELOOP2',
+  'LOOPTHELOOP4',
+  'LOOPTHELOOPT2',
+  'LOOPTHELOOPT3',
+  'LOOPTHELOOPT4',
+  'LOOPTHELOOPW',
+  'LOOPBOW',
+  'HILL',
+  'HILL4C',
+  'HILL4',
+  'VALLEY',
+  'VALLEY4C',
+  'VALLEY4',
+  'SBEND',
+  'CAGE2',
+  'HUMP',
+  'DUMP',
+  'HUMPSMALL',
+  'DUMPSMALL',
+  'DIP',
+  'SCREW',
+  'SLALOM',
+  'SLALOMBIG',
+  'WORM',
+  'LOOPOUT',
+  'LOOPOUT3',
+  'LOOPOUTBIG',
+  'SWEEP',
+  'SNAKE',
+  'WARP',
+  'SUPERTRAMP',
+  'SLALOMDOUBLE',
+  'P0',
+  'P1',
+  'P2',
+  'START',
+  'TURNOVER',
+  'TURNOVERDOUBLE',
+  'TURNUNDER',
+  'WIBBLE',
+  'INVERT',
+  'HALFPIPE',
+  'TWISTERA',
+  'TWISTERB',
+  'TWISTER2A',
+  'TWISTER2B',
+  'TOAD0',
+  'TOAD1',
+  'TOADPAIR0',
+  'TOADPAIR1',
+];
+
 const RUNTIME = {
-  selected_track_id: 0x40,
+  mode_or_track: 0x40,
+  active_level_flag_0: 0xff25d0,
+  active_level_flag_1: 0xff25d1,
   active_level_ptr: 0xff25d4,
   garbage_scalar: 0x125ffd8,
   salt_scalar: 0x125ffdc,
@@ -225,6 +281,42 @@ function safeReadCString(base, maxLength) {
   }
 }
 
+function safeReadAsciiToken(base, maxLength) {
+  const p = asPtr(base);
+  if (p === null || p.isNull()) {
+    return null;
+  }
+
+  try {
+    const bytes = p.readByteArray(maxLength || 64);
+    if (bytes === null) {
+      return null;
+    }
+
+    const view = new Uint8Array(bytes);
+    let token = '';
+    for (let index = 0; index < view.length; index += 1) {
+      const byte = view[index];
+      if (byte === 0) {
+        break;
+      }
+
+      const isDigit = byte >= 0x30 && byte <= 0x39;
+      const isUpper = byte >= 0x41 && byte <= 0x5a;
+      const isLower = byte >= 0x61 && byte <= 0x7a;
+      if (!isDigit && !isUpper && !isLower) {
+        break;
+      }
+
+      token += String.fromCharCode(byte);
+    }
+
+    return token.length === 0 ? null : token;
+  } catch (_) {
+    return null;
+  }
+}
+
 function safeReadVec3(base, offset) {
   const p = asPtr(base);
   if (p === null || p.isNull()) {
@@ -253,6 +345,34 @@ function floatArg(arg) {
   } catch (_) {
     return null;
   }
+}
+
+function canonicalPathNameFromIndex(pathIndex) {
+  if (pathIndex === null || pathIndex === undefined) {
+    return null;
+  }
+  if (pathIndex < 0 || pathIndex >= SEGMENT_PATH_INDEX_NAMES.length) {
+    return null;
+  }
+  return SEGMENT_PATH_INDEX_NAMES[pathIndex];
+}
+
+function makeLevelRuntimeSnapshot(game) {
+  const gamePtr = asPtr(game);
+  const flag0 = safeReadU8(gamePtr, RUNTIME.active_level_flag_0);
+  const flag1 = safeReadU8(gamePtr, RUNTIME.active_level_flag_1);
+  const hasActiveLevel = (flag0 !== null && flag0 !== 0) || (flag1 !== null && flag1 !== 0);
+  const activeLevelPtr = hasActiveLevel ? safeReadPointer(gamePtr, RUNTIME.active_level_ptr) : null;
+
+  return {
+    active_level_flag_0: flag0,
+    active_level_flag_1: flag1,
+    active_level_present: hasActiveLevel,
+    active_level: hex(activeLevelPtr),
+    selected_track_id: activeLevelPtr !== null ? safeReadU32(activeLevelPtr, 0x2c) : null,
+    garbage_scalar: safeReadFloat(gamePtr, RUNTIME.garbage_scalar),
+    salt_scalar: safeReadFloat(gamePtr, RUNTIME.salt_scalar),
+  };
 }
 
 function eventPayload(event, extra) {
@@ -389,16 +509,23 @@ function installHooks(module) {
       onEnter(args) {
         this.game = this.context.ecx;
         this.level_descriptor = args[0];
+        this.mode_before = safeReadU32(this.game, RUNTIME.mode_or_track);
       },
       onLeave(retval) {
+        const snapshot = makeLevelRuntimeSnapshot(this.game);
         emit('level_start', {
           game: hex(this.game),
           level_descriptor: hex(this.level_descriptor),
           retval: retval.toInt32(),
-          selected_track_id: safeReadU32(this.game, RUNTIME.selected_track_id),
-          active_level: hex(safeReadPointer(this.game, RUNTIME.active_level_ptr)),
-          garbage_scalar: safeReadFloat(this.game, RUNTIME.garbage_scalar),
-          salt_scalar: safeReadFloat(this.game, RUNTIME.salt_scalar),
+          mode_before: this.mode_before,
+          mode_after: safeReadU32(this.game, RUNTIME.mode_or_track),
+          active_level_flag_0: snapshot.active_level_flag_0,
+          active_level_flag_1: snapshot.active_level_flag_1,
+          active_level_present: snapshot.active_level_present,
+          selected_track_id: snapshot.selected_track_id,
+          active_level: snapshot.active_level,
+          garbage_scalar: snapshot.garbage_scalar,
+          salt_scalar: snapshot.salt_scalar,
         });
       },
     });
@@ -407,12 +534,23 @@ function installHooks(module) {
   if (HOOKS.path_lookup) {
     Interceptor.attach(fromVa(module, VA.find_segment_path_index_by_name), {
       onEnter(args) {
-        this.path_name = safeReadCString(args[0], 96);
+        this.path_name_raw = safeReadCString(args[0], 96);
+        this.path_name_sanitized = safeReadAsciiToken(args[0], 64);
       },
       onLeave(retval) {
+        const pathIndex = retval.toInt32();
+        const canonicalPathName = canonicalPathNameFromIndex(pathIndex);
         emit('path_lookup', {
-          path_name: this.path_name,
-          path_index: retval.toInt32(),
+          path_name:
+            canonicalPathName !== null
+              ? canonicalPathName
+              : this.path_name_sanitized !== null
+                ? this.path_name_sanitized
+                : this.path_name_raw,
+          path_name_raw: this.path_name_raw,
+          path_name_sanitized: this.path_name_sanitized,
+          path_name_from_index: canonicalPathName,
+          path_index: pathIndex,
         });
       },
     });

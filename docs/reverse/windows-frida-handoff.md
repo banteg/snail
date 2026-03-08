@@ -64,6 +64,14 @@ The script currently hooks these points:
 - `0x43dc80` `spawn_slug_runtime_entity`
 - `0x447040` `get_track_cell_row_index` for row tagging when safe
 
+Important payload notes for the current script:
+
+- `SnailMail_unwrapped.exe` is now the primary runtime target
+- `path_lookup.path_name` is canonicalized from the recovered path-index table when possible
+- `path_lookup.path_name_raw` is still included for debugging bad or truncated reads
+- `level_start.selected_track_id` is only meaningful when `active_level_present` is true
+- for tutorial-like captures, prefer `mode_before` and `mode_after` over `selected_track_id`
+
 Expected event names in the NDJSON:
 
 - `module_ready`
