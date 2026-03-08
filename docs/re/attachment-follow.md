@@ -40,6 +40,40 @@ Related helper:
 
 - `is_point_inside_track_attachment` is a cheaper point-membership predicate over the same sampled path object
 
+## Recovered Follow-State Layout
+
+The current high-confidence follow-state layout is:
+
+- `+0x00`: active flag
+- `+0x04`: active attachment-template record pointer
+- `+0x08`: source runtime cell pointer
+- `+0x0c`: current sample index
+- `+0x10`: progress within the current sampled segment
+- `+0x14`: vertical offset seed from `world_y - 0.49`
+- `+0x18..+0x28`: orientation-like values updated each tick
+- `+0x2c`: interpolated output position written by `update_track_attachment_follow_state`
+- `+0x38`: player pointer
+
+Recovered begin-state behavior from `begin_track_attachment_follow_state`:
+
+- sets the active flag to `1`
+- stores the selected attachment pointer from runtime cell `+0x38`
+- stores the source runtime cell pointer
+- zeros the sample index
+- seeds progress from `world_z - cell_anchor_z`
+- seeds vertical offset from `world_y - 0.49`
+- stores the player pointer
+- copies a row-derived value into `attachment + 0x98` through `get_track_cell_row_index`
+
+Recovered end-state behavior from `end_track_attachment_follow_state`:
+
+- copies `attachment->+0x98` into `player + 0x430`
+- copies `player + 0x3a0` into `player + 0x42c`
+- clears the active flag at `player + 0x384`
+- sets `player + 0x41d = 1`
+- seeds `player + 0x424` from current player `z`
+- clears `player + 0x434`, `player + 0x44c`, and `player + 0x44d`
+
 ## March 8 Dynamic Capture
 
 The long local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) materially tightened the attachment picture.
@@ -68,6 +102,15 @@ Representative row `442` progression from the trace:
 - then continued through sample `1` and into sample `2`
 
 That matches the static control flow in `update_track_attachment_follow_state`, where the function adds the scaled path factor to the stored progress, advances the sample index on overflow, and interpolates against the neighboring sample records.
+
+Additional static detail from `update_track_attachment_follow_state`:
+
+- the live record pointer uses the sampled point array at attachment `+0x5c`
+- each sampled point record is `0xa8` bytes
+- the current sample delta length is read from sampled point `+0x8c`
+- the current output position is written to follow-state `+0x2c`
+- the update terminates the follow state when the sample index reaches the template end
+- special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
 
 Important caveat for this specific March 8 capture:
 

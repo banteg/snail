@@ -67,6 +67,64 @@ pub const GameplayCellKind = enum {
     }
 };
 
+pub fn confirmedRuntimeTileHint(cell: u8) ?u8 {
+    return switch (cell) {
+        '.' => 0x01,
+        '_' => 0x0f,
+        '|' => 0x0e,
+        '(' => 0x16,
+        '-' => 0x15,
+        'p' => 0x1d,
+        'P' => 0x1e,
+        '$' => 0x17,
+        '&' => 0x22,
+        'J' => 0x19,
+        'M' => 0x12,
+        'R' => 0x23,
+        's' => 0x21,
+        else => null,
+    };
+}
+
+pub fn isFloorCacheRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x0f, 0x10, 0x12, 0x13, 0x17, 0x18, 0x19, 0x1a => true,
+        else => false,
+    };
+}
+
+pub fn isRampRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d => true,
+        else => false,
+    };
+}
+
+pub fn isSlideRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x14, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+pub fn isOpenNeighborRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x00, 0x0e, 0x1c, 0x1d, 0x23 => true,
+        else => false,
+    };
+}
+
+pub fn sampleFloorHeightForRuntimeTile(tile_type: u8, world_z: f32, special_floor_height: ?f32) ?f32 {
+    const row_fraction = world_z - @floor(world_z);
+    return switch (tile_type) {
+        0x01, 0x0e, 0x0f => 0.0,
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x0b, 0x0c, 0x0d => row_fraction * 0.4,
+        0x08, 0x09, 0x0a => (row_fraction * 0.4) + 0.5,
+        0x16 => special_floor_height,
+        else => null,
+    };
+}
+
 pub const GameplayCellSample = struct {
     global_row: usize,
     lane_index: usize,
@@ -308,6 +366,27 @@ pub const LoadedLevelPreview = struct {
             .annotation = if (row.annotation) |annotation| annotation.tag() else null,
             .marked = row.marked,
         };
+    }
+
+    pub fn laneIndexAtWorldX(self: *const LoadedLevelPreview, world_x: f32) usize {
+        if (self.max_width == 0) return 0;
+        const gameplay_width = @min(self.max_width, 8);
+        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        const raw_index: isize = @intFromFloat(@floor(world_x + width_offset));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(gameplay_width - 1))));
+    }
+
+    pub fn rowIndexAtWorldZ(self: *const LoadedLevelPreview, world_z: f32) usize {
+        if (self.total_rows == 0) return 0;
+        const raw_index: isize = @intFromFloat(@floor(world_z));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(self.total_rows - 1))));
+    }
+
+    pub fn gameplayCellSampleAtWorldPosition(self: *const LoadedLevelPreview, world_position: rl.Vector3) ?GameplayCellSample {
+        if (self.total_rows == 0 or self.max_width == 0) return null;
+        const global_row = self.rowIndexAtWorldZ(world_position.z);
+        const lane_index = self.laneIndexAtWorldX(world_position.x);
+        return self.gameplayCellSampleAt(global_row, lane_index);
     }
 
     pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
@@ -862,4 +941,66 @@ test "gameplay cell kinds match recovered runtime glyph semantics" {
     try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKind('M').?);
     try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKind('s').?);
     try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKind('&').?);
+}
+
+test "confirmed runtime tile hints match recovered gameplay tiles" {
+    try std.testing.expectEqual(@as(?u8, 0x01), confirmedRuntimeTileHint('.'));
+    try std.testing.expectEqual(@as(?u8, 0x0f), confirmedRuntimeTileHint('_'));
+    try std.testing.expectEqual(@as(?u8, 0x0e), confirmedRuntimeTileHint('|'));
+    try std.testing.expectEqual(@as(?u8, 0x16), confirmedRuntimeTileHint('('));
+    try std.testing.expectEqual(@as(?u8, 0x15), confirmedRuntimeTileHint('-'));
+    try std.testing.expectEqual(@as(?u8, 0x1e), confirmedRuntimeTileHint('P'));
+    try std.testing.expectEqual(@as(?u8, 0x1d), confirmedRuntimeTileHint('p'));
+    try std.testing.expectEqual(@as(?u8, 0x17), confirmedRuntimeTileHint('$'));
+    try std.testing.expectEqual(@as(?u8, 0x19), confirmedRuntimeTileHint('J'));
+    try std.testing.expectEqual(@as(?u8, 0x12), confirmedRuntimeTileHint('M'));
+    try std.testing.expectEqual(@as(?u8, 0x22), confirmedRuntimeTileHint('&'));
+    try std.testing.expectEqual(@as(?u8, 0x23), confirmedRuntimeTileHint('R'));
+    try std.testing.expectEqual(@as(?u8, 0x21), confirmedRuntimeTileHint('s'));
+    try std.testing.expectEqual(@as(?u8, null), confirmedRuntimeTileHint('#'));
+}
+
+test "runtime tile family helpers match recovered cache predicates" {
+    try std.testing.expect(isFloorCacheRuntimeTileFamily(0x17));
+    try std.testing.expect(isFloorCacheRuntimeTileFamily(0x10));
+    try std.testing.expect(!isFloorCacheRuntimeTileFamily(0x22));
+
+    try std.testing.expect(isRampRuntimeTileFamily(0x02));
+    try std.testing.expect(isRampRuntimeTileFamily(0x0a));
+    try std.testing.expect(!isRampRuntimeTileFamily(0x17));
+
+    try std.testing.expect(isSlideRuntimeTileFamily(0x22));
+    try std.testing.expect(isSlideRuntimeTileFamily(0x01));
+    try std.testing.expect(!isSlideRuntimeTileFamily(0x10));
+
+    try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x1d));
+    try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x23));
+    try std.testing.expect(!isOpenNeighborRuntimeTileFamily(0x1e));
+}
+
+test "runtime floor sampler matches recovered tile formulas" {
+    try std.testing.expectEqual(@as(?f32, 0.0), sampleFloorHeightForRuntimeTile(0x01, 12.25, null));
+    try std.testing.expectApproxEqAbs(@as(f32, 0.1), sampleFloorHeightForRuntimeTile(0x02, 12.25, null).?, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), sampleFloorHeightForRuntimeTile(0x08, 12.25, null).?, 0.0001);
+    try std.testing.expectEqual(@as(?f32, 1.75), sampleFloorHeightForRuntimeTile(0x16, 12.25, 1.75));
+    try std.testing.expectEqual(@as(?f32, null), sampleFloorHeightForRuntimeTile(0x1e, 12.25, null));
+}
+
+test "world quantization matches recovered track grid sampling" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
+    defer preview.deinit();
+
+    try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-20.0));
+    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(20.0));
+    try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-3.99));
+    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(3.99));
+    try std.testing.expectEqual(@as(usize, 0), preview.rowIndexAtWorldZ(-5.0));
+    try std.testing.expectEqual(preview.total_rows - 1, preview.rowIndexAtWorldZ(10_000.0));
 }

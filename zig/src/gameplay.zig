@@ -110,6 +110,7 @@ const RowSample = struct {
     resolved_lane_index: usize,
     cell: u8,
     gameplay_cell: ?track.GameplayCellKind,
+    runtime_tile_hint: ?u8,
     annotation: ?segment.Annotation,
     path_center_lane: ?f32,
     path_name: ?[]const u8,
@@ -129,6 +130,7 @@ pub const Runner = struct {
     current_cell: u8 = ' ',
     current_annotation: ?segment.Annotation.Tag = null,
     current_gameplay_cell: ?track.GameplayCellKind = null,
+    current_runtime_tile_hint: ?u8 = null,
     current_path_name: ?[]const u8 = null,
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
@@ -194,7 +196,11 @@ pub const Runner = struct {
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
-        return preview.worldPositionForLane(self.lane_center, self.row_position, y);
+        const floor_y = if (self.current_runtime_tile_hint) |tile_type|
+            track.sampleFloorHeightForRuntimeTile(tile_type, self.row_position, null) orelse 0.0
+        else
+            0.0;
+        return preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -222,6 +228,10 @@ pub const Runner = struct {
         return self.attachment_path_name orelse self.current_path_name;
     }
 
+    pub fn runtimeTileHint(self: *const Runner) ?u8 {
+        return self.current_runtime_tile_hint;
+    }
+
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
         if (lane_delta == 0) return;
         if (lane_delta < 0) {
@@ -238,6 +248,7 @@ pub const Runner = struct {
             self.current_cell = ' ';
             self.current_annotation = null;
             self.current_gameplay_cell = null;
+            self.current_runtime_tile_hint = null;
             self.current_path_name = null;
             self.attachment_hint = .none;
             self.path_center_lane = null;
@@ -252,6 +263,7 @@ pub const Runner = struct {
             self.current_cell = ' ';
             self.current_annotation = null;
             self.current_gameplay_cell = null;
+            self.current_runtime_tile_hint = null;
             self.current_path_name = null;
             self.attachment_hint = .none;
             self.path_center_lane = null;
@@ -265,6 +277,7 @@ pub const Runner = struct {
         self.current_cell = sample.cell;
         self.current_annotation = if (sample.annotation) |annotation| annotation.tag() else null;
         self.current_gameplay_cell = sample.gameplay_cell;
+        self.current_runtime_tile_hint = sample.runtime_tile_hint;
         self.current_path_name = sample.path_name;
         self.path_center_lane = sample.path_center_lane;
         self.attachment_hint = if (sample.gameplay_cell) |kind|
@@ -303,6 +316,7 @@ pub const Runner = struct {
             .resolved_lane_index = resolved_lane_index,
             .cell = cell,
             .gameplay_cell = track.gameplayCellKind(cell),
+            .runtime_tile_hint = track.confirmedRuntimeTileHint(cell),
             .annotation = annotation,
             .path_center_lane = path_center_lane,
             .path_name = pathNameFromAnnotation(annotation),

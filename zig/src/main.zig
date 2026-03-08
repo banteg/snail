@@ -921,12 +921,14 @@ fn drawLevelPanel(state: *const AppState) !void {
 
         var cell_buffer: [384]u8 = undefined;
         var path_value_buffer: [96]u8 = undefined;
+        var tile_value_buffer: [32]u8 = undefined;
         const cell_text = try std.fmt.bufPrintZ(
             &cell_buffer,
-            "Cell {c} {s}  bounds {d}-{d}  attach {s}  path {s}",
+            "Cell {c} {s}  tile {s}  bounds {d}-{d}  attach {s}  path {s}",
             .{
                 runner.current_cell,
                 runner.gameplayCellLabel() orelse "<none>",
+                optionalHexU8ToText(&tile_value_buffer, runner.runtimeTileHint()),
                 runner.traversable_bounds.min,
                 runner.traversable_bounds.max,
                 runner.attachment_hint.label(),
@@ -984,12 +986,11 @@ fn drawLevelViewport(state: *const AppState) void {
         const position = runner.worldPosition(&loaded_track_preview, 0.58);
         const color: rl.Color = if (runner.movement_mode == .attachment)
             .gold
-        else
-            switch (runner.attachment_hint) {
-                .none => .lime,
-                .probe => .orange,
-                .entry => .yellow,
-            };
+        else switch (runner.attachment_hint) {
+            .none => .lime,
+            .probe => .orange,
+            .entry => .yellow,
+        };
         rl.drawSphere(position, if (runner.attachment_hint == .none) 0.18 else 0.22, color);
         rl.drawLine3D(
             .{ .x = position.x, .y = 0.04, .z = position.z },
@@ -1164,6 +1165,10 @@ fn optionalUsizeToText(buffer: []u8, value: ?usize) []const u8 {
 
 fn optionalTextToText(buffer: []u8, value: ?[]const u8) []const u8 {
     return if (value) |text| std.fmt.bufPrint(buffer, "{s}", .{text}) catch "?" else "-";
+}
+
+fn optionalHexU8ToText(buffer: []u8, value: ?u8) []const u8 {
+    return if (value) |tile_type| std.fmt.bufPrint(buffer, "0x{x}", .{tile_type}) catch "?" else "-";
 }
 
 fn trackToText(buffer: []u8, value: level.Track) []const u8 {
