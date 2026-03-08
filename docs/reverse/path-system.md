@@ -257,6 +257,20 @@ The constructor-family mapping below is the current high-confidence read for the
 | 45-46 | `TWISTER2A`, `TWISTER2B` | `sub_42af30` | |
 | 47-50 | `TOAD*` | `sub_42cbf0` | `TOAD0`, `TOAD1`, `TOADPAIR0`, `TOADPAIR1` |
 
+The aligned constructor extraction also now gives a few stronger slot-specific reads than the family table alone:
+
+- `VALLEY` and `VALLEY4C` are no longer generic family inferences
+  - both are built by the same `sub_42d570` family as `HILL*`
+  - the distinguishing parameter is the negative vertical offset `-4.0` instead of the positive hill offset
+- `P0`, `P1`, and `P2` all use `sub_425a40`
+  - the first selector argument is `0`, `1`, or `2` for the three public names
+- `INVERT` uses `sub_429250(8.0, 8, 1, ...)`
+- `SUPERTRAMP` and `START` remain the two clear public exceptions where both halves are constructed explicitly instead of using `mirror_path_template_pair_x`
+- `WARP` is now narrower and stranger than before:
+  - slot `30` is the only public `Path=` name whose aligned `0x150` pair start is absent from the main constructor block
+  - the neighboring public slots `29` (`SNAKE`) and `31` (`SUPERTRAMP`) are both present and fully initialized
+  - no shipped extracted segment or level text currently references `WARP`, so the missing constructor still looks like either dead content or a secondary init path not yet recovered
+
 ## Segment Metadata Layout
 
 `load_segment_definitions` confirms the text grammar already implemented in the repo parser, and also shows how the RWG runtime stores per-row metadata.
