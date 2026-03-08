@@ -48,23 +48,25 @@ The format parser adds:
 - `format`: structured JSON for decoded `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` assets
 - `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
 - `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, no-fall, jetpack-off, authored-salt, and scalar-salt targets
-- `symbols`: validation for the tracked Binary Ninja gameplay symbol manifest in [`docs/reverse/symbols/gameplay-functions.json`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/gameplay-functions.json)
+- `symbols`: validation for the tracked Binary Ninja gameplay symbol manifest in `analysis/symbols/gameplay-functions.json`
 
 ## Asset Format Notes
 
-Verified archive and asset format notes live in [`docs/asset-formats.md`](/Users/banteg/dev/banteg/snail-mail/docs/asset-formats.md).
+Browse the docs locally with `zensical serve`.
 
-The rewrite direction and runtime goals live in [`docs/rewrite/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/README.md).
+Verified archive and asset format notes live in [docs/original/asset-formats.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/original/asset-formats.md).
 
-Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md).
+The rewrite direction and runtime goals live in [docs/rewrite/index.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/rewrite/index.md).
 
-The tracked Binary Ninja symbol workflow lives in [`docs/reverse/symbols/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/README.md), with the version-controlled function manifest in [`docs/reverse/symbols/gameplay-functions.json`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/gameplay-functions.json).
+Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [docs/re/path-system.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/path-system.md).
 
-Executable bootstrap and obfuscation notes live in [`docs/reverse/reflexive-wrapper.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/reflexive-wrapper.md).
+The tracked Binary Ninja symbol workflow lives in [docs/re/symbols.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/symbols.md), with the version-controlled function manifest in `analysis/symbols/gameplay-functions.json`.
 
-The Windows runtime trace harness for Frida lives in [`docs/reverse/frida-runtime-trace.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/frida-runtime-trace.md).
+Executable bootstrap and obfuscation notes live in [docs/re/reflexive-wrapper.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/reflexive-wrapper.md).
 
-The Windows-agent runbook for collecting those captures lives in [`docs/reverse/windows-frida-handoff.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/windows-frida-handoff.md).
+The Windows runtime trace harness for Frida lives in [docs/re/frida-runtime-trace.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/frida-runtime-trace.md).
+
+The Windows-agent runbook for collecting those captures lives in [docs/re/windows-frida-handoff.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/windows-frida-handoff.md).
 
 Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
 

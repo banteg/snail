@@ -1,6 +1,6 @@
 # Rewrite Plan
 
-This directory captures the intended direction for the playable rewrite of Snail Mail.
+This section captures the intended direction for the playable rewrite of Snail Mail.
 
 ## Stack Split
 
