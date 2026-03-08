@@ -206,6 +206,30 @@ Instead it:
 
 The table below is therefore a high-confidence normalized-glyph-to-runtime map for the shipped segment alphabet after `normalize_segment_glyph_for_track_flags` has done its substitutions.
 
+One useful constraint from `lookup_table_43744c`:
+
+- most printable glyphs bypass the normalizer unchanged
+- only these raw glyph classes participate in rewrite logic:
+  - space
+  - `$`
+  - `-`
+  - `<` and `>`
+  - `=`
+  - `[` and `]`
+  - `_`
+  - `o`
+  - `{`, `|`, and `}`
+
+High-confidence rewrite behavior from `normalize_segment_glyph_for_track_flags`:
+
+- space can rewrite to `,` or `.`
+- `$` and `o` can rewrite to `.` or `_`
+- `-` can collapse to `.`
+- `<` and `>` can collapse to `.`
+- `[` and `]` can rewrite into `.`, `<`, `{`, or stay as bracket-family glyphs
+- `{` and `}` can rewrite into `.`, `>`, `{`, `}`, or stay as brace-family glyphs
+- `=` and `|` participate in the flag-driven flat-tile family and can rewrite into `.`, `,`, space, `=`, or `|`
+
 | Glyph | Dispatch Case | Runtime Tile Type | Notes |
 |---|---:|---|---|
 | space | `0x00` | `0x00` | empty or neutral |
