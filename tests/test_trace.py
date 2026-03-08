@@ -156,6 +156,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert len(events) == 10
     assert summary.total_events == 10
     assert summary.event_counts["path_lookup"] == 2
+    assert summary.level_modes == {3: 1}
     assert summary.levels[0].mode_before == 7
     assert summary.levels[0].mode_after == 3
     assert summary.levels[0].active_level_present is True
@@ -184,6 +185,7 @@ def test_summarize_runtime_trace_uses_index_name_for_legacy_corrupted_path() -> 
     path_index_summary = next(item for item in summary.path_lookups_by_index if item.path_index == 36)
     assert path_index_summary.names == ("START",)
     assert "START" in summary.path_lookups_by_name
+    assert summary.level_modes == {}
 
 
 def test_build_trace_capture_plan_uses_real_corpus() -> None:

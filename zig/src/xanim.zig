@@ -122,8 +122,7 @@ pub const Player = struct {
     keyframes: []KeyframeModel,
     rendered: x2.LoadedModel,
     paused: bool = false,
-    paused_elapsed: f64 = 0.0,
-    start_time: f64,
+    elapsed_seconds: f64 = 0.0,
     current_from_index: usize = 0,
     current_to_index: usize = 0,
     current_blend: f32 = 0.0,
@@ -135,7 +134,6 @@ pub const Player = struct {
         clip: *const Clip,
         flip_v: bool,
         initial_frame_number: usize,
-        start_time: f64,
     ) !Player {
         if (clip.frames.len == 0) return error.EmptyAnimationClip;
 
@@ -168,11 +166,10 @@ pub const Player = struct {
             .clip = clip,
             .keyframes = keyframes,
             .rendered = rendered,
-            .start_time = start_time,
         };
 
-        player.seekToFrame(initial_frame_number, start_time);
-        try player.update(start_time);
+        player.seekToFrame(initial_frame_number);
+        try player.refreshPose();
         return player;
     }
 
@@ -184,7 +181,14 @@ pub const Player = struct {
         self.allocator.free(self.keyframes);
     }
 
-    pub fn update(self: *Player, now: f64) !void {
+    pub fn step(self: *Player, delta_seconds: f64) !void {
+        if (!self.paused) {
+            self.elapsed_seconds += delta_seconds;
+        }
+        try self.refreshPose();
+    }
+
+    pub fn refreshPose(self: *Player) !void {
         if (self.keyframes.len == 1) {
             self.current_from_index = 0;
             self.current_to_index = 0;
@@ -193,7 +197,7 @@ pub const Player = struct {
             return;
         }
 
-        const frame_sample = self.sample(now);
+        const frame_sample = self.sample();
         self.current_from_index = frame_sample.from_index;
         self.current_to_index = frame_sample.to_index;
         self.current_blend = frame_sample.blend;
@@ -205,40 +209,30 @@ pub const Player = struct {
         );
     }
 
-    pub fn restart(self: *Player, now: f64) void {
+    pub fn restart(self: *Player) !void {
         self.paused = false;
-        self.paused_elapsed = 0.0;
-        self.start_time = now;
+        self.elapsed_seconds = 0.0;
+        try self.refreshPose();
     }
 
-    pub fn togglePause(self: *Player, now: f64) void {
-        if (self.paused) {
-            self.start_time = now - self.paused_elapsed;
-            self.paused = false;
-        } else {
-            self.paused_elapsed = elapsedSeconds(self, now);
-            self.paused = true;
-        }
+    pub fn togglePause(self: *Player) void {
+        self.paused = !self.paused;
     }
 
-    fn seekToFrame(self: *Player, frame_number: usize, now: f64) void {
+    fn seekToFrame(self: *Player, frame_number: usize) void {
         const last = @as(f64, @floatFromInt(self.keyframes[self.keyframes.len - 1].frame_number));
         if (last <= 0.0 or self.clip.duration_seconds <= 0.0) {
-            self.start_time = now;
+            self.elapsed_seconds = 0.0;
             return;
         }
 
         const clamped = @min(@as(f64, @floatFromInt(frame_number)), last);
         const phase = clamped / last;
-        self.start_time = now - phase * self.clip.duration_seconds;
+        self.elapsed_seconds = phase * self.clip.duration_seconds;
     }
 
-    fn elapsedSeconds(self: *const Player, now: f64) f64 {
-        return if (self.paused) self.paused_elapsed else now - self.start_time;
-    }
-
-    fn sample(self: *const Player, now: f64) Sample {
-        const elapsed = @max(self.elapsedSeconds(now), 0.0);
+    fn sample(self: *const Player) Sample {
+        const elapsed = @max(self.elapsed_seconds, 0.0);
         const duration = @max(@as(f64, self.clip.duration_seconds), 0.0001);
         const last_frame_number = @as(f64, @floatFromInt(self.keyframes[self.keyframes.len - 1].frame_number));
 
@@ -500,4 +494,71 @@ test "parse shipped animation catalog" {
         try std.testing.expectEqualStrings("START", clip.trigger_steps[0]);
         try std.testing.expectEqualStrings("LAST", clip.trigger_steps[clip.trigger_steps.len - 1]);
     }
+}
+
+test "pingpong sample is stable at fixed elapsed time" {
+    const frame_numbers = [_]usize{ 0, 1, 2, 3, 4 };
+    const clip = Clip{
+        .name = "turbo-bobalong-000.x",
+        .family_key = "TURBO-BOBALONG",
+        .duration_seconds = 0.5,
+        .mode = .pingpong,
+        .trigger_steps = &.{"START", "LAST"},
+        .frames = &.{
+            .{ .entry_index = 0, .frame_number = 0 },
+            .{ .entry_index = 1, .frame_number = 1 },
+            .{ .entry_index = 2, .frame_number = 2 },
+            .{ .entry_index = 3, .frame_number = 3 },
+            .{ .entry_index = 4, .frame_number = 4 },
+        },
+    };
+
+    const sample_a = sampleFrameNumbers(&clip, &frame_numbers, 0.125);
+    const sample_b = sampleFrameNumbers(&clip, &frame_numbers, 0.125);
+
+    try std.testing.expectEqual(sample_a.from_index, sample_b.from_index);
+    try std.testing.expectEqual(sample_a.to_index, sample_b.to_index);
+    try std.testing.expectApproxEqAbs(sample_a.blend, sample_b.blend, 0.000001);
+}
+
+fn sampleFrameNumbers(clip: *const Clip, frame_numbers: []const usize, elapsed_seconds: f64) Sample {
+    const duration = @max(@as(f64, clip.duration_seconds), 0.0001);
+    const last_frame_number = @as(f64, @floatFromInt(frame_numbers[frame_numbers.len - 1]));
+    const phase = switch (clip.mode) {
+        .once => @min(elapsed_seconds / duration, 1.0),
+        .loop => normalizedLoop(elapsed_seconds, duration),
+        .pingpong => normalizedPingpong(elapsed_seconds, duration),
+    };
+    const sample_number = @as(f32, @floatCast(phase * last_frame_number));
+
+    if (sample_number <= @as(f32, @floatFromInt(frame_numbers[0]))) {
+        return .{
+            .from_index = 0,
+            .to_index = 0,
+            .blend = 0.0,
+            .sample_number = sample_number,
+        };
+    }
+
+    for (frame_numbers[1..], 1..) |frame_number, index| {
+        const upper = @as(f32, @floatFromInt(frame_number));
+        if (sample_number <= upper) {
+            const lower = @as(f32, @floatFromInt(frame_numbers[index - 1]));
+            const denom = @max(upper - lower, 0.0001);
+            return .{
+                .from_index = index - 1,
+                .to_index = index,
+                .blend = (sample_number - lower) / denom,
+                .sample_number = sample_number,
+            };
+        }
+    }
+
+    const last_index = frame_numbers.len - 1;
+    return .{
+        .from_index = last_index,
+        .to_index = last_index,
+        .blend = 0.0,
+        .sample_number = sample_number,
+    };
 }

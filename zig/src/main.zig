@@ -1,6 +1,8 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const gameplay = @import("gameplay.zig");
+const sim = @import("sim.zig");
 const track = @import("track.zig");
 const object = @import("object.zig");
 const segment = @import("segment.zig");
@@ -17,6 +19,7 @@ const default_audio_path = "MUSIC/MAINMENU.OGG";
 const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
+const simulation_step_seconds = 1.0 / 60.0;
 
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
@@ -36,6 +39,8 @@ const AppState = struct {
     catalog: assets.Catalog,
     animation_catalog: xanim.Catalog,
     audio_ready: bool,
+    simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
+    render_time_seconds: f64 = 0.0,
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -54,6 +59,8 @@ const AppState = struct {
     current_level: ?level.Definition = null,
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
+    level_runner: ?gameplay.Runner = null,
+    pending_level_input: gameplay.RunnerInput = .{},
 
     fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !AppState {
         var catalog = try assets.Catalog.init(allocator, archive_path);
@@ -134,12 +141,27 @@ const AppState = struct {
         try self.previewMusic();
     }
 
-    fn update(self: *AppState) !void {
+    fn update(self: *AppState, frame_delta_seconds: f64) !void {
+        self.render_time_seconds += frame_delta_seconds;
         if (self.current_music) |music| {
             rl.updateMusicStream(music.music);
         }
+        const tick_count = self.simulation_clock.beginFrame(frame_delta_seconds);
+        const runner_input = self.pending_level_input;
+        self.pending_level_input = .{};
+        for (0..tick_count) |tick_index| {
+            try self.simulateTick(if (tick_index == 0) runner_input else .{});
+        }
+    }
+
+    fn simulateTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
         if (self.current_animation) |*animation| {
-            try animation.update(rl.getTime());
+            try animation.step(self.simulation_clock.step_seconds);
+        }
+        if (self.current_track_preview) |*loaded_track_preview| {
+            if (self.level_runner) |*runner| {
+                runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+            }
         }
     }
 
@@ -178,6 +200,24 @@ const AppState = struct {
             if (rl.isKeyPressed(.down)) {
                 try self.stepLevelSegment(1);
             }
+            if (rl.isKeyPressed(.a)) {
+                self.pending_level_input.lane_delta -= 1;
+            }
+            if (rl.isKeyPressed(.d)) {
+                self.pending_level_input.lane_delta += 1;
+            }
+            if (rl.isKeyPressed(.w)) {
+                self.pending_level_input.speed_delta_rows_per_second += 2.0;
+            }
+            if (rl.isKeyPressed(.s)) {
+                self.pending_level_input.speed_delta_rows_per_second -= 2.0;
+            }
+            if (rl.isKeyPressed(.space)) {
+                self.pending_level_input.toggle_pause = true;
+            }
+            if (rl.isKeyPressed(.r)) {
+                self.pending_level_input.reset = true;
+            }
         } else {
             if (rl.isKeyPressed(.left)) {
                 try self.stepSelection(-1);
@@ -211,12 +251,12 @@ const AppState = struct {
         }
         if (self.mode == .models and rl.isKeyPressed(.r)) {
             if (self.current_animation) |*animation| {
-                animation.restart(rl.getTime());
+                try animation.restart();
             }
         }
         if (self.mode == .models and rl.isKeyPressed(.p)) {
             if (self.current_animation) |*animation| {
-                animation.togglePause(rl.getTime());
+                animation.togglePause();
             }
         }
         if (self.mode == .objects and rl.isKeyPressed(.f)) {
@@ -325,7 +365,6 @@ const AppState = struct {
                     clip,
                     self.model_flip_v,
                     xanim.frameNumberFromPath(entry.path),
-                    rl.getTime(),
                 );
                 self.current_animation = animation;
                 return;
@@ -364,12 +403,16 @@ const AppState = struct {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
         }
+        self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
         const entry = self.catalog.level_entries[self.level_index];
         self.current_level = try level.loadFromArchive(self.allocator, &self.catalog, entry);
         if (self.current_level) |*loaded_level| {
             self.current_track_preview = try track.LoadedLevelPreview.load(self.allocator, &self.catalog, loaded_level);
+            if (self.current_track_preview) |*loaded_track_preview| {
+                self.level_runner = gameplay.Runner.init(loaded_track_preview);
+            }
         }
         self.level_segment_index = 0;
         try self.reloadLevelSegment();
@@ -449,6 +492,7 @@ pub fn main() !void {
 
     var state = try AppState.init(allocator, options.archive_path, audio_ready);
     defer state.deinit();
+    var frame_timer = try std.time.Timer.start();
 
     if (options.smoke_test) {
         try state.warmupSmokeTest();
@@ -458,12 +502,13 @@ pub fn main() !void {
     var frames_left: usize = if (options.smoke_test) 3 else std.math.maxInt(usize);
 
     while (!rl.windowShouldClose() and frames_left > 0) {
+        const frame_delta_seconds = @as(f64, @floatFromInt(frame_timer.lap())) / @as(f64, std.time.ns_per_s);
         if (options.smoke_test) {
             frames_left -= 1;
         }
 
         try state.handleInput();
-        try state.update();
+        try state.update(frame_delta_seconds);
 
         rl.beginDrawing();
         defer rl.endDrawing();
@@ -484,7 +529,7 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
 
     rl.drawText("Snail Mail archive browser", 32, 24, 30, .ray_white);
     rl.drawText("1 textures  2 audio  3 x2  4 objects  5 levels  tab switch", 32, 62, 18, .light_gray);
-    rl.drawText("arrows: browse current mode  levels up/down change segment  audio: space enter s  models: f p r", 32, 84, 18, .light_gray);
+    rl.drawText("arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
 
     var archive_buffer: [512]u8 = undefined;
     const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
@@ -673,7 +718,7 @@ fn drawModelPanel(state: *const AppState) !void {
 
 fn drawModelViewport(state: *const AppState) void {
     const model = state.activeModel() orelse return;
-    const camera = model.previewCamera(@floatCast(rl.getTime()));
+    const camera = model.previewCamera(@floatCast(state.render_time_seconds));
     camera.begin();
     defer rl.endMode3D();
 
@@ -749,7 +794,7 @@ fn drawObjectPanel(state: *const AppState) !void {
 
 fn drawObjectViewport(state: *const AppState) void {
     const loaded_object = state.current_object orelse return;
-    const camera = loaded_object.previewCamera(@floatCast(rl.getTime()));
+    const camera = loaded_object.previewCamera(@floatCast(state.render_time_seconds));
     camera.begin();
     defer rl.endMode3D();
 
@@ -857,18 +902,59 @@ fn drawLevelPanel(state: *const AppState) !void {
         rl.drawText(dim_text, 56, 620, 18, .light_gray);
     }
 
+    if (state.level_runner) |runner| {
+        var sim_buffer: [384]u8 = undefined;
+        const sim_text = try std.fmt.bufPrintZ(
+            &sim_buffer,
+            "Sim row {d:.2}/{d}  lane {d}  speed {d:.1}  tick {d}  paused {s}",
+            .{
+                runner.row_position,
+                loaded_track_preview.total_rows,
+                runner.lane_index,
+                runner.speed_rows_per_second,
+                runner.tick_count,
+                if (runner.paused) "yes" else "no",
+            },
+        );
+        rl.drawText(sim_text, 56, 646, 18, .gold);
+
+        var cell_buffer: [384]u8 = undefined;
+        const cell_text = try std.fmt.bufPrintZ(
+            &cell_buffer,
+            "Cell {c}  bounds {d}-{d}  attachment {s}  annotation {s}",
+            .{
+                runner.current_cell,
+                runner.traversable_bounds.min,
+                runner.traversable_bounds.max,
+                if (runner.attachment_hint) "hint" else "none",
+                runner.annotationLabel() orelse "<none>",
+            },
+        );
+        rl.drawText(cell_text, 56, 670, 18, .light_gray);
+    }
+
     drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
 }
 
 fn drawLevelViewport(state: *const AppState) void {
     const loaded_track_preview = state.current_track_preview orelse return;
-    const camera = loaded_track_preview.previewCamera(@floatCast(rl.getTime()), state.level_segment_index);
+    const camera = loaded_track_preview.previewCamera(@floatCast(state.render_time_seconds), state.level_segment_index);
     camera.begin();
     defer rl.endMode3D();
 
     const grid_slices: i32 = @intCast(@max(loaded_track_preview.total_rows, 10));
     rl.drawGrid(@min(grid_slices, 200), 1.0);
     loaded_track_preview.draw(state.level_segment_index);
+    if (state.level_runner) |runner| {
+        const position = runner.worldPosition(&loaded_track_preview, 0.58);
+        const color: rl.Color = if (runner.attachment_hint) .gold else .lime;
+        rl.drawSphere(position, if (runner.attachment_hint) 0.22 else 0.18, color);
+        rl.drawLine3D(
+            .{ .x = position.x, .y = 0.04, .z = position.z },
+            position,
+            color,
+        );
+    }
 }
 
 fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {

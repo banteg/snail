@@ -132,6 +132,8 @@ Current behavior:
 - parses `_OBJECT.TXT` quads and renders object previews in 3D using sibling TGA textures from the archive
 - parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, preserves typed row metadata such as `Path`, `Ring`, `Parcel`, `JetPack=Off`, `3DModel`, `NoFall`, and the post-row `*` flag, and renders a sequential 3D track preview with semantic markers
 - resolves segment `3DModel=<name>.x` rows to matching `X/<NAME>.X2` meshes when those assets exist and instances them directly in the level preview
+- runs model animation and the new level runner on a fixed `1/60` simulation clock instead of wall-clock render time
+- includes a simple deterministic level runner that advances through the parsed track, samples row metadata, and exposes lane, cell, and attachment-hint state in the UI
 
 Current note:
 
@@ -164,12 +166,15 @@ Interactive controls:
 - `Left` / `Right`: cycle entries
 - `Up` / `Down`: jump by 10 entries in texture, audio, model, and object modes
 - `Up` / `Down` in level mode: step through the selected level's segment list
+- `A` / `D` in level mode: move the deterministic runner left or right
+- `W` / `S` in level mode: adjust runner speed
 - `Space`: play current audio as a one-shot sound
 - `Enter`: play current audio as a music stream
+- `Space` in level mode: pause or resume the deterministic runner
 - `S`: stop audio preview
 - `F`: flip `V` texture coordinates in model and object modes
 - `P`: pause or resume the active animation clip
-- `R`: restart the active animation clip
+- `R`: restart the active animation clip or reset the deterministic runner in level mode
 
 ## Current .x2 Understanding
 
@@ -205,6 +210,18 @@ Current playback behavior:
 Current caveat:
 
 - `Trigger:` lists from `_ANIMATION.TXT` are not applied yet; the viewer currently follows the numbered keyframes plus `Duration:` and `Mode:`
+
+## Current Simulation Read
+
+The strongest current design lesson from replay behavior and the March 8 Frida captures is still the same:
+
+- the rewrite should treat gameplay as a deterministic headless simulation with rendering layered on top
+- replay playback appears to reuse the same underlying gameplay state transitions rather than a render-only camera path
+- the fixed-step Zig runner is therefore scaffolding, not polish: it keeps the port aligned with the likely architecture of the original game
+
+Current caveat:
+
+- the runner is intentionally conservative and still viewer-like; faithful floor following, attachment-follow movement, and hazard spawning are still blocked on more runtime evidence from `SnailMail_unwrapped.exe`
 
 ## Non-Goals For Now
 

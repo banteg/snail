@@ -60,3 +60,29 @@ The current high-confidence model is:
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 
 The remaining unknowns are mostly about exact constructor semantics, special cases like `WARP`, and the last details of attachment entry or exit behavior.
+
+## March 8 Runtime Capture
+
+The latest Windows Frida capture is now local at [`artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson), with the corresponding rollup at [`artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json).
+
+This run covered:
+
+- five postal-mode levels
+- replay playback after those runs
+- one challenge-mode level
+
+High-confidence dynamic facts from that capture:
+
+- `attachment_probe` hit runtime tile types `29` and `30`
+- `attachment_begin` only fired on runtime tile type `30`
+- slug spawns remained pinned to runtime tile type `18`
+- garbage spawns were dominated by runtime tile types `1` and `33`, with one observed `21`
+- one replay-time `level_start` finally exposed a live active-level pointer and `selected_track_id = 4`
+
+Current best mode mapping from capture order plus the recorded `mode_before` and `mode_after` bytes:
+
+- `0` is postal
+- `4` is replay
+- `1` is challenge
+
+That mapping is still an inference from the known run order, not a fully proven enum decode, but it is materially stronger than the earlier tutorial-only trace.

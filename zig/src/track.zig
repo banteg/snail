@@ -23,6 +23,18 @@ const PlacedModel = struct {
     offset: segment.Vec3,
 };
 
+pub const LaneBounds = struct {
+    min: usize,
+    max: usize,
+};
+
+pub const RowLocation = struct {
+    global_row: usize,
+    segment_index: usize,
+    row_index: usize,
+    row: segment.Row,
+};
+
 pub const LoadedLevelPreview = struct {
     allocator: std.mem.Allocator,
     segments: []segment.Definition,
@@ -177,6 +189,61 @@ pub const LoadedLevelPreview = struct {
     pub fn activeSegment(self: *const LoadedLevelPreview, selected_segment_index: usize) ?*const segment.Definition {
         if (selected_segment_index >= self.segments.len) return null;
         return &self.segments[selected_segment_index];
+    }
+
+    pub fn locateRow(self: *const LoadedLevelPreview, global_row: usize) ?RowLocation {
+        if (global_row >= self.total_rows or self.segments.len == 0) return null;
+
+        var segment_index = self.segments.len - 1;
+        for (self.row_offsets, 0..) |row_offset, index| {
+            const next_offset = if (index + 1 < self.row_offsets.len) self.row_offsets[index + 1] else self.total_rows;
+            if (global_row >= row_offset and global_row < next_offset) {
+                segment_index = index;
+                break;
+            }
+        }
+
+        const row_index = global_row - self.row_offsets[segment_index];
+        const loaded_segment = self.segments[segment_index];
+        if (row_index >= loaded_segment.rows.len) return null;
+
+        return .{
+            .global_row = global_row,
+            .segment_index = segment_index,
+            .row_index = row_index,
+            .row = loaded_segment.rows[row_index],
+        };
+    }
+
+    pub fn laneBoundsForRow(self: *const LoadedLevelPreview, row_location: RowLocation) LaneBounds {
+        _ = self;
+        return guidanceBounds(row_location.row) orelse blk: {
+            if (row_location.row.cells.len == 0) {
+                break :blk .{ .min = 0, .max = 0 };
+            }
+            break :blk .{ .min = 0, .max = row_location.row.cells.len - 1 };
+        };
+    }
+
+    pub fn pathBoundsForRow(self: *const LoadedLevelPreview, row_location: RowLocation) ?LaneBounds {
+        _ = self;
+        return pathBounds(row_location.row.cells);
+    }
+
+    pub fn cellAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        const row_location = self.locateRow(global_row) orelse return null;
+        const row = row_location.row;
+        if (lane_index >= row.cells.len) return null;
+        return row.cells[lane_index];
+    }
+
+    pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+        return .{
+            .x = (lane_center - width_offset) * 1.0,
+            .y = y,
+            .z = row_position + 0.5,
+        };
     }
 
     fn segmentCenter(self: *const LoadedLevelPreview, selected_segment_index: usize) rl.Vector3 {
@@ -478,7 +545,7 @@ fn drawNoFallMarker(
 }
 
 fn drawRowStrip(
-    bounds: TraversableBounds,
+    bounds: LaneBounds,
     row_index: usize,
     width_offset: f32,
     segment_start_z: f32,
@@ -502,7 +569,7 @@ fn rowAnchorPosition(
 ) rl.Vector3 {
     const bounds = guidanceBounds(row) orelse blk: {
         const max_index = if (row.cells.len == 0) @as(usize, 0) else row.cells.len - 1;
-        break :blk TraversableBounds{ .min = 0, .max = max_index };
+        break :blk LaneBounds{ .min = 0, .max = max_index };
     };
     const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
     return worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, y);
@@ -542,16 +609,11 @@ fn applyAnnotationOffset(base: rl.Vector3, offset: segment.Vec3) rl.Vector3 {
     };
 }
 
-const TraversableBounds = struct {
-    min: usize,
-    max: usize,
-};
-
-fn guidanceBounds(row: segment.Row) ?TraversableBounds {
+fn guidanceBounds(row: segment.Row) ?LaneBounds {
     return pathBounds(row.cells) orelse traversableBounds(row.cells);
 }
 
-fn traversableBounds(cells: []const u8) ?TraversableBounds {
+fn traversableBounds(cells: []const u8) ?LaneBounds {
     var min_index: ?usize = null;
     var max_index: usize = 0;
     for (cells, 0..) |cell, index| {
@@ -564,7 +626,7 @@ fn traversableBounds(cells: []const u8) ?TraversableBounds {
     return .{ .min = min_index.?, .max = max_index };
 }
 
-fn pathBounds(cells: []const u8) ?TraversableBounds {
+fn pathBounds(cells: []const u8) ?LaneBounds {
     var min_index: ?usize = null;
     var max_index: usize = 0;
     for (cells, 0..) |cell, index| {
@@ -698,6 +760,10 @@ test "load tutorial level preview" {
     try std.testing.expectEqual(@as(usize, level_definition.segments.len), preview.segments.len);
     try std.testing.expectEqualStrings("Tutorial 0", preview.segments[0].name);
     try std.testing.expect(preview.total_rows > 0);
+    const first_row = preview.locateRow(0).?;
+    try std.testing.expectEqual(@as(usize, 0), first_row.segment_index);
+    try std.testing.expectEqual(@as(usize, 0), first_row.row_index);
+    try std.testing.expect(preview.cellAt(0, 0) != null);
 }
 
 test "resolve segment x model path" {

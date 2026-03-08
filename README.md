@@ -83,6 +83,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `.x2` mesh rendering and animation playback
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
+- a fixed-step level runner in level mode, so track stepping now happens on a deterministic simulation clock instead of render time
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -116,6 +117,8 @@ Interactive controls:
 - `Left` / `Right`: cycle entries
 - `Up` / `Down`: jump by 10 entries in texture, audio, model, and object modes
 - `Up` / `Down` in level mode: step through the selected level's segment list
+- `A` / `D` in level mode: move the deterministic runner left or right across the current track row
+- `W` / `S` in level mode: speed up or slow down the deterministic runner
 - `Space`: play current audio entry as a one-shot sound
 - `Enter`: play current audio entry as a music stream
 - `S`: stop audio preview
@@ -123,8 +126,17 @@ Interactive controls:
 - `P`: pause or resume the current animation clip
 - `R`: restart the current animation clip
 
+Recent Frida evidence from the March 8 multi-level Windows capture is now consistent with that architecture:
+
+- `mode 0` appeared five times in the postal-mode run
+- `mode 4` appeared twice during replay playback
+- `mode 1` appeared once in the challenge-mode run
+- attachment probes hit runtime tile types `29` and `30`, but actual attachment-follow begins only occurred on tile type `30`
+- slug spawns stayed pinned to tile type `18`
+- garbage spawns were dominated by tile types `1` and `33`
+
 ## Immediate Next Targets
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- continue tracing the hardcoded `Path=` route system from `SnailMail_unwrapped.exe`, especially the exact name-to-template mapping and attachment-entry tile semantics, so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay
+- keep moving the rewrite from viewer to gameplay runtime: the next useful work is deterministic player-state scaffolding, while the next hard wall is still faithful attachment-follow, floor sampling, and hazard spawn semantics from `SnailMail_unwrapped.exe`

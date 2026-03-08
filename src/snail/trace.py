@@ -156,6 +156,7 @@ class RuntimeTraceSummary(msgspec.Struct, frozen=True):
     source: str
     total_events: int
     event_counts: dict[str, int]
+    level_modes: dict[int, int]
     levels: tuple[LevelRuntimeSample, ...]
     path_lookups_by_name: dict[str, int]
     path_lookups_by_index: tuple[PathIndexSummary, ...]
@@ -239,6 +240,7 @@ def summarize_runtime_trace(
     preview_limit: int = 8,
 ) -> RuntimeTraceSummary:
     event_counts = Counter(event.event for event in events)
+    level_modes: Counter[int] = Counter()
     levels = tuple(
         LevelRuntimeSample(
             seq=event.seq,
@@ -255,6 +257,10 @@ def summarize_runtime_trace(
         for event in events
         if event.event == "level_start"
     )
+    for level in levels:
+        mode = level.mode_after if level.mode_after is not None else level.mode_before
+        if mode is not None:
+            level_modes[mode] += 1
 
     path_name_counts: Counter[str] = Counter()
     path_index_counts: Counter[int] = Counter()
@@ -274,6 +280,7 @@ def summarize_runtime_trace(
         source=source,
         total_events=len(events),
         event_counts=dict(sorted(event_counts.items())),
+        level_modes=dict(sorted(level_modes.items())),
         levels=levels,
         path_lookups_by_name=dict(sorted(path_name_counts.items())),
         path_lookups_by_index=tuple(
