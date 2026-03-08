@@ -38,8 +38,8 @@ Segment entry lines inside `Segments Begin:` can be:
 
 - the extracted archive currently has `53` level files
 - shipped `Mode:` values are `arcade`, `challenge`, and `tutorial`
-- shipped `Flags:` appears as an empty marker in `52/53` files and is absent only in [`LEVELS/CHALLENGE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT)
-- shipped `Track:` is missing only from [`LEVELS/ARCADE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
+- shipped `Flags:` appears as an empty marker in `52/53` files and is absent only in [`LEVELS/CHALLENGE000.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT)
+- shipped `Track:` is missing only from [`LEVELS/ARCADE000.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
 - shipped segment-entry metadata only uses three forms:
   - bare filename
   - `Angle=<degrees>`
@@ -55,8 +55,8 @@ Segment entry lines inside `Segments Begin:` can be:
 
 Representative samples:
 
-- [`LEVELS/ARCADE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
-- [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
+- [`LEVELS/ARCADE000.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
+- [`LEVELS/TUTORIAL.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
 
 ## Tooling
 

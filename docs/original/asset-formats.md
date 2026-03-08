@@ -1,6 +1,6 @@
 # Asset Formats Overview
 
-This section documents the verified on-disk layout of [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) and the major asset families inside it.
+This section documents the verified on-disk layout of [`SnailMail.dat`](../../artifacts/bin/SnailMail.dat) and the major asset families inside it.
 
 The original page grew into a single long reference. It is now split by format so the side nav can take you directly to the relevant part of the corpus.
 

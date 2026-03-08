@@ -6,7 +6,7 @@ Use this together with:
 
 - [Frida runtime trace](frida-runtime-trace.md)
 - [Path system](path-system.md)
-- [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js)
+- [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js)
 
 ## Goal
 
@@ -34,9 +34,9 @@ The remaining gaps are runtime-behavior questions:
 From the Windows machine, have all of these available:
 
 1. A checkout or copy of this repo.
-2. The original game files plus a locally generated [SnailMail_unwrapped.exe](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe). If it is missing, generate it first with `uv run snail unwrap`.
+2. The original game files plus a locally generated [SnailMail_unwrapped.exe](../../artifacts/bin/SnailMail_unwrapped.exe). If it is missing, generate it first with `uv run snail unwrap`.
 3. Frida CLI installed and working on Windows.
-4. The trace script at [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js).
+4. The trace script at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
 
 Recommended quick checks:
 
@@ -174,7 +174,7 @@ frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 The script now creates `C:\share\snail\frida\` itself and writes NDJSON there with a generated filename like `snailmail-trace-20260308-153000-1234.ndjson`.
 Keep the first console line from each run because it prints the exact file path that was opened.
 
-Before running any new capture, sync the latest repo copy of [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js) onto the Windows machine. The most recent local fixes corrected:
+Before running any new capture, sync the latest repo copy of [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js) onto the Windows machine. The most recent local fixes corrected:
 
 - `update_player_track_movement_and_triggers`
 - `end_track_attachment_follow_state`

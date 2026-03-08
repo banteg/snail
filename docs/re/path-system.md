@@ -1,14 +1,14 @@
 # Path System Overview
 
-This section captures the current static understanding of the `SEGMENTS` path system and the segment-to-track runtime pipeline inside the gameplay executable. The preferred analysis target is [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe); the original shipped equivalent is [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+This section captures the current static understanding of the `SEGMENTS` path system and the segment-to-track runtime pipeline inside the gameplay executable. The preferred analysis target is [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe); the original shipped equivalent is [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG).
 
 Primary sources used for these notes:
 
-- the Binary Ninja database in [`SnailMail_unwrapped.exe.bndb`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb)
+- the Binary Ninja database in [`SnailMail_unwrapped.exe.bndb`](../../artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb)
 - the tracked symbol manifest in `analysis/symbols/gameplay-functions.json`
-- the historical rename source in [`SnailMail.RWG.bndb`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail.RWG.bndb)
-- the exported HLIL snapshot in [`SnailMail.RWG.bndb_hlil.txt`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail.RWG.bndb_hlil.txt)
-- the IDA decompile dump in [`SnailMail.RWG.c`](/Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail.RWG.c)
+- the historical rename source in [`SnailMail.RWG.bndb`](../../artifacts/binary_ninja/SnailMail.RWG.bndb)
+- the exported HLIL snapshot in [`SnailMail.RWG.bndb_hlil.txt`](../../artifacts/binary_ninja/SnailMail.RWG.bndb_hlil.txt)
+- the IDA decompile dump in [`SnailMail.RWG.c`](../../artifacts/ida/SnailMail.RWG.c)
 - Ghidra as a second-opinion decompiler for ambiguous functions
 
 ## Current Function Map
@@ -63,7 +63,7 @@ The remaining unknowns are mostly about exact constructor semantics, special cas
 
 ## March 8 Runtime Capture
 
-The latest Windows Frida capture is now local at [`artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson), with the corresponding rollup at [`artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json).
+The latest Windows Frida capture is now local at [`artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson`](../../artifacts/frida/snailmail-trace-20260308-160644-15084.ndjson), with the corresponding rollup at [`artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json`](../../artifacts/frida/snailmail-trace-20260308-160644-15084.summary.json).
 
 This run covered:
 

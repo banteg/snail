@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const gameplay = @import("gameplay.zig");
+const intro = @import("intro.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
 const object = @import("object.zig");
@@ -17,12 +18,14 @@ const window_height = 720;
 const default_archive_path = "artifacts/bin/SnailMail.dat";
 const splash_background_path = "BACKGROUNDS/SPLASH.TXT";
 const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
+const help_background_path = "BACKGROUNDS/HELP.TXT";
+const credits_script_path = "INTRO/CREDITS.TXT";
 const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 const default_audio_path = "MUSIC/MAINMENU.OGG";
 const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
-const default_arcade_level_path = "LEVELS/ARCADE000.TXT";
+const default_challenge_level_path = "LEVELS/CHALLENGE000.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
 const boot_phase_duration_ticks: u64 = 75;
 const status_message_duration_ticks: u32 = 180;
@@ -43,26 +46,85 @@ const AppCommand = enum {
 const GamePhase = enum {
     boot,
     main_menu,
+    new_game_menu,
+    high_scores_menu,
+    credits,
+    help,
     level,
 };
 
+// PORT(partial): these top-level labels match the recovered front-end constructor at `sub_419b50`.
+// Actions for `Options` and deeper score routing are still scaffolded until their handlers are ported.
 const MainMenuItem = enum {
-    adventure,
-    arcade,
+    new_game,
+    high_scores,
     options,
-    quit,
+    credits,
+    exit,
 
     fn label(self: MainMenuItem) [:0]const u8 {
         return switch (self) {
-            .adventure => "Adventure",
-            .arcade => "Arcade",
+            .new_game => "New Game",
+            .high_scores => "High Scores",
             .options => "Options",
-            .quit => "Quit",
+            .credits => "Credits",
+            .exit => "Exit",
         };
     }
 };
 
-const main_menu_items = [_]MainMenuItem{ .adventure, .arcade, .options, .quit };
+const main_menu_items = [_]MainMenuItem{ .new_game, .high_scores, .options, .credits, .exit };
+
+// PORT(partial): these labels match the recovered `sub_417bc0` new-game submenu.
+// `Tutorial`, `Challenge Mode`, and `Help` are evidence-backed; `Postal Mode` and `Time Trial` actions remain unresolved.
+const NewGameMenuItem = enum {
+    tutorial,
+    postal_mode,
+    time_trial,
+    challenge_mode,
+    help,
+    back,
+
+    fn label(self: NewGameMenuItem) [:0]const u8 {
+        return switch (self) {
+            .tutorial => "Tutorial",
+            .postal_mode => "Postal Mode",
+            .time_trial => "Time Trial",
+            .challenge_mode => "Challenge Mode",
+            .help => "Help",
+            .back => "Back",
+        };
+    }
+};
+
+const new_game_menu_items = [_]NewGameMenuItem{
+    .tutorial,
+    .postal_mode,
+    .time_trial,
+    .challenge_mode,
+    .help,
+    .back,
+};
+
+const HighScoresMenuItem = enum {
+    postal_high_scores,
+    challenge_high_scores,
+    back,
+
+    fn label(self: HighScoresMenuItem) [:0]const u8 {
+        return switch (self) {
+            .postal_high_scores => "Postal High Scores",
+            .challenge_high_scores => "Challenge High Scores",
+            .back => "Back",
+        };
+    }
+};
+
+const high_scores_menu_items = [_]HighScoresMenuItem{
+    .postal_high_scores,
+    .challenge_high_scores,
+    .back,
+};
 
 const Mode = enum {
     textures,
@@ -84,6 +146,8 @@ const AppState = struct {
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
     menu_index: usize = 0,
+    new_game_menu_index: usize = 0,
+    high_scores_menu_index: usize = 0,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
@@ -108,6 +172,7 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_background: ?background.Loaded = null,
+    current_credits_script: ?intro.Definition = null,
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
@@ -176,6 +241,10 @@ const AppState = struct {
         if (self.current_track_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
+        }
+        if (self.current_credits_script) |*credits_script| {
+            credits_script.deinit();
+            self.current_credits_script = null;
         }
 
         if (self.current_texture) |*texture| {
@@ -360,6 +429,7 @@ const AppState = struct {
             switch (self.game_phase) {
                 .level => try self.enterGamePhase(.main_menu),
                 .boot, .main_menu => self.should_exit = true,
+                .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
             }
             return;
         }
@@ -379,6 +449,33 @@ const AppState = struct {
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.activateMainMenuItem(main_menu_items[self.menu_index]);
+                }
+            },
+            .new_game_menu => {
+                if (rl.isKeyPressed(.up)) {
+                    self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, -1);
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, 1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.activateNewGameMenuItem(new_game_menu_items[self.new_game_menu_index]);
+                }
+            },
+            .high_scores_menu => {
+                if (rl.isKeyPressed(.up)) {
+                    self.high_scores_menu_index = wrappedIndex(high_scores_menu_items.len, self.high_scores_menu_index, -1);
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.high_scores_menu_index = wrappedIndex(high_scores_menu_items.len, self.high_scores_menu_index, 1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.activateHighScoresMenuItem(high_scores_menu_items[self.high_scores_menu_index]);
+                }
+            },
+            .credits, .help => {
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.enterGamePhase(.main_menu);
                 }
             },
             .level => {
@@ -442,10 +539,29 @@ const AppState = struct {
 
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         switch (item) {
-            .adventure => try self.enterGameplayShell(default_level_path),
-            .arcade => try self.enterGameplayShell(default_arcade_level_path),
+            .new_game => try self.enterGamePhase(.new_game_menu),
+            .high_scores => try self.enterGamePhase(.high_scores_menu),
             .options => self.setGameStatusMessage("Unavailable."),
-            .quit => self.should_exit = true,
+            .credits => try self.enterGamePhase(.credits),
+            .exit => self.should_exit = true,
+        }
+    }
+
+    fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
+        switch (item) {
+            .tutorial => try self.enterGameplayShell(default_level_path),
+            .postal_mode => self.setGameStatusMessage("Unavailable."),
+            .time_trial => self.setGameStatusMessage("Unavailable."),
+            .challenge_mode => try self.enterGameplayShell(default_challenge_level_path),
+            .help => try self.enterGamePhase(.help),
+            .back => try self.enterGamePhase(.main_menu),
+        }
+    }
+
+    fn activateHighScoresMenuItem(self: *AppState, item: HighScoresMenuItem) !void {
+        switch (item) {
+            .postal_high_scores, .challenge_high_scores => self.setGameStatusMessage("Unavailable."),
+            .back => try self.enterGamePhase(.main_menu),
         }
     }
 
@@ -461,18 +577,37 @@ const AppState = struct {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
+                self.unloadCreditsScript();
                 try self.loadGameBackground(splash_background_path);
             },
-            .main_menu => {
+            .main_menu, .new_game_menu, .high_scores_menu => {
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
+                self.mouse_level_lane_target = null;
+                self.unloadCreditsScript();
+                try self.loadGameBackground(main_menu_background_path);
+                try self.playMusicByPath(default_audio_path);
+            },
+            .credits => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
+                try self.loadCreditsScript();
+            },
+            .help => {
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
+                self.mouse_level_lane_target = null;
+                self.unloadCreditsScript();
+                try self.loadGameBackground(help_background_path);
+                try self.playMusicByPath(default_audio_path);
             },
             .level => {
                 self.stopAudioPreview();
                 self.mouse_level_lane_target = null;
+                self.unloadCreditsScript();
                 try self.loadCurrentLevelBackground();
                 try self.syncActiveLevelSegment(true);
             },
@@ -570,6 +705,18 @@ const AppState = struct {
     fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
         self.unloadGameBackground();
         self.current_game_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
+    }
+
+    fn loadCreditsScript(self: *AppState) !void {
+        self.unloadCreditsScript();
+        self.current_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+    }
+
+    fn unloadCreditsScript(self: *AppState) void {
+        if (self.current_credits_script) |*credits_script| {
+            credits_script.deinit();
+            self.current_credits_script = null;
+        }
     }
 
     fn unloadGameBackground(self: *AppState) void {
@@ -891,7 +1038,11 @@ fn drawGameUi(state: *const AppState) !void {
 
     switch (state.game_phase) {
         .boot => try drawGameBootUi(state, art_layout),
-        .main_menu => try drawGameMenuUi(state, art_layout),
+        .main_menu => try drawMainMenuUi(state, art_layout),
+        .new_game_menu => try drawNewGameMenuUi(state, art_layout),
+        .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
+        .credits => try drawCreditsUi(state, art_layout),
+        .help => drawHelpUi(state),
         .level => try drawGameplayLevelUi(state, art_layout),
     }
 }
@@ -924,7 +1075,7 @@ fn drawGameBootUi(state: *const AppState, art_layout: ?background.Layout) !void 
     rl.drawText("Esc quits", @intFromFloat(hint_point.x), @intFromFloat(hint_point.y), 18, .light_gray);
 }
 
-fn drawGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
     const menu_panel = if (art_layout) |layout|
         layout.mapRect(56.0, 104.0, 220.0, 250.0)
     else
@@ -948,25 +1099,7 @@ fn drawGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
     rl.drawText("Main Menu", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .ray_white);
 
     for (main_menu_items, 0..) |item, index| {
-        const active = index == state.menu_index;
-        const row_rect = if (art_layout) |layout|
-            layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
-        else
-            rl.Rectangle{
-                .x = 112.0,
-                .y = 252.0 + @as(f32, @floatFromInt(index)) * 48.0,
-                .width = 328.0,
-                .height = 36.0,
-            };
-        const label_point = if (art_layout) |layout|
-            layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0)
-        else
-            rl.Vector2{ .x = 132.0, .y = 260.0 + @as(f32, @floatFromInt(index)) * 48.0 };
-
-        if (active) {
-            rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
-        }
-        rl.drawText(item.label(), @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
+        drawMenuItem(art_layout, index, state.menu_index, item.label());
     }
 
     const selected = main_menu_items[state.menu_index];
@@ -1000,6 +1133,157 @@ fn drawGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
         try drawWrappedText(message, @intFromFloat(footer_panel.x + 20.0), @intFromFloat(footer_panel.y + 11.0), @intFromFloat(footer_panel.width - 32.0), 20, .ray_white);
     }
+}
+
+fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const panels = menuPanels(art_layout);
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawText("New Game", panels.title_x, panels.title_y, 28, .ray_white);
+
+    for (new_game_menu_items, 0..) |item, index| {
+        drawMenuItem(art_layout, index, state.new_game_menu_index, item.label());
+    }
+
+    const selected = new_game_menu_items[state.new_game_menu_index];
+    rl.drawText(selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    if (newGameMenuHint(selected)) |hint| {
+        try drawWrappedText(hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+    }
+    rl.drawText("Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
+    rl.drawText("Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    rl.drawText("Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+
+    if (state.game_status_message) |message| {
+        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
+        try drawWrappedText(message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+    }
+}
+
+fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const panels = menuPanels(art_layout);
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawText("High Scores", panels.title_x, panels.title_y, 28, .ray_white);
+
+    for (high_scores_menu_items, 0..) |item, index| {
+        drawMenuItem(art_layout, index, state.high_scores_menu_index, item.label());
+    }
+
+    const selected = high_scores_menu_items[state.high_scores_menu_index];
+    rl.drawText(selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    rl.drawText("Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
+    rl.drawText("Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    rl.drawText("Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+
+    if (state.game_status_message) |message| {
+        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
+        try drawWrappedText(message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+    }
+}
+
+fn drawCreditsUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const script = state.current_credits_script orelse return;
+    const panel = if (art_layout) |layout|
+        layout.mapRect(68.0, 84.0, 456.0, 336.0)
+    else
+        rl.Rectangle{ .x = 96.0, .y = 120.0, .width = 1088.0, .height = 500.0 };
+    rl.drawRectangleRounded(panel, 0.06, 8, .{ .r = 0, .g = 0, .b = 0, .a = 160 });
+    rl.drawText("Credits", @intFromFloat(panel.x + 24.0), @intFromFloat(panel.y + 18.0), 30, .gold);
+    try drawMultilineText(
+        script.text,
+        @intFromFloat(panel.x + 28.0),
+        @intFromFloat(panel.y + 64.0),
+        @intFromFloat(panel.width - 40.0),
+        18,
+        .ray_white,
+    );
+    rl.drawText("Enter or Esc back", @intFromFloat(panel.x + 24.0), @intFromFloat(panel.y + panel.height - 28.0), 18, .light_gray);
+}
+
+fn drawHelpUi(state: *const AppState) void {
+    _ = state;
+    rl.drawRectangleRounded(.{ .x = 72.0, .y = 646.0, .width = 260.0, .height = 34.0 }, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+    rl.drawText("Enter or Esc back", 96, 654, 18, .ray_white);
+}
+
+const MenuPanels = struct {
+    menu_panel: rl.Rectangle,
+    detail_panel: rl.Rectangle,
+    footer_panel: rl.Rectangle,
+    title_x: i32,
+    title_y: i32,
+    detail_title_x: i32,
+    detail_title_y: i32,
+    detail_body_x: i32,
+    detail_body_y: i32,
+    detail_width: i32,
+    control_x: i32,
+    control_y: i32,
+};
+
+fn menuPanels(art_layout: ?background.Layout) MenuPanels {
+    return if (art_layout) |layout|
+        .{
+            .menu_panel = layout.mapRect(56.0, 104.0, 220.0, 250.0),
+            .detail_panel = layout.mapRect(292.0, 104.0, 248.0, 250.0),
+            .footer_panel = layout.mapRect(56.0, 370.0, 484.0, 38.0),
+            .title_x = @intFromFloat(layout.mapPoint(72.0, 78.0).x),
+            .title_y = @intFromFloat(layout.mapPoint(72.0, 78.0).y),
+            .detail_title_x = @intFromFloat(layout.mapPoint(312.0, 126.0).x),
+            .detail_title_y = @intFromFloat(layout.mapPoint(312.0, 126.0).y),
+            .detail_body_x = @intFromFloat(layout.mapPoint(312.0, 168.0).x),
+            .detail_body_y = @intFromFloat(layout.mapPoint(312.0, 168.0).y),
+            .detail_width = @intFromFloat(layout.mapRect(292.0, 104.0, 248.0, 250.0).width - 36.0),
+            .control_x = @intFromFloat(layout.mapPoint(312.0, 250.0).x),
+            .control_y = @intFromFloat(layout.mapPoint(312.0, 250.0).y),
+        }
+    else
+        .{
+            .menu_panel = .{ .x = 96.0, .y = 220.0, .width = 360.0, .height = 260.0 },
+            .detail_panel = .{ .x = 492.0, .y = 220.0, .width = 640.0, .height = 260.0 },
+            .footer_panel = .{ .x = 96.0, .y = 516.0, .width = 1036.0, .height = 44.0 },
+            .title_x = 96,
+            .title_y = 176,
+            .detail_title_x = 520,
+            .detail_title_y = 252,
+            .detail_body_x = 520,
+            .detail_body_y = 304,
+            .detail_width = 580,
+            .control_x = 520,
+            .control_y = 400,
+        };
+}
+
+fn drawMenuItem(art_layout: ?background.Layout, index: usize, selected_index: usize, label: [:0]const u8) void {
+    const active = index == selected_index;
+    const row_rect = if (art_layout) |layout|
+        layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
+    else
+        rl.Rectangle{
+            .x = 112.0,
+            .y = 252.0 + @as(f32, @floatFromInt(index)) * 48.0,
+            .width = 328.0,
+            .height = 36.0,
+        };
+    const label_point = if (art_layout) |layout|
+        layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0)
+    else
+        rl.Vector2{ .x = 132.0, .y = 260.0 + @as(f32, @floatFromInt(index)) * 48.0 };
+
+    if (active) {
+        rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
+    }
+    rl.drawText(label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
+}
+
+fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
+    return switch (item) {
+        .time_trial => "Improve your skills in Time Trial!",
+        .challenge_mode => "Test your reflexes in Challenge Mode!",
+        .help => "Click to Continue",
+        else => null,
+    };
 }
 
 fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -1795,6 +2079,21 @@ fn drawWrappedText(text: []const u8, x: i32, y: i32, max_width: i32, line_height
     var line_index: i32 = 0;
 
     var parts = std.mem.splitScalar(u8, text, '>');
+    while (parts.next()) |part| {
+        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
+        @memcpy(line_buffer[0..clipped.len], clipped);
+        line_buffer[clipped.len] = 0;
+        _ = max_width;
+        rl.drawText(line_buffer[0..clipped.len :0], x, y + line_index * line_height, 18, color);
+        line_index += 1;
+    }
+}
+
+fn drawMultilineText(text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
+    var line_buffer: [512]u8 = undefined;
+    var line_index: i32 = 0;
+
+    var parts = std.mem.splitScalar(u8, text, '\n');
     while (parts.next()) |part| {
         const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
         @memcpy(line_buffer[0..clipped.len], clipped);

@@ -1,15 +1,15 @@
 # Snail Mail RE Notes
 
-This repo is for decompiling and rebuilding the 2006 Windows game bundle in [`artifacts/bin`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin).
+This repo is for decompiling and rebuilding the 2006 Windows game bundle in [`artifacts/bin`](artifacts/bin).
 
 ## Current Findings
 
-- [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) is the preferred gameplay reversing target. It is the reproducible decrypted gameplay image generated from the shipped wrapper assets.
-- [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) is the original shipped wrapped gameplay image for the same runtime. Keep it around for provenance and wrapper-specific work.
-- [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) is a 32-bit Windows GUI PE from June 28, 2006. It is the Reflexive launcher or wrapper layer rather than the gameplay runtime.
-- [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) is a 27 MiB opaque container. It is not recognized as a standard archive by `binwalk` or `7z`, but it does contain embedded asset-like signatures such as `BMP`, `JPEG`, and zlib headers.
-- [`tBass.dll`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/tBass.dll) exports the legacy BASS audio API.
-- [`ReflexiveArcade`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/ReflexiveArcade) contains the Reflexive storefront and updater runtime, including `ReflexiveArcade.dll`.
+- [`SnailMail_unwrapped.exe`](artifacts/bin/SnailMail_unwrapped.exe) is the preferred gameplay reversing target. It is the reproducible decrypted gameplay image generated from the shipped wrapper assets.
+- [`SnailMail.RWG`](artifacts/bin/SnailMail.RWG) is the original shipped wrapped gameplay image for the same runtime. Keep it around for provenance and wrapper-specific work.
+- [`SnailMail.exe`](artifacts/bin/SnailMail.exe) is a 32-bit Windows GUI PE from June 28, 2006. It is the Reflexive launcher or wrapper layer rather than the gameplay runtime.
+- [`SnailMail.dat`](artifacts/bin/SnailMail.dat) is a 27 MiB opaque container. It is not recognized as a standard archive by `binwalk` or `7z`, but it does contain embedded asset-like signatures such as `BMP`, `JPEG`, and zlib headers.
+- [`tBass.dll`](artifacts/bin/tBass.dll) exports the legacy BASS audio API.
+- [`ReflexiveArcade`](artifacts/bin/ReflexiveArcade) contains the Reflexive storefront and updater runtime, including `ReflexiveArcade.dll`.
 
 ## Repo Tooling
 
@@ -35,7 +35,7 @@ The command emits JSON with:
 - Shannon entropy for opaque blobs
 - common embedded signature offsets (`BMP`, `JPEG`, `PNG`, `RIFF`, zlib, etc.)
 - PE metadata for executables and DLLs, including imports, sections, and export previews
-- decoded archive metadata when the target is [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat)
+- decoded archive metadata when the target is [`SnailMail.dat`](artifacts/bin/SnailMail.dat)
 
 The archive subcommands add:
 
@@ -54,22 +54,22 @@ The format parser adds:
 
 Browse the docs locally with `zensical serve`.
 
-Verified archive and asset format notes live in [docs/original/asset-formats.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/original/asset-formats.md).
+Verified archive and asset format notes live in [docs/original/asset-formats.md](docs/original/asset-formats.md).
 
-The rewrite direction and runtime goals live in [docs/rewrite/index.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/rewrite/index.md).
-The current verified versus fallback or scaffold ledger lives in [docs/rewrite/port-status.md](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/port-status.md).
+The rewrite direction and runtime goals live in [docs/rewrite/index.md](docs/rewrite/index.md).
+The current verified versus fallback or scaffold ledger lives in [docs/rewrite/port-status.md](docs/rewrite/port-status.md).
 
-Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [docs/re/path-system.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/path-system.md).
+Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [docs/re/path-system.md](docs/re/path-system.md).
 
-The tracked Binary Ninja symbol workflow lives in [docs/re/symbols.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/symbols.md), with the version-controlled function manifest in `analysis/symbols/gameplay-functions.json`.
+The tracked Binary Ninja symbol workflow lives in [docs/re/symbols.md](docs/re/symbols.md), with the version-controlled function manifest in `analysis/symbols/gameplay-functions.json`.
 
-Executable bootstrap and obfuscation notes live in [docs/re/reflexive-wrapper.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/reflexive-wrapper.md).
+Executable bootstrap and obfuscation notes live in [docs/re/reflexive-wrapper.md](docs/re/reflexive-wrapper.md).
 
-The Windows runtime trace harness for Frida lives in [docs/re/frida-runtime-trace.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/frida-runtime-trace.md).
+The Windows runtime trace harness for Frida lives in [docs/re/frida-runtime-trace.md](docs/re/frida-runtime-trace.md).
 
-The Windows-agent runbook for collecting those captures lives in [docs/re/windows-frida-handoff.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/windows-frida-handoff.md).
+The Windows-agent runbook for collecting those captures lives in [docs/re/windows-frida-handoff.md](docs/re/windows-frida-handoff.md).
 
-Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
+Current confirmed asset families in [`SnailMail.dat`](artifacts/bin/SnailMail.dat):
 
 - `.ogg` audio
 - `.tga` textures
@@ -77,7 +77,7 @@ Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/s
 - `.x2` text mesh or animation fragments
 - an embedded `BASS.DLL`
 
-The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly and provides an archive-backed browser for:
+The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) directly and provides an archive-backed browser for:
 
 - `.tga` textures
 - `.ogg` audio as both one-shot sounds and music streams
@@ -91,11 +91,13 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
 - a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
-- a default `snail` path that now uses the original splash and main-menu background assets and can hand off `Adventure` or `Arcade` into a lightweight authored-level path
+- a default `snail` path that now uses the original splash and main-menu background assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
 - a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
 - the authored `Sample=` and `Message=` metadata from active level segments now surfaces in the default level path, so tutorial voice clips and their text prompts are no longer ignored there
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds, which is closer to the tutorial’s intended control path than keyboard-only lane nudges
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
+- the default front-end now uses decompile-backed menu labels and hierarchy: `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, with a recovered `New Game` submenu of `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, and `Back`
+- `Help` now uses the shipped help background directly and `Credits` now reads `INTRO/CREDITS.TXT`; unresolved actions such as `Postal Mode`, `Time Trial`, and score presentation stay explicitly unavailable instead of guessed
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -110,7 +112,7 @@ The raylib build in this repo enables TGA and OGG support explicitly so the runt
 
 ## Runtime Commands
 
-Use the Zig runtime to exercise original assets directly from [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
+Use the Zig runtime to exercise original assets directly from [`SnailMail.dat`](artifacts/bin/SnailMail.dat):
 
 ```bash
 zig build

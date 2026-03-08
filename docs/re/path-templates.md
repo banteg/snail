@@ -88,7 +88,7 @@ The important practical rule is:
 
 ## Dynamic Family Cross-Check
 
-The evening March 8 capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) now gives live `template_summary` records during attachment-follow.
+The evening March 8 capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](../../artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) now gives live `template_summary` records during attachment-follow.
 
 Useful dynamic cross-checks against the static constructors:
 

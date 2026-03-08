@@ -87,7 +87,7 @@ Those names describe stable behavior without overcommitting to the final gamepla
 
 ## March 8 Dynamic Capture
 
-The long local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) materially tightened the attachment picture.
+The long local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](../../artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) materially tightened the attachment picture.
 
 High-confidence dynamic facts from that run:
 
@@ -131,7 +131,7 @@ Important caveat for this specific March 8 capture:
 
 ## March 8 Evening Capture
 
-The longer evening capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) broadened the live attachment coverage substantially.
+The longer evening capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](../../artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) broadened the live attachment coverage substantially.
 
 High-confidence attachment facts from that run:
 

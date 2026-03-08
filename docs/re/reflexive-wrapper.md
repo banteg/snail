@@ -6,9 +6,9 @@ This page captures the shipped executable bootstrap chain and the lightweight ob
 
 Use these binaries with different intent:
 
-- [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) is the preferred gameplay reversing target. It is the decrypted gameplay image generated from the shipped wrapper assets.
-- [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) is the original shipped wrapped gameplay image. Keep it for provenance, wrapper validation, and any future re-wrapping work.
-- [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) is the Reflexive launcher or demo wrapper. Only use it when you care about storefront, timeout, or bootstrap behavior.
+- [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe) is the preferred gameplay reversing target. It is the decrypted gameplay image generated from the shipped wrapper assets.
+- [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG) is the original shipped wrapped gameplay image. Keep it for provenance, wrapper validation, and any future re-wrapping work.
+- [`SnailMail.exe`](../../artifacts/bin/SnailMail.exe) is the Reflexive launcher or demo wrapper. Only use it when you care about storefront, timeout, or bootstrap behavior.
 
 Older local notes referred to a `SnailMail_alt.exe`. That file was removed after we confirmed that the reproducible unwrapped output is byte-for-byte identical to it.
 
@@ -22,7 +22,7 @@ uv run snail unwrap --write-config artifacts/bin/ReflexiveArcade/RAW_002.decoded
 
 Known output for the current shipped assets:
 
-- output path: [`artifacts/bin/SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe)
+- output path: [`artifacts/bin/SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe)
 - size: `741376`
 - SHA-256: `d365acf3db5335dded4dfd944e876ee2f23156595503693e0bf1baee1c8c83e5`
 
@@ -30,9 +30,9 @@ Known output for the current shipped assets:
 
 The shipped startup path is:
 
-1. [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) derives a sibling `.RWG` filename from its own path and falls back to `RAW_001.exe` if the `.RWG` file is missing.
-2. It reads the wrapped gameplay image into memory and also decrypts [`ReflexiveArcade/RAW_002.wdt`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/ReflexiveArcade/RAW_002.wdt), which is a wrapper config blob.
-3. It launches [`ReflexiveArcade/RAW_003.wdt`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/ReflexiveArcade/RAW_003.wdt), a small helper PE used by the Reflexive wrapper UI and timeout control path.
+1. [`SnailMail.exe`](../../artifacts/bin/SnailMail.exe) derives a sibling `.RWG` filename from its own path and falls back to `RAW_001.exe` if the `.RWG` file is missing.
+2. It reads the wrapped gameplay image into memory and also decrypts [`ReflexiveArcade/RAW_002.wdt`](../../artifacts/bin/ReflexiveArcade/RAW_002.wdt), which is a wrapper config blob.
+3. It launches [`ReflexiveArcade/RAW_003.wdt`](../../artifacts/bin/ReflexiveArcade/RAW_003.wdt), a small helper PE used by the Reflexive wrapper UI and timeout control path.
 4. It creates the real gameplay process from `SnailMail.RWG` in a suspended state.
 5. It reads the encrypted code region out of that suspended process, decrypts it in memory, writes the plaintext back, validates a small integration marker, and resumes the main thread.
 
@@ -68,6 +68,6 @@ For the shipped Snail Mail assets, the second seed collapses to `0`, which makes
 
 For current work:
 
-- reverse gameplay, rendering, pathing, and content loading against [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe)
-- use [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) only when you need to confirm wrapper provenance or reproduce the original decryption flow
-- ignore [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) unless the task is specifically about the Reflexive wrapper
+- reverse gameplay, rendering, pathing, and content loading against [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe)
+- use [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG) only when you need to confirm wrapper provenance or reproduce the original decryption flow
+- ignore [`SnailMail.exe`](../../artifacts/bin/SnailMail.exe) unless the task is specifically about the Reflexive wrapper

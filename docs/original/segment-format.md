@@ -29,8 +29,8 @@ Current corpus notes:
 
 Representative samples:
 
-- [`SEGMENTS/START.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT)
-- [`SEGMENTS/BIG JUMP.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/BIG%20JUMP.TXT)
+- [`SEGMENTS/START.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT)
+- [`SEGMENTS/BIG JUMP.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/BIG%20JUMP.TXT)
 
 ## Practical Notes
 

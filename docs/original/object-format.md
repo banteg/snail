@@ -20,8 +20,8 @@ Observed structure:
 
 Representative samples:
 
-- [`OBJECTS/FONT3D/_OBJECT.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT)
-- [`OBJECTS/VAPOURLAZER/_OBJECT.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/OBJECTS/VAPOURLAZER/_OBJECT.TXT)
+- [`OBJECTS/FONT3D/_OBJECT.TXT`](../../artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT)
+- [`OBJECTS/VAPOURLAZER/_OBJECT.TXT`](../../artifacts/extracted/SnailMail.dat/OBJECTS/VAPOURLAZER/_OBJECT.TXT)
 
 ## Tooling
 

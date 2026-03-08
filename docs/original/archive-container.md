@@ -34,7 +34,7 @@ Important detail:
 - index bytes are decoded with `absolute_offset` starting at `0`
 - payload bytes are decoded with `absolute_offset` starting at each member's `data_offset`
 
-This matches the archive loader in the gameplay executable, which we now prefer to study through [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) even though the original shipped image is [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+This matches the archive loader in the gameplay executable, which we now prefer to study through [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe) even though the original shipped image is [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG).
 
 ## Tooling
 

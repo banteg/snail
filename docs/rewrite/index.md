@@ -2,7 +2,7 @@
 
 This section captures the intended direction for the playable rewrite of Snail Mail.
 
-The current verified versus fallback or scaffold ledger lives in [port-status.md](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/port-status.md).
+The current verified versus fallback or scaffold ledger lives in [port-status.md](port-status.md).
 
 ## Stack Split
 
@@ -112,26 +112,26 @@ The first rewrite milestones should be:
 
 The repo now includes a minimal Zig + raylib runtime scaffold:
 
-- [`build.zig`](/Users/banteg/dev/banteg/snail-mail/build.zig)
-- [`build.zig.zon`](/Users/banteg/dev/banteg/snail-mail/build.zig.zon)
-- [`zig/src/archive.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/archive.zig)
-- [`zig/src/object.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/object.zig)
-- [`zig/src/segment.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/segment.zig)
-- [`zig/src/level.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/level.zig)
-- [`zig/src/track.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/track.zig)
-- [`zig/src/xanim.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/xanim.zig)
-- [`zig/src/main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
+- [`build.zig`](../../build.zig)
+- [`build.zig.zon`](../../build.zig.zon)
+- [`zig/src/archive.zig`](../../zig/src/archive.zig)
+- [`zig/src/object.zig`](../../zig/src/object.zig)
+- [`zig/src/segment.zig`](../../zig/src/segment.zig)
+- [`zig/src/level.zig`](../../zig/src/level.zig)
+- [`zig/src/track.zig`](../../zig/src/track.zig)
+- [`zig/src/xanim.zig`](../../zig/src/xanim.zig)
+- [`zig/src/main.zig`](../../zig/src/main.zig)
 
 Current behavior:
 
 - the runtime opens a window
-- reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly
+- reads [`SnailMail.dat`](../../artifacts/bin/SnailMail.dat) directly
 - builds asset catalogs for the archive's `.tga`, `.ogg`, `.x2`, `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` entries
 - parses `BACKGROUNDS/*.TXT` scripts and resolves both single-image and split `_A` / `_B` TGA background layouts directly from the archive
 - browses original textures directly from archive memory
 - previews original OGGs as both one-shot sounds and music streams
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
-- parses [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
+- parses [`X/_ANIMATION.TXT`](../../artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
 - parses `_OBJECT.TXT` quads and renders object previews in 3D using sibling TGA textures from the archive
 - parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, preserves typed row metadata such as `Path`, `Ring`, `Parcel`, `JetPack=Off`, `3DModel`, `NoFall`, and the post-row `*` flag, and renders a sequential 3D track preview with semantic markers
 - resolves segment `3DModel=<name>.x` rows to matching `X/<NAME>.X2` meshes when those assets exist and instances them directly in the level preview
@@ -142,11 +142,13 @@ Current behavior:
 - the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
 - the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
-- the default `snail` path now reuses the original splash and menu background assets and can hand off `Adventure` or `Arcade` into a lightweight level path backed by authored level backgrounds plus the deterministic runner
+- the default `snail` path now reuses the original splash and menu background assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
+- the front-end hierarchy now follows the recovered constructor labels from the binary: top level `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, and `New Game` submenu `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, `Back`
+- `Help` uses the shipped help background directly and `Credits` uses `INTRO/CREDITS.TXT`; unresolved actions like `Postal Mode`, `Time Trial`, and score presentation remain explicitly unavailable instead of guessed
 
 Current note:
 
@@ -208,13 +210,13 @@ The current Zig loader mirrors the original RWG logic closely enough to render s
 - faces with `4; ...` are quads and are triangulated at runtime
 - faces with non-`4` counts are treated as triangles
 
-This behavior was cross-checked against the Binary Ninja database, Ghidra decompile, and the IDA output in [`artifacts/ida/SnailMail.RWG.c`](/Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail.RWG.c)
+This behavior was cross-checked against the Binary Ninja database, Ghidra decompile, and the IDA output in [`artifacts/ida/SnailMail.RWG.c`](../../artifacts/ida/SnailMail.RWG.c)
 
 Observed caveat:
 
 - the final mesh block appears to omit a closing `}` in shipped assets, so the parser intentionally tolerates EOF after the face list
 
-Animation is orchestrated separately by [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT), which references multiple `.x2` files as frame sequences.
+Animation is orchestrated separately by [`X/_ANIMATION.TXT`](../../artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT), which references multiple `.x2` files as frame sequences.
 
 Current playback behavior:
 

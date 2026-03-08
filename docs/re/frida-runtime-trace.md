@@ -2,7 +2,7 @@
 
 This page describes the Frida harness for capturing the runtime evidence we still need from the original Windows game.
 
-The script lives at [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js).
+The script lives at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
 
 The Windows-side operational handoff lives at [windows-frida-handoff.md](windows-frida-handoff.md).
 
@@ -240,7 +240,7 @@ For the next capture, the new high-value questions are narrower:
 
 ## Latest March 8 Read
 
-The longer local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) is the current best dynamic baseline.
+The longer local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](../../artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) is the current best dynamic baseline.
 
 Key facts from that run:
 
@@ -313,45 +313,45 @@ Operational read:
 
 As of the current extracted corpus and parser state, `uv run snail trace plan --limit 3` recommends these first captures:
 
-- path-heavy run: [`LEVELS/ARCADE028.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE028.TXT)
+- path-heavy run: [`LEVELS/ARCADE028.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE028.TXT)
   - strongest current path target when repeated segment placements are counted as real playthrough exposure
   - `33` path rows across `20` path-bearing segment placements
-- ring-heavy run: [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
+- ring-heavy run: [`LEVELS/TUTORIAL.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
   - current top ring-tagged level
   - `12` authored ring rows across the tutorial chain
   - best first probe for confirming how `Ring=None`, `Ring=PowerUp`, `Ring=Explode`, and `Ring=Slow` surface in live runtime behavior
-- no-fall run: [`LEVELS/ARCADE047.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE047.TXT)
+- no-fall run: [`LEVELS/ARCADE047.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE047.TXT)
   - current top level by explicit `NoFall` rows once repeated segment placements are counted
   - `286` `NoFall` rows, driven mostly by repeated trampoline-family segments
   - best first probe if you want to correlate trampoline-heavy authored rows with the now-recovered runtime `NoFall` lane at mask `0x100`
-- jetpack-off run: [`LEVELS/ARCADE025.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE025.TXT)
+- jetpack-off run: [`LEVELS/ARCADE025.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE025.TXT)
   - current top level by repeated `JetPackOff` segment exposure
   - `3` explicit `JetPack=Off` rows in one short arcade flow
   - best first probe if you want to watch how the runtime behaves around authored jetpack suppression without mixing in large no-fall sections
-- garbage-heavy run: [`LEVELS/ARCADE040.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE040.TXT)
+- garbage-heavy run: [`LEVELS/ARCADE040.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE040.TXT)
   - current top garbage level
   - `Garbage:100`
-- salt-heavy run: [`LEVELS/ARCADE039.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT)
+- salt-heavy run: [`LEVELS/ARCADE039.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT)
   - current top salt level
   - `Salt:100`
   - notable static clue: it has `0` explicit `&` rows, so it is the best first probe for the fallback salt branch on runtime tile kinds `1` and `15`
-- authored salt level run: [`LEVELS/ARCADE037.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE037.TXT)
+- authored salt level run: [`LEVELS/ARCADE037.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE037.TXT)
   - current top level by explicit `&` rows once repeated segment placements are counted
   - useful first probe if you want the densest authored-salt exposure in one short arcade flow
-- clean authored salt tutorial run: [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
+- clean authored salt tutorial run: [`LEVELS/TUTORIAL.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
   - still the best tutorial-grade authored-salt target
   - notable static clue: it has `Salt:0`, so it remains the cleanest first probe for authored salt placements that should resolve directly through runtime tile `0x22`
-- authored salt segment run: [`SEGMENTS/TUTORIAL 8.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL%208.TXT)
+- authored salt segment run: [`SEGMENTS/TUTORIAL 8.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL%208.TXT)
   - current top segment by explicit `&` rows
   - best static target for verifying the tile-family branch that feeds `spawn_salt_hazard`
-- no-fall segment run: [`SEGMENTS/TRAMPOLINES.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TRAMPOLINES.TXT)
+- no-fall segment run: [`SEGMENTS/TRAMPOLINES.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/TRAMPOLINES.TXT)
   - current top segment by explicit `NoFall` rows
   - `84` no-fall-tagged rows in one segment
   - best static target if you want a concentrated trampoline or no-fall capture without full-level noise
-- jetpack-off segment run: [`SEGMENTS/JETPACKOFF.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT)
+- jetpack-off segment run: [`SEGMENTS/JETPACKOFF.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT)
   - current only segment with an explicit `JetPack=Off` annotation
   - best static target for isolating any runtime response to authored jetpack suppression
-- slug-like run: [`LEVELS/ARCADE029.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE029.TXT)
+- slug-like run: [`LEVELS/ARCADE029.TXT`](../../artifacts/extracted/SnailMail.dat/LEVELS/ARCADE029.TXT)
   - current top `M`-glyph-heavy level
   - useful first probe for the remaining slug and salt ambiguity
 
@@ -359,7 +359,7 @@ Regenerate the ranked lists after any parser or corpus changes instead of treati
 
 ## Windows Usage
 
-Attach to the real gameplay process, not the Reflexive wrapper. Prefer a locally generated [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) on the Windows machine and start it from its own binary directory so it can resolve adjacent game files correctly. If you only have the original shipped files, the Frida script also accepts [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+Attach to the real gameplay process, not the Reflexive wrapper. Prefer a locally generated [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe) on the Windows machine and start it from its own binary directory so it can resolve adjacent game files correctly. If you only have the original shipped files, the Frida script also accepts [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG).
 
 Generate the preferred gameplay target first when needed:
 
@@ -403,5 +403,5 @@ Use a few focused capture runs instead of one giant noisy trace:
 
 - The script assumes the current 2006 gameplay image with preferred PE base `0x400000`.
 - It resolves all hook addresses relative to the actual loaded module base at runtime.
-- The hook set is designed for 32-bit Windows Frida because both [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) and [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) are 32-bit PEs with the same gameplay code after unwrap.
+- The hook set is designed for 32-bit Windows Frida because both [`SnailMail_unwrapped.exe`](../../artifacts/bin/SnailMail_unwrapped.exe) and [`SnailMail.RWG`](../../artifacts/bin/SnailMail.RWG) are 32-bit PEs with the same gameplay code after unwrap.
 - The current script does not decode every attachment-template field. It focuses on the row, tile type, world position, and attachment pointer so we can correlate dynamic behavior back to the existing static notes.
