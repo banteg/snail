@@ -1274,7 +1274,7 @@ fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) 
 }
 
 fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, panels: MenuPanels) void {
-    const entries = state.high_score_tables.entries(mode);
+    const entries = state.high_score_tables.visibleEntries(mode);
     const row_start_y = panels.detail_body_y + 28;
     const row_height = 18;
     const rank_x = panels.detail_body_x;

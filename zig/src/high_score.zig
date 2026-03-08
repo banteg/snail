@@ -1,6 +1,8 @@
 const std = @import("std");
 
 pub const visible_entry_count = 10;
+pub const bank_entry_count = 11;
+pub const completion_entry_count = 0x33;
 pub const name_capacity = 32;
 
 pub const Mode = enum {
@@ -26,16 +28,21 @@ pub const Entry = struct {
     }
 };
 
-// PORT(partial): this seeds the recovered 10-row postal/challenge table shape,
-// but not the full cRSubHighScore save/edit/runtime overlay yet.
+// PORT(partial): this matches the recovered startup table layout more closely:
+// 11-entry postal and challenge banks, a 51-entry completion bank, plus a scratch entry.
+// We still do not port the full cRSubHighScore save/edit/runtime overlay yet.
 pub const Tables = struct {
-    postal: [visible_entry_count]Entry,
-    challenge: [visible_entry_count]Entry,
+    postal: [bank_entry_count]Entry,
+    challenge: [bank_entry_count]Entry,
+    completion: [completion_entry_count]Entry,
+    scratch: Entry,
 
     pub fn initDefault() Tables {
         return .{
             .postal = blankEntries(),
             .challenge = blankEntries(),
+            .completion = blankCompletionEntries(),
+            .scratch = .{},
         };
     }
 
@@ -45,16 +52,27 @@ pub const Tables = struct {
             .challenge => self.challenge[0..],
         };
     }
+
+    pub fn visibleEntries(self: *const Tables, mode: Mode) []const Entry {
+        return self.entries(mode)[0..visible_entry_count];
+    }
 };
 
-fn blankEntries() [visible_entry_count]Entry {
-    return [_]Entry{Entry{}} ** visible_entry_count;
+fn blankEntries() [bank_entry_count]Entry {
+    return [_]Entry{Entry{}} ** bank_entry_count;
 }
 
-test "default tables seed the recovered 10-row screen shape" {
+fn blankCompletionEntries() [completion_entry_count]Entry {
+    return [_]Entry{Entry{}} ** completion_entry_count;
+}
+
+test "default tables seed the recovered startup bank shape" {
     const tables = Tables.initDefault();
-    try std.testing.expectEqual(@as(usize, visible_entry_count), tables.postal.len);
-    try std.testing.expectEqual(@as(usize, visible_entry_count), tables.challenge.len);
+    try std.testing.expectEqual(@as(usize, bank_entry_count), tables.postal.len);
+    try std.testing.expectEqual(@as(usize, bank_entry_count), tables.challenge.len);
+    try std.testing.expectEqual(@as(usize, completion_entry_count), tables.completion.len);
     try std.testing.expectEqual(@as(u32, 0), tables.postal[0].score);
-    try std.testing.expectEqual(@as(usize, 0), tables.challenge[9].name().len);
+    try std.testing.expectEqual(@as(usize, 0), tables.challenge[bank_entry_count - 1].name().len);
+    try std.testing.expectEqual(@as(usize, visible_entry_count), tables.visibleEntries(.postal).len);
+    try std.testing.expectEqual(@as(usize, 0), tables.scratch.name().len);
 }

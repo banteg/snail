@@ -29,7 +29,7 @@ Current high-signal entries:
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: intro-script image directives, text transforms, and any remaining transition semantics are ported
 - high-score screen table branch: `partial`
-  - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`
+  - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
 - front-end font atlas registration, width measurement, and tutorial icon tokens: `verified`
