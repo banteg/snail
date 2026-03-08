@@ -175,6 +175,9 @@ Current RWG understanding:
 - RWG first normalizes some glyph classes through `normalize_segment_glyph_for_track_flags` and `lookup_table_43744c[char - 0x20]`, then classifies the normalized glyph alphabet through `lookup_table_437204[char - 0x20]` before assigning runtime tile ids
 - `P` and `p` path cells later consume the copied row `Path=` index and select one of the hardcoded path-template pairs rooted at runtime offsets `0xff2914` and `0xff29bc`
 - each path-template step is `0x150` bytes, which corresponds to two `0xa8`-byte template records per path id
+- most named path ids build the first `0xa8` record with a constructor family and then build the second record by mirroring it across X
+- `SUPERTRAMP` and `START` are the clearest exceptions: both halves are constructed explicitly instead of through the generic mirror helper
+- `WARP` still has no clean recovered constructor site, and no shipped extracted segment or level text currently references it by name
 - the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records
 - `Ring=Explosive` appears in shipped text, but the RWG parser path matches the `Explode` behavior
 - `3DModel=<mesh>.x` rows line up with archive meshes like `X/SIGNBANG.X2`, `X/SIGNSTOP.X2`, and `X/SIGNCONSTRUCTION.X2`

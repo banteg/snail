@@ -14,6 +14,8 @@ Primary sources used for these notes:
 High-confidence renamed functions in the current Binary Ninja database:
 
 - `find_segment_path_index_by_name` at `0x429ae0`
+- `initialize_path_template_record_pair` at `0x4085c0`
+- `mirror_path_template_pair_x` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
 - `load_level_definitions` at `0x448900`
 - `begin_track_attachment_follow_state` at `0x420c40`
@@ -111,6 +113,79 @@ Important correction:
 
 - the shipped table has `51` names, not `47`
 - the extra names were easy to miss in HLIL because a few short entries were rendered as generic pointers instead of obvious string-typed symbols
+- short names like `DIP`, `P0`, `P1`, and `P2` are especially easy to miss in the exported HLIL for that reason
+
+One useful corpus fact from the extracted archive:
+
+- no shipped `SEGMENTS/*.TXT` or `LEVELS/*.TXT` currently references `WARP` by name
+
+## Path Template Slot Layout
+
+The current static read is that named `Path=` ids index into a prebuilt bank of paired sampled path-template records.
+
+Observed facts:
+
+- the runtime path-template bank is rooted at `arg1 + 0xff2914`
+- the second half of each pair is rooted at `arg1 + 0xff29bc`, exactly `0xa8` bytes after the first
+- the init pass zeroes `126` records of size `0xa8`, which is enough space for `63` path-template pairs
+- one named path id therefore steps by `0x150`, which is `0xa8 + 0xa8`
+- the first record of pair `n` lives at `base + n * 0x150`
+- the second record of pair `n` lives at `base + n * 0x150 + 0xa8`
+
+Two generic helpers now make that layout clearer:
+
+- `initialize_path_template_record_pair`
+  - constructs the two `0x18`-byte record halves for one paired path object and installs the shared vtable at `data_497334`
+- `mirror_path_template_pair_x`
+  - clones one path-template pair from source to destination
+  - negates X-space sample positions and basis vectors
+  - swaps copied strip winding and index order so the mirrored path still renders and samples correctly
+
+The important practical rule is:
+
+- most named path slots build the first `0xa8` record with a constructor family, then build the second `0xa8` record by calling `mirror_path_template_pair_x(dst = base + 0xa8, src = base)`
+- `SUPERTRAMP` and `START` are the clear exceptions: both halves are built explicitly instead of through the mirror helper
+
+One caution:
+
+- the path-generation init block constructs aligned pairs beyond the `51` public names, so the constructor bank is larger than the public `Path=` name table
+
+## Path Template Constructor Families
+
+The constructor-family mapping below is the current high-confidence read for the `51` named slots. It is based on the init block between the `"path generation start"` and `"path generation end"` markers, filtered to aligned `0x150` pair starts.
+
+| Index | Name | Constructor | Notes |
+|---:|---|---|---|
+| 0-5 | `LOOPTHELOOP*` | `sub_41b0f0` | `LOOPTHELOOP`, `2`, `4`, `T2`, `T3`, `T4` |
+| 6 | `LOOPTHELOOPW` | `sub_41bb40` | |
+| 7 | `LOOPBOW` | `sub_42ba80` | |
+| 8-13 | `HILL*` / `VALLEY*` | `sub_42d570` | `HILL`, `HILL4C`, `HILL4`, `VALLEY`, `VALLEY4C`, `VALLEY4` |
+| 14 | `SBEND` | `sub_42df00` | |
+| 15 | `CAGE2` | `sub_42e720` | |
+| 16, 18 | `HUMP`, `HUMPSMALL` | `sub_41d030` | |
+| 17, 19 | `DUMP`, `DUMPSMALL` | `sub_41da30` | |
+| 20 | `DIP` | `sub_41e440` | |
+| 21 | `SCREW` | `sub_41eda0` | |
+| 22 | `SLALOM` | `sub_41f760` | |
+| 23 | `SLALOMBIG` | `sub_4221f0` | |
+| 24 | `WORM` | `sub_420170` | also does extra per-half object setup outside the generic `sub_4246a0` visual pass |
+| 25-27 | `LOOPOUT*` | `sub_41c5f0` | `LOOPOUT`, `LOOPOUT3`, `LOOPOUTBIG` |
+| 28 | `SWEEP` | `sub_422c00` | |
+| 29 | `SNAKE` | `sub_423580` | |
+| 30 | `WARP` | unresolved | no clean aligned constructor site recovered yet; no shipped extracted text currently references `WARP` |
+| 31 | `SUPERTRAMP` | `sub_423f10` | both halves are built explicitly, not via `mirror_path_template_pair_x` |
+| 32 | `SLALOMDOUBLE` | `sub_425050` | |
+| 33-35 | `P0`, `P1`, `P2` | `sub_425a40` | |
+| 36 | `START` | `sub_426400` | both halves are built explicitly, not via `mirror_path_template_pair_x` |
+| 37 | `TURNOVER` | `sub_426cb0` | |
+| 38 | `TURNOVERDOUBLE` | `sub_427640` | |
+| 39 | `TURNUNDER` | `sub_427fe0` | |
+| 40 | `WIBBLE` | `sub_4289a0` | |
+| 41 | `INVERT` | `sub_429250` | |
+| 42 | `HALFPIPE` | `sub_429b20` | |
+| 43-44 | `TWISTERA`, `TWISTERB` | `sub_42a540` | |
+| 45-46 | `TWISTER2A`, `TWISTER2B` | `sub_42af30` | |
+| 47-50 | `TOAD*` | `sub_42cbf0` | `TOAD0`, `TOAD1`, `TOADPAIR0`, `TOADPAIR1` |
 
 ## Segment Metadata Layout
 
@@ -303,6 +378,8 @@ Observed facts:
 - a second block at `arg1 + 0xff29bc` is exactly `0xa8` bytes later
 - the initialization code zeroes `126` records of size `0xa8`, which is enough space for `63` path-index pairs
 - helper constructors such as `sub_4289a0`, `sub_429250`, and `sub_429b20` build sampled path records with the same `0xa8` stride and are called during `initialize_game_assets_and_world`
+- most named pairs are initialized as `constructor(base)` followed by `mirror_path_template_pair_x(base + 0xa8, base)`
+- `SUPERTRAMP` and `START` instead construct both halves explicitly
 
 High-confidence field usage inside one `0xa8` record:
 
@@ -313,8 +390,9 @@ High-confidence field usage inside one `0xa8` record:
 
 What is not pinned down yet:
 
-- the exact mapping from each of the `51` recovered path names to a specific constructor or template-pair slot
-- whether all path slots are built eagerly during world init or copied from a smaller set of prototypes later
+- the exact constructor site for the named `WARP` slot
+- whether every aligned pair beyond the `51` public names is reachable from gameplay code
+- whether all path slots are built eagerly during world init or some later code still patches them from smaller prototypes
 
 ## Attachment Follow State
 
@@ -394,7 +472,8 @@ The unresolved part is no longer whether the stored `Path=` row index is used fo
 What is still missing:
 
 - the exact initialization path from the hardcoded path-name table to the path-template pair tables
-- the full semantics of each path-template constructor and which names map to which template slots
+- the detailed semantics of each path-template constructor beyond the current family grouping
+- the exact constructor site for the named `WARP` slot
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
 - whether every named path family feeds the same attachment-follow code or whether some names are visual-only exceptions
 
