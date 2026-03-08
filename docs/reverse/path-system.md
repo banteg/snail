@@ -30,6 +30,9 @@ High-confidence renamed functions in the current Binary Ninja database:
 - `merge_track_tile_runs` at `0x435180`
 - `normalize_segment_glyph_for_track_flags` at `0x437270`
 - `rebuild_track_runtime_from_segments` at `0x437de0`
+- `select_level_track_texture_set` at `0x410730`
+- `populate_track_runtime_entities` at `0x438b90`
+- `spawn_track_garbage_hazard` at `0x43da80`
 - `update_player_track_movement_and_triggers` at `0x43b120`
 - `end_track_attachment_follow_state` at `0x43af60`
 - `allocate_parcels_on_track` at `0x4438e0`
@@ -285,6 +288,32 @@ One useful clue from `allocate_challenge_parcels_on_track`:
 
 - the copied runtime field at `+0x5ccb64` is parcel id, not path index
 - challenge-mode parcel selection explicitly filters for runtime cells whose parcel id equals `0`
+
+## Level Runtime Field Mapping
+
+The current static read is that `load_level_definition_file` only parses text into a level descriptor, and `sub_437eb0` later normalizes the selected descriptor into runtime fields before the track build begins.
+
+High-confidence downstream behavior:
+
+- `Random:yes` and `Length:` feed `populate_runtime_track_cells_from_segments`
+  - a runtime flag toggles between authored sequential assembly and randomized segment selection
+  - a runtime length value is used as the target generated track length
+- `Track:` feeds `select_level_track_texture_set`
+  - values `0..3` pick the matching track texture set
+  - value `5` is the `Track:r` / random case and randomizes across `0..3`
+- `Track:r` also changes backdrop handling during level start
+  - non-random track ids keep the loaded background asset
+  - the random-track path instead picks a random `Space*.txt` background
+- `Garbage:` is normalized to a `0..1` runtime scalar and later consumed by `populate_track_runtime_entities`
+  - that pass uses the scalar to gate calls to `spawn_track_garbage_hazard`
+  - `spawn_track_garbage_hazard` allocates from a `50`-slot pool and chooses sprite ids `0x72..0x75`, which match `Sprites/GarbageA-D.tga`
+- `Salt:` follows the same normalization pattern and also feeds `populate_track_runtime_entities`
+  - the strongest current read is that it gates calls to `sub_441560`, which manages a `40`-slot pool
+  - that likely corresponds to salt-related hazard or effect placement, but the exact asset identity is not fully pinned down yet from static text exports alone
+
+One caution:
+
+- the exact copy from the parsed level-descriptor fields into the later runtime slots is still inferred from the downstream reads above, rather than fully recovered as a typed struct assignment in the exported text dumps
 
 ## Confirmed Glyph Dispatch
 
