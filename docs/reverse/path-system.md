@@ -452,6 +452,46 @@ Useful follow-on facts from the same switch:
   - `M` -> `spawn_slug_hazard`
 - `+` still dispatches through this switch, but the target is a nullsub and no shipped extracted segment currently uses the glyph
 
+## Recovered Ring Effect Dispatch
+
+The segment parser only told us which bits `Ring=<name>` sets on the per-row metadata byte. The runtime dispatch inside `populate_track_runtime_entities` now makes the next step visible.
+
+High-confidence control flow:
+
+- the `R` tile branch only enters the special-effect helper if `(row_flags & 0x02) == 0`
+- that means `Ring=None` suppresses the helper on authored `R` rows
+- the same `0x02` bit is also used by `3DModel`, which is why mixed `R` plus `3DModel` rows would be ambiguous even though the shipped corpus keeps those tags separated
+- once the `R` branch does call the helper, the row flags choose helper modes exactly as follows:
+  - default or `Ring=Normal` -> mode `5`
+  - `Ring=PowerUp` -> mode `8`
+  - `Ring=Explode` -> mode `6`
+  - `Ring=Slow` -> mode `7`
+- the helper being called is `sub_43df10`, which is now documented in the Binary Ninja database as the ring or special-row effect helper
+
+The follow-on particle initializer `sub_43e470` groups those modes into visible sprite families:
+
+- modes `4`, `5`, and `8` -> sprite ids `0x87` and `0x88`
+  - `Sprites/ParticleRing-big.tga`
+  - `Sprites/ParticleRing-small.tga`
+- modes `2` and `6` -> sprite ids `0x83` and `0x84`
+  - `Sprites/ParticleExplode-big.tga`
+  - `Sprites/ParticleExplode-small.tga`
+- modes `3` and `7` -> sprite ids `0x85` and `0x86`
+  - `Sprites/ParticleSlow-big.tga`
+  - `Sprites/ParticleSlow-small.tga`
+
+That gives a clean authored-ring mapping:
+
+- `Ring=Normal` -> helper mode `5` -> `ParticleRing`
+- `Ring=PowerUp` -> helper mode `8` -> `ParticleRing`
+- `Ring=Explode` -> helper mode `6` -> `ParticleExplode`
+- `Ring=Slow` -> helper mode `7` -> `ParticleSlow`
+- `Ring=None` -> no helper call on the authored `R` tile path
+
+One remaining caveat: mode `4` also lands on the `ParticleRing` family, but the call site is a separate fallback path guarded by other runtime conditions rather than the explicit `Ring=` tags. So mode `4` should be treated as a related special-row effect, not as another recovered authored ring value.
+
+`RingSpeed=` also now has a clearer runtime interpretation. The parser stores a per-row float, and the authored ring modes `5` through `8` are the helper path that uses the row float argument to compute the orbit angular speed. No shipped extracted segment currently uses `RingSpeed=`, so the static link is stronger than the corpus evidence.
+
 ## First Confirmed Path Consumer
 
 The first strong static consumer of nonzero `Path=` indices is inside `rebuild_track_runtime_from_segments`.

@@ -187,6 +187,17 @@ Current RWG understanding:
   - `Ring=Explode` -> `0x08`
   - `Ring=Slow` -> `0x10`
   - `Ring=PowerUp` -> `0x20`
+- the runtime ring or special-effect builder in `populate_track_runtime_entities` checks `if ((row_flags & 0x02) == 0)` before it considers any of the other ring bits, so `Ring=None` suppresses the helper entirely on `R` rows
+- on the authored `R` tile path, the later helper mode selection is:
+  - default or `Ring=Normal` -> mode `5`
+  - `Ring=PowerUp` -> mode `8`
+  - `Ring=Explode` -> mode `6`
+  - `Ring=Slow` -> mode `7`
+- the ring-effect particle initializer groups those modes into three visible sprite families:
+  - modes `4`, `5`, and `8` -> `Sprites/ParticleRing-big.tga` and `Sprites/ParticleRing-small.tga`
+  - modes `2` and `6` -> `Sprites/ParticleExplode-big.tga` and `Sprites/ParticleExplode-small.tga`
+  - modes `3` and `7` -> `Sprites/ParticleSlow-big.tga` and `Sprites/ParticleSlow-small.tga`
+- `RingSpeed=` stores a per-row float, and the helper's authored ring modes `5` through `8` are the path that uses the row float argument to derive the orbit angular speed
 - those bits are reused by other metadata tags in the parser:
   - `Parcel` and `NoFall` also set `0x01`
   - `3DModel` also sets `0x02`

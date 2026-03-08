@@ -102,6 +102,8 @@ class SegmentTraceHint(msgspec.Struct, frozen=True):
     name: str
     path_rows: int
     path_names: tuple[str, ...]
+    ring_rows: int
+    ring_kinds: dict[str, int]
     salt_like_rows: int
     slug_like_rows: int
     no_fall_rows: int
@@ -117,6 +119,8 @@ class LevelTraceHint(msgspec.Struct, frozen=True):
     segment_count: int
     path_segment_count: int
     path_row_count: int
+    ring_row_count: int
+    ring_kinds: dict[str, int]
     salt_like_row_count: int
     slug_like_row_count: int
     path_names: tuple[str, ...]
@@ -126,9 +130,11 @@ class LevelTraceHint(msgspec.Struct, frozen=True):
 class RuntimeTracePlan(msgspec.Struct, frozen=True):
     source: str
     path_segments: tuple[SegmentTraceHint, ...]
+    ring_segments: tuple[SegmentTraceHint, ...]
     salt_segments: tuple[SegmentTraceHint, ...]
     slug_like_segments: tuple[SegmentTraceHint, ...]
     best_path_levels: tuple[LevelTraceHint, ...]
+    best_ring_levels: tuple[LevelTraceHint, ...]
     best_garbage_levels: tuple[LevelTraceHint, ...]
     best_salt_levels: tuple[LevelTraceHint, ...]
     best_authored_salt_levels: tuple[LevelTraceHint, ...]
@@ -252,6 +258,15 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
         (hint for _, hint in segment_defs.values() if hint.path_rows > 0),
         key=lambda hint: (-hint.path_rows, -hint.salt_like_rows, -hint.slug_like_rows, hint.name.lower()),
     )
+    ring_segments = sorted(
+        (hint for _, hint in segment_defs.values() if hint.ring_rows > 0),
+        key=lambda hint: (
+            -hint.ring_rows,
+            -len(hint.ring_kinds),
+            -sum(count for kind, count in hint.ring_kinds.items() if kind not in {"None", "Normal"}),
+            hint.name.lower(),
+        ),
+    )
     salt_segments = sorted(
         (hint for _, hint in segment_defs.values() if hint.salt_like_rows > 0),
         key=lambda hint: (-hint.salt_like_rows, -hint.path_rows, hint.name.lower()),
@@ -263,6 +278,15 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
     best_path_levels = sorted(
         (hint for hint in level_hints if hint.path_row_count > 0),
         key=lambda hint: (-hint.path_row_count, -hint.path_segment_count, hint.path.lower()),
+    )
+    best_ring_levels = sorted(
+        (hint for hint in level_hints if hint.ring_row_count > 0),
+        key=lambda hint: (
+            -hint.ring_row_count,
+            -sum(count for kind, count in hint.ring_kinds.items() if kind not in {"None", "Normal"}),
+            -hint.path_row_count,
+            hint.path.lower(),
+        ),
     )
     best_garbage_levels = sorted(
         (hint for hint in level_hints if (hint.garbage or 0) > 0),
@@ -284,9 +308,11 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
     return RuntimeTracePlan(
         source=root.as_posix(),
         path_segments=tuple(path_segments[:limit]),
+        ring_segments=tuple(ring_segments[:limit]),
         salt_segments=tuple(salt_segments[:limit]),
         slug_like_segments=tuple(slug_like_segments[:limit]),
         best_path_levels=tuple(best_path_levels[:limit]),
+        best_ring_levels=tuple(best_ring_levels[:limit]),
         best_garbage_levels=tuple(best_garbage_levels[:limit]),
         best_salt_levels=tuple(best_salt_levels[:limit]),
         best_authored_salt_levels=tuple(best_authored_salt_levels[:limit]),
@@ -337,6 +363,8 @@ def _build_segment_hint(path: Path, segment: SegmentDefinition) -> SegmentTraceH
         }
     )
     path_rows = sum(1 for row in segment.rows if row.annotation is not None and row.annotation.key == "Path")
+    ring_kinds = _collect_segment_ring_counts(segment)
+    ring_rows = sum(ring_kinds.values())
     salt_like_rows = sum(1 for row in segment.rows if "&" in row.cells)
     slug_like_rows = sum(1 for row in segment.rows if "M" in row.cells)
     no_fall_rows = sum(
@@ -357,6 +385,8 @@ def _build_segment_hint(path: Path, segment: SegmentDefinition) -> SegmentTraceH
         name=segment.name,
         path_rows=path_rows,
         path_names=tuple(path_names),
+        ring_rows=ring_rows,
+        ring_kinds=dict(sorted(ring_kinds.items())),
         salt_like_rows=salt_like_rows,
         slug_like_rows=slug_like_rows,
         no_fall_rows=no_fall_rows,
@@ -378,6 +408,9 @@ def _build_level_hint(
             segment_hints.append(entry[1])
 
     path_names = sorted({name for hint in segment_hints for name in hint.path_names})
+    ring_kinds: Counter[str] = Counter()
+    for hint in segment_hints:
+        ring_kinds.update(hint.ring_kinds)
     return LevelTraceHint(
         path=path.resolve().as_posix(),
         name=level.name,
@@ -387,6 +420,8 @@ def _build_level_hint(
         segment_count=len(segment_hints),
         path_segment_count=sum(1 for hint in segment_hints if hint.path_rows > 0),
         path_row_count=sum(hint.path_rows for hint in segment_hints),
+        ring_row_count=sum(hint.ring_rows for hint in segment_hints),
+        ring_kinds=dict(sorted(ring_kinds.items())),
         salt_like_row_count=sum(hint.salt_like_rows for hint in segment_hints),
         slug_like_row_count=sum(hint.slug_like_rows for hint in segment_hints),
         path_names=tuple(path_names),
@@ -398,12 +433,29 @@ def _referenced_segment_names(level: LevelDefinition) -> list[str]:
     names = list(level.first_segments)
     names.extend(entry.path for entry in level.segments)
     names.extend(level.last_segments)
+    return names
 
-    unique_names: list[str] = []
-    seen: set[str] = set()
-    for name in names:
-        key = name.lower()
-        if key not in seen:
-            seen.add(key)
-            unique_names.append(name)
-    return unique_names
+
+def _collect_segment_ring_counts(segment: SegmentDefinition) -> Counter[str]:
+    ring_kinds: Counter[str] = Counter()
+    for row in segment.rows:
+        annotation = row.annotation
+        if annotation is None or annotation.key.lower() != "ring" or annotation.value is None:
+            continue
+        ring_kinds[_canonicalize_ring_kind(annotation.value)] += 1
+    return ring_kinds
+
+
+def _canonicalize_ring_kind(value: str) -> str:
+    normalized = value.strip().lower()
+    if normalized == "powerup":
+        return "PowerUp"
+    if normalized in {"explode", "explosive"}:
+        return "Explode"
+    if normalized == "normal":
+        return "Normal"
+    if normalized == "slow":
+        return "Slow"
+    if normalized == "none":
+        return "None"
+    return value.strip()
