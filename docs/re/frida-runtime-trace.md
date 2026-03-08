@@ -275,6 +275,40 @@ One important operational note:
 - the March 8 evening capture also exposed a second ABI issue: `get_track_grid_cell_at_world_position` must be called as `thiscall`, and gameplay grid cells must not be interpreted like row cells
 - the next Windows recapture should therefore use the current repo version of the script, not an older copied copy
 
+## March 8 Late Capture
+
+The later local capture `snailmail-trace-20260308-225359-1484.ndjson` tightened a few practical points even though it was not the most attachment-heavy run.
+
+Key facts from that run:
+
+- `attachment_probe`: `259`
+- `attachment_begin`: `89`
+- `attachment_update`: `4096`
+- `attachment_end`: `11`
+- `garbage_spawn`: `660`
+- `health_pickup`: `18`
+- `jetpack_pickup`: `0`
+- `ring_effect`: `41`
+- `salt_spawn`: `84`
+- `salt_deactivate`: `721`
+- `salt_update`: `3858`
+- `slug_spawn`: `115`
+- `track_pair_payload`: `0`
+
+Useful confirmations from that capture:
+
+- attachment probes still mostly hit runtime tile `29`, while actual follow-state updates stayed on runtime tile `30`
+- the hottest probe rows were `91`, `213`, `349`, `850`, and `851`
+- the observed probe-side attachment kinds were `0`, `20`, and `45`
+- row `349` was dominated by kind `20`, which makes it a good future recapture target if we want one narrow probe-heavy path family
+- startup path lookup still walked nearly the whole hardcoded name table, and `WARP` still did not appear
+- `track_pair_payload` stayed at zero again, so the current hook is still waiting either on a better target level or on a more precise trigger site
+
+Operational read:
+
+- this run is useful for hazard and pickup coverage, not just attachment coverage
+- the zero-count `track_pair_payload` result should now be treated as a standing capture question rather than a one-off anomaly
+
 ## Current Recommended Targets
 
 As of the current extracted corpus and parser state, `uv run snail trace plan --limit 3` recommends these first captures:

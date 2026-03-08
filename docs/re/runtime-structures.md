@@ -1,0 +1,135 @@
+# Runtime Structures
+
+This page collects the high-confidence runtime layouts that currently matter most for the movement, attachment, and row-event work.
+
+The goal is not to freeze a final class hierarchy. It is to keep the recovered offsets in one place so Binary Ninja typing, Frida captures, and the Zig rewrite can all refer to the same names.
+
+## Player
+
+The current high-confidence `Player` fields are:
+
+- `+0x68`: `position`
+- `+0x98`: `cached_track_pair_cell_a`
+- `+0x9c`: `cached_track_pair_cell_b`
+- `+0x120`: `movement_state`
+- `+0x1e8`: `row_event_id`
+- `+0x1ec`: `row_event_state`
+- `+0x1f0`: `row_event_timer`
+- `+0x1f8`: `row_event_data_a`
+- `+0x1fc`: `row_event_data_b`
+- `+0x308`: `movement_flag_selector`
+- `+0x338`: `movement_flags`
+- `+0x33c`: `previous_movement_flags`
+- `+0x384`: `follow_state`
+- `+0x408`: `game`
+- `+0x40c`: `movement_mode_selector`
+- `+0x410`: `velocity`
+- `+0x41d`: `attachment_exit_pending`
+- `+0x424`: `attachment_exit_anchor_z`
+- `+0x42c`: `post_follow_value_a`
+- `+0x430`: `post_follow_value_b`
+- `+0x434`: `attachment_exit_progress`
+- `+0x438`: `attachment_exit_progress_step`
+- `+0x43c`: `current_cell`
+- `+0x44c`: `follow_effect_gate_a`
+- `+0x44d`: `follow_effect_gate_b`
+- `+0x2730`: `movement_progress`
+- `+0x2734`: `movement_rate_scalar`
+- `+0x273c`: `track_z_offset`
+- `+0x2740`: `track_z_anchor`
+
+Important caveat:
+
+- the real `Player` object is larger than the currently typed prefix
+- the movement-emitter and visual-state blocks around `player + 0x2984` and beyond are still only partially named
+
+## Movement Visual State Controller
+
+The block rooted at `player + 0x2984` now has a stable enough behavioral shape to document, even though the full struct layout is still incomplete.
+
+High-confidence current read:
+
+- `update_player_movement_flags` feeds this block through `update_movement_visual_state_controller` at `0x445920`
+- the controller resolves one `movement_flags` mask into three channel states
+- those three channels live at offsets:
+  - `+0x64c`
+  - `+0xa28`
+  - `+0xe04`
+- each channel keeps its current selected state at:
+  - `+0x750`
+  - `+0xb2c`
+  - `+0xf08`
+
+The transition helpers at `0x444600` and `0x4446e0` appear to be near-identical queue or start routines over adjacent channel structs:
+
+- when their third argument is non-zero, they immediately begin a selected state
+- when their third argument is zero, they append the requested state id to a small queued-transition list
+- both helpers read per-state records from pointer tables whose entries are selected by `state_id << 7`
+
+Practical interpretation:
+
+- this is not the same system as the 12 movement-flag emitter slots updated at `player + 0x450`
+- the `+0x2984` block is a second layer that looks more like a queued visual-state or presentation controller
+- the same queue or start pattern also appears in the global jetpack-related controller rooted at `data_4df904 + 0x432700`, via helper `0x445860`
+
+## Game
+
+The current high-confidence `Game` fields are:
+
+- `+0x38`: `track_center_x`
+- `+0x40`: `level_mode`
+- `+0x44`: `level_mode_arg`
+- `+0x4c`: `runtime_flags`
+- `+0xa854`: `track_state_latch`
+- `+0xa874`: `row_event_limit`
+- `+0xff25d0`: `replay_active`
+- `+0xff25d4`: `replay_track`
+- `+0xff25d8`: `replay_track_index`
+- `+0xff25dc`: `runtime_track_index`
+
+Current practical read:
+
+- `runtime_track_index` is the per-tick cursor advanced by `update_player_track_movement_and_triggers`
+- the same cursor also drives the replay-track reads in that function
+- `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
+
+## Attachment Template Samples
+
+The path-template typing is now firm enough to name the sampled point records explicitly.
+
+High-confidence `PathTemplate` fields:
+
+- `+0x44`: `sample_count`
+- `+0x58`: `primary_points`
+- `+0x5c`: `secondary_points`
+- `+0x98`: `row_scalar_a`
+- `+0x9c`: `row_scalar_b`
+- `+0xa0`: `row_scalar_c`
+- `+0xa4`: `row_scalar_d`
+
+High-confidence `PathTemplateSample` fields:
+
+- `+0x30`: `position`
+- `+0x80`: `delta`
+- `+0x8c`: `delta_length`
+- `+0x90`: `orientation_a`
+- `+0x94`: `orientation_b`
+- `+0x98`: `orientation_c`
+- `+0x9c`: `scalar_9c`
+- `+0xa0`: `scalar_a0`
+
+This matches the recovered follow-state update behavior:
+
+- `sample_count` bounds the active sample index
+- the current sample `delta_length` scales the per-tick path factor
+- `position` and `delta` feed the interpolated output pose
+- `scalar_a0` is the field currently consumed by the ride-height smoothing branch in `update_player_track_movement_and_triggers`
+
+## Binary Ninja Note
+
+These names are now safe to use when reading or extending the current Binary Ninja database.
+
+One local tooling caveat remains:
+
+- the current `bn decompile` output does not always rewrite post-hoc struct-growth sites away from raw `__offset(...)` expressions, even after a manual analysis refresh
+- `bn types show Player`, `bn types show Game`, and `bn types show PathTemplate` are therefore the authoritative typed layouts for now

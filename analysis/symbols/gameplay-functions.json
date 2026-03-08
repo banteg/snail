@@ -346,6 +346,11 @@
       "description": "Projects a world-space position onto an active track attachment template."
     },
     {
+      "address": "0x445920",
+      "name": "update_movement_visual_state_controller",
+      "description": "Maps movement flag masks onto three queued visual-state channels in the player-side controller rooted at +0x2984."
+    },
+    {
       "address": "0x447040",
       "name": "get_track_cell_row_index"
     },
