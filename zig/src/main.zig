@@ -848,7 +848,7 @@ fn drawLevelPanel(state: *const AppState) !void {
     );
     rl.drawText(meta_text, 32, 258, 20, .sky_blue);
 
-    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 372 }, 0.03, 8, .dark_blue);
+    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
     rl.drawText("Level and segment notes", 56, 332, 26, .ray_white);
 
     if (state.activeLevelSegmentEntry()) |segment_entry| {
@@ -906,31 +906,66 @@ fn drawLevelPanel(state: *const AppState) !void {
         var sim_buffer: [384]u8 = undefined;
         const sim_text = try std.fmt.bufPrintZ(
             &sim_buffer,
-            "Sim row {d:.2}/{d}  lane {d}  speed {d:.1}  tick {d}  paused {s}",
+            "Sim row {d:.2}/{d}  lane {d}->{d}  speed {d:.1}  tick {d}  mode {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
                 runner.lane_index,
+                runner.resolved_lane_index,
                 runner.speed_rows_per_second,
                 runner.tick_count,
-                if (runner.paused) "yes" else "no",
+                runner.movement_mode.label(),
             },
         );
         rl.drawText(sim_text, 56, 646, 18, .gold);
 
         var cell_buffer: [384]u8 = undefined;
+        var path_value_buffer: [96]u8 = undefined;
         const cell_text = try std.fmt.bufPrintZ(
             &cell_buffer,
-            "Cell {c}  bounds {d}-{d}  attachment {s}  annotation {s}",
+            "Cell {c} {s}  bounds {d}-{d}  attach {s}  path {s}",
             .{
                 runner.current_cell,
+                runner.gameplayCellLabel() orelse "<none>",
                 runner.traversable_bounds.min,
                 runner.traversable_bounds.max,
                 runner.attachment_hint.label(),
-                runner.annotationLabel() orelse "<none>",
+                optionalTextToText(&path_value_buffer, runner.activePathName()),
             },
         );
         rl.drawText(cell_text, 56, 670, 18, .light_gray);
+
+        var event_buffer: [384]u8 = undefined;
+        const event_text = try std.fmt.bufPrintZ(
+            &event_buffer,
+            "Event {s}  annotation {s}  paused {s}  attachment ticks {d}",
+            .{
+                runner.recentEventLabel(),
+                runner.annotationLabel() orelse "<none>",
+                if (runner.paused) "yes" else "no",
+                runner.attachment_ticks,
+            },
+        );
+        rl.drawText(event_text, 56, 692, 16, .sky_blue);
+
+        var counter_buffer: [384]u8 = undefined;
+        const counter_text = try std.fmt.bufPrintZ(
+            &counter_buffer,
+            "H {d}  J {d}  G {d}  S {d}  Sl {d}  P {d}  A {d}/{d}  NF {d}  JO {d}",
+            .{
+                runner.counters.health_pickups,
+                runner.counters.jetpack_pickups,
+                runner.counters.garbage_hits,
+                runner.counters.salt_hits,
+                runner.counters.slug_hits,
+                runner.counters.parcels,
+                runner.counters.attachments_begun,
+                runner.counters.attachments_completed,
+                runner.counters.no_fall_rows,
+                runner.counters.jetpack_off_rows,
+            },
+        );
+        rl.drawText(counter_text, 56, 712, 16, .light_gray);
     }
 
     drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
@@ -947,11 +982,14 @@ fn drawLevelViewport(state: *const AppState) void {
     loaded_track_preview.draw(state.level_segment_index);
     if (state.level_runner) |runner| {
         const position = runner.worldPosition(&loaded_track_preview, 0.58);
-        const color: rl.Color = switch (runner.attachment_hint) {
-            .none => .lime,
-            .probe => .orange,
-            .entry => .gold,
-        };
+        const color: rl.Color = if (runner.movement_mode == .attachment)
+            .gold
+        else
+            switch (runner.attachment_hint) {
+                .none => .lime,
+                .probe => .orange,
+                .entry => .yellow,
+            };
         rl.drawSphere(position, if (runner.attachment_hint == .none) 0.18 else 0.22, color);
         rl.drawLine3D(
             .{ .x = position.x, .y = 0.04, .z = position.z },
@@ -1122,6 +1160,10 @@ fn nextMode(mode: Mode) Mode {
 
 fn optionalUsizeToText(buffer: []u8, value: ?usize) []const u8 {
     return if (value != null) std.fmt.bufPrint(buffer, "{d}", .{value.?}) catch "?" else "-";
+}
+
+fn optionalTextToText(buffer: []u8, value: ?[]const u8) []const u8 {
+    return if (value) |text| std.fmt.bufPrint(buffer, "{s}", .{text}) catch "?" else "-";
 }
 
 fn trackToText(buffer: []u8, value: level.Track) []const u8 {

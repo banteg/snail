@@ -35,6 +35,51 @@ pub const RowLocation = struct {
     row: segment.Row,
 };
 
+pub const GameplayCellKind = enum {
+    attachment_probe,
+    attachment_entry,
+    ring,
+    parcel,
+    slug,
+    garbage,
+    salt,
+    health,
+    jetpack,
+    turret,
+    trampoline,
+    enemy_generic,
+
+    pub fn label(self: GameplayCellKind) []const u8 {
+        return switch (self) {
+            .attachment_probe => "attachment_probe",
+            .attachment_entry => "attachment_entry",
+            .ring => "ring",
+            .parcel => "parcel",
+            .slug => "slug",
+            .garbage => "garbage",
+            .salt => "salt",
+            .health => "health",
+            .jetpack => "jetpack",
+            .turret => "turret",
+            .trampoline => "trampoline",
+            .enemy_generic => "enemy_generic",
+        };
+    }
+};
+
+pub const GameplayCellSample = struct {
+    global_row: usize,
+    lane_index: usize,
+    cell: u8,
+    kind: GameplayCellKind,
+    annotation: ?segment.Annotation.Tag = null,
+    marked: bool = false,
+};
+
+pub const LoadOptions = struct {
+    load_models: bool = true,
+};
+
 pub const LoadedLevelPreview = struct {
     allocator: std.mem.Allocator,
     segments: []segment.Definition,
@@ -48,6 +93,15 @@ pub const LoadedLevelPreview = struct {
         allocator: std.mem.Allocator,
         catalog: *const assets.Catalog,
         level_definition: *const level.Definition,
+    ) !LoadedLevelPreview {
+        return loadWithOptions(allocator, catalog, level_definition, .{});
+    }
+
+    pub fn loadWithOptions(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        level_definition: *const level.Definition,
+        options: LoadOptions,
     ) !LoadedLevelPreview {
         const segment_count = level_definition.segments.len;
         const segments = try allocator.alloc(segment.Definition, segment_count);
@@ -91,6 +145,8 @@ pub const LoadedLevelPreview = struct {
             max_width = @max(max_width, segments[index].width);
 
             for (segments[index].rows, 0..) |row, row_index| {
+                if (!options.load_models) continue;
+
                 const annotation = row.annotation orelse continue;
                 const model_annotation = switch (annotation) {
                     .model => |model| model,
@@ -237,6 +293,23 @@ pub const LoadedLevelPreview = struct {
         return row.cells[lane_index];
     }
 
+    pub fn gameplayCellSampleAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?GameplayCellSample {
+        const row_location = self.locateRow(global_row) orelse return null;
+        const row = row_location.row;
+        if (lane_index >= row.cells.len) return null;
+
+        const cell = row.cells[lane_index];
+        const kind = gameplayCellKind(cell) orelse return null;
+        return .{
+            .global_row = global_row,
+            .lane_index = lane_index,
+            .cell = cell,
+            .kind = kind,
+            .annotation = if (row.annotation) |annotation| annotation.tag() else null,
+            .marked = row.marked,
+        };
+    }
+
     pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
         const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
         return .{
@@ -380,14 +453,16 @@ fn drawSegmentGameplayMarkers(
 ) void {
     for (loaded_segment.rows, 0..) |row, row_index| {
         for (row.cells, 0..) |cell, col_index| {
-            const marker = gameplayMarkerForCell(cell) orelse continue;
-            const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, markerY(marker));
-            const color = tintForSelection(markerColor(marker), is_selected);
+            const kind = gameplayCellKind(cell) orelse continue;
+            if (kind == .ring or kind == .attachment_probe or kind == .attachment_entry) continue;
 
-            switch (marker) {
+            const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, gameplayCellY(kind));
+            const color = tintForSelection(gameplayCellColor(kind), is_selected);
+
+            switch (kind) {
                 .parcel => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.24, .z = 0.24 }, color),
-                .enemy => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
-                .asteroid => rl.drawSphere(position, 0.16, color),
+                .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
+                .garbage => rl.drawSphere(position, 0.16, color),
                 .salt => {
                     rl.drawSphere(position, 0.14, color);
                     rl.drawLine3D(
@@ -397,8 +472,11 @@ fn drawSegmentGameplayMarkers(
                     );
                 },
                 .health => rl.drawCubeV(position, .{ .x = 0.22, .y = 0.22, .z = 0.22 }, color),
+                .jetpack => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.44, .z = 0.24 }, color),
                 .turret => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.6, .z = 0.24 }, color),
                 .trampoline => rl.drawCubeV(position, .{ .x = 0.28, .y = 0.12, .z = 0.28 }, color),
+                .enemy_generic => rl.drawCubeWiresV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
+                .ring, .attachment_probe, .attachment_entry => unreachable,
             }
         }
     }
@@ -654,50 +732,53 @@ fn isRingCell(cell: u8) bool {
     };
 }
 
-const GameplayMarker = enum {
-    parcel,
-    enemy,
-    asteroid,
-    salt,
-    health,
-    turret,
-    trampoline,
-};
-
-fn gameplayMarkerForCell(cell: u8) ?GameplayMarker {
+pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
     return switch (cell) {
+        'p' => .attachment_probe,
+        'P' => .attachment_entry,
+        '>', '<', '{', '}', ';', 'R' => .ring,
         '0', '1', '2', '3' => .parcel,
-        'M', '[', 'J' => .enemy,
-        's' => .asteroid,
+        'M' => .slug,
+        's' => .garbage,
         '&' => .salt,
         '$' => .health,
+        'J' => .jetpack,
         '=' => .turret,
         '(', ')' => .trampoline,
+        '[' => .enemy_generic,
         else => null,
     };
 }
 
-fn markerColor(marker: GameplayMarker) rl.Color {
-    return switch (marker) {
+fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
+    return switch (kind) {
+        .attachment_probe => .blue,
+        .attachment_entry => .sky_blue,
+        .ring => .yellow,
         .parcel => .gold,
-        .enemy => .red,
-        .asteroid => .gray,
+        .slug => .red,
+        .garbage => .gray,
         .salt => .sky_blue,
         .health => .green,
+        .jetpack => .orange,
         .turret => .purple,
         .trampoline => .orange,
+        .enemy_generic => .maroon,
     };
 }
 
-fn markerY(marker: GameplayMarker) f32 {
-    return switch (marker) {
+fn gameplayCellY(kind: GameplayCellKind) f32 {
+    return switch (kind) {
+        .attachment_probe, .attachment_entry, .ring => 0.62,
         .parcel => 0.72,
-        .enemy => 0.62,
-        .asteroid => 0.56,
+        .slug => 0.62,
+        .garbage => 0.56,
         .salt => 0.62,
         .health => 0.7,
+        .jetpack => 0.82,
         .turret => 0.78,
         .trampoline => 0.12,
+        .enemy_generic => 0.62,
     };
 }
 
@@ -771,4 +852,14 @@ test "resolve segment x model path" {
     defer std.testing.allocator.free(resolved);
 
     try std.testing.expectEqualStrings("X/SIGNBANG.X2", resolved);
+}
+
+test "gameplay cell kinds match recovered runtime glyph semantics" {
+    try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKind('P').?);
+    try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKind('p').?);
+    try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKind('$').?);
+    try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKind('J').?);
+    try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKind('M').?);
+    try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKind('s').?);
+    try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKind('&').?);
 }

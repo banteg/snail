@@ -26,20 +26,118 @@ pub const AttachmentHint = enum {
     }
 };
 
+pub const MovementMode = enum {
+    track,
+    attachment,
+
+    pub fn label(self: MovementMode) []const u8 {
+        return switch (self) {
+            .track => "track",
+            .attachment => "attachment",
+        };
+    }
+};
+
+pub const RecentEvent = union(enum) {
+    none,
+    attachment_probe,
+    attachment_begin,
+    attachment_end,
+    parcel: i32,
+    health_pickup,
+    jetpack_pickup,
+    garbage_hit,
+    salt_hit,
+    slug_hit,
+    turret_row,
+    trampoline,
+    enemy_generic,
+    no_fall,
+    jetpack_off,
+    ring: segment.RingKind,
+
+    pub fn label(self: RecentEvent) []const u8 {
+        return switch (self) {
+            .none => "none",
+            .attachment_probe => "attachment_probe",
+            .attachment_begin => "attachment_begin",
+            .attachment_end => "attachment_end",
+            .parcel => "parcel",
+            .health_pickup => "health_pickup",
+            .jetpack_pickup => "jetpack_pickup",
+            .garbage_hit => "garbage_hit",
+            .salt_hit => "salt_hit",
+            .slug_hit => "slug_hit",
+            .turret_row => "turret_row",
+            .trampoline => "trampoline",
+            .enemy_generic => "enemy_generic",
+            .no_fall => "no_fall",
+            .jetpack_off => "jetpack_off",
+            .ring => |ring_kind| switch (ring_kind) {
+                .none => "ring_none",
+                .normal => "ring_normal",
+                .powerup => "ring_powerup",
+                .explode => "ring_explode",
+                .slow => "ring_slow",
+            },
+        };
+    }
+};
+
+pub const EncounterCounters = struct {
+    attachments_begun: u32 = 0,
+    attachments_completed: u32 = 0,
+    parcels: u32 = 0,
+    health_pickups: u32 = 0,
+    jetpack_pickups: u32 = 0,
+    garbage_hits: u32 = 0,
+    salt_hits: u32 = 0,
+    slug_hits: u32 = 0,
+    turrets: u32 = 0,
+    trampolines: u32 = 0,
+    enemy_rows: u32 = 0,
+    no_fall_rows: u32 = 0,
+    jetpack_off_rows: u32 = 0,
+    ring_normal: u32 = 0,
+    ring_powerup: u32 = 0,
+    ring_explode: u32 = 0,
+    ring_slow: u32 = 0,
+};
+
+const RowSample = struct {
+    global_row: usize,
+    traversable_bounds: track.LaneBounds,
+    resolved_lane_index: usize,
+    cell: u8,
+    gameplay_cell: ?track.GameplayCellKind,
+    annotation: ?segment.Annotation,
+    path_center_lane: ?f32,
+    path_name: ?[]const u8,
+};
+
 pub const Runner = struct {
     lane_index: usize = 0,
+    resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
     row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
     paused: bool = false,
     finished: bool = false,
     tick_count: u64 = 0,
+    movement_mode: MovementMode = .track,
     current_global_row: usize = 0,
     current_cell: u8 = ' ',
     current_annotation: ?segment.Annotation.Tag = null,
+    current_gameplay_cell: ?track.GameplayCellKind = null,
+    current_path_name: ?[]const u8 = null,
     attachment_hint: AttachmentHint = .none,
+    attachment_path_name: ?[]const u8 = null,
+    attachment_ticks: u64 = 0,
     path_center_lane: ?f32 = null,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
+    recent_event: RecentEvent = .none,
+    counters: EncounterCounters = .{},
+    last_processed_row: ?usize = null,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -52,6 +150,7 @@ pub const Runner = struct {
             .speed_rows_per_second = 12.0,
         };
         self.refreshSample(preview);
+        self.last_processed_row = self.current_global_row;
     }
 
     pub fn step(self: *Runner, preview: *const track.LoadedLevelPreview, input: RunnerInput, delta_seconds: f32) void {
@@ -75,7 +174,9 @@ pub const Runner = struct {
             return;
         }
 
-        self.applyLaneDelta(input.lane_delta);
+        if (self.movement_mode != .attachment) {
+            self.applyLaneDelta(input.lane_delta);
+        }
 
         if (!self.paused and !self.finished) {
             const track_end = @as(f32, @floatFromInt(preview.total_rows - 1)) + 0.999;
@@ -84,7 +185,12 @@ pub const Runner = struct {
             self.tick_count += 1;
         }
 
+        self.processVisitedRows(preview);
+        self.endAttachmentIfNeeded(preview);
         self.refreshSample(preview);
+        if (self.movement_mode == .attachment) {
+            self.attachment_ticks += 1;
+        }
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
@@ -103,6 +209,19 @@ pub const Runner = struct {
         };
     }
 
+    pub fn gameplayCellLabel(self: *const Runner) ?[]const u8 {
+        const kind = self.current_gameplay_cell orelse return null;
+        return kind.label();
+    }
+
+    pub fn recentEventLabel(self: *const Runner) []const u8 {
+        return self.recent_event.label();
+    }
+
+    pub fn activePathName(self: *const Runner) ?[]const u8 {
+        return self.attachment_path_name orelse self.current_path_name;
+    }
+
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
         if (lane_delta == 0) return;
         if (lane_delta < 0) {
@@ -118,50 +237,296 @@ pub const Runner = struct {
             self.current_global_row = 0;
             self.current_cell = ' ';
             self.current_annotation = null;
+            self.current_gameplay_cell = null;
+            self.current_path_name = null;
             self.attachment_hint = .none;
             self.path_center_lane = null;
             self.traversable_bounds = .{ .min = 0, .max = 0 };
+            self.resolved_lane_index = 0;
             self.lane_center = 0.5;
             return;
         }
 
-        const clamped_row_float = std.math.clamp(
-            self.row_position,
-            0.0,
-            @as(f32, @floatFromInt(preview.total_rows - 1)),
-        );
-        const global_row: usize = @intFromFloat(@floor(clamped_row_float));
-        self.current_global_row = global_row;
-
-        const row_location = preview.locateRow(global_row) orelse {
+        const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse {
+            self.current_global_row = 0;
             self.current_cell = ' ';
             self.current_annotation = null;
+            self.current_gameplay_cell = null;
+            self.current_path_name = null;
             self.attachment_hint = .none;
             self.path_center_lane = null;
+            self.resolved_lane_index = 0;
             return;
         };
 
-        const traversable = preview.laneBoundsForRow(row_location);
-        self.traversable_bounds = traversable;
-        self.lane_index = std.math.clamp(self.lane_index, traversable.min, traversable.max);
-        self.current_cell = preview.cellAt(global_row, self.lane_index) orelse ' ';
-        self.current_annotation = if (row_location.row.annotation) |annotation| annotation.tag() else null;
+        self.current_global_row = sample.global_row;
+        self.traversable_bounds = sample.traversable_bounds;
+        self.resolved_lane_index = sample.resolved_lane_index;
+        self.current_cell = sample.cell;
+        self.current_annotation = if (sample.annotation) |annotation| annotation.tag() else null;
+        self.current_gameplay_cell = sample.gameplay_cell;
+        self.current_path_name = sample.path_name;
+        self.path_center_lane = sample.path_center_lane;
+        self.attachment_hint = if (sample.gameplay_cell) |kind|
+            switch (kind) {
+                .attachment_entry => .entry,
+                .attachment_probe => .probe,
+                else => returnAttachmentHint(sample.path_center_lane),
+            }
+        else
+            returnAttachmentHint(sample.path_center_lane);
+        self.lane_center = if (self.movement_mode == .attachment and sample.path_center_lane != null)
+            sample.path_center_lane.?
+        else
+            @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
+    }
 
+    fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
+        const row_location = preview.locateRow(global_row) orelse return null;
+        const traversable = preview.laneBoundsForRow(row_location);
+        const desired_lane = std.math.clamp(self.lane_index, traversable.min, traversable.max);
+
+        var resolved_lane_index = desired_lane;
+        var path_center_lane: ?f32 = null;
         if (preview.pathBoundsForRow(row_location)) |path_bounds| {
-            self.attachment_hint = switch (self.current_cell) {
-                'P' => .entry,
-                'p' => .probe,
-                else => .probe,
-            };
-            self.path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
-            self.lane_center = self.path_center_lane.?;
-        } else {
-            self.attachment_hint = .none;
-            self.path_center_lane = null;
-            self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
+            path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
+            if (self.movement_mode == .attachment) {
+                resolved_lane_index = (path_bounds.min + path_bounds.max) / 2;
+            }
+        }
+
+        const cell = row_location.row.cells[resolved_lane_index];
+        const annotation = row_location.row.annotation;
+        return .{
+            .global_row = global_row,
+            .traversable_bounds = traversable,
+            .resolved_lane_index = resolved_lane_index,
+            .cell = cell,
+            .gameplay_cell = track.gameplayCellKind(cell),
+            .annotation = annotation,
+            .path_center_lane = path_center_lane,
+            .path_name = pathNameFromAnnotation(annotation),
+        };
+    }
+
+    fn processVisitedRows(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) return;
+        const current_row = currentRowIndex(preview, self.row_position);
+        const last_row = self.last_processed_row orelse {
+            self.last_processed_row = current_row;
+            return;
+        };
+        if (current_row < last_row) {
+            self.last_processed_row = current_row;
+            return;
+        }
+
+        var row = last_row + 1;
+        while (row <= current_row) : (row += 1) {
+            self.processRow(preview, row);
+        }
+        self.last_processed_row = current_row;
+    }
+
+    fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
+        const sample = self.sampleRow(preview, global_row) orelse return;
+
+        if (sample.annotation) |annotation| {
+            switch (annotation) {
+                .path => |path_name| {
+                    if (self.movement_mode == .attachment) {
+                        self.attachment_path_name = path_name;
+                    }
+                },
+                .ring => |ring_kind| {
+                    if (sample.gameplay_cell) |kind| {
+                        if (kind == .ring) {
+                            self.recordRing(ring_kind);
+                        }
+                    }
+                },
+                .parcel => |parcel| {
+                    if (sample.gameplay_cell) |kind| {
+                        if (kind == .parcel) {
+                            self.counters.parcels += 1;
+                            self.recent_event = .{ .parcel = parcel.id };
+                        }
+                    }
+                },
+                .jetpack_off => {
+                    self.counters.jetpack_off_rows += 1;
+                    self.recent_event = .jetpack_off;
+                },
+                .no_fall => {
+                    self.counters.no_fall_rows += 1;
+                    self.recent_event = .no_fall;
+                },
+                .model => {},
+            }
+        }
+
+        const gameplay_cell = sample.gameplay_cell orelse return;
+        switch (gameplay_cell) {
+            .attachment_probe => {
+                if (self.movement_mode == .track) {
+                    self.recent_event = .attachment_probe;
+                }
+            },
+            .attachment_entry => {
+                if (self.movement_mode != .attachment) {
+                    self.movement_mode = .attachment;
+                    self.attachment_path_name = sample.path_name;
+                    self.counters.attachments_begun += 1;
+                    self.recent_event = .attachment_begin;
+                }
+            },
+            .ring => {},
+            .parcel => {},
+            .health => {
+                self.counters.health_pickups += 1;
+                self.recent_event = .health_pickup;
+            },
+            .jetpack => {
+                self.counters.jetpack_pickups += 1;
+                self.recent_event = .jetpack_pickup;
+            },
+            .garbage => {
+                self.counters.garbage_hits += 1;
+                self.recent_event = .garbage_hit;
+            },
+            .salt => {
+                self.counters.salt_hits += 1;
+                self.recent_event = .salt_hit;
+            },
+            .slug => {
+                self.counters.slug_hits += 1;
+                self.recent_event = .slug_hit;
+            },
+            .turret => {
+                self.counters.turrets += 1;
+                self.recent_event = .turret_row;
+            },
+            .trampoline => {
+                self.counters.trampolines += 1;
+                self.recent_event = .trampoline;
+            },
+            .enemy_generic => {
+                self.counters.enemy_rows += 1;
+                self.recent_event = .enemy_generic;
+            },
+        }
+    }
+
+    fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.movement_mode != .attachment or preview.total_rows == 0) return;
+        const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
+        if (sample.path_center_lane != null) return;
+
+        self.movement_mode = .track;
+        self.attachment_path_name = null;
+        self.counters.attachments_completed += 1;
+        self.recent_event = .attachment_end;
+    }
+
+    fn recordRing(self: *Runner, ring_kind: segment.RingKind) void {
+        switch (ring_kind) {
+            .none => {},
+            .normal => self.counters.ring_normal += 1,
+            .powerup => self.counters.ring_powerup += 1,
+            .explode => self.counters.ring_explode += 1,
+            .slow => self.counters.ring_slow += 1,
+        }
+        if (ring_kind != .none) {
+            self.recent_event = .{ .ring = ring_kind };
         }
     }
 };
+
+fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) usize {
+    return @intFromFloat(@floor(std.math.clamp(
+        row_position,
+        0.0,
+        @as(f32, @floatFromInt(preview.total_rows - 1)),
+    )));
+}
+
+fn returnAttachmentHint(path_center_lane: ?f32) AttachmentHint {
+    return if (path_center_lane != null) .probe else .none;
+}
+
+fn pathNameFromAnnotation(annotation: ?segment.Annotation) ?[]const u8 {
+    const value = annotation orelse return null;
+    return switch (value) {
+        .path => |path_name| path_name,
+        else => null,
+    };
+}
+
+const TestFixture = struct {
+    catalog: assets.Catalog,
+    level_definition: level.Definition,
+    preview: track.LoadedLevelPreview,
+
+    fn load(level_path: []const u8) !TestFixture {
+        var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+        errdefer catalog.deinit();
+
+        const level_entry = catalog.level_entries[catalog.findLevelIndex(level_path).?];
+        var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+        errdefer level_definition.deinit();
+
+        var preview = try track.LoadedLevelPreview.loadWithOptions(
+            std.testing.allocator,
+            &catalog,
+            &level_definition,
+            .{ .load_models = false },
+        );
+        errdefer preview.deinit();
+
+        return .{
+            .catalog = catalog,
+            .level_definition = level_definition,
+            .preview = preview,
+        };
+    }
+
+    fn deinit(self: *TestFixture) void {
+        self.preview.deinit();
+        self.level_definition.deinit();
+        self.catalog.deinit();
+    }
+};
+
+const RowTarget = struct {
+    row: usize,
+    lane: usize,
+};
+
+fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.GameplayCellKind) ?RowTarget {
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        for (row_location.row.cells, 0..) |cell, lane| {
+            if (track.gameplayCellKind(cell)) |cell_kind| {
+                if (cell_kind == kind) {
+                    return .{
+                        .row = global_row,
+                        .lane = lane,
+                    };
+                }
+            }
+        }
+    }
+    return null;
+}
+
+fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPreview, target: RowTarget) void {
+    std.debug.assert(target.row > 0);
+    runner.reset(preview);
+    runner.lane_index = target.lane;
+    runner.row_position = @as(f32, @floatFromInt(target.row)) - 0.01;
+    runner.refreshSample(preview);
+    runner.last_processed_row = target.row - 1;
+}
 
 test "runner advances deterministically over fixed time" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
@@ -205,4 +570,62 @@ test "runner discovers attachment hint rows in shipped corpus" {
     }
 
     try std.testing.expect(found_attachment_hint);
+}
+
+test "runner records pickup and hazard encounters from shipped tutorial" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const step_seconds = 1.0 / 60.0;
+
+    const health = findFirstGameplayCell(&fixture.preview, .health).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, health);
+    runner.step(&fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
+    try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
+
+    const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, salt);
+    runner.step(&fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.salt_hits);
+    try std.testing.expectEqualStrings("salt_hit", runner.recentEventLabel());
+
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, slug);
+    runner.step(&fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
+    try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
+
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
+    runner.step(&fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "runner records attachment entry and jetpack pickup from shipped levels" {
+    var challenge_fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
+    defer challenge_fixture.deinit();
+
+    var runner = Runner.init(&challenge_fixture.preview);
+    const step_seconds = 1.0 / 60.0;
+
+    const attachment = findFirstGameplayCell(&challenge_fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &challenge_fixture.preview, attachment);
+    runner.step(&challenge_fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
+    try std.testing.expectEqualStrings("attachment_begin", runner.recentEventLabel());
+    try std.testing.expect(runner.activePathName() != null);
+
+    var jetpack_fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer jetpack_fixture.deinit();
+
+    runner = Runner.init(&jetpack_fixture.preview);
+    const jetpack = findFirstGameplayCell(&jetpack_fixture.preview, .jetpack).?;
+    primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack);
+    runner.step(&jetpack_fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_pickups);
+    try std.testing.expectEqualStrings("jetpack_pickup", runner.recentEventLabel());
 }

@@ -84,6 +84,8 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
 - a fixed-step level runner in level mode, so track stepping now happens on a deterministic simulation clock instead of render time
+- a stricter gameplay-cell vocabulary in the Zig runtime, so the runner now distinguishes authored attachment tiles, health, jetpack, garbage, salt, slug, ring, parcel, turret, and trampoline rows instead of treating them as generic preview markers
+- deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -134,9 +136,10 @@ Recent Frida evidence from the March 8 multi-level Windows capture is now consis
 - attachment probes hit runtime tile types `29` and `30`, but actual attachment-follow begins only occurred on tile type `30`
 - slug spawns stayed pinned to tile type `18`
 - garbage spawns were dominated by tile types `1` and `33`
+- the new March 8 long capture also reinforced the port’s current attachment split: tile `29` behaves mostly like a probe lane, tile `30` dominates real follow-state updates, health uses tile `23`, jetpack uses tile `25`, and authored `$`, `J`, `s`, `&`, and `M` rows are now reflected directly in the Zig runner state
 
 ## Immediate Next Targets
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- keep moving the rewrite from viewer to gameplay runtime: the next useful work is deterministic player-state scaffolding, while the next hard wall is still faithful attachment-follow, floor sampling, and hazard spawn semantics from `SnailMail_unwrapped.exe`
+- keep moving the rewrite from viewer to gameplay runtime: the next useful work is faithful player motion on top of the new deterministic runner scaffold, while the next hard wall is still curve-accurate attachment-follow, floor sampling, off-track fall behavior, and live hazard spawn semantics from `SnailMail_unwrapped.exe`
