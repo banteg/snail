@@ -41,6 +41,8 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     template: str | None = None
     follow_state: str | None = None
     player: str | None = None
+    slot: str | None = None
+    state: int | None = None
     slot_manager: str | None = None
     slot_result: int | None = None
     manager: str | None = None
@@ -91,6 +93,7 @@ class RuntimeTraceSummary(msgspec.Struct, frozen=True):
     attachment_begins: TraceBucketSummary
     garbage_spawns: TraceBucketSummary
     salt_spawns: TraceBucketSummary
+    salt_deactivations: TraceBucketSummary
     slug_spawns: TraceBucketSummary
 
 
@@ -203,6 +206,10 @@ def summarize_runtime_trace(
         ),
         salt_spawns=_summarize_bucket(
             (event for event in events if event.event == "salt_spawn"),
+            preview_limit=preview_limit,
+        ),
+        salt_deactivations=_summarize_bucket(
+            (event for event in events if event.event == "salt_deactivate"),
             preview_limit=preview_limit,
         ),
         slug_spawns=_summarize_bucket(

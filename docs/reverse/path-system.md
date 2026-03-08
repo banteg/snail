@@ -52,6 +52,31 @@ The current track-runtime pipeline is:
    - `allocate_parcels_on_track`
 4. Later game code consumes the rebuilt track runtime for parcel placement and gameplay.
 
+## Salt And Slug Runtime Split
+
+The current static read is now much stronger than the earlier generic “40-slot pool” note.
+
+High-confidence findings:
+
+- `salt.x` is loaded during startup and cloned into a `40`-slot runtime array.
+- the same `40`-slot stride is used by `sub_441540` and `sub_441560`, so that manager is not abstract bookkeeping; it owns the live `salt.x` instances.
+- `populate_track_runtime_entities` calls `sub_441560` only on a specific tile-family branch:
+  - tile kind `34` always qualifies in-range
+  - otherwise the branch accepts tile kinds `1` or `15` when the row flag byte does not contain `0x08`
+  - the level-wide normalized `Salt:` scalar at `+0x125ffdc` gates the random chance before the spawn call
+- `sub_441560` initializes one active slot with a world position pointer from the runtime track cell plus a small upward velocity component.
+- the per-slot vtable points at `sub_4417D0`, which integrates the slot position, tests track-attachment intersection through `sub_42CA90`, and deactivates the slot through `sub_441740` after the object hits geometry or leaves the supported path.
+
+Practical read:
+
+- `Salt:` is now best understood as live `salt.x` projectile or hazard placement, not a vague effect pool.
+- slugs are a separate runtime path:
+  - `sub_43dc80` allocates from the `8`-slot slug pool
+  - it uses sprite id `118`, which matches `Sprites/Slug000.tga`
+  - the current static branch into slug spawning remains the tile-type-`18` path guarded by the high bit in `this + 76`
+
+What remains unresolved is not whether salt and slugs are separate systems. They are. The remaining gap is the exact authored meaning of the eligible tile-family branch that leads to salt placement.
+
 ## Hardcoded Path Table
 
 `Path=<name>` in `SEGMENTS/*.TXT` does not resolve through an archive file.

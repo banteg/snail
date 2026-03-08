@@ -11,6 +11,7 @@ const HOOKS = {
   attachment_begin: true,
   garbage_spawn: true,
   salt_spawn: true,
+  salt_deactivate: true,
   slug_spawn: true,
 };
 
@@ -21,6 +22,7 @@ const LIMITS = {
   attachment_begin: 1024,
   garbage_spawn: 4096,
   salt_spawn: 4096,
+  salt_deactivate: 4096,
   slug_spawn: 1024,
 };
 
@@ -31,6 +33,7 @@ const VA = {
   normalize_level_runtime_fields: 0x437eb0,
   spawn_track_garbage_hazard: 0x43da80,
   spawn_salt_runtime_entity: 0x441560,
+  deactivate_salt_runtime_entity: 0x441740,
   spawn_slug_runtime_entity: 0x43dc80,
   get_track_cell_row_index: 0x447040,
 };
@@ -370,6 +373,20 @@ function installHooks(module) {
           slot_manager: hex(this.slot_manager),
           position: this.position,
           slot_result: retval.toInt32(),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.salt_deactivate) {
+    Interceptor.attach(fromVa(module, VA.deactivate_salt_runtime_entity), {
+      onEnter(args) {
+        const slot = this.context.ecx;
+        emit('salt_deactivate', {
+          slot: hex(slot),
+          state: safeReadU32(slot, 128),
+          position: safeReadVec3(slot, 104),
+          velocity: safeReadVec3(slot, 140),
         });
       },
     });

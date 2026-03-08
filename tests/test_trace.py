@@ -115,6 +115,17 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "ts_ms": 9,
             "pid": 111,
             "tid": 222,
+            "event": "salt_deactivate",
+            "seq": 1,
+            "slot": "0x720000",
+            "state": 1,
+            "position": {"x": -1.0, "y": 0.7, "z": 221.3},
+            "velocity": {"x": 0.0, "y": 0.03, "z": 0.0},
+        },
+        {
+            "ts_ms": 10,
+            "pid": 111,
+            "tid": 222,
             "event": "slug_spawn",
             "seq": 1,
             "sprite_id": 118,
@@ -133,8 +144,8 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     events = load_runtime_trace(trace_path)
     summary = summarize_runtime_trace_file(trace_path, preview_limit=2)
 
-    assert len(events) == 9
-    assert summary.total_events == 9
+    assert len(events) == 10
+    assert summary.total_events == 10
     assert summary.event_counts["path_lookup"] == 2
     assert summary.levels[0].selected_track_id == 3
     assert summary.path_lookups_by_name == {"START": 2}
@@ -147,6 +158,8 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert summary.garbage_spawns.rows == {220: 1}
     assert summary.garbage_spawns.positions_preview[0].z == 220.0
     assert summary.salt_spawns.positions_preview[0].y == 0.5
+    assert summary.salt_deactivations.count == 1
+    assert summary.salt_deactivations.positions_preview[0].z == 221.3
     assert summary.slug_spawns.rows == {221: 1}
 
 

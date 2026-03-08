@@ -30,6 +30,8 @@ Current hooks in the script:
   - logs garbage spawns with the chosen runtime cell
 - `0x441560` `spawn_salt_runtime_entity`
   - logs salt-pool spawns with the world position passed in
+- `0x441740` `deactivate_salt_runtime_entity`
+  - logs the salt slot position and velocity when a live salt object is removed
 - `0x43dc80` `spawn_slug_runtime_entity`
   - logs slug spawns with the chosen runtime cell
 
@@ -49,6 +51,7 @@ Event names currently emitted:
 - `attachment_begin`
 - `garbage_spawn`
 - `salt_spawn`
+- `salt_deactivate`
 - `slug_spawn`
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
