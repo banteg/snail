@@ -310,13 +310,18 @@ pub const Runner = struct {
 
         const cell = row_location.row.cells[resolved_lane_index];
         const annotation = row_location.row.annotation;
+        const runtime_tile_hint = preview.runtimeTileAt(global_row, resolved_lane_index) orelse track.confirmedRuntimeTileHint(cell);
+        const gameplay_cell = if (runtime_tile_hint) |tile_type|
+            track.gameplayCellKindForRuntimeTile(tile_type) orelse track.gameplayCellKind(cell)
+        else
+            track.gameplayCellKind(cell);
         return .{
             .global_row = global_row,
             .traversable_bounds = traversable,
             .resolved_lane_index = resolved_lane_index,
             .cell = cell,
-            .gameplay_cell = track.gameplayCellKind(cell),
-            .runtime_tile_hint = track.confirmedRuntimeTileHint(cell),
+            .gameplay_cell = gameplay_cell,
+            .runtime_tile_hint = runtime_tile_hint,
             .annotation = annotation,
             .path_center_lane = path_center_lane,
             .path_name = pathNameFromAnnotation(annotation),

@@ -122,6 +122,9 @@ const SEGMENT_PATH_INDEX_NAMES = [
 
 const RUNTIME = {
   mode_or_track: 0x40,
+  build_flags: 0x4c,
+  track_row_start: 0x50,
+  track_row_end: 0x58,
   active_level_flag_0: 0xff25d0,
   active_level_flag_1: 0xff25d1,
   active_level_ptr: 0xff25d4,
@@ -411,6 +414,9 @@ function makeLevelRuntimeSnapshot(game) {
     active_level_present: hasActiveLevel,
     active_level: hex(activeLevelPtr),
     selected_track_id: activeLevelPtr !== null ? safeReadU32(activeLevelPtr, 0x2c) : null,
+    build_flags: safeReadU32(gamePtr, RUNTIME.build_flags),
+    track_row_start: safeReadU32(gamePtr, RUNTIME.track_row_start),
+    track_row_end: safeReadU32(gamePtr, RUNTIME.track_row_end),
     garbage_scalar: safeReadFloat(gamePtr, RUNTIME.garbage_scalar),
     salt_scalar: safeReadFloat(gamePtr, RUNTIME.salt_scalar),
   };
@@ -532,6 +538,7 @@ function summarizeCell(cellPtr, getTrackCellRowIndex) {
   return {
     ptr: hex(cell),
     row: row,
+    flags: safeReadU32(cell, 4),
     tile_type: safeReadU8(cell, 60),
     world: safeReadVec3(cell, 16),
     attachment: hex(attachment),
@@ -565,6 +572,7 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
   return {
     ptr: hex(player),
     game: hex(safeReadPointer(player, 0x408)),
+    build_flags: safeReadU32(safeReadPointer(player, 0x408), RUNTIME.build_flags),
     position: safeReadVec3(player, 0x68),
     velocity: safeReadVec3(player, 0x410),
     cell: summarizeCell(safeReadPointer(player, 0x43c), getTrackCellRowIndex),
@@ -629,6 +637,9 @@ function installHooks(module) {
           active_level_present: snapshot.active_level_present,
           selected_track_id: snapshot.selected_track_id,
           active_level: snapshot.active_level,
+          build_flags: snapshot.build_flags,
+          track_row_start: snapshot.track_row_start,
+          track_row_end: snapshot.track_row_end,
           garbage_scalar: snapshot.garbage_scalar,
           salt_scalar: snapshot.salt_scalar,
         });
@@ -684,6 +695,7 @@ function installHooks(module) {
         maybeEmitSampled('player_update', after.ptr || 'player', digest, 8, {
           player: after.ptr,
           game: after.game,
+          build_flags: after.build_flags,
           player_position: after.position,
           before_position: this.before ? this.before.position : null,
           cell: after.cell,
@@ -706,6 +718,7 @@ function installHooks(module) {
         const cell = args[6];
         emit('attachment_probe', {
           template: hex(this.context.ecx),
+          build_flags: safeReadU32(safeReadPointer(this.context.ecx, 0x408), RUNTIME.build_flags),
           cell: summarizeCell(cell, getTrackCellRowIndex),
           position: {
             x: floatArg(args[0]),
@@ -728,6 +741,7 @@ function installHooks(module) {
         const follow = summarizeFollowState(this.context.ecx, getTrackCellRowIndex);
         emit('attachment_begin', {
           follow_state: follow !== null ? follow.ptr : hex(this.context.ecx),
+          build_flags: safeReadU32(safeReadPointer(args[2], 0x408), RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           player_position: safeReadVec3(args[1], 0),
           player: hex(args[2]),
@@ -759,6 +773,7 @@ function installHooks(module) {
 
         maybeEmitSampled('attachment_update', follow !== null ? follow.ptr : hex(this.followState), digest, 2, {
           follow_state: follow !== null ? follow.ptr : hex(this.followState),
+          build_flags: safeReadU32(safeReadPointer(follow !== null ? follow.player : null, 0x408), RUNTIME.build_flags),
           cell: follow !== null ? follow.cell : null,
           player: follow !== null ? follow.player : null,
           player_position: safeReadVec3(this.playerPositionPtr, 0),
@@ -781,6 +796,7 @@ function installHooks(module) {
         const follow = summarizeFollowState(player !== null ? player.add(0x384) : null, getTrackCellRowIndex);
         emit('attachment_end', {
           player: before !== null ? before.ptr : hex(player),
+          build_flags: before !== null ? before.build_flags : safeReadU32(safeReadPointer(player, 0x408), RUNTIME.build_flags),
           player_position: before !== null ? before.position : null,
           cell: follow !== null && follow.cell !== null ? follow.cell : before !== null ? before.cell : null,
           attachment_active: follow !== null ? follow.active : before !== null ? before.attachment_active : null,
@@ -811,6 +827,7 @@ function installHooks(module) {
         });
         maybeEmitSampled('floor_sample', hex(this.positionPtr), digest, 16, {
           game: hex(this.game),
+          build_flags: safeReadU32(this.game, RUNTIME.build_flags),
           position: position,
           cell: cell,
         });
@@ -823,6 +840,7 @@ function installHooks(module) {
       onEnter(args) {
         emit('garbage_spawn', {
           game: hex(this.context.ecx),
+          build_flags: safeReadU32(this.context.ecx, RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           manager: hex(args[1]),
           manager_sprite_bank: safeReadPointer(args[1], 896) !== null ? hex(safeReadPointer(args[1], 896)) : null,
@@ -836,6 +854,7 @@ function installHooks(module) {
       onEnter(args) {
         emit('health_pickup', {
           game: hex(this.context.ecx),
+          build_flags: safeReadU32(this.context.ecx, RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           manager: hex(args[1]),
         });
@@ -848,6 +867,7 @@ function installHooks(module) {
       onEnter(args) {
         emit('jetpack_pickup', {
           game: hex(this.context.ecx),
+          build_flags: safeReadU32(this.context.ecx, RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           manager: hex(args[1]),
         });
@@ -860,6 +880,7 @@ function installHooks(module) {
       onEnter(args) {
         emit('ring_effect', {
           game: hex(this.context.ecx),
+          build_flags: safeReadU32(this.context.ecx, RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           effect_kind: args[1].toInt32(),
           manager: hex(args[2]),
@@ -927,6 +948,7 @@ function installHooks(module) {
       onEnter(args) {
         emit('slug_spawn', {
           game: hex(this.context.ecx),
+          build_flags: safeReadU32(this.context.ecx, RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           manager: hex(args[1]),
           sprite_id: 0x76,

@@ -26,12 +26,14 @@ Current hooks in the script:
 - `0x437eb0` `normalize_level_runtime_fields`
   - logs the normalized runtime `Garbage:` and `Salt:` scalars
   - also records `mode_before`, `mode_after`, and the active-level flag bytes so tutorial-style runs do not get misreported as track id `7`
+  - now also records the live track build flags and the active row window `[track_row_start, track_row_end)`
 - `0x429ae0` `find_segment_path_index_by_name`
   - logs `Path=<name>` to runtime index resolution
   - emits a canonical path name from the recovered hardcoded table whenever the raw lookup buffer is not safely NUL-terminated
 - `0x43b120` `update_player_track_movement_and_triggers`
   - emits sampled before and after player snapshots
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
+  - now also records the current build-flag word seen by the active gameplay state
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
@@ -100,9 +102,12 @@ Important payload details:
 
 - `level_start.selected_track_id` is only populated when the active-level pointer flags are set
 - `level_start.mode_before` and `level_start.mode_after` are always recorded and are the correct fallback fields when the active-level pointer is absent
+- `level_start.build_flags` is the live track-build mask that drives glyph normalization and several entity-spawn gates
+- `level_start.track_row_start` and `level_start.track_row_end` are the current active spawn window used by the entity-population pass
 - `path_lookup.path_name` is the preferred canonical name
 - `path_lookup.path_name_raw` keeps the raw pointer read for debugging
 - `path_lookup.path_name_from_index` is the table-derived name from the recovered `51`-entry path list
+- `cell.flags` is the runtime per-cell flag dword read directly from `cell + 0x4`
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 

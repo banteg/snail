@@ -82,6 +82,8 @@ Important payload notes for the current script:
 - `path_lookup.path_name_raw` is still included for debugging bad or truncated reads
 - `level_start.selected_track_id` is only meaningful when `active_level_present` is true
 - for tutorial-like captures, prefer `mode_before` and `mode_after` over `selected_track_id`
+- `level_start.build_flags`, `track_row_start`, and `track_row_end` are now emitted and are the main fields to compare against the static track-builder notes
+- every traced `cell` object now includes `flags` from `cell + 0x4`, not just `tile_type` and world position
 - `player_update` and `attachment_end` are `thiscall` methods and the newest script version reads their object state from `ecx`
 - if you are reusing an older local script copy on Windows, replace it first; the March 8 long capture proved the older copy misses `player_update` entirely and misreports `attachment_end`
 

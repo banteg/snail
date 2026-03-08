@@ -144,6 +144,7 @@ pub const LoadedLevelPreview = struct {
     row_offsets: []usize,
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
+    runtime_tiles: []u8,
     total_rows: usize,
     max_width: usize,
 
@@ -242,12 +243,16 @@ pub const LoadedLevelPreview = struct {
             }
         }
 
+        const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
+        errdefer allocator.free(runtime_tiles);
+
         return .{
             .allocator = allocator,
             .segments = segments,
             .row_offsets = row_offsets,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
+            .runtime_tiles = runtime_tiles,
             .total_rows = total_rows,
             .max_width = max_width,
         };
@@ -259,6 +264,7 @@ pub const LoadedLevelPreview = struct {
         }
         self.allocator.free(self.placed_models);
         self.allocator.free(self.model_assets);
+        self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
         }
@@ -357,7 +363,10 @@ pub const LoadedLevelPreview = struct {
         if (lane_index >= row.cells.len) return null;
 
         const cell = row.cells[lane_index];
-        const kind = gameplayCellKind(cell) orelse return null;
+        const kind = if (self.runtimeTileAt(global_row, lane_index)) |tile_type|
+            gameplayCellKindForRuntimeTile(tile_type) orelse gameplayCellKind(cell) orelse return null
+        else
+            gameplayCellKind(cell) orelse return null;
         return .{
             .global_row = global_row,
             .lane_index = lane_index,
@@ -387,6 +396,11 @@ pub const LoadedLevelPreview = struct {
         const global_row = self.rowIndexAtWorldZ(world_position.z);
         const lane_index = self.laneIndexAtWorldX(world_position.x);
         return self.gameplayCellSampleAt(global_row, lane_index);
+    }
+
+    pub fn runtimeTileAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_tiles[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
@@ -770,6 +784,88 @@ fn guidanceBounds(row: segment.Row) ?LaneBounds {
     return pathBounds(row.cells) orelse traversableBounds(row.cells);
 }
 
+const RuntimeTileTransition = struct {
+    current: u8,
+    previous_override: ?u8 = null,
+};
+
+fn buildRuntimeTileGrid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+) ![]u8 {
+    const runtime_tiles = try allocator.alloc(u8, total_rows * max_width);
+    @memset(runtime_tiles, 0);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            for (row.cells, 0..) |cell, lane_index| {
+                const previous_tile = if (global_row > 0 and lane_index < max_width)
+                    runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)]
+                else
+                    null;
+                const transition = runtimeTileTransitionForShippedGlyph(cell, previous_tile);
+                const tile_type = if (transition) |value| value.current else 0;
+                runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)] = tile_type;
+
+                if (transition) |value| {
+                    if (value.previous_override) |previous_override| {
+                        if (global_row > 0) {
+                            runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)] = previous_override;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return runtime_tiles;
+}
+
+fn runtimeTileIndex(max_width: usize, global_row: usize, lane_index: usize) usize {
+    return (global_row * max_width) + lane_index;
+}
+
+fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
+    return switch (cell) {
+        ' ', '@' => .{ .current = 0x00 },
+        '#' => .{ .current = 0x20 },
+        '$' => .{ .current = 0x17 },
+        '&' => .{ .current = 0x22 },
+        '-' => .{ .current = 0x15 },
+        '.' => .{ .current = 0x01 },
+        '0', '1', '2', '3' => .{ .current = 0x0f },
+        '<' => .{ .current = 0x06 },
+        '=' => .{ .current = 0x0e },
+        '>' => if (previous_tile == 0x03)
+            .{ .current = 0x09 }
+        else
+            .{ .current = 0x03, .previous_override = if (previous_tile != null) 0x0c else null },
+        'J' => .{ .current = 0x19 },
+        'M' => .{ .current = 0x12 },
+        'P' => .{ .current = 0x1e },
+        'R' => .{ .current = 0x23 },
+        '[' => .{ .current = 0x05 },
+        '_' => .{ .current = 0x0f },
+        'p' => .{ .current = 0x1d },
+        's' => .{ .current = 0x21 },
+        '{' => if (previous_tile == 0x03)
+            .{ .current = 0x08 }
+        else
+            .{ .current = 0x02, .previous_override = if (previous_tile != null) 0x0b else null },
+        '|' => .{ .current = 0x0e },
+        '}' => if (previous_tile == 0x03)
+            .{ .current = 0x0a }
+        else
+            .{ .current = 0x04, .previous_override = if (previous_tile != null) 0x0d else null },
+        else => null,
+    };
+}
+
 fn traversableBounds(cells: []const u8) ?LaneBounds {
     var min_index: ?usize = null;
     var max_index: usize = 0;
@@ -825,6 +921,20 @@ pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
         '=' => .turret,
         '(', ')' => .trampoline,
         '[' => .enemy_generic,
+        else => null,
+    };
+}
+
+pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
+    return switch (tile_type) {
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x23 => .ring,
+        0x12 => .slug,
+        0x17 => .health,
+        0x19 => .jetpack,
+        0x1d => .attachment_probe,
+        0x1e => .attachment_entry,
+        0x21 => .garbage,
+        0x22 => .salt,
         else => null,
     };
 }
@@ -958,6 +1068,107 @@ test "confirmed runtime tile hints match recovered gameplay tiles" {
     try std.testing.expectEqual(@as(?u8, 0x23), confirmedRuntimeTileHint('R'));
     try std.testing.expectEqual(@as(?u8, 0x21), confirmedRuntimeTileHint('s'));
     try std.testing.expectEqual(@as(?u8, null), confirmedRuntimeTileHint('#'));
+}
+
+test "runtime tile transitions match recovered shipped glyph mapping" {
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x03, .previous_override = 0x0c },
+        runtimeTileTransitionForShippedGlyph('>', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x09 },
+        runtimeTileTransitionForShippedGlyph('>', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x02, .previous_override = 0x0b },
+        runtimeTileTransitionForShippedGlyph('{', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x08 },
+        runtimeTileTransitionForShippedGlyph('{', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x04, .previous_override = 0x0d },
+        runtimeTileTransitionForShippedGlyph('}', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x0a },
+        runtimeTileTransitionForShippedGlyph('}', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x20 },
+        runtimeTileTransitionForShippedGlyph('#', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x05 },
+        runtimeTileTransitionForShippedGlyph('[', null).?,
+    );
+}
+
+test "runtime tile kinds map to recovered gameplay families" {
+    try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKindForRuntimeTile(0x1d).?);
+    try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKindForRuntimeTile(0x1e).?);
+    try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKindForRuntimeTile(0x17).?);
+    try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKindForRuntimeTile(0x19).?);
+    try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKindForRuntimeTile(0x12).?);
+    try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKindForRuntimeTile(0x21).?);
+    try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKindForRuntimeTile(0x22).?);
+    try std.testing.expectEqual(GameplayCellKind.ring, gameplayCellKindForRuntimeTile(0x23).?);
+}
+
+test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    var saw_health = false;
+    var saw_jetpack = false;
+    var saw_slug = false;
+    var saw_garbage = false;
+    var saw_salt = false;
+
+    for (catalog.level_entries) |level_entry| {
+        var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+        defer level_definition.deinit();
+
+        var preview = try LoadedLevelPreview.loadWithOptions(std.testing.allocator, &catalog, &level_definition, .{ .load_models = false });
+        defer preview.deinit();
+
+        for (0..preview.total_rows) |row_index| {
+            const row_location = preview.locateRow(row_index) orelse continue;
+            for (row_location.row.cells, 0..) |cell, lane_index| {
+                const tile_type = preview.runtimeTileAt(row_index, lane_index) orelse continue;
+                switch (cell) {
+                    '$' => {
+                        saw_health = true;
+                        try std.testing.expectEqual(@as(u8, 0x17), tile_type);
+                    },
+                    'J' => {
+                        saw_jetpack = true;
+                        try std.testing.expectEqual(@as(u8, 0x19), tile_type);
+                    },
+                    'M' => {
+                        saw_slug = true;
+                        try std.testing.expectEqual(@as(u8, 0x12), tile_type);
+                    },
+                    's' => {
+                        saw_garbage = true;
+                        try std.testing.expectEqual(@as(u8, 0x21), tile_type);
+                    },
+                    '&' => {
+                        saw_salt = true;
+                        try std.testing.expectEqual(@as(u8, 0x22), tile_type);
+                    },
+                    else => {},
+                }
+            }
+        }
+    }
+
+    try std.testing.expect(saw_health);
+    try std.testing.expect(saw_jetpack);
+    try std.testing.expect(saw_slug);
+    try std.testing.expect(saw_garbage);
+    try std.testing.expect(saw_salt);
 }
 
 test "runtime tile family helpers match recovered cache predicates" {

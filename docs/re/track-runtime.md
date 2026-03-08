@@ -81,6 +81,31 @@ Useful follow-on facts:
 - some normalized tile ids carry extra vertical bias
 - the text alphabet goes through a normalization pass before runtime tile ids are assigned
 
+Recovered normalized glyph classes used by the shipped segment corpus:
+
+- ` ` -> class `0x00`
+- `#` -> class `0x01`
+- `$` -> class `0x02`
+- `&` -> class `0x03`
+- `-` -> class `0x07`
+- `.` -> class `0x08`
+- `0..3` -> classes `0x09` and `0x0a`
+- `<` -> class `0x0b`
+- `=` and `|` -> class `0x0c`
+- `>` -> class `0x0d`
+- `@` -> class `0x0e`
+- `J` -> class `0x11`
+- `M` -> class `0x12`
+- `P` and `p` -> class `0x13`
+- `R` -> class `0x14`
+- `[` -> class `0x15`
+- `_` -> class `0x16`
+- `s` -> class `0x18`
+- `{` -> class `0x19`
+- `}` -> class `0x1a`
+
+For the common gameplay build preset `0x00f5cfff` used by postal and challenge play, the shipped punctuation glyphs are effectively already in their enabled forms. The main remaining builder work is not the flag rewrite itself, but the row-to-row backpatching for the ramp families.
+
 Recovered flat gameplay and hazard anchors:
 
 - `.` -> runtime tile `0x01`
@@ -96,6 +121,24 @@ Recovered flat gameplay and hazard anchors:
 - explicit `R` rows land on runtime tile `0x23`
 - explicit `s` rows land on runtime tile `0x21`
 - explicit `&` rows land on runtime tile `0x22`
+- `#` rows land on runtime tile `0x20`
+- `@` guard rows normalize to runtime tile `0x00`
+- parcel digits `0..3` normalize into the parcel floor tile family rooted at runtime tile `0x0f`
+
+Recovered row-wise ramp and connector rewrites:
+
+- `>`:
+  - first row in a run becomes runtime tile `0x03`
+  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0c`
+  - subsequent linked rows in the same lane become `0x09`
+- `{`:
+  - first row in a run becomes runtime tile `0x02`
+  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0b`
+  - subsequent linked rows in the same lane become `0x08`
+- `}`:
+  - first row in a run becomes runtime tile `0x04`
+  - if the previous row in the same lane was not already `0x03`, that previous row is backpatched to `0x0d`
+  - subsequent linked rows in the same lane become `0x0a`
 
 ## Salt, Slug, and Ring Dispatch
 
@@ -104,6 +147,7 @@ High-confidence findings:
 - `salt.x` is cloned into a `40`-slot runtime array and managed separately from slugs
 - slugs use an `8`-slot pool and a different runtime path
 - authored `R` rows map onto ring-effect helpers through the packed ring bits
+- runtime tile `0x18` exists in the track builder but the later entity-population path calls a stubbed `nullsub`, not a live pickup or hazard spawner
 - `Ring=None` suppresses the helper
 - `Ring=Normal` and `Ring=PowerUp` land on the ring particle family
 - `Ring=Explode` lands on the explode particle family
@@ -177,6 +221,18 @@ Recovered helper predicates:
   - `0x00`, `0x0e`, `0x1c`, `0x1d`, `0x23`
 
 These helpers feed both the render-cache passes and the movement code, so they are a better porting boundary than the raw authored glyphs.
+
+Recovered entity-population tile semantics from `populate_track_runtime_entities`:
+
+- `0x17` -> `spawn_track_health_pickup`
+- `0x18` -> stubbed `nullsub`
+- `0x19` -> `spawn_track_jetpack_pickup`
+- `0x21` -> `spawn_track_garbage_hazard`
+- `0x22` -> `spawn_salt_hazard`
+- `0x12` -> `spawn_slug_hazard` when `build_flags & 0x80`
+- `0x01` and `0x15` can also produce garbage through the randomized fallback branch when `build_flags & 0x2`
+- `0x01` and `0x0f` can also produce salt through the randomized fallback branch when `build_flags & 0x10000`
+- `0x23` plus the ramp ring family `0x02..0x0a` feed `spawn_track_ring_or_special_effect`
 
 ## Floor Height Sampling
 
