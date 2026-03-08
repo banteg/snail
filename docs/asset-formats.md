@@ -235,11 +235,49 @@ Segment entry lines inside `Segments Begin:` can be:
   - `Sample="<voice clip>"`
   - `Message="<tutorial text>"`
 
-Current parser behavior:
+Current corpus notes:
+
+- the extracted archive currently has `53` level files
+- shipped `Mode:` values are `arcade`, `challenge`, and `tutorial`
+- shipped `Flags:` appears as an empty marker in `52/53` files and is absent only in [`LEVELS/CHALLENGE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT)
+- shipped `Track:` is missing only from [`LEVELS/ARCADE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT)
+- shipped hazard-field spellings are mostly `Garbage:`, with lowercase `garbage:` in tutorial and challenge files, and legacy `Slug:` only in [`LEVELS/ARCADE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT) and [`LEVELS/ARCADE003.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE003.TXT)
+- shipped segment-entry metadata only uses three forms:
+  - bare filename
+  - `Angle=<degrees>`
+  - tutorial-only `Duration=<seconds> Sample="<voice clip>" Message="<tutorial text>"`
+
+Current tooling parser behavior:
 
 - normalizes `Slug`, `Garbage`, and `garbage` into one `garbage` field
 - preserves tutorial messages exactly, including in-string marker characters like `>` and `{`
 - keeps per-segment metadata as structured attributes in addition to common convenience fields
+
+Current RWG level-parser behavior:
+
+- RWG uses the same `find_case_insensitive_substring` helper here as in the segment parser, so field matching is case-insensitive and prefix-friendly
+- `Random:yes` sets a real random flag and enables a mandatory `Length:` integer; when `Random:yes` is absent, the runtime clears both the random flag and the stored length
+- `Background:` is required and is resolved to a `.txt` asset handle, not kept as a raw filename string
+- `Fringe:` parses three integer color components and normalizes them to `0..1` floats; if missing, RWG logs a warning and uses white
+- `Track:` maps the first character to an internal track id:
+  - `0`, `1`, `2`, `3` -> `0`, `1`, `2`, `3`
+  - `r` -> `5`
+  - missing -> `0` with a warning
+- `Parcels:` and `Quota:` are required integers
+- `Speed:select` maps to a stored `-1.0` sentinel
+- plain `Speed:` stores a parsed float, and a missing speed falls back to `100.0` with a warning
+- `Garbage:` and `Salt:` are optional floats that default to `-1.0`
+- `Segments Begin:` entries are resolved through the already-parsed segment catalog and copied into per-level segment slots, not left as filename strings
+- per-segment entry defaults in RWG are:
+  - `Angle=` default `0` radians
+  - `Duration=` default `4.0`
+  - `Sample=` default `-1` when no voice clip is resolved
+  - `Message=` default empty string
+- `First:` and `Last:` also resolve named segment definitions and copy them into dedicated level slots
+- `GalaxyText:` is extracted from the `{ ... }` block; if the block is missing or malformed, RWG substitutes literal fallback text such as `TEXT MISSING` or `TEXT ERROR } MISSING`
+- no `Mode:` or `Flags:` probe has been recovered in the current `load_level_definition_file` path
+- the only confirmed `Mode:*` text probes in current RWG are animation-side `Mode:Loop`, `Mode:Once`, and `Mode:Pingpong` inside `X/_Animation.txt`
+- the only recovered hazard probe in the current level parser is `Garbage:`; lowercase `garbage:` still matches because lookup is case-insensitive, but no separate `Slug:` alias has been recovered yet
 
 Representative samples:
 

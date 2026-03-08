@@ -18,6 +18,8 @@ High-confidence renamed functions in the current Binary Ninja database:
 - `mirror_path_template_pair_x` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
 - `load_level_definitions` at `0x448900`
+- `load_level_definition_file` at `0x447480`
+- `copy_segment_definition_to_level_slot` at `0x447300`
 - `begin_track_attachment_follow_state` at `0x420c40`
 - `update_track_attachment_follow_state` at `0x420cb0`
 - `try_enter_track_attachment_from_swept_motion` at `0x42c770`
