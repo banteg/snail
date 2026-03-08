@@ -262,7 +262,8 @@
     },
     {
       "address": "0x43b120",
-      "name": "update_player_track_movement_and_triggers"
+      "name": "update_player_track_movement_and_triggers",
+      "description": "Main per-frame player movement step. Updates attachment-follow state, samples current track cells, drives row events, emits movement flags and sounds, and advances the runtime track index."
     },
     {
       "address": "0x43d3d0",
@@ -271,7 +272,8 @@
     },
     {
       "address": "0x43d410",
-      "name": "get_track_grid_cell_at_world_position"
+      "name": "get_track_grid_cell_at_world_position",
+      "description": "Clamps world-space x and z into the 8-lane gameplay grid and returns the compact 0x54-byte runtime cell."
     },
     {
       "address": "0x43d480",
@@ -280,7 +282,8 @@
     },
     {
       "address": "0x43d4d0",
-      "name": "sample_track_floor_height_at_position"
+      "name": "sample_track_floor_height_at_position",
+      "description": "Evaluates the runtime floor-height sampler for the current gameplay-grid cell, including ramp tiles and the special cell-stored height used by tile 0x16."
     },
     {
       "address": "0x43d6c0",

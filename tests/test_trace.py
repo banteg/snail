@@ -74,8 +74,22 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "movement_flag_selector": 2,
             "movement_flags": 5,
             "previous_movement_flags": 1,
+            "movement_progress": 0.33,
             "movement_rate_scalar": 0.074,
+            "track_z_offset": 0.12,
+            "track_z_anchor": 118.0,
             "movement_mode_selector": 0,
+            "level_mode": 3,
+            "level_mode_arg": 7,
+            "track_center_x": 2.5,
+            "track_state_latch": 1,
+            "replay_active": False,
+            "replay_track_index": 118,
+            "row_event_id": 12,
+            "row_event_state": 2,
+            "row_event_timer": 30.0,
+            "row_event_data_a": 42,
+            "row_event_data_b": 4096,
             "attachment_exit_pending": False,
             "attachment_exit_anchor_z": 117.8,
             "post_follow_value_a": 0.2,
@@ -506,7 +520,13 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "tid": 222,
             "event": "floor_sample",
             "seq": 1,
-            "template": "0x401000",
+            "level_mode": 3,
+            "level_mode_arg": 7,
+            "track_center_x": 2.5,
+            "track_state_latch": 1,
+            "replay_active": False,
+            "replay_track_index": 224,
+            "sampled_floor_height": 0.0,
             "position": {"x": 0.0, "y": 0.0, "z": 224.0},
             "cell": {
                 "ptr": "0x5cd120",
@@ -551,13 +571,18 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert events[4].cell.row_scalar_b == 0.6
     assert events[4].movement_flag_selector == 2
     assert events[4].movement_flags == 5
+    assert events[4].movement_progress == 0.33
     assert events[4].movement_rate_scalar == 0.074
+    assert events[4].track_state_latch == 1
+    assert events[4].row_event_id == 12
     assert events[4].attachment_exit_pending is False
     assert events[4].follow_state_summary is not None
     assert events[4].follow_state_summary.template_summary is not None
     assert events[4].follow_state_summary.template_summary.kind == 36
     assert events[4].follow_state_summary.template_summary.row_scalar_c == 1.25
     assert events[4].follow_state_summary.offset_y == -0.09
+    assert summary.movement_flags_updates.count == 0
+    assert summary.track_pair_payloads.count == 0
     assert summary.attachment_probes.count == 2
     assert summary.attachment_probes.rows == {118: 2}
     assert summary.attachment_probes.tile_types == {30: 2}
@@ -581,6 +606,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert summary.salt_deactivations.count == 1
     assert summary.salt_deactivations.positions_preview[0].z == 221.3
     assert summary.slug_spawns.rows == {221: 1}
+    assert events[19].sampled_floor_height == 0.0
 
 
 def test_summarize_runtime_trace_uses_index_name_for_legacy_corrupted_path() -> None:

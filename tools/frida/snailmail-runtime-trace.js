@@ -127,13 +127,18 @@ const SEGMENT_PATH_INDEX_NAMES = [
 ];
 
 const RUNTIME = {
+  track_center_x: 0x38,
+  level_mode: 0x40,
+  level_mode_arg: 0x44,
   mode_or_track: 0x40,
   build_flags: 0x4c,
   track_row_start: 0x50,
   track_row_end: 0x58,
+  track_state_latch: 0xa854,
   active_level_flag_0: 0xff25d0,
   active_level_flag_1: 0xff25d1,
   active_level_ptr: 0xff25d4,
+  replay_track_index: 0xff25d8,
   garbage_scalar: 0x125ffd8,
   salt_scalar: 0x125ffdc,
 };
@@ -696,6 +701,38 @@ function summarizeFollowState(followStatePtr, getTrackCellRowIndex) {
   };
 }
 
+function computeSampledFloorHeight(cell, position) {
+  if (cell === null || position === null || cell.tile_type === null || position.z === null) {
+    return null;
+  }
+
+  const rowFraction = position.z - Math.floor(position.z);
+  switch (cell.tile_type) {
+    case 0x01:
+    case 0x0e:
+    case 0x0f:
+      return 0.0;
+    case 0x02:
+    case 0x03:
+    case 0x04:
+    case 0x05:
+    case 0x06:
+    case 0x07:
+    case 0x0b:
+    case 0x0c:
+    case 0x0d:
+      return rowFraction * 0.400000006;
+    case 0x08:
+    case 0x09:
+    case 0x0a:
+      return rowFraction * 0.400000006 + 0.5;
+    case 0x16:
+      return cell.floor_height;
+    default:
+      return -100.0;
+  }
+}
+
 function summarizePlayer(playerPtr, getTrackCellRowIndex) {
   const player = asPtr(playerPtr);
   if (player === null || player.isNull()) {
@@ -707,6 +744,12 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
     ptr: hex(player),
     game: hex(gamePtr),
     build_flags: safeReadU32(gamePtr, RUNTIME.build_flags),
+    level_mode: safeReadU32(gamePtr, RUNTIME.level_mode),
+    level_mode_arg: safeReadU32(gamePtr, RUNTIME.level_mode_arg),
+    track_center_x: safeReadFloat(gamePtr, RUNTIME.track_center_x),
+    track_state_latch: safeReadU8(gamePtr, RUNTIME.track_state_latch),
+    replay_active: boolFlag(safeReadU8(gamePtr, RUNTIME.active_level_flag_0)),
+    replay_track_index: safeReadU32(gamePtr, RUNTIME.replay_track_index),
     position: safeReadVec3(player, 0x68),
     velocity: safeReadVec3(player, 0x410),
     cached_track_pair_cell_a: summarizeCell(safeReadPointer(player, 0x98), getTrackCellRowIndex, gamePtr),
@@ -720,8 +763,16 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
     movement_flag_selector: safeReadU32(player, 0x308),
     movement_flags: safeReadU32(player, 0x338),
     previous_movement_flags: safeReadU32(player, 0x33c),
+    movement_progress: safeReadFloat(player, 0x2730),
     movement_rate_scalar: safeReadFloat(player, 0x2734),
+    track_z_offset: safeReadFloat(player, 0x273c),
+    track_z_anchor: safeReadFloat(player, 0x2740),
     movement_mode_selector: safeReadU32(player, 0x40c),
+    row_event_id: safeReadU32(player, 0x1e8),
+    row_event_state: safeReadU32(player, 0x1ec),
+    row_event_timer: safeReadFloat(player, 0x1f0),
+    row_event_data_a: safeReadU32(player, 0x1f8),
+    row_event_data_b: safeReadU32(player, 0x1fc),
     attachment_exit_pending: boolFlag(safeReadU8(player, 0x41d)),
     attachment_exit_anchor_z: safeReadFloat(player, 0x424),
     post_follow_value_a: safeReadFloat(player, 0x42c),
@@ -843,13 +894,28 @@ function installHooks(module) {
         maybeEmitSampled('movement_flags_update', after.ptr || 'player', digest, 8, {
           retval: retval.toInt32(),
           player: after.ptr,
+          game: after.game,
+          level_mode: after.level_mode,
+          level_mode_arg: after.level_mode_arg,
+          track_center_x: after.track_center_x,
+          track_state_latch: after.track_state_latch,
+          replay_active: after.replay_active,
+          replay_track_index: after.replay_track_index,
           player_position: after.position,
           movement_state: after.movement_state,
           movement_flag_selector: after.movement_flag_selector,
           movement_flags: after.movement_flags,
           previous_movement_flags: after.previous_movement_flags,
+          movement_progress: after.movement_progress,
           movement_rate_scalar: after.movement_rate_scalar,
+          track_z_offset: after.track_z_offset,
+          track_z_anchor: after.track_z_anchor,
           movement_mode_selector: after.movement_mode_selector,
+          row_event_id: after.row_event_id,
+          row_event_state: after.row_event_state,
+          row_event_timer: after.row_event_timer,
+          row_event_data_a: after.row_event_data_a,
+          row_event_data_b: after.row_event_data_b,
           before_cell: this.before !== null ? this.before.cell : null,
           cell: after.cell,
         });
@@ -891,6 +957,12 @@ function installHooks(module) {
           player: after.ptr,
           game: after.game,
           build_flags: after.build_flags,
+          level_mode: after.level_mode,
+          level_mode_arg: after.level_mode_arg,
+          track_center_x: after.track_center_x,
+          track_state_latch: after.track_state_latch,
+          replay_active: after.replay_active,
+          replay_track_index: after.replay_track_index,
           player_position: after.position,
           before_position: this.before ? this.before.position : null,
           cell: currentSampledCell !== null ? currentSampledCell : after.cell,
@@ -910,8 +982,16 @@ function installHooks(module) {
           movement_flag_selector: after.movement_flag_selector,
           movement_flags: after.movement_flags,
           previous_movement_flags: after.previous_movement_flags,
+          movement_progress: after.movement_progress,
           movement_rate_scalar: after.movement_rate_scalar,
+          track_z_offset: after.track_z_offset,
+          track_z_anchor: after.track_z_anchor,
           movement_mode_selector: after.movement_mode_selector,
+          row_event_id: after.row_event_id,
+          row_event_state: after.row_event_state,
+          row_event_timer: after.row_event_timer,
+          row_event_data_a: after.row_event_data_a,
+          row_event_data_b: after.row_event_data_b,
           attachment_exit_pending: after.attachment_exit_pending,
           attachment_exit_anchor_z: after.attachment_exit_anchor_z,
           post_follow_value_a: after.post_follow_value_a,
@@ -949,6 +1029,10 @@ function installHooks(module) {
           movement_state: playerSummary !== null ? playerSummary.movement_state : null,
           movement_flag_selector: playerSummary !== null ? playerSummary.movement_flag_selector : null,
           movement_flags: playerSummary !== null ? playerSummary.movement_flags : null,
+          movement_progress: playerSummary !== null ? playerSummary.movement_progress : null,
+          track_z_offset: playerSummary !== null ? playerSummary.track_z_offset : null,
+          track_z_anchor: playerSummary !== null ? playerSummary.track_z_anchor : null,
+          track_state_latch: playerSummary !== null ? playerSummary.track_state_latch : null,
           pair_payload: payload,
           pair_cell_a: playerSummary !== null ? playerSummary.cached_track_pair_cell_a : null,
           pair_cell_b: playerSummary !== null ? playerSummary.cached_track_pair_cell_b : null,
@@ -1095,8 +1179,22 @@ function installHooks(module) {
           movement_flag_selector: after !== null ? after.movement_flag_selector : this.before !== null ? this.before.movement_flag_selector : null,
           movement_flags: after !== null ? after.movement_flags : this.before !== null ? this.before.movement_flags : null,
           previous_movement_flags: after !== null ? after.previous_movement_flags : this.before !== null ? this.before.previous_movement_flags : null,
+          movement_progress: after !== null ? after.movement_progress : this.before !== null ? this.before.movement_progress : null,
           movement_rate_scalar: after !== null ? after.movement_rate_scalar : this.before !== null ? this.before.movement_rate_scalar : null,
+          track_z_offset: after !== null ? after.track_z_offset : this.before !== null ? this.before.track_z_offset : null,
+          track_z_anchor: after !== null ? after.track_z_anchor : this.before !== null ? this.before.track_z_anchor : null,
           movement_mode_selector: after !== null ? after.movement_mode_selector : this.before !== null ? this.before.movement_mode_selector : null,
+          level_mode: after !== null ? after.level_mode : this.before !== null ? this.before.level_mode : null,
+          level_mode_arg: after !== null ? after.level_mode_arg : this.before !== null ? this.before.level_mode_arg : null,
+          track_center_x: after !== null ? after.track_center_x : this.before !== null ? this.before.track_center_x : null,
+          track_state_latch: after !== null ? after.track_state_latch : this.before !== null ? this.before.track_state_latch : null,
+          replay_active: after !== null ? after.replay_active : this.before !== null ? this.before.replay_active : null,
+          replay_track_index: after !== null ? after.replay_track_index : this.before !== null ? this.before.replay_track_index : null,
+          row_event_id: after !== null ? after.row_event_id : this.before !== null ? this.before.row_event_id : null,
+          row_event_state: after !== null ? after.row_event_state : this.before !== null ? this.before.row_event_state : null,
+          row_event_timer: after !== null ? after.row_event_timer : this.before !== null ? this.before.row_event_timer : null,
+          row_event_data_a: after !== null ? after.row_event_data_a : this.before !== null ? this.before.row_event_data_a : null,
+          row_event_data_b: after !== null ? after.row_event_data_b : this.before !== null ? this.before.row_event_data_b : null,
           attachment_exit_pending: after !== null ? after.attachment_exit_pending : null,
           attachment_exit_anchor_z: after !== null ? after.attachment_exit_anchor_z : null,
           post_follow_value_a: after !== null ? after.post_follow_value_a : null,
@@ -1130,8 +1228,15 @@ function installHooks(module) {
         maybeEmitSampled('floor_sample', hex(this.positionPtr), digest, 16, {
           game: hex(this.game),
           build_flags: safeReadU32(this.game, RUNTIME.build_flags),
+          level_mode: safeReadU32(this.game, RUNTIME.level_mode),
+          level_mode_arg: safeReadU32(this.game, RUNTIME.level_mode_arg),
+          track_center_x: safeReadFloat(this.game, RUNTIME.track_center_x),
+          track_state_latch: safeReadU8(this.game, RUNTIME.track_state_latch),
+          replay_active: boolFlag(safeReadU8(this.game, RUNTIME.active_level_flag_0)),
+          replay_track_index: safeReadU32(this.game, RUNTIME.replay_track_index),
           position: position,
           cell: cell,
+          sampled_floor_height: computeSampledFloorHeight(cell, position),
         });
       },
     });

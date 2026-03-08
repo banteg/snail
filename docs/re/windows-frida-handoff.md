@@ -111,6 +111,21 @@ Important payload notes for the current script:
   - `follow_effect_gate_b`
 - `movement_flags_update` now samples the `movement_flag_selector -> movement_flags` switch directly at `0x43a1a0`
 - `track_pair_payload` now records the scalar written into the cached pair-cell payload slots at `0x43d3d0`
+- `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the typed movement integrator and row-event state:
+  - `level_mode`
+  - `level_mode_arg`
+  - `track_center_x`
+  - `track_state_latch`
+  - `replay_active`
+  - `replay_track_index`
+  - `movement_progress`
+  - `track_z_offset`
+  - `track_z_anchor`
+  - `row_event_id`
+  - `row_event_state`
+  - `row_event_timer`
+  - `row_event_data_a`
+  - `row_event_data_b`
 - `attachment_end` is now emitted on return and should carry both:
   - `before_follow_state_summary`, `before_template_summary`, `before_follow_sample_index`, `before_follow_progress`
   - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
@@ -207,8 +222,10 @@ Success criteria:
 - at least one `attachment_begin`
 - at least one `attachment_update`
 - at least one `attachment_end`
+- at least one `movement_flags_update`
+- at least one `track_pair_payload`
 - at least one attachment event carrying non-null `template_summary.sample_count`
-- at least one `player_update` or `floor_sample` on a row whose `cell.floor_height` differs from `0.0`
+- at least one `player_update` or `floor_sample` carrying non-null `sampled_floor_height`
 
 ### 2. Scalar Salt Capture
 

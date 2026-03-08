@@ -50,12 +50,31 @@ Current hooks in the script:
     - `attachment_exit_progress_step`
     - `follow_effect_gate_a`
     - `follow_effect_gate_b`
+  - now also emits the higher-level movement and row-event fields recovered from the typed `Game` and `Player` structs:
+    - `level_mode`
+    - `level_mode_arg`
+    - `track_center_x`
+    - `track_state_latch`
+    - `replay_active`
+    - `replay_track_index`
+    - `movement_progress`
+    - `track_z_offset`
+    - `track_z_anchor`
+    - `row_event_id`
+    - `row_event_state`
+    - `row_event_timer`
+    - `row_event_data_a`
+    - `row_event_data_b`
   - now samples `cell` and `before_cell` directly from the player's world position through `get_track_grid_cell_at_world_position`
   - keeps the ambiguous legacy field under `raw_cell` and `before_raw_cell` for debugging only
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
 - `0x43a1a0` `update_player_movement_flags`
   - emits sampled selector-to-flag transitions for the `movement_flag_selector -> movement_flags` switch
-  - includes `movement_rate_scalar` from `player + 0x2734`
+  - includes the live movement integrator fields:
+    - `movement_progress`
+    - `movement_rate_scalar`
+    - `track_z_offset`
+    - `track_z_anchor`
 - `0x43d3d0` `mark_current_track_pair_with_payload`
   - logs the scalar payload pushed into the cached pair cells and the resolved rows of `cached_track_pair_cell_a/b`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
@@ -79,6 +98,7 @@ Current hooks in the script:
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
   - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`
+  - now also includes `sampled_floor_height`, computed from the recovered floor-sampler formula over the traced cell and query position
 - `0x43da80` `spawn_track_garbage_hazard`
   - logs garbage spawns with the chosen runtime cell
 - `0x43d6c0` `spawn_track_health_pickup`
@@ -116,7 +136,9 @@ Event names currently emitted:
 - `hooks_installed`
 - `level_start`
 - `path_lookup`
+- `movement_flags_update`
 - `player_update`
+- `track_pair_payload`
 - `attachment_probe`
 - `attachment_begin`
 - `attachment_update`
@@ -164,6 +186,16 @@ Important payload details:
   - orientation-like vector fields
   - resolved template summary
 - `attachment_end` now includes both pre-exit and post-exit follow-state snapshots, so the next capture can prove which fields are latched, zeroed, or copied across the exit boundary
+- `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the movement integrator and row-event state:
+  - `movement_progress`
+  - `track_z_offset`
+  - `track_z_anchor`
+  - `track_state_latch`
+  - `row_event_id`
+  - `row_event_state`
+  - `row_event_timer`
+  - `row_event_data_a`
+  - `row_event_data_b`
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 
@@ -178,6 +210,7 @@ That converts the raw NDJSON into grouped counts for:
 
 - normalized level-start scalars
 - `Path=` name to index lookups
+- sampled movement-flag transitions and track-pair payload writes
 - sampled player updates and attachment lifecycle events
 - attachment probes and follow-state transitions
 - garbage, salt, slug, pickup, and ring-effect rows
@@ -202,6 +235,8 @@ For the next capture, the new high-value questions are narrower:
   - how `follow_state_summary.output_position`, `offset_y`, and the template sample metadata evolve across entry, steady follow, and exit
 - attachment exit:
   - whether the exit row or floor slot differs systematically by template kind
+- movement-state integration:
+  - how `movement_progress`, `track_z_offset`, `track_z_anchor`, and `track_state_latch` evolve around row events and attachment exit
 
 ## Latest March 8 Read
 

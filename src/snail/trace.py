@@ -169,8 +169,11 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     movement_flag_selector: int | None = None
     movement_flags: int | None = None
     previous_movement_flags: int | None = None
+    movement_progress: float | None = None
     movement_rate_scalar: float | None = None
     movement_mode_selector: int | None = None
+    track_z_offset: float | None = None
+    track_z_anchor: float | None = None
     attachment_exit_pending: bool | None = None
     attachment_exit_anchor_z: float | None = None
     post_follow_value_a: float | None = None
@@ -179,6 +182,17 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     attachment_exit_progress_step: float | None = None
     follow_effect_gate_a: bool | None = None
     follow_effect_gate_b: bool | None = None
+    level_mode: int | None = None
+    level_mode_arg: int | None = None
+    track_center_x: float | None = None
+    track_state_latch: int | None = None
+    replay_active: bool | None = None
+    replay_track_index: int | None = None
+    row_event_id: int | None = None
+    row_event_state: int | None = None
+    row_event_timer: float | None = None
+    row_event_data_a: int | None = None
+    row_event_data_b: int | None = None
     pair_payload: float | None = None
     pair_cell_a: TraceCell | None = None
     pair_cell_b: TraceCell | None = None
@@ -189,6 +203,7 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     sprite_id: int | None = None
     effect_kind: int | None = None
     effect_scale: float | None = None
+    sampled_floor_height: float | None = None
     position: TraceVec3 | None = None
     before_position: TraceVec3 | None = None
     velocity: TraceVec3 | None = None
@@ -240,7 +255,9 @@ class RuntimeTraceSummary(msgspec.Struct, frozen=True):
     levels: tuple[LevelRuntimeSample, ...]
     path_lookups_by_name: dict[str, int]
     path_lookups_by_index: tuple[PathIndexSummary, ...]
+    movement_flags_updates: TraceBucketSummary
     player_updates: TraceBucketSummary
+    track_pair_payloads: TraceBucketSummary
     attachment_probes: TraceBucketSummary
     attachment_begins: TraceBucketSummary
     attachment_updates: TraceBucketSummary
@@ -378,8 +395,16 @@ def summarize_runtime_trace(
             )
             for path_index in sorted(path_index_counts)
         ),
+        movement_flags_updates=_summarize_bucket(
+            (event for event in events if event.event == "movement_flags_update"),
+            preview_limit=preview_limit,
+        ),
         player_updates=_summarize_bucket(
             (event for event in events if event.event == "player_update"),
+            preview_limit=preview_limit,
+        ),
+        track_pair_payloads=_summarize_bucket(
+            (event for event in events if event.event == "track_pair_payload"),
             preview_limit=preview_limit,
         ),
         attachment_probes=_summarize_bucket(
