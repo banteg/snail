@@ -172,12 +172,28 @@ Current RWG understanding:
 
 - `Path=<name>` resolves through a hardcoded string table inside `SnailMail.RWG`, not through a separate path-definition file in the archive
 - the recovered hardcoded table currently has `51` names, including `START`, `HALFPIPE`, `TWISTER*`, and `TOAD*` variants
+- `find_case_insensitive_substring` is the generic metadata matcher in the RWG parser, so tag matching is case-insensitive and substring-based rather than exact
+- that matcher explains why shipped text like `Ring=Powerup` and `Ring=Explosive` still matches the RWG parser's canonical probes `Ring=PowerUp` and `Ring=Explode`
 - RWG first normalizes some glyph classes through `normalize_segment_glyph_for_track_flags` and `lookup_table_43744c[char - 0x20]`, then classifies the normalized glyph alphabet through `lookup_table_437204[char - 0x20]` before assigning runtime tile ids
 - `P` and `p` path cells later consume the copied row `Path=` index and select one of the hardcoded path-template pairs rooted at runtime offsets `0xff2914` and `0xff29bc`
 - each path-template step is `0x150` bytes, which corresponds to two `0xa8`-byte template records per path id
 - most named path ids build the first `0xa8` record with a constructor family and then build the second record by mirroring it across X
 - `SUPERTRAMP` and `START` are the clearest exceptions: both halves are constructed explicitly instead of through the generic mirror helper
 - `WARP` still has no clean recovered constructor site, and no shipped extracted segment or level text currently references it by name
+- the per-row dword at segment offset `+0x88c` is a generic metadata flag byte, not a clean ring-only enum
+- observed ring bits in that byte are:
+  - `Ring=None` -> `0x02`
+  - `Ring=Normal` -> `0x04`
+  - `Ring=Explode` -> `0x08`
+  - `Ring=Slow` -> `0x10`
+  - `Ring=PowerUp` -> `0x20`
+- those bits are reused by other metadata tags in the parser:
+  - `Parcel` and `NoFall` also set `0x01`
+  - `3DModel` also sets `0x02`
+  - `Path` and `Velocity` also set `0x08`
+  - `JetPack=Off` sets `0x80`
+- in the shipped corpus, ring-tagged segment files are isolated from `Path=` and `Parcel=` usage, which avoids the most obvious flag collisions
+- `RingSpeed=` exists in parser code but is unused in shipped extracted segments
 - the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records
 - `Ring=Explosive` appears in shipped text, but the RWG parser path matches the `Explode` behavior
 - `3DModel=<mesh>.x` rows line up with archive meshes like `X/SIGNBANG.X2`, `X/SIGNSTOP.X2`, and `X/SIGNCONSTRUCTION.X2`

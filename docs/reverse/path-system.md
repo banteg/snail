@@ -197,6 +197,7 @@ Verified parser behavior:
 - hard cap: `150` segment files
 - each row keeps `8` interior cell characters between the leading and trailing `@` guards
 - a literal `*` immediately after the row body is stored as a real per-row flag
+- metadata matching is done through `find_case_insensitive_substring`, so matching is case-insensitive and prefix-friendly rather than exact
 - recognized metadata includes:
   - `Path=<name>`
   - `Ring=<name>`
@@ -223,6 +224,22 @@ Observed field offsets from the segment slot base in `load_segment_definitions`:
 - model offset: `+0x8a4`, `+0x8a8`, `+0x8ac`
 - velocity: `+0x8b0`, `+0x8b4`, `+0x8b8`
 - path index: `+0x8bc`
+
+Observed uses of the generic row-flags dword at `+0x88c`:
+
+- `Parcel` and `NoFall` both set `0x01`
+- `3DModel` and `Ring=None` both set `0x02`
+- the post-row `*` marker and `Ring=Normal` both set `0x04`
+- `Path`, `Velocity`, and `Ring=Explode` all set `0x08`
+- `Ring=Slow` sets `0x10`
+- `Ring=PowerUp` sets `0x20`
+- `JetPack=Off` sets `0x80`
+
+That means `+0x88c` is a generic metadata-flag byte, not a clean ring-only enum.
+
+One useful parser detail:
+
+- the case-insensitive substring matcher explains why shipped spellings like `Ring=Powerup` and `Ring=Explosive` still match the RWG parser's canonical probes `Ring=PowerUp` and `Ring=Explode`
 
 The segment-to-runtime builder copies these row fields into the per-cell runtime record during `rebuild_track_runtime_from_segments`.
 
