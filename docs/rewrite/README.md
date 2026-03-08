@@ -130,7 +130,8 @@ Current behavior:
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
 - parses [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
 - parses `_OBJECT.TXT` quads and renders object previews in 3D using sibling TGA textures from the archive
-- parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, lays segments out sequentially, and renders a 3D blockout with lane centerlines and simple annotation markers
+- parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, preserves typed row metadata such as `Path`, `Ring`, `Parcel`, `JetPack=Off`, `3DModel`, `NoFall`, and the post-row `*` flag, and renders a sequential 3D track preview with semantic markers
+- resolves segment `3DModel=<name>.x` rows to matching `X/<NAME>.X2` meshes when those assets exist and instances them directly in the level preview
 
 Current note:
 
@@ -151,6 +152,7 @@ Notes:
 
 - `zig build run` opens the interactive archive browser and waits until you close it
 - `zig build run -- --smoke-test` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
+- current level previews are still sequential approximations: the named `Path=` routes appear to be backed by a hardcoded table in `SnailMail.RWG`, not by data files in the archive
 
 Interactive controls:
 

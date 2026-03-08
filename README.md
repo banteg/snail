@@ -61,7 +61,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `.ogg` audio as both one-shot sounds and music streams
 - `.x2` mesh rendering and animation playback
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
-- `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track blockout previews
+- `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
 
 The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
@@ -104,4 +104,4 @@ Interactive controls:
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- map segment cell symbols and row annotations onto real gameplay semantics, hazards, pickups, and lane rules
+- reconstruct the hardcoded `Path=` route system from `SnailMail.RWG` so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay

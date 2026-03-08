@@ -843,11 +843,12 @@ fn drawLevelPanel(state: *const AppState) !void {
         var dim_buffer: [384]u8 = undefined;
         const dim_text = try std.fmt.bufPrintZ(
             &dim_buffer,
-            "Grid {d}x{d}  row annotations {d}  preview rows {d}",
+            "Grid {d}x{d}  semantic rows {d}  marked rows {d}  preview rows {d}",
             .{
                 loaded_segment.width,
                 loaded_segment.height,
                 countAnnotatedRows(loaded_segment.rows),
+                countMarkedRows(loaded_segment.rows),
                 loaded_track_preview.total_rows,
             },
         );
@@ -883,17 +884,53 @@ fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i3
     const offset_y = @as(f32, @floatFromInt(y)) + 8.0 + (usable_height - grid_height) * 0.5;
 
     for (loaded_segment.rows, 0..) |row, row_index| {
+        const row_y = offset_y + @as(f32, @floatFromInt(row_index)) * cell_size;
         for (row.cells, 0..) |cell, col_index| {
             const draw_x = offset_x + @as(f32, @floatFromInt(col_index)) * cell_size;
-            const draw_y = offset_y + @as(f32, @floatFromInt(row_index)) * cell_size;
             rl.drawRectangleRec(
                 .{
                     .x = draw_x,
-                    .y = draw_y,
+                    .y = row_y,
                     .width = cell_size,
                     .height = cell_size,
                 },
                 colorForSegmentCell(cell),
+            );
+        }
+
+        if (row.annotation) |annotation| {
+            rl.drawRectangleRec(
+                .{
+                    .x = offset_x,
+                    .y = row_y,
+                    .width = grid_width,
+                    .height = @max(cell_size * 0.12, 2.0),
+                },
+                colorForSegmentAnnotation(annotation),
+            );
+        }
+
+        if (row.marked) {
+            const marker_width = @max(cell_size * 0.14, 3.0);
+            const marker_height = @max(cell_size * 0.55, 4.0);
+            const marker_y = row_y + (cell_size - marker_height) * 0.5;
+            rl.drawRectangleRec(
+                .{
+                    .x = offset_x,
+                    .y = marker_y,
+                    .width = marker_width,
+                    .height = marker_height,
+                },
+                .gold,
+            );
+            rl.drawRectangleRec(
+                .{
+                    .x = offset_x + grid_width - marker_width,
+                    .y = marker_y,
+                    .width = marker_width,
+                    .height = marker_height,
+                },
+                .gold,
             );
         }
     }
@@ -913,6 +950,34 @@ fn countAnnotatedRows(rows: []const segment.Row) usize {
         if (row.annotation != null) total += 1;
     }
     return total;
+}
+
+fn countMarkedRows(rows: []const segment.Row) usize {
+    var total: usize = 0;
+    for (rows) |row| {
+        if (row.marked) total += 1;
+    }
+    return total;
+}
+
+fn colorForSegmentAnnotation(annotation: segment.Annotation) rl.Color {
+    return switch (annotation.kind) {
+        .path => .gold,
+        .ring => switch (annotation.ring_kind orelse .normal) {
+            .none => .gray,
+            .normal => .yellow,
+            .powerup => .green,
+            .explode => .orange,
+            .slow => .purple,
+        },
+        .ring_speed => .yellow,
+        .parcel => .green,
+        .model => .purple,
+        .velocity => .lime,
+        .jetpack_off => .red,
+        .no_fall => .sky_blue,
+        .unknown => .white,
+    };
 }
 
 fn colorForSegmentCell(cell: u8) rl.Color {

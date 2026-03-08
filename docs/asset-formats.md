@@ -150,20 +150,29 @@ Current corpus notes:
 - rows are `10` characters wide in the shipped files
 - segment heights vary by file
 - any text after column `10` is metadata attached to that row
+- a literal `*` immediately after column `10` is a real per-row flag used by shipped segments
 
 Observed row metadata forms include:
 
 - `Path=<name>`
 - `Ring=<name>`
+- `RingSpeed=<float>` appears in RWG parser code, though no shipped segment currently uses it
 - `Parcel=<id>,(<x>,<y>,<z>)`
 - `JetPack=Off`
 - `3DModel=<mesh> (<x>,<y>,<z>)`
+- `Velocity=(<x>,<y>,<z>)` appears in RWG parser code, though no shipped segment currently uses it
 - `No Fall` / `NoFall`
 
 Representative samples:
 
 - [`SEGMENTS/START.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT)
 - [`SEGMENTS/BIG JUMP.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/BIG%20JUMP.TXT)
+
+Current RWG understanding:
+
+- `Path=<name>` resolves through a hardcoded string table inside `SnailMail.RWG`, not through a separate path-definition file in the archive
+- `Ring=Explosive` appears in shipped text, but the RWG parser path matches the `Explode` behavior
+- `3DModel=<mesh>.x` rows line up with archive meshes like `X/SIGNBANG.X2`, `X/SIGNSTOP.X2`, and `X/SIGNCONSTRUCTION.X2`
 
 ## LEVELS/*.TXT
 
