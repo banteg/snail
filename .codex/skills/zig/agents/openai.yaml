@@ -1,0 +1,7 @@
+interface:
+  display_name: "Zig"
+  short_description: "Use the local Zig 0.15.2 cheatsheet for Zig work"
+  default_prompt: "Use $zig when writing, reviewing, debugging, or explaining Zig code so the local Zig 0.15.2 idioms and ownership guidance are followed."
+
+policy:
+  allow_implicit_invocation: true
