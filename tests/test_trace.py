@@ -176,4 +176,8 @@ def test_build_trace_capture_plan_uses_real_corpus() -> None:
     assert plan.best_garbage_levels[0].path.endswith("LEVELS/ARCADE040.TXT")
     assert plan.best_salt_levels[0].salt == 100
     assert plan.best_salt_levels[0].path.endswith("LEVELS/ARCADE039.TXT")
+    assert plan.best_authored_salt_levels
+    assert plan.best_authored_salt_levels[0].path.endswith("LEVELS/TUTORIAL.TXT")
+    assert plan.best_authored_salt_levels[0].salt_like_row_count == 11
+    assert plan.best_authored_salt_levels[0].salt in (None, 0)
     assert plan.best_slug_like_levels

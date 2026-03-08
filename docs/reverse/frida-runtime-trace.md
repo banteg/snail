@@ -74,6 +74,7 @@ The `trace plan` command uses the extracted corpus to rank good first-run target
 
 - path-heavy segments and levels
 - salt-candidate segments with authored `&` rows
+- authored-salt levels with explicit `&` rows
 - high-garbage levels
 - high-salt levels
 - levels and segments with many `M` glyph rows, which are the current best static slug candidates
@@ -91,6 +92,13 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
 - salt-heavy run: [`LEVELS/ARCADE039.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT)
   - current top salt level
   - `Salt:100`
+  - notable static clue: it has `0` explicit `&` rows, so it is the best first probe for the fallback salt branch on runtime tile kinds `1` and `15`
+- authored salt level run: [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT)
+  - current top level by explicit `&` rows
+  - notable static clue: it still has `Salt:0`, so it is the cleanest first probe for authored salt placements that should resolve directly through runtime tile `0x22`
+- authored salt arcade run: [`LEVELS/ARCADE037.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE037.TXT)
+  - current strongest non-tutorial level with explicit `&` rows
+  - useful second probe if the tutorial flow adds too much extra scripting noise
 - authored salt segment run: [`SEGMENTS/TUTORIAL 8.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL%208.TXT)
   - current top segment by explicit `&` rows
   - best static target for verifying the tile-family branch that feeds `spawn_salt_hazard`

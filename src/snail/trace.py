@@ -117,6 +117,7 @@ class LevelTraceHint(msgspec.Struct, frozen=True):
     segment_count: int
     path_segment_count: int
     path_row_count: int
+    salt_like_row_count: int
     slug_like_row_count: int
     path_names: tuple[str, ...]
     segments_preview: tuple[str, ...]
@@ -130,6 +131,7 @@ class RuntimeTracePlan(msgspec.Struct, frozen=True):
     best_path_levels: tuple[LevelTraceHint, ...]
     best_garbage_levels: tuple[LevelTraceHint, ...]
     best_salt_levels: tuple[LevelTraceHint, ...]
+    best_authored_salt_levels: tuple[LevelTraceHint, ...]
     best_slug_like_levels: tuple[LevelTraceHint, ...]
 
 
@@ -270,6 +272,10 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
         (hint for hint in level_hints if (hint.salt or 0) > 0),
         key=lambda hint: (-(hint.salt or 0), -hint.path_row_count, hint.path.lower()),
     )
+    best_authored_salt_levels = sorted(
+        (hint for hint in level_hints if hint.salt_like_row_count > 0),
+        key=lambda hint: (-hint.salt_like_row_count, -(hint.salt or 0), hint.path.lower()),
+    )
     best_slug_like_levels = sorted(
         (hint for hint in level_hints if hint.slug_like_row_count > 0),
         key=lambda hint: (-hint.slug_like_row_count, -hint.path_row_count, hint.path.lower()),
@@ -283,6 +289,7 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
         best_path_levels=tuple(best_path_levels[:limit]),
         best_garbage_levels=tuple(best_garbage_levels[:limit]),
         best_salt_levels=tuple(best_salt_levels[:limit]),
+        best_authored_salt_levels=tuple(best_authored_salt_levels[:limit]),
         best_slug_like_levels=tuple(best_slug_like_levels[:limit]),
     )
 
@@ -380,6 +387,7 @@ def _build_level_hint(
         segment_count=len(segment_hints),
         path_segment_count=sum(1 for hint in segment_hints if hint.path_rows > 0),
         path_row_count=sum(hint.path_rows for hint in segment_hints),
+        salt_like_row_count=sum(hint.salt_like_rows for hint in segment_hints),
         slug_like_row_count=sum(hint.slug_like_rows for hint in segment_hints),
         path_names=tuple(path_names),
         segments_preview=tuple(referenced_segment_names[:8]),

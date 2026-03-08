@@ -100,6 +100,9 @@ One useful corpus sanity check:
 
 - shipped `J` rows are concentrated in `JETPACK*.TXT`, `JETPACKOFF.TXT`, `REGISTER.TXT`, and `RICHTEST.TXT`
 - shipped `$` rows show up in pickup-heavy segments such as `CAGE2.TXT`, `FENCES.TXT`, and `TUTORIAL 10.TXT`
+- authored salt and scalar salt are clearly separate in shipped data:
+  - [`LEVELS/TUTORIAL.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT) is currently the top explicit-`&` level, but it has `Salt:0`
+  - high-salt arcade levels such as [`LEVELS/ARCADE039.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT) and [`LEVELS/ARCADE017.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE017.TXT) currently have `0` explicit `&` rows
 
 ## Hardcoded Path Table
 
