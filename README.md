@@ -49,6 +49,8 @@ The rewrite direction and runtime goals live in [`docs/rewrite/README.md`](/User
 
 Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md).
 
+The Windows runtime trace harness for Frida lives in [`docs/reverse/frida-runtime-trace.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/frida-runtime-trace.md).
+
 Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
 
 - `.ogg` audio
