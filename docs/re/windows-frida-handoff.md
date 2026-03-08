@@ -84,7 +84,11 @@ Important payload notes for the current script:
 - for tutorial-like captures, prefer `mode_before` and `mode_after` over `selected_track_id`
 - `level_start.build_flags`, `track_row_start`, and `track_row_end` are now emitted and are the main fields to compare against the static track-builder notes
 - every traced `cell` object now includes `flags` from `cell + 0x4`, not just `tile_type` and world position
+- every traced `cell` object now also includes `floor_height` from `cell + 0x14`
 - `player_update` and `attachment_end` are `thiscall` methods and the newest script version reads their object state from `ecx`
+- attachment events now include:
+  - `template_summary` with the active attachment template kind, sample count, width or scale, and sample-array pointers
+  - `follow_state_summary` with the active follow sample index, progress, vertical offset, orientation-ish vector, and output pose
 - if you are reusing an older local script copy on Windows, replace it first; the March 8 long capture proved the older copy misses `player_update` entirely and misreports `attachment_end`
 
 Expected event names in the NDJSON:
@@ -174,6 +178,8 @@ Success criteria:
 - at least one `attachment_begin`
 - at least one `attachment_update`
 - at least one `attachment_end`
+- at least one attachment event carrying non-null `template_summary.sample_count`
+- at least one `player_update` or `floor_sample` on a row whose `cell.floor_height` differs from `0.0`
 
 ### 2. Scalar Salt Capture
 

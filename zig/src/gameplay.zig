@@ -49,9 +49,6 @@ pub const RecentEvent = union(enum) {
     garbage_hit,
     salt_hit,
     slug_hit,
-    turret_row,
-    trampoline,
-    enemy_generic,
     no_fall,
     jetpack_off,
     ring: segment.RingKind,
@@ -68,9 +65,6 @@ pub const RecentEvent = union(enum) {
             .garbage_hit => "garbage_hit",
             .salt_hit => "salt_hit",
             .slug_hit => "slug_hit",
-            .turret_row => "turret_row",
-            .trampoline => "trampoline",
-            .enemy_generic => "enemy_generic",
             .no_fall => "no_fall",
             .jetpack_off => "jetpack_off",
             .ring => |ring_kind| switch (ring_kind) {
@@ -93,9 +87,6 @@ pub const EncounterCounters = struct {
     garbage_hits: u32 = 0,
     salt_hits: u32 = 0,
     slug_hits: u32 = 0,
-    turrets: u32 = 0,
-    trampolines: u32 = 0,
-    enemy_rows: u32 = 0,
     no_fall_rows: u32 = 0,
     jetpack_off_rows: u32 = 0,
     ring_normal: u32 = 0,
@@ -196,10 +187,11 @@ pub const Runner = struct {
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
-        const floor_y = if (self.current_runtime_tile_hint) |tile_type|
-            track.sampleFloorHeightForRuntimeTile(tile_type, self.row_position, null) orelse 0.0
-        else
-            0.0;
+        const floor_y = preview.sampleFloorHeightAtGridPosition(
+            self.current_global_row,
+            self.resolved_lane_index,
+            self.row_position,
+        ) orelse 0.0;
         return preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
     }
 
@@ -365,12 +357,8 @@ pub const Runner = struct {
                     }
                 },
                 .parcel => |parcel| {
-                    if (sample.gameplay_cell) |kind| {
-                        if (kind == .parcel) {
-                            self.counters.parcels += 1;
-                            self.recent_event = .{ .parcel = parcel.id };
-                        }
-                    }
+                    self.counters.parcels += 1;
+                    self.recent_event = .{ .parcel = parcel.id };
                 },
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
@@ -400,7 +388,6 @@ pub const Runner = struct {
                 }
             },
             .ring => {},
-            .parcel => {},
             .health => {
                 self.counters.health_pickups += 1;
                 self.recent_event = .health_pickup;
@@ -420,18 +407,6 @@ pub const Runner = struct {
             .slug => {
                 self.counters.slug_hits += 1;
                 self.recent_event = .slug_hit;
-            },
-            .turret => {
-                self.counters.turrets += 1;
-                self.recent_event = .turret_row;
-            },
-            .trampoline => {
-                self.counters.trampolines += 1;
-                self.recent_event = .trampoline;
-            },
-            .enemy_generic => {
-                self.counters.enemy_rows += 1;
-                self.recent_event = .enemy_generic;
             },
         }
     }
@@ -524,9 +499,9 @@ const RowTarget = struct {
 fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.GameplayCellKind) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
-        for (row_location.row.cells, 0..) |cell, lane| {
-            if (track.gameplayCellKind(cell)) |cell_kind| {
-                if (cell_kind == kind) {
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
+                if (sample.kind == kind) {
                     return .{
                         .row = global_row,
                         .lane = lane,

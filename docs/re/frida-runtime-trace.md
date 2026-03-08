@@ -34,18 +34,22 @@ Current hooks in the script:
   - emits sampled before and after player snapshots
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
   - now also records the current build-flag word seen by the active gameplay state
+  - now includes the embedded follow-state summary, including template metadata, output position, orientation, and `offset_y`
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
 - `0x420c40` `begin_track_attachment_follow_state`
   - logs the actual transition into attachment-follow state
+  - now emits both the full follow-state summary and the resolved attachment-template summary
 - `0x420cb0` `update_track_attachment_follow_state`
   - emits sampled follow-state updates with current row, progress, and movement output
+  - now includes template sample-count and width fields plus the follow-state output pose
 - `0x43af60` `end_track_attachment_follow_state`
   - logs the point where the player drops back out of attachment-follow mode
   - this is also a `thiscall` method, and the script now prefers the embedded follow-state cell over the transient player cell so exit rows stay meaningful
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
+  - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`
 - `0x43da80` `spawn_track_garbage_hazard`
   - logs garbage spawns with the chosen runtime cell
 - `0x43d6c0` `spawn_track_health_pickup`
@@ -108,6 +112,21 @@ Important payload details:
 - `path_lookup.path_name_raw` keeps the raw pointer read for debugging
 - `path_lookup.path_name_from_index` is the table-derived name from the recovered `51`-entry path list
 - `cell.flags` is the runtime per-cell flag dword read directly from `cell + 0x4`
+- `cell.floor_height` is the runtime floor slot read from `cell + 0x14`
+- `template_summary` captures the active attachment template record:
+  - origin
+  - kind
+  - sample count
+  - width or scale
+  - subdivision count
+  - sample-array pointers
+  - current per-sample delta and length fields
+- `follow_state_summary` captures the active attachment-follow state:
+  - current sample index and progress
+  - vertical offset
+  - output pose
+  - orientation-like vector fields
+  - resolved template summary
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 
@@ -137,6 +156,15 @@ The `trace plan` command uses the extracted corpus to rank good first-run target
 - high-garbage levels
 - high-salt levels
 - levels and segments with many `M` glyph rows, which are the current best static slug candidates
+
+For the next capture, the new high-value questions are narrower:
+
+- tile `0x16` rows:
+  - does the logged `cell.floor_height` stay fixed at the builder-seeded value or change dynamically in live play
+- attachment-follow updates:
+  - how `follow_state_summary.output_position`, `offset_y`, and the template sample metadata evolve across entry, steady follow, and exit
+- attachment exit:
+  - whether the exit row or floor slot differs systematically by template kind
 
 ## Latest March 8 Read
 

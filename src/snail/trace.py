@@ -76,9 +76,39 @@ class TraceCell(msgspec.Struct, frozen=True):
     row: int | None = None
     flags: int | None = None
     tile_type: int | None = None
+    floor_height: float | None = None
     world: TraceVec3 | None = None
     attachment: str | None = None
     attachment_kind: int | None = None
+
+
+class TraceTemplate(msgspec.Struct, frozen=True):
+    ptr: str | None = None
+    origin: TraceVec3 | None = None
+    kind: int | None = None
+    sample_count: int | None = None
+    width_or_scale: float | None = None
+    subdivision_count: int | None = None
+    primary_points: str | None = None
+    secondary_points: str | None = None
+    sample_delta: TraceVec3 | None = None
+    sample_length: float | None = None
+    row_scalar_a: float | None = None
+    row_scalar_b: float | None = None
+
+
+class TraceFollowState(msgspec.Struct, frozen=True):
+    ptr: str | None = None
+    active: bool | None = None
+    template: str | None = None
+    template_summary: TraceTemplate | None = None
+    cell: TraceCell | None = None
+    sample_index: int | None = None
+    progress: float | None = None
+    offset_y: float | None = None
+    orientation: TraceVec3 | None = None
+    output_position: TraceVec3 | None = None
+    player: str | None = None
 
 
 class RuntimeTraceEvent(msgspec.Struct, frozen=True):
@@ -108,7 +138,9 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     path_name_from_index: str | None = None
     path_index: int | None = None
     template: str | None = None
+    template_summary: TraceTemplate | None = None
     follow_state: str | None = None
+    follow_state_summary: TraceFollowState | None = None
     attachment_active: bool | None = None
     attachment_active_before: bool | None = None
     follow_sample_index: int | None = None

@@ -125,6 +125,13 @@ Recovered flat gameplay and hazard anchors:
 - `@` guard rows normalize to runtime tile `0x00`
 - parcel digits `0..3` normalize into the parcel floor tile family rooted at runtime tile `0x0f`
 
+Recovered special floor-height slot use:
+
+- runtime cell `+0x14` is the per-cell floor-height slot sampled by `sample_track_floor_height_at_position`
+- runtime tile `0x16` returns that stored slot directly instead of using a generic slope formula
+- in the shipped track-builder branch recovered so far, the `0x16` builder case seeds that slot to `-3.0`
+- player update also treats tile `0x16` specially when comparing player `y` against that stored floor height
+
 Recovered row-wise ramp and connector rewrites:
 
 - `>`:

@@ -39,30 +39,22 @@ pub const GameplayCellKind = enum {
     attachment_probe,
     attachment_entry,
     ring,
-    parcel,
     slug,
     garbage,
     salt,
     health,
     jetpack,
-    turret,
-    trampoline,
-    enemy_generic,
 
     pub fn label(self: GameplayCellKind) []const u8 {
         return switch (self) {
             .attachment_probe => "attachment_probe",
             .attachment_entry => "attachment_entry",
             .ring => "ring",
-            .parcel => "parcel",
             .slug => "slug",
             .garbage => "garbage",
             .salt => "salt",
             .health => "health",
             .jetpack => "jetpack",
-            .turret => "turret",
-            .trampoline => "trampoline",
-            .enemy_generic => "enemy_generic",
         };
     }
 };
@@ -121,6 +113,15 @@ pub fn sampleFloorHeightForRuntimeTile(tile_type: u8, world_z: f32, special_floo
         0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x0b, 0x0c, 0x0d => row_fraction * 0.4,
         0x08, 0x09, 0x0a => (row_fraction * 0.4) + 0.5,
         0x16 => special_floor_height,
+        else => null,
+    };
+}
+
+pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
+    return switch (tile_type) {
+        // The track builder seeds trampoline-family tile 0x16 from the cell's +0x14 slot.
+        // In the shipped gameplay branch we have recovered so far, that slot is forced to -3.0.
+        0x16 => -3.0,
         else => null,
     };
 }
@@ -298,7 +299,7 @@ pub const LoadedLevelPreview = struct {
 
             drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
             drawSegmentCells(loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
-            drawSegmentGameplayMarkers(loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
             drawSegmentCenterline(loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
             drawSegmentAnnotations(loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
         }
@@ -410,6 +411,15 @@ pub const LoadedLevelPreview = struct {
             .y = y,
             .z = row_position + 0.5,
         };
+    }
+
+    pub fn sampleFloorHeightAtGridPosition(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize, row_position: f32) ?f32 {
+        const tile_type = self.runtimeTileAt(global_row, lane_index) orelse return null;
+        return sampleFloorHeightForRuntimeTile(
+            tile_type,
+            row_position,
+            specialFloorHeightForShippedRuntimeTile(tile_type),
+        );
     }
 
     fn segmentCenter(self: *const LoadedLevelPreview, selected_segment_index: usize) rl.Vector3 {
@@ -538,6 +548,8 @@ fn drawSegmentAnnotations(
 }
 
 fn drawSegmentGameplayMarkers(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
     loaded_segment: segment.Definition,
     width_offset: f32,
     segment_start_z: f32,
@@ -545,15 +557,16 @@ fn drawSegmentGameplayMarkers(
     cell_size: f32,
 ) void {
     for (loaded_segment.rows, 0..) |row, row_index| {
-        for (row.cells, 0..) |cell, col_index| {
-            const kind = gameplayCellKind(cell) orelse continue;
+        const global_row = preview.row_offsets[segment_index] + row_index;
+        for (row.cells, 0..) |_, col_index| {
+            const sample = preview.gameplayCellSampleAt(global_row, col_index) orelse continue;
+            const kind = sample.kind;
             if (kind == .ring or kind == .attachment_probe or kind == .attachment_entry) continue;
 
             const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, gameplayCellY(kind));
             const color = tintForSelection(gameplayCellColor(kind), is_selected);
 
             switch (kind) {
-                .parcel => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.24, .z = 0.24 }, color),
                 .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
                 .garbage => rl.drawSphere(position, 0.16, color),
                 .salt => {
@@ -566,9 +579,6 @@ fn drawSegmentGameplayMarkers(
                 },
                 .health => rl.drawCubeV(position, .{ .x = 0.22, .y = 0.22, .z = 0.22 }, color),
                 .jetpack => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.44, .z = 0.24 }, color),
-                .turret => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.6, .z = 0.24 }, color),
-                .trampoline => rl.drawCubeV(position, .{ .x = 0.28, .y = 0.12, .z = 0.28 }, color),
-                .enemy_generic => rl.drawCubeWiresV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
                 .ring, .attachment_probe, .attachment_entry => unreachable,
             }
         }
@@ -912,15 +922,11 @@ pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
         'p' => .attachment_probe,
         'P' => .attachment_entry,
         '>', '<', '{', '}', ';', 'R' => .ring,
-        '0', '1', '2', '3' => .parcel,
         'M' => .slug,
         's' => .garbage,
         '&' => .salt,
         '$' => .health,
         'J' => .jetpack,
-        '=' => .turret,
-        '(', ')' => .trampoline,
-        '[' => .enemy_generic,
         else => null,
     };
 }
@@ -944,30 +950,22 @@ fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
         .attachment_probe => .blue,
         .attachment_entry => .sky_blue,
         .ring => .yellow,
-        .parcel => .gold,
         .slug => .red,
         .garbage => .gray,
         .salt => .sky_blue,
         .health => .green,
         .jetpack => .orange,
-        .turret => .purple,
-        .trampoline => .orange,
-        .enemy_generic => .maroon,
     };
 }
 
 fn gameplayCellY(kind: GameplayCellKind) f32 {
     return switch (kind) {
         .attachment_probe, .attachment_entry, .ring => 0.62,
-        .parcel => 0.72,
         .slug => 0.62,
         .garbage => 0.56,
         .salt => 0.62,
         .health => 0.7,
         .jetpack => 0.82,
-        .turret => 0.78,
-        .trampoline => 0.12,
-        .enemy_generic => 0.62,
     };
 }
 
@@ -1051,6 +1049,9 @@ test "gameplay cell kinds match recovered runtime glyph semantics" {
     try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKind('M').?);
     try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKind('s').?);
     try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKind('&').?);
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('0'));
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('='));
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('['));
 }
 
 test "confirmed runtime tile hints match recovered gameplay tiles" {
@@ -1195,6 +1196,11 @@ test "runtime floor sampler matches recovered tile formulas" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.6), sampleFloorHeightForRuntimeTile(0x08, 12.25, null).?, 0.0001);
     try std.testing.expectEqual(@as(?f32, 1.75), sampleFloorHeightForRuntimeTile(0x16, 12.25, 1.75));
     try std.testing.expectEqual(@as(?f32, null), sampleFloorHeightForRuntimeTile(0x1e, 12.25, null));
+}
+
+test "special floor heights match recovered shipped builder defaults" {
+    try std.testing.expectEqual(@as(?f32, -3.0), specialFloorHeightForShippedRuntimeTile(0x16));
+    try std.testing.expectEqual(@as(?f32, null), specialFloorHeightForShippedRuntimeTile(0x1e));
 }
 
 test "world quantization matches recovered track grid sampling" {

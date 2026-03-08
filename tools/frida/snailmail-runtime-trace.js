@@ -540,9 +540,32 @@ function summarizeCell(cellPtr, getTrackCellRowIndex) {
     row: row,
     flags: safeReadU32(cell, 4),
     tile_type: safeReadU8(cell, 60),
+    floor_height: safeReadFloat(cell, 0x14),
     world: safeReadVec3(cell, 16),
     attachment: hex(attachment),
     attachment_kind: safeReadU32(attachment, 56),
+  };
+}
+
+function summarizeAttachmentTemplate(templatePtr) {
+  const template = asPtr(templatePtr);
+  if (template === null || template.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(template),
+    origin: safeReadVec3(template, 0x30),
+    kind: safeReadU32(template, 0x38),
+    sample_count: safeReadU32(template, 0x44),
+    width_or_scale: safeReadFloat(template, 0x50),
+    subdivision_count: safeReadU32(template, 0x54),
+    primary_points: hex(safeReadPointer(template, 0x58)),
+    secondary_points: hex(safeReadPointer(template, 0x5c)),
+    sample_delta: safeReadVec3(template, 0x80),
+    sample_length: safeReadFloat(template, 0x8c),
+    row_scalar_a: safeReadFloat(template, 0x98),
+    row_scalar_b: safeReadFloat(template, 0x9c),
   };
 }
 
@@ -552,13 +575,19 @@ function summarizeFollowState(followStatePtr, getTrackCellRowIndex) {
     return null;
   }
 
+  const templatePtr = safeReadPointer(followState, 4);
+
   return {
     ptr: hex(followState),
     active: boolFlag(safeReadU32(followState, 0)),
-    template: hex(safeReadPointer(followState, 4)),
+    template: hex(templatePtr),
+    template_summary: summarizeAttachmentTemplate(templatePtr),
     cell: summarizeCell(safeReadPointer(followState, 8), getTrackCellRowIndex),
     sample_index: safeReadU32(followState, 0xc),
     progress: safeReadFloat(followState, 0x10),
+    offset_y: safeReadFloat(followState, 0x14),
+    orientation: safeReadVec3(followState, 0x18),
+    output_position: safeReadVec3(followState, 0x2c),
     player: hex(safeReadPointer(followState, 0x38)),
   };
 }
@@ -704,6 +733,7 @@ function installHooks(module) {
           attachment_active: after.attachment_active,
           attachment_active_before: this.before ? this.before.attachment_active : null,
           follow_state: after.follow_state,
+          follow_state_summary: summarizeFollowState(this.player !== null ? this.player.add(0x384) : null, getTrackCellRowIndex),
           follow_sample_index: after.follow_sample_index,
           follow_progress: after.follow_progress,
           movement_state: after.movement_state,
@@ -716,9 +746,11 @@ function installHooks(module) {
     Interceptor.attach(fromVa(module, VA.try_enter_track_attachment_from_swept_motion), {
       onEnter(args) {
         const cell = args[6];
+        const template = this.context.ecx;
         emit('attachment_probe', {
-          template: hex(this.context.ecx),
-          build_flags: safeReadU32(safeReadPointer(this.context.ecx, 0x408), RUNTIME.build_flags),
+          template: hex(template),
+          template_summary: summarizeAttachmentTemplate(template),
+          build_flags: safeReadU32(safeReadPointer(template, 0x408), RUNTIME.build_flags),
           cell: summarizeCell(cell, getTrackCellRowIndex),
           position: {
             x: floatArg(args[0]),
@@ -741,6 +773,9 @@ function installHooks(module) {
         const follow = summarizeFollowState(this.context.ecx, getTrackCellRowIndex);
         emit('attachment_begin', {
           follow_state: follow !== null ? follow.ptr : hex(this.context.ecx),
+          follow_state_summary: follow,
+          template: follow !== null ? follow.template : null,
+          template_summary: follow !== null ? follow.template_summary : null,
           build_flags: safeReadU32(safeReadPointer(args[2], 0x408), RUNTIME.build_flags),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           player_position: safeReadVec3(args[1], 0),
@@ -773,6 +808,9 @@ function installHooks(module) {
 
         maybeEmitSampled('attachment_update', follow !== null ? follow.ptr : hex(this.followState), digest, 2, {
           follow_state: follow !== null ? follow.ptr : hex(this.followState),
+          follow_state_summary: follow,
+          template: follow !== null ? follow.template : null,
+          template_summary: follow !== null ? follow.template_summary : null,
           build_flags: safeReadU32(safeReadPointer(follow !== null ? follow.player : null, 0x408), RUNTIME.build_flags),
           cell: follow !== null ? follow.cell : null,
           player: follow !== null ? follow.player : null,
@@ -801,6 +839,9 @@ function installHooks(module) {
           cell: follow !== null && follow.cell !== null ? follow.cell : before !== null ? before.cell : null,
           attachment_active: follow !== null ? follow.active : before !== null ? before.attachment_active : null,
           follow_state: follow !== null ? follow.ptr : before !== null ? before.follow_state : null,
+          follow_state_summary: follow,
+          template: follow !== null ? follow.template : null,
+          template_summary: follow !== null ? follow.template_summary : null,
           follow_sample_index: follow !== null ? follow.sample_index : before !== null ? before.follow_sample_index : null,
           follow_progress: follow !== null ? follow.progress : before !== null ? before.follow_progress : null,
         });
