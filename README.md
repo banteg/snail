@@ -22,7 +22,7 @@ uv run snail archive manifest
 uv run snail archive extract --output artifacts/extracted/SnailMail.dat
 uv run snail format artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT
 uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
-uv run snail trace summary snailmail-trace.ndjson
+uv run snail trace summary /path/to/snailmail-trace.ndjson
 uv run snail trace plan
 ```
 

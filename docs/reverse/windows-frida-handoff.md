@@ -81,23 +81,20 @@ Expected event names in the NDJSON:
 
 Run from the repo root on the Windows machine.
 
-Create a capture directory:
-
-```powershell
-New-Item -ItemType Directory -Force .\captures | Out-Null
-```
-
 Spawn the gameplay binary under Frida:
 
 ```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\snailmail-trace.ndjson
+frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
 If you need to attach to an already running process instead:
 
 ```powershell
-frida -n SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\snailmail-trace.ndjson
+frida -n SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js
 ```
+
+The script now creates `C:\share\snail\frida\` itself and writes NDJSON there with a generated filename like `snailmail-trace-20260308-153000-1234.ndjson`.
+Keep the first console line from each run because it prints the exact file path that was opened.
 
 ## Capture Matrix
 
@@ -118,11 +115,10 @@ Why:
 - strongest current path-heavy arcade target
 - many repeated public path families
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\arcade028-path.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `arcade028-path.ndjson` before handing it back
 
 What to do in-game:
 
@@ -151,11 +147,10 @@ Why:
 - current top scalar-salt level
 - static corpus has `Salt:100` and `0` explicit `&` rows
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\arcade039-salt.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `arcade039-salt.ndjson` before handing it back
 
 What to do in-game:
 
@@ -184,11 +179,10 @@ Why:
 - strongest combined authored-salt and ring tutorial target
 - static clue: `Salt:0`, so any `salt_spawn` should correlate with authored rows rather than the scalar fallback
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\tutorial-salt-ring.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `tutorial-salt-ring.ndjson` before handing it back
 
 Success criteria:
 
@@ -210,11 +204,10 @@ Why:
 
 - currently the cleanest level for explicit `JetPack=Off`
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\arcade025-jetpackoff.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `arcade025-jetpackoff.ndjson` before handing it back
 
 Success criteria:
 
@@ -236,11 +229,10 @@ Why:
 
 - strongest repeated `NoFall` exposure in the current corpus
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\arcade047-nofall.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `arcade047-nofall.ndjson` before handing it back
 
 ### 6. Slug Capture
 
@@ -256,11 +248,10 @@ Why:
 
 - best current slug-like level from the local planner
 
-Output file:
+Output location:
 
-```powershell
-frida -f .\artifacts\bin\SnailMail.RWG -l .\tools\frida\snailmail-runtime-trace.js > .\captures\arcade029-slugs.ndjson
-```
+- generated under `C:\share\snail\frida\`
+- copy or rename the resulting file to `arcade029-slugs.ndjson` before handing it back
 
 ## What To Hand Back
 
@@ -285,9 +276,9 @@ Notes: saw one obvious path transition near TwisterA/TwisterB segment
 Once the NDJSON files are back in this repo on macOS or Linux, summarize them from the repo root:
 
 ```bash
-uv run snail trace summary captures/arcade028-path.ndjson
-uv run snail trace summary captures/arcade039-salt.ndjson
-uv run snail trace summary captures/tutorial-salt-ring.ndjson
+uv run snail trace summary /path/to/arcade028-path.ndjson
+uv run snail trace summary /path/to/arcade039-salt.ndjson
+uv run snail trace summary /path/to/tutorial-salt-ring.ndjson
 uv run snail trace plan --limit 5
 ```
 

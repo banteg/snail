@@ -3,6 +3,9 @@
 const TARGET_MODULE_NAME = 'SnailMail.RWG';
 const PREFERRED_IMAGE_BASE = 0x400000;
 const MODULE_POLL_MS = 250;
+const TRACE_OUTPUT_DIR = 'C:\\share\\snail\\frida';
+const TRACE_OUTPUT_PREFIX = 'snailmail-trace';
+const ERROR_ALREADY_EXISTS = 183;
 
 const HOOKS = {
   level_start: true,
@@ -48,6 +51,96 @@ const RUNTIME = {
 const counters = {};
 const floatScratch = Memory.alloc(4);
 let hookInstalled = false;
+let traceFile = null;
+let traceFilePath = null;
+let traceFileError = null;
+
+const createDirectoryW = new SystemFunction(
+  Module.getExportByName('kernel32.dll', 'CreateDirectoryW'),
+  'bool',
+  ['pointer', 'pointer']
+);
+
+function pad2(value) {
+  return value < 10 ? '0' + value : String(value);
+}
+
+function formatTimestamp(date) {
+  return [
+    date.getFullYear(),
+    pad2(date.getMonth() + 1),
+    pad2(date.getDate()),
+    '-',
+    pad2(date.getHours()),
+    pad2(date.getMinutes()),
+    pad2(date.getSeconds()),
+  ].join('');
+}
+
+function ensureDirectory(path) {
+  const normalized = path.replace(/\//g, '\\');
+  const parts = normalized.split('\\');
+  if (parts.length === 0) {
+    return;
+  }
+
+  let current = '';
+  let index = 0;
+  if (/^[A-Za-z]:$/.test(parts[0])) {
+    current = parts[0] + '\\';
+    index = 1;
+  }
+
+  for (; index < parts.length; index += 1) {
+    const part = parts[index];
+    if (part.length === 0) {
+      continue;
+    }
+
+    current = current.length === 0 ? part : current + '\\' + part;
+    const result = createDirectoryW(Memory.allocUtf16String(current), NULL);
+    if (!result.value && result.lastError !== ERROR_ALREADY_EXISTS) {
+      throw new Error('CreateDirectoryW failed for ' + current + ' (lastError=' + result.lastError + ')');
+    }
+  }
+}
+
+function getTraceFilePath() {
+  if (traceFilePath === null) {
+    traceFilePath =
+      TRACE_OUTPUT_DIR +
+      '\\' +
+      TRACE_OUTPUT_PREFIX +
+      '-' +
+      formatTimestamp(new Date()) +
+      '-' +
+      Process.id +
+      '.ndjson';
+  }
+  return traceFilePath;
+}
+
+function appendTraceLine(line) {
+  if (traceFileError !== null) {
+    return false;
+  }
+
+  try {
+    if (traceFile === null) {
+      ensureDirectory(TRACE_OUTPUT_DIR);
+      traceFile = new File(getTraceFilePath(), 'ab');
+      console.log('[snailmail-trace] writing NDJSON to ' + traceFilePath);
+    }
+
+    traceFile.write(line + '\n');
+    traceFile.flush();
+    return true;
+  } catch (error) {
+    traceFileError = String(error);
+    console.error('[snailmail-trace] file output disabled: ' + traceFileError);
+    return false;
+  }
+}
 
 function roundFloat(value) {
   if (value === null || value === undefined) {
@@ -176,7 +269,9 @@ function eventPayload(event, extra) {
         event: event + '_suppressed',
         limit: limit,
       };
-      console.log(JSON.stringify(suppressed));
+      const line = JSON.stringify(suppressed);
+      appendTraceLine(line);
+      console.log(line);
     }
     return null;
   }
@@ -201,7 +296,9 @@ function eventPayload(event, extra) {
 function emit(event, extra) {
   const payload = eventPayload(event, extra);
   if (payload !== null) {
-    console.log(JSON.stringify(payload));
+    const line = JSON.stringify(payload);
+    appendTraceLine(line);
+    console.log(line);
   }
 }
 

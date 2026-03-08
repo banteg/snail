@@ -41,7 +41,15 @@ The script also calls `get_track_cell_row_index` at `0x447040` so cell-based eve
 
 ## Output
 
-The script writes one JSON object per line to standard output.
+The script writes one JSON object per line to a generated NDJSON file under `C:\share\snail\frida\`.
+
+Current filename pattern:
+
+```text
+C:\share\snail\frida\snailmail-trace-YYYYMMDD-HHMMSS-<pid>.ndjson
+```
+
+It also mirrors the same JSON lines to standard output so live debugging still works without changing the payload format.
 
 Event names currently emitted:
 
@@ -61,7 +69,7 @@ If one hook becomes noisy, the script rate-limits it and emits a matching `*_sup
 Once a capture exists, summarize it locally from the repo root:
 
 ```bash
-uv run snail trace summary snailmail-trace.ndjson
+uv run snail trace summary /path/to/snailmail-trace.ndjson
 uv run snail trace plan
 ```
 
@@ -136,17 +144,19 @@ Regenerate the ranked lists after any parser or corpus changes instead of treati
 
 Attach to the real gameplay process, not the Reflexive wrapper. The easiest path is to start [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) directly on the Windows machine.
 
-Spawn the game under Frida and save NDJSON output:
+Spawn the game under Frida:
 
 ```bash
-frida -f C:\path\to\SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js > snailmail-trace.ndjson
+frida -f C:\path\to\SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js
 ```
 
 Attach to an already running RWG process:
 
 ```bash
-frida -n SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js > snailmail-trace.ndjson
+frida -n SnailMail.RWG -l tools\frida\snailmail-runtime-trace.js
 ```
+
+Watch the first console line from the script. It prints the exact NDJSON path it opened under `C:\share\snail\frida\`.
 
 If you only have the wrapper path handy, do not attach to `SnailMail.exe` unless you have confirmed that `SnailMail.RWG` runs inside the same process. In the common case it is a separate process, so the script needs the RWG image directly.
 
