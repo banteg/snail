@@ -53,6 +53,46 @@ Event names currently emitted:
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 
+Once a capture exists, summarize it locally from the repo root:
+
+```bash
+uv run snail trace summary snailmail-trace.ndjson
+uv run snail trace plan
+```
+
+That converts the raw NDJSON into grouped counts for:
+
+- normalized level-start scalars
+- `Path=` name to index lookups
+- attachment probes and follow-state transitions
+- garbage, salt, and slug spawn rows
+
+The `trace plan` command uses the extracted corpus to rank good first-run targets:
+
+- path-heavy segments and levels
+- high-garbage levels
+- high-salt levels
+- levels and segments with many `M` glyph rows, which are the current best static slug candidates
+
+## Current Recommended Targets
+
+As of the current extracted corpus and parser state, `uv run snail trace plan --limit 3` recommends these first captures:
+
+- path-heavy run: [`LEVELS/CHALLENGE000.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT)
+  - strongest current path target
+  - `31` path rows across `23` referenced path-bearing segments
+- garbage-heavy run: [`LEVELS/ARCADE040.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE040.TXT)
+  - current top garbage level
+  - `Garbage:100`
+- salt-heavy run: [`LEVELS/ARCADE039.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT)
+  - current top salt level
+  - `Salt:100`
+- slug-like run: [`LEVELS/ARCADE029.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE029.TXT)
+  - current top `M`-glyph-heavy level
+  - useful first probe for the remaining slug and salt ambiguity
+
+Regenerate the ranked lists after any parser or corpus changes instead of treating the recommendations above as permanent truth.
+
 ## Windows Usage
 
 Attach to the real gameplay process, not the Reflexive wrapper. The easiest path is to start [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) directly on the Windows machine.

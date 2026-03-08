@@ -22,6 +22,8 @@ uv run snail archive manifest
 uv run snail archive extract --output artifacts/extracted/SnailMail.dat
 uv run snail format artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT
 uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
+uv run snail trace summary snailmail-trace.ndjson
+uv run snail trace plan
 ```
 
 The command emits JSON with:
@@ -40,6 +42,8 @@ The archive subcommands add:
 The format parser adds:
 
 - `format`: structured JSON for decoded `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` assets
+- `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
+- `trace plan`: ranked level and segment candidates for the next runtime capture
 
 ## Asset Format Notes
 

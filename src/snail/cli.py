@@ -5,11 +5,12 @@ import json
 from pathlib import Path
 from typing import Sequence
 
-from .archive import extract_archive, parse_archive_index, summarize_archive
 import msgspec
 
+from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .recon import inspect_path
+from .trace import build_trace_capture_plan, summarize_runtime_trace_file
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -110,6 +111,54 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the JSON report to this path in addition to stdout.",
     )
 
+    trace_parser = subparsers.add_parser(
+        "trace",
+        help="Inspect or summarize Snail Mail runtime trace captures.",
+    )
+    trace_subparsers = trace_parser.add_subparsers(dest="trace_command", required=True)
+
+    trace_summary_parser = trace_subparsers.add_parser(
+        "summary",
+        help="Summarize a Frida NDJSON runtime trace.",
+    )
+    trace_summary_parser.add_argument(
+        "path",
+        help="Path to a newline-delimited JSON trace capture.",
+    )
+    trace_summary_parser.add_argument(
+        "--preview-limit",
+        type=int,
+        default=8,
+        help="Maximum world positions to keep per event bucket preview.",
+    )
+    trace_summary_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the JSON summary to this path in addition to stdout.",
+    )
+
+    trace_plan_parser = trace_subparsers.add_parser(
+        "plan",
+        help="Rank extracted levels and segments for the next Frida runtime capture.",
+    )
+    trace_plan_parser.add_argument(
+        "path",
+        nargs="?",
+        default="artifacts/extracted/SnailMail.dat",
+        help="Path to the extracted Snail Mail asset tree.",
+    )
+    trace_plan_parser.add_argument(
+        "--limit",
+        type=int,
+        default=8,
+        help="Maximum results to keep in each recommendation list.",
+    )
+    trace_plan_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the JSON plan to this path in addition to stdout.",
+    )
+
     return parser
 
 
@@ -148,6 +197,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.command == "format":
         parsed = parse_text_asset(Path(args.path), kind=args.kind)
         builtins = msgspec.to_builtins(parsed)
+        text = json.dumps(builtins, indent=2, sort_keys=True)
+        if args.write is not None:
+            args.write.parent.mkdir(parents=True, exist_ok=True)
+            args.write.write_text(text + "\n", encoding="utf-8")
+        print(text)
+        return 0
+
+    if args.command == "trace" and args.trace_command == "summary":
+        summary = summarize_runtime_trace_file(Path(args.path), preview_limit=args.preview_limit)
+        builtins = msgspec.to_builtins(summary)
+        text = json.dumps(builtins, indent=2, sort_keys=True)
+        if args.write is not None:
+            args.write.parent.mkdir(parents=True, exist_ok=True)
+            args.write.write_text(text + "\n", encoding="utf-8")
+        print(text)
+        return 0
+
+    if args.command == "trace" and args.trace_command == "plan":
+        plan = build_trace_capture_plan(Path(args.path), limit=args.limit)
+        builtins = msgspec.to_builtins(plan)
         text = json.dumps(builtins, indent=2, sort_keys=True)
         if args.write is not None:
             args.write.parent.mkdir(parents=True, exist_ok=True)

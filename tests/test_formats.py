@@ -90,3 +90,11 @@ def test_parse_level_segment_angle_metadata() -> None:
     assert worm.angle == 360.0
     assert parsed.galaxy_text is not None
     assert "jetpack" in parsed.galaxy_text.lower()
+
+
+def test_parse_challenge_level_random_track_alias() -> None:
+    parsed = parse_text_asset(EXTRACTED_ROOT / "LEVELS/CHALLENGE000.TXT")
+
+    assert isinstance(parsed, LevelDefinition)
+    assert parsed.mode == "challenge"
+    assert parsed.track == 5

@@ -302,7 +302,7 @@ def parse_level_text(text: str, source: str | None = None) -> LevelDefinition:
         elif key_lower == "mode":
             mode = value
         elif key_lower == "track":
-            track = int(value)
+            track = _parse_track_value(value)
         elif key_lower == "background":
             background = value
         elif key_lower == "fringe":
@@ -471,6 +471,13 @@ def _parse_rgb_tuple(value: str) -> tuple[int, int, int]:
     if match is None:
         raise ValueError(f"Invalid RGB tuple: {value!r}")
     return (int(match.group(1)), int(match.group(2)), int(match.group(3)))
+
+
+def _parse_track_value(value: str) -> int:
+    normalized = value.strip().lower()
+    if normalized in {"r", "random"}:
+        return 5
+    return int(value)
 
 
 def _strip_inline_comments(line: str) -> str:
