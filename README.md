@@ -121,6 +121,8 @@ zig build run
 zig build run -- debug
 zig build run -- smoke
 zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
+zig build run -- --runtime-dir artifacts/runtime
+zig build run -- --fullscreen
 ```
 
 Command behavior:
@@ -129,6 +131,9 @@ Command behavior:
 - `zig build run` launches the default game path, shows the archive-backed splash, intro crawl, and menu flow, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the archive-backed debug browser
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
+- windowed mode is the intentional development default; `--fullscreen` is opt-in until the original fullscreen or config behavior is ported
+- `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
+- the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now reserves the runtime root for those future config and score files instead of using the repo root
 
 Interactive controls for `zig build run -- debug`:
 

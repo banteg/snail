@@ -32,6 +32,10 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
+- mutable config and score-file root: `scaffold`
+  - evidence: Binary Ninja decompile of `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
+  - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the actual config blob parser and high-score overlay serializer are ported onto that runtime root
 - front-end font atlas registration, width measurement, and tutorial icon tokens: `verified`
   - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas and tutorial `Message=` strings using `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;`
   - implementation: [`game_font.zig`](../../zig/src/game_font.zig), [`main.zig`](../../zig/src/main.zig)

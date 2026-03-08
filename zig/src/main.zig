@@ -11,6 +11,7 @@ const track = @import("track.zig");
 const object = @import("object.zig");
 const segment = @import("segment.zig");
 const level = @import("level.zig");
+const runtime_state = @import("runtime_state.zig");
 const x2 = @import("x2.zig");
 const xanim = @import("xanim.zig");
 
@@ -36,6 +37,8 @@ const status_message_duration_ticks: u32 = 180;
 
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
+    runtime_root_path: []const u8 = runtime_state.default_root_path,
+    fullscreen: bool = false,
     command: AppCommand = .game,
 };
 
@@ -153,6 +156,7 @@ const AppState = struct {
     catalog: assets.Catalog,
     animation_catalog: xanim.Catalog,
     ui_font: game_font.Loaded,
+    runtime_root_path: []const u8,
     command: AppCommand,
     audio_ready: bool,
     should_exit: bool = false,
@@ -211,6 +215,7 @@ const AppState = struct {
             .catalog = catalog,
             .animation_catalog = animation_catalog,
             .ui_font = ui_font,
+            .runtime_root_path = options.runtime_root_path,
             .command = options.command,
             .audio_ready = audio_ready,
             .high_score_tables = high_score.Tables.initDefault(),
@@ -1027,6 +1032,16 @@ fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.archive_path = args[index];
             continue;
         }
+        if (std.mem.eql(u8, arg, "--runtime-dir")) {
+            index += 1;
+            if (index >= args.len) return error.MissingRuntimeDir;
+            options.runtime_root_path = args[index];
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--fullscreen")) {
+            options.fullscreen = true;
+            continue;
+        }
         if (std.mem.eql(u8, arg, "game")) {
             options.command = .game;
             continue;
@@ -1055,6 +1070,9 @@ pub fn main() !void {
     const allocator = gpa.allocator();
 
     const options = try parseArgs(allocator);
+    try runtime_state.ensureRootExists(options.runtime_root_path);
+    // Development default: stay windowed unless fullscreen is requested explicitly.
+    rl.setConfigFlags(.{ .fullscreen_mode = options.fullscreen });
 
     rl.initWindow(window_width, window_height, "snail");
     defer rl.closeWindow();
@@ -1586,12 +1604,15 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     var archive_buffer: [512]u8 = undefined;
     const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
     drawAppText(state, archive_text, 32, 110, 18, .dark_gray);
+    var runtime_buffer: [512]u8 = undefined;
+    const runtime_text = try std.fmt.bufPrintZ(&runtime_buffer, "Runtime: {s}", .{state.runtime_root_path});
+    drawAppText(state, runtime_text, 32, 132, 18, .dark_gray);
 
-    drawModeBadge(state, .textures, state.mode, "Textures", 32, 144);
-    drawModeBadge(state, .audio, state.mode, "Audio", 156, 144);
-    drawModeBadge(state, .models, state.mode, "X2", 280, 144);
-    drawModeBadge(state, .objects, state.mode, "Objects", 404, 144);
-    drawModeBadge(state, .levels, state.mode, "Levels", 528, 144);
+    drawModeBadge(state, .textures, state.mode, "Textures", 32, 156);
+    drawModeBadge(state, .audio, state.mode, "Audio", 156, 156);
+    drawModeBadge(state, .models, state.mode, "X2", 280, 156);
+    drawModeBadge(state, .objects, state.mode, "Objects", 404, 156);
+    drawModeBadge(state, .levels, state.mode, "Levels", 528, 156);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
@@ -2399,12 +2420,16 @@ test "parse args defaults to game shell" {
     const options = try parseArgsFromSlice(&.{});
     try std.testing.expectEqual(AppCommand.game, options.command);
     try std.testing.expectEqualStrings(default_archive_path, options.archive_path);
+    try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
+    try std.testing.expectEqual(false, options.fullscreen);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--fullscreen" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
+    try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
+    try std.testing.expectEqual(true, options.fullscreen);
 
     options = try parseArgsFromSlice(&.{"smoke"});
     try std.testing.expectEqual(AppCommand.smoke, options.command);
