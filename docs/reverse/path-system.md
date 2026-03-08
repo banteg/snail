@@ -492,6 +492,27 @@ One remaining caveat: mode `4` also lands on the `ParticleRing` family, but the 
 
 `RingSpeed=` also now has a clearer runtime interpretation. The parser stores a per-row float, and the authored ring modes `5` through `8` are the helper path that uses the row float argument to compute the orbit angular speed. No shipped extracted segment currently uses `RingSpeed=`, so the static link is stronger than the corpus evidence.
 
+## Runtime Flag Collisions Around Parcel and NoFall
+
+The remaining `NoFall` ambiguity is real.
+
+High-confidence findings:
+
+- the segment parser sets the same source bit `0x01` for both `Parcel=...` and `NoFall`
+- the rebuilt runtime cells preserve that shared lane in their merged flag byte
+- `allocate_challenge_parcels_on_track` explicitly scans for cells where:
+  - `(cell_flags & 0x01) != 0`
+  - `parcel_id == 0`
+- those cells become random parcel candidates in challenge-mode placement
+
+That proves the shared `0x01` lane is live gameplay data, not dead parser residue. It also means we cannot yet assign a clean standalone runtime meaning to `NoFall` from static evidence alone.
+
+The practical read for the port is:
+
+- `Parcel` semantics are definitely live and feed both authored and random challenge parcel placement
+- `NoFall` still cannot be treated as an isolated runtime bit without more evidence
+- any rewrite that wants to preserve exact behavior should keep `Parcel` and `NoFall` represented separately at the parser level and avoid collapsing them into one boolean until we have either more static recovery or dynamic traces
+
 ## First Confirmed Path Consumer
 
 The first strong static consumer of nonzero `Path=` indices is inside `rebuild_track_runtime_from_segments`.
@@ -534,6 +555,15 @@ High-confidence field usage inside one `0xa8` record:
 - `+0x38`: sampled path object pointer consumed by the attachment-follow state machine
 - `+0x48`: number of neighboring runtime cells that receive `0x40` or `0x80` attachment flags
 - `+0x84`: secondary visual object pointer copied into the runtime cell's side object slot
+
+The neighbor propagation step is now clearer too:
+
+- the first neighboring runtime cell that receives the template gets runtime flag `0x40`
+- additional neighboring cells receive runtime flag `0x80`
+- those two lanes store sampled path-object pointers at runtime offsets `+0x5ccb6c` and `+0x5ccb70`
+- `update_player_track_movement_and_triggers` later probes both lanes through `try_enter_track_attachment_from_swept_motion`
+
+So the movement code's `0x40` and `0x80` checks are part of the path-follow system, not evidence for `JetPack=Off`
 
 What is not pinned down yet:
 

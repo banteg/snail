@@ -203,6 +203,10 @@ Current RWG understanding:
   - `3DModel` also sets `0x02`
   - `Path` and `Velocity` also set `0x08`
   - `JetPack=Off` sets `0x80`
+- deeper runtime caution:
+  - the rebuilt track cell flags are a merged bitfield, not a clean one-tag-to-one-bit map
+  - path-template propagation later reuses runtime bits `0x40` and `0x80` as the primary and secondary attachment-follow lanes, with live pointers at `+0x5ccb6c` and `+0x5ccb70`
+  - `allocate_challenge_parcels_on_track` treats `(cell_flags & 0x01) != 0` plus `parcel_id == 0` as a random parcel candidate, so the shared `Parcel` or `NoFall` source bit is definitely live and still not separable into a clean `NoFall`-only runtime meaning from static evidence alone
 - in the shipped corpus, ring-tagged segment files are isolated from `Path=` and `Parcel=` usage, which avoids the most obvious flag collisions
 - `RingSpeed=` exists in parser code but is unused in shipped extracted segments
 - the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records
