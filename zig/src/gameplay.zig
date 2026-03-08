@@ -44,6 +44,7 @@ pub const RecentEvent = union(enum) {
     attachment_begin,
     attachment_end,
     parcel: i32,
+    trampoline,
     health_pickup,
     jetpack_pickup,
     garbage_hit,
@@ -60,6 +61,7 @@ pub const RecentEvent = union(enum) {
             .attachment_begin => "attachment_begin",
             .attachment_end => "attachment_end",
             .parcel => "parcel",
+            .trampoline => "trampoline",
             .health_pickup => "health_pickup",
             .jetpack_pickup => "jetpack_pickup",
             .garbage_hit => "garbage_hit",
@@ -82,6 +84,7 @@ pub const EncounterCounters = struct {
     attachments_begun: u32 = 0,
     attachments_completed: u32 = 0,
     parcels: u32 = 0,
+    trampoline_rows: u32 = 0,
     health_pickups: u32 = 0,
     jetpack_pickups: u32 = 0,
     garbage_hits: u32 = 0,
@@ -111,6 +114,9 @@ pub const Runner = struct {
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
+    runtime_track_index: usize = 0,
+    movement_progress: f32 = 0.0,
+    movement_rate_scalar: f32 = 0.0,
     row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
     paused: bool = false,
@@ -142,6 +148,7 @@ pub const Runner = struct {
         self.* = .{
             .speed_rows_per_second = 12.0,
         };
+        self.syncRowPosition(preview);
         self.refreshSample(preview);
         self.last_processed_row = self.current_global_row;
     }
@@ -172,9 +179,8 @@ pub const Runner = struct {
         }
 
         if (!self.paused and !self.finished) {
-            const track_end = @as(f32, @floatFromInt(preview.total_rows - 1)) + 0.999;
-            self.row_position = @min(self.row_position + (self.speed_rows_per_second * delta_seconds), track_end);
-            self.finished = self.row_position >= track_end;
+            self.movement_rate_scalar = self.speed_rows_per_second * delta_seconds;
+            self.advanceMovement(preview);
             self.tick_count += 1;
         }
 
@@ -247,6 +253,9 @@ pub const Runner = struct {
             self.traversable_bounds = .{ .min = 0, .max = 0 };
             self.resolved_lane_index = 0;
             self.lane_center = 0.5;
+            self.runtime_track_index = 0;
+            self.movement_progress = 0.0;
+            self.row_position = 0.0;
             return;
         }
 
@@ -284,6 +293,55 @@ pub const Runner = struct {
             sample.path_center_lane.?
         else
             @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
+    }
+
+    fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0 or self.finished) return;
+
+        const last_row = preview.total_rows - 1;
+        const max_progress: f32 = 0.999;
+        var remaining = self.movement_rate_scalar;
+
+        while (remaining > 0.0) {
+            const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
+            const available_progress = progress_limit - self.movement_progress;
+            if (available_progress <= 0.0) {
+                break;
+            }
+
+            if (remaining < available_progress) {
+                self.movement_progress += remaining;
+                remaining = 0.0;
+                break;
+            }
+
+            remaining -= available_progress;
+            if (self.runtime_track_index >= last_row) {
+                self.movement_progress = max_progress;
+                self.finished = true;
+                remaining = 0.0;
+                break;
+            }
+
+            self.runtime_track_index += 1;
+            self.movement_progress = 0.0;
+        }
+
+        self.syncRowPosition(preview);
+    }
+
+    fn syncRowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) {
+            self.row_position = 0.0;
+            return;
+        }
+
+        const last_row = preview.total_rows - 1;
+        if (self.runtime_track_index > last_row) {
+            self.runtime_track_index = last_row;
+            self.movement_progress = 0.999;
+        }
+        self.row_position = @as(f32, @floatFromInt(self.runtime_track_index)) + self.movement_progress;
     }
 
     fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
@@ -388,6 +446,10 @@ pub const Runner = struct {
                 }
             },
             .ring => {},
+            .trampoline => {
+                self.counters.trampoline_rows += 1;
+                self.recent_event = .trampoline;
+            },
             .health => {
                 self.counters.health_pickups += 1;
                 self.recent_event = .health_pickup;
@@ -517,7 +579,9 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     std.debug.assert(target.row > 0);
     runner.reset(preview);
     runner.lane_index = target.lane;
-    runner.row_position = @as(f32, @floatFromInt(target.row)) - 0.01;
+    runner.runtime_track_index = target.row - 1;
+    runner.movement_progress = 0.99;
+    runner.syncRowPosition(preview);
     runner.refreshSample(preview);
     runner.last_processed_row = target.row - 1;
 }
@@ -539,7 +603,36 @@ test "runner advances deterministically over fixed time" {
     }
 
     try std.testing.expectApproxEqAbs(@as(f32, 24.0), runner.row_position, 0.001);
+    try std.testing.expectEqual(@as(usize, 24), runner.runtime_track_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
+}
+
+test "runner keeps discrete track cursor and fractional movement progress" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try track.LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.step(&preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(@as(usize, 0), runner.runtime_track_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.row_position, 0.0001);
+
+    for (0..4) |_| {
+        runner.step(&preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(@as(usize, 1), runner.runtime_track_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.row_position, 0.0001);
 }
 
 test "runner discovers attachment hint rows in shipped corpus" {
@@ -622,4 +715,18 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     runner.step(&jetpack_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_pickups);
     try std.testing.expectEqualStrings("jetpack_pickup", runner.recentEventLabel());
+}
+
+test "runner records trampoline rows from shipped levels" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const trampoline = findFirstGameplayCell(&fixture.preview, .trampoline).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, trampoline);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.trampoline_rows);
+    try std.testing.expectEqualStrings("trampoline", runner.recentEventLabel());
+    try std.testing.expectEqualStrings("trampoline", runner.gameplayCellLabel().?);
 }

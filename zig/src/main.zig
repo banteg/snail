@@ -906,10 +906,13 @@ fn drawLevelPanel(state: *const AppState) !void {
         var sim_buffer: [384]u8 = undefined;
         const sim_text = try std.fmt.bufPrintZ(
             &sim_buffer,
-            "Sim row {d:.2}/{d}  lane {d}->{d}  speed {d:.1}  tick {d}  mode {s}",
+            "Sim row {d:.2}/{d}  cursor {d}+{d:.2}  rate {d:.2}  lane {d}->{d}  speed {d:.1}  tick {d}  mode {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
+                runner.runtime_track_index,
+                runner.movement_progress,
+                runner.movement_rate_scalar,
                 runner.lane_index,
                 runner.resolved_lane_index,
                 runner.speed_rows_per_second,
@@ -953,13 +956,14 @@ fn drawLevelPanel(state: *const AppState) !void {
         var counter_buffer: [384]u8 = undefined;
         const counter_text = try std.fmt.bufPrintZ(
             &counter_buffer,
-            "H {d}  J {d}  G {d}  S {d}  Sl {d}  P {d}  A {d}/{d}  NF {d}  JO {d}",
+            "H {d}  J {d}  G {d}  S {d}  Sl {d}  T {d}  P {d}  A {d}/{d}  NF {d}  JO {d}",
             .{
                 runner.counters.health_pickups,
                 runner.counters.jetpack_pickups,
                 runner.counters.garbage_hits,
                 runner.counters.salt_hits,
                 runner.counters.slug_hits,
+                runner.counters.trampoline_rows,
                 runner.counters.parcels,
                 runner.counters.attachments_begun,
                 runner.counters.attachments_completed,

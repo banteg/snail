@@ -39,6 +39,7 @@ pub const GameplayCellKind = enum {
     attachment_probe,
     attachment_entry,
     ring,
+    trampoline,
     slug,
     garbage,
     salt,
@@ -50,6 +51,7 @@ pub const GameplayCellKind = enum {
             .attachment_probe => "attachment_probe",
             .attachment_entry => "attachment_entry",
             .ring => "ring",
+            .trampoline => "trampoline",
             .slug => "slug",
             .garbage => "garbage",
             .salt => "salt",
@@ -298,7 +300,7 @@ pub const LoadedLevelPreview = struct {
             const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[segment_index])) * cell_size;
 
             drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
-            drawSegmentCells(loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentCells(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
             drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
             drawSegmentCenterline(loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
             drawSegmentAnnotations(loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
@@ -422,6 +424,14 @@ pub const LoadedLevelPreview = struct {
         );
     }
 
+    pub fn floorHeightAtCellCenter(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?f32 {
+        return self.sampleFloorHeightAtGridPosition(
+            global_row,
+            lane_index,
+            @as(f32, @floatFromInt(global_row)) + 0.5,
+        );
+    }
+
     fn segmentCenter(self: *const LoadedLevelPreview, selected_segment_index: usize) rl.Vector3 {
         const safe_index = @min(selected_segment_index, self.segments.len - 1);
         const loaded_segment = self.segments[safe_index];
@@ -473,6 +483,8 @@ fn resolveSegmentModelArchivePath(allocator: std.mem.Allocator, model_name: []co
 }
 
 fn drawSegmentCells(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
     loaded_segment: segment.Definition,
     width_offset: f32,
     segment_start_z: f32,
@@ -480,10 +492,12 @@ fn drawSegmentCells(
     cell_size: f32,
 ) void {
     for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
         for (row.cells, 0..) |cell, col_index| {
+            const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
             const position = rl.Vector3{
                 .x = (@as(f32, @floatFromInt(col_index)) - width_offset + 0.5) * cell_size,
-                .y = if (cell == '@') 0.35 else -0.05,
+                .y = if (cell == '@') 0.35 else floor_height - 0.05,
                 .z = segment_start_z + @as(f32, @floatFromInt(row_index)) * cell_size + 0.5,
             };
             const size = rl.Vector3{
@@ -563,10 +577,12 @@ fn drawSegmentGameplayMarkers(
             const kind = sample.kind;
             if (kind == .ring or kind == .attachment_probe or kind == .attachment_entry) continue;
 
-            const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, gameplayCellY(kind));
+            const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+            const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + gameplayCellY(kind));
             const color = tintForSelection(gameplayCellColor(kind), is_selected);
 
             switch (kind) {
+                .trampoline => rl.drawCubeV(position, .{ .x = 0.34, .y = 0.1, .z = 0.34 }, color),
                 .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
                 .garbage => rl.drawSphere(position, 0.16, color),
                 .salt => {
@@ -846,6 +862,7 @@ fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTi
         '#' => .{ .current = 0x20 },
         '$' => .{ .current = 0x17 },
         '&' => .{ .current = 0x22 },
+        '(' => .{ .current = 0x16 },
         '-' => .{ .current = 0x15 },
         '.' => .{ .current = 0x01 },
         '0', '1', '2', '3' => .{ .current = 0x0f },
@@ -922,6 +939,7 @@ pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
         'p' => .attachment_probe,
         'P' => .attachment_entry,
         '>', '<', '{', '}', ';', 'R' => .ring,
+        '(' => .trampoline,
         'M' => .slug,
         's' => .garbage,
         '&' => .salt,
@@ -934,6 +952,7 @@ pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
 pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
     return switch (tile_type) {
         0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x23 => .ring,
+        0x16 => .trampoline,
         0x12 => .slug,
         0x17 => .health,
         0x19 => .jetpack,
@@ -950,6 +969,7 @@ fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
         .attachment_probe => .blue,
         .attachment_entry => .sky_blue,
         .ring => .yellow,
+        .trampoline => .pink,
         .slug => .red,
         .garbage => .gray,
         .salt => .sky_blue,
@@ -961,6 +981,7 @@ fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
 fn gameplayCellY(kind: GameplayCellKind) f32 {
     return switch (kind) {
         .attachment_probe, .attachment_entry, .ring => 0.62,
+        .trampoline => 0.18,
         .slug => 0.62,
         .garbage => 0.56,
         .salt => 0.62,
@@ -1044,6 +1065,7 @@ test "resolve segment x model path" {
 test "gameplay cell kinds match recovered runtime glyph semantics" {
     try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKind('P').?);
     try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKind('p').?);
+    try std.testing.expectEqual(GameplayCellKind.trampoline, gameplayCellKind('(').?);
     try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKind('$').?);
     try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKind('J').?);
     try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKind('M').?);
@@ -1101,6 +1123,10 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
         runtimeTileTransitionForShippedGlyph('#', null).?,
     );
     try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x16 },
+        runtimeTileTransitionForShippedGlyph('(', null).?,
+    );
+    try std.testing.expectEqualDeep(
         RuntimeTileTransition{ .current = 0x05 },
         runtimeTileTransitionForShippedGlyph('[', null).?,
     );
@@ -1109,6 +1135,7 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
 test "runtime tile kinds map to recovered gameplay families" {
     try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKindForRuntimeTile(0x1d).?);
     try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKindForRuntimeTile(0x1e).?);
+    try std.testing.expectEqual(GameplayCellKind.trampoline, gameplayCellKindForRuntimeTile(0x16).?);
     try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKindForRuntimeTile(0x17).?);
     try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKindForRuntimeTile(0x19).?);
     try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKindForRuntimeTile(0x12).?);
@@ -1124,6 +1151,7 @@ test "level preview builds derived runtime tiles for shipped glyphs across the c
     var saw_health = false;
     var saw_jetpack = false;
     var saw_slug = false;
+    var saw_trampoline = false;
     var saw_garbage = false;
     var saw_salt = false;
 
@@ -1151,6 +1179,11 @@ test "level preview builds derived runtime tiles for shipped glyphs across the c
                         saw_slug = true;
                         try std.testing.expectEqual(@as(u8, 0x12), tile_type);
                     },
+                    '(' => {
+                        saw_trampoline = true;
+                        try std.testing.expectEqual(@as(u8, 0x16), tile_type);
+                        try std.testing.expectEqual(@as(?f32, -3.0), preview.floorHeightAtCellCenter(row_index, lane_index));
+                    },
                     's' => {
                         saw_garbage = true;
                         try std.testing.expectEqual(@as(u8, 0x21), tile_type);
@@ -1168,6 +1201,7 @@ test "level preview builds derived runtime tiles for shipped glyphs across the c
     try std.testing.expect(saw_health);
     try std.testing.expect(saw_jetpack);
     try std.testing.expect(saw_slug);
+    try std.testing.expect(saw_trampoline);
     try std.testing.expect(saw_garbage);
     try std.testing.expect(saw_salt);
 }

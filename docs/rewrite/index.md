@@ -133,9 +133,10 @@ Current behavior:
 - parses `LEVELS/*.TXT` and `SEGMENTS/*.TXT`, preserves typed row metadata such as `Path`, `Ring`, `Parcel`, `JetPack=Off`, `3DModel`, `NoFall`, and the post-row `*` flag, and renders a sequential 3D track preview with semantic markers
 - resolves segment `3DModel=<name>.x` rows to matching `X/<NAME>.X2` meshes when those assets exist and instances them directly in the level preview
 - runs model animation and the new level runner on a fixed `1/60` simulation clock instead of wall-clock render time
-- includes a deterministic level runner that advances through the parsed track, samples row metadata, and exposes lane, cell, attachment, and recent-event state in the UI
+- includes a deterministic level runner that advances through the parsed track with a discrete `runtime_track_index` cursor plus fractional `movement_progress`, samples row metadata, and exposes lane, cell, attachment, and recent-event state in the UI
 - the level runner now distinguishes attachment probe rows from primary attachment-entry rows, mirroring the current runtime evidence that lowercase `p` mostly behaves like tile `29` probes while uppercase `P` is the normal tile `30` entry path
-- the runner also consumes the authored gameplay-cell vocabulary directly, so `$`, `J`, `s`, `&`, `M`, parcel digits, ring rows, `NoFall`, and `JetPack=Off` now update deterministic runner counters instead of living only as preview markers
+- the runner also consumes the authored gameplay-cell vocabulary directly, so `(` trampoline rows, `$`, `J`, `s`, `&`, `M`, parcel digits, ring rows, `NoFall`, and `JetPack=Off` now update deterministic runner counters instead of living only as preview markers
+- the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
 
 Current note:

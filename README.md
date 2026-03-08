@@ -84,7 +84,9 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
 - a fixed-step level runner in level mode, so track stepping now happens on a deterministic simulation clock instead of render time
-- a stricter gameplay-cell vocabulary in the Zig runtime, so the runner now distinguishes authored attachment tiles, health, jetpack, garbage, salt, slug, ring, parcel, turret, and trampoline rows instead of treating them as generic preview markers
+- a more original-shaped movement integrator in level mode, with a discrete `runtime_track_index` cursor plus fractional `movement_progress` and per-tick `movement_rate_scalar` instead of only a free-running row float
+- a stricter gameplay-cell vocabulary in the Zig runtime, so the runner now distinguishes authored attachment tiles, trampoline rows, health, jetpack, garbage, salt, slug, ring, and parcel semantics instead of treating them as generic preview markers
+- a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
