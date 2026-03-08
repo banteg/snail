@@ -148,6 +148,7 @@ pub const LoadedLevelPreview = struct {
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
     runtime_tiles: []u8,
+    runtime_edge_masks: []u8,
     total_rows: usize,
     max_width: usize,
 
@@ -248,6 +249,8 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
+        const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
+        errdefer allocator.free(runtime_edge_masks);
 
         return .{
             .allocator = allocator,
@@ -256,6 +259,7 @@ pub const LoadedLevelPreview = struct {
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_tiles = runtime_tiles,
+            .runtime_edge_masks = runtime_edge_masks,
             .total_rows = total_rows,
             .max_width = max_width,
         };
@@ -267,6 +271,7 @@ pub const LoadedLevelPreview = struct {
         }
         self.allocator.free(self.placed_models);
         self.allocator.free(self.model_assets);
+        self.allocator.free(self.runtime_edge_masks);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
@@ -302,8 +307,8 @@ pub const LoadedLevelPreview = struct {
             drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
             drawSegmentCells(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
             drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
-            drawSegmentCenterline(loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
-            drawSegmentAnnotations(loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
+            drawSegmentCenterline(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
+            drawSegmentAnnotations(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
         }
 
         self.drawPlacedModels(width_offset, cell_size);
@@ -406,6 +411,11 @@ pub const LoadedLevelPreview = struct {
         return self.runtime_tiles[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
+    pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_edge_masks[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
     pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
         const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
         return .{
@@ -453,7 +463,8 @@ pub const LoadedLevelPreview = struct {
 
             const row = loaded_segment.rows[instance.row_index];
             const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[instance.segment_index])) * cell_size;
-            const base = rowAnchorPosition(row, instance.row_index, width_offset, segment_start_z, cell_size, 0.02);
+            const global_row = self.row_offsets[instance.segment_index] + instance.row_index;
+            const base = rowAnchorPosition(self, global_row, row, instance.row_index, width_offset, segment_start_z, cell_size, 0.02);
             const position = applyAnnotationOffset(base, instance.offset);
             const asset = &self.model_assets[instance.asset_index].loaded;
 
@@ -508,6 +519,14 @@ fn drawSegmentCells(
 
             const color = tintForSelection(colorForCell(cell), is_selected);
             rl.drawCubeV(position, size, color);
+            if (cell != '@') {
+                drawRuntimeCellExposedEdges(
+                    preview.runtimeEdgeMaskAt(global_row, col_index) orelse 0,
+                    position,
+                    size,
+                    tintForSelection(.ray_white, is_selected),
+                );
+            }
             if (row.marked and cell != '@') {
                 rl.drawCubeWiresV(position, size, .gold);
             }
@@ -516,6 +535,8 @@ fn drawSegmentCells(
 }
 
 fn drawSegmentCenterline(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
     loaded_segment: segment.Definition,
     width_offset: f32,
     segment_start_z: f32,
@@ -525,13 +546,15 @@ fn drawSegmentCenterline(
     var previous: ?rl.Vector3 = null;
 
     for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
         const bounds = guidanceBounds(row) orelse {
             previous = null;
             continue;
         };
 
         const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-        const point = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, 0.35);
+        const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+        const point = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.35);
 
         rl.drawSphere(point, 0.08, color);
         if (previous) |prev| {
@@ -542,6 +565,8 @@ fn drawSegmentCenterline(
 }
 
 fn drawSegmentAnnotations(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
     loaded_segment: segment.Definition,
     width_offset: f32,
     segment_start_z: f32,
@@ -549,14 +574,15 @@ fn drawSegmentAnnotations(
     is_selected: bool,
 ) void {
     for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
         const annotation = row.annotation orelse continue;
         switch (annotation) {
-            .path => drawPathMarkers(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
-            .ring => drawRingMarkers(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
-            .parcel => |parcel| drawParcelMarker(row, row_index, width_offset, segment_start_z, cell_size, parcel, is_selected),
-            .model => |model| drawModelMarker(row, row_index, width_offset, segment_start_z, cell_size, model, is_selected),
-            .jetpack_off => drawJetpackOffMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
-            .no_fall => drawNoFallMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .path => drawPathMarkers(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .ring => drawRingMarkers(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .parcel => |parcel| drawParcelMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, parcel, is_selected),
+            .model => |model| drawModelMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, model, is_selected),
+            .jetpack_off => drawJetpackOffMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .no_fall => drawNoFallMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
         }
     }
 }
@@ -615,6 +641,8 @@ fn drawSegmentBoundary(width_offset: f32, segment_start_z: f32, height: usize, i
 }
 
 fn drawPathMarkers(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -630,7 +658,8 @@ fn drawPathMarkers(
         if (!isPathCell(cell)) continue;
         found = true;
 
-        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, 0.62);
+        const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.62);
         const color = tintForSelection(if (cell == 'P') .sky_blue else .blue, is_selected);
         rl.drawSphere(position, if (cell == 'P') 0.17 else 0.13, color);
         if (first == null) first = position;
@@ -647,6 +676,8 @@ fn drawPathMarkers(
 }
 
 fn drawRingMarkers(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -663,7 +694,8 @@ fn drawRingMarkers(
 
     for (row.cells, 0..) |cell, col_index| {
         if (!isRingCell(cell)) continue;
-        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, 0.85);
+        const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.85);
         switch (ring) {
             .none => rl.drawCubeWiresV(position, .{ .x = 0.28, .y = 0.28, .z = 0.28 }, color),
             .normal => rl.drawSphere(position, 0.2, color),
@@ -678,6 +710,8 @@ fn drawRingMarkers(
 }
 
 fn drawParcelMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -686,7 +720,7 @@ fn drawParcelMarker(
     parcel: segment.ParcelAnnotation,
     is_selected: bool,
 ) void {
-    const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.6);
+    const base = rowAnchorPosition(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, 0.6);
     const position = applyAnnotationOffset(base, parcel.offset);
     const color = tintForSelection(if (parcel.id == 0) .gold else .green, is_selected);
 
@@ -695,6 +729,8 @@ fn drawParcelMarker(
 }
 
 fn drawModelMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -703,7 +739,7 @@ fn drawModelMarker(
     model_annotation: segment.ModelAnnotation,
     is_selected: bool,
 ) void {
-    const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.5);
+    const base = rowAnchorPosition(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, 0.5);
     const position = applyAnnotationOffset(base, model_annotation.offset);
     const color = tintForSelection(.purple, is_selected);
 
@@ -713,6 +749,8 @@ fn drawModelMarker(
 }
 
 fn drawJetpackOffMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -721,10 +759,12 @@ fn drawJetpackOffMarker(
     is_selected: bool,
 ) void {
     const bounds = guidanceBounds(row) orelse return;
-    drawRowStrip(bounds, row_index, width_offset, segment_start_z, cell_size, 0.22, tintForSelection(.red, is_selected));
+    drawRowStrip(preview, global_row, bounds, row_index, width_offset, segment_start_z, cell_size, 0.22, tintForSelection(.red, is_selected));
 }
 
 fn drawNoFallMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -733,8 +773,10 @@ fn drawNoFallMarker(
     is_selected: bool,
 ) void {
     const bounds = guidanceBounds(row) orelse return;
-    const left = worldPositionForColumn(@as(f32, @floatFromInt(bounds.min)) + 0.5, row_index, width_offset, segment_start_z, cell_size, 0.95);
-    const right = worldPositionForColumn(@as(f32, @floatFromInt(bounds.max)) + 0.5, row_index, width_offset, segment_start_z, cell_size, 0.95);
+    const left_floor = preview.floorHeightAtCellCenter(global_row, bounds.min) orelse 0.0;
+    const right_floor = preview.floorHeightAtCellCenter(global_row, bounds.max) orelse 0.0;
+    const left = worldPositionForColumn(@as(f32, @floatFromInt(bounds.min)) + 0.5, row_index, width_offset, segment_start_z, cell_size, left_floor + 0.95);
+    const right = worldPositionForColumn(@as(f32, @floatFromInt(bounds.max)) + 0.5, row_index, width_offset, segment_start_z, cell_size, right_floor + 0.95);
     const color = tintForSelection(.sky_blue, is_selected);
     rl.drawLine3D(left, right, color);
     rl.drawSphere(left, 0.08, color);
@@ -742,6 +784,8 @@ fn drawNoFallMarker(
 }
 
 fn drawRowStrip(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     bounds: LaneBounds,
     row_index: usize,
     width_offset: f32,
@@ -752,11 +796,14 @@ fn drawRowStrip(
 ) void {
     const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
     const width = @as(f32, @floatFromInt(bounds.max - bounds.min + 1)) * cell_size;
-    const position = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, y);
+    const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+    const position = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + y);
     rl.drawCubeV(position, .{ .x = width, .y = 0.08, .z = 0.2 }, color);
 }
 
 fn rowAnchorPosition(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
     row: segment.Row,
     row_index: usize,
     width_offset: f32,
@@ -769,7 +816,8 @@ fn rowAnchorPosition(
         break :blk LaneBounds{ .min = 0, .max = max_index };
     };
     const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-    return worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, y);
+    const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+    return worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + y);
 }
 
 fn cellWorldPosition(
@@ -796,6 +844,32 @@ fn worldPositionForColumn(
         .y = y,
         .z = segment_start_z + @as(f32, @floatFromInt(row_index)) * cell_size + 0.5,
     };
+}
+
+fn drawRuntimeCellExposedEdges(edge_mask: u8, position: rl.Vector3, size: rl.Vector3, color: rl.Color) void {
+    if (edge_mask == 0) return;
+
+    const half_x = size.x * 0.5;
+    const half_z = size.z * 0.5;
+    const top_y = position.y + (size.y * 0.5) + 0.01;
+
+    const front_left = rl.Vector3{ .x = position.x - half_x, .y = top_y, .z = position.z - half_z };
+    const front_right = rl.Vector3{ .x = position.x + half_x, .y = top_y, .z = position.z - half_z };
+    const back_left = rl.Vector3{ .x = position.x - half_x, .y = top_y, .z = position.z + half_z };
+    const back_right = rl.Vector3{ .x = position.x + half_x, .y = top_y, .z = position.z + half_z };
+
+    if ((edge_mask & 0x01) != 0) {
+        rl.drawLine3D(front_left, front_right, color);
+    }
+    if ((edge_mask & 0x02) != 0) {
+        rl.drawLine3D(back_left, back_right, color);
+    }
+    if ((edge_mask & 0x08) != 0) {
+        rl.drawLine3D(front_left, back_left, color);
+    }
+    if ((edge_mask & 0x04) != 0) {
+        rl.drawLine3D(front_right, back_right, color);
+    }
 }
 
 fn applyAnnotationOffset(base: rl.Vector3, offset: segment.Vec3) rl.Vector3 {
@@ -852,8 +926,74 @@ fn buildRuntimeTileGrid(
     return runtime_tiles;
 }
 
+fn buildRuntimeEdgeMaskGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+) ![]u8 {
+    const edge_masks = try allocator.alloc(u8, total_rows * max_width);
+    @memset(edge_masks, 0);
+
+    for (0..total_rows) |global_row| {
+        for (0..max_width) |lane_index| {
+            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+            edge_masks[runtimeTileIndex(max_width, global_row, lane_index)] = runtimeOpenEdgeMask(
+                runtime_tiles,
+                total_rows,
+                max_width,
+                global_row,
+                lane_index,
+                tile_type,
+            );
+        }
+    }
+
+    return edge_masks;
+}
+
 fn runtimeTileIndex(max_width: usize, global_row: usize, lane_index: usize) usize {
     return (global_row * max_width) + lane_index;
+}
+
+fn runtimeOpenEdgeMask(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+    tile_type: u8,
+) u8 {
+    if (tile_type == 0x00 or tile_type == 0x0e or tile_type == 0x1c or tile_type == 0x1d or tile_type == 0x1e or tile_type == 0x23) {
+        return 0;
+    }
+
+    var mask: u8 = 0;
+    if (lane_index == 0 or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row, lane_index - 1)) {
+        mask |= 0x08;
+    }
+    if (lane_index + 1 >= max_width or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row, lane_index + 1)) {
+        mask |= 0x04;
+    }
+    if (global_row == 0 or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row - 1, lane_index)) {
+        mask |= 0x01;
+    }
+    if (global_row + 1 >= total_rows or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row + 1, lane_index)) {
+        mask |= 0x02;
+    }
+    return mask;
+}
+
+fn isRuntimeEdgeNeighborOpen(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) bool {
+    if (global_row >= total_rows or lane_index >= max_width) return true;
+    const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    return isOpenNeighborRuntimeTileFamily(tile_type);
 }
 
 fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
@@ -1222,6 +1362,24 @@ test "runtime tile family helpers match recovered cache predicates" {
     try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x1d));
     try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x23));
     try std.testing.expect(!isOpenNeighborRuntimeTileFamily(0x1e));
+}
+
+test "runtime open edge mask follows open-neighbor family boundaries" {
+    const tiles = [_]u8{
+        0x00, 0x00, 0x00,
+        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
+    };
+    try std.testing.expectEqual(@as(u8, 0x0f), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x01));
+
+    const closed_neighbors = [_]u8{
+        0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01,
+    };
+    try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&closed_neighbors, 3, 3, 1, 1, 0x01));
+
+    try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x1e));
 }
 
 test "runtime floor sampler matches recovered tile formulas" {
