@@ -47,6 +47,8 @@ Verified archive and asset format notes live in [`docs/asset-formats.md`](/Users
 
 The rewrite direction and runtime goals live in [`docs/rewrite/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/README.md).
 
+Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md).
+
 Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
 
 - `.ogg` audio
@@ -62,6 +64,8 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - `.x2` mesh rendering and animation playback
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
+
+Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
 The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
@@ -104,4 +108,4 @@ Interactive controls:
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- reconstruct the hardcoded `Path=` route system from `SnailMail.RWG` so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay
+- continue tracing the hardcoded `Path=` route system from `SnailMail.RWG`, especially the exact name-to-template mapping and attachment-entry tile semantics, so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay

@@ -171,8 +171,13 @@ Representative samples:
 Current RWG understanding:
 
 - `Path=<name>` resolves through a hardcoded string table inside `SnailMail.RWG`, not through a separate path-definition file in the archive
+- the recovered hardcoded table currently has `51` names, including `START`, `HALFPIPE`, `TWISTER*`, and `TOAD*` variants
+- `P` and `p` path cells later consume the copied row `Path=` index and select one of the hardcoded path-template pairs rooted at runtime offsets `0xff2914` and `0xff29bc`
+- each path-template step is `0x150` bytes, which corresponds to two `0xa8`-byte template records per path id
+- the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records
 - `Ring=Explosive` appears in shipped text, but the RWG parser path matches the `Explode` behavior
 - `3DModel=<mesh>.x` rows line up with archive meshes like `X/SIGNBANG.X2`, `X/SIGNSTOP.X2`, and `X/SIGNCONSTRUCTION.X2`
+- deeper static notes for the path table and track-runtime builder now live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md)
 
 ## LEVELS/*.TXT
 

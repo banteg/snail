@@ -152,7 +152,7 @@ Notes:
 
 - `zig build run` opens the interactive archive browser and waits until you close it
 - `zig build run -- --smoke-test` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
-- current level previews are still sequential approximations: the named `Path=` routes appear to be backed by a hardcoded table in `SnailMail.RWG`, not by data files in the archive
+- current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in `SnailMail.RWG`, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation
 
 Interactive controls:
 
