@@ -55,6 +55,8 @@ Current static reverse-engineering notes for the hardcoded segment path system a
 
 The Windows runtime trace harness for Frida lives in [`docs/reverse/frida-runtime-trace.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/frida-runtime-trace.md).
 
+The Windows-agent runbook for collecting those captures lives in [`docs/reverse/windows-frida-handoff.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/windows-frida-handoff.md).
+
 Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
 
 - `.ogg` audio
