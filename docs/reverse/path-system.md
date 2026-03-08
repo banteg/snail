@@ -282,17 +282,23 @@ Observed field offsets from the segment slot base in `load_segment_definitions`:
 - velocity: `+0x8b0`, `+0x8b4`, `+0x8b8`
 - path index: `+0x8bc`
 
-Observed uses of the generic row-flags dword at `+0x88c`:
+Observed uses of the packed row-flags dword at `+0x88c`:
 
-- `Parcel` and `NoFall` both set `0x01`
-- `3DModel` and `Ring=None` both set `0x02`
-- the post-row `*` marker and `Ring=Normal` both set `0x04`
-- `Path`, `Velocity`, and `Ring=Explode` all set `0x08`
-- `Ring=Slow` sets `0x10`
-- `Ring=PowerUp` sets `0x20`
-- `JetPack=Off` sets `0x80`
+- low byte:
+  - `Parcel` sets `0x01`
+  - `3DModel` sets `0x02`
+  - the post-row `*` marker sets `0x04`
+  - `Path` and `Velocity` set `0x08`
+- second byte:
+  - `NoFall` sets `0x01`
+  - `Ring=None` sets `0x02`
+  - `Ring=Normal` sets `0x04`
+  - `Ring=Explode` sets `0x08`
+  - `Ring=Slow` sets `0x10`
+  - `Ring=PowerUp` sets `0x20`
+  - `JetPack=Off` sets `0x80`
 
-That means `+0x88c` is a generic metadata-flag byte, not a clean ring-only enum.
+So `+0x88c` is still a generic packed metadata word, not a clean ring-only enum, but the byte split matters: `Parcel`, `NoFall`, and `JetPack=Off` are statically distinguishable in the IDA export even though Binary Ninja HLIL partially flattened them.
 
 One useful parser detail:
 
@@ -307,6 +313,9 @@ High-confidence runtime mapping:
 - runtime `+0x5ccb68`: copied row `Path=` index
 - runtime `+0x5ccb34`, `+0x5ccb38`, `+0x5ccb3c`: copied `3DModel` offset
 - runtime `+0x5ccb4c`, `+0x5ccb50`, `+0x5ccb54`: copied `Velocity`
+- runtime low-byte `0x01` plus `0x4000`: authored `Parcel` lane
+- runtime `0x100`: authored `NoFall`
+- runtime `0x8000`: authored `JetPack=Off`
 
 ## Track Runtime Pipeline
 
@@ -492,26 +501,49 @@ One remaining caveat: mode `4` also lands on the `ParticleRing` family, but the 
 
 `RingSpeed=` also now has a clearer runtime interpretation. The parser stores a per-row float, and the authored ring modes `5` through `8` are the helper path that uses the row float argument to compute the orbit angular speed. No shipped extracted segment currently uses `RingSpeed=`, so the static link is stronger than the corpus evidence.
 
-## Runtime Flag Collisions Around Parcel and NoFall
+## JetPack=Off And NoFall Are Confirmed Runtime Bits
 
-The remaining `NoFall` ambiguity is real.
+`JetPack=Off` and `NoFall` are no longer just parser metadata.
 
 High-confidence findings:
 
-- the segment parser sets the same source bit `0x01` for both `Parcel=...` and `NoFall`
-- the rebuilt runtime cells preserve that shared lane in their merged flag byte
+- `load_segment_definitions` stores `NoFall` in the second byte of the row-flags dword and `JetPack=Off` in that same byte's `0x80` lane
+- `rebuild_track_runtime_from_segments` copies those authored bits into runtime mask `0x100` for `NoFall` and runtime mask `0x8000` for `JetPack=Off`
+- `get_track_runtime_cell_at_world_z` returns the current runtime cell by clamping world `z` into the row array
+- `update_player_track_movement_and_triggers` later checks runtime mask `0x100` on the current cell before applying one movement branch on `=` rows
+- a player update helper called from `update_player_track_movement_and_triggers` samples that current runtime cell and, if `BYTE1(cell_flags) & 0x80` is set, emits `Auto Shutoff Jetpack` and clamps the jetpack timer path
+
+That makes both `NoFall` and `JetPack=Off` confirmed live gameplay flags in the runtime, not dead authored residue.
+
+The remaining wrinkle is representation, not identity:
+
+- the hardcoded `Path=` template propagation uses low-byte `0x40` and `0x80` for the two attachment lanes
+- `JetPack=Off` uses second-byte `0x80`, which is runtime mask `0x8000`
+- so the apparent `0x80` overlap in some HLIL views is a byte-packing artifact, not a full-mask collision
+- the safe parser-level interpretation is now straightforward: keep `Parcel`, `NoFall`, `JetPack=Off`, and `Path` as distinct authored tags in the rewrite and preserve their separate runtime lanes
+
+## Packed Runtime Flags Around Parcel, NoFall, and Path
+
+High-confidence findings:
+
+- the segment parser uses low-byte `0x01` for `Parcel=...`, second-byte `0x01` for `NoFall`, and second-byte `0x80` for `JetPack=Off`
+- the rebuilt runtime cells preserve those lanes as:
+  - low-byte `0x01` plus `0x4000` for `Parcel`
+  - `0x100` for `NoFall`
+  - `0x8000` for `JetPack=Off`
 - `allocate_challenge_parcels_on_track` explicitly scans for cells where:
   - `(cell_flags & 0x01) != 0`
   - `parcel_id == 0`
 - those cells become random parcel candidates in challenge-mode placement
 
-That proves the shared `0x01` lane is live gameplay data, not dead parser residue. It also means we cannot yet assign a clean standalone runtime meaning to `NoFall` from static evidence alone.
+That proves the low-byte `Parcel` lane is live gameplay data, not dead parser residue, and it also removes the earlier HLIL-driven ambiguity: `NoFall` is statically separable from `Parcel` in the original runtime.
 
 The practical read for the port is:
 
 - `Parcel` semantics are definitely live and feed both authored and random challenge parcel placement
-- `NoFall` still cannot be treated as an isolated runtime bit without more evidence
-- any rewrite that wants to preserve exact behavior should keep `Parcel` and `NoFall` represented separately at the parser level and avoid collapsing them into one boolean until we have either more static recovery or dynamic traces
+- `NoFall` should be modeled as its own authored flag that becomes runtime mask `0x100`
+- `JetPack=Off` should be modeled as its own authored flag that becomes runtime mask `0x8000`
+- any rewrite that wants to preserve exact behavior should keep `Parcel`, `NoFall`, `JetPack=Off`, and path-attachment lanes distinct instead of flattening them into one generic flag bucket
 
 ## First Confirmed Path Consumer
 
@@ -563,7 +595,7 @@ The neighbor propagation step is now clearer too:
 - those two lanes store sampled path-object pointers at runtime offsets `+0x5ccb6c` and `+0x5ccb70`
 - `update_player_track_movement_and_triggers` later probes both lanes through `try_enter_track_attachment_from_swept_motion`
 
-So the movement code's `0x40` and `0x80` checks are part of the path-follow system, not evidence for `JetPack=Off`
+So the attachment-follow checks on low-byte `0x40` and `0x80` are part of the path-follow system. They are separate from authored `JetPack=Off`, which lives in second-byte `0x80` and therefore full runtime mask `0x8000`.
 
 What is not pinned down yet:
 

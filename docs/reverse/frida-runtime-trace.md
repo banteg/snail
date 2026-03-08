@@ -96,7 +96,7 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
 - no-fall run: [`LEVELS/ARCADE047.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE047.TXT)
   - current top level by explicit `NoFall` rows once repeated segment placements are counted
   - `286` `NoFall` rows, driven mostly by repeated trampoline-family segments
-  - best first probe if you want to correlate trampoline-heavy authored rows with the remaining shared parcel or no-fall runtime bit ambiguity
+  - best first probe if you want to correlate trampoline-heavy authored rows with the now-recovered runtime `NoFall` lane at mask `0x100`
 - jetpack-off run: [`LEVELS/ARCADE025.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE025.TXT)
   - current top level by repeated `JetPackOff` segment exposure
   - `3` explicit `JetPack=Off` rows in one short arcade flow

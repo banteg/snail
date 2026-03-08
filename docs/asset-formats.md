@@ -198,15 +198,28 @@ Current RWG understanding:
   - modes `2` and `6` -> `Sprites/ParticleExplode-big.tga` and `Sprites/ParticleExplode-small.tga`
   - modes `3` and `7` -> `Sprites/ParticleSlow-big.tga` and `Sprites/ParticleSlow-small.tga`
 - `RingSpeed=` stores a per-row float, and the helper's authored ring modes `5` through `8` are the path that uses the row float argument to derive the orbit angular speed
-- those bits are reused by other metadata tags in the parser:
-  - `Parcel` and `NoFall` also set `0x01`
-  - `3DModel` also sets `0x02`
-  - `Path` and `Velocity` also set `0x08`
-  - `JetPack=Off` sets `0x80`
+- those bits live in a packed row-flags dword rather than one flat byte:
+  - low byte:
+    - `Parcel` sets `0x01`
+    - `3DModel` also sets `0x02`
+    - `Path` and `Velocity` also set `0x08`
+  - second byte:
+    - `NoFall` sets `0x01` and becomes runtime mask `0x100`
+    - `Ring=None` sets `0x02`
+    - `Ring=Normal` sets `0x04`
+    - `Ring=Explode` sets `0x08`
+    - `Ring=Slow` sets `0x10`
+    - `Ring=PowerUp` sets `0x20`
+    - `JetPack=Off` sets `0x80` and becomes runtime mask `0x8000`
 - deeper runtime caution:
   - the rebuilt track cell flags are a merged bitfield, not a clean one-tag-to-one-bit map
-  - path-template propagation later reuses runtime bits `0x40` and `0x80` as the primary and secondary attachment-follow lanes, with live pointers at `+0x5ccb6c` and `+0x5ccb70`
-  - `allocate_challenge_parcels_on_track` treats `(cell_flags & 0x01) != 0` plus `parcel_id == 0` as a random parcel candidate, so the shared `Parcel` or `NoFall` source bit is definitely live and still not separable into a clean `NoFall`-only runtime meaning from static evidence alone
+  - `rebuild_track_runtime_from_segments` copies `Parcel` rows into runtime low-byte `0x01` plus `0x4000`, and fills `parcel_id` plus parcel offsets at `+0x5ccb64` and `+0x5ccb58/+0x5ccb5c/+0x5ccb60`
+  - `rebuild_track_runtime_from_segments` copies `NoFall` rows into runtime mask `0x100`
+  - `rebuild_track_runtime_from_segments` copies authored `JetPack=Off` rows into runtime mask `0x8000`
+  - a player jetpack update path later samples the current runtime cell and treats `BYTE1(cell_flags) & 0x80` as `Auto Shutoff Jetpack`
+  - path-template propagation separately uses low-byte `0x40` and `0x80` as the primary and secondary attachment-follow lanes, with live pointers at `+0x5ccb6c` and `+0x5ccb70`
+  - so `JetPack=Off` and the secondary path-attachment lane are distinct at the full runtime-mask level even though both show up as byte-local `0x80` tests in different consumers
+  - `allocate_challenge_parcels_on_track` treats `(cell_flags & 0x01) != 0` plus `parcel_id == 0` as a random parcel candidate, which confirms `Parcel` is live gameplay state rather than dead parser residue
 - in the shipped corpus, ring-tagged segment files are isolated from `Path=` and `Parcel=` usage, which avoids the most obvious flag collisions
 - `RingSpeed=` exists in parser code but is unused in shipped extracted segments
 - the selected `P/p` template also installs live attachment pointers on neighboring runtime cells, and player movement later enters a dedicated follow state when swept motion intersects those sampled path records
