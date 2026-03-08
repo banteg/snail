@@ -4,3 +4,4 @@ artifacts/
 __pycache__/
 .zig-cache/
 zig-out/
+site/

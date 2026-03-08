@@ -4,7 +4,7 @@ This page describes the Frida harness for capturing the runtime evidence we stil
 
 The script lives at [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js).
 
-The Windows-side operational handoff lives at [windows-frida-handoff.md](/Users/banteg/dev/banteg/snail-mail/docs/reverse/windows-frida-handoff.md).
+The Windows-side operational handoff lives at [windows-frida-handoff.md](windows-frida-handoff.md).
 
 ## Goal
 

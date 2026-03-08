@@ -1,0 +1,48 @@
+[project]
+site_name = "Snail Mail"
+site_description = "Docs for the original game, the rewrite, and deeper reverse-engineering notes."
+site_author = "banteg"
+nav = [
+    { "Index" = "index.md" },
+    { "Original" = [
+        { "Overview" = "original/index.md" },
+        { "Asset formats overview" = "original/asset-formats.md" },
+        { "Archive container" = "original/archive-container.md" },
+        { "Asset families" = "original/asset-families.md" },
+        { "X2 format" = "original/x2-format.md" },
+        { "OBJECT format" = "original/object-format.md" },
+        { "Segment format" = "original/segment-format.md" },
+        { "Level format" = "original/level-format.md" },
+    ] },
+    { "Rewrite" = [
+        { "Overview" = "rewrite/index.md" },
+    ] },
+    { "RE" = [
+        { "Overview" = "re/index.md" },
+        { "Path system overview" = "re/path-system.md" },
+        { "Path templates" = "re/path-templates.md" },
+        { "Track runtime" = "re/track-runtime.md" },
+        { "Attachment follow state" = "re/attachment-follow.md" },
+        { "Symbol workflow" = "re/symbols.md" },
+        { "Reflexive wrapper" = "re/reflexive-wrapper.md" },
+        { "Frida runtime trace" = "re/frida-runtime-trace.md" },
+        { "Windows Frida handoff" = "re/windows-frida-handoff.md" },
+    ] },
+]
+copyright = """
+Copyright &copy; 2026 banteg
+"""
+
+[project.theme]
+language = "en"
+features = [
+    "content.code.copy",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.path",
+    "navigation.sections",
+    "navigation.tabs",
+    "navigation.tabs.sticky",
+    "navigation.top",
+    "search.highlight",
+]

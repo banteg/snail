@@ -9,7 +9,7 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH = (
-    REPO_ROOT / "docs/reverse/symbols/gameplay-functions.json"
+    REPO_ROOT / "analysis/symbols/gameplay-functions.json"
 )
 AUTO_FUNCTION_NAME_RE = re.compile(
     r"^(?:sub|j_sub|nullsub|j_nullsub|thunk|j_thunk)_[0-9a-fA-F]+$"
