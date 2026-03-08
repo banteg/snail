@@ -127,6 +127,7 @@ Current behavior:
 - the runtime opens a window
 - reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly
 - builds asset catalogs for the archive's `.tga`, `.ogg`, `.x2`, `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` entries
+- parses `BACKGROUNDS/*.TXT` scripts and resolves both single-image and split `_A` / `_B` TGA background layouts directly from the archive
 - browses original textures directly from archive memory
 - previews original OGGs as both one-shot sounds and music streams
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
@@ -141,6 +142,7 @@ Current behavior:
 - the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
 - the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
+- the default `snail` path now reuses the original splash and menu background assets and can hand off `Adventure` or `Arcade` into a lightweight level path backed by authored level backgrounds plus the deterministic runner
 
 Current note:
 
@@ -161,7 +163,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Notes:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` now enters the default game shell and drives the boot-to-main-menu path
+- `zig build run` now enters the default game path, shows archive-backed splash and menu scenes, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the interactive archive browser and waits until you close it
 - `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
 - current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation

@@ -13,9 +13,13 @@ Code-level convention:
 Current high-signal entries:
 
 - boot and main-menu shell: `scaffold`
-  - evidence: current forward-pass goal, not original UI parity yet
+  - evidence: original splash and menu art are now wired, but the overall front-end flow and copy are still not at original parity
   - implementation: [`main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
-  - replace when: title flow, menu assets, and real actions are ported
+  - replace when: title flow, menu assets, menu actions, and front-end copy are ported
+- background script parsing plus split `_A` / `_B` menu or splash layouts: `partial`
+  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
+  - implementation: [`background.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/background.zig), [`main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
+  - replace when: `Landscape` and any remaining background motion or distortion semantics are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
   - evidence: [`docs/re/track-runtime.md`](/Users/banteg/dev/banteg/snail-mail/docs/re/track-runtime.md)
   - implementation: [`track.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/track.zig)

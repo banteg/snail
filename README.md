@@ -81,6 +81,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 
 - `.tga` textures
 - `.ogg` audio as both one-shot sounds and music streams
+- `BACKGROUNDS/*.TXT` scripts plus their authored single-image or `_A`/`_B` split TGA layouts
 - `.x2` mesh rendering and animation playback
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
@@ -90,6 +91,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
 - a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
+- a default `snail` path that now uses the original splash and main-menu background assets and can hand off `Adventure` or `Arcade` into a lightweight authored-level path
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -118,7 +120,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Command behavior:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` launches the default game shell and currently drives the boot-to-main-menu path
+- `zig build run` launches the default game path, shows archive-backed splash and menu scenes, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the archive-backed debug browser
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
 

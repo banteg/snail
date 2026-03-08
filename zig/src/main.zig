@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const background = @import("background.zig");
 const gameplay = @import("gameplay.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
@@ -14,11 +15,14 @@ const window_width = 1280;
 const window_height = 720;
 
 const default_archive_path = "artifacts/bin/SnailMail.dat";
+const splash_background_path = "BACKGROUNDS/SPLASH.TXT";
+const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 const default_audio_path = "MUSIC/MAINMENU.OGG";
 const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
+const default_arcade_level_path = "LEVELS/ARCADE000.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
 const boot_phase_duration_ticks: u64 = 75;
 const status_message_duration_ticks: u32 = 180;
@@ -39,6 +43,7 @@ const AppCommand = enum {
 const GamePhase = enum {
     boot,
     main_menu,
+    level,
 };
 
 const MainMenuItem = enum {
@@ -53,15 +58,6 @@ const MainMenuItem = enum {
             .arcade => "Arcade",
             .options => "Options",
             .quit => "Quit",
-        };
-    }
-
-    fn description(self: MainMenuItem) []const u8 {
-        return switch (self) {
-            .adventure => "Primary campaign path. Wiring this will become the real game entry.",
-            .arcade => "Single-run playflow. Good second target once menu and selection state are stable.",
-            .options => "Settings shell for audio, controls, and graphics.",
-            .quit => "Exit the runtime cleanly.",
         };
     }
 };
@@ -108,6 +104,7 @@ const AppState = struct {
     current_level: ?level.Definition = null,
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
+    current_game_background: ?background.Loaded = null,
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
@@ -144,17 +141,14 @@ const AppState = struct {
                 try state.reloadObject();
                 try state.reloadLevel();
             },
-            .game => {
-                if (audio_ready and state.catalog.audio_entries.len > 0) {
-                    try state.previewMusic();
-                }
-            },
+            .game => try state.enterGamePhase(.boot),
         }
         return state;
     }
 
     fn deinit(self: *AppState) void {
         self.stopAudioPreview();
+        self.unloadGameBackground();
 
         if (self.current_model) |*model| {
             model.deinit();
@@ -215,7 +209,7 @@ const AppState = struct {
 
     fn simulateTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
         switch (self.command) {
-            .game => self.simulateGameTick(),
+            .game => try self.simulateGameTick(runner_input),
             .debug, .smoke => {
                 if (self.current_animation) |*animation| {
                     try animation.step(self.simulation_clock.step_seconds);
@@ -335,7 +329,7 @@ const AppState = struct {
         }
     }
 
-    fn simulateGameTick(self: *AppState) void {
+    fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
         self.game_phase_ticks += 1;
         if (self.game_status_ticks > 0) {
             self.game_status_ticks -= 1;
@@ -345,20 +339,31 @@ const AppState = struct {
         }
 
         if (self.game_phase == .boot and self.game_phase_ticks >= boot_phase_duration_ticks) {
-            self.enterGamePhase(.main_menu);
+            try self.enterGamePhase(.main_menu);
+        }
+
+        if (self.game_phase == .level) {
+            if (self.current_track_preview) |*loaded_track_preview| {
+                if (self.level_runner) |*runner| {
+                    runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                }
+            }
         }
     }
 
-    fn handleGameInput(self: *AppState) void {
+    fn handleGameInput(self: *AppState) !void {
         if (rl.isKeyPressed(.escape)) {
-            self.should_exit = true;
+            switch (self.game_phase) {
+                .level => try self.enterGamePhase(.main_menu),
+                .boot, .main_menu => self.should_exit = true,
+            }
             return;
         }
 
         switch (self.game_phase) {
             .boot => {
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.enterGamePhase(.main_menu);
+                    try self.enterGamePhase(.main_menu);
                 }
             },
             .main_menu => {
@@ -369,23 +374,114 @@ const AppState = struct {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, 1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.activateMainMenuItem(main_menu_items[self.menu_index]);
+                    try self.activateMainMenuItem(main_menu_items[self.menu_index]);
+                }
+            },
+            .level => {
+                if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+                    self.pending_level_input.lane_delta -= 1;
+                }
+                if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+                    self.pending_level_input.lane_delta += 1;
+                }
+                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.w)) {
+                    self.pending_level_input.speed_delta_rows_per_second += 2.0;
+                }
+                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.s)) {
+                    self.pending_level_input.speed_delta_rows_per_second -= 2.0;
+                }
+                if (rl.isKeyPressed(.space)) {
+                    self.pending_level_input.toggle_pause = true;
+                }
+                if (rl.isKeyPressed(.r)) {
+                    self.pending_level_input.reset = true;
                 }
             },
         }
     }
 
-    fn enterGamePhase(self: *AppState, phase: GamePhase) void {
+    fn enterGamePhase(self: *AppState, phase: GamePhase) !void {
         self.game_phase = phase;
         self.game_phase_ticks = 0;
+        try self.syncGamePhaseResources();
     }
 
-    fn activateMainMenuItem(self: *AppState, item: MainMenuItem) void {
+    fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         switch (item) {
-            .adventure => self.setGameStatusMessage("Adventure path is the next gameplay shell to wire."),
-            .arcade => self.setGameStatusMessage("Arcade flow is not wired yet."),
-            .options => self.setGameStatusMessage("Options UI is not wired yet."),
+            .adventure => try self.enterGameplayShell(default_level_path),
+            .arcade => try self.enterGameplayShell(default_arcade_level_path),
+            .options => self.setGameStatusMessage("Unavailable."),
             .quit => self.should_exit = true,
+        }
+    }
+
+    fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
+        try self.loadGameLevel(level_path);
+        try self.enterGamePhase(.level);
+    }
+
+    fn syncGamePhaseResources(self: *AppState) !void {
+        switch (self.game_phase) {
+            .boot => {
+                self.stopAudioPreview();
+                try self.loadGameBackground(splash_background_path);
+            },
+            .main_menu => {
+                try self.loadGameBackground(main_menu_background_path);
+                try self.playMusicByPath(default_audio_path);
+            },
+            .level => {
+                self.stopAudioPreview();
+                try self.loadCurrentLevelBackground();
+            },
+        }
+    }
+
+    fn loadGameLevel(self: *AppState, level_path: []const u8) !void {
+        self.level_index = self.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
+        try self.reloadLevel();
+    }
+
+    fn playMusicByPath(self: *AppState, path: []const u8) !void {
+        if (!self.audio_ready) return;
+        if (self.current_music) |music| {
+            if (std.ascii.eqlIgnoreCase(music.path, path)) {
+                if (!rl.isMusicStreamPlaying(music.music)) {
+                    rl.playMusicStream(music.music);
+                }
+                return;
+            }
+        }
+
+        self.stopAudioPreview();
+        self.current_music = try self.catalog.loadMusicByPath(self.allocator, path);
+        rl.playMusicStream(self.current_music.?.music);
+    }
+
+    fn loadCurrentLevelBackground(self: *AppState) !void {
+        const loaded_level = self.current_level orelse {
+            self.unloadGameBackground();
+            return;
+        };
+        const background_name = loaded_level.background orelse {
+            self.unloadGameBackground();
+            return;
+        };
+
+        var path_buffer: [256]u8 = undefined;
+        const script_path = try std.fmt.bufPrint(&path_buffer, "BACKGROUNDS/{s}", .{background_name});
+        try self.loadGameBackground(script_path);
+    }
+
+    fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
+        self.unloadGameBackground();
+        self.current_game_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
+    }
+
+    fn unloadGameBackground(self: *AppState) void {
+        if (self.current_game_background) |*loaded_background| {
+            loaded_background.deinit();
+            self.current_game_background = null;
         }
     }
 
@@ -679,56 +775,196 @@ pub fn main() !void {
 
 fn drawUi(state: *const AppState, archive_path: []const u8) !void {
     switch (state.command) {
-        .game => return drawGameUi(state, archive_path),
+        .game => return drawGameUi(state),
         .debug, .smoke => return drawDebugUi(state, archive_path),
     }
 }
 
-fn drawGameUi(state: *const AppState, archive_path: []const u8) !void {
-    rl.drawRectangle(0, 0, window_width, window_height, .black);
-    rl.drawRectangleRounded(.{ .x = 52, .y = 52, .width = 1176, .height = 616 }, 0.04, 12, .dark_blue);
-    rl.drawRectangleRounded(.{ .x = 70, .y = 70, .width = 1140, .height = 580 }, 0.04, 12, .{ .r = 0, .g = 0, .b = 0, .a = 140 });
+fn drawGameUi(state: *const AppState) !void {
+    const full_bounds: rl.Rectangle = .{
+        .x = 0.0,
+        .y = 0.0,
+        .width = @floatFromInt(window_width),
+        .height = @floatFromInt(window_height),
+    };
 
-    rl.drawText("snail", 92, 84, 72, .orange);
-    rl.drawText("runtime port", 96, 150, 28, .gold);
-
-    var archive_buffer: [512]u8 = undefined;
-    const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
-    rl.drawText(archive_text, 92, 196, 20, .light_gray);
+    const art_layout = if (state.current_game_background) |loaded_background|
+        loaded_background.draw(full_bounds)
+    else blk: {
+        rl.drawRectangleRec(full_bounds, .black);
+        break :blk null;
+    };
 
     switch (state.game_phase) {
-        .boot => {
-            rl.drawText("Boot path", 92, 252, 28, .ray_white);
-            rl.drawText("This is now the default executable path, not the debug browser.", 92, 292, 24, .light_gray);
-            rl.drawText("The current forward pass is boot -> main menu. Gameplay screens come next.", 92, 326, 24, .light_gray);
-            rl.drawText("Press Enter to continue", 92, 390, 30, if ((state.game_phase_ticks / 20) % 2 == 0) .orange else .gray);
-            rl.drawText("Use `snail debug` for the asset browser and `snail smoke` for the warmup check.", 92, 454, 20, .sky_blue);
+        .boot => try drawGameBootUi(state, art_layout),
+        .main_menu => try drawGameMenuUi(state, art_layout),
+        .level => try drawGameplayLevelUi(state, art_layout),
+    }
+}
+
+fn drawGameBootUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const panel = if (art_layout) |layout|
+        layout.mapRect(36.0, 418.0, 568.0, 70.0)
+    else
+        rl.Rectangle{ .x = 72.0, .y = 596.0, .width = 1136.0, .height = 90.0 };
+
+    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+
+    const title_point = if (art_layout) |layout|
+        layout.mapPoint(56.0, 438.0)
+    else
+        rl.Vector2{ .x = 96.0, .y = 624.0 };
+    const prompt_point = if (art_layout) |layout|
+        layout.mapPoint(250.0, 438.0)
+    else
+        rl.Vector2{ .x = 332.0, .y = 624.0 };
+    const hint_point = if (art_layout) |layout|
+        layout.mapPoint(250.0, 462.0)
+    else
+        rl.Vector2{ .x = 332.0, .y = 650.0 };
+
+    rl.drawText("snail", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 30, .orange);
+
+    const prompt_color: rl.Color = if ((state.game_phase_ticks / 20) % 2 == 0) .gold else .light_gray;
+    rl.drawText("Press Enter to continue", @intFromFloat(prompt_point.x), @intFromFloat(prompt_point.y), 22, prompt_color);
+    rl.drawText("Esc quits", @intFromFloat(hint_point.x), @intFromFloat(hint_point.y), 18, .light_gray);
+}
+
+fn drawGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const menu_panel = if (art_layout) |layout|
+        layout.mapRect(56.0, 104.0, 220.0, 250.0)
+    else
+        rl.Rectangle{ .x = 96.0, .y = 220.0, .width = 360.0, .height = 260.0 };
+    const detail_panel = if (art_layout) |layout|
+        layout.mapRect(292.0, 104.0, 248.0, 250.0)
+    else
+        rl.Rectangle{ .x = 492.0, .y = 220.0, .width = 640.0, .height = 260.0 };
+    const footer_panel = if (art_layout) |layout|
+        layout.mapRect(56.0, 370.0, 484.0, 38.0)
+    else
+        rl.Rectangle{ .x = 96.0, .y = 516.0, .width = 1036.0, .height = 44.0 };
+
+    rl.drawRectangleRounded(menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+
+    const title_point = if (art_layout) |layout|
+        layout.mapPoint(72.0, 78.0)
+    else
+        rl.Vector2{ .x = 96.0, .y = 176.0 };
+    rl.drawText("Main Menu", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .ray_white);
+
+    for (main_menu_items, 0..) |item, index| {
+        const active = index == state.menu_index;
+        const row_rect = if (art_layout) |layout|
+            layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
+        else
+            rl.Rectangle{
+                .x = 112.0,
+                .y = 252.0 + @as(f32, @floatFromInt(index)) * 48.0,
+                .width = 328.0,
+                .height = 36.0,
+            };
+        const label_point = if (art_layout) |layout|
+            layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0)
+        else
+            rl.Vector2{ .x = 132.0, .y = 260.0 + @as(f32, @floatFromInt(index)) * 48.0 };
+
+        if (active) {
+            rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
+        }
+        rl.drawText(item.label(), @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
+    }
+
+    const selected = main_menu_items[state.menu_index];
+    const detail_title = if (art_layout) |layout|
+        layout.mapPoint(312.0, 126.0)
+    else
+        rl.Vector2{ .x = 520.0, .y = 252.0 };
+    const control_note = if (art_layout) |layout|
+        layout.mapPoint(312.0, 170.0)
+    else
+        rl.Vector2{ .x = 520.0, .y = 304.0 };
+    const selection_note = if (art_layout) |layout|
+        layout.mapPoint(312.0, 210.0)
+    else
+        rl.Vector2{ .x = 520.0, .y = 348.0 };
+    const status_note = if (art_layout) |layout|
+        layout.mapPoint(312.0, 276.0)
+    else
+        rl.Vector2{ .x = 520.0, .y = 424.0 };
+
+    rl.drawText(selected.label(), @intFromFloat(detail_title.x), @intFromFloat(detail_title.y), 30, .gold);
+    rl.drawText("Up/Down select", @intFromFloat(control_note.x), @intFromFloat(control_note.y), 20, .ray_white);
+    rl.drawText("Enter confirm", @intFromFloat(control_note.x), @intFromFloat(control_note.y + 26.0), 20, .ray_white);
+    rl.drawText("Esc quit", @intFromFloat(selection_note.x), @intFromFloat(selection_note.y), 20, .light_gray);
+
+    if (selected == .options) {
+        rl.drawText("Unavailable", @intFromFloat(status_note.x), @intFromFloat(status_note.y), 18, .sky_blue);
+    }
+
+    if (state.game_status_message) |message| {
+        rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
+        try drawWrappedText(message, @intFromFloat(footer_panel.x + 20.0), @intFromFloat(footer_panel.y + 11.0), @intFromFloat(footer_panel.width - 32.0), 20, .ray_white);
+    }
+}
+
+fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    drawLevelViewport(state);
+
+    const hud_panel = if (art_layout) |layout|
+        layout.mapRect(16.0, 14.0, 608.0, 84.0)
+    else
+        rl.Rectangle{ .x = 24.0, .y = 24.0, .width = 624.0, .height = 112.0 };
+    const footer_panel = if (art_layout) |layout|
+        layout.mapRect(16.0, 438.0, 608.0, 54.0)
+    else
+        rl.Rectangle{ .x = 24.0, .y = 642.0, .width = 960.0, .height = 54.0 };
+
+    rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+
+    const loaded_level = state.current_level orelse return;
+    const loaded_track_preview = state.current_track_preview orelse return;
+    const title_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 14.0 };
+    const meta_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 44.0 };
+    const control_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 68.0 };
+
+    var level_name_buffer: [128]u8 = undefined;
+    const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
+    rl.drawText(level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .gold);
+
+    var meta_buffer: [384]u8 = undefined;
+    const meta_text = try std.fmt.bufPrintZ(
+        &meta_buffer,
+        "Mode {s}  background {s}  segments {d}  rows {d}",
+        .{
+            loaded_level.mode,
+            loaded_level.background orelse "<none>",
+            loaded_level.segments.len,
+            loaded_track_preview.total_rows,
         },
-        .main_menu => {
-            rl.drawText("Main Menu", 92, 240, 32, .ray_white);
-            rl.drawText("Up/Down select  Enter confirm  Esc quit", 92, 282, 20, .light_gray);
+    );
+    rl.drawText(meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
+    rl.drawText("Left/Right lane  Up/Down speed  Space pause  R reset  Esc menu", @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
 
-            rl.drawRectangleRounded(.{ .x = 92, .y = 322, .width = 360, .height = 232 }, 0.05, 10, .{ .r = 0, .g = 0, .b = 0, .a = 128 });
-            for (main_menu_items, 0..) |item, index| {
-                const active = index == state.menu_index;
-                const row_y = 344 + @as(i32, @intCast(index)) * 50;
-                if (active) {
-                    rl.drawRectangleRounded(.{ .x = 108, .y = @floatFromInt(row_y - 8), .width = 328, .height = 40 }, 0.25, 8, .orange);
-                }
-                rl.drawText(item.label(), 128, row_y, 26, if (active) .black else .ray_white);
-            }
+    if (state.level_runner) |runner| {
+        rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
 
-            const selected = main_menu_items[state.menu_index];
-            rl.drawRectangleRounded(.{ .x = 492, .y = 322, .width = 640, .height = 232 }, 0.05, 10, .{ .r = 0, .g = 0, .b = 0, .a = 128 });
-            rl.drawText(selected.label(), 520, 352, 34, .gold);
-            try drawWrappedText(selected.description(), 520, 402, 580, 26, .light_gray);
-            rl.drawText("Current target: replace these placeholders with the real front-end flow.", 520, 496, 20, .sky_blue);
-
-            if (state.game_status_message) |message| {
-                rl.drawRectangleRounded(.{ .x = 92, .y = 584, .width = 1040, .height = 52 }, 0.22, 8, .dark_gray);
-                try drawWrappedText(message, 116, 600, 1000, 20, .ray_white);
-            }
-        },
+        var runner_buffer: [384]u8 = undefined;
+        const runner_text = try std.fmt.bufPrintZ(
+            &runner_buffer,
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}",
+            .{
+                runner.row_position,
+                loaded_track_preview.total_rows,
+                runner.runtime_track_index,
+                runner.movement_progress,
+                runner.lane_index,
+                runner.resolved_lane_index,
+                runner.speed_rows_per_second,
+                runner.recentEventLabel(),
+            },
+        );
+        rl.drawText(runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
     }
 }
 

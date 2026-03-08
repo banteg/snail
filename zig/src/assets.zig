@@ -90,8 +90,18 @@ pub const Catalog = struct {
         return self.texture_index_by_path.get(path);
     }
 
+    pub fn findTextureEntry(self: *const Catalog, path: []const u8) ?archive.Entry {
+        const index = self.findTextureIndex(path) orelse return null;
+        return self.texture_entries[index];
+    }
+
     pub fn findAudioIndex(self: *const Catalog, path: []const u8) ?usize {
         return self.audio_index_by_path.get(path);
+    }
+
+    pub fn findAudioEntry(self: *const Catalog, path: []const u8) ?archive.Entry {
+        const index = self.findAudioIndex(path) orelse return null;
+        return self.audio_entries[index];
     }
 
     pub fn findModelIndex(self: *const Catalog, path: []const u8) ?usize {
@@ -130,6 +140,11 @@ pub const Catalog = struct {
         };
     }
 
+    pub fn loadTextureByPath(self: *const Catalog, allocator: std.mem.Allocator, path: []const u8) !LoadedTexture {
+        const entry = self.findTextureEntry(path) orelse return error.EntryNotFound;
+        return self.loadTexture(allocator, entry);
+    }
+
     pub fn loadSound(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedSound {
         const decoded = try self.readEntryAlloc(allocator, entry);
         defer allocator.free(decoded);
@@ -159,6 +174,11 @@ pub const Catalog = struct {
             .bytes = decoded,
             .music = music,
         };
+    }
+
+    pub fn loadMusicByPath(self: *const Catalog, allocator: std.mem.Allocator, path: []const u8) !LoadedMusic {
+        const entry = self.findAudioEntry(path) orelse return error.EntryNotFound;
+        return self.loadMusic(allocator, entry);
     }
 };
 
