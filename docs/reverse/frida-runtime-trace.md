@@ -74,6 +74,8 @@ The `trace plan` command uses the extracted corpus to rank good first-run target
 
 - path-heavy segments and levels
 - ring-heavy segments and levels
+- no-fall-heavy segments and levels
+- jetpack-off-heavy segments and levels
 - salt-candidate segments with authored `&` rows
 - authored-salt levels with explicit `&` rows
 - high-garbage levels
@@ -91,6 +93,14 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
   - current top ring-tagged level
   - `12` authored ring rows across the tutorial chain
   - best first probe for confirming how `Ring=None`, `Ring=PowerUp`, `Ring=Explode`, and `Ring=Slow` surface in live runtime behavior
+- no-fall run: [`LEVELS/ARCADE047.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE047.TXT)
+  - current top level by explicit `NoFall` rows once repeated segment placements are counted
+  - `286` `NoFall` rows, driven mostly by repeated trampoline-family segments
+  - best first probe if you want to correlate trampoline-heavy authored rows with the remaining shared parcel or no-fall runtime bit ambiguity
+- jetpack-off run: [`LEVELS/ARCADE025.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE025.TXT)
+  - current top level by repeated `JetPackOff` segment exposure
+  - `3` explicit `JetPack=Off` rows in one short arcade flow
+  - best first probe if you want to watch how the runtime behaves around authored jetpack suppression without mixing in large no-fall sections
 - garbage-heavy run: [`LEVELS/ARCADE040.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE040.TXT)
   - current top garbage level
   - `Garbage:100`
@@ -107,6 +117,13 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
 - authored salt segment run: [`SEGMENTS/TUTORIAL 8.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL%208.TXT)
   - current top segment by explicit `&` rows
   - best static target for verifying the tile-family branch that feeds `spawn_salt_hazard`
+- no-fall segment run: [`SEGMENTS/TRAMPOLINES.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TRAMPOLINES.TXT)
+  - current top segment by explicit `NoFall` rows
+  - `84` no-fall-tagged rows in one segment
+  - best static target if you want a concentrated trampoline or no-fall capture without full-level noise
+- jetpack-off segment run: [`SEGMENTS/JETPACKOFF.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT)
+  - current only segment with an explicit `JetPack=Off` annotation
+  - best static target for isolating any runtime response to authored jetpack suppression
 - slug-like run: [`LEVELS/ARCADE029.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE029.TXT)
   - current top `M`-glyph-heavy level
   - useful first probe for the remaining slug and salt ambiguity

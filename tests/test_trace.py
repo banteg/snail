@@ -168,18 +168,30 @@ def test_build_trace_capture_plan_uses_real_corpus() -> None:
 
     assert plan.path_segments
     assert plan.ring_segments
+    assert plan.no_fall_segments
+    assert plan.jetpack_off_segments
     assert plan.salt_segments
     assert any("WARP.TXT" in hint.path for hint in plan.path_segments)
     assert plan.ring_segments[0].ring_rows == 2
     assert any(hint.path.endswith("SEGMENTS/TUTORIAL 7.TXT") for hint in plan.ring_segments)
+    assert plan.no_fall_segments[0].path.endswith("SEGMENTS/TRAMPOLINES.TXT")
+    assert plan.no_fall_segments[0].no_fall_rows == 84
+    assert plan.jetpack_off_segments[0].path.endswith("SEGMENTS/JETPACKOFF.TXT")
+    assert plan.jetpack_off_segments[0].jetpack_off_rows == 1
     assert plan.salt_segments[0].path.endswith("SEGMENTS/TUTORIAL 8.TXT")
     assert plan.salt_segments[0].salt_like_rows >= 7
     assert plan.best_path_levels
     assert plan.best_ring_levels
+    assert plan.best_no_fall_levels
+    assert plan.best_jetpack_off_levels
     assert plan.best_ring_levels[0].path.endswith("LEVELS/TUTORIAL.TXT")
     assert plan.best_ring_levels[0].ring_row_count == 12
     assert plan.best_ring_levels[0].ring_kinds["PowerUp"] == 9
     assert plan.best_ring_levels[0].ring_kinds["Explode"] == 1
+    assert plan.best_no_fall_levels[0].path.endswith("LEVELS/ARCADE047.TXT")
+    assert plan.best_no_fall_levels[0].no_fall_row_count == 286
+    assert plan.best_jetpack_off_levels[0].path.endswith("LEVELS/ARCADE025.TXT")
+    assert plan.best_jetpack_off_levels[0].jetpack_off_row_count == 3
     assert plan.best_garbage_levels[0].garbage == 100
     assert plan.best_garbage_levels[0].path.endswith("LEVELS/ARCADE040.TXT")
     assert plan.best_salt_levels[0].salt == 100

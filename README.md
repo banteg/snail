@@ -43,7 +43,7 @@ The format parser adds:
 
 - `format`: structured JSON for decoded `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` assets
 - `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
-- `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, authored-salt, and scalar-salt targets
+- `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, no-fall, jetpack-off, authored-salt, and scalar-salt targets
 
 ## Asset Format Notes
 

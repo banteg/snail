@@ -123,6 +123,8 @@ class LevelTraceHint(msgspec.Struct, frozen=True):
     ring_kinds: dict[str, int]
     salt_like_row_count: int
     slug_like_row_count: int
+    no_fall_row_count: int
+    jetpack_off_row_count: int
     path_names: tuple[str, ...]
     segments_preview: tuple[str, ...]
 
@@ -131,10 +133,14 @@ class RuntimeTracePlan(msgspec.Struct, frozen=True):
     source: str
     path_segments: tuple[SegmentTraceHint, ...]
     ring_segments: tuple[SegmentTraceHint, ...]
+    no_fall_segments: tuple[SegmentTraceHint, ...]
+    jetpack_off_segments: tuple[SegmentTraceHint, ...]
     salt_segments: tuple[SegmentTraceHint, ...]
     slug_like_segments: tuple[SegmentTraceHint, ...]
     best_path_levels: tuple[LevelTraceHint, ...]
     best_ring_levels: tuple[LevelTraceHint, ...]
+    best_no_fall_levels: tuple[LevelTraceHint, ...]
+    best_jetpack_off_levels: tuple[LevelTraceHint, ...]
     best_garbage_levels: tuple[LevelTraceHint, ...]
     best_salt_levels: tuple[LevelTraceHint, ...]
     best_authored_salt_levels: tuple[LevelTraceHint, ...]
@@ -267,6 +273,14 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
             hint.name.lower(),
         ),
     )
+    no_fall_segments = sorted(
+        (hint for _, hint in segment_defs.values() if hint.no_fall_rows > 0),
+        key=lambda hint: (-hint.no_fall_rows, -hint.slug_like_rows, hint.name.lower()),
+    )
+    jetpack_off_segments = sorted(
+        (hint for _, hint in segment_defs.values() if hint.jetpack_off_rows > 0),
+        key=lambda hint: (-hint.jetpack_off_rows, -hint.path_rows, hint.name.lower()),
+    )
     salt_segments = sorted(
         (hint for _, hint in segment_defs.values() if hint.salt_like_rows > 0),
         key=lambda hint: (-hint.salt_like_rows, -hint.path_rows, hint.name.lower()),
@@ -287,6 +301,14 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
             -hint.path_row_count,
             hint.path.lower(),
         ),
+    )
+    best_no_fall_levels = sorted(
+        (hint for hint in level_hints if hint.no_fall_row_count > 0),
+        key=lambda hint: (-hint.no_fall_row_count, -hint.slug_like_row_count, hint.path.lower()),
+    )
+    best_jetpack_off_levels = sorted(
+        (hint for hint in level_hints if hint.jetpack_off_row_count > 0),
+        key=lambda hint: (-hint.jetpack_off_row_count, -hint.no_fall_row_count, -hint.path_row_count, hint.path.lower()),
     )
     best_garbage_levels = sorted(
         (hint for hint in level_hints if (hint.garbage or 0) > 0),
@@ -309,10 +331,14 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
         source=root.as_posix(),
         path_segments=tuple(path_segments[:limit]),
         ring_segments=tuple(ring_segments[:limit]),
+        no_fall_segments=tuple(no_fall_segments[:limit]),
+        jetpack_off_segments=tuple(jetpack_off_segments[:limit]),
         salt_segments=tuple(salt_segments[:limit]),
         slug_like_segments=tuple(slug_like_segments[:limit]),
         best_path_levels=tuple(best_path_levels[:limit]),
         best_ring_levels=tuple(best_ring_levels[:limit]),
+        best_no_fall_levels=tuple(best_no_fall_levels[:limit]),
+        best_jetpack_off_levels=tuple(best_jetpack_off_levels[:limit]),
         best_garbage_levels=tuple(best_garbage_levels[:limit]),
         best_salt_levels=tuple(best_salt_levels[:limit]),
         best_authored_salt_levels=tuple(best_authored_salt_levels[:limit]),
@@ -424,6 +450,8 @@ def _build_level_hint(
         ring_kinds=dict(sorted(ring_kinds.items())),
         salt_like_row_count=sum(hint.salt_like_rows for hint in segment_hints),
         slug_like_row_count=sum(hint.slug_like_rows for hint in segment_hints),
+        no_fall_row_count=sum(hint.no_fall_rows for hint in segment_hints),
+        jetpack_off_row_count=sum(hint.jetpack_off_rows for hint in segment_hints),
         path_names=tuple(path_names),
         segments_preview=tuple(referenced_segment_names[:8]),
     )
