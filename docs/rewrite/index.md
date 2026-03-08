@@ -151,17 +151,20 @@ Useful commands:
 zig build
 zig build test
 zig build run
-zig build run -- --smoke-test
-zig build run -- --archive-path artifacts/bin/SnailMail.dat
+zig build run -- debug
+zig build run -- smoke
+zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 ```
 
 Notes:
 
-- `zig build run` opens the interactive archive browser and waits until you close it
-- `zig build run -- --smoke-test` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
+- `zig build` installs `zig-out/bin/snail`
+- `zig build run` now enters the default game shell and drives the boot-to-main-menu path
+- `zig build run -- debug` opens the interactive archive browser and waits until you close it
+- `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
 - current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation
 
-Interactive controls:
+Interactive controls for `zig build run -- debug`:
 
 - `1`: texture browser
 - `2`: audio browser

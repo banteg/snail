@@ -109,10 +109,19 @@ Use the Zig runtime to exercise original assets directly from [`SnailMail.dat`](
 zig build
 zig build test
 zig build run
-zig build run -- --smoke-test
+zig build run -- debug
+zig build run -- smoke
+zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 ```
 
-Interactive controls:
+Command behavior:
+
+- `zig build` installs `zig-out/bin/snail`
+- `zig build run` launches the default game shell and currently drives the boot-to-main-menu path
+- `zig build run -- debug` opens the archive-backed debug browser
+- `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
+
+Interactive controls for `zig build run -- debug`:
 
 - `1`: texture browser
 - `2`: audio browser

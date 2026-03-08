@@ -20,11 +20,51 @@ const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
+const boot_phase_duration_ticks: u64 = 75;
+const status_message_duration_ticks: u32 = 180;
 
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
-    smoke_test: bool = false,
+    command: AppCommand = .game,
 };
+
+const AppCommand = enum {
+    game,
+    debug,
+    smoke,
+};
+
+const GamePhase = enum {
+    boot,
+    main_menu,
+};
+
+const MainMenuItem = enum {
+    adventure,
+    arcade,
+    options,
+    quit,
+
+    fn label(self: MainMenuItem) [:0]const u8 {
+        return switch (self) {
+            .adventure => "Adventure",
+            .arcade => "Arcade",
+            .options => "Options",
+            .quit => "Quit",
+        };
+    }
+
+    fn description(self: MainMenuItem) []const u8 {
+        return switch (self) {
+            .adventure => "Primary campaign path. Wiring this will become the real game entry.",
+            .arcade => "Single-run playflow. Good second target once menu and selection state are stable.",
+            .options => "Settings shell for audio, controls, and graphics.",
+            .quit => "Exit the runtime cleanly.",
+        };
+    }
+};
+
+const main_menu_items = [_]MainMenuItem{ .adventure, .arcade, .options, .quit };
 
 const Mode = enum {
     textures,
@@ -38,9 +78,16 @@ const AppState = struct {
     allocator: std.mem.Allocator,
     catalog: assets.Catalog,
     animation_catalog: xanim.Catalog,
+    command: AppCommand,
     audio_ready: bool,
+    should_exit: bool = false,
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
+    game_phase: GamePhase = .boot,
+    game_phase_ticks: u64 = 0,
+    menu_index: usize = 0,
+    game_status_message: ?[]const u8 = null,
+    game_status_ticks: u32 = 0,
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -62,8 +109,8 @@ const AppState = struct {
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
-    fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !AppState {
-        var catalog = try assets.Catalog.init(allocator, archive_path);
+    fn init(allocator: std.mem.Allocator, options: Options, audio_ready: bool) !AppState {
+        var catalog = try assets.Catalog.init(allocator, options.archive_path);
         errdefer catalog.deinit();
         var animation_catalog = try xanim.Catalog.load(allocator, &catalog);
         errdefer animation_catalog.deinit();
@@ -78,6 +125,7 @@ const AppState = struct {
             .allocator = allocator,
             .catalog = catalog,
             .animation_catalog = animation_catalog,
+            .command = options.command,
             .audio_ready = audio_ready,
             .texture_index = texture_index,
             .audio_index = audio_index,
@@ -87,10 +135,19 @@ const AppState = struct {
         };
         errdefer state.deinit();
 
-        try state.reloadTexture();
-        try state.reloadModel();
-        try state.reloadObject();
-        try state.reloadLevel();
+        switch (options.command) {
+            .debug, .smoke => {
+                try state.reloadTexture();
+                try state.reloadModel();
+                try state.reloadObject();
+                try state.reloadLevel();
+            },
+            .game => {
+                if (audio_ready and state.catalog.audio_entries.len > 0) {
+                    try state.previewMusic();
+                }
+            },
+        }
         return state;
     }
 
@@ -155,17 +212,28 @@ const AppState = struct {
     }
 
     fn simulateTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
-        if (self.current_animation) |*animation| {
-            try animation.step(self.simulation_clock.step_seconds);
-        }
-        if (self.current_track_preview) |*loaded_track_preview| {
-            if (self.level_runner) |*runner| {
-                runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
-            }
+        switch (self.command) {
+            .game => self.simulateGameTick(),
+            .debug, .smoke => {
+                if (self.current_animation) |*animation| {
+                    try animation.step(self.simulation_clock.step_seconds);
+                }
+                if (self.current_track_preview) |*loaded_track_preview| {
+                    if (self.level_runner) |*runner| {
+                        runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                    }
+                }
+            },
         }
     }
 
     fn handleInput(self: *AppState) !void {
+        switch (self.command) {
+            .game => return self.handleGameInput(),
+            .smoke => return,
+            .debug => {},
+        }
+
         if (rl.isKeyPressed(.tab)) {
             try self.setMode(nextMode(self.mode));
         }
@@ -263,6 +331,65 @@ const AppState = struct {
             self.object_flip_v = !self.object_flip_v;
             try self.reloadObject();
         }
+    }
+
+    fn simulateGameTick(self: *AppState) void {
+        self.game_phase_ticks += 1;
+        if (self.game_status_ticks > 0) {
+            self.game_status_ticks -= 1;
+            if (self.game_status_ticks == 0) {
+                self.game_status_message = null;
+            }
+        }
+
+        if (self.game_phase == .boot and self.game_phase_ticks >= boot_phase_duration_ticks) {
+            self.enterGamePhase(.main_menu);
+        }
+    }
+
+    fn handleGameInput(self: *AppState) void {
+        if (rl.isKeyPressed(.escape)) {
+            self.should_exit = true;
+            return;
+        }
+
+        switch (self.game_phase) {
+            .boot => {
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    self.enterGamePhase(.main_menu);
+                }
+            },
+            .main_menu => {
+                if (rl.isKeyPressed(.up)) {
+                    self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, -1);
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, 1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    self.activateMainMenuItem(main_menu_items[self.menu_index]);
+                }
+            },
+        }
+    }
+
+    fn enterGamePhase(self: *AppState, phase: GamePhase) void {
+        self.game_phase = phase;
+        self.game_phase_ticks = 0;
+    }
+
+    fn activateMainMenuItem(self: *AppState, item: MainMenuItem) void {
+        switch (item) {
+            .adventure => self.setGameStatusMessage("Adventure path is the next gameplay shell to wire."),
+            .arcade => self.setGameStatusMessage("Arcade flow is not wired yet."),
+            .options => self.setGameStatusMessage("Options UI is not wired yet."),
+            .quit => self.should_exit = true,
+        }
+    }
+
+    fn setGameStatusMessage(self: *AppState, message: []const u8) void {
+        self.game_status_message = message;
+        self.game_status_ticks = status_message_duration_ticks;
     }
 
     fn setMode(self: *AppState, mode: Mode) !void {
@@ -454,21 +581,51 @@ const AppState = struct {
 };
 
 fn parseArgs(allocator: std.mem.Allocator) !Options {
-    var options = Options{};
+    var argv = std.ArrayList([]const u8).empty;
+    defer argv.deinit(allocator);
+
     var args = try std.process.argsWithAllocator(allocator);
     defer args.deinit();
 
     _ = args.skip();
     while (args.next()) |arg| {
-        if (std.mem.eql(u8, arg, "--smoke-test")) {
-            options.smoke_test = true;
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "--archive-path")) {
-            options.archive_path = args.next() orelse return error.MissingArchivePath;
-            continue;
-        }
+        try argv.append(allocator, arg);
     }
+
+    return parseArgsFromSlice(argv.items);
+}
+
+fn parseArgsFromSlice(args: []const []const u8) !Options {
+    var options = Options{};
+
+    var index: usize = 0;
+    while (index < args.len) : (index += 1) {
+        const arg = args[index];
+        if (std.mem.eql(u8, arg, "--archive-path")) {
+            index += 1;
+            if (index >= args.len) return error.MissingArchivePath;
+            options.archive_path = args[index];
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "game")) {
+            options.command = .game;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "debug")) {
+            options.command = .debug;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "browser")) {
+            if (options.command != .debug) return error.UnknownCommand;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "smoke")) {
+            options.command = .smoke;
+            continue;
+        }
+        return error.UnknownCommand;
+    }
+
     return options;
 }
 
@@ -479,7 +636,7 @@ pub fn main() !void {
 
     const options = try parseArgs(allocator);
 
-    rl.initWindow(window_width, window_height, "Snail Mail");
+    rl.initWindow(window_width, window_height, "snail");
     defer rl.closeWindow();
 
     rl.initAudioDevice();
@@ -490,20 +647,20 @@ pub fn main() !void {
         }
     }
 
-    var state = try AppState.init(allocator, options.archive_path, audio_ready);
+    var state = try AppState.init(allocator, options, audio_ready);
     defer state.deinit();
     var frame_timer = try std.time.Timer.start();
 
-    if (options.smoke_test) {
+    if (options.command == .smoke) {
         try state.warmupSmokeTest();
     }
 
     rl.setTargetFPS(144);
-    var frames_left: usize = if (options.smoke_test) 3 else std.math.maxInt(usize);
+    var frames_left: usize = if (options.command == .smoke) 3 else std.math.maxInt(usize);
 
-    while (!rl.windowShouldClose() and frames_left > 0) {
+    while (!rl.windowShouldClose() and !state.should_exit and frames_left > 0) {
         const frame_delta_seconds = @as(f64, @floatFromInt(frame_timer.lap())) / @as(f64, std.time.ns_per_s);
-        if (options.smoke_test) {
+        if (options.command == .smoke) {
             frames_left -= 1;
         }
 
@@ -519,6 +676,61 @@ pub fn main() !void {
 }
 
 fn drawUi(state: *const AppState, archive_path: []const u8) !void {
+    switch (state.command) {
+        .game => return drawGameUi(state, archive_path),
+        .debug, .smoke => return drawDebugUi(state, archive_path),
+    }
+}
+
+fn drawGameUi(state: *const AppState, archive_path: []const u8) !void {
+    rl.drawRectangle(0, 0, window_width, window_height, .black);
+    rl.drawRectangleRounded(.{ .x = 52, .y = 52, .width = 1176, .height = 616 }, 0.04, 12, .dark_blue);
+    rl.drawRectangleRounded(.{ .x = 70, .y = 70, .width = 1140, .height = 580 }, 0.04, 12, .{ .r = 0, .g = 0, .b = 0, .a = 140 });
+
+    rl.drawText("snail", 92, 84, 72, .orange);
+    rl.drawText("runtime port", 96, 150, 28, .gold);
+
+    var archive_buffer: [512]u8 = undefined;
+    const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
+    rl.drawText(archive_text, 92, 196, 20, .light_gray);
+
+    switch (state.game_phase) {
+        .boot => {
+            rl.drawText("Boot path", 92, 252, 28, .ray_white);
+            rl.drawText("This is now the default executable path, not the debug browser.", 92, 292, 24, .light_gray);
+            rl.drawText("The current forward pass is boot -> main menu. Gameplay screens come next.", 92, 326, 24, .light_gray);
+            rl.drawText("Press Enter to continue", 92, 390, 30, if ((state.game_phase_ticks / 20) % 2 == 0) .orange else .gray);
+            rl.drawText("Use `snail debug` for the asset browser and `snail smoke` for the warmup check.", 92, 454, 20, .sky_blue);
+        },
+        .main_menu => {
+            rl.drawText("Main Menu", 92, 240, 32, .ray_white);
+            rl.drawText("Up/Down select  Enter confirm  Esc quit", 92, 282, 20, .light_gray);
+
+            rl.drawRectangleRounded(.{ .x = 92, .y = 322, .width = 360, .height = 232 }, 0.05, 10, .{ .r = 0, .g = 0, .b = 0, .a = 128 });
+            for (main_menu_items, 0..) |item, index| {
+                const active = index == state.menu_index;
+                const row_y = 344 + @as(i32, @intCast(index)) * 50;
+                if (active) {
+                    rl.drawRectangleRounded(.{ .x = 108, .y = @floatFromInt(row_y - 8), .width = 328, .height = 40 }, 0.25, 8, .orange);
+                }
+                rl.drawText(item.label(), 128, row_y, 26, if (active) .black else .ray_white);
+            }
+
+            const selected = main_menu_items[state.menu_index];
+            rl.drawRectangleRounded(.{ .x = 492, .y = 322, .width = 640, .height = 232 }, 0.05, 10, .{ .r = 0, .g = 0, .b = 0, .a = 128 });
+            rl.drawText(selected.label(), 520, 352, 34, .gold);
+            try drawWrappedText(selected.description(), 520, 402, 580, 26, .light_gray);
+            rl.drawText("Current target: replace these placeholders with the real front-end flow.", 520, 496, 20, .sky_blue);
+
+            if (state.game_status_message) |message| {
+                rl.drawRectangleRounded(.{ .x = 92, .y = 584, .width = 1040, .height = 52 }, 0.22, 8, .dark_gray);
+                try drawWrappedText(message, 116, 600, 1000, 20, .ray_white);
+            }
+        },
+    }
+}
+
+fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     if (state.mode == .models) {
         drawModelViewport(state);
     } else if (state.mode == .objects) {
@@ -527,7 +739,7 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
         drawLevelViewport(state);
     }
 
-    rl.drawText("Snail Mail archive browser", 32, 24, 30, .ray_white);
+    rl.drawText("snail debug browser", 32, 24, 30, .ray_white);
     rl.drawText("1 textures  2 audio  3 x2  4 objects  5 levels  tab switch", 32, 62, 18, .light_gray);
     rl.drawText("arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
 
@@ -1218,4 +1430,24 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
 test "wrapped index handles negative deltas" {
     try std.testing.expectEqual(@as(usize, 4), wrappedIndex(5, 0, -1));
     try std.testing.expectEqual(@as(usize, 0), wrappedIndex(5, 0, 5));
+}
+
+test "parse args defaults to game shell" {
+    const options = try parseArgsFromSlice(&.{});
+    try std.testing.expectEqual(AppCommand.game, options.command);
+    try std.testing.expectEqualStrings(default_archive_path, options.archive_path);
+}
+
+test "parse args handles debug and smoke subcommands" {
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat" });
+    try std.testing.expectEqual(AppCommand.debug, options.command);
+    try std.testing.expectEqualStrings("custom.dat", options.archive_path);
+
+    options = try parseArgsFromSlice(&.{"smoke"});
+    try std.testing.expectEqual(AppCommand.smoke, options.command);
+}
+
+test "parse args rejects unknown commands" {
+    try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"weird"}));
+    try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"browser"}));
 }

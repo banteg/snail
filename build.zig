@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     raylib_artifact.root_module.addCMacro("SUPPORT_FILEFORMAT_OGG", "1");
 
     const exe = b.addExecutable(.{
-        .name = "snail-runtime",
+        .name = "snail",
         .root_module = b.createModule(.{
             .root_source_file = b.path("zig/src/main.zig"),
             .target = target,
@@ -26,7 +26,7 @@ pub fn build(b: *std.Build) void {
 
     b.installArtifact(exe);
 
-    const run_step = b.step("run", "Run the Snail runtime");
+    const run_step = b.step("run", "Run the snail runtime");
     const run_cmd = b.addRunArtifact(exe);
     run_cmd.step.dependOn(b.getInstallStep());
     if (b.args) |args| {
