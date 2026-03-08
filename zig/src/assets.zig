@@ -163,6 +163,11 @@ pub const Catalog = struct {
         };
     }
 
+    pub fn loadSoundByPath(self: *const Catalog, allocator: std.mem.Allocator, path: []const u8) !LoadedSound {
+        const entry = self.findAudioEntry(path) orelse return error.EntryNotFound;
+        return self.loadSound(allocator, entry);
+    }
+
     pub fn loadMusic(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedMusic {
         const decoded = try self.readEntryAlloc(allocator, entry);
         errdefer allocator.free(decoded);

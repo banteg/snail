@@ -86,6 +86,8 @@ const AppState = struct {
     menu_index: usize = 0,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
+    active_level_segment_index: ?usize = null,
+    active_level_message: ?[]const u8 = null,
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -348,6 +350,7 @@ const AppState = struct {
                     runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                 }
             }
+            try self.syncActiveLevelSegment(false);
         }
     }
 
@@ -424,15 +427,20 @@ const AppState = struct {
         switch (self.game_phase) {
             .boot => {
                 self.stopAudioPreview();
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
                 try self.loadGameBackground(splash_background_path);
             },
             .main_menu => {
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
             .level => {
                 self.stopAudioPreview();
                 try self.loadCurrentLevelBackground();
+                try self.syncActiveLevelSegment(true);
             },
         }
     }
@@ -456,6 +464,58 @@ const AppState = struct {
         self.stopAudioPreview();
         self.current_music = try self.catalog.loadMusicByPath(self.allocator, path);
         rl.playMusicStream(self.current_music.?.music);
+    }
+
+    fn playSoundByPath(self: *AppState, path: []const u8) !void {
+        if (!self.audio_ready) return;
+        if (self.current_sound) |*sound| {
+            sound.unload();
+            self.current_sound = null;
+        }
+
+        self.current_sound = try self.catalog.loadSoundByPath(self.allocator, path);
+        rl.playSound(self.current_sound.?.sound);
+    }
+
+    fn syncActiveLevelSegment(self: *AppState, replay_sample_on_match: bool) !void {
+        const loaded_level = self.current_level orelse {
+            self.active_level_segment_index = null;
+            self.active_level_message = null;
+            return;
+        };
+        const loaded_track_preview = self.current_track_preview orelse {
+            self.active_level_segment_index = null;
+            self.active_level_message = null;
+            return;
+        };
+        const runner = self.level_runner orelse {
+            self.active_level_segment_index = null;
+            self.active_level_message = null;
+            return;
+        };
+
+        const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse {
+            self.active_level_segment_index = null;
+            self.active_level_message = null;
+            return;
+        };
+        if (row_location.segment_index >= loaded_level.segments.len) {
+            self.active_level_segment_index = null;
+            self.active_level_message = null;
+            return;
+        }
+
+        self.level_segment_index = row_location.segment_index;
+        const segment_entry = &loaded_level.segments[row_location.segment_index];
+        const segment_changed = self.active_level_segment_index == null or self.active_level_segment_index.? != row_location.segment_index;
+        self.active_level_segment_index = row_location.segment_index;
+        self.active_level_message = segment_entry.message;
+
+        if (segment_changed or replay_sample_on_match) {
+            if (segment_entry.sample) |sample_path| {
+                try self.playSoundByPath(sample_path);
+            }
+        }
     }
 
     fn loadCurrentLevelBackground(self: *AppState) !void {
@@ -916,9 +976,9 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     else
         rl.Rectangle{ .x = 24.0, .y = 24.0, .width = 624.0, .height = 112.0 };
     const footer_panel = if (art_layout) |layout|
-        layout.mapRect(16.0, 438.0, 608.0, 54.0)
+        layout.mapRect(16.0, 408.0, 608.0, 84.0)
     else
-        rl.Rectangle{ .x = 24.0, .y = 642.0, .width = 960.0, .height = 54.0 };
+        rl.Rectangle{ .x = 24.0, .y = 612.0, .width = 960.0, .height = 84.0 };
 
     rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
 
@@ -935,10 +995,11 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segments {d}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
+            if (state.active_level_segment_index) |segment_index| segment_index + 1 else 1,
             loaded_level.segments.len,
             loaded_track_preview.total_rows,
         },
@@ -965,6 +1026,17 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
             },
         );
         rl.drawText(runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
+
+        if (state.active_level_message) |message| {
+            try drawWrappedText(
+                message,
+                @intFromFloat(footer_panel.x + 18.0),
+                @intFromFloat(footer_panel.y + 44.0),
+                @intFromFloat(footer_panel.width - 30.0),
+                18,
+                .gold,
+            );
+        }
     }
 
     const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };

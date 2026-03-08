@@ -93,6 +93,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
 - a default `snail` path that now uses the original splash and main-menu background assets and can hand off `Adventure` or `Arcade` into a lightweight authored-level path
 - a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
+- the authored `Sample=` and `Message=` metadata from active level segments now surfaces in the default level path, so tutorial voice clips and their text prompts are no longer ignored there
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 

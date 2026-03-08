@@ -144,6 +144,7 @@ Current behavior:
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
 - the default `snail` path now reuses the original splash and menu background assets and can hand off `Adventure` or `Arcade` into a lightweight level path backed by authored level backgrounds plus the deterministic runner
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
+- the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
 
 Current note:
 

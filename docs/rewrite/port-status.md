@@ -20,6 +20,10 @@ Current high-signal entries:
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
   - implementation: [`background.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/background.zig), [`main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
   - replace when: `Landscape` and any remaining background motion or distortion semantics are ported
+- active segment `Sample=` / `Message=` routing in the default level path: `partial`
+  - evidence: authored level metadata and current tutorial-level behavior
+  - implementation: [`main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
+  - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
   - evidence: [`docs/re/track-runtime.md`](/Users/banteg/dev/banteg/snail-mail/docs/re/track-runtime.md)
   - implementation: [`track.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/track.zig)
