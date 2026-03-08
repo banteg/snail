@@ -95,6 +95,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
 - the authored `Sample=` and `Message=` metadata from active level segments now surfaces in the default level path, so tutorial voice clips and their text prompts are no longer ignored there
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds, which is closer to the tutorial’s intended control path than keyboard-only lane nudges
+- the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 

@@ -382,6 +382,14 @@ const AppState = struct {
                 }
             },
             .level => {
+                if (rl.isKeyPressed(.enter)) {
+                    if (self.level_runner) |runner| {
+                        if (runner.finished) {
+                            try self.enterGamePhase(.main_menu);
+                            return;
+                        }
+                    }
+                }
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
@@ -1013,6 +1021,9 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     const title_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 14.0 };
     const meta_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 44.0 };
     const control_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 68.0 };
+    const parcel_target = loaded_level.parcels orelse 0;
+    const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
+    const finished = if (state.level_runner) |runner| runner.finished else false;
 
     var level_name_buffer: [128]u8 = undefined;
     const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
@@ -1021,17 +1032,25 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  parcels {d}/{d}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
             if (state.active_level_segment_index) |segment_index| segment_index + 1 else 1,
             loaded_level.segments.len,
+            parcel_count,
+            parcel_target,
             loaded_track_preview.total_rows,
         },
     );
     rl.drawText(meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
-    rl.drawText("Mouse/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
+    rl.drawText(
+        if (finished) "Mouse/Left/Right steer  Enter menu  Esc menu" else "Mouse/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu",
+        @intFromFloat(control_point.x),
+        @intFromFloat(control_point.y),
+        18,
+        .light_gray,
+    );
 
     if (state.level_runner) |runner| {
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
@@ -1039,7 +1058,7 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  finished {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -1049,6 +1068,7 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
                 runner.resolved_lane_index,
                 runner.speed_rows_per_second,
                 runner.recentEventLabel(),
+                if (runner.finished) "yes" else "no",
             },
         );
         rl.drawText(runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
