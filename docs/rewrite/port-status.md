@@ -28,6 +28,9 @@ Current high-signal entries:
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: intro-script image directives, text transforms, and any remaining transition semantics are ported
+- front-end menu font atlas scan and width measurement: `verified`
+  - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas
+  - implementation: [`game_font.zig`](../../zig/src/game_font.zig), [`main.zig`](../../zig/src/main.zig)
 - active segment `Sample=` / `Message=` routing in the default level path: `partial`
   - evidence: authored level metadata and current tutorial-level behavior
   - implementation: [`main.zig`](../../zig/src/main.zig)

@@ -60,12 +60,37 @@
       "name": "initialize_d3d8_device"
     },
     {
+      "address": "0x416910",
+      "name": "initialize_high_score_screen"
+    },
+    {
+      "address": "0x417260",
+      "name": "update_high_score_screen"
+    },
+    {
       "address": "0x4175e0",
       "name": "load_high_scores_from_file"
     },
     {
       "address": "0x417940",
       "name": "save_high_scores_and_config"
+    },
+    {
+      "address": "0x417eb0",
+      "name": "launch_frontend_level_mode",
+      "description": "Starts the selected front-end mode and seeds its initial level handoff through the shared level-path switch."
+    },
+    {
+      "address": "0x4191e0",
+      "name": "initialize_intro_text_screen"
+    },
+    {
+      "address": "0x4199e0",
+      "name": "update_intro_text_screen"
+    },
+    {
+      "address": "0x419e00",
+      "name": "update_main_menu"
     },
     {
       "address": "0x41b0f0",
@@ -371,6 +396,31 @@
       "address": "0x448900",
       "name": "load_level_definitions",
       "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
+    },
+    {
+      "address": "0x449d20",
+      "name": "font_slot_index_for_char",
+      "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; several punctuation bytes resolve to special icon slots."
+    },
+    {
+      "address": "0x449e90",
+      "name": "measure_font_text_width",
+      "description": "Accumulates atlas slot widths for one string using the registered font's spacing scalar and trailing space padding."
+    },
+    {
+      "address": "0x449f50",
+      "name": "register_font_texture_sheet",
+      "description": "Loads one FONT-MENU-HOVER atlas, scans row-0 white delimiters and the column-0 height marker, and registers per-slot metrics and texture refs."
+    },
+    {
+      "address": "0x44a360",
+      "name": "draw_font_text_instance",
+      "description": "Draws one queued font text instance by mapping each byte through the atlas slot table and submitting textured glyph quads."
+    },
+    {
+      "address": "0x44a730",
+      "name": "draw_font_text_queue",
+      "description": "Iterates the live font text queue, retires dead entries, and draws the ones matching the supplied render mask."
     },
     {
       "address": "0x44b3c0",

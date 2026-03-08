@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
+const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
 const intro = @import("intro.zig");
 const sim = @import("sim.zig");
@@ -150,6 +151,7 @@ const AppState = struct {
     allocator: std.mem.Allocator,
     catalog: assets.Catalog,
     animation_catalog: xanim.Catalog,
+    ui_font: game_font.Loaded,
     command: AppCommand,
     audio_ready: bool,
     should_exit: bool = false,
@@ -193,6 +195,8 @@ const AppState = struct {
         errdefer catalog.deinit();
         var animation_catalog = try xanim.Catalog.load(allocator, &catalog);
         errdefer animation_catalog.deinit();
+        var ui_font = try game_font.Loaded.load(allocator, &catalog);
+        errdefer ui_font.deinit();
 
         const texture_index = catalog.findTextureIndex(default_texture_path) orelse 0;
         const audio_index = catalog.findAudioIndex(default_audio_path) orelse 0;
@@ -204,6 +208,7 @@ const AppState = struct {
             .allocator = allocator,
             .catalog = catalog,
             .animation_catalog = animation_catalog,
+            .ui_font = ui_font,
             .command = options.command,
             .audio_ready = audio_ready,
             .texture_index = texture_index,
@@ -264,6 +269,7 @@ const AppState = struct {
             self.current_texture = null;
         }
 
+        self.ui_font.deinit();
         self.animation_catalog.deinit();
         self.catalog.deinit();
     }
@@ -1140,11 +1146,11 @@ fn drawGameBootUi(state: *const AppState, art_layout: ?background.Layout) !void 
     else
         rl.Vector2{ .x = 332.0, .y = 650.0 };
 
-    rl.drawText("snail", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 30, .orange);
+    drawAppText(state, "snail", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 30, .orange);
 
     const prompt_color: rl.Color = if ((state.game_phase_ticks / 20) % 2 == 0) .gold else .light_gray;
-    rl.drawText("Press Enter to continue", @intFromFloat(prompt_point.x), @intFromFloat(prompt_point.y), 22, prompt_color);
-    rl.drawText("Esc quits", @intFromFloat(hint_point.x), @intFromFloat(hint_point.y), 18, .light_gray);
+    drawAppText(state, "Press Enter to continue", @intFromFloat(prompt_point.x), @intFromFloat(prompt_point.y), 22, prompt_color);
+    drawAppText(state, "Esc quits", @intFromFloat(hint_point.x), @intFromFloat(hint_point.y), 18, .light_gray);
 }
 
 fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -1168,10 +1174,10 @@ fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
         layout.mapPoint(72.0, 78.0)
     else
         rl.Vector2{ .x = 96.0, .y = 176.0 };
-    rl.drawText("Main Menu", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .ray_white);
+    drawAppText(state, "Main Menu", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .ray_white);
 
     for (main_menu_items, 0..) |item, index| {
-        drawMenuItem(art_layout, index, state.menu_index, item.label());
+        drawMenuItem(state, art_layout, index, state.menu_index, item.label());
     }
 
     const selected = main_menu_items[state.menu_index];
@@ -1192,18 +1198,18 @@ fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
     else
         rl.Vector2{ .x = 520.0, .y = 424.0 };
 
-    rl.drawText(selected.label(), @intFromFloat(detail_title.x), @intFromFloat(detail_title.y), 30, .gold);
-    rl.drawText("Up/Down select", @intFromFloat(control_note.x), @intFromFloat(control_note.y), 20, .ray_white);
-    rl.drawText("Enter confirm", @intFromFloat(control_note.x), @intFromFloat(control_note.y + 26.0), 20, .ray_white);
-    rl.drawText("Esc quit", @intFromFloat(selection_note.x), @intFromFloat(selection_note.y), 20, .light_gray);
+    drawAppText(state, selected.label(), @intFromFloat(detail_title.x), @intFromFloat(detail_title.y), 30, .gold);
+    drawAppText(state, "Up/Down select", @intFromFloat(control_note.x), @intFromFloat(control_note.y), 20, .ray_white);
+    drawAppText(state, "Enter confirm", @intFromFloat(control_note.x), @intFromFloat(control_note.y + 26.0), 20, .ray_white);
+    drawAppText(state, "Esc quit", @intFromFloat(selection_note.x), @intFromFloat(selection_note.y), 20, .light_gray);
 
     if (selected == .options) {
-        rl.drawText("Unavailable", @intFromFloat(status_note.x), @intFromFloat(status_note.y), 18, .sky_blue);
+        drawAppText(state, "Unavailable", @intFromFloat(status_note.x), @intFromFloat(status_note.y), 18, .sky_blue);
     }
 
     if (state.game_status_message) |message| {
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(message, @intFromFloat(footer_panel.x + 20.0), @intFromFloat(footer_panel.y + 11.0), @intFromFloat(footer_panel.width - 32.0), 20, .ray_white);
+        try drawWrappedText(state, message, @intFromFloat(footer_panel.x + 20.0), @intFromFloat(footer_panel.y + 11.0), @intFromFloat(footer_panel.width - 32.0), 20, .ray_white);
     }
 }
 
@@ -1211,24 +1217,24 @@ fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
     const panels = menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawText("New Game", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "New Game", panels.title_x, panels.title_y, 28, .ray_white);
 
     for (new_game_menu_items, 0..) |item, index| {
-        drawMenuItem(art_layout, index, state.new_game_menu_index, item.label());
+        drawMenuItem(state, art_layout, index, state.new_game_menu_index, item.label());
     }
 
     const selected = new_game_menu_items[state.new_game_menu_index];
-    rl.drawText(selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
     if (newGameMenuHint(selected)) |hint| {
-        try drawWrappedText(hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
     }
-    rl.drawText("Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
-    rl.drawText("Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    rl.drawText("Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
 
     if (state.game_status_message) |message| {
         rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
     }
 }
 
@@ -1236,21 +1242,21 @@ fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) 
     const panels = menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawText("High Scores", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "High Scores", panels.title_x, panels.title_y, 28, .ray_white);
 
     for (high_scores_menu_items, 0..) |item, index| {
-        drawMenuItem(art_layout, index, state.high_scores_menu_index, item.label());
+        drawMenuItem(state, art_layout, index, state.high_scores_menu_index, item.label());
     }
 
     const selected = high_scores_menu_items[state.high_scores_menu_index];
-    rl.drawText(selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
-    rl.drawText("Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
-    rl.drawText("Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    rl.drawText("Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
 
     if (state.game_status_message) |message| {
         rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
     }
 }
 
@@ -1275,6 +1281,7 @@ fn drawTextScriptUi(state: *const AppState) !void {
     const end_y = viewport.y - total_height - 40.0;
     const base_y = std.math.lerp(start_y, end_y, progress);
     try drawCenteredMultilineText(
+        state,
         script.text,
         @intFromFloat(viewport.x + viewport.width / 2.0),
         @intFromFloat(base_y),
@@ -1283,7 +1290,7 @@ fn drawTextScriptUi(state: *const AppState) !void {
     );
 
     const hint = state.currentTextScriptSkipLabel();
-    const hint_width = rl.measureText(hint, 18);
+    const hint_width = measureAppText(state, hint, 18);
     rl.drawRectangleRounded(
         .{
             .x = @as(f32, @floatFromInt(window_width - hint_width - 68)),
@@ -1295,13 +1302,12 @@ fn drawTextScriptUi(state: *const AppState) !void {
         8,
         .{ .r = 0, .g = 0, .b = 0, .a = 176 },
     );
-    rl.drawText(hint, window_width - hint_width - 52, window_height - 46, 18, .light_gray);
+    drawAppText(state, hint, window_width - hint_width - 52, window_height - 46, 18, .light_gray);
 }
 
 fn drawHelpUi(state: *const AppState) void {
-    _ = state;
     rl.drawRectangleRounded(.{ .x = 72.0, .y = 646.0, .width = 260.0, .height = 34.0 }, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-    rl.drawText("Enter or Esc back", 96, 654, 18, .ray_white);
+    drawAppText(state, "Enter or Esc back", 96, 654, 18, .ray_white);
 }
 
 const MenuPanels = struct {
@@ -1352,7 +1358,7 @@ fn menuPanels(art_layout: ?background.Layout) MenuPanels {
         };
 }
 
-fn drawMenuItem(art_layout: ?background.Layout, index: usize, selected_index: usize, label: [:0]const u8) void {
+fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: [:0]const u8) void {
     const active = index == selected_index;
     const row_rect = if (art_layout) |layout|
         layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
@@ -1371,7 +1377,7 @@ fn drawMenuItem(art_layout: ?background.Layout, index: usize, selected_index: us
     if (active) {
         rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
     }
-    rl.drawText(label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
+    drawAppText(state, label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
 }
 
 fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
@@ -1435,7 +1441,7 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
 
     var level_name_buffer: [128]u8 = undefined;
     const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
-    rl.drawText(level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .gold);
+    drawAppText(state, level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .gold);
 
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
@@ -1451,8 +1457,9 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
             loaded_track_preview.total_rows,
         },
     );
-    rl.drawText(meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
-    rl.drawText(
+    drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
+    drawAppText(
+        state,
         if (finished) "Mouse/Left/Right steer  Enter menu  Esc menu" else "Mouse/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu",
         @intFromFloat(control_point.x),
         @intFromFloat(control_point.y),
@@ -1479,10 +1486,11 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
                 if (runner.finished) "yes" else "no",
             },
         );
-        rl.drawText(runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
+        drawAppText(state, runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
 
         if (state.active_level_message) |message| {
             try drawWrappedText(
+                state,
                 message,
                 @intFromFloat(footer_panel.x + 18.0),
                 @intFromFloat(footer_panel.y + 44.0),
@@ -1508,19 +1516,19 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
         drawLevelViewport(state);
     }
 
-    rl.drawText("snail debug browser", 32, 24, 30, .ray_white);
-    rl.drawText("1 textures  2 audio  3 x2  4 objects  5 levels  tab switch", 32, 62, 18, .light_gray);
-    rl.drawText("arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
+    drawAppText(state, "snail debug browser", 32, 24, 30, .ray_white);
+    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  tab switch", 32, 62, 18, .light_gray);
+    drawAppText(state, "arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
 
     var archive_buffer: [512]u8 = undefined;
     const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
-    rl.drawText(archive_text, 32, 110, 18, .dark_gray);
+    drawAppText(state, archive_text, 32, 110, 18, .dark_gray);
 
-    drawModeBadge(.textures, state.mode, "Textures", 32, 144);
-    drawModeBadge(.audio, state.mode, "Audio", 156, 144);
-    drawModeBadge(.models, state.mode, "X2", 280, 144);
-    drawModeBadge(.objects, state.mode, "Objects", 404, 144);
-    drawModeBadge(.levels, state.mode, "Levels", 528, 144);
+    drawModeBadge(state, .textures, state.mode, "Textures", 32, 144);
+    drawModeBadge(state, .audio, state.mode, "Audio", 156, 144);
+    drawModeBadge(state, .models, state.mode, "X2", 280, 144);
+    drawModeBadge(state, .objects, state.mode, "Objects", 404, 144);
+    drawModeBadge(state, .levels, state.mode, "Levels", 528, 144);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
@@ -1531,10 +1539,10 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     }
 }
 
-fn drawModeBadge(mode: Mode, active_mode: Mode, text: [:0]const u8, x: i32, y: i32) void {
+fn drawModeBadge(state: *const AppState, mode: Mode, active_mode: Mode, text: [:0]const u8, x: i32, y: i32) void {
     const color: rl.Color = if (mode == active_mode) .orange else .dark_gray;
     rl.drawRectangleRounded(.{ .x = @floatFromInt(x), .y = @floatFromInt(y), .width = 104, .height = 34 }, 0.22, 8, color);
-    rl.drawText(text, x + 20, y + 8, 18, .ray_white);
+    drawAppText(state, text, x + 20, y + 8, 18, .ray_white);
 }
 
 fn drawTexturePanel(state: *const AppState) void {
@@ -1552,11 +1560,11 @@ fn drawTexturePanel(state: *const AppState) void {
             current.texture.height,
         },
     ) catch "Texture";
-    rl.drawText(summary_text, 32, 194, 24, .ray_white);
+    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = std.fmt.bufPrintZ(&path_buffer, "{s}", .{entry.path}) catch "";
-    rl.drawText(path_text, 32, 226, 18, .light_gray);
+    drawAppText(state, path_text, 32, 226, 18, .light_gray);
 
     const max_width = 860.0;
     const max_height = 430.0;
@@ -1581,11 +1589,11 @@ fn drawAudioPanel(state: *const AppState) !void {
         "Audio {d}/{d}",
         .{ state.audio_index + 1, state.catalog.audio_entries.len },
     );
-    rl.drawText(summary_text, 32, 194, 24, .ray_white);
+    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{entry.path});
-    rl.drawText(path_text, 32, 226, 18, .light_gray);
+    drawAppText(state, path_text, 32, 226, 18, .light_gray);
 
     const status_text: [:0]const u8 = blk: {
         if (!state.audio_ready) break :blk "Audio device unavailable";
@@ -1595,13 +1603,13 @@ fn drawAudioPanel(state: *const AppState) !void {
         }
         break :blk "Stopped";
     };
-    rl.drawText(status_text, 32, 260, 22, .sky_blue);
+    drawAppText(state, status_text, 32, 260, 22, .sky_blue);
 
     rl.drawRectangleRounded(.{ .x = 32, .y = 308, .width = 1216, .height = 380 }, 0.03, 8, .dark_blue);
-    rl.drawText("Audio preview stays archive-backed: OGG bytes are decoded from SnailMail.dat in memory.", 56, 338, 24, .ray_white);
-    rl.drawText("Space loads the current OGG as a sound effect and plays it once.", 56, 384, 22, .light_gray);
-    rl.drawText("Enter loads the same OGG as a music stream and keeps updating it each frame.", 56, 420, 22, .light_gray);
-    rl.drawText("This lets us exercise both playback paths before game logic exists.", 56, 456, 22, .light_gray);
+    drawAppText(state, "Audio preview stays archive-backed: OGG bytes are decoded from SnailMail.dat in memory.", 56, 338, 24, .ray_white);
+    drawAppText(state, "Space loads the current OGG as a sound effect and plays it once.", 56, 384, 22, .light_gray);
+    drawAppText(state, "Enter loads the same OGG as a music stream and keeps updating it each frame.", 56, 420, 22, .light_gray);
+    drawAppText(state, "This lets us exercise both playback paths before game logic exists.", 56, 456, 22, .light_gray);
 }
 
 fn drawModelPanel(state: *const AppState) !void {
@@ -1622,11 +1630,11 @@ fn drawModelPanel(state: *const AppState) !void {
             parsed.total_triangle_count,
         },
     );
-    rl.drawText(summary_text, 32, 194, 24, .ray_white);
+    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{entry.path});
-    rl.drawText(path_text, 32, 226, 18, .light_gray);
+    drawAppText(state, path_text, 32, 226, 18, .light_gray);
 
     var detail_buffer: [256]u8 = undefined;
     const detail_text = try std.fmt.bufPrintZ(
@@ -1639,18 +1647,18 @@ fn drawModelPanel(state: *const AppState) !void {
             if (state.model_flip_v) "on" else "off",
         },
     );
-    rl.drawText(detail_text, 32, 258, 20, .sky_blue);
+    drawAppText(state, detail_text, 32, 258, 20, .sky_blue);
 
     rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 332 }, 0.03, 8, .dark_blue);
-    rl.drawText("RWG loader notes", 56, 332, 26, .ray_white);
+    drawAppText(state, "RWG loader notes", 56, 332, 26, .ray_white);
 
     var mesh_buffer: [384]u8 = undefined;
     const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.center.x, model.center.y, model.center.z });
-    rl.drawText(mesh_text, 56, 378, 20, .light_gray);
+    drawAppText(state, mesh_text, 56, 378, 20, .light_gray);
 
     var material_buffer: [384]u8 = undefined;
     const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.radius});
-    rl.drawText(material_text, 56, 410, 20, .light_gray);
+    drawAppText(state, material_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
     const texture_text = try std.fmt.bufPrintZ(
@@ -1658,7 +1666,7 @@ fn drawModelPanel(state: *const AppState) !void {
         "First texture: {s}",
         .{if (model.submeshes.len > 0 and model.submeshes[0].archive_texture_path != null) model.submeshes[0].archive_texture_path.? else "<none>"},
     );
-    rl.drawText(texture_text, 56, 442, 20, .light_gray);
+    drawAppText(state, texture_text, 56, 442, 20, .light_gray);
 
     if (state.current_animation) |animation| {
         var anim_buffer: [384]u8 = undefined;
@@ -1672,7 +1680,7 @@ fn drawModelPanel(state: *const AppState) !void {
                 if (animation.paused) "yes" else "no",
             },
         );
-        rl.drawText(anim_text, 56, 486, 20, .gold);
+        drawAppText(state, anim_text, 56, 486, 20, .gold);
 
         var trigger_buffer: [384]u8 = undefined;
         const trigger_text = try std.fmt.bufPrintZ(
@@ -1684,16 +1692,16 @@ fn drawModelPanel(state: *const AppState) !void {
                 animation.clip.trigger_steps[animation.clip.trigger_steps.len - 1],
             },
         );
-        rl.drawText(trigger_text, 56, 520, 20, .light_gray);
-        rl.drawText("Binary Ninja + Ghidra + IDA agree the runtime interpolates numbered keyframes.", 56, 550, 20, .light_gray);
-        rl.drawText("Duration and Mode come from X/_ANIMATION.TXT; frame numbers come from .x2 filenames.", 56, 580, 20, .light_gray);
-        rl.drawText("Trigger lists are parsed strictly but not applied yet in this viewer.", 56, 610, 20, .light_gray);
+        drawAppText(state, trigger_text, 56, 520, 20, .light_gray);
+        drawAppText(state, "Binary Ninja + Ghidra + IDA agree the runtime interpolates numbered keyframes.", 56, 550, 20, .light_gray);
+        drawAppText(state, "Duration and Mode come from X/_ANIMATION.TXT; frame numbers come from .x2 filenames.", 56, 580, 20, .light_gray);
+        drawAppText(state, "Trigger lists are parsed strictly but not applied yet in this viewer.", 56, 610, 20, .light_gray);
     } else {
-        rl.drawText("Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
-        rl.drawText("TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
-        rl.drawText("MeshMaterialList assigns one material index per face", 56, 550, 20, .light_gray);
-        rl.drawText("Faces with 4 indices are quads; others are triangles", 56, 580, 20, .light_gray);
-        rl.drawText("This viewer triangulates quads and draws archive-backed textures directly.", 56, 610, 20, .light_gray);
+        drawAppText(state, "Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
+        drawAppText(state, "TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
+        drawAppText(state, "MeshMaterialList assigns one material index per face", 56, 550, 20, .light_gray);
+        drawAppText(state, "Faces with 4 indices are quads; others are triangles", 56, 580, 20, .light_gray);
+        drawAppText(state, "This viewer triangulates quads and draws archive-backed textures directly.", 56, 610, 20, .light_gray);
     }
 }
 
@@ -1725,11 +1733,11 @@ fn drawObjectPanel(state: *const AppState) !void {
             loaded_object.parsed.texture_names.len,
         },
     );
-    rl.drawText(summary_text, 32, 194, 24, .ray_white);
+    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{entry.path});
-    rl.drawText(path_text, 32, 226, 18, .light_gray);
+    drawAppText(state, path_text, 32, 226, 18, .light_gray);
 
     var detail_buffer: [256]u8 = undefined;
     const detail_text = try std.fmt.bufPrintZ(
@@ -1741,10 +1749,10 @@ fn drawObjectPanel(state: *const AppState) !void {
             if (state.object_flip_v) "on" else "off",
         },
     );
-    rl.drawText(detail_text, 32, 258, 20, .sky_blue);
+    drawAppText(state, detail_text, 32, 258, 20, .sky_blue);
 
     rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 332 }, 0.03, 8, .dark_blue);
-    rl.drawText("Object notes", 56, 332, 26, .ray_white);
+    drawAppText(state, "Object notes", 56, 332, 26, .ray_white);
 
     var bounds_buffer: [384]u8 = undefined;
     const bounds_text = try std.fmt.bufPrintZ(
@@ -1752,11 +1760,11 @@ fn drawObjectPanel(state: *const AppState) !void {
         "Bounds center: {d:.2}, {d:.2}, {d:.2}",
         .{ loaded_object.center.x, loaded_object.center.y, loaded_object.center.z },
     );
-    rl.drawText(bounds_text, 56, 378, 20, .light_gray);
+    drawAppText(state, bounds_text, 56, 378, 20, .light_gray);
 
     var radius_buffer: [256]u8 = undefined;
     const radius_text = try std.fmt.bufPrintZ(&radius_buffer, "Preview radius: {d:.2}", .{loaded_object.radius});
-    rl.drawText(radius_text, 56, 410, 20, .light_gray);
+    drawAppText(state, radius_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
     const texture_text = try std.fmt.bufPrintZ(
@@ -1764,13 +1772,13 @@ fn drawObjectPanel(state: *const AppState) !void {
         "First texture: {s}",
         .{if (loaded_object.submeshes.len > 0 and loaded_object.submeshes[0].archive_texture_path != null) loaded_object.submeshes[0].archive_texture_path.? else "<none>"},
     );
-    rl.drawText(texture_text, 56, 442, 20, .light_gray);
+    drawAppText(state, texture_text, 56, 442, 20, .light_gray);
 
-    rl.drawText("Simple text object format:", 56, 486, 20, .gold);
-    rl.drawText("[VERTEX START] defines indexed positions", 56, 520, 20, .light_gray);
-    rl.drawText("[FACEQUAD START] defines quads with four UV pairs", 56, 550, 20, .light_gray);
-    rl.drawText("Texture tokens resolve to sibling TGA files in the same OBJECTS folder.", 56, 580, 20, .light_gray);
-    rl.drawText("This viewer triangulates those quads into a textured mesh directly.", 56, 610, 20, .light_gray);
+    drawAppText(state, "Simple text object format:", 56, 486, 20, .gold);
+    drawAppText(state, "[VERTEX START] defines indexed positions", 56, 520, 20, .light_gray);
+    drawAppText(state, "[FACEQUAD START] defines quads with four UV pairs", 56, 550, 20, .light_gray);
+    drawAppText(state, "Texture tokens resolve to sibling TGA files in the same OBJECTS folder.", 56, 580, 20, .light_gray);
+    drawAppText(state, "This viewer triangulates those quads into a textured mesh directly.", 56, 610, 20, .light_gray);
 }
 
 fn drawObjectViewport(state: *const AppState) void {
@@ -1810,11 +1818,11 @@ fn drawLevelPanel(state: *const AppState) !void {
             loaded_track_preview.segments.len,
         },
     );
-    rl.drawText(summary_text, 32, 194, 24, .ray_white);
+    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{level_entry.path});
-    rl.drawText(path_text, 32, 226, 18, .light_gray);
+    drawAppText(state, path_text, 32, 226, 18, .light_gray);
 
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
@@ -1829,7 +1837,7 @@ fn drawLevelPanel(state: *const AppState) !void {
             optionalUsizeToText(&salt_value_buffer, loaded_level.salt),
         },
     );
-    rl.drawText(meta_text, 32, 258, 20, .sky_blue);
+    drawAppText(state, meta_text, 32, 258, 20, .sky_blue);
 
     const fallback_counts = loaded_track_preview.fallbackHazardCandidateCounts();
     var runtime_buffer: [384]u8 = undefined;
@@ -1844,10 +1852,10 @@ fn drawLevelPanel(state: *const AppState) !void {
             fallback_counts.salt,
         },
     );
-    rl.drawText(runtime_text, 32, 284, 18, .light_gray);
+    drawAppText(state, runtime_text, 32, 284, 18, .light_gray);
 
     rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
-    rl.drawText("Level and segment notes", 56, 332, 26, .ray_white);
+    drawAppText(state, "Level and segment notes", 56, 332, 26, .ray_white);
 
     if (state.activeLevelSegmentEntry()) |segment_entry| {
         var segment_buffer: [384]u8 = undefined;
@@ -1860,7 +1868,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 segment_entry.path,
             },
         );
-        rl.drawText(segment_text, 56, 378, 20, .gold);
+        drawAppText(state, segment_text, 56, 378, 20, .gold);
 
         var timing_buffer: [384]u8 = undefined;
         var duration_value_buffer: [32]u8 = undefined;
@@ -1874,13 +1882,13 @@ fn drawLevelPanel(state: *const AppState) !void {
                 segment_entry.sample orelse "<none>",
             },
         );
-        rl.drawText(timing_text, 56, 410, 20, .light_gray);
+        drawAppText(state, timing_text, 56, 410, 20, .light_gray);
 
         if (segment_entry.message) |message| {
-            rl.drawText("Tutorial message:", 56, 444, 20, .light_gray);
-            try drawWrappedText(message, 56, 472, 412, 20, .ray_white);
+            drawAppText(state, "Tutorial message:", 56, 444, 20, .light_gray);
+            try drawWrappedText(state, message, 56, 472, 412, 20, .ray_white);
         } else {
-            rl.drawText("No per-segment tutorial metadata on this entry.", 56, 444, 20, .light_gray);
+            drawAppText(state, "No per-segment tutorial metadata on this entry.", 56, 444, 20, .light_gray);
         }
     }
 
@@ -1897,7 +1905,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 loaded_track_preview.total_rows,
             },
         );
-        rl.drawText(dim_text, 56, 620, 18, .light_gray);
+        drawAppText(state, dim_text, 56, 620, 18, .light_gray);
     }
 
     if (state.level_runner) |runner| {
@@ -1918,7 +1926,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 runner.movement_mode.label(),
             },
         );
-        rl.drawText(sim_text, 56, 646, 18, .gold);
+        drawAppText(state, sim_text, 56, 646, 18, .gold);
 
         var cell_buffer: [384]u8 = undefined;
         var path_value_buffer: [96]u8 = undefined;
@@ -1936,7 +1944,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 optionalTextToText(&path_value_buffer, runner.activePathName()),
             },
         );
-        rl.drawText(cell_text, 56, 670, 18, .light_gray);
+        drawAppText(state, cell_text, 56, 670, 18, .light_gray);
 
         var event_buffer: [384]u8 = undefined;
         const event_text = try std.fmt.bufPrintZ(
@@ -1949,7 +1957,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 runner.attachment_ticks,
             },
         );
-        rl.drawText(event_text, 56, 692, 16, .sky_blue);
+        drawAppText(state, event_text, 56, 692, 16, .sky_blue);
 
         var counter_buffer: [384]u8 = undefined;
         const counter_text = try std.fmt.bufPrintZ(
@@ -1969,7 +1977,7 @@ fn drawLevelPanel(state: *const AppState) !void {
                 runner.counters.jetpack_off_rows,
             },
         );
-        rl.drawText(counter_text, 56, 712, 16, .light_gray);
+        drawAppText(state, counter_text, 56, 712, 16, .light_gray);
     }
 
     drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
@@ -2198,7 +2206,15 @@ fn colorForSegmentCell(cell: u8) rl.Color {
     };
 }
 
-fn drawWrappedText(text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
+fn drawAppText(state: *const AppState, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
+    state.ui_font.drawText(text, @floatFromInt(x), @floatFromInt(y), @floatFromInt(font_size), color);
+}
+
+fn measureAppText(state: *const AppState, text: []const u8, font_size: i32) i32 {
+    return @intFromFloat(@ceil(state.ui_font.measureText(text, @floatFromInt(font_size))));
+}
+
+fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
     var line_buffer: [512]u8 = undefined;
     var line_index: i32 = 0;
 
@@ -2208,12 +2224,12 @@ fn drawWrappedText(text: []const u8, x: i32, y: i32, max_width: i32, line_height
         @memcpy(line_buffer[0..clipped.len], clipped);
         line_buffer[clipped.len] = 0;
         _ = max_width;
-        rl.drawText(line_buffer[0..clipped.len :0], x, y + line_index * line_height, 18, color);
+        drawAppText(state, line_buffer[0..clipped.len], x, y + line_index * line_height, 18, color);
         line_index += 1;
     }
 }
 
-fn drawMultilineText(text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
+fn drawMultilineText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
     var line_buffer: [512]u8 = undefined;
     var line_index: i32 = 0;
 
@@ -2223,12 +2239,12 @@ fn drawMultilineText(text: []const u8, x: i32, y: i32, max_width: i32, line_heig
         @memcpy(line_buffer[0..clipped.len], clipped);
         line_buffer[clipped.len] = 0;
         _ = max_width;
-        rl.drawText(line_buffer[0..clipped.len :0], x, y + line_index * line_height, 18, color);
+        drawAppText(state, line_buffer[0..clipped.len], x, y + line_index * line_height, 18, color);
         line_index += 1;
     }
 }
 
-fn drawCenteredMultilineText(text: []const u8, center_x: i32, y: i32, line_height: i32, color: rl.Color) !void {
+fn drawCenteredMultilineText(state: *const AppState, text: []const u8, center_x: i32, y: i32, line_height: i32, color: rl.Color) !void {
     var line_buffer: [512]u8 = undefined;
     var line_index: i32 = 0;
 
@@ -2237,9 +2253,10 @@ fn drawCenteredMultilineText(text: []const u8, center_x: i32, y: i32, line_heigh
         const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
         @memcpy(line_buffer[0..clipped.len], clipped);
         line_buffer[clipped.len] = 0;
-        const text_width = rl.measureText(line_buffer[0..clipped.len :0], 18);
-        rl.drawText(
-            line_buffer[0..clipped.len :0],
+        const text_width = measureAppText(state, line_buffer[0..clipped.len], 18);
+        drawAppText(
+            state,
+            line_buffer[0..clipped.len],
             center_x - @divTrunc(text_width, 2),
             y + line_index * line_height,
             18,
