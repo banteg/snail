@@ -122,7 +122,7 @@ Current behavior:
 - builds asset catalogs for the archive's `.tga`, `.ogg`, and `.x2` entries
 - browses original textures directly from archive memory
 - previews original OGGs as both one-shot sounds and music streams
-- parses representative `.x2` files into mesh and material summaries
+- parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
 
 Current note:
 
@@ -148,7 +148,7 @@ Interactive controls:
 
 - `1`: texture browser
 - `2`: audio browser
-- `3`: `.x2` summary browser
+- `3`: `.x2` model browser
 - `Left` / `Right`: cycle entries
 - `Up` / `Down`: jump by 10 entries
 - `Space`: play current audio as a one-shot sound
@@ -157,12 +157,21 @@ Interactive controls:
 
 ## Current .x2 Understanding
 
-The `.x2` files are not opaque binary data. The current parser shows that representative files such as `X/SIGNSTOP.X2`, `X/PILLAR2.X2`, and `X/TURBO-BASE-000.X2` are text-based mesh files with:
+The `.x2` files are not opaque binary data. The current parser and renderer show that representative files such as `X/SIGNSTOP.X2`, `X/PILLAR2.X2`, and `X/TURBO-BASE-000.X2` are text-based mesh files with:
 
 - a leading `Frame <name> { ... }` block that contains one or more `Material` blocks
 - a `MeshTextureCoords { ... }` block
 - a final `Mesh <name> { ... }` block with vertex and face lists
 - a trailing NUL byte at end of file
+
+The current Zig loader mirrors the original RWG logic closely enough to render static meshes:
+
+- `TextureFilename` entries are resolved as `X/<basename>.tga`
+- the material list assigns one material index per face
+- faces with `4; ...` are quads and are triangulated at runtime
+- faces with non-`4` counts are treated as triangles
+
+This behavior was cross-checked against the Binary Ninja database, Ghidra decompile, and the IDA output in [`artifacts/ida/SnailMail.RWG.c`](/Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail.RWG.c)
 
 Observed caveat:
 

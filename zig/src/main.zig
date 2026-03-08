@@ -27,13 +27,14 @@ const AppState = struct {
     catalog: assets.Catalog,
     audio_ready: bool,
     mode: Mode = .textures,
+    model_flip_v: bool = true,
     texture_index: usize,
     audio_index: usize,
     model_index: usize,
     current_texture: ?assets.LoadedTexture = null,
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
-    current_model_summary: ?x2.Summary = null,
+    current_model: ?x2.LoadedModel = null,
 
     fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !AppState {
         var catalog = try assets.Catalog.init(allocator, archive_path);
@@ -54,16 +55,16 @@ const AppState = struct {
         errdefer state.deinit();
 
         try state.reloadTexture();
-        try state.reloadModelSummary();
+        try state.reloadModel();
         return state;
     }
 
     fn deinit(self: *AppState) void {
         self.stopAudioPreview();
 
-        if (self.current_model_summary) |*summary| {
-            summary.deinit();
-            self.current_model_summary = null;
+        if (self.current_model) |*model| {
+            model.deinit();
+            self.current_model = null;
         }
 
         if (self.current_texture) |*texture| {
@@ -128,6 +129,11 @@ const AppState = struct {
                 self.stopAudioPreview();
             }
         }
+
+        if (self.mode == .models and rl.isKeyPressed(.f)) {
+            self.model_flip_v = !self.model_flip_v;
+            try self.reloadModel();
+        }
     }
 
     fn setMode(self: *AppState, mode: Mode) !void {
@@ -151,7 +157,7 @@ const AppState = struct {
             },
             .models => {
                 self.model_index = wrappedIndex(self.catalog.model_entries.len, self.model_index, delta);
-                try self.reloadModelSummary();
+                try self.reloadModel();
             },
         }
     }
@@ -199,18 +205,15 @@ const AppState = struct {
         self.current_texture = texture;
     }
 
-    fn reloadModelSummary(self: *AppState) !void {
-        if (self.current_model_summary) |*summary| {
-            summary.deinit();
-            self.current_model_summary = null;
+    fn reloadModel(self: *AppState) !void {
+        if (self.current_model) |*model| {
+            model.deinit();
+            self.current_model = null;
         }
 
         const entry = self.catalog.model_entries[self.model_index];
-        const decoded = try self.catalog.readEntryAlloc(self.allocator, entry);
-        defer self.allocator.free(decoded);
-
-        const summary = try x2.parseSummary(self.allocator, decoded);
-        self.current_model_summary = summary;
+        const model = try x2.LoadedModel.loadFromArchive(self.allocator, &self.catalog, entry, self.model_flip_v);
+        self.current_model = model;
     }
 };
 
@@ -278,9 +281,13 @@ pub fn main() !void {
 }
 
 fn drawUi(state: *const AppState, archive_path: []const u8) !void {
+    if (state.mode == .models) {
+        drawModelViewport(state);
+    }
+
     rl.drawText("Snail Mail archive browser", 32, 24, 30, .ray_white);
     rl.drawText("1 textures  2 audio  3 x2 models  left/right cycle  up/down jump  tab switch", 32, 62, 18, .light_gray);
-    rl.drawText("audio: space sound  enter music  s stop", 32, 84, 18, .light_gray);
+    rl.drawText("audio: space sound  enter music  s stop    models: f flips V  auto orbit camera", 32, 84, 18, .light_gray);
 
     var archive_buffer: [512]u8 = undefined;
     const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
@@ -372,18 +379,20 @@ fn drawAudioPanel(state: *const AppState) !void {
 
 fn drawModelPanel(state: *const AppState) !void {
     const entry = state.catalog.model_entries[state.model_index];
-    const summary = state.current_model_summary orelse return;
+    const model = state.current_model orelse return;
+    const parsed = &model.parsed;
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
         &summary_buffer,
-        "X2 {d}/{d}  meshes {d}  vertices {d}  faces {d}",
+        "X2 {d}/{d}  submeshes {d}  vertices {d}  faces {d}  triangles {d}",
         .{
             state.model_index + 1,
             state.catalog.model_entries.len,
-            summary.mesh_count,
-            summary.total_vertices,
-            summary.total_faces,
+            model.submeshes.len,
+            parsed.vertices.len,
+            parsed.faces.len,
+            parsed.total_triangle_count,
         },
     );
     rl.drawText(summary_text, 32, 194, 24, .ray_white);
@@ -395,37 +404,53 @@ fn drawModelPanel(state: *const AppState) !void {
     var detail_buffer: [256]u8 = undefined;
     const detail_text = try std.fmt.bufPrintZ(
         &detail_buffer,
-        "frames {d}  materials {d}  texcoord blocks {d}  trailing NULs {d}",
+        "frame {s}  mesh {s}  materials {d}  flipV {s}  trailing NULs {d}",
         .{
-            summary.frame_count,
-            summary.material_count,
-            summary.mesh_texture_coord_block_count,
-            summary.trailing_nul_count,
+            parsed.frame_name,
+            parsed.mesh_name,
+            parsed.materials.len,
+            if (state.model_flip_v) "on" else "off",
+            parsed.trailing_nul_count,
         },
     );
     rl.drawText(detail_text, 32, 258, 20, .sky_blue);
 
-    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 1216, .height = 388 }, 0.03, 8, .dark_blue);
-    rl.drawText("Current parser result", 56, 332, 26, .ray_white);
-
-    const mesh_name = if (summary.meshes.len > 0) summary.meshes[0].name else "<none>";
-    const material_name = if (summary.materials.len > 0) summary.materials[0].name else "<none>";
-    const texture_name = if (summary.texture_filenames.len > 0) summary.texture_filenames[0] else "<none>";
+    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 332 }, 0.03, 8, .dark_blue);
+    rl.drawText("RWG loader notes", 56, 332, 26, .ray_white);
 
     var mesh_buffer: [384]u8 = undefined;
-    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "First mesh: {s}", .{mesh_name});
-    rl.drawText(mesh_text, 56, 378, 22, .light_gray);
+    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.center.x, model.center.y, model.center.z });
+    rl.drawText(mesh_text, 56, 378, 20, .light_gray);
 
     var material_buffer: [384]u8 = undefined;
-    const material_text = try std.fmt.bufPrintZ(&material_buffer, "First material: {s}", .{material_name});
-    rl.drawText(material_text, 56, 414, 22, .light_gray);
+    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.radius});
+    rl.drawText(material_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
-    const texture_text = try std.fmt.bufPrintZ(&texture_buffer, "Referenced texture: {s}", .{texture_name});
-    rl.drawText(texture_text, 56, 450, 22, .light_gray);
+    const texture_text = try std.fmt.bufPrintZ(
+        &texture_buffer,
+        "First texture: {s}",
+        .{if (model.submeshes.len > 0 and model.submeshes[0].archive_texture_path != null) model.submeshes[0].archive_texture_path.? else "<none>"},
+    );
+    rl.drawText(texture_text, 56, 442, 20, .light_gray);
 
-    rl.drawText("The .x2 files are text meshes, not opaque binary blobs.", 56, 500, 22, .gold);
-    rl.drawText("Next step is to map these parsed sections to original RWG loading semantics and build a real model loader.", 56, 536, 22, .light_gray);
+    rl.drawText("Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
+    rl.drawText("TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
+    rl.drawText("MeshMaterialList assigns one material index per face", 56, 550, 20, .light_gray);
+    rl.drawText("Faces with 4 indices are quads; others are triangles", 56, 580, 20, .light_gray);
+    rl.drawText("This viewer triangulates quads and draws archive-backed textures directly.", 56, 610, 20, .light_gray);
+}
+
+fn drawModelViewport(state: *const AppState) void {
+    const model = state.current_model orelse return;
+    const camera = model.previewCamera(@floatCast(rl.getTime()));
+    camera.begin();
+    defer rl.endMode3D();
+
+    const grid_slices: i32 = @intFromFloat(@min(@max(model.radius * 6.0, 10.0), 80.0));
+    const grid_spacing = @max(model.radius / 2.0, 0.5);
+    rl.drawGrid(grid_slices, grid_spacing);
+    model.draw();
 }
 
 fn nextMode(mode: Mode) Mode {

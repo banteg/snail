@@ -53,7 +53,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 
 - `.tga` textures
 - `.ogg` audio as both one-shot sounds and music streams
-- `.x2` mesh summaries
+- `.x2` mesh rendering
 
 The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
@@ -79,7 +79,7 @@ Interactive controls:
 
 - `1`: texture browser
 - `2`: audio browser
-- `3`: `.x2` summary browser
+- `3`: `.x2` model browser
 - `Left` / `Right`: cycle entries
 - `Up` / `Down`: jump by 10 entries
 - `Space`: play current audio entry as a one-shot sound
@@ -88,6 +88,6 @@ Interactive controls:
 
 ## Immediate Next Targets
 
-- consult the RWG decompile for original `.x2` transform and animation semantics
-- resolve model texture references from `.x2` filenames to archive paths automatically
-- convert the current `.x2` summaries into a real mesh loader and viewer
+- map RWG animation playback semantics from `X/_ANIMATION.TXT` onto the new `.x2` renderer
+- confirm transform, winding, and material flags against more in-game RWG call sites
+- move from the archive browser toward object and level rendering
