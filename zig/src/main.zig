@@ -17,15 +17,17 @@ const window_height = 720;
 
 const default_archive_path = "artifacts/bin/SnailMail.dat";
 const splash_background_path = "BACKGROUNDS/SPLASH.TXT";
+const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 const help_background_path = "BACKGROUNDS/HELP.TXT";
+const intro_script_path = "INTRO/INTRO.TXT";
 const credits_script_path = "INTRO/CREDITS.TXT";
+const intro_music_path = "MUSIC/INTROTEXT.OGG";
 const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 const default_audio_path = "MUSIC/MAINMENU.OGG";
 const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
-const default_challenge_level_path = "LEVELS/CHALLENGE000.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
 const boot_phase_duration_ticks: u64 = 75;
 const status_message_duration_ticks: u32 = 180;
@@ -45,6 +47,7 @@ const AppCommand = enum {
 // Replace this with the real menu flow once original assets, transitions, and actions are ported.
 const GamePhase = enum {
     boot,
+    intro,
     main_menu,
     new_game_menu,
     high_scores_menu,
@@ -75,8 +78,8 @@ const MainMenuItem = enum {
 
 const main_menu_items = [_]MainMenuItem{ .new_game, .high_scores, .options, .credits, .exit };
 
-// PORT(partial): these labels match the recovered `sub_417bc0` new-game submenu.
-// `Tutorial`, `Challenge Mode`, and `Help` are evidence-backed; `Postal Mode` and `Time Trial` actions remain unresolved.
+// PORT(partial): these labels and mode actions match the recovered `sub_417bc0` / `sub_417eb0` new-game flow.
+// `Help` is still only a partial screen port, and later progression beyond the first level remains unresolved.
 const NewGameMenuItem = enum {
     tutorial,
     postal_mode,
@@ -104,6 +107,15 @@ const new_game_menu_items = [_]NewGameMenuItem{
     .challenge_mode,
     .help,
     .back,
+};
+
+// PORT(partial): these mode ids match the recovered `sub_417eb0` launcher and `sub_443650` level-name switch.
+// We only port the initial level handoff here, not the original front-end's level-select or progression flow yet.
+const FrontendLevelMode = enum(i32) {
+    postal = 0,
+    challenge = 1,
+    time_trial = 4,
+    tutorial = 7,
 };
 
 const HighScoresMenuItem = enum {
@@ -172,7 +184,7 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_background: ?background.Loaded = null,
-    current_credits_script: ?intro.Definition = null,
+    current_text_script: ?intro.Definition = null,
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
@@ -242,9 +254,9 @@ const AppState = struct {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
         }
-        if (self.current_credits_script) |*credits_script| {
-            credits_script.deinit();
-            self.current_credits_script = null;
+        if (self.current_text_script) |*script| {
+            script.deinit();
+            self.current_text_script = null;
         }
 
         if (self.current_texture) |*texture| {
@@ -411,7 +423,16 @@ const AppState = struct {
         }
 
         if (self.game_phase == .boot and self.game_phase_ticks >= boot_phase_duration_ticks) {
-            try self.enterGamePhase(.main_menu);
+            try self.enterGamePhase(.intro);
+        }
+
+        if (self.game_phase == .intro or self.game_phase == .credits) {
+            if (self.currentTextScriptDurationTicks()) |duration_ticks| {
+                if (self.game_phase_ticks >= duration_ticks) {
+                    try self.enterGamePhase(.main_menu);
+                    return;
+                }
+            }
         }
 
         if (self.game_phase == .level) {
@@ -429,13 +450,18 @@ const AppState = struct {
             switch (self.game_phase) {
                 .level => try self.enterGamePhase(.main_menu),
                 .boot, .main_menu => self.should_exit = true,
-                .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
+                .intro, .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
             }
             return;
         }
 
         switch (self.game_phase) {
             .boot => {
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.enterGamePhase(.intro);
+                }
+            },
+            .intro => {
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.enterGamePhase(.main_menu);
                 }
@@ -549,10 +575,10 @@ const AppState = struct {
 
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
         switch (item) {
-            .tutorial => try self.enterGameplayShell(default_level_path),
-            .postal_mode => self.setGameStatusMessage("Unavailable."),
-            .time_trial => self.setGameStatusMessage("Unavailable."),
-            .challenge_mode => try self.enterGameplayShell(default_challenge_level_path),
+            .tutorial => try self.enterFrontendLevelMode(.tutorial),
+            .postal_mode => try self.enterFrontendLevelMode(.postal),
+            .time_trial => try self.enterFrontendLevelMode(.time_trial),
+            .challenge_mode => try self.enterFrontendLevelMode(.challenge),
             .help => try self.enterGamePhase(.help),
             .back => try self.enterGamePhase(.main_menu),
         }
@@ -570,6 +596,12 @@ const AppState = struct {
         try self.enterGamePhase(.level);
     }
 
+    fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
+        var path_buffer: [64]u8 = undefined;
+        const level_path = try frontendLevelPath(mode, 0, &path_buffer);
+        try self.enterGameplayShell(level_path);
+    }
+
     fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .boot => {
@@ -577,14 +609,22 @@ const AppState = struct {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
-                self.unloadCreditsScript();
+                self.unloadTextScript();
                 try self.loadGameBackground(splash_background_path);
+            },
+            .intro => {
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
+                self.mouse_level_lane_target = null;
+                try self.loadGameBackground(intro_background_path);
+                try self.playMusicByPath(intro_music_path);
+                try self.loadTextScript(intro_script_path);
             },
             .main_menu, .new_game_menu, .high_scores_menu => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
-                self.unloadCreditsScript();
+                self.unloadTextScript();
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
@@ -592,22 +632,22 @@ const AppState = struct {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
-                try self.loadGameBackground(main_menu_background_path);
-                try self.playMusicByPath(default_audio_path);
-                try self.loadCreditsScript();
+                try self.loadGameBackground(intro_background_path);
+                try self.playMusicByPath(intro_music_path);
+                try self.loadTextScript(credits_script_path);
             },
             .help => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
-                self.unloadCreditsScript();
+                self.unloadTextScript();
                 try self.loadGameBackground(help_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
             .level => {
                 self.stopAudioPreview();
                 self.mouse_level_lane_target = null;
-                self.unloadCreditsScript();
+                self.unloadTextScript();
                 try self.loadCurrentLevelBackground();
                 try self.syncActiveLevelSegment(true);
             },
@@ -707,16 +747,47 @@ const AppState = struct {
         self.current_game_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
     }
 
-    fn loadCreditsScript(self: *AppState) !void {
-        self.unloadCreditsScript();
-        self.current_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+    fn loadTextScript(self: *AppState, path: []const u8) !void {
+        self.unloadTextScript();
+        self.current_text_script = try intro.loadByPath(self.allocator, &self.catalog, path);
     }
 
-    fn unloadCreditsScript(self: *AppState) void {
-        if (self.current_credits_script) |*credits_script| {
-            credits_script.deinit();
-            self.current_credits_script = null;
+    fn unloadTextScript(self: *AppState) void {
+        if (self.current_text_script) |*script| {
+            script.deinit();
+            self.current_text_script = null;
         }
+    }
+
+    fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
+        const script = self.current_text_script orelse return null;
+        const ticks = @as(u64, @intFromFloat(@max(script.duration * 60.0, 1.0)));
+        return ticks;
+    }
+
+    fn currentTextScriptProgress(self: *const AppState) ?f32 {
+        const duration_ticks = self.currentTextScriptDurationTicks() orelse return null;
+        if (duration_ticks == 0) return 1.0;
+        return std.math.clamp(
+            @as(f32, @floatFromInt(self.game_phase_ticks)) / @as(f32, @floatFromInt(duration_ticks)),
+            0.0,
+            1.0,
+        );
+    }
+
+    fn currentTextScript(self: *const AppState) ?*const intro.Definition {
+        if (self.current_text_script) |*script| {
+            return script;
+        }
+        return null;
+    }
+
+    fn currentTextScriptSkipLabel(self: *const AppState) [:0]const u8 {
+        return switch (self.game_phase) {
+            .intro => "Enter, Space, or Esc to continue",
+            .credits => "Enter, Space, or Esc back",
+            else => "",
+        };
     }
 
     fn unloadGameBackground(self: *AppState) void {
@@ -1038,10 +1109,11 @@ fn drawGameUi(state: *const AppState) !void {
 
     switch (state.game_phase) {
         .boot => try drawGameBootUi(state, art_layout),
+        .intro => try drawTextScriptUi(state),
         .main_menu => try drawMainMenuUi(state, art_layout),
         .new_game_menu => try drawNewGameMenuUi(state, art_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
-        .credits => try drawCreditsUi(state, art_layout),
+        .credits => try drawTextScriptUi(state),
         .help => drawHelpUi(state),
         .level => try drawGameplayLevelUi(state, art_layout),
     }
@@ -1182,23 +1254,48 @@ fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) 
     }
 }
 
-fn drawCreditsUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const script = state.current_credits_script orelse return;
-    const panel = if (art_layout) |layout|
-        layout.mapRect(68.0, 84.0, 456.0, 336.0)
-    else
-        rl.Rectangle{ .x = 96.0, .y = 120.0, .width = 1088.0, .height = 500.0 };
-    rl.drawRectangleRounded(panel, 0.06, 8, .{ .r = 0, .g = 0, .b = 0, .a = 160 });
-    rl.drawText("Credits", @intFromFloat(panel.x + 24.0), @intFromFloat(panel.y + 18.0), 30, .gold);
-    try drawMultilineText(
+// PORT(partial): intro and credits now share the recovered text-screen flow.
+// The original loader also supports `*texture.tga(width,height)` directives and richer transforms we have not ported yet.
+fn drawTextScriptUi(state: *const AppState) !void {
+    const script = state.currentTextScript() orelse return;
+    const progress = state.currentTextScriptProgress() orelse 0.0;
+    const viewport = rl.Rectangle{
+        .x = 164.0,
+        .y = 84.0,
+        .width = @as(f32, @floatFromInt(window_width)) - 328.0,
+        .height = @as(f32, @floatFromInt(window_height)) - 168.0,
+    };
+
+    rl.drawRectangleRounded(viewport, 0.04, 8, .{ .r = 0, .g = 0, .b = 0, .a = 132 });
+
+    const line_height: i32 = 28;
+    const line_count = countLines(script.text);
+    const total_height = @as(f32, @floatFromInt(@max(line_count, 1) * line_height));
+    const start_y = viewport.y + viewport.height + 40.0;
+    const end_y = viewport.y - total_height - 40.0;
+    const base_y = std.math.lerp(start_y, end_y, progress);
+    try drawCenteredMultilineText(
         script.text,
-        @intFromFloat(panel.x + 28.0),
-        @intFromFloat(panel.y + 64.0),
-        @intFromFloat(panel.width - 40.0),
-        18,
+        @intFromFloat(viewport.x + viewport.width / 2.0),
+        @intFromFloat(base_y),
+        line_height,
         .ray_white,
     );
-    rl.drawText("Enter or Esc back", @intFromFloat(panel.x + 24.0), @intFromFloat(panel.y + panel.height - 28.0), 18, .light_gray);
+
+    const hint = state.currentTextScriptSkipLabel();
+    const hint_width = rl.measureText(hint, 18);
+    rl.drawRectangleRounded(
+        .{
+            .x = @as(f32, @floatFromInt(window_width - hint_width - 68)),
+            .y = @as(f32, @floatFromInt(window_height - 54)),
+            .width = @as(f32, @floatFromInt(hint_width + 32)),
+            .height = 30.0,
+        },
+        0.2,
+        8,
+        .{ .r = 0, .g = 0, .b = 0, .a = 176 },
+    );
+    rl.drawText(hint, window_width - hint_width - 52, window_height - 46, 18, .light_gray);
 }
 
 fn drawHelpUi(state: *const AppState) void {
@@ -1279,11 +1376,38 @@ fn drawMenuItem(art_layout: ?background.Layout, index: usize, selected_index: us
 
 fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
     return switch (item) {
+        .postal_mode => "Begin the postal-mode level flow from Arcade000.",
         .time_trial => "Improve your skills in Time Trial!",
         .challenge_mode => "Test your reflexes in Challenge Mode!",
         .help => "Click to Continue",
         else => null,
     };
+}
+
+fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffer: []u8) ![]const u8 {
+    return switch (mode) {
+        .tutorial => "LEVELS/TUTORIAL.TXT",
+        .challenge => "LEVELS/CHALLENGE000.TXT",
+        .postal => if (level_index <= 0x32)
+            try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
+        else
+            "LEVELS/ARCADEEXTRA000.TXT",
+        .time_trial => if (level_index <= 0x32)
+            try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
+        else
+            try std.fmt.bufPrint(path_buffer, "LEVELS/TIMETRIALEXTRA{d:0>3}.TXT", .{level_index - 0x32}),
+    };
+}
+
+test "frontend level mode paths follow recovered launch mapping" {
+    var scratch: [64]u8 = undefined;
+
+    try std.testing.expectEqualStrings("LEVELS/TUTORIAL.TXT", try frontendLevelPath(.tutorial, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/CHALLENGE000.TXT", try frontendLevelPath(.challenge, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.postal, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADE012.TXT", try frontendLevelPath(.postal, 12, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.time_trial, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/TIMETRIALEXTRA001.TXT", try frontendLevelPath(.time_trial, 0x33, &scratch));
 }
 
 fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -2102,6 +2226,35 @@ fn drawMultilineText(text: []const u8, x: i32, y: i32, max_width: i32, line_heig
         rl.drawText(line_buffer[0..clipped.len :0], x, y + line_index * line_height, 18, color);
         line_index += 1;
     }
+}
+
+fn drawCenteredMultilineText(text: []const u8, center_x: i32, y: i32, line_height: i32, color: rl.Color) !void {
+    var line_buffer: [512]u8 = undefined;
+    var line_index: i32 = 0;
+
+    var parts = std.mem.splitScalar(u8, text, '\n');
+    while (parts.next()) |part| {
+        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
+        @memcpy(line_buffer[0..clipped.len], clipped);
+        line_buffer[clipped.len] = 0;
+        const text_width = rl.measureText(line_buffer[0..clipped.len :0], 18);
+        rl.drawText(
+            line_buffer[0..clipped.len :0],
+            center_x - @divTrunc(text_width, 2),
+            y + line_index * line_height,
+            18,
+            color,
+        );
+        line_index += 1;
+    }
+}
+
+fn countLines(text: []const u8) i32 {
+    var line_count: i32 = 1;
+    for (text) |byte| {
+        if (byte == '\n') line_count += 1;
+    }
+    return line_count;
 }
 
 fn modeLabel(mode: xanim.Mode) [:0]const u8 {

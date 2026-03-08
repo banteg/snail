@@ -16,6 +16,7 @@ nav = [
     ] },
     { "Rewrite" = [
         { "Overview" = "rewrite/index.md" },
+        { "Port status" = "rewrite/port-status.md" },
     ] },
     { "RE" = [
         { "Overview" = "re/index.md" },
@@ -23,6 +24,7 @@ nav = [
         { "Path templates" = "re/path-templates.md" },
         { "Track runtime" = "re/track-runtime.md" },
         { "Attachment follow state" = "re/attachment-follow.md" },
+        { "Runtime structures" = "re/runtime-structures.md" },
         { "Symbol workflow" = "re/symbols.md" },
         { "Reflexive wrapper" = "re/reflexive-wrapper.md" },
         { "Frida runtime trace" = "re/frida-runtime-trace.md" },

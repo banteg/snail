@@ -91,13 +91,13 @@ The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) d
 - a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
 - a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
-- a default `snail` path that now uses the original splash and main-menu background assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
+- a default `snail` path that now uses the original splash, intro-text, and menu assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
 - a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
 - the authored `Sample=` and `Message=` metadata from active level segments now surfaces in the default level path, so tutorial voice clips and their text prompts are no longer ignored there
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds, which is closer to the tutorial’s intended control path than keyboard-only lane nudges
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the default front-end now uses decompile-backed menu labels and hierarchy: `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, with a recovered `New Game` submenu of `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, and `Back`
-- `Help` now uses the shipped help background directly and `Credits` now reads `INTRO/CREDITS.TXT`; unresolved actions such as `Postal Mode`, `Time Trial`, and score presentation stay explicitly unavailable instead of guessed
+- `Help` now uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -126,7 +126,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Command behavior:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` launches the default game path, shows archive-backed splash and menu scenes, and can enter the current tutorial or arcade level path
+- `zig build run` launches the default game path, shows the archive-backed splash, intro crawl, and menu flow, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the archive-backed debug browser
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
 

@@ -19,15 +19,15 @@ Current high-signal entries:
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `sub_419b50` and `sub_417bc0`
   - implementation: [`main.zig`](../../zig/src/main.zig)
-  - replace when: `Postal Mode`, `Time Trial`, high-score routing, and option handlers are ported
+  - replace when: high-score routing, option handlers, and later front-end progression flow are ported
 - background script parsing plus split `_A` / `_B` menu or splash layouts: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: `Landscape` and any remaining background motion or distortion semantics are ported
-- intro script text parsing for credits: `partial`
-  - evidence: shipped `INTRO/CREDITS.TXT`
+- intro and credits text-screen flow: `partial`
+  - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: intro-script timing, image directives, and any related front-end audio behavior are ported
+  - replace when: intro-script image directives, text transforms, and any remaining transition semantics are ported
 - active segment `Sample=` / `Message=` routing in the default level path: `partial`
   - evidence: authored level metadata and current tutorial-level behavior
   - implementation: [`main.zig`](../../zig/src/main.zig)

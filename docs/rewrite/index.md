@@ -142,13 +142,13 @@ Current behavior:
 - the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
 - the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
-- the default `snail` path now reuses the original splash and menu background assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
+- the default `snail` path now reuses the original splash, intro-text, and menu assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the front-end hierarchy now follows the recovered constructor labels from the binary: top level `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, and `New Game` submenu `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, `Back`
-- `Help` uses the shipped help background directly and `Credits` uses `INTRO/CREDITS.TXT`; unresolved actions like `Postal Mode`, `Time Trial`, and score presentation remain explicitly unavailable instead of guessed
+- `Help` uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
 
 Current note:
 
@@ -169,7 +169,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Notes:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` now enters the default game path, shows archive-backed splash and menu scenes, and can enter the current tutorial or arcade level path
+- `zig build run` now enters the default game path, shows the archive-backed splash, intro crawl, and menu flow, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the interactive archive browser and waits until you close it
 - `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
 - current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation
