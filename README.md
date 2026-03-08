@@ -57,6 +57,7 @@ Browse the docs locally with `zensical serve`.
 Verified archive and asset format notes live in [docs/original/asset-formats.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/original/asset-formats.md).
 
 The rewrite direction and runtime goals live in [docs/rewrite/index.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/rewrite/index.md).
+The current verified versus fallback or scaffold ledger lives in [docs/rewrite/port-status.md](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/port-status.md).
 
 Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [docs/re/path-system.md](/Users/banteg/.codex/worktrees/ba09/snail-mail/docs/re/path-system.md).
 

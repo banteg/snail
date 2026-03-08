@@ -1,0 +1,11 @@
+id: zig-z002-placeholder-ui-copy
+valid:
+  - |
+    rl.drawText("Main Menu", 0, 0, 20, .white);
+  - |
+    rl.drawText("Adventure", 0, 0, 20, .white);
+invalid:
+  - |
+    rl.drawText("Current target: replace these placeholders with the real front-end flow.", 0, 0, 20, .white);
+  - |
+    rl.drawText("Arcade flow is not wired yet.", 0, 0, 20, .white);

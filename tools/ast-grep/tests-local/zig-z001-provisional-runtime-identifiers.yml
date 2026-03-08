@@ -1,0 +1,13 @@
+id: zig-z001-provisional-runtime-identifiers
+valid:
+  - |
+    const menu_index: usize = 0;
+  - |
+    fn drawGameUi() void {}
+invalid:
+  - |
+    const fallbackHazardCandidateCounts: usize = 0;
+  - |
+    fn drawDebugUi() void {}
+  - |
+    var scaffold_state: i32 = 0;

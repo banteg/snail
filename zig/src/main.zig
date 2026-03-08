@@ -34,6 +34,8 @@ const AppCommand = enum {
     smoke,
 };
 
+// PORT(scaffold): the default `snail` path is now a forward-pass boot and menu shell.
+// Replace this with the real menu flow once original assets, transitions, and actions are ported.
 const GamePhase = enum {
     boot,
     main_menu,
@@ -730,6 +732,7 @@ fn drawGameUi(state: *const AppState, archive_path: []const u8) !void {
     }
 }
 
+// PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
 fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     if (state.mode == .models) {
         drawModelViewport(state);

@@ -128,8 +128,12 @@ pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
     };
 }
 
+// PORT(partial): this is the currently confirmed common gameplay preset from captures.
+// Replace the constant once per-mode or per-level build-flag normalization is ported.
 pub const defaultRuntimeBuildFlags: u32 = 0x00f5cfff;
 
+// PORT(fallback): these are candidate overlays for trace-confirmed ambient hazard families.
+// They are not the original populate_track_runtime_entities spawner.
 const runtime_spawn_hint_garbage_fallback: u8 = 0x01;
 const runtime_spawn_hint_salt_fallback: u8 = 0x02;
 

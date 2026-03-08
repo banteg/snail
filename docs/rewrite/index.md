@@ -2,6 +2,8 @@
 
 This section captures the intended direction for the playable rewrite of Snail Mail.
 
+The current verified versus fallback or scaffold ledger lives in [port-status.md](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/port-status.md).
+
 ## Stack Split
 
 The project is split into two tracks:

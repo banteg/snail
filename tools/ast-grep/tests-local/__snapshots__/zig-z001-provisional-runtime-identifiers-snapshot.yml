@@ -1,0 +1,23 @@
+id: zig-z001-provisional-runtime-identifiers
+snapshots:
+  ? |
+    const fallbackHazardCandidateCounts: usize = 0;
+  : labels:
+    - source: 'const fallbackHazardCandidateCounts: usize = 0;'
+      style: primary
+      start: 0
+      end: 47
+  ? |
+    fn drawDebugUi() void {}
+  : labels:
+    - source: fn drawDebugUi() void {}
+      style: primary
+      start: 0
+      end: 24
+  ? |
+    var scaffold_state: i32 = 0;
+  : labels:
+    - source: 'var scaffold_state: i32 = 0;'
+      style: primary
+      start: 0
+      end: 28

@@ -1,0 +1,16 @@
+id: zig-z001-provisional-runtime-identifiers
+language: zig
+severity: warning
+message: Provisional identifiers (`fallback`, `scaffold`, `placeholder`, `debug`) should stay explicitly PORT-tagged and removable.
+files:
+  - zig/src/**/*.zig
+rule:
+  any:
+    - pattern: "const $NAME = $VALUE;"
+    - pattern: "const $NAME: $TYPE = $VALUE;"
+    - pattern: "var $NAME = $VALUE;"
+    - pattern: "var $NAME: $TYPE = $VALUE;"
+    - pattern: "fn $NAME($$$ARGS) $RET { $$$BODY }"
+constraints:
+  NAME:
+    regex: ".*(?:fallback|Fallback|scaffold|Scaffold|placeholder|Placeholder|debug|Debug).*"

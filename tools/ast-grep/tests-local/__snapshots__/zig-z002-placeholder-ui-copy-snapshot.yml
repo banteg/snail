@@ -1,0 +1,16 @@
+id: zig-z002-placeholder-ui-copy
+snapshots:
+  ? |
+    rl.drawText("Arcade flow is not wired yet.", 0, 0, 20, .white);
+  : labels:
+    - source: '"Arcade flow is not wired yet."'
+      style: primary
+      start: 12
+      end: 43
+  ? |
+    rl.drawText("Current target: replace these placeholders with the real front-end flow.", 0, 0, 20, .white);
+  : labels:
+    - source: '"Current target: replace these placeholders with the real front-end flow."'
+      style: primary
+      start: 12
+      end: 86

@@ -1,0 +1,11 @@
+id: zig-z002-placeholder-ui-copy
+language: zig
+severity: warning
+message: Placeholder UI copy should stay explicitly scaffold-tagged and tracked for removal.
+files:
+  - zig/src/**/*.zig
+rule:
+  pattern: '"$TEXT"'
+constraints:
+  TEXT:
+    regex: ".*(?:replace these placeholders|not wired yet|Current target:).*"
