@@ -362,7 +362,7 @@ pub const Runner = struct {
         const annotation = row_location.row.annotation;
         const runtime_tile_hint = preview.runtimeTileAt(global_row, resolved_lane_index) orelse track.confirmedRuntimeTileHint(cell);
         const gameplay_cell = if (runtime_tile_hint) |tile_type|
-            track.gameplayCellKindForRuntimeTile(tile_type) orelse track.gameplayCellKind(cell)
+            track.runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags) orelse track.gameplayCellKind(cell)
         else
             track.gameplayCellKind(cell);
         return .{

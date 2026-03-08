@@ -137,6 +137,7 @@ Current behavior:
 - the level runner now distinguishes attachment probe rows from primary attachment-entry rows, mirroring the current runtime evidence that lowercase `p` mostly behaves like tile `29` probes while uppercase `P` is the normal tile `30` entry path
 - the runner also consumes the authored gameplay-cell vocabulary directly, so `(` trampoline rows, `$`, `J`, `s`, `&`, `M`, parcel digits, ring rows, `NoFall`, and `JetPack=Off` now update deterministic runner counters instead of living only as preview markers
 - the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
+- the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
 
 Current note:
@@ -225,7 +226,7 @@ The strongest current design lesson from replay behavior and the March 8 Frida c
 
 Current caveat:
 
-- the runner is intentionally conservative and still not a full movement port; faithful floor following, curve-accurate attachment-follow motion, off-track fall behavior, and hazard spawning are still blocked on more runtime evidence from `SnailMail_unwrapped.exe`
+- the runner is intentionally conservative and still not a full movement port; faithful floor following, curve-accurate attachment-follow motion, off-track fall behavior, and exact ambient hazard spawn timing are still blocked on more runtime evidence from `SnailMail_unwrapped.exe`
 
 ## Non-Goals For Now
 

@@ -814,6 +814,8 @@ fn drawLevelPanel(state: *const AppState) !void {
     var speed_value_buffer: [32]u8 = undefined;
     var garbage_value_buffer: [32]u8 = undefined;
     var salt_value_buffer: [32]u8 = undefined;
+    var garbage_scalar_buffer: [32]u8 = undefined;
+    var salt_scalar_buffer: [32]u8 = undefined;
 
     var summary_buffer: [384]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
@@ -847,6 +849,21 @@ fn drawLevelPanel(state: *const AppState) !void {
         },
     );
     rl.drawText(meta_text, 32, 258, 20, .sky_blue);
+
+    const fallback_counts = loaded_track_preview.fallbackHazardCandidateCounts();
+    var runtime_buffer: [384]u8 = undefined;
+    const runtime_text = try std.fmt.bufPrintZ(
+        &runtime_buffer,
+        "build 0x{x:0>8}  garbage scalar {s}  salt scalar {s}  fallback G {d}  S {d}",
+        .{
+            loaded_track_preview.runtime_build_flags,
+            optionalFloatToText(&garbage_scalar_buffer, loaded_level.normalizedGarbageScalar()),
+            optionalFloatToText(&salt_scalar_buffer, loaded_level.normalizedSaltScalar()),
+            fallback_counts.garbage,
+            fallback_counts.salt,
+        },
+    );
+    rl.drawText(runtime_text, 32, 284, 18, .light_gray);
 
     rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
     rl.drawText("Level and segment notes", 56, 332, 26, .ray_white);

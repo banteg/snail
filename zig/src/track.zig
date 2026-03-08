@@ -128,6 +128,16 @@ pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
     };
 }
 
+pub const defaultRuntimeBuildFlags: u32 = 0x00f5cfff;
+
+const runtime_spawn_hint_garbage_fallback: u8 = 0x01;
+const runtime_spawn_hint_salt_fallback: u8 = 0x02;
+
+pub const FallbackHazardCandidateCounts = struct {
+    garbage: usize = 0,
+    salt: usize = 0,
+};
+
 pub const GameplayCellSample = struct {
     global_row: usize,
     lane_index: usize,
@@ -147,8 +157,10 @@ pub const LoadedLevelPreview = struct {
     row_offsets: []usize,
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
+    runtime_build_flags: u32,
     runtime_tiles: []u8,
     runtime_edge_masks: []u8,
+    runtime_spawn_hints: []u8,
     total_rows: usize,
     max_width: usize,
 
@@ -249,8 +261,17 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
+        const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
+        const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_spawn_hints);
 
         return .{
             .allocator = allocator,
@@ -258,8 +279,10 @@ pub const LoadedLevelPreview = struct {
             .row_offsets = row_offsets,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
+            .runtime_build_flags = runtime_build_flags,
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
+            .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
             .max_width = max_width,
         };
@@ -271,6 +294,7 @@ pub const LoadedLevelPreview = struct {
         }
         self.allocator.free(self.placed_models);
         self.allocator.free(self.model_assets);
+        self.allocator.free(self.runtime_spawn_hints);
         self.allocator.free(self.runtime_edge_masks);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
@@ -372,7 +396,7 @@ pub const LoadedLevelPreview = struct {
 
         const cell = row.cells[lane_index];
         const kind = if (self.runtimeTileAt(global_row, lane_index)) |tile_type|
-            gameplayCellKindForRuntimeTile(tile_type) orelse gameplayCellKind(cell) orelse return null
+            runtimeGameplayCellKindForTile(tile_type, self.runtime_build_flags) orelse gameplayCellKind(cell) orelse return null
         else
             gameplayCellKind(cell) orelse return null;
         return .{
@@ -414,6 +438,24 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
         return self.runtime_edge_masks[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeSpawnHintMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_spawn_hints[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn fallbackHazardCandidateCounts(self: *const LoadedLevelPreview) FallbackHazardCandidateCounts {
+        var counts: FallbackHazardCandidateCounts = .{};
+        for (self.runtime_spawn_hints) |hint_mask| {
+            if ((hint_mask & runtime_spawn_hint_garbage_fallback) != 0) {
+                counts.garbage += 1;
+            }
+            if ((hint_mask & runtime_spawn_hint_salt_fallback) != 0) {
+                counts.salt += 1;
+            }
+        }
+        return counts;
     }
 
     pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
@@ -599,29 +641,71 @@ fn drawSegmentGameplayMarkers(
     for (loaded_segment.rows, 0..) |row, row_index| {
         const global_row = preview.row_offsets[segment_index] + row_index;
         for (row.cells, 0..) |_, col_index| {
-            const sample = preview.gameplayCellSampleAt(global_row, col_index) orelse continue;
-            const kind = sample.kind;
-            if (kind == .ring or kind == .attachment_probe or kind == .attachment_entry) continue;
-
             const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
-            const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + gameplayCellY(kind));
-            const color = tintForSelection(gameplayCellColor(kind), is_selected);
+            if (preview.gameplayCellSampleAt(global_row, col_index)) |sample| {
+                const kind = sample.kind;
+                if (kind != .ring and kind != .attachment_probe and kind != .attachment_entry) {
+                    const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + gameplayCellY(kind));
+                    const color = tintForSelection(gameplayCellColor(kind), is_selected);
 
-            switch (kind) {
-                .trampoline => rl.drawCubeV(position, .{ .x = 0.34, .y = 0.1, .z = 0.34 }, color),
-                .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
-                .garbage => rl.drawSphere(position, 0.16, color),
-                .salt => {
-                    rl.drawSphere(position, 0.14, color);
-                    rl.drawLine3D(
-                        .{ .x = position.x, .y = position.y - 0.1, .z = position.z },
-                        .{ .x = position.x, .y = position.y + 0.14, .z = position.z },
-                        color,
-                    );
-                },
-                .health => rl.drawCubeV(position, .{ .x = 0.22, .y = 0.22, .z = 0.22 }, color),
-                .jetpack => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.44, .z = 0.24 }, color),
-                .ring, .attachment_probe, .attachment_entry => unreachable,
+                    switch (kind) {
+                        .trampoline => rl.drawCubeV(position, .{ .x = 0.34, .y = 0.1, .z = 0.34 }, color),
+                        .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
+                        .garbage => rl.drawSphere(position, 0.16, color),
+                        .salt => {
+                            rl.drawSphere(position, 0.14, color);
+                            rl.drawLine3D(
+                                .{ .x = position.x, .y = position.y - 0.1, .z = position.z },
+                                .{ .x = position.x, .y = position.y + 0.14, .z = position.z },
+                                color,
+                            );
+                        },
+                        .health => rl.drawCubeV(position, .{ .x = 0.22, .y = 0.22, .z = 0.22 }, color),
+                        .jetpack => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.44, .z = 0.24 }, color),
+                        .ring, .attachment_probe, .attachment_entry => unreachable,
+                    }
+                }
+            }
+
+            const spawn_hint_mask = preview.runtimeSpawnHintMaskAt(global_row, col_index) orelse 0;
+            if ((spawn_hint_mask & runtime_spawn_hint_garbage_fallback) != 0) {
+                const garbage_position = cellWorldPosition(
+                    col_index,
+                    row_index,
+                    width_offset,
+                    segment_start_z,
+                    cell_size,
+                    floor_height + 0.24,
+                );
+                const shifted = rl.Vector3{
+                    .x = garbage_position.x - 0.12,
+                    .y = garbage_position.y,
+                    .z = garbage_position.z,
+                };
+                rl.drawCubeWiresV(shifted, .{ .x = 0.18, .y = 0.18, .z = 0.18 }, tintForSelection(.gray, is_selected));
+            }
+
+            if ((spawn_hint_mask & runtime_spawn_hint_salt_fallback) != 0) {
+                const salt_position = cellWorldPosition(
+                    col_index,
+                    row_index,
+                    width_offset,
+                    segment_start_z,
+                    cell_size,
+                    floor_height + 0.28,
+                );
+                const shifted = rl.Vector3{
+                    .x = salt_position.x + 0.12,
+                    .y = salt_position.y,
+                    .z = salt_position.z,
+                };
+                const color = tintForSelection(.sky_blue, is_selected);
+                rl.drawCubeWiresV(shifted, .{ .x = 0.16, .y = 0.16, .z = 0.16 }, color);
+                rl.drawLine3D(
+                    .{ .x = shifted.x, .y = shifted.y - 0.1, .z = shifted.z },
+                    .{ .x = shifted.x, .y = shifted.y + 0.12, .z = shifted.z },
+                    color,
+                );
             }
         }
     }
@@ -952,6 +1036,26 @@ fn buildRuntimeEdgeMaskGrid(
     return edge_masks;
 }
 
+fn buildRuntimeSpawnHintGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    build_flags: u32,
+) ![]u8 {
+    const spawn_hints = try allocator.alloc(u8, total_rows * max_width);
+    @memset(spawn_hints, 0);
+
+    for (0..total_rows) |global_row| {
+        for (0..max_width) |lane_index| {
+            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+            spawn_hints[runtimeTileIndex(max_width, global_row, lane_index)] = runtimeFallbackSpawnHintMask(tile_type, build_flags);
+        }
+    }
+
+    return spawn_hints;
+}
+
 fn runtimeTileIndex(max_width: usize, global_row: usize, lane_index: usize) usize {
     return (global_row * max_width) + lane_index;
 }
@@ -994,6 +1098,23 @@ fn isRuntimeEdgeNeighborOpen(
     if (global_row >= total_rows or lane_index >= max_width) return true;
     const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
     return isOpenNeighborRuntimeTileFamily(tile_type);
+}
+
+fn runtimeFallbackSpawnHintMask(tile_type: u8, build_flags: u32) u8 {
+    var mask: u8 = 0;
+    if ((build_flags & 0x2) != 0) {
+        switch (tile_type) {
+            0x01, 0x15 => mask |= runtime_spawn_hint_garbage_fallback,
+            else => {},
+        }
+    }
+    if ((build_flags & 0x10000) != 0) {
+        switch (tile_type) {
+            0x01, 0x0f => mask |= runtime_spawn_hint_salt_fallback,
+            else => {},
+        }
+    }
+    return mask;
 }
 
 fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
@@ -1089,11 +1210,11 @@ pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
     };
 }
 
-pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
+pub fn runtimeGameplayCellKindForTile(tile_type: u8, build_flags: u32) ?GameplayCellKind {
     return switch (tile_type) {
         0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x23 => .ring,
+        0x12 => if ((build_flags & 0x80) != 0) .slug else null,
         0x16 => .trampoline,
-        0x12 => .slug,
         0x17 => .health,
         0x19 => .jetpack,
         0x1d => .attachment_probe,
@@ -1102,6 +1223,10 @@ pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
         0x22 => .salt,
         else => null,
     };
+}
+
+pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
+    return runtimeGameplayCellKindForTile(tile_type, defaultRuntimeBuildFlags);
 }
 
 fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
@@ -1282,6 +1407,28 @@ test "runtime tile kinds map to recovered gameplay families" {
     try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKindForRuntimeTile(0x21).?);
     try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKindForRuntimeTile(0x22).?);
     try std.testing.expectEqual(GameplayCellKind.ring, gameplayCellKindForRuntimeTile(0x23).?);
+}
+
+test "runtime gameplay tile mapping respects build-flag gates" {
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), runtimeGameplayCellKindForTile(0x12, 0));
+    try std.testing.expectEqual(GameplayCellKind.slug, runtimeGameplayCellKindForTile(0x12, 0x80).?);
+    try std.testing.expectEqual(GameplayCellKind.health, runtimeGameplayCellKindForTile(0x17, 0).?);
+}
+
+test "runtime fallback spawn hint mask follows recovered tile families" {
+    try std.testing.expectEqual(
+        runtime_spawn_hint_garbage_fallback | runtime_spawn_hint_salt_fallback,
+        runtimeFallbackSpawnHintMask(0x01, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(
+        runtime_spawn_hint_garbage_fallback,
+        runtimeFallbackSpawnHintMask(0x15, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(
+        runtime_spawn_hint_salt_fallback,
+        runtimeFallbackSpawnHintMask(0x0f, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(@as(u8, 0), runtimeFallbackSpawnHintMask(0x22, defaultRuntimeBuildFlags));
 }
 
 test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {

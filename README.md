@@ -87,6 +87,7 @@ The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail
 - a more original-shaped movement integrator in level mode, with a discrete `runtime_track_index` cursor plus fractional `movement_progress` and per-tick `movement_rate_scalar` instead of only a free-running row float
 - a stricter gameplay-cell vocabulary in the Zig runtime, so the runner now distinguishes authored attachment tiles, trampoline rows, health, jetpack, garbage, salt, slug, ring, and parcel semantics instead of treating them as generic preview markers
 - a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
+- a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD
 - deterministic runner-side encounter tracking for pickups, hazards, `NoFall`, `JetPack=Off`, and attachment entry or exit, with a model-free level-preview load path available for headless simulation tests
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
@@ -144,4 +145,4 @@ Recent Frida evidence from the March 8 multi-level Windows capture is now consis
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- keep moving the rewrite from viewer to gameplay runtime: the next useful work is faithful player motion on top of the new deterministic runner scaffold, while the next hard wall is still curve-accurate attachment-follow, floor sampling, off-track fall behavior, and live hazard spawn semantics from `SnailMail_unwrapped.exe`
+- keep moving the rewrite from viewer to gameplay runtime: the next useful work is faithful player motion plus actual ambient hazard population on top of the new deterministic runner scaffold, while the next hard wall is still curve-accurate attachment-follow, off-track fall behavior, and exact spawn timing semantics from `SnailMail_unwrapped.exe`

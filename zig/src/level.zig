@@ -44,6 +44,14 @@ pub const Definition = struct {
     pub fn deinit(self: *Definition) void {
         self.arena.deinit();
     }
+
+    pub fn normalizedGarbageScalar(self: *const Definition) ?f32 {
+        return normalizedRuntimeScalar(self.garbage);
+    }
+
+    pub fn normalizedSaltScalar(self: *const Definition) ?f32 {
+        return normalizedRuntimeScalar(self.salt);
+    }
 };
 
 pub fn loadFromArchive(
@@ -385,6 +393,11 @@ fn parseRandomValue(value: []const u8) !bool {
     return error.UnsupportedLevelRandomValue;
 }
 
+fn normalizedRuntimeScalar(value: ?usize) ?f32 {
+    const raw_value = value orelse return null;
+    return @as(f32, @floatFromInt(@min(raw_value, 100))) / 100.0;
+}
+
 fn trackMatchesIndex(track: Track, expected: i32) bool {
     return switch (track) {
         .index => |value| value == expected,
@@ -433,6 +446,16 @@ test "parse arcade000 level" {
     try std.testing.expectEqualStrings("Wibble.txt", level.segments[0].path);
     try std.testing.expectEqualStrings("Start.txt", level.first_segments[0]);
     try std.testing.expectEqualStrings("Finish.txt", level.last_segments[0]);
+}
+
+test "normalize level runtime scalars" {
+    const maxed = normalizedRuntimeScalar(150).?;
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), maxed, 0.0001);
+
+    const mid = normalizedRuntimeScalar(30).?;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.3), mid, 0.0001);
+
+    try std.testing.expectEqual(@as(?f32, null), normalizedRuntimeScalar(null));
 }
 
 test "parse tutorial level metadata" {
