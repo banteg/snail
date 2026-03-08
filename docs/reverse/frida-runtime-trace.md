@@ -142,7 +142,13 @@ Regenerate the ranked lists after any parser or corpus changes instead of treati
 
 ## Windows Usage
 
-Attach to the real gameplay process, not the Reflexive wrapper. Start [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) from its own binary directory on the Windows machine so it can resolve adjacent game files correctly.
+Attach to the real gameplay process, not the Reflexive wrapper. Prefer a locally generated [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) on the Windows machine and start it from its own binary directory so it can resolve adjacent game files correctly. If you only have the original shipped files, the Frida script also accepts [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+
+Generate the preferred gameplay target first when needed:
+
+```bash
+uv run snail unwrap
+```
 
 Spawn the game under Frida:
 
@@ -160,7 +166,7 @@ frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 
 Watch the first console line from the script. It prints the exact NDJSON path it opened under `C:\share\snail\frida\`.
 
-If you only have the wrapper path handy, do not attach to `SnailMail.exe` unless you have confirmed that `SnailMail_unwrapped.exe` runs inside the same process. In the common case it is a separate process, so the script needs the gameplay image directly.
+If you only have the wrapper path handy, do not attach to `SnailMail.exe`. In the common case the wrapper launches a separate gameplay process, so the script needs the gameplay image directly. Falling back to `SnailMail.RWG` is still valid if you have not generated the unwrapped image yet.
 
 ## First Capture Plan
 
@@ -178,7 +184,7 @@ Use three focused capture runs instead of one long noisy trace:
 
 ## Notes
 
-- The script assumes the current 2006 RWG image with preferred PE base `0x400000`.
+- The script assumes the current 2006 gameplay image with preferred PE base `0x400000`.
 - It resolves all hook addresses relative to the actual loaded module base at runtime.
-- The hook set is designed for 32-bit Windows Frida because [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) is a 32-bit PE.
+- The hook set is designed for 32-bit Windows Frida because both [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) and [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) are 32-bit PEs with the same gameplay code after unwrap.
 - The current script does not decode every attachment-template field. It focuses on the row, tile type, world position, and attachment pointer so we can correlate dynamic behavior back to the existing static notes.

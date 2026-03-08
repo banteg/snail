@@ -1,17 +1,19 @@
 # Track Path RE Notes
 
-This page captures the current static understanding of the `SEGMENTS` path system and the segment-to-track runtime pipeline inside [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+This page captures the current static understanding of the `SEGMENTS` path system and the segment-to-track runtime pipeline inside the gameplay executable. The preferred analysis target is [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe); the original shipped equivalent is [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
 
 Primary sources used for these notes:
 
-- the Binary Ninja database in [`SnailMail.RWG.bndb`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail.RWG.bndb)
+- the Binary Ninja database in [`SnailMail_unwrapped.exe.bndb`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb)
+- the tracked symbol manifest in [`gameplay-functions.json`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/gameplay-functions.json)
+- the historical rename source in [`SnailMail.RWG.bndb`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail.RWG.bndb)
 - the exported HLIL snapshot in [`SnailMail.RWG.bndb_hlil.txt`](/Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail.RWG.bndb_hlil.txt)
 - the IDA decompile dump in [`SnailMail.RWG.c`](/Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail.RWG.c)
 - Ghidra as a second-opinion decompiler for ambiguous functions
 
 ## Current Function Map
 
-High-confidence renamed functions in the current Binary Ninja database:
+High-confidence renamed functions in the tracked manifest and the current Binary Ninja database:
 
 - `find_segment_path_index_by_name` at `0x429ae0`
 - `initialize_path_template_record_pair` at `0x4085c0`

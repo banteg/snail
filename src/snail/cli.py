@@ -11,6 +11,12 @@ from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
+from .symbols import (
+    DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+    load_function_symbol_manifest,
+    summarize_function_symbol_manifest,
+    write_function_symbol_manifest,
+)
 from .trace import build_trace_capture_plan, summarize_runtime_trace_file
 
 
@@ -193,6 +199,22 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the JSON plan to this path in addition to stdout.",
     )
 
+    symbols_parser = subparsers.add_parser(
+        "symbols",
+        help="Validate and summarize the tracked gameplay function symbol manifest.",
+    )
+    symbols_parser.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
+        help="Path to the tracked gameplay function symbol manifest.",
+    )
+    symbols_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the normalized manifest JSON to this path in addition to printing a summary.",
+    )
+
     return parser
 
 
@@ -296,6 +318,16 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.write.parent.mkdir(parents=True, exist_ok=True)
             args.write.write_text(text + "\n", encoding="utf-8")
         print(text)
+        return 0
+
+    if args.command == "symbols":
+        manifest = load_function_symbol_manifest(args.manifest)
+        if args.write is not None:
+            write_function_symbol_manifest(manifest, args.write)
+        summary = summarize_function_symbol_manifest(manifest, path=args.manifest)
+        if args.write is not None:
+            summary["normalized_output"] = str(args.write)
+        print(json.dumps(summary, indent=2, sort_keys=True))
         return 0
 
     parser.error(f"Unhandled command: {args.command}")

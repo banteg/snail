@@ -38,7 +38,7 @@ Important detail:
 - index bytes are decoded with `absolute_offset` starting at `0`
 - payload bytes are decoded with `absolute_offset` starting at each member's `data_offset`
 
-This matches the archive loader in [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
+This matches the archive loader in the gameplay executable, which we now prefer to study through [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) even though the original shipped image is [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG).
 
 ## Asset Families
 
@@ -168,9 +168,9 @@ Representative samples:
 - [`SEGMENTS/START.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT)
 - [`SEGMENTS/BIG JUMP.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/BIG%20JUMP.TXT)
 
-Current RWG understanding:
+Current gameplay-executable understanding:
 
-- `Path=<name>` resolves through a hardcoded string table inside `SnailMail.RWG`, not through a separate path-definition file in the archive
+- `Path=<name>` resolves through a hardcoded string table inside the gameplay executable, not through a separate path-definition file in the archive
 - the recovered hardcoded table currently has `51` names, including `START`, `HALFPIPE`, `TWISTER*`, and `TOAD*` variants
 - `find_case_insensitive_substring` is the generic metadata matcher in the RWG parser, so tag matching is case-insensitive and substring-based rather than exact
 - that matcher explains why shipped text like `Ring=Powerup` and `Ring=Explosive` still matches the RWG parser's canonical probes `Ring=PowerUp` and `Ring=Explode`

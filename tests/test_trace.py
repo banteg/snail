@@ -17,9 +17,9 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "pid": 111,
             "tid": 222,
             "event": "module_ready",
-            "module": "SnailMail.RWG",
+            "module": "SnailMail_unwrapped.exe",
             "module_base": "0x400000",
-            "module_path": "C:/Games/SnailMail.RWG",
+            "module_path": "C:/Games/SnailMail_unwrapped.exe",
         },
         {
             "ts_ms": 2,

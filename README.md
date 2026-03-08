@@ -4,8 +4,9 @@ This repo is for decompiling and rebuilding the 2006 Windows game bundle in [`ar
 
 ## Current Findings
 
-- [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) is a 32-bit Windows GUI PE from June 28, 2006. It looks like the Reflexive launcher or wrapper layer rather than the heavy game runtime.
-- [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) is also a PE32 executable and imports `d3d8.dll` and `DINPUT8.dll`, which makes it a strong candidate for the core gameplay runtime.
+- [`SnailMail_unwrapped.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe) is the preferred gameplay reversing target. It is the reproducible decrypted gameplay image generated from the shipped wrapper assets.
+- [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) is the original shipped wrapped gameplay image for the same runtime. Keep it around for provenance and wrapper-specific work.
+- [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) is a 32-bit Windows GUI PE from June 28, 2006. It is the Reflexive launcher or wrapper layer rather than the gameplay runtime.
 - [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) is a 27 MiB opaque container. It is not recognized as a standard archive by `binwalk` or `7z`, but it does contain embedded asset-like signatures such as `BMP`, `JPEG`, and zlib headers.
 - [`tBass.dll`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/tBass.dll) exports the legacy BASS audio API.
 - [`ReflexiveArcade`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/ReflexiveArcade) contains the Reflexive storefront and updater runtime, including `ReflexiveArcade.dll`.
@@ -18,12 +19,14 @@ Use the repo CLI for repeatable inspection instead of ad hoc one-off shell comma
 uv run snail inspect
 uv run snail inspect artifacts/bin/SnailMail.dat
 uv run snail inspect --write reports/bundle.json
+uv run snail unwrap --write-config artifacts/bin/ReflexiveArcade/RAW_002.decoded.txt
 uv run snail archive manifest
 uv run snail archive extract --output artifacts/extracted/SnailMail.dat
 uv run snail format artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT
 uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
 uv run snail trace summary /path/to/snailmail-trace.ndjson
 uv run snail trace plan
+uv run snail symbols
 ```
 
 The command emits JSON with:
@@ -38,12 +41,14 @@ The archive subcommands add:
 
 - `archive manifest`: a decoded `SnailMail.dat` index summary with extension and root counts plus entry previews
 - `archive extract`: a real extractor for the archive, including payload decode and a generated `manifest.json`
+- `unwrap`: a reproducible Reflexive unwrap pass that emits `SnailMail_unwrapped.exe` plus an optional decoded `RAW_002.wdt` config
 
 The format parser adds:
 
 - `format`: structured JSON for decoded `_OBJECT.TXT`, `SEGMENTS/*.TXT`, and `LEVELS/*.TXT` assets
 - `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
 - `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, no-fall, jetpack-off, authored-salt, and scalar-salt targets
+- `symbols`: validation for the tracked Binary Ninja gameplay symbol manifest in [`docs/reverse/symbols/gameplay-functions.json`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/gameplay-functions.json)
 
 ## Asset Format Notes
 
@@ -52,6 +57,10 @@ Verified archive and asset format notes live in [`docs/asset-formats.md`](/Users
 The rewrite direction and runtime goals live in [`docs/rewrite/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/rewrite/README.md).
 
 Current static reverse-engineering notes for the hardcoded segment path system and track-runtime pipeline live in [`docs/reverse/path-system.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/path-system.md).
+
+The tracked Binary Ninja symbol workflow lives in [`docs/reverse/symbols/README.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/README.md), with the version-controlled function manifest in [`docs/reverse/symbols/gameplay-functions.json`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/symbols/gameplay-functions.json).
+
+Executable bootstrap and obfuscation notes live in [`docs/reverse/reflexive-wrapper.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/reflexive-wrapper.md).
 
 The Windows runtime trace harness for Frida lives in [`docs/reverse/frida-runtime-trace.md`](/Users/banteg/dev/banteg/snail-mail/docs/reverse/frida-runtime-trace.md).
 
@@ -116,4 +125,4 @@ Interactive controls:
 
 - confirm whether `Trigger:` lists in `X/_ANIMATION.TXT` affect timing beyond the numbered frame interpolation already implemented
 - confirm transform, winding, and material flags against more in-game RWG call sites
-- continue tracing the hardcoded `Path=` route system from `SnailMail.RWG`, especially the exact name-to-template mapping and attachment-entry tile semantics, so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay
+- continue tracing the hardcoded `Path=` route system from `SnailMail_unwrapped.exe`, especially the exact name-to-template mapping and attachment-entry tile semantics, so level previews can move from sequential blockouts to faithful lane geometry and eventually drive gameplay

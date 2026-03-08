@@ -1,6 +1,6 @@
 'use strict';
 
-const TARGET_MODULE_NAME = 'SnailMail_unwrapped.exe';
+const TARGET_MODULE_NAMES = ['SnailMail_unwrapped.exe', 'SnailMail.RWG'];
 const PREFERRED_IMAGE_BASE = 0x400000;
 const MODULE_POLL_MS = 250;
 const TRACE_OUTPUT_DIR = 'C:\\share\\snail\\frida';
@@ -304,11 +304,13 @@ function emit(event, extra) {
 
 function findTargetModule() {
   const modules = Process.enumerateModules();
-  const targetLower = TARGET_MODULE_NAME.toLowerCase();
+  const targetLower = TARGET_MODULE_NAMES.map(function (name) {
+    return name.toLowerCase();
+  });
 
   for (let i = 0; i < modules.length; i += 1) {
     const module = modules[i];
-    if (module.name.toLowerCase() === targetLower) {
+    if (targetLower.indexOf(module.name.toLowerCase()) !== -1) {
       return module;
     }
   }
@@ -317,7 +319,12 @@ function findTargetModule() {
     const module = modules[i];
     const nameLower = module.name.toLowerCase();
     const pathLower = module.path.toLowerCase();
-    if (nameLower.indexOf('snailmail') !== -1 && pathLower.indexOf('snailmail.rwg') !== -1) {
+    if (
+      nameLower.indexOf('snailmail') !== -1 &&
+      targetLower.some(function (target) {
+        return pathLower.indexOf(target) !== -1;
+      })
+    ) {
       return module;
     }
   }
@@ -515,7 +522,7 @@ function waitForTargetModule() {
   }
 
   emit('waiting_for_module', {
-    target_module: TARGET_MODULE_NAME,
+    target_modules: TARGET_MODULE_NAMES,
   });
 
   const timer = setInterval(function () {

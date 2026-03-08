@@ -31,7 +31,7 @@ The remaining gaps are runtime-behavior questions:
 From the Windows machine, have all of these available:
 
 1. A checkout or copy of this repo.
-2. The original game files, especially [SnailMail_unwrapped.exe](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe).
+2. The original game files plus a locally generated [SnailMail_unwrapped.exe](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail_unwrapped.exe). If it is missing, generate it first with `uv run snail unwrap`.
 3. Frida CLI installed and working on Windows.
 4. The trace script at [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js).
 
@@ -45,9 +45,9 @@ Get-ChildItem .\artifacts\bin\SnailMail_unwrapped.exe
 
 ## Important Targeting Rules
 
-- Attach to `SnailMail_unwrapped.exe`, not `SnailMail.exe`.
-- The script is written for the 32-bit RWG runtime.
-- The script resolves addresses relative to the loaded module base, so ASLR is fine as long as the module is really `SnailMail_unwrapped.exe`.
+- Prefer `SnailMail_unwrapped.exe`, not `SnailMail.exe`.
+- The script is written for the 32-bit gameplay runtime and accepts either `SnailMail_unwrapped.exe` or `SnailMail.RWG`.
+- The script resolves addresses relative to the loaded module base, so ASLR is fine as long as the module is really the gameplay image.
 - Keep captures short and focused. Several short NDJSON files are much better than one giant noisy trace.
 
 ## Current Hook Set
@@ -76,7 +76,6 @@ Expected event names in the NDJSON:
 - `salt_spawn`
 - `salt_deactivate`
 - `slug_spawn`
-
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
@@ -308,6 +307,6 @@ The Windows agent should assume all of these are already established statically:
 ## If Something Goes Wrong
 
 - If no `module_ready` or `hooks_installed` event appears, you are probably attached to the wrong process.
-- If the game launches but no events appear, attach to `SnailMail_unwrapped.exe` directly instead of the wrapper.
+- If the game launches but no events appear, attach to `SnailMail_unwrapped.exe` directly instead of the wrapper. Falling back to `SnailMail.RWG` is still valid if you have not generated the unwrapped image yet.
 - If output is too noisy, stop the run and switch to a shorter target level instead of letting one huge trace grow.
 - If the game crashes immediately under Frida, keep the failing NDJSON or console output anyway. Even a failed launch is useful if it happens consistently.
