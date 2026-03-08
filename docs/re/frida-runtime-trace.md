@@ -35,7 +35,29 @@ Current hooks in the script:
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
   - now also records the current build-flag word seen by the active gameplay state
   - now includes the embedded follow-state summary, including template metadata, output position, orientation, and `offset_y`
+  - now also records the cached pair-cell pointers at `player + 0x98/+0x9c`
+  - now also emits the follow-exit latch fields recovered statically from the player object:
+    - `movement_flag_selector`
+    - `movement_flags`
+    - `previous_movement_flags`
+    - `movement_rate_scalar`
+    - `movement_mode_selector`
+    - `attachment_exit_pending`
+    - `attachment_exit_anchor_z`
+    - `post_follow_value_a`
+    - `post_follow_value_b`
+    - `attachment_exit_progress`
+    - `attachment_exit_progress_step`
+    - `follow_effect_gate_a`
+    - `follow_effect_gate_b`
+  - now samples `cell` and `before_cell` directly from the player's world position through `get_track_grid_cell_at_world_position`
+  - keeps the ambiguous legacy field under `raw_cell` and `before_raw_cell` for debugging only
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
+- `0x43a1a0` `update_player_movement_flags`
+  - emits sampled selector-to-flag transitions for the `movement_flag_selector -> movement_flags` switch
+  - includes `movement_rate_scalar` from `player + 0x2734`
+- `0x43d3d0` `mark_current_track_pair_with_payload`
+  - logs the scalar payload pushed into the cached pair cells and the resolved rows of `cached_track_pair_cell_a/b`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
 - `0x420c40` `begin_track_attachment_follow_state`
@@ -46,7 +68,14 @@ Current hooks in the script:
   - now includes template sample-count and width fields plus the follow-state output pose
 - `0x43af60` `end_track_attachment_follow_state`
   - logs the point where the player drops back out of attachment-follow mode
-  - this is also a `thiscall` method, and the script now prefers the embedded follow-state cell over the transient player cell so exit rows stay meaningful
+  - this is also a `thiscall` method
+  - the event is now emitted on return, not entry, so it carries a real before or after transition:
+    - `before_follow_state_summary`
+    - `before_template_summary`
+    - `before_follow_sample_index`
+    - `before_follow_progress`
+    - `before_cell` and `before_raw_cell`
+    - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
   - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`
@@ -113,20 +142,28 @@ Important payload details:
 - `path_lookup.path_name_from_index` is the table-derived name from the recovered `51`-entry path list
 - `cell.flags` is the runtime per-cell flag dword read directly from `cell + 0x4`
 - `cell.floor_height` is the runtime floor slot read from `cell + 0x14`
+- `cell.row_scalar_a`, `cell.row_scalar_b`, and `cell.payload` now expose the row-cell fields at `+0x24`, `+0x34`, and `+0x50`
+- `cell.storage` distinguishes the compact gameplay grid cells from the larger row-cell records used by attachment-follow state
+- `cell.lane` is derived for gameplay grid cells from the recovered `game + 0x3bfac8 + (lane + row*8) * 0x54` layout
 - `template_summary` captures the active attachment template record:
-  - origin
+  - `header_30` and `header_34`
   - kind
+  - `mirror_or_variant`
+  - `terminal_flag`
   - sample count
+  - float sample-count copy
   - width or scale
   - subdivision count
   - sample-array pointers
   - current per-sample delta and length fields
+  - the four row-scalar fields at `+0x98/+0x9c/+0xa0/+0xa4`
 - `follow_state_summary` captures the active attachment-follow state:
   - current sample index and progress
   - vertical offset
   - output pose
   - orientation-like vector fields
   - resolved template summary
+- `attachment_end` now includes both pre-exit and post-exit follow-state snapshots, so the next capture can prove which fields are latched, zeroed, or copied across the exit boundary
 
 If one hook becomes noisy, the script rate-limits it and emits a matching `*_suppressed` event once.
 
@@ -200,6 +237,7 @@ Useful confirmed tile mappings from that capture:
 One important operational note:
 
 - that March 8 long capture predates the latest local `thiscall` fix for `player_update` and `attachment_end`
+- the March 8 evening capture also exposed a second ABI issue: `get_track_grid_cell_at_world_position` must be called as `thiscall`, and gameplay grid cells must not be interpreted like row cells
 - the next Windows recapture should therefore use the current repo version of the script, not an older copied copy
 
 ## Current Recommended Targets

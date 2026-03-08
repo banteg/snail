@@ -86,6 +86,27 @@ The important practical rule is:
 - most named path slots build the first `0xa8` record with a constructor family, then build the second `0xa8` record by calling `mirror_path_template_pair_x(dst = base + 0xa8, src = base)`
 - `SUPERTRAMP` and `START` are the clear exceptions: both halves are built explicitly instead of through the mirror helper
 
+## Dynamic Family Cross-Check
+
+The evening March 8 capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) now gives live `template_summary` records during attachment-follow.
+
+Useful dynamic cross-checks against the static constructors:
+
+- kind `36` -> sample count `27`, subdivision count `8`
+- kind `35` -> sample count `16`, subdivision count `3`
+- kind `34` -> sample count `16`, subdivision count `3`
+- kind `33` -> sample count `16`, subdivision count `3`
+- kind `32` -> sample count `70`, subdivision count `4`
+- kind `42` -> sample count `66`, subdivision count `8`
+- kind `39` -> sample count `45`, subdivision count `4`
+- kind `45` -> sample count `52`, subdivision count `3`
+
+That dynamic shape is useful because it tells us the constructor output is stable enough to model by family:
+
+- the live runtime is not mutating the sample count or subdivision count per use-site
+- the follow-state code is consuming family-shaped records, not ad hoc per-row blobs
+- the remaining rewrite problem is therefore constructor semantics and sampled-point reconstruction, not discovering whether path templates are dynamically resized at runtime
+
 ## Recovered Record Shape
 
 `mirror_path_template_pair_x` plus the recovered `SUPERTRAMP` constructor (`0x423f10`) now give a much clearer picture of one path-template record.
@@ -93,15 +114,17 @@ The important practical rule is:
 High-confidence fields on the `0xa8`-byte record:
 
 - `+0x24`: nested render or mesh strip object
+- `+0x30/+0x34`: two leading header floats; these are live in the runtime record but do not yet have a stable semantic name
 - `+0x38`: attachment kind or constructor family id
 - `+0x3c`: mirror flag
-- `+0x40`: paired-side or variant selector
+- `+0x40`: terminal or return flag read by `update_track_attachment_follow_state`
 - `+0x44`: sample count
 - `+0x4c`: float copy of the effective sample count
 - `+0x50`: scale or width-like constructor parameter
 - `+0x54`: subdivision count used for the generated strip mesh
 - `+0x58`: pointer to the primary sampled point array
 - `+0x5c`: pointer to the mirrored or secondary sampled point array
+- `+0x98/+0x9c/+0xa0/+0xa4`: the four row-scalar fields that the follow or builder code latches into row cells and player exit state
 - `+0x9c`: extra scalar copied by the mirror helper
 
 High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c` arrays:

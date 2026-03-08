@@ -74,6 +74,17 @@ Recovered end-state behavior from `end_track_attachment_follow_state`:
 - seeds `player + 0x424` from current player `z`
 - clears `player + 0x434`, `player + 0x44c`, and `player + 0x44d`
 
+For the trace schema and partial Binary Ninja typing, those exit-side fields are intentionally named conservatively:
+
+- `player + 0x424` -> `attachment_exit_anchor_z`
+- `player + 0x42c` -> `post_follow_value_a`
+- `player + 0x430` -> `post_follow_value_b`
+- `player + 0x434` -> `attachment_exit_progress`
+- `player + 0x438` -> `attachment_exit_progress_step`
+- `player + 0x44c` / `+0x44d` -> `follow_effect_gate_a` / `follow_effect_gate_b`
+
+Those names describe stable behavior without overcommitting to the final gameplay meaning yet.
+
 ## March 8 Dynamic Capture
 
 The long local capture at [`artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-170041-12920.ndjson) materially tightened the attachment picture.
@@ -108,6 +119,7 @@ Additional static detail from `update_track_attachment_follow_state`:
 - the live record pointer uses the sampled point array at attachment `+0x5c`
 - each sampled point record is `0xa8` bytes
 - the current sample delta length is read from sampled point `+0x8c`
+- template row scalars at `+0xa0` and `+0xa4` are copied into the source row-cell at `+0x24` and `+0x34`
 - the current output position is written to follow-state `+0x2c`
 - the update terminates the follow state when the sample index reaches the template end
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
@@ -116,6 +128,58 @@ Important caveat for this specific March 8 capture:
 
 - `attachment_end` still reflected the pre-fix hook and reported the sentinel player cell (`tile_type = 32`, row `-6558`) instead of the embedded follow-state cell
 - the local Frida script has now been corrected to read the player from `ecx` and prefer the follow-state cell on exit, so the next capture should produce a real end-row signal
+
+## March 8 Evening Capture
+
+The longer evening capture at [`artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson`](/Users/banteg/dev/banteg/snail-mail/artifacts/frida/snailmail-trace-20260308-204003-8604.ndjson) broadened the live attachment coverage substantially.
+
+High-confidence attachment facts from that run:
+
+- `attachment_begin`: `120`
+- `attachment_probe`: `707`
+- `attachment_update`: `4096`
+- `attachment_end`: `14`
+- attachment probes still split across runtime tiles `29` and `30`
+- actual attachment-follow updates still overwhelmingly stay on runtime tile `30`
+
+The dynamic template summaries now give a stable live family table:
+
+- kind `36` -> `27` samples, subdivision count `8`
+- kind `35` -> `16` samples, subdivision count `3`
+- kind `33` -> `16` samples, subdivision count `3`
+- kind `34` -> `16` samples, subdivision count `3`
+- kind `39` -> `45` samples, subdivision count `4`
+- kind `32` -> `70` samples, subdivision count `4`
+- kind `17` -> `30` samples, subdivision count `3`
+- kind `0` -> `51` or `32` samples, subdivision count `3` or `4`
+- kind `42` -> `66` samples, subdivision count `8`
+- kind `16` -> `22` samples, subdivision count `4`
+- kind `28` -> `30` samples, subdivision count `4`
+- kind `29` -> `27` samples, subdivision count `4`
+- kind `40` -> `32` samples, subdivision count `8`
+- kind `45` -> `52` samples, subdivision count `3`
+
+Representative live rows from that run:
+
+- row `4` -> kind `36`, sample count `27`
+- row `40` -> kind `28`, sample count `30`
+- row `85` -> kind `29`, sample count `27`
+- row `299` -> kind `34`, sample count `16`
+- row `331` -> kind `35`, sample count `16`
+- row `339` -> kind `39`, sample count `45`
+- row `516` -> kind `32`, sample count `70`
+- row `606` -> kind `42`, sample count `66`
+- row `1229` -> kind `45`, sample count `52`
+
+The same run also confirmed a useful live split in vertical behavior:
+
+- many families begin with `offset_y = 0` and an output `y` close to the ordinary player ride height
+- kinds `34`, `35`, `39`, and `45` clearly start with positive `offset_y` and elevated output `y`, which makes them good first targets when reconstructing vertical path motion in Zig
+
+Operational caveat:
+
+- that evening capture still used the older grid-cell summarizer, so `player_update` and `floor_sample` cell rows are not trustworthy there
+- the attachment template and follow-state summaries themselves are still useful, and the local Frida script now fixes the gameplay-grid versus row-cell split for the next recapture
 
 ## Practical Read
 

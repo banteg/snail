@@ -238,6 +238,16 @@
       "name": "is_floor_cache_tile_family"
     },
     {
+      "address": "0x43a1a0",
+      "name": "update_player_movement_flags",
+      "description": "Maps the player movement-flag selector at +0x308 onto movement_flags and a per-state rate scalar at +0x2734, then refreshes the 0x2984 state machine when the mask changes."
+    },
+    {
+      "address": "0x43a300",
+      "name": "update_movement_flag_emitters",
+      "description": "Iterates the 12 effect slots at player+0x450 and feeds the slot updater with one of three emitter classes derived from movement_flags."
+    },
+    {
       "address": "0x43a390",
       "name": "update_jetpack_auto_shutoff_state"
     },
@@ -246,8 +256,18 @@
       "name": "end_track_attachment_follow_state"
     },
     {
+      "address": "0x43afd0",
+      "name": "play_movement_state_sound",
+      "description": "Chooses one of three movement sound families from movement_flags and attenuates playback while attachment-exit handling is active."
+    },
+    {
       "address": "0x43b120",
       "name": "update_player_track_movement_and_triggers"
+    },
+    {
+      "address": "0x43d3d0",
+      "name": "mark_current_track_pair_with_payload",
+      "description": "Sets flag 0x40 on the two cached track cells at +0x98/+0x9c and writes the supplied scalar payload into each cell payload slot at +0x50."
     },
     {
       "address": "0x43d410",

@@ -85,10 +85,35 @@ Important payload notes for the current script:
 - `level_start.build_flags`, `track_row_start`, and `track_row_end` are now emitted and are the main fields to compare against the static track-builder notes
 - every traced `cell` object now includes `flags` from `cell + 0x4`, not just `tile_type` and world position
 - every traced `cell` object now also includes `floor_height` from `cell + 0x14`
+- row-cell and gameplay-grid captures now also expose `row_scalar_a`, `row_scalar_b`, and `payload` from `+0x24`, `+0x34`, and `+0x50`
+- `cell.storage` now tells you whether the event points at a gameplay grid cell or a row-cell attachment record
+- `cell.lane` is now derived for gameplay grid cells from the recovered runtime grid layout
 - `player_update` and `attachment_end` are `thiscall` methods and the newest script version reads their object state from `ecx`
+- `player_update.cell` is now sampled from player position via `get_track_grid_cell_at_world_position`; the older ambiguous field is retained only as `raw_cell`
 - attachment events now include:
-  - `template_summary` with the active attachment template kind, sample count, width or scale, and sample-array pointers
+  - `template_summary` with the active attachment template header floats, kind, mirror or variant flags, terminal flag, sample count, width or scale, and sample-array pointers
+  - `template_summary.row_scalar_a` through `row_scalar_d` from `+0x98/+0x9c/+0xa0/+0xa4`
   - `follow_state_summary` with the active follow sample index, progress, vertical offset, orientation-ish vector, and output pose
+- `player_update` now also exposes the cached pair-cell pointers at `player + 0x98/+0x9c` as `cached_track_pair_cell_a` and `cached_track_pair_cell_b`
+- `player_update` now also emits the statically recovered attachment-exit latch fields:
+  - `movement_flag_selector`
+  - `movement_flags`
+  - `previous_movement_flags`
+  - `movement_rate_scalar`
+  - `movement_mode_selector`
+  - `attachment_exit_pending`
+  - `attachment_exit_anchor_z`
+  - `post_follow_value_a`
+  - `post_follow_value_b`
+  - `attachment_exit_progress`
+  - `attachment_exit_progress_step`
+  - `follow_effect_gate_a`
+  - `follow_effect_gate_b`
+- `movement_flags_update` now samples the `movement_flag_selector -> movement_flags` switch directly at `0x43a1a0`
+- `track_pair_payload` now records the scalar written into the cached pair-cell payload slots at `0x43d3d0`
+- `attachment_end` is now emitted on return and should carry both:
+  - `before_follow_state_summary`, `before_template_summary`, `before_follow_sample_index`, `before_follow_progress`
+  - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
 - if you are reusing an older local script copy on Windows, replace it first; the March 8 long capture proved the older copy misses `player_update` entirely and misreports `attachment_end`
 
 Expected event names in the NDJSON:
@@ -97,7 +122,9 @@ Expected event names in the NDJSON:
 - `hooks_installed`
 - `level_start`
 - `path_lookup`
+- `movement_flags_update`
 - `player_update`
+- `track_pair_payload`
 - `attachment_probe`
 - `attachment_begin`
 - `attachment_update`
@@ -132,10 +159,12 @@ frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 The script now creates `C:\share\snail\frida\` itself and writes NDJSON there with a generated filename like `snailmail-trace-20260308-153000-1234.ndjson`.
 Keep the first console line from each run because it prints the exact file path that was opened.
 
-Before running any new capture, sync the latest repo copy of [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js) onto the Windows machine. The most recent local fix corrected two `thiscall` hooks:
+Before running any new capture, sync the latest repo copy of [tools/frida/snailmail-runtime-trace.js](/Users/banteg/dev/banteg/snail-mail/tools/frida/snailmail-runtime-trace.js) onto the Windows machine. The most recent local fixes corrected:
 
 - `update_player_track_movement_and_triggers`
 - `end_track_attachment_follow_state`
+- `get_track_grid_cell_at_world_position`
+- the cell-layout split between gameplay grid cells and row-cell attachment records
 
 Without that update, the capture will still be useful for probes, pickups, and hazard spawns, but it will under-report player state and attachment exits.
 
