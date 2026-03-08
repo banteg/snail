@@ -28,8 +28,12 @@ Current high-signal entries:
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: intro-script image directives, text transforms, and any remaining transition semantics are ported
-- front-end menu font atlas scan and width measurement: `verified`
-  - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas
+- high-score screen table branch: `partial`
+  - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`
+  - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
+- front-end font atlas registration, width measurement, and tutorial icon tokens: `verified`
+  - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas and tutorial `Message=` strings using `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;`
   - implementation: [`game_font.zig`](../../zig/src/game_font.zig), [`main.zig`](../../zig/src/main.zig)
 - active segment `Sample=` / `Message=` routing in the default level path: `partial`
   - evidence: authored level metadata and current tutorial-level behavior

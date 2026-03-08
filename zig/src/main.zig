@@ -4,6 +4,7 @@ const assets = @import("assets.zig");
 const background = @import("background.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
+const high_score = @import("high_score.zig");
 const intro = @import("intro.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
@@ -162,6 +163,7 @@ const AppState = struct {
     menu_index: usize = 0,
     new_game_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
+    high_score_tables: high_score.Tables,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
@@ -211,6 +213,7 @@ const AppState = struct {
             .ui_font = ui_font,
             .command = options.command,
             .audio_ready = audio_ready,
+            .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
             .audio_index = audio_index,
             .model_index = model_index,
@@ -592,7 +595,8 @@ const AppState = struct {
 
     fn activateHighScoresMenuItem(self: *AppState, item: HighScoresMenuItem) !void {
         switch (item) {
-            .postal_high_scores, .challenge_high_scores => self.setGameStatusMessage("Unavailable."),
+            .postal_high_scores => self.high_scores_menu_index = 0,
+            .challenge_high_scores => self.high_scores_menu_index = 1,
             .back => try self.enterGamePhase(.main_menu),
         }
     }
@@ -1250,6 +1254,15 @@ fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) 
 
     const selected = high_scores_menu_items[state.high_scores_menu_index];
     drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+
+    switch (selected) {
+        .postal_high_scores => drawHighScoreTable(state, .postal, panels),
+        .challenge_high_scores => drawHighScoreTable(state, .challenge, panels),
+        .back => {
+            try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+        },
+    }
+
     drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
     drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
     drawAppText(state, "Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
@@ -1258,6 +1271,55 @@ fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) 
         rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
         try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
     }
+}
+
+fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, panels: MenuPanels) void {
+    const entries = state.high_score_tables.entries(mode);
+    const row_start_y = panels.detail_body_y + 28;
+    const row_height = 18;
+    const rank_x = panels.detail_body_x;
+    const name_x = panels.detail_body_x + 44;
+    const score_x = panels.detail_body_x + 292;
+    const replay_x = panels.detail_body_x + 438;
+
+    drawAppText(state, mode.label(), panels.detail_body_x, panels.detail_body_y, 18, .sky_blue);
+    drawAppText(state, "#", rank_x, panels.detail_body_y + 26, 16, .light_gray);
+    drawAppText(state, "Name", name_x, panels.detail_body_y + 26, 16, .light_gray);
+    drawAppText(state, "Score", score_x, panels.detail_body_y + 26, 16, .light_gray);
+    drawAppText(state, "Replay", replay_x, panels.detail_body_y + 26, 16, .light_gray);
+
+    for (entries, 0..) |entry, index| {
+        const row_y = row_start_y + @as(i32, @intCast(index)) * row_height;
+        if ((index & 1) == 0) {
+            rl.drawRectangleRounded(
+                .{
+                    .x = @floatFromInt(panels.detail_body_x - 8),
+                    .y = @floatFromInt(row_y - 2),
+                    .width = @floatFromInt(panels.detail_width - 4),
+                    .height = 18.0,
+                },
+                0.16,
+                4,
+                .{ .r = 255, .g = 255, .b = 255, .a = 12 },
+            );
+        }
+
+        var rank_buffer: [8]u8 = undefined;
+        const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}.", .{index + 1}) catch "";
+        drawAppText(state, rank_text, rank_x, row_y, 16, .ray_white);
+        drawAppText(state, highScoreDisplayName(&entry), name_x, row_y, 16, .ray_white);
+
+        var score_buffer: [32]u8 = undefined;
+        const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
+        drawAppText(state, score_text, score_x, row_y, 16, .gold);
+        drawAppText(state, if (entry.has_replay) "Replay" else "-", replay_x, row_y, 16, .light_gray);
+    }
+}
+
+fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
+    const name = entry.name();
+    if (name.len == 0) return "---";
+    return name;
 }
 
 // PORT(partial): intro and credits now share the recovered text-screen flow.
@@ -1382,10 +1444,10 @@ fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: u
 
 fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
     return switch (item) {
-        .postal_mode => "Begin the postal-mode level flow from Arcade000.",
-        .time_trial => "Improve your skills in Time Trial!",
-        .challenge_mode => "Test your reflexes in Challenge Mode!",
-        .help => "Click to Continue",
+        .postal_mode => "Start the postal-mode level flow.",
+        .time_trial => "Start the time-trial level flow.",
+        .challenge_mode => "Start the challenge-mode level flow.",
+        .help => "Open the help screen.",
         else => null,
     };
 }
@@ -1438,6 +1500,8 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
     const finished = if (state.level_runner) |runner| runner.finished else false;
+    const package_icon = game_font.IconGlyph.package.byte();
+    const mouse_icon = game_font.IconGlyph.mouse.byte();
 
     var level_name_buffer: [128]u8 = undefined;
     const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
@@ -1446,26 +1510,25 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  parcels {d}/{d}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
             if (state.active_level_segment_index) |segment_index| segment_index + 1 else 1,
             loaded_level.segments.len,
+            package_icon,
             parcel_count,
             parcel_target,
             loaded_track_preview.total_rows,
         },
     );
     drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
-    drawAppText(
-        state,
-        if (finished) "Mouse/Left/Right steer  Enter menu  Esc menu" else "Mouse/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu",
-        @intFromFloat(control_point.x),
-        @intFromFloat(control_point.y),
-        18,
-        .light_gray,
-    );
+    var control_buffer: [192]u8 = undefined;
+    const control_text = if (finished)
+        try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Enter menu  Esc menu", .{mouse_icon})
+    else
+        try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", .{mouse_icon});
+    drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
 
     if (state.level_runner) |runner| {
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });

@@ -10,6 +10,27 @@ const fallback_slot_index = 74;
 const space_slot_index = 53;
 const recovered_spacing_scale: f32 = 0.75;
 
+// PORT(partial): these named icon tokens are backed by shipped tutorial `Message=` strings
+// plus the recovered FONT-MENU-HOVER byte mapper. A few other special slots still need names.
+pub const IconGlyph = enum(u8) {
+    package = '{',
+    mouse = '}',
+    slug = '[',
+    asteroid = ']',
+    powerup = '~',
+    slow_ring = ';',
+    health = '_',
+    salt = '^',
+
+    pub fn byte(self: IconGlyph) u8 {
+        return @intFromEnum(self);
+    }
+
+    pub fn slotIndex(self: IconGlyph) usize {
+        return slotIndexForByte(self.byte()).?;
+    }
+};
+
 const GlyphSlot = struct {
     source_x: f32,
     source_y: f32,
@@ -85,7 +106,7 @@ pub const Loaded = struct {
                 else => {},
             }
 
-            const slot_index = glyphIndexForByte(byte) orelse fallback_slot_index;
+            const slot_index = slotIndexForByte(byte) orelse fallback_slot_index;
             if (byte != ' ') {
                 self.drawSlot(slot_index, pen_x, pen_y, font_size, color);
             }
@@ -112,7 +133,7 @@ pub const Loaded = struct {
                 else => {},
             }
 
-            const slot_index = glyphIndexForByte(byte) orelse fallback_slot_index;
+            const slot_index = slotIndexForByte(byte) orelse fallback_slot_index;
             line_width += self.measureSlot(slot_index, font_size);
         }
 
@@ -211,7 +232,7 @@ fn isWhiteMarker(color: rl.Color) bool {
     return color.r == 255 and color.g == 255 and color.b == 255;
 }
 
-fn glyphIndexForByte(byte: u8) ?usize {
+fn slotIndexForByte(byte: u8) ?usize {
     if (byte >= 'a' and byte <= 'z') return byte - 'a' + 1;
     if (byte >= 'A' and byte <= 'Z') return byte - 'A' + 27;
     if (byte >= '0' and byte <= '9') return byte - '0' + 54;
@@ -253,18 +274,29 @@ fn glyphIndexForByte(byte: u8) ?usize {
     };
 }
 
-test "glyph index mapping matches recovered front-end font mapper" {
-    try std.testing.expectEqual(@as(?usize, 1), glyphIndexForByte('a'));
-    try std.testing.expectEqual(@as(?usize, 26), glyphIndexForByte('z'));
-    try std.testing.expectEqual(@as(?usize, 27), glyphIndexForByte('A'));
-    try std.testing.expectEqual(@as(?usize, 52), glyphIndexForByte('Z'));
-    try std.testing.expectEqual(@as(?usize, 53), glyphIndexForByte(' '));
-    try std.testing.expectEqual(@as(?usize, 54), glyphIndexForByte('0'));
-    try std.testing.expectEqual(@as(?usize, 63), glyphIndexForByte('9'));
-    try std.testing.expectEqual(@as(?usize, 64), glyphIndexForByte('"'));
-    try std.testing.expectEqual(@as(?usize, 69), glyphIndexForByte('!'));
-    try std.testing.expectEqual(@as(?usize, 74), glyphIndexForByte('?'));
-    try std.testing.expectEqual(@as(?usize, 81), glyphIndexForByte('\\'));
-    try std.testing.expectEqual(@as(?usize, 94), glyphIndexForByte('='));
-    try std.testing.expectEqual(@as(?usize, null), glyphIndexForByte('<'));
+test "slot index mapping matches recovered front-end font mapper" {
+    try std.testing.expectEqual(@as(?usize, 1), slotIndexForByte('a'));
+    try std.testing.expectEqual(@as(?usize, 26), slotIndexForByte('z'));
+    try std.testing.expectEqual(@as(?usize, 27), slotIndexForByte('A'));
+    try std.testing.expectEqual(@as(?usize, 52), slotIndexForByte('Z'));
+    try std.testing.expectEqual(@as(?usize, 53), slotIndexForByte(' '));
+    try std.testing.expectEqual(@as(?usize, 54), slotIndexForByte('0'));
+    try std.testing.expectEqual(@as(?usize, 63), slotIndexForByte('9'));
+    try std.testing.expectEqual(@as(?usize, 64), slotIndexForByte('"'));
+    try std.testing.expectEqual(@as(?usize, 69), slotIndexForByte('!'));
+    try std.testing.expectEqual(@as(?usize, 74), slotIndexForByte('?'));
+    try std.testing.expectEqual(@as(?usize, 81), slotIndexForByte('\\'));
+    try std.testing.expectEqual(@as(?usize, 94), slotIndexForByte('='));
+    try std.testing.expectEqual(@as(?usize, null), slotIndexForByte('<'));
+}
+
+test "named icon glyphs resolve to recovered tutorial slots" {
+    try std.testing.expectEqual(@as(usize, 86), IconGlyph.package.slotIndex());
+    try std.testing.expectEqual(@as(usize, 87), IconGlyph.mouse.slotIndex());
+    try std.testing.expectEqual(@as(usize, 88), IconGlyph.slug.slotIndex());
+    try std.testing.expectEqual(@as(usize, 89), IconGlyph.asteroid.slotIndex());
+    try std.testing.expectEqual(@as(usize, 90), IconGlyph.powerup.slotIndex());
+    try std.testing.expectEqual(@as(usize, 91), IconGlyph.slow_ring.slotIndex());
+    try std.testing.expectEqual(@as(usize, 92), IconGlyph.health.slotIndex());
+    try std.testing.expectEqual(@as(usize, 93), IconGlyph.salt.slotIndex());
 }

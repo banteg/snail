@@ -68,12 +68,32 @@
       "name": "update_high_score_screen"
     },
     {
+      "address": "0x417540",
+      "name": "initialize_high_score_tables",
+      "description": "Seeds the postal, challenge, and completion high-score banks with blank cRSubHighScore records before ScoreA/B/C overlays are loaded."
+    },
+    {
       "address": "0x4175e0",
       "name": "load_high_scores_from_file"
     },
     {
       "address": "0x417940",
       "name": "save_high_scores_and_config"
+    },
+    {
+      "address": "0x417a70",
+      "name": "initialize_high_score_entry",
+      "description": "Clears one cRSubHighScore record, seeds its score-mode metadata, and copies the current player-name buffer into the entry name field."
+    },
+    {
+      "address": "0x417af0",
+      "name": "commit_high_score_entry_into_top_ten",
+      "description": "Copies the edited scratch high-score entry into the selected insertion row and shifts the remaining top-10 rows down."
+    },
+    {
+      "address": "0x417b50",
+      "name": "return_from_high_score_screen",
+      "description": "Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table."
     },
     {
       "address": "0x417eb0",
@@ -400,7 +420,7 @@
     {
       "address": "0x449d20",
       "name": "font_slot_index_for_char",
-      "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; several punctuation bytes resolve to special icon slots."
+      "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; shipped tutorial strings reuse bytes like `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;` as icon tokens."
     },
     {
       "address": "0x449e90",

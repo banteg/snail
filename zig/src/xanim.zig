@@ -30,7 +30,6 @@ pub const Catalog = struct {
     clip_index_by_family: archive.CaseInsensitiveStringHashMap(usize),
 
     pub fn deinit(self: *Catalog) void {
-        self.clip_index_by_family.deinit();
         self.arena.deinit();
     }
 
@@ -503,7 +502,7 @@ test "pingpong sample is stable at fixed elapsed time" {
         .family_key = "TURBO-BOBALONG",
         .duration_seconds = 0.5,
         .mode = .pingpong,
-        .trigger_steps = &.{"START", "LAST"},
+        .trigger_steps = &.{ "START", "LAST" },
         .frames = &.{
             .{ .entry_index = 0, .frame_number = 0 },
             .{ .entry_index = 1, .frame_number = 1 },
