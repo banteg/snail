@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const archive = @import("archive.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
 const x2 = @import("x2.zig");
@@ -50,6 +51,8 @@ pub const LoadedLevelPreview = struct {
                 asset.deinit(allocator);
             }
         }
+        var model_asset_index_by_path = archive.CaseInsensitiveStringHashMap(usize).init(allocator);
+        defer model_asset_index_by_path.deinit();
 
         var placed_models_list: std.ArrayList(PlacedModel) = .empty;
         defer placed_models_list.deinit(allocator);
@@ -77,20 +80,18 @@ pub const LoadedLevelPreview = struct {
 
             for (segments[index].rows, 0..) |row, row_index| {
                 const annotation = row.annotation orelse continue;
-                if (annotation.kind != .model or annotation.model_name == null) continue;
+                const model_annotation = switch (annotation) {
+                    .model => |model| model,
+                    else => continue,
+                };
 
-                const archive_model_path = try resolveSegmentModelArchivePath(allocator, annotation.model_name.?);
+                const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
                 errdefer allocator.free(archive_model_path);
 
-                var asset_index: ?usize = null;
-                for (model_assets_list.items, 0..) |asset, existing_index| {
-                    if (std.mem.eql(u8, asset.path, archive_model_path)) {
-                        asset_index = existing_index;
-                        break;
-                    }
-                }
-
-                if (asset_index == null) {
+                const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
+                    allocator.free(archive_model_path);
+                    break :blk existing_index;
+                } else blk: {
                     const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
                         allocator.free(archive_model_path);
                         continue;
@@ -101,16 +102,16 @@ pub const LoadedLevelPreview = struct {
                         .path = archive_model_path,
                         .loaded = loaded_model,
                     });
-                    asset_index = model_assets_list.items.len - 1;
-                } else {
-                    allocator.free(archive_model_path);
-                }
+                    const new_index = model_assets_list.items.len - 1;
+                    try model_asset_index_by_path.put(archive_model_path, new_index);
+                    break :blk new_index;
+                };
 
                 try placed_models_list.append(allocator, .{
-                    .asset_index = asset_index.?,
+                    .asset_index = asset_index,
                     .segment_index = index,
                     .row_index = row_index,
-                    .offset = annotation.offset orelse .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+                    .offset = model_annotation.offset,
                 });
             }
         }
@@ -292,16 +293,13 @@ fn drawSegmentAnnotations(
 ) void {
     for (loaded_segment.rows, 0..) |row, row_index| {
         const annotation = row.annotation orelse continue;
-        switch (annotation.kind) {
+        switch (annotation) {
             .path => drawPathMarkers(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
             .ring => drawRingMarkers(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
-            .parcel => drawParcelMarker(row, row_index, width_offset, segment_start_z, cell_size, annotation, is_selected),
-            .model => drawModelMarker(row, row_index, width_offset, segment_start_z, cell_size, annotation, is_selected),
-            .velocity => drawVelocityMarker(row, row_index, width_offset, segment_start_z, cell_size, annotation, is_selected),
+            .parcel => |parcel| drawParcelMarker(row, row_index, width_offset, segment_start_z, cell_size, parcel, is_selected),
+            .model => |model| drawModelMarker(row, row_index, width_offset, segment_start_z, cell_size, model, is_selected),
             .jetpack_off => drawJetpackOffMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
             .no_fall => drawNoFallMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
-            .ring_speed => drawRingSpeedMarker(row, row_index, width_offset, segment_start_z, cell_size, annotation, is_selected),
-            .unknown => drawGenericAnnotationMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected),
         }
     }
 }
@@ -381,10 +379,7 @@ fn drawPathMarkers(
                 rl.drawLine3D(start, finish, tintForSelection(.gold, is_selected));
             }
         }
-        return;
     }
-
-    drawGenericAnnotationMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected);
 }
 
 fn drawRingMarkers(
@@ -396,15 +391,16 @@ fn drawRingMarkers(
     is_selected: bool,
 ) void {
     const annotation = row.annotation orelse return;
+    const ring = switch (annotation) {
+        .ring => |ring_kind| ring_kind,
+        else => return,
+    };
     const color = tintForSelection(colorForAnnotation(annotation), is_selected);
-    var found = false;
 
     for (row.cells, 0..) |cell, col_index| {
         if (!isRingCell(cell)) continue;
-        found = true;
-
         const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, 0.85);
-        switch (annotation.ring_kind orelse .normal) {
+        switch (ring) {
             .none => rl.drawCubeWiresV(position, .{ .x = 0.28, .y = 0.28, .z = 0.28 }, color),
             .normal => rl.drawSphere(position, 0.2, color),
             .powerup => rl.drawCubeV(position, .{ .x = 0.28, .y = 0.28, .z = 0.28 }, color),
@@ -415,10 +411,6 @@ fn drawRingMarkers(
             .slow => rl.drawSphere(position, 0.18, color),
         }
     }
-
-    if (!found) {
-        drawGenericAnnotationMarker(row, row_index, width_offset, segment_start_z, cell_size, is_selected);
-    }
 }
 
 fn drawParcelMarker(
@@ -427,13 +419,12 @@ fn drawParcelMarker(
     width_offset: f32,
     segment_start_z: f32,
     cell_size: f32,
-    annotation: segment.Annotation,
+    parcel: segment.ParcelAnnotation,
     is_selected: bool,
 ) void {
     const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.6);
-    const offset = annotation.offset orelse segment.Vec3{ .x = 0.0, .y = 0.0, .z = 0.0 };
-    const position = applyAnnotationOffset(base, offset);
-    const color = tintForSelection(if (annotation.parcel_id == 0) .gold else .green, is_selected);
+    const position = applyAnnotationOffset(base, parcel.offset);
+    const color = tintForSelection(if (parcel.id == 0) .gold else .green, is_selected);
 
     rl.drawLine3D(base, position, tintForSelection(.dark_green, is_selected));
     rl.drawCubeV(position, .{ .x = 0.32, .y = 0.32, .z = 0.32 }, color);
@@ -445,39 +436,16 @@ fn drawModelMarker(
     width_offset: f32,
     segment_start_z: f32,
     cell_size: f32,
-    annotation: segment.Annotation,
+    model_annotation: segment.ModelAnnotation,
     is_selected: bool,
 ) void {
     const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.5);
-    const offset = annotation.offset orelse segment.Vec3{ .x = 0.0, .y = 0.0, .z = 0.0 };
-    const position = applyAnnotationOffset(base, offset);
+    const position = applyAnnotationOffset(base, model_annotation.offset);
     const color = tintForSelection(.purple, is_selected);
 
     rl.drawLine3D(base, position, tintForSelection(.light_gray, is_selected));
     rl.drawCubeV(position, .{ .x = 0.36, .y = 0.72, .z = 0.36 }, color);
     rl.drawCubeWiresV(position, .{ .x = 0.36, .y = 0.72, .z = 0.36 }, .ray_white);
-}
-
-fn drawVelocityMarker(
-    row: segment.Row,
-    row_index: usize,
-    width_offset: f32,
-    segment_start_z: f32,
-    cell_size: f32,
-    annotation: segment.Annotation,
-    is_selected: bool,
-) void {
-    const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.8);
-    const velocity = annotation.velocity orelse return;
-    const tip = rl.Vector3{
-        .x = base.x + velocity.x,
-        .y = base.y + velocity.y,
-        .z = base.z + velocity.z,
-    };
-
-    const color = tintForSelection(.lime, is_selected);
-    rl.drawLine3D(base, tip, color);
-    rl.drawSphere(tip, 0.12, color);
 }
 
 fn drawJetpackOffMarker(
@@ -507,36 +475,6 @@ fn drawNoFallMarker(
     rl.drawLine3D(left, right, color);
     rl.drawSphere(left, 0.08, color);
     rl.drawSphere(right, 0.08, color);
-}
-
-fn drawRingSpeedMarker(
-    row: segment.Row,
-    row_index: usize,
-    width_offset: f32,
-    segment_start_z: f32,
-    cell_size: f32,
-    annotation: segment.Annotation,
-    is_selected: bool,
-) void {
-    const base = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.7);
-    const speed = annotation.ring_speed orelse 0.0;
-    const height = @max(@abs(speed) * 0.15, 0.15);
-    const top = rl.Vector3{ .x = base.x, .y = base.y + height, .z = base.z };
-    const color = tintForSelection(.yellow, is_selected);
-    rl.drawLine3D(base, top, color);
-    rl.drawSphere(top, 0.08, color);
-}
-
-fn drawGenericAnnotationMarker(
-    row: segment.Row,
-    row_index: usize,
-    width_offset: f32,
-    segment_start_z: f32,
-    cell_size: f32,
-    is_selected: bool,
-) void {
-    const position = rowAnchorPosition(row, row_index, width_offset, segment_start_z, cell_size, 0.75);
-    rl.drawCubeV(position, .{ .x = 0.18, .y = 0.18, .z = 0.18 }, tintForSelection(.white, is_selected));
 }
 
 fn drawRowStrip(
@@ -702,22 +640,19 @@ fn markerY(marker: GameplayMarker) f32 {
 }
 
 fn colorForAnnotation(annotation: segment.Annotation) rl.Color {
-    return switch (annotation.kind) {
+    return switch (annotation) {
         .path => .gold,
-        .ring => switch (annotation.ring_kind orelse .normal) {
+        .ring => |ring| switch (ring) {
             .none => .gray,
             .normal => .yellow,
             .powerup => .green,
             .explode => .orange,
             .slow => .purple,
         },
-        .ring_speed => .yellow,
         .parcel => .green,
         .model => .purple,
-        .velocity => .lime,
         .jetpack_off => .red,
         .no_fall => .sky_blue,
-        .unknown => .white,
     };
 }
 
@@ -761,7 +696,7 @@ test "load tutorial level preview" {
     defer preview.deinit();
 
     try std.testing.expectEqual(@as(usize, level_definition.segments.len), preview.segments.len);
-    try std.testing.expectEqualStrings("Start", preview.segments[0].name);
+    try std.testing.expectEqualStrings("Tutorial 0", preview.segments[0].name);
     try std.testing.expect(preview.total_rows > 0);
 }
 

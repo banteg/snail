@@ -8,9 +8,9 @@ pub const Rgb = struct {
     b: i32,
 };
 
-pub const SegmentAttribute = struct {
-    key: []const u8,
-    value: []const u8,
+pub const Track = union(enum) {
+    index: i32,
+    random,
 };
 
 pub const SegmentEntry = struct {
@@ -19,7 +19,6 @@ pub const SegmentEntry = struct {
     sample: ?[]const u8 = null,
     message: ?[]const u8 = null,
     angle: ?f32 = null,
-    attributes: []const SegmentAttribute = &.{},
 };
 
 pub const Definition = struct {
@@ -27,7 +26,7 @@ pub const Definition = struct {
     source_path: []const u8,
     name: []const u8,
     mode: []const u8,
-    track: ?i32 = null,
+    track: Track,
     galaxy_text: ?[]const u8 = null,
     background: ?[]const u8 = null,
     fringe: ?Rgb = null,
@@ -36,10 +35,8 @@ pub const Definition = struct {
     speed: ?usize = null,
     garbage: ?usize = null,
     salt: ?usize = null,
-    flags: []const []const u8 = &.{},
-    random: ?bool = null,
-    length_value: ?usize = null,
-    length_raw: ?[]const u8 = null,
+    random: bool,
+    length: usize,
     segments: []const SegmentEntry = &.{},
     first_segments: []const []const u8 = &.{},
     last_segments: []const []const u8 = &.{},
@@ -75,9 +72,9 @@ pub fn parseText(
     var last_segments: std.ArrayList([]const u8) = .empty;
     defer last_segments.deinit(arena_allocator);
 
-    var name: []const u8 = "";
-    var mode: []const u8 = "";
-    var track: ?i32 = null;
+    var name: ?[]const u8 = null;
+    var mode: ?[]const u8 = null;
+    var track: Track = .{ .index = 0 };
     var galaxy_text: ?[]const u8 = null;
     var background: ?[]const u8 = null;
     var fringe: ?Rgb = null;
@@ -86,10 +83,8 @@ pub fn parseText(
     var speed: ?usize = null;
     var garbage: ?usize = null;
     var salt: ?usize = null;
-    var flags: []const []const u8 = &.{};
     var random: ?bool = null;
-    var length_value: ?usize = null;
-    var length_raw: ?[]const u8 = null;
+    var length: ?usize = null;
 
     var lines = std.mem.splitScalar(u8, data, '\n');
     var scratch: [4096]u8 = undefined;
@@ -121,47 +116,29 @@ pub fn parseText(
         const key = std.mem.trim(u8, line[0..colon_index], " \t");
         const value = std.mem.trim(u8, line[colon_index + 1 ..], " \t");
 
-        if (std.ascii.eqlIgnoreCase(key, "Name")) {
-            name = try parseSingleQuotedValue(arena_allocator, line);
-        } else if (std.ascii.eqlIgnoreCase(key, "Mode")) {
-            mode = try arena_allocator.dupe(u8, value);
-        } else if (std.ascii.eqlIgnoreCase(key, "Track")) {
-            track = try std.fmt.parseInt(i32, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Background")) {
-            background = try arena_allocator.dupe(u8, value);
-        } else if (std.ascii.eqlIgnoreCase(key, "Fringe")) {
-            fringe = try parseRgb(value);
-        } else if (std.ascii.eqlIgnoreCase(key, "Parcels")) {
-            parcels = try std.fmt.parseUnsigned(usize, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Quota")) {
-            quota = try std.fmt.parseUnsigned(usize, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Speed")) {
-            speed = try std.fmt.parseUnsigned(usize, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Slug") or std.ascii.eqlIgnoreCase(key, "Garbage")) {
-            garbage = try std.fmt.parseUnsigned(usize, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Salt")) {
-            salt = try std.fmt.parseUnsigned(usize, value, 10);
-        } else if (std.ascii.eqlIgnoreCase(key, "Flags")) {
-            flags = try parseFlags(arena_allocator, value);
-        } else if (std.ascii.eqlIgnoreCase(key, "Random")) {
-            random = std.ascii.eqlIgnoreCase(value, "yes");
-        } else if (std.ascii.eqlIgnoreCase(key, "Length")) {
-            if (std.ascii.eqlIgnoreCase(value, "auto")) {
-                length_raw = try arena_allocator.dupe(u8, value);
-            } else {
-                length_value = std.fmt.parseUnsigned(usize, value, 10) catch null;
-                if (length_value == null) {
-                    length_raw = try arena_allocator.dupe(u8, value);
-                }
-            }
+        const field_key = parseFieldKey(key) orelse return error.UnsupportedLevelField;
+        switch (field_key) {
+            .name => name = try parseSingleQuotedValue(arena_allocator, line),
+            .mode => mode = try arena_allocator.dupe(u8, value),
+            .track => track = try parseTrackValue(value),
+            .background => background = try arena_allocator.dupe(u8, value),
+            .fringe => fringe = try parseRgb(value),
+            .parcels => parcels = try std.fmt.parseUnsigned(usize, value, 10),
+            .quota => quota = try std.fmt.parseUnsigned(usize, value, 10),
+            .speed => speed = try std.fmt.parseUnsigned(usize, value, 10),
+            .garbage => garbage = try std.fmt.parseUnsigned(usize, value, 10),
+            .salt => salt = try std.fmt.parseUnsigned(usize, value, 10),
+            .flags => if (value.len != 0) return error.UnsupportedLevelFlags,
+            .random => random = try parseRandomValue(value),
+            .length => length = try std.fmt.parseUnsigned(usize, value, 10),
         }
     }
 
     return .{
         .arena = arena,
         .source_path = try arena_allocator.dupe(u8, source_path),
-        .name = name,
-        .mode = mode,
+        .name = name orelse return error.MissingLevelName,
+        .mode = mode orelse return error.MissingLevelMode,
         .track = track,
         .galaxy_text = galaxy_text,
         .background = background,
@@ -171,15 +148,29 @@ pub fn parseText(
         .speed = speed,
         .garbage = garbage,
         .salt = salt,
-        .flags = flags,
-        .random = random,
-        .length_value = length_value,
-        .length_raw = length_raw,
+        .random = random orelse return error.MissingLevelRandomFlag,
+        .length = length orelse return error.MissingLevelLength,
         .segments = try segments.toOwnedSlice(arena_allocator),
         .first_segments = try first_segments.toOwnedSlice(arena_allocator),
         .last_segments = try last_segments.toOwnedSlice(arena_allocator),
     };
 }
+
+const FieldKey = enum {
+    name,
+    mode,
+    track,
+    background,
+    fringe,
+    parcels,
+    quota,
+    speed,
+    garbage,
+    salt,
+    flags,
+    random,
+    length,
+};
 
 fn stripInlineComments(line: []const u8, scratch: []u8) ![]const u8 {
     var out_index: usize = 0;
@@ -287,9 +278,6 @@ fn parseSegmentEntry(allocator: std.mem.Allocator, line: []const u8) !SegmentEnt
     const path = try allocator.dupe(u8, std.mem.trim(u8, line[0..path_end], " \t"));
     const remainder = std.mem.trim(u8, line[path_end..], " \t");
 
-    var attributes: std.ArrayList(SegmentAttribute) = .empty;
-    defer attributes.deinit(allocator);
-
     var entry = SegmentEntry{
         .path = path,
     };
@@ -318,22 +306,18 @@ fn parseSegmentEntry(allocator: std.mem.Allocator, line: []const u8) !SegmentEnt
             break :blk remainder[value_start..index];
         };
 
-        const key = try allocator.dupe(u8, key_text);
-        const value = try allocator.dupe(u8, value_text);
-        try attributes.append(allocator, .{ .key = key, .value = value });
-
-        if (std.ascii.eqlIgnoreCase(key, "Duration")) {
-            entry.duration = try std.fmt.parseFloat(f32, value);
-        } else if (std.ascii.eqlIgnoreCase(key, "Sample")) {
-            entry.sample = value;
-        } else if (std.ascii.eqlIgnoreCase(key, "Message")) {
-            entry.message = value;
-        } else if (std.ascii.eqlIgnoreCase(key, "Angle")) {
-            entry.angle = try std.fmt.parseFloat(f32, value);
+        if (parseSegmentEntryAttributeKey(key_text)) |attribute_key| {
+            switch (attribute_key) {
+                .duration => entry.duration = try std.fmt.parseFloat(f32, value_text),
+                .sample => entry.sample = try allocator.dupe(u8, value_text),
+                .message => entry.message = try allocator.dupe(u8, value_text),
+                .angle => entry.angle = try std.fmt.parseFloat(f32, value_text),
+            }
+        } else {
+            return error.UnsupportedLevelSegmentAttribute;
         }
     }
 
-    entry.attributes = try attributes.toOwnedSlice(allocator);
     return entry;
 }
 
@@ -356,16 +340,63 @@ fn looksLikeField(line: []const u8) bool {
     return true;
 }
 
-fn parseFlags(allocator: std.mem.Allocator, value: []const u8) ![]const []const u8 {
-    var flags: std.ArrayList([]const u8) = .empty;
-    defer flags.deinit(allocator);
+fn parseFieldKey(key: []const u8) ?FieldKey {
+    if (std.ascii.eqlIgnoreCase(key, "Name")) return .name;
+    if (std.ascii.eqlIgnoreCase(key, "Mode")) return .mode;
+    if (std.ascii.eqlIgnoreCase(key, "Track")) return .track;
+    if (std.ascii.eqlIgnoreCase(key, "Background")) return .background;
+    if (std.ascii.eqlIgnoreCase(key, "Fringe")) return .fringe;
+    if (std.ascii.eqlIgnoreCase(key, "Parcels")) return .parcels;
+    if (std.ascii.eqlIgnoreCase(key, "Quota")) return .quota;
+    if (std.ascii.eqlIgnoreCase(key, "Speed")) return .speed;
+    if (std.ascii.eqlIgnoreCase(key, "Slug") or std.ascii.eqlIgnoreCase(key, "Garbage")) return .garbage;
+    if (std.ascii.eqlIgnoreCase(key, "Salt")) return .salt;
+    if (std.ascii.eqlIgnoreCase(key, "Flags")) return .flags;
+    if (std.ascii.eqlIgnoreCase(key, "Random")) return .random;
+    if (std.ascii.eqlIgnoreCase(key, "Length")) return .length;
+    return null;
+}
 
-    var parts = std.mem.tokenizeAny(u8, value, ", \t");
-    while (parts.next()) |part| {
-        try flags.append(allocator, try allocator.dupe(u8, part));
+const SegmentEntryAttributeKey = enum {
+    duration,
+    sample,
+    message,
+    angle,
+};
+
+fn parseSegmentEntryAttributeKey(key: []const u8) ?SegmentEntryAttributeKey {
+    if (std.ascii.eqlIgnoreCase(key, "Duration")) return .duration;
+    if (std.ascii.eqlIgnoreCase(key, "Sample")) return .sample;
+    if (std.ascii.eqlIgnoreCase(key, "Message")) return .message;
+    if (std.ascii.eqlIgnoreCase(key, "Angle")) return .angle;
+    return null;
+}
+
+fn parseTrackValue(value: []const u8) !Track {
+    if (std.ascii.eqlIgnoreCase(value, "random")) {
+        return .random;
     }
+    return .{ .index = try std.fmt.parseInt(i32, value, 10) };
+}
 
-    return try flags.toOwnedSlice(allocator);
+fn parseRandomValue(value: []const u8) !bool {
+    if (std.ascii.eqlIgnoreCase(value, "yes")) return true;
+    if (std.ascii.eqlIgnoreCase(value, "no")) return false;
+    return error.UnsupportedLevelRandomValue;
+}
+
+fn trackMatchesIndex(track: Track, expected: i32) bool {
+    return switch (track) {
+        .index => |value| value == expected,
+        .random => false,
+    };
+}
+
+fn trackIsRandom(track: Track) bool {
+    return switch (track) {
+        .index => false,
+        .random => true,
+    };
 }
 
 fn parseRgb(value: []const u8) !Rgb {
@@ -395,8 +426,9 @@ test "parse arcade000 level" {
 
     try std.testing.expectEqualStrings("Test", level.name);
     try std.testing.expectEqualStrings("arcade", level.mode);
+    try std.testing.expect(trackMatchesIndex(level.track, 0));
     try std.testing.expectEqual(@as(?usize, 65), level.garbage);
-    try std.testing.expectEqual(@as(?usize, 500), level.length_value);
+    try std.testing.expectEqual(@as(usize, 500), level.length);
     try std.testing.expectEqual(@as(usize, 4), level.segments.len);
     try std.testing.expectEqualStrings("Wibble.txt", level.segments[0].path);
     try std.testing.expectEqualStrings("Start.txt", level.first_segments[0]);
@@ -411,7 +443,7 @@ test "parse tutorial level metadata" {
     defer level.deinit();
 
     try std.testing.expectEqualStrings("tutorial", level.mode);
-    try std.testing.expectEqual(@as(?i32, 0), level.track);
+    try std.testing.expect(trackMatchesIndex(level.track, 0));
     try std.testing.expectEqual(@as(usize, 23), level.segments.len);
     try std.testing.expectApproxEqAbs(@as(f32, 5.5), level.segments[0].duration.?, 0.0001);
     try std.testing.expectEqualStrings("Voice/tut1.ogg", level.segments[0].sample.?);
@@ -429,4 +461,79 @@ test "parse level segment angle and galaxy text" {
     const worm = level.segments[10];
     try std.testing.expectEqualStrings("Worm.txt", worm.path);
     try std.testing.expectEqual(@as(f32, 360.0), worm.angle.?);
+}
+
+test "parse challenge level random track" {
+    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT", 1 << 20);
+    defer std.testing.allocator.free(data);
+
+    var level = try parseText(std.testing.allocator, data, "LEVELS/CHALLENGE000.TXT");
+    defer level.deinit();
+
+    try std.testing.expect(trackIsRandom(level.track));
+    try std.testing.expect(level.random);
+    try std.testing.expectEqual(@as(usize, 3000), level.length);
+}
+
+test "default missing track to zero" {
+    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT", 1 << 20);
+    defer std.testing.allocator.free(data);
+
+    var level = try parseText(std.testing.allocator, data, "LEVELS/ARCADE000.TXT");
+    defer level.deinit();
+
+    try std.testing.expect(trackMatchesIndex(level.track, 0));
+}
+
+test "reject non-corpus random track alias" {
+    try std.testing.expectError(
+        error.InvalidCharacter,
+        parseText(
+            std.testing.allocator,
+            "Name: 'Broken'\nMode: arcade\nTrack:r\nRandom:yes\nLength:500\n",
+            "LEVELS/BROKEN.TXT",
+        ),
+    );
+}
+
+test "require level name and mode" {
+    try std.testing.expectError(
+        error.MissingLevelName,
+        parseText(std.testing.allocator, "Mode: arcade\n", "LEVELS/BROKEN.TXT"),
+    );
+    try std.testing.expectError(
+        error.MissingLevelMode,
+        parseText(std.testing.allocator, "Name: 'Broken'\n", "LEVELS/BROKEN.TXT"),
+    );
+    var parsed = try parseText(std.testing.allocator, "Name: 'Broken'\nMode: arcade\nRandom:no\nLength:500\n", "LEVELS/BROKEN.TXT");
+    defer parsed.deinit();
+    try std.testing.expect(trackMatchesIndex(parsed.track, 0));
+}
+
+test "parse shipped level corpus" {
+    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/LEVELS", .{ .iterate = true });
+    defer dir.close();
+
+    var iterator = dir.iterate();
+    var parsed_count: usize = 0;
+    while (try iterator.next()) |entry| {
+        if (entry.kind != .file) continue;
+        if (!std.ascii.endsWithIgnoreCase(entry.name, ".TXT")) continue;
+
+        var path_buffer: [512]u8 = undefined;
+        const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/LEVELS/{s}", .{entry.name});
+        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 20);
+        defer std.testing.allocator.free(data);
+
+        var parsed = try parseText(std.testing.allocator, data, path);
+        defer parsed.deinit();
+
+        try std.testing.expect(parsed.name.len > 0);
+        try std.testing.expect(parsed.mode.len > 0);
+        try std.testing.expect(parsed.length > 0);
+
+        parsed_count += 1;
+    }
+
+    try std.testing.expectEqual(@as(usize, 53), parsed_count);
 }

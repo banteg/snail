@@ -9,12 +9,32 @@ pub const Entry = struct {
     size: usize,
 };
 
+pub const CaseInsensitiveStringContext = struct {
+    pub fn hash(_: @This(), value: []const u8) u64 {
+        var hasher = std.hash.Wyhash.init(0);
+        for (value) |byte| {
+            const lower = std.ascii.toLower(byte);
+            hasher.update(&[_]u8{lower});
+        }
+        return hasher.final();
+    }
+
+    pub fn eql(_: @This(), a: []const u8, b: []const u8) bool {
+        return std.ascii.eqlIgnoreCase(a, b);
+    }
+};
+
+pub fn CaseInsensitiveStringHashMap(comptime V: type) type {
+    return std.HashMap([]const u8, V, CaseInsensitiveStringContext, std.hash_map.default_max_load_percentage);
+}
+
 pub const Archive = struct {
     allocator: std.mem.Allocator,
     source_path: []const u8,
     file_bytes: []const u8,
     index_blob: []u8,
     entries: []Entry,
+    path_index: CaseInsensitiveStringHashMap(usize),
 
     pub fn init(allocator: std.mem.Allocator, path: []const u8) !Archive {
         const source_path = try allocator.dupe(u8, path);
@@ -45,6 +65,8 @@ pub const Archive = struct {
 
         const entries = try allocator.alloc(Entry, entry_count);
         errdefer allocator.free(entries);
+        var path_index = CaseInsensitiveStringHashMap(usize).init(allocator);
+        errdefer path_index.deinit();
 
         for (entries, 0..) |*entry, entry_index| {
             const record_offset = 4 + entry_index * entry_size;
@@ -62,6 +84,8 @@ pub const Archive = struct {
                 .data_offset = data_offset,
                 .size = size,
             };
+
+            try path_index.put(entry.path, entry_index);
         }
 
         return .{
@@ -70,10 +94,12 @@ pub const Archive = struct {
             .file_bytes = file_bytes,
             .index_blob = index_blob,
             .entries = entries,
+            .path_index = path_index,
         };
     }
 
     pub fn deinit(self: *Archive) void {
+        self.path_index.deinit();
         self.allocator.free(self.entries);
         self.allocator.free(self.index_blob);
         self.allocator.free(self.file_bytes);
@@ -81,12 +107,8 @@ pub const Archive = struct {
     }
 
     pub fn entryByPath(self: *const Archive, asset_path: []const u8) ?Entry {
-        for (self.entries) |entry| {
-            if (std.ascii.eqlIgnoreCase(entry.path, asset_path)) {
-                return entry;
-            }
-        }
-        return null;
+        const entry_index = self.path_index.get(asset_path) orelse return null;
+        return self.entries[entry_index];
     }
 
     pub fn readEntryAlloc(self: *const Archive, allocator: std.mem.Allocator, asset_path: []const u8) ![]u8 {
@@ -155,4 +177,6 @@ test "decode representative archive members" {
     const dll = try archive.readEntryAlloc(std.testing.allocator, "BASS.DLL");
     defer std.testing.allocator.free(dll);
     try std.testing.expectEqualSlices(u8, "MZ", dll[0..2]);
+
+    try std.testing.expect(archive.entryByPath("music/1.ogg") != null);
 }

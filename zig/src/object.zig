@@ -30,6 +30,7 @@ pub const ParsedObject = struct {
     arena: std.heap.ArenaAllocator,
     source_path: []const u8,
     vertices: []const ObjectVertex,
+    vertex_positions: std.AutoHashMapUnmanaged(usize, Vec3),
     faces: []const FaceQuad,
     texture_names: []const []const u8,
 
@@ -150,6 +151,7 @@ pub fn parseObject(
 
     var vertices_list: std.ArrayList(ObjectVertex) = .empty;
     defer vertices_list.deinit(arena_allocator);
+    var vertex_positions: std.AutoHashMapUnmanaged(usize, Vec3) = .empty;
 
     var faces_list: std.ArrayList(FaceQuad) = .empty;
     defer faces_list.deinit(arena_allocator);
@@ -192,14 +194,18 @@ pub fn parseObject(
             const z_text = parts.next() orelse return error.InvalidObjectVertex;
             if (parts.next() != null) return error.InvalidObjectVertex;
 
+            const vertex_index = try std.fmt.parseUnsigned(usize, index_text, 10);
+            const position = Vec3{
+                .x = try std.fmt.parseFloat(f32, x_text),
+                .y = try std.fmt.parseFloat(f32, y_text),
+                .z = try std.fmt.parseFloat(f32, z_text),
+            };
+
             try vertices_list.append(arena_allocator, .{
-                .index = try std.fmt.parseUnsigned(usize, index_text, 10),
-                .position = .{
-                    .x = try std.fmt.parseFloat(f32, x_text),
-                    .y = try std.fmt.parseFloat(f32, y_text),
-                    .z = try std.fmt.parseFloat(f32, z_text),
-                },
+                .index = vertex_index,
+                .position = position,
             });
+            try vertex_positions.put(arena_allocator, vertex_index, position);
             continue;
         }
 
@@ -246,6 +252,7 @@ pub fn parseObject(
         .arena = arena,
         .source_path = try arena_allocator.dupe(u8, source_path),
         .vertices = try vertices_list.toOwnedSlice(arena_allocator),
+        .vertex_positions = vertex_positions,
         .faces = try faces_list.toOwnedSlice(arena_allocator),
         .texture_names = try texture_names.toOwnedSlice(arena_allocator),
     };
@@ -393,10 +400,7 @@ fn buildSubmesh(
 }
 
 fn positionForIndex(parsed: *const ParsedObject, index: u16) !Vec3 {
-    for (parsed.vertices) |vertex| {
-        if (vertex.index == index) return vertex.position;
-    }
-    return error.InvalidObjectVertexIndex;
+    return parsed.vertex_positions.get(@as(usize, index)) orelse error.InvalidObjectVertexIndex;
 }
 
 fn writeTriangle(
@@ -532,15 +536,39 @@ test "parse font3d object definition" {
     try std.testing.expectEqual(@as(u16, 3), parsed.faces[0].vertex_indices[3]);
 }
 
-test "load object preview from archive" {
-    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
-    defer catalog.deinit();
+test "resolve object texture archive path" {
+    const path = try resolveTextureArchivePath(std.testing.allocator, "OBJECTS/FONT3D/_OBJECT.TXT", "Letter");
+    defer if (path) |owned_path| std.testing.allocator.free(owned_path);
 
-    const entry = catalog.object_entries[catalog.findObjectIndex("OBJECTS/FONT3D/_OBJECT.TXT").?];
-    var loaded = try LoadedObject.loadFromArchive(std.testing.allocator, &catalog, entry, true);
-    defer loaded.deinit();
+    try std.testing.expect(path != null);
+    try std.testing.expectEqualStrings("OBJECTS/FONT3D/Letter.TGA", path.?);
+}
 
-    try std.testing.expectEqual(@as(usize, 1), loaded.submeshes.len);
-    try std.testing.expectEqual(@as(usize, 2), loaded.submeshes[0].triangle_count);
-    try std.testing.expectEqualStrings("OBJECTS/FONT3D/Letter.TGA", loaded.submeshes[0].archive_texture_path.?);
+test "parse shipped object corpus" {
+    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/OBJECTS", .{ .iterate = true });
+    defer dir.close();
+
+    var object_dir_iterator = dir.iterate();
+    var parsed_count: usize = 0;
+    while (try object_dir_iterator.next()) |entry| {
+        if (entry.kind != .directory) continue;
+
+        var path_buffer: [512]u8 = undefined;
+        const object_path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/OBJECTS/{s}/_OBJECT.TXT", .{entry.name});
+        const data = std.fs.cwd().readFileAlloc(std.testing.allocator, object_path, 1 << 20) catch |err| switch (err) {
+            error.FileNotFound => continue,
+            else => return err,
+        };
+        defer std.testing.allocator.free(data);
+
+        var parsed = try parseObject(std.testing.allocator, data, object_path);
+        defer parsed.deinit();
+
+        try std.testing.expect(parsed.vertices.len > 0);
+        try std.testing.expect(parsed.faces.len > 0);
+        try std.testing.expect(parsed.texture_names.len > 0);
+        parsed_count += 1;
+    }
+
+    try std.testing.expectEqual(@as(usize, 4), parsed_count);
 }

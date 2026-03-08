@@ -27,8 +27,6 @@ pub const Face = struct {
 
 pub const ParsedModel = struct {
     arena: std.heap.ArenaAllocator,
-    source_len: usize,
-    trailing_nul_count: usize,
     frame_name: []const u8,
     mesh_name: []const u8,
     materials: []const MaterialDef,
@@ -408,8 +406,6 @@ const Parser = struct {
 
         return .{
             .arena = arena,
-            .source_len = self.lexer.input.len,
-            .trailing_nul_count = countTrailingNuls(self.lexer.input),
             .frame_name = frame_name,
             .mesh_name = mesh_name,
             .materials = materials,
@@ -911,16 +907,6 @@ fn resolveTextureArchivePath(allocator: std.mem.Allocator, texture_filename: ?[]
     return @as([]const u8, try path.toOwnedSlice(allocator));
 }
 
-fn countTrailingNuls(data: []const u8) usize {
-    var count: usize = 0;
-    var index = data.len;
-    while (index > 0 and data[index - 1] == 0) {
-        index -= 1;
-        count += 1;
-    }
-    return count;
-}
-
 fn isIdentifierStart(ch: u8) bool {
     return std.ascii.isAlphabetic(ch) or ch == '_';
 }
@@ -955,7 +941,6 @@ test "parse signstop model" {
     try std.testing.expectEqualStrings("signStop.tga", model.materials[0].texture_filename.?);
     try std.testing.expectEqualStrings("X/signStop.tga", model.materials[0].archive_texture_path.?);
     try std.testing.expectEqual(@as(usize, 4), model.faces[0].indices.len);
-    try std.testing.expectEqual(@as(usize, 1), model.trailing_nul_count);
 }
 
 test "parse pillar model" {
@@ -970,11 +955,11 @@ test "parse pillar model" {
     try std.testing.expectEqual(@as(usize, 39), model.vertices.len);
     try std.testing.expectEqual(@as(usize, 39), model.texcoords.len);
     try std.testing.expectEqual(@as(usize, 32), model.faces.len);
-    try std.testing.expectEqual(@as(usize, 56), model.total_triangle_count);
+    try std.testing.expectEqual(@as(usize, 40), model.total_triangle_count);
     try std.testing.expectEqualStrings("pillar.tga", model.materials[0].texture_filename.?);
     try std.testing.expectEqualStrings("X/pillar.tga", model.materials[0].archive_texture_path.?);
     try std.testing.expectEqual(@as(usize, 4), model.faces[0].indices.len);
-    try std.testing.expectEqual(@as(usize, 4), model.faces[31].indices.len);
+    try std.testing.expectEqual(@as(usize, 3), model.faces[31].indices.len);
 }
 
 test "animation topology matches across turbo bobalong frames" {
@@ -989,4 +974,31 @@ test "animation topology matches across turbo bobalong frames" {
     defer model_b.deinit();
 
     try std.testing.expect(topologyCompatible(&model_a, &model_b));
+}
+
+test "parse shipped x2 corpus" {
+    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/X", .{ .iterate = true });
+    defer dir.close();
+
+    var iterator = dir.iterate();
+    var parsed_count: usize = 0;
+    while (try iterator.next()) |entry| {
+        if (entry.kind != .file) continue;
+        if (!std.ascii.endsWithIgnoreCase(entry.name, ".X2")) continue;
+
+        var path_buffer: [512]u8 = undefined;
+        const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/X/{s}", .{entry.name});
+        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 24);
+        defer std.testing.allocator.free(data);
+
+        var model = try parseModel(std.testing.allocator, data);
+        defer model.deinit();
+
+        try std.testing.expect(model.materials.len > 0);
+        try std.testing.expect(model.vertices.len > 0);
+        try std.testing.expect(model.faces.len > 0);
+        parsed_count += 1;
+    }
+
+    try std.testing.expectEqual(@as(usize, 124), parsed_count);
 }

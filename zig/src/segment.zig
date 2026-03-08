@@ -8,18 +8,6 @@ pub const Vec3 = struct {
     z: f32,
 };
 
-pub const AnnotationKind = enum {
-    unknown,
-    path,
-    ring,
-    ring_speed,
-    parcel,
-    model,
-    velocity,
-    jetpack_off,
-    no_fall,
-};
-
 pub const RingKind = enum {
     none,
     normal,
@@ -28,18 +16,37 @@ pub const RingKind = enum {
     slow,
 };
 
-pub const Annotation = struct {
-    raw: []const u8,
-    key: []const u8,
-    value: ?[]const u8 = null,
-    kind: AnnotationKind = .unknown,
-    ring_kind: ?RingKind = null,
-    ring_speed: ?f32 = null,
-    path_name: ?[]const u8 = null,
-    parcel_id: ?i32 = null,
-    model_name: ?[]const u8 = null,
-    offset: ?Vec3 = null,
-    velocity: ?Vec3 = null,
+pub const ParcelAnnotation = struct {
+    id: i32,
+    offset: Vec3,
+};
+
+pub const ModelAnnotation = struct {
+    name: []const u8,
+    offset: Vec3,
+};
+
+pub const Annotation = union(enum) {
+    path: []const u8,
+    ring: RingKind,
+    parcel: ParcelAnnotation,
+    model: ModelAnnotation,
+    jetpack_off,
+    no_fall,
+
+    pub const Tag = std.meta.Tag(Annotation);
+
+    pub fn tag(self: Annotation) Tag {
+        return std.meta.activeTag(self);
+    }
+};
+
+const AnnotationKey = enum {
+    path,
+    ring,
+    parcel,
+    model,
+    jetpack,
 };
 
 pub const Row = struct {
@@ -147,73 +154,44 @@ pub fn parseText(
 
 fn parseAnnotation(allocator: std.mem.Allocator, raw: []const u8) !Annotation {
     const trimmed = std.mem.trim(u8, raw, " \t");
+    if (trimmed.len == 0) {
+        return error.EmptySegmentAnnotation;
+    }
 
     if (std.ascii.eqlIgnoreCase(trimmed, "NoFall") or std.ascii.eqlIgnoreCase(trimmed, "No Fall")) {
-        return .{
-            .raw = try allocator.dupe(u8, trimmed),
-            .key = try allocator.dupe(u8, "NoFall"),
-            .value = null,
-            .kind = .no_fall,
-        };
+        return .no_fall;
     }
 
     if (std.mem.indexOfScalar(u8, trimmed, '=')) |equals_index| {
         const key = std.mem.trim(u8, trimmed[0..equals_index], " \t");
         const value = std.mem.trim(u8, trimmed[equals_index + 1 ..], " \t");
 
-        var annotation = Annotation{
-            .raw = try allocator.dupe(u8, trimmed),
-            .key = try allocator.dupe(u8, key),
-            .value = try allocator.dupe(u8, value),
-        };
-
-        if (std.ascii.eqlIgnoreCase(key, "Path")) {
-            annotation.kind = .path;
-            annotation.path_name = annotation.value.?;
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "Ring")) {
-            annotation.kind = .ring;
-            annotation.ring_kind = parseRingKind(value);
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "RingSpeed")) {
-            annotation.kind = .ring_speed;
-            annotation.ring_speed = try std.fmt.parseFloat(f32, value);
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "Parcel")) {
-            annotation.kind = .parcel;
-            const parsed = try parseParcelValue(value);
-            annotation.parcel_id = parsed.parcel_id;
-            annotation.offset = parsed.offset;
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "3DModel")) {
-            annotation.kind = .model;
-            const parsed = try parseNamedOffsetValue(allocator, value);
-            annotation.model_name = parsed.name;
-            annotation.offset = parsed.offset;
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "Velocity")) {
-            annotation.kind = .velocity;
-            annotation.velocity = try parseVec3Value(value);
-            return annotation;
-        }
-        if (std.ascii.eqlIgnoreCase(key, "JetPack") and std.ascii.eqlIgnoreCase(value, "Off")) {
-            annotation.kind = .jetpack_off;
-            return annotation;
+        if (parseAnnotationKey(key)) |annotation_key| {
+            return switch (annotation_key) {
+                .path => .{ .path = try allocator.dupe(u8, value) },
+                .ring => .{ .ring = parseRingKind(value) orelse return error.UnsupportedSegmentRingKind },
+                .parcel => blk: {
+                    const parsed = try parseParcelValue(value);
+                    break :blk .{ .parcel = .{
+                        .id = parsed.parcel_id,
+                        .offset = parsed.offset,
+                    } };
+                },
+                .model => blk: {
+                    const parsed = try parseNamedOffsetValue(allocator, value);
+                    break :blk .{ .model = .{
+                        .name = parsed.name,
+                        .offset = parsed.offset,
+                    } };
+                },
+                .jetpack => if (std.ascii.eqlIgnoreCase(value, "Off")) .jetpack_off else error.UnsupportedSegmentJetpackValue,
+            };
         }
 
-        return annotation;
+        return error.UnsupportedSegmentAnnotation;
     }
 
-    return .{
-        .raw = try allocator.dupe(u8, trimmed),
-        .key = try allocator.dupe(u8, trimmed),
-        .value = null,
-    };
+    return error.UnsupportedSegmentAnnotation;
 }
 
 fn parseSingleQuotedValue(allocator: std.mem.Allocator, line: []const u8) ![]const u8 {
@@ -276,6 +254,15 @@ fn parseRingKind(value: []const u8) ?RingKind {
     return null;
 }
 
+fn parseAnnotationKey(key: []const u8) ?AnnotationKey {
+    if (std.ascii.eqlIgnoreCase(key, "Path")) return .path;
+    if (std.ascii.eqlIgnoreCase(key, "Ring")) return .ring;
+    if (std.ascii.eqlIgnoreCase(key, "Parcel")) return .parcel;
+    if (std.ascii.eqlIgnoreCase(key, "3DModel")) return .model;
+    if (std.ascii.eqlIgnoreCase(key, "JetPack")) return .jetpack;
+    return null;
+}
+
 test "parse start segment" {
     const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT", 1 << 16);
     defer std.testing.allocator.free(data);
@@ -289,10 +276,10 @@ test "parse start segment" {
     try std.testing.expectEqual(@as(usize, 33), segment.height);
     try std.testing.expectEqualStrings("@PPPPPPPP@", segment.rows[5].cells);
     try std.testing.expectEqual(false, segment.rows[5].marked);
-    try std.testing.expectEqualStrings("Path", segment.rows[5].annotation.?.key);
-    try std.testing.expectEqualStrings("Start", segment.rows[5].annotation.?.value.?);
-    try std.testing.expectEqual(.path, segment.rows[5].annotation.?.kind);
-    try std.testing.expectEqualStrings("Start", segment.rows[5].annotation.?.path_name.?);
+    switch (segment.rows[5].annotation.?) {
+        .path => |path_name| try std.testing.expectEqualStrings("Start", path_name),
+        else => return error.ExpectedPathAnnotation,
+    }
 }
 
 test "parse big jump segment annotation" {
@@ -303,10 +290,10 @@ test "parse big jump segment annotation" {
     defer segment.deinit();
 
     try std.testing.expectEqualStrings("@  {}{}  @", segment.rows[9].cells);
-    try std.testing.expectEqualStrings("Ring", segment.rows[9].annotation.?.key);
-    try std.testing.expectEqualStrings("Explode", segment.rows[9].annotation.?.value.?);
-    try std.testing.expectEqual(.ring, segment.rows[9].annotation.?.kind);
-    try std.testing.expectEqual(.explode, segment.rows[9].annotation.?.ring_kind.?);
+    switch (segment.rows[9].annotation.?) {
+        .ring => |ring| try std.testing.expectEqual(.explode, ring),
+        else => return error.ExpectedRingAnnotation,
+    }
 }
 
 test "parse parcel, no fall, and row mark semantics" {
@@ -316,12 +303,16 @@ test "parse parcel, no fall, and row mark semantics" {
     var hump = try parseText(std.testing.allocator, hump_data, "SEGMENTS/HUMP.TXT");
     defer hump.deinit();
 
-    const parcel = hump.rows[25].annotation.?;
-    try std.testing.expectEqual(.parcel, parcel.kind);
-    try std.testing.expectEqual(@as(i32, 0), parcel.parcel_id.?);
-    try std.testing.expectEqual(@as(f32, 0.0), parcel.offset.?.x);
-    try std.testing.expectEqual(@as(f32, 0.0), parcel.offset.?.y);
-    try std.testing.expectEqual(@as(f32, 0.0), parcel.offset.?.z);
+    const parcel = hump.rows[24].annotation.?;
+    switch (parcel) {
+        .parcel => |parcel_annotation| {
+            try std.testing.expectEqual(@as(i32, 0), parcel_annotation.id);
+            try std.testing.expectEqual(@as(f32, 0.0), parcel_annotation.offset.x);
+            try std.testing.expectEqual(@as(f32, 0.0), parcel_annotation.offset.y);
+            try std.testing.expectEqual(@as(f32, 0.0), parcel_annotation.offset.z);
+        },
+        else => return error.ExpectedParcelAnnotation,
+    }
 
     const supertramp_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/SUPERTRAMP2.TXT", 1 << 16);
     defer std.testing.allocator.free(supertramp_data);
@@ -329,7 +320,7 @@ test "parse parcel, no fall, and row mark semantics" {
     var supertramp = try parseText(std.testing.allocator, supertramp_data, "SEGMENTS/SUPERTRAMP2.TXT");
     defer supertramp.deinit();
 
-    try std.testing.expectEqual(.no_fall, supertramp.rows[11].annotation.?.kind);
+    try std.testing.expectEqual(Annotation.Tag.no_fall, supertramp.rows[11].annotation.?.tag());
 
     const gap_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/EASY GAP.TXT", 1 << 16);
     defer std.testing.allocator.free(gap_data);
@@ -347,7 +338,10 @@ test "normalize explosive and jetpack annotations" {
     var tutorial = try parseText(std.testing.allocator, tutorial_data, "SEGMENTS/TUTORIAL 11.TXT");
     defer tutorial.deinit();
 
-    try std.testing.expectEqual(.explode, tutorial.rows[28].annotation.?.ring_kind.?);
+    switch (tutorial.rows[28].annotation.?) {
+        .ring => |ring| try std.testing.expectEqual(.explode, ring),
+        else => return error.ExpectedRingAnnotation,
+    }
 
     const jetpack_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT", 1 << 16);
     defer std.testing.allocator.free(jetpack_data);
@@ -355,5 +349,32 @@ test "normalize explosive and jetpack annotations" {
     var jetpack = try parseText(std.testing.allocator, jetpack_data, "SEGMENTS/JETPACKOFF.TXT");
     defer jetpack.deinit();
 
-    try std.testing.expectEqual(.jetpack_off, jetpack.rows[1].annotation.?.kind);
+    try std.testing.expectEqual(Annotation.Tag.jetpack_off, jetpack.rows[1].annotation.?.tag());
+}
+
+test "parse shipped segment corpus" {
+    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/SEGMENTS", .{ .iterate = true });
+    defer dir.close();
+
+    var iterator = dir.iterate();
+    var parsed_count: usize = 0;
+    while (try iterator.next()) |entry| {
+        if (entry.kind != .file) continue;
+        if (!std.ascii.endsWithIgnoreCase(entry.name, ".TXT")) continue;
+
+        var path_buffer: [512]u8 = undefined;
+        const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/SEGMENTS/{s}", .{entry.name});
+        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 16);
+        defer std.testing.allocator.free(data);
+
+        var parsed = try parseText(std.testing.allocator, data, path);
+        defer parsed.deinit();
+
+        try std.testing.expect(parsed.segment_id >= 0);
+        try std.testing.expect(parsed.name.len > 0);
+        try std.testing.expectEqual(@as(usize, 10), parsed.width);
+        parsed_count += 1;
+    }
+
+    try std.testing.expectEqual(@as(usize, 133), parsed_count);
 }

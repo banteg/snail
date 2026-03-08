@@ -134,12 +134,12 @@ const AppState = struct {
         try self.previewMusic();
     }
 
-    fn update(self: *AppState) void {
+    fn update(self: *AppState) !void {
         if (self.current_music) |music| {
             rl.updateMusicStream(music.music);
         }
         if (self.current_animation) |*animation| {
-            animation.update(rl.getTime()) catch {};
+            try animation.update(rl.getTime());
         }
     }
 
@@ -319,7 +319,7 @@ const AppState = struct {
         if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
             const clip = &self.animation_catalog.clips[clip_index];
             if (clip.frames.len > 1) {
-                var animation = try xanim.Player.load(
+                const animation = try xanim.Player.load(
                     self.allocator,
                     &self.catalog,
                     clip,
@@ -327,7 +327,6 @@ const AppState = struct {
                     xanim.frameNumberFromPath(entry.path),
                     rl.getTime(),
                 );
-                animation.update(rl.getTime()) catch {};
                 self.current_animation = animation;
                 return;
             }
@@ -464,7 +463,7 @@ pub fn main() !void {
         }
 
         try state.handleInput();
-        state.update();
+        try state.update();
 
         rl.beginDrawing();
         defer rl.endDrawing();
@@ -606,13 +605,12 @@ fn drawModelPanel(state: *const AppState) !void {
     var detail_buffer: [256]u8 = undefined;
     const detail_text = try std.fmt.bufPrintZ(
         &detail_buffer,
-        "frame {s}  mesh {s}  materials {d}  flipV {s}  trailing NULs {d}",
+        "frame {s}  mesh {s}  materials {d}  flipV {s}",
         .{
             parsed.frame_name,
             parsed.mesh_name,
             parsed.materials.len,
             if (state.model_flip_v) "on" else "off",
-            parsed.trailing_nul_count,
         },
     );
     rl.drawText(detail_text, 32, 258, 20, .sky_blue);
@@ -650,16 +648,20 @@ fn drawModelPanel(state: *const AppState) !void {
         );
         rl.drawText(anim_text, 56, 486, 20, .gold);
 
-        var title_buffer: [384]u8 = undefined;
-        const title_text = try std.fmt.bufPrintZ(
-            &title_buffer,
-            "{s}",
-            .{animation.clip.title orelse "Interpolated archive-driven clip"},
+        var trigger_buffer: [384]u8 = undefined;
+        const trigger_text = try std.fmt.bufPrintZ(
+            &trigger_buffer,
+            "Trigger steps {d}  first {s}  last {s}",
+            .{
+                animation.clip.trigger_steps.len,
+                animation.clip.trigger_steps[0],
+                animation.clip.trigger_steps[animation.clip.trigger_steps.len - 1],
+            },
         );
-        rl.drawText(title_text, 56, 520, 20, .light_gray);
+        rl.drawText(trigger_text, 56, 520, 20, .light_gray);
         rl.drawText("Binary Ninja + Ghidra + IDA agree the runtime interpolates numbered keyframes.", 56, 550, 20, .light_gray);
         rl.drawText("Duration and Mode come from X/_ANIMATION.TXT; frame numbers come from .x2 filenames.", 56, 580, 20, .light_gray);
-        rl.drawText("Trigger lists are not applied yet in this viewer.", 56, 610, 20, .light_gray);
+        rl.drawText("Trigger lists are parsed strictly but not applied yet in this viewer.", 56, 610, 20, .light_gray);
     } else {
         rl.drawText("Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
         rl.drawText("TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
@@ -791,7 +793,7 @@ fn drawLevelPanel(state: *const AppState) !void {
         &meta_buffer,
         "track {s}  parcels {s}  quota {s}  speed {s}  garbage {s}  salt {s}",
         .{
-            optionalIntToText(&track_value_buffer, loaded_level.track),
+            trackToText(&track_value_buffer, loaded_level.track),
             optionalUsizeToText(&parcels_value_buffer, loaded_level.parcels),
             optionalUsizeToText(&quota_value_buffer, loaded_level.quota),
             optionalUsizeToText(&speed_value_buffer, loaded_level.speed),
@@ -961,22 +963,19 @@ fn countMarkedRows(rows: []const segment.Row) usize {
 }
 
 fn colorForSegmentAnnotation(annotation: segment.Annotation) rl.Color {
-    return switch (annotation.kind) {
+    return switch (annotation) {
         .path => .gold,
-        .ring => switch (annotation.ring_kind orelse .normal) {
+        .ring => |ring| switch (ring) {
             .none => .gray,
             .normal => .yellow,
             .powerup => .green,
             .explode => .orange,
             .slow => .purple,
         },
-        .ring_speed => .yellow,
         .parcel => .green,
         .model => .purple,
-        .velocity => .lime,
         .jetpack_off => .red,
         .no_fall => .sky_blue,
-        .unknown => .white,
     };
 }
 
@@ -1035,8 +1034,11 @@ fn optionalUsizeToText(buffer: []u8, value: ?usize) []const u8 {
     return if (value != null) std.fmt.bufPrint(buffer, "{d}", .{value.?}) catch "?" else "-";
 }
 
-fn optionalIntToText(buffer: []u8, value: ?i32) []const u8 {
-    return if (value != null) std.fmt.bufPrint(buffer, "{d}", .{value.?}) catch "?" else "-";
+fn trackToText(buffer: []u8, value: level.Track) []const u8 {
+    return switch (value) {
+        .index => |track_index| std.fmt.bufPrint(buffer, "{d}", .{track_index}) catch "?",
+        .random => "random",
+    };
 }
 
 fn optionalFloatToText(buffer: []u8, value: ?f32) []const u8 {
