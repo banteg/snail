@@ -10,10 +10,18 @@ const ERROR_ALREADY_EXISTS = 183;
 const HOOKS = {
   level_start: true,
   path_lookup: true,
+  player_update: true,
   attachment_probe: true,
   attachment_begin: true,
+  attachment_update: true,
+  attachment_end: true,
+  floor_sample: true,
   garbage_spawn: true,
+  health_pickup: true,
+  jetpack_pickup: true,
+  ring_effect: true,
   salt_spawn: true,
+  salt_update: true,
   salt_deactivate: true,
   slug_spawn: true,
 };
@@ -21,10 +29,18 @@ const HOOKS = {
 const LIMITS = {
   level_start: 128,
   path_lookup: 2048,
+  player_update: 4096,
   attachment_probe: 4096,
   attachment_begin: 1024,
+  attachment_update: 4096,
+  attachment_end: 1024,
+  floor_sample: 4096,
   garbage_spawn: 4096,
+  health_pickup: 1024,
+  jetpack_pickup: 1024,
+  ring_effect: 2048,
   salt_spawn: 4096,
+  salt_update: 4096,
   salt_deactivate: 4096,
   slug_spawn: 1024,
 };
@@ -32,10 +48,19 @@ const LIMITS = {
 const VA = {
   find_segment_path_index_by_name: 0x429ae0,
   begin_track_attachment_follow_state: 0x420c40,
+  update_track_attachment_follow_state: 0x420cb0,
   try_enter_track_attachment_from_swept_motion: 0x42c770,
   normalize_level_runtime_fields: 0x437eb0,
+  end_track_attachment_follow_state: 0x43af60,
+  update_player_track_movement_and_triggers: 0x43b120,
+  get_track_grid_cell_at_world_position: 0x43d410,
+  sample_track_floor_height_at_position: 0x43d4d0,
+  spawn_track_health_pickup: 0x43d6c0,
+  spawn_track_jetpack_pickup: 0x43d890,
   spawn_track_garbage_hazard: 0x43da80,
+  spawn_track_ring_or_special_effect: 0x43df10,
   spawn_salt_runtime_entity: 0x441560,
+  update_salt_hazard: 0x4417d0,
   deactivate_salt_runtime_entity: 0x441740,
   spawn_slug_runtime_entity: 0x43dc80,
   get_track_cell_row_index: 0x447040,
@@ -105,6 +130,7 @@ const RUNTIME = {
 };
 
 const counters = {};
+const sampledState = {};
 const floatScratch = Memory.alloc(4);
 let hookInstalled = false;
 let traceFile = null;
@@ -334,6 +360,21 @@ function safeReadVec3(base, offset) {
   }
 }
 
+function boolFlag(value) {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  return value !== 0;
+}
+
+function fastcallArg0(args, context) {
+  const fromArgs = asPtr(args[0]);
+  if (fromArgs !== null) {
+    return fromArgs;
+  }
+  return asPtr(context.ecx);
+}
+
 function floatArg(arg) {
   const p = asPtr(arg);
   if (p === null) {
@@ -456,6 +497,14 @@ function fromVa(module, va) {
   return module.base.add(va - PREFERRED_IMAGE_BASE);
 }
 
+function makeTrackGridCellLocator(module) {
+  try {
+    return new NativeFunction(fromVa(module, VA.get_track_grid_cell_at_world_position), 'pointer', ['pointer', 'pointer'], 'fastcall');
+  } catch (_) {
+    return null;
+  }
+}
+
 function makeTrackCellRowIndex(module) {
   try {
     return new NativeFunction(fromVa(module, VA.get_track_cell_row_index), 'int', ['pointer'], 'thiscall');
@@ -490,6 +539,61 @@ function summarizeCell(cellPtr, getTrackCellRowIndex) {
   };
 }
 
+function summarizeFollowState(followStatePtr, getTrackCellRowIndex) {
+  const followState = asPtr(followStatePtr);
+  if (followState === null || followState.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(followState),
+    active: boolFlag(safeReadU32(followState, 0)),
+    template: hex(safeReadPointer(followState, 4)),
+    cell: summarizeCell(safeReadPointer(followState, 8), getTrackCellRowIndex),
+    sample_index: safeReadU32(followState, 0xc),
+    progress: safeReadFloat(followState, 0x10),
+    player: hex(safeReadPointer(followState, 0x38)),
+  };
+}
+
+function summarizePlayer(playerPtr, getTrackCellRowIndex) {
+  const player = asPtr(playerPtr);
+  if (player === null || player.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(player),
+    game: hex(safeReadPointer(player, 0x408)),
+    position: safeReadVec3(player, 0x68),
+    velocity: safeReadVec3(player, 0x410),
+    cell: summarizeCell(safeReadPointer(player, 0x43c), getTrackCellRowIndex),
+    attachment_active: boolFlag(safeReadU32(player, 0x384)),
+    follow_state: hex(player.add(0x384)),
+    follow_sample_index: safeReadU32(player, 0x390),
+    follow_progress: safeReadFloat(player, 0x394),
+    movement_state: safeReadU32(player, 0x120),
+  };
+}
+
+function maybeEmitSampled(event, key, digest, stride, extra) {
+  if (!sampledState[event]) {
+    sampledState[event] = new Map();
+  }
+
+  const stateKey = String(key);
+  const state = sampledState[event].get(stateKey) || { count: 0, digest: null };
+  state.count += 1;
+  const changed = state.digest !== digest;
+  const periodic = stride <= 1 || state.count === 1 || state.count % stride === 0;
+  state.digest = digest;
+  sampledState[event].set(stateKey, state);
+
+  if (changed || periodic) {
+    emit(event, extra);
+  }
+}
+
 function installHooks(module) {
   if (hookInstalled) {
     return;
@@ -497,6 +601,7 @@ function installHooks(module) {
   hookInstalled = true;
 
   const getTrackCellRowIndex = makeTrackCellRowIndex(module);
+  const getTrackGridCellAtWorldPosition = makeTrackGridCellLocator(module);
 
   emit('module_ready', {
     module: module.name,
@@ -556,6 +661,45 @@ function installHooks(module) {
     });
   }
 
+  if (HOOKS.player_update) {
+    Interceptor.attach(fromVa(module, VA.update_player_track_movement_and_triggers), {
+      onEnter(args) {
+        this.player = fastcallArg0(args, this.context);
+        this.before = summarizePlayer(this.player, getTrackCellRowIndex);
+      },
+      onLeave() {
+        const after = summarizePlayer(this.player, getTrackCellRowIndex);
+        if (after === null) {
+          return;
+        }
+
+        const digest = JSON.stringify({
+          row: after.cell ? after.cell.row : null,
+          tile: after.cell ? after.cell.tile_type : null,
+          attachment_active: after.attachment_active,
+          sample_index: after.follow_sample_index,
+          movement_state: after.movement_state,
+        });
+
+        maybeEmitSampled('player_update', after.ptr || 'player', digest, 8, {
+          player: after.ptr,
+          game: after.game,
+          player_position: after.position,
+          before_position: this.before ? this.before.position : null,
+          cell: after.cell,
+          before_cell: this.before ? this.before.cell : null,
+          velocity: after.velocity,
+          attachment_active: after.attachment_active,
+          attachment_active_before: this.before ? this.before.attachment_active : null,
+          follow_state: after.follow_state,
+          follow_sample_index: after.follow_sample_index,
+          follow_progress: after.follow_progress,
+          movement_state: after.movement_state,
+        });
+      },
+    });
+  }
+
   if (HOOKS.attachment_probe) {
     Interceptor.attach(fromVa(module, VA.try_enter_track_attachment_from_swept_motion), {
       onEnter(args) {
@@ -581,11 +725,93 @@ function installHooks(module) {
   if (HOOKS.attachment_begin) {
     Interceptor.attach(fromVa(module, VA.begin_track_attachment_follow_state), {
       onEnter(args) {
+        const follow = summarizeFollowState(this.context.ecx, getTrackCellRowIndex);
         emit('attachment_begin', {
-          follow_state: hex(this.context.ecx),
+          follow_state: follow !== null ? follow.ptr : hex(this.context.ecx),
           cell: summarizeCell(args[0], getTrackCellRowIndex),
           player_position: safeReadVec3(args[1], 0),
           player: hex(args[2]),
+          attachment_active: follow !== null ? follow.active : null,
+          follow_sample_index: follow !== null ? follow.sample_index : null,
+          follow_progress: follow !== null ? follow.progress : null,
+        });
+      },
+    });
+  }
+
+  if (HOOKS.attachment_update) {
+    Interceptor.attach(fromVa(module, VA.update_track_attachment_follow_state), {
+      onEnter(args) {
+        this.followState = this.context.ecx;
+        this.playerPositionPtr = args[1];
+        this.motionPtr = args[2];
+        this.pathFactor = args[0];
+      },
+      onLeave(retval) {
+        const follow = summarizeFollowState(this.followState, getTrackCellRowIndex);
+        const digest = JSON.stringify({
+          row: follow && follow.cell ? follow.cell.row : null,
+          tile: follow && follow.cell ? follow.cell.tile_type : null,
+          sample_index: follow ? follow.sample_index : null,
+          progress: follow ? follow.progress : null,
+          retval: retval.toInt32(),
+        });
+
+        maybeEmitSampled('attachment_update', follow !== null ? follow.ptr : hex(this.followState), digest, 2, {
+          follow_state: follow !== null ? follow.ptr : hex(this.followState),
+          cell: follow !== null ? follow.cell : null,
+          player: follow !== null ? follow.player : null,
+          player_position: safeReadVec3(this.playerPositionPtr, 0),
+          velocity: safeReadVec3(this.motionPtr, 0),
+          attachment_active: follow !== null ? follow.active : null,
+          follow_sample_index: follow !== null ? follow.sample_index : null,
+          follow_progress: follow !== null ? follow.progress : null,
+          effect_scale: floatArg(this.pathFactor),
+          retval: retval.toInt32(),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.attachment_end) {
+    Interceptor.attach(fromVa(module, VA.end_track_attachment_follow_state), {
+      onEnter(args) {
+        const player = fastcallArg0(args, this.context);
+        const before = summarizePlayer(player, getTrackCellRowIndex);
+        emit('attachment_end', {
+          player: before !== null ? before.ptr : hex(player),
+          player_position: before !== null ? before.position : null,
+          cell: before !== null ? before.cell : null,
+          attachment_active: before !== null ? before.attachment_active : null,
+          follow_state: before !== null ? before.follow_state : null,
+          follow_sample_index: before !== null ? before.follow_sample_index : null,
+          follow_progress: before !== null ? before.follow_progress : null,
+        });
+      },
+    });
+  }
+
+  if (HOOKS.floor_sample) {
+    Interceptor.attach(fromVa(module, VA.sample_track_floor_height_at_position), {
+      onEnter(args) {
+        this.game = this.context.ecx;
+        this.positionPtr = args[0];
+      },
+      onLeave() {
+        const position = safeReadVec3(this.positionPtr, 0);
+        const cell =
+          getTrackGridCellAtWorldPosition !== null && this.game !== null
+            ? summarizeCell(getTrackGridCellAtWorldPosition(this.game, this.positionPtr), getTrackCellRowIndex)
+            : null;
+        const digest = JSON.stringify({
+          row: cell ? cell.row : null,
+          tile: cell ? cell.tile_type : null,
+          z: position ? position.z : null,
+        });
+        maybeEmitSampled('floor_sample', hex(this.positionPtr), digest, 16, {
+          game: hex(this.game),
+          position: position,
+          cell: cell,
         });
       },
     });
@@ -604,6 +830,44 @@ function installHooks(module) {
     });
   }
 
+  if (HOOKS.health_pickup) {
+    Interceptor.attach(fromVa(module, VA.spawn_track_health_pickup), {
+      onEnter(args) {
+        emit('health_pickup', {
+          game: hex(this.context.ecx),
+          cell: summarizeCell(args[0], getTrackCellRowIndex),
+          manager: hex(args[1]),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.jetpack_pickup) {
+    Interceptor.attach(fromVa(module, VA.spawn_track_jetpack_pickup), {
+      onEnter(args) {
+        emit('jetpack_pickup', {
+          game: hex(this.context.ecx),
+          cell: summarizeCell(args[0], getTrackCellRowIndex),
+          manager: hex(args[1]),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.ring_effect) {
+    Interceptor.attach(fromVa(module, VA.spawn_track_ring_or_special_effect), {
+      onEnter(args) {
+        emit('ring_effect', {
+          game: hex(this.context.ecx),
+          cell: summarizeCell(args[0], getTrackCellRowIndex),
+          effect_kind: args[1].toInt32(),
+          manager: hex(args[2]),
+          effect_scale: floatArg(args[3]),
+        });
+      },
+    });
+  }
+
   if (HOOKS.salt_spawn) {
     Interceptor.attach(fromVa(module, VA.spawn_salt_runtime_entity), {
       onEnter(args) {
@@ -615,6 +879,29 @@ function installHooks(module) {
           slot_manager: hex(this.slot_manager),
           position: this.position,
           slot_result: retval.toInt32(),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.salt_update) {
+    Interceptor.attach(fromVa(module, VA.update_salt_hazard), {
+      onEnter(args) {
+        const slot = fastcallArg0(args, this.context);
+        const position = safeReadVec3(slot, 104);
+        const state = safeReadU32(slot, 128);
+        const digest = JSON.stringify({
+          state: state,
+          x: position !== null ? position.x : null,
+          y: position !== null ? position.y : null,
+          z: position !== null ? position.z : null,
+        });
+
+        maybeEmitSampled('salt_update', hex(slot), digest, 8, {
+          slot: hex(slot),
+          state: state,
+          position: position,
+          velocity: safeReadVec3(slot, 140),
         });
       },
     });

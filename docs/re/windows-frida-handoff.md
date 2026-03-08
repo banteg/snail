@@ -21,7 +21,10 @@ Static RE is now strong on:
 The remaining gaps are runtime-behavior questions:
 
 - when `P/p` rows become real attachment-follow transitions
+- how the player state evolves while attachment-follow is active and when it exits
 - how often `Salt:` spawns without authored `&` rows
+- how live salt hazards move after spawn
+- where health, jetpack, and ring rows become live entities or effects
 - what authored `JetPack=Off` rows do in live play
 - what `NoFall` rows actually suppress at runtime
 - how often `M` rows turn into slug spawns in real play
@@ -56,10 +59,18 @@ The script currently hooks these points:
 
 - `0x437eb0` `normalize_level_runtime_fields`
 - `0x429ae0` `find_segment_path_index_by_name`
+- `0x43b120` `update_player_track_movement_and_triggers`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
 - `0x420c40` `begin_track_attachment_follow_state`
+- `0x420cb0` `update_track_attachment_follow_state`
+- `0x43af60` `end_track_attachment_follow_state`
+- `0x43d4d0` `sample_track_floor_height_at_position`
 - `0x43da80` `spawn_track_garbage_hazard`
+- `0x43d6c0` `spawn_track_health_pickup`
+- `0x43d890` `spawn_track_jetpack_pickup`
+- `0x43df10` `spawn_track_ring_or_special_effect`
 - `0x441560` `spawn_salt_runtime_entity`
+- `0x4417d0` `update_salt_hazard`
 - `0x441740` `deactivate_salt_runtime_entity`
 - `0x43dc80` `spawn_slug_runtime_entity`
 - `0x447040` `get_track_cell_row_index` for row tagging when safe
@@ -78,10 +89,18 @@ Expected event names in the NDJSON:
 - `hooks_installed`
 - `level_start`
 - `path_lookup`
+- `player_update`
 - `attachment_probe`
 - `attachment_begin`
+- `attachment_update`
+- `attachment_end`
+- `floor_sample`
 - `garbage_spawn`
+- `health_pickup`
+- `jetpack_pickup`
+- `ring_effect`
 - `salt_spawn`
+- `salt_update`
 - `salt_deactivate`
 - `slug_spawn`
 ## How To Run
@@ -114,6 +133,7 @@ Run these captures in roughly this order.
 Purpose:
 
 - prove the full chain from `Path=<name>` lookup to `attachment_probe` to `attachment_begin`
+- capture a full attachment lifecycle with sampled `player_update`, `attachment_update`, and `attachment_end`
 
 Best target:
 
@@ -140,6 +160,8 @@ Success criteria:
 - at least one `path_lookup`
 - at least one `attachment_probe`
 - at least one `attachment_begin`
+- at least one `attachment_update`
+- at least one `attachment_end`
 
 ### 2. Scalar Salt Capture
 
@@ -177,7 +199,7 @@ Success criteria:
 Purpose:
 
 - separate authored `&` behavior from scalar salt
-- observe ring effect rows in a controlled tutorial flow
+- observe ring effect rows, pickups, and ordinary player updates in a controlled tutorial flow
 
 Best target:
 
@@ -198,6 +220,7 @@ Success criteria:
 - `level_start`
 - ring-heavy progression in a low-noise level
 - any `salt_spawn` behavior with `Salt:0`
+- at least one of `ring_effect`, `health_pickup`, or `jetpack_pickup`
 
 ### 4. JetPack-Off Capture
 
@@ -307,7 +330,10 @@ The Windows agent should assume all of these are already established statically:
 ## Open Questions To Prioritize
 
 - Which named `Path=` families actually produce `attachment_begin` events in live play?
+- What does one full attachment-follow lifecycle look like in sampled `player_update`, `attachment_update`, and `attachment_end` events?
 - Do high `Salt:` levels spawn salt hazards without any authored `&` rows?
+- What trajectories do live `salt_update` samples show before `salt_deactivate`?
+- Which ring-effect kinds and pickup helpers correspond to the authored rows we already parse statically?
 - Does `Salt:0` plus authored `&` still produce `salt_spawn` in the expected rows?
 - What concrete gameplay effect shows up on authored `JetPack=Off` rows?
 - How often do `M`-heavy levels actually call `spawn_slug_runtime_entity`?

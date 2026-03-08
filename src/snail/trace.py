@@ -105,18 +105,27 @@ class RuntimeTraceEvent(msgspec.Struct, frozen=True):
     path_index: int | None = None
     template: str | None = None
     follow_state: str | None = None
+    attachment_active: bool | None = None
+    attachment_active_before: bool | None = None
+    follow_sample_index: int | None = None
+    follow_progress: float | None = None
     player: str | None = None
     slot: str | None = None
     state: int | None = None
+    movement_state: int | None = None
     slot_manager: str | None = None
     slot_result: int | None = None
     manager: str | None = None
     manager_sprite_bank: str | None = None
     sprite_id: int | None = None
+    effect_kind: int | None = None
+    effect_scale: float | None = None
     position: TraceVec3 | None = None
+    before_position: TraceVec3 | None = None
     velocity: TraceVec3 | None = None
     player_position: TraceVec3 | None = None
     cell: TraceCell | None = None
+    before_cell: TraceCell | None = None
     hooks: dict[str, bool] | None = None
     module: str | None = None
     module_base: str | None = None
@@ -160,10 +169,17 @@ class RuntimeTraceSummary(msgspec.Struct, frozen=True):
     levels: tuple[LevelRuntimeSample, ...]
     path_lookups_by_name: dict[str, int]
     path_lookups_by_index: tuple[PathIndexSummary, ...]
+    player_updates: TraceBucketSummary
     attachment_probes: TraceBucketSummary
     attachment_begins: TraceBucketSummary
+    attachment_updates: TraceBucketSummary
+    attachment_ends: TraceBucketSummary
     garbage_spawns: TraceBucketSummary
+    health_pickups: TraceBucketSummary
+    jetpack_pickups: TraceBucketSummary
+    ring_effects: TraceBucketSummary
     salt_spawns: TraceBucketSummary
+    salt_updates: TraceBucketSummary
     salt_deactivations: TraceBucketSummary
     slug_spawns: TraceBucketSummary
 
@@ -291,6 +307,10 @@ def summarize_runtime_trace(
             )
             for path_index in sorted(path_index_counts)
         ),
+        player_updates=_summarize_bucket(
+            (event for event in events if event.event == "player_update"),
+            preview_limit=preview_limit,
+        ),
         attachment_probes=_summarize_bucket(
             (event for event in events if event.event == "attachment_probe"),
             preview_limit=preview_limit,
@@ -299,12 +319,36 @@ def summarize_runtime_trace(
             (event for event in events if event.event == "attachment_begin"),
             preview_limit=preview_limit,
         ),
+        attachment_updates=_summarize_bucket(
+            (event for event in events if event.event == "attachment_update"),
+            preview_limit=preview_limit,
+        ),
+        attachment_ends=_summarize_bucket(
+            (event for event in events if event.event == "attachment_end"),
+            preview_limit=preview_limit,
+        ),
         garbage_spawns=_summarize_bucket(
             (event for event in events if event.event == "garbage_spawn"),
             preview_limit=preview_limit,
         ),
+        health_pickups=_summarize_bucket(
+            (event for event in events if event.event == "health_pickup"),
+            preview_limit=preview_limit,
+        ),
+        jetpack_pickups=_summarize_bucket(
+            (event for event in events if event.event == "jetpack_pickup"),
+            preview_limit=preview_limit,
+        ),
+        ring_effects=_summarize_bucket(
+            (event for event in events if event.event == "ring_effect"),
+            preview_limit=preview_limit,
+        ),
         salt_spawns=_summarize_bucket(
             (event for event in events if event.event == "salt_spawn"),
+            preview_limit=preview_limit,
+        ),
+        salt_updates=_summarize_bucket(
+            (event for event in events if event.event == "salt_update"),
             preview_limit=preview_limit,
         ),
         salt_deactivations=_summarize_bucket(
@@ -467,6 +511,10 @@ def _summarize_bucket(
 
     for event in events:
         count += 1
+        if event.player_position is not None and len(positions_preview) < preview_limit:
+            positions_preview.append(event.player_position)
+        elif event.position is not None and len(positions_preview) < preview_limit:
+            positions_preview.append(event.position)
         if event.cell is not None:
             if event.cell.row is not None:
                 rows[event.cell.row] += 1
@@ -476,8 +524,6 @@ def _summarize_bucket(
                 attachment_kinds[event.cell.attachment_kind] += 1
             if event.cell.world is not None and len(positions_preview) < preview_limit:
                 positions_preview.append(event.cell.world)
-        elif event.position is not None and len(positions_preview) < preview_limit:
-            positions_preview.append(event.position)
 
     return TraceBucketSummary(
         count=count,

@@ -11,7 +11,10 @@ The Windows-side operational handoff lives at [windows-frida-handoff.md](windows
 The remaining static RE gap is no longer basic file formats. It is runtime behavior:
 
 - when named `Path=` rows become live attachment probes and follow states
+- how the player state evolves while those attachments stay active
+- how ordinary player movement samples runtime cells and floor semantics outside attachment mode
 - how often `Garbage:`, `Salt:`, and slug logic actually spawn entities
+- when pickups and ring rows become live runtime entities or effects
 - which row and cell positions those systems choose at runtime
 
 The Frida script is intentionally narrow. It only hooks the points that answer those questions.
@@ -26,14 +29,31 @@ Current hooks in the script:
 - `0x429ae0` `find_segment_path_index_by_name`
   - logs `Path=<name>` to runtime index resolution
   - emits a canonical path name from the recovered hardcoded table whenever the raw lookup buffer is not safely NUL-terminated
+- `0x43b120` `update_player_track_movement_and_triggers`
+  - emits sampled before and after player snapshots
+  - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - logs attempted path-attachment entry with swept position and velocity
 - `0x420c40` `begin_track_attachment_follow_state`
   - logs the actual transition into attachment-follow state
+- `0x420cb0` `update_track_attachment_follow_state`
+  - emits sampled follow-state updates with current row, progress, and movement output
+- `0x43af60` `end_track_attachment_follow_state`
+  - logs the point where the player drops back out of attachment-follow mode
+- `0x43d4d0` `sample_track_floor_height_at_position`
+  - logs sampled floor-query positions and the runtime cell chosen for that query
 - `0x43da80` `spawn_track_garbage_hazard`
   - logs garbage spawns with the chosen runtime cell
+- `0x43d6c0` `spawn_track_health_pickup`
+  - logs health pickup placement with the chosen runtime cell
+- `0x43d890` `spawn_track_jetpack_pickup`
+  - logs jetpack pickup placement with the chosen runtime cell
+- `0x43df10` `spawn_track_ring_or_special_effect`
+  - logs ring and special-effect dispatch with the chosen runtime cell and effect kind
 - `0x441560` `spawn_salt_runtime_entity`
   - logs salt-pool spawns with the world position passed in
+- `0x4417d0` `update_salt_hazard`
+  - emits sampled live salt-slot positions and velocities so hazard motion can be reconstructed
 - `0x441740` `deactivate_salt_runtime_entity`
   - logs the salt slot position and velocity when a live salt object is removed
 - `0x43dc80` `spawn_slug_runtime_entity`
@@ -59,10 +79,18 @@ Event names currently emitted:
 - `hooks_installed`
 - `level_start`
 - `path_lookup`
+- `player_update`
 - `attachment_probe`
 - `attachment_begin`
+- `attachment_update`
+- `attachment_end`
+- `floor_sample`
 - `garbage_spawn`
+- `health_pickup`
+- `jetpack_pickup`
+- `ring_effect`
 - `salt_spawn`
+- `salt_update`
 - `salt_deactivate`
 - `slug_spawn`
 
@@ -87,8 +115,9 @@ That converts the raw NDJSON into grouped counts for:
 
 - normalized level-start scalars
 - `Path=` name to index lookups
+- sampled player updates and attachment lifecycle events
 - attachment probes and follow-state transitions
-- garbage, salt, and slug spawn rows
+- garbage, salt, slug, pickup, and ring-effect rows
 
 The `trace plan` command uses the extracted corpus to rank good first-run targets:
 
@@ -180,17 +209,17 @@ If you only have the wrapper path handy, do not attach to `SnailMail.exe`. In th
 
 ## First Capture Plan
 
-Use three focused capture runs instead of one long noisy trace:
+Use a few focused capture runs instead of one giant noisy trace:
 
 1. Start a level and quit quickly.
    - confirms `level_start`
    - records the normalized `Garbage:` and `Salt:` runtime scalars
-2. Play a segment with `P/p` path tiles.
-   - look for `path_lookup`, then `attachment_probe`, then `attachment_begin`
-   - this is the shortest path to proving how path templates become live follow-state transitions
-3. Play a level with visible garbage, salt, or slugs.
-   - compare `garbage_spawn`, `salt_spawn`, and `slug_spawn`
-   - this should settle the remaining ambiguity around the salt-managed runtime pool
+2. Play a path-heavy level and deliberately enter at least one visible attachment section.
+   - look for `path_lookup`, `attachment_probe`, `attachment_begin`, `attachment_update`, and `attachment_end`
+   - this is the shortest path to proving how path templates become live follow-state transitions and how the player exits them
+3. Play a level with visible garbage, salt, slugs, rings, and pickups.
+   - compare `garbage_spawn`, `salt_spawn`, `salt_update`, `slug_spawn`, `ring_effect`, `health_pickup`, and `jetpack_pickup`
+   - this should settle the remaining ambiguity around the salt-managed runtime pool and the entity dispatch rows
 
 ## Notes
 
