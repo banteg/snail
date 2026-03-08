@@ -73,6 +73,7 @@ That converts the raw NDJSON into grouped counts for:
 The `trace plan` command uses the extracted corpus to rank good first-run targets:
 
 - path-heavy segments and levels
+- salt-candidate segments with authored `&` rows
 - high-garbage levels
 - high-salt levels
 - levels and segments with many `M` glyph rows, which are the current best static slug candidates
@@ -90,6 +91,9 @@ As of the current extracted corpus and parser state, `uv run snail trace plan --
 - salt-heavy run: [`LEVELS/ARCADE039.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE039.TXT)
   - current top salt level
   - `Salt:100`
+- authored salt segment run: [`SEGMENTS/TUTORIAL 8.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL%208.TXT)
+  - current top segment by explicit `&` rows
+  - best static target for verifying the tile-family branch that feeds `spawn_salt_hazard`
 - slug-like run: [`LEVELS/ARCADE029.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/LEVELS/ARCADE029.TXT)
   - current top `M`-glyph-heavy level
   - useful first probe for the remaining slug and salt ambiguity

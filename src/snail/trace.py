@@ -102,6 +102,7 @@ class SegmentTraceHint(msgspec.Struct, frozen=True):
     name: str
     path_rows: int
     path_names: tuple[str, ...]
+    salt_like_rows: int
     slug_like_rows: int
     no_fall_rows: int
     jetpack_off_rows: int
@@ -124,6 +125,7 @@ class LevelTraceHint(msgspec.Struct, frozen=True):
 class RuntimeTracePlan(msgspec.Struct, frozen=True):
     source: str
     path_segments: tuple[SegmentTraceHint, ...]
+    salt_segments: tuple[SegmentTraceHint, ...]
     slug_like_segments: tuple[SegmentTraceHint, ...]
     best_path_levels: tuple[LevelTraceHint, ...]
     best_garbage_levels: tuple[LevelTraceHint, ...]
@@ -246,11 +248,15 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
 
     path_segments = sorted(
         (hint for _, hint in segment_defs.values() if hint.path_rows > 0),
-        key=lambda hint: (-hint.path_rows, -hint.slug_like_rows, hint.name.lower()),
+        key=lambda hint: (-hint.path_rows, -hint.salt_like_rows, -hint.slug_like_rows, hint.name.lower()),
+    )
+    salt_segments = sorted(
+        (hint for _, hint in segment_defs.values() if hint.salt_like_rows > 0),
+        key=lambda hint: (-hint.salt_like_rows, -hint.path_rows, hint.name.lower()),
     )
     slug_like_segments = sorted(
         (hint for _, hint in segment_defs.values() if hint.slug_like_rows > 0),
-        key=lambda hint: (-hint.slug_like_rows, -hint.path_rows, hint.name.lower()),
+        key=lambda hint: (-hint.slug_like_rows, -hint.salt_like_rows, -hint.path_rows, hint.name.lower()),
     )
     best_path_levels = sorted(
         (hint for hint in level_hints if hint.path_row_count > 0),
@@ -272,6 +278,7 @@ def build_trace_capture_plan(extracted_root: Path, *, limit: int = 8) -> Runtime
     return RuntimeTracePlan(
         source=root.as_posix(),
         path_segments=tuple(path_segments[:limit]),
+        salt_segments=tuple(salt_segments[:limit]),
         slug_like_segments=tuple(slug_like_segments[:limit]),
         best_path_levels=tuple(best_path_levels[:limit]),
         best_garbage_levels=tuple(best_garbage_levels[:limit]),
@@ -323,6 +330,7 @@ def _build_segment_hint(path: Path, segment: SegmentDefinition) -> SegmentTraceH
         }
     )
     path_rows = sum(1 for row in segment.rows if row.annotation is not None and row.annotation.key == "Path")
+    salt_like_rows = sum(1 for row in segment.rows if "&" in row.cells)
     slug_like_rows = sum(1 for row in segment.rows if "M" in row.cells)
     no_fall_rows = sum(
         1
@@ -342,6 +350,7 @@ def _build_segment_hint(path: Path, segment: SegmentDefinition) -> SegmentTraceH
         name=segment.name,
         path_rows=path_rows,
         path_names=tuple(path_names),
+        salt_like_rows=salt_like_rows,
         slug_like_rows=slug_like_rows,
         no_fall_rows=no_fall_rows,
         jetpack_off_rows=jetpack_off_rows,

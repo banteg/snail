@@ -167,7 +167,10 @@ def test_build_trace_capture_plan_uses_real_corpus() -> None:
     plan = build_trace_capture_plan(EXTRACTED_ROOT, limit=64)
 
     assert plan.path_segments
+    assert plan.salt_segments
     assert any("WARP.TXT" in hint.path for hint in plan.path_segments)
+    assert plan.salt_segments[0].path.endswith("SEGMENTS/TUTORIAL 8.TXT")
+    assert plan.salt_segments[0].salt_like_rows >= 7
     assert plan.best_path_levels
     assert plan.best_garbage_levels[0].garbage == 100
     assert plan.best_garbage_levels[0].path.endswith("LEVELS/ARCADE040.TXT")
