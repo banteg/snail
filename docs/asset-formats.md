@@ -73,8 +73,25 @@ Extension counts from the decoded index:
   - `VOICE/_VOICE.TXT` starts with `/* Voice Script */`
   - `BACKGROUNDS/MENUBG.TXT` is a small background script with keys like `Fog`, `Picture`, and `Landscape`
   - `OBJECTS/FONT3D/_OBJECT.TXT` is a text-based object or mesh definition with explicit vertex lists
-- `.X2`: plaintext mesh or animation fragments, for example `X/BLASTERLEFT-BASE-000.X2` begins with `Frame MeshMaterialList {`
+- `.X2`: plaintext mesh fragments, for example `X/BLASTERLEFT-BASE-000.X2` begins with `Frame MeshMaterialList {`
 - `.DLL`: `BASS.DLL` decodes to a normal PE payload beginning with `MZ`
+
+## .X2 Observations
+
+The current Zig parser and corpus scan show that the shipped `.x2` files are text-based mesh assets with a stripped-down DirectX `.x`-style layout.
+
+Observed structure in representative files:
+
+- `Frame <name> { ... }`
+- one or more nested `Material <name> { ... TextureFilename { "foo.tga"; } }` blocks
+- `MeshTextureCoords { ... }`
+- `Mesh <name> { ... }`
+
+Observed quirks:
+
+- files end with a trailing NUL byte
+- the final `Mesh` block appears to terminate at EOF rather than with a closing brace in the shipped samples we tested
+- animation sequencing is handled separately by `X/_ANIMATION.TXT`, not embedded directly in the `.x2` payloads
 
 ## Tooling
 

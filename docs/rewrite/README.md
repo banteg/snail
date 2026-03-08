@@ -119,13 +119,15 @@ Current behavior:
 
 - the runtime opens a window
 - reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly
-- decodes `OBJECTS/FONT/FONT-MENU-HOVER.TGA` from the archive
-- uploads it as a texture and draws it
+- builds asset catalogs for the archive's `.tga`, `.ogg`, and `.x2` entries
+- browses original textures directly from archive memory
+- previews original OGGs as both one-shot sounds and music streams
+- parses representative `.x2` files into mesh and material summaries
 
 Current note:
 
 - upstream raylib has `SUPPORT_FILEFORMAT_TGA` disabled by default in `config.h`
-- this repo enables `SUPPORT_FILEFORMAT_TGA=1` for the bundled raylib build so the runtime can use raylib's normal TGA loader directly
+- this repo enables `SUPPORT_FILEFORMAT_TGA=1` and `SUPPORT_FILEFORMAT_OGG=1` for the bundled raylib build so the runtime can use raylib's normal memory loaders directly
 
 Useful commands:
 
@@ -139,8 +141,34 @@ zig build run -- --archive-path artifacts/bin/SnailMail.dat
 
 Notes:
 
-- `zig build run` opens the interactive window and waits until you close it
-- `zig build run -- --smoke-test` opens the window briefly and exits automatically for verification
+- `zig build run` opens the interactive archive browser and waits until you close it
+- `zig build run -- --smoke-test` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
+
+Interactive controls:
+
+- `1`: texture browser
+- `2`: audio browser
+- `3`: `.x2` summary browser
+- `Left` / `Right`: cycle entries
+- `Up` / `Down`: jump by 10 entries
+- `Space`: play current audio as a one-shot sound
+- `Enter`: play current audio as a music stream
+- `S`: stop audio preview
+
+## Current .x2 Understanding
+
+The `.x2` files are not opaque binary data. The current parser shows that representative files such as `X/SIGNSTOP.X2`, `X/PILLAR2.X2`, and `X/TURBO-BASE-000.X2` are text-based mesh files with:
+
+- a leading `Frame <name> { ... }` block that contains one or more `Material` blocks
+- a `MeshTextureCoords { ... }` block
+- a final `Mesh <name> { ... }` block with vertex and face lists
+- a trailing NUL byte at end of file
+
+Observed caveat:
+
+- the final mesh block appears to omit a closing `}` in shipped assets, so the parser intentionally tolerates EOF after the face list
+
+Animation appears to be orchestrated separately by [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT), which references multiple `.x2` files as frame sequences.
 
 ## Non-Goals For Now
 

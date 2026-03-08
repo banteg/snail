@@ -11,6 +11,7 @@ pub fn build(b: *std.Build) void {
     const raylib = raylib_dep.module("raylib");
     const raylib_artifact = raylib_dep.artifact("raylib");
     raylib_artifact.root_module.addCMacro("SUPPORT_FILEFORMAT_TGA", "1");
+    raylib_artifact.root_module.addCMacro("SUPPORT_FILEFORMAT_OGG", "1");
 
     const exe = b.addExecutable(.{
         .name = "snail-runtime",

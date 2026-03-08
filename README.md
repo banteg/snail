@@ -49,8 +49,13 @@ Current confirmed asset families in [`SnailMail.dat`](/Users/banteg/dev/banteg/s
 - `.x2` text mesh or animation fragments
 - an embedded `BASS.DLL`
 
-The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly and renders `OBJECTS/FONT/FONT-MENU-HOVER.TGA` from the archive.
-The raylib build in this repo enables TGA support explicitly because upstream raylib ships with `SUPPORT_FILEFORMAT_TGA` disabled by default.
+The Zig runtime currently reads [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) directly and provides an archive-backed browser for:
+
+- `.tga` textures
+- `.ogg` audio as both one-shot sounds and music streams
+- `.x2` mesh summaries
+
+The raylib build in this repo enables TGA and OGG support explicitly so the runtime can consume the original asset formats directly from the archive.
 
 ## Native Tools Already Available
 
@@ -59,8 +64,30 @@ The raylib build in this repo enables TGA support explicitly because upstream ra
 - `objdump`, `strings`, and `file` for quick triage
 - `zig build run` for the native Zig + raylib rewrite scaffold
 
+## Runtime Commands
+
+Use the Zig runtime to exercise original assets directly from [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat):
+
+```bash
+zig build
+zig build test
+zig build run
+zig build run -- --smoke-test
+```
+
+Interactive controls:
+
+- `1`: texture browser
+- `2`: audio browser
+- `3`: `.x2` summary browser
+- `Left` / `Right`: cycle entries
+- `Up` / `Down`: jump by 10 entries
+- `Space`: play current audio entry as a one-shot sound
+- `Enter`: play current audio entry as a music stream
+- `S`: stop audio preview
+
 ## Immediate Next Targets
 
-- diff the behavior of [`SnailMail.exe`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.exe) and [`SnailMail.RWG`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.RWG) to separate launcher code from gameplay code
-- reverse the structure of [`SnailMail.dat`](/Users/banteg/dev/banteg/snail-mail/artifacts/bin/SnailMail.dat) and carve assets into named files
-- identify how Reflexive purchase flow hooks into the actual game runtime
+- consult the RWG decompile for original `.x2` transform and animation semantics
+- resolve model texture references from `.x2` filenames to archive paths automatically
+- convert the current `.x2` summaries into a real mesh loader and viewer
