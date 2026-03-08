@@ -33,7 +33,7 @@ pub const ParsedModel = struct {
     mesh_name: []const u8,
     materials: []const MaterialDef,
     texcoords: []const Vec2,
-    vertices: []const Vec3,
+    vertices: []Vec3,
     faces: []const Face,
     total_triangle_count: usize,
 
@@ -43,12 +43,14 @@ pub const ParsedModel = struct {
 };
 
 pub const LoadedSubmesh = struct {
+    allocator: std.mem.Allocator,
     mesh: rl.Mesh,
     material: rl.Material,
     texture: ?assets.LoadedTexture,
     material_name: []const u8,
     archive_texture_path: ?[]const u8,
     triangle_count: usize,
+    source_indices: []u16,
 
     pub fn unload(self: *LoadedSubmesh) void {
         self.material.unload();
@@ -57,6 +59,7 @@ pub const LoadedSubmesh = struct {
             self.texture = null;
         }
         self.mesh.unload();
+        self.allocator.free(self.source_indices);
     }
 };
 
@@ -129,6 +132,80 @@ pub const LoadedModel = struct {
         for (self.submeshes) |submesh| {
             rl.drawMesh(submesh.mesh, submesh.material, rl.Matrix.identity());
         }
+    }
+
+    pub fn applyInterpolatedVertices(
+        self: *LoadedModel,
+        from: *const ParsedModel,
+        to: *const ParsedModel,
+        blend: f32,
+    ) !void {
+        if (!topologyCompatible(from, to)) {
+            return error.AnimationTopologyMismatch;
+        }
+        if (!topologyCompatible(from, &self.parsed)) {
+            return error.AnimationTopologyMismatch;
+        }
+
+        const one_minus_blend = 1.0 - blend;
+        for (self.parsed.vertices, 0..) |_, index| {
+            const from_vertex = from.vertices[index];
+            const to_vertex = to.vertices[index];
+            self.parsed.vertices[index] = .{
+                .x = from_vertex.x * one_minus_blend + to_vertex.x * blend,
+                .y = from_vertex.y * one_minus_blend + to_vertex.y * blend,
+                .z = from_vertex.z * one_minus_blend + to_vertex.z * blend,
+            };
+        }
+
+        for (self.submeshes) |*submesh| {
+            const vertex_count: usize = @intCast(submesh.mesh.vertexCount);
+            const vertices = @as([*]f32, @ptrCast(submesh.mesh.vertices))[0 .. vertex_count * 3];
+            const normals = @as([*]f32, @ptrCast(submesh.mesh.normals))[0 .. vertex_count * 3];
+
+            var vertex_cursor: usize = 0;
+            var normal_cursor: usize = 0;
+            for (0..submesh.source_indices.len / 3) |triangle_index| {
+                const base = triangle_index * 3;
+                const index0 = submesh.source_indices[base];
+                const index1 = submesh.source_indices[base + 1];
+                const index2 = submesh.source_indices[base + 2];
+
+                const p0 = self.parsed.vertices[index0];
+                const p1 = self.parsed.vertices[index1];
+                const p2 = self.parsed.vertices[index2];
+                const normal = computeNormal(p0, p1, p2);
+
+                writeVertex(vertices, &vertex_cursor, p0);
+                writeVertex(vertices, &vertex_cursor, p1);
+                writeVertex(vertices, &vertex_cursor, p2);
+
+                writeVertex(normals, &normal_cursor, normal);
+                writeVertex(normals, &normal_cursor, normal);
+                writeVertex(normals, &normal_cursor, normal);
+            }
+
+            rl.updateMeshBuffer(
+                submesh.mesh,
+                0,
+                vertices.ptr,
+                @intCast(vertices.len * @sizeOf(f32)),
+                0,
+            );
+            rl.updateMeshBuffer(
+                submesh.mesh,
+                2,
+                normals.ptr,
+                @intCast(normals.len * @sizeOf(f32)),
+                0,
+            );
+        }
+
+        const bounds = computeBounds(self.parsed.vertices);
+        self.bounds_min = bounds.min;
+        self.bounds_max = bounds.max;
+        self.center = bounds.center;
+        self.radius = bounds.radius;
     }
 };
 
@@ -549,6 +626,36 @@ pub fn parseModel(allocator: std.mem.Allocator, data: []const u8) !ParsedModel {
     return parser.parseDocument();
 }
 
+pub fn topologyCompatible(a: *const ParsedModel, b: *const ParsedModel) bool {
+    if (a.vertices.len != b.vertices.len) return false;
+    if (a.texcoords.len != b.texcoords.len) return false;
+    if (a.faces.len != b.faces.len) return false;
+    if (a.materials.len != b.materials.len) return false;
+    if (a.total_triangle_count != b.total_triangle_count) return false;
+
+    for (a.texcoords, b.texcoords) |lhs, rhs| {
+        if (lhs.x != rhs.x or lhs.y != rhs.y) return false;
+    }
+
+    for (a.materials, b.materials) |lhs, rhs| {
+        if (!std.mem.eql(u8, lhs.name, rhs.name)) return false;
+        if ((lhs.archive_texture_path == null) != (rhs.archive_texture_path == null)) return false;
+        if (lhs.archive_texture_path) |lhs_path| {
+            if (!std.mem.eql(u8, lhs_path, rhs.archive_texture_path.?)) return false;
+        }
+    }
+
+    for (a.faces, b.faces) |lhs, rhs| {
+        if (lhs.material_index != rhs.material_index) return false;
+        if (lhs.indices.len != rhs.indices.len) return false;
+        for (lhs.indices, rhs.indices) |lhs_index, rhs_index| {
+            if (lhs_index != rhs_index) return false;
+        }
+    }
+
+    return true;
+}
+
 fn buildSubmeshes(
     allocator: std.mem.Allocator,
     catalog: *const assets.Catalog,
@@ -599,13 +706,18 @@ fn buildSubmesh(
     const normals = try rl.mem.alloc(f32, vertex_count * 3);
     errdefer rl.mem.free(normals);
 
+    const source_indices = try allocator.alloc(u16, vertex_count);
+    errdefer allocator.free(source_indices);
+
     @memset(vertices, 0);
     @memset(texcoords, 0);
     @memset(normals, 0);
+    @memset(source_indices, 0);
 
     var vertex_cursor: usize = 0;
     var texcoord_cursor: usize = 0;
     var normal_cursor: usize = 0;
+    var source_cursor: usize = 0;
 
     for (parsed.faces) |face| {
         if (face.material_index != material_index) continue;
@@ -633,6 +745,11 @@ fn buildSubmesh(
             writeVertex(vertices, &vertex_cursor, p1);
             writeVertex(vertices, &vertex_cursor, p2);
 
+            source_indices[source_cursor] = index0;
+            source_indices[source_cursor + 1] = index1;
+            source_indices[source_cursor + 2] = index2;
+            source_cursor += 3;
+
             writeTexcoord(texcoords, &texcoord_cursor, uv0);
             writeTexcoord(texcoords, &texcoord_cursor, uv1);
             writeTexcoord(texcoords, &texcoord_cursor, uv2);
@@ -649,7 +766,7 @@ fn buildSubmesh(
     mesh.vertices = @ptrCast(vertices.ptr);
     mesh.texcoords = @ptrCast(texcoords.ptr);
     mesh.normals = @ptrCast(normals.ptr);
-    rl.uploadMesh(&mesh, false);
+    rl.uploadMesh(&mesh, true);
 
     var material = try rl.loadMaterialDefault();
     errdefer material.unload();
@@ -666,12 +783,14 @@ fn buildSubmesh(
     }
 
     return .{
+        .allocator = allocator,
         .mesh = mesh,
         .material = material,
         .texture = texture,
         .material_name = if (parsed.materials.len > material_index) parsed.materials[material_index].name else "default",
         .archive_texture_path = if (parsed.materials.len > material_index) parsed.materials[material_index].archive_texture_path else null,
         .triangle_count = triangle_count,
+        .source_indices = source_indices,
     };
 }
 
@@ -856,4 +975,18 @@ test "parse pillar model" {
     try std.testing.expectEqualStrings("X/pillar.tga", model.materials[0].archive_texture_path.?);
     try std.testing.expectEqual(@as(usize, 4), model.faces[0].indices.len);
     try std.testing.expectEqual(@as(usize, 4), model.faces[31].indices.len);
+}
+
+test "animation topology matches across turbo bobalong frames" {
+    const first = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-000.X2", 1 << 20);
+    defer std.testing.allocator.free(first);
+    const second = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-001.X2", 1 << 20);
+    defer std.testing.allocator.free(second);
+
+    var model_a = try parseModel(std.testing.allocator, first);
+    defer model_a.deinit();
+    var model_b = try parseModel(std.testing.allocator, second);
+    defer model_b.deinit();
+
+    try std.testing.expect(topologyCompatible(&model_a, &model_b));
 }

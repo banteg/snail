@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const x2 = @import("x2.zig");
+const xanim = @import("xanim.zig");
 
 const window_width = 1280;
 const window_height = 720;
@@ -9,7 +10,7 @@ const window_height = 720;
 const default_archive_path = "artifacts/bin/SnailMail.dat";
 const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 const default_audio_path = "MUSIC/MAINMENU.OGG";
-const default_model_path = "X/SIGNSTOP.X2";
+const default_model_path = "X/TURBO-BOBALONG-000.X2";
 
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
@@ -25,6 +26,7 @@ const Mode = enum {
 const AppState = struct {
     allocator: std.mem.Allocator,
     catalog: assets.Catalog,
+    animation_catalog: xanim.Catalog,
     audio_ready: bool,
     mode: Mode = .textures,
     model_flip_v: bool = true,
@@ -35,10 +37,13 @@ const AppState = struct {
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
     current_model: ?x2.LoadedModel = null,
+    current_animation: ?xanim.Player = null,
 
     fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !AppState {
         var catalog = try assets.Catalog.init(allocator, archive_path);
         errdefer catalog.deinit();
+        var animation_catalog = try xanim.Catalog.load(allocator, &catalog);
+        errdefer animation_catalog.deinit();
 
         const texture_index = catalog.findTextureIndex(default_texture_path) orelse 0;
         const audio_index = catalog.findAudioIndex(default_audio_path) orelse 0;
@@ -47,6 +52,7 @@ const AppState = struct {
         var state = AppState{
             .allocator = allocator,
             .catalog = catalog,
+            .animation_catalog = animation_catalog,
             .audio_ready = audio_ready,
             .texture_index = texture_index,
             .audio_index = audio_index,
@@ -66,12 +72,17 @@ const AppState = struct {
             model.deinit();
             self.current_model = null;
         }
+        if (self.current_animation) |*animation| {
+            animation.deinit();
+            self.current_animation = null;
+        }
 
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
         }
 
+        self.animation_catalog.deinit();
         self.catalog.deinit();
     }
 
@@ -88,6 +99,9 @@ const AppState = struct {
     fn update(self: *AppState) void {
         if (self.current_music) |music| {
             rl.updateMusicStream(music.music);
+        }
+        if (self.current_animation) |*animation| {
+            animation.update(rl.getTime()) catch {};
         }
     }
 
@@ -133,6 +147,16 @@ const AppState = struct {
         if (self.mode == .models and rl.isKeyPressed(.f)) {
             self.model_flip_v = !self.model_flip_v;
             try self.reloadModel();
+        }
+        if (self.mode == .models and rl.isKeyPressed(.r)) {
+            if (self.current_animation) |*animation| {
+                animation.restart(rl.getTime());
+            }
+        }
+        if (self.mode == .models and rl.isKeyPressed(.p)) {
+            if (self.current_animation) |*animation| {
+                animation.togglePause(rl.getTime());
+            }
         }
     }
 
@@ -210,10 +234,40 @@ const AppState = struct {
             model.deinit();
             self.current_model = null;
         }
+        if (self.current_animation) |*animation| {
+            animation.deinit();
+            self.current_animation = null;
+        }
 
         const entry = self.catalog.model_entries[self.model_index];
-        const model = try x2.LoadedModel.loadFromArchive(self.allocator, &self.catalog, entry, self.model_flip_v);
-        self.current_model = model;
+        if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
+            const clip = &self.animation_catalog.clips[clip_index];
+            if (clip.frames.len > 1) {
+                var animation = try xanim.Player.load(
+                    self.allocator,
+                    &self.catalog,
+                    clip,
+                    self.model_flip_v,
+                    xanim.frameNumberFromPath(entry.path),
+                    rl.getTime(),
+                );
+                animation.update(rl.getTime()) catch {};
+                self.current_animation = animation;
+                return;
+            }
+        }
+
+        self.current_model = try x2.LoadedModel.loadFromArchive(self.allocator, &self.catalog, entry, self.model_flip_v);
+    }
+
+    fn activeModel(self: *const AppState) ?*const x2.LoadedModel {
+        if (self.current_animation) |*animation| {
+            return &animation.rendered;
+        }
+        if (self.current_model) |*model| {
+            return model;
+        }
+        return null;
     }
 };
 
@@ -287,7 +341,7 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
 
     rl.drawText("Snail Mail archive browser", 32, 24, 30, .ray_white);
     rl.drawText("1 textures  2 audio  3 x2 models  left/right cycle  up/down jump  tab switch", 32, 62, 18, .light_gray);
-    rl.drawText("audio: space sound  enter music  s stop    models: f flips V  auto orbit camera", 32, 84, 18, .light_gray);
+    rl.drawText("audio: space sound  enter music  s stop    models: f flips V  p pause  r restart  auto orbit", 32, 84, 18, .light_gray);
 
     var archive_buffer: [512]u8 = undefined;
     const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
@@ -379,7 +433,7 @@ fn drawAudioPanel(state: *const AppState) !void {
 
 fn drawModelPanel(state: *const AppState) !void {
     const entry = state.catalog.model_entries[state.model_index];
-    const model = state.current_model orelse return;
+    const model = state.activeModel() orelse return;
     const parsed = &model.parsed;
 
     var summary_buffer: [256]u8 = undefined;
@@ -434,15 +488,41 @@ fn drawModelPanel(state: *const AppState) !void {
     );
     rl.drawText(texture_text, 56, 442, 20, .light_gray);
 
-    rl.drawText("Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
-    rl.drawText("TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
-    rl.drawText("MeshMaterialList assigns one material index per face", 56, 550, 20, .light_gray);
-    rl.drawText("Faces with 4 indices are quads; others are triangles", 56, 580, 20, .light_gray);
-    rl.drawText("This viewer triangulates quads and draws archive-backed textures directly.", 56, 610, 20, .light_gray);
+    if (state.current_animation) |animation| {
+        var anim_buffer: [384]u8 = undefined;
+        const anim_text = try std.fmt.bufPrintZ(
+            &anim_buffer,
+            "Anim: {s}  mode {s}  sample {d:.2}  paused {s}",
+            .{
+                animation.clip.name,
+                modeLabel(animation.clip.mode),
+                animation.current_sample_number,
+                if (animation.paused) "yes" else "no",
+            },
+        );
+        rl.drawText(anim_text, 56, 486, 20, .gold);
+
+        var title_buffer: [384]u8 = undefined;
+        const title_text = try std.fmt.bufPrintZ(
+            &title_buffer,
+            "{s}",
+            .{animation.clip.title orelse "Interpolated archive-driven clip"},
+        );
+        rl.drawText(title_text, 56, 520, 20, .light_gray);
+        rl.drawText("Binary Ninja + Ghidra + IDA agree the runtime interpolates numbered keyframes.", 56, 550, 20, .light_gray);
+        rl.drawText("Duration and Mode come from X/_ANIMATION.TXT; frame numbers come from .x2 filenames.", 56, 580, 20, .light_gray);
+        rl.drawText("Trigger lists are not applied yet in this viewer.", 56, 610, 20, .light_gray);
+    } else {
+        rl.drawText("Binary Ninja + Ghidra + IDA agree on the loader shape:", 56, 486, 20, .gold);
+        rl.drawText("TextureFilename resolves to X/<basename>.tga", 56, 520, 20, .light_gray);
+        rl.drawText("MeshMaterialList assigns one material index per face", 56, 550, 20, .light_gray);
+        rl.drawText("Faces with 4 indices are quads; others are triangles", 56, 580, 20, .light_gray);
+        rl.drawText("This viewer triangulates quads and draws archive-backed textures directly.", 56, 610, 20, .light_gray);
+    }
 }
 
 fn drawModelViewport(state: *const AppState) void {
-    const model = state.current_model orelse return;
+    const model = state.activeModel() orelse return;
     const camera = model.previewCamera(@floatCast(rl.getTime()));
     camera.begin();
     defer rl.endMode3D();
@@ -451,6 +531,14 @@ fn drawModelViewport(state: *const AppState) void {
     const grid_spacing = @max(model.radius / 2.0, 0.5);
     rl.drawGrid(grid_slices, grid_spacing);
     model.draw();
+}
+
+fn modeLabel(mode: xanim.Mode) [:0]const u8 {
+    return switch (mode) {
+        .loop => "loop",
+        .once => "once",
+        .pingpong => "pingpong",
+    };
 }
 
 fn nextMode(mode: Mode) Mode {

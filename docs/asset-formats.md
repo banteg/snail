@@ -100,6 +100,14 @@ Loader notes verified against the original RWG decompile:
 - face material indices are applied after parsing the mesh faces
 - faces with four indices are quads and require a fourth vertex read
 - faces with other counts are treated as triangles in the original loader
+- animation clips are assembled from `.x2` families listed in `X/_ANIMATION.TXT`
+- `Duration:` and `Mode:` are used for playback timing
+- numbered filename suffixes such as `000`, `001`, and `004` determine keyframe sample positions for interpolation
+
+Current implementation note:
+
+- the Zig runtime already plays these interpolated `.x2` animations directly from the archive
+- `Trigger:` lists from `_ANIMATION.TXT` are still under investigation and are not yet applied during playback
 
 ## Tooling
 

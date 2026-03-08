@@ -113,6 +113,7 @@ The repo now includes a minimal Zig + raylib runtime scaffold:
 - [`build.zig`](/Users/banteg/dev/banteg/snail-mail/build.zig)
 - [`build.zig.zon`](/Users/banteg/dev/banteg/snail-mail/build.zig.zon)
 - [`zig/src/archive.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/archive.zig)
+- [`zig/src/xanim.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/xanim.zig)
 - [`zig/src/main.zig`](/Users/banteg/dev/banteg/snail-mail/zig/src/main.zig)
 
 Current behavior:
@@ -123,6 +124,7 @@ Current behavior:
 - browses original textures directly from archive memory
 - previews original OGGs as both one-shot sounds and music streams
 - parses `.x2` meshes and renders them in a 3D preview using archive-backed textures
+- parses [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT) and auto-plays matching `.x2` frame families with interpolated vertex animation
 
 Current note:
 
@@ -154,6 +156,9 @@ Interactive controls:
 - `Space`: play current audio as a one-shot sound
 - `Enter`: play current audio as a music stream
 - `S`: stop audio preview
+- `F`: flip model `V` texture coordinates
+- `P`: pause or resume the active animation clip
+- `R`: restart the active animation clip
 
 ## Current .x2 Understanding
 
@@ -164,7 +169,7 @@ The `.x2` files are not opaque binary data. The current parser and renderer show
 - a final `Mesh <name> { ... }` block with vertex and face lists
 - a trailing NUL byte at end of file
 
-The current Zig loader mirrors the original RWG logic closely enough to render static meshes:
+The current Zig loader mirrors the original RWG logic closely enough to render static meshes and animated frame families:
 
 - `TextureFilename` entries are resolved as `X/<basename>.tga`
 - the material list assigns one material index per face
@@ -177,7 +182,18 @@ Observed caveat:
 
 - the final mesh block appears to omit a closing `}` in shipped assets, so the parser intentionally tolerates EOF after the face list
 
-Animation appears to be orchestrated separately by [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT), which references multiple `.x2` files as frame sequences.
+Animation is orchestrated separately by [`X/_ANIMATION.TXT`](/Users/banteg/dev/banteg/snail-mail/artifacts/extracted/SnailMail.dat/X/_ANIMATION.TXT), which references multiple `.x2` files as frame sequences.
+
+Current playback behavior:
+
+- the runtime groups `.x2` files by family key, for example `turbo-bobalong`
+- the numeric suffix in each filename, for example `000` through `004`, defines the keyframe sample positions
+- `Duration:` and `Mode:` control clip length and playback mode
+- the renderer interpolates vertex positions between compatible keyframes and updates the uploaded mesh buffers in place
+
+Current caveat:
+
+- `Trigger:` lists from `_ANIMATION.TXT` are not applied yet; the viewer currently follows the numbered keyframes plus `Duration:` and `Mode:`
 
 ## Non-Goals For Now
 
