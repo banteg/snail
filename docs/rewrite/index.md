@@ -145,6 +145,7 @@ Current behavior:
 - the default `snail` path now reuses the original splash and menu background assets and can hand off `Adventure` or `Arcade` into a lightweight level path backed by authored level backgrounds plus the deterministic runner
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
+- the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
 
 Current note:
 

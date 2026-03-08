@@ -88,6 +88,7 @@ const AppState = struct {
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
     active_level_message: ?[]const u8 = null,
+    mouse_level_lane_target: ?usize = null,
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -382,9 +383,11 @@ const AppState = struct {
             },
             .level => {
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+                    self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+                    self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta += 1;
                 }
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.w)) {
@@ -397,7 +400,27 @@ const AppState = struct {
                     self.pending_level_input.toggle_pause = true;
                 }
                 if (rl.isKeyPressed(.r)) {
+                    self.mouse_level_lane_target = null;
                     self.pending_level_input.reset = true;
+                }
+                if (self.current_track_preview) |loaded_track_preview| {
+                    if (self.level_runner) |runner| {
+                        const mouse_delta = rl.getMouseDelta();
+                        if (@abs(mouse_delta.x) > 0.01) {
+                            self.mouse_level_lane_target = laneTargetForRunnerMouse(
+                                loaded_track_preview,
+                                runner,
+                                @floatFromInt(rl.getMouseX()),
+                            );
+                        }
+                        if (self.mouse_level_lane_target) |lane_target| {
+                            if (lane_target < runner.lane_index) {
+                                self.pending_level_input.lane_delta -= 1;
+                            } else if (lane_target > runner.lane_index) {
+                                self.pending_level_input.lane_delta += 1;
+                            }
+                        }
+                    }
                 }
             },
         }
@@ -429,16 +452,19 @@ const AppState = struct {
                 self.stopAudioPreview();
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
+                self.mouse_level_lane_target = null;
                 try self.loadGameBackground(splash_background_path);
             },
             .main_menu => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
+                self.mouse_level_lane_target = null;
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
             .level => {
                 self.stopAudioPreview();
+                self.mouse_level_lane_target = null;
                 try self.loadCurrentLevelBackground();
                 try self.syncActiveLevelSegment(true);
             },
@@ -1005,7 +1031,7 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
         },
     );
     rl.drawText(meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
-    rl.drawText("Left/Right lane  Up/Down speed  Space pause  R reset  Esc menu", @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
+    rl.drawText("Mouse/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
 
     if (state.level_runner) |runner| {
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
@@ -1596,6 +1622,28 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     };
 }
 
+fn laneTargetForRunnerMouse(
+    loaded_track_preview: track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    mouse_x: f32,
+) ?usize {
+    const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse return null;
+    return laneTargetForMouseX(mouse_x, @floatFromInt(window_width), loaded_track_preview.laneBoundsForRow(row_location));
+}
+
+fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds) usize {
+    const lane_count = bounds.max - bounds.min + 1;
+    if (lane_count <= 1 or screen_width <= 1.0) return bounds.min;
+
+    const clamped_mouse_x = std.math.clamp(mouse_x, 0.0, screen_width - 1.0);
+    const ratio = clamped_mouse_x / screen_width;
+    const lane_offset = @min(
+        @as(usize, @intFromFloat(@floor(ratio * @as(f32, @floatFromInt(lane_count))))),
+        lane_count - 1,
+    );
+    return bounds.min + lane_offset;
+}
+
 fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
     rl.drawRectangleLines(x, y, width, height, .dark_gray);
 
@@ -1839,4 +1887,11 @@ test "gameplay camera looks ahead of the runner" {
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.target.y >= 0.0);
     try std.testing.expectApproxEqAbs(@as(f32, 68.0), camera.fovy, 0.001);
+}
+
+test "lane target mapping respects bounds" {
+    const bounds: track.LaneBounds = .{ .min = 2, .max = 4 };
+    try std.testing.expectEqual(@as(usize, 2), laneTargetForMouseX(0.0, 1280.0, bounds));
+    try std.testing.expectEqual(@as(usize, 3), laneTargetForMouseX(640.0, 1280.0, bounds));
+    try std.testing.expectEqual(@as(usize, 4), laneTargetForMouseX(1279.0, 1280.0, bounds));
 }
