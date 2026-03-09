@@ -656,6 +656,11 @@
       "description": "Runs the active subgame camera update, choosing between the live cameraman follow pose, cached camera states, and direct identity handoffs before interpolating the view matrix back into the shared camera. Cross-port Android and iOS symbols match this helper to the outer `cRSubGame::CameraAI()` flow."
     },
     {
+      "address": "0x446160",
+      "name": "initialize_cameraman",
+      "description": "Initializes the follow-camera controller, wiring its shared player and global pointers, clearing the cached matrices, and seeding the default zoom used by `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::Init()`."
+    },
+    {
       "address": "0x4461d0",
       "name": "update_cameraman",
       "description": "Builds the live follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom before handing the matrix back to `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::AI()`."
