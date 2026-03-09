@@ -1001,7 +1001,7 @@ const AppState = struct {
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
-            .return_target = resultReturnTargetForMode(active_mode),
+            .return_target = resultReturnTargetForOutcome(.completed, active_mode),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -1054,28 +1054,61 @@ const AppState = struct {
         const loaded_level = self.current_level orelse return;
         const runner = self.level_runner orelse return;
         const active_mode = self.active_frontend_mode;
+        const parcel_target = loaded_level.parcels orelse 0;
         const elapsed_millis = completionElapsedMillis(runner);
-        const result_score = switch (active_mode orelse .tutorial) {
-            .time_trial => elapsed_millis,
-            else => runner.score.total,
-        };
-
-        self.completion_action_index = 0;
-        self.pending_run_result = .{
+        var result = PendingRunResult{
             .outcome = .failed,
             .level_name = loaded_level.name,
             .mode = active_mode,
             .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
             .elapsed_millis = elapsed_millis,
             .parcel_count = runner.counters.parcels,
-            .parcel_target = loaded_level.parcels orelse 0,
-            .score = result_score,
+            .parcel_target = parcel_target,
+            .score = 0,
             .score_is_partial = true,
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
-            .return_target = resultReturnTargetForMode(active_mode),
+            .return_target = resultReturnTargetForOutcome(.failed, active_mode),
         };
+
+        switch (active_mode orelse .tutorial) {
+            .postal => {
+                result.score = runner.score.total;
+                const entry = high_score.Entry{
+                    .score = result.score,
+                };
+                const insert = self.high_score_tables.addArcade(entry);
+                result.high_score_mode = .postal;
+                result.high_score_rank = insert.rank;
+                try self.saveHighScoreTables();
+            },
+            .challenge => {
+                result.score = runner.score.total;
+                const entry = high_score.Entry{
+                    .score = result.score,
+                };
+                const insert = self.high_score_tables.addSurvival(entry);
+                result.high_score_mode = .challenge;
+                result.high_score_rank = insert.rank;
+                try self.saveHighScoreTables();
+            },
+            .time_trial => {
+                result.score = elapsed_millis;
+                const entry = high_score.Entry{
+                    .score = elapsed_millis,
+                };
+                const insert = self.high_score_tables.addTimeTrial(self.active_frontend_level_index, entry);
+                result.time_trial_record_improved = insert.improved;
+                try self.saveHighScoreTables();
+            },
+            .tutorial => {
+                result.score = runner.score.total;
+            },
+        }
+
+        self.completion_action_index = 0;
+        self.pending_run_result = result;
         try self.enterGamePhase(.completion_screen);
     }
 
@@ -2311,7 +2344,8 @@ fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel
     );
 }
 
-fn resultReturnTargetForMode(mode: ?FrontendLevelMode) ResultReturnTarget {
+fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
+    if (outcome == .failed) return .main_menu;
     return switch (mode orelse .tutorial) {
         .postal => .postal_route_map,
         .time_trial => .time_trial_route_map,
@@ -3535,6 +3569,15 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(!completionBonusAppliesForMode(.time_trial));
     try std.testing.expect(!completionBonusAppliesForMode(.tutorial));
     try std.testing.expect(!completionBonusAppliesForMode(null));
+}
+
+test "failed runs return to the main menu while completions keep mode-specific exits" {
+    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, resultReturnTargetForOutcome(.completed, .postal));
+    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.completed, .time_trial));
+    try std.testing.expectEqual(ResultReturnTarget.replay_current_level, resultReturnTargetForOutcome(.completed, .challenge));
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .postal));
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .challenge));
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
 }
 
 test "high score mode index follows screen order" {
