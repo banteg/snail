@@ -108,6 +108,20 @@ pub const ScoreTotals = struct {
     completion_bonus: u32 = 0,
 };
 
+pub const DamageWarningState = enum {
+    idle,
+    filling,
+    draining,
+
+    pub fn label(self: DamageWarningState) []const u8 {
+        return switch (self) {
+            .idle => "idle",
+            .filling => "fill",
+            .draining => "drain",
+        };
+    }
+};
+
 // PORT(partial): recovered from Android `cRSubGoldy::Collision()` callsites into
 // `cRDamageGuage::Take(float,bool)`. A separate +0.02 damage path from another pool
 // is still unresolved, so only the identified gameplay hazards are modeled here.
@@ -115,6 +129,8 @@ const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
+const damage_warning_fill_step: f32 = 0.16666667;
+const damage_warning_drain_delta: f32 = -0.0016666667;
 const score_life_threshold: u32 = 50_000;
 
 const RowSample = struct {
@@ -159,6 +175,8 @@ pub const Runner = struct {
     score: ScoreTotals = .{},
     score_life_awards: u32 = 0,
     damage_gauge: f32 = 0.0,
+    damage_warning_state: DamageWarningState = .idle,
+    damage_warning_fill: f32 = 0.0,
     completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
 
@@ -209,6 +227,9 @@ pub const Runner = struct {
         }
 
         self.processVisitedRows(preview);
+        if (!self.paused and !self.finished) {
+            self.updateDamageWarning();
+        }
         self.endAttachmentIfNeeded(preview);
         self.refreshSample(preview);
         if (self.movement_mode == .attachment) {
@@ -252,6 +273,10 @@ pub const Runner = struct {
 
     pub fn runtimeTileHint(self: *const Runner) ?u8 {
         return self.current_runtime_tile_hint;
+    }
+
+    pub fn damageWarningLabel(self: *const Runner) []const u8 {
+        return self.damage_warning_state.label();
     }
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
@@ -553,6 +578,33 @@ pub const Runner = struct {
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
         self.damage_gauge = std.math.clamp(self.damage_gauge + delta, 0.0, 1.0);
+        if (self.damage_gauge <= 0.0) {
+            self.damage_warning_state = .idle;
+            self.damage_warning_fill = 0.0;
+        }
+    }
+
+    // PORT(partial): recovered from Android `cRDamageGuage::AI()`. Filling the gauge enters a
+    // warning/fill phase, then a slow auto-drain phase, instead of killing the player directly.
+    // This still omits the original game-flag gates, warning actor, and the separate death path.
+    fn updateDamageWarning(self: *Runner) void {
+        switch (self.damage_warning_state) {
+            .idle => {
+                if (self.damage_gauge >= 1.0) {
+                    self.damage_warning_state = .filling;
+                    self.damage_warning_fill = 0.0;
+                }
+            },
+            .filling => {
+                self.damage_warning_fill = std.math.clamp(self.damage_warning_fill + damage_warning_fill_step, 0.0, 1.0);
+                if (self.damage_warning_fill >= 0.999) {
+                    self.damage_warning_state = .draining;
+                }
+            },
+            .draining => {
+                self.applyDamageGaugeDelta(damage_warning_drain_delta);
+            },
+        }
     }
 
     // PORT(partial): `cRSubGoldy::ScoreAdd` awards one life whenever total score crosses
@@ -782,6 +834,25 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "full damage enters warning fill and auto-drain" {
+    var runner = Runner{};
+    runner.damage_gauge = 1.0;
+
+    runner.updateDamageWarning();
+    try std.testing.expectEqual(DamageWarningState.filling, runner.damage_warning_state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_warning_fill, 0.0001);
+
+    for (0..6) |_| {
+        runner.updateDamageWarning();
+    }
+    try std.testing.expectEqual(DamageWarningState.draining, runner.damage_warning_state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_warning_fill, 0.0001);
+
+    const gauge_before_drain = runner.damage_gauge;
+    runner.updateDamageWarning();
+    try std.testing.expect(runner.damage_gauge < gauge_before_drain);
 }
 
 test "runner accumulates ring and parcel score totals from shipped levels" {

@@ -2229,6 +2229,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
     const score_total = if (state.level_runner) |runner| runner.score.total else 0;
     const damage_gauge = if (state.level_runner) |runner| runner.damage_gauge else 0.0;
+    const damage_warning = if (state.level_runner) |runner| runner.damageWarningLabel() else "idle";
     const finished = if (state.level_runner) |runner| runner.finished else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
@@ -2242,7 +2243,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  damage {d:.2}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  damage {d:.2}  warn {s}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2253,6 +2254,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             parcel_target,
             score_total,
             damage_gauge,
+            damage_warning,
             loaded_track_preview.total_rows,
         },
     );
@@ -2270,7 +2272,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  1ups {d}  jet {s}  finished {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  1ups {d}  jet {s}  finished {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -2281,6 +2283,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.speed_rows_per_second,
                 runner.recentEventLabel(),
                 runner.damage_gauge,
+                runner.damageWarningLabel(),
                 runner.score_life_awards,
                 if (runner.jetpack_active) "on" else "off",
                 if (runner.finished) "yes" else "no",
