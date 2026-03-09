@@ -40,8 +40,10 @@ pub const Options = struct {
     runtime_root_path: []const u8 = runtime_state.default_root_path,
     screenshot_dir: []const u8 = default_screenshot_dir,
     auto_screenshot: ?AutoScreenshot = null,
+    start_phase: ?frontend.GamePhase = null,
     window_size_override: ?WindowSize = null,
     fullscreen: bool = false,
+    hidden_window: bool = false,
     command: AppCommand = .game,
 };
 
@@ -95,6 +97,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.auto_screenshot = try parseAutoScreenshot(args[index]);
             continue;
         }
+        if (std.mem.eql(u8, arg, "--start-phase")) {
+            index += 1;
+            if (index >= args.len) return error.MissingStartPhase;
+            options.start_phase = parseGamePhase(args[index]) orelse return error.InvalidStartPhase;
+            continue;
+        }
         if (std.mem.eql(u8, arg, "--window-size")) {
             index += 1;
             if (index >= args.len) return error.MissingWindowSize;
@@ -103,6 +111,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
         }
         if (std.mem.eql(u8, arg, "--fullscreen")) {
             options.fullscreen = true;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--hidden-window")) {
+            options.hidden_window = true;
             continue;
         }
         if (std.mem.eql(u8, arg, "game")) {
@@ -195,12 +207,14 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
     try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
+    try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
     try std.testing.expectEqual(false, options.fullscreen);
+    try std.testing.expectEqual(false, options.hidden_window);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen", "--hidden-window" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
     try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
@@ -210,9 +224,15 @@ test "parse args handles debug and smoke subcommands" {
     try std.testing.expectEqual(@as(i32, 640), options.window_size_override.?.width);
     try std.testing.expectEqual(@as(i32, 480), options.window_size_override.?.height);
     try std.testing.expectEqual(true, options.fullscreen);
+    try std.testing.expectEqual(true, options.hidden_window);
 
     options = try parseArgsFromSlice(&.{"smoke"});
     try std.testing.expectEqual(AppCommand.smoke, options.command);
+}
+
+test "parse args accepts start phase override" {
+    const options = try parseArgsFromSlice(&.{ "--start-phase", "main_menu" });
+    try std.testing.expectEqual(frontend.GamePhase.main_menu, options.start_phase.?);
 }
 
 test "parse args rejects unknown commands" {
@@ -227,6 +247,11 @@ test "parse auto screenshot validates phase and tick" {
 
     try std.testing.expectError(error.InvalidScreenshotSpec, parseAutoScreenshot("intro"));
     try std.testing.expectError(error.InvalidScreenshotPhase, parseAutoScreenshot("weird:30"));
+}
+
+test "parse args validates start phase" {
+    try std.testing.expectError(error.MissingStartPhase, parseArgsFromSlice(&.{"--start-phase"}));
+    try std.testing.expectError(error.InvalidStartPhase, parseArgsFromSlice(&.{ "--start-phase", "weird" }));
 }
 
 test "parse window size validates dimensions" {

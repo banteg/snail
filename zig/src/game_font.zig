@@ -187,6 +187,7 @@ fn scanAtlas(colors: []const rl.Color, width: usize, height: usize) !AtlasScan {
     }
 
     const nominal_height = findNominalHeight(colors, width, height) orelse return error.InvalidFontAtlas;
+    const source_y, const source_height = biasedVerticalSourceRect(height, nominal_height);
     var slots = [_]GlyphSlot{GlyphSlot.invisible()} ** slot_count;
     var previous_marker: isize = -1;
     var slot_index: usize = 0;
@@ -198,10 +199,12 @@ fn scanAtlas(colors: []const rl.Color, width: usize, height: usize) !AtlasScan {
         const start_x = @as(usize, @intCast(previous_marker + 1));
         const glyph_width = x - start_x;
         slots[slot_index] = .{
-            .source_x = @floatFromInt(start_x),
-            .source_y = 1.0,
+            // PORT(verified): register_font_texture_sheet stores biased atlas UVs up front.
+            // The Windows path does not apply a second inset at draw time.
+            .source_x = @as(f32, @floatFromInt(start_x)) + 0.5,
+            .source_y = source_y,
             .source_width = @floatFromInt(glyph_width),
-            .source_height = @floatFromInt(nominal_height),
+            .source_height = source_height,
             .advance_width = @as(f32, @floatFromInt(glyph_width)) * recovered_spacing_scale,
         };
 
@@ -213,6 +216,17 @@ fn scanAtlas(colors: []const rl.Color, width: usize, height: usize) !AtlasScan {
     return .{
         .slots = slots,
         .nominal_height = nominal_height,
+    };
+}
+
+fn biasedVerticalSourceRect(image_height: usize, nominal_height: usize) struct { f32, f32 } {
+    const denominator = @as(f32, @floatFromInt(image_height - 1));
+    const image_height_f = @as(f32, @floatFromInt(image_height));
+    const top_v = 3.0 / denominator;
+    const bottom_v = @as(f32, @floatFromInt(nominal_height)) / denominator;
+    return .{
+        top_v * image_height_f,
+        (bottom_v - top_v) * image_height_f,
     };
 }
 
