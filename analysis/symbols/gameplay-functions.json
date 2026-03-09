@@ -654,6 +654,11 @@
       "description": "Compacts one active cRSubHighScore entry into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays."
     },
     {
+      "address": "0x4402c0",
+      "name": "add_subgoldy_score",
+      "description": "Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
+    },
+    {
       "address": "0x441540",
       "name": "initialize_salt_hazard_pool"
     },
@@ -718,6 +723,11 @@
       "description": "Maps movement flag masks onto three queued visual-state channels in the player-side controller rooted at +0x2984."
     },
     {
+      "address": "0x445e90",
+      "name": "show_times_up_message",
+      "description": "Spawns the floating `Time's Up` gameplay message once the subgame timer hits its terminal threshold."
+    },
+    {
       "address": "0x446020",
       "name": "update_subgame_camera",
       "description": "Runs the active subgame camera update, choosing between the live cameraman follow pose, cached camera states, and direct identity handoffs before interpolating the view matrix back into the shared camera. Cross-port Android and iOS symbols match this helper to the outer `cRSubGame::CameraAI()` flow."
@@ -765,6 +775,11 @@
       "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
     },
     {
+      "address": "0x448d30",
+      "name": "show_tip_message",
+      "description": "Allocates one of the small gameplay tip-message slots and seeds it with the requested text payload, warning if all slots are already occupied."
+    },
+    {
       "address": "0x449460",
       "name": "initialize_bass_audio_backend",
       "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
@@ -809,6 +824,11 @@
     {
       "address": "0x44c420",
       "name": "load_object_definition"
+    },
+    {
+      "address": "0x44dde0",
+      "name": "play_sound_effect",
+      "description": "Thin gameplay sound wrapper that forwards one effect id into the shared audio backend with the default volume, pitch, and pan parameters."
     },
     {
       "address": "0x44e0f0",

@@ -21,7 +21,7 @@ The current high-confidence `Player` fields are:
 - `+0x338`: `movement_flags`
 - `+0x33c`: `previous_movement_flags`
 - `+0x384`: `follow_state`
-- `+0x408`: `game`
+- `+0x408`: `subgame`
 - `+0x40c`: `movement_mode_selector`
 - `+0x410`: `velocity`
 - `+0x41d`: `attachment_exit_pending`
@@ -33,6 +33,7 @@ The current high-confidence `Player` fields are:
 - `+0x43c`: `current_cell`
 - `+0x44c`: `follow_effect_gate_a`
 - `+0x44d`: `follow_effect_gate_b`
+- `+0x4340`: `visible_life_stock`
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -89,6 +90,7 @@ The current high-confidence `Game` fields are:
 
 Current practical read:
 
+- `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning `SubGame`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
