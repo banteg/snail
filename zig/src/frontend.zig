@@ -297,7 +297,7 @@ pub fn routeMenuActionLabel(mode: FrontendLevelMode, action: RouteMenuAction) []
     return switch (action) {
         .play => if (mode == .postal) "Deliver!" else "Play",
         .watch_best_trial => "Watch Best Trial",
-        .back => "Back",
+        .back => if (mode == .postal) "Exit" else "Back",
     };
 }
 
@@ -312,15 +312,21 @@ pub fn routeMenuHint(mode: FrontendLevelMode, action: RouteMenuAction) ?[]const 
     };
 }
 
+// PORT(verified): the original route selectors pass 1-based postal/time-trial indices into
+// `load_frontend_level_by_mode_and_index`, so route 1 is `ARCADE001`, not `ARCADE000`.
 pub fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffer: []u8) ![]const u8 {
     return switch (mode) {
         .tutorial => "LEVELS/TUTORIAL.TXT",
         .challenge => "LEVELS/CHALLENGE000.TXT",
-        .postal => if (level_index <= 0x32)
+        .postal => if (level_index == 0)
+            error.InvalidRouteIndex
+        else if (level_index <= 0x32)
             try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
         else
             "LEVELS/ARCADEEXTRA000.TXT",
-        .time_trial => if (level_index <= 0x32)
+        .time_trial => if (level_index == 0)
+            error.InvalidRouteIndex
+        else if (level_index <= 0x32)
             try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
         else
             try std.fmt.bufPrint(path_buffer, "LEVELS/TIMETRIALEXTRA{d:0>3}.TXT", .{level_index - 0x32}),
@@ -332,10 +338,19 @@ test "frontend level mode paths follow recovered launch mapping" {
 
     try std.testing.expectEqualStrings("LEVELS/TUTORIAL.TXT", try frontendLevelPath(.tutorial, 0, &scratch));
     try std.testing.expectEqualStrings("LEVELS/CHALLENGE000.TXT", try frontendLevelPath(.challenge, 0, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.postal, 0, &scratch));
+    try std.testing.expectError(error.InvalidRouteIndex, frontendLevelPath(.postal, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADE001.TXT", try frontendLevelPath(.postal, 1, &scratch));
     try std.testing.expectEqualStrings("LEVELS/ARCADE012.TXT", try frontendLevelPath(.postal, 12, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.time_trial, 0, &scratch));
+    try std.testing.expectError(error.InvalidRouteIndex, frontendLevelPath(.time_trial, 0, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADE001.TXT", try frontendLevelPath(.time_trial, 1, &scratch));
     try std.testing.expectEqualStrings("LEVELS/TIMETRIALEXTRA001.TXT", try frontendLevelPath(.time_trial, 0x33, &scratch));
+}
+
+test "route menu labels follow recovered postal wording" {
+    try std.testing.expectEqualStrings("Deliver!", routeMenuActionLabel(.postal, .play));
+    try std.testing.expectEqualStrings("Exit", routeMenuActionLabel(.postal, .back));
+    try std.testing.expectEqualStrings("Play", routeMenuActionLabel(.time_trial, .play));
+    try std.testing.expectEqualStrings("Back", routeMenuActionLabel(.time_trial, .back));
 }
 
 test "frontend fade-in reaches idle after 18 ticks" {

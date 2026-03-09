@@ -66,6 +66,7 @@ const routeMenuHint = frontend.routeMenuHint;
 const frontendLevelPath = frontend.frontendLevelPath;
 
 const MenuPanels = app_ui.MenuPanels;
+const VirtualLayout = app_ui.VirtualLayout;
 
 const ScreenshotRequest = struct {
     relative_path_z: [:0]u8,
@@ -802,7 +803,7 @@ const AppState = struct {
         if (self.active_frontend_mode) |mode| {
             switch (mode) {
                 .postal => {
-                    self.commitPostalRouteProgress();
+                    try self.commitPostalRouteProgress();
                     try self.enterRouteMapMenu(.postal);
                     return;
                 },
@@ -817,24 +818,29 @@ const AppState = struct {
         try self.enterGamePhase(.main_menu);
     }
 
-    fn commitPostalRouteProgress(self: *AppState) void {
+    fn commitPostalRouteProgress(self: *AppState) !void {
         const current_index: u32 = @intCast(self.active_frontend_level_index);
         self.runtime_config.setRouteSelectionIndex(current_index);
         const next_unlock = current_index + 1;
         if (next_unlock > self.runtime_config.routeUnlockLimit()) {
             self.runtime_config.setRouteUnlockLimit(next_unlock);
+            self.setGameStatusMessage("Unlocked the next delivery route.");
         }
+        try self.saveRuntimeConfig();
     }
 
     fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
         const available_limit = self.availableFrontendRouteLimit(mode);
+        if (available_limit == 0) return 0;
         const saved_index: usize = @intCast(self.runtime_config.routeSelectionIndex());
-        return @min(saved_index, available_limit);
+        return std.math.clamp(saved_index, @as(usize, 1), available_limit);
     }
 
     fn availableFrontendRouteLimit(self: *const AppState, mode: FrontendLevelMode) usize {
+        const highest_available = self.highestAvailableFrontendRouteIndex(mode);
+        if (highest_available == 0) return 0;
         const saved_limit: usize = @intCast(self.runtime_config.routeUnlockLimit());
-        return @min(saved_limit, self.highestAvailableFrontendRouteIndex(mode));
+        return std.math.clamp(saved_limit, @as(usize, 1), highest_available);
     }
 
     fn highestAvailableFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
@@ -860,8 +866,9 @@ const AppState = struct {
 
     fn stepFrontendRouteSelection(self: *AppState, delta: isize) void {
         const mode = self.frontend_route_mode orelse return;
-        const route_count = self.availableFrontendRouteLimit(mode) + 1;
-        self.frontend_route_index = wrappedIndex(route_count, self.frontend_route_index, delta);
+        const route_count = self.availableFrontendRouteLimit(mode);
+        if (route_count == 0) return;
+        self.frontend_route_index = wrappedIndex(route_count, self.frontend_route_index - 1, delta) + 1;
     }
 
     fn syncGamePhaseResources(self: *AppState) !void {
@@ -1497,6 +1504,7 @@ fn drawGameUi(state: *const AppState) !void {
         .width = @floatFromInt(screenWidth()),
         .height = @floatFromInt(screenHeight()),
     };
+    const ui_layout = app_ui.virtualLayout(full_bounds);
 
     if (state.game_phase == .boot) {
         if (state.current_loading_screen) |loaded_screen| {
@@ -1504,142 +1512,119 @@ fn drawGameUi(state: *const AppState) !void {
         } else {
             rl.drawRectangleRec(full_bounds, .black);
         }
-        return drawGameBootUi(state);
+        return drawGameBootUi(state, ui_layout);
     }
 
-    const art_layout = if (state.current_game_background) |loaded_background| blk: {
-        const runtime = state.current_game_background_runtime orelse break :blk loaded_background.draw(full_bounds);
-        switch (state.game_phase) {
-            .intro, .credits => {
-                runtime.drawStretched(&loaded_background, full_bounds);
-                break :blk null;
-            },
-            else => break :blk runtime.draw(&loaded_background, full_bounds),
+    if (state.current_game_background) |loaded_background| {
+        if (state.current_game_background_runtime) |runtime| {
+            switch (state.game_phase) {
+                .intro, .credits => runtime.drawStretched(&loaded_background, full_bounds),
+                else => _ = runtime.draw(&loaded_background, full_bounds),
+            }
+        } else {
+            _ = loaded_background.draw(full_bounds);
         }
-    } else blk: {
+    } else {
         rl.drawRectangleRec(full_bounds, .black);
-        break :blk null;
-    };
+    }
 
     switch (state.game_phase) {
         .boot => unreachable,
-        .intro => drawCurrentTextScript(state, full_bounds),
-        .main_menu => try drawMainMenuUi(state, art_layout),
-        .new_game_menu => try drawNewGameMenuUi(state, art_layout),
-        .options_menu => try drawOptionsMenuUi(state, art_layout),
-        .route_map_menu => try drawRouteMapMenuUi(state, art_layout),
-        .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
-        .credits => drawCurrentTextScript(state, full_bounds),
-        .help => drawHelpUi(state),
-        .level => try drawGameplayLevelUi(state, art_layout),
+        .intro => drawCurrentTextScript(state, ui_layout),
+        .main_menu => try drawMainMenuUi(state, ui_layout),
+        .new_game_menu => try drawNewGameMenuUi(state, ui_layout),
+        .options_menu => try drawOptionsMenuUi(state, ui_layout),
+        .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
+        .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
+        .credits => drawCurrentTextScript(state, ui_layout),
+        .help => drawHelpUi(state, ui_layout),
+        .level => try drawGameplayLevelUi(state, ui_layout),
     }
 
     state.frontend_transition.draw(full_bounds);
 }
 
-fn drawGameBootUi(state: *const AppState) !void {
+fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     if (state.current_loading_screen != null) return;
 
-    const title_width = measureAppText(state, "Loading...", 30);
+    const font_size = layout.fontSize(30);
+    const title_width = measureAppText(state, "Loading...", font_size);
+    const title_point = layout.mapPoint(320.0, 240.0);
+    const title_x: i32 = @intFromFloat(title_point.x);
+    const title_y: i32 = @intFromFloat(title_point.y);
     drawAppText(
         state,
         "Loading...",
-        @divTrunc(screenWidth() - title_width, 2),
-        @divTrunc(screenHeight(), 2) - 18,
-        30,
+        title_x - @divTrunc(title_width, 2),
+        title_y - layout.scaleInt(18),
+        font_size,
         .ray_white,
     );
 }
 
-fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const menu_panel = if (art_layout) |layout|
-        layout.mapRect(56.0, 104.0, 220.0, 250.0)
-    else
-        rl.Rectangle{ .x = 96.0, .y = 220.0, .width = 360.0, .height = 260.0 };
-    const detail_panel = if (art_layout) |layout|
-        layout.mapRect(292.0, 104.0, 248.0, 250.0)
-    else
-        rl.Rectangle{ .x = 492.0, .y = 220.0, .width = 640.0, .height = 260.0 };
-    const footer_panel = if (art_layout) |layout|
-        layout.mapRect(56.0, 370.0, 484.0, 38.0)
-    else
-        rl.Rectangle{ .x = 96.0, .y = 516.0, .width = 1036.0, .height = 44.0 };
-
-    rl.drawRectangleRounded(menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-
-    const title_point = if (art_layout) |layout|
-        layout.mapPoint(72.0, 78.0)
-    else
-        rl.Vector2{ .x = 96.0, .y = 176.0 };
-    drawAppText(state, "Main Menu", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .ray_white);
+fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const panels = app_ui.menuPanels(layout);
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    drawAppText(state, "Main Menu", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
     for (main_menu_items, 0..) |item, index| {
-        drawMenuItem(state, art_layout, index, state.menu_index, item.label());
+        drawMenuItem(state, layout, index, state.menu_index, item.label());
     }
 
     const selected = main_menu_items[state.menu_index];
-    const detail_title = if (art_layout) |layout|
-        layout.mapPoint(312.0, 126.0)
-    else
-        rl.Vector2{ .x = 520.0, .y = 252.0 };
-    const control_note = if (art_layout) |layout|
-        layout.mapPoint(312.0, 170.0)
-    else
-        rl.Vector2{ .x = 520.0, .y = 304.0 };
-    const selection_note = if (art_layout) |layout|
-        layout.mapPoint(312.0, 210.0)
-    else
-        rl.Vector2{ .x = 520.0, .y = 348.0 };
-    const status_note = if (art_layout) |layout|
-        layout.mapPoint(312.0, 276.0)
-    else
-        rl.Vector2{ .x = 520.0, .y = 424.0 };
+    const control_note = layout.mapPoint(312.0, 170.0);
+    const selection_note = layout.mapPoint(312.0, 210.0);
+    const status_note = layout.mapPoint(312.0, 276.0);
+    const control_x: i32 = @intFromFloat(control_note.x);
+    const control_y: i32 = @intFromFloat(control_note.y);
+    const selection_x: i32 = @intFromFloat(selection_note.x);
+    const selection_y: i32 = @intFromFloat(selection_note.y);
+    const status_x: i32 = @intFromFloat(status_note.x);
+    const status_y: i32 = @intFromFloat(status_note.y);
 
-    drawAppText(state, selected.label(), @intFromFloat(detail_title.x), @intFromFloat(detail_title.y), 30, .gold);
-    drawAppText(state, "Up/Down select", @intFromFloat(control_note.x), @intFromFloat(control_note.y), 20, .ray_white);
-    drawAppText(state, "Enter confirm", @intFromFloat(control_note.x), @intFromFloat(control_note.y + 26.0), 20, .ray_white);
-    drawAppText(state, "Esc quit", @intFromFloat(selection_note.x), @intFromFloat(selection_note.y), 20, .light_gray);
+    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
+    drawAppText(state, "Up/Down select", control_x, control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Enter confirm", control_x, control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc quit", selection_x, selection_y, layout.fontSize(20), .light_gray);
     if (mainMenuItemHint(selected)) |hint| {
-        try drawWrappedText(state, hint, @intFromFloat(status_note.x), @intFromFloat(status_note.y), @intFromFloat(detail_panel.width - 36.0), 20, .sky_blue);
+        try drawWrappedText(state, hint, status_x, status_y, panels.detail_width, layout.fontSize(20), .sky_blue);
     }
 
     if (state.game_status_message) |message| {
-        rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(state, message, @intFromFloat(footer_panel.x + 20.0), @intFromFloat(footer_panel.y + 11.0), @intFromFloat(footer_panel.width - 32.0), 20, .ray_white);
+        try drawFooterMessage(state, layout, panels.footer_panel, message);
     }
 }
 
-fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = app_ui.menuPanels(art_layout);
+fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const panels = app_ui.menuPanels(layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "New Game", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "New Game", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
     for (new_game_menu_items, 0..) |item, index| {
-        drawMenuItem(state, art_layout, index, state.new_game_menu_index, item.label());
+        drawMenuItem(state, layout, index, state.new_game_menu_index, item.label());
     }
 
     const selected = new_game_menu_items[state.new_game_menu_index];
-    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
     if (newGameMenuHint(selected)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
     }
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(20), .light_gray);
 
     if (state.game_status_message) |message| {
-        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+        try drawFooterMessage(state, layout, panels.footer_panel, message);
     }
 }
 
-fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = app_ui.menuPanels(art_layout);
+fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const panels = app_ui.menuPanels(layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "Options", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "Options", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
     for (options_menu_items, 0..) |item, index| {
         var label_buffer: [64]u8 = undefined;
@@ -1650,13 +1635,13 @@ fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
             state.runtime_config.musicVolume(),
             &label_buffer,
         );
-        drawMenuItem(state, art_layout, index, state.options_menu_index, label);
+        drawMenuItem(state, layout, index, state.options_menu_index, label);
     }
 
     const selected = options_menu_items[state.options_menu_index];
-    drawAppText(state, optionsMenuTitle(selected), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    drawAppText(state, optionsMenuTitle(selected), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
     if (frontend.optionsMenuHint(state.runtime_config_loaded_from_file, selected)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
     }
 
     switch (selected) {
@@ -1665,15 +1650,15 @@ fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
                 state,
                 if (state.runtime_config.fullscreenEnabled()) "Saved full-screen: On" else "Saved full-screen: Off",
                 panels.detail_body_x,
-                panels.detail_body_y + 64,
-                20,
+                panels.detail_body_y + layout.scaleInt(64),
+                layout.fontSize(20),
                 .sky_blue,
             );
         },
-        .sound_volume => try drawOptionsSliderRow(state, "Sounds", state.runtime_config.soundVolume(), panels),
-        .music_volume => try drawOptionsSliderRow(state, "Music", state.runtime_config.musicVolume(), panels),
+        .sound_volume => try drawOptionsSliderRow(state, layout, "Sounds", state.runtime_config.soundVolume(), panels),
+        .music_volume => try drawOptionsSliderRow(state, layout, "Music", state.runtime_config.musicVolume(), panels),
         .back => {
-            drawAppText(state, "Leave Options", panels.detail_body_x, panels.detail_body_y + 64, 20, .sky_blue);
+            drawAppText(state, "Leave Options", panels.detail_body_x, panels.detail_body_y + layout.scaleInt(64), layout.fontSize(20), .sky_blue);
         },
     }
 
@@ -1681,29 +1666,29 @@ fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
         "Config source: runtime file"
     else
         "Config source: recovered defaults";
-    drawAppText(state, config_source_text, panels.detail_body_x, panels.detail_body_y + 112, 18, .dark_gray);
+    drawAppText(state, config_source_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(112), layout.fontSize(18), .dark_gray);
 
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
-    drawAppText(state, "Left/Right adjust", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    drawAppText(state, "Enter toggle or back", panels.control_x, panels.control_y + 52, 20, .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 78, 20, .light_gray);
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Left/Right adjust", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Enter toggle or back", panels.control_x, panels.control_y + layout.scaleInt(52), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(78), layout.fontSize(20), .light_gray);
 }
 
-fn drawRouteMapMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const panels = app_ui.menuPanels(art_layout);
+    const panels = app_ui.menuPanels(layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "Intergalactic Delivery Route", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "Intergalactic Delivery Route", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
     for (route_menu_actions, 0..) |action, index| {
-        drawMenuItem(state, art_layout, index, state.route_menu_action_index, routeMenuActionLabel(mode, action));
+        drawMenuItem(state, layout, index, state.route_menu_action_index, routeMenuActionLabel(mode, action));
     }
 
     const selected_action = route_menu_actions[state.route_menu_action_index];
-    drawAppText(state, routeMenuActionLabel(mode, selected_action), panels.detail_title_x, panels.detail_title_y, 28, .gold);
+    drawAppText(state, routeMenuActionLabel(mode, selected_action), panels.detail_title_x, panels.detail_title_y, layout.fontSize(28), .gold);
     if (routeMenuHint(mode, selected_action)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 20, .light_gray);
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(20), .light_gray);
     }
 
     var level_path_buffer: [64]u8 = undefined;
@@ -1715,80 +1700,78 @@ fn drawRouteMapMenuUi(state: *const AppState, art_layout: ?background.Layout) !v
         "{s} route {d} of {d}",
         .{ frontendRouteModeLabel(mode), state.frontend_route_index, state.availableFrontendRouteLimit(mode) },
     );
-    drawAppText(state, route_text, panels.detail_body_x, panels.detail_body_y + 66, 18, .sky_blue);
+    drawAppText(state, route_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(66), layout.fontSize(18), .sky_blue);
 
     var path_buffer: [128]u8 = undefined;
     const path_text = try std.fmt.bufPrint(&path_buffer, "{s}", .{level_path});
-    drawAppText(state, path_text, panels.detail_body_x, panels.detail_body_y + 92, 18, .ray_white);
+    drawAppText(state, path_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(92), layout.fontSize(18), .ray_white);
 
-    drawRouteSelectionDots(state, panels, state.frontend_route_index, state.availableFrontendRouteLimit(mode));
+    drawRouteSelectionDots(state, layout, panels, state.frontend_route_index, state.availableFrontendRouteLimit(mode));
 
-    drawAppText(state, "Left/Right route", panels.control_x, panels.control_y, 20, .ray_white);
-    drawAppText(state, "Up/Down action", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 52, 20, .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 78, 20, .light_gray);
+    drawAppText(state, "Left/Right route", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Up/Down action", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(52), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(78), layout.fontSize(20), .light_gray);
 
     if (state.game_status_message) |message| {
-        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+        try drawFooterMessage(state, layout, panels.footer_panel, message);
     }
 }
 
-fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = app_ui.menuPanels(art_layout);
+fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const panels = app_ui.menuPanels(layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "High Scores", panels.title_x, panels.title_y, 28, .ray_white);
+    drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
     for (high_scores_menu_items, 0..) |item, index| {
-        drawMenuItem(state, art_layout, index, state.high_scores_menu_index, item.label());
+        drawMenuItem(state, layout, index, state.high_scores_menu_index, item.label());
     }
 
     const selected = high_scores_menu_items[state.high_scores_menu_index];
-    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
 
     switch (selected) {
-        .postal_high_scores => drawHighScoreTable(state, .postal, panels),
-        .challenge_high_scores => drawHighScoreTable(state, .challenge, panels),
+        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels),
+        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels),
         .back => {
-            try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+            try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
         },
     }
 
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 26, 20, .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 66, 20, .light_gray);
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(20), .light_gray);
 
     if (state.game_status_message) |message| {
-        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+        try drawFooterMessage(state, layout, panels.footer_panel, message);
     }
 }
 
-fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, panels: MenuPanels) void {
+fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: VirtualLayout, panels: MenuPanels) void {
     const entries = state.high_score_tables.visibleEntries(mode);
-    const row_start_y = panels.detail_body_y + 28;
-    const row_height = 18;
+    const row_start_y = panels.detail_body_y + layout.scaleInt(28);
+    const row_height = layout.scaleInt(18);
     const rank_x = panels.detail_body_x;
-    const name_x = panels.detail_body_x + 44;
-    const score_x = panels.detail_body_x + 292;
-    const replay_x = panels.detail_body_x + 438;
+    const name_x = panels.detail_body_x + layout.scaleInt(44);
+    const score_x = panels.detail_body_x + layout.scaleInt(146);
+    const replay_x = panels.detail_body_x + layout.scaleInt(206);
 
-    drawAppText(state, mode.label(), panels.detail_body_x, panels.detail_body_y, 18, .sky_blue);
-    drawAppText(state, "#", rank_x, panels.detail_body_y + 26, 16, .light_gray);
-    drawAppText(state, "Name", name_x, panels.detail_body_y + 26, 16, .light_gray);
-    drawAppText(state, "Score", score_x, panels.detail_body_y + 26, 16, .light_gray);
-    drawAppText(state, "Replay", replay_x, panels.detail_body_y + 26, 16, .light_gray);
+    drawAppText(state, mode.label(), panels.detail_body_x, panels.detail_body_y, layout.fontSize(18), .sky_blue);
+    drawAppText(state, "#", rank_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
+    drawAppText(state, "Name", name_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
+    drawAppText(state, "Score", score_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
+    drawAppText(state, "Replay", replay_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
 
     for (entries, 0..) |entry, index| {
         const row_y = row_start_y + @as(i32, @intCast(index)) * row_height;
         if ((index & 1) == 0) {
             rl.drawRectangleRounded(
                 .{
-                    .x = @floatFromInt(panels.detail_body_x - 8),
-                    .y = @floatFromInt(row_y - 2),
-                    .width = @floatFromInt(panels.detail_width - 4),
-                    .height = 18.0,
+                    .x = @floatFromInt(panels.detail_body_x - layout.scaleInt(8)),
+                    .y = @floatFromInt(row_y - layout.scaleInt(2)),
+                    .width = @floatFromInt(panels.detail_width - layout.scaleInt(4)),
+                    .height = layout.scaleFloat(18.0),
                 },
                 0.16,
                 4,
@@ -1798,13 +1781,13 @@ fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, panels: Men
 
         var rank_buffer: [8]u8 = undefined;
         const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}.", .{index + 1}) catch "";
-        drawAppText(state, rank_text, rank_x, row_y, 16, .ray_white);
-        drawAppText(state, highScoreDisplayName(&entry), name_x, row_y, 16, .ray_white);
+        drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(16), .ray_white);
+        drawAppText(state, highScoreDisplayName(&entry), name_x, row_y, layout.fontSize(16), .ray_white);
 
         var score_buffer: [32]u8 = undefined;
         const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
-        drawAppText(state, score_text, score_x, row_y, 16, .gold);
-        drawAppText(state, if (entry.has_replay) "Replay" else "-", replay_x, row_y, 16, .light_gray);
+        drawAppText(state, score_text, score_x, row_y, layout.fontSize(16), .gold);
+        drawAppText(state, if (entry.has_replay) "Replay" else "-", replay_x, row_y, layout.fontSize(16), .light_gray);
     }
 }
 
@@ -1812,6 +1795,19 @@ fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
     const name = entry.name();
     if (name.len == 0) return "---";
     return name;
+}
+
+fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
+    rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
+    try drawWrappedText(
+        state,
+        message,
+        @intFromFloat(footer_panel.x + layout.scaleFloat(20.0)),
+        @intFromFloat(footer_panel.y + layout.scaleFloat(11.0)),
+        @intFromFloat(footer_panel.width - layout.scaleFloat(32.0)),
+        layout.fontSize(20),
+        .ray_white,
+    );
 }
 
 fn bootPhaseProgress(state: *const AppState) f32 {
@@ -1823,45 +1819,48 @@ fn bootPhaseProgress(state: *const AppState) f32 {
     );
 }
 
-fn drawCurrentTextScript(state: *const AppState, viewport: rl.Rectangle) void {
+fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
     const script = state.currentTextScript() orelse return;
     const progress = state.currentTextScriptProgress() orelse 0.0;
-    script.drawCrawl(&state.ui_font, progress, viewport);
+    script.drawCrawl(&state.ui_font, progress, .{
+        .x = layout.x,
+        .y = layout.y,
+        .width = layout.width,
+        .height = layout.height,
+    });
 }
 
-fn drawHelpUi(state: *const AppState) void {
-    rl.drawRectangleRounded(.{ .x = 72.0, .y = 646.0, .width = 260.0, .height = 34.0 }, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-    drawAppText(state, "Enter or Esc back", 96, 654, 18, .ray_white);
+fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
+    const help_panel = layout.mapRect(56.0, 426.0, 170.0, 24.0);
+    const help_text = layout.mapPoint(72.0, 430.0);
+    rl.drawRectangleRounded(help_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+    drawAppText(state, "Enter or Esc back", @intFromFloat(help_text.x), @intFromFloat(help_text.y), layout.fontSize(18), .ray_white);
 }
 
-fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
+fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     drawGameplayLevelViewport(state);
 
-    const hud_panel = if (art_layout) |layout|
-        layout.mapRect(16.0, 14.0, 608.0, 84.0)
-    else
-        rl.Rectangle{ .x = 24.0, .y = 24.0, .width = 624.0, .height = 112.0 };
-    const footer_panel = if (art_layout) |layout|
-        layout.mapRect(16.0, 408.0, 608.0, 84.0)
-    else
-        rl.Rectangle{ .x = 24.0, .y = 612.0, .width = 960.0, .height = 84.0 };
+    const hud_panel = layout.mapRect(16.0, 14.0, 608.0, 84.0);
+    const footer_panel = layout.mapRect(16.0, 392.0, 608.0, 72.0);
 
     rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
 
     const loaded_level = state.current_level orelse return;
     const loaded_track_preview = state.current_track_preview orelse return;
-    const title_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 14.0 };
-    const meta_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 44.0 };
-    const control_point = rl.Vector2{ .x = hud_panel.x + 20.0, .y = hud_panel.y + 68.0 };
+    const title_point = layout.mapPoint(36.0, 28.0);
+    const meta_point = layout.mapPoint(36.0, 58.0);
+    const control_point = layout.mapPoint(36.0, 82.0);
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
     const finished = if (state.level_runner) |runner| runner.finished else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
+    const title_font_size = layout.fontSize(28);
+    const body_font_size = layout.fontSize(18);
 
     var level_name_buffer: [128]u8 = undefined;
     const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
-    drawAppText(state, level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), 28, .gold);
+    drawAppText(state, level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
 
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
@@ -1878,13 +1877,13 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
             loaded_track_preview.total_rows,
         },
     );
-    drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), 18, .ray_white);
+    drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
     var control_buffer: [192]u8 = undefined;
     const control_text = if (finished)
         try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Enter menu  Esc menu", .{mouse_icon})
     else
         try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", .{mouse_icon});
-    drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), 18, .light_gray);
+    drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), body_font_size, .light_gray);
 
     if (state.level_runner) |runner| {
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
@@ -1905,24 +1904,26 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
                 if (runner.finished) "yes" else "no",
             },
         );
-        drawAppText(state, runner_text, @intFromFloat(footer_panel.x + 18.0), @intFromFloat(footer_panel.y + 18.0), 18, .ray_white);
+        drawAppText(state, runner_text, @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)), @intFromFloat(footer_panel.y + layout.scaleFloat(18.0)), body_font_size, .ray_white);
 
         if (state.active_level_message) |message| {
             try drawWrappedText(
                 state,
                 message,
-                @intFromFloat(footer_panel.x + 18.0),
-                @intFromFloat(footer_panel.y + 44.0),
-                @intFromFloat(footer_panel.width - 30.0),
-                18,
+                @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)),
+                @intFromFloat(footer_panel.y + layout.scaleFloat(42.0)),
+                @intFromFloat(footer_panel.width - layout.scaleFloat(30.0)),
+                body_font_size,
                 .gold,
             );
         }
     }
 
     const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
-    rl.drawRectangle(@divTrunc(screenWidth(), 2) - 12, @divTrunc(screenHeight(), 2), 24, 2, crosshair_color);
-    rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - 12, 2, 24, crosshair_color);
+    const crosshair_radius = layout.scaleInt(12);
+    const crosshair_thickness = @max(layout.scaleInt(2), 1);
+    rl.drawRectangle(@divTrunc(screenWidth(), 2) - crosshair_radius, @divTrunc(screenHeight(), 2), crosshair_radius * 2, crosshair_thickness, crosshair_color);
+    rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
@@ -2644,16 +2645,16 @@ fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max
     return app_ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
-fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: []const u8) void {
-    app_ui.drawMenuItem(uiContext(state), art_layout, index, selected_index, label);
+fn drawMenuItem(state: *const AppState, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
+    app_ui.drawMenuItem(uiContext(state), layout, index, selected_index, label);
 }
 
-fn drawOptionsSliderRow(state: *const AppState, label: []const u8, value: f32, panels: MenuPanels) !void {
-    return app_ui.drawOptionsSliderRow(uiContext(state), label, value, panels);
+fn drawOptionsSliderRow(state: *const AppState, layout: VirtualLayout, label: []const u8, value: f32, panels: MenuPanels) !void {
+    return app_ui.drawOptionsSliderRow(uiContext(state), layout, label, value, panels);
 }
 
-fn drawRouteSelectionDots(state: *const AppState, panels: MenuPanels, current_index: usize, max_index: usize) void {
-    app_ui.drawRouteSelectionDots(uiContext(state), panels, current_index, max_index);
+fn drawRouteSelectionDots(state: *const AppState, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {
+    app_ui.drawRouteSelectionDots(uiContext(state), layout, panels, current_index, max_index);
 }
 
 fn modeLabel(mode: xanim.Mode) [:0]const u8 {

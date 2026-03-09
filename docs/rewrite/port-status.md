@@ -38,6 +38,7 @@ Current high-signal entries:
 - delivery-route map flow: `partial`
   - evidence: Binary Ninja decompile of `initialize_delivery_route_screen`, `update_delivery_route_screen`, and `load_frontend_level_by_mode_and_index`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
+  - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
 - front-end background loading plus Distort-driven single-texture motion: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, plus Binary Ninja decompile of `initialize_frontend_background_distortion_grid`, `activate_frontend_background_entry`, `initialize_frontend_background_renderer`, `draw_frontend_split_background`, `draw_frontend_warped_background`, and `update_frontend_background_renderer`

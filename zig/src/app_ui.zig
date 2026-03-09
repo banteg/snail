@@ -1,11 +1,62 @@
 const std = @import("std");
 const rl = @import("raylib");
-const background = @import("background.zig");
 const game_font = @import("game_font.zig");
+
+pub const authored_width: f32 = 640.0;
+pub const authored_height: f32 = 480.0;
 
 pub const Context = struct {
     font: *const game_font.Loaded,
 };
+
+pub const VirtualLayout = struct {
+    x: f32,
+    y: f32,
+    width: f32,
+    height: f32,
+    scale: f32,
+
+    pub fn mapPoint(self: VirtualLayout, local_x: f32, local_y: f32) rl.Vector2 {
+        return .{
+            .x = self.x + local_x * self.scale,
+            .y = self.y + local_y * self.scale,
+        };
+    }
+
+    pub fn mapRect(self: VirtualLayout, local_x: f32, local_y: f32, local_width: f32, local_height: f32) rl.Rectangle {
+        return .{
+            .x = self.x + local_x * self.scale,
+            .y = self.y + local_y * self.scale,
+            .width = local_width * self.scale,
+            .height = local_height * self.scale,
+        };
+    }
+
+    pub fn scaleFloat(self: VirtualLayout, value: f32) f32 {
+        return value * self.scale;
+    }
+
+    pub fn scaleInt(self: VirtualLayout, value: i32) i32 {
+        return @intFromFloat(@round(@as(f32, @floatFromInt(value)) * self.scale));
+    }
+
+    pub fn fontSize(self: VirtualLayout, authored_size: i32) i32 {
+        return @max(self.scaleInt(authored_size), 1);
+    }
+};
+
+pub fn virtualLayout(bounds: rl.Rectangle) VirtualLayout {
+    const scale = @min(bounds.width / authored_width, bounds.height / authored_height);
+    const width = authored_width * scale;
+    const height = authored_height * scale;
+    return .{
+        .x = bounds.x + (bounds.width - width) * 0.5,
+        .y = bounds.y + (bounds.height - height) * 0.5,
+        .width = width,
+        .height = height,
+        .scale = scale,
+    };
+}
 
 pub const MenuPanels = struct {
     menu_panel: rl.Rectangle,
@@ -22,37 +73,21 @@ pub const MenuPanels = struct {
     control_y: i32,
 };
 
-pub fn menuPanels(art_layout: ?background.Layout) MenuPanels {
-    return if (art_layout) |layout|
-        .{
-            .menu_panel = layout.mapRect(56.0, 104.0, 220.0, 250.0),
-            .detail_panel = layout.mapRect(292.0, 104.0, 248.0, 250.0),
-            .footer_panel = layout.mapRect(56.0, 370.0, 484.0, 38.0),
-            .title_x = @intFromFloat(layout.mapPoint(72.0, 78.0).x),
-            .title_y = @intFromFloat(layout.mapPoint(72.0, 78.0).y),
-            .detail_title_x = @intFromFloat(layout.mapPoint(312.0, 126.0).x),
-            .detail_title_y = @intFromFloat(layout.mapPoint(312.0, 126.0).y),
-            .detail_body_x = @intFromFloat(layout.mapPoint(312.0, 168.0).x),
-            .detail_body_y = @intFromFloat(layout.mapPoint(312.0, 168.0).y),
-            .detail_width = @intFromFloat(layout.mapRect(292.0, 104.0, 248.0, 250.0).width - 36.0),
-            .control_x = @intFromFloat(layout.mapPoint(312.0, 250.0).x),
-            .control_y = @intFromFloat(layout.mapPoint(312.0, 250.0).y),
-        }
-    else
-        .{
-            .menu_panel = .{ .x = 96.0, .y = 220.0, .width = 360.0, .height = 260.0 },
-            .detail_panel = .{ .x = 492.0, .y = 220.0, .width = 640.0, .height = 260.0 },
-            .footer_panel = .{ .x = 96.0, .y = 516.0, .width = 1036.0, .height = 44.0 },
-            .title_x = 96,
-            .title_y = 176,
-            .detail_title_x = 520,
-            .detail_title_y = 252,
-            .detail_body_x = 520,
-            .detail_body_y = 304,
-            .detail_width = 580,
-            .control_x = 520,
-            .control_y = 400,
-        };
+pub fn menuPanels(layout: VirtualLayout) MenuPanels {
+    return .{
+        .menu_panel = layout.mapRect(56.0, 104.0, 220.0, 250.0),
+        .detail_panel = layout.mapRect(292.0, 104.0, 248.0, 250.0),
+        .footer_panel = layout.mapRect(56.0, 370.0, 484.0, 38.0),
+        .title_x = @intFromFloat(layout.mapPoint(72.0, 78.0).x),
+        .title_y = @intFromFloat(layout.mapPoint(72.0, 78.0).y),
+        .detail_title_x = @intFromFloat(layout.mapPoint(312.0, 126.0).x),
+        .detail_title_y = @intFromFloat(layout.mapPoint(312.0, 126.0).y),
+        .detail_body_x = @intFromFloat(layout.mapPoint(312.0, 168.0).x),
+        .detail_body_y = @intFromFloat(layout.mapPoint(312.0, 168.0).y),
+        .detail_width = @intFromFloat(layout.mapRect(292.0, 104.0, 248.0, 250.0).width - layout.scaleFloat(36.0)),
+        .control_x = @intFromFloat(layout.mapPoint(312.0, 250.0).x),
+        .control_y = @intFromFloat(layout.mapPoint(312.0, 250.0).y),
+    };
 }
 
 pub fn drawText(context: Context, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
@@ -73,51 +108,40 @@ pub fn drawWrappedText(context: Context, text: []const u8, x: i32, y: i32, max_w
         @memcpy(line_buffer[0..clipped.len], clipped);
         line_buffer[clipped.len] = 0;
         _ = max_width;
-        drawText(context, line_buffer[0..clipped.len], x, y + line_index * line_height, 18, color);
+        drawText(context, line_buffer[0..clipped.len], x, y + line_index * line_height, line_height, color);
         line_index += 1;
     }
 }
 
-pub fn drawMenuItem(context: Context, art_layout: ?background.Layout, index: usize, selected_index: usize, label: []const u8) void {
+pub fn drawMenuItem(context: Context, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
     const active = index == selected_index;
-    const row_rect = if (art_layout) |layout|
-        layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
-    else
-        rl.Rectangle{
-            .x = 112.0,
-            .y = 252.0 + @as(f32, @floatFromInt(index)) * 48.0,
-            .width = 328.0,
-            .height = 36.0,
-        };
-    const label_point = if (art_layout) |layout|
-        layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0)
-    else
-        rl.Vector2{ .x = 132.0, .y = 260.0 + @as(f32, @floatFromInt(index)) * 48.0 };
+    const row_rect = layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0);
+    const label_point = layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0);
 
     if (active) {
         rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
     }
-    drawText(context, label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
+    drawText(context, label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), layout.fontSize(24), if (active) .black else .ray_white);
 }
 
-pub fn drawOptionsSliderRow(context: Context, label: []const u8, value: f32, panels: MenuPanels) !void {
+pub fn drawOptionsSliderRow(context: Context, layout: VirtualLayout, label: []const u8, value: f32, panels: MenuPanels) !void {
     var value_buffer: [64]u8 = undefined;
     const value_text = try std.fmt.bufPrint(&value_buffer, "{s}: {d:.2}", .{ label, value });
-    drawText(context, value_text, panels.detail_body_x, panels.detail_body_y + 64, 20, .sky_blue);
+    drawText(context, value_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(64), layout.fontSize(20), .sky_blue);
 
     const bar_rect = rl.Rectangle{
         .x = @floatFromInt(panels.detail_body_x),
-        .y = @floatFromInt(panels.detail_body_y + 96),
-        .width = @floatFromInt(@min(panels.detail_width, 240)),
-        .height = 18.0,
+        .y = @floatFromInt(panels.detail_body_y + layout.scaleInt(96)),
+        .width = @floatFromInt(@min(panels.detail_width, layout.scaleInt(240))),
+        .height = layout.scaleFloat(18.0),
     };
     rl.drawRectangleRounded(bar_rect, 0.24, 8, .{ .r = 255, .g = 255, .b = 255, .a = 26 });
     rl.drawRectangleRounded(
         .{
-            .x = bar_rect.x + 2.0,
-            .y = bar_rect.y + 2.0,
-            .width = (bar_rect.width - 4.0) * std.math.clamp(value, 0.0, 1.0),
-            .height = bar_rect.height - 4.0,
+            .x = bar_rect.x + layout.scaleFloat(2.0),
+            .y = bar_rect.y + layout.scaleFloat(2.0),
+            .width = (bar_rect.width - layout.scaleFloat(4.0)) * std.math.clamp(value, 0.0, 1.0),
+            .height = bar_rect.height - layout.scaleFloat(4.0),
         },
         0.24,
         8,
@@ -125,17 +149,17 @@ pub fn drawOptionsSliderRow(context: Context, label: []const u8, value: f32, pan
     );
 }
 
-pub fn drawRouteSelectionDots(context: Context, panels: MenuPanels, current_index: usize, max_index: usize) void {
-    const visible_count: usize = @min(max_index + 1, 8);
+pub fn drawRouteSelectionDots(context: Context, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {
+    const visible_count: usize = @min(max_index, 8);
     if (visible_count == 0) return;
 
-    const start_index = if (current_index > 3 and max_index + 1 > visible_count)
-        @min(current_index - 3, max_index + 1 - visible_count)
+    const start_index = if (current_index > 4 and max_index > visible_count)
+        @min(current_index - 3, max_index - visible_count + 1)
     else
-        0;
-    const center_y = @as(f32, @floatFromInt(panels.detail_body_y + 146));
-    const start_x = @as(f32, @floatFromInt(panels.detail_body_x + 10));
-    const spacing = 30.0;
+        1;
+    const center_y = @as(f32, @floatFromInt(panels.detail_body_y + layout.scaleInt(146)));
+    const start_x = @as(f32, @floatFromInt(panels.detail_body_x + layout.scaleInt(10)));
+    const spacing = layout.scaleFloat(30.0);
 
     for (0..visible_count) |visible_offset| {
         const route_index = start_index + visible_offset;
@@ -144,7 +168,7 @@ pub fn drawRouteSelectionDots(context: Context, panels: MenuPanels, current_inde
         const center_x = start_x + @as(f32, @floatFromInt(visible_offset)) * spacing;
         rl.drawCircleV(
             .{ .x = center_x, .y = center_y },
-            if (active) 8.0 else 6.0,
+            if (active) layout.scaleFloat(8.0) else layout.scaleFloat(6.0),
             if (active)
                 .gold
             else if (unlocked)
@@ -155,6 +179,6 @@ pub fn drawRouteSelectionDots(context: Context, panels: MenuPanels, current_inde
 
         var label_buffer: [8]u8 = undefined;
         const label = std.fmt.bufPrint(&label_buffer, "{d}", .{route_index}) catch "?";
-        drawText(context, label, @intFromFloat(center_x - 4.0), @intFromFloat(center_y + 14.0), 14, .ray_white);
+        drawText(context, label, @intFromFloat(center_x - layout.scaleFloat(4.0)), @intFromFloat(center_y + layout.scaleFloat(14.0)), layout.fontSize(14), .ray_white);
     }
 }
