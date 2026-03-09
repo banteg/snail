@@ -177,6 +177,8 @@ pub const Runner = struct {
     damage_gauge: f32 = 0.0,
     damage_warning_state: DamageWarningState = .idle,
     damage_warning_fill: f32 = 0.0,
+    completion_bonus_enabled: bool = false,
+    parcel_target: usize = 0,
     completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
 
@@ -187,8 +189,12 @@ pub const Runner = struct {
     }
 
     pub fn reset(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const completion_bonus_enabled = self.completion_bonus_enabled;
+        const parcel_target = self.parcel_target;
         self.* = .{
             .speed_rows_per_second = 12.0,
+            .completion_bonus_enabled = completion_bonus_enabled,
+            .parcel_target = parcel_target,
         };
         self.syncRowPosition(preview);
         self.refreshSample(preview);
@@ -277,6 +283,11 @@ pub const Runner = struct {
 
     pub fn damageWarningLabel(self: *const Runner) []const u8 {
         return self.damage_warning_state.label();
+    }
+
+    pub fn configureCompletionBonus(self: *Runner, parcel_target: usize, enabled: bool) void {
+        self.parcel_target = parcel_target;
+        self.completion_bonus_enabled = enabled;
     }
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
@@ -469,6 +480,7 @@ pub const Runner = struct {
                     // PORT(partial): until parcel-flight objects and `RegisterParcel` timing are ported,
                     // the current runner collapses parcel pickup and parcel registration onto the same row event.
                     self.recordScore(&self.score.parcel_register, 100);
+                    self.maybeRecordCompletionBonus();
                     self.recent_event = .{ .parcel = parcel.id };
                 },
                 .jetpack_off => {
@@ -562,11 +574,9 @@ pub const Runner = struct {
     }
 
     pub fn applyCompletionBonus(self: *Runner, parcel_target: usize) void {
-        if (self.completion_bonus_applied) return;
-        self.completion_bonus_applied = true;
-        if (parcel_target != 0 and self.counters.parcels >= parcel_target) {
-            self.recordScore(&self.score.completion_bonus, 100);
-        }
+        self.parcel_target = parcel_target;
+        self.completion_bonus_enabled = true;
+        self.maybeRecordCompletionBonus();
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
@@ -582,6 +592,14 @@ pub const Runner = struct {
             self.damage_warning_state = .idle;
             self.damage_warning_fill = 0.0;
         }
+    }
+
+    fn maybeRecordCompletionBonus(self: *Runner) void {
+        if (self.completion_bonus_applied or !self.completion_bonus_enabled) return;
+        if (self.parcel_target == 0 or self.counters.parcels < self.parcel_target) return;
+
+        self.completion_bonus_applied = true;
+        self.recordScore(&self.score.completion_bonus, 100);
     }
 
     // PORT(partial): recovered from Android `cRDamageGuage::AI()`. Filling the gauge enters a
@@ -873,6 +891,13 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+
+    runner = Runner.init(&arcade_fixture.preview);
+    runner.configureCompletionBonus(1, true);
+    primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
+    runner.step(&arcade_fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 300), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.completion_bonus);
 }
 
 test "runner applies the completion bonus once" {

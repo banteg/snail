@@ -1699,6 +1699,10 @@ const AppState = struct {
             self.current_track_preview = try track.LoadedLevelPreview.load(self.allocator, &self.catalog, loaded_level);
             if (self.current_track_preview) |*loaded_track_preview| {
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
+                self.level_runner.?.configureCompletionBonus(
+                    loaded_level.parcels orelse 0,
+                    completionBonusAppliesForMode(self.active_frontend_mode),
+                );
             }
         }
         self.level_segment_index = 0;
