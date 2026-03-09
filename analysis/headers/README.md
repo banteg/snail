@@ -1,9 +1,15 @@
 # Binary Ninja Import Headers
 
-This directory holds small handwritten headers for Binary Ninja import.
+This directory holds small handwritten headers for Binary Ninja import, plus an
+official vendored BASS 2.0 header set for higher-fidelity audio API recovery.
 
 Import `snail_bn_import.h` in Binary Ninja. It is a flattened entrypoint because
 BN's file importer does not reliably resolve sibling `#include` paths.
+
+For the real upstream BASS header, import
+`upstream/bass20/bass_bn_import.h`. That wrapper is derived from the official
+`bass20.zip` SDK and stays close to upstream, while making the small changes BN
+needs to parse it locally.
 
 The split `*_min.h` files are the maintained sources behind that entrypoint:
 
@@ -29,6 +35,8 @@ Observed DLL facts behind `bass_min.h`:
 - `tBass.dll` and the archive `BASS.DLL` are byte-for-byte identical
 - the version resource reports `FileVersion = 2.0`
 - the exported surface is still the older pre-2.1 API family used by the game
+- the official `bass20.zip` SDK header parses to the same `100` named BASS functions
+  once wrapped for BN import
 
 Why this lives in-repo:
 
