@@ -1,10 +1,11 @@
-# Binary Ninja Symbol Workflow
+# Binary Analysis Symbol Workflow
 
 The canonical gameplay Binary Ninja target is [`SnailMail_unwrapped.exe.bndb`](../../artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb).
+The canonical Windows IDA target now lives at [`artifacts/ida/SnailMail_unwrapped.exe.i64`](../../artifacts/ida/SnailMail_unwrapped.exe.i64).
 
 Tracked function names live in `analysis/symbols/gameplay-functions.json`. That JSON is the version-controlled source of truth for the gameplay renames we have high confidence in. [`SnailMail.RWG.bndb`](../../artifacts/binary_ninja/SnailMail.RWG.bndb) is now just the historical source we mined those names from.
 
-When a manifest entry also has a `description`, the Binary Ninja sync script treats that text as the function comment for the target database.
+When a manifest entry also has a `description`, the sync tools treat that text as the function comment for the target database.
 
 Recommended workflow:
 
@@ -15,5 +16,9 @@ Recommended workflow:
    - `uv run snail symbols --manifest analysis/symbols/gameplay-functions.json`
 4. Apply the tracked manifest onto a fresh unwrapped database when needed:
    - `python tools/binja/sync_symbols.py apply`
+5. Apply the same manifest onto the colocated IDA database when you want the Windows names available there too:
+   - `uv run tools/ida/sync_symbols.py`
 
 The Binary Ninja script uses only identifier-like curated names from the open database. It intentionally skips default `sub_*` labels, jump thunks, and mangled compiler symbols so the manifest stays readable and reviewable in version control.
+
+The IDA sync path is intentionally one-way. Do new rename work in Binary Ninja, validate and commit the manifest, then replay that manifest into `artifacts/ida/SnailMail_unwrapped.exe.i64` so the Windows decompiler views stay aligned across tools.

@@ -564,8 +564,14 @@
       "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the damage guage and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
     },
     {
+      "address": "0x43af10",
+      "name": "show_subgoldy_lives",
+      "description": "Refreshes the nine-slot Goldy life display by showing the first `current_lives` widgets and hiding the rest. Windows `update_subgoldy` only calls it for gameplay mode 0, matching the mode-gated `cRSubGoldy::ShowLives()` helper in the Android and iOS ports."
+    },
+    {
       "address": "0x43af60",
-      "name": "end_track_attachment_follow_state"
+      "name": "initialize_subgoldy_fall_state",
+      "description": "Clears any active attachment-follow state, seeds the falling-state timers and sound guards, and marks Goldy as airborne until landing or death resolves."
     },
     {
       "address": "0x43afd0",
@@ -667,6 +673,11 @@
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
     },
     {
+      "address": "0x441fa0",
+      "name": "initialize_subgoldy_resurrect",
+      "description": "Seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
+    },
+    {
       "address": "0x441fd0",
       "name": "update_subgoldy_completion_handoff",
       "description": "Advances the post-delivery completion handoff inside the active Goldy update once the completion flow is active: starts the fade, waits for fade completion, dispatches `complete_subgame`, and selects the next frontend state. Cross-port Android and iOS symbols place this logic inside `cRSubGoldy::AI()`, not in `cRCompletion::RegisterParcel()`."
@@ -697,6 +708,11 @@
       "description": "Projects a world-space position onto an active track attachment template."
     },
     {
+      "address": "0x444cf0",
+      "name": "handle_subgoldy_collisions",
+      "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the damage guage side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
+    },
+    {
       "address": "0x445920",
       "name": "update_movement_visual_state_controller",
       "description": "Maps movement flag masks onto three queued visual-state channels in the player-side controller rooted at +0x2984."
@@ -720,6 +736,11 @@
       "address": "0x4466d0",
       "name": "update_cutscene",
       "description": "Advances the player-side cutscene controller, including the completion camera blend and the handoff into `initialize_completion_screen`. Cross-port Android and iOS symbols match this helper to `cRCutScene::AI()`."
+    },
+    {
+      "address": "0x446e30",
+      "name": "initialize_subgoldy_death",
+      "description": "Chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
     },
     {
       "address": "0x447040",
