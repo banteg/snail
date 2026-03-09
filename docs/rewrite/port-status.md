@@ -28,7 +28,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - note: the current `snail` default is a deliberate development window (`1024x768`) over that verified base size
 - top-level menu labels plus recovered `New Game` submenu: `partial`
-  - evidence: Binary Ninja decompile of `sub_419b50` and `sub_417bc0`
+  - evidence: Binary Ninja decompile of `initialize_main_menu` and `initialize_new_game_menu`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
 - front-end options menu fields: `partial`
@@ -40,7 +40,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original Help-screen teardown path and any missing transition details are ported
 - delivery-route map flow: `partial`
-  - evidence: Binary Ninja decompile of `initialize_galaxy`, `update_galaxy`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI}`
+  - evidence: Binary Ninja decompile of `initialize_galaxy`, `destroy_galaxy`, `update_galaxy`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI}` and Android `cRGalaxy::UnInit()`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
@@ -72,7 +72,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - level completion return overlay: `scaffold`
-  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, `update_completion_screen`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}` and `cRCutScene::AI()`
+  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, and `cRCutScene::AI()`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`

@@ -33,6 +33,11 @@
       "description": "Tears down the active completion-screen widgets and restores the owning front-end state once the current exit choice resolves. Cross-port Android and iOS symbols match this helper to `cRCompletion::UnInit()`."
     },
     {
+      "address": "0x4060d0",
+      "name": "initialize_exit_prompt",
+      "description": "Builds the shared Yes/No exit prompt used by the front-end completion return flow, including the `Do you really want to quit?` title and the per-owner button layout variants. Cross-port Android and iOS symbols match this helper to `cRExit::Init()`."
+    },
+    {
       "address": "0x4067e0",
       "name": "update_completion_screen",
       "description": "Runs the completion-screen state machine, including continue, replay, route-map return, and outbound-link actions. Cross-port Android and iOS symbols match this helper to `cRCompletion::AI()`."
@@ -62,6 +67,11 @@
       "address": "0x4085c0",
       "name": "initialize_path_template_record_pair",
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
+    },
+    {
+      "address": "0x408c10",
+      "name": "destroy_galaxy",
+      "description": "Tears down the active Star Map galaxy-screen widgets before replay launch, route handoff, or return to the owning front-end state. Cross-port Android symbols match this helper to `cRGalaxy::UnInit()`."
     },
     {
       "address": "0x408cf0",
@@ -221,6 +231,11 @@
       "address": "0x417b50",
       "name": "exit_high_score_screen",
       "description": "Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table. Cross-port Android symbols match this helper to `cRHighScore::Exit()`."
+    },
+    {
+      "address": "0x417bc0",
+      "name": "initialize_new_game_menu",
+      "description": "Builds the New Game submenu, including Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back, after reloading the shared menu backdrop and shell-font scene."
     },
     {
       "address": "0x417eb0",
