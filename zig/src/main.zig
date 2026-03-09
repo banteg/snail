@@ -667,11 +667,7 @@ const AppState = struct {
 
         switch (self.game_phase) {
             .boot => {},
-            .intro => {
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.enterGamePhase(.main_menu);
-                }
-            },
+            .intro => {},
             .main_menu => {
                 if (rl.isKeyPressed(.up)) {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, -1);
@@ -741,7 +737,8 @@ const AppState = struct {
                     try self.activateHighScoresMenuItem(high_scores_menu_items[self.high_scores_menu_index]);
                 }
             },
-            .credits, .help => {
+            .credits => {},
+            .help => {
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.enterGamePhase(.main_menu);
                 }

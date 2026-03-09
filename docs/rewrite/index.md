@@ -150,7 +150,7 @@ Current behavior:
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the front-end hierarchy now follows the recovered constructor labels from the binary: top level `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, and `New Game` submenu `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, `Back`
 - `Help` uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
-- the intro and credits crawl now also follows the recovered tilted text-plane setup from `initialize_intro_text_screen`, including the shared duration scroll and world-sized image directives, while still approximating the original textured image quad projection in screen space
+- the intro and credits crawl now also follows the recovered tilted text-plane setup from `initialize_intro_text_screen`, including the shared duration scroll, world-sized image directives, and projected textured quads, while exact skip and transition semantics still remain unresolved
 - the runtime now has an explicit mutable state root at `artifacts/runtime`, and the high-score screen already loads compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat` overlays from there when present
 
 Current note:
