@@ -34,8 +34,10 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `complete_subgame` at `0x438700`
 - `select_level_track_texture_set` at `0x410730`
 - `update_subgame` at `0x438b90`
+- `update_parcel` at `0x43f200`
 - `spawn_track_garbage_hazard` at `0x43da80`
 - `update_player_track_movement_and_triggers` at `0x43b120`
+- `update_player_completion_handoff` at `0x441fd0`
 - `end_track_attachment_follow_state` at `0x43af60`
 - `place_parcels_on_track` at `0x4438e0`
 - `place_challenge_parcels_on_track` at `0x444240`

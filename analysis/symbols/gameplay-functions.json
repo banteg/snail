@@ -592,6 +592,16 @@
       "description": "Maps ring or special-effect modes onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families."
     },
     {
+      "address": "0x43f130",
+      "name": "destroy_parcel",
+      "description": "Removes one live parcel object from the active body lists, kills its sprite, and unlinks it from the parcel chain after collection or expiry."
+    },
+    {
+      "address": "0x43f200",
+      "name": "update_parcel",
+      "description": "Advances one live parcel object through its hover, travel-to-player, score burst, and teardown states. Cross-port Android symbols match this helper to `cRParcel::AI()`."
+    },
+    {
       "address": "0x440020",
       "name": "deserialize_compact_high_score_record",
       "description": "Validates one compact ScoreA/B/C record checksum, copies its scalar fields, name, and replay samples into the expanded cRSubHighScore entry, and marks the entry active."
@@ -619,6 +629,11 @@
       "address": "0x4417d0",
       "name": "update_salt_hazard",
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
+    },
+    {
+      "address": "0x441fd0",
+      "name": "update_player_completion_handoff",
+      "description": "Advances the player-side post-delivery completion handoff once the completion flow is active: starts the fade, waits for fade completion, dispatches `complete_subgame`, and selects the next frontend state. Cross-port Android symbols place this logic inside the post-completion branch of `cRSubGoldy::AI()`, not in `cRCompletion::RegisterParcel()`."
     },
     {
       "address": "0x4428d0",
