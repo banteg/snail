@@ -75,8 +75,8 @@ Current high-signal entries:
 - level completion and post-level score flow: `partial`
   - evidence: Binary Ninja decompile of `update_subgoldy_completion_handoff`, `complete_subgame`, `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, `initialize_cutscene`, `update_cutscene`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, `cRCutScene::{Init, AI}`, `cRHighScore::{Init, AI, Exit}`, `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and `cRSubGoldy::AI()`
   - implementation: [`main.zig`](../../zig/src/main.zig), [`high_score.zig`](../../zig/src/high_score.zig)
-  - note: postal and challenge scores now accumulate inside the runner using the recovered `ScoreAdd` constants for rings, garbage collision, health, parcel pickup/register, and the completion bonus, but still omit the missing slug/jetpack/replay-side score events
-  - replace when: the original cutscene camera handoff, saved-replay launch path, and the remaining gameplay score events are ported
+  - note: the runtime now has a distinct post-finish cutscene phase before the completion screen, but its camera blend is still a conservative approximation of `cRCutScene::AI()`. Postal scoring now keeps the recovered final-bonus path separate from challenge runs, but both modes still omit the missing slug/jetpack/replay-side score events.
+  - replace when: the original cutscene camera handoff, saved-replay launch path, shared exit-prompt flow, and the remaining gameplay score events are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
   - evidence: [`docs/re/track-runtime.md`](../re/track-runtime.md)
   - implementation: [`track.zig`](../../zig/src/track.zig)
