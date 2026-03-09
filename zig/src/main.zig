@@ -94,6 +94,9 @@ const PendingRunResult = struct {
     parcel_target: usize,
     score: u32,
     score_is_partial: bool,
+    score_totals: gameplay.ScoreTotals = .{},
+    score_life_awards: u32 = 0,
+    damage_gauge: f32 = 0.0,
     high_score_mode: ?high_score.Mode = null,
     high_score_rank: ?usize = null,
     time_trial_record_improved: bool = false,
@@ -925,6 +928,9 @@ const AppState = struct {
             .parcel_target = parcel_target,
             .score = 0,
             .score_is_partial = false,
+            .score_totals = runner.score,
+            .score_life_awards = runner.score_life_awards,
+            .damage_gauge = runner.damage_gauge,
             .return_target = resultReturnTargetForMode(active_mode),
         };
 
@@ -2275,10 +2281,10 @@ fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, result: PendingRunResult) !void {
-    const overlay_panel = layout.mapRect(120.0, 132.0, 400.0, 176.0);
+    const overlay_panel = layout.mapRect(120.0, 132.0, 400.0, 204.0);
     const title_point = layout.mapPoint(144.0, 156.0);
     const body_point = layout.mapPoint(144.0, 196.0);
-    const footer_point = layout.mapPoint(144.0, 276.0);
+    const footer_point = layout.mapPoint(144.0, 306.0);
     const title_x: i32 = @intFromFloat(title_point.x);
     const title_y: i32 = @intFromFloat(title_point.y);
     const body_x: i32 = @intFromFloat(body_point.x);
@@ -2326,6 +2332,31 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
             if (result.score_is_partial) " (partial)" else "",
         });
         drawAppText(state, score_text, body_x, score_y, layout.fontSize(18), .sky_blue);
+
+        var breakdown_buffer: [224]u8 = undefined;
+        const breakdown_text = try std.fmt.bufPrint(
+            &breakdown_buffer,
+            "Rings {d}  Garbage {d}  Health {d}  Pickup {d}  Register {d}  Bonus {d}  1ups {d}  Damage {d:.2}",
+            .{
+                result.score_totals.ring_collect,
+                result.score_totals.garbage_collision,
+                result.score_totals.health_collect,
+                result.score_totals.parcel_pickup,
+                result.score_totals.parcel_register,
+                result.score_totals.completion_bonus,
+                result.score_life_awards,
+                result.damage_gauge,
+            },
+        );
+        try drawWrappedText(
+            state,
+            breakdown_text,
+            body_x,
+            score_y + layout.scaleInt(22),
+            layout.scaleInt(332),
+            layout.fontSize(16),
+            .light_gray,
+        );
     }
 
     if (result.unlocked_next_route) {
