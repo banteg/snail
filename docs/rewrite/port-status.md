@@ -95,7 +95,7 @@ Current high-signal entries:
   - implementation: [`track.zig`](../../zig/src/track.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original gameplay-side spawn timing and windowing inside `update_subgame` are ported
 - gameplay subgame lifecycle: `partial`
-  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `initialize_subgoldy`, `show_subgoldy_lives`, `update_subgoldy`, `initialize_subgoldy_fall_state`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, `handle_subgoldy_collisions`, `initialize_damage_guage`, `update_damage_guage`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRSubGoldy::{Init, ShowLives, DeathInit, RessurectAI, Collision, AI}`, `cRDamageGuage::{Init, AI}`, and `cRCameraman::{Init, AI}`
+  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `initialize_subgoldy`, `show_subgoldy_lives`, `update_subgoldy`, `initialize_subgoldy_fall_state`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, `handle_subgoldy_collisions`, `initialize_damage_guage`, `update_damage_guage`, `advance_timer_counters`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRSubGoldy::{Init, ShowLives, DeathInit, RessurectAI, Collision, AI}`, `cRDamageGuage::{Init, AI}`, and `cRCameraman::{Init, AI}`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
   - replace when: the original `cRSubGame::AI()` loop, camera flow, and remaining mode-specific runtime behaviors are ported
 - damage-gauge hazard and recovery deltas: `partial`
@@ -106,8 +106,8 @@ Current high-signal entries:
 - score-threshold bonus life awards: `partial`
   - evidence: Windows `add_subgoldy_score`, `show_subgoldy_lives`, `initialize_subgoldy_death`, and `update_subgoldy_resurrect`, plus matching Android `cRSubGoldy::ScoreAdd(int,int)`, `cRSubGoldy::ShowLives()`, `cRSubGoldy::DeathInit()`, and `cRSubGoldy::RessurectAI()`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
-  - note: Windows now confirms the bonus-life path increments Goldy's own visible life stock and caps it at nine, but the initial stock seed is still unresolved
-  - replace when: the base life stock, actual life-counter ownership, and death or resurrection flow are ported instead of only the score-side threshold awards
+  - note: Windows now confirms the visible life stock is seeded to `3` during `populate_runtime_track_cells_from_segments`, and the current port mirrors that seed plus the `50,000`-point bonus-life path capped at `9`; the death and resurrect decrements are still unported
+  - replace when: the death or resurrection flow and the remaining mode-specific life behavior are ported instead of only the seed plus score-side threshold awards
 - jetpack pickup and authored-off state: `partial`
   - evidence: shipped jetpack pickup runtime tile `0x19`, authored `JetPack=Off` segment annotations, and Android `cRSubGoldy::JetPackCollect()` plus the collision branch that enters `cRSubHover::On()`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)

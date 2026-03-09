@@ -38,6 +38,9 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `update_subgame` at `0x438b90`
 - `initialize_damage_guage` at `0x43a930`
 - `update_damage_guage` at `0x43a390`
+- `advance_timer_counters` at `0x441b90`
+- `set_backdrop_progress_fraction` at `0x410c30`
+- `set_matrix_identity` at `0x44d250`
 - `initialize_subgoldy` at `0x43a9c0`
 - `show_subgoldy_lives` at `0x43af10`
 - `update_parcel` at `0x43f200`
@@ -69,6 +72,7 @@ The current high-confidence model is:
 - `Path=<name>` resolves through a hardcoded name table in the executable
 - `P/p` rows consume those indices and install hardcoded sampled path-template objects onto runtime cells
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
+- `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 
 The remaining unknowns are mostly about exact constructor semantics, special cases like `WARP`, and the last details of attachment entry or exit behavior.
@@ -91,10 +95,12 @@ High-confidence dynamic facts from that capture:
 - garbage spawns were dominated by runtime tile types `1` and `33`, with one observed `21`
 - one replay-time `level_start` finally exposed a live active-level pointer and `selected_track_id = 4`
 
-Current best mode mapping from capture order plus the recorded `mode_before` and `mode_after` bytes:
+Current best Windows mode mapping, combining that capture with `load_frontend_level_by_mode_and_index` and the `initialize_subgame` front-end switch:
 
-- `0` is postal
-- `4` is replay
+- `0` is the arcade or postal family
 - `1` is challenge
+- `4` is the time-trial family
+- `7` is tutorial
+- replay is not its own `level_mode`; it rides the separate `replay_active` or `replay_track` path
 
-That mapping is still an inference from the known run order, not a fully proven enum decode, but it is materially stronger than the earlier tutorial-only trace.
+That leaves `2` and `3` unresolved as front-end or replay-adjacent helper modes, but it is enough to reject the earlier `4 == replay` read.

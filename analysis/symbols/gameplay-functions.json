@@ -141,6 +141,11 @@
       "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, and gameplay handoff states."
     },
     {
+      "address": "0x410c30",
+      "name": "set_backdrop_progress_fraction",
+      "description": "Stores one normalized progress fraction on the active backdrop controller. Windows `update_subgoldy` drives it from the current track-row payload ratio, and `initialize_backdrop` clears the same field at +0x6c8."
+    },
+    {
       "address": "0x410c40",
       "name": "set_backdrop_distort",
       "description": "Seeds the shared backdrop distortion grid and its per-cell phase, speed, and amplitude terms from the script-side Distort scalar. Cross-port Android and iOS symbols match this helper to `cRBackdrop::SetDistort(float)`."
@@ -486,7 +491,7 @@
     {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
-      "description": "Copies authored segment rows into the generated runtime grid, including Random and Length handling."
+      "description": "Copies authored segment rows into the generated runtime grid, including Random and Length handling, and seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs."
     },
     {
       "address": "0x437270",
@@ -561,7 +566,7 @@
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
-      "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the damage guage and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
+      "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the damage gauge and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
     },
     {
       "address": "0x43af10",
@@ -678,6 +683,11 @@
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
     },
     {
+      "address": "0x441b90",
+      "name": "advance_timer_counters",
+      "description": "Accumulates one generic timer record from a 60 Hz-scaled delta, rolls the frame counter at 60, and refreshes the derived hundredths and thousandths fields from the fractional remainder."
+    },
+    {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
       "description": "Seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
@@ -715,7 +725,7 @@
     {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
-      "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the damage guage side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
+      "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the damage gauge side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
     },
     {
       "address": "0x445920",
@@ -824,6 +834,11 @@
     {
       "address": "0x44c420",
       "name": "load_object_definition"
+    },
+    {
+      "address": "0x44d250",
+      "name": "set_matrix_identity",
+      "description": "Resets one 4x4 transform matrix to identity. Windows callers use it for player, cutscene, and path-template transform setup."
     },
     {
       "address": "0x44dde0",
