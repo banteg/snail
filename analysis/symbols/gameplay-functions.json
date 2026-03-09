@@ -563,11 +563,13 @@
     },
     {
       "address": "0x43d6c0",
-      "name": "spawn_track_health_pickup"
+      "name": "spawn_track_health_pickup",
+      "description": "Allocates and seeds one live health pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43d890",
-      "name": "spawn_track_jetpack_pickup"
+      "name": "spawn_track_jetpack_pickup",
+      "description": "Allocates and seeds one live jetpack pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43da80",
