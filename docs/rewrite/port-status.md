@@ -28,7 +28,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - note: the current `snail` default is a deliberate development window (`1024x768`) over that verified base size
 - top-level menu labels plus recovered `New Game` submenu: `partial`
-  - evidence: Binary Ninja decompile of `initialize_main_menu` and `initialize_new_game_menu`
+  - evidence: Binary Ninja decompile of `initialize_main_menu`, `destroy_main_menu`, and `initialize_new_game_menu`, plus cross-port Android and iOS symbols for `cRMainMenu::{Init, UnInit}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
 - front-end options menu fields: `partial`
@@ -72,7 +72,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - level completion return overlay: `scaffold`
-  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, and `cRCutScene::AI()`
+  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, `initialize_cutscene`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, and `cRCutScene::{Init, AI}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
@@ -86,6 +86,10 @@ Current high-signal entries:
   - evidence: trace-confirmed fallback tile families on `0x01`, `0x0f`, and `0x15`
   - implementation: [`track.zig`](../../zig/src/track.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: `populate_track_runtime_entities` spawn timing and windowing are ported
+- gameplay subgame lifecycle: `partial`
+  - evidence: Binary Ninja decompile of `initialize_subgame`, `destroy_subgame`, and `populate_track_runtime_entities`, plus cross-port Android symbols for `cRSubGame::{Init, UnInit}`
+  - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
+  - replace when: the original `cRSubGame::AI()` loop, camera flow, and remaining mode-specific runtime behaviors are ported
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
 

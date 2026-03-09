@@ -283,6 +283,11 @@
       "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input. Cross-port Android and iOS symbols match this helper to `cRIntro::AI()`."
     },
     {
+      "address": "0x419b30",
+      "name": "destroy_main_menu",
+      "description": "Clears the active menu shell-font scene and tears down the current main-menu widget set before control leaves the front-end. Cross-port Android and iOS symbols match the owning flow to `cRMainMenu::UnInit()`."
+    },
+    {
       "address": "0x419b50",
       "name": "initialize_main_menu",
       "description": "Starts MAINMENU.OGG, loads Menubg.txt into the shared backdrop renderer, seeds the front-end state to menu mode, and allocates the New Game, High Scores, Options, Credits, and Exit widgets. Cross-port Android and iOS symbols match this helper to `cRMainMenu::Init()`."
@@ -457,9 +462,19 @@
       "name": "normalize_segment_glyph_for_track_flags"
     },
     {
+      "address": "0x4374b0",
+      "name": "initialize_subgame",
+      "description": "Initializes the active gameplay subgame state, including menu-backed mode selection, per-mode counters, HUD widgets, and the first galaxy or result handoff after setup. Cross-port Android symbols match this helper to `cRSubGame::Init()`."
+    },
+    {
       "address": "0x437de0",
       "name": "rebuild_track_runtime_from_segments",
       "description": "Normalizes the generated runtime grid, copies authored metadata into runtime cells, and runs the post-build render passes."
+    },
+    {
+      "address": "0x438850",
+      "name": "destroy_subgame",
+      "description": "Tears down the active gameplay subgame state, including runtime lists, HUD widgets, and the current mode handoff state before control returns to the front-end. Cross-port Android symbols match this helper to `cRSubGame::UnInit()`."
     },
     {
       "address": "0x438b90",
@@ -584,6 +599,11 @@
       "address": "0x4417d0",
       "name": "update_salt_hazard",
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
+    },
+    {
+      "address": "0x4428d0",
+      "name": "initialize_cutscene",
+      "description": "Seeds the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state before `update_cutscene` takes over. Cross-port Android symbols match this helper to `cRCutScene::Init()`."
     },
     {
       "address": "0x443650",
