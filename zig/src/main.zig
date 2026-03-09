@@ -145,8 +145,8 @@ const ExitPromptChoice = enum {
 };
 
 const exit_prompt_choices = [_]ExitPromptChoice{
-    .no,
     .yes,
+    .no,
 };
 
 const PostLevelHighScoreAction = enum {
@@ -196,6 +196,7 @@ const AppState = struct {
     command: AppCommand,
     window_size: WindowSize,
     audio_ready: bool,
+    audio_muted: bool,
     should_exit: bool = false,
     auto_screenshot: ?AutoScreenshot = null,
     auto_screenshot_taken: bool = false,
@@ -289,6 +290,7 @@ const AppState = struct {
             .command = options.command,
             .window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command),
             .audio_ready = audio_ready,
+            .audio_muted = options.hidden_window,
             .auto_screenshot = options.auto_screenshot,
             .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
@@ -891,6 +893,7 @@ const AppState = struct {
             .help,
             .credits,
             => try self.enterGamePhase(phase),
+            .exit_prompt => try self.beginExitPrompt(.main_menu),
             .route_map_menu => {
                 self.frontend_route_mode = .postal;
                 self.frontend_route_index = self.initialFrontendRouteIndex(.postal);
@@ -898,7 +901,7 @@ const AppState = struct {
                 try self.enterGamePhase(.route_map_menu);
             },
             .level => try self.enterGameplayShell(default_level_path),
-            .exit_prompt, .completion_screen => return error.UnsupportedStartPhase,
+            .completion_screen => return error.UnsupportedStartPhase,
         }
     }
 
@@ -936,7 +939,7 @@ const AppState = struct {
     }
 
     fn beginExitPrompt(self: *AppState, return_phase: GamePhase) !void {
-        self.exit_prompt_choice_index = 0;
+        self.exit_prompt_choice_index = 1;
         self.exit_prompt_return_phase = return_phase;
         try self.enterGamePhase(.exit_prompt);
     }
@@ -1618,11 +1621,14 @@ const AppState = struct {
     fn applyAudioConfigVolumes(self: *AppState) void {
         if (!self.audio_ready) return;
 
+        const sound_volume = if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
+        const music_volume = if (self.audio_muted) 0.0 else self.runtime_config.musicVolume();
+
         if (self.current_sound) |sound| {
-            rl.setSoundVolume(sound.sound, self.runtime_config.soundVolume());
+            rl.setSoundVolume(sound.sound, sound_volume);
         }
         if (self.current_music) |music| {
-            rl.setMusicVolume(music.music, self.runtime_config.musicVolume());
+            rl.setMusicVolume(music.music, music_volume);
         }
     }
 
@@ -1785,9 +1791,9 @@ const AppState = struct {
 
         self.stopAudioPreview();
         const sound = try self.catalog.loadSound(self.allocator, self.catalog.audio_entries[self.audio_index]);
-        rl.setSoundVolume(sound.sound, self.runtime_config.soundVolume());
-        rl.playSound(sound.sound);
         self.current_sound = sound;
+        self.applyAudioConfigVolumes();
+        rl.playSound(self.current_sound.?.sound);
     }
 
     fn previewMusic(self: *AppState) !void {
@@ -1797,9 +1803,9 @@ const AppState = struct {
 
         self.stopAudioPreview();
         const music = try self.catalog.loadMusic(self.allocator, self.catalog.audio_entries[self.audio_index]);
-        rl.setMusicVolume(music.music, self.runtime_config.musicVolume());
-        rl.playMusicStream(music.music);
         self.current_music = music;
+        self.applyAudioConfigVolumes();
+        rl.playMusicStream(self.current_music.?.music);
     }
 
     fn stopAudioPreview(self: *AppState) void {
@@ -1973,6 +1979,7 @@ pub fn main() !void {
     defer state.saveRuntimeConfig() catch |err| std.log.err("failed to save runtime config: {}", .{err});
     defer state.deinit();
     var frame_timer = try std.time.Timer.start();
+    var runtime_timer = try std.time.Timer.start();
 
     if (options.command == .smoke) {
         try state.warmupSmokeTest();
@@ -1982,6 +1989,12 @@ pub fn main() !void {
     var frames_left: usize = if (options.command == .smoke) 3 else std.math.maxInt(usize);
 
     while (!rl.windowShouldClose() and !state.should_exit and frames_left > 0) {
+        if (options.timeout_seconds) |timeout_seconds| {
+            const timeout_ns = @as(u64, timeout_seconds) * std.time.ns_per_s;
+            if (runtime_timer.read() >= timeout_ns) {
+                return error.RunTimeout;
+            }
+        }
         const frame_delta_seconds = @as(f64, @floatFromInt(frame_timer.lap())) / @as(f64, std.time.ns_per_s);
         if (options.command == .smoke) {
             frames_left -= 1;
@@ -2077,7 +2090,15 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const item_y = [_]f32{ 90.0, 144.0, 198.0, 252.0, 390.0 };
     for (main_menu_items, item_y, 0..) |item, local_y, index| {
-        drawFrontendMenuLabel(state, layout, 92.0, local_y, item.label(), state.menu_index == index, .left);
+        drawFrontendMenuButton(
+            state,
+            layout,
+            320.0,
+            local_y,
+            item.label(),
+            state.menu_index == index,
+            .{},
+        );
     }
 
     if (state.game_status_message) |message| {
@@ -2088,10 +2109,34 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const primary_item_y = [_]f32{ 80.0, 134.0, 188.0, 242.0 };
     for (new_game_menu_items[0..4], primary_item_y, 0..) |item, local_y, index| {
-        drawFrontendMenuLabel(state, layout, 92.0, local_y, item.label(), state.new_game_menu_index == index, .left);
+        drawFrontendMenuButton(
+            state,
+            layout,
+            320.0,
+            local_y,
+            item.label(),
+            state.new_game_menu_index == index,
+            .{},
+        );
     }
-    drawFrontendMenuLabel(state, layout, 92.0, 350.0, "Help", state.new_game_menu_index == 4, .left);
-    drawFrontendMenuLabel(state, layout, 204.0, 350.0, "Back", state.new_game_menu_index == 5, .left);
+    drawFrontendMenuButton(
+        state,
+        layout,
+        84.0,
+        390.0,
+        "Help",
+        state.new_game_menu_index == 4,
+        .{ .min_width = 84.0 },
+    );
+    drawFrontendMenuButton(
+        state,
+        layout,
+        320.0,
+        390.0,
+        "Back",
+        state.new_game_menu_index == 5,
+        .{ .min_width = 96.0 },
+    );
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -2099,31 +2144,42 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const item_y = [_]f32{ 83.0, 137.0, 191.0, 245.0 };
-    for (options_menu_items, 0..) |item, index| {
-        const selected = state.options_menu_index == index;
-        var label_buffer: [64]u8 = undefined;
-        switch (item) {
-            .fullscreen => drawFrontendMenuLabel(
-                state,
-                layout,
-                162.0,
-                item_y[index],
-                if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
-                selected,
-                .left,
-            ),
-            .sound_volume => {
-                const label = try std.fmt.bufPrint(&label_buffer, "Sounds Volume {d:>3.0}%", .{state.runtime_config.soundVolume() * 100.0});
-                drawFrontendMenuLabel(state, layout, 162.0, item_y[index], label, selected, .left);
-            },
-            .music_volume => {
-                const label = try std.fmt.bufPrint(&label_buffer, "Music Volume {d:>3.0}%", .{state.runtime_config.musicVolume() * 100.0});
-                drawFrontendMenuLabel(state, layout, 162.0, item_y[index], label, selected, .left);
-            },
-            .back => drawFrontendMenuLabel(state, layout, 162.0, item_y[index], "Back", selected, .left),
-        }
-    }
+    drawFrontendMenuButton(
+        state,
+        layout,
+        320.0,
+        61.0,
+        if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
+        state.options_menu_index == 0,
+        .{ .min_width = 220.0 },
+    );
+    drawFrontendSliderPanel(
+        state,
+        layout,
+        320.0,
+        183.0,
+        "Sounds Volume",
+        state.runtime_config.soundVolume(),
+        state.options_menu_index == 1,
+    );
+    drawFrontendSliderPanel(
+        state,
+        layout,
+        320.0,
+        277.0,
+        "Music Volume",
+        state.runtime_config.musicVolume(),
+        state.options_menu_index == 2,
+    );
+    drawFrontendMenuButton(
+        state,
+        layout,
+        320.0,
+        390.0,
+        "Back",
+        state.options_menu_index == 3,
+        .{ .min_width = 92.0 },
+    );
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -2132,45 +2188,29 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const panels = app_ui.menuPanels(layout);
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "Intergalactic Delivery Route", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-
-    for (route_menu_actions, 0..) |action, index| {
-        drawMenuItem(state, layout, index, state.route_menu_action_index, routeMenuActionLabel(mode, action));
-    }
-
     const selected_action = route_menu_actions[state.route_menu_action_index];
-    drawAppText(state, routeMenuActionLabel(mode, selected_action), panels.detail_title_x, panels.detail_title_y, layout.fontSize(28), .gold);
-    if (routeMenuHint(mode, selected_action)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(20), .light_gray);
-    }
+    drawFrontendHeading(state, layout, 16.0, 18.0, "Intergalactic Delivery Route", 18, .left, .{ .r = 216, .g = 138, .b = 28, .a = 255 });
 
     var level_path_buffer: [64]u8 = undefined;
     const level_path = try frontendLevelPath(mode, state.frontend_route_index, &level_path_buffer);
+    var title_buffer: [64]u8 = undefined;
+    const route_title = try std.fmt.bufPrint(&title_buffer, "{s} Route {d}", .{ frontendRouteModeLabel(mode), state.frontend_route_index });
+    const primary_action = if (selected_action == .back) routeMenuActionLabel(mode, .play) else routeMenuActionLabel(mode, selected_action);
 
-    var route_buffer: [128]u8 = undefined;
-    const route_text = try std.fmt.bufPrint(
-        &route_buffer,
-        "{s} route {d} of {d}",
-        .{ frontendRouteModeLabel(mode), state.frontend_route_index, state.availableFrontendRouteLimit(mode) },
+    drawRouteMapCard(state, layout, 230.0, 176.0, 208.0, 164.0, route_title, level_path, primary_action, selected_action != .back);
+    drawRouteMapStarAnchor(layout, 83.0, 187.0);
+    drawFrontendMenuButton(
+        state,
+        layout,
+        49.0,
+        438.0,
+        "Back",
+        selected_action == .back,
+        .{ .min_width = 88.0 },
     );
-    drawAppText(state, route_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(66), layout.fontSize(18), .sky_blue);
-
-    var path_buffer: [128]u8 = undefined;
-    const path_text = try std.fmt.bufPrint(&path_buffer, "{s}", .{level_path});
-    drawAppText(state, path_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(92), layout.fontSize(18), .ray_white);
-
-    drawRouteSelectionDots(state, layout, panels, state.frontend_route_index, state.availableFrontendRouteLimit(mode));
-
-    drawAppText(state, "Left/Right route", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Up/Down action", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(52), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(78), layout.fontSize(20), .light_gray);
 
     if (state.game_status_message) |message| {
-        try drawFooterMessage(state, layout, panels.footer_panel, message);
+        try drawFrontendNoticeBlock(state, layout, 320.0, 438.0, message, .ray_white);
     }
 }
 
@@ -2180,14 +2220,15 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         context.mode
     else
         high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
-    drawFrontendMenuLabel(
+    drawFrontendHeading(
         state,
         layout,
         app_ui.authored_width * 0.5,
         64.0,
         if (pending_entry != null) "Enter Your Name Here!" else highScoreScreenTitle(selected_mode),
-        true,
+        23,
         .center,
+        .{ .r = 216, .g = 138, .b = 28, .a = 255 },
     );
 
     if (pending_entry) |context| {
@@ -2197,19 +2238,19 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         else
             try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
         drawHighScoreTable(state, layout, context.rank, draft_name, true, selected_mode);
-        drawFrontendMenuLabel(state, layout, 210.0, 412.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .center);
-        drawFrontendMenuLabel(state, layout, 375.0, 412.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .center);
+        drawFrontendMenuButton(state, layout, 210.0, 438.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .{ .min_width = 108.0 });
+        drawFrontendMenuButton(state, layout, 375.0, 438.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .{ .min_width = 118.0 });
     } else {
         drawHighScoreTable(state, layout, null, null, false, selected_mode);
-        drawFrontendMenuLabel(state, layout, 188.0, 412.0, "Back", state.high_scores_action_index == 0, .center);
-        drawFrontendMenuLabel(
+        drawFrontendMenuButton(state, layout, 188.0, 438.0, "Back", state.high_scores_action_index == 0, .{ .min_width = 94.0 });
+        drawFrontendMenuButton(
             state,
             layout,
             353.0,
-            412.0,
+            438.0,
             highScoreTableToggleLabel(selected_mode),
             state.high_scores_action_index == 1,
-            .center,
+            .{ .min_width = 180.0 },
         );
     }
 
@@ -2219,39 +2260,9 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    const overlay_panel = layout.mapRect(146.0, 154.0, 348.0, 132.0);
-    const title_point = layout.mapPoint(320.0, 182.0);
-    const body_point = layout.mapPoint(320.0, 214.0);
-    const footer_y: i32 = @intFromFloat(layout.mapPoint(320.0, 258.0).y);
-    const title = "Do you really want to quit?";
-    const title_font_size = layout.fontSize(26);
-    const title_width = measureAppText(state, title, title_font_size);
-
-    rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
-    drawAppText(
-        state,
-        title,
-        @as(i32, @intFromFloat(title_point.x)) - @divTrunc(title_width, 2),
-        @as(i32, @intFromFloat(title_point.y)),
-        title_font_size,
-        .gold,
-    );
-    drawAppText(
-        state,
-        "Esc cancels",
-        @as(i32, @intFromFloat(body_point.x)) - @divTrunc(measureAppText(state, "Esc cancels", layout.fontSize(18)), 2),
-        @as(i32, @intFromFloat(body_point.y)),
-        layout.fontSize(18),
-        .light_gray,
-    );
-    drawActionButtons(
-        state,
-        layout,
-        @intFromFloat(overlay_panel.x + overlay_panel.width * 0.5),
-        footer_y,
-        &[_][]const u8{ exit_prompt_choices[0].label(), exit_prompt_choices[1].label() },
-        state.exit_prompt_choice_index,
-    );
+    drawFrontendHeading(state, layout, 320.0, 210.0, "Do you really want to quit?", 26, .center, .ray_white);
+    drawFrontendMenuButton(state, layout, 250.0, 292.0, exit_prompt_choices[0].label(), state.exit_prompt_choice_index == 0, .{ .min_width = 88.0 });
+    drawFrontendMenuButton(state, layout, 392.0, 292.0, exit_prompt_choices[1].label(), state.exit_prompt_choice_index == 1, .{ .min_width = 88.0 });
 }
 
 fn drawHighScoreTable(
@@ -2335,6 +2346,18 @@ const FrontendTextAlign = enum {
     right,
 };
 
+const FrontendButtonOptions = struct {
+    min_width: f32 = 0.0,
+    show_cursor: bool = true,
+};
+
+const FrontendButtonColors = struct {
+    fill: rl.Color,
+    outline: rl.Color,
+    text: rl.Color,
+    shadow: rl.Color,
+};
+
 fn drawFrontendTextAligned(
     state: *const AppState,
     layout: VirtualLayout,
@@ -2356,21 +2379,192 @@ fn drawFrontendTextAligned(
     drawAppText(state, text, draw_x, @intFromFloat(point.y), font_size, color);
 }
 
-fn drawFrontendMenuLabel(
+fn frontendButtonColors(active: bool) FrontendButtonColors {
+    return if (active)
+        .{
+            .fill = .{ .r = 184, .g = 112, .b = 214, .a = 232 },
+            .outline = .{ .r = 226, .g = 194, .b = 255, .a = 255 },
+            .text = .ray_white,
+            .shadow = .{ .r = 74, .g = 18, .b = 84, .a = 220 },
+        }
+    else
+        .{
+            .fill = .{ .r = 96, .g = 78, .b = 152, .a = 164 },
+            .outline = .{ .r = 112, .g = 96, .b = 176, .a = 112 },
+            .text = .{ .r = 216, .g = 138, .b = 28, .a = 255 },
+            .shadow = .{ .r = 40, .g = 16, .b = 58, .a = 220 },
+        };
+}
+
+fn measureFrontendLocalTextWidth(state: *const AppState, layout: VirtualLayout, text: []const u8, authored_size: i32) f32 {
+    const pixel_width = measureAppText(state, text, layout.fontSize(authored_size));
+    return @as(f32, @floatFromInt(pixel_width)) / layout.scale;
+}
+
+fn drawFrontendPill(
+    layout: VirtualLayout,
+    center_x: f32,
+    center_y: f32,
+    width: f32,
+    height: f32,
+    fill: rl.Color,
+    outline: rl.Color,
+) void {
+    const shadow_rect = layout.mapRect(center_x - width * 0.5, center_y - height * 0.5 + 2.0, width, height);
+    const rect = layout.mapRect(center_x - width * 0.5, center_y - height * 0.5, width, height);
+    rl.drawRectangleRounded(shadow_rect, 0.4, 10, .{ .r = 30, .g = 6, .b = 34, .a = 110 });
+    rl.drawRectangleRounded(rect, 0.4, 10, fill);
+    rl.drawRectangleRoundedLinesEx(rect, 0.4, 10, layout.scaleFloat(1.0), outline);
+}
+
+fn drawFrontendCursorRocket(layout: VirtualLayout, local_x: f32, local_y: f32) void {
+    const center = layout.mapPoint(local_x, local_y);
+    const scale = layout.scale * 1.6;
+
+    rl.drawTriangle(
+        .{ .x = center.x - 5.0 * scale, .y = center.y - 6.0 * scale },
+        .{ .x = center.x + 8.0 * scale, .y = center.y },
+        .{ .x = center.x - 5.0 * scale, .y = center.y + 6.0 * scale },
+        .{ .r = 246, .g = 165, .b = 52, .a = 255 },
+    );
+    rl.drawCircleV(.{ .x = center.x - 3.0 * scale, .y = center.y }, 5.0 * scale, .{ .r = 140, .g = 64, .b = 198, .a = 255 });
+    rl.drawTriangle(
+        .{ .x = center.x - 1.0 * scale, .y = center.y - 3.0 * scale },
+        .{ .x = center.x + 6.0 * scale, .y = center.y },
+        .{ .x = center.x - 1.0 * scale, .y = center.y + 3.0 * scale },
+        .{ .r = 255, .g = 241, .b = 180, .a = 255 },
+    );
+    rl.drawCircleV(.{ .x = center.x - 4.0 * scale, .y = center.y - 1.2 * scale }, 1.9 * scale, .{ .r = 236, .g = 236, .b = 255, .a = 255 });
+    rl.drawTriangle(
+        .{ .x = center.x - 10.0 * scale, .y = center.y - 1.5 * scale },
+        .{ .x = center.x - 16.0 * scale, .y = center.y - 5.0 * scale },
+        .{ .x = center.x - 10.0 * scale, .y = center.y + 1.5 * scale },
+        .{ .r = 124, .g = 56, .b = 186, .a = 255 },
+    );
+    rl.drawTriangle(
+        .{ .x = center.x - 10.0 * scale, .y = center.y + 1.5 * scale },
+        .{ .x = center.x - 16.0 * scale, .y = center.y + 5.0 * scale },
+        .{ .x = center.x - 10.0 * scale, .y = center.y - 1.5 * scale },
+        .{ .r = 124, .g = 56, .b = 186, .a = 255 },
+    );
+    rl.drawTriangle(
+        .{ .x = center.x - 12.0 * scale, .y = center.y },
+        .{ .x = center.x - 18.0 * scale, .y = center.y - 2.5 * scale },
+        .{ .x = center.x - 18.0 * scale, .y = center.y + 2.5 * scale },
+        .{ .r = 250, .g = 128, .b = 52, .a = 224 },
+    );
+}
+
+fn drawFrontendHeading(
     state: *const AppState,
     layout: VirtualLayout,
     local_x: f32,
     local_y: f32,
     text: []const u8,
-    active: bool,
+    authored_size: i32,
     alignment: FrontendTextAlign,
+    color: rl.Color,
 ) void {
-    const shadow_color: rl.Color = if (active)
-        .{ .r = 58, .g = 18, .b = 0, .a = 220 }
-    else
-        .{ .r = 0, .g = 0, .b = 0, .a = 176 };
-    drawFrontendTextAligned(state, layout, local_x + 2.0, local_y + 2.0, text, if (active) 28 else 26, shadow_color, alignment);
-    drawFrontendTextAligned(state, layout, local_x, local_y, text, if (active) 28 else 26, if (active) .gold else .ray_white, alignment);
+    drawFrontendTextAligned(state, layout, local_x + 2.0, local_y + 2.0, text, authored_size, .{ .r = 30, .g = 10, .b = 28, .a = 224 }, alignment);
+    drawFrontendTextAligned(state, layout, local_x, local_y, text, authored_size, color, alignment);
+}
+
+fn drawFrontendMenuButton(
+    state: *const AppState,
+    layout: VirtualLayout,
+    center_x: f32,
+    center_y: f32,
+    text: []const u8,
+    active: bool,
+    options: FrontendButtonOptions,
+) void {
+    const authored_font_size: i32 = if (active) 28 else 26;
+    const horizontal_padding: f32 = if (active) 54.0 else 42.0;
+    const local_width = @max(measureFrontendLocalTextWidth(state, layout, text, authored_font_size) + horizontal_padding, options.min_width);
+    const local_height: f32 = if (active) 38.0 else 34.0;
+    const colors = frontendButtonColors(active);
+    drawFrontendPill(layout, center_x, center_y, local_width, local_height, colors.fill, colors.outline);
+    drawFrontendHeading(state, layout, center_x, center_y - @as(f32, if (active) 15 else 14), text, authored_font_size, .center, colors.text);
+    if (active and options.show_cursor) {
+        drawFrontendCursorRocket(layout, center_x + local_width * 0.5 + 18.0, center_y + 2.0);
+    }
+}
+
+fn drawFrontendSliderPanel(
+    state: *const AppState,
+    layout: VirtualLayout,
+    center_x: f32,
+    center_y: f32,
+    label: []const u8,
+    value: f32,
+    active: bool,
+) void {
+    const panel_width: f32 = 392.0;
+    const panel_height: f32 = 74.0;
+    const colors = frontendButtonColors(active);
+    drawFrontendPill(layout, center_x, center_y, panel_width, panel_height, colors.fill, colors.outline);
+    drawFrontendHeading(state, layout, center_x, center_y - 31.0, label, 22, .center, colors.text);
+
+    const bar_rect = layout.mapRect(center_x - 120.0, center_y - 4.0, 240.0, 24.0);
+    rl.drawRectangleRounded(bar_rect, 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
+    rl.drawRectangleRounded(
+        .{
+            .x = bar_rect.x + layout.scaleFloat(2.0),
+            .y = bar_rect.y + layout.scaleFloat(2.0),
+            .width = (bar_rect.width - layout.scaleFloat(4.0)) * std.math.clamp(value, 0.0, 1.0),
+            .height = bar_rect.height - layout.scaleFloat(4.0),
+        },
+        0.45,
+        8,
+        .{ .r = 252, .g = 198, .b = 40, .a = 255 },
+    );
+    rl.drawCircleV(.{ .x = bar_rect.x - layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(15.0), .{ .r = 128, .g = 48, .b = 190, .a = 255 });
+    rl.drawCircleV(.{ .x = bar_rect.x + bar_rect.width + layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(15.0), .{ .r = 128, .g = 48, .b = 190, .a = 255 });
+    rl.drawCircleV(.{ .x = bar_rect.x - layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(10.0), .{ .r = 250, .g = 212, .b = 72, .a = 255 });
+    rl.drawCircleV(.{ .x = bar_rect.x + bar_rect.width + layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(10.0), .{ .r = 250, .g = 212, .b = 72, .a = 255 });
+
+    var value_buffer: [16]u8 = undefined;
+    const value_text = std.fmt.bufPrint(&value_buffer, "{d:.0}%", .{value * 100.0}) catch "0%";
+    drawFrontendHeading(state, layout, center_x, center_y - 5.0, value_text, 20, .center, .ray_white);
+
+    if (active) {
+        drawFrontendCursorRocket(layout, center_x + panel_width * 0.5 - 14.0, center_y + 10.0);
+    }
+}
+
+fn drawRouteMapCard(
+    state: *const AppState,
+    layout: VirtualLayout,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    title: []const u8,
+    level_path: []const u8,
+    primary_action: []const u8,
+    primary_active: bool,
+) void {
+    const card = layout.mapRect(local_x - local_width * 0.5, local_y - local_height * 0.5, local_width, local_height);
+    rl.drawRectangleRounded(card, 0.16, 10, .{ .r = 18, .g = 16, .b = 118, .a = 188 });
+    rl.drawRectangleRoundedLinesEx(card, 0.16, 10, layout.scaleFloat(2.0), .{ .r = 76, .g = 210, .b = 255, .a = 255 });
+    drawFrontendHeading(state, layout, local_x, local_y - 70.0, title, 18, .center, .ray_white);
+
+    var body_buffer: [192]u8 = undefined;
+    const body_text = std.fmt.bufPrint(&body_buffer, "{s}>{s}", .{ frontendRouteDescriptionLine(title), level_path }) catch level_path;
+    drawFrontendNoticeBlock(state, layout, local_x, local_y - 32.0, body_text, .ray_white) catch {};
+    drawFrontendMenuButton(state, layout, local_x, local_y + 48.0, primary_action, primary_active, .{ .min_width = 132.0, .show_cursor = primary_active });
+}
+
+fn frontendRouteDescriptionLine(title: []const u8) []const u8 {
+    _ = title;
+    return "Select the highlighted route.";
+}
+
+fn drawRouteMapStarAnchor(layout: VirtualLayout, local_x: f32, local_y: f32) void {
+    const center = layout.mapPoint(local_x, local_y);
+    rl.drawCircleV(center, layout.scaleFloat(11.0), .{ .r = 34, .g = 162, .b = 255, .a = 64 });
+    rl.drawCircleLinesV(center, layout.scaleFloat(9.0), .{ .r = 90, .g = 212, .b = 255, .a = 255 });
+    rl.drawLineV(.{ .x = center.x + layout.scaleFloat(10.0), .y = center.y }, .{ .x = center.x + layout.scaleFloat(54.0), .y = center.y }, .{ .r = 90, .g = 212, .b = 255, .a = 255 });
 }
 
 fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
@@ -2492,10 +2686,7 @@ fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    const help_panel = layout.mapRect(56.0, 426.0, 170.0, 24.0);
-    const help_text = layout.mapPoint(72.0, 430.0);
-    rl.drawRectangleRounded(help_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-    drawAppText(state, "Enter or Esc back", @intFromFloat(help_text.x), @intFromFloat(help_text.y), layout.fontSize(18), .ray_white);
+    drawFrontendMenuButton(state, layout, 320.0, 432.0, "Back", true, .{ .min_width = 92.0 });
 }
 
 fn resultTitle(result: PendingRunResult) []const u8 {

@@ -41,6 +41,7 @@ pub const Options = struct {
     screenshot_dir: []const u8 = default_screenshot_dir,
     auto_screenshot: ?AutoScreenshot = null,
     start_phase: ?frontend.GamePhase = null,
+    timeout_seconds: ?u32 = null,
     window_size_override: ?WindowSize = null,
     fullscreen: bool = false,
     hidden_window: bool = false,
@@ -103,6 +104,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.start_phase = parseGamePhase(args[index]) orelse return error.InvalidStartPhase;
             continue;
         }
+        if (std.mem.eql(u8, arg, "--timeout-seconds")) {
+            index += 1;
+            if (index >= args.len) return error.MissingTimeoutSeconds;
+            options.timeout_seconds = try parseTimeoutSeconds(args[index]);
+            continue;
+        }
         if (std.mem.eql(u8, arg, "--window-size")) {
             index += 1;
             if (index >= args.len) return error.MissingWindowSize;
@@ -134,6 +141,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             continue;
         }
         return error.UnknownCommand;
+    }
+
+    if (options.hidden_window and options.timeout_seconds == null) {
+        return error.HiddenWindowRequiresTimeout;
     }
 
     return options;
@@ -176,6 +187,12 @@ fn parseWindowSize(spec: []const u8) !WindowSize {
     };
 }
 
+fn parseTimeoutSeconds(spec: []const u8) !u32 {
+    const seconds = try std.fmt.parseUnsigned(u32, spec, 10);
+    if (seconds == 0) return error.InvalidTimeoutSeconds;
+    return seconds;
+}
+
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: initialize_game_window_and_input.
@@ -208,19 +225,21 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
+    try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
     try std.testing.expectEqual(false, options.fullscreen);
     try std.testing.expectEqual(false, options.hidden_window);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen", "--hidden-window" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen", "--hidden-window", "--timeout-seconds", "5" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
     try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
     try std.testing.expectEqualStrings("artifacts/test-shots", options.screenshot_dir);
     try std.testing.expectEqual(frontend.GamePhase.intro, options.auto_screenshot.?.phase);
     try std.testing.expectEqual(@as(u64, 60), options.auto_screenshot.?.tick);
+    try std.testing.expectEqual(@as(u32, 5), options.timeout_seconds.?);
     try std.testing.expectEqual(@as(i32, 640), options.window_size_override.?.width);
     try std.testing.expectEqual(@as(i32, 480), options.window_size_override.?.height);
     try std.testing.expectEqual(true, options.fullscreen);
@@ -233,6 +252,10 @@ test "parse args handles debug and smoke subcommands" {
 test "parse args accepts start phase override" {
     const options = try parseArgsFromSlice(&.{ "--start-phase", "main_menu" });
     try std.testing.expectEqual(frontend.GamePhase.main_menu, options.start_phase.?);
+}
+
+test "parse args requires timeout for hidden window" {
+    try std.testing.expectError(error.HiddenWindowRequiresTimeout, parseArgsFromSlice(&.{"--hidden-window"}));
 }
 
 test "parse args rejects unknown commands" {
@@ -252,6 +275,11 @@ test "parse auto screenshot validates phase and tick" {
 test "parse args validates start phase" {
     try std.testing.expectError(error.MissingStartPhase, parseArgsFromSlice(&.{"--start-phase"}));
     try std.testing.expectError(error.InvalidStartPhase, parseArgsFromSlice(&.{ "--start-phase", "weird" }));
+}
+
+test "parse args validates timeout seconds" {
+    try std.testing.expectError(error.MissingTimeoutSeconds, parseArgsFromSlice(&.{"--timeout-seconds"}));
+    try std.testing.expectError(error.InvalidTimeoutSeconds, parseArgsFromSlice(&.{ "--timeout-seconds", "0" }));
 }
 
 test "parse window size validates dimensions" {

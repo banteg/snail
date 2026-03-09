@@ -301,7 +301,7 @@ pub fn routeMenuActionLabel(mode: FrontendLevelMode, action: RouteMenuAction) []
     return switch (action) {
         .play => if (mode == .postal) "Deliver!" else "Play",
         .watch_best_trial => "Watch Best Trial",
-        .back => if (mode == .postal) "Exit" else "Back",
+        .back => "Back",
     };
 }
 
@@ -352,7 +352,7 @@ test "frontend level mode paths follow recovered launch mapping" {
 
 test "route menu labels follow recovered postal wording" {
     try std.testing.expectEqualStrings("Deliver!", routeMenuActionLabel(.postal, .play));
-    try std.testing.expectEqualStrings("Exit", routeMenuActionLabel(.postal, .back));
+    try std.testing.expectEqualStrings("Back", routeMenuActionLabel(.postal, .back));
     try std.testing.expectEqualStrings("Play", routeMenuActionLabel(.time_trial, .play));
     try std.testing.expectEqualStrings("Back", routeMenuActionLabel(.time_trial, .back));
 }
