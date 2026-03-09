@@ -32,11 +32,15 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
 - front-end options menu fields: `partial`
-  - evidence: Binary Ninja decompile of `build_frontend_options_menu`, `commit_frontend_options_menu`, `destroy_frontend_options_menu`, and `apply_audio_config_volumes`
+  - evidence: Binary Ninja decompile of `initialize_options`, `update_options`, `destroy_options`, and `apply_audio_config_volumes`, plus cross-port Android and iOS symbols for `cROptions::{Init, AI, UnInit}`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original slider widgets, audio test feedback, and any remaining option fields are ported
+- help screen flow: `partial`
+  - evidence: Binary Ninja decompile of `initialize_help`, `destroy_help`, and `update_help`, plus cross-port Android and iOS symbols for `cRHelp::{Init, AI}`
+  - implementation: [`main.zig`](../../zig/src/main.zig)
+  - replace when: the original Help-screen teardown path and any missing transition details are ported
 - delivery-route map flow: `partial`
-  - evidence: Binary Ninja decompile of `initialize_delivery_route_screen`, `update_delivery_route_screen`, and `load_frontend_level_by_mode_and_index`
+  - evidence: Binary Ninja decompile of `initialize_galaxy`, `update_galaxy`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI}`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
@@ -68,7 +72,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - level completion return overlay: `scaffold`
-  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, and `update_completion_screen`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`
+  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, `update_completion_screen`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}` and `cRCutScene::AI()`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`

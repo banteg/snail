@@ -41,8 +41,8 @@ pub const LoadResult = struct {
 
 // PORT(partial): this preserves the full 0xc4-byte SnailMail.cfg blob while only exposing the
 // sound volume, music volume, and fullscreen fields we have recovered with confidence so far.
-// Evidence: initialize_default_runtime_config, build_frontend_options_menu,
-// commit_frontend_options_menu, and apply_audio_config_volumes.
+// Evidence: initialize_default_runtime_config, initialize_options,
+// update_options, and apply_audio_config_volumes.
 pub const Blob = struct {
     bytes: [byte_len]u8,
 
