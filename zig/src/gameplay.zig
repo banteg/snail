@@ -101,6 +101,7 @@ pub const EncounterCounters = struct {
 pub const ScoreTotals = struct {
     total: u32 = 0,
     ring_collect: u32 = 0,
+    garbage_collision: u32 = 0,
     health_collect: u32 = 0,
     parcel_pickup: u32 = 0,
     parcel_register: u32 = 0,
@@ -486,6 +487,7 @@ pub const Runner = struct {
             },
             .garbage => {
                 self.counters.garbage_hits += 1;
+                self.recordScore(&self.score.garbage_collision, 10);
                 self.applyDamageGaugeDelta(garbage_damage_delta);
                 self.recent_event = .garbage_hit;
             },
@@ -757,6 +759,8 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectEqual(@as(u32, 10), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
