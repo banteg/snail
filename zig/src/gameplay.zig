@@ -115,6 +115,7 @@ const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
+const score_life_threshold: u32 = 50_000;
 
 const RowSample = struct {
     global_row: usize,
@@ -155,6 +156,7 @@ pub const Runner = struct {
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
+    score_life_awards: u32 = 0,
     damage_gauge: f32 = 0.0,
     completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
@@ -538,12 +540,24 @@ pub const Runner = struct {
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
+        const previous_total = self.score.total;
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
         self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
+        self.recordScoreLifeAwards(previous_total, self.score.total);
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
         self.damage_gauge = std.math.clamp(self.damage_gauge + delta, 0.0, 1.0);
+    }
+
+    // PORT(partial): `cRSubGoldy::ScoreAdd` awards one life whenever total score crosses
+    // another 50,000-point bucket. The starting life stock is still unresolved, so the
+    // runner only tracks earned score-side awards for now.
+    fn recordScoreLifeAwards(self: *Runner, previous_total: u32, current_total: u32) void {
+        const previous_bucket = @divTrunc(previous_total, score_life_threshold);
+        const current_bucket = @divTrunc(current_total, score_life_threshold);
+        if (current_bucket <= previous_bucket) return;
+        self.score_life_awards = std.math.add(u32, self.score_life_awards, current_bucket - previous_bucket) catch std.math.maxInt(u32);
     }
 };
 
@@ -795,6 +809,22 @@ test "runner applies the completion bonus once" {
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+}
+
+test "runner tracks score-side life awards across 50000-point thresholds" {
+    var runner = Runner{};
+
+    runner.recordScore(&runner.score.ring_collect, 49_900);
+    try std.testing.expectEqual(@as(u32, 49_900), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 0), runner.score_life_awards);
+
+    runner.recordScore(&runner.score.health_collect, 100);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 1), runner.score_life_awards);
+
+    runner.recordScore(&runner.score.health_collect, 50_000);
+    try std.testing.expectEqual(@as(u32, 100_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 2), runner.score_life_awards);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {

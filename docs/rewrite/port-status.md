@@ -95,6 +95,10 @@ Current high-signal entries:
   - evidence: Android `cRSubGoldy::Collision()` and `cRDamageGuage::Take(float,bool)`, which clamp the gauge to `[0,1]` and apply `-0.5` for health, `+0.04` for garbage, `+0.15` for salt, and `+1.0` for slug collisions
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the unresolved `+0.02` collision path, the `bool`-gated suppression semantics, lives or death behavior, and the original gauge presentation are ported
+- score-threshold bonus life awards: `partial`
+  - evidence: Android `cRSubGoldy::ScoreAdd(int,int)`, `cRSubGoldy::ShowLives()`, `cRSubGoldy::DeathInit()`, and `cRSubGoldy::RessurectAI()`, where score crossings at 50,000 points award one additional life
+  - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the base life stock, actual life-counter ownership, and death or resurrection flow are ported instead of only the score-side threshold awards
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
 
