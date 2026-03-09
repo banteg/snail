@@ -41,7 +41,7 @@ Current high-signal entries:
   - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
 - front-end background loading plus Distort-driven single-texture motion: `partial`
-  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, plus Binary Ninja decompile of `initialize_frontend_background_distortion_grid`, `activate_frontend_background_entry`, `initialize_frontend_background_renderer`, `draw_frontend_split_background`, `draw_frontend_warped_background`, and `update_frontend_background_renderer`
+  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, Binary Ninja decompile of `initialize_frontend_background_distortion_grid`, `activate_frontend_background_entry`, `initialize_frontend_background_renderer`, `apply_frontend_background_change_real`, `draw_frontend_split_background`, `draw_frontend_warped_background`, and `update_frontend_background_renderer`, plus cross-port Android and iOS symbols for `cRBackdrop::{Change, ChangeReal, Init, Render, AI}`
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the distortion grid state and any real `Landscape` model path are ported from the original RNG-driven renderer, and the split `_A` / `_B` crop semantics are verified against the original renderer
 - intro and credits text-screen flow: `partial`

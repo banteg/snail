@@ -108,12 +108,17 @@
     {
       "address": "0x410d50",
       "name": "activate_frontend_background_entry",
-      "description": "Binds one parsed background script entry into the shared front-end backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode."
+      "description": "Binds one parsed background script entry into the shared front-end backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`."
+    },
+    {
+      "address": "0x410dc0",
+      "name": "apply_frontend_background_change_real",
+      "description": "Commits the pending front-end backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`."
     },
     {
       "address": "0x410e20",
       "name": "initialize_frontend_background_renderer",
-      "description": "Initializes the shared front-end backdrop renderer, seeds its texture-transition state, and primes its distortion grid."
+      "description": "Initializes the shared front-end backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android symbols match this helper to `cRBackdrop::Init(int)`."
     },
     {
       "address": "0x410f40",
@@ -128,12 +133,12 @@
     {
       "address": "0x411040",
       "name": "draw_frontend_warped_background",
-      "description": "Draws the single-texture 320x240 backdrop crop through the animated front-end distortion grid."
+      "description": "Draws the single-texture 320x240 backdrop crop through the animated front-end distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Render()`."
     },
     {
       "address": "0x4112f0",
       "name": "update_frontend_background_renderer",
-      "description": "Advances the shared front-end backdrop renderer, updates its distortion grid, and dispatches the split or warped background draw path."
+      "description": "Advances the shared front-end backdrop renderer, updates its distortion grid, and dispatches the split or warped background draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
     },
     {
       "address": "0x411730",
@@ -224,6 +229,11 @@
       "address": "0x4199e0",
       "name": "update_intro_text_screen",
       "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input."
+    },
+    {
+      "address": "0x419b50",
+      "name": "initialize_main_menu",
+      "description": "Starts MAINMENU.OGG, loads Menubg.txt into the shared backdrop renderer, seeds the front-end state to menu mode, and allocates the New Game, High Scores, Options, Credits, and Exit widgets. Cross-port Android and iOS symbols match this helper to `cRMainMenu::Init()`."
     },
     {
       "address": "0x419e00",
