@@ -18,7 +18,11 @@ Recommended workflow:
    - `python tools/binja/sync_symbols.py apply`
 5. Apply the same manifest onto the colocated IDA database when you want the Windows names available there too:
    - `uv run tools/ida/sync_symbols.py`
+6. Export targeted IDA pseudocode artifacts when a single function needs a second-opinion decompile view:
+   - `uv run tools/ida/export_function.py update_subgoldy`
 
 The Binary Ninja script uses only identifier-like curated names from the open database. It intentionally skips default `sub_*` labels, jump thunks, and mangled compiler symbols so the manifest stays readable and reviewable in version control.
 
 The IDA sync path is intentionally one-way. Do new rename work in Binary Ninja, validate and commit the manifest, then replay that manifest into `artifacts/ida/SnailMail_unwrapped.exe.i64` so the Windows decompiler views stay aligned across tools.
+
+The targeted export path writes pseudocode artifacts under `artifacts/ida/functions/` by default. That is the preferred way to keep a readable second-opinion snapshot for oversized functions like `update_subgoldy` without regenerating a giant whole-program C dump on every sync.

@@ -8,13 +8,19 @@ import sys
 
 from runner import DEFAULT_IDA_DB_PATH, REPO_ROOT, find_ida_binary, run_ida_script
 
-DEFAULT_MANIFEST_PATH = REPO_ROOT / "analysis/symbols/gameplay-functions.json"
-IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/apply_symbol_manifest.py"
+
+DEFAULT_OUT_DIR = REPO_ROOT / "artifacts/ida/functions"
+IDAPYTHON_SCRIPT_PATH = REPO_ROOT / "tools/ida/export_function_artifact.py"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Apply the tracked Snail Mail symbol manifest to an IDA database."
+        description="Export one or more IDA pseudocode artifacts by function name or address."
+    )
+    parser.add_argument(
+        "selectors",
+        nargs="+",
+        help="Function selectors to export. Accepts names or addresses like 0x43b120.",
     )
     parser.add_argument(
         "--ida-bin",
@@ -24,13 +30,13 @@ def parse_args() -> argparse.Namespace:
         "--db",
         type=Path,
         default=DEFAULT_IDA_DB_PATH,
-        help="Path to the IDA database to update.",
+        help="Path to the IDA database to read from.",
     )
     parser.add_argument(
-        "--manifest",
+        "--out-dir",
         type=Path,
-        default=DEFAULT_MANIFEST_PATH,
-        help="Path to the tracked gameplay function manifest.",
+        default=DEFAULT_OUT_DIR,
+        help="Directory to write exported pseudocode artifacts into.",
     )
     return parser.parse_args()
 
@@ -39,21 +45,19 @@ def main() -> int:
     args = parse_args()
     ida_bin = find_ida_binary(args.ida_bin)
     db_path = args.db.resolve()
-    manifest_path = args.manifest.resolve()
+    out_dir = args.out_dir.resolve()
 
     if not db_path.is_file():
         raise FileNotFoundError(f"IDA database not found: {db_path}")
-    if not manifest_path.is_file():
-        raise FileNotFoundError(f"symbol manifest not found: {manifest_path}")
     if not IDAPYTHON_SCRIPT_PATH.is_file():
-        raise FileNotFoundError(f"IDAPython sync script not found: {IDAPYTHON_SCRIPT_PATH}")
+        raise FileNotFoundError(f"IDAPython export script not found: {IDAPYTHON_SCRIPT_PATH}")
 
     exit_code, log_text = run_ida_script(
         ida_bin=ida_bin,
         script_path=IDAPYTHON_SCRIPT_PATH,
         db_path=db_path,
-        script_args=[str(manifest_path)],
-        log_stem="sync-symbols",
+        script_args=[str(out_dir), *args.selectors],
+        log_stem="export-function",
     )
     sys.stdout.write(log_text)
     return exit_code
