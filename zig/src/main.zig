@@ -930,7 +930,8 @@ const AppState = struct {
 
         switch (active_mode orelse .tutorial) {
             .postal => {
-                result.score = partialPostalOrChallengeScore(loaded_level, runner);
+                self.level_runner.?.applyCompletionBonus(parcel_target);
+                result.score = self.level_runner.?.score.total;
                 result.score_is_partial = true;
 
                 const entry = high_score.Entry{
@@ -943,7 +944,8 @@ const AppState = struct {
                 try self.saveHighScoreTables();
             },
             .challenge => {
-                result.score = partialPostalOrChallengeScore(loaded_level, runner);
+                self.level_runner.?.applyCompletionBonus(parcel_target);
+                result.score = self.level_runner.?.score.total;
                 result.score_is_partial = true;
 
                 const entry = high_score.Entry{
@@ -2144,24 +2146,6 @@ fn completionElapsedMillis(runner: gameplay.Runner) u32 {
 // and health pickup (+250).
 // Slug kills (+500), garbage-side score events (+10), jetpack/speed-up scoring, and the rest
 // of the original `cRSubGoldy::AI()` path remain unported.
-fn partialPostalOrChallengeScore(loaded_level: level.Definition, runner: gameplay.Runner) u32 {
-    const ring_count: u64 =
-        @as(u64, runner.counters.ring_normal) +
-        @as(u64, runner.counters.ring_powerup) +
-        @as(u64, runner.counters.ring_explode) +
-        @as(u64, runner.counters.ring_slow);
-    const parcel_count: u64 = runner.counters.parcels;
-    const parcel_target: u64 = loaded_level.parcels orelse 0;
-    const completion_bonus: u64 = if (parcel_target != 0 and parcel_count >= parcel_target) 100 else 0;
-
-    const total: u64 =
-        ring_count * 100 +
-        parcel_count * 200 +
-        @as(u64, runner.counters.health_pickups) * 250 +
-        completion_bonus;
-    return @intCast(@min(total, std.math.maxInt(u32)));
-}
-
 fn bootPhaseProgress(state: *const AppState) f32 {
     if (boot_tasks.len == 0) return 1.0;
     return std.math.clamp(
@@ -2204,6 +2188,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const control_point = layout.mapPoint(36.0, 82.0);
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
+    const score_total = if (state.level_runner) |runner| runner.score.total else 0;
     const finished = if (state.level_runner) |runner| runner.finished else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
@@ -2217,7 +2202,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2226,6 +2211,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             package_icon,
             parcel_count,
             parcel_target,
+            score_total,
             loaded_track_preview.total_rows,
         },
     );

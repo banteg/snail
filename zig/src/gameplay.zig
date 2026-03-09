@@ -98,6 +98,15 @@ pub const EncounterCounters = struct {
     ring_slow: u32 = 0,
 };
 
+pub const ScoreTotals = struct {
+    total: u32 = 0,
+    ring_collect: u32 = 0,
+    health_collect: u32 = 0,
+    parcel_pickup: u32 = 0,
+    parcel_register: u32 = 0,
+    completion_bonus: u32 = 0,
+};
+
 const RowSample = struct {
     global_row: usize,
     traversable_bounds: track.LaneBounds,
@@ -136,6 +145,8 @@ pub const Runner = struct {
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
+    score: ScoreTotals = .{},
+    completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
@@ -416,6 +427,10 @@ pub const Runner = struct {
                 },
                 .parcel => |parcel| {
                     self.counters.parcels += 1;
+                    self.recordScore(&self.score.parcel_pickup, 100);
+                    // PORT(partial): until parcel-flight objects and `RegisterParcel` timing are ported,
+                    // the current runner collapses parcel pickup and parcel registration onto the same row event.
+                    self.recordScore(&self.score.parcel_register, 100);
                     self.recent_event = .{ .parcel = parcel.id };
                 },
                 .jetpack_off => {
@@ -452,6 +467,7 @@ pub const Runner = struct {
             },
             .health => {
                 self.counters.health_pickups += 1;
+                self.recordScore(&self.score.health_collect, 250);
                 self.recent_event = .health_pickup;
             },
             .jetpack => {
@@ -493,8 +509,22 @@ pub const Runner = struct {
             .slow => self.counters.ring_slow += 1,
         }
         if (ring_kind != .none) {
+            self.recordScore(&self.score.ring_collect, 100);
             self.recent_event = .{ .ring = ring_kind };
         }
+    }
+
+    pub fn applyCompletionBonus(self: *Runner, parcel_target: usize) void {
+        if (self.completion_bonus_applied) return;
+        self.completion_bonus_applied = true;
+        if (parcel_target != 0 and self.counters.parcels >= parcel_target) {
+            self.recordScore(&self.score.completion_bonus, 100);
+        }
+    }
+
+    fn recordScore(self: *Runner, slot: *u32, points: u32) void {
+        slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
+        self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
     }
 };
 
@@ -571,6 +601,20 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
                 }
             }
         }
+    }
+    return null;
+}
+
+fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment.Annotation.Tag) ?RowTarget {
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const annotation = row_location.row.annotation orelse continue;
+        if (annotation.tag() != tag) continue;
+        const bounds = preview.laneBoundsForRow(row_location);
+        return .{
+            .row = global_row,
+            .lane = bounds.min,
+        };
     }
     return null;
 }
@@ -670,6 +714,8 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, health);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
+    try std.testing.expectEqual(@as(u32, 250), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 250), runner.score.health_collect);
     try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
 
     const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
@@ -689,6 +735,38 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "runner accumulates ring and parcel score totals from shipped levels" {
+    var arcade_fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer arcade_fixture.deinit();
+
+    var runner = Runner{};
+    const step_seconds = 1.0 / 60.0;
+
+    runner.recordRing(.normal);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.ring_collect);
+
+    runner = Runner.init(&arcade_fixture.preview);
+    const parcel = findFirstAnnotationTag(&arcade_fixture.preview, .parcel).?;
+    primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
+    runner.step(&arcade_fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+}
+
+test "runner applies the completion bonus once" {
+    var runner = Runner{};
+    runner.counters.parcels = 3;
+
+    runner.applyCompletionBonus(3);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.completion_bonus);
+
+    runner.applyCompletionBonus(3);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {
