@@ -33,6 +33,7 @@ pub const Entry = struct {
     has_replay: bool = false,
     name_len: usize = 0,
     name_buf: [name_capacity]u8 = [_]u8{0} ** name_capacity,
+    raw_record: ?[]u8 = null,
 
     pub fn name(self: *const Entry) []const u8 {
         return self.name_buf[0..self.name_len];
@@ -47,6 +48,18 @@ pub const Entry = struct {
 
     pub fn isActive(self: *const Entry) bool {
         return self.score != 0 or self.name_len != 0 or self.has_replay;
+    }
+
+    pub fn deinit(self: *Entry, allocator: std.mem.Allocator) void {
+        if (self.raw_record) |record| {
+            allocator.free(record);
+            self.raw_record = null;
+        }
+    }
+
+    fn setRawRecord(self: *Entry, allocator: std.mem.Allocator, record: []const u8) !void {
+        self.deinit(allocator);
+        self.raw_record = try allocator.dupe(u8, record);
     }
 };
 
@@ -71,6 +84,13 @@ pub const Tables = struct {
             .completion = blankCompletionEntries(),
             .scratch = .{},
         };
+    }
+
+    pub fn deinit(self: *Tables, allocator: std.mem.Allocator) void {
+        for (&self.postal) |*entry| entry.deinit(allocator);
+        for (&self.challenge) |*entry| entry.deinit(allocator);
+        for (&self.completion) |*entry| entry.deinit(allocator);
+        self.scratch.deinit(allocator);
     }
 
     pub fn entries(self: *const Tables, mode: Mode) []const Entry {
@@ -116,15 +136,18 @@ pub const Tables = struct {
     }
 
     // PORT(partial): this reads the compact score overlays from ScoreA/B/C.dat,
-    // but only surfaces score, name, and replay presence in the current port.
+    // but only surfaces score, name, replay presence, and raw record preservation in the current port.
     pub fn loadFromRuntimeRoot(self: *Tables, allocator: std.mem.Allocator, root_path: []const u8) !void {
+        self.deinit(allocator);
+        self.* = Tables.initDefault();
         try loadBankFile(allocator, root_path, .score_a, self);
         try loadBankFile(allocator, root_path, .score_b, self);
         try loadBankFile(allocator, root_path, .score_c, self);
     }
 
     // PORT(partial): this writes compact ScoreA/B/C overlays back to the runtime root,
-    // but still omits the original replay payload arrays and full cRSubHighScore metadata.
+    // while preserving unknown raw record tails for existing entries. The port still does not
+    // synthesize new replay payload arrays or the full cRSubHighScore metadata.
     pub fn saveToRuntimeRoot(self: *const Tables, allocator: std.mem.Allocator, root_path: []const u8) !void {
         try runtime_state.ensureRootExists(root_path);
         try saveBankFile(allocator, root_path, .score_a, self.postal[0..], 0);
@@ -160,12 +183,12 @@ fn loadBankFile(allocator: std.mem.Allocator, root_path: []const u8, kind: runti
         if (record_size < compact_record_header_size or offset + record_size > bytes.len) {
             return error.InvalidHighScoreFile;
         }
-        parseCompactRecord(tables, bytes[offset .. offset + record_size]);
+        try parseCompactRecord(tables, allocator, bytes[offset .. offset + record_size]);
         offset += record_size;
     }
 }
 
-fn parseCompactRecord(tables: *Tables, record: []const u8) void {
+fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []const u8) !void {
     if (record.len < compact_record_header_size) return;
 
     const score = readU32(record, compact_record_score_offset);
@@ -188,6 +211,7 @@ fn parseCompactRecord(tables: *Tables, record: []const u8) void {
     entry.score = score;
     entry.has_replay = replay_sample_count > 0;
     entry.setName(name);
+    try entry.setRawRecord(allocator, record);
 }
 
 fn insertDescending(entries: []Entry, entry: Entry) ?usize {
@@ -217,17 +241,29 @@ fn saveBankFile(
     for (entries, 0..) |entry, entry_index| {
         if (!entry.isActive()) continue;
 
-        var record: [compact_record_header_size]u8 = [_]u8{0} ** compact_record_header_size;
-        std.mem.writeInt(u32, record[0x00..0x04], compact_record_header_size, .little);
-        std.mem.writeInt(u32, record[compact_record_score_offset .. compact_record_score_offset + 4], entry.score, .little);
-        std.mem.writeInt(u32, record[compact_record_checksum_offset .. compact_record_checksum_offset + 4], (entry.score *% entry.score) ^ 0xdeadbabe, .little);
-        std.mem.writeInt(u32, record[compact_record_bank_selector_offset .. compact_record_bank_selector_offset + 4], bank_selector, .little);
-        std.mem.writeInt(u32, record[compact_record_entry_index_offset .. compact_record_entry_index_offset + 4], @intCast(entry_index), .little);
-        std.mem.writeInt(u32, record[compact_record_replay_sample_count_offset .. compact_record_replay_sample_count_offset + 4], 0, .little);
+        const owned_record = if (entry.raw_record) |raw_record|
+            try allocator.dupe(u8, raw_record)
+        else
+            try allocator.alloc(u8, compact_record_header_size);
+        defer allocator.free(owned_record);
+
+        if (entry.raw_record == null) {
+            @memset(owned_record, 0);
+            std.mem.writeInt(u32, owned_record[compact_record_replay_sample_count_offset .. compact_record_replay_sample_count_offset + 4], 0, .little);
+        } else if (owned_record.len < compact_record_header_size) {
+            return error.InvalidHighScoreFile;
+        }
+
+        std.mem.writeInt(u32, owned_record[0x00..0x04], @intCast(owned_record.len), .little);
+        std.mem.writeInt(u32, owned_record[compact_record_score_offset .. compact_record_score_offset + 4], entry.score, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_checksum_offset .. compact_record_checksum_offset + 4], (entry.score *% entry.score) ^ 0xdeadbabe, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_bank_selector_offset .. compact_record_bank_selector_offset + 4], bank_selector, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_entry_index_offset .. compact_record_entry_index_offset + 4], @intCast(entry_index), .little);
 
         const name = entry.name()[0..@min(entry.name().len, compact_record_name_len)];
-        @memcpy(record[compact_record_name_offset .. compact_record_name_offset + name.len], name);
-        try encoded.appendSlice(allocator, &record);
+        @memset(owned_record[compact_record_name_offset .. compact_record_name_offset + compact_record_name_len], 0);
+        @memcpy(owned_record[compact_record_name_offset .. compact_record_name_offset + name.len], name);
+        try encoded.appendSlice(allocator, owned_record);
     }
 
     archive.xorDecodeInPlace(encoded.items, 0);
@@ -244,7 +280,8 @@ fn readU32(buffer: []const u8, offset: usize) u32 {
 }
 
 test "default tables seed the recovered startup bank shape" {
-    const tables = Tables.initDefault();
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
     try std.testing.expectEqual(@as(usize, bank_entry_count), tables.postal.len);
     try std.testing.expectEqual(@as(usize, bank_entry_count), tables.challenge.len);
     try std.testing.expectEqual(@as(usize, completion_entry_count), tables.completion.len);
@@ -265,11 +302,13 @@ test "parse compact high-score record into recovered bank slots" {
     @memcpy(payload[0x5c .. 0x5c + "Turbo".len], "Turbo");
 
     var tables = Tables.initDefault();
-    parseCompactRecord(&tables, &payload);
+    defer tables.deinit(std.testing.allocator);
+    try parseCompactRecord(&tables, std.testing.allocator, &payload);
 
     try std.testing.expectEqual(@as(u32, 4242), tables.postal[2].score);
     try std.testing.expect(tables.postal[2].has_replay);
     try std.testing.expectEqualStrings("Turbo", tables.postal[2].name());
+    try std.testing.expect(tables.postal[2].raw_record != null);
     try std.testing.expectEqual(@as(u32, 0), tables.challenge[2].score);
 }
 
@@ -283,7 +322,8 @@ test "ignore compact high-score records with invalid checksum" {
     @memcpy(payload[0x5c .. 0x5c + "Nope".len], "Nope");
 
     var tables = Tables.initDefault();
-    parseCompactRecord(&tables, &payload);
+    defer tables.deinit(std.testing.allocator);
+    try parseCompactRecord(&tables, std.testing.allocator, &payload);
 
     try std.testing.expectEqual(@as(u32, 0), tables.challenge[0].score);
     try std.testing.expectEqual(@as(usize, 0), tables.challenge[0].name().len);
@@ -291,6 +331,7 @@ test "ignore compact high-score records with invalid checksum" {
 
 test "insert arcade score into visible top ten with overflow row" {
     var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
     for (tables.postal[0..visible_entry_count], 0..) |*entry, index| {
         entry.* = .{ .score = @as(u32, @intCast(1000 - index * 10)) };
     }
@@ -304,6 +345,7 @@ test "insert arcade score into visible top ten with overflow row" {
 
 test "time trial score only improves when the new route time is better" {
     var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
 
     const first = tables.addTimeTrial(3, .{ .score = 42000 });
     try std.testing.expect(first.improved);
@@ -330,6 +372,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     defer previous_dir.setAsCwd() catch unreachable;
 
     var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
     tables.postal[0].score = 12345;
     tables.postal[0].setName("Turbo");
     tables.challenge[1].score = 777;
@@ -340,6 +383,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     try tables.saveToRuntimeRoot(std.testing.allocator, "runtime");
 
     var loaded = Tables.initDefault();
+    defer loaded.deinit(std.testing.allocator);
     try loaded.loadFromRuntimeRoot(std.testing.allocator, "runtime");
 
     try std.testing.expectEqual(@as(u32, 12345), loaded.postal[0].score);
@@ -348,4 +392,50 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectEqualStrings("Slug", loaded.challenge[1].name());
     try std.testing.expectEqual(@as(u32, 54321), loaded.completion[2].score);
     try std.testing.expectEqualStrings("Route", loaded.completion[2].name());
+}
+
+test "saveback preserves unknown compact record tails for loaded entries" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    const record_len = compact_record_header_size + 8;
+    var payload: [record_len]u8 = [_]u8{0} ** record_len;
+    std.mem.writeInt(u32, payload[0x00..0x04], record_len, .little);
+    std.mem.writeInt(u32, payload[0x04..0x08], 4242, .little);
+    std.mem.writeInt(u32, payload[0x28..0x2c], (4242 *% 4242) ^ 0xdeadbabe, .little);
+    std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
+    std.mem.writeInt(u32, payload[0x40..0x44], 0, .little);
+    std.mem.writeInt(u32, payload[0x74..0x78], 7, .little);
+    @memcpy(payload[0x5c .. 0x5c + "Turbo".len], "Turbo");
+    @memcpy(payload[compact_record_header_size..], &[_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 });
+
+    var encoded = payload;
+    archive.xorDecodeInPlace(&encoded, 0);
+    try runtime_state.ensureRootExists("runtime");
+    try std.fs.cwd().writeFile(.{ .sub_path = "runtime/ScoreA.dat", .data = &encoded });
+
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+    try tables.loadFromRuntimeRoot(std.testing.allocator, "runtime");
+    tables.postal[0].score = 5000;
+    tables.postal[0].setName("Turb0");
+    try tables.saveToRuntimeRoot(std.testing.allocator, "runtime");
+
+    const saved_bytes = try std.fs.cwd().readFileAlloc(std.testing.allocator, "runtime/ScoreA.dat", 1 << 20);
+    defer std.testing.allocator.free(saved_bytes);
+    archive.xorDecodeInPlace(saved_bytes, 0);
+
+    try std.testing.expectEqual(@as(usize, record_len), saved_bytes.len);
+    try std.testing.expectEqual(@as(u32, record_len), readU32(saved_bytes, 0));
+    try std.testing.expectEqual(@as(u32, 5000), readU32(saved_bytes, compact_record_score_offset));
+    try std.testing.expectEqual(@as(u32, (5000 *% 5000) ^ 0xdeadbabe), readU32(saved_bytes, compact_record_checksum_offset));
+    try std.testing.expectEqual(@as(u32, 7), readU32(saved_bytes, compact_record_replay_sample_count_offset));
+    try std.testing.expectEqualStrings("Turb0", std.mem.trimRight(u8, saved_bytes[compact_record_name_offset .. compact_record_name_offset + 5], " "));
+    try std.testing.expectEqualSlices(u8, &[_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 }, saved_bytes[compact_record_header_size..]);
 }

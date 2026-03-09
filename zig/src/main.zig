@@ -319,6 +319,7 @@ const AppState = struct {
         self.ui_font.deinit();
         self.animation_catalog.deinit();
         self.catalog.deinit();
+        self.high_score_tables.deinit(self.allocator);
     }
 
     fn warmupSmokeTest(self: *AppState) !void {
