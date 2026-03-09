@@ -1,6 +1,19 @@
 const std = @import("std");
+const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const game_font = @import("game_font.zig");
+
+const text_world_height: f32 = 1.0;
+const text_world_width_scale: f32 = 0.8;
+const scroll_start_z: f32 = 0.2;
+const scroll_end_z: f32 = 3.0;
+const world_y: f32 = -4.0;
+const rotation_cos: f32 = @bitCast(@as(u32, 0x3f226794));
+const rotation_sin: f32 = @bitCast(@as(u32, 0x3f45e3fc));
+const projection_focal_ratio: f32 = 0.3125;
+const near_clip_depth: f32 = 0.05;
+const text_color: rl.Color = .{ .r = 0xf1, .g = 0xc5, .b = 0x4a, .a = 0xff };
 
 pub const ImageEntry = struct {
     archive_path: []const u8,
@@ -53,6 +66,38 @@ pub const Loaded = struct {
 
     pub fn duration(self: *const Loaded) f32 {
         return self.definition.duration;
+    }
+
+    pub fn durationTicks(self: *const Loaded) u64 {
+        return @as(u64, @intFromFloat(@max(self.duration() * 60.0, 1.0)));
+    }
+
+    pub fn progressForTicks(self: *const Loaded, elapsed_ticks: u64) f32 {
+        const total_ticks = self.durationTicks();
+        if (total_ticks == 0) return 1.0;
+        return std.math.clamp(
+            @as(f32, @floatFromInt(elapsed_ticks)) / @as(f32, @floatFromInt(total_ticks)),
+            0.0,
+            1.0,
+        );
+    }
+
+    // PORT(partial): this crawl renderer now follows the recovered intro plane (`y = -4`),
+    // X-axis rotation, centered world-space text and image quads, per-line/image heights,
+    // and shared duration-driven z scroll from `initialize_intro_text_screen`. Remaining
+    // gaps are exact transition semantics and any original renderer-side batching quirks.
+    pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
+        const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
+        const scroll_offset = std.math.clamp(progress, 0.0, 1.0) * layout.scroll_distance;
+        var cursor_z = scroll_start_z;
+
+        for (self.entries) |entry| {
+            switch (entry) {
+                .text => |line| drawProjectedTextLine(ui_font, line, cursor_z + scroll_offset, viewport),
+                .image => |image| drawProjectedImage(image, cursor_z + scroll_offset, viewport),
+            }
+            cursor_z -= loadedEntryWorldHeight(entry);
+        }
     }
 };
 
@@ -237,6 +282,203 @@ fn stripLine(raw_line: []const u8, scratch: []u8) []const u8 {
     return std.mem.trim(u8, scratch[0..clipped.len], " \t\r");
 }
 
+const Projection = struct {
+    center_x: f32,
+    center_y: f32,
+    focal: f32,
+};
+
+const CrawlLayout = struct {
+    final_cursor_z: f32,
+    scroll_distance: f32,
+};
+
+const ProjectedPoint = struct {
+    x: f32,
+    y: f32,
+};
+
+const ProjectedQuad = struct {
+    top_left: ProjectedPoint,
+    top_right: ProjectedPoint,
+    bottom_right: ProjectedPoint,
+    bottom_left: ProjectedPoint,
+};
+
+fn projectionForViewport(viewport: rl.Rectangle) Projection {
+    return .{
+        .center_x = viewport.x + viewport.width * 0.5,
+        .center_y = viewport.y + viewport.height * 0.5,
+        .focal = @min(viewport.width, viewport.height) * projection_focal_ratio,
+    };
+}
+
+fn projectPoint(projection: Projection, world_x: f32, world_z: f32) ?ProjectedPoint {
+    const rotated_y = world_y * rotation_cos + world_z * rotation_sin;
+    const depth = -world_y * rotation_sin + world_z * rotation_cos;
+    if (depth <= near_clip_depth) return null;
+
+    const perspective = projection.focal / depth;
+    return .{
+        .x = projection.center_x + world_x * perspective,
+        .y = projection.center_y - rotated_y * perspective,
+    };
+}
+
+fn drawProjectedTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32, viewport: rl.Rectangle) void {
+    if (line.len == 0) return;
+
+    const projection = projectionForViewport(viewport);
+    const line_width_world = measureLineWorldWidth(ui_font, line);
+    var pen_x = -line_width_world * 0.5;
+
+    for (line) |byte| {
+        if (byte == '\r' or byte == '\n') continue;
+
+        const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
+        const slot = ui_font.slots[slot_index];
+        const advance_world = slot.advance_width * text_world_width_scale / ui_font.nominal_height;
+
+        if (byte != ' ' and slot.source_width > 0.0 and slot.source_height > 0.0) {
+            const glyph_width_world = slot.source_width * text_world_width_scale / ui_font.nominal_height;
+            const glyph_height_world = slot.source_height / ui_font.nominal_height;
+            if (projectQuad(
+                projection,
+                pen_x,
+                pen_x + glyph_width_world,
+                top_z,
+                top_z - glyph_height_world,
+            )) |quad| {
+                drawTexturedQuad(
+                    ui_font.texture,
+                    .{
+                        .x = slot.source_x,
+                        .y = slot.source_y,
+                        .width = slot.source_width,
+                        .height = slot.source_height,
+                    },
+                    quad,
+                    text_color,
+                );
+            }
+        }
+
+        pen_x += advance_world;
+    }
+}
+
+fn drawProjectedImage(image: LoadedImage, top_z: f32, viewport: rl.Rectangle) void {
+    const world_width = clampedImageWorldWidth(image);
+    const world_height = clampedImageWorldHeight(image);
+    const projection = projectionForViewport(viewport);
+    if (projectQuad(
+        projection,
+        -world_width * 0.5,
+        world_width * 0.5,
+        top_z,
+        top_z - world_height,
+    )) |quad| {
+        drawTexturedQuad(
+            image.texture.texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @floatFromInt(image.texture.texture.width),
+                .height = @floatFromInt(image.texture.texture.height),
+            },
+            quad,
+            .white,
+        );
+    }
+}
+
+fn crawlLayout(total_world_height: f32) CrawlLayout {
+    const final_cursor_z = scroll_start_z - total_world_height;
+    return .{
+        .final_cursor_z = final_cursor_z,
+        .scroll_distance = scroll_end_z - final_cursor_z,
+    };
+}
+
+fn measureLineWorldWidth(ui_font: *const game_font.Loaded, line: []const u8) f32 {
+    var width: f32 = 0.0;
+    for (line) |byte| {
+        if (byte == '\r' or byte == '\n') continue;
+        const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
+        width += ui_font.slots[slot_index].advance_width * text_world_width_scale / ui_font.nominal_height;
+    }
+    return width;
+}
+
+fn projectQuad(
+    projection: Projection,
+    left_x: f32,
+    right_x: f32,
+    top_z: f32,
+    bottom_z: f32,
+) ?ProjectedQuad {
+    return .{
+        .top_left = projectPoint(projection, left_x, top_z) orelse return null,
+        .top_right = projectPoint(projection, right_x, top_z) orelse return null,
+        .bottom_right = projectPoint(projection, right_x, bottom_z) orelse return null,
+        .bottom_left = projectPoint(projection, left_x, bottom_z) orelse return null,
+    };
+}
+
+fn drawTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: ProjectedQuad, tint: rl.Color) void {
+    if (texture.width <= 0 or texture.height <= 0) return;
+
+    const inv_width = 1.0 / @as(f32, @floatFromInt(texture.width));
+    const inv_height = 1.0 / @as(f32, @floatFromInt(texture.height));
+    const tex_u0 = source.x * inv_width;
+    const tex_v0 = source.y * inv_height;
+    const tex_u1 = (source.x + source.width) * inv_width;
+    const tex_v1 = (source.y + source.height) * inv_height;
+
+    rl.gl.rlSetTexture(texture.id);
+    defer rl.gl.rlSetTexture(0);
+
+    rl.gl.rlBegin(rl.gl.rl_quads);
+    defer rl.gl.rlEnd();
+
+    rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    rl.gl.rlTexCoord2f(tex_u0, tex_v0);
+    rl.gl.rlVertex2f(quad.top_left.x, quad.top_left.y);
+
+    rl.gl.rlTexCoord2f(tex_u1, tex_v0);
+    rl.gl.rlVertex2f(quad.top_right.x, quad.top_right.y);
+
+    rl.gl.rlTexCoord2f(tex_u1, tex_v1);
+    rl.gl.rlVertex2f(quad.bottom_right.x, quad.bottom_right.y);
+
+    rl.gl.rlTexCoord2f(tex_u0, tex_v1);
+    rl.gl.rlVertex2f(quad.bottom_left.x, quad.bottom_left.y);
+}
+
+fn totalLoadedWorldHeight(entries: []const LoadedEntry) f32 {
+    var total_height: f32 = 0.0;
+    for (entries) |entry| {
+        total_height += loadedEntryWorldHeight(entry);
+    }
+    return total_height;
+}
+
+fn loadedEntryWorldHeight(entry: LoadedEntry) f32 {
+    return switch (entry) {
+        .text => text_world_height,
+        .image => |image| clampedImageWorldHeight(image),
+    };
+}
+
+fn clampedImageWorldWidth(image: LoadedImage) f32 {
+    return @max(image.width, 0.01);
+}
+
+fn clampedImageWorldHeight(image: LoadedImage) f32 {
+    return @max(image.height, 0.01);
+}
+
 test "parse intro script body into ordered text entries" {
     const source =
         \\/* Intro script */
@@ -287,4 +529,55 @@ test "parse intro image directive" {
             try std.testing.expectApproxEqAbs(@as(f32, 2.0), image.height, 0.001);
         },
     }
+}
+
+test "intro duration ticks clamp to at least one frame" {
+    const definition = Definition{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "",
+        .duration = 0.0,
+        .entries = &.{},
+    };
+    var loaded = Loaded{
+        .definition = definition,
+        .entries = &.{},
+    };
+    defer loaded.definition.deinit();
+
+    try std.testing.expectEqual(@as(u64, 1), loaded.durationTicks());
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), loaded.progressForTicks(5), 0.001);
+}
+
+test "projected crawl uses image world heights and text line height" {
+    const entries = [_]LoadedEntry{
+        .{ .text = "Credits" },
+        .{ .image = .{
+            .archive_path = "INTRO/Turbo.tga",
+            .width = 1.5,
+            .height = 2.25,
+            .texture = undefined,
+        } },
+        .{ .text = "Programming" },
+    };
+
+    try std.testing.expectApproxEqAbs(@as(f32, 4.25), totalLoadedWorldHeight(&entries), 0.001);
+}
+
+test "crawl layout follows recovered cursor math" {
+    const layout = crawlLayout(4.25);
+    try std.testing.expectApproxEqAbs(@as(f32, -4.05), layout.final_cursor_z, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 7.05), layout.scroll_distance, 0.001);
+}
+
+test "projection moves crawl upward and inward as z advances" {
+    const projection = projectionForViewport(.{ .x = 0.0, .y = 0.0, .width = 640.0, .height = 480.0 });
+    const near_center = projectPoint(projection, 0.0, 0.2).?;
+    const far_center = projectPoint(projection, 0.0, 3.0).?;
+    try std.testing.expect(far_center.y < near_center.y);
+
+    const near_quad = projectQuad(projection, -1.0, 1.0, 0.2, -0.8).?;
+    const far_quad = projectQuad(projection, -1.0, 1.0, 3.0, 2.0).?;
+    const near_width = near_quad.top_right.x - near_quad.top_left.x;
+    const far_width = far_quad.top_right.x - far_quad.top_left.x;
+    try std.testing.expect(far_width < near_width);
 }

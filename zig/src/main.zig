@@ -1192,8 +1192,7 @@ const AppState = struct {
 
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
         const script = self.current_text_script orelse return null;
-        const ticks = @as(u64, @intFromFloat(@max(script.duration() * 60.0, 1.0)));
-        return ticks;
+        return script.durationTicks();
     }
 
     fn applyAudioConfigVolumes(self: *AppState) void {
@@ -1246,13 +1245,8 @@ const AppState = struct {
     }
 
     fn currentTextScriptProgress(self: *const AppState) ?f32 {
-        const duration_ticks = self.currentTextScriptDurationTicks() orelse return null;
-        if (duration_ticks == 0) return 1.0;
-        return std.math.clamp(
-            @as(f32, @floatFromInt(self.game_phase_ticks)) / @as(f32, @floatFromInt(duration_ticks)),
-            0.0,
-            1.0,
-        );
+        const script = self.currentTextScript() orelse return null;
+        return script.progressForTicks(self.game_phase_ticks);
     }
 
     fn currentTextScript(self: *const AppState) ?*const intro.Loaded {
@@ -1614,13 +1608,13 @@ fn drawGameUi(state: *const AppState) !void {
 
     switch (state.game_phase) {
         .boot => unreachable,
-        .intro => try drawTextScriptUi(state),
+        .intro => drawCurrentTextScript(state, full_bounds),
         .main_menu => try drawMainMenuUi(state, art_layout),
         .new_game_menu => try drawNewGameMenuUi(state, art_layout),
         .options_menu => try drawOptionsMenuUi(state, art_layout),
         .route_map_menu => try drawRouteMapMenuUi(state, art_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
-        .credits => try drawTextScriptUi(state),
+        .credits => drawCurrentTextScript(state, full_bounds),
         .help => drawHelpUi(state),
         .level => try drawGameplayLevelUi(state, art_layout),
     }
@@ -1897,32 +1891,6 @@ fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
     return name;
 }
 
-// PORT(partial): intro and credits now use ordered script entries with centered per-line text,
-// archive-backed image directives, and the recovered duration-driven shared scroll.
-// Remaining gaps are the original transform/camera setup and exact image size semantics.
-fn drawTextScriptUi(state: *const AppState) !void {
-    const script = state.currentTextScript() orelse return;
-    const progress = state.currentTextScriptProgress() orelse 0.0;
-    const font_size: f32 = 22.0;
-    const total_height = totalTextScriptHeight(state, script, font_size);
-    const start_y = @as(f32, @floatFromInt(screenHeight())) + 36.0;
-    const end_y = -total_height - 36.0;
-    var cursor_y = std.math.lerp(start_y, end_y, progress);
-
-    for (script.entries) |entry| {
-        switch (entry) {
-            .text => |line| {
-                drawCenteredTextScriptLine(state, line, font_size, cursor_y);
-                cursor_y += font_size;
-            },
-            .image => |image| {
-                drawCenteredTextScriptImage(image, cursor_y);
-                cursor_y += imageHeight(image);
-            },
-        }
-    }
-}
-
 fn bootPhaseProgress(state: *const AppState) f32 {
     if (boot_tasks.len == 0) return 1.0;
     return std.math.clamp(
@@ -1932,61 +1900,10 @@ fn bootPhaseProgress(state: *const AppState) f32 {
     );
 }
 
-fn totalTextScriptHeight(state: *const AppState, script: *const intro.Loaded, font_size: f32) f32 {
-    _ = state;
-
-    var total_height: f32 = 0.0;
-    for (script.entries) |entry| {
-        total_height += switch (entry) {
-            .text => font_size,
-            .image => |image| imageHeight(image),
-        };
-    }
-    return total_height;
-}
-
-fn drawCenteredTextScriptLine(state: *const AppState, line: []const u8, font_size: f32, y: f32) void {
-    if (line.len == 0) return;
-
-    const measured_width = state.ui_font.measureText(line, font_size);
-    state.ui_font.drawText(
-        line,
-        (@as(f32, @floatFromInt(screenWidth())) - measured_width) * 0.5,
-        y,
-        font_size,
-        .ray_white,
-    );
-}
-
-fn drawCenteredTextScriptImage(image: intro.LoadedImage, y: f32) void {
-    const width = imageWidth(image);
-    const height = imageHeight(image);
-    rl.drawTexturePro(
-        image.texture.texture,
-        .{
-            .x = 0.0,
-            .y = 0.0,
-            .width = @floatFromInt(image.texture.texture.width),
-            .height = @floatFromInt(image.texture.texture.height),
-        },
-        .{
-            .x = (@as(f32, @floatFromInt(screenWidth())) - width) * 0.5,
-            .y = y,
-            .width = width,
-            .height = height,
-        },
-        .{ .x = 0.0, .y = 0.0 },
-        0.0,
-        .white,
-    );
-}
-
-fn imageWidth(image: intro.LoadedImage) f32 {
-    return @as(f32, @floatFromInt(image.texture.texture.width)) * @max(image.width, 0.01);
-}
-
-fn imageHeight(image: intro.LoadedImage) f32 {
-    return @as(f32, @floatFromInt(image.texture.texture.height)) * @max(image.height, 0.01);
+fn drawCurrentTextScript(state: *const AppState, viewport: rl.Rectangle) void {
+    const script = state.currentTextScript() orelse return;
+    const progress = state.currentTextScriptProgress() orelse 0.0;
+    script.drawCrawl(&state.ui_font, progress, viewport);
 }
 
 fn drawHelpUi(state: *const AppState) void {

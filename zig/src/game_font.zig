@@ -6,7 +6,7 @@ pub const default_archive_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 
 const max_slot_index = 94;
 const slot_count = max_slot_index + 1;
-const fallback_slot_index = 74;
+pub const fallback_slot_index = 74;
 const space_slot_index = 53;
 const recovered_spacing_scale: f32 = 0.75;
 
@@ -232,7 +232,7 @@ fn isWhiteMarker(color: rl.Color) bool {
     return color.r == 255 and color.g == 255 and color.b == 255;
 }
 
-fn slotIndexForByte(byte: u8) ?usize {
+pub fn slotIndexForByte(byte: u8) ?usize {
     if (byte >= 'a' and byte <= 'z') return byte - 'a' + 1;
     if (byte >= 'A' and byte <= 'Z') return byte - 'A' + 27;
     if (byte >= '0' and byte <= '9') return byte - '0' + 54;

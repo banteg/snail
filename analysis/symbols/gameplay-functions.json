@@ -142,11 +142,18 @@
     },
     {
       "address": "0x4191e0",
-      "name": "initialize_intro_text_screen"
+      "name": "initialize_intro_text_screen",
+      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into centered text and image renderables on the tilted crawl plane, and derives the shared scroll delta from Duration."
+    },
+    {
+      "address": "0x419920",
+      "name": "recycle_intro_text_renderables",
+      "description": "Unlinks each intro or credits crawl renderable from the active body lists and returns it to the shared free list before the text screen exits."
     },
     {
       "address": "0x4199e0",
-      "name": "update_intro_text_screen"
+      "name": "update_intro_text_screen",
+      "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input."
     },
     {
       "address": "0x419e00",
