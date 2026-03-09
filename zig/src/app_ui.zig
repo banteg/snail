@@ -23,6 +23,17 @@ pub const VirtualLayout = struct {
         };
     }
 
+    pub fn unmapPoint(self: VirtualLayout, screen_x: f32, screen_y: f32) rl.Vector2 {
+        return .{
+            .x = (screen_x - self.x) / self.scale,
+            .y = (screen_y - self.y) / self.scale,
+        };
+    }
+
+    pub fn containsScreenPoint(self: VirtualLayout, screen_x: f32, screen_y: f32) bool {
+        return screen_x >= self.x and screen_x <= self.x + self.width and screen_y >= self.y and screen_y <= self.y + self.height;
+    }
+
     pub fn mapRect(self: VirtualLayout, local_x: f32, local_y: f32, local_width: f32, local_height: f32) rl.Rectangle {
         return .{
             .x = self.x + local_x * self.scale,

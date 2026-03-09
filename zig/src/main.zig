@@ -6,6 +6,7 @@ const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
 const frontend = @import("frontend.zig");
+const frontend_widget = @import("frontend_widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
@@ -37,6 +38,10 @@ const route_map_line_texture_path = app.route_map_line_texture_path;
 const route_map_line_star_texture_path = app.route_map_line_star_texture_path;
 const route_map_galaxy_texture_paths = app.route_map_galaxy_texture_paths;
 const frontend_cursor_texture_path = app.frontend_cursor_texture_path;
+const widget_border_texture_path = app.widget_border_texture_path;
+const widget_border_glow_texture_path = app.widget_border_glow_texture_path;
+const frontend_highlight_sound_path = app.frontend_highlight_sound_path;
+const frontend_select_sound_path = app.frontend_select_sound_path;
 const slider_less_texture_path = app.slider_less_texture_path;
 const slider_less_hover_texture_path = app.slider_less_hover_texture_path;
 const slider_more_texture_path = app.slider_more_texture_path;
@@ -126,6 +131,38 @@ const SliderArt = struct {
     }
 };
 
+const FrontendWidgetArt = struct {
+    border: ?assets.LoadedTexture = null,
+    glow: ?assets.LoadedTexture = null,
+
+    fn unload(self: *FrontendWidgetArt) void {
+        if (self.border) |*texture| {
+            texture.unload();
+            self.border = null;
+        }
+        if (self.glow) |*texture| {
+            texture.unload();
+            self.glow = null;
+        }
+    }
+};
+
+const FrontendSoundFx = struct {
+    highlight: ?assets.LoadedSound = null,
+    select: ?assets.LoadedSound = null,
+
+    fn unload(self: *FrontendSoundFx) void {
+        if (self.highlight) |*sound| {
+            sound.unload();
+            self.highlight = null;
+        }
+        if (self.select) |*sound| {
+            sound.unload();
+            self.select = null;
+        }
+    }
+};
+
 const RouteMapArt = struct {
     logo: ?assets.LoadedTexture = null,
     border: ?assets.LoadedTexture = null,
@@ -173,6 +210,28 @@ const RouteMapArt = struct {
         }
     }
 };
+
+fn loadFrontendWidgetArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !FrontendWidgetArt {
+    var art = FrontendWidgetArt{};
+    errdefer art.unload();
+
+    art.border = try catalog.loadTextureByPath(allocator, widget_border_texture_path);
+    art.glow = try catalog.loadTextureByPath(allocator, widget_border_glow_texture_path);
+
+    return art;
+}
+
+fn loadFrontendSoundFx(allocator: std.mem.Allocator, catalog: *const assets.Catalog, audio_ready: bool) !FrontendSoundFx {
+    if (!audio_ready) return .{};
+
+    var sound_fx = FrontendSoundFx{};
+    errdefer sound_fx.unload();
+
+    sound_fx.highlight = try catalog.loadSoundByPath(allocator, frontend_highlight_sound_path);
+    sound_fx.select = try catalog.loadSoundByPath(allocator, frontend_select_sound_path);
+
+    return sound_fx;
+}
 
 fn loadSliderArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !SliderArt {
     var art = SliderArt{};
@@ -319,6 +378,131 @@ const route_menu_actions_with_replay = [_]RouteMenuAction{
     .back,
 };
 
+const options_button_count = 2;
+const options_fullscreen_button_index: usize = 0;
+const options_back_button_index: usize = 1;
+const options_fullscreen_anchor_y: f32 = 83.0;
+const options_button_center_offset_x: f32 = 0.0;
+const options_slider_center_x: f32 = 320.0;
+const options_sound_slider_center_y: f32 = 183.0;
+const options_music_slider_center_y: f32 = 277.0;
+const options_back_anchor_y: f32 = 390.0;
+const options_slider_panel_width: f32 = 418.0;
+const options_slider_panel_height: f32 = 86.0;
+const options_slider_arrow_size: f32 = 64.0;
+const options_slider_arrow_offset_x: f32 = 172.0;
+const options_slider_arrow_center_y_offset: f32 = 10.0;
+const high_score_button_count = 2;
+const exit_prompt_button_count = 2;
+const high_score_title_y: f32 = 64.0;
+const high_score_row_start_y: f32 = 111.0;
+const high_score_row_pitch: f32 = 27.0;
+const high_score_footer_y: f32 = 381.0;
+const high_score_entry_cancel_x: f32 = -110.0;
+const high_score_entry_submit_x: f32 = 55.0;
+const high_score_back_x: f32 = -132.0;
+const high_score_toggle_x: f32 = 33.0;
+const exit_prompt_title_y: f32 = 200.0;
+const exit_prompt_button_y: f32 = 330.0;
+const exit_prompt_yes_x: f32 = -80.0;
+const exit_prompt_no_x: f32 = 80.0;
+const frontend_activation_delay_step: f32 = 1.0 / 12.0;
+
+const FrontendHoverTarget = enum(u8) {
+    main_menu_new_game,
+    main_menu_high_scores,
+    main_menu_options,
+    main_menu_credits,
+    main_menu_exit,
+    new_game_tutorial,
+    new_game_postal_mode,
+    new_game_time_trial,
+    new_game_challenge_mode,
+    new_game_help,
+    new_game_back,
+    options_fullscreen,
+    options_sound_volume,
+    options_music_volume,
+    options_back,
+    high_scores_back,
+    high_scores_switch_table,
+    post_level_high_scores_cancel,
+    post_level_high_scores_submit,
+    exit_prompt_yes,
+    exit_prompt_no,
+};
+
+const FrontendQueuedAction = union(enum) {
+    main_menu: MainMenuItem,
+    new_game_menu: NewGameMenuItem,
+    options_menu: OptionsMenuItem,
+    high_scores_menu: HighScoreMenuAction,
+    post_level_high_scores: PostLevelHighScoreAction,
+    exit_prompt: ExitPromptChoice,
+};
+
+const FrontendQueuedActivation = struct {
+    action: FrontendQueuedAction,
+    progress: f32 = 0.0,
+};
+
+fn hoverTargetForMainMenu(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .main_menu_new_game,
+        1 => .main_menu_high_scores,
+        2 => .main_menu_options,
+        3 => .main_menu_credits,
+        4 => .main_menu_exit,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForNewGame(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .new_game_tutorial,
+        1 => .new_game_postal_mode,
+        2 => .new_game_time_trial,
+        3 => .new_game_challenge_mode,
+        4 => .new_game_help,
+        5 => .new_game_back,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForOptions(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .options_fullscreen,
+        1 => .options_sound_volume,
+        2 => .options_music_volume,
+        3 => .options_back,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .high_scores_back,
+        1 => .high_scores_switch_table,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForPostLevelHighScores(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .post_level_high_scores_cancel,
+        1 => .post_level_high_scores_submit,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForExitPrompt(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .exit_prompt_yes,
+        1 => .exit_prompt_no,
+        else => unreachable,
+    };
+}
+
 const Mode = enum {
     textures,
     audio,
@@ -352,14 +536,20 @@ const AppState = struct {
     frontend_transition: FrontendTransition = .{},
     boot_task_index: usize = 0,
     menu_index: usize = 0,
+    main_menu_button_states: [main_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** main_menu_items.len,
     new_game_menu_index: usize = 0,
+    new_game_button_states: [new_game_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** new_game_menu_items.len,
     options_menu_index: usize = 0,
+    options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
     high_scores_menu_index: usize = 0,
     high_scores_action_index: usize = 1,
+    high_score_button_states: [high_score_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** high_score_button_count,
     exit_prompt_choice_index: usize = 0,
+    exit_prompt_button_states: [exit_prompt_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** exit_prompt_button_count,
     exit_prompt_return_phase: GamePhase = .main_menu,
     completion_action_index: usize = 0,
     post_level_high_score_action_index: usize = 1,
+    post_level_high_score_button_states: [post_level_high_score_actions.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** post_level_high_score_actions.len,
     post_level_high_score_name_len: usize = 0,
     post_level_high_score_name_buf: [high_score.name_capacity]u8 = [_]u8{0} ** high_score.name_capacity,
     high_score_tables: high_score.Tables,
@@ -385,6 +575,10 @@ const AppState = struct {
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
     frontend_cursor_texture: ?assets.LoadedTexture = null,
+    frontend_widget_art: FrontendWidgetArt = .{},
+    frontend_sound_fx: FrontendSoundFx = .{},
+    hovered_frontend_target: ?FrontendHoverTarget = null,
+    pending_frontend_activation: ?FrontendQueuedActivation = null,
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
     current_sound: ?assets.LoadedSound = null,
@@ -421,6 +615,10 @@ const AppState = struct {
         errdefer ui_font.deinit();
         var frontend_cursor_texture = try catalog.loadTextureByPath(allocator, frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
+        var frontend_widget_art = try loadFrontendWidgetArt(allocator, &catalog);
+        errdefer frontend_widget_art.unload();
+        var frontend_sound_fx = try loadFrontendSoundFx(allocator, &catalog, audio_ready);
+        errdefer frontend_sound_fx.unload();
         var slider_art = try loadSliderArt(allocator, &catalog);
         errdefer slider_art.unload();
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
@@ -455,6 +653,8 @@ const AppState = struct {
             .object_index = object_index,
             .level_index = level_index,
             .frontend_cursor_texture = frontend_cursor_texture,
+            .frontend_widget_art = frontend_widget_art,
+            .frontend_sound_fx = frontend_sound_fx,
             .slider_art = slider_art,
             .route_map_art = route_map_art,
             .galaxy_names = galaxy_names,
@@ -525,6 +725,8 @@ const AppState = struct {
             texture.unload();
             self.frontend_cursor_texture = null;
         }
+        self.frontend_widget_art.unload();
+        self.frontend_sound_fx.unload();
         self.slider_art.unload();
         self.route_map_art.unload();
         self.unloadFrontendRouteLevel();
@@ -796,6 +998,328 @@ const AppState = struct {
         }
     }
 
+    fn currentUiLayout(self: *const AppState) VirtualLayout {
+        _ = self;
+        return app_ui.virtualLayout(.{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @floatFromInt(screenWidth()),
+            .height = @floatFromInt(screenHeight()),
+        });
+    }
+
+    fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
+        const layout = self.currentUiLayout();
+        const mouse_x = @as(f32, @floatFromInt(rl.getMouseX()));
+        const mouse_y = @as(f32, @floatFromInt(rl.getMouseY()));
+        if (!layout.containsScreenPoint(mouse_x, mouse_y)) return null;
+        return layout.unmapPoint(mouse_x, mouse_y);
+    }
+
+    fn setFrontendHoverTarget(self: *AppState, target: ?FrontendHoverTarget) void {
+        if (self.hovered_frontend_target == target) return;
+        self.hovered_frontend_target = target;
+        if (target != null) {
+            self.playFrontendHoverSound();
+        }
+    }
+
+    fn queueFrontendActivation(self: *AppState, action: FrontendQueuedAction) void {
+        if (self.pending_frontend_activation != null) return;
+        self.playFrontendSelectSound();
+        self.pending_frontend_activation = .{ .action = action };
+    }
+
+    fn dispatchFrontendActivation(self: *AppState, action: FrontendQueuedAction) !void {
+        switch (action) {
+            .main_menu => |item| try self.performMainMenuItem(item),
+            .new_game_menu => |item| try self.performNewGameMenuItem(item),
+            .options_menu => |item| try self.performOptionsMenuItem(item),
+            .high_scores_menu => |item| try self.performHighScoreMenuAction(item),
+            .post_level_high_scores => |item| try self.performPostLevelHighScoreAction(item),
+            .exit_prompt => |choice| try self.performExitPromptChoice(choice),
+        }
+    }
+
+    fn updatePendingFrontendActivation(self: *AppState) !bool {
+        if (self.pending_frontend_activation) |*pending| {
+            pending.progress = @min(pending.progress + frontend_activation_delay_step, 1.0);
+            if (pending.progress >= 0.999) {
+                const action = pending.action;
+                self.pending_frontend_activation = null;
+                try self.dispatchFrontendActivation(action);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    fn playFrontendHoverSound(self: *AppState) void {
+        if (!self.audio_ready) return;
+        if (self.frontend_sound_fx.highlight) |sound| {
+            rl.stopSound(sound.sound);
+            rl.playSound(sound.sound);
+        }
+    }
+
+    fn playFrontendSelectSound(self: *AppState) void {
+        if (!self.audio_ready) return;
+        if (self.frontend_sound_fx.select) |sound| {
+            rl.stopSound(sound.sound);
+            rl.playSound(sound.sound);
+        }
+    }
+
+    fn updateFrontendWidgetAnimations(self: *AppState) void {
+        const main_menu_active = self.game_phase == .main_menu and !self.frontend_transition.blocksInput();
+        for (&self.main_menu_button_states, 0..) |*state, index| {
+            state.stepFor(.menu_button, main_menu_active and self.menu_index == index);
+        }
+
+        const new_game_active = self.game_phase == .new_game_menu and !self.frontend_transition.blocksInput();
+        for (&self.new_game_button_states, 0..) |*state, index| {
+            state.stepFor(.menu_button, new_game_active and self.new_game_menu_index == index);
+        }
+
+        const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
+        self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.options_menu_index == 0);
+        self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.options_menu_index == 3);
+
+        const high_scores_active = self.game_phase == .high_scores_menu and !self.frontend_transition.blocksInput();
+        for (&self.high_score_button_states, 0..) |*state, index| {
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() == null and self.high_scores_action_index == index);
+        }
+        for (&self.post_level_high_score_button_states, 0..) |*state, index| {
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.post_level_high_score_action_index == index);
+        }
+
+        const exit_prompt_active = self.game_phase == .exit_prompt and !self.frontend_transition.blocksInput();
+        for (&self.exit_prompt_button_states, 0..) |*state, index| {
+            state.stepFor(.menu_button, exit_prompt_active and self.exit_prompt_choice_index == index);
+        }
+    }
+
+    fn snapFrontendWidgetStates(self: *AppState) void {
+        for (&self.main_menu_button_states, 0..) |*state, index| {
+            state.snapFor(.menu_button, self.game_phase == .main_menu and self.menu_index == index);
+        }
+        for (&self.new_game_button_states, 0..) |*state, index| {
+            state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.new_game_menu_index == index);
+        }
+        self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.options_menu_index == 0);
+        self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.options_menu_index == 3);
+        for (&self.high_score_button_states, 0..) |*state, index| {
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.high_scores_action_index == index);
+        }
+        for (&self.post_level_high_score_button_states, 0..) |*state, index| {
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() != null and self.post_level_high_score_action_index == index);
+        }
+        for (&self.exit_prompt_button_states, 0..) |*state, index| {
+            state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.exit_prompt_choice_index == index);
+        }
+    }
+
+    fn updateMainMenuMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+        var anchor_y: f32 = 90.0;
+        var hovered_index: ?usize = null;
+
+        for (main_menu_items, 0..) |item, index| {
+            const text_rect = frontend_widget.type20TextRect(&self.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+            if (frontend_widget.hitRect(text_rect, self.main_menu_button_states[index]).contains(local_mouse)) {
+                hovered_index = index;
+            }
+            anchor_y = frontend_widget.stackBelow(text_rect);
+        }
+
+        if (hovered_index) |index| {
+            self.setFrontendHoverTarget(hoverTargetForMainMenu(index));
+            self.menu_index = index;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .main_menu = main_menu_items[index] });
+            }
+        } else {
+            self.setFrontendHoverTarget(null);
+        }
+    }
+
+    fn updateNewGameMenuMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+        var hovered_index: ?usize = null;
+        var anchor_y: f32 = 80.0;
+
+        for (new_game_menu_items[0..4], 0..) |item, index| {
+            const text_rect = frontend_widget.type20TextRect(&self.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+            if (frontend_widget.hitRect(text_rect, self.new_game_button_states[index]).contains(local_mouse)) {
+                hovered_index = index;
+            }
+            anchor_y = frontend_widget.stackBelow(text_rect);
+        }
+
+        const help_rect = frontend_widget.type20TextRect(&self.ui_font, "Help", 350.0, -220.0);
+        if (frontend_widget.hitRect(help_rect, self.new_game_button_states[4]).contains(local_mouse)) {
+            hovered_index = 4;
+        }
+
+        const back_rect = frontend_widget.type20TextRect(&self.ui_font, "Back", 350.0, frontend_widget.type20_center_offset_x);
+        if (frontend_widget.hitRect(back_rect, self.new_game_button_states[5]).contains(local_mouse)) {
+            hovered_index = 5;
+        }
+
+        if (hovered_index) |index| {
+            self.setFrontendHoverTarget(hoverTargetForNewGame(index));
+            self.new_game_menu_index = index;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[index] });
+            }
+        } else {
+            self.setFrontendHoverTarget(null);
+        }
+    }
+
+    fn updateOptionsMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+
+        const fullscreen_rect = optionsFullscreenTextRect(self);
+        if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[options_fullscreen_button_index]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptions(0));
+            self.options_menu_index = 0;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .options_menu = .fullscreen });
+            }
+            return;
+        }
+
+        const sound_panel_rect = optionsSliderPanelRect(options_sound_slider_center_y);
+        if (sound_panel_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptions(1));
+            self.options_menu_index = 1;
+            if (rl.isMouseButtonPressed(.left)) {
+                if (optionsSliderLessRect(options_sound_slider_center_y).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.sound_volume, -0.2);
+                } else if (optionsSliderMoreRect(options_sound_slider_center_y).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.sound_volume, 0.2);
+                }
+            }
+            return;
+        }
+
+        const music_panel_rect = optionsSliderPanelRect(options_music_slider_center_y);
+        if (music_panel_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptions(2));
+            self.options_menu_index = 2;
+            if (rl.isMouseButtonPressed(.left)) {
+                if (optionsSliderLessRect(options_music_slider_center_y).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.music_volume, -0.2);
+                } else if (optionsSliderMoreRect(options_music_slider_center_y).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.music_volume, 0.2);
+                }
+            }
+            return;
+        }
+
+        const back_rect = optionsBackTextRect(self);
+        if (frontend_widget.hitRect(back_rect, self.options_button_states[options_back_button_index]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptions(3));
+            self.options_menu_index = 3;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .options_menu = .back });
+            }
+            return;
+        }
+
+        self.setFrontendHoverTarget(null);
+    }
+
+    fn updateHighScoresMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+
+        if (self.postLevelHighScoreContext() != null) {
+            const cancel_rect = highScoreFooterTextRect(self, post_level_high_score_actions[0].label(), high_score_entry_cancel_x);
+            if (frontend_widget.hitRect(cancel_rect, self.post_level_high_score_button_states[0]).contains(local_mouse)) {
+                self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(0));
+                self.post_level_high_score_action_index = 0;
+                if (rl.isMouseButtonPressed(.left)) {
+                    self.queueFrontendActivation(.{ .post_level_high_scores = .cancel });
+                }
+                return;
+            }
+
+            const submit_rect = highScoreFooterTextRect(self, post_level_high_score_actions[1].label(), high_score_entry_submit_x);
+            if (frontend_widget.hitRect(submit_rect, self.post_level_high_score_button_states[1]).contains(local_mouse)) {
+                self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(1));
+                self.post_level_high_score_action_index = 1;
+                if (rl.isMouseButtonPressed(.left)) {
+                    self.queueFrontendActivation(.{ .post_level_high_scores = .submit });
+                }
+                return;
+            }
+        } else {
+            const back_rect = highScoreFooterTextRect(self, "Back", high_score_back_x);
+            if (frontend_widget.hitRect(back_rect, self.high_score_button_states[0]).contains(local_mouse)) {
+                self.setFrontendHoverTarget(hoverTargetForHighScores(0));
+                self.high_scores_action_index = 0;
+                if (rl.isMouseButtonPressed(.left)) {
+                    self.queueFrontendActivation(.{ .high_scores_menu = .back });
+                }
+                return;
+            }
+
+            const toggle_rect = highScoreFooterTextRect(self, highScoreTableToggleLabel(high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)]), high_score_toggle_x);
+            if (frontend_widget.hitRect(toggle_rect, self.high_score_button_states[1]).contains(local_mouse)) {
+                self.setFrontendHoverTarget(hoverTargetForHighScores(1));
+                self.high_scores_action_index = 1;
+                if (rl.isMouseButtonPressed(.left)) {
+                    self.queueFrontendActivation(.{ .high_scores_menu = .switch_table });
+                }
+                return;
+            }
+        }
+
+        self.setFrontendHoverTarget(null);
+    }
+
+    fn updateExitPromptMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+
+        const yes_rect = exitPromptTextRect(self, exit_prompt_choices[0].label(), exit_prompt_yes_x);
+        if (frontend_widget.hitRect(yes_rect, self.exit_prompt_button_states[0]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForExitPrompt(0));
+            self.exit_prompt_choice_index = 0;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .exit_prompt = .yes });
+            }
+            return;
+        }
+
+        const no_rect = exitPromptTextRect(self, exit_prompt_choices[1].label(), exit_prompt_no_x);
+        if (frontend_widget.hitRect(no_rect, self.exit_prompt_button_states[1]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForExitPrompt(1));
+            self.exit_prompt_choice_index = 1;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .exit_prompt = .no });
+            }
+            return;
+        }
+
+        self.setFrontendHoverTarget(null);
+    }
+
     fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
         self.game_phase_ticks += 1;
         if (self.current_game_background_runtime) |*runtime| {
@@ -814,6 +1338,12 @@ const AppState = struct {
             self.frontend_transition.completeHandoff();
             return;
         }
+
+        if (try self.updatePendingFrontendActivation()) {
+            return;
+        }
+
+        self.updateFrontendWidgetAnimations();
 
         if (self.game_phase == .boot) {
             if (try self.advanceBootTask()) {
@@ -875,6 +1405,7 @@ const AppState = struct {
         }
 
         if (self.frontend_transition.blocksInput()) return;
+        if (self.pending_frontend_activation != null) return;
 
         switch (self.game_phase) {
             .boot => {},
@@ -884,6 +1415,7 @@ const AppState = struct {
                 }
             },
             .main_menu => {
+                try self.updateMainMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, -1);
                 }
@@ -891,10 +1423,11 @@ const AppState = struct {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, 1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateMainMenuItem(main_menu_items[self.menu_index]);
+                    self.queueFrontendActivation(.{ .main_menu = main_menu_items[self.menu_index] });
                 }
             },
             .new_game_menu => {
+                try self.updateNewGameMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, -1);
                 }
@@ -902,10 +1435,11 @@ const AppState = struct {
                     self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, 1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateNewGameMenuItem(new_game_menu_items[self.new_game_menu_index]);
+                    self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[self.new_game_menu_index] });
                 }
             },
             .options_menu => {
+                try self.updateOptionsMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, -1);
                 }
@@ -915,13 +1449,16 @@ const AppState = struct {
 
                 const selected = options_menu_items[self.options_menu_index];
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
-                    try self.stepOptionsMenuValue(selected, -0.1);
+                    try self.stepOptionsMenuValue(selected, -0.2);
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
-                    try self.stepOptionsMenuValue(selected, 0.1);
+                    try self.stepOptionsMenuValue(selected, 0.2);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateOptionsMenuItem(selected);
+                    switch (selected) {
+                        .fullscreen, .back => self.queueFrontendActivation(.{ .options_menu = selected }),
+                        .sound_volume, .music_volume => {},
+                    }
                 }
             },
             .route_map_menu => {
@@ -943,6 +1480,7 @@ const AppState = struct {
                 }
             },
             .high_scores_menu => {
+                try self.updateHighScoresMouseSelection();
                 if (self.postLevelHighScoreContext() != null) {
                     self.collectPostLevelHighScoreTextInput();
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
@@ -952,7 +1490,7 @@ const AppState = struct {
                         self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        try self.activatePostLevelHighScoreAction(post_level_high_score_actions[self.post_level_high_score_action_index]);
+                        self.queueFrontendActivation(.{ .post_level_high_scores = post_level_high_score_actions[self.post_level_high_score_action_index] });
                     }
                 } else {
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
@@ -962,11 +1500,12 @@ const AppState = struct {
                         self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, 1);
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        try self.activateHighScoreMenuAction(high_score_menu_actions[self.high_scores_action_index]);
+                        self.queueFrontendActivation(.{ .high_scores_menu = high_score_menu_actions[self.high_scores_action_index] });
                     }
                 }
             },
             .exit_prompt => {
+                try self.updateExitPromptMouseSelection();
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                     self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, -1);
                 }
@@ -974,7 +1513,7 @@ const AppState = struct {
                     self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, 1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateExitPromptChoice(exit_prompt_choices[self.exit_prompt_choice_index]);
+                    self.queueFrontendActivation(.{ .exit_prompt = exit_prompt_choices[self.exit_prompt_choice_index] });
                 }
             },
             .completion_screen => {
@@ -1049,7 +1588,10 @@ const AppState = struct {
     fn enterGamePhase(self: *AppState, phase: GamePhase) !void {
         self.game_phase = phase;
         self.game_phase_ticks = 0;
+        self.hovered_frontend_target = null;
+        self.pending_frontend_activation = null;
         try self.syncGamePhaseResources();
+        self.snapFrontendWidgetStates();
     }
 
     fn enterStartPhase(self: *AppState, phase: GamePhase) !void {
@@ -1072,7 +1614,7 @@ const AppState = struct {
         }
     }
 
-    fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
+    fn performMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         switch (item) {
             .new_game => try self.enterGamePhase(.new_game_menu),
             .high_scores => {
@@ -1086,7 +1628,12 @@ const AppState = struct {
         }
     }
 
-    fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
+    fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
+        self.playFrontendSelectSound();
+        try self.performMainMenuItem(item);
+    }
+
+    fn performNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
         switch (item) {
             .tutorial => try self.enterFrontendLevelMode(.tutorial),
             .postal_mode => try self.enterFrontendLevelMode(.postal),
@@ -1097,12 +1644,22 @@ const AppState = struct {
         }
     }
 
-    fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
+    fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
+        self.playFrontendSelectSound();
+        try self.performNewGameMenuItem(item);
+    }
+
+    fn performOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
         switch (item) {
             .fullscreen => self.toggleFullscreenPreference(),
             .sound_volume, .music_volume => {},
             .back => try self.leaveOptionsMenu(),
         }
+    }
+
+    fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
+        self.playFrontendSelectSound();
+        try self.performOptionsMenuItem(item);
     }
 
     fn beginExitPrompt(self: *AppState, return_phase: GamePhase) !void {
@@ -1111,14 +1668,20 @@ const AppState = struct {
         try self.enterGamePhase(.exit_prompt);
     }
 
-    fn activateExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
+    fn performExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
         switch (choice) {
             .no => try self.enterGamePhase(self.exit_prompt_return_phase),
             .yes => self.should_exit = true,
         }
     }
 
+    fn activateExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
+        self.playFrontendSelectSound();
+        try self.performExitPromptChoice(choice);
+    }
+
     fn activateRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
+        self.playFrontendSelectSound();
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
             .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
@@ -1127,24 +1690,35 @@ const AppState = struct {
     }
 
     fn activateCompletionAction(self: *AppState, action: CompletionAction) !void {
+        self.playFrontendSelectSound();
         switch (action) {
             .continue_flow => try self.continueCompletionScreen(),
             .replay_level => try self.replayCompletedRun(),
         }
     }
 
-    fn activatePostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
+    fn performPostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
         switch (action) {
             .cancel => try self.cancelPostLevelHighScoreEntry(),
             .submit => try self.submitPostLevelHighScore(),
         }
     }
 
-    fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
+    fn activatePostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
+        self.playFrontendSelectSound();
+        try self.performPostLevelHighScoreAction(action);
+    }
+
+    fn performHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
         switch (action) {
             .back => try self.enterGamePhase(.main_menu),
             .switch_table => self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1),
         }
+    }
+
+    fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
+        self.playFrontendSelectSound();
+        try self.performHighScoreMenuAction(action);
     }
 
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
@@ -1829,6 +2403,12 @@ const AppState = struct {
         if (self.current_sound) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
+        if (self.frontend_sound_fx.highlight) |sound| {
+            rl.setSoundVolume(sound.sound, sound_volume);
+        }
+        if (self.frontend_sound_fx.select) |sound| {
+            rl.setSoundVolume(sound.sound, sound_volume);
+        }
         if (self.current_music) |music| {
             rl.setMusicVolume(music.music, music_volume);
         }
@@ -1854,18 +2434,28 @@ const AppState = struct {
         switch (item) {
             .fullscreen => {
                 if (delta != 0.0) {
+                    self.playFrontendSelectSound();
                     self.toggleFullscreenPreference();
                 }
             },
             .sound_volume => {
+                const previous = self.runtime_config.soundVolume();
                 self.runtime_config.setSoundVolume(self.runtime_config.soundVolume() + delta);
                 self.applyAudioConfigVolumes();
+                if (self.runtime_config.soundVolume() != previous) {
+                    self.playFrontendSelectSound();
+                }
             },
             .music_volume => {
+                const previous = self.runtime_config.musicVolume();
                 self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
                 self.applyAudioConfigVolumes();
+                if (self.runtime_config.musicVolume() != previous) {
+                    self.playFrontendSelectSound();
+                }
             },
             .back => if (delta != 0.0) {
+                self.playFrontendSelectSound();
                 try self.leaveOptionsMenu();
             },
         }
@@ -2168,6 +2758,11 @@ pub fn main() !void {
     const initial_window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command);
     rl.initWindow(initial_window_size.width, initial_window_size.height, "snail");
     defer rl.closeWindow();
+    if (options.command == .game) {
+        rl.hideCursor();
+    } else {
+        rl.showCursor();
+    }
 
     rl.initAudioDevice();
     const audio_ready = rl.isAudioDeviceReady();
@@ -2268,6 +2863,7 @@ fn drawGameUi(state: *const AppState) !void {
         .level => try drawGameplayLevelUi(state, ui_layout),
     }
 
+    drawFrontendCursorOverlay(state);
     state.frontend_transition.draw(full_bounds);
 }
 
@@ -2289,18 +2885,73 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     );
 }
 
+fn optionsFullscreenTextRect(state: *const AppState) frontend_widget.Rect {
+    return frontend_widget.type20TextRect(
+        &state.ui_font,
+        if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
+        options_fullscreen_anchor_y,
+        options_button_center_offset_x,
+    );
+}
+
+fn optionsBackTextRect(state: *const AppState) frontend_widget.Rect {
+    return frontend_widget.type20TextRect(&state.ui_font, "Back", options_back_anchor_y, options_button_center_offset_x);
+}
+
+fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
+    return frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, text, high_score_footer_y, center_offset_x);
+}
+
+fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
+    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .center, text, exit_prompt_button_y, center_offset_x);
+}
+
+fn optionsSliderPanelRect(center_y: f32) frontend_widget.Rect {
+    return .{
+        .left = options_slider_center_x - options_slider_panel_width * 0.5,
+        .top = center_y - options_slider_panel_height * 0.5,
+        .width = options_slider_panel_width,
+        .height = options_slider_panel_height,
+    };
+}
+
+fn optionsSliderLessRect(center_y: f32) frontend_widget.Rect {
+    return .{
+        .left = options_slider_center_x - options_slider_arrow_offset_x - options_slider_arrow_size * 0.5,
+        .top = center_y + options_slider_arrow_center_y_offset - options_slider_arrow_size * 0.5,
+        .width = options_slider_arrow_size,
+        .height = options_slider_arrow_size,
+    };
+}
+
+fn optionsSliderMoreRect(center_y: f32) frontend_widget.Rect {
+    return .{
+        .left = options_slider_center_x + options_slider_arrow_offset_x - options_slider_arrow_size * 0.5,
+        .top = center_y + options_slider_arrow_center_y_offset - options_slider_arrow_size * 0.5,
+        .width = options_slider_arrow_size,
+        .height = options_slider_arrow_size,
+    };
+}
+
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const item_y = [_]f32{ 90.0, 144.0, 198.0, 252.0, 390.0 };
-    for (main_menu_items, item_y, 0..) |item, local_y, index| {
-        drawFrontendMenuButton(
-            state,
+    var anchor_y: f32 = 90.0;
+    const hover_phase = frontendHoverGlowPhase(state);
+    for (main_menu_items, 0..) |item, index| {
+        const text_rect = frontend_widget.type20TextRect(&state.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+        frontend_widget.drawType20Button(
             layout,
-            320.0,
-            local_y,
+            .{
+                .border = state.frontend_widget_art.border.?.texture,
+                .glow = state.frontend_widget_art.glow.?.texture,
+            },
+            &state.ui_font,
             item.label(),
-            state.menu_index == index,
-            .{},
+            text_rect,
+            state.main_menu_button_states[index],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForMainMenu(index)) hover_phase else null,
         );
+        anchor_y = frontend_widget.stackBelow(text_rect);
     }
 
     if (state.game_status_message) |message| {
@@ -2309,35 +2960,50 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const primary_item_y = [_]f32{ 80.0, 134.0, 188.0, 242.0 };
-    for (new_game_menu_items[0..4], primary_item_y, 0..) |item, local_y, index| {
-        drawFrontendMenuButton(
-            state,
+    var anchor_y: f32 = 80.0;
+    const hover_phase = frontendHoverGlowPhase(state);
+    for (new_game_menu_items[0..4], 0..) |item, index| {
+        const text_rect = frontend_widget.type20TextRect(&state.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+        frontend_widget.drawType20Button(
             layout,
-            320.0,
-            local_y,
+            .{
+                .border = state.frontend_widget_art.border.?.texture,
+                .glow = state.frontend_widget_art.glow.?.texture,
+            },
+            &state.ui_font,
             item.label(),
-            state.new_game_menu_index == index,
-            .{},
+            text_rect,
+            state.new_game_button_states[index],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForNewGame(index)) hover_phase else null,
         );
+        anchor_y = frontend_widget.stackBelow(text_rect);
     }
-    drawFrontendMenuButton(
-        state,
+    frontend_widget.drawType20Button(
         layout,
-        84.0,
-        350.0,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+            .glow = state.frontend_widget_art.glow.?.texture,
+        },
+        &state.ui_font,
         "Help",
-        state.new_game_menu_index == 4,
-        .{ .min_width = 84.0 },
+        frontend_widget.type20TextRect(&state.ui_font, "Help", 350.0, -220.0),
+        state.new_game_button_states[4],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForNewGame(4)) hover_phase else null,
     );
-    drawFrontendMenuButton(
-        state,
+    frontend_widget.drawType20Button(
         layout,
-        320.0,
-        350.0,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+            .glow = state.frontend_widget_art.glow.?.texture,
+        },
+        &state.ui_font,
         "Back",
-        state.new_game_menu_index == 5,
-        .{ .min_width = 96.0 },
+        frontend_widget.type20TextRect(&state.ui_font, "Back", 350.0, frontend_widget.type20_center_offset_x),
+        state.new_game_button_states[5],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForNewGame(5)) hover_phase else null,
     );
 
     if (state.game_status_message) |message| {
@@ -2346,41 +3012,55 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawFrontendMenuButton(
-        state,
+    const local_mouse = state.currentFrontendMouseLocal();
+    const hover_phase = frontendHoverGlowPhase(state);
+    frontend_widget.drawType20Button(
         layout,
-        320.0,
-        61.0,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+            .glow = state.frontend_widget_art.glow.?.texture,
+        },
+        &state.ui_font,
         if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
-        state.options_menu_index == 0,
-        .{ .min_width = 220.0 },
+        optionsFullscreenTextRect(state),
+        state.options_button_states[options_fullscreen_button_index],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForOptions(0)) hover_phase else null,
     );
     drawFrontendSliderPanel(
         state,
         layout,
-        320.0,
-        183.0,
+        options_slider_center_x,
+        options_sound_slider_center_y,
         "Sounds Volume",
         state.runtime_config.soundVolume(),
         state.options_menu_index == 1,
+        if (local_mouse) |mouse| optionsSliderLessRect(options_sound_slider_center_y).contains(mouse) else false,
+        if (local_mouse) |mouse| optionsSliderMoreRect(options_sound_slider_center_y).contains(mouse) else false,
     );
     drawFrontendSliderPanel(
         state,
         layout,
-        320.0,
-        277.0,
+        options_slider_center_x,
+        options_music_slider_center_y,
         "Music Volume",
         state.runtime_config.musicVolume(),
         state.options_menu_index == 2,
+        if (local_mouse) |mouse| optionsSliderLessRect(options_music_slider_center_y).contains(mouse) else false,
+        if (local_mouse) |mouse| optionsSliderMoreRect(options_music_slider_center_y).contains(mouse) else false,
     );
-    drawFrontendMenuButton(
-        state,
+    frontend_widget.drawType20Button(
         layout,
-        320.0,
-        390.0,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+            .glow = state.frontend_widget_art.glow.?.texture,
+        },
+        &state.ui_font,
         "Back",
-        state.options_menu_index == 3,
-        .{ .min_width = 92.0 },
+        optionsBackTextRect(state),
+        state.options_button_states[options_back_button_index],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForOptions(3)) hover_phase else null,
     );
 
     if (state.game_status_message) |message| {
@@ -2426,11 +3106,16 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         context.mode
     else
         high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
+    const hover_phase = frontendHoverGlowPhase(state);
+    const art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+        .glow = state.frontend_widget_art.glow.?.texture,
+    };
     drawFrontendHeading(
         state,
         layout,
         app_ui.authored_width * 0.5,
-        64.0,
+        high_score_title_y,
         if (pending_entry != null) "Enter Your Name Here!" else highScoreScreenTitle(selected_mode),
         23,
         .center,
@@ -2444,19 +3129,51 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         else
             try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
         drawHighScoreTable(state, layout, context.rank, draft_name, true, selected_mode);
-        drawFrontendMenuButton(state, layout, 210.0, 381.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .{ .min_width = 108.0 });
-        drawFrontendMenuButton(state, layout, 375.0, 381.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .{ .min_width = 118.0 });
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .footer_button,
+            post_level_high_score_actions[0].label(),
+            highScoreFooterTextRect(state, post_level_high_score_actions[0].label(), high_score_entry_cancel_x),
+            state.post_level_high_score_button_states[0],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForPostLevelHighScores(0)) hover_phase else null,
+        );
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .footer_button,
+            post_level_high_score_actions[1].label(),
+            highScoreFooterTextRect(state, post_level_high_score_actions[1].label(), high_score_entry_submit_x),
+            state.post_level_high_score_button_states[1],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForPostLevelHighScores(1)) hover_phase else null,
+        );
     } else {
         drawHighScoreTable(state, layout, null, null, false, selected_mode);
-        drawFrontendMenuButton(state, layout, 188.0, 381.0, "Back", state.high_scores_action_index == 0, .{ .min_width = 94.0 });
-        drawFrontendMenuButton(
-            state,
+        frontend_widget.drawTextButton(
             layout,
-            353.0,
-            381.0,
+            art,
+            &state.ui_font,
+            .footer_button,
+            "Back",
+            highScoreFooterTextRect(state, "Back", high_score_back_x),
+            state.high_score_button_states[0],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForHighScores(0)) hover_phase else null,
+        );
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .footer_button,
             highScoreTableToggleLabel(selected_mode),
-            state.high_scores_action_index == 1,
-            .{ .min_width = 180.0 },
+            highScoreFooterTextRect(state, highScoreTableToggleLabel(selected_mode), high_score_toggle_x),
+            state.high_score_button_states[1],
+            false,
+            if (state.hovered_frontend_target == hoverTargetForHighScores(1)) hover_phase else null,
         );
     }
 
@@ -2466,9 +3183,32 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawFrontendHeading(state, layout, 320.0, 210.0, "Do you really want to quit?", 26, .center, .ray_white);
-    drawFrontendMenuButton(state, layout, 250.0, 292.0, exit_prompt_choices[0].label(), state.exit_prompt_choice_index == 0, .{ .min_width = 88.0 });
-    drawFrontendMenuButton(state, layout, 392.0, 292.0, exit_prompt_choices[1].label(), state.exit_prompt_choice_index == 1, .{ .min_width = 88.0 });
+    const hover_phase = frontendHoverGlowPhase(state);
+    const art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+        .glow = state.frontend_widget_art.glow.?.texture,
+    };
+    drawFrontendHeading(state, layout, 320.0, exit_prompt_title_y, "Do you really want to quit?", 26, .center, .ray_white);
+    frontend_widget.drawType20Button(
+        layout,
+        art,
+        &state.ui_font,
+        exit_prompt_choices[0].label(),
+        exitPromptTextRect(state, exit_prompt_choices[0].label(), exit_prompt_yes_x),
+        state.exit_prompt_button_states[0],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForExitPrompt(0)) hover_phase else null,
+    );
+    frontend_widget.drawType20Button(
+        layout,
+        art,
+        &state.ui_font,
+        exit_prompt_choices[1].label(),
+        exitPromptTextRect(state, exit_prompt_choices[1].label(), exit_prompt_no_x),
+        state.exit_prompt_button_states[1],
+        false,
+        if (state.hovered_frontend_target == hoverTargetForExitPrompt(1)) hover_phase else null,
+    );
 }
 
 fn drawHighScoreTable(
@@ -2480,63 +3220,70 @@ fn drawHighScoreTable(
     mode: high_score.Mode,
 ) void {
     const entries = state.high_score_tables.visibleEntries(mode);
-    const row_start_y: i32 = @intFromFloat(layout.mapPoint(0.0, 111.0).y);
-    const row_height = layout.scaleInt(27);
-    const rank_x: i32 = @intFromFloat(layout.mapPoint(92.0, 0.0).x);
-    const name_x: i32 = @intFromFloat(layout.mapPoint(140.0, 0.0).x);
-    const score_x: i32 = @intFromFloat(layout.mapPoint(445.0, 0.0).x);
-    const replay_x: i32 = @intFromFloat(layout.mapPoint(490.0, 0.0).x);
-    const row_panel_x: i32 = @intFromFloat(layout.mapPoint(84.0, 0.0).x);
-    const row_panel_width = layout.scaleFloat(464.0);
+    const art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+        .glow = state.frontend_widget_art.glow.?.texture,
+    };
+    const row_background_text = switch (mode) {
+        .postal => "                                               ",
+        .challenge => "                                           ",
+    };
 
-    var visible_indices: [high_score.visible_entry_count]usize = undefined;
-    var visible_count: usize = 0;
-    for (entries, 0..) |entry, index| {
-        if (entry.isActive() or (highlight_index != null and highlight_index.? == index)) {
-            visible_indices[visible_count] = index;
-            visible_count += 1;
-        }
-    }
+    var visible_row: usize = 0;
+    for (entries, 0..) |table_entry, entry_index| {
+        if (!table_entry.isActive() and !(highlight_index != null and highlight_index.? == entry_index)) continue;
 
-    for (visible_indices[0..visible_count], 0..) |entry_index, visible_row| {
-        const entry = entries[entry_index];
-        const row_y = row_start_y + @as(i32, @intCast(visible_row)) * row_height;
-        const row_color: rl.Color = if (highlight_index != null and highlight_index.? == entry_index)
-            .{ .r = 255, .g = 210, .b = 80, .a = 46 }
-        else if ((visible_row & 1) == 0)
-            .{ .r = 255, .g = 255, .b = 255, .a = 12 }
-        else
-            .{ .r = 0, .g = 0, .b = 0, .a = 0 };
-        if (row_color.a != 0) {
-            rl.drawRectangleRounded(
-                .{
-                    .x = @floatFromInt(row_panel_x),
-                    .y = @floatFromInt(row_y - layout.scaleInt(2)),
-                    .width = row_panel_width,
-                    .height = layout.scaleFloat(22.0),
-                },
-                0.16,
-                4,
-                row_color,
-            );
-        }
+        const row_y = high_score_row_start_y + @as(f32, @floatFromInt(visible_row)) * high_score_row_pitch;
+        var row_state = frontend_widget.TextButtonState{};
+        row_state.snapFor(.compact_score_row, highlight_index != null and highlight_index.? == entry_index);
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .compact_score_row,
+            row_background_text,
+            frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, row_background_text, row_y, -228.0),
+            row_state,
+            false,
+            null,
+        );
 
         var rank_buffer: [8]u8 = undefined;
         const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}", .{entry_index + 1}) catch "";
-        drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(18), .ray_white);
         const display_name = if (highlight_index != null and highlight_index.? == entry_index and editing_name != null)
             editing_name.?
         else
-            highScoreDisplayName(&entry);
-        drawAppText(state, display_name, name_x, row_y, layout.fontSize(18), .ray_white);
+            highScoreDisplayName(&table_entry);
+        drawFrontendTextAligned(state, layout, 98.0, row_y, rank_text, 18, .{ .r = 216, .g = 138, .b = 28, .a = 255 }, .left);
+        drawFrontendTextAligned(state, layout, 140.0, row_y, display_name, 18, .ray_white, .left);
 
         var score_buffer: [32]u8 = undefined;
-        const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
-        drawAppText(state, score_text, score_x - measureAppText(state, score_text, layout.fontSize(18)), row_y, layout.fontSize(18), .gold);
-        const replay_text = if (!hide_replay and entry.has_replay) "Replay" else "";
+        const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0";
+        drawFrontendTextAligned(
+            state,
+            layout,
+            if (mode == .postal) 480.0 else 445.0,
+            row_y,
+            score_text,
+            18,
+            .{ .r = 216, .g = 138, .b = 28, .a = 255 },
+            .right,
+        );
+        const replay_text = if (!hide_replay and table_entry.has_replay) "Replay" else "";
         if (replay_text.len != 0) {
-            drawAppText(state, replay_text, replay_x - measureAppText(state, replay_text, layout.fontSize(18)), row_y, layout.fontSize(18), .light_gray);
+            drawFrontendTextAligned(
+                state,
+                layout,
+                if (mode == .postal) 490.0 else 445.0,
+                row_y,
+                replay_text,
+                18,
+                .{ .r = 216, .g = 138, .b = 28, .a = 255 },
+                .center,
+            );
         }
+
+        visible_row += 1;
     }
 }
 
@@ -2638,7 +3385,12 @@ fn drawFrontendPill(
 
 fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local_x: f32, local_y: f32) void {
     const loaded_texture = state.frontend_cursor_texture orelse return;
-    const destination = layout.mapRect(local_x - 32.0, local_y - 32.0, 64.0, 64.0);
+    const destination = layout.mapRect(
+        local_x - frontend_widget.cursor_hotspot_x,
+        local_y - frontend_widget.cursor_hotspot_y,
+        frontend_widget.cursor_size,
+        frontend_widget.cursor_size,
+    );
     rl.drawTexturePro(
         loaded_texture.texture,
         .{
@@ -2652,6 +3404,34 @@ fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local
         0.0,
         .white,
     );
+}
+
+fn drawFrontendCursorOverlay(state: *const AppState) void {
+    if (state.command != .game) return;
+    if (!frontendPhaseShowsCursor(state.game_phase)) return;
+    const layout = state.currentUiLayout();
+    const local_mouse = state.currentFrontendMouseLocal() orelse return;
+    drawFrontendCursorRocket(state, layout, local_mouse.x, local_mouse.y);
+}
+
+fn frontendPhaseShowsCursor(phase: GamePhase) bool {
+    return switch (phase) {
+        .main_menu,
+        .new_game_menu,
+        .options_menu,
+        .route_map_menu,
+        .high_scores_menu,
+        .exit_prompt,
+        .completion_screen,
+        .help,
+        => true,
+        .boot, .intro, .credits, .level => false,
+    };
+}
+
+fn frontendHoverGlowPhase(state: *const AppState) f32 {
+    const period_seconds = 0.5;
+    return @floatCast(@mod(state.render_time_seconds / period_seconds, 1.0));
 }
 
 fn drawFrontendHeading(
@@ -2685,9 +3465,6 @@ fn drawFrontendMenuButton(
     drawFrontendPill(layout, center_x, center_y, local_width, local_height, colors.fill, colors.outline);
     drawFrontendTextAligned(state, layout, center_x + 2.0, center_y - @as(f32, if (active) 13 else 12), text, authored_font_size, colors.shadow, .center);
     drawFrontendTextAligned(state, layout, center_x, center_y - @as(f32, if (active) 15 else 14), text, authored_font_size, colors.text, .center);
-    if (active and options.show_cursor) {
-        drawFrontendCursorRocket(state, layout, center_x + local_width * 0.5 + 20.0, center_y + 2.0);
-    }
 }
 
 fn drawTextureLocalRectSource(
@@ -2765,6 +3542,8 @@ fn drawFrontendSliderPanel(
     label: []const u8,
     value: f32,
     active: bool,
+    less_hovered: bool,
+    more_hovered: bool,
 ) void {
     const panel_width: f32 = 418.0;
     const panel_height: f32 = 86.0;
@@ -2816,11 +3595,11 @@ fn drawFrontendSliderPanel(
         );
     }
 
-    const less_texture = if (active)
+    const less_texture = if (less_hovered)
         state.slider_art.less_hover orelse state.slider_art.less
     else
         state.slider_art.less;
-    const more_texture = if (active)
+    const more_texture = if (more_hovered)
         state.slider_art.more_hover orelse state.slider_art.more
     else
         state.slider_art.more;
@@ -2835,10 +3614,6 @@ fn drawFrontendSliderPanel(
     const value_text = std.fmt.bufPrint(&value_buffer, "{d:.0}%", .{value * 100.0}) catch "0%";
     drawFrontendTextAligned(state, layout, center_x + 2.0, center_y + 2.0, value_text, 20, .{ .r = 42, .g = 20, .b = 34, .a = 220 }, .center);
     drawFrontendTextAligned(state, layout, center_x, center_y, value_text, 20, .ray_white, .center);
-
-    if (active) {
-        drawFrontendCursorRocket(state, layout, center_x + 198.0, center_y + 10.0);
-    }
 }
 
 fn drawRouteMapConnection(
