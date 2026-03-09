@@ -93,7 +93,7 @@ const PendingRunResult = struct {
     parcel_count: u32,
     parcel_target: usize,
     score: u32,
-    score_is_fallback: bool,
+    score_is_partial: bool,
     high_score_mode: ?high_score.Mode = null,
     high_score_rank: ?usize = null,
     time_trial_record_improved: bool = false,
@@ -924,14 +924,14 @@ const AppState = struct {
             .parcel_count = parcel_count,
             .parcel_target = parcel_target,
             .score = 0,
-            .score_is_fallback = false,
+            .score_is_partial = false,
             .return_target = resultReturnTargetForMode(active_mode),
         };
 
         switch (active_mode orelse .tutorial) {
             .postal => {
-                result.score = fallbackPostalOrChallengeScore(loaded_level, runner);
-                result.score_is_fallback = true;
+                result.score = partialPostalOrChallengeScore(loaded_level, runner);
+                result.score_is_partial = true;
 
                 const entry = high_score.Entry{
                     .score = result.score,
@@ -943,8 +943,8 @@ const AppState = struct {
                 try self.saveHighScoreTables();
             },
             .challenge => {
-                result.score = fallbackPostalOrChallengeScore(loaded_level, runner);
-                result.score_is_fallback = true;
+                result.score = partialPostalOrChallengeScore(loaded_level, runner);
+                result.score_is_partial = true;
 
                 const entry = high_score.Entry{
                     .score = result.score,
@@ -2138,24 +2138,28 @@ fn completionElapsedMillis(runner: gameplay.Runner) u32 {
     return @intCast(@min(millis, std.math.maxInt(u32)));
 }
 
-// PORT(fallback): until the original cRSubGoldy::ScoreAdd path is ported,
-// postal and challenge table scores are derived from currently tracked runner counters.
-fn fallbackPostalOrChallengeScore(loaded_level: level.Definition, runner: gameplay.Runner) u32 {
-    _ = loaded_level;
+// PORT(partial): this now follows the recovered `cRSubGoldy::ScoreAdd` constants for the
+// score events the current runner actually models:
+// ring collect (+100), parcel pickup/register (+100 each), route completion bonus (+100),
+// and health pickup (+250).
+// Slug kills (+500), garbage-side score events (+10), jetpack/speed-up scoring, and the rest
+// of the original `cRSubGoldy::AI()` path remain unported.
+fn partialPostalOrChallengeScore(loaded_level: level.Definition, runner: gameplay.Runner) u32 {
+    const ring_count: u64 =
+        @as(u64, runner.counters.ring_normal) +
+        @as(u64, runner.counters.ring_powerup) +
+        @as(u64, runner.counters.ring_explode) +
+        @as(u64, runner.counters.ring_slow);
+    const parcel_count: u64 = runner.counters.parcels;
+    const parcel_target: u64 = loaded_level.parcels orelse 0;
+    const completion_bonus: u64 = if (parcel_target != 0 and parcel_count >= parcel_target) 100 else 0;
 
-    const positive: u64 =
-        @as(u64, runner.counters.parcels) * 10000 +
-        @as(u64, runner.counters.ring_normal) * 250 +
-        @as(u64, runner.counters.ring_powerup) * 1000 +
-        @as(u64, runner.counters.health_pickups) * 750 +
-        @as(u64, runner.counters.jetpack_pickups) * 750;
-    const penalties: u64 =
-        @as(u64, runner.counters.garbage_hits) * 1000 +
-        @as(u64, runner.counters.salt_hits) * 750 +
-        @as(u64, runner.counters.slug_hits) * 1250 +
-        @as(u64, completionElapsedMillis(runner) / 25);
-    const clamped = positive -| penalties;
-    return @intCast(@min(clamped, std.math.maxInt(u32)));
+    const total: u64 =
+        ring_count * 100 +
+        parcel_count * 200 +
+        @as(u64, runner.counters.health_pickups) * 250 +
+        completion_bonus;
+    return @intCast(@min(total, std.math.maxInt(u32)));
 }
 
 fn bootPhaseProgress(state: *const AppState) f32 {
@@ -2329,7 +2333,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
         var score_buffer: [128]u8 = undefined;
         const score_text = try std.fmt.bufPrint(&score_buffer, "Score {d}{s}", .{
             result.score,
-            if (result.score_is_fallback) " (fallback)" else "",
+            if (result.score_is_partial) " (partial)" else "",
         });
         drawAppText(state, score_text, body_x, score_y, layout.fontSize(18), .sky_blue);
     }
