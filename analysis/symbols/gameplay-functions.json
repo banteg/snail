@@ -23,6 +23,11 @@
       "name": "load_x_animation_clip"
     },
     {
+      "address": "0x406c10",
+      "name": "initialize_default_runtime_config",
+      "description": "Seeds the 0xc4-byte SnailMail.cfg blob with default sound volume, music volume, fullscreen, progression, and tuning values before any file overlay is loaded."
+    },
+    {
       "address": "0x406d30",
       "name": "log_startup_timestamp"
     },
@@ -111,6 +116,26 @@
     {
       "address": "0x419e00",
       "name": "update_main_menu"
+    },
+    {
+      "address": "0x41ace0",
+      "name": "build_frontend_options_menu",
+      "description": "Constructs the front-end Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls."
+    },
+    {
+      "address": "0x41aee0",
+      "name": "destroy_frontend_options_menu",
+      "description": "Tears down the front-end Options screen widgets and writes the current SnailMail.cfg blob back to disk."
+    },
+    {
+      "address": "0x41af60",
+      "name": "commit_frontend_options_menu",
+      "description": "Applies the current Options-screen widget state into SnailMail.cfg, toggles fullscreen, refreshes audio volumes, and resumes the owning front-end state."
+    },
+    {
+      "address": "0x41b070",
+      "name": "apply_audio_config_volumes",
+      "description": "Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine."
     },
     {
       "address": "0x41b0f0",

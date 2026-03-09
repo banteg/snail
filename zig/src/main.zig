@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
+const config = @import("config.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
 const high_score = @import("high_score.zig");
@@ -55,6 +56,7 @@ const GamePhase = enum {
     intro,
     main_menu,
     new_game_menu,
+    options_menu,
     high_scores_menu,
     credits,
     help,
@@ -143,6 +145,22 @@ const high_scores_menu_items = [_]HighScoresMenuItem{
     .back,
 };
 
+// PORT(partial): the original options screen is a richer widget tree with sliders and text objects.
+// This port keeps the recovered fields, labels, and save/apply behavior on a simpler list UI for now.
+const OptionsMenuItem = enum {
+    fullscreen,
+    sound_volume,
+    music_volume,
+    back,
+};
+
+const options_menu_items = [_]OptionsMenuItem{
+    .fullscreen,
+    .sound_volume,
+    .music_volume,
+    .back,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -157,6 +175,8 @@ const AppState = struct {
     animation_catalog: xanim.Catalog,
     ui_font: game_font.Loaded,
     runtime_root_path: []const u8,
+    runtime_config: config.Blob,
+    runtime_config_loaded_from_file: bool,
     command: AppCommand,
     audio_ready: bool,
     should_exit: bool = false,
@@ -166,6 +186,7 @@ const AppState = struct {
     game_phase_ticks: u64 = 0,
     menu_index: usize = 0,
     new_game_menu_index: usize = 0,
+    options_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
     high_score_tables: high_score.Tables,
     game_status_message: ?[]const u8 = null,
@@ -196,7 +217,7 @@ const AppState = struct {
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
-    fn init(allocator: std.mem.Allocator, options: Options, audio_ready: bool) !AppState {
+    fn init(allocator: std.mem.Allocator, options: Options, runtime_config_result: config.LoadResult, audio_ready: bool) !AppState {
         var catalog = try assets.Catalog.init(allocator, options.archive_path);
         errdefer catalog.deinit();
         var animation_catalog = try xanim.Catalog.load(allocator, &catalog);
@@ -216,6 +237,8 @@ const AppState = struct {
             .animation_catalog = animation_catalog,
             .ui_font = ui_font,
             .runtime_root_path = options.runtime_root_path,
+            .runtime_config = runtime_config_result.blob,
+            .runtime_config_loaded_from_file = runtime_config_result.loaded_from_file,
             .command = options.command,
             .audio_ready = audio_ready,
             .high_score_tables = high_score.Tables.initDefault(),
@@ -227,6 +250,7 @@ const AppState = struct {
         };
         errdefer state.deinit();
         try state.high_score_tables.loadFromRuntimeRoot(allocator, options.runtime_root_path);
+        state.applyAudioConfigVolumes();
 
         switch (options.command) {
             .debug, .smoke => {
@@ -291,6 +315,10 @@ const AppState = struct {
         try self.previewSound();
         self.stopAudioPreview();
         try self.previewMusic();
+    }
+
+    fn saveRuntimeConfig(self: *const AppState) !void {
+        try self.runtime_config.saveToRuntimeRoot(self.runtime_root_path);
     }
 
     fn update(self: *AppState, frame_delta_seconds: f64) !void {
@@ -466,6 +494,7 @@ const AppState = struct {
                 .level => try self.enterGamePhase(.main_menu),
                 .boot, .main_menu => self.should_exit = true,
                 .intro, .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
+                .options_menu => try self.leaveOptionsMenu(),
             }
             return;
         }
@@ -501,6 +530,25 @@ const AppState = struct {
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.activateNewGameMenuItem(new_game_menu_items[self.new_game_menu_index]);
+                }
+            },
+            .options_menu => {
+                if (rl.isKeyPressed(.up)) {
+                    self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, -1);
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, 1);
+                }
+
+                const selected = options_menu_items[self.options_menu_index];
+                if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+                    try self.stepOptionsMenuValue(selected, -0.1);
+                }
+                if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+                    try self.stepOptionsMenuValue(selected, 0.1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.activateOptionsMenuItem(selected);
                 }
             },
             .high_scores_menu => {
@@ -582,7 +630,7 @@ const AppState = struct {
         switch (item) {
             .new_game => try self.enterGamePhase(.new_game_menu),
             .high_scores => try self.enterGamePhase(.high_scores_menu),
-            .options => self.setGameStatusMessage("Unavailable."),
+            .options => try self.enterGamePhase(.options_menu),
             .credits => try self.enterGamePhase(.credits),
             .exit => self.should_exit = true,
         }
@@ -607,9 +655,22 @@ const AppState = struct {
         }
     }
 
+    fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
+        switch (item) {
+            .fullscreen => self.toggleFullscreenPreference(),
+            .sound_volume, .music_volume => {},
+            .back => try self.leaveOptionsMenu(),
+        }
+    }
+
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
+    }
+
+    fn leaveOptionsMenu(self: *AppState) !void {
+        try self.saveRuntimeConfig();
+        try self.enterGamePhase(.main_menu);
     }
 
     fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
@@ -636,7 +697,7 @@ const AppState = struct {
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
-            .main_menu, .new_game_menu, .high_scores_menu => {
+            .main_menu, .new_game_menu, .options_menu, .high_scores_menu => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
@@ -679,6 +740,7 @@ const AppState = struct {
         if (!self.audio_ready) return;
         if (self.current_music) |music| {
             if (std.ascii.eqlIgnoreCase(music.path, path)) {
+                self.applyAudioConfigVolumes();
                 if (!rl.isMusicStreamPlaying(music.music)) {
                     rl.playMusicStream(music.music);
                 }
@@ -688,6 +750,7 @@ const AppState = struct {
 
         self.stopAudioPreview();
         self.current_music = try self.catalog.loadMusicByPath(self.allocator, path);
+        self.applyAudioConfigVolumes();
         rl.playMusicStream(self.current_music.?.music);
     }
 
@@ -699,6 +762,7 @@ const AppState = struct {
         }
 
         self.current_sound = try self.catalog.loadSoundByPath(self.allocator, path);
+        self.applyAudioConfigVolumes();
         rl.playSound(self.current_sound.?.sound);
     }
 
@@ -779,6 +843,54 @@ const AppState = struct {
         const script = self.current_text_script orelse return null;
         const ticks = @as(u64, @intFromFloat(@max(script.duration * 60.0, 1.0)));
         return ticks;
+    }
+
+    fn applyAudioConfigVolumes(self: *AppState) void {
+        if (!self.audio_ready) return;
+
+        if (self.current_sound) |sound| {
+            rl.setSoundVolume(sound.sound, self.runtime_config.soundVolume());
+        }
+        if (self.current_music) |music| {
+            rl.setMusicVolume(music.music, self.runtime_config.musicVolume());
+        }
+    }
+
+    fn toggleFullscreenPreference(self: *AppState) void {
+        self.runtime_config.setFullscreenEnabled(!self.runtime_config.fullscreenEnabled());
+        self.syncWindowFullscreenPreference();
+    }
+
+    fn syncWindowFullscreenPreference(self: *AppState) void {
+        const want_fullscreen = self.runtime_config.fullscreenEnabled();
+        const is_fullscreen = rl.isWindowFullscreen();
+        if (want_fullscreen == is_fullscreen) return;
+
+        rl.toggleFullscreen();
+        if (!want_fullscreen) {
+            rl.setWindowSize(window_width, window_height);
+        }
+    }
+
+    fn stepOptionsMenuValue(self: *AppState, item: OptionsMenuItem, delta: f32) !void {
+        switch (item) {
+            .fullscreen => {
+                if (delta != 0.0) {
+                    self.toggleFullscreenPreference();
+                }
+            },
+            .sound_volume => {
+                self.runtime_config.setSoundVolume(self.runtime_config.soundVolume() + delta);
+                self.applyAudioConfigVolumes();
+            },
+            .music_volume => {
+                self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
+                self.applyAudioConfigVolumes();
+            },
+            .back => if (delta != 0.0) {
+                try self.leaveOptionsMenu();
+            },
+        }
     }
 
     fn currentTextScriptProgress(self: *const AppState) ?f32 {
@@ -862,6 +974,7 @@ const AppState = struct {
 
         self.stopAudioPreview();
         const sound = try self.catalog.loadSound(self.allocator, self.catalog.audio_entries[self.audio_index]);
+        rl.setSoundVolume(sound.sound, self.runtime_config.soundVolume());
         rl.playSound(sound.sound);
         self.current_sound = sound;
     }
@@ -873,6 +986,7 @@ const AppState = struct {
 
         self.stopAudioPreview();
         const music = try self.catalog.loadMusic(self.allocator, self.catalog.audio_entries[self.audio_index]);
+        rl.setMusicVolume(music.music, self.runtime_config.musicVolume());
         rl.playMusicStream(music.music);
         self.current_music = music;
     }
@@ -1072,8 +1186,16 @@ pub fn main() !void {
 
     const options = try parseArgs(allocator);
     try runtime_state.ensureRootExists(options.runtime_root_path);
-    // Development default: stay windowed unless fullscreen is requested explicitly.
-    rl.setConfigFlags(.{ .fullscreen_mode = options.fullscreen });
+    var runtime_config_result = try config.Blob.loadFromRuntimeRoot(allocator, options.runtime_root_path);
+    if (options.fullscreen) {
+        runtime_config_result.blob.setFullscreenEnabled(true);
+    }
+
+    const startup_fullscreen = options.fullscreen or
+        (runtime_config_result.loaded_from_file and runtime_config_result.blob.fullscreenEnabled());
+    runtime_config_result.blob.setFullscreenEnabled(startup_fullscreen);
+    // Development default: stay windowed until fullscreen is requested explicitly or a saved runtime config says otherwise.
+    rl.setConfigFlags(.{ .fullscreen_mode = startup_fullscreen });
 
     rl.initWindow(window_width, window_height, "snail");
     defer rl.closeWindow();
@@ -1086,7 +1208,8 @@ pub fn main() !void {
         }
     }
 
-    var state = try AppState.init(allocator, options, audio_ready);
+    var state = try AppState.init(allocator, options, runtime_config_result, audio_ready);
+    defer state.saveRuntimeConfig() catch |err| std.log.err("failed to save runtime config: {}", .{err});
     defer state.deinit();
     var frame_timer = try std.time.Timer.start();
 
@@ -1141,6 +1264,7 @@ fn drawGameUi(state: *const AppState) !void {
         .intro => try drawTextScriptUi(state),
         .main_menu => try drawMainMenuUi(state, art_layout),
         .new_game_menu => try drawNewGameMenuUi(state, art_layout),
+        .options_menu => try drawOptionsMenuUi(state, art_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
         .credits => try drawTextScriptUi(state),
         .help => drawHelpUi(state),
@@ -1225,9 +1349,8 @@ fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
     drawAppText(state, "Up/Down select", @intFromFloat(control_note.x), @intFromFloat(control_note.y), 20, .ray_white);
     drawAppText(state, "Enter confirm", @intFromFloat(control_note.x), @intFromFloat(control_note.y + 26.0), 20, .ray_white);
     drawAppText(state, "Esc quit", @intFromFloat(selection_note.x), @intFromFloat(selection_note.y), 20, .light_gray);
-
-    if (selected == .options) {
-        drawAppText(state, "Unavailable", @intFromFloat(status_note.x), @intFromFloat(status_note.y), 18, .sky_blue);
+    if (mainMenuItemHint(selected)) |hint| {
+        try drawWrappedText(state, hint, @intFromFloat(status_note.x), @intFromFloat(status_note.y), @intFromFloat(detail_panel.width - 36.0), 20, .sky_blue);
     }
 
     if (state.game_status_message) |message| {
@@ -1259,6 +1382,54 @@ fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
         rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
         try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
     }
+}
+
+fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const panels = menuPanels(art_layout);
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    drawAppText(state, "Options", panels.title_x, panels.title_y, 28, .ray_white);
+
+    for (options_menu_items, 0..) |item, index| {
+        var label_buffer: [64]u8 = undefined;
+        const label = try optionsMenuLabel(state, item, &label_buffer);
+        drawMenuItem(state, art_layout, index, state.options_menu_index, label);
+    }
+
+    const selected = options_menu_items[state.options_menu_index];
+    drawAppText(state, optionsMenuTitle(selected), panels.detail_title_x, panels.detail_title_y, 30, .gold);
+    if (optionsMenuHint(state, selected)) |hint| {
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
+    }
+
+    switch (selected) {
+        .fullscreen => {
+            drawAppText(
+                state,
+                if (state.runtime_config.fullscreenEnabled()) "Saved full-screen: On" else "Saved full-screen: Off",
+                panels.detail_body_x,
+                panels.detail_body_y + 64,
+                20,
+                .sky_blue,
+            );
+        },
+        .sound_volume => try drawOptionsSliderRow(state, "Sounds", state.runtime_config.soundVolume(), panels),
+        .music_volume => try drawOptionsSliderRow(state, "Music", state.runtime_config.musicVolume(), panels),
+        .back => {
+            drawAppText(state, "Leave Options", panels.detail_body_x, panels.detail_body_y + 64, 20, .sky_blue);
+        },
+    }
+
+    const config_source_text = if (state.runtime_config_loaded_from_file)
+        "Config source: runtime file"
+    else
+        "Config source: recovered defaults";
+    drawAppText(state, config_source_text, panels.detail_body_x, panels.detail_body_y + 112, 18, .dark_gray);
+
+    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, 20, .ray_white);
+    drawAppText(state, "Left/Right adjust", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    drawAppText(state, "Enter toggle or back", panels.control_x, panels.control_y + 52, 20, .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 78, 20, .light_gray);
 }
 
 fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -1439,7 +1610,7 @@ fn menuPanels(art_layout: ?background.Layout) MenuPanels {
         };
 }
 
-fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: [:0]const u8) void {
+fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: []const u8) void {
     const active = index == selected_index;
     const row_rect = if (art_layout) |layout|
         layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
@@ -1469,6 +1640,71 @@ fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
         .help => "Open the help screen.",
         else => null,
     };
+}
+
+fn mainMenuItemHint(item: MainMenuItem) ?[]const u8 {
+    return switch (item) {
+        .new_game => "Open the recovered New Game flow.",
+        .high_scores => "Open postal and challenge score tables.",
+        .options => "Adjust the recovered fullscreen, sounds, and music config fields.",
+        .credits => "Play the shipped archive-backed credits crawl.",
+        .exit => "Leave the runtime.",
+    };
+}
+
+fn optionsMenuTitle(item: OptionsMenuItem) []const u8 {
+    return switch (item) {
+        .fullscreen => "Full-screen",
+        .sound_volume => "Sounds Volume",
+        .music_volume => "Music Volume",
+        .back => "Back",
+    };
+}
+
+fn optionsMenuHint(state: *const AppState, item: OptionsMenuItem) ?[]const u8 {
+    return switch (item) {
+        .fullscreen => if (state.runtime_config_loaded_from_file)
+            "Recovered fullscreen preference from SnailMail.cfg. The development default only stays windowed when no runtime config exists."
+        else
+            "Recovered fullscreen preference from the options flow. Until a runtime config exists, development startup stays windowed by default.",
+        .sound_volume => "Recovered sound-effects scalar from SnailMail.cfg and the original options menu apply path.",
+        .music_volume => "Recovered music scalar from SnailMail.cfg and the original options menu apply path.",
+        .back => "Save the current config blob and return to the main menu.",
+    };
+}
+
+fn optionsMenuLabel(state: *const AppState, item: OptionsMenuItem, buffer: []u8) ![]const u8 {
+    return switch (item) {
+        .fullscreen => std.fmt.bufPrint(buffer, "Full-screen {s}", .{if (state.runtime_config.fullscreenEnabled()) "On" else "Off"}),
+        .sound_volume => std.fmt.bufPrint(buffer, "Sounds {d:>3.0}%", .{state.runtime_config.soundVolume() * 100.0}),
+        .music_volume => std.fmt.bufPrint(buffer, "Music {d:>3.0}%", .{state.runtime_config.musicVolume() * 100.0}),
+        .back => "Back",
+    };
+}
+
+fn drawOptionsSliderRow(state: *const AppState, label: []const u8, value: f32, panels: MenuPanels) !void {
+    var value_buffer: [64]u8 = undefined;
+    const value_text = try std.fmt.bufPrint(&value_buffer, "{s}: {d:.2}", .{ label, value });
+    drawAppText(state, value_text, panels.detail_body_x, panels.detail_body_y + 64, 20, .sky_blue);
+
+    const bar_rect = rl.Rectangle{
+        .x = @floatFromInt(panels.detail_body_x),
+        .y = @floatFromInt(panels.detail_body_y + 96),
+        .width = @floatFromInt(@min(panels.detail_width, 240)),
+        .height = 18.0,
+    };
+    rl.drawRectangleRounded(bar_rect, 0.24, 8, .{ .r = 255, .g = 255, .b = 255, .a = 26 });
+    rl.drawRectangleRounded(
+        .{
+            .x = bar_rect.x + 2.0,
+            .y = bar_rect.y + 2.0,
+            .width = (bar_rect.width - 4.0) * std.math.clamp(value, 0.0, 1.0),
+            .height = bar_rect.height - 4.0,
+        },
+        0.24,
+        8,
+        .gold,
+    );
 }
 
 fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffer: []u8) ![]const u8 {

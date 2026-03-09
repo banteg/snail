@@ -3,6 +3,7 @@ const std = @import("std");
 test {
     std.testing.refAllDecls(@import("archive.zig"));
     std.testing.refAllDecls(@import("assets.zig"));
+    std.testing.refAllDecls(@import("config.zig"));
     std.testing.refAllDecls(@import("gameplay.zig"));
     std.testing.refAllDecls(@import("level.zig"));
     std.testing.refAllDecls(@import("main.zig"));

@@ -19,7 +19,11 @@ Current high-signal entries:
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `sub_419b50` and `sub_417bc0`
   - implementation: [`main.zig`](../../zig/src/main.zig)
-  - replace when: high-score routing, option handlers, and later front-end progression flow are ported
+  - replace when: deeper front-end progression and the remaining menu widget behavior are ported
+- front-end options menu fields: `partial`
+  - evidence: Binary Ninja decompile of `build_frontend_options_menu`, `commit_frontend_options_menu`, `destroy_frontend_options_menu`, and `apply_audio_config_volumes`
+  - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the original slider widgets, audio test feedback, and any remaining option fields are ported
 - background script parsing plus split `_A` / `_B` menu or splash layouts: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
@@ -32,10 +36,10 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
-- mutable config and score-file root: `scaffold`
-  - evidence: Binary Ninja decompile of `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
-  - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: the actual config blob parser and high-score overlay serializer are ported onto that runtime root
+- mutable config and score-file root: `partial`
+  - evidence: Binary Ninja decompile of `initialize_default_runtime_config`, `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
+  - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the remaining unknown config fields and high-score overlay serializer are ported onto that runtime root
 - compact high-score overlay loading: `partial`
   - evidence: Binary Ninja decompile of `deserialize_compact_high_score_record`, `serialize_compact_high_score_record`, `load_high_scores_from_file`, and `save_high_scores_and_config`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
