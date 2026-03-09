@@ -67,6 +67,10 @@ Current high-signal entries:
   - evidence: authored level metadata and current tutorial-level behavior
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
+- level completion return overlay: `scaffold`
+  - evidence: none yet beyond the existing runner finished-state and route-map handoff plumbing
+  - implementation: [`main.zig`](../../zig/src/main.zig)
+  - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
   - evidence: [`docs/re/track-runtime.md`](../re/track-runtime.md)
   - implementation: [`track.zig`](../../zig/src/track.zig)

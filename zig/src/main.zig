@@ -1917,6 +1917,10 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 .gold,
             );
         }
+
+        if (runner.finished) {
+            try drawLevelResultOverlay(state, layout, loaded_level, runner, parcel_count, parcel_target);
+        }
     }
 
     const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
@@ -1924,6 +1928,94 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const crosshair_thickness = @max(layout.scaleInt(2), 1);
     rl.drawRectangle(@divTrunc(screenWidth(), 2) - crosshair_radius, @divTrunc(screenHeight(), 2), crosshair_radius * 2, crosshair_thickness, crosshair_color);
     rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
+}
+
+// PORT(scaffold): this completion overlay keeps the playable postal/time-trial loop readable
+// until the original result and score-entry screens are ported.
+fn drawLevelResultOverlay(
+    state: *const AppState,
+    layout: VirtualLayout,
+    loaded_level: level.Definition,
+    runner: gameplay.Runner,
+    parcel_count: u32,
+    parcel_target: usize,
+) !void {
+    const overlay_panel = layout.mapRect(120.0, 132.0, 400.0, 176.0);
+    const title_point = layout.mapPoint(144.0, 156.0);
+    const body_point = layout.mapPoint(144.0, 196.0);
+    const footer_point = layout.mapPoint(144.0, 276.0);
+    const elapsed_seconds = @as(f32, @floatFromInt(runner.tick_count)) / 60.0;
+    const title_x: i32 = @intFromFloat(title_point.x);
+    const title_y: i32 = @intFromFloat(title_point.y);
+    const body_x: i32 = @intFromFloat(body_point.x);
+    const body_y: i32 = @intFromFloat(body_point.y);
+    const footer_x: i32 = @intFromFloat(footer_point.x);
+    const footer_y: i32 = @intFromFloat(footer_point.y);
+    const active_mode = state.active_frontend_mode;
+    const title = if (active_mode) |mode|
+        switch (mode) {
+            .postal => "Delivery Complete",
+            .time_trial => "Route Complete",
+            .challenge => "Challenge Complete",
+            .tutorial => "Tutorial Complete",
+        }
+    else
+        "Level Complete";
+
+    rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
+    drawAppText(state, title, title_x, title_y, layout.fontSize(28), .gold);
+
+    var summary_buffer: [256]u8 = undefined;
+    const summary_text = try std.fmt.bufPrint(
+        &summary_buffer,
+        "Level {s}>Time {d:.1}s>Packages {d}/{d}",
+        .{ loaded_level.name, elapsed_seconds, parcel_count, parcel_target },
+    );
+    try drawWrappedText(
+        state,
+        summary_text,
+        body_x,
+        body_y,
+        layout.scaleInt(332),
+        layout.fontSize(20),
+        .ray_white,
+    );
+
+    if (active_mode) |mode| {
+        if ((mode == .postal or mode == .time_trial) and
+            state.active_frontend_level_index < state.highestAvailableFrontendRouteIndex(mode))
+        {
+            const next_unlock = state.active_frontend_level_index + 1;
+            const unlock_text = if (mode == .postal and next_unlock > state.runtime_config.routeUnlockLimit())
+                "Continue to unlock the next delivery route."
+            else
+                "Continue to return to the route map.";
+            drawAppText(
+                state,
+                unlock_text,
+                body_x,
+                body_y + layout.scaleInt(70),
+                layout.fontSize(18),
+                .sky_blue,
+            );
+        }
+    }
+
+    const continue_text = if (active_mode) |mode|
+        if (mode == .postal or mode == .time_trial)
+            "Enter continue to route map"
+        else
+            "Enter continue to main menu"
+    else
+        "Enter continue to main menu";
+    drawAppText(
+        state,
+        continue_text,
+        footer_x,
+        footer_y,
+        layout.fontSize(18),
+        .light_gray,
+    );
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
