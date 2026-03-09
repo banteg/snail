@@ -1,8 +1,11 @@
 const std = @import("std");
 const rl = @import("raylib");
+const app = @import("app.zig");
+const app_ui = @import("app_ui.zig");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
+const frontend = @import("frontend.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
 const high_score = @import("high_score.zig");
@@ -17,90 +20,52 @@ const runtime_state = @import("runtime_state.zig");
 const x2 = @import("x2.zig");
 const xanim = @import("xanim.zig");
 
-const original_game_client_width = 640;
-const original_game_client_height = 480;
-const game_window_width = 1024;
-const game_window_height = 768;
-const debug_window_width = 1280;
-const debug_window_height = 720;
-
-const default_archive_path = "artifacts/bin/SnailMail.dat";
-const default_screenshot_dir = "artifacts/screenshots";
-const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
-const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
-const help_background_path = "BACKGROUNDS/HELP.TXT";
-const route_map_background_path = "BACKGROUNDS/STARMAP.TXT";
-const intro_script_path = "INTRO/INTRO.TXT";
-const credits_script_path = "INTRO/CREDITS.TXT";
-const intro_music_path = "MUSIC/INTROTEXT.OGG";
-const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
-const default_audio_path = "MUSIC/MAINMENU.OGG";
-const default_model_path = "X/TURBO-BOBALONG-000.X2";
-const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
-const default_level_path = "LEVELS/TUTORIAL.TXT";
+const default_archive_path = app.default_archive_path;
+const default_screenshot_dir = app.default_screenshot_dir;
+const intro_background_path = app.intro_background_path;
+const main_menu_background_path = app.main_menu_background_path;
+const help_background_path = app.help_background_path;
+const route_map_background_path = app.route_map_background_path;
+const intro_script_path = app.intro_script_path;
+const credits_script_path = app.credits_script_path;
+const intro_music_path = app.intro_music_path;
+const default_texture_path = app.default_texture_path;
+const default_audio_path = app.default_audio_path;
+const default_model_path = app.default_model_path;
+const default_object_path = app.default_object_path;
+const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
-const frontend_transition_fade_step: f32 = 0.0555555522;
-const frontend_transition_hold_step: f32 = 0.33333334;
+const Options = app.Options;
+const AppCommand = app.AppCommand;
+const AutoScreenshot = app.AutoScreenshot;
+const parseArgs = app.parseArgs;
+const defaultWindowSizeForCommand = app.defaultWindowSizeForCommand;
 
-const Options = struct {
-    archive_path: []const u8 = default_archive_path,
-    runtime_root_path: []const u8 = runtime_state.default_root_path,
-    screenshot_dir: []const u8 = default_screenshot_dir,
-    auto_screenshot: ?AutoScreenshot = null,
-    fullscreen: bool = false,
-    command: AppCommand = .game,
-};
+const BootTask = frontend.BootTask;
+const boot_tasks = frontend.boot_tasks;
+const GamePhase = frontend.GamePhase;
+const FrontendTransition = frontend.FrontendTransition;
+const MainMenuItem = frontend.MainMenuItem;
+const main_menu_items = frontend.main_menu_items;
+const NewGameMenuItem = frontend.NewGameMenuItem;
+const new_game_menu_items = frontend.new_game_menu_items;
+const FrontendLevelMode = frontend.FrontendLevelMode;
+const HighScoresMenuItem = frontend.HighScoresMenuItem;
+const high_scores_menu_items = frontend.high_scores_menu_items;
+const OptionsMenuItem = frontend.OptionsMenuItem;
+const options_menu_items = frontend.options_menu_items;
+const RouteMenuAction = frontend.RouteMenuAction;
+const route_menu_actions = frontend.route_menu_actions;
+const mainMenuItemHint = frontend.mainMenuItemHint;
+const newGameMenuHint = frontend.newGameMenuHint;
+const optionsMenuTitle = frontend.optionsMenuTitle;
+const frontendRouteModeLabel = frontend.frontendRouteModeLabel;
+const routeMenuActionLabel = frontend.routeMenuActionLabel;
+const routeMenuHint = frontend.routeMenuHint;
+const frontendLevelPath = frontend.frontendLevelPath;
 
-const AppCommand = enum {
-    game,
-    debug,
-    smoke,
-};
-
-const BootTask = enum {
-    load_high_scores,
-    load_intro_background,
-    load_main_menu_background,
-    load_route_map_background,
-    load_help_background,
-    load_intro_script,
-    load_credits_script,
-    load_intro_music,
-    load_menu_music,
-};
-
-const boot_tasks = [_]BootTask{
-    .load_high_scores,
-    .load_intro_background,
-    .load_main_menu_background,
-    .load_route_map_background,
-    .load_help_background,
-    .load_intro_script,
-    .load_credits_script,
-    .load_intro_music,
-    .load_menu_music,
-};
-
-// PORT(scaffold): the default `snail` path is now a forward-pass boot and menu shell.
-// Replace this with the real menu flow once original assets, transitions, and actions are ported.
-const GamePhase = enum {
-    boot,
-    intro,
-    main_menu,
-    new_game_menu,
-    options_menu,
-    route_map_menu,
-    high_scores_menu,
-    credits,
-    help,
-    level,
-};
-
-const AutoScreenshot = struct {
-    phase: GamePhase,
-    tick: u64,
-};
+const MenuPanels = app_ui.MenuPanels;
 
 const ScreenshotRequest = struct {
     relative_path_z: [:0]u8,
@@ -109,197 +74,6 @@ const ScreenshotRequest = struct {
     fn deinit(self: *ScreenshotRequest, allocator: std.mem.Allocator) void {
         allocator.free(self.relative_path_z);
     }
-};
-
-const FrontendTransitionState = enum {
-    idle,
-    fading_in,
-    fading_out,
-    holding_black,
-    handoff,
-};
-
-// PORT(partial): intro and credits now reuse the recovered front-end black overlay transition:
-// fade in from alpha 1.0 to 0.0 over 18 ticks, fade out over 18 ticks, then hold black for 3 ticks
-// before the next screen swaps in and starts its own fade-in. Other front-end overlay users remain unresolved.
-const FrontendTransition = struct {
-    state: FrontendTransitionState = .idle,
-    alpha: f32 = 0.0,
-    progress: f32 = 0.0,
-    pending_phase: ?GamePhase = null,
-
-    fn beginFadeIn(self: *FrontendTransition) void {
-        self.state = .fading_in;
-        self.alpha = 1.0;
-        self.progress = 0.0;
-        self.pending_phase = null;
-    }
-
-    fn beginFadeOut(self: *FrontendTransition, next_phase: GamePhase) void {
-        if (self.state != .idle) return;
-        self.state = .fading_out;
-        self.alpha = 0.0;
-        self.progress = 0.0;
-        self.pending_phase = next_phase;
-    }
-
-    fn update(self: *FrontendTransition) ?GamePhase {
-        switch (self.state) {
-            .idle => return null,
-            .fading_in => {
-                self.alpha = @max(self.alpha - frontend_transition_fade_step, 0.0);
-                if (self.alpha <= 0.01) {
-                    self.alpha = 0.0;
-                    self.state = .idle;
-                }
-            },
-            .fading_out => {
-                self.alpha = @min(self.alpha + frontend_transition_fade_step, 1.0);
-                if (self.alpha >= 0.99) {
-                    self.alpha = 1.0;
-                    self.progress = 0.0;
-                    self.state = .holding_black;
-                }
-            },
-            .holding_black => {
-                self.progress = @min(self.progress + frontend_transition_hold_step, 1.0);
-                if (self.progress >= 0.99) {
-                    self.state = .handoff;
-                    return self.pending_phase;
-                }
-            },
-            .handoff => return self.pending_phase,
-        }
-        return null;
-    }
-
-    fn completeHandoff(self: *FrontendTransition) void {
-        self.beginFadeIn();
-    }
-
-    fn blocksInput(self: *const FrontendTransition) bool {
-        return self.state != .idle;
-    }
-
-    fn draw(self: *const FrontendTransition, bounds: rl.Rectangle) void {
-        if (self.alpha <= 0.01) return;
-        rl.drawRectangleRec(bounds, .{
-            .r = 0,
-            .g = 0,
-            .b = 0,
-            .a = @intFromFloat(std.math.clamp(self.alpha, 0.0, 1.0) * 255.0),
-        });
-    }
-};
-
-// PORT(partial): these top-level labels match the recovered front-end constructor at `sub_419b50`.
-// Actions for `Options` and deeper score routing are still scaffolded until their handlers are ported.
-const MainMenuItem = enum {
-    new_game,
-    high_scores,
-    options,
-    credits,
-    exit,
-
-    fn label(self: MainMenuItem) [:0]const u8 {
-        return switch (self) {
-            .new_game => "New Game",
-            .high_scores => "High Scores",
-            .options => "Options",
-            .credits => "Credits",
-            .exit => "Exit",
-        };
-    }
-};
-
-const main_menu_items = [_]MainMenuItem{ .new_game, .high_scores, .options, .credits, .exit };
-
-// PORT(partial): these labels and mode actions match the recovered `sub_417bc0` / `sub_417eb0` new-game flow.
-// `Help` is still only a partial screen port, and later progression beyond the first level remains unresolved.
-const NewGameMenuItem = enum {
-    tutorial,
-    postal_mode,
-    time_trial,
-    challenge_mode,
-    help,
-    back,
-
-    fn label(self: NewGameMenuItem) [:0]const u8 {
-        return switch (self) {
-            .tutorial => "Tutorial",
-            .postal_mode => "Postal Mode",
-            .time_trial => "Time Trial",
-            .challenge_mode => "Challenge Mode",
-            .help => "Help",
-            .back => "Back",
-        };
-    }
-};
-
-const new_game_menu_items = [_]NewGameMenuItem{
-    .tutorial,
-    .postal_mode,
-    .time_trial,
-    .challenge_mode,
-    .help,
-    .back,
-};
-
-// PORT(partial): these mode ids match the recovered `sub_417eb0` launcher and `sub_443650` level-name switch.
-// We only port the initial level handoff here, not the original front-end's level-select or progression flow yet.
-const FrontendLevelMode = enum(i32) {
-    postal = 0,
-    challenge = 1,
-    time_trial = 4,
-    tutorial = 7,
-};
-
-const HighScoresMenuItem = enum {
-    postal_high_scores,
-    challenge_high_scores,
-    back,
-
-    fn label(self: HighScoresMenuItem) [:0]const u8 {
-        return switch (self) {
-            .postal_high_scores => "Postal High Scores",
-            .challenge_high_scores => "Challenge High Scores",
-            .back => "Back",
-        };
-    }
-};
-
-const high_scores_menu_items = [_]HighScoresMenuItem{
-    .postal_high_scores,
-    .challenge_high_scores,
-    .back,
-};
-
-// PORT(partial): the original options screen is a richer widget tree with sliders and text objects.
-// This port keeps the recovered fields, labels, and save/apply behavior on a simpler list UI for now.
-const OptionsMenuItem = enum {
-    fullscreen,
-    sound_volume,
-    music_volume,
-    back,
-};
-
-const options_menu_items = [_]OptionsMenuItem{
-    .fullscreen,
-    .sound_volume,
-    .music_volume,
-    .back,
-};
-
-const RouteMenuAction = enum {
-    play,
-    watch_best_trial,
-    back,
-};
-
-const route_menu_actions = [_]RouteMenuAction{
-    .play,
-    .watch_best_trial,
-    .back,
 };
 
 const Mode = enum {
@@ -1641,98 +1415,6 @@ const AppState = struct {
     }
 };
 
-fn parseArgs(allocator: std.mem.Allocator) !Options {
-    var argv = std.ArrayList([]const u8).empty;
-    defer argv.deinit(allocator);
-
-    var args = try std.process.argsWithAllocator(allocator);
-    defer args.deinit();
-
-    _ = args.skip();
-    while (args.next()) |arg| {
-        try argv.append(allocator, arg);
-    }
-
-    return parseArgsFromSlice(argv.items);
-}
-
-fn parseArgsFromSlice(args: []const []const u8) !Options {
-    var options = Options{};
-
-    var index: usize = 0;
-    while (index < args.len) : (index += 1) {
-        const arg = args[index];
-        if (std.mem.eql(u8, arg, "--archive-path")) {
-            index += 1;
-            if (index >= args.len) return error.MissingArchivePath;
-            options.archive_path = args[index];
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "--runtime-dir")) {
-            index += 1;
-            if (index >= args.len) return error.MissingRuntimeDir;
-            options.runtime_root_path = args[index];
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "--screenshot-dir")) {
-            index += 1;
-            if (index >= args.len) return error.MissingScreenshotDir;
-            options.screenshot_dir = args[index];
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "--screenshot-at")) {
-            index += 1;
-            if (index >= args.len) return error.MissingScreenshotSpec;
-            options.auto_screenshot = try parseAutoScreenshot(args[index]);
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "--fullscreen")) {
-            options.fullscreen = true;
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "game")) {
-            options.command = .game;
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "debug")) {
-            options.command = .debug;
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "browser")) {
-            if (options.command != .debug) return error.UnknownCommand;
-            continue;
-        }
-        if (std.mem.eql(u8, arg, "smoke")) {
-            options.command = .smoke;
-            continue;
-        }
-        return error.UnknownCommand;
-    }
-
-    return options;
-}
-
-fn parseAutoScreenshot(spec: []const u8) !AutoScreenshot {
-    const colon_index = std.mem.indexOfScalar(u8, spec, ':') orelse return error.InvalidScreenshotSpec;
-    if (colon_index == 0 or colon_index + 1 >= spec.len) return error.InvalidScreenshotSpec;
-
-    const phase = parseGamePhase(spec[0..colon_index]) orelse return error.InvalidScreenshotPhase;
-    const tick = try std.fmt.parseUnsigned(u64, spec[colon_index + 1 ..], 10);
-    return .{
-        .phase = phase,
-        .tick = tick,
-    };
-}
-
-fn parseGamePhase(name: []const u8) ?GamePhase {
-    inline for (std.meta.fields(GamePhase)) |field| {
-        if (std.ascii.eqlIgnoreCase(name, field.name)) {
-            return @field(GamePhase, field.name);
-        }
-    }
-    return null;
-}
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -1921,7 +1603,7 @@ fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void 
 }
 
 fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = menuPanels(art_layout);
+    const panels = app_ui.menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "New Game", panels.title_x, panels.title_y, 28, .ray_white);
@@ -1946,20 +1628,26 @@ fn drawNewGameMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
 }
 
 fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = menuPanels(art_layout);
+    const panels = app_ui.menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "Options", panels.title_x, panels.title_y, 28, .ray_white);
 
     for (options_menu_items, 0..) |item, index| {
         var label_buffer: [64]u8 = undefined;
-        const label = try optionsMenuLabel(state, item, &label_buffer);
+        const label = try frontend.optionsMenuLabel(
+            item,
+            state.runtime_config.fullscreenEnabled(),
+            state.runtime_config.soundVolume(),
+            state.runtime_config.musicVolume(),
+            &label_buffer,
+        );
         drawMenuItem(state, art_layout, index, state.options_menu_index, label);
     }
 
     const selected = options_menu_items[state.options_menu_index];
     drawAppText(state, optionsMenuTitle(selected), panels.detail_title_x, panels.detail_title_y, 30, .gold);
-    if (optionsMenuHint(state, selected)) |hint| {
+    if (frontend.optionsMenuHint(state.runtime_config_loaded_from_file, selected)) |hint| {
         try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 22, .light_gray);
     }
 
@@ -1995,7 +1683,7 @@ fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
 
 fn drawRouteMapMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const panels = menuPanels(art_layout);
+    const panels = app_ui.menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "Intergalactic Delivery Route", panels.title_x, panels.title_y, 28, .ray_white);
@@ -2039,7 +1727,7 @@ fn drawRouteMapMenuUi(state: *const AppState, art_layout: ?background.Layout) !v
 }
 
 fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panels = menuPanels(art_layout);
+    const panels = app_ui.menuPanels(art_layout);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "High Scores", panels.title_x, panels.title_y, 28, .ray_white);
@@ -2136,244 +1824,6 @@ fn drawCurrentTextScript(state: *const AppState, viewport: rl.Rectangle) void {
 fn drawHelpUi(state: *const AppState) void {
     rl.drawRectangleRounded(.{ .x = 72.0, .y = 646.0, .width = 260.0, .height = 34.0 }, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
     drawAppText(state, "Enter or Esc back", 96, 654, 18, .ray_white);
-}
-
-const MenuPanels = struct {
-    menu_panel: rl.Rectangle,
-    detail_panel: rl.Rectangle,
-    footer_panel: rl.Rectangle,
-    title_x: i32,
-    title_y: i32,
-    detail_title_x: i32,
-    detail_title_y: i32,
-    detail_body_x: i32,
-    detail_body_y: i32,
-    detail_width: i32,
-    control_x: i32,
-    control_y: i32,
-};
-
-const WindowSize = struct {
-    width: i32,
-    height: i32,
-};
-
-fn menuPanels(art_layout: ?background.Layout) MenuPanels {
-    return if (art_layout) |layout|
-        .{
-            .menu_panel = layout.mapRect(56.0, 104.0, 220.0, 250.0),
-            .detail_panel = layout.mapRect(292.0, 104.0, 248.0, 250.0),
-            .footer_panel = layout.mapRect(56.0, 370.0, 484.0, 38.0),
-            .title_x = @intFromFloat(layout.mapPoint(72.0, 78.0).x),
-            .title_y = @intFromFloat(layout.mapPoint(72.0, 78.0).y),
-            .detail_title_x = @intFromFloat(layout.mapPoint(312.0, 126.0).x),
-            .detail_title_y = @intFromFloat(layout.mapPoint(312.0, 126.0).y),
-            .detail_body_x = @intFromFloat(layout.mapPoint(312.0, 168.0).x),
-            .detail_body_y = @intFromFloat(layout.mapPoint(312.0, 168.0).y),
-            .detail_width = @intFromFloat(layout.mapRect(292.0, 104.0, 248.0, 250.0).width - 36.0),
-            .control_x = @intFromFloat(layout.mapPoint(312.0, 250.0).x),
-            .control_y = @intFromFloat(layout.mapPoint(312.0, 250.0).y),
-        }
-    else
-        .{
-            .menu_panel = .{ .x = 96.0, .y = 220.0, .width = 360.0, .height = 260.0 },
-            .detail_panel = .{ .x = 492.0, .y = 220.0, .width = 640.0, .height = 260.0 },
-            .footer_panel = .{ .x = 96.0, .y = 516.0, .width = 1036.0, .height = 44.0 },
-            .title_x = 96,
-            .title_y = 176,
-            .detail_title_x = 520,
-            .detail_title_y = 252,
-            .detail_body_x = 520,
-            .detail_body_y = 304,
-            .detail_width = 580,
-            .control_x = 520,
-            .control_y = 400,
-        };
-}
-
-fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: []const u8) void {
-    const active = index == selected_index;
-    const row_rect = if (art_layout) |layout|
-        layout.mapRect(68.0, 128.0 + @as(f32, @floatFromInt(index)) * 42.0, 196.0, 32.0)
-    else
-        rl.Rectangle{
-            .x = 112.0,
-            .y = 252.0 + @as(f32, @floatFromInt(index)) * 48.0,
-            .width = 328.0,
-            .height = 36.0,
-        };
-    const label_point = if (art_layout) |layout|
-        layout.mapPoint(84.0, 136.0 + @as(f32, @floatFromInt(index)) * 42.0)
-    else
-        rl.Vector2{ .x = 132.0, .y = 260.0 + @as(f32, @floatFromInt(index)) * 48.0 };
-
-    if (active) {
-        rl.drawRectangleRounded(row_rect, 0.25, 8, .orange);
-    }
-    drawAppText(state, label, @intFromFloat(label_point.x), @intFromFloat(label_point.y), 24, if (active) .black else .ray_white);
-}
-
-fn newGameMenuHint(item: NewGameMenuItem) ?[]const u8 {
-    return switch (item) {
-        .postal_mode => "Start the postal-mode level flow.",
-        .time_trial => "Start the time-trial level flow.",
-        .challenge_mode => "Start the challenge-mode level flow.",
-        .help => "Open the help screen.",
-        else => null,
-    };
-}
-
-fn mainMenuItemHint(item: MainMenuItem) ?[]const u8 {
-    return switch (item) {
-        .new_game => "Open the recovered New Game flow.",
-        .high_scores => "Open postal and challenge score tables.",
-        .options => "Adjust the recovered fullscreen, sounds, and music config fields.",
-        .credits => "Play the shipped archive-backed credits crawl.",
-        .exit => "Leave the runtime.",
-    };
-}
-
-fn optionsMenuTitle(item: OptionsMenuItem) []const u8 {
-    return switch (item) {
-        .fullscreen => "Full-screen",
-        .sound_volume => "Sounds Volume",
-        .music_volume => "Music Volume",
-        .back => "Back",
-    };
-}
-
-fn optionsMenuHint(state: *const AppState, item: OptionsMenuItem) ?[]const u8 {
-    return switch (item) {
-        .fullscreen => if (state.runtime_config_loaded_from_file)
-            "Recovered fullscreen preference from SnailMail.cfg. The development default only stays windowed when no runtime config exists."
-        else
-            "Recovered fullscreen preference from the options flow. Until a runtime config exists, development startup stays windowed by default.",
-        .sound_volume => "Recovered sound-effects scalar from SnailMail.cfg and the original options menu apply path.",
-        .music_volume => "Recovered music scalar from SnailMail.cfg and the original options menu apply path.",
-        .back => "Save the current config blob and return to the main menu.",
-    };
-}
-
-fn optionsMenuLabel(state: *const AppState, item: OptionsMenuItem, buffer: []u8) ![]const u8 {
-    return switch (item) {
-        .fullscreen => std.fmt.bufPrint(buffer, "Full-screen {s}", .{if (state.runtime_config.fullscreenEnabled()) "On" else "Off"}),
-        .sound_volume => std.fmt.bufPrint(buffer, "Sounds {d:>3.0}%", .{state.runtime_config.soundVolume() * 100.0}),
-        .music_volume => std.fmt.bufPrint(buffer, "Music {d:>3.0}%", .{state.runtime_config.musicVolume() * 100.0}),
-        .back => "Back",
-    };
-}
-
-fn drawOptionsSliderRow(state: *const AppState, label: []const u8, value: f32, panels: MenuPanels) !void {
-    var value_buffer: [64]u8 = undefined;
-    const value_text = try std.fmt.bufPrint(&value_buffer, "{s}: {d:.2}", .{ label, value });
-    drawAppText(state, value_text, panels.detail_body_x, panels.detail_body_y + 64, 20, .sky_blue);
-
-    const bar_rect = rl.Rectangle{
-        .x = @floatFromInt(panels.detail_body_x),
-        .y = @floatFromInt(panels.detail_body_y + 96),
-        .width = @floatFromInt(@min(panels.detail_width, 240)),
-        .height = 18.0,
-    };
-    rl.drawRectangleRounded(bar_rect, 0.24, 8, .{ .r = 255, .g = 255, .b = 255, .a = 26 });
-    rl.drawRectangleRounded(
-        .{
-            .x = bar_rect.x + 2.0,
-            .y = bar_rect.y + 2.0,
-            .width = (bar_rect.width - 4.0) * std.math.clamp(value, 0.0, 1.0),
-            .height = bar_rect.height - 4.0,
-        },
-        0.24,
-        8,
-        .gold,
-    );
-}
-
-fn frontendRouteModeLabel(mode: FrontendLevelMode) []const u8 {
-    return switch (mode) {
-        .postal => "Postal",
-        .time_trial => "Time Trial",
-        .challenge => "Challenge",
-        .tutorial => "Tutorial",
-    };
-}
-
-fn routeMenuActionLabel(mode: FrontendLevelMode, action: RouteMenuAction) []const u8 {
-    return switch (action) {
-        .play => if (mode == .postal) "Deliver!" else "Play",
-        .watch_best_trial => "Watch Best Trial",
-        .back => "Back",
-    };
-}
-
-fn routeMenuHint(mode: FrontendLevelMode, action: RouteMenuAction) ?[]const u8 {
-    return switch (action) {
-        .play => if (mode == .postal)
-            "Launch the selected delivery route using the recovered front-end route index."
-        else
-            "Launch the selected route using the recovered front-end route index.",
-        .watch_best_trial => "The original front end can launch saved replay trials from here, but replay playback is not ported yet.",
-        .back => "Return to the main menu.",
-    };
-}
-
-fn drawRouteSelectionDots(state: *const AppState, panels: MenuPanels, current_index: usize, max_index: usize) void {
-    const visible_count: usize = @min(max_index + 1, 8);
-    if (visible_count == 0) return;
-
-    const start_index = if (current_index > 3 and max_index + 1 > visible_count)
-        @min(current_index - 3, max_index + 1 - visible_count)
-    else
-        0;
-    const center_y = @as(f32, @floatFromInt(panels.detail_body_y + 146));
-    const start_x = @as(f32, @floatFromInt(panels.detail_body_x + 10));
-    const spacing = 30.0;
-
-    for (0..visible_count) |visible_offset| {
-        const route_index = start_index + visible_offset;
-        const active = route_index == current_index;
-        const unlocked = route_index <= max_index;
-        const center_x = start_x + @as(f32, @floatFromInt(visible_offset)) * spacing;
-        rl.drawCircleV(
-            .{ .x = center_x, .y = center_y },
-            if (active) 8.0 else 6.0,
-            if (active)
-                .gold
-            else if (unlocked)
-                .sky_blue
-            else
-                .dark_gray,
-        );
-
-        var label_buffer: [8]u8 = undefined;
-        const label = std.fmt.bufPrint(&label_buffer, "{d}", .{route_index}) catch "?";
-        drawAppText(state, label, @intFromFloat(center_x - 4.0), @intFromFloat(center_y + 14.0), 14, .ray_white);
-    }
-}
-
-fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffer: []u8) ![]const u8 {
-    return switch (mode) {
-        .tutorial => "LEVELS/TUTORIAL.TXT",
-        .challenge => "LEVELS/CHALLENGE000.TXT",
-        .postal => if (level_index <= 0x32)
-            try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
-        else
-            "LEVELS/ARCADEEXTRA000.TXT",
-        .time_trial => if (level_index <= 0x32)
-            try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
-        else
-            try std.fmt.bufPrint(path_buffer, "LEVELS/TIMETRIALEXTRA{d:0>3}.TXT", .{level_index - 0x32}),
-    };
-}
-
-test "frontend level mode paths follow recovered launch mapping" {
-    var scratch: [64]u8 = undefined;
-
-    try std.testing.expectEqualStrings("LEVELS/TUTORIAL.TXT", try frontendLevelPath(.tutorial, 0, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/CHALLENGE000.TXT", try frontendLevelPath(.challenge, 0, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.postal, 0, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/ARCADE012.TXT", try frontendLevelPath(.postal, 12, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/ARCADE000.TXT", try frontendLevelPath(.time_trial, 0, &scratch));
-    try std.testing.expectEqualStrings("LEVELS/TIMETRIALEXTRA001.TXT", try frontendLevelPath(.time_trial, 0x33, &scratch));
 }
 
 fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -3170,72 +2620,32 @@ fn colorForSegmentCell(cell: u8) rl.Color {
     };
 }
 
+fn uiContext(state: *const AppState) app_ui.Context {
+    return .{ .font = &state.ui_font };
+}
+
 fn drawAppText(state: *const AppState, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    state.ui_font.drawText(text, @floatFromInt(x), @floatFromInt(y), @floatFromInt(font_size), color);
+    app_ui.drawText(uiContext(state), text, x, y, font_size, color);
 }
 
 fn measureAppText(state: *const AppState, text: []const u8, font_size: i32) i32 {
-    return @intFromFloat(@ceil(state.ui_font.measureText(text, @floatFromInt(font_size))));
+    return app_ui.measureText(uiContext(state), text, font_size);
 }
 
 fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    var line_buffer: [512]u8 = undefined;
-    var line_index: i32 = 0;
-
-    var parts = std.mem.splitScalar(u8, text, '>');
-    while (parts.next()) |part| {
-        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
-        @memcpy(line_buffer[0..clipped.len], clipped);
-        line_buffer[clipped.len] = 0;
-        _ = max_width;
-        drawAppText(state, line_buffer[0..clipped.len], x, y + line_index * line_height, 18, color);
-        line_index += 1;
-    }
+    return app_ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
-fn drawMultilineText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    var line_buffer: [512]u8 = undefined;
-    var line_index: i32 = 0;
-
-    var parts = std.mem.splitScalar(u8, text, '\n');
-    while (parts.next()) |part| {
-        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
-        @memcpy(line_buffer[0..clipped.len], clipped);
-        line_buffer[clipped.len] = 0;
-        _ = max_width;
-        drawAppText(state, line_buffer[0..clipped.len], x, y + line_index * line_height, 18, color);
-        line_index += 1;
-    }
+fn drawMenuItem(state: *const AppState, art_layout: ?background.Layout, index: usize, selected_index: usize, label: []const u8) void {
+    app_ui.drawMenuItem(uiContext(state), art_layout, index, selected_index, label);
 }
 
-fn drawCenteredMultilineText(state: *const AppState, text: []const u8, center_x: i32, y: i32, line_height: i32, color: rl.Color) !void {
-    var line_buffer: [512]u8 = undefined;
-    var line_index: i32 = 0;
-
-    var parts = std.mem.splitScalar(u8, text, '\n');
-    while (parts.next()) |part| {
-        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
-        @memcpy(line_buffer[0..clipped.len], clipped);
-        line_buffer[clipped.len] = 0;
-        const text_width = measureAppText(state, line_buffer[0..clipped.len], 18);
-        drawAppText(
-            state,
-            line_buffer[0..clipped.len],
-            center_x - @divTrunc(text_width, 2),
-            y + line_index * line_height,
-            18,
-            color,
-        );
-        line_index += 1;
-    }
+fn drawOptionsSliderRow(state: *const AppState, label: []const u8, value: f32, panels: MenuPanels) !void {
+    return app_ui.drawOptionsSliderRow(uiContext(state), label, value, panels);
 }
 
-fn countLines(text: []const u8) i32 {
-    var line_count: i32 = 1;
-    for (text) |byte| {
-        if (byte == '\n') line_count += 1;
-    }
-    return line_count;
+fn drawRouteSelectionDots(state: *const AppState, panels: MenuPanels, current_index: usize, max_index: usize) void {
+    app_ui.drawRouteSelectionDots(uiContext(state), panels, current_index, max_index);
 }
 
 fn modeLabel(mode: xanim.Mode) [:0]const u8 {
@@ -3302,13 +2712,6 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: sub_4119d0.
-fn defaultWindowSizeForCommand(command: AppCommand) WindowSize {
-    return switch (command) {
-        .game => .{ .width = game_window_width, .height = game_window_height },
-        .debug, .smoke => .{ .width = debug_window_width, .height = debug_window_height },
-    };
-}
-
 fn screenWidth() i32 {
     return rl.getScreenWidth();
 }
@@ -3320,87 +2723,6 @@ fn screenHeight() i32 {
 test "wrapped index handles negative deltas" {
     try std.testing.expectEqual(@as(usize, 4), wrappedIndex(5, 0, -1));
     try std.testing.expectEqual(@as(usize, 0), wrappedIndex(5, 0, 5));
-}
-
-test "default window sizes split game and debug paths" {
-    const game_size = defaultWindowSizeForCommand(.game);
-    try std.testing.expectEqual(@as(i32, 1024), game_size.width);
-    try std.testing.expectEqual(@as(i32, 768), game_size.height);
-
-    const debug_size = defaultWindowSizeForCommand(.debug);
-    try std.testing.expectEqual(@as(i32, 1280), debug_size.width);
-    try std.testing.expectEqual(@as(i32, 720), debug_size.height);
-
-    const smoke_size = defaultWindowSizeForCommand(.smoke);
-    try std.testing.expectEqual(debug_size.width, smoke_size.width);
-    try std.testing.expectEqual(debug_size.height, smoke_size.height);
-}
-
-test "frontend fade-in reaches idle after 18 ticks" {
-    var transition: FrontendTransition = .{};
-    transition.beginFadeIn();
-
-    for (0..18) |_| {
-        try std.testing.expectEqual(@as(?GamePhase, null), transition.update());
-    }
-
-    try std.testing.expectEqual(FrontendTransitionState.idle, transition.state);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), transition.alpha, 0.001);
-}
-
-test "frontend fade-out hands off after black hold" {
-    var transition: FrontendTransition = .{};
-    transition.beginFadeOut(.main_menu);
-
-    var handoff_phase: ?GamePhase = null;
-    for (0..21) |_| {
-        handoff_phase = transition.update() orelse handoff_phase;
-    }
-
-    try std.testing.expectEqual(GamePhase.main_menu, handoff_phase.?);
-    try std.testing.expectEqual(FrontendTransitionState.handoff, transition.state);
-
-    transition.completeHandoff();
-    try std.testing.expectEqual(FrontendTransitionState.fading_in, transition.state);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), transition.alpha, 0.001);
-}
-
-test "parse args defaults to game shell" {
-    const options = try parseArgsFromSlice(&.{});
-    try std.testing.expectEqual(AppCommand.game, options.command);
-    try std.testing.expectEqualStrings(default_archive_path, options.archive_path);
-    try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
-    try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
-    try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
-    try std.testing.expectEqual(false, options.fullscreen);
-}
-
-test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--fullscreen" });
-    try std.testing.expectEqual(AppCommand.debug, options.command);
-    try std.testing.expectEqualStrings("custom.dat", options.archive_path);
-    try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
-    try std.testing.expectEqualStrings("artifacts/test-shots", options.screenshot_dir);
-    try std.testing.expectEqual(GamePhase.intro, options.auto_screenshot.?.phase);
-    try std.testing.expectEqual(@as(u64, 60), options.auto_screenshot.?.tick);
-    try std.testing.expectEqual(true, options.fullscreen);
-
-    options = try parseArgsFromSlice(&.{"smoke"});
-    try std.testing.expectEqual(AppCommand.smoke, options.command);
-}
-
-test "parse args rejects unknown commands" {
-    try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"weird"}));
-    try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"browser"}));
-}
-
-test "parse auto screenshot validates phase and tick" {
-    const capture = try parseAutoScreenshot("credits:120");
-    try std.testing.expectEqual(GamePhase.credits, capture.phase);
-    try std.testing.expectEqual(@as(u64, 120), capture.tick);
-
-    try std.testing.expectError(error.InvalidScreenshotSpec, parseAutoScreenshot("intro"));
-    try std.testing.expectError(error.InvalidScreenshotPhase, parseAutoScreenshot("weird:30"));
 }
 
 test "gameplay camera looks ahead of the runner" {
