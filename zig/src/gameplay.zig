@@ -206,8 +206,9 @@ pub const DamageWarningState = enum {
     }
 };
 
-// PORT(partial): recovered from Android `cRSubGoldy::Collision()` callsites into
-// `cRDamageGuage::Take(float,bool)`. A separate +0.02 damage path from another pool
+// PORT(partial): Windows now confirms the contact-damage controller is the separate
+// player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
+// not the jetpack gauge at +0x2750. A separate +0.02 damage path from another pool
 // is still unresolved, so only the identified gameplay hazards are modeled here.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;

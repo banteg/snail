@@ -186,6 +186,13 @@ This matches the follow-state code path:
 | 45-46 | `TWISTER2A`, `TWISTER2B` | `sub_42af30` | |
 | 47-50 | `TOAD*` | `sub_42cbf0` | `TOAD0`, `TOAD1`, `TOADPAIR0`, `TOADPAIR1` |
 
+The March 10 Windows attachment package independently corroborated a few of these families from the live follow side:
+
+- kind `31` has the dedicated launch-exit branch, matching `SUPERTRAMP`
+- kinds `33`, `34`, and `35` are the shared `P`-family constructor variants
+- kind `36` is the explicit `START` constructor family
+- kind `42` still has its own nonlinear projection or follow branch in both projection and live-update code, but that new package does not overturn the current `WARP` slot assignment above
+
 ## Practical Read
 
 - named `Path=` rows choose hardcoded template pairs rather than archive-defined path files

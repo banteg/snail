@@ -20,9 +20,11 @@ Recommended workflow:
    - `uv run tools/ida/sync_symbols.py`
 6. Export targeted IDA pseudocode artifacts when a single function needs a second-opinion decompile view:
    - `uv run tools/ida/export_function.py update_subgoldy`
+7. Refresh the whole named Windows gameplay slice under `artifacts/ida/functions/` when you want `rg`-friendly second-opinion pseudocode for every curated symbol:
+   - `uv run tools/ida/export_manifest_functions.py`
 
 The Binary Ninja script uses only identifier-like curated names from the open database. It intentionally skips default `sub_*` labels, jump thunks, and mangled compiler symbols so the manifest stays readable and reviewable in version control.
 
 The IDA sync path is intentionally one-way. Do new rename work in Binary Ninja, validate and commit the manifest, then replay that manifest into `artifacts/ida/SnailMail_unwrapped.exe.i64` so the Windows decompiler views stay aligned across tools.
 
-The targeted export path writes pseudocode artifacts under `artifacts/ida/functions/` by default. That is the preferred way to keep a readable second-opinion snapshot for oversized functions like `update_subgoldy` without regenerating a giant whole-program C dump on every sync.
+The targeted export path writes pseudocode artifacts under `artifacts/ida/functions/` by default. The manifest-backed export now writes the whole curated gameplay set to that same directory, which is the preferred way to keep an `rg`-friendly second-opinion snapshot without regenerating a giant whole-program C dump of unrelated runtime code.

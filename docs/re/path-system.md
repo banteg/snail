@@ -36,9 +36,11 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `add_subgoldy_score` at `0x4402c0`
 - `select_level_track_texture_set` at `0x410730`
 - `update_subgame` at `0x438b90`
-- `initialize_damage_gauge` at `0x43a930`
-- `update_damage_gauge` at `0x43a390`
+- `initialize_jetpack_gauge` at `0x43a930`
+- `update_jetpack_gauge` at `0x43a390`
 - `advance_timer_counters` at `0x441b90`
+- `update_damage_gauge` at `0x440fd0`
+- `apply_damage_gauge_delta` at `0x4413f0`
 - `set_backdrop_progress_fraction` at `0x410c30`
 - `set_matrix_identity` at `0x44d250`
 - `initialize_subgoldy` at `0x43a9c0`
@@ -74,6 +76,7 @@ The current high-confidence model is:
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
+- contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
 
 The remaining unknowns are mostly about exact constructor semantics, special cases like `WARP`, and the last details of attachment entry or exit behavior.
 
