@@ -10,7 +10,7 @@ The split `*_min.h` files are the maintained sources behind that entrypoint:
 - `win32_min.h`: 32-bit Win32 and COM base types used by the game
 - `d3d8_min.h`: the Direct3D 8 surface currently recovered around `initialize_d3d8_device`
 - `dinput8_min.h`: the DirectInput 8 surface currently recovered around keyboard, mouse, and controller setup
-- `bass_min.h`: the legacy BASS API subset resolved dynamically from `tBass.dll`
+- `bass_min.h`: the BASS 2.0-era API subset resolved dynamically from `tBass.dll`
 
 These are intentionally minimal. They are meant to make imported APIs, COM
 vtables, and function-pointer wrappers readable in Binary Ninja, not to replace
@@ -23,6 +23,12 @@ Current high-value targets for these headers:
 - `initialize_keyboard_input`
 - `initialize_mouse_input`
 - `sub_449460` (`tBass.dll` loader)
+
+Observed DLL facts behind `bass_min.h`:
+
+- `tBass.dll` and the archive `BASS.DLL` are byte-for-byte identical
+- the version resource reports `FileVersion = 2.0`
+- the exported surface is still the older pre-2.1 API family used by the game
 
 Why this lives in-repo:
 

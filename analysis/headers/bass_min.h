@@ -4,9 +4,10 @@
 #include "win32_min.h"
 
 /*
- * Minimal legacy BASS declarations matching the dynamically resolved symbols in
- * the game's `tBass.dll` loader. This follows the older BASS 1.x-style API
- * surface used by the 2006 build instead of newer 2.x headers.
+ * Minimal BASS 2.0-era declarations matching the dynamically resolved symbols
+ * in the game's `tBass.dll` loader. The shipped DLL reports FileVersion 2.0
+ * and exposes the older pre-2.1 surface, so this remains intentionally
+ * narrower than modern BASS headers.
  */
 
 typedef DWORD HCHANNEL;
