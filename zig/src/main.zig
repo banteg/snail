@@ -93,7 +93,6 @@ const PendingRunResult = struct {
     outcome: RunOutcome = .completed,
     level_name: []const u8,
     mode: ?FrontendLevelMode,
-    elapsed_seconds: f32,
     elapsed_millis: u32,
     parcel_count: u32,
     parcel_target: usize,
@@ -1003,7 +1002,6 @@ const AppState = struct {
             .outcome = .completed,
             .level_name = loaded_level.name,
             .mode = active_mode,
-            .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
             .elapsed_millis = elapsed_millis,
             .parcel_count = parcel_count,
             .parcel_target = parcel_target,
@@ -1071,7 +1069,6 @@ const AppState = struct {
             .outcome = .failed,
             .level_name = loaded_level.name,
             .mode = active_mode,
-            .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
             .elapsed_millis = elapsed_millis,
             .parcel_count = runner.counters.parcels,
             .parcel_target = parcel_target,
@@ -2401,6 +2398,14 @@ fn completionElapsedMillis(runner: gameplay.Runner) u32 {
     return runner.stopwatch.elapsedMillis();
 }
 
+fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
+    const total_seconds = @divTrunc(elapsed_millis, 1000);
+    const minutes = @divTrunc(total_seconds, 60);
+    const seconds = @mod(total_seconds, 60);
+    const centiseconds = @divTrunc(@mod(elapsed_millis, 1000), 10);
+    return std.fmt.bufPrint(buffer, "{d:0>2}:{d:0>2}.{d:0>2}", .{ minutes, seconds, centiseconds });
+}
+
 // PORT(partial): this now follows the recovered `cRSubGoldy::ScoreAdd` constants for the
 // score events the current runner actually models:
 // ring collect (+100), parcel pickup/register (+100 each), and the postal-only completion bonus,
@@ -2484,10 +2489,12 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
     drawAppText(state, level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
 
+    var elapsed_buffer: [32]u8 = undefined;
+    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {d:.3}s  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {s}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2497,7 +2504,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             parcel_count,
             parcel_target,
             score_total,
-            @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
+            elapsed_text,
             loaded_track_preview.total_rows,
         },
     );
@@ -2679,6 +2686,8 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     const footer_x: i32 = @intFromFloat(footer_point.x);
     const footer_y: i32 = @intFromFloat(footer_point.y);
     const title = resultTitle(result);
+    var elapsed_buffer: [32]u8 = undefined;
+    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, result.elapsed_millis);
 
     rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
     drawAppText(state, title, title_x, title_y, layout.fontSize(28), .gold);
@@ -2686,10 +2695,10 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrint(
         &summary_buffer,
-        "{s}>Time {d:.1}s>Packages {d}/{d}",
+        "{s}>Time {s}>Packages {d}/{d}",
         .{
             if (result.outcome == .completed) result.level_name else "Run ended before route completion",
-            result.elapsed_seconds,
+            elapsed_text,
             result.parcel_count,
             result.parcel_target,
         },
@@ -2707,7 +2716,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     const score_y = body_y + layout.scaleInt(70);
     if (result.mode == .time_trial) {
         var time_buffer: [128]u8 = undefined;
-        const time_text = try std.fmt.bufPrint(&time_buffer, "Route time {d:.3}s", .{@as(f32, @floatFromInt(result.elapsed_millis)) / 1000.0});
+        const time_text = try std.fmt.bufPrint(&time_buffer, "Route time {s}", .{elapsed_text});
         drawAppText(state, time_text, body_x, score_y, layout.fontSize(18), .sky_blue);
     } else {
         var score_buffer: [128]u8 = undefined;
@@ -3702,6 +3711,12 @@ test "failed runs return to the main menu while completions keep mode-specific e
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .postal));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .challenge));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
+}
+
+test "elapsed millis format as mm:ss.cc" {
+    var buffer: [32]u8 = undefined;
+    const text = try formatElapsedMillis(&buffer, 91_230);
+    try std.testing.expectEqualStrings("01:31.23", text);
 }
 
 test "high score mode index follows screen order" {
