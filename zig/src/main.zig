@@ -36,7 +36,6 @@ const default_object_path = app.default_object_path;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
-const completion_cutscene_duration_ticks: u64 = 72;
 const Options = app.Options;
 const AppCommand = app.AppCommand;
 const AutoScreenshot = app.AutoScreenshot;
@@ -84,7 +83,13 @@ const ResultReturnTarget = enum {
     replay_current_level,
 };
 
+const RunOutcome = enum {
+    completed,
+    failed,
+};
+
 const PendingRunResult = struct {
+    outcome: RunOutcome = .completed,
     level_name: []const u8,
     mode: ?FrontendLevelMode,
     elapsed_seconds: f32,
@@ -648,17 +653,19 @@ const AppState = struct {
                 }
             }
             try self.syncActiveLevelSegment(false);
-            if (self.level_runner) |runner| {
-                if (runner.finished) {
-                    try self.beginCompletedRun();
-                    return;
+            if (self.level_runner) |*runner| {
+                switch (runner.consumeHandoff()) {
+                    .none => {},
+                    .completion => {
+                        try self.beginCompletedRun();
+                        return;
+                    },
+                    .final_loss => |cause| {
+                        try self.beginFailedRun(cause);
+                        return;
+                    },
                 }
             }
-        }
-
-        if (self.game_phase == .cutscene and self.game_phase_ticks >= completion_cutscene_duration_ticks) {
-            try self.enterGamePhase(.completion_screen);
-            return;
         }
     }
 
@@ -677,7 +684,6 @@ const AppState = struct {
                 .options_menu => try self.leaveOptionsMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
-                .cutscene => try self.enterGamePhase(.completion_screen),
                 .completion_screen => try self.continueCompletionScreen(),
             }
             return;
@@ -782,11 +788,6 @@ const AppState = struct {
                     try self.activateExitPromptChoice(exit_prompt_choices[self.exit_prompt_choice_index]);
                 }
             },
-            .cutscene => {
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space) or rl.isMouseButtonPressed(.left)) {
-                    try self.enterGamePhase(.completion_screen);
-                }
-            },
             .completion_screen => {
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                     self.completion_action_index = wrappedIndex(completion_actions.len, self.completion_action_index, -1);
@@ -809,42 +810,45 @@ const AppState = struct {
                 }
             },
             .level => {
-                if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+                const accepts_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
+                if (accepts_input and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
                 }
-                if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+                if (accepts_input and (rl.isKeyPressed(.right) or rl.isKeyPressed(.d))) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta += 1;
                 }
-                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.w)) {
+                if (accepts_input and (rl.isKeyPressed(.up) or rl.isKeyPressed(.w))) {
                     self.pending_level_input.speed_delta_rows_per_second += 2.0;
                 }
-                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.s)) {
+                if (accepts_input and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
                     self.pending_level_input.speed_delta_rows_per_second -= 2.0;
                 }
-                if (rl.isKeyPressed(.space)) {
+                if (accepts_input and rl.isKeyPressed(.space)) {
                     self.pending_level_input.toggle_pause = true;
                 }
                 if (rl.isKeyPressed(.r)) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.reset = true;
                 }
-                if (self.current_track_preview) |loaded_track_preview| {
-                    if (self.level_runner) |runner| {
-                        const mouse_delta = rl.getMouseDelta();
-                        if (@abs(mouse_delta.x) > 0.01) {
-                            self.mouse_level_lane_target = laneTargetForRunnerMouse(
-                                loaded_track_preview,
-                                runner,
-                                @floatFromInt(rl.getMouseX()),
-                            );
-                        }
-                        if (self.mouse_level_lane_target) |lane_target| {
-                            if (lane_target < runner.lane_index) {
-                                self.pending_level_input.lane_delta -= 1;
-                            } else if (lane_target > runner.lane_index) {
-                                self.pending_level_input.lane_delta += 1;
+                if (accepts_input) {
+                    if (self.current_track_preview) |loaded_track_preview| {
+                        if (self.level_runner) |runner| {
+                            const mouse_delta = rl.getMouseDelta();
+                            if (@abs(mouse_delta.x) > 0.01) {
+                                self.mouse_level_lane_target = laneTargetForRunnerMouse(
+                                    loaded_track_preview,
+                                    runner,
+                                    @floatFromInt(rl.getMouseX()),
+                                );
+                            }
+                            if (self.mouse_level_lane_target) |lane_target| {
+                                if (lane_target < runner.lane_index) {
+                                    self.pending_level_input.lane_delta -= 1;
+                                } else if (lane_target > runner.lane_index) {
+                                    self.pending_level_input.lane_delta += 1;
+                                }
                             }
                         }
                     }
@@ -974,14 +978,18 @@ const AppState = struct {
         if (self.pending_run_result != null) return;
 
         const loaded_level = self.current_level orelse return;
-        const runner = self.level_runner orelse return;
-        if (!runner.finished) return;
-
         const active_mode = self.active_frontend_mode;
         const parcel_target = loaded_level.parcels orelse 0;
+        if (completionBonusAppliesForMode(active_mode)) {
+            if (self.level_runner) |*runner| {
+                runner.applyCompletionBonus(parcel_target);
+            }
+        }
+        const runner = self.level_runner orelse return;
         const parcel_count = runner.counters.parcels;
         const elapsed_millis = completionElapsedMillis(runner);
         var result = PendingRunResult{
+            .outcome = .completed,
             .level_name = loaded_level.name,
             .mode = active_mode,
             .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
@@ -998,10 +1006,7 @@ const AppState = struct {
 
         switch (active_mode orelse .tutorial) {
             .postal => {
-                if (completionBonusAppliesForMode(active_mode)) {
-                    self.level_runner.?.applyCompletionBonus(parcel_target);
-                }
-                result.score = self.level_runner.?.score.total;
+                result.score = runner.score.total;
                 result.score_is_partial = true;
 
                 const entry = high_score.Entry{
@@ -1014,7 +1019,7 @@ const AppState = struct {
                 try self.saveHighScoreTables();
             },
             .challenge => {
-                result.score = self.level_runner.?.score.total;
+                result.score = runner.score.total;
                 result.score_is_partial = true;
 
                 const entry = high_score.Entry{
@@ -1039,7 +1044,39 @@ const AppState = struct {
 
         self.completion_action_index = 0;
         self.pending_run_result = result;
-        try self.enterGamePhase(.cutscene);
+        try self.enterGamePhase(.completion_screen);
+    }
+
+    fn beginFailedRun(self: *AppState, cause: gameplay.DeathCause) !void {
+        _ = cause;
+        if (self.pending_run_result != null) return;
+
+        const loaded_level = self.current_level orelse return;
+        const runner = self.level_runner orelse return;
+        const active_mode = self.active_frontend_mode;
+        const elapsed_millis = completionElapsedMillis(runner);
+        const result_score = switch (active_mode orelse .tutorial) {
+            .time_trial => elapsed_millis,
+            else => runner.score.total,
+        };
+
+        self.completion_action_index = 0;
+        self.pending_run_result = .{
+            .outcome = .failed,
+            .level_name = loaded_level.name,
+            .mode = active_mode,
+            .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
+            .elapsed_millis = elapsed_millis,
+            .parcel_count = runner.counters.parcels,
+            .parcel_target = loaded_level.parcels orelse 0,
+            .score = result_score,
+            .score_is_partial = true,
+            .score_totals = runner.score,
+            .visible_life_stock = runner.visible_life_stock,
+            .damage_gauge = runner.damage_gauge,
+            .return_target = resultReturnTargetForMode(active_mode),
+        };
+        try self.enterGamePhase(.completion_screen);
     }
 
     fn continueCompletionScreen(self: *AppState) !void {
@@ -1292,7 +1329,7 @@ const AppState = struct {
                 try self.loadGameBackground(help_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
-            .cutscene, .completion_screen => {
+            .completion_screen => {
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
@@ -1761,6 +1798,7 @@ const AppState = struct {
                     loaded_level.parcels orelse 0,
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
+                self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
             }
         }
         self.level_segment_index = 0;
@@ -1910,7 +1948,6 @@ fn drawGameUi(state: *const AppState) !void {
         .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
         .exit_prompt => try drawExitPromptUi(state, ui_layout),
-        .cutscene => drawCutsceneUi(state, ui_layout),
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
         .credits => drawCurrentTextScript(state, ui_layout),
         .help => drawHelpUi(state, ui_layout),
@@ -2283,10 +2320,26 @@ fn resultReturnTargetForMode(mode: ?FrontendLevelMode) ResultReturnTarget {
     };
 }
 
+fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
+    return switch (mode orelse .tutorial) {
+        .postal => .postal,
+        .time_trial => .time_trial,
+        .challenge => .challenge,
+        .tutorial => .tutorial,
+    };
+}
+
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
     return switch (mode orelse .tutorial) {
         .postal => true,
         .challenge, .time_trial, .tutorial => false,
+    };
+}
+
+fn completionActionLabel(result: PendingRunResult, action: CompletionAction) []const u8 {
+    return switch (action) {
+        .continue_flow => "Continue",
+        .replay_level => if (result.outcome == .failed) "Retry" else "Replay",
     };
 }
 
@@ -2310,14 +2363,6 @@ fn bootPhaseProgress(state: *const AppState) f32 {
     );
 }
 
-fn completionCutsceneProgress(state: *const AppState) f32 {
-    return std.math.clamp(
-        @as(f32, @floatFromInt(state.game_phase_ticks)) / @as(f32, @floatFromInt(completion_cutscene_duration_ticks)),
-        0.0,
-        1.0,
-    );
-}
-
 fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
     const script = state.currentTextScript() orelse return;
     const progress = state.currentTextScriptProgress() orelse 0.0;
@@ -2336,16 +2381,27 @@ fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
     drawAppText(state, "Enter or Esc back", @intFromFloat(help_text.x), @intFromFloat(help_text.y), layout.fontSize(18), .ray_white);
 }
 
-fn completionTitle(result: PendingRunResult) []const u8 {
-    return if (result.mode) |mode|
-        switch (mode) {
-            .postal => "Delivery Complete",
-            .time_trial => "Route Complete",
-            .challenge => "Challenge Complete",
-            .tutorial => "Tutorial Complete",
-        }
-    else
-        "Level Complete";
+fn resultTitle(result: PendingRunResult) []const u8 {
+    return switch (result.outcome) {
+        .completed => if (result.mode) |mode|
+            switch (mode) {
+                .postal => "Delivery Complete",
+                .time_trial => "Route Complete",
+                .challenge => "Challenge Complete",
+                .tutorial => "Tutorial Complete",
+            }
+        else
+            "Level Complete",
+        .failed => if (result.mode) |mode|
+            switch (mode) {
+                .postal => "Game Over",
+                .time_trial => "Route Failed",
+                .challenge => "Challenge Failed",
+                .tutorial => "Tutorial Failed",
+            }
+        else
+            "Run Failed",
+    };
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -2366,7 +2422,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const score_total = if (state.level_runner) |runner| runner.score.total else 0;
     const damage_gauge = if (state.level_runner) |runner| runner.damage_gauge else 0.0;
     const damage_warning = if (state.level_runner) |runner| runner.damageWarningLabel() else "idle";
-    const finished = if (state.level_runner) |runner| runner.finished else false;
+    const accepts_input = if (state.level_runner) |runner| runner.acceptsGameplayInput() else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
     const title_font_size = layout.fontSize(28);
@@ -2396,8 +2452,8 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     );
     drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
     var control_buffer: [192]u8 = undefined;
-    const control_text = if (finished)
-        try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Enter menu  Esc menu", .{mouse_icon})
+    const control_text = if (!accepts_input)
+        try std.fmt.bufPrintZ(&control_buffer, "Runner cutscene active  R reset  Esc menu", .{})
     else
         try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", .{mouse_icon});
     drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), body_font_size, .light_gray);
@@ -2408,7 +2464,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {s}  finished {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {s}  phase {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -2422,7 +2478,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.damageWarningLabel(),
                 runner.visible_life_stock,
                 if (runner.jetpack_active) "on" else "off",
-                if (runner.finished) "yes" else "no",
+                runner.phaseLabel(),
             },
         );
         drawAppText(state, runner_text, @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)), @intFromFloat(footer_panel.y + layout.scaleFloat(18.0)), body_font_size, .ray_white);
@@ -2447,27 +2503,6 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
 }
 
-fn drawCutsceneUi(state: *const AppState, layout: VirtualLayout) void {
-    drawGameplayLevelViewport(state);
-
-    const result = state.pending_run_result orelse return;
-    const title = completionTitle(result);
-    const title_panel = layout.mapRect(146.0, 36.0, 348.0, 48.0);
-    const title_point = layout.mapPoint(320.0, 50.0);
-    const font_size = layout.fontSize(28);
-    const title_width = measureAppText(state, title, font_size);
-
-    rl.drawRectangleRounded(title_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-    drawAppText(
-        state,
-        title,
-        @as(i32, @intFromFloat(title_point.x)) - @divTrunc(title_width, 2),
-        @as(i32, @intFromFloat(title_point.y)),
-        font_size,
-        .gold,
-    );
-}
-
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
     drawGameplayLevelViewport(state);
     const result = state.pending_run_result orelse return;
@@ -2485,7 +2520,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     const body_y: i32 = @intFromFloat(body_point.y);
     const footer_x: i32 = @intFromFloat(footer_point.x);
     const footer_y: i32 = @intFromFloat(footer_point.y);
-    const title = completionTitle(result);
+    const title = resultTitle(result);
 
     rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
     drawAppText(state, title, title_x, title_y, layout.fontSize(28), .gold);
@@ -2493,8 +2528,13 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrint(
         &summary_buffer,
-        "Level {s}>Time {d:.1}s>Packages {d}/{d}",
-        .{ result.level_name, result.elapsed_seconds, result.parcel_count, result.parcel_target },
+        "{s}>Time {d:.1}s>Packages {d}/{d}",
+        .{
+            if (result.outcome == .completed) result.level_name else "Run ended before route completion",
+            result.elapsed_seconds,
+            result.parcel_count,
+            result.parcel_target,
+        },
     );
     try drawWrappedText(
         state,
@@ -2568,7 +2608,10 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
         layout,
         @intFromFloat(overlay_panel.x + overlay_panel.width * 0.5),
         footer_y,
-        &[_][]const u8{ completion_actions[0].label(), completion_actions[1].label() },
+        &[_][]const u8{
+            completionActionLabel(result, completion_actions[0]),
+            completionActionLabel(result, completion_actions[1]),
+        },
         state.completion_action_index,
     );
 }
@@ -3134,10 +3177,12 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
         return;
     };
 
-    const camera = switch (state.game_phase) {
-        .cutscene => completionCutsceneCamera(&loaded_track_preview, runner, completionCutsceneProgress(state)),
-        else => gameplayLevelCamera(&loaded_track_preview, runner),
-    };
+    const camera = if (runner.acceptsGameplayInput())
+        gameplayLevelCamera(&loaded_track_preview, runner)
+    else if (runner.finished)
+        completionCutsceneCamera(&loaded_track_preview, runner, runner.phaseProgress())
+    else
+        deathCutsceneCamera(&loaded_track_preview, runner, runner.phaseProgress());
     camera.begin();
     defer rl.endMode3D();
 
@@ -3206,6 +3251,21 @@ fn completionCutsceneCamera(
     camera.position.z -= 2.2 * eased;
     camera.target.y += 0.4 * eased;
     camera.target.z += 0.8 * eased;
+    return camera;
+}
+
+fn deathCutsceneCamera(
+    loaded_track_preview: *const track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    progress: f32,
+) rl.Camera3D {
+    var camera = gameplayLevelCamera(loaded_track_preview, runner);
+    const eased = progress * progress * (3.0 - 2.0 * progress);
+
+    camera.position.x += 0.6 * eased;
+    camera.position.y += 0.6 * eased;
+    camera.position.z -= 1.4 * eased;
+    camera.target.y -= 0.2 * eased;
     return camera;
 }
 

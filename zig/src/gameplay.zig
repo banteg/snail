@@ -38,6 +38,58 @@ pub const MovementMode = enum {
     }
 };
 
+pub const SessionMode = enum {
+    debug,
+    postal,
+    challenge,
+    time_trial,
+    tutorial,
+
+    pub fn label(self: SessionMode) []const u8 {
+        return switch (self) {
+            .debug => "debug",
+            .postal => "postal",
+            .challenge => "challenge",
+            .time_trial => "time_trial",
+            .tutorial => "tutorial",
+        };
+    }
+};
+
+pub const DeathCause = enum {
+    damage,
+    hazard,
+    fall,
+
+    pub fn label(self: DeathCause) []const u8 {
+        return switch (self) {
+            .damage => "damage",
+            .hazard => "hazard",
+            .fall => "fall",
+        };
+    }
+};
+
+pub const RunnerHandoff = union(enum) {
+    none,
+    completion,
+    final_loss: DeathCause,
+};
+
+const RunnerPhase = union(enum) {
+    active,
+    completion_cutscene: u16,
+    death_cutscene: struct {
+        cause: DeathCause,
+        ticks: u16,
+    },
+    death_resolution: struct {
+        cause: DeathCause,
+        final_loss: bool,
+        ticks: u16,
+    },
+};
+
 pub const RecentEvent = union(enum) {
     none,
     attachment_probe,
@@ -134,6 +186,9 @@ const damage_warning_drain_delta: f32 = -0.0016666667;
 const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const maximum_visible_life_stock: u32 = 9;
+const completion_cutscene_duration_ticks: u16 = 72;
+const death_cutscene_duration_ticks: u16 = 72;
+const death_resolution_duration_ticks: u16 = 120;
 
 const RowSample = struct {
     global_row: usize,
@@ -148,6 +203,7 @@ const RowSample = struct {
 };
 
 pub const Runner = struct {
+    session_mode: SessionMode = .debug,
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -158,6 +214,8 @@ pub const Runner = struct {
     speed_rows_per_second: f32 = 12.0,
     paused: bool = false,
     finished: bool = false,
+    phase: RunnerPhase = .active,
+    pending_handoff: RunnerHandoff = .none,
     tick_count: u64 = 0,
     movement_mode: MovementMode = .track,
     current_global_row: usize = 0,
@@ -193,7 +251,9 @@ pub const Runner = struct {
     pub fn reset(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const completion_bonus_enabled = self.completion_bonus_enabled;
         const parcel_target = self.parcel_target;
+        const session_mode = self.session_mode;
         self.* = .{
+            .session_mode = session_mode,
             .speed_rows_per_second = 12.0,
             .completion_bonus_enabled = completion_bonus_enabled,
             .parcel_target = parcel_target,
@@ -210,38 +270,43 @@ pub const Runner = struct {
             return;
         }
 
-        if (input.toggle_pause) {
+        if (input.toggle_pause and self.acceptsGameplayInput()) {
             self.paused = !self.paused;
         }
 
-        self.speed_rows_per_second = std.math.clamp(
-            self.speed_rows_per_second + input.speed_delta_rows_per_second,
-            2.0,
-            48.0,
-        );
+        if (self.acceptsGameplayInput()) {
+            self.speed_rows_per_second = std.math.clamp(
+                self.speed_rows_per_second + input.speed_delta_rows_per_second,
+                2.0,
+                48.0,
+            );
+        }
 
         if (preview.total_rows == 0) {
             self.finished = true;
+            self.pending_handoff = .completion;
             return;
         }
 
-        if (self.movement_mode != .attachment) {
+        if (self.acceptsGameplayInput() and self.movement_mode != .attachment) {
             self.applyLaneDelta(input.lane_delta);
         }
 
-        if (!self.paused and !self.finished) {
+        if (!self.paused and self.acceptsGameplayInput()) {
             self.movement_rate_scalar = self.speed_rows_per_second * delta_seconds;
             self.advanceMovement(preview);
             self.tick_count += 1;
         }
 
-        self.processVisitedRows(preview);
-        if (!self.paused and !self.finished) {
+        if (!self.paused and self.phase == .active) {
+            self.processVisitedRows(preview);
             self.updateDamageWarning();
+        } else if (!self.paused) {
+            self.updatePhaseController(preview);
         }
         self.endAttachmentIfNeeded(preview);
         self.refreshSample(preview);
-        if (self.movement_mode == .attachment) {
+        if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
     }
@@ -288,9 +353,49 @@ pub const Runner = struct {
         return self.damage_warning_state.label();
     }
 
+    pub fn phaseLabel(self: *const Runner) []const u8 {
+        return switch (self.phase) {
+            .active => "active",
+            .completion_cutscene => "completion_cutscene",
+            .death_cutscene => "death_cutscene",
+            .death_resolution => "death_resolution",
+        };
+    }
+
+    pub fn phaseProgress(self: *const Runner) f32 {
+        return switch (self.phase) {
+            .active => 0.0,
+            .completion_cutscene => |ticks| progressForTicks(ticks, completion_cutscene_duration_ticks),
+            .death_cutscene => |state| progressForTicks(state.ticks, death_cutscene_duration_ticks),
+            .death_resolution => |state| progressForTicks(state.ticks, death_resolution_duration_ticks),
+        };
+    }
+
+    pub fn deathCause(self: *const Runner) ?DeathCause {
+        return switch (self.phase) {
+            .death_cutscene => |state| state.cause,
+            .death_resolution => |state| state.cause,
+            else => null,
+        };
+    }
+
+    pub fn acceptsGameplayInput(self: *const Runner) bool {
+        return self.phase == .active and !self.finished;
+    }
+
+    pub fn consumeHandoff(self: *Runner) RunnerHandoff {
+        const handoff = self.pending_handoff;
+        self.pending_handoff = .none;
+        return handoff;
+    }
+
     pub fn configureCompletionBonus(self: *Runner, parcel_target: usize, enabled: bool) void {
         self.parcel_target = parcel_target;
         self.completion_bonus_enabled = enabled;
+    }
+
+    pub fn configureSessionMode(self: *Runner, session_mode: SessionMode) void {
+        self.session_mode = session_mode;
     }
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
@@ -381,7 +486,7 @@ pub const Runner = struct {
             remaining -= available_progress;
             if (self.runtime_track_index >= last_row) {
                 self.movement_progress = max_progress;
-                self.finished = true;
+                self.beginCompletionCutscene();
                 remaining = 0.0;
                 break;
             }
@@ -547,6 +652,10 @@ pub const Runner = struct {
                 self.counters.slug_hits += 1;
                 self.applyDamageGaugeDelta(slug_damage_delta);
                 self.recent_event = .slug_hit;
+                // PORT(partial): Windows drives several scripted death entries from a richer
+                // collision pool. Until that pool split is ported, the runner treats the
+                // shipped slug hit as the current lethal hazard handoff.
+                self.beginDeathCutscene(.hazard);
             },
         }
     }
@@ -607,7 +716,7 @@ pub const Runner = struct {
 
     // PORT(partial): recovered from Android `cRDamageGuage::AI()`. Filling the gauge enters a
     // warning/fill phase, then a slow auto-drain phase, instead of killing the player directly.
-    // This still omits the original game-flag gates, warning actor, and the separate death path.
+    // This still omits the original game-flag gates, warning actor, and the separate fall-side path.
     fn updateDamageWarning(self: *Runner) void {
         switch (self.damage_warning_state) {
             .idle => {
@@ -640,6 +749,96 @@ pub const Runner = struct {
         const updated_lives = std.math.add(u32, self.visible_life_stock, crossed_buckets) catch std.math.maxInt(u32);
         self.visible_life_stock = @min(maximum_visible_life_stock, updated_lives);
     }
+
+    fn beginCompletionCutscene(self: *Runner) void {
+        if (self.phase != .active) return;
+        self.finished = true;
+        self.phase = .{ .completion_cutscene = 0 };
+    }
+
+    fn beginDeathCutscene(self: *Runner, cause: DeathCause) void {
+        if (self.phase != .active or self.finished) return;
+        self.paused = false;
+        self.phase = .{
+            .death_cutscene = .{
+                .cause = cause,
+                .ticks = 0,
+            },
+        };
+    }
+
+    fn updatePhaseController(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        switch (self.phase) {
+            .active => {},
+            .completion_cutscene => |ticks| {
+                if (ticks + 1 >= completion_cutscene_duration_ticks) {
+                    self.pending_handoff = .completion;
+                    return;
+                }
+                self.phase = .{ .completion_cutscene = ticks + 1 };
+            },
+            .death_cutscene => |state| {
+                if (state.ticks + 1 >= death_cutscene_duration_ticks) {
+                    self.phase = .{
+                        .death_resolution = .{
+                            .cause = state.cause,
+                            .final_loss = self.deathUsesFinalLoss(),
+                            .ticks = 0,
+                        },
+                    };
+                    return;
+                }
+                self.phase = .{
+                    .death_cutscene = .{
+                        .cause = state.cause,
+                        .ticks = state.ticks + 1,
+                    },
+                };
+            },
+            .death_resolution => |state| {
+                if (state.ticks + 1 < death_resolution_duration_ticks) {
+                    self.phase = .{
+                        .death_resolution = .{
+                            .cause = state.cause,
+                            .final_loss = state.final_loss,
+                            .ticks = state.ticks + 1,
+                        },
+                    };
+                    return;
+                }
+
+                if (state.final_loss) {
+                    self.pending_handoff = .{ .final_loss = state.cause };
+                    return;
+                }
+
+                if (self.session_mode == .postal and self.visible_life_stock > 0) {
+                    self.visible_life_stock -= 1;
+                }
+                self.applyRespawn(preview);
+            },
+        }
+    }
+
+    fn deathUsesFinalLoss(self: *const Runner) bool {
+        return switch (self.session_mode) {
+            .postal => self.visible_life_stock == 0,
+            .challenge, .time_trial => true,
+            .tutorial, .debug => false,
+        };
+    }
+
+    fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const session_mode = self.session_mode;
+        const score = self.score;
+        const visible_life_stock = self.visible_life_stock;
+        const tick_count = self.tick_count;
+        self.reset(preview);
+        self.session_mode = session_mode;
+        self.score = score;
+        self.visible_life_stock = visible_life_stock;
+        self.tick_count = tick_count;
+    }
 };
 
 fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) usize {
@@ -660,6 +859,14 @@ fn pathNameFromAnnotation(annotation: ?segment.Annotation) ?[]const u8 {
         .path => |path_name| path_name,
         else => null,
     };
+}
+
+fn progressForTicks(ticks: u16, total_ticks: u16) f32 {
+    return std.math.clamp(
+        @as(f32, @floatFromInt(ticks)) / @as(f32, @floatFromInt(total_ticks)),
+        0.0,
+        1.0,
+    );
 }
 
 const TestFixture = struct {
@@ -848,6 +1055,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 
     runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
@@ -932,6 +1140,67 @@ test "runner seeds visible life stock at 3 and caps score-side awards at 9" {
     runner.recordScore(&runner.score.health_collect, 400_000);
     try std.testing.expectEqual(@as(u32, 450_000), runner.score.total);
     try std.testing.expectEqual(@as(u32, 9), runner.visible_life_stock);
+}
+
+test "postal death respawns from the runner-local controller" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.postal);
+    runner.recordScore(&runner.score.ring_collect, 200);
+    runner.runtime_track_index = 24;
+    runner.movement_progress = 0.5;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.beginDeathCutscene(.hazard);
+
+    for (0..death_cutscene_duration_ticks + death_resolution_duration_ticks) |_| {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
+    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.row_position, 0.0001);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
+}
+
+test "challenge death hands off final loss" {
+    var fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.challenge);
+    runner.beginDeathCutscene(.hazard);
+
+    for (0..death_cutscene_duration_ticks + death_resolution_duration_ticks) |_| {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    const handoff = runner.consumeHandoff();
+    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
+    try std.testing.expectEqual(DeathCause.hazard, handoff.final_loss);
+}
+
+test "runner completion reaches a handoff after the local cutscene" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.95;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.beginCompletionCutscene();
+
+    try std.testing.expectEqualStrings("completion_cutscene", runner.phaseLabel());
+    for (0..completion_cutscene_duration_ticks + 1) |_| {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {

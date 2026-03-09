@@ -36,8 +36,8 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `add_subgoldy_score` at `0x4402c0`
 - `select_level_track_texture_set` at `0x410730`
 - `update_subgame` at `0x438b90`
-- `initialize_damage_guage` at `0x43a930`
-- `update_damage_guage` at `0x43a390`
+- `initialize_damage_gauge` at `0x43a930`
+- `update_damage_gauge` at `0x43a390`
 - `advance_timer_counters` at `0x441b90`
 - `set_backdrop_progress_fraction` at `0x410c30`
 - `set_matrix_identity` at `0x44d250`
