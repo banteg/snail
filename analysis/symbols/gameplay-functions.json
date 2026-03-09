@@ -84,6 +84,11 @@
       "description": "Runs the Star Map galaxy-screen state machine, including route selection, replay launch, and Deliver/Play actions through the shared level-path handoff. Cross-port Android and iOS symbols match this helper to `cRGalaxy::AI()`."
     },
     {
+      "address": "0x409c50",
+      "name": "open_galaxy_route",
+      "description": "Opens one selected Star Map route card, loads its preview label and widget stack, and toggles the replay-only controls for locked or cleared routes. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Open(int)`."
+    },
+    {
       "address": "0x40a2a0",
       "name": "run_frame_update"
     },
@@ -445,12 +450,13 @@
     },
     {
       "address": "0x4356f0",
-      "name": "harmonize_center_lane_floor_slide_variants"
+      "name": "harmonize_center_lane_floor_slide_variants",
+      "description": "Normalizes center-lane floor and slide seam variants after the main edge pass. Cross-port Android and iOS symbols match this pass to `cRSubGame::SlideSmoothTrack()`."
     },
     {
       "address": "0x435a80",
       "name": "select_track_tile_edge_variants",
-      "description": "Computes neighbor masks and chooses edge or corner variants for special runtime tile classes."
+      "description": "Computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`."
     },
     {
       "address": "0x435eb0",
@@ -464,7 +470,7 @@
     {
       "address": "0x4374b0",
       "name": "initialize_subgame",
-      "description": "Initializes the active gameplay subgame state, including menu-backed mode selection, per-mode counters, HUD widgets, and the first galaxy or result handoff after setup. Cross-port Android symbols match this helper to `cRSubGame::Init()`."
+      "description": "Initializes the active gameplay subgame state, including menu-backed mode selection, per-mode counters, HUD widgets, and the first galaxy or result handoff after setup. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`."
     },
     {
       "address": "0x437de0",
@@ -472,14 +478,24 @@
       "description": "Normalizes the generated runtime grid, copies authored metadata into runtime cells, and runs the post-build render passes."
     },
     {
+      "address": "0x437eb0",
+      "name": "build_subgame_level",
+      "description": "Builds the active subgame course, including level-file load, runtime track rebuild, mode-specific HUD setup, backdrop selection, and the first gameplay object lists. Cross-port Android and iOS symbols match this helper to `cRSubGame::BuildLevel()`."
+    },
+    {
+      "address": "0x438700",
+      "name": "complete_subgame",
+      "description": "Snapshots the just-finished run into the subgame result bank, increments the per-run completion counter, and dispatches the delivery, galaxy, or cutscene handoff for the finished course. Cross-port Android and iOS symbols match this helper to `cRSubGame::Complete(bool)`."
+    },
+    {
       "address": "0x438850",
       "name": "destroy_subgame",
-      "description": "Tears down the active gameplay subgame state, including runtime lists, HUD widgets, and the current mode handoff state before control returns to the front-end. Cross-port Android symbols match this helper to `cRSubGame::UnInit()`."
+      "description": "Tears down the active gameplay subgame state, including runtime lists, HUD widgets, and the current mode handoff state before control returns to the front-end. Cross-port Android and iOS symbols match this helper to `cRSubGame::UnInit()`."
     },
     {
       "address": "0x438b90",
-      "name": "populate_track_runtime_entities",
-      "description": "Spawns gameplay entities from the rebuilt runtime track, including garbage, salt, slug, pickup, and ring-effect rows."
+      "name": "update_subgame",
+      "description": "Runs the main gameplay subgame state machine, including galaxy or replay handoff, level start or restart, pause and quit flow, HUD timing, camera updates, and the active gameplay tick. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",
@@ -555,11 +571,13 @@
     },
     {
       "address": "0x43da80",
-      "name": "spawn_track_garbage_hazard"
+      "name": "spawn_track_garbage_hazard",
+      "description": "Allocates and seeds one live garbage hazard from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddGarbage(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43dc80",
-      "name": "spawn_slug_hazard"
+      "name": "spawn_slug_hazard",
+      "description": "Allocates and seeds one live slug hazard from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddSlug(cRSubLoc*, cRSubGoldy*)`."
     },
     {
       "address": "0x43df10",
@@ -612,13 +630,13 @@
     },
     {
       "address": "0x4438e0",
-      "name": "allocate_parcels_on_track",
-      "description": "Allocates parcel placements for the current course and projects flagged parcel offsets onto generated track rows."
+      "name": "place_parcels_on_track",
+      "description": "Places parcels for the current course and projects flagged parcel offsets onto generated track rows. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcels()`."
     },
     {
       "address": "0x444240",
-      "name": "allocate_challenge_parcels_on_track",
-      "description": "Scans parcel-capable runtime rows whose copied parcel id is zero and activates challenge parcels from that filtered set."
+      "name": "place_challenge_parcels_on_track",
+      "description": "Scans parcel-capable runtime rows whose copied parcel id is zero and places challenge parcels from that filtered set. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcelsSurvival()`."
     },
     {
       "address": "0x4444b0",

@@ -133,7 +133,7 @@ pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
 pub const defaultRuntimeBuildFlags: u32 = 0x00f5cfff;
 
 // PORT(fallback): these are candidate overlays for trace-confirmed ambient hazard families.
-// They are not the original populate_track_runtime_entities spawner.
+// They are not the original gameplay-side spawn timing inside update_subgame.
 const runtime_spawn_hint_garbage_fallback: u8 = 0x01;
 const runtime_spawn_hint_salt_fallback: u8 = 0x02;
 

@@ -45,8 +45,8 @@ Known stages:
 
 - `select_track_tile_edge_variants`
 - `merge_track_tile_runs`
-- `allocate_parcels_on_track`
-- `allocate_challenge_parcels_on_track`
+- `place_parcels_on_track`
+- `place_challenge_parcels_on_track`
 - `get_track_grid_cell_at_world_position`
 - `sample_track_floor_height_at_position`
 - `get_track_cell_row_index`
@@ -60,7 +60,7 @@ High-confidence downstream behavior:
 - `Random:yes` and `Length:` feed `populate_runtime_track_cells_from_segments`
 - `Track:` feeds `select_level_track_texture_set`
 - `Track:r` randomizes across the non-random track sets and changes backdrop handling
-- `Garbage:` becomes a normalized `0..1` runtime scalar used by `populate_track_runtime_entities`
+- `Garbage:` becomes a normalized `0..1` runtime scalar used by the gameplay-side spawn path inside `update_subgame`
 - `Salt:` follows the same normalization pattern and feeds the salt hazard path
 
 ## Confirmed Glyph Dispatch
@@ -229,7 +229,7 @@ Recovered helper predicates:
 
 These helpers feed both the render-cache passes and the movement code, so they are a better porting boundary than the raw authored glyphs.
 
-Recovered entity-population tile semantics from `populate_track_runtime_entities`:
+Recovered gameplay entity-population tile semantics from `update_subgame`:
 
 - `0x17` -> `spawn_track_health_pickup`
 - `0x18` -> stubbed `nullsub`
