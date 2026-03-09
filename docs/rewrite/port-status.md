@@ -99,6 +99,10 @@ Current high-signal entries:
   - evidence: Android `cRSubGoldy::ScoreAdd(int,int)`, `cRSubGoldy::ShowLives()`, `cRSubGoldy::DeathInit()`, and `cRSubGoldy::RessurectAI()`, where score crossings at 50,000 points award one additional life
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the base life stock, actual life-counter ownership, and death or resurrection flow are ported instead of only the score-side threshold awards
+- jetpack pickup and authored-off state: `partial`
+  - evidence: shipped jetpack pickup runtime tile `0x19`, authored `JetPack=Off` segment annotations, and Android `cRSubGoldy::JetPackCollect()` plus the collision branch that enters `cRSubHover::On()`
+  - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the original hover movement, fall interaction, and full `cRSubHover` behavior are ported instead of only the persistent on/off state
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
 

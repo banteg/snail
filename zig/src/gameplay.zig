@@ -151,6 +151,7 @@ pub const Runner = struct {
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
     attachment_ticks: u64 = 0,
+    jetpack_active: bool = false,
     path_center_lane: ?f32 = null,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
     recent_event: RecentEvent = .none,
@@ -447,6 +448,7 @@ pub const Runner = struct {
                 },
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
+                    self.jetpack_active = false;
                     self.recent_event = .jetpack_off;
                 },
                 .no_fall => {
@@ -485,6 +487,9 @@ pub const Runner = struct {
             },
             .jetpack => {
                 self.counters.jetpack_pickups += 1;
+                // PORT(partial): the runner currently only tracks the pickup/off state.
+                // The original hover movement and the surrounding cRSubHover behavior are still unported.
+                self.jetpack_active = true;
                 self.recent_event = .jetpack_pickup;
             },
             .garbage => {
@@ -850,7 +855,15 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack);
     runner.step(&jetpack_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_pickups);
+    try std.testing.expect(runner.jetpack_active);
     try std.testing.expectEqualStrings("jetpack_pickup", runner.recentEventLabel());
+
+    const jetpack_off = findFirstAnnotationTag(&jetpack_fixture.preview, .jetpack_off).?;
+    primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack_off);
+    runner.step(&jetpack_fixture.preview, .{}, step_seconds);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_off_rows);
+    try std.testing.expect(!runner.jetpack_active);
+    try std.testing.expectEqualStrings("jetpack_off", runner.recentEventLabel());
 }
 
 test "runner records trampoline rows from shipped levels" {

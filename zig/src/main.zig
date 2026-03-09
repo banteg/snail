@@ -2237,7 +2237,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  1ups {d}  finished {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  1ups {d}  jet {s}  finished {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -2249,6 +2249,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.recentEventLabel(),
                 runner.damage_gauge,
                 runner.score_life_awards,
+                if (runner.jetpack_active) "on" else "off",
                 if (runner.finished) "yes" else "no",
             },
         );
