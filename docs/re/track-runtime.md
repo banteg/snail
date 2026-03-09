@@ -58,6 +58,7 @@ The practical read is that the game does not play directly on the authored text 
 High-confidence downstream behavior:
 
 - `Random:yes` and `Length:` feed `populate_runtime_track_cells_from_segments`
+- that same runtime-population pass seeds Goldy's visible life stock to `3` before `initialize_subgoldy`
 - `Track:` feeds `select_level_track_texture_set`
 - `Track:r` randomizes across the non-random track sets and changes backdrop handling
 - `Garbage:` becomes a normalized `0..1` runtime scalar used by the gameplay-side spawn path inside `update_subgame`

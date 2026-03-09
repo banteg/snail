@@ -34,6 +34,9 @@ The current high-confidence `Player` fields are:
 - `+0x44c`: `follow_effect_gate_a`
 - `+0x44d`: `follow_effect_gate_b`
 - `+0x4340`: `visible_life_stock`
+  - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
+  - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
+  - decremented by `update_subgoldy_resurrect` on the respawn branch
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -91,6 +94,7 @@ The current high-confidence `Game` fields are:
 Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning `SubGame`
+- `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence

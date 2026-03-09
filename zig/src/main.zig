@@ -94,7 +94,7 @@ const PendingRunResult = struct {
     score: u32,
     score_is_partial: bool,
     score_totals: gameplay.ScoreTotals = .{},
-    score_life_awards: u32 = 0,
+    visible_life_stock: u32 = 0,
     damage_gauge: f32 = 0.0,
     high_score_mode: ?high_score.Mode = null,
     high_score_rank: ?usize = null,
@@ -991,7 +991,7 @@ const AppState = struct {
             .score = 0,
             .score_is_partial = false,
             .score_totals = runner.score,
-            .score_life_awards = runner.score_life_awards,
+            .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
             .return_target = resultReturnTargetForMode(active_mode),
         };
@@ -2408,7 +2408,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  1ups {d}  jet {s}  finished {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {s}  finished {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -2420,7 +2420,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.recentEventLabel(),
                 runner.damage_gauge,
                 runner.damageWarningLabel(),
-                runner.score_life_awards,
+                runner.visible_life_stock,
                 if (runner.jetpack_active) "on" else "off",
                 if (runner.finished) "yes" else "no",
             },
@@ -2522,7 +2522,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
         var breakdown_buffer: [224]u8 = undefined;
         const breakdown_text = try std.fmt.bufPrint(
             &breakdown_buffer,
-            "Rings {d}  Garbage {d}  Health {d}  Pickup {d}  Register {d}  Bonus {d}  1ups {d}  Damage {d:.2}",
+            "Rings {d}  Garbage {d}  Health {d}  Pickup {d}  Register {d}  Bonus {d}  Lives {d}  Damage {d:.2}",
             .{
                 result.score_totals.ring_collect,
                 result.score_totals.garbage_collision,
@@ -2530,7 +2530,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
                 result.score_totals.parcel_pickup,
                 result.score_totals.parcel_register,
                 result.score_totals.completion_bonus,
-                result.score_life_awards,
+                result.visible_life_stock,
                 result.damage_gauge,
             },
         );

@@ -132,6 +132,8 @@ const slug_damage_delta: f32 = 1.0;
 const damage_warning_fill_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
 const score_life_threshold: u32 = 50_000;
+const starting_visible_life_stock: u32 = 3;
+const maximum_visible_life_stock: u32 = 9;
 
 const RowSample = struct {
     global_row: usize,
@@ -173,7 +175,7 @@ pub const Runner = struct {
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
-    score_life_awards: u32 = 0,
+    visible_life_stock: u32 = starting_visible_life_stock,
     damage_gauge: f32 = 0.0,
     damage_warning_state: DamageWarningState = .idle,
     damage_warning_fill: f32 = 0.0,
@@ -195,6 +197,7 @@ pub const Runner = struct {
             .speed_rows_per_second = 12.0,
             .completion_bonus_enabled = completion_bonus_enabled,
             .parcel_target = parcel_target,
+            .visible_life_stock = starting_visible_life_stock,
         };
         self.syncRowPosition(preview);
         self.refreshSample(preview);
@@ -583,7 +586,7 @@ pub const Runner = struct {
         const previous_total = self.score.total;
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
         self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
-        self.recordScoreLifeAwards(previous_total, self.score.total);
+        self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
@@ -625,14 +628,17 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(partial): `cRSubGoldy::ScoreAdd` awards one life whenever total score crosses
-    // another 50,000-point bucket. The starting life stock is still unresolved, so the
-    // runner only tracks earned score-side awards for now.
-    fn recordScoreLifeAwards(self: *Runner, previous_total: u32, current_total: u32) void {
+    // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
+    // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
+    // score crosses another 50,000-point bucket, capped at 9. The death/resurrect path
+    // still is not ported, so the runner only models the seed and score-side increments.
+    fn updateVisibleLifeStockFromScore(self: *Runner, previous_total: u32, current_total: u32) void {
         const previous_bucket = @divTrunc(previous_total, score_life_threshold);
         const current_bucket = @divTrunc(current_total, score_life_threshold);
         if (current_bucket <= previous_bucket) return;
-        self.score_life_awards = std.math.add(u32, self.score_life_awards, current_bucket - previous_bucket) catch std.math.maxInt(u32);
+        const crossed_buckets = current_bucket - previous_bucket;
+        const updated_lives = std.math.add(u32, self.visible_life_stock, crossed_buckets) catch std.math.maxInt(u32);
+        self.visible_life_stock = @min(maximum_visible_life_stock, updated_lives);
     }
 };
 
@@ -912,20 +918,20 @@ test "runner applies the completion bonus once" {
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
 }
 
-test "runner tracks score-side life awards across 50000-point thresholds" {
+test "runner seeds visible life stock at 3 and caps score-side awards at 9" {
     var runner = Runner{};
 
     runner.recordScore(&runner.score.ring_collect, 49_900);
     try std.testing.expectEqual(@as(u32, 49_900), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 0), runner.score_life_awards);
+    try std.testing.expectEqual(@as(u32, 3), runner.visible_life_stock);
 
     runner.recordScore(&runner.score.health_collect, 100);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 1), runner.score_life_awards);
+    try std.testing.expectEqual(@as(u32, 4), runner.visible_life_stock);
 
-    runner.recordScore(&runner.score.health_collect, 50_000);
-    try std.testing.expectEqual(@as(u32, 100_000), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 2), runner.score_life_awards);
+    runner.recordScore(&runner.score.health_collect, 400_000);
+    try std.testing.expectEqual(@as(u32, 450_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 9), runner.visible_life_stock);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {
