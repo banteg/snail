@@ -19,6 +19,10 @@ Current high-signal entries:
 - loading-screen composition: `verified`
   - evidence: Binary Ninja decompile of `sub_418b50` and `sub_418e80`, plus the shipped `SPRITES/LOADING.TGA` and `SPRITES/LOADINGBARON.TGA` assets
   - implementation: [`loading_screen.zig`](../../zig/src/loading_screen.zig), [`main.zig`](../../zig/src/main.zig)
+- loading-screen progress driver: `partial`
+  - evidence: Binary Ninja decompile shows `update_loading_screen` is called from archive or file readers plus a startup initialization loop, so the original bar is activity-backed rather than time-backed
+  - implementation: [`main.zig`](../../zig/src/main.zig)
+  - replace when: the port moves more of the original world-init and startup loops behind the loading screen instead of only the current front-end asset, script, music, and score loads
 - window bootstrap and default windowed presentation size: `verified`
   - evidence: Binary Ninja decompile of `sub_4119d0`, which falls back to a 640x480 client area in windowed mode and only exposes 4:3 fullscreen presets
   - implementation: [`main.zig`](../../zig/src/main.zig)

@@ -38,7 +38,6 @@ const default_model_path = "X/TURBO-BOBALONG-000.X2";
 const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
-const boot_phase_duration_ticks: u64 = 75;
 const status_message_duration_ticks: u32 = 180;
 
 const Options = struct {
@@ -52,6 +51,30 @@ const AppCommand = enum {
     game,
     debug,
     smoke,
+};
+
+const BootTask = enum {
+    load_high_scores,
+    load_intro_background,
+    load_main_menu_background,
+    load_route_map_background,
+    load_help_background,
+    load_intro_script,
+    load_credits_script,
+    load_intro_music,
+    load_menu_music,
+};
+
+const boot_tasks = [_]BootTask{
+    .load_high_scores,
+    .load_intro_background,
+    .load_main_menu_background,
+    .load_route_map_background,
+    .load_help_background,
+    .load_intro_script,
+    .load_credits_script,
+    .load_intro_music,
+    .load_menu_music,
 };
 
 // PORT(scaffold): the default `snail` path is now a forward-pass boot and menu shell.
@@ -202,6 +225,7 @@ const AppState = struct {
     render_time_seconds: f64 = 0.0,
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
+    boot_task_index: usize = 0,
     menu_index: usize = 0,
     new_game_menu_index: usize = 0,
     options_menu_index: usize = 0,
@@ -238,6 +262,14 @@ const AppState = struct {
     current_game_background: ?background.Loaded = null,
     current_loading_screen: ?loading_screen.Loaded = null,
     current_text_script: ?intro.Loaded = null,
+    preloaded_intro_background: ?background.Loaded = null,
+    preloaded_main_menu_background: ?background.Loaded = null,
+    preloaded_route_map_background: ?background.Loaded = null,
+    preloaded_help_background: ?background.Loaded = null,
+    preloaded_intro_script: ?intro.Loaded = null,
+    preloaded_credits_script: ?intro.Loaded = null,
+    preloaded_intro_music: ?assets.LoadedMusic = null,
+    preloaded_menu_music: ?assets.LoadedMusic = null,
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
@@ -273,11 +305,11 @@ const AppState = struct {
             .level_index = level_index,
         };
         errdefer state.deinit();
-        try state.high_score_tables.loadFromRuntimeRoot(allocator, options.runtime_root_path);
         state.applyAudioConfigVolumes();
 
         switch (options.command) {
             .debug, .smoke => {
+                try state.high_score_tables.loadFromRuntimeRoot(allocator, options.runtime_root_path);
                 try state.reloadTexture();
                 try state.reloadModel();
                 try state.reloadObject();
@@ -292,6 +324,7 @@ const AppState = struct {
         self.stopAudioPreview();
         self.unloadLoadingScreen();
         self.unloadGameBackground();
+        self.unloadPreloadedBootAssets();
 
         if (self.current_model) |*model| {
             model.deinit();
@@ -364,6 +397,86 @@ const AppState = struct {
         try self.previewSound();
         self.stopAudioPreview();
         try self.previewMusic();
+    }
+
+    // PORT(partial): the original loading screen advances from real archive reads
+    // and startup initialization loops. The port now advances from actual front-end
+    // startup loads instead of a timer, but it still does not cover the full world-init pass.
+    fn advanceBootTask(self: *AppState) !bool {
+        if (self.boot_task_index >= boot_tasks.len) return true;
+
+        switch (boot_tasks[self.boot_task_index]) {
+            .load_high_scores => try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path),
+            .load_intro_background => {
+                self.unloadPreloadedBackground(&self.preloaded_intro_background);
+                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, intro_background_path);
+            },
+            .load_main_menu_background => {
+                self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
+                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, main_menu_background_path);
+            },
+            .load_route_map_background => {
+                self.unloadPreloadedBackground(&self.preloaded_route_map_background);
+                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, route_map_background_path);
+            },
+            .load_help_background => {
+                self.unloadPreloadedBackground(&self.preloaded_help_background);
+                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, help_background_path);
+            },
+            .load_intro_script => {
+                self.unloadPreloadedTextScript(&self.preloaded_intro_script);
+                self.preloaded_intro_script = try intro.loadByPath(self.allocator, &self.catalog, intro_script_path);
+            },
+            .load_credits_script => {
+                self.unloadPreloadedTextScript(&self.preloaded_credits_script);
+                self.preloaded_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+            },
+            .load_intro_music => {
+                self.unloadPreloadedMusic(&self.preloaded_intro_music);
+                self.preloaded_intro_music = try self.catalog.loadMusicByPath(self.allocator, intro_music_path);
+            },
+            .load_menu_music => {
+                self.unloadPreloadedMusic(&self.preloaded_menu_music);
+                self.preloaded_menu_music = try self.catalog.loadMusicByPath(self.allocator, default_audio_path);
+            },
+        }
+
+        self.boot_task_index += 1;
+        return self.boot_task_index >= boot_tasks.len;
+    }
+
+    fn unloadPreloadedBootAssets(self: *AppState) void {
+        self.unloadPreloadedBackground(&self.preloaded_intro_background);
+        self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
+        self.unloadPreloadedBackground(&self.preloaded_route_map_background);
+        self.unloadPreloadedBackground(&self.preloaded_help_background);
+        self.unloadPreloadedTextScript(&self.preloaded_intro_script);
+        self.unloadPreloadedTextScript(&self.preloaded_credits_script);
+        self.unloadPreloadedMusic(&self.preloaded_intro_music);
+        self.unloadPreloadedMusic(&self.preloaded_menu_music);
+    }
+
+    fn unloadPreloadedBackground(self: *AppState, slot: *?background.Loaded) void {
+        _ = self;
+        if (slot.*) |*loaded| {
+            loaded.deinit();
+            slot.* = null;
+        }
+    }
+
+    fn unloadPreloadedTextScript(self: *AppState, slot: *?intro.Loaded) void {
+        if (slot.*) |*loaded| {
+            loaded.deinit(self.allocator);
+            slot.* = null;
+        }
+    }
+
+    fn unloadPreloadedMusic(self: *AppState, slot: *?assets.LoadedMusic) void {
+        _ = self;
+        if (slot.*) |*loaded| {
+            loaded.unload();
+            slot.* = null;
+        }
     }
 
     fn saveRuntimeConfig(self: *const AppState) !void {
@@ -514,8 +627,11 @@ const AppState = struct {
             }
         }
 
-        if (self.game_phase == .boot and self.game_phase_ticks >= boot_phase_duration_ticks) {
-            try self.enterGamePhase(.intro);
+        if (self.game_phase == .boot) {
+            if (try self.advanceBootTask()) {
+                try self.enterGamePhase(.intro);
+            }
+            return;
         }
 
         if (self.game_phase == .intro or self.game_phase == .credits) {
@@ -847,6 +963,8 @@ const AppState = struct {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
+                self.boot_task_index = 0;
+                self.unloadPreloadedBootAssets();
                 self.unloadTextScript();
                 self.unloadGameBackground();
                 try self.loadLoadingScreen();
@@ -925,7 +1043,10 @@ const AppState = struct {
         }
 
         self.stopAudioPreview();
-        self.current_music = try self.catalog.loadMusicByPath(self.allocator, path);
+        self.current_music = if (self.takePreloadedMusic(path)) |music|
+            music
+        else
+            try self.catalog.loadMusicByPath(self.allocator, path);
         self.applyAudioConfigVolumes();
         rl.playMusicStream(self.current_music.?.music);
     }
@@ -1000,7 +1121,10 @@ const AppState = struct {
 
     fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
         self.unloadGameBackground();
-        self.current_game_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
+        self.current_game_background = if (self.takePreloadedBackground(script_path)) |loaded|
+            loaded
+        else
+            try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
     }
 
     fn loadLoadingScreen(self: *AppState) !void {
@@ -1010,7 +1134,10 @@ const AppState = struct {
 
     fn loadTextScript(self: *AppState, path: []const u8) !void {
         self.unloadTextScript();
-        self.current_text_script = try intro.loadByPath(self.allocator, &self.catalog, path);
+        self.current_text_script = if (self.takePreloadedTextScript(path)) |loaded|
+            loaded
+        else
+            try intro.loadByPath(self.allocator, &self.catalog, path);
     }
 
     fn unloadTextScript(self: *AppState) void {
@@ -1025,6 +1152,42 @@ const AppState = struct {
             loaded_screen.deinit();
             self.current_loading_screen = null;
         }
+    }
+
+    fn takePreloadedBackground(self: *AppState, script_path: []const u8) ?background.Loaded {
+        if (std.ascii.eqlIgnoreCase(script_path, intro_background_path)) {
+            return takeOptional(background.Loaded, &self.preloaded_intro_background);
+        }
+        if (std.ascii.eqlIgnoreCase(script_path, main_menu_background_path)) {
+            return takeOptional(background.Loaded, &self.preloaded_main_menu_background);
+        }
+        if (std.ascii.eqlIgnoreCase(script_path, route_map_background_path)) {
+            return takeOptional(background.Loaded, &self.preloaded_route_map_background);
+        }
+        if (std.ascii.eqlIgnoreCase(script_path, help_background_path)) {
+            return takeOptional(background.Loaded, &self.preloaded_help_background);
+        }
+        return null;
+    }
+
+    fn takePreloadedTextScript(self: *AppState, path: []const u8) ?intro.Loaded {
+        if (std.ascii.eqlIgnoreCase(path, intro_script_path)) {
+            return takeOptional(intro.Loaded, &self.preloaded_intro_script);
+        }
+        if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
+            return takeOptional(intro.Loaded, &self.preloaded_credits_script);
+        }
+        return null;
+    }
+
+    fn takePreloadedMusic(self: *AppState, path: []const u8) ?assets.LoadedMusic {
+        if (std.ascii.eqlIgnoreCase(path, intro_music_path)) {
+            return takeOptional(assets.LoadedMusic, &self.preloaded_intro_music);
+        }
+        if (std.ascii.eqlIgnoreCase(path, default_audio_path)) {
+            return takeOptional(assets.LoadedMusic, &self.preloaded_menu_music);
+        }
+        return null;
     }
 
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
@@ -1761,8 +1924,9 @@ fn drawTextScriptUi(state: *const AppState) !void {
 }
 
 fn bootPhaseProgress(state: *const AppState) f32 {
+    if (boot_tasks.len == 0) return 1.0;
     return std.math.clamp(
-        @as(f32, @floatFromInt(state.game_phase_ticks)) / @as(f32, @floatFromInt(boot_phase_duration_ticks)),
+        @as(f32, @floatFromInt(state.boot_task_index)) / @as(f32, @floatFromInt(boot_tasks.len)),
         0.0,
         1.0,
     );
@@ -2969,6 +3133,14 @@ fn trackToText(buffer: []u8, value: level.Track) []const u8 {
 
 fn optionalFloatToText(buffer: []u8, value: ?f32) []const u8 {
     return if (value != null) std.fmt.bufPrint(buffer, "{d:.1}", .{value.?}) catch "?" else "-";
+}
+
+fn takeOptional(comptime T: type, slot: *?T) ?T {
+    if (slot.*) |value| {
+        slot.* = null;
+        return value;
+    }
+    return null;
 }
 
 fn wrappedIndex(count: usize, current: usize, delta: isize) usize {

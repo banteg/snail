@@ -143,6 +143,7 @@ Current behavior:
 - the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
 - the default `snail` path now reuses the original loading-screen, intro-text, and menu assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
+- the loading screen now advances from actual startup tasks in the port instead of a timer, though it still only covers the current front-end asset, script, music, and score loads rather than the original game's full world-init pass
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
