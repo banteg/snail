@@ -19,6 +19,10 @@ Current high-signal entries:
 - loading-screen composition: `verified`
   - evidence: Binary Ninja decompile of `sub_418b50` and `sub_418e80`, plus the shipped `SPRITES/LOADING.TGA` and `SPRITES/LOADINGBARON.TGA` assets
   - implementation: [`loading_screen.zig`](../../zig/src/loading_screen.zig), [`main.zig`](../../zig/src/main.zig)
+- window bootstrap and default windowed presentation size: `verified`
+  - evidence: Binary Ninja decompile of `sub_4119d0`, which falls back to a 640x480 client area in windowed mode and only exposes 4:3 fullscreen presets
+  - implementation: [`main.zig`](../../zig/src/main.zig)
+  - note: the current `snail` default is a deliberate development window (`1024x768`) over that verified base size
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `sub_419b50` and `sub_417bc0`
   - implementation: [`main.zig`](../../zig/src/main.zig)

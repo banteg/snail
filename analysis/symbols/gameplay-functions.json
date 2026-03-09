@@ -80,6 +80,11 @@
       "name": "initialize_d3d8_device"
     },
     {
+      "address": "0x4119d0",
+      "name": "initialize_game_window_and_input",
+      "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
+    },
+    {
       "address": "0x416910",
       "name": "initialize_high_score_screen"
     },

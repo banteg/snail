@@ -17,8 +17,12 @@ const runtime_state = @import("runtime_state.zig");
 const x2 = @import("x2.zig");
 const xanim = @import("xanim.zig");
 
-const window_width = 1280;
-const window_height = 720;
+const original_game_client_width = 640;
+const original_game_client_height = 480;
+const game_window_width = 1024;
+const game_window_height = 768;
+const debug_window_width = 1280;
+const debug_window_height = 720;
 
 const default_archive_path = "artifacts/bin/SnailMail.dat";
 const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
@@ -1052,7 +1056,8 @@ const AppState = struct {
 
         rl.toggleFullscreen();
         if (!want_fullscreen) {
-            rl.setWindowSize(window_width, window_height);
+            const size = defaultWindowSizeForCommand(self.command);
+            rl.setWindowSize(size.width, size.height);
         }
     }
 
@@ -1372,8 +1377,8 @@ pub fn main() !void {
     runtime_config_result.blob.setFullscreenEnabled(startup_fullscreen);
     // Development default: stay windowed until fullscreen is requested explicitly or a saved runtime config says otherwise.
     rl.setConfigFlags(.{ .fullscreen_mode = startup_fullscreen });
-
-    rl.initWindow(window_width, window_height, "snail");
+    const initial_window_size = defaultWindowSizeForCommand(options.command);
+    rl.initWindow(initial_window_size.width, initial_window_size.height, "snail");
     defer rl.closeWindow();
 
     rl.initAudioDevice();
@@ -1424,8 +1429,8 @@ fn drawGameUi(state: *const AppState) !void {
     const full_bounds: rl.Rectangle = .{
         .x = 0.0,
         .y = 0.0,
-        .width = @floatFromInt(window_width),
-        .height = @floatFromInt(window_height),
+        .width = @floatFromInt(screenWidth()),
+        .height = @floatFromInt(screenHeight()),
     };
 
     if (state.game_phase == .boot) {
@@ -1465,8 +1470,8 @@ fn drawGameBootUi(state: *const AppState) !void {
     drawAppText(
         state,
         "Loading...",
-        @divTrunc(window_width - title_width, 2),
-        @divTrunc(window_height, 2) - 18,
+        @divTrunc(screenWidth() - title_width, 2),
+        @divTrunc(screenHeight(), 2) - 18,
         30,
         .ray_white,
     );
@@ -1737,7 +1742,7 @@ fn drawTextScriptUi(state: *const AppState) !void {
     const progress = state.currentTextScriptProgress() orelse 0.0;
     const font_size: f32 = 22.0;
     const total_height = totalTextScriptHeight(state, script, font_size);
-    const start_y = @as(f32, @floatFromInt(window_height)) + 36.0;
+    const start_y = @as(f32, @floatFromInt(screenHeight())) + 36.0;
     const end_y = -total_height - 36.0;
     var cursor_y = std.math.lerp(start_y, end_y, progress);
 
@@ -1782,7 +1787,7 @@ fn drawCenteredTextScriptLine(state: *const AppState, line: []const u8, font_siz
     const measured_width = state.ui_font.measureText(line, font_size);
     state.ui_font.drawText(
         line,
-        (@as(f32, @floatFromInt(window_width)) - measured_width) * 0.5,
+        (@as(f32, @floatFromInt(screenWidth())) - measured_width) * 0.5,
         y,
         font_size,
         .ray_white,
@@ -1801,7 +1806,7 @@ fn drawCenteredTextScriptImage(image: intro.LoadedImage, y: f32) void {
             .height = @floatFromInt(image.texture.texture.height),
         },
         .{
-            .x = (@as(f32, @floatFromInt(window_width)) - width) * 0.5,
+            .x = (@as(f32, @floatFromInt(screenWidth())) - width) * 0.5,
             .y = y,
             .width = width,
             .height = height,
@@ -1838,6 +1843,11 @@ const MenuPanels = struct {
     detail_width: i32,
     control_x: i32,
     control_y: i32,
+};
+
+const WindowSize = struct {
+    width: i32,
+    height: i32,
 };
 
 fn menuPanels(art_layout: ?background.Layout) MenuPanels {
@@ -2145,8 +2155,8 @@ fn drawGameplayLevelUi(state: *const AppState, art_layout: ?background.Layout) !
     }
 
     const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
-    rl.drawRectangle(window_width / 2 - 12, window_height / 2, 24, 2, crosshair_color);
-    rl.drawRectangle(window_width / 2, window_height / 2 - 12, 2, 24, crosshair_color);
+    rl.drawRectangle(@divTrunc(screenWidth(), 2) - 12, @divTrunc(screenHeight(), 2), 24, 2, crosshair_color);
+    rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - 12, 2, 24, crosshair_color);
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
@@ -2219,7 +2229,7 @@ fn drawTexturePanel(state: *const AppState) void {
     const scale = @min(scale_x, scale_y);
     const draw_width = @as(f32, @floatFromInt(current.texture.width)) * scale;
     const draw_height = @as(f32, @floatFromInt(current.texture.height)) * scale;
-    const draw_x = (@as(f32, window_width) - draw_width) / 2.0;
+    const draw_x = (@as(f32, @floatFromInt(screenWidth())) - draw_width) / 2.0;
     const draw_y = 280.0 + (max_height - draw_height) / 2.0;
 
     rl.drawRectangleLines(200, 268, 880, 454, .dark_gray);
@@ -2710,7 +2720,7 @@ fn laneTargetForRunnerMouse(
     mouse_x: f32,
 ) ?usize {
     const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse return null;
-    return laneTargetForMouseX(mouse_x, @floatFromInt(window_width), loaded_track_preview.laneBoundsForRow(row_location));
+    return laneTargetForMouseX(mouse_x, @floatFromInt(screenWidth()), loaded_track_preview.laneBoundsForRow(row_location));
 }
 
 fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds) usize {
@@ -2973,9 +2983,41 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
     return @intCast(next);
 }
 
+// PORT(verified): the original window bootstrap falls back to a 640x480 client area
+// in windowed mode, while its fullscreen presets are also all 4:3.
+// Evidence: sub_4119d0.
+fn defaultWindowSizeForCommand(command: AppCommand) WindowSize {
+    return switch (command) {
+        .game => .{ .width = game_window_width, .height = game_window_height },
+        .debug, .smoke => .{ .width = debug_window_width, .height = debug_window_height },
+    };
+}
+
+fn screenWidth() i32 {
+    return rl.getScreenWidth();
+}
+
+fn screenHeight() i32 {
+    return rl.getScreenHeight();
+}
+
 test "wrapped index handles negative deltas" {
     try std.testing.expectEqual(@as(usize, 4), wrappedIndex(5, 0, -1));
     try std.testing.expectEqual(@as(usize, 0), wrappedIndex(5, 0, 5));
+}
+
+test "default window sizes split game and debug paths" {
+    const game_size = defaultWindowSizeForCommand(.game);
+    try std.testing.expectEqual(@as(i32, 1024), game_size.width);
+    try std.testing.expectEqual(@as(i32, 768), game_size.height);
+
+    const debug_size = defaultWindowSizeForCommand(.debug);
+    try std.testing.expectEqual(@as(i32, 1280), debug_size.width);
+    try std.testing.expectEqual(@as(i32, 720), debug_size.height);
+
+    const smoke_size = defaultWindowSizeForCommand(.smoke);
+    try std.testing.expectEqual(debug_size.width, smoke_size.width);
+    try std.testing.expectEqual(debug_size.height, smoke_size.height);
 }
 
 test "parse args defaults to game shell" {

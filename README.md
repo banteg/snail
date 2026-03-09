@@ -131,7 +131,8 @@ Command behavior:
 - `zig build run` launches the default game path, shows the archive-backed loading screen, intro crawl, main menu, options menu, delivery-route map, high-score menu, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the archive-backed debug browser
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
-- windowed mode is the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
+- `zig build run` now defaults to a `1024x768` window, which keeps the original `4:3` presentation while staying larger than the original `640x480` windowed client; `debug` and `smoke` keep the wider tooling window
+- windowed mode is still the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
 - the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now uses the runtime root for those mutable files, loads and saves the raw `SnailMail.cfg` blob there, applies the recovered sound/music/fullscreen fields, and already loads compact score overlays from `ScoreA/B/C.dat`
 
