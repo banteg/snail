@@ -14,6 +14,11 @@ const warp_cell_height = original_screen_height / @as(f32, @floatFromInt(warp_gr
 const warp_u_span: f32 = 0.625;
 const warp_v_span: f32 = 0.9375;
 const tau: f32 = std.math.pi * 2.0;
+const frontend_random_range: u32 = 0x8000;
+const frontend_random_center: f32 = 16384.0;
+const frontend_random_unit_scale: f32 = 1.0 / frontend_random_center;
+const warp_min_cycle_seconds: f32 = 3.0;
+const warp_max_cycle_seconds: f32 = 5.0;
 
 pub const Rgb = struct {
     r: u8,
@@ -407,8 +412,9 @@ fn canonicalLayout(bounds: rl.Rectangle) Layout {
 
 fn runtimeSeedForSourcePath(source_path: []const u8) u64 {
     // PORT(partial): the original backdrop grid pulls fresh random phases and amplitudes
-    // from the shared frontend RNG. The port keeps the recovered amplitude math, but seeds
-    // deterministically by source path so captures stay stable across runs.
+    // from the shared frontend RNG. The port now matches the recovered integer-to-float
+    // distortion math, but still seeds deterministically by source path so captures stay
+    // stable across runs.
     var hasher = std.hash.Wyhash.init(0);
     hasher.update(source_path);
     return hasher.final();
@@ -433,13 +439,18 @@ fn initializeWarpVertices(vertices: *[warp_vertex_count]WarpVertex, seed: u64, d
                 continue;
             }
 
-            const phase = random.float(f32) * tau;
-            const cycles_per_second = 1.0 / ((3.0 + random.float(f32)) * 60.0);
-            const amplitude_x = (random.float(f32) * 2.0 - 1.0) * distort_amount;
-            const amplitude_y = (random.float(f32) * 2.0 - 1.0) * distort_amount;
+            const phase_sample = @as(f32, @floatFromInt(random.intRangeLessThan(u32, 0, frontend_random_range)));
+            const step_sample = @as(f32, @floatFromInt(random.intRangeLessThan(u32, 0, frontend_random_range)));
+            const amplitude_x_sample = @as(f32, @floatFromInt(random.intRangeLessThan(u32, 0, frontend_random_range)));
+            const amplitude_y_sample = @as(f32, @floatFromInt(random.intRangeLessThan(u32, 0, frontend_random_range)));
+
+            const phase = phase_sample * (tau / @as(f32, @floatFromInt(frontend_random_range)));
+            const phase_step = tau / (((step_sample * frontend_random_unit_scale) + warp_min_cycle_seconds) * 60.0);
+            const amplitude_x = (amplitude_x_sample - frontend_random_center) * distort_amount * frontend_random_unit_scale;
+            const amplitude_y = (amplitude_y_sample - frontend_random_center) * distort_amount * frontend_random_unit_scale;
             vertex.* = .{
                 .phase = phase,
-                .phase_step = cycles_per_second * tau,
+                .phase_step = phase_step,
                 .amplitude_x = amplitude_x,
                 .amplitude_y = amplitude_y,
                 .offset_x = @sin(phase) * amplitude_x,
@@ -667,4 +678,32 @@ test "runtime keeps split textures on the static draw path" {
     };
     const runtime = Runtime.init(&loaded);
     try std.testing.expect(runtime.use_split_draw);
+}
+
+test "distortion grid uses recovered 3-to-5 second timing and bounded amplitudes" {
+    var vertices: [warp_vertex_count]WarpVertex = undefined;
+    initializeWarpVertices(&vertices, 1234, 0.75);
+
+    const min_phase_step = tau / (warp_max_cycle_seconds * 60.0);
+    const max_phase_step = tau / (warp_min_cycle_seconds * 60.0);
+
+    for (0..warp_grid_height) |row| {
+        for (0..warp_grid_width) |col| {
+            const vertex = vertices[row * warp_grid_width + col];
+            const is_border = row == 0 or col == 0 or row == warp_grid_height - 1 or col == warp_grid_width - 1;
+            if (is_border) {
+                try std.testing.expectEqual(@as(f32, 0.0), vertex.phase);
+                try std.testing.expectEqual(@as(f32, 0.0), vertex.phase_step);
+                try std.testing.expectEqual(@as(f32, 0.0), vertex.amplitude_x);
+                try std.testing.expectEqual(@as(f32, 0.0), vertex.amplitude_y);
+                continue;
+            }
+
+            try std.testing.expect(vertex.phase >= 0.0 and vertex.phase < tau);
+            try std.testing.expect(vertex.phase_step >= min_phase_step);
+            try std.testing.expect(vertex.phase_step <= max_phase_step);
+            try std.testing.expect(vertex.amplitude_x >= -0.75 and vertex.amplitude_x < 0.75);
+            try std.testing.expect(vertex.amplitude_y >= -0.75 and vertex.amplitude_y < 0.75);
+        }
+    }
 }
