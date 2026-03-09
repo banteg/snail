@@ -46,7 +46,7 @@ Current high-signal entries:
 - intro and credits text-screen flow: `partial`
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: the remaining screen-transition semantics and any original renderer-only quirks are ported
+  - replace when: any original renderer-only quirks and the remaining non-intro users of the shared front-end transition overlay are ported
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)

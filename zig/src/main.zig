@@ -39,6 +39,8 @@ const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 const default_level_path = "LEVELS/TUTORIAL.TXT";
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
+const frontend_transition_fade_step: f32 = 0.0555555522;
+const frontend_transition_hold_step: f32 = 0.33333334;
 
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
@@ -90,6 +92,87 @@ const GamePhase = enum {
     credits,
     help,
     level,
+};
+
+const FrontendTransitionState = enum {
+    idle,
+    fading_in,
+    fading_out,
+    holding_black,
+    handoff,
+};
+
+// PORT(partial): intro and credits now reuse the recovered front-end black overlay transition:
+// fade in from alpha 1.0 to 0.0 over 18 ticks, fade out over 18 ticks, then hold black for 3 ticks
+// before the next screen swaps in and starts its own fade-in. Other front-end overlay users remain unresolved.
+const FrontendTransition = struct {
+    state: FrontendTransitionState = .idle,
+    alpha: f32 = 0.0,
+    progress: f32 = 0.0,
+    pending_phase: ?GamePhase = null,
+
+    fn beginFadeIn(self: *FrontendTransition) void {
+        self.state = .fading_in;
+        self.alpha = 1.0;
+        self.progress = 0.0;
+        self.pending_phase = null;
+    }
+
+    fn beginFadeOut(self: *FrontendTransition, next_phase: GamePhase) void {
+        if (self.state != .idle) return;
+        self.state = .fading_out;
+        self.alpha = 0.0;
+        self.progress = 0.0;
+        self.pending_phase = next_phase;
+    }
+
+    fn update(self: *FrontendTransition) ?GamePhase {
+        switch (self.state) {
+            .idle => return null,
+            .fading_in => {
+                self.alpha = @max(self.alpha - frontend_transition_fade_step, 0.0);
+                if (self.alpha <= 0.01) {
+                    self.alpha = 0.0;
+                    self.state = .idle;
+                }
+            },
+            .fading_out => {
+                self.alpha = @min(self.alpha + frontend_transition_fade_step, 1.0);
+                if (self.alpha >= 0.99) {
+                    self.alpha = 1.0;
+                    self.progress = 0.0;
+                    self.state = .holding_black;
+                }
+            },
+            .holding_black => {
+                self.progress = @min(self.progress + frontend_transition_hold_step, 1.0);
+                if (self.progress >= 0.99) {
+                    self.state = .handoff;
+                    return self.pending_phase;
+                }
+            },
+            .handoff => return self.pending_phase,
+        }
+        return null;
+    }
+
+    fn completeHandoff(self: *FrontendTransition) void {
+        self.beginFadeIn();
+    }
+
+    fn blocksInput(self: *const FrontendTransition) bool {
+        return self.state != .idle;
+    }
+
+    fn draw(self: *const FrontendTransition, bounds: rl.Rectangle) void {
+        if (self.alpha <= 0.01) return;
+        rl.drawRectangleRec(bounds, .{
+            .r = 0,
+            .g = 0,
+            .b = 0,
+            .a = @intFromFloat(std.math.clamp(self.alpha, 0.0, 1.0) * 255.0),
+        });
+    }
 };
 
 // PORT(partial): these top-level labels match the recovered front-end constructor at `sub_419b50`.
@@ -225,6 +308,7 @@ const AppState = struct {
     render_time_seconds: f64 = 0.0,
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
+    frontend_transition: FrontendTransition = .{},
     boot_task_index: usize = 0,
     menu_index: usize = 0,
     new_game_menu_index: usize = 0,
@@ -627,18 +711,24 @@ const AppState = struct {
             }
         }
 
+        if (self.frontend_transition.update()) |next_phase| {
+            try self.enterGamePhase(next_phase);
+            self.frontend_transition.completeHandoff();
+            return;
+        }
+
         if (self.game_phase == .boot) {
             if (try self.advanceBootTask()) {
                 try self.enterGamePhase(.intro);
+                self.frontend_transition.beginFadeIn();
             }
             return;
         }
 
         if (self.game_phase == .intro or self.game_phase == .credits) {
             if (self.currentTextScriptDurationTicks()) |duration_ticks| {
-                if (self.game_phase_ticks >= duration_ticks) {
-                    try self.enterGamePhase(.main_menu);
-                    return;
+                if (self.game_phase_ticks >= duration_ticks and !self.frontend_transition.blocksInput()) {
+                    self.frontend_transition.beginFadeOut(.main_menu);
                 }
             }
         }
@@ -658,18 +748,21 @@ const AppState = struct {
             switch (self.game_phase) {
                 .level => try self.enterGamePhase(.main_menu),
                 .boot, .main_menu => self.should_exit = true,
-                .intro, .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
+                .intro, .credits => self.frontend_transition.beginFadeOut(.main_menu),
+                .new_game_menu, .high_scores_menu, .help => try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
             }
             return;
         }
 
+        if (self.frontend_transition.blocksInput()) return;
+
         switch (self.game_phase) {
             .boot => {},
             .intro => {
                 if (rl.isMouseButtonPressed(.left)) {
-                    try self.enterGamePhase(.main_menu);
+                    self.frontend_transition.beginFadeOut(.main_menu);
                 }
             },
             .main_menu => {
@@ -743,7 +836,7 @@ const AppState = struct {
             },
             .credits => {
                 if (rl.isMouseButtonPressed(.left)) {
-                    try self.enterGamePhase(.main_menu);
+                    self.frontend_transition.beginFadeOut(.main_menu);
                 }
             },
             .help => {
@@ -1623,6 +1716,8 @@ fn drawGameUi(state: *const AppState) !void {
         .help => drawHelpUi(state),
         .level => try drawGameplayLevelUi(state, art_layout),
     }
+
+    state.frontend_transition.draw(full_bounds);
 }
 
 fn drawGameBootUi(state: *const AppState) !void {
@@ -3112,6 +3207,35 @@ test "default window sizes split game and debug paths" {
     const smoke_size = defaultWindowSizeForCommand(.smoke);
     try std.testing.expectEqual(debug_size.width, smoke_size.width);
     try std.testing.expectEqual(debug_size.height, smoke_size.height);
+}
+
+test "frontend fade-in reaches idle after 18 ticks" {
+    var transition: FrontendTransition = .{};
+    transition.beginFadeIn();
+
+    for (0..18) |_| {
+        try std.testing.expectEqual(@as(?GamePhase, null), transition.update());
+    }
+
+    try std.testing.expectEqual(FrontendTransitionState.idle, transition.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), transition.alpha, 0.001);
+}
+
+test "frontend fade-out hands off after black hold" {
+    var transition: FrontendTransition = .{};
+    transition.beginFadeOut(.main_menu);
+
+    var handoff_phase: ?GamePhase = null;
+    for (0..21) |_| {
+        handoff_phase = transition.update() orelse handoff_phase;
+    }
+
+    try std.testing.expectEqual(GamePhase.main_menu, handoff_phase.?);
+    try std.testing.expectEqual(FrontendTransitionState.handoff, transition.state);
+
+    transition.completeHandoff();
+    try std.testing.expectEqual(FrontendTransitionState.fading_in, transition.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), transition.alpha, 0.001);
 }
 
 test "parse args defaults to game shell" {

@@ -63,6 +63,31 @@
       "name": "run_frame_update"
     },
     {
+      "address": "0x40ab00",
+      "name": "initialize_frontend_overlay_color_lerp",
+      "description": "Seeds the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`."
+    },
+    {
+      "address": "0x40ab40",
+      "name": "draw_frontend_overlay_color_lerp",
+      "description": "Advances and draws the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`."
+    },
+    {
+      "address": "0x40abc0",
+      "name": "begin_frontend_fade_out",
+      "description": "Requests the shared front-end black transition overlay to fade from clear to full black and hold before a screen handoff."
+    },
+    {
+      "address": "0x40abe0",
+      "name": "begin_frontend_fade_in",
+      "description": "Seeds the shared front-end black transition overlay at full black so the next screen fades in over 18 updates."
+    },
+    {
+      "address": "0x40abf0",
+      "name": "update_frontend_transition_overlay",
+      "description": "Updates and draws the shared full-screen black front-end transition overlay, including fade-in, fade-out, three-tick black hold, and the handoff sentinel state."
+    },
+    {
       "address": "0x40acf0",
       "name": "initialize_game_assets_and_world"
     },
