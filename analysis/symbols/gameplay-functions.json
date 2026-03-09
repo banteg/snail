@@ -49,6 +49,16 @@
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
     },
     {
+      "address": "0x408cf0",
+      "name": "initialize_delivery_route_screen",
+      "description": "Builds the Star Map front-end screen, seeds its selected route from SnailMail.cfg, and wires the Deliver/Play, replay, and back controls."
+    },
+    {
+      "address": "0x4092f0",
+      "name": "update_delivery_route_screen",
+      "description": "Handles Star Map route selection, replay launch, and Deliver/Play actions, including the shared level-path handoff for postal and time-trial routes."
+    },
+    {
       "address": "0x40a2a0",
       "name": "run_frame_update"
     },
@@ -409,6 +419,11 @@
       "address": "0x4417d0",
       "name": "update_salt_hazard",
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
+    },
+    {
+      "address": "0x443650",
+      "name": "load_frontend_level_by_mode_and_index",
+      "description": "Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and then loads that level definition file."
     },
     {
       "address": "0x4438e0",

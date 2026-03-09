@@ -24,6 +24,7 @@ const splash_background_path = "BACKGROUNDS/SPLASH.TXT";
 const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 const help_background_path = "BACKGROUNDS/HELP.TXT";
+const route_map_background_path = "BACKGROUNDS/STARMAP.TXT";
 const intro_script_path = "INTRO/INTRO.TXT";
 const credits_script_path = "INTRO/CREDITS.TXT";
 const intro_music_path = "MUSIC/INTROTEXT.OGG";
@@ -57,6 +58,7 @@ const GamePhase = enum {
     main_menu,
     new_game_menu,
     options_menu,
+    route_map_menu,
     high_scores_menu,
     credits,
     help,
@@ -161,6 +163,18 @@ const options_menu_items = [_]OptionsMenuItem{
     .back,
 };
 
+const RouteMenuAction = enum {
+    play,
+    watch_best_trial,
+    back,
+};
+
+const route_menu_actions = [_]RouteMenuAction{
+    .play,
+    .watch_best_trial,
+    .back,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -194,6 +208,11 @@ const AppState = struct {
     active_level_segment_index: ?usize = null,
     active_level_message: ?[]const u8 = null,
     mouse_level_lane_target: ?usize = null,
+    frontend_route_mode: ?FrontendLevelMode = null,
+    frontend_route_index: usize = 0,
+    route_menu_action_index: usize = 0,
+    active_frontend_mode: ?FrontendLevelMode = null,
+    active_frontend_level_index: usize = 0,
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -495,6 +514,7 @@ const AppState = struct {
                 .boot, .main_menu => self.should_exit = true,
                 .intro, .new_game_menu, .high_scores_menu, .credits, .help => try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
+                .route_map_menu => try self.enterGamePhase(.main_menu),
             }
             return;
         }
@@ -551,6 +571,23 @@ const AppState = struct {
                     try self.activateOptionsMenuItem(selected);
                 }
             },
+            .route_map_menu => {
+                if (rl.isKeyPressed(.up)) {
+                    self.route_menu_action_index = wrappedIndex(route_menu_actions.len, self.route_menu_action_index, -1);
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.route_menu_action_index = wrappedIndex(route_menu_actions.len, self.route_menu_action_index, 1);
+                }
+                if (rl.isKeyPressed(.left)) {
+                    self.stepFrontendRouteSelection(-1);
+                }
+                if (rl.isKeyPressed(.right)) {
+                    self.stepFrontendRouteSelection(1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.activateRouteMenuAction(route_menu_actions[self.route_menu_action_index]);
+                }
+            },
             .high_scores_menu => {
                 if (rl.isKeyPressed(.up)) {
                     self.high_scores_menu_index = wrappedIndex(high_scores_menu_items.len, self.high_scores_menu_index, -1);
@@ -571,7 +608,7 @@ const AppState = struct {
                 if (rl.isKeyPressed(.enter)) {
                     if (self.level_runner) |runner| {
                         if (runner.finished) {
-                            try self.enterGamePhase(.main_menu);
+                            try self.handleFinishedLevelReturn();
                             return;
                         }
                     }
@@ -663,7 +700,26 @@ const AppState = struct {
         }
     }
 
+    fn activateRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
+        switch (action) {
+            .play => try self.enterSelectedFrontendRoute(),
+            .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
+            .back => try self.enterGamePhase(.main_menu),
+        }
+    }
+
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
+        self.active_frontend_mode = null;
+        self.active_frontend_level_index = 0;
+        try self.loadGameLevel(level_path);
+        try self.enterGamePhase(.level);
+    }
+
+    fn enterFrontendLevelPath(self: *AppState, mode: FrontendLevelMode, level_index: usize) !void {
+        var path_buffer: [64]u8 = undefined;
+        const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
+        self.active_frontend_mode = mode;
+        self.active_frontend_level_index = level_index;
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
     }
@@ -674,9 +730,88 @@ const AppState = struct {
     }
 
     fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
-        var path_buffer: [64]u8 = undefined;
-        const level_path = try frontendLevelPath(mode, 0, &path_buffer);
-        try self.enterGameplayShell(level_path);
+        switch (mode) {
+            .postal, .time_trial => try self.enterRouteMapMenu(mode),
+            .challenge, .tutorial => try self.enterFrontendLevelPath(mode, 0),
+        }
+    }
+
+    fn enterRouteMapMenu(self: *AppState, mode: FrontendLevelMode) !void {
+        self.frontend_route_mode = mode;
+        self.frontend_route_index = self.initialFrontendRouteIndex(mode);
+        self.route_menu_action_index = 0;
+        try self.enterGamePhase(.route_map_menu);
+    }
+
+    fn enterSelectedFrontendRoute(self: *AppState) !void {
+        const mode = self.frontend_route_mode orelse return;
+        try self.enterFrontendLevelPath(mode, self.frontend_route_index);
+    }
+
+    fn handleFinishedLevelReturn(self: *AppState) !void {
+        if (self.active_frontend_mode) |mode| {
+            switch (mode) {
+                .postal => {
+                    self.commitPostalRouteProgress();
+                    try self.enterRouteMapMenu(.postal);
+                    return;
+                },
+                .time_trial => {
+                    try self.enterRouteMapMenu(.time_trial);
+                    return;
+                },
+                .challenge, .tutorial => {},
+            }
+        }
+
+        try self.enterGamePhase(.main_menu);
+    }
+
+    fn commitPostalRouteProgress(self: *AppState) void {
+        const current_index: u32 = @intCast(self.active_frontend_level_index);
+        self.runtime_config.setRouteSelectionIndex(current_index);
+        const next_unlock = current_index + 1;
+        if (next_unlock > self.runtime_config.routeUnlockLimit()) {
+            self.runtime_config.setRouteUnlockLimit(next_unlock);
+        }
+    }
+
+    fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
+        const available_limit = self.availableFrontendRouteLimit(mode);
+        const saved_index: usize = @intCast(self.runtime_config.routeSelectionIndex());
+        return @min(saved_index, available_limit);
+    }
+
+    fn availableFrontendRouteLimit(self: *const AppState, mode: FrontendLevelMode) usize {
+        const saved_limit: usize = @intCast(self.runtime_config.routeUnlockLimit());
+        return @min(saved_limit, self.highestAvailableFrontendRouteIndex(mode));
+    }
+
+    fn highestAvailableFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
+        switch (mode) {
+            .postal => {
+                if (self.catalog.findLevelIndex("LEVELS/ARCADEEXTRA000.TXT") != null) return 0x33;
+                return 0x32;
+            },
+            .time_trial => {
+                var scratch: [64]u8 = undefined;
+                var last_index: usize = 0x32;
+                var extra_index: usize = 0x33;
+                while (extra_index < 0x80) : (extra_index += 1) {
+                    const path = frontendLevelPath(.time_trial, extra_index, &scratch) catch break;
+                    if (self.catalog.findLevelIndex(path) == null) break;
+                    last_index = extra_index;
+                }
+                return last_index;
+            },
+            .challenge, .tutorial => return 0,
+        }
+    }
+
+    fn stepFrontendRouteSelection(self: *AppState, delta: isize) void {
+        const mode = self.frontend_route_mode orelse return;
+        const route_count = self.availableFrontendRouteLimit(mode) + 1;
+        self.frontend_route_index = wrappedIndex(route_count, self.frontend_route_index, delta);
     }
 
     fn syncGamePhaseResources(self: *AppState) !void {
@@ -703,6 +838,14 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 try self.loadGameBackground(main_menu_background_path);
+                try self.playMusicByPath(default_audio_path);
+            },
+            .route_map_menu => {
+                self.active_level_segment_index = null;
+                self.active_level_message = null;
+                self.mouse_level_lane_target = null;
+                self.unloadTextScript();
+                try self.loadGameBackground(route_map_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
             .credits => {
@@ -1265,6 +1408,7 @@ fn drawGameUi(state: *const AppState) !void {
         .main_menu => try drawMainMenuUi(state, art_layout),
         .new_game_menu => try drawNewGameMenuUi(state, art_layout),
         .options_menu => try drawOptionsMenuUi(state, art_layout),
+        .route_map_menu => try drawRouteMapMenuUi(state, art_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, art_layout),
         .credits => try drawTextScriptUi(state),
         .help => drawHelpUi(state),
@@ -1430,6 +1574,51 @@ fn drawOptionsMenuUi(state: *const AppState, art_layout: ?background.Layout) !vo
     drawAppText(state, "Left/Right adjust", panels.control_x, panels.control_y + 26, 20, .ray_white);
     drawAppText(state, "Enter toggle or back", panels.control_x, panels.control_y + 52, 20, .ray_white);
     drawAppText(state, "Esc back", panels.control_x, panels.control_y + 78, 20, .light_gray);
+}
+
+fn drawRouteMapMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
+    const mode = state.frontend_route_mode orelse return;
+    const panels = menuPanels(art_layout);
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    drawAppText(state, "Intergalactic Delivery Route", panels.title_x, panels.title_y, 28, .ray_white);
+
+    for (route_menu_actions, 0..) |action, index| {
+        drawMenuItem(state, art_layout, index, state.route_menu_action_index, routeMenuActionLabel(mode, action));
+    }
+
+    const selected_action = route_menu_actions[state.route_menu_action_index];
+    drawAppText(state, routeMenuActionLabel(mode, selected_action), panels.detail_title_x, panels.detail_title_y, 28, .gold);
+    if (routeMenuHint(mode, selected_action)) |hint| {
+        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, 20, .light_gray);
+    }
+
+    var level_path_buffer: [64]u8 = undefined;
+    const level_path = try frontendLevelPath(mode, state.frontend_route_index, &level_path_buffer);
+
+    var route_buffer: [128]u8 = undefined;
+    const route_text = try std.fmt.bufPrint(
+        &route_buffer,
+        "{s} route {d} of {d}",
+        .{ frontendRouteModeLabel(mode), state.frontend_route_index, state.availableFrontendRouteLimit(mode) },
+    );
+    drawAppText(state, route_text, panels.detail_body_x, panels.detail_body_y + 66, 18, .sky_blue);
+
+    var path_buffer: [128]u8 = undefined;
+    const path_text = try std.fmt.bufPrint(&path_buffer, "{s}", .{level_path});
+    drawAppText(state, path_text, panels.detail_body_x, panels.detail_body_y + 92, 18, .ray_white);
+
+    drawRouteSelectionDots(state, panels, state.frontend_route_index, state.availableFrontendRouteLimit(mode));
+
+    drawAppText(state, "Left/Right route", panels.control_x, panels.control_y, 20, .ray_white);
+    drawAppText(state, "Up/Down action", panels.control_x, panels.control_y + 26, 20, .ray_white);
+    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + 52, 20, .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + 78, 20, .light_gray);
+
+    if (state.game_status_message) |message| {
+        rl.drawRectangleRounded(panels.footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
+        try drawWrappedText(state, message, @intFromFloat(panels.footer_panel.x + 20.0), @intFromFloat(panels.footer_panel.y + 11.0), @intFromFloat(panels.footer_panel.width - 32.0), 20, .ray_white);
+    }
 }
 
 fn drawHighScoresMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -1705,6 +1894,68 @@ fn drawOptionsSliderRow(state: *const AppState, label: []const u8, value: f32, p
         8,
         .gold,
     );
+}
+
+fn frontendRouteModeLabel(mode: FrontendLevelMode) []const u8 {
+    return switch (mode) {
+        .postal => "Postal",
+        .time_trial => "Time Trial",
+        .challenge => "Challenge",
+        .tutorial => "Tutorial",
+    };
+}
+
+fn routeMenuActionLabel(mode: FrontendLevelMode, action: RouteMenuAction) []const u8 {
+    return switch (action) {
+        .play => if (mode == .postal) "Deliver!" else "Play",
+        .watch_best_trial => "Watch Best Trial",
+        .back => "Back",
+    };
+}
+
+fn routeMenuHint(mode: FrontendLevelMode, action: RouteMenuAction) ?[]const u8 {
+    return switch (action) {
+        .play => if (mode == .postal)
+            "Launch the selected delivery route using the recovered front-end route index."
+        else
+            "Launch the selected route using the recovered front-end route index.",
+        .watch_best_trial => "The original front end can launch saved replay trials from here, but replay playback is not ported yet.",
+        .back => "Return to the main menu.",
+    };
+}
+
+fn drawRouteSelectionDots(state: *const AppState, panels: MenuPanels, current_index: usize, max_index: usize) void {
+    const visible_count: usize = @min(max_index + 1, 8);
+    if (visible_count == 0) return;
+
+    const start_index = if (current_index > 3 and max_index + 1 > visible_count)
+        @min(current_index - 3, max_index + 1 - visible_count)
+    else
+        0;
+    const center_y = @as(f32, @floatFromInt(panels.detail_body_y + 146));
+    const start_x = @as(f32, @floatFromInt(panels.detail_body_x + 10));
+    const spacing = 30.0;
+
+    for (0..visible_count) |visible_offset| {
+        const route_index = start_index + visible_offset;
+        const active = route_index == current_index;
+        const unlocked = route_index <= max_index;
+        const center_x = start_x + @as(f32, @floatFromInt(visible_offset)) * spacing;
+        rl.drawCircleV(
+            .{ .x = center_x, .y = center_y },
+            if (active) 8.0 else 6.0,
+            if (active)
+                .gold
+            else if (unlocked)
+                .sky_blue
+            else
+                .dark_gray,
+        );
+
+        var label_buffer: [8]u8 = undefined;
+        const label = std.fmt.bufPrint(&label_buffer, "{d}", .{route_index}) catch "?";
+        drawAppText(state, label, @intFromFloat(center_x - 4.0), @intFromFloat(center_y + 14.0), 14, .ray_white);
+    }
 }
 
 fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffer: []u8) ![]const u8 {

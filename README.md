@@ -128,7 +128,7 @@ zig build run -- --fullscreen
 Command behavior:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` launches the default game path, shows the archive-backed splash, intro crawl, main menu, options menu, high-score menu, and can enter the current tutorial or arcade level path
+- `zig build run` launches the default game path, shows the archive-backed splash, intro crawl, main menu, options menu, delivery-route map, high-score menu, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the archive-backed debug browser
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
 - windowed mode is the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen

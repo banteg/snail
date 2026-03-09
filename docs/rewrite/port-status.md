@@ -24,6 +24,10 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `build_frontend_options_menu`, `commit_frontend_options_menu`, `destroy_frontend_options_menu`, and `apply_audio_config_volumes`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original slider widgets, audio test feedback, and any remaining option fields are ported
+- delivery-route map flow: `partial`
+  - evidence: Binary Ninja decompile of `initialize_delivery_route_screen`, `update_delivery_route_screen`, and `load_frontend_level_by_mode_and_index`
+  - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
 - background script parsing plus split `_A` / `_B` menu or splash layouts: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)

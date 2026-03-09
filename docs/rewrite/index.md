@@ -170,7 +170,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Notes:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` now enters the default game path, shows the archive-backed splash, intro crawl, main menu, options menu, high-score menu, and can enter the current tutorial or arcade level path
+- `zig build run` now enters the default game path, shows the archive-backed splash, intro crawl, main menu, options menu, delivery-route map, high-score menu, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the interactive archive browser and waits until you close it
 - `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
 - windowed mode stays the development default until a saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
