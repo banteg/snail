@@ -10,6 +10,7 @@ const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
 const high_score = @import("high_score.zig");
 const intro = @import("intro.zig");
+const level_prompt = @import("level_prompt.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
 const loading_screen = @import("loading_screen.zig");
@@ -215,7 +216,7 @@ const AppState = struct {
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
-    active_level_message: ?[]const u8 = null,
+    level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?usize = null,
     frontend_route_mode: ?FrontendLevelMode = null,
     frontend_route_index: usize = 0,
@@ -623,6 +624,7 @@ const AppState = struct {
                 self.game_status_message = null;
             }
         }
+        self.level_prompt_queue.tick();
 
         if (self.frontend_transition.update()) |next_phase| {
             try self.enterGamePhase(next_phase);
@@ -963,6 +965,15 @@ const AppState = struct {
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
         self.route_menu_action_index = 0;
         try self.enterGamePhase(.route_map_menu);
+    }
+
+    fn clearLevelPromptQueue(self: *AppState) void {
+        self.level_prompt_queue.clear();
+    }
+
+    fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
+        const message = segment_entry.message orelse return;
+        self.level_prompt_queue.enqueue(message, level_prompt.durationTicks(segment_entry.duration));
     }
 
     fn enterSelectedFrontendRoute(self: *AppState) !void {
@@ -1309,7 +1320,7 @@ const AppState = struct {
             .boot => {
                 self.stopAudioPreview();
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.boot_task_index = 0;
                 self.unloadPreloadedBootAssets();
@@ -1319,7 +1330,7 @@ const AppState = struct {
             },
             .intro => {
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
@@ -1328,7 +1339,7 @@ const AppState = struct {
             },
             .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .exit_prompt => {
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
@@ -1337,7 +1348,7 @@ const AppState = struct {
             },
             .route_map_menu => {
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
@@ -1346,7 +1357,7 @@ const AppState = struct {
             },
             .credits => {
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
@@ -1355,7 +1366,7 @@ const AppState = struct {
             },
             .help => {
                 self.active_level_segment_index = null;
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
@@ -1363,7 +1374,7 @@ const AppState = struct {
                 try self.playMusicByPath(default_audio_path);
             },
             .completion_screen => {
-                self.active_level_message = null;
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
@@ -1371,6 +1382,7 @@ const AppState = struct {
             },
             .level => {
                 self.stopAudioPreview();
+                self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
@@ -1421,36 +1433,44 @@ const AppState = struct {
     fn syncActiveLevelSegment(self: *AppState, replay_sample_on_match: bool) !void {
         const loaded_level = self.current_level orelse {
             self.active_level_segment_index = null;
-            self.active_level_message = null;
+            self.clearLevelPromptQueue();
             return;
         };
         const loaded_track_preview = self.current_track_preview orelse {
             self.active_level_segment_index = null;
-            self.active_level_message = null;
+            self.clearLevelPromptQueue();
             return;
         };
         const runner = self.level_runner orelse {
             self.active_level_segment_index = null;
-            self.active_level_message = null;
+            self.clearLevelPromptQueue();
             return;
         };
 
         const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse {
             self.active_level_segment_index = null;
-            self.active_level_message = null;
+            self.clearLevelPromptQueue();
             return;
         };
         if (row_location.segment_index >= loaded_level.segments.len) {
             self.active_level_segment_index = null;
-            self.active_level_message = null;
+            self.clearLevelPromptQueue();
             return;
         }
 
         self.level_segment_index = row_location.segment_index;
         const segment_entry = &loaded_level.segments[row_location.segment_index];
-        const segment_changed = self.active_level_segment_index == null or self.active_level_segment_index.? != row_location.segment_index;
+        const previous_segment_index = self.active_level_segment_index;
+        const segment_changed = previous_segment_index == null or previous_segment_index.? != row_location.segment_index;
         self.active_level_segment_index = row_location.segment_index;
-        self.active_level_message = segment_entry.message;
+        if (segment_changed) {
+            if (previous_segment_index) |previous_index| {
+                if (row_location.segment_index < previous_index) {
+                    self.clearLevelPromptQueue();
+                }
+            }
+            self.queueLevelSegmentPrompt(segment_entry);
+        }
 
         if (segment_changed or replay_sample_on_match) {
             if (segment_entry.sample) |sample_path| {
@@ -2378,8 +2398,7 @@ fn completionActionLabel(result: PendingRunResult, action: CompletionAction) []c
 }
 
 fn completionElapsedMillis(runner: gameplay.Runner) u32 {
-    const millis = @divTrunc(runner.tick_count * 1000, 60);
-    return @intCast(@min(millis, std.math.maxInt(u32)));
+    return runner.stopwatch.elapsedMillis();
 }
 
 // PORT(partial): this now follows the recovered `cRSubGoldy::ScoreAdd` constants for the
@@ -2456,6 +2475,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const score_total = if (state.level_runner) |runner| runner.score.total else 0;
     const damage_gauge = if (state.level_runner) |runner| runner.damage_gauge else 0.0;
     const damage_warning = if (state.level_runner) |runner| runner.damageWarningLabel() else "idle";
+    const elapsed_millis = if (state.level_runner) |runner| runner.stopwatch.elapsedMillis() else 0;
     const accepts_input = if (state.level_runner) |runner| runner.acceptsGameplayInput() else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
@@ -2469,7 +2489,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  damage {d:.2}  warn {s}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {d:.3}s  damage {d:.2}  warn {s}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2479,6 +2499,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             parcel_count,
             parcel_target,
             score_total,
+            @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
             damage_gauge,
             damage_warning,
             loaded_track_preview.total_rows,
@@ -2517,10 +2538,10 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         );
         drawAppText(state, runner_text, @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)), @intFromFloat(footer_panel.y + layout.scaleFloat(18.0)), body_font_size, .ray_white);
 
-        if (state.active_level_message) |message| {
+        if (state.level_prompt_queue.active()) |prompt| {
             try drawWrappedText(
                 state,
-                message,
+                prompt.message,
                 @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)),
                 @intFromFloat(footer_panel.y + layout.scaleFloat(42.0)),
                 @intFromFloat(footer_panel.width - layout.scaleFloat(30.0)),

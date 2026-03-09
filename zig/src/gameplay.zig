@@ -160,6 +160,38 @@ pub const ScoreTotals = struct {
     completion_bonus: u32 = 0,
 };
 
+pub const Stopwatch = struct {
+    total_seconds: f32 = 0.0,
+    minutes: u32 = 0,
+    seconds: u32 = 0,
+    centiseconds: u32 = 0,
+    milliseconds: u32 = 0,
+    fractional_seconds: f32 = 0.0,
+
+    pub fn advance(self: *Stopwatch, tick_count: f32) void {
+        const delta_seconds = tick_count * (1.0 / 60.0);
+        self.total_seconds += delta_seconds;
+
+        var fractional_seconds = self.fractional_seconds + delta_seconds;
+        while (fractional_seconds >= 1.0) {
+            fractional_seconds -= 1.0;
+            self.seconds += 1;
+            if (self.seconds >= 60) {
+                self.seconds -= 60;
+                self.minutes += 1;
+            }
+        }
+
+        self.fractional_seconds = fractional_seconds;
+        self.centiseconds = @intFromFloat(@floor(fractional_seconds * 100.0));
+        self.milliseconds = @intFromFloat(@floor(fractional_seconds * 1000.0));
+    }
+
+    pub fn elapsedMillis(self: Stopwatch) u32 {
+        return @intFromFloat(@round(self.total_seconds * 1000.0));
+    }
+};
+
 pub const DamageWarningState = enum {
     idle,
     filling,
@@ -217,6 +249,7 @@ pub const Runner = struct {
     phase: RunnerPhase = .active,
     pending_handoff: RunnerHandoff = .none,
     tick_count: u64 = 0,
+    stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
     current_global_row: usize = 0,
     current_cell: u8 = ' ',
@@ -296,6 +329,7 @@ pub const Runner = struct {
             self.movement_rate_scalar = self.speed_rows_per_second * delta_seconds;
             self.advanceMovement(preview);
             self.tick_count += 1;
+            self.stopwatch.advance(1.0);
         }
 
         if (!self.paused and self.phase == .active) {
@@ -739,8 +773,8 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
     // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
-    // score crosses another 50,000-point bucket, capped at 9. The death/resurrect path
-    // still is not ported, so the runner only models the seed and score-side increments.
+    // score crosses another 50,000-point bucket, capped at 9. The runner now also mirrors
+    // the current postal/tutorial respawn decrement path, but not the original reload flow.
     fn updateVisibleLifeStockFromScore(self: *Runner, previous_total: u32, current_total: u32) void {
         const previous_bucket = @divTrunc(previous_total, score_life_threshold);
         const current_bucket = @divTrunc(current_total, score_life_threshold);
@@ -833,11 +867,13 @@ pub const Runner = struct {
         const score = self.score;
         const visible_life_stock = self.visible_life_stock;
         const tick_count = self.tick_count;
+        const stopwatch = self.stopwatch;
         self.reset(preview);
         self.session_mode = session_mode;
         self.score = score;
         self.visible_life_stock = visible_life_stock;
         self.tick_count = tick_count;
+        self.stopwatch = stopwatch;
     }
 };
 
@@ -1140,6 +1176,18 @@ test "runner seeds visible life stock at 3 and caps score-side awards at 9" {
     runner.recordScore(&runner.score.health_collect, 400_000);
     try std.testing.expectEqual(@as(u32, 450_000), runner.score.total);
     try std.testing.expectEqual(@as(u32, 9), runner.visible_life_stock);
+}
+
+test "stopwatch advances minutes seconds and subsecond counters at 60fps" {
+    var stopwatch = Stopwatch{};
+    stopwatch.advance(90.0);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.5), stopwatch.total_seconds, 0.0001);
+    try std.testing.expectEqual(@as(u32, 0), stopwatch.minutes);
+    try std.testing.expectEqual(@as(u32, 1), stopwatch.seconds);
+    try std.testing.expectEqual(@as(u32, 50), stopwatch.centiseconds);
+    try std.testing.expectEqual(@as(u32, 500), stopwatch.milliseconds);
+    try std.testing.expectEqual(@as(u32, 1500), stopwatch.elapsedMillis());
 }
 
 test "postal death respawns from the runner-local controller" {
