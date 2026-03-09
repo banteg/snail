@@ -53,8 +53,6 @@ const main_menu_items = frontend.main_menu_items;
 const NewGameMenuItem = frontend.NewGameMenuItem;
 const new_game_menu_items = frontend.new_game_menu_items;
 const FrontendLevelMode = frontend.FrontendLevelMode;
-const HighScoresMenuItem = frontend.HighScoresMenuItem;
-const high_scores_menu_items = frontend.high_scores_menu_items;
 const OptionsMenuItem = frontend.OptionsMenuItem;
 const options_menu_items = frontend.options_menu_items;
 const RouteMenuAction = frontend.RouteMenuAction;
@@ -120,6 +118,11 @@ const CompletionAction = enum {
 const completion_actions = [_]CompletionAction{
     .continue_flow,
     .replay_level,
+};
+
+const high_score_screen_modes = [_]high_score.Mode{
+    .postal,
+    .challenge,
 };
 
 const PostLevelHighScoreAction = enum {
@@ -719,14 +722,11 @@ const AppState = struct {
                 }
             },
             .high_scores_menu => {
-                if (rl.isKeyPressed(.up)) {
-                    self.high_scores_menu_index = wrappedIndex(high_scores_menu_items.len, self.high_scores_menu_index, -1);
+                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                    self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, -1);
                 }
-                if (rl.isKeyPressed(.down)) {
-                    self.high_scores_menu_index = wrappedIndex(high_scores_menu_items.len, self.high_scores_menu_index, 1);
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateHighScoresMenuItem(high_scores_menu_items[self.high_scores_menu_index]);
+                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                    self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
                 }
             },
             .cutscene => {
@@ -821,7 +821,10 @@ const AppState = struct {
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         switch (item) {
             .new_game => try self.enterGamePhase(.new_game_menu),
-            .high_scores => try self.enterGamePhase(.high_scores_menu),
+            .high_scores => {
+                self.high_scores_menu_index = 0;
+                try self.enterGamePhase(.high_scores_menu);
+            },
             .options => try self.enterGamePhase(.options_menu),
             .credits => try self.enterGamePhase(.credits),
             .exit => self.should_exit = true,
@@ -835,14 +838,6 @@ const AppState = struct {
             .time_trial => try self.enterFrontendLevelMode(.time_trial),
             .challenge_mode => try self.enterFrontendLevelMode(.challenge),
             .help => try self.enterGamePhase(.help),
-            .back => try self.enterGamePhase(.main_menu),
-        }
-    }
-
-    fn activateHighScoresMenuItem(self: *AppState, item: HighScoresMenuItem) !void {
-        switch (item) {
-            .postal_high_scores => self.high_scores_menu_index = 0,
-            .challenge_high_scores => self.high_scores_menu_index = 1,
             .back => try self.enterGamePhase(.main_menu),
         }
     }
@@ -2039,28 +2034,24 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const panels = app_ui.menuPanels(layout);
+    const selected_mode = high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
 
-    for (high_scores_menu_items, 0..) |item, index| {
-        drawMenuItem(state, layout, index, state.high_scores_menu_index, item.label());
+    for (high_score_screen_modes, 0..) |mode, index| {
+        const label = switch (mode) {
+            .postal => "Postal Scores",
+            .challenge => "Challenge Scores",
+        };
+        drawMenuItem(state, layout, index, state.high_scores_menu_index, label);
     }
 
-    const selected = high_scores_menu_items[state.high_scores_menu_index];
-    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
+    drawAppText(state, selected_mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
+    drawHighScoreTable(state, selected_mode, layout, panels, null, null, false);
 
-    switch (selected) {
-        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels, null, null, false),
-        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels, null, null, false),
-        .back => {
-            try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
-        },
-    }
-
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(20), .light_gray);
+    drawAppText(state, "Up/Down or Left/Right change table", panels.control_x, panels.control_y, layout.fontSize(18), .ray_white);
+    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(18), .light_gray);
 
     if (state.game_status_message) |message| {
         try drawFooterMessage(state, layout, panels.footer_panel, message);
