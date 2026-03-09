@@ -25,6 +25,7 @@ const debug_window_width = 1280;
 const debug_window_height = 720;
 
 const default_archive_path = "artifacts/bin/SnailMail.dat";
+const default_screenshot_dir = "artifacts/screenshots";
 const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 const help_background_path = "BACKGROUNDS/HELP.TXT";
@@ -45,6 +46,8 @@ const frontend_transition_hold_step: f32 = 0.33333334;
 const Options = struct {
     archive_path: []const u8 = default_archive_path,
     runtime_root_path: []const u8 = runtime_state.default_root_path,
+    screenshot_dir: []const u8 = default_screenshot_dir,
+    auto_screenshot: ?AutoScreenshot = null,
     fullscreen: bool = false,
     command: AppCommand = .game,
 };
@@ -92,6 +95,20 @@ const GamePhase = enum {
     credits,
     help,
     level,
+};
+
+const AutoScreenshot = struct {
+    phase: GamePhase,
+    tick: u64,
+};
+
+const ScreenshotRequest = struct {
+    relative_path_z: [:0]u8,
+    exit_after_capture: bool,
+
+    fn deinit(self: *ScreenshotRequest, allocator: std.mem.Allocator) void {
+        allocator.free(self.relative_path_z);
+    }
 };
 
 const FrontendTransitionState = enum {
@@ -299,11 +316,16 @@ const AppState = struct {
     animation_catalog: xanim.Catalog,
     ui_font: game_font.Loaded,
     runtime_root_path: []const u8,
+    screenshot_dir: []const u8,
     runtime_config: config.Blob,
     runtime_config_loaded_from_file: bool,
     command: AppCommand,
     audio_ready: bool,
     should_exit: bool = false,
+    auto_screenshot: ?AutoScreenshot = null,
+    auto_screenshot_taken: bool = false,
+    frame_capture_index: u32 = 0,
+    pending_screenshot: ?ScreenshotRequest = null,
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
     game_phase: GamePhase = .boot,
@@ -377,10 +399,12 @@ const AppState = struct {
             .animation_catalog = animation_catalog,
             .ui_font = ui_font,
             .runtime_root_path = options.runtime_root_path,
+            .screenshot_dir = options.screenshot_dir,
             .runtime_config = runtime_config_result.blob,
             .runtime_config_loaded_from_file = runtime_config_result.loaded_from_file,
             .command = options.command,
             .audio_ready = audio_ready,
+            .auto_screenshot = options.auto_screenshot,
             .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
             .audio_index = audio_index,
@@ -409,6 +433,10 @@ const AppState = struct {
         self.unloadLoadingScreen();
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
+        if (self.pending_screenshot) |*request| {
+            request.deinit(self.allocator);
+            self.pending_screenshot = null;
+        }
 
         if (self.current_model) |*model| {
             model.deinit();
@@ -597,6 +625,10 @@ const AppState = struct {
     }
 
     fn handleInput(self: *AppState) !void {
+        if (rl.isKeyPressed(.f12)) {
+            try self.queueScreenshot(false);
+        }
+
         switch (self.command) {
             .game => return self.handleGameInput(),
             .smoke => return,
@@ -1354,6 +1386,59 @@ const AppState = struct {
         return null;
     }
 
+    fn maybeQueueAutoScreenshot(self: *AppState) !void {
+        const auto_screenshot = self.auto_screenshot orelse return;
+        if (self.auto_screenshot_taken) return;
+        if (self.game_phase != auto_screenshot.phase) return;
+        if (self.game_phase_ticks < auto_screenshot.tick) return;
+
+        self.auto_screenshot_taken = true;
+        try self.queueScreenshot(true);
+    }
+
+    fn queueScreenshot(self: *AppState, exit_after_capture: bool) !void {
+        if (self.pending_screenshot != null) return;
+
+        self.frame_capture_index += 1;
+        const relative_path = try std.fmt.allocPrint(
+            self.allocator,
+            "{s}/snail-{s}-{s}-{d:0>6}-{d:0>3}.png",
+            .{
+                self.screenshot_dir,
+                @tagName(self.command),
+                @tagName(self.game_phase),
+                self.game_phase_ticks,
+                self.frame_capture_index,
+            },
+        );
+        errdefer self.allocator.free(relative_path);
+        const relative_path_z = try self.allocator.dupeZ(u8, relative_path);
+        defer self.allocator.free(relative_path);
+        errdefer self.allocator.free(relative_path_z);
+
+        self.pending_screenshot = .{
+            .relative_path_z = relative_path_z,
+            .exit_after_capture = exit_after_capture,
+        };
+    }
+
+    fn flushQueuedScreenshot(self: *AppState) !void {
+        var request = self.pending_screenshot orelse return;
+        self.pending_screenshot = null;
+        defer request.deinit(self.allocator);
+
+        const screenshot = try rl.loadImageFromScreen();
+        defer screenshot.unload();
+        if (!rl.exportImage(screenshot, request.relative_path_z)) {
+            return error.ScreenshotExportFailed;
+        }
+        std.log.info("captured screenshot {s}", .{request.relative_path_z});
+
+        if (request.exit_after_capture) {
+            self.should_exit = true;
+        }
+    }
+
     fn unloadGameBackground(self: *AppState) void {
         if (self.current_game_background) |*loaded_background| {
             loaded_background.deinit();
@@ -1589,6 +1674,18 @@ fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.runtime_root_path = args[index];
             continue;
         }
+        if (std.mem.eql(u8, arg, "--screenshot-dir")) {
+            index += 1;
+            if (index >= args.len) return error.MissingScreenshotDir;
+            options.screenshot_dir = args[index];
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--screenshot-at")) {
+            index += 1;
+            if (index >= args.len) return error.MissingScreenshotSpec;
+            options.auto_screenshot = try parseAutoScreenshot(args[index]);
+            continue;
+        }
         if (std.mem.eql(u8, arg, "--fullscreen")) {
             options.fullscreen = true;
             continue;
@@ -1615,6 +1712,27 @@ fn parseArgsFromSlice(args: []const []const u8) !Options {
     return options;
 }
 
+fn parseAutoScreenshot(spec: []const u8) !AutoScreenshot {
+    const colon_index = std.mem.indexOfScalar(u8, spec, ':') orelse return error.InvalidScreenshotSpec;
+    if (colon_index == 0 or colon_index + 1 >= spec.len) return error.InvalidScreenshotSpec;
+
+    const phase = parseGamePhase(spec[0..colon_index]) orelse return error.InvalidScreenshotPhase;
+    const tick = try std.fmt.parseUnsigned(u64, spec[colon_index + 1 ..], 10);
+    return .{
+        .phase = phase,
+        .tick = tick,
+    };
+}
+
+fn parseGamePhase(name: []const u8) ?GamePhase {
+    inline for (std.meta.fields(GamePhase)) |field| {
+        if (std.ascii.eqlIgnoreCase(name, field.name)) {
+            return @field(GamePhase, field.name);
+        }
+    }
+    return null;
+}
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -1622,6 +1740,7 @@ pub fn main() !void {
 
     const options = try parseArgs(allocator);
     try runtime_state.ensureRootExists(options.runtime_root_path);
+    try std.fs.cwd().makePath(options.screenshot_dir);
     var runtime_config_result = try config.Blob.loadFromRuntimeRoot(allocator, options.runtime_root_path);
     if (options.fullscreen) {
         runtime_config_result.blob.setFullscreenEnabled(true);
@@ -1662,8 +1781,10 @@ pub fn main() !void {
             frames_left -= 1;
         }
 
+        try state.flushQueuedScreenshot();
         try state.handleInput();
         try state.update(frame_delta_seconds);
+        try state.maybeQueueAutoScreenshot();
 
         rl.beginDrawing();
         defer rl.endDrawing();
@@ -1697,9 +1818,15 @@ fn drawGameUi(state: *const AppState) !void {
         return drawGameBootUi(state);
     }
 
-    const art_layout = if (state.current_game_background) |loaded_background|
-        loaded_background.draw(full_bounds)
-    else blk: {
+    const art_layout = if (state.current_game_background) |loaded_background| blk: {
+        switch (state.game_phase) {
+            .intro, .credits => {
+                loaded_background.drawStretched(full_bounds);
+                break :blk null;
+            },
+            else => break :blk loaded_background.draw(full_bounds),
+        }
+    } else blk: {
         rl.drawRectangleRec(full_bounds, .black);
         break :blk null;
     };
@@ -3243,14 +3370,19 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(AppCommand.game, options.command);
     try std.testing.expectEqualStrings(default_archive_path, options.archive_path);
     try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
+    try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
+    try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
     try std.testing.expectEqual(false, options.fullscreen);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--fullscreen" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--fullscreen" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
     try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
+    try std.testing.expectEqualStrings("artifacts/test-shots", options.screenshot_dir);
+    try std.testing.expectEqual(GamePhase.intro, options.auto_screenshot.?.phase);
+    try std.testing.expectEqual(@as(u64, 60), options.auto_screenshot.?.tick);
     try std.testing.expectEqual(true, options.fullscreen);
 
     options = try parseArgsFromSlice(&.{"smoke"});
@@ -3260,6 +3392,15 @@ test "parse args handles debug and smoke subcommands" {
 test "parse args rejects unknown commands" {
     try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"weird"}));
     try std.testing.expectError(error.UnknownCommand, parseArgsFromSlice(&.{"browser"}));
+}
+
+test "parse auto screenshot validates phase and tick" {
+    const capture = try parseAutoScreenshot("credits:120");
+    try std.testing.expectEqual(GamePhase.credits, capture.phase);
+    try std.testing.expectEqual(@as(u64, 120), capture.tick);
+
+    try std.testing.expectError(error.InvalidScreenshotSpec, parseAutoScreenshot("intro"));
+    try std.testing.expectError(error.InvalidScreenshotPhase, parseAutoScreenshot("weird:30"));
 }
 
 test "gameplay camera looks ahead of the runner" {

@@ -152,6 +152,26 @@ pub const Loaded = struct {
 
         return layout;
     }
+
+    pub fn drawStretched(self: *const Loaded, bounds: rl.Rectangle) void {
+        rl.drawRectangleRec(bounds, self.fogColor());
+
+        const base_width = self.baseWidth();
+        const base_height = self.baseHeight();
+        if (base_width <= 0.0 or base_height <= 0.0) return;
+
+        const scale_x = bounds.width / base_width;
+        const scale_y = bounds.height / base_height;
+        const primary_width = @as(f32, @floatFromInt(self.primary_texture.texture.width));
+        const primary_height = @as(f32, @floatFromInt(self.primary_texture.texture.height));
+        drawTextureScaled(self.primary_texture.texture, bounds.x, bounds.y, primary_width * scale_x, primary_height * scale_y);
+
+        if (self.secondary_texture) |texture| {
+            const secondary_width = @as(f32, @floatFromInt(texture.texture.width));
+            const secondary_height = @as(f32, @floatFromInt(texture.texture.height));
+            drawTextureScaled(texture.texture, bounds.x + primary_width * scale_x, bounds.y, secondary_width * scale_x, secondary_height * scale_y);
+        }
+    }
 };
 
 const LoadedTextures = struct {

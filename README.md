@@ -99,7 +99,7 @@ The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) d
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the default front-end now uses decompile-backed menu labels and hierarchy: `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, with a recovered `New Game` submenu of `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, and `Back`
 - `Help` now uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
-- the intro and credits crawl now also uses the recovered tilted text-plane layout, duration-driven shared scroll distance, world-unit image sizing, projected textured quads, `Esc` or click skip behavior, and the shared fade-to-black front-end transition overlay recovered from `initialize_intro_text_screen` and its companion transition helper
+- the intro and credits crawl now also uses the recovered tilted text-plane layout, right-to-left centered glyph placement, duration-driven shared scroll distance, world-unit line or image placement, `Esc` or click skip behavior, and the shared fade-to-black front-end transition overlay recovered from `initialize_intro_text_screen` and its companion transition helper
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
@@ -136,6 +136,7 @@ Command behavior:
 - `zig build run` now defaults to a `1024x768` window, which keeps the original `4:3` presentation while staying larger than the original `640x480` windowed client; `debug` and `smoke` keep the wider tooling window
 - windowed mode is still the intentional development default when no saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
+- `--screenshot-at intro:120` auto-captures a game-path frame into `artifacts/screenshots`; `F12` queues a manual screenshot during runtime
 - the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now uses the runtime root for those mutable files, loads and saves the raw `SnailMail.cfg` blob there, applies the recovered sound/music/fullscreen fields, and already loads compact score overlays from `ScoreA/B/C.dat`
 
 Interactive controls for `zig build run -- debug`:

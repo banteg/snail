@@ -75,6 +75,7 @@ pub const Loaded = struct {
 
         const scan = try scanAtlas(colors, @intCast(image.width), @intCast(image.height));
         const texture = try rl.loadTextureFromImage(image);
+        rl.setTextureWrap(texture, .clamp);
         rl.setTextureFilter(texture, .bilinear);
 
         return .{

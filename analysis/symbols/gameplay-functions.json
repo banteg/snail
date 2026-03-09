@@ -151,6 +151,16 @@
       "description": "Starts the selected front-end mode and seeds its initial level handoff through the shared level-path switch."
     },
     {
+      "address": "0x4182f0",
+      "name": "load_landscape_script_by_name",
+      "description": "Loads or reuses one `Backgrounds/<name>` landscape script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the referenced backdrop textures, and returns the cached landscape index."
+    },
+    {
+      "address": "0x418870",
+      "name": "activate_landscape_entry",
+      "description": "Binds one cached landscape entry into the shared backdrop manager, applies its texture or model handles, chooses the random variant flag, and copies its fog color into the global render state."
+    },
+    {
       "address": "0x418b50",
       "name": "initialize_loading_screen",
       "description": "Loads the loading-screen textures, seeds the full-screen quad and progress-bar quad, and resets the loader progress counters."

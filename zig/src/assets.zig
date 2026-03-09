@@ -132,6 +132,7 @@ pub const Catalog = struct {
         defer rl.unloadImage(image);
 
         const texture = try rl.loadTextureFromImage(image);
+        rl.setTextureWrap(texture, .clamp);
         rl.setTextureFilter(texture, .bilinear);
 
         return .{

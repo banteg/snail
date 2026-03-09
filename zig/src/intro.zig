@@ -4,7 +4,8 @@ const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 const game_font = @import("game_font.zig");
 
-const text_world_height: f32 = 1.0;
+const text_line_advance_world: f32 = 1.0;
+const text_glyph_height_world: f32 = 0.5;
 const text_world_width_scale: f32 = 0.8;
 const scroll_start_z: f32 = 0.2;
 const scroll_end_z: f32 = 3.0;
@@ -83,18 +84,21 @@ pub const Loaded = struct {
     }
 
     // PORT(partial): this crawl renderer now follows the recovered intro plane (`y = -4`),
-    // X-axis rotation, centered world-space text and image quads, per-line/image heights,
-    // and shared duration-driven z scroll from `initialize_intro_text_screen`. Remaining
-    // gaps are exact transition semantics and any original renderer-side batching quirks.
+    // X-axis rotation, right-to-left centered glyph placement, image sizing, and
+    // duration-driven shared z scroll from `initialize_intro_text_screen`. Remaining gaps
+    // are the exact original quad geometry and the backdrop system's motion or distortion.
     pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
         const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
         const scroll_offset = std.math.clamp(progress, 0.0, 1.0) * layout.scroll_distance;
+        const camera = introCameraForViewport(viewport);
+        camera.begin();
+        defer rl.endMode3D();
         var cursor_z = scroll_start_z;
 
         for (self.entries) |entry| {
             switch (entry) {
-                .text => |line| drawProjectedTextLine(ui_font, line, cursor_z + scroll_offset, viewport),
-                .image => |image| drawProjectedImage(image, cursor_z + scroll_offset, viewport),
+                .text => |line| drawWorldTextLine(ui_font, line, cursor_z + scroll_offset),
+                .image => |image| drawWorldImage(image, cursor_z + scroll_offset),
             }
             cursor_z -= loadedEntryWorldHeight(entry);
         }
@@ -305,6 +309,13 @@ const ProjectedQuad = struct {
     bottom_left: ProjectedPoint,
 };
 
+const WorldQuad = struct {
+    top_left: rl.Vector3,
+    top_right: rl.Vector3,
+    bottom_right: rl.Vector3,
+    bottom_left: rl.Vector3,
+};
+
 fn projectionForViewport(viewport: rl.Rectangle) Projection {
     return .{
         .center_x = viewport.x + viewport.width * 0.5,
@@ -325,61 +336,79 @@ fn projectPoint(projection: Projection, world_x: f32, world_z: f32) ?ProjectedPo
     };
 }
 
-fn drawProjectedTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32, viewport: rl.Rectangle) void {
-    if (line.len == 0) return;
-
+fn introCameraForViewport(viewport: rl.Rectangle) rl.Camera3D {
     const projection = projectionForViewport(viewport);
+    const half_height = @max(viewport.height * 0.5, 1.0);
+    const fovy_radians = 2.0 * std.math.atan(half_height / projection.focal);
+    return .{
+        .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .target = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .fovy = std.math.radiansToDegrees(fovy_radians),
+        .projection = .perspective,
+    };
+}
+
+fn worldPoint(world_x: f32, world_z: f32) rl.Vector3 {
+    return .{
+        .x = world_x,
+        .y = world_y * rotation_cos + world_z * rotation_sin,
+        .z = -world_y * rotation_sin + world_z * rotation_cos,
+    };
+}
+
+fn worldQuad(left_x: f32, right_x: f32, top_z: f32, bottom_z: f32) ?WorldQuad {
+    const top_left = worldPoint(left_x, top_z);
+    const top_right = worldPoint(right_x, top_z);
+    const bottom_right = worldPoint(right_x, bottom_z);
+    const bottom_left = worldPoint(left_x, bottom_z);
+    if (top_left.z <= near_clip_depth or top_right.z <= near_clip_depth or bottom_right.z <= near_clip_depth or bottom_left.z <= near_clip_depth) {
+        return null;
+    }
+    return .{
+        .top_left = top_left,
+        .top_right = top_right,
+        .bottom_right = bottom_right,
+        .bottom_left = bottom_left,
+    };
+}
+
+fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32) void {
+    if (line.len == 0 or ui_font.nominal_height <= 0.0) return;
+
     const line_width_world = measureLineWorldWidth(ui_font, line);
-    var pen_x = -line_width_world * 0.5;
-
-    rl.gl.rlSetTexture(ui_font.texture.id);
-    defer rl.gl.rlSetTexture(0);
-
-    rl.gl.rlBegin(rl.gl.rl_quads);
-    defer rl.gl.rlEnd();
-
-    rl.gl.rlColor4ub(text_color.r, text_color.g, text_color.b, text_color.a);
+    var pen_right_x = line_width_world * 0.5;
 
     for (line) |byte| {
         if (byte == '\r' or byte == '\n') continue;
 
         const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
-        const slot = ui_font.slots[slot_index];
-        const advance_world = slot.advance_width * text_world_width_scale / ui_font.nominal_height;
+        const glyph_width_world = measureSlotWorldWidth(ui_font, slot_index);
+        defer pen_right_x -= glyph_width_world;
 
-        if (byte != ' ' and slot.source_width > 0.0 and slot.source_height > 0.0) {
-            const glyph_width_world = slot.source_width * text_world_width_scale / ui_font.nominal_height;
-            const glyph_height_world = slot.source_height / ui_font.nominal_height;
-            if (projectQuad(
-                projection,
-                pen_x,
-                pen_x + glyph_width_world,
-                top_z,
-                top_z - glyph_height_world,
-            )) |quad| {
-                emitTexturedQuad(
-                    ui_font.texture,
-                    .{
-                        .x = slot.source_x,
-                        .y = slot.source_y,
-                        .width = slot.source_width,
-                        .height = slot.source_height,
-                    },
-                    quad,
-                );
-            }
-        }
+        if (byte == ' ') continue;
 
-        pen_x += advance_world;
+        const quad = worldQuad(
+            pen_right_x - glyph_width_world,
+            pen_right_x,
+            top_z,
+            top_z - text_glyph_height_world,
+        ) orelse continue;
+        drawTexturedQuad(
+            ui_font.texture,
+            glyphSourceRect(ui_font.slots[slot_index]),
+            quad,
+            text_color,
+            true,
+            true,
+        );
     }
 }
 
-fn drawProjectedImage(image: LoadedImage, top_z: f32, viewport: rl.Rectangle) void {
+fn drawWorldImage(image: LoadedImage, top_z: f32) void {
     const world_width = clampedImageWorldWidth(image);
     const world_height = clampedImageWorldHeight(image);
-    const projection = projectionForViewport(viewport);
-    if (projectQuad(
-        projection,
+    if (worldQuad(
         -world_width * 0.5,
         world_width * 0.5,
         top_z,
@@ -395,6 +424,8 @@ fn drawProjectedImage(image: LoadedImage, top_z: f32, viewport: rl.Rectangle) vo
             },
             quad,
             .white,
+            false,
+            false,
         );
     }
 }
@@ -412,9 +443,14 @@ fn measureLineWorldWidth(ui_font: *const game_font.Loaded, line: []const u8) f32
     for (line) |byte| {
         if (byte == '\r' or byte == '\n') continue;
         const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
-        width += ui_font.slots[slot_index].advance_width * text_world_width_scale / ui_font.nominal_height;
+        width += measureSlotWorldWidth(ui_font, slot_index);
     }
     return width;
+}
+
+fn measureSlotWorldWidth(ui_font: *const game_font.Loaded, slot_index: usize) f32 {
+    if (slot_index >= ui_font.slots.len or ui_font.nominal_height <= 0.0) return 0.0;
+    return ui_font.slots[slot_index].advance_width * text_world_width_scale / ui_font.nominal_height;
 }
 
 fn projectQuad(
@@ -432,41 +468,6 @@ fn projectQuad(
     };
 }
 
-fn drawTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: ProjectedQuad, tint: rl.Color) void {
-    if (texture.width <= 0 or texture.height <= 0) return;
-
-    rl.gl.rlSetTexture(texture.id);
-    defer rl.gl.rlSetTexture(0);
-
-    rl.gl.rlBegin(rl.gl.rl_quads);
-    defer rl.gl.rlEnd();
-
-    rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
-
-    emitTexturedQuad(texture, source, quad);
-}
-
-fn emitTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: ProjectedQuad) void {
-    const inv_width = 1.0 / @as(f32, @floatFromInt(texture.width));
-    const inv_height = 1.0 / @as(f32, @floatFromInt(texture.height));
-    const tex_u0 = source.x * inv_width;
-    const tex_v0 = source.y * inv_height;
-    const tex_u1 = (source.x + source.width) * inv_width;
-    const tex_v1 = (source.y + source.height) * inv_height;
-
-    rl.gl.rlTexCoord2f(tex_u0, tex_v0);
-    rl.gl.rlVertex2f(quad.top_left.x, quad.top_left.y);
-
-    rl.gl.rlTexCoord2f(tex_u1, tex_v0);
-    rl.gl.rlVertex2f(quad.top_right.x, quad.top_right.y);
-
-    rl.gl.rlTexCoord2f(tex_u1, tex_v1);
-    rl.gl.rlVertex2f(quad.bottom_right.x, quad.bottom_right.y);
-
-    rl.gl.rlTexCoord2f(tex_u0, tex_v1);
-    rl.gl.rlVertex2f(quad.bottom_left.x, quad.bottom_left.y);
-}
-
 fn totalLoadedWorldHeight(entries: []const LoadedEntry) f32 {
     var total_height: f32 = 0.0;
     for (entries) |entry| {
@@ -477,7 +478,7 @@ fn totalLoadedWorldHeight(entries: []const LoadedEntry) f32 {
 
 fn loadedEntryWorldHeight(entry: LoadedEntry) f32 {
     return switch (entry) {
-        .text => text_world_height,
+        .text => text_line_advance_world,
         .image => |image| clampedImageWorldHeight(image),
     };
 }
@@ -488,6 +489,54 @@ fn clampedImageWorldWidth(image: LoadedImage) f32 {
 
 fn clampedImageWorldHeight(image: LoadedImage) f32 {
     return @max(image.height, 0.01);
+}
+
+fn glyphSourceRect(slot: anytype) rl.Rectangle {
+    return .{
+        .x = slot.source_x,
+        .y = slot.source_y,
+        .width = slot.source_width,
+        .height = slot.source_height,
+    };
+}
+
+fn drawTexturedQuad(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    quad: WorldQuad,
+    tint: rl.Color,
+    use_half_texel_inset: bool,
+    flip_horizontal: bool,
+) void {
+    if (source.width <= 0.0 or source.height <= 0.0) return;
+
+    const texture_width: f32 = @floatFromInt(texture.width);
+    const texture_height: f32 = @floatFromInt(texture.height);
+    if (texture_width <= 0.0 or texture_height <= 0.0) return;
+
+    const inset_x: f32 = if (use_half_texel_inset and source.width > 1.0) 0.5 else 0.0;
+    const inset_y: f32 = if (use_half_texel_inset and source.height > 1.0) 0.5 else 0.0;
+    const unclamped_left_u = (source.x + inset_x) / texture_width;
+    const unclamped_right_u = (source.x + source.width - inset_x) / texture_width;
+    const left_u = if (flip_horizontal) unclamped_right_u else unclamped_left_u;
+    const right_u = if (flip_horizontal) unclamped_left_u else unclamped_right_u;
+    const top_v = (source.y + inset_y) / texture_height;
+    const bottom_v = (source.y + source.height - inset_y) / texture_height;
+
+    rl.gl.rlSetTexture(texture.id);
+    defer rl.gl.rlSetTexture(0);
+    rl.gl.rlBegin(rl.gl.rl_quads);
+    defer rl.gl.rlEnd();
+
+    rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+    rl.gl.rlTexCoord2f(left_u, top_v);
+    rl.gl.rlVertex3f(quad.top_left.x, quad.top_left.y, quad.top_left.z);
+    rl.gl.rlTexCoord2f(right_u, top_v);
+    rl.gl.rlVertex3f(quad.top_right.x, quad.top_right.y, quad.top_right.z);
+    rl.gl.rlTexCoord2f(right_u, bottom_v);
+    rl.gl.rlVertex3f(quad.bottom_right.x, quad.bottom_right.y, quad.bottom_right.z);
+    rl.gl.rlTexCoord2f(left_u, bottom_v);
+    rl.gl.rlVertex3f(quad.bottom_left.x, quad.bottom_left.y, quad.bottom_left.z);
 }
 
 test "parse intro script body into ordered text entries" {
@@ -591,4 +640,26 @@ test "projection moves crawl upward and inward as z advances" {
     const near_width = near_quad.top_right.x - near_quad.top_left.x;
     const far_width = far_quad.top_right.x - far_quad.top_left.x;
     try std.testing.expect(far_width < near_width);
+}
+
+test "textured quad uv inset trims font marker columns" {
+    const texture = rl.Texture2D{
+        .id = 1,
+        .width = 256,
+        .height = 128,
+        .mipmaps = 1,
+        .format = .uncompressed_r8g8b8a8,
+    };
+    const source = rl.Rectangle{
+        .x = 32.0,
+        .y = 1.0,
+        .width = 10.0,
+        .height = 12.0,
+    };
+    const inset_x = if (true and source.width > 1.0) 0.5 else 0.0;
+    const inset_y = if (true and source.height > 1.0) 0.5 else 0.0;
+
+    try std.testing.expectApproxEqAbs(@as(f32, 32.5 / 256.0), (source.x + inset_x) / @as(f32, @floatFromInt(texture.width)), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 41.5 / 256.0), (source.x + source.width - inset_x) / @as(f32, @floatFromInt(texture.width)), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.5 / 128.0), (source.y + inset_y) / @as(f32, @floatFromInt(texture.height)), 0.0001);
 }
