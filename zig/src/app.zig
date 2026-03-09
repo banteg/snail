@@ -15,6 +15,33 @@ pub const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 pub const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 pub const help_background_path = "BACKGROUNDS/HELP.TXT";
 pub const route_map_background_path = "BACKGROUNDS/STARMAP.TXT";
+pub const route_map_logo_texture_path = "GALAXY/SPACEMAPLOGO.TGA";
+pub const route_map_border_texture_path = "GALAXY/BORDERSPACEMAP.TGA";
+pub const route_map_galaxy_select_texture_path = "GALAXY/GALAXYSELECT.TGA";
+pub const route_map_level_select_texture_path = "GALAXY/LEVELSELECT.TGA";
+pub const route_map_level_star_texture_path = "GALAXY/LEVELSTAR.TGA";
+pub const route_map_line_texture_path = "GALAXY/LINE.TGA";
+pub const route_map_line_star_texture_path = "GALAXY/LINESTAR.TGA";
+pub const route_map_galaxy_texture_paths = [_][]const u8{
+    "GALAXY/GALAXY000.TGA",
+    "GALAXY/GALAXY001.TGA",
+    "GALAXY/GALAXY002.TGA",
+    "GALAXY/GALAXY003.TGA",
+    "GALAXY/GALAXY004.TGA",
+    "GALAXY/GALAXY005.TGA",
+    "GALAXY/GALAXY006.TGA",
+    "GALAXY/GALAXY007.TGA",
+    "GALAXY/GALAXY008.TGA",
+    "GALAXY/GALAXY009.TGA",
+};
+pub const frontend_cursor_texture_path = "SPRITES/PROGRESS-CURSOR.TGA";
+pub const slider_less_texture_path = "SPRITES/LESS.TGA";
+pub const slider_less_hover_texture_path = "SPRITES/LESSHOVER.TGA";
+pub const slider_more_texture_path = "SPRITES/MORE.TGA";
+pub const slider_more_hover_texture_path = "SPRITES/MOREHOVER.TGA";
+pub const slider_bar_texture_path = "SPRITES/SLIDERBAR.TGA";
+pub const slider_bar_full_texture_path = "SPRITES/SLIDERBARFULL.TGA";
+pub const galaxy_names_path = "GALAXY/_GALAXY.TXT";
 pub const intro_script_path = "INTRO/INTRO.TXT";
 pub const credits_script_path = "INTRO/CREDITS.TXT";
 pub const intro_music_path = "MUSIC/INTROTEXT.OGG";

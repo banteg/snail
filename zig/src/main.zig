@@ -6,6 +6,7 @@ const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
 const frontend = @import("frontend.zig");
+const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
 const high_score = @import("high_score.zig");
@@ -27,6 +28,22 @@ const intro_background_path = app.intro_background_path;
 const main_menu_background_path = app.main_menu_background_path;
 const help_background_path = app.help_background_path;
 const route_map_background_path = app.route_map_background_path;
+const route_map_logo_texture_path = app.route_map_logo_texture_path;
+const route_map_border_texture_path = app.route_map_border_texture_path;
+const route_map_galaxy_select_texture_path = app.route_map_galaxy_select_texture_path;
+const route_map_level_select_texture_path = app.route_map_level_select_texture_path;
+const route_map_level_star_texture_path = app.route_map_level_star_texture_path;
+const route_map_line_texture_path = app.route_map_line_texture_path;
+const route_map_line_star_texture_path = app.route_map_line_star_texture_path;
+const route_map_galaxy_texture_paths = app.route_map_galaxy_texture_paths;
+const frontend_cursor_texture_path = app.frontend_cursor_texture_path;
+const slider_less_texture_path = app.slider_less_texture_path;
+const slider_less_hover_texture_path = app.slider_less_hover_texture_path;
+const slider_more_texture_path = app.slider_more_texture_path;
+const slider_more_hover_texture_path = app.slider_more_hover_texture_path;
+const slider_bar_texture_path = app.slider_bar_texture_path;
+const slider_bar_full_texture_path = app.slider_bar_full_texture_path;
+const galaxy_names_path = app.galaxy_names_path;
 const intro_script_path = app.intro_script_path;
 const credits_script_path = app.credits_script_path;
 const intro_music_path = app.intro_music_path;
@@ -56,7 +73,6 @@ const FrontendLevelMode = frontend.FrontendLevelMode;
 const OptionsMenuItem = frontend.OptionsMenuItem;
 const options_menu_items = frontend.options_menu_items;
 const RouteMenuAction = frontend.RouteMenuAction;
-const route_menu_actions = frontend.route_menu_actions;
 const frontendRouteModeLabel = frontend.frontendRouteModeLabel;
 const routeMenuActionLabel = frontend.routeMenuActionLabel;
 const routeMenuHint = frontend.routeMenuHint;
@@ -73,6 +89,122 @@ const ScreenshotRequest = struct {
         allocator.free(self.relative_path_z);
     }
 };
+
+const SliderArt = struct {
+    less: ?assets.LoadedTexture = null,
+    less_hover: ?assets.LoadedTexture = null,
+    more: ?assets.LoadedTexture = null,
+    more_hover: ?assets.LoadedTexture = null,
+    bar: ?assets.LoadedTexture = null,
+    bar_full: ?assets.LoadedTexture = null,
+
+    fn unload(self: *SliderArt) void {
+        if (self.less) |*texture| {
+            texture.unload();
+            self.less = null;
+        }
+        if (self.less_hover) |*texture| {
+            texture.unload();
+            self.less_hover = null;
+        }
+        if (self.more) |*texture| {
+            texture.unload();
+            self.more = null;
+        }
+        if (self.more_hover) |*texture| {
+            texture.unload();
+            self.more_hover = null;
+        }
+        if (self.bar) |*texture| {
+            texture.unload();
+            self.bar = null;
+        }
+        if (self.bar_full) |*texture| {
+            texture.unload();
+            self.bar_full = null;
+        }
+    }
+};
+
+const RouteMapArt = struct {
+    logo: ?assets.LoadedTexture = null,
+    border: ?assets.LoadedTexture = null,
+    galaxy_select: ?assets.LoadedTexture = null,
+    level_select: ?assets.LoadedTexture = null,
+    level_star: ?assets.LoadedTexture = null,
+    line: ?assets.LoadedTexture = null,
+    line_star: ?assets.LoadedTexture = null,
+    galaxies: [galaxy.map_galaxy_count]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** galaxy.map_galaxy_count,
+
+    fn unload(self: *RouteMapArt) void {
+        if (self.logo) |*texture| {
+            texture.unload();
+            self.logo = null;
+        }
+        if (self.border) |*texture| {
+            texture.unload();
+            self.border = null;
+        }
+        if (self.galaxy_select) |*texture| {
+            texture.unload();
+            self.galaxy_select = null;
+        }
+        if (self.level_select) |*texture| {
+            texture.unload();
+            self.level_select = null;
+        }
+        if (self.level_star) |*texture| {
+            texture.unload();
+            self.level_star = null;
+        }
+        if (self.line) |*texture| {
+            texture.unload();
+            self.line = null;
+        }
+        if (self.line_star) |*texture| {
+            texture.unload();
+            self.line_star = null;
+        }
+        for (&self.galaxies) |*texture| {
+            if (texture.*) |*loaded| {
+                loaded.unload();
+                texture.* = null;
+            }
+        }
+    }
+};
+
+fn loadSliderArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !SliderArt {
+    var art = SliderArt{};
+    errdefer art.unload();
+
+    art.less = try catalog.loadTextureByPath(allocator, slider_less_texture_path);
+    art.less_hover = try catalog.loadTextureByPath(allocator, slider_less_hover_texture_path);
+    art.more = try catalog.loadTextureByPath(allocator, slider_more_texture_path);
+    art.more_hover = try catalog.loadTextureByPath(allocator, slider_more_hover_texture_path);
+    art.bar = try catalog.loadTextureByPath(allocator, slider_bar_texture_path);
+    art.bar_full = try catalog.loadTextureByPath(allocator, slider_bar_full_texture_path);
+
+    return art;
+}
+
+fn loadRouteMapArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !RouteMapArt {
+    var art = RouteMapArt{};
+    errdefer art.unload();
+
+    art.logo = try catalog.loadTextureByPath(allocator, route_map_logo_texture_path);
+    art.border = try catalog.loadTextureByPath(allocator, route_map_border_texture_path);
+    art.galaxy_select = try catalog.loadTextureByPath(allocator, route_map_galaxy_select_texture_path);
+    art.level_select = try catalog.loadTextureByPath(allocator, route_map_level_select_texture_path);
+    art.level_star = try catalog.loadTextureByPath(allocator, route_map_level_star_texture_path);
+    art.line = try catalog.loadTextureByPath(allocator, route_map_line_texture_path);
+    art.line_star = try catalog.loadTextureByPath(allocator, route_map_line_star_texture_path);
+    for (route_map_galaxy_texture_paths, 0..) |path, index| {
+        art.galaxies[index] = try catalog.loadTextureByPath(allocator, path);
+    }
+
+    return art;
+}
 
 const ResultReturnTarget = enum {
     main_menu,
@@ -176,6 +308,17 @@ const high_score_menu_actions = [_]HighScoreMenuAction{
     .switch_table,
 };
 
+const route_menu_actions_without_replay = [_]RouteMenuAction{
+    .play,
+    .back,
+};
+
+const route_menu_actions_with_replay = [_]RouteMenuAction{
+    .play,
+    .watch_best_trial,
+    .back,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -241,6 +384,9 @@ const AppState = struct {
     level_index: usize,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
+    frontend_cursor_texture: ?assets.LoadedTexture = null,
+    slider_art: SliderArt = .{},
+    route_map_art: RouteMapArt = .{},
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
     current_model: ?x2.LoadedModel = null,
@@ -253,6 +399,8 @@ const AppState = struct {
     current_game_background_runtime: ?background.Runtime = null,
     current_loading_screen: ?loading_screen.Loaded = null,
     current_text_script: ?intro.Loaded = null,
+    galaxy_names: ?galaxy.Definition = null,
+    frontend_route_level: ?level.Definition = null,
     preloaded_intro_background: ?background.Loaded = null,
     preloaded_main_menu_background: ?background.Loaded = null,
     preloaded_route_map_background: ?background.Loaded = null,
@@ -271,6 +419,14 @@ const AppState = struct {
         errdefer animation_catalog.deinit();
         var ui_font = try game_font.Loaded.load(allocator, &catalog);
         errdefer ui_font.deinit();
+        var frontend_cursor_texture = try catalog.loadTextureByPath(allocator, frontend_cursor_texture_path);
+        errdefer frontend_cursor_texture.unload();
+        var slider_art = try loadSliderArt(allocator, &catalog);
+        errdefer slider_art.unload();
+        var route_map_art = try loadRouteMapArt(allocator, &catalog);
+        errdefer route_map_art.unload();
+        var galaxy_names = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
+        errdefer galaxy_names.deinit();
 
         const texture_index = catalog.findTextureIndex(default_texture_path) orelse 0;
         const audio_index = catalog.findAudioIndex(default_audio_path) orelse 0;
@@ -298,6 +454,10 @@ const AppState = struct {
             .model_index = model_index,
             .object_index = object_index,
             .level_index = level_index,
+            .frontend_cursor_texture = frontend_cursor_texture,
+            .slider_art = slider_art,
+            .route_map_art = route_map_art,
+            .galaxy_names = galaxy_names,
         };
         errdefer state.deinit();
         state.applyAudioConfigVolumes();
@@ -360,6 +520,17 @@ const AppState = struct {
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
+        }
+        if (self.frontend_cursor_texture) |*texture| {
+            texture.unload();
+            self.frontend_cursor_texture = null;
+        }
+        self.slider_art.unload();
+        self.route_map_art.unload();
+        self.unloadFrontendRouteLevel();
+        if (self.galaxy_names) |*names| {
+            names.deinit();
+            self.galaxy_names = null;
         }
 
         self.ui_font.deinit();
@@ -754,20 +925,21 @@ const AppState = struct {
                 }
             },
             .route_map_menu => {
+                const route_actions = self.activeRouteMenuActions();
                 if (rl.isKeyPressed(.up)) {
-                    self.route_menu_action_index = wrappedIndex(route_menu_actions.len, self.route_menu_action_index, -1);
+                    self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, -1);
                 }
                 if (rl.isKeyPressed(.down)) {
-                    self.route_menu_action_index = wrappedIndex(route_menu_actions.len, self.route_menu_action_index, 1);
+                    self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, 1);
                 }
                 if (rl.isKeyPressed(.left)) {
-                    self.stepFrontendRouteSelection(-1);
+                    try self.stepFrontendRouteSelection(-1);
                 }
                 if (rl.isKeyPressed(.right)) {
-                    self.stepFrontendRouteSelection(1);
+                    try self.stepFrontendRouteSelection(1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateRouteMenuAction(route_menu_actions[self.route_menu_action_index]);
+                    try self.activateRouteMenuAction(route_actions[self.route_menu_action_index]);
                 }
             },
             .high_scores_menu => {
@@ -894,12 +1066,7 @@ const AppState = struct {
             .credits,
             => try self.enterGamePhase(phase),
             .exit_prompt => try self.beginExitPrompt(.main_menu),
-            .route_map_menu => {
-                self.frontend_route_mode = .postal;
-                self.frontend_route_index = self.initialFrontendRouteIndex(.postal);
-                self.route_menu_action_index = 0;
-                try self.enterGamePhase(.route_map_menu);
-            },
+            .route_map_menu => try self.enterRouteMapMenu(.postal),
             .level => try self.enterGameplayShell(default_level_path),
             .completion_screen => return error.UnsupportedStartPhase,
         }
@@ -1012,7 +1179,41 @@ const AppState = struct {
         self.frontend_route_mode = mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
         self.route_menu_action_index = 0;
+        try self.reloadFrontendRouteLevel();
         try self.enterGamePhase(.route_map_menu);
+    }
+
+    fn unloadFrontendRouteLevel(self: *AppState) void {
+        if (self.frontend_route_level) |*loaded_level| {
+            loaded_level.deinit();
+            self.frontend_route_level = null;
+        }
+    }
+
+    fn reloadFrontendRouteLevel(self: *AppState) !void {
+        self.unloadFrontendRouteLevel();
+        const mode = self.frontend_route_mode orelse return;
+        var path_buffer: [64]u8 = undefined;
+        const level_path = frontendLevelPath(mode, self.frontend_route_index, &path_buffer) catch return;
+        const level_index = self.catalog.findLevelIndex(level_path) orelse return;
+        self.frontend_route_level = try level.loadFromArchive(self.allocator, &self.catalog, self.catalog.level_entries[level_index]);
+    }
+
+    fn currentFrontendGalaxyName(self: *const AppState) ?[]const u8 {
+        const names = self.galaxy_names orelse return null;
+        return names.nameForRouteIndex(self.frontend_route_index);
+    }
+
+    fn routeMapShowsReplay(self: *const AppState) bool {
+        _ = self;
+        return false;
+    }
+
+    fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
+        return if (self.routeMapShowsReplay())
+            &route_menu_actions_with_replay
+        else
+            &route_menu_actions_without_replay;
     }
 
     fn clearLevelPromptQueue(self: *AppState) void {
@@ -1354,11 +1555,12 @@ const AppState = struct {
         }
     }
 
-    fn stepFrontendRouteSelection(self: *AppState, delta: isize) void {
+    fn stepFrontendRouteSelection(self: *AppState, delta: isize) !void {
         const mode = self.frontend_route_mode orelse return;
         const route_count = self.availableFrontendRouteLimit(mode);
         if (route_count == 0) return;
         self.frontend_route_index = wrappedIndex(route_count, self.frontend_route_index - 1, delta) + 1;
+        try self.reloadFrontendRouteLevel();
     }
 
     fn syncGamePhaseResources(self: *AppState) !void {
@@ -2123,7 +2325,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state,
         layout,
         84.0,
-        390.0,
+        350.0,
         "Help",
         state.new_game_menu_index == 4,
         .{ .min_width = 84.0 },
@@ -2132,7 +2334,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state,
         layout,
         320.0,
-        390.0,
+        350.0,
         "Back",
         state.new_game_menu_index == 5,
         .{ .min_width = 96.0 },
@@ -2188,22 +2390,26 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const selected_action = route_menu_actions[state.route_menu_action_index];
+    const route_actions = state.activeRouteMenuActions();
+    const selected_action = route_actions[@min(state.route_menu_action_index, route_actions.len - 1)];
     drawFrontendHeading(state, layout, 16.0, 18.0, "Intergalactic Delivery Route", 18, .left, .{ .r = 216, .g = 138, .b = 28, .a = 255 });
-
-    var level_path_buffer: [64]u8 = undefined;
-    const level_path = try frontendLevelPath(mode, state.frontend_route_index, &level_path_buffer);
-    var title_buffer: [64]u8 = undefined;
-    const route_title = try std.fmt.bufPrint(&title_buffer, "{s} Route {d}", .{ frontendRouteModeLabel(mode), state.frontend_route_index });
+    drawRouteMapLogo(state, layout);
+    const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
+    const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
+    const route_body = if (state.frontend_route_level) |loaded_level|
+        loaded_level.galaxy_text orelse routeMenuHint(mode, selected_action) orelse ""
+    else
+        routeMenuHint(mode, selected_action) orelse "";
     const primary_action = if (selected_action == .back) routeMenuActionLabel(mode, .play) else routeMenuActionLabel(mode, selected_action);
-
-    drawRouteMapCard(state, layout, 230.0, 176.0, 208.0, 164.0, route_title, level_path, primary_action, selected_action != .back);
-    drawRouteMapStarAnchor(layout, 83.0, 187.0);
+    drawRouteMapStars(state, layout, mode);
+    if (galaxy.routePointForRouteIndex(state.frontend_route_index)) |route_point| {
+        drawRouteMapCard(state, layout, route_point, route_galaxy_name, route_level_name, route_body, primary_action, selected_action != .back);
+    }
     drawFrontendMenuButton(
         state,
         layout,
         49.0,
-        438.0,
+        420.0,
         "Back",
         selected_action == .back,
         .{ .min_width = 88.0 },
@@ -2238,16 +2444,16 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         else
             try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
         drawHighScoreTable(state, layout, context.rank, draft_name, true, selected_mode);
-        drawFrontendMenuButton(state, layout, 210.0, 438.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .{ .min_width = 108.0 });
-        drawFrontendMenuButton(state, layout, 375.0, 438.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .{ .min_width = 118.0 });
+        drawFrontendMenuButton(state, layout, 210.0, 381.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .{ .min_width = 108.0 });
+        drawFrontendMenuButton(state, layout, 375.0, 381.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .{ .min_width = 118.0 });
     } else {
         drawHighScoreTable(state, layout, null, null, false, selected_mode);
-        drawFrontendMenuButton(state, layout, 188.0, 438.0, "Back", state.high_scores_action_index == 0, .{ .min_width = 94.0 });
+        drawFrontendMenuButton(state, layout, 188.0, 381.0, "Back", state.high_scores_action_index == 0, .{ .min_width = 94.0 });
         drawFrontendMenuButton(
             state,
             layout,
             353.0,
-            438.0,
+            381.0,
             highScoreTableToggleLabel(selected_mode),
             state.high_scores_action_index == 1,
             .{ .min_width = 180.0 },
@@ -2276,18 +2482,28 @@ fn drawHighScoreTable(
     const entries = state.high_score_tables.visibleEntries(mode);
     const row_start_y: i32 = @intFromFloat(layout.mapPoint(0.0, 111.0).y);
     const row_height = layout.scaleInt(27);
-    const rank_x: i32 = @intFromFloat(layout.mapPoint(112.0, 0.0).x);
-    const name_x: i32 = @intFromFloat(layout.mapPoint(154.0, 0.0).x);
-    const score_x: i32 = @intFromFloat(layout.mapPoint(430.0, 0.0).x);
-    const replay_x: i32 = @intFromFloat(layout.mapPoint(536.0, 0.0).x);
-    const row_panel_x: i32 = @intFromFloat(layout.mapPoint(96.0, 0.0).x);
-    const row_panel_width = layout.scaleFloat(450.0);
+    const rank_x: i32 = @intFromFloat(layout.mapPoint(92.0, 0.0).x);
+    const name_x: i32 = @intFromFloat(layout.mapPoint(140.0, 0.0).x);
+    const score_x: i32 = @intFromFloat(layout.mapPoint(445.0, 0.0).x);
+    const replay_x: i32 = @intFromFloat(layout.mapPoint(490.0, 0.0).x);
+    const row_panel_x: i32 = @intFromFloat(layout.mapPoint(84.0, 0.0).x);
+    const row_panel_width = layout.scaleFloat(464.0);
 
+    var visible_indices: [high_score.visible_entry_count]usize = undefined;
+    var visible_count: usize = 0;
     for (entries, 0..) |entry, index| {
-        const row_y = row_start_y + @as(i32, @intCast(index)) * row_height;
-        const row_color: rl.Color = if (highlight_index != null and highlight_index.? == index)
+        if (entry.isActive() or (highlight_index != null and highlight_index.? == index)) {
+            visible_indices[visible_count] = index;
+            visible_count += 1;
+        }
+    }
+
+    for (visible_indices[0..visible_count], 0..) |entry_index, visible_row| {
+        const entry = entries[entry_index];
+        const row_y = row_start_y + @as(i32, @intCast(visible_row)) * row_height;
+        const row_color: rl.Color = if (highlight_index != null and highlight_index.? == entry_index)
             .{ .r = 255, .g = 210, .b = 80, .a = 46 }
-        else if ((index & 1) == 0)
+        else if ((visible_row & 1) == 0)
             .{ .r = 255, .g = 255, .b = 255, .a = 12 }
         else
             .{ .r = 0, .g = 0, .b = 0, .a = 0 };
@@ -2306,9 +2522,9 @@ fn drawHighScoreTable(
         }
 
         var rank_buffer: [8]u8 = undefined;
-        const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}.", .{index + 1}) catch "";
+        const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}", .{entry_index + 1}) catch "";
         drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(18), .ray_white);
-        const display_name = if (highlight_index != null and highlight_index.? == index and editing_name != null)
+        const display_name = if (highlight_index != null and highlight_index.? == entry_index and editing_name != null)
             editing_name.?
         else
             highScoreDisplayName(&entry);
@@ -2317,7 +2533,10 @@ fn drawHighScoreTable(
         var score_buffer: [32]u8 = undefined;
         const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
         drawAppText(state, score_text, score_x - measureAppText(state, score_text, layout.fontSize(18)), row_y, layout.fontSize(18), .gold);
-        drawAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", replay_x - measureAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", layout.fontSize(18)), row_y, layout.fontSize(18), .light_gray);
+        const replay_text = if (!hide_replay and entry.has_replay) "Replay" else "";
+        if (replay_text.len != 0) {
+            drawAppText(state, replay_text, replay_x - measureAppText(state, replay_text, layout.fontSize(18)), row_y, layout.fontSize(18), .light_gray);
+        }
     }
 }
 
@@ -2417,41 +2636,21 @@ fn drawFrontendPill(
     rl.drawRectangleRoundedLinesEx(rect, 0.4, 10, layout.scaleFloat(1.0), outline);
 }
 
-fn drawFrontendCursorRocket(layout: VirtualLayout, local_x: f32, local_y: f32) void {
-    const center = layout.mapPoint(local_x, local_y);
-    const scale = layout.scale * 1.6;
-
-    rl.drawTriangle(
-        .{ .x = center.x - 5.0 * scale, .y = center.y - 6.0 * scale },
-        .{ .x = center.x + 8.0 * scale, .y = center.y },
-        .{ .x = center.x - 5.0 * scale, .y = center.y + 6.0 * scale },
-        .{ .r = 246, .g = 165, .b = 52, .a = 255 },
-    );
-    rl.drawCircleV(.{ .x = center.x - 3.0 * scale, .y = center.y }, 5.0 * scale, .{ .r = 140, .g = 64, .b = 198, .a = 255 });
-    rl.drawTriangle(
-        .{ .x = center.x - 1.0 * scale, .y = center.y - 3.0 * scale },
-        .{ .x = center.x + 6.0 * scale, .y = center.y },
-        .{ .x = center.x - 1.0 * scale, .y = center.y + 3.0 * scale },
-        .{ .r = 255, .g = 241, .b = 180, .a = 255 },
-    );
-    rl.drawCircleV(.{ .x = center.x - 4.0 * scale, .y = center.y - 1.2 * scale }, 1.9 * scale, .{ .r = 236, .g = 236, .b = 255, .a = 255 });
-    rl.drawTriangle(
-        .{ .x = center.x - 10.0 * scale, .y = center.y - 1.5 * scale },
-        .{ .x = center.x - 16.0 * scale, .y = center.y - 5.0 * scale },
-        .{ .x = center.x - 10.0 * scale, .y = center.y + 1.5 * scale },
-        .{ .r = 124, .g = 56, .b = 186, .a = 255 },
-    );
-    rl.drawTriangle(
-        .{ .x = center.x - 10.0 * scale, .y = center.y + 1.5 * scale },
-        .{ .x = center.x - 16.0 * scale, .y = center.y + 5.0 * scale },
-        .{ .x = center.x - 10.0 * scale, .y = center.y - 1.5 * scale },
-        .{ .r = 124, .g = 56, .b = 186, .a = 255 },
-    );
-    rl.drawTriangle(
-        .{ .x = center.x - 12.0 * scale, .y = center.y },
-        .{ .x = center.x - 18.0 * scale, .y = center.y - 2.5 * scale },
-        .{ .x = center.x - 18.0 * scale, .y = center.y + 2.5 * scale },
-        .{ .r = 250, .g = 128, .b = 52, .a = 224 },
+fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local_x: f32, local_y: f32) void {
+    const loaded_texture = state.frontend_cursor_texture orelse return;
+    const destination = layout.mapRect(local_x - 32.0, local_y - 32.0, 64.0, 64.0);
+    rl.drawTexturePro(
+        loaded_texture.texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
+            .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+        },
+        destination,
+        .{ .x = 0.0, .y = 0.0 },
+        0.0,
+        .white,
     );
 }
 
@@ -2484,10 +2683,78 @@ fn drawFrontendMenuButton(
     const local_height: f32 = if (active) 38.0 else 34.0;
     const colors = frontendButtonColors(active);
     drawFrontendPill(layout, center_x, center_y, local_width, local_height, colors.fill, colors.outline);
-    drawFrontendHeading(state, layout, center_x, center_y - @as(f32, if (active) 15 else 14), text, authored_font_size, .center, colors.text);
+    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y - @as(f32, if (active) 13 else 12), text, authored_font_size, colors.shadow, .center);
+    drawFrontendTextAligned(state, layout, center_x, center_y - @as(f32, if (active) 15 else 14), text, authored_font_size, colors.text, .center);
     if (active and options.show_cursor) {
-        drawFrontendCursorRocket(layout, center_x + local_width * 0.5 + 18.0, center_y + 2.0);
+        drawFrontendCursorRocket(state, layout, center_x + local_width * 0.5 + 20.0, center_y + 2.0);
     }
+}
+
+fn drawTextureLocalRectSource(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    source: rl.Rectangle,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    if (local_width <= 0.0 or local_height <= 0.0) return;
+    rl.drawTexturePro(
+        loaded_texture.texture,
+        source,
+        layout.mapRect(local_x, local_y, local_width, local_height),
+        .{ .x = 0.0, .y = 0.0 },
+        0.0,
+        tint,
+    );
+}
+
+fn drawTextureLocalRect(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    drawTextureLocalRectSource(
+        layout,
+        loaded_texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
+            .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+        },
+        local_x,
+        local_y,
+        local_width,
+        local_height,
+        tint,
+    );
+}
+
+fn drawTextureCenteredLocal(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    center_x: f32,
+    center_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    drawTextureLocalRect(
+        layout,
+        loaded_texture,
+        center_x - local_width * 0.5,
+        center_y - local_height * 0.5,
+        local_width,
+        local_height,
+        tint,
+    );
 }
 
 fn drawFrontendSliderPanel(
@@ -2499,72 +2766,236 @@ fn drawFrontendSliderPanel(
     value: f32,
     active: bool,
 ) void {
-    const panel_width: f32 = 392.0;
-    const panel_height: f32 = 74.0;
+    const panel_width: f32 = 418.0;
+    const panel_height: f32 = 86.0;
     const colors = frontendButtonColors(active);
-    drawFrontendPill(layout, center_x, center_y, panel_width, panel_height, colors.fill, colors.outline);
-    drawFrontendHeading(state, layout, center_x, center_y - 31.0, label, 22, .center, colors.text);
+    const normalized_value = std.math.clamp(value, 0.0, 1.0);
 
-    const bar_rect = layout.mapRect(center_x - 120.0, center_y - 4.0, 240.0, 24.0);
-    rl.drawRectangleRounded(bar_rect, 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
-    rl.drawRectangleRounded(
-        .{
-            .x = bar_rect.x + layout.scaleFloat(2.0),
-            .y = bar_rect.y + layout.scaleFloat(2.0),
-            .width = (bar_rect.width - layout.scaleFloat(4.0)) * std.math.clamp(value, 0.0, 1.0),
-            .height = bar_rect.height - layout.scaleFloat(4.0),
-        },
-        0.45,
-        8,
-        .{ .r = 252, .g = 198, .b = 40, .a = 255 },
-    );
-    rl.drawCircleV(.{ .x = bar_rect.x - layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(15.0), .{ .r = 128, .g = 48, .b = 190, .a = 255 });
-    rl.drawCircleV(.{ .x = bar_rect.x + bar_rect.width + layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(15.0), .{ .r = 128, .g = 48, .b = 190, .a = 255 });
-    rl.drawCircleV(.{ .x = bar_rect.x - layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(10.0), .{ .r = 250, .g = 212, .b = 72, .a = 255 });
-    rl.drawCircleV(.{ .x = bar_rect.x + bar_rect.width + layout.scaleFloat(18.0), .y = bar_rect.y + bar_rect.height * 0.5 }, layout.scaleFloat(10.0), .{ .r = 250, .g = 212, .b = 72, .a = 255 });
+    drawFrontendPill(layout, center_x, center_y, panel_width, panel_height, colors.fill, colors.outline);
+    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y - 29.0, label, 22, colors.shadow, .center);
+    drawFrontendTextAligned(state, layout, center_x, center_y - 31.0, label, 22, colors.text, .center);
+
+    const bar_left = center_x - 128.0;
+    const bar_top = center_y - 5.0;
+    const bar_width: f32 = 256.0;
+    const bar_height: f32 = 32.0;
+
+    if (state.slider_art.bar) |loaded_texture| {
+        drawTextureLocalRect(layout, loaded_texture, bar_left, bar_top, bar_width, bar_height, .white);
+    } else {
+        const bar_rect = layout.mapRect(bar_left, bar_top, bar_width, bar_height);
+        rl.drawRectangleRounded(bar_rect, 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
+    }
+    if (state.slider_art.bar_full) |loaded_texture| {
+        drawTextureLocalRectSource(
+            layout,
+            loaded_texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)) * normalized_value,
+                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+            },
+            bar_left,
+            bar_top,
+            bar_width * normalized_value,
+            bar_height,
+            .white,
+        );
+    } else {
+        rl.drawRectangleRounded(
+            .{
+                .x = layout.mapPoint(bar_left, bar_top).x,
+                .y = layout.mapPoint(bar_left, bar_top).y,
+                .width = layout.scaleFloat(bar_width * normalized_value),
+                .height = layout.scaleFloat(bar_height),
+            },
+            0.45,
+            8,
+            .{ .r = 252, .g = 198, .b = 40, .a = 255 },
+        );
+    }
+
+    const less_texture = if (active)
+        state.slider_art.less_hover orelse state.slider_art.less
+    else
+        state.slider_art.less;
+    const more_texture = if (active)
+        state.slider_art.more_hover orelse state.slider_art.more
+    else
+        state.slider_art.more;
+    if (less_texture) |loaded_texture| {
+        drawTextureCenteredLocal(layout, loaded_texture, center_x - 172.0, center_y + 10.0, 64.0, 64.0, .white);
+    }
+    if (more_texture) |loaded_texture| {
+        drawTextureCenteredLocal(layout, loaded_texture, center_x + 172.0, center_y + 10.0, 64.0, 64.0, .white);
+    }
 
     var value_buffer: [16]u8 = undefined;
     const value_text = std.fmt.bufPrint(&value_buffer, "{d:.0}%", .{value * 100.0}) catch "0%";
-    drawFrontendHeading(state, layout, center_x, center_y - 5.0, value_text, 20, .center, .ray_white);
+    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y + 2.0, value_text, 20, .{ .r = 42, .g = 20, .b = 34, .a = 220 }, .center);
+    drawFrontendTextAligned(state, layout, center_x, center_y, value_text, 20, .ray_white, .center);
 
     if (active) {
-        drawFrontendCursorRocket(layout, center_x + panel_width * 0.5 - 14.0, center_y + 10.0);
+        drawFrontendCursorRocket(state, layout, center_x + 198.0, center_y + 10.0);
+    }
+}
+
+fn drawRouteMapConnection(
+    layout: VirtualLayout,
+    start_point: galaxy.Point,
+    end_point: galaxy.Point,
+    line_texture: ?assets.LoadedTexture,
+    authored_width: f32,
+    tint: rl.Color,
+) void {
+    const start = layout.mapPoint(start_point.x, start_point.y);
+    const end = layout.mapPoint(end_point.x, end_point.y);
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const length = std.math.sqrt(dx * dx + dy * dy);
+    if (length <= 0.01) return;
+
+    if (line_texture) |loaded_texture| {
+        const scaled_width = layout.scaleFloat(authored_width);
+        rl.drawTexturePro(
+            loaded_texture.texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
+                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+            },
+            .{
+                .x = start.x,
+                .y = start.y,
+                .width = length,
+                .height = scaled_width,
+            },
+            .{ .x = 0.0, .y = scaled_width * 0.5 },
+            @as(f32, @floatCast(std.math.atan2(dy, dx) * 180.0 / std.math.pi)),
+            tint,
+        );
+    } else {
+        rl.drawLineEx(start, end, layout.scaleFloat(authored_width), tint);
+    }
+}
+
+fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: FrontendLevelMode) void {
+    const available_limit = state.availableFrontendRouteLimit(mode);
+    const selected_galaxy_index = if (state.galaxy_names) |names|
+        names.galaxyIndexForRouteIndex(state.frontend_route_index)
+    else
+        null;
+
+    for (0..galaxy.map_galaxy_count) |galaxy_index| {
+        const center = galaxy.galaxyCenter(galaxy_index);
+        if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
+            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, 176.0, 176.0, .white);
+        }
+    }
+
+    if (state.galaxy_names) |names| {
+        if (selected_galaxy_index) |galaxy_index| {
+            var route_cursor: usize = 0;
+            for (0..galaxy_index) |prior_index| {
+                route_cursor += names.starCountForGalaxyIndex(prior_index) orelse 0;
+            }
+            const star_count = names.starCountForGalaxyIndex(galaxy_index) orelse 0;
+
+            if (star_count >= 2) {
+                for (0..star_count - 1) |local_index| {
+                    const start_index = route_cursor + local_index;
+                    const end_index = start_index + 1;
+                    const unlocked = end_index + 1 <= available_limit;
+                    drawRouteMapConnection(
+                        layout,
+                        galaxy.routePoint(start_index),
+                        galaxy.routePoint(end_index),
+                        state.route_map_art.line,
+                        6.0,
+                        if (unlocked)
+                            .white
+                        else
+                            .{ .r = 255, .g = 255, .b = 255, .a = 88 },
+                    );
+                }
+            }
+
+            for (0..star_count) |local_index| {
+                const route_index = route_cursor + local_index;
+                const point = galaxy.routePoint(route_index);
+                const unlocked = route_index + 1 <= available_limit;
+                const star_tint: rl.Color = if (unlocked)
+                    .white
+                else
+                    .{ .r = 255, .g = 255, .b = 255, .a = 88 };
+                if (state.route_map_art.level_star) |loaded_texture| {
+                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, star_tint);
+                }
+            }
+        }
+    }
+
+    if (galaxy.routePointForRouteIndex(state.frontend_route_index)) |selected_point| {
+        if (state.route_map_art.level_select) |loaded_texture| {
+            drawTextureCenteredLocal(layout, loaded_texture, selected_point.x, selected_point.y, 64.0, 64.0, .white);
+        }
     }
 }
 
 fn drawRouteMapCard(
     state: *const AppState,
     layout: VirtualLayout,
-    local_x: f32,
-    local_y: f32,
-    local_width: f32,
-    local_height: f32,
-    title: []const u8,
-    level_path: []const u8,
+    route_point: galaxy.Point,
+    route_galaxy_name: []const u8,
+    route_level_name: []const u8,
+    route_body: []const u8,
     primary_action: []const u8,
     primary_active: bool,
 ) void {
-    const card = layout.mapRect(local_x - local_width * 0.5, local_y - local_height * 0.5, local_width, local_height);
-    rl.drawRectangleRounded(card, 0.16, 10, .{ .r = 18, .g = 16, .b = 118, .a = 188 });
-    rl.drawRectangleRoundedLinesEx(card, 0.16, 10, layout.scaleFloat(2.0), .{ .r = 76, .g = 210, .b = 255, .a = 255 });
-    drawFrontendHeading(state, layout, local_x, local_y - 70.0, title, 18, .center, .ray_white);
+    const card_width: f32 = 218.0;
+    const card_height: f32 = 188.0;
+    var card_left = route_point.x + 60.0;
+    var card_top = route_point.y - 130.0;
+    if (card_left + card_width > 630.0) {
+        card_left = route_point.x - card_width - 28.0;
+    }
+    if (card_top < 50.0) {
+        card_top = 50.0;
+    } else if (card_top + card_height > 450.0) {
+        card_top = 450.0 - card_height;
+    }
 
-    var body_buffer: [192]u8 = undefined;
-    const body_text = std.fmt.bufPrint(&body_buffer, "{s}>{s}", .{ frontendRouteDescriptionLine(title), level_path }) catch level_path;
-    drawFrontendNoticeBlock(state, layout, local_x, local_y - 32.0, body_text, .ray_white) catch {};
-    drawFrontendMenuButton(state, layout, local_x, local_y + 48.0, primary_action, primary_active, .{ .min_width = 132.0, .show_cursor = primary_active });
+    const pointer_anchor_x = if (card_left > route_point.x) card_left else card_left + card_width;
+    const pointer_anchor_y = std.math.clamp(route_point.y, card_top + 28.0, card_top + card_height - 28.0);
+    drawRouteMapConnection(layout, route_point, .{ .x = pointer_anchor_x, .y = pointer_anchor_y }, state.route_map_art.line_star, 6.0, .white);
+
+    if (state.route_map_art.border) |loaded_texture| {
+        drawTextureLocalRect(layout, loaded_texture, card_left, card_top, card_width, card_height, .white);
+    } else {
+        const card = layout.mapRect(card_left, card_top, card_width, card_height);
+        rl.drawRectangleRounded(card, 0.16, 10, .{ .r = 18, .g = 16, .b = 118, .a = 188 });
+        rl.drawRectangleRoundedLinesEx(card, 0.16, 10, layout.scaleFloat(2.0), .{ .r = 76, .g = 210, .b = 255, .a = 255 });
+    }
+
+    drawFrontendTextAligned(state, layout, card_left + 16.0, card_top + 14.0, route_galaxy_name, 16, .ray_white, .left);
+    drawFrontendTextAligned(state, layout, card_left + 16.0, card_top + 44.0, route_level_name, 20, .ray_white, .left);
+    drawWrappedText(
+        state,
+        route_body,
+        @intFromFloat(layout.mapPoint(card_left + 16.0, card_top + 76.0).x),
+        @intFromFloat(layout.mapPoint(card_left + 16.0, card_top + 76.0).y),
+        @intFromFloat(layout.scaleFloat(card_width - 32.0)),
+        layout.fontSize(20),
+        .ray_white,
+    ) catch {};
+    drawFrontendMenuButton(state, layout, card_left + card_width * 0.5, card_top + 156.0, primary_action, primary_active, .{ .min_width = 132.0, .show_cursor = primary_active });
 }
 
-fn frontendRouteDescriptionLine(title: []const u8) []const u8 {
-    _ = title;
-    return "Select the highlighted route.";
-}
-
-fn drawRouteMapStarAnchor(layout: VirtualLayout, local_x: f32, local_y: f32) void {
-    const center = layout.mapPoint(local_x, local_y);
-    rl.drawCircleV(center, layout.scaleFloat(11.0), .{ .r = 34, .g = 162, .b = 255, .a = 64 });
-    rl.drawCircleLinesV(center, layout.scaleFloat(9.0), .{ .r = 90, .g = 212, .b = 255, .a = 255 });
-    rl.drawLineV(.{ .x = center.x + layout.scaleFloat(10.0), .y = center.y }, .{ .x = center.x + layout.scaleFloat(54.0), .y = center.y }, .{ .r = 90, .g = 212, .b = 255, .a = 255 });
+fn drawRouteMapLogo(state: *const AppState, layout: VirtualLayout) void {
+    const loaded_texture = state.route_map_art.logo orelse return;
+    drawTextureLocalRect(layout, loaded_texture, 370.0, 10.0, 251.0, 82.0, .white);
 }
 
 fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
@@ -2581,9 +3012,11 @@ fn drawFrontendNoticeBlock(
 ) !void {
     var line_buffer: [512]u8 = undefined;
     var line_index: i32 = 0;
-    var parts = std.mem.splitScalar(u8, message, '>');
+    var parts = std.mem.tokenizeAny(u8, message, ">\n");
     while (parts.next()) |part| {
-        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
+        const trimmed = std.mem.trim(u8, part, " \t\r");
+        if (trimmed.len == 0) continue;
+        const clipped = if (trimmed.len > line_buffer.len - 1) trimmed[0 .. line_buffer.len - 1] else trimmed;
         @memcpy(line_buffer[0..clipped.len], clipped);
         line_buffer[clipped.len] = 0;
         drawFrontendTextAligned(
@@ -2686,7 +3119,7 @@ fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    drawFrontendMenuButton(state, layout, 320.0, 432.0, "Back", true, .{ .min_width = 92.0 });
+    drawFrontendMenuButton(state, layout, 320.0, 420.0, "Back", true, .{ .min_width = 92.0 });
 }
 
 fn resultTitle(result: PendingRunResult) []const u8 {

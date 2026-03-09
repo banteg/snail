@@ -1,0 +1,214 @@
+const std = @import("std");
+const archive = @import("archive.zig");
+const assets = @import("assets.zig");
+
+pub const map_galaxy_count = 10;
+pub const map_route_count = 50;
+
+pub const Point = struct {
+    x: f32,
+    y: f32,
+};
+
+pub const Definition = struct {
+    arena: std.heap.ArenaAllocator,
+    names: []const []const u8,
+    star_counts: []const usize,
+
+    pub fn deinit(self: *Definition) void {
+        self.arena.deinit();
+    }
+
+    pub fn nameForRouteIndex(self: *const Definition, route_index: usize) ?[]const u8 {
+        const galaxy_index = self.galaxyIndexForRouteIndex(route_index) orelse return null;
+        return self.names[galaxy_index];
+    }
+
+    pub fn starCountForGalaxyIndex(self: *const Definition, galaxy_index: usize) ?usize {
+        if (galaxy_index >= self.star_counts.len) return null;
+        return self.star_counts[galaxy_index];
+    }
+
+    pub fn galaxyIndexForRouteIndex(self: *const Definition, route_index: usize) ?usize {
+        if (route_index == 0) return null;
+
+        var remaining = route_index;
+        for (self.star_counts, 0..) |star_count, galaxy_index| {
+            if (remaining <= star_count) return galaxy_index;
+            remaining -= star_count;
+        }
+        return null;
+    }
+};
+
+// PORT(verified): the Windows Star Map initializer at `sub_4088E0` scales these authored
+// route and galaxy coordinates before `initialize_galaxy` and `update_galaxy` consume them.
+// The route points come from the flat float table starting at `0x4A1D1C`, and the galaxy
+// centers come from the ten pairs starting at `0x4A1C4C`.
+const raw_galaxy_centers = [_]Point{
+    .{ .x = 104.0, .y = 253.0 },
+    .{ .x = 239.0, .y = 149.0 },
+    .{ .x = 415.0, .y = 95.0 },
+    .{ .x = 583.0, .y = 111.0 },
+    .{ .x = 715.0, .y = 211.0 },
+    .{ .x = 703.0, .y = 374.0 },
+    .{ .x = 592.0, .y = 506.0 },
+    .{ .x = 368.0, .y = 523.0 },
+    .{ .x = 275.0, .y = 395.0 },
+    .{ .x = 428.0, .y = 292.0 },
+};
+
+const raw_route_points = [_]Point{
+    .{ .x = 80.0, .y = 311.0 },
+    .{ .x = 83.0, .y = 302.0 },
+    .{ .x = 67.0, .y = 249.0 },
+    .{ .x = 123.0, .y = 285.0 },
+    .{ .x = 131.0, .y = 253.0 },
+    .{ .x = 116.0, .y = 212.0 },
+    .{ .x = 83.0, .y = 179.0 },
+    .{ .x = 142.0, .y = 186.0 },
+    .{ .x = 150.0, .y = 223.0 },
+    .{ .x = 199.0, .y = 224.0 },
+    .{ .x = 202.0, .y = 177.0 },
+    .{ .x = 238.0, .y = 193.0 },
+    .{ .x = 258.0, .y = 169.0 },
+    .{ .x = 223.0, .y = 158.0 },
+    .{ .x = 218.0, .y = 125.0 },
+    .{ .x = 256.0, .y = 81.0 },
+    .{ .x = 274.0, .y = 111.0 },
+    .{ .x = 279.0, .y = 149.0 },
+    .{ .x = 314.0, .y = 154.0 },
+    .{ .x = 327.0, .y = 111.0 },
+    .{ .x = 375.0, .y = 125.0 },
+    .{ .x = 386.0, .y = 152.0 },
+    .{ .x = 421.0, .y = 129.0 },
+    .{ .x = 372.0, .y = 84.0 },
+    .{ .x = 402.0, .y = 64.0 },
+    .{ .x = 419.0, .y = 30.0 },
+    .{ .x = 442.0, .y = 82.0 },
+    .{ .x = 458.0, .y = 118.0 },
+    .{ .x = 493.0, .y = 79.0 },
+    .{ .x = 509.0, .y = 112.0 },
+    .{ .x = 530.0, .y = 131.0 },
+    .{ .x = 544.0, .y = 95.0 },
+    .{ .x = 573.0, .y = 61.0 },
+    .{ .x = 562.0, .y = 135.0 },
+    .{ .x = 602.0, .y = 130.0 },
+    .{ .x = 594.0, .y = 87.0 },
+    .{ .x = 633.0, .y = 104.0 },
+    .{ .x = 603.0, .y = 185.0 },
+    .{ .x = 643.0, .y = 157.0 },
+    .{ .x = 687.0, .y = 149.0 },
+    .{ .x = 708.0, .y = 177.0 },
+    .{ .x = 668.0, .y = 191.0 },
+    .{ .x = 676.0, .y = 236.0 },
+    .{ .x = 771.0, .y = 140.0 },
+    .{ .x = 756.0, .y = 186.0 },
+    .{ .x = 758.0, .y = 217.0 },
+    .{ .x = 731.0, .y = 245.0 },
+    .{ .x = 768.0, .y = 266.0 },
+    .{ .x = 736.0, .y = 286.0 },
+    .{ .x = 778.0, .y = 321.0 },
+};
+
+pub fn galaxyCenter(index: usize) Point {
+    return transformAuthoredPoint(raw_galaxy_centers[index]);
+}
+
+pub fn routePoint(index: usize) Point {
+    return transformAuthoredPoint(raw_route_points[index]);
+}
+
+pub fn routePointForRouteIndex(route_index: usize) ?Point {
+    if (route_index == 0 or route_index > raw_route_points.len) return null;
+    return routePoint(route_index - 1);
+}
+
+fn transformAuthoredPoint(raw: Point) Point {
+    return .{
+        .x = raw.x * 0.8,
+        .y = (raw.y * 0.8 - 240.0) * 0.93 + 250.0,
+    };
+}
+
+pub fn loadByPath(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    path: []const u8,
+) !Definition {
+    const entry = catalog.dat.entryByPath(path) orelse return error.EntryNotFound;
+    return loadFromArchive(allocator, catalog, entry);
+}
+
+pub fn loadFromArchive(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    entry: archive.Entry,
+) !Definition {
+    const decoded = try catalog.readEntryAlloc(allocator, entry);
+    defer allocator.free(decoded);
+    return parseText(allocator, decoded);
+}
+
+pub fn parseText(allocator: std.mem.Allocator, data: []const u8) !Definition {
+    var arena = std.heap.ArenaAllocator.init(allocator);
+    errdefer arena.deinit();
+    const arena_allocator = arena.allocator();
+
+    var names = std.ArrayList([]const u8).empty;
+    defer names.deinit(arena_allocator);
+    var star_counts = std.ArrayList(usize).empty;
+    defer star_counts.deinit(arena_allocator);
+
+    var lines = std.mem.splitScalar(u8, data, '\n');
+    while (lines.next()) |raw_line| {
+        const line = std.mem.trim(u8, raw_line, " \t\r");
+
+        if (std.mem.startsWith(u8, line, "Galaxy")) {
+            const colon_index = std.mem.indexOfScalar(u8, line, ':') orelse continue;
+            const quoted = std.mem.trim(u8, line[colon_index + 1 ..], " \t");
+            if (quoted.len < 2 or quoted[0] != '"' or quoted[quoted.len - 1] != '"') {
+                return error.InvalidGalaxyScript;
+            }
+            try names.append(arena_allocator, try arena_allocator.dupe(u8, quoted[1 .. quoted.len - 1]));
+            continue;
+        }
+
+        if (std.mem.startsWith(u8, line, "StarNumber")) {
+            const equals_index = std.mem.indexOfScalar(u8, line, '=') orelse return error.InvalidGalaxyScript;
+            const value = std.mem.trim(u8, line[equals_index + 1 ..], " \t");
+            try star_counts.append(arena_allocator, try std.fmt.parseUnsigned(usize, value, 10));
+        }
+    }
+
+    if (names.items.len != star_counts.items.len) {
+        return error.InvalidGalaxyScript;
+    }
+
+    return .{
+        .arena = arena,
+        .names = try names.toOwnedSlice(arena_allocator),
+        .star_counts = try star_counts.toOwnedSlice(arena_allocator),
+    };
+}
+
+test "parse galaxy names" {
+    const data =
+        \\/* Galaxy map script file */
+        \\
+        \\Galaxy0:"Pomacea cuprina"
+        \\StarNumber=5
+        \\
+        \\Galaxy1:"Ferrissia rivularis"
+        \\StarNumber=5
+    ;
+
+    var parsed = try parseText(std.testing.allocator, data);
+    defer parsed.deinit();
+
+    try std.testing.expectEqual(@as(usize, 2), parsed.names.len);
+    try std.testing.expectEqualStrings("Pomacea cuprina", parsed.names[0]);
+    try std.testing.expectEqualStrings("Ferrissia rivularis", parsed.nameForRouteIndex(6).?);
+    try std.testing.expectEqual(@as(usize, 5), parsed.starCountForGalaxyIndex(0).?);
+    try std.testing.expectEqual(@as(usize, 5), parsed.starCountForGalaxyIndex(1).?);
+}
