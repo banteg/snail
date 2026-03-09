@@ -41,15 +41,15 @@ Current high-signal entries:
   - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
 - front-end background loading plus Distort-driven single-texture motion: `partial`
-  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, Binary Ninja decompile of `initialize_frontend_background_distortion_grid`, `activate_frontend_background_entry`, `initialize_frontend_background_renderer`, `apply_frontend_background_change_real`, `draw_frontend_split_background`, `draw_frontend_warped_background`, and `update_frontend_background_renderer`, plus cross-port Android and iOS symbols for `cRBackdrop::{Change, ChangeReal, Init, Render, AI}`
+  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, Binary Ninja decompile of `set_backdrop_distort`, `change_backdrop`, `initialize_backdrop`, `change_backdrop_real`, `draw_split_backdrop`, `render_backdrop`, and `update_backdrop`, plus cross-port Android and iOS symbols for `cRBackdrop::{SetDistort, Change, ChangeReal, Init, Render, AI}`
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the distortion grid state and any real `Landscape` model path are ported from the original RNG-driven renderer, and the split `_A` / `_B` crop semantics are verified against the original renderer
 - intro and credits text-screen flow: `partial`
-  - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
+  - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `initialize_intro_screen`, `destroy_intro_screen`, and `update_intro_screen`, plus cross-port Android and iOS symbols for `cRIntro::{Init, AI}` and Android `cRIntro::UnInit()`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the remaining exact image-quad sizing and any non-intro users of the shared front-end transition overlay are ported
 - high-score screen table branch: `partial`
-  - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
+  - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and Android `cRHighScore::{UnInit, Exit}`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
 - mutable config and score-file root: `partial`
@@ -68,7 +68,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - level completion return overlay: `scaffold`
-  - evidence: none yet beyond the existing runner finished-state and route-map handoff plumbing
+  - evidence: Binary Ninja decompile of `initialize_completion_screen`, `destroy_completion_screen`, and `update_completion_screen`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`

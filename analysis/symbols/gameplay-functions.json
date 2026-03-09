@@ -7,6 +7,11 @@
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
+      "address": "0x404920",
+      "name": "initialize_completion_screen",
+      "description": "Builds the Delivery Complete screen, seeds its package-count and bonus summary widgets, and lays out the continue prompt. Cross-port Android and iOS symbols match this helper to `cRCompletion::Init(int, bool)`."
+    },
+    {
       "address": "0x405140",
       "name": "file_exists"
     },
@@ -21,6 +26,16 @@
     {
       "address": "0x405d60",
       "name": "load_x_animation_clip"
+    },
+    {
+      "address": "0x406060",
+      "name": "destroy_completion_screen",
+      "description": "Tears down the active completion-screen widgets and restores the owning front-end state once the current exit choice resolves. Cross-port Android and iOS symbols match this helper to `cRCompletion::UnInit()`."
+    },
+    {
+      "address": "0x4067e0",
+      "name": "update_completion_screen",
+      "description": "Runs the completion-screen state machine, including continue, replay, route-map return, and outbound-link actions. Cross-port Android and iOS symbols match this helper to `cRCompletion::AI()`."
     },
     {
       "address": "0x406c10",
@@ -102,43 +117,43 @@
     },
     {
       "address": "0x410c40",
-      "name": "initialize_frontend_background_distortion_grid",
-      "description": "Seeds the shared front-end backdrop renderer with an 8x8 distortion grid whose random phase, speed, and amplitude terms scale from the script-side Distort value."
+      "name": "set_backdrop_distort",
+      "description": "Seeds the shared backdrop distortion grid and its per-cell phase, speed, and amplitude terms from the script-side Distort scalar. Cross-port Android and iOS symbols match this helper to `cRBackdrop::SetDistort(float)`."
     },
     {
       "address": "0x410d50",
-      "name": "activate_frontend_background_entry",
-      "description": "Binds one parsed background script entry into the shared front-end backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`."
+      "name": "change_backdrop",
+      "description": "Binds one parsed background script entry into the shared backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Change(cRLandscape*, bool)`."
     },
     {
       "address": "0x410dc0",
-      "name": "apply_frontend_background_change_real",
-      "description": "Commits the pending front-end backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`."
+      "name": "change_backdrop_real",
+      "description": "Commits the pending backdrop selection, refreshes the distortion grid when the world index changes, and copies the current split-vs-single draw flags into the active renderer state. Cross-port Android and iOS symbols match this helper to `cRBackdrop::ChangeReal()`."
     },
     {
       "address": "0x410e20",
-      "name": "initialize_frontend_background_renderer",
-      "description": "Initializes the shared front-end backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android symbols match this helper to `cRBackdrop::Init(int)`."
+      "name": "initialize_backdrop",
+      "description": "Initializes the shared backdrop renderer, seeds its texture-transition state, and primes its distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Init(int)`."
     },
     {
       "address": "0x410f40",
-      "name": "set_frontend_background_texture_target",
-      "description": "Captures the current and next backdrop texture ids and resets the crossfade counters inside the shared front-end backdrop renderer."
+      "name": "set_backdrop_texture_target",
+      "description": "Captures the current and next backdrop texture ids and resets the internal crossfade counters inside the shared backdrop renderer."
     },
     {
       "address": "0x410f90",
-      "name": "draw_frontend_split_background",
-      "description": "Queues the split `_A` / `_B` front-end backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout."
+      "name": "draw_split_backdrop",
+      "description": "Queues the split `_A` / `_B` backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout."
     },
     {
       "address": "0x411040",
-      "name": "draw_frontend_warped_background",
-      "description": "Draws the single-texture 320x240 backdrop crop through the animated front-end distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Render()`."
+      "name": "render_backdrop",
+      "description": "Draws the single-texture 320x240 backdrop crop through the animated distortion grid. Cross-port Android and iOS symbols match this helper to `cRBackdrop::Render()`."
     },
     {
       "address": "0x4112f0",
-      "name": "update_frontend_background_renderer",
-      "description": "Advances the shared front-end backdrop renderer, updates its distortion grid, and dispatches the split or warped background draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
+      "name": "update_backdrop",
+      "description": "Advances the shared backdrop renderer, updates its distortion grid, and dispatches the split or warped draw path. Cross-port Android and iOS symbols match this helper to `cRBackdrop::AI()`."
     },
     {
       "address": "0x411730",
@@ -151,11 +166,18 @@
     },
     {
       "address": "0x416910",
-      "name": "initialize_high_score_screen"
+      "name": "initialize_high_score_screen",
+      "description": "Builds the postal or challenge high-score screen, optionally enables inline name entry for a pending rank, and lays out the per-row replay or submit controls. Cross-port Android and iOS symbols match this helper to `cRHighScore::Init(int, int)`."
+    },
+    {
+      "address": "0x417220",
+      "name": "destroy_high_score_screen",
+      "description": "Tears down the active high-score table widgets, preserves the selected bank index, and resets the shell-font scene before control returns to the owning front-end state. Cross-port Android symbols match this helper to `cRHighScore::UnInit()`."
     },
     {
       "address": "0x417260",
-      "name": "update_high_score_screen"
+      "name": "update_high_score_screen",
+      "description": "Runs the high-score screen state machine, including replay launch, bank toggling, inline name submission, and back or exit actions. Cross-port Android and iOS symbols match this helper to `cRHighScore::AI()`."
     },
     {
       "address": "0x417540",
@@ -182,8 +204,8 @@
     },
     {
       "address": "0x417b50",
-      "name": "return_from_high_score_screen",
-      "description": "Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table."
+      "name": "exit_high_score_screen",
+      "description": "Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table. Cross-port Android symbols match this helper to `cRHighScore::Exit()`."
     },
     {
       "address": "0x417eb0",
@@ -217,18 +239,18 @@
     },
     {
       "address": "0x4191e0",
-      "name": "initialize_intro_text_screen",
-      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into centered text and image renderables on the tilted crawl plane, and derives the shared scroll delta from Duration."
+      "name": "initialize_intro_screen",
+      "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into centered text and image renderables on the tilted crawl plane, and derives the shared scroll delta from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`."
     },
     {
       "address": "0x419920",
-      "name": "recycle_intro_text_renderables",
-      "description": "Unlinks each intro or credits crawl renderable from the active body lists and returns it to the shared free list before the text screen exits."
+      "name": "destroy_intro_screen",
+      "description": "Unlinks each intro or credits crawl renderable from the active body lists and returns it to the shared free list before the text screen exits. Cross-port Android symbols match this helper to `cRIntro::UnInit()`."
     },
     {
       "address": "0x4199e0",
-      "name": "update_intro_text_screen",
-      "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input."
+      "name": "update_intro_screen",
+      "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input. Cross-port Android and iOS symbols match this helper to `cRIntro::AI()`."
     },
     {
       "address": "0x419b50",
@@ -237,7 +259,8 @@
     },
     {
       "address": "0x419e00",
-      "name": "update_main_menu"
+      "name": "update_main_menu",
+      "description": "Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`."
     },
     {
       "address": "0x41ace0",

@@ -87,7 +87,7 @@ pub const Loaded = struct {
 
     // PORT(partial): this crawl renderer now follows the recovered intro plane (`y = -4`),
     // X-axis rotation, Font3D unit quad geometry, right-to-left centered glyph placement,
-    // image sizing, and duration-driven shared z scroll from `initialize_intro_text_screen`.
+    // image sizing, and duration-driven shared z scroll from `initialize_intro_screen`.
     // Remaining gaps are the exact object/material batching path and backdrop RNG seeding.
     pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
         const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
