@@ -39,14 +39,14 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `initialize_delivery_route_screen`, `update_delivery_route_screen`, and `load_frontend_level_by_mode_and_index`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
-- background script parsing plus split `_A` / `_B` menu or splash layouts: `partial`
-  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets
+- front-end background loading plus Distort-driven single-texture motion: `partial`
+  - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, plus Binary Ninja decompile of `initialize_frontend_background_distortion_grid`, `activate_frontend_background_entry`, `initialize_frontend_background_renderer`, `draw_frontend_split_background`, `draw_frontend_warped_background`, and `update_frontend_background_renderer`
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: `Landscape` and any remaining background motion or distortion semantics are ported
+  - replace when: the distortion grid state and any real `Landscape` model path are ported from the original RNG-driven renderer, and the split `_A` / `_B` crop semantics are verified against the original renderer
 - intro and credits text-screen flow: `partial`
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: the remaining exact glyph or image quad geometry, the original `SpaceRed` backdrop motion or distortion path, and the non-intro users of the shared front-end transition overlay are ported
+  - replace when: the remaining exact image-quad sizing and any non-intro users of the shared front-end transition overlay are ported
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)

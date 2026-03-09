@@ -140,6 +140,7 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_background: ?background.Loaded = null,
+    current_game_background_runtime: ?background.Runtime = null,
     current_loading_screen: ?loading_screen.Loaded = null,
     current_text_script: ?intro.Loaded = null,
     preloaded_intro_background: ?background.Loaded = null,
@@ -510,6 +511,9 @@ const AppState = struct {
 
     fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
         self.game_phase_ticks += 1;
+        if (self.current_game_background_runtime) |*runtime| {
+            runtime.update();
+        }
         if (self.game_status_ticks > 0) {
             self.game_status_ticks -= 1;
             if (self.game_status_ticks == 0) {
@@ -1025,10 +1029,12 @@ const AppState = struct {
 
     fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
         self.unloadGameBackground();
-        self.current_game_background = if (self.takePreloadedBackground(script_path)) |loaded|
+        var loaded = if (self.takePreloadedBackground(script_path)) |loaded|
             loaded
         else
             try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
+        self.current_game_background_runtime = background.Runtime.init(&loaded);
+        self.current_game_background = loaded;
     }
 
     fn loadLoadingScreen(self: *AppState) !void {
@@ -1218,6 +1224,7 @@ const AppState = struct {
             loaded_background.deinit();
             self.current_game_background = null;
         }
+        self.current_game_background_runtime = null;
     }
 
     fn setGameStatusMessage(self: *AppState, message: []const u8) void {
@@ -1501,12 +1508,13 @@ fn drawGameUi(state: *const AppState) !void {
     }
 
     const art_layout = if (state.current_game_background) |loaded_background| blk: {
+        const runtime = state.current_game_background_runtime orelse break :blk loaded_background.draw(full_bounds);
         switch (state.game_phase) {
             .intro, .credits => {
-                loaded_background.drawStretched(full_bounds);
+                runtime.drawStretched(&loaded_background, full_bounds);
                 break :blk null;
             },
-            else => break :blk loaded_background.draw(full_bounds),
+            else => break :blk runtime.draw(&loaded_background, full_bounds),
         }
     } else blk: {
         rl.drawRectangleRec(full_bounds, .black);

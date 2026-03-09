@@ -101,6 +101,41 @@
       "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, and gameplay handoff states."
     },
     {
+      "address": "0x410c40",
+      "name": "initialize_frontend_background_distortion_grid",
+      "description": "Seeds the shared front-end backdrop renderer with an 8x8 distortion grid whose random phase, speed, and amplitude terms scale from the script-side Distort value."
+    },
+    {
+      "address": "0x410d50",
+      "name": "activate_frontend_background_entry",
+      "description": "Binds one parsed background script entry into the shared front-end backdrop renderer, including its texture handles, Distort scalar, and split-vs-single draw mode."
+    },
+    {
+      "address": "0x410e20",
+      "name": "initialize_frontend_background_renderer",
+      "description": "Initializes the shared front-end backdrop renderer, seeds its texture-transition state, and primes its distortion grid."
+    },
+    {
+      "address": "0x410f40",
+      "name": "set_frontend_background_texture_target",
+      "description": "Captures the current and next backdrop texture ids and resets the crossfade counters inside the shared front-end backdrop renderer."
+    },
+    {
+      "address": "0x410f90",
+      "name": "draw_frontend_split_background",
+      "description": "Queues the split `_A` / `_B` front-end backdrop textures directly into the sprite renderer when a background script points at a split menu or splash layout."
+    },
+    {
+      "address": "0x411040",
+      "name": "draw_frontend_warped_background",
+      "description": "Draws the single-texture 320x240 backdrop crop through the animated front-end distortion grid."
+    },
+    {
+      "address": "0x4112f0",
+      "name": "update_frontend_background_renderer",
+      "description": "Advances the shared front-end backdrop renderer, updates its distortion grid, and dispatches the split or warped background draw path."
+    },
+    {
       "address": "0x411730",
       "name": "initialize_d3d8_device"
     },
@@ -533,6 +568,11 @@
       "address": "0x448900",
       "name": "load_level_definitions",
       "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
+    },
+    {
+      "address": "0x449460",
+      "name": "initialize_bass_audio_backend",
+      "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
     },
     {
       "address": "0x449d20",

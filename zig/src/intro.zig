@@ -5,16 +5,17 @@ const archive = @import("archive.zig");
 const game_font = @import("game_font.zig");
 
 const text_line_advance_world: f32 = 1.0;
-const text_glyph_height_world: f32 = 0.5;
+const text_glyph_height_world: f32 = 1.0;
 const text_world_width_scale: f32 = 0.8;
 const scroll_start_z: f32 = 0.2;
 const scroll_end_z: f32 = 3.0;
 const world_y: f32 = -4.0;
 const rotation_cos: f32 = @bitCast(@as(u32, 0x3f226794));
 const rotation_sin: f32 = @bitCast(@as(u32, 0x3f45e3fc));
-const projection_focal_ratio: f32 = 0.3125;
+const original_intro_viewport_height: f32 = 480.0;
+const projection_focal_original: f32 = 100.0;
 const near_clip_depth: f32 = 0.05;
-const text_color: rl.Color = .{ .r = 0xf1, .g = 0xc5, .b = 0x4a, .a = 0xff };
+const text_color: rl.Color = .white;
 
 pub const ImageEntry = struct {
     archive_path: []const u8,
@@ -86,7 +87,7 @@ pub const Loaded = struct {
     // PORT(partial): this crawl renderer now follows the recovered intro plane (`y = -4`),
     // X-axis rotation, right-to-left centered glyph placement, image sizing, and
     // duration-driven shared z scroll from `initialize_intro_text_screen`. Remaining gaps
-    // are the exact original quad geometry and the backdrop system's motion or distortion.
+    // are the exact original quad geometry.
     pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
         const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
         const scroll_offset = std.math.clamp(progress, 0.0, 1.0) * layout.scroll_distance;
@@ -317,10 +318,11 @@ const WorldQuad = struct {
 };
 
 fn projectionForViewport(viewport: rl.Rectangle) Projection {
+    const scale = viewport.height / original_intro_viewport_height;
     return .{
         .center_x = viewport.x + viewport.width * 0.5,
         .center_y = viewport.y + viewport.height * 0.5,
-        .focal = @min(viewport.width, viewport.height) * projection_focal_ratio,
+        .focal = projection_focal_original * scale,
     };
 }
 
@@ -523,8 +525,12 @@ fn drawTexturedQuad(
     const top_v = (source.y + inset_y) / texture_height;
     const bottom_v = (source.y + source.height - inset_y) / texture_height;
 
+    rl.gl.rlDrawRenderBatchActive();
     rl.gl.rlSetTexture(texture.id);
-    defer rl.gl.rlSetTexture(0);
+    defer {
+        rl.gl.rlSetTexture(0);
+        rl.gl.rlDrawRenderBatchActive();
+    }
     rl.gl.rlBegin(rl.gl.rl_quads);
     defer rl.gl.rlEnd();
 
@@ -640,6 +646,13 @@ test "projection moves crawl upward and inward as z advances" {
     const near_width = near_quad.top_right.x - near_quad.top_left.x;
     const far_width = far_quad.top_right.x - far_quad.top_left.x;
     try std.testing.expect(far_width < near_width);
+}
+
+test "projection focal uses the recovered 100-unit intro scalar" {
+    const projection = projectionForViewport(.{ .x = 0.0, .y = 0.0, .width = 1024.0, .height = 768.0 });
+    try std.testing.expectApproxEqAbs(@as(f32, 512.0), projection.center_x, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 384.0), projection.center_y, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 160.0), projection.focal, 0.001);
 }
 
 test "textured quad uv inset trims font marker columns" {

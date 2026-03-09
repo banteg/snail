@@ -1,7 +1,19 @@
 const std = @import("std");
 const rl = @import("raylib");
+const rlgl = rl.gl;
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+
+const original_screen_width: f32 = 640.0;
+const original_screen_height: f32 = 480.0;
+const warp_grid_width = 8;
+const warp_grid_height = 8;
+const warp_vertex_count = warp_grid_width * warp_grid_height;
+const warp_cell_width = original_screen_width / @as(f32, @floatFromInt(warp_grid_width - 1));
+const warp_cell_height = original_screen_height / @as(f32, @floatFromInt(warp_grid_height - 1));
+const warp_u_span: f32 = 0.625;
+const warp_v_span: f32 = 0.9375;
+const tau: f32 = std.math.pi * 2.0;
 
 pub const Rgb = struct {
     r: u8,
@@ -174,6 +186,64 @@ pub const Loaded = struct {
     }
 };
 
+pub const Runtime = struct {
+    use_split_draw: bool,
+    distort_amount: f32,
+    flipped_uvs: bool = false,
+    warp_vertices: [warp_vertex_count]WarpVertex,
+
+    pub fn init(loaded: *const Loaded) Runtime {
+        var runtime = Runtime{
+            .use_split_draw = loaded.secondary_texture != null,
+            .distort_amount = loaded.definition.distort,
+            .warp_vertices = undefined,
+        };
+        runtime.reset(loaded);
+        return runtime;
+    }
+
+    pub fn reset(self: *Runtime, loaded: *const Loaded) void {
+        self.use_split_draw = loaded.secondary_texture != null;
+        self.distort_amount = loaded.definition.distort;
+        self.flipped_uvs = false;
+        initializeWarpVertices(&self.warp_vertices, runtimeSeedForSourcePath(loaded.definition.source_path), self.distort_amount);
+    }
+
+    pub fn update(self: *Runtime) void {
+        if (self.use_split_draw) return;
+
+        for (&self.warp_vertices) |*vertex| {
+            vertex.phase += vertex.phase_step;
+            if (vertex.phase >= tau) {
+                vertex.phase -= tau;
+            }
+            vertex.offset_x = @sin(vertex.phase) * vertex.amplitude_x;
+            vertex.offset_y = @cos(vertex.phase) * vertex.amplitude_y;
+        }
+    }
+
+    pub fn draw(self: *const Runtime, loaded: *const Loaded, bounds: rl.Rectangle) Layout {
+        if (self.use_split_draw) {
+            return loaded.draw(bounds);
+        }
+
+        rl.drawRectangleRec(bounds, loaded.fogColor());
+        const layout = canonicalLayout(bounds);
+        drawWarpedTexture(loaded.primary_texture.texture, layout, &self.warp_vertices, self.flipped_uvs);
+        return layout;
+    }
+
+    pub fn drawStretched(self: *const Runtime, loaded: *const Loaded, bounds: rl.Rectangle) void {
+        if (self.use_split_draw) {
+            loaded.drawStretched(bounds);
+            return;
+        }
+
+        rl.drawRectangleRec(bounds, loaded.fogColor());
+        drawWarpedTexture(loaded.primary_texture.texture, canonicalLayout(bounds), &self.warp_vertices, self.flipped_uvs);
+    }
+};
+
 const LoadedTextures = struct {
     primary_texture: assets.LoadedTexture,
     secondary_texture: ?assets.LoadedTexture = null,
@@ -313,6 +383,155 @@ fn drawTextureScaled(texture: rl.Texture2D, x: f32, y: f32, width: f32, height: 
     );
 }
 
+const WarpVertex = struct {
+    phase: f32,
+    phase_step: f32,
+    amplitude_x: f32,
+    amplitude_y: f32,
+    offset_x: f32,
+    offset_y: f32,
+};
+
+fn canonicalLayout(bounds: rl.Rectangle) Layout {
+    const scale = @min(bounds.width / original_screen_width, bounds.height / original_screen_height);
+    const width = original_screen_width * scale;
+    const height = original_screen_height * scale;
+    return .{
+        .x = bounds.x + (bounds.width - width) * 0.5,
+        .y = bounds.y + (bounds.height - height) * 0.5,
+        .width = width,
+        .height = height,
+        .scale = scale,
+    };
+}
+
+fn runtimeSeedForSourcePath(source_path: []const u8) u64 {
+    // PORT(partial): the original backdrop grid pulls fresh random phases and amplitudes
+    // from the shared frontend RNG. The port keeps the recovered amplitude math, but seeds
+    // deterministically by source path so captures stay stable across runs.
+    var hasher = std.hash.Wyhash.init(0);
+    hasher.update(source_path);
+    return hasher.final();
+}
+
+fn initializeWarpVertices(vertices: *[warp_vertex_count]WarpVertex, seed: u64, distort_amount: f32) void {
+    var prng = std.Random.DefaultPrng.init(seed);
+    const random = prng.random();
+
+    for (0..warp_grid_height) |row| {
+        for (0..warp_grid_width) |col| {
+            const vertex = &vertices[row * warp_grid_width + col];
+            if (row == 0 or col == 0 or row == warp_grid_height - 1 or col == warp_grid_width - 1) {
+                vertex.* = .{
+                    .phase = 0.0,
+                    .phase_step = 0.0,
+                    .amplitude_x = 0.0,
+                    .amplitude_y = 0.0,
+                    .offset_x = 0.0,
+                    .offset_y = 0.0,
+                };
+                continue;
+            }
+
+            const phase = random.float(f32) * tau;
+            const cycles_per_second = 1.0 / ((3.0 + random.float(f32)) * 60.0);
+            const amplitude_x = (random.float(f32) * 2.0 - 1.0) * distort_amount;
+            const amplitude_y = (random.float(f32) * 2.0 - 1.0) * distort_amount;
+            vertex.* = .{
+                .phase = phase,
+                .phase_step = cycles_per_second * tau,
+                .amplitude_x = amplitude_x,
+                .amplitude_y = amplitude_y,
+                .offset_x = @sin(phase) * amplitude_x,
+                .offset_y = @cos(phase) * amplitude_y,
+            };
+        }
+    }
+}
+
+fn drawWarpedTexture(
+    texture: rl.Texture2D,
+    layout: Layout,
+    vertices: *const [warp_vertex_count]WarpVertex,
+    flipped_uvs: bool,
+) void {
+    if (texture.width <= 0 or texture.height <= 0) return;
+
+    rlgl.rlSetTexture(texture.id);
+    defer rlgl.rlSetTexture(0);
+
+    rlgl.rlBegin(rlgl.rl_quads);
+    defer rlgl.rlEnd();
+    rlgl.rlColor4ub(255, 255, 255, 255);
+
+    for (0..warp_grid_height - 1) |row| {
+        for (0..warp_grid_width - 1) |col| {
+            const top_left = warpVertexPoint(layout, vertices, row, col);
+            const top_right = warpVertexPoint(layout, vertices, row, col + 1);
+            const bottom_right = warpVertexPoint(layout, vertices, row + 1, col + 1);
+            const bottom_left = warpVertexPoint(layout, vertices, row + 1, col);
+
+            const uvs = warpCellUvBounds(row, col, flipped_uvs);
+
+            rlgl.rlTexCoord2f(uvs.left, uvs.top);
+            rlgl.rlVertex2f(top_left.x, top_left.y);
+
+            rlgl.rlTexCoord2f(uvs.left, uvs.bottom);
+            rlgl.rlVertex2f(bottom_left.x, bottom_left.y);
+
+            rlgl.rlTexCoord2f(uvs.right, uvs.bottom);
+            rlgl.rlVertex2f(bottom_right.x, bottom_right.y);
+
+            rlgl.rlTexCoord2f(uvs.right, uvs.top);
+            rlgl.rlVertex2f(top_right.x, top_right.y);
+        }
+    }
+}
+
+const WarpCellUvBounds = struct {
+    left: f32,
+    right: f32,
+    top: f32,
+    bottom: f32,
+};
+
+fn warpVertexPoint(
+    layout: Layout,
+    vertices: *const [warp_vertex_count]WarpVertex,
+    row: usize,
+    col: usize,
+) rl.Vector2 {
+    const vertex = vertices[row * warp_grid_width + col];
+    return .{
+        .x = layout.x + (@as(f32, @floatFromInt(col)) * warp_cell_width + vertex.offset_x) * layout.scale,
+        .y = layout.y + (@as(f32, @floatFromInt(row)) * warp_cell_height + vertex.offset_y) * layout.scale,
+    };
+}
+
+fn warpCellUvBounds(row: usize, col: usize, flipped_uvs: bool) WarpCellUvBounds {
+    const u_step = warp_u_span / @as(f32, @floatFromInt(warp_grid_width - 1));
+    const v_step = warp_v_span / @as(f32, @floatFromInt(warp_grid_height - 1));
+    const left_u = @as(f32, @floatFromInt(col)) * u_step;
+    const right_u = @as(f32, @floatFromInt(col + 1)) * u_step;
+    const top_v = @as(f32, @floatFromInt(row)) * v_step;
+    const bottom_v = @as(f32, @floatFromInt(row + 1)) * v_step;
+    if (!flipped_uvs) {
+        return .{
+            .left = left_u,
+            .right = right_u,
+            .top = top_v,
+            .bottom = bottom_v,
+        };
+    }
+
+    return .{
+        .left = 0.8 - right_u,
+        .right = 0.8 - left_u,
+        .top = top_v,
+        .bottom = bottom_v,
+    };
+}
+
 fn directoryPrefix(path: []const u8) []const u8 {
     const slash_index = std.mem.lastIndexOfScalar(u8, path, '/') orelse return "";
     return path[0 .. slash_index + 1];
@@ -402,4 +621,50 @@ test "picture helpers preserve directory and extensionless stem" {
     try std.testing.expectEqualStrings("BACKGROUNDS/", directoryPrefix("BACKGROUNDS/MENUBG.TXT"));
     try std.testing.expectEqualStrings("Menubg", pictureStem("Menubg.tga"));
     try std.testing.expectEqualStrings("SpaceRed", pictureStem("SpaceRed"));
+}
+
+test "runtime picks warp path for single picture backgrounds" {
+    var definition = Definition{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "BACKGROUNDS/SPACERED.TXT",
+        .id = 0,
+        .fog = .{ .r = 0, .g = 0, .b = 0 },
+        .picture = "SpaceRed.tga",
+        .landscape = null,
+        .distort = 10.0,
+    };
+    defer definition.deinit();
+
+    const loaded = Loaded{
+        .definition = definition,
+        .primary_texture = undefined,
+        .secondary_texture = null,
+    };
+    var runtime = Runtime.init(&loaded);
+    try std.testing.expect(!runtime.use_split_draw);
+    runtime.update();
+}
+
+test "runtime keeps split textures on the static draw path" {
+    var definition = Definition{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "BACKGROUNDS/MENUBG.TXT",
+        .id = 0,
+        .fog = .{ .r = 0, .g = 0, .b = 0 },
+        .picture = "Menubg.tga",
+        .landscape = null,
+        .distort = 0.0,
+    };
+    defer definition.deinit();
+
+    const loaded = Loaded{
+        .definition = definition,
+        .primary_texture = undefined,
+        .secondary_texture = .{
+            .path = "",
+            .texture = undefined,
+        },
+    };
+    const runtime = Runtime.init(&loaded);
+    try std.testing.expect(runtime.use_split_draw);
 }
