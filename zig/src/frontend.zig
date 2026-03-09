@@ -38,6 +38,7 @@ pub const GamePhase = enum {
     options_menu,
     route_map_menu,
     high_scores_menu,
+    exit_prompt,
     cutscene,
     completion_screen,
     post_level_high_score,

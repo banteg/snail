@@ -31,6 +31,11 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `initialize_main_menu`, `destroy_main_menu`, and `initialize_new_game_menu`, plus cross-port Android and iOS symbols for `cRMainMenu::{Init, UnInit}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
+- shared exit prompt: `partial`
+  - evidence: Binary Ninja decompile of `initialize_exit_prompt`, plus cross-port Android and iOS symbols for `cRExit::{Init, AI}`
+  - implementation: [`main.zig`](../../zig/src/main.zig)
+  - note: the main-menu exit path now uses a shared `Do you really want to quit?` prompt instead of terminating immediately
+  - replace when: the remaining owner-specific layouts and any post-completion uses of the shared exit prompt are ported
 - front-end options menu fields: `partial`
   - evidence: Binary Ninja decompile of `initialize_options`, `update_options`, `destroy_options`, and `apply_audio_config_volumes`, plus cross-port Android and iOS symbols for `cROptions::{Init, AI, UnInit}`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)

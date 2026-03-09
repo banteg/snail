@@ -125,6 +125,23 @@ const high_score_screen_modes = [_]high_score.Mode{
     .challenge,
 };
 
+const ExitPromptChoice = enum {
+    no,
+    yes,
+
+    fn label(self: ExitPromptChoice) []const u8 {
+        return switch (self) {
+            .no => "No",
+            .yes => "Yes",
+        };
+    }
+};
+
+const exit_prompt_choices = [_]ExitPromptChoice{
+    .no,
+    .yes,
+};
+
 const PostLevelHighScoreAction = enum {
     cancel,
     submit,
@@ -177,6 +194,8 @@ const AppState = struct {
     new_game_menu_index: usize = 0,
     options_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
+    exit_prompt_choice_index: usize = 0,
+    exit_prompt_return_phase: GamePhase = .main_menu,
     completion_action_index: usize = 0,
     post_level_high_score_action_index: usize = 1,
     post_level_high_score_name_len: usize = 0,
@@ -642,11 +661,13 @@ const AppState = struct {
         if (rl.isKeyPressed(.escape)) {
             switch (self.game_phase) {
                 .level => try self.enterGamePhase(.main_menu),
-                .boot, .main_menu => self.should_exit = true,
+                .boot => self.should_exit = true,
+                .main_menu => try self.beginExitPrompt(.main_menu),
                 .intro, .credits => self.frontend_transition.beginFadeOut(.main_menu),
                 .new_game_menu, .high_scores_menu, .help => try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
+                .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
                 .cutscene => try self.enterGamePhase(.completion_screen),
                 .completion_screen => try self.continueCompletionScreen(),
                 .post_level_high_score => try self.continuePostLevelHighScore(),
@@ -727,6 +748,17 @@ const AppState = struct {
                 }
                 if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
                     self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
+                }
+            },
+            .exit_prompt => {
+                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                    self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, -1);
+                }
+                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                    self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, 1);
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.activateExitPromptChoice(exit_prompt_choices[self.exit_prompt_choice_index]);
                 }
             },
             .cutscene => {
@@ -827,7 +859,7 @@ const AppState = struct {
             },
             .options => try self.enterGamePhase(.options_menu),
             .credits => try self.enterGamePhase(.credits),
-            .exit => self.should_exit = true,
+            .exit => try self.beginExitPrompt(.main_menu),
         }
     }
 
@@ -847,6 +879,19 @@ const AppState = struct {
             .fullscreen => self.toggleFullscreenPreference(),
             .sound_volume, .music_volume => {},
             .back => try self.leaveOptionsMenu(),
+        }
+    }
+
+    fn beginExitPrompt(self: *AppState, return_phase: GamePhase) !void {
+        self.exit_prompt_choice_index = 0;
+        self.exit_prompt_return_phase = return_phase;
+        try self.enterGamePhase(.exit_prompt);
+    }
+
+    fn activateExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
+        switch (choice) {
+            .no => try self.enterGamePhase(self.exit_prompt_return_phase),
+            .yes => self.should_exit = true,
         }
     }
 
@@ -1198,7 +1243,7 @@ const AppState = struct {
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
-            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .post_level_high_score => {
+            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .post_level_high_score, .exit_prompt => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
@@ -1851,6 +1896,7 @@ fn drawGameUi(state: *const AppState) !void {
         .options_menu => try drawOptionsMenuUi(state, ui_layout),
         .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
+        .exit_prompt => try drawExitPromptUi(state, ui_layout),
         .cutscene => drawCutsceneUi(state, ui_layout),
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
         .post_level_high_score => try drawPostLevelHighScoreUi(state, ui_layout),
@@ -2060,6 +2106,42 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     if (state.game_status_message) |message| {
         try drawFooterMessage(state, layout, panels.footer_panel, message);
     }
+}
+
+fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
+    const overlay_panel = layout.mapRect(146.0, 154.0, 348.0, 132.0);
+    const title_point = layout.mapPoint(320.0, 182.0);
+    const body_point = layout.mapPoint(320.0, 214.0);
+    const footer_y: i32 = @intFromFloat(layout.mapPoint(320.0, 258.0).y);
+    const title = "Do you really want to quit?";
+    const title_font_size = layout.fontSize(26);
+    const title_width = measureAppText(state, title, title_font_size);
+
+    rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
+    drawAppText(
+        state,
+        title,
+        @as(i32, @intFromFloat(title_point.x)) - @divTrunc(title_width, 2),
+        @as(i32, @intFromFloat(title_point.y)),
+        title_font_size,
+        .gold,
+    );
+    drawAppText(
+        state,
+        "Esc cancels",
+        @as(i32, @intFromFloat(body_point.x)) - @divTrunc(measureAppText(state, "Esc cancels", layout.fontSize(18)), 2),
+        @as(i32, @intFromFloat(body_point.y)),
+        layout.fontSize(18),
+        .light_gray,
+    );
+    drawActionButtons(
+        state,
+        layout,
+        @intFromFloat(overlay_panel.x + overlay_panel.width * 0.5),
+        footer_y,
+        &[_][]const u8{ exit_prompt_choices[0].label(), exit_prompt_choices[1].label() },
+        state.exit_prompt_choice_index,
+    );
 }
 
 fn drawHighScoreTable(
