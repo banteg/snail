@@ -55,7 +55,7 @@ Current high-signal entries:
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and Android `cRHighScore::{UnInit, Exit}`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: original name-entry editing, replay launch, and the remaining cRHighScore widget behavior are ported
+  - replace when: the original replay row controls, bank-toggle widgets, and remaining cRHighScore behavior are ported
 - mutable config and score-file root: `partial`
   - evidence: Binary Ninja decompile of `initialize_default_runtime_config`, `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
   - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
@@ -74,7 +74,7 @@ Current high-signal entries:
 - level completion and post-level score flow: `partial`
   - evidence: Binary Ninja decompile of `update_subgoldy_completion_handoff`, `complete_subgame`, `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, `initialize_cutscene`, `update_cutscene`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, `cRCutScene::{Init, AI}`, `cRHighScore::{Init, AI, Exit}`, `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and `cRSubGoldy::AI()`
   - implementation: [`main.zig`](../../zig/src/main.zig), [`high_score.zig`](../../zig/src/high_score.zig)
-  - replace when: the original cutscene camera handoff, name-entry submit path, replay launch, and non-fallback gameplay score accounting are ported
+  - replace when: the original cutscene camera handoff, saved-replay launch path, and non-fallback gameplay score accounting are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`
   - evidence: [`docs/re/track-runtime.md`](../re/track-runtime.md)
   - implementation: [`track.zig`](../../zig/src/track.zig)

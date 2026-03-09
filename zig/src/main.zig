@@ -101,6 +101,40 @@ const PendingRunResult = struct {
     return_target: ResultReturnTarget,
 };
 
+const CompletionAction = enum {
+    continue_flow,
+    replay_level,
+
+    fn label(self: CompletionAction) []const u8 {
+        return switch (self) {
+            .continue_flow => "Continue",
+            .replay_level => "Replay",
+        };
+    }
+};
+
+const completion_actions = [_]CompletionAction{
+    .continue_flow,
+    .replay_level,
+};
+
+const PostLevelHighScoreAction = enum {
+    cancel,
+    submit,
+
+    fn label(self: PostLevelHighScoreAction) []const u8 {
+        return switch (self) {
+            .cancel => "Cancel",
+            .submit => "Submit",
+        };
+    }
+};
+
+const post_level_high_score_actions = [_]PostLevelHighScoreAction{
+    .cancel,
+    .submit,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -136,6 +170,10 @@ const AppState = struct {
     new_game_menu_index: usize = 0,
     options_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
+    completion_action_index: usize = 0,
+    post_level_high_score_action_index: usize = 1,
+    post_level_high_score_name_len: usize = 0,
+    post_level_high_score_name_buf: [high_score.name_capacity]u8 = [_]u8{0} ** high_score.name_capacity,
     high_score_tables: high_score.Tables,
     pending_run_result: ?PendingRunResult = null,
     game_status_message: ?[]const u8 = null,
@@ -681,13 +719,26 @@ const AppState = struct {
                 }
             },
             .completion_screen => {
+                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                    self.completion_action_index = wrappedIndex(completion_actions.len, self.completion_action_index, -1);
+                }
+                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                    self.completion_action_index = wrappedIndex(completion_actions.len, self.completion_action_index, 1);
+                }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.continueCompletionScreen();
+                    try self.activateCompletionAction(completion_actions[self.completion_action_index]);
                 }
             },
             .post_level_high_score => {
+                self.collectPostLevelHighScoreTextInput();
+                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                    self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, -1);
+                }
+                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                    self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
+                }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.continuePostLevelHighScore();
+                    try self.activatePostLevelHighScoreAction(post_level_high_score_actions[self.post_level_high_score_action_index]);
                 }
             },
             .credits => {
@@ -796,6 +847,20 @@ const AppState = struct {
         }
     }
 
+    fn activateCompletionAction(self: *AppState, action: CompletionAction) !void {
+        switch (action) {
+            .continue_flow => try self.continueCompletionScreen(),
+            .replay_level => try self.replayCompletedRun(),
+        }
+    }
+
+    fn activatePostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
+        switch (action) {
+            .cancel => try self.continuePostLevelHighScore(),
+            .submit => try self.submitPostLevelHighScore(),
+        }
+    }
+
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
@@ -901,6 +966,7 @@ const AppState = struct {
             .tutorial => {},
         }
 
+        self.completion_action_index = 0;
         self.pending_run_result = result;
         try self.enterGamePhase(.completion_screen);
     }
@@ -908,6 +974,7 @@ const AppState = struct {
     fn continueCompletionScreen(self: *AppState) !void {
         const result = self.pending_run_result orelse return;
         if (result.high_score_mode != null and result.high_score_rank != null) {
+            self.preparePostLevelHighScoreEntry();
             try self.enterGamePhase(.post_level_high_score);
             return;
         }
@@ -915,6 +982,7 @@ const AppState = struct {
     }
 
     fn continuePostLevelHighScore(self: *AppState) !void {
+        self.clearPostLevelHighScoreEntry();
         try self.finishPendingRunReturn();
     }
 
@@ -923,7 +991,9 @@ const AppState = struct {
             try self.enterGamePhase(.main_menu);
             return;
         };
+        self.clearPostLevelHighScoreEntry();
         self.pending_run_result = null;
+        self.completion_action_index = 0;
 
         switch (result.return_target) {
             .main_menu => try self.enterGamePhase(.main_menu),
@@ -934,6 +1004,103 @@ const AppState = struct {
             else
                 try self.enterGamePhase(.main_menu),
         }
+    }
+
+    fn replayCompletedRun(self: *AppState) !void {
+        const loaded_level = self.current_level orelse {
+            try self.finishPendingRunReturn();
+            return;
+        };
+        const level_path = loaded_level.source_path;
+        const mode = self.pending_run_result.?.mode;
+
+        self.clearPostLevelHighScoreEntry();
+        self.pending_run_result = null;
+        self.completion_action_index = 0;
+        if (mode) |frontend_mode| {
+            try self.enterFrontendLevelPath(frontend_mode, self.active_frontend_level_index);
+            return;
+        }
+        try self.enterGameplayShell(level_path);
+    }
+
+    fn preparePostLevelHighScoreEntry(self: *AppState) void {
+        self.clearPostLevelHighScoreEntry();
+        self.post_level_high_score_action_index = 1;
+
+        const result = self.pending_run_result orelse return;
+        const mode = result.high_score_mode orelse return;
+        const rank = result.high_score_rank orelse return;
+        const entry = self.highScoreEntry(mode, rank) orelse return;
+        const existing_name = entry.name();
+        const clipped = existing_name[0..@min(existing_name.len, self.post_level_high_score_name_buf.len)];
+        @memcpy(self.post_level_high_score_name_buf[0..clipped.len], clipped);
+        self.post_level_high_score_name_len = clipped.len;
+    }
+
+    fn clearPostLevelHighScoreEntry(self: *AppState) void {
+        @memset(&self.post_level_high_score_name_buf, 0);
+        self.post_level_high_score_name_len = 0;
+        self.post_level_high_score_action_index = 1;
+    }
+
+    fn postLevelHighScoreDraft(self: *const AppState) []const u8 {
+        return self.post_level_high_score_name_buf[0..self.post_level_high_score_name_len];
+    }
+
+    fn collectPostLevelHighScoreTextInput(self: *AppState) void {
+        var codepoint = rl.getCharPressed();
+        while (codepoint > 0) : (codepoint = rl.getCharPressed()) {
+            if (codepoint < 0x20 or codepoint > 0x7e) continue;
+            if (self.post_level_high_score_name_len >= high_score.compact_name_capacity) continue;
+
+            const byte: u8 = @intCast(codepoint);
+            const normalized = if (byte >= 'a' and byte <= 'z') std.ascii.toUpper(byte) else byte;
+            self.post_level_high_score_name_buf[self.post_level_high_score_name_len] = normalized;
+            self.post_level_high_score_name_len += 1;
+        }
+
+        if (rl.isKeyPressed(.backspace) and self.post_level_high_score_name_len > 0) {
+            self.post_level_high_score_name_len -= 1;
+            self.post_level_high_score_name_buf[self.post_level_high_score_name_len] = 0;
+        }
+    }
+
+    fn submitPostLevelHighScore(self: *AppState) !void {
+        const result = self.pending_run_result orelse {
+            try self.enterGamePhase(.main_menu);
+            return;
+        };
+        const mode = result.high_score_mode orelse {
+            try self.finishPendingRunReturn();
+            return;
+        };
+        const rank = result.high_score_rank orelse {
+            try self.finishPendingRunReturn();
+            return;
+        };
+        const entry = self.highScoreEntryMut(mode, rank) orelse {
+            try self.finishPendingRunReturn();
+            return;
+        };
+
+        entry.setName(std.mem.trimRight(u8, self.postLevelHighScoreDraft(), " "));
+        try self.saveHighScoreTables();
+        try self.finishPendingRunReturn();
+    }
+
+    fn highScoreEntry(self: *const AppState, mode: high_score.Mode, index: usize) ?*const high_score.Entry {
+        return switch (mode) {
+            .postal => if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
+            .challenge => if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
+        };
+    }
+
+    fn highScoreEntryMut(self: *AppState, mode: high_score.Mode, index: usize) ?*high_score.Entry {
+        return switch (mode) {
+            .postal => if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
+            .challenge => if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
+        };
     }
 
     fn commitPostalRouteProgress(self: *AppState) !bool {
@@ -1861,8 +2028,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
 
     switch (selected) {
-        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels, null),
-        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels, null),
+        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels, null, null, false),
+        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels, null, null, false),
         .back => {
             try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
         },
@@ -1877,7 +2044,15 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
-fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: VirtualLayout, panels: MenuPanels, highlight_index: ?usize) void {
+fn drawHighScoreTable(
+    state: *const AppState,
+    mode: high_score.Mode,
+    layout: VirtualLayout,
+    panels: MenuPanels,
+    highlight_index: ?usize,
+    editing_name: ?[]const u8,
+    hide_replay: bool,
+) void {
     const entries = state.high_score_tables.visibleEntries(mode);
     const row_start_y = panels.detail_body_y + layout.scaleInt(28);
     const row_height = layout.scaleInt(18);
@@ -1917,12 +2092,16 @@ fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: Vir
         var rank_buffer: [8]u8 = undefined;
         const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}.", .{index + 1}) catch "";
         drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(16), .ray_white);
-        drawAppText(state, highScoreDisplayName(&entry), name_x, row_y, layout.fontSize(16), .ray_white);
+        const display_name = if (highlight_index != null and highlight_index.? == index and editing_name != null)
+            editing_name.?
+        else
+            highScoreDisplayName(&entry);
+        drawAppText(state, display_name, name_x, row_y, layout.fontSize(16), .ray_white);
 
         var score_buffer: [32]u8 = undefined;
         const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
         drawAppText(state, score_text, score_x, row_y, layout.fontSize(16), .gold);
-        drawAppText(state, if (entry.has_replay) "Replay" else "-", replay_x, row_y, layout.fontSize(16), .light_gray);
+        drawAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", replay_x, row_y, layout.fontSize(16), .light_gray);
     }
 }
 
@@ -2166,19 +2345,20 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     }
 
     const continue_text = if (result.high_score_mode != null and result.high_score_rank != null)
-        "Enter continue to high scores"
+        "Continue opens name entry"
     else switch (result.return_target) {
-        .postal_route_map, .time_trial_route_map => "Enter continue to route map",
-        .replay_current_level => "Enter replay challenge",
-        .main_menu => "Enter continue to main menu",
+        .postal_route_map, .time_trial_route_map => "Continue returns to the route map",
+        .replay_current_level => "Continue follows the current challenge return path",
+        .main_menu => "Continue returns to the main menu",
     };
-    drawAppText(
+    drawAppText(state, continue_text, footer_x, footer_y - layout.scaleInt(18), layout.fontSize(16), .light_gray);
+    drawActionButtons(
         state,
-        continue_text,
-        footer_x,
+        layout,
+        @intFromFloat(overlay_panel.x + overlay_panel.width * 0.5),
         footer_y,
-        layout.fontSize(18),
-        .light_gray,
+        &[_][]const u8{ completion_actions[0].label(), completion_actions[1].label() },
+        state.completion_action_index,
     );
 }
 
@@ -2194,8 +2374,8 @@ fn drawPostLevelHighScoreUi(state: *const AppState, layout: VirtualLayout) !void
     drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
     drawAppText(state, mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
 
-    var message_buffer: [128]u8 = undefined;
-    const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}.", .{ rank + 1, result.level_name });
+    var message_buffer: [160]u8 = undefined;
+    const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}>Enter your name here!", .{ rank + 1, result.level_name });
     try drawWrappedText(
         state,
         message,
@@ -2206,9 +2386,69 @@ fn drawPostLevelHighScoreUi(state: *const AppState, layout: VirtualLayout) !void
         .sky_blue,
     );
 
-    drawHighScoreTable(state, mode, layout, panels, rank);
-    drawAppText(state, "Enter continue", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc continue", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .light_gray);
+    var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
+    const draft_name = if (state.postLevelHighScoreDraft().len == 0)
+        "_"
+    else
+        try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
+    drawHighScoreTable(state, mode, layout, panels, rank, draft_name, true);
+    drawActionButtons(
+        state,
+        layout,
+        panels.control_x + @divTrunc(layout.scaleInt(132), 2),
+        panels.control_y + layout.scaleInt(10),
+        &[_][]const u8{ post_level_high_score_actions[0].label(), post_level_high_score_actions[1].label() },
+        state.post_level_high_score_action_index,
+    );
+    drawAppText(state, "Type name  Left/Right choose", panels.control_x, panels.control_y + layout.scaleInt(42), layout.fontSize(18), .ray_white);
+    drawAppText(state, "Enter confirm  Esc cancel", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(18), .light_gray);
+}
+
+fn drawActionButtons(
+    state: *const AppState,
+    layout: VirtualLayout,
+    center_x: i32,
+    top_y: i32,
+    labels: []const []const u8,
+    selected_index: usize,
+) void {
+    if (labels.len == 0) return;
+
+    const button_width = layout.scaleInt(112);
+    const button_height = layout.scaleInt(28);
+    const gap = layout.scaleInt(12);
+    const total_width = @as(i32, @intCast(labels.len)) * button_width + @as(i32, @intCast(labels.len - 1)) * gap;
+    var button_x = center_x - @divTrunc(total_width, 2);
+
+    for (labels, 0..) |label, index| {
+        const active = index == selected_index;
+        const rect = rl.Rectangle{
+            .x = @floatFromInt(button_x),
+            .y = @floatFromInt(top_y),
+            .width = @floatFromInt(button_width),
+            .height = @floatFromInt(button_height),
+        };
+        rl.drawRectangleRounded(
+            rect,
+            0.25,
+            8,
+            if (active)
+                .orange
+            else
+                .{ .r = 255, .g = 255, .b = 255, .a = 24 },
+        );
+        const font_size = layout.fontSize(18);
+        const label_width = measureAppText(state, label, font_size);
+        drawAppText(
+            state,
+            label,
+            button_x + @divTrunc(button_width - label_width, 2),
+            top_y + @divTrunc(button_height - font_size, 2) - 1,
+            font_size,
+            if (active) .black else .ray_white,
+        );
+        button_x += button_width + gap;
+    }
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
