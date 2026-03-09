@@ -99,7 +99,7 @@ The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) d
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the default front-end now uses decompile-backed menu labels and hierarchy: `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, with a recovered `New Game` submenu of `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, and `Back`
 - `Help` now uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
-- the intro and credits crawl now also uses the recovered tilted text-plane layout, duration-driven shared scroll distance, world-unit image sizing, and projected textured quads from `initialize_intro_text_screen`, though exact skip and transition semantics are still not fully ported
+- the intro and credits crawl now also uses the recovered tilted text-plane layout, duration-driven shared scroll distance, world-unit image sizing, projected textured quads, and `Esc` or click skip behavior from `initialize_intro_text_screen`, though exact screen-transition semantics are still not fully ported
 
 Current static RE on the path system now also shows that the hardcoded `Path=` templates are not only visual: `P/p` cells install sampled attachment pointers onto runtime track cells, and the main player movement update can transition into a dedicated attachment-follow state backed by those path objects.
 
