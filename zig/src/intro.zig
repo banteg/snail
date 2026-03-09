@@ -12,6 +12,7 @@ const scroll_end_z: f32 = 3.0;
 const world_y: f32 = -4.0;
 const rotation_cos: f32 = @bitCast(@as(u32, 0x3f226794));
 const rotation_sin: f32 = @bitCast(@as(u32, 0x3f45e3fc));
+const original_intro_viewport_width: f32 = 640.0;
 const original_intro_viewport_height: f32 = 480.0;
 const projection_focal_original: f32 = 100.0;
 const near_clip_depth: f32 = 0.05;
@@ -91,6 +92,7 @@ pub const Loaded = struct {
     pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
         const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
         const scroll_offset = std.math.clamp(progress, 0.0, 1.0) * layout.scroll_distance;
+        const viewport_scale = introViewportScale(viewport);
         const camera = introCameraForViewport(viewport);
         camera.begin();
         defer rl.endMode3D();
@@ -98,8 +100,8 @@ pub const Loaded = struct {
 
         for (self.entries) |entry| {
             switch (entry) {
-                .text => |line| drawWorldTextLine(ui_font, line, cursor_z + scroll_offset),
-                .image => |image| drawWorldImage(image, cursor_z + scroll_offset),
+                .text => |line| drawWorldTextLine(ui_font, line, cursor_z + scroll_offset, viewport_scale),
+                .image => |image| drawWorldImage(image, cursor_z + scroll_offset, viewport_scale),
             }
             cursor_z -= loadedEntryWorldHeight(entry);
         }
@@ -298,18 +300,6 @@ const CrawlLayout = struct {
     scroll_distance: f32,
 };
 
-const ProjectedPoint = struct {
-    x: f32,
-    y: f32,
-};
-
-const ProjectedQuad = struct {
-    top_left: ProjectedPoint,
-    top_right: ProjectedPoint,
-    bottom_right: ProjectedPoint,
-    bottom_left: ProjectedPoint,
-};
-
 const WorldQuad = struct {
     top_left: rl.Vector3,
     top_right: rl.Vector3,
@@ -326,16 +316,11 @@ fn projectionForViewport(viewport: rl.Rectangle) Projection {
     };
 }
 
-fn projectPoint(projection: Projection, world_x: f32, world_z: f32) ?ProjectedPoint {
-    const rotated_y = world_y * rotation_cos + world_z * rotation_sin;
-    const depth = -world_y * rotation_sin + world_z * rotation_cos;
-    if (depth <= near_clip_depth) return null;
-
-    const perspective = projection.focal / depth;
-    return .{
-        .x = projection.center_x + world_x * perspective,
-        .y = projection.center_y - rotated_y * perspective,
-    };
+fn introViewportScale(viewport: rl.Rectangle) f32 {
+    return @min(
+        viewport.width / original_intro_viewport_width,
+        viewport.height / original_intro_viewport_height,
+    );
 }
 
 fn introCameraForViewport(viewport: rl.Rectangle) rl.Camera3D {
@@ -351,19 +336,19 @@ fn introCameraForViewport(viewport: rl.Rectangle) rl.Camera3D {
     };
 }
 
-fn worldPoint(world_x: f32, world_z: f32) rl.Vector3 {
+fn worldPoint(world_x: f32, world_z: f32, viewport_scale: f32) rl.Vector3 {
     return .{
-        .x = world_x,
-        .y = world_y * rotation_cos + world_z * rotation_sin,
+        .x = world_x * viewport_scale,
+        .y = (world_y * rotation_cos + world_z * rotation_sin) * viewport_scale,
         .z = -world_y * rotation_sin + world_z * rotation_cos,
     };
 }
 
-fn worldQuad(left_x: f32, right_x: f32, top_z: f32, bottom_z: f32) ?WorldQuad {
-    const top_left = worldPoint(left_x, top_z);
-    const top_right = worldPoint(right_x, top_z);
-    const bottom_right = worldPoint(right_x, bottom_z);
-    const bottom_left = worldPoint(left_x, bottom_z);
+fn worldQuad(left_x: f32, right_x: f32, top_z: f32, bottom_z: f32, viewport_scale: f32) ?WorldQuad {
+    const top_left = worldPoint(left_x, top_z, viewport_scale);
+    const top_right = worldPoint(right_x, top_z, viewport_scale);
+    const bottom_right = worldPoint(right_x, bottom_z, viewport_scale);
+    const bottom_left = worldPoint(left_x, bottom_z, viewport_scale);
     if (top_left.z <= near_clip_depth or top_right.z <= near_clip_depth or bottom_right.z <= near_clip_depth or bottom_left.z <= near_clip_depth) {
         return null;
     }
@@ -375,7 +360,7 @@ fn worldQuad(left_x: f32, right_x: f32, top_z: f32, bottom_z: f32) ?WorldQuad {
     };
 }
 
-fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32) void {
+fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32, viewport_scale: f32) void {
     if (line.len == 0 or ui_font.nominal_height <= 0.0) return;
 
     const line_width_world = measureLineWorldWidth(ui_font, line);
@@ -395,6 +380,7 @@ fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: 
             pen_right_x,
             top_z,
             top_z - text_glyph_height_world,
+            viewport_scale,
         ) orelse continue;
         drawTexturedQuad(
             ui_font.texture,
@@ -407,7 +393,7 @@ fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: 
     }
 }
 
-fn drawWorldImage(image: LoadedImage, top_z: f32) void {
+fn drawWorldImage(image: LoadedImage, top_z: f32, viewport_scale: f32) void {
     const world_width = clampedImageWorldWidth(image);
     const world_height = clampedImageWorldHeight(image);
     if (worldQuad(
@@ -415,6 +401,7 @@ fn drawWorldImage(image: LoadedImage, top_z: f32) void {
         world_width * 0.5,
         top_z,
         top_z - world_height,
+        viewport_scale,
     )) |quad| {
         drawTexturedQuad(
             image.texture.texture,
@@ -453,21 +440,6 @@ fn measureLineWorldWidth(ui_font: *const game_font.Loaded, line: []const u8) f32
 fn measureSlotWorldWidth(ui_font: *const game_font.Loaded, slot_index: usize) f32 {
     if (slot_index >= ui_font.slots.len or ui_font.nominal_height <= 0.0) return 0.0;
     return ui_font.slots[slot_index].advance_width * text_world_width_scale / ui_font.nominal_height;
-}
-
-fn projectQuad(
-    projection: Projection,
-    left_x: f32,
-    right_x: f32,
-    top_z: f32,
-    bottom_z: f32,
-) ?ProjectedQuad {
-    return .{
-        .top_left = projectPoint(projection, left_x, top_z) orelse return null,
-        .top_right = projectPoint(projection, right_x, top_z) orelse return null,
-        .bottom_right = projectPoint(projection, right_x, bottom_z) orelse return null,
-        .bottom_left = projectPoint(projection, left_x, bottom_z) orelse return null,
-    };
 }
 
 fn totalLoadedWorldHeight(entries: []const LoadedEntry) f32 {
@@ -635,24 +607,29 @@ test "crawl layout follows recovered cursor math" {
     try std.testing.expectApproxEqAbs(@as(f32, 7.05), layout.scroll_distance, 0.001);
 }
 
-test "projection moves crawl upward and inward as z advances" {
-    const projection = projectionForViewport(.{ .x = 0.0, .y = 0.0, .width = 640.0, .height = 480.0 });
-    const near_center = projectPoint(projection, 0.0, 0.2).?;
-    const far_center = projectPoint(projection, 0.0, 3.0).?;
-    try std.testing.expect(far_center.y < near_center.y);
-
-    const near_quad = projectQuad(projection, -1.0, 1.0, 0.2, -0.8).?;
-    const far_quad = projectQuad(projection, -1.0, 1.0, 3.0, 2.0).?;
-    const near_width = near_quad.top_right.x - near_quad.top_left.x;
-    const far_width = far_quad.top_right.x - far_quad.top_left.x;
-    try std.testing.expect(far_width < near_width);
-}
-
 test "projection focal uses the recovered 100-unit intro scalar" {
     const projection = projectionForViewport(.{ .x = 0.0, .y = 0.0, .width = 1024.0, .height = 768.0 });
     try std.testing.expectApproxEqAbs(@as(f32, 512.0), projection.center_x, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 384.0), projection.center_y, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 160.0), projection.focal, 0.001);
+}
+
+test "intro viewport scale tracks 640x480 upscaling" {
+    const scale = introViewportScale(.{
+        .x = 0.0,
+        .y = 0.0,
+        .width = 1024.0,
+        .height = 768.0,
+    });
+    try std.testing.expectApproxEqAbs(@as(f32, 1.6), scale, 0.001);
+}
+
+test "viewport scale expands intro plane coordinates without changing depth" {
+    const scaled = worldPoint(1.0, 0.2, 1.6);
+    const unscaled = worldPoint(1.0, 0.2, 1.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.6), scaled.x, 0.001);
+    try std.testing.expectApproxEqAbs(unscaled.z, scaled.z, 0.001);
+    try std.testing.expect(@abs(scaled.y) > @abs(unscaled.y));
 }
 
 test "textured quad uv inset trims font marker columns" {
