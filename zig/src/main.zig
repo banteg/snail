@@ -39,6 +39,7 @@ const status_message_duration_ticks: u32 = 180;
 const Options = app.Options;
 const AppCommand = app.AppCommand;
 const AutoScreenshot = app.AutoScreenshot;
+const WindowSize = app.WindowSize;
 const parseArgs = app.parseArgs;
 const defaultWindowSizeForCommand = app.defaultWindowSizeForCommand;
 
@@ -95,6 +96,7 @@ const AppState = struct {
     runtime_config: config.Blob,
     runtime_config_loaded_from_file: bool,
     command: AppCommand,
+    window_size: WindowSize,
     audio_ready: bool,
     should_exit: bool = false,
     auto_screenshot: ?AutoScreenshot = null,
@@ -179,6 +181,7 @@ const AppState = struct {
             .runtime_config = runtime_config_result.blob,
             .runtime_config_loaded_from_file = runtime_config_result.loaded_from_file,
             .command = options.command,
+            .window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command),
             .audio_ready = audio_ready,
             .auto_screenshot = options.auto_screenshot,
             .high_score_tables = high_score.Tables.initDefault(),
@@ -1135,8 +1138,7 @@ const AppState = struct {
 
         rl.toggleFullscreen();
         if (!want_fullscreen) {
-            const size = defaultWindowSizeForCommand(self.command);
-            rl.setWindowSize(size.width, size.height);
+            rl.setWindowSize(self.window_size.width, self.window_size.height);
         }
     }
 
@@ -1447,7 +1449,7 @@ pub fn main() !void {
     runtime_config_result.blob.setFullscreenEnabled(startup_fullscreen);
     // Development default: stay windowed until fullscreen is requested explicitly or a saved runtime config says otherwise.
     rl.setConfigFlags(.{ .fullscreen_mode = startup_fullscreen });
-    const initial_window_size = defaultWindowSizeForCommand(options.command);
+    const initial_window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command);
     rl.initWindow(initial_window_size.width, initial_window_size.height, "snail");
     defer rl.closeWindow();
 

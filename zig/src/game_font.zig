@@ -31,14 +31,14 @@ pub const IconGlyph = enum(u8) {
     }
 };
 
-const GlyphSlot = struct {
+pub const GlyphSlot = struct {
     source_x: f32,
     source_y: f32,
     source_width: f32,
     source_height: f32,
     advance_width: f32,
 
-    fn invisible() GlyphSlot {
+    pub fn invisible() GlyphSlot {
         return .{
             .source_x = 0.0,
             .source_y = 0.0,

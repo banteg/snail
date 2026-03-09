@@ -40,6 +40,7 @@ pub const Options = struct {
     runtime_root_path: []const u8 = runtime_state.default_root_path,
     screenshot_dir: []const u8 = default_screenshot_dir,
     auto_screenshot: ?AutoScreenshot = null,
+    window_size_override: ?WindowSize = null,
     fullscreen: bool = false,
     command: AppCommand = .game,
 };
@@ -94,6 +95,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             options.auto_screenshot = try parseAutoScreenshot(args[index]);
             continue;
         }
+        if (std.mem.eql(u8, arg, "--window-size")) {
+            index += 1;
+            if (index >= args.len) return error.MissingWindowSize;
+            options.window_size_override = try parseWindowSize(args[index]);
+            continue;
+        }
         if (std.mem.eql(u8, arg, "--fullscreen")) {
             options.fullscreen = true;
             continue;
@@ -141,6 +148,22 @@ fn parseGamePhase(name: []const u8) ?frontend.GamePhase {
     return null;
 }
 
+fn parseWindowSize(spec: []const u8) !WindowSize {
+    const sep_index = std.mem.indexOfScalar(u8, spec, 'x') orelse
+        std.mem.indexOfScalar(u8, spec, 'X') orelse
+        return error.InvalidWindowSize;
+    if (sep_index == 0 or sep_index + 1 >= spec.len) return error.InvalidWindowSize;
+
+    const width = try std.fmt.parseInt(i32, spec[0..sep_index], 10);
+    const height = try std.fmt.parseInt(i32, spec[sep_index + 1 ..], 10);
+    if (width <= 0 or height <= 0) return error.InvalidWindowSize;
+
+    return .{
+        .width = width,
+        .height = height,
+    };
+}
+
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: initialize_game_window_and_input.
@@ -172,17 +195,20 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
     try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
+    try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
     try std.testing.expectEqual(false, options.fullscreen);
 }
 
 test "parse args handles debug and smoke subcommands" {
-    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--fullscreen" });
+    var options = try parseArgsFromSlice(&.{ "debug", "--archive-path", "custom.dat", "--runtime-dir", "tmp/snail-runtime", "--screenshot-dir", "artifacts/test-shots", "--screenshot-at", "intro:60", "--window-size", "640x480", "--fullscreen" });
     try std.testing.expectEqual(AppCommand.debug, options.command);
     try std.testing.expectEqualStrings("custom.dat", options.archive_path);
     try std.testing.expectEqualStrings("tmp/snail-runtime", options.runtime_root_path);
     try std.testing.expectEqualStrings("artifacts/test-shots", options.screenshot_dir);
     try std.testing.expectEqual(frontend.GamePhase.intro, options.auto_screenshot.?.phase);
     try std.testing.expectEqual(@as(u64, 60), options.auto_screenshot.?.tick);
+    try std.testing.expectEqual(@as(i32, 640), options.window_size_override.?.width);
+    try std.testing.expectEqual(@as(i32, 480), options.window_size_override.?.height);
     try std.testing.expectEqual(true, options.fullscreen);
 
     options = try parseArgsFromSlice(&.{"smoke"});
@@ -201,4 +227,17 @@ test "parse auto screenshot validates phase and tick" {
 
     try std.testing.expectError(error.InvalidScreenshotSpec, parseAutoScreenshot("intro"));
     try std.testing.expectError(error.InvalidScreenshotPhase, parseAutoScreenshot("weird:30"));
+}
+
+test "parse window size validates dimensions" {
+    const size = try parseWindowSize("1024x768");
+    try std.testing.expectEqual(@as(i32, 1024), size.width);
+    try std.testing.expectEqual(@as(i32, 768), size.height);
+
+    const uppercase = try parseWindowSize("640X480");
+    try std.testing.expectEqual(@as(i32, 640), uppercase.width);
+    try std.testing.expectEqual(@as(i32, 480), uppercase.height);
+
+    try std.testing.expectError(error.InvalidWindowSize, parseWindowSize("640"));
+    try std.testing.expectError(error.InvalidWindowSize, parseWindowSize("0x480"));
 }

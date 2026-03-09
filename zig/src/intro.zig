@@ -6,7 +6,7 @@ const game_font = @import("game_font.zig");
 
 const text_line_advance_world: f32 = 1.0;
 const text_glyph_height_world: f32 = 1.0;
-const text_world_width_scale: f32 = 0.8;
+const text_glyph_advance_scale: f32 = 0.8;
 const scroll_start_z: f32 = 0.2;
 const scroll_end_z: f32 = 3.0;
 const world_y: f32 = -4.0;
@@ -86,9 +86,9 @@ pub const Loaded = struct {
     }
 
     // PORT(partial): this crawl renderer now follows the recovered intro plane (`y = -4`),
-    // X-axis rotation, right-to-left centered glyph placement, image sizing, and
-    // duration-driven shared z scroll from `initialize_intro_text_screen`. Remaining gaps
-    // are the exact original quad geometry.
+    // X-axis rotation, Font3D unit quad geometry, right-to-left centered glyph placement,
+    // image sizing, and duration-driven shared z scroll from `initialize_intro_text_screen`.
+    // Remaining gaps are the exact object/material batching path and backdrop RNG seeding.
     pub fn drawCrawl(self: *const Loaded, ui_font: *const game_font.Loaded, progress: f32, viewport: rl.Rectangle) void {
         const layout = crawlLayout(totalLoadedWorldHeight(self.entries));
         const scroll_offset = std.math.clamp(progress, 0.0, 1.0) * layout.scroll_distance;
@@ -360,26 +360,32 @@ fn worldQuad(left_x: f32, right_x: f32, top_z: f32, bottom_z: f32, viewport_scal
     };
 }
 
-fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: f32, viewport_scale: f32) void {
+const LineMetrics = struct {
+    render_width: f32,
+    first_right_edge_x: f32,
+};
+
+fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, center_z: f32, viewport_scale: f32) void {
     if (line.len == 0 or ui_font.nominal_height <= 0.0) return;
 
-    const line_width_world = measureLineWorldWidth(ui_font, line);
-    var pen_right_x = line_width_world * 0.5;
+    const metrics = measureLineMetrics(ui_font, line);
+    var pen_right_x = metrics.first_right_edge_x;
 
     for (line) |byte| {
         if (byte == '\r' or byte == '\n') continue;
 
         const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
-        const glyph_width_world = measureSlotWorldWidth(ui_font, slot_index);
-        defer pen_right_x -= glyph_width_world;
+        const glyph_width_world = glyphRenderWidthWorld(ui_font, slot_index);
+        const glyph_advance_world = glyphAdvanceWorld(ui_font, slot_index);
+        defer pen_right_x -= glyph_advance_world;
 
         if (byte == ' ') continue;
 
         const quad = worldQuad(
             pen_right_x - glyph_width_world,
             pen_right_x,
-            top_z,
-            top_z - text_glyph_height_world,
+            center_z + text_glyph_height_world * 0.5,
+            center_z - text_glyph_height_world * 0.5,
             viewport_scale,
         ) orelse continue;
         drawTexturedQuad(
@@ -393,14 +399,14 @@ fn drawWorldTextLine(ui_font: *const game_font.Loaded, line: []const u8, top_z: 
     }
 }
 
-fn drawWorldImage(image: LoadedImage, top_z: f32, viewport_scale: f32) void {
+fn drawWorldImage(image: LoadedImage, center_z: f32, viewport_scale: f32) void {
     const world_width = clampedImageWorldWidth(image);
     const world_height = clampedImageWorldHeight(image);
     if (worldQuad(
         -world_width * 0.5,
         world_width * 0.5,
-        top_z,
-        top_z - world_height,
+        center_z + world_height * 0.5,
+        center_z - world_height * 0.5,
         viewport_scale,
     )) |quad| {
         drawTexturedQuad(
@@ -427,19 +433,41 @@ fn crawlLayout(total_world_height: f32) CrawlLayout {
     };
 }
 
-fn measureLineWorldWidth(ui_font: *const game_font.Loaded, line: []const u8) f32 {
-    var width: f32 = 0.0;
+fn measureLineMetrics(ui_font: *const game_font.Loaded, line: []const u8) LineMetrics {
+    var advance_width: f32 = 0.0;
+    var last_render_width: f32 = 0.0;
+    var saw_glyph = false;
+
     for (line) |byte| {
         if (byte == '\r' or byte == '\n') continue;
         const slot_index = game_font.slotIndexForByte(byte) orelse game_font.fallback_slot_index;
-        width += measureSlotWorldWidth(ui_font, slot_index);
+        advance_width += glyphAdvanceWorld(ui_font, slot_index);
+        last_render_width = glyphRenderWidthWorld(ui_font, slot_index);
+        saw_glyph = true;
     }
-    return width;
+
+    if (!saw_glyph) {
+        return .{
+            .render_width = 0.0,
+            .first_right_edge_x = 0.0,
+        };
+    }
+
+    const last_advance_width = last_render_width * text_glyph_advance_scale;
+    const render_width = advance_width - last_advance_width + last_render_width;
+    return .{
+        .render_width = render_width,
+        .first_right_edge_x = render_width * 0.5,
+    };
 }
 
-fn measureSlotWorldWidth(ui_font: *const game_font.Loaded, slot_index: usize) f32 {
+fn glyphRenderWidthWorld(ui_font: *const game_font.Loaded, slot_index: usize) f32 {
     if (slot_index >= ui_font.slots.len or ui_font.nominal_height <= 0.0) return 0.0;
-    return ui_font.slots[slot_index].advance_width * text_world_width_scale / ui_font.nominal_height;
+    return ui_font.slots[slot_index].source_width / ui_font.nominal_height;
+}
+
+fn glyphAdvanceWorld(ui_font: *const game_font.Loaded, slot_index: usize) f32 {
+    return glyphRenderWidthWorld(ui_font, slot_index) * text_glyph_advance_scale;
 }
 
 fn totalLoadedWorldHeight(entries: []const LoadedEntry) f32 {
@@ -630,6 +658,33 @@ test "viewport scale expands intro plane coordinates without changing depth" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.6), scaled.x, 0.001);
     try std.testing.expectApproxEqAbs(unscaled.z, scaled.z, 0.001);
     try std.testing.expect(@abs(scaled.y) > @abs(unscaled.y));
+}
+
+test "line metrics use Font3D render width with 0.8 advance" {
+    var slots = [_]game_font.GlyphSlot{game_font.GlyphSlot.invisible()} ** 95;
+    slots[game_font.slotIndexForByte('A').?] = .{
+        .source_x = 0.0,
+        .source_y = 0.0,
+        .source_width = 12.0,
+        .source_height = 16.0,
+        .advance_width = 9.0,
+    };
+    slots[game_font.slotIndexForByte('B').?] = .{
+        .source_x = 12.0,
+        .source_y = 0.0,
+        .source_width = 8.0,
+        .source_height = 16.0,
+        .advance_width = 6.0,
+    };
+    const font = game_font.Loaded{
+        .texture = undefined,
+        .slots = slots,
+        .nominal_height = 10.0,
+    };
+
+    const metrics = measureLineMetrics(&font, "AB");
+    try std.testing.expectApproxEqAbs(@as(f32, 1.76), metrics.render_width, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.88), metrics.first_right_edge_x, 0.001);
 }
 
 test "textured quad uv inset trims font marker columns" {
