@@ -78,6 +78,29 @@ const ScreenshotRequest = struct {
     }
 };
 
+const ResultReturnTarget = enum {
+    main_menu,
+    postal_route_map,
+    time_trial_route_map,
+    replay_current_level,
+};
+
+const PendingRunResult = struct {
+    level_name: []const u8,
+    mode: ?FrontendLevelMode,
+    elapsed_seconds: f32,
+    elapsed_millis: u32,
+    parcel_count: u32,
+    parcel_target: usize,
+    score: u32,
+    score_is_fallback: bool,
+    high_score_mode: ?high_score.Mode = null,
+    high_score_rank: ?usize = null,
+    time_trial_record_improved: bool = false,
+    unlocked_next_route: bool = false,
+    return_target: ResultReturnTarget,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -114,6 +137,7 @@ const AppState = struct {
     options_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
     high_score_tables: high_score.Tables,
+    pending_run_result: ?PendingRunResult = null,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
@@ -554,6 +578,12 @@ const AppState = struct {
                 }
             }
             try self.syncActiveLevelSegment(false);
+            if (self.level_runner) |runner| {
+                if (runner.finished) {
+                    try self.beginCompletedRun();
+                    return;
+                }
+            }
         }
     }
 
@@ -566,6 +596,8 @@ const AppState = struct {
                 .new_game_menu, .high_scores_menu, .help => try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
+                .completion_screen => try self.continueCompletionScreen(),
+                .post_level_high_score => try self.continuePostLevelHighScore(),
             }
             return;
         }
@@ -648,6 +680,16 @@ const AppState = struct {
                     try self.activateHighScoresMenuItem(high_scores_menu_items[self.high_scores_menu_index]);
                 }
             },
+            .completion_screen => {
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.continueCompletionScreen();
+                }
+            },
+            .post_level_high_score => {
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    try self.continuePostLevelHighScore();
+                }
+            },
             .credits => {
                 if (rl.isMouseButtonPressed(.left)) {
                     self.frontend_transition.beginFadeOut(.main_menu);
@@ -659,14 +701,6 @@ const AppState = struct {
                 }
             },
             .level => {
-                if (rl.isKeyPressed(.enter)) {
-                    if (self.level_runner) |runner| {
-                        if (runner.finished) {
-                            try self.handleFinishedLevelReturn();
-                            return;
-                        }
-                    }
-                }
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
@@ -802,34 +836,118 @@ const AppState = struct {
         try self.enterFrontendLevelPath(mode, self.frontend_route_index);
     }
 
-    fn handleFinishedLevelReturn(self: *AppState) !void {
-        if (self.active_frontend_mode) |mode| {
-            switch (mode) {
-                .postal => {
-                    try self.commitPostalRouteProgress();
-                    try self.enterRouteMapMenu(.postal);
-                    return;
-                },
-                .time_trial => {
-                    try self.enterRouteMapMenu(.time_trial);
-                    return;
-                },
-                .challenge, .tutorial => {},
-            }
-        }
-
-        try self.enterGamePhase(.main_menu);
+    fn saveHighScoreTables(self: *AppState) !void {
+        try self.high_score_tables.saveToRuntimeRoot(self.allocator, self.runtime_root_path);
     }
 
-    fn commitPostalRouteProgress(self: *AppState) !void {
+    fn beginCompletedRun(self: *AppState) !void {
+        if (self.pending_run_result != null) return;
+
+        const loaded_level = self.current_level orelse return;
+        const runner = self.level_runner orelse return;
+        if (!runner.finished) return;
+
+        const active_mode = self.active_frontend_mode;
+        const parcel_target = loaded_level.parcels orelse 0;
+        const parcel_count = runner.counters.parcels;
+        const elapsed_millis = completionElapsedMillis(runner);
+        var result = PendingRunResult{
+            .level_name = loaded_level.name,
+            .mode = active_mode,
+            .elapsed_seconds = @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
+            .elapsed_millis = elapsed_millis,
+            .parcel_count = parcel_count,
+            .parcel_target = parcel_target,
+            .score = 0,
+            .score_is_fallback = false,
+            .return_target = resultReturnTargetForMode(active_mode),
+        };
+
+        switch (active_mode orelse .tutorial) {
+            .postal => {
+                result.score = fallbackPostalOrChallengeScore(loaded_level, runner);
+                result.score_is_fallback = true;
+
+                const entry = high_score.Entry{
+                    .score = result.score,
+                };
+                const insert = self.high_score_tables.addArcade(entry);
+                result.high_score_mode = .postal;
+                result.high_score_rank = insert.rank;
+                result.unlocked_next_route = try self.commitPostalRouteProgress();
+                try self.saveHighScoreTables();
+            },
+            .challenge => {
+                result.score = fallbackPostalOrChallengeScore(loaded_level, runner);
+                result.score_is_fallback = true;
+
+                const entry = high_score.Entry{
+                    .score = result.score,
+                };
+                const insert = self.high_score_tables.addSurvival(entry);
+                result.high_score_mode = .challenge;
+                result.high_score_rank = insert.rank;
+                try self.saveHighScoreTables();
+            },
+            .time_trial => {
+                result.score = elapsed_millis;
+                const entry = high_score.Entry{
+                    .score = elapsed_millis,
+                };
+                const insert = self.high_score_tables.addTimeTrial(self.active_frontend_level_index, entry);
+                result.time_trial_record_improved = insert.improved;
+                try self.saveHighScoreTables();
+            },
+            .tutorial => {},
+        }
+
+        self.pending_run_result = result;
+        try self.enterGamePhase(.completion_screen);
+    }
+
+    fn continueCompletionScreen(self: *AppState) !void {
+        const result = self.pending_run_result orelse return;
+        if (result.high_score_mode != null and result.high_score_rank != null) {
+            try self.enterGamePhase(.post_level_high_score);
+            return;
+        }
+        try self.finishPendingRunReturn();
+    }
+
+    fn continuePostLevelHighScore(self: *AppState) !void {
+        try self.finishPendingRunReturn();
+    }
+
+    fn finishPendingRunReturn(self: *AppState) !void {
+        const result = self.pending_run_result orelse {
+            try self.enterGamePhase(.main_menu);
+            return;
+        };
+        self.pending_run_result = null;
+
+        switch (result.return_target) {
+            .main_menu => try self.enterGamePhase(.main_menu),
+            .postal_route_map => try self.enterRouteMapMenu(.postal),
+            .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
+            .replay_current_level => if (result.mode) |mode|
+                try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
+            else
+                try self.enterGamePhase(.main_menu),
+        }
+    }
+
+    fn commitPostalRouteProgress(self: *AppState) !bool {
         const current_index: u32 = @intCast(self.active_frontend_level_index);
         self.runtime_config.setRouteSelectionIndex(current_index);
         const next_unlock = current_index + 1;
+        var unlocked = false;
         if (next_unlock > self.runtime_config.routeUnlockLimit()) {
             self.runtime_config.setRouteUnlockLimit(next_unlock);
             self.setGameStatusMessage("Unlocked the next delivery route.");
+            unlocked = true;
         }
         try self.saveRuntimeConfig();
+        return unlocked;
     }
 
     fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
@@ -896,7 +1014,7 @@ const AppState = struct {
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
-            .main_menu, .new_game_menu, .options_menu, .high_scores_menu => {
+            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .post_level_high_score => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
@@ -931,6 +1049,13 @@ const AppState = struct {
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
                 try self.playMusicByPath(default_audio_path);
+            },
+            .completion_screen => {
+                self.active_level_message = null;
+                self.mouse_level_lane_target = null;
+                self.unloadTextScript();
+                self.unloadLoadingScreen();
+                try self.loadCurrentLevelBackground();
             },
             .level => {
                 self.stopAudioPreview();
@@ -1538,6 +1663,8 @@ fn drawGameUi(state: *const AppState) !void {
         .options_menu => try drawOptionsMenuUi(state, ui_layout),
         .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
+        .completion_screen => try drawCompletionScreenUi(state, ui_layout),
+        .post_level_high_score => try drawPostLevelHighScoreUi(state, ui_layout),
         .credits => drawCurrentTextScript(state, ui_layout),
         .help => drawHelpUi(state, ui_layout),
         .level => try drawGameplayLevelUi(state, ui_layout),
@@ -1734,8 +1861,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
 
     switch (selected) {
-        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels),
-        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels),
+        .postal_high_scores => drawHighScoreTable(state, .postal, layout, panels, null),
+        .challenge_high_scores => drawHighScoreTable(state, .challenge, layout, panels, null),
         .back => {
             try drawWrappedText(state, "Return to the main menu.", panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
         },
@@ -1750,7 +1877,7 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
-fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: VirtualLayout, panels: MenuPanels) void {
+fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: VirtualLayout, panels: MenuPanels, highlight_index: ?usize) void {
     const entries = state.high_score_tables.visibleEntries(mode);
     const row_start_y = panels.detail_body_y + layout.scaleInt(28);
     const row_height = layout.scaleInt(18);
@@ -1767,7 +1894,13 @@ fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: Vir
 
     for (entries, 0..) |entry, index| {
         const row_y = row_start_y + @as(i32, @intCast(index)) * row_height;
-        if ((index & 1) == 0) {
+        const row_color: rl.Color = if (highlight_index != null and highlight_index.? == index)
+            .{ .r = 255, .g = 210, .b = 80, .a = 46 }
+        else if ((index & 1) == 0)
+            .{ .r = 255, .g = 255, .b = 255, .a = 12 }
+        else
+            .{ .r = 0, .g = 0, .b = 0, .a = 0 };
+        if (row_color.a != 0) {
             rl.drawRectangleRounded(
                 .{
                     .x = @floatFromInt(panels.detail_body_x - layout.scaleInt(8)),
@@ -1777,7 +1910,7 @@ fn drawHighScoreTable(state: *const AppState, mode: high_score.Mode, layout: Vir
                 },
                 0.16,
                 4,
-                .{ .r = 255, .g = 255, .b = 255, .a = 12 },
+                row_color,
             );
         }
 
@@ -1810,6 +1943,40 @@ fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel
         layout.fontSize(20),
         .ray_white,
     );
+}
+
+fn resultReturnTargetForMode(mode: ?FrontendLevelMode) ResultReturnTarget {
+    return switch (mode orelse .tutorial) {
+        .postal => .postal_route_map,
+        .time_trial => .time_trial_route_map,
+        .challenge => .replay_current_level,
+        .tutorial => .main_menu,
+    };
+}
+
+fn completionElapsedMillis(runner: gameplay.Runner) u32 {
+    const millis = @divTrunc(runner.tick_count * 1000, 60);
+    return @intCast(@min(millis, std.math.maxInt(u32)));
+}
+
+// PORT(fallback): until the original cRSubGoldy::ScoreAdd path is ported,
+// postal and challenge table scores are derived from currently tracked runner counters.
+fn fallbackPostalOrChallengeScore(loaded_level: level.Definition, runner: gameplay.Runner) u32 {
+    _ = loaded_level;
+
+    const positive: u64 =
+        @as(u64, runner.counters.parcels) * 10000 +
+        @as(u64, runner.counters.ring_normal) * 250 +
+        @as(u64, runner.counters.ring_powerup) * 1000 +
+        @as(u64, runner.counters.health_pickups) * 750 +
+        @as(u64, runner.counters.jetpack_pickups) * 750;
+    const penalties: u64 =
+        @as(u64, runner.counters.garbage_hits) * 1000 +
+        @as(u64, runner.counters.salt_hits) * 750 +
+        @as(u64, runner.counters.slug_hits) * 1250 +
+        @as(u64, completionElapsedMillis(runner) / 25);
+    const clamped = positive -| penalties;
+    return @intCast(@min(clamped, std.math.maxInt(u32)));
 }
 
 fn bootPhaseProgress(state: *const AppState) f32 {
@@ -1919,10 +2086,6 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 .gold,
             );
         }
-
-        if (runner.finished) {
-            try drawLevelResultOverlay(state, layout, loaded_level, runner, parcel_count, parcel_target);
-        }
     }
 
     const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
@@ -1932,29 +2095,24 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
 }
 
-// PORT(scaffold): this completion overlay keeps the playable postal/time-trial loop readable
-// until the original result and score-entry screens are ported.
-fn drawLevelResultOverlay(
-    state: *const AppState,
-    layout: VirtualLayout,
-    loaded_level: level.Definition,
-    runner: gameplay.Runner,
-    parcel_count: u32,
-    parcel_target: usize,
-) !void {
+fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
+    drawGameplayLevelViewport(state);
+    const result = state.pending_run_result orelse return;
+    try drawCompletionSummaryPanel(state, layout, result);
+}
+
+fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, result: PendingRunResult) !void {
     const overlay_panel = layout.mapRect(120.0, 132.0, 400.0, 176.0);
     const title_point = layout.mapPoint(144.0, 156.0);
     const body_point = layout.mapPoint(144.0, 196.0);
     const footer_point = layout.mapPoint(144.0, 276.0);
-    const elapsed_seconds = @as(f32, @floatFromInt(runner.tick_count)) / 60.0;
     const title_x: i32 = @intFromFloat(title_point.x);
     const title_y: i32 = @intFromFloat(title_point.y);
     const body_x: i32 = @intFromFloat(body_point.x);
     const body_y: i32 = @intFromFloat(body_point.y);
     const footer_x: i32 = @intFromFloat(footer_point.x);
     const footer_y: i32 = @intFromFloat(footer_point.y);
-    const active_mode = state.active_frontend_mode;
-    const title = if (active_mode) |mode|
+    const title = if (result.mode) |mode|
         switch (mode) {
             .postal => "Delivery Complete",
             .time_trial => "Route Complete",
@@ -1971,7 +2129,7 @@ fn drawLevelResultOverlay(
     const summary_text = try std.fmt.bufPrint(
         &summary_buffer,
         "Level {s}>Time {d:.1}s>Packages {d}/{d}",
-        .{ loaded_level.name, elapsed_seconds, parcel_count, parcel_target },
+        .{ result.level_name, result.elapsed_seconds, result.parcel_count, result.parcel_target },
     );
     try drawWrappedText(
         state,
@@ -1983,33 +2141,37 @@ fn drawLevelResultOverlay(
         .ray_white,
     );
 
-    if (active_mode) |mode| {
-        if ((mode == .postal or mode == .time_trial) and
-            state.active_frontend_level_index < state.highestAvailableFrontendRouteIndex(mode))
-        {
-            const next_unlock = state.active_frontend_level_index + 1;
-            const unlock_text = if (mode == .postal and next_unlock > state.runtime_config.routeUnlockLimit())
-                "Continue to unlock the next delivery route."
-            else
-                "Continue to return to the route map.";
-            drawAppText(
-                state,
-                unlock_text,
-                body_x,
-                body_y + layout.scaleInt(70),
-                layout.fontSize(18),
-                .sky_blue,
-            );
-        }
+    const score_y = body_y + layout.scaleInt(70);
+    if (result.mode == .time_trial) {
+        var time_buffer: [128]u8 = undefined;
+        const time_text = try std.fmt.bufPrint(&time_buffer, "Route time {d:.3}s", .{@as(f32, @floatFromInt(result.elapsed_millis)) / 1000.0});
+        drawAppText(state, time_text, body_x, score_y, layout.fontSize(18), .sky_blue);
+    } else {
+        var score_buffer: [128]u8 = undefined;
+        const score_text = try std.fmt.bufPrint(&score_buffer, "Score {d}{s}", .{
+            result.score,
+            if (result.score_is_fallback) " (fallback)" else "",
+        });
+        drawAppText(state, score_text, body_x, score_y, layout.fontSize(18), .sky_blue);
     }
 
-    const continue_text = if (active_mode) |mode|
-        if (mode == .postal or mode == .time_trial)
-            "Enter continue to route map"
-        else
-            "Enter continue to main menu"
-    else
-        "Enter continue to main menu";
+    if (result.unlocked_next_route) {
+        drawAppText(state, "Unlocked the next delivery route.", body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
+    } else if (result.time_trial_record_improved) {
+        drawAppText(state, "Saved a new best route time.", body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
+    } else if (result.high_score_rank) |rank| {
+        var rank_buffer: [96]u8 = undefined;
+        const rank_text = try std.fmt.bufPrint(&rank_buffer, "New high score rank: {d}", .{rank + 1});
+        drawAppText(state, rank_text, body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
+    }
+
+    const continue_text = if (result.high_score_mode != null and result.high_score_rank != null)
+        "Enter continue to high scores"
+    else switch (result.return_target) {
+        .postal_route_map, .time_trial_route_map => "Enter continue to route map",
+        .replay_current_level => "Enter replay challenge",
+        .main_menu => "Enter continue to main menu",
+    };
     drawAppText(
         state,
         continue_text,
@@ -2018,6 +2180,35 @@ fn drawLevelResultOverlay(
         layout.fontSize(18),
         .light_gray,
     );
+}
+
+fn drawPostLevelHighScoreUi(state: *const AppState, layout: VirtualLayout) !void {
+    const result = state.pending_run_result orelse return;
+    const mode = result.high_score_mode orelse return;
+    const rank = result.high_score_rank orelse return;
+    const panels = app_ui.menuPanels(layout);
+
+    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
+
+    drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
+    drawAppText(state, mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
+
+    var message_buffer: [128]u8 = undefined;
+    const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}.", .{ rank + 1, result.level_name });
+    try drawWrappedText(
+        state,
+        message,
+        panels.detail_body_x,
+        panels.detail_body_y,
+        panels.detail_width,
+        layout.fontSize(18),
+        .sky_blue,
+    );
+
+    drawHighScoreTable(state, mode, layout, panels, rank);
+    drawAppText(state, "Enter continue", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
+    drawAppText(state, "Esc continue", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .light_gray);
 }
 
 // PORT(debug): this browser is intentionally a tooling surface, not the shipping game path.
