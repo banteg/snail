@@ -59,7 +59,7 @@ The script currently hooks these points:
 
 - `0x437eb0` `normalize_level_runtime_fields`
 - `0x429ae0` `find_segment_path_index_by_name`
-- `0x43b120` `update_player_track_movement_and_triggers`
+- `0x43b120` `update_subgoldy`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
 - `0x420c40` `begin_track_attachment_follow_state`
 - `0x420cb0` `update_track_attachment_follow_state`
@@ -176,7 +176,7 @@ Keep the first console line from each run because it prints the exact file path 
 
 Before running any new capture, sync the latest repo copy of [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js) onto the Windows machine. The most recent local fixes corrected:
 
-- `update_player_track_movement_and_triggers`
+- `update_subgoldy`
 - `end_track_attachment_follow_state`
 - `get_track_grid_cell_at_world_position`
 - the cell-layout split between gameplay grid cells and row-cell attachment records

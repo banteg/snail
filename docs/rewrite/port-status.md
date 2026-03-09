@@ -72,7 +72,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: full front-end voice mixing, timing, and segment-transition behavior are ported
 - level completion return overlay: `scaffold`
-  - evidence: Binary Ninja decompile of `update_player_completion_handoff`, `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, `initialize_cutscene`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, `cRCutScene::{Init, AI}`, and the post-completion branch inside `cRSubGoldy::AI()`
+  - evidence: Binary Ninja decompile of `update_subgoldy_completion_handoff`, `initialize_completion_screen`, `destroy_completion_screen`, `initialize_exit_prompt`, `update_completion_screen`, `initialize_cutscene`, and `update_cutscene`, plus cross-port Android and iOS symbols for `cRCompletion::{Init, AI, UnInit}`, `cRExit::Init()`, `cRCutScene::{Init, AI}`, and `cRSubGoldy::AI()`
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original result, progression, and score-entry screens are ported
 - runtime floor-height sampling and tile `0x16` floor slot: `verified`

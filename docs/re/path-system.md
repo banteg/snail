@@ -16,6 +16,7 @@ Primary sources used for these notes:
 High-confidence renamed functions in the tracked manifest and the current Binary Ninja database:
 
 - `find_segment_path_index_by_name` at `0x429ae0`
+- `initialize_parcel` at `0x408550`
 - `initialize_path_template_record_pair` at `0x4085c0`
 - `mirror_path_template_pair_x` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
@@ -36,8 +37,8 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `update_subgame` at `0x438b90`
 - `update_parcel` at `0x43f200`
 - `spawn_track_garbage_hazard` at `0x43da80`
-- `update_player_track_movement_and_triggers` at `0x43b120`
-- `update_player_completion_handoff` at `0x441fd0`
+- `update_subgoldy` at `0x43b120`
+- `update_subgoldy_completion_handoff` at `0x441fd0`
 - `end_track_attachment_follow_state` at `0x43af60`
 - `place_parcels_on_track` at `0x4438e0`
 - `place_challenge_parcels_on_track` at `0x444240`

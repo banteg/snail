@@ -89,7 +89,7 @@ The current high-confidence `Game` fields are:
 
 Current practical read:
 
-- `runtime_track_index` is the per-tick cursor advanced by `update_player_track_movement_and_triggers`
+- `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
 
@@ -123,7 +123,7 @@ This matches the recovered follow-state update behavior:
 - `sample_count` bounds the active sample index
 - the current sample `delta_length` scales the per-tick path factor
 - `position` and `delta` feed the interpolated output pose
-- `scalar_a0` is the field currently consumed by the ride-height smoothing branch in `update_player_track_movement_and_triggers`
+- `scalar_a0` is the field currently consumed by the ride-height smoothing branch in `update_subgoldy`
 
 ## Binary Ninja Note
 

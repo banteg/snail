@@ -30,7 +30,7 @@ Current hooks in the script:
 - `0x429ae0` `find_segment_path_index_by_name`
   - logs `Path=<name>` to runtime index resolution
   - emits a canonical path name from the recovered hardcoded table whenever the raw lookup buffer is not safely NUL-terminated
-- `0x43b120` `update_player_track_movement_and_triggers`
+- `0x43b120` `update_subgoldy`
   - emits sampled before and after player snapshots
   - records current runtime cell, attachment-active state, and follow-state progress on a rate-limited basis
   - now also records the current build-flag word seen by the active gameplay state

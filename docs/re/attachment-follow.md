@@ -25,7 +25,7 @@ Inside the `P/p` branch of `rebuild_track_runtime_from_segments`:
 - those runtime cells get flag `0x40` first and then `0x80` for the second attachment lane
 - the same pass stores attachment pointers into runtime `+0x5ccb6c` and `+0x5ccb70`
 
-Later, `update_player_track_movement_and_triggers` checks those flags on the current runtime cell and calls `try_enter_track_attachment_from_swept_motion` on the corresponding attachment pointer.
+Later, `update_subgoldy` checks those flags on the current runtime cell and calls `try_enter_track_attachment_from_swept_motion` on the corresponding attachment pointer.
 
 ## Follow-State Functions
 

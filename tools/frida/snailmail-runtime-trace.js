@@ -57,7 +57,7 @@ const VA = {
   update_player_movement_flags: 0x43a1a0,
   normalize_level_runtime_fields: 0x437eb0,
   end_track_attachment_follow_state: 0x43af60,
-  update_player_track_movement_and_triggers: 0x43b120,
+  update_subgoldy: 0x43b120,
   mark_current_track_pair_with_payload: 0x43d3d0,
   get_track_grid_cell_at_world_position: 0x43d410,
   sample_track_floor_height_at_position: 0x43d4d0,
@@ -924,7 +924,7 @@ function installHooks(module) {
   }
 
   if (HOOKS.player_update) {
-    Interceptor.attach(fromVa(module, VA.update_player_track_movement_and_triggers), {
+    Interceptor.attach(fromVa(module, VA.update_subgoldy), {
       onEnter(args) {
         this.player = asPtr(this.context.ecx);
         this.before = summarizePlayer(this.player, getTrackCellRowIndex);

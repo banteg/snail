@@ -64,6 +64,11 @@
       "name": "initialize_runtime_pools_and_path_template_bank"
     },
     {
+      "address": "0x408550",
+      "name": "initialize_parcel",
+      "description": "Constructs one parcel runtime object by running the shared body constructor and installing the parcel vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot parcel pool, matching the setup loop inside Android `cRParcelManager::Init()`."
+    },
+    {
       "address": "0x4085c0",
       "name": "initialize_path_template_record_pair",
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
@@ -538,8 +543,8 @@
     },
     {
       "address": "0x43b120",
-      "name": "update_player_track_movement_and_triggers",
-      "description": "Main per-frame player movement step. Updates attachment-follow state, samples current track cells, drives row events, emits movement flags and sounds, and advances the runtime track index."
+      "name": "update_subgoldy",
+      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
       "address": "0x43d3d0",
@@ -632,8 +637,8 @@
     },
     {
       "address": "0x441fd0",
-      "name": "update_player_completion_handoff",
-      "description": "Advances the player-side post-delivery completion handoff once the completion flow is active: starts the fade, waits for fade completion, dispatches `complete_subgame`, and selects the next frontend state. Cross-port Android symbols place this logic inside the post-completion branch of `cRSubGoldy::AI()`, not in `cRCompletion::RegisterParcel()`."
+      "name": "update_subgoldy_completion_handoff",
+      "description": "Advances the post-delivery completion handoff inside the active Goldy update once the completion flow is active: starts the fade, waits for fade completion, dispatches `complete_subgame`, and selects the next frontend state. Cross-port Android and iOS symbols place this logic inside `cRSubGoldy::AI()`, not in `cRCompletion::RegisterParcel()`."
     },
     {
       "address": "0x4428d0",
