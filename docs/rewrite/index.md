@@ -142,7 +142,7 @@ Current behavior:
 - the level preview now also reuses the recovered runtime floor-height sampler for cell slabs and gameplay markers, so trampoline-family tile `0x16` and the basic ramp families render with their known vertical bias instead of a fully flat placeholder surface
 - the preview and runner now also use the currently confirmed gameplay build preset `0x00f5cfff`, so slug rows respect their recovered runtime gate and the March 8 trace-driven fallback garbage or salt candidates on tiles `0x01`, `0x0f`, and `0x15` are surfaced in the UI instead of disappearing behind authored glyphs alone
 - the track loader now has an explicit no-model path for headless simulation tests, so gameplay coverage no longer depends on uploading decorative `.X2` meshes
-- the default `snail` path now reuses the original splash, intro-text, and menu assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
+- the default `snail` path now reuses the original loading-screen, intro-text, and menu assets and can hand off evidence-backed menu actions like `Tutorial`, `Challenge Mode`, `Help`, and `Credits`
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and prompt text in the default level path instead of being trapped in the debug browser only
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
@@ -170,7 +170,7 @@ zig build run -- debug --archive-path artifacts/bin/SnailMail.dat
 Notes:
 
 - `zig build` installs `zig-out/bin/snail`
-- `zig build run` now enters the default game path, shows the archive-backed splash, intro crawl, main menu, options menu, delivery-route map, high-score menu, and can enter the current tutorial or arcade level path
+- `zig build run` now enters the default game path, shows the archive-backed loading screen, intro crawl, main menu, options menu, delivery-route map, high-score menu, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the interactive archive browser and waits until you close it
 - `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
 - windowed mode stays the development default until a saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen

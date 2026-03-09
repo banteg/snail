@@ -71,6 +71,11 @@
       "name": "select_level_track_texture_set"
     },
     {
+      "address": "0x4107d0",
+      "name": "update_frontend_state_machine",
+      "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, and gameplay handoff states."
+    },
+    {
       "address": "0x411730",
       "name": "initialize_d3d8_device"
     },
@@ -114,6 +119,21 @@
       "address": "0x417eb0",
       "name": "launch_frontend_level_mode",
       "description": "Starts the selected front-end mode and seeds its initial level handoff through the shared level-path switch."
+    },
+    {
+      "address": "0x418b50",
+      "name": "initialize_loading_screen",
+      "description": "Loads the loading-screen textures, seeds the full-screen quad and progress-bar quad, and resets the loader progress counters."
+    },
+    {
+      "address": "0x418e50",
+      "name": "destroy_loading_screen",
+      "description": "Tears down the loading-screen textures and preserves the last measured loading budget for the next loader pass."
+    },
+    {
+      "address": "0x418e80",
+      "name": "update_loading_screen",
+      "description": "Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window."
     },
     {
       "address": "0x4191e0",

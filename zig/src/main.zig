@@ -9,6 +9,7 @@ const high_score = @import("high_score.zig");
 const intro = @import("intro.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
+const loading_screen = @import("loading_screen.zig");
 const object = @import("object.zig");
 const segment = @import("segment.zig");
 const level = @import("level.zig");
@@ -20,7 +21,6 @@ const window_width = 1280;
 const window_height = 720;
 
 const default_archive_path = "artifacts/bin/SnailMail.dat";
-const splash_background_path = "BACKGROUNDS/SPLASH.TXT";
 const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 const help_background_path = "BACKGROUNDS/HELP.TXT";
@@ -232,7 +232,8 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_background: ?background.Loaded = null,
-    current_text_script: ?intro.Definition = null,
+    current_loading_screen: ?loading_screen.Loaded = null,
+    current_text_script: ?intro.Loaded = null,
     level_runner: ?gameplay.Runner = null,
     pending_level_input: gameplay.RunnerInput = .{},
 
@@ -285,6 +286,7 @@ const AppState = struct {
 
     fn deinit(self: *AppState) void {
         self.stopAudioPreview();
+        self.unloadLoadingScreen();
         self.unloadGameBackground();
 
         if (self.current_model) |*model| {
@@ -312,7 +314,7 @@ const AppState = struct {
             self.current_track_preview = null;
         }
         if (self.current_text_script) |*script| {
-            script.deinit();
+            script.deinit(self.allocator);
             self.current_text_script = null;
         }
 
@@ -327,6 +329,30 @@ const AppState = struct {
     }
 
     fn warmupSmokeTest(self: *AppState) !void {
+        var loaded_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.catalog);
+        defer loaded_loading_screen.deinit();
+        if (loaded_loading_screen.background_texture.texture.width <= 0 or loaded_loading_screen.bar_texture.texture.width <= 0) {
+            return error.InvalidLoadingScreenTexture;
+        }
+
+        var loaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, intro_background_path);
+        defer loaded_intro_background.deinit();
+        if (loaded_intro_background.primary_texture.texture.width <= 0) {
+            return error.InvalidIntroBackgroundTexture;
+        }
+
+        var loaded_intro_script = try intro.loadByPath(self.allocator, &self.catalog, intro_script_path);
+        defer loaded_intro_script.deinit(self.allocator);
+        if (loaded_intro_script.entries.len == 0) {
+            return error.EmptyIntroScript;
+        }
+
+        var loaded_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+        defer loaded_credits_script.deinit(self.allocator);
+        if (loaded_credits_script.entries.len == 0) {
+            return error.EmptyCreditsScript;
+        }
+
         if (!self.audio_ready or self.catalog.audio_entries.len == 0) {
             return;
         }
@@ -520,11 +546,7 @@ const AppState = struct {
         }
 
         switch (self.game_phase) {
-            .boot => {
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.enterGamePhase(.intro);
-                }
-            },
+            .boot => {},
             .intro => {
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.enterGamePhase(.main_menu);
@@ -822,12 +844,14 @@ const AppState = struct {
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
-                try self.loadGameBackground(splash_background_path);
+                self.unloadGameBackground();
+                try self.loadLoadingScreen();
             },
             .intro => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
+                self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
@@ -837,6 +861,7 @@ const AppState = struct {
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
+                self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
@@ -845,6 +870,7 @@ const AppState = struct {
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
+                self.unloadLoadingScreen();
                 try self.loadGameBackground(route_map_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
@@ -852,6 +878,7 @@ const AppState = struct {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
+                self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(credits_script_path);
@@ -861,6 +888,7 @@ const AppState = struct {
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
+                self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
                 try self.playMusicByPath(default_audio_path);
             },
@@ -868,6 +896,7 @@ const AppState = struct {
                 self.stopAudioPreview();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
+                self.unloadLoadingScreen();
                 try self.loadCurrentLevelBackground();
                 try self.syncActiveLevelSegment(true);
             },
@@ -970,6 +999,11 @@ const AppState = struct {
         self.current_game_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
     }
 
+    fn loadLoadingScreen(self: *AppState) !void {
+        self.unloadLoadingScreen();
+        self.current_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.catalog);
+    }
+
     fn loadTextScript(self: *AppState, path: []const u8) !void {
         self.unloadTextScript();
         self.current_text_script = try intro.loadByPath(self.allocator, &self.catalog, path);
@@ -977,14 +1011,21 @@ const AppState = struct {
 
     fn unloadTextScript(self: *AppState) void {
         if (self.current_text_script) |*script| {
-            script.deinit();
+            script.deinit(self.allocator);
             self.current_text_script = null;
+        }
+    }
+
+    fn unloadLoadingScreen(self: *AppState) void {
+        if (self.current_loading_screen) |*loaded_screen| {
+            loaded_screen.deinit();
+            self.current_loading_screen = null;
         }
     }
 
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
         const script = self.current_text_script orelse return null;
-        const ticks = @as(u64, @intFromFloat(@max(script.duration * 60.0, 1.0)));
+        const ticks = @as(u64, @intFromFloat(@max(script.duration() * 60.0, 1.0)));
         return ticks;
     }
 
@@ -1046,19 +1087,11 @@ const AppState = struct {
         );
     }
 
-    fn currentTextScript(self: *const AppState) ?*const intro.Definition {
+    fn currentTextScript(self: *const AppState) ?*const intro.Loaded {
         if (self.current_text_script) |*script| {
             return script;
         }
         return null;
-    }
-
-    fn currentTextScriptSkipLabel(self: *const AppState) [:0]const u8 {
-        return switch (self.game_phase) {
-            .intro => "Enter, Space, or Esc to continue",
-            .credits => "Enter, Space, or Esc back",
-            else => "",
-        };
     }
 
     fn unloadGameBackground(self: *AppState) void {
@@ -1395,6 +1428,15 @@ fn drawGameUi(state: *const AppState) !void {
         .height = @floatFromInt(window_height),
     };
 
+    if (state.game_phase == .boot) {
+        if (state.current_loading_screen) |loaded_screen| {
+            loaded_screen.draw(full_bounds, bootPhaseProgress(state));
+        } else {
+            rl.drawRectangleRec(full_bounds, .black);
+        }
+        return drawGameBootUi(state);
+    }
+
     const art_layout = if (state.current_game_background) |loaded_background|
         loaded_background.draw(full_bounds)
     else blk: {
@@ -1403,7 +1445,7 @@ fn drawGameUi(state: *const AppState) !void {
     };
 
     switch (state.game_phase) {
-        .boot => try drawGameBootUi(state, art_layout),
+        .boot => unreachable,
         .intro => try drawTextScriptUi(state),
         .main_menu => try drawMainMenuUi(state, art_layout),
         .new_game_menu => try drawNewGameMenuUi(state, art_layout),
@@ -1416,32 +1458,18 @@ fn drawGameUi(state: *const AppState) !void {
     }
 }
 
-fn drawGameBootUi(state: *const AppState, art_layout: ?background.Layout) !void {
-    const panel = if (art_layout) |layout|
-        layout.mapRect(36.0, 418.0, 568.0, 70.0)
-    else
-        rl.Rectangle{ .x = 72.0, .y = 596.0, .width = 1136.0, .height = 90.0 };
+fn drawGameBootUi(state: *const AppState) !void {
+    if (state.current_loading_screen != null) return;
 
-    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-
-    const title_point = if (art_layout) |layout|
-        layout.mapPoint(56.0, 438.0)
-    else
-        rl.Vector2{ .x = 96.0, .y = 624.0 };
-    const prompt_point = if (art_layout) |layout|
-        layout.mapPoint(250.0, 438.0)
-    else
-        rl.Vector2{ .x = 332.0, .y = 624.0 };
-    const hint_point = if (art_layout) |layout|
-        layout.mapPoint(250.0, 462.0)
-    else
-        rl.Vector2{ .x = 332.0, .y = 650.0 };
-
-    drawAppText(state, "snail", @intFromFloat(title_point.x), @intFromFloat(title_point.y), 30, .orange);
-
-    const prompt_color: rl.Color = if ((state.game_phase_ticks / 20) % 2 == 0) .gold else .light_gray;
-    drawAppText(state, "Press Enter to continue", @intFromFloat(prompt_point.x), @intFromFloat(prompt_point.y), 22, prompt_color);
-    drawAppText(state, "Esc quits", @intFromFloat(hint_point.x), @intFromFloat(hint_point.y), 18, .light_gray);
+    const title_width = measureAppText(state, "Loading...", 30);
+    drawAppText(
+        state,
+        "Loading...",
+        @divTrunc(window_width - title_width, 2),
+        @divTrunc(window_height, 2) - 18,
+        30,
+        .ray_white,
+    );
 }
 
 fn drawMainMenuUi(state: *const AppState, art_layout: ?background.Layout) !void {
@@ -1701,49 +1729,95 @@ fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
     return name;
 }
 
-// PORT(partial): intro and credits now share the recovered text-screen flow.
-// The original loader also supports `*texture.tga(width,height)` directives and richer transforms we have not ported yet.
+// PORT(partial): intro and credits now use ordered script entries with centered per-line text,
+// archive-backed image directives, and the recovered duration-driven shared scroll.
+// Remaining gaps are the original transform/camera setup and exact image size semantics.
 fn drawTextScriptUi(state: *const AppState) !void {
     const script = state.currentTextScript() orelse return;
     const progress = state.currentTextScriptProgress() orelse 0.0;
-    const viewport = rl.Rectangle{
-        .x = 164.0,
-        .y = 84.0,
-        .width = @as(f32, @floatFromInt(window_width)) - 328.0,
-        .height = @as(f32, @floatFromInt(window_height)) - 168.0,
-    };
+    const font_size: f32 = 22.0;
+    const total_height = totalTextScriptHeight(state, script, font_size);
+    const start_y = @as(f32, @floatFromInt(window_height)) + 36.0;
+    const end_y = -total_height - 36.0;
+    var cursor_y = std.math.lerp(start_y, end_y, progress);
 
-    rl.drawRectangleRounded(viewport, 0.04, 8, .{ .r = 0, .g = 0, .b = 0, .a = 132 });
+    for (script.entries) |entry| {
+        switch (entry) {
+            .text => |line| {
+                drawCenteredTextScriptLine(state, line, font_size, cursor_y);
+                cursor_y += font_size;
+            },
+            .image => |image| {
+                drawCenteredTextScriptImage(image, cursor_y);
+                cursor_y += imageHeight(image);
+            },
+        }
+    }
+}
 
-    const line_height: i32 = 28;
-    const line_count = countLines(script.text);
-    const total_height = @as(f32, @floatFromInt(@max(line_count, 1) * line_height));
-    const start_y = viewport.y + viewport.height + 40.0;
-    const end_y = viewport.y - total_height - 40.0;
-    const base_y = std.math.lerp(start_y, end_y, progress);
-    try drawCenteredMultilineText(
-        state,
-        script.text,
-        @intFromFloat(viewport.x + viewport.width / 2.0),
-        @intFromFloat(base_y),
-        line_height,
+fn bootPhaseProgress(state: *const AppState) f32 {
+    return std.math.clamp(
+        @as(f32, @floatFromInt(state.game_phase_ticks)) / @as(f32, @floatFromInt(boot_phase_duration_ticks)),
+        0.0,
+        1.0,
+    );
+}
+
+fn totalTextScriptHeight(state: *const AppState, script: *const intro.Loaded, font_size: f32) f32 {
+    _ = state;
+
+    var total_height: f32 = 0.0;
+    for (script.entries) |entry| {
+        total_height += switch (entry) {
+            .text => font_size,
+            .image => |image| imageHeight(image),
+        };
+    }
+    return total_height;
+}
+
+fn drawCenteredTextScriptLine(state: *const AppState, line: []const u8, font_size: f32, y: f32) void {
+    if (line.len == 0) return;
+
+    const measured_width = state.ui_font.measureText(line, font_size);
+    state.ui_font.drawText(
+        line,
+        (@as(f32, @floatFromInt(window_width)) - measured_width) * 0.5,
+        y,
+        font_size,
         .ray_white,
     );
+}
 
-    const hint = state.currentTextScriptSkipLabel();
-    const hint_width = measureAppText(state, hint, 18);
-    rl.drawRectangleRounded(
+fn drawCenteredTextScriptImage(image: intro.LoadedImage, y: f32) void {
+    const width = imageWidth(image);
+    const height = imageHeight(image);
+    rl.drawTexturePro(
+        image.texture.texture,
         .{
-            .x = @as(f32, @floatFromInt(window_width - hint_width - 68)),
-            .y = @as(f32, @floatFromInt(window_height - 54)),
-            .width = @as(f32, @floatFromInt(hint_width + 32)),
-            .height = 30.0,
+            .x = 0.0,
+            .y = 0.0,
+            .width = @floatFromInt(image.texture.texture.width),
+            .height = @floatFromInt(image.texture.texture.height),
         },
-        0.2,
-        8,
-        .{ .r = 0, .g = 0, .b = 0, .a = 176 },
+        .{
+            .x = (@as(f32, @floatFromInt(window_width)) - width) * 0.5,
+            .y = y,
+            .width = width,
+            .height = height,
+        },
+        .{ .x = 0.0, .y = 0.0 },
+        0.0,
+        .white,
     );
-    drawAppText(state, hint, window_width - hint_width - 52, window_height - 46, 18, .light_gray);
+}
+
+fn imageWidth(image: intro.LoadedImage) f32 {
+    return @as(f32, @floatFromInt(image.texture.texture.width)) * @max(image.width, 0.01);
+}
+
+fn imageHeight(image: intro.LoadedImage) f32 {
+    return @as(f32, @floatFromInt(image.texture.texture.height)) * @max(image.height, 0.01);
 }
 
 fn drawHelpUi(state: *const AppState) void {

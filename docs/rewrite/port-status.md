@@ -13,9 +13,12 @@ Code-level convention:
 Current high-signal entries:
 
 - boot and main-menu shell: `scaffold`
-  - evidence: original splash art and recovered main-menu labels are now wired, but the overall front-end flow and most handlers are still not at original parity
+  - evidence: original loading-screen assets and recovered main-menu labels are now wired, but the overall front-end flow and most handlers are still not at original parity
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: title flow, menu assets, menu actions, and front-end copy are ported
+- loading-screen composition: `verified`
+  - evidence: Binary Ninja decompile of `sub_418b50` and `sub_418e80`, plus the shipped `SPRITES/LOADING.TGA` and `SPRITES/LOADINGBARON.TGA` assets
+  - implementation: [`loading_screen.zig`](../../zig/src/loading_screen.zig), [`main.zig`](../../zig/src/main.zig)
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `sub_419b50` and `sub_417bc0`
   - implementation: [`main.zig`](../../zig/src/main.zig)
@@ -35,7 +38,7 @@ Current high-signal entries:
 - intro and credits text-screen flow: `partial`
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `sub_4191e0` / `sub_4199e0`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: intro-script image directives, text transforms, and any remaining transition semantics are ported
+  - replace when: the original transform or camera setup, exact image size semantics, and any remaining transition semantics are ported
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `sub_416910`, `sub_417260`, `sub_417540`, and `sub_417a70`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
