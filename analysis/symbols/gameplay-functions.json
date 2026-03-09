@@ -89,6 +89,11 @@
       "description": "Runs the Star Map galaxy-screen state machine, including route selection, replay launch, and Deliver/Play actions through the shared level-path handoff. Cross-port Android and iOS symbols match this helper to `cRGalaxy::AI()`."
     },
     {
+      "address": "0x409bf0",
+      "name": "close_galaxy_route",
+      "description": "Closes the currently open Star Map route card, clears its active replay or play controls, and resets the open-route selection before another route is opened. Cross-port Android and iOS symbols match this helper to `cRGalaxy::BoxOff()`."
+    },
+    {
       "address": "0x409c50",
       "name": "open_galaxy_route",
       "description": "Opens one selected Star Map route card, loads its preview label and widget stack, and toggles the replay-only controls for locked or cleared routes. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Open(int)`."
@@ -222,6 +227,21 @@
     {
       "address": "0x4175e0",
       "name": "load_high_scores_from_file"
+    },
+    {
+      "address": "0x4176a0",
+      "name": "add_arcade_high_score",
+      "description": "Attempts to insert one completed postal or arcade run into the ordered top-10 bank, then arms the high-score entry screen when the run places. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddArcade(int)`."
+    },
+    {
+      "address": "0x417780",
+      "name": "add_survival_high_score",
+      "description": "Attempts to insert one completed challenge or survival run into the ordered top-10 bank, mirrors the pending entry into the challenge bank overlay, and arms the high-score entry screen when the run places. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddSurvival()`."
+    },
+    {
+      "address": "0x4178b0",
+      "name": "add_time_trial_high_score",
+      "description": "Records one per-route time-trial result into the completion bank, replacing the stored entry only when the new time beats the existing route record. Cross-port Android and iOS symbols match this helper to `cRSubHighScore::AddTimeTrial(int, bool)`."
     },
     {
       "address": "0x417940",
@@ -530,7 +550,18 @@
     },
     {
       "address": "0x43a390",
-      "name": "update_jetpack_auto_shutoff_state"
+      "name": "update_damage_guage",
+      "description": "Advances the HUD damage-guage state machine: animates the warning meter and icon pulses, triggers the auto-shutoff jetpack warning branch when the floor sampler sees flag 0x80, and clears the warning once the gauge drains. Cross-port Android and iOS symbols match this helper to `cRDamageGuage::AI()`."
+    },
+    {
+      "address": "0x43a930",
+      "name": "initialize_damage_guage",
+      "description": "Initializes the player damage-guage controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_damage_guage`. Cross-port Android symbols match this helper to `cRDamageGuage::Init()`."
+    },
+    {
+      "address": "0x43a9c0",
+      "name": "initialize_subgoldy",
+      "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the damage guage and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
     },
     {
       "address": "0x43af60",

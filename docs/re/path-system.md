@@ -35,6 +35,9 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `complete_subgame` at `0x438700`
 - `select_level_track_texture_set` at `0x410730`
 - `update_subgame` at `0x438b90`
+- `initialize_damage_guage` at `0x43a930`
+- `update_damage_guage` at `0x43a390`
+- `initialize_subgoldy` at `0x43a9c0`
 - `update_parcel` at `0x43f200`
 - `spawn_track_garbage_hazard` at `0x43da80`
 - `update_subgoldy` at `0x43b120`

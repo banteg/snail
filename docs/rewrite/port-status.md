@@ -40,7 +40,7 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: the original Help-screen teardown path and any missing transition details are ported
 - delivery-route map flow: `partial`
-  - evidence: Binary Ninja decompile of `initialize_galaxy`, `destroy_galaxy`, `update_galaxy`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI}` and Android `cRGalaxy::UnInit()`
+  - evidence: Binary Ninja decompile of `initialize_galaxy`, `destroy_galaxy`, `update_galaxy`, `close_galaxy_route`, `open_galaxy_route`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI, BoxOff, Open}` and Android `cRGalaxy::UnInit()`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
@@ -53,7 +53,7 @@ Current high-signal entries:
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the remaining exact image-quad sizing and any non-intro users of the shared front-end transition overlay are ported
 - high-score screen table branch: `partial`
-  - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and Android `cRHighScore::{UnInit, Exit}`
+  - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and Android `cRHighScore::{UnInit, Exit}`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: file-backed cRSubHighScore overlays, name-entry editing, and replay/submit actions are ported
 - mutable config and score-file root: `partial`
@@ -87,7 +87,7 @@ Current high-signal entries:
   - implementation: [`track.zig`](../../zig/src/track.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original gameplay-side spawn timing and windowing inside `update_subgame` are ported
 - gameplay subgame lifecycle: `partial`
-  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRCameraman::{Init, AI}`, and the track-build passes `cRSubGame::{SmoothTrack, SlideSmoothTrack}`
+  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `initialize_subgoldy`, `update_subgoldy`, `initialize_damage_guage`, `update_damage_guage`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRSubGoldy::{Init, AI}`, `cRDamageGuage::{Init, AI}`, `cRCameraman::{Init, AI}`, and the track-build passes `cRSubGame::{SmoothTrack, SlideSmoothTrack}`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
   - replace when: the original `cRSubGame::AI()` loop, camera flow, and remaining mode-specific runtime behaviors are ported
 - debug asset browser and smoke path: `debug`
