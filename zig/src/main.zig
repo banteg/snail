@@ -226,6 +226,7 @@ const AppState = struct {
             .level_index = level_index,
         };
         errdefer state.deinit();
+        try state.high_score_tables.loadFromRuntimeRoot(allocator, options.runtime_root_path);
 
         switch (options.command) {
             .debug, .smoke => {

@@ -149,6 +149,7 @@ Current behavior:
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the front-end hierarchy now follows the recovered constructor labels from the binary: top level `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, and `New Game` submenu `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, `Back`
 - `Help` uses the shipped help background directly, while `INTRO/INTRO.TXT` and `INTRO/CREDITS.TXT` now share the recovered `SpaceRed` plus `INTROTEXT.OGG` text-screen flow; `Postal Mode`, `Time Trial`, `Challenge Mode`, and `Tutorial` now use the recovered mode-to-level handoff, while score presentation and later front-end progression still remain unresolved
+- the runtime now has an explicit mutable state root at `artifacts/runtime`, and the high-score screen already loads compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat` overlays from there when present
 
 Current note:
 
@@ -172,6 +173,7 @@ Notes:
 - `zig build run` now enters the default game path, shows the archive-backed splash, intro crawl, and menu flow, and can enter the current tutorial or arcade level path
 - `zig build run -- debug` opens the interactive archive browser and waits until you close it
 - `zig build run -- smoke` opens the window briefly, loads texture and audio paths from the archive, and exits automatically for verification
+- `--runtime-dir` overrides the mutable state root for `SnailMail.cfg` and `ScoreA/B/C.dat`; the default is `artifacts/runtime`
 - current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation
 
 Interactive controls for `zig build run -- debug`:

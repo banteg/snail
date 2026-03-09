@@ -133,7 +133,7 @@ Command behavior:
 - `zig build run -- smoke` opens briefly, warms key asset paths, and exits for verification
 - windowed mode is the intentional development default; `--fullscreen` is opt-in until the original fullscreen or config behavior is ported
 - `--runtime-dir` selects the mutable runtime-state root, which defaults to `artifacts/runtime`
-- the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now reserves the runtime root for those future config and score files instead of using the repo root
+- the original executable reads and writes `SnailMail.cfg` plus `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`; the rewrite now uses the runtime root for those mutable files, and it already loads compact score overlays from `ScoreA/B/C.dat` there
 
 Interactive controls for `zig build run -- debug`:
 

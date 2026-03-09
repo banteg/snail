@@ -357,6 +357,16 @@
       "description": "Maps ring or special-effect modes onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families."
     },
     {
+      "address": "0x440020",
+      "name": "deserialize_compact_high_score_record",
+      "description": "Validates one compact ScoreA/B/C record checksum, copies its scalar fields, name, and replay samples into the expanded cRSubHighScore entry, and marks the entry active."
+    },
+    {
+      "address": "0x440170",
+      "name": "serialize_compact_high_score_record",
+      "description": "Compacts one active cRSubHighScore entry into the ScoreA/B/C on-disk record format, including checksum, name, and variable replay payload arrays."
+    },
+    {
       "address": "0x441540",
       "name": "initialize_salt_hazard_pool"
     },

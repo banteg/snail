@@ -36,6 +36,10 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
   - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the actual config blob parser and high-score overlay serializer are ported onto that runtime root
+- compact high-score overlay loading: `partial`
+  - evidence: Binary Ninja decompile of `deserialize_compact_high_score_record`, `serialize_compact_high_score_record`, `load_high_scores_from_file`, and `save_high_scores_and_config`
+  - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the port preserves the full replay payload arrays, supports writing overlays back out, and wires score mutation from the actual gameplay or front-end flow
 - front-end font atlas registration, width measurement, and tutorial icon tokens: `verified`
   - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas and tutorial `Message=` strings using `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;`
   - implementation: [`game_font.zig`](../../zig/src/game_font.zig), [`main.zig`](../../zig/src/main.zig)
