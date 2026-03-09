@@ -2473,8 +2473,6 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
     const score_total = if (state.level_runner) |runner| runner.score.total else 0;
-    const damage_gauge = if (state.level_runner) |runner| runner.damage_gauge else 0.0;
-    const damage_warning = if (state.level_runner) |runner| runner.damageWarningLabel() else "idle";
     const elapsed_millis = if (state.level_runner) |runner| runner.stopwatch.elapsedMillis() else 0;
     const accepts_input = if (state.level_runner) |runner| runner.acceptsGameplayInput() else false;
     const package_icon = game_font.IconGlyph.package.byte();
@@ -2489,7 +2487,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {d:.3}s  damage {d:.2}  warn {s}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {d:.3}s  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2500,8 +2498,6 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             parcel_target,
             score_total,
             @as(f32, @floatFromInt(elapsed_millis)) / 1000.0,
-            damage_gauge,
-            damage_warning,
             loaded_track_preview.total_rows,
         },
     );
@@ -2514,6 +2510,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), body_font_size, .light_gray);
 
     if (state.level_runner) |runner| {
+        drawGameplayStatusWidgets(state, layout, runner);
         rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
 
         var runner_buffer: [384]u8 = undefined;
@@ -2556,6 +2553,112 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const crosshair_thickness = @max(layout.scaleInt(2), 1);
     rl.drawRectangle(@divTrunc(screenWidth(), 2) - crosshair_radius, @divTrunc(screenHeight(), 2), crosshair_radius * 2, crosshair_thickness, crosshair_color);
     rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
+}
+
+fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+    drawDamageGaugeWidget(state, layout, runner);
+    if (runner.session_mode == .postal) {
+        drawVisibleLifeStrip(state, layout, runner.visible_life_stock);
+    }
+}
+
+fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+    const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
+    const fill_margin = layout.scaleFloat(4.0);
+    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
+    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
+    const fill_ratio = std.math.clamp(runner.damage_gauge, 0.0, 1.0);
+    const active_fill_height = fill_height * fill_ratio;
+    const pulse = if (runner.damage_warning_state == .idle)
+        @as(f32, 0.0)
+    else
+        (@sin(@as(f32, @floatCast(state.render_time_seconds * 8.0))) + 1.0) * 0.5;
+    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
+    const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
+    const fill_color = damageGaugeColor(fill_ratio, runner.damage_warning_state, pulse);
+
+    drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+
+    const inner = rl.Rectangle{
+        .x = panel.x + fill_margin,
+        .y = panel.y + fill_margin,
+        .width = fill_width,
+        .height = fill_height,
+    };
+    rl.drawRectangleRounded(inner, 0.12, 6, .{ .r = 255, .g = 255, .b = 255, .a = 20 });
+
+    if (active_fill_height > 0.0) {
+        const fill_rect = rl.Rectangle{
+            .x = inner.x,
+            .y = inner.y + (fill_height - active_fill_height),
+            .width = fill_width,
+            .height = active_fill_height,
+        };
+        rl.drawRectangleRounded(fill_rect, 0.12, 6, fill_color);
+    }
+
+    rl.drawRectangleRoundedLinesEx(
+        panel,
+        0.18,
+        8,
+        layout.scaleFloat(2.0),
+        .{ .r = 255, .g = 255, .b = 255, .a = outline_alpha },
+    );
+}
+
+fn drawVisibleLifeStrip(state: *const AppState, layout: VirtualLayout, visible_life_stock: u32) void {
+    const panel = layout.mapRect(448.0, 26.0, 158.0, 28.0);
+    const slot_width = layout.scaleFloat(12.0);
+    const slot_height = layout.scaleFloat(14.0);
+    const gap = layout.scaleFloat(4.0);
+    const start_x = panel.x + layout.scaleFloat(38.0);
+    const slot_y = panel.y + layout.scaleFloat(7.0);
+
+    drawAppText(state, "Lives", @intFromFloat(panel.x), @intFromFloat(panel.y + layout.scaleFloat(5.0)), layout.fontSize(16), .light_gray);
+
+    for (0..9) |slot_index| {
+        const filled = slot_index < visible_life_stock;
+        const rect = rl.Rectangle{
+            .x = start_x + (@as(f32, @floatFromInt(slot_index)) * (slot_width + gap)),
+            .y = slot_y,
+            .width = slot_width,
+            .height = slot_height,
+        };
+        rl.drawRectangleRounded(
+            rect,
+            0.22,
+            6,
+            if (filled)
+                .{ .r = 248, .g = 196, .b = 82, .a = 232 }
+            else
+                .{ .r = 255, .g = 255, .b = 255, .a = 24 },
+        );
+        rl.drawRectangleRoundedLinesEx(
+            rect,
+            0.22,
+            6,
+            layout.scaleFloat(1.0),
+            if (filled)
+                .{ .r = 255, .g = 234, .b = 172, .a = 255 }
+            else
+                .{ .r = 255, .g = 255, .b = 255, .a = 96 },
+        );
+    }
+}
+
+fn damageGaugeColor(fill_ratio: f32, warning_state: gameplay.DamageWarningState, pulse: f32) rl.Color {
+    if (warning_state != .idle) {
+        const green: u8 = @intFromFloat(160.0 + 72.0 * pulse);
+        return .{ .r = 255, .g = green, .b = 88, .a = 232 };
+    }
+    if (fill_ratio >= 0.75) {
+        return .{ .r = 232, .g = 78, .b = 72, .a = 224 };
+    }
+    if (fill_ratio >= 0.35) {
+        return .{ .r = 244, .g = 170, .b = 64, .a = 216 };
+    }
+    return .{ .r = 94, .g = 204, .b = 122, .a = 208 };
 }
 
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {

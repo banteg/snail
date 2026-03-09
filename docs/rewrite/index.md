@@ -147,6 +147,7 @@ Current behavior:
 - the default in-level camera now follows the runner forward instead of reusing the debug orbit camera, which makes the level path much closer to a playable Turbo viewpoint
 - the authored `Sample=` and `Message=` metadata on active level segments now drives voice playback and timed prompt queueing in the default level path instead of being trapped in the debug browser only
 - the runner now keeps a dedicated gameplay stopwatch shaped after the recovered `advance_timer_counters` helper, so route timing is carried by runtime state instead of only being reconstructed from `tick_count` at the result screen
+- the gameplay HUD now also renders a dedicated damage gauge widget and a postal-only 9-slot life strip instead of leaving those recovered states only in debug text
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds instead of relying on keyboard-only lane changes
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the front-end hierarchy now follows the recovered constructor labels from the binary: top level `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, and `New Game` submenu `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, `Back`

@@ -96,6 +96,7 @@ The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) d
 - a default in-level camera that now follows the runner forward instead of reusing the debug orbit camera, making the level path much closer to a playable Turbo view
 - the authored `Sample=` and `Message=` metadata from active level segments now surfaces in the default level path through timed prompt queueing instead of a permanent footer banner, so tutorial voice clips and their text prompts are no longer ignored there
 - the runner now keeps a dedicated gameplay stopwatch shaped after the recovered `advance_timer_counters` helper, so route times no longer come only from converting `tick_count` at the end of the run
+- the gameplay HUD now also renders a dedicated damage gauge widget and a postal-only 9-slot life strip instead of leaving those recovered states buried only in text
 - the default level path now also accepts mouse steering by mapping cursor motion onto the current lane bounds, which is closer to the tutorial’s intended control path than keyboard-only lane nudges
 - the default level HUD now surfaces parcel progress and finish state, and `Enter` returns to the menu once the runner reaches the end of the authored level path
 - the default front-end now uses decompile-backed menu labels and hierarchy: `New Game`, `High Scores`, `Options`, `Credits`, `Exit`, with a recovered `New Game` submenu of `Tutorial`, `Postal Mode`, `Time Trial`, `Challenge Mode`, `Help`, and `Back`
