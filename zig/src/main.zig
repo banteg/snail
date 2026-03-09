@@ -3008,7 +3008,12 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         return loaded_track_preview.previewCamera(0.0, 0);
     }
 
-    const eye = runner.worldPosition(loaded_track_preview, 0.82);
+    const player_position = runner.worldPosition(loaded_track_preview, 0.82);
+    const player_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
+        runner.current_global_row,
+        runner.resolved_lane_index,
+        runner.row_position,
+    ) orelse 0.0;
     const max_target_row_position = @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.5, 0.5);
     const target_row_position = std.math.clamp(runner.row_position + 8.0, 0.5, max_target_row_position);
     const target_global_row = @min(@as(usize, @intFromFloat(@floor(target_row_position))), loaded_track_preview.total_rows - 1);
@@ -3023,9 +3028,16 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         target_row_position,
     ) orelse 0.0;
     const target = loaded_track_preview.worldPositionForLane(target_lane_center, target_row_position, target_floor + 0.62);
+    // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
+    // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
+    const position = rl.Vector3{
+        .x = player_position.x * 0.5,
+        .y = player_floor + 1.8,
+        .z = player_position.z - 0.5,
+    };
 
     return .{
-        .position = eye,
+        .position = position,
         .target = target,
         .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
         .fovy = 68.0,
@@ -3306,8 +3318,11 @@ test "gameplay camera looks ahead of the runner" {
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
 
     const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
     try std.testing.expect(camera.target.z > camera.position.z);
+    try std.testing.expect(camera.position.z < player_position.z);
     try std.testing.expect(camera.position.y > 0.0);
+    try std.testing.expect(camera.position.y > player_position.y);
     try std.testing.expect(camera.target.y >= 0.0);
     try std.testing.expectApproxEqAbs(@as(f32, 68.0), camera.fovy, 0.001);
 }
