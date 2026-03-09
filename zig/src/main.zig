@@ -57,9 +57,6 @@ const OptionsMenuItem = frontend.OptionsMenuItem;
 const options_menu_items = frontend.options_menu_items;
 const RouteMenuAction = frontend.RouteMenuAction;
 const route_menu_actions = frontend.route_menu_actions;
-const mainMenuItemHint = frontend.mainMenuItemHint;
-const newGameMenuHint = frontend.newGameMenuHint;
-const optionsMenuTitle = frontend.optionsMenuTitle;
 const frontendRouteModeLabel = frontend.frontendRouteModeLabel;
 const routeMenuActionLabel = frontend.routeMenuActionLabel;
 const routeMenuHint = frontend.routeMenuHint;
@@ -169,6 +166,16 @@ const post_level_high_score_actions = [_]PostLevelHighScoreAction{
     .submit,
 };
 
+const HighScoreMenuAction = enum {
+    back,
+    switch_table,
+};
+
+const high_score_menu_actions = [_]HighScoreMenuAction{
+    .back,
+    .switch_table,
+};
+
 const Mode = enum {
     textures,
     audio,
@@ -204,6 +211,7 @@ const AppState = struct {
     new_game_menu_index: usize = 0,
     options_menu_index: usize = 0,
     high_scores_menu_index: usize = 0,
+    high_scores_action_index: usize = 1,
     exit_prompt_choice_index: usize = 0,
     exit_prompt_return_phase: GamePhase = .main_menu,
     completion_action_index: usize = 0,
@@ -300,7 +308,10 @@ const AppState = struct {
                 try state.reloadObject();
                 try state.reloadLevel();
             },
-            .game => try state.enterGamePhase(.boot),
+            .game => if (options.start_phase) |start_phase|
+                try state.enterStartPhase(start_phase)
+            else
+                try state.enterGamePhase(.boot),
         }
         return state;
     }
@@ -771,10 +782,13 @@ const AppState = struct {
                     }
                 } else {
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                        self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, -1);
+                        self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, -1);
                     }
                     if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                        self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
+                        self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, 1);
+                    }
+                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                        try self.activateHighScoreMenuAction(high_score_menu_actions[self.high_scores_action_index]);
                     }
                 }
             },
@@ -864,11 +878,36 @@ const AppState = struct {
         try self.syncGamePhaseResources();
     }
 
+    fn enterStartPhase(self: *AppState, phase: GamePhase) !void {
+        try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path);
+
+        switch (phase) {
+            .boot => try self.enterGamePhase(.boot),
+            .intro,
+            .main_menu,
+            .new_game_menu,
+            .options_menu,
+            .high_scores_menu,
+            .help,
+            .credits,
+            => try self.enterGamePhase(phase),
+            .route_map_menu => {
+                self.frontend_route_mode = .postal;
+                self.frontend_route_index = self.initialFrontendRouteIndex(.postal);
+                self.route_menu_action_index = 0;
+                try self.enterGamePhase(.route_map_menu);
+            },
+            .level => try self.enterGameplayShell(default_level_path),
+            .exit_prompt, .completion_screen => return error.UnsupportedStartPhase,
+        }
+    }
+
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         switch (item) {
             .new_game => try self.enterGamePhase(.new_game_menu),
             .high_scores => {
                 self.high_scores_menu_index = 0;
+                self.high_scores_action_index = 1;
                 try self.enterGamePhase(.high_scores_menu);
             },
             .options => try self.enterGamePhase(.options_menu),
@@ -928,6 +967,13 @@ const AppState = struct {
         switch (action) {
             .cancel => try self.cancelPostLevelHighScoreEntry(),
             .submit => try self.submitPostLevelHighScore(),
+        }
+    }
+
+    fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
+        switch (action) {
+            .back => try self.enterGamePhase(.main_menu),
+            .switch_table => self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1),
         }
     }
 
@@ -1907,7 +1953,10 @@ pub fn main() !void {
         (runtime_config_result.loaded_from_file and runtime_config_result.blob.fullscreenEnabled());
     runtime_config_result.blob.setFullscreenEnabled(startup_fullscreen);
     // Development default: stay windowed until fullscreen is requested explicitly or a saved runtime config says otherwise.
-    rl.setConfigFlags(.{ .fullscreen_mode = startup_fullscreen });
+    rl.setConfigFlags(.{
+        .fullscreen_mode = startup_fullscreen,
+        .window_hidden = options.hidden_window,
+    });
     const initial_window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command);
     rl.initWindow(initial_window_size.width, initial_window_size.height, "snail");
     defer rl.closeWindow();
@@ -2026,115 +2075,59 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const panels = app_ui.menuPanels(layout);
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "Main Menu", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-
-    for (main_menu_items, 0..) |item, index| {
-        drawMenuItem(state, layout, index, state.menu_index, item.label());
-    }
-
-    const selected = main_menu_items[state.menu_index];
-    const control_note = layout.mapPoint(312.0, 170.0);
-    const selection_note = layout.mapPoint(312.0, 210.0);
-    const status_note = layout.mapPoint(312.0, 276.0);
-    const control_x: i32 = @intFromFloat(control_note.x);
-    const control_y: i32 = @intFromFloat(control_note.y);
-    const selection_x: i32 = @intFromFloat(selection_note.x);
-    const selection_y: i32 = @intFromFloat(selection_note.y);
-    const status_x: i32 = @intFromFloat(status_note.x);
-    const status_y: i32 = @intFromFloat(status_note.y);
-
-    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
-    drawAppText(state, "Up/Down select", control_x, control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Enter confirm", control_x, control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc quit", selection_x, selection_y, layout.fontSize(20), .light_gray);
-    if (mainMenuItemHint(selected)) |hint| {
-        try drawWrappedText(state, hint, status_x, status_y, panels.detail_width, layout.fontSize(20), .sky_blue);
+    const item_y = [_]f32{ 90.0, 144.0, 198.0, 252.0, 390.0 };
+    for (main_menu_items, item_y, 0..) |item, local_y, index| {
+        drawFrontendMenuLabel(state, layout, 92.0, local_y, item.label(), state.menu_index == index, .left);
     }
 
     if (state.game_status_message) |message| {
-        try drawFooterMessage(state, layout, panels.footer_panel, message);
+        try drawFrontendStatusMessage(state, layout, message);
     }
 }
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const panels = app_ui.menuPanels(layout);
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "New Game", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-
-    for (new_game_menu_items, 0..) |item, index| {
-        drawMenuItem(state, layout, index, state.new_game_menu_index, item.label());
+    const primary_item_y = [_]f32{ 80.0, 134.0, 188.0, 242.0 };
+    for (new_game_menu_items[0..4], primary_item_y, 0..) |item, local_y, index| {
+        drawFrontendMenuLabel(state, layout, 92.0, local_y, item.label(), state.new_game_menu_index == index, .left);
     }
-
-    const selected = new_game_menu_items[state.new_game_menu_index];
-    drawAppText(state, selected.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
-    if (newGameMenuHint(selected)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
-    }
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Enter confirm", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(20), .light_gray);
+    drawFrontendMenuLabel(state, layout, 92.0, 350.0, "Help", state.new_game_menu_index == 4, .left);
+    drawFrontendMenuLabel(state, layout, 204.0, 350.0, "Back", state.new_game_menu_index == 5, .left);
 
     if (state.game_status_message) |message| {
-        try drawFooterMessage(state, layout, panels.footer_panel, message);
+        try drawFrontendStatusMessage(state, layout, message);
     }
 }
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const panels = app_ui.menuPanels(layout);
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "Options", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-
+    const item_y = [_]f32{ 83.0, 137.0, 191.0, 245.0 };
     for (options_menu_items, 0..) |item, index| {
+        const selected = state.options_menu_index == index;
         var label_buffer: [64]u8 = undefined;
-        const label = try frontend.optionsMenuLabel(
-            item,
-            state.runtime_config.fullscreenEnabled(),
-            state.runtime_config.soundVolume(),
-            state.runtime_config.musicVolume(),
-            &label_buffer,
-        );
-        drawMenuItem(state, layout, index, state.options_menu_index, label);
-    }
-
-    const selected = options_menu_items[state.options_menu_index];
-    drawAppText(state, optionsMenuTitle(selected), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
-    if (frontend.optionsMenuHint(state.runtime_config_loaded_from_file, selected)) |hint| {
-        try drawWrappedText(state, hint, panels.detail_body_x, panels.detail_body_y, panels.detail_width, layout.fontSize(22), .light_gray);
-    }
-
-    switch (selected) {
-        .fullscreen => {
-            drawAppText(
+        switch (item) {
+            .fullscreen => drawFrontendMenuLabel(
                 state,
-                if (state.runtime_config.fullscreenEnabled()) "Saved full-screen: On" else "Saved full-screen: Off",
-                panels.detail_body_x,
-                panels.detail_body_y + layout.scaleInt(64),
-                layout.fontSize(20),
-                .sky_blue,
-            );
-        },
-        .sound_volume => try drawOptionsSliderRow(state, layout, "Sounds", state.runtime_config.soundVolume(), panels),
-        .music_volume => try drawOptionsSliderRow(state, layout, "Music", state.runtime_config.musicVolume(), panels),
-        .back => {
-            drawAppText(state, "Leave Options", panels.detail_body_x, panels.detail_body_y + layout.scaleInt(64), layout.fontSize(20), .sky_blue);
-        },
+                layout,
+                162.0,
+                item_y[index],
+                if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
+                selected,
+                .left,
+            ),
+            .sound_volume => {
+                const label = try std.fmt.bufPrint(&label_buffer, "Sounds Volume {d:>3.0}%", .{state.runtime_config.soundVolume() * 100.0});
+                drawFrontendMenuLabel(state, layout, 162.0, item_y[index], label, selected, .left);
+            },
+            .music_volume => {
+                const label = try std.fmt.bufPrint(&label_buffer, "Music Volume {d:>3.0}%", .{state.runtime_config.musicVolume() * 100.0});
+                drawFrontendMenuLabel(state, layout, 162.0, item_y[index], label, selected, .left);
+            },
+            .back => drawFrontendMenuLabel(state, layout, 162.0, item_y[index], "Back", selected, .left),
+        }
     }
 
-    const config_source_text = if (state.runtime_config_loaded_from_file)
-        "Config source: runtime file"
-    else
-        "Config source: recovered defaults";
-    drawAppText(state, config_source_text, panels.detail_body_x, panels.detail_body_y + layout.scaleInt(112), layout.fontSize(18), .dark_gray);
-
-    drawAppText(state, "Up/Down select", panels.control_x, panels.control_y, layout.fontSize(20), .ray_white);
-    drawAppText(state, "Left/Right adjust", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Enter toggle or back", panels.control_x, panels.control_y + layout.scaleInt(52), layout.fontSize(20), .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(78), layout.fontSize(20), .light_gray);
+    if (state.game_status_message) |message| {
+        try drawFrontendStatusMessage(state, layout, message);
+    }
 }
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -2182,66 +2175,46 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const panels = app_ui.menuPanels(layout);
     const pending_entry = state.postLevelHighScoreContext();
     const selected_mode = if (pending_entry) |context|
         context.mode
     else
         high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
-    const selected_mode_index = highScoreModeIndex(selected_mode);
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-
-    for (high_score_screen_modes, 0..) |mode, index| {
-        const label = switch (mode) {
-            .postal => "Postal Scores",
-            .challenge => "Challenge Scores",
-        };
-        drawMenuItem(state, layout, index, selected_mode_index, label);
-    }
-
-    drawAppText(state, selected_mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
+    drawFrontendMenuLabel(
+        state,
+        layout,
+        app_ui.authored_width * 0.5,
+        64.0,
+        if (pending_entry != null) "Enter Your Name Here!" else highScoreScreenTitle(selected_mode),
+        true,
+        .center,
+    );
 
     if (pending_entry) |context| {
-        const result = state.pending_run_result orelse return;
-
-        var message_buffer: [160]u8 = undefined;
-        const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}>Enter your name here!", .{ context.rank + 1, result.level_name });
-        try drawWrappedText(
-            state,
-            message,
-            panels.detail_body_x,
-            panels.detail_body_y,
-            panels.detail_width,
-            layout.fontSize(18),
-            .sky_blue,
-        );
-
         var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
         const draft_name = if (state.postLevelHighScoreDraft().len == 0)
             "_"
         else
             try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
-        drawHighScoreTable(state, selected_mode, layout, panels, context.rank, draft_name, true);
-        drawActionButtons(
+        drawHighScoreTable(state, layout, context.rank, draft_name, true, selected_mode);
+        drawFrontendMenuLabel(state, layout, 210.0, 412.0, post_level_high_score_actions[0].label(), state.post_level_high_score_action_index == 0, .center);
+        drawFrontendMenuLabel(state, layout, 375.0, 412.0, post_level_high_score_actions[1].label(), state.post_level_high_score_action_index == 1, .center);
+    } else {
+        drawHighScoreTable(state, layout, null, null, false, selected_mode);
+        drawFrontendMenuLabel(state, layout, 188.0, 412.0, "Back", state.high_scores_action_index == 0, .center);
+        drawFrontendMenuLabel(
             state,
             layout,
-            panels.control_x + @divTrunc(layout.scaleInt(132), 2),
-            panels.control_y + layout.scaleInt(10),
-            &[_][]const u8{ post_level_high_score_actions[0].label(), post_level_high_score_actions[1].label() },
-            state.post_level_high_score_action_index,
+            353.0,
+            412.0,
+            highScoreTableToggleLabel(selected_mode),
+            state.high_scores_action_index == 1,
+            .center,
         );
-        drawAppText(state, "Type name  Left/Right choose", panels.control_x, panels.control_y + layout.scaleInt(42), layout.fontSize(18), .ray_white);
-        drawAppText(state, "Enter confirm  Esc cancel", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(18), .light_gray);
-    } else {
-        drawHighScoreTable(state, selected_mode, layout, panels, null, null, false);
-        drawAppText(state, "Up/Down or Left/Right change table", panels.control_x, panels.control_y, layout.fontSize(18), .ray_white);
-        drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(18), .light_gray);
     }
 
     if (state.game_status_message) |message| {
-        try drawFooterMessage(state, layout, panels.footer_panel, message);
+        try drawFrontendStatusMessage(state, layout, message);
     }
 }
 
@@ -2283,26 +2256,21 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawHighScoreTable(
     state: *const AppState,
-    mode: high_score.Mode,
     layout: VirtualLayout,
-    panels: MenuPanels,
     highlight_index: ?usize,
     editing_name: ?[]const u8,
     hide_replay: bool,
+    mode: high_score.Mode,
 ) void {
     const entries = state.high_score_tables.visibleEntries(mode);
-    const row_start_y = panels.detail_body_y + layout.scaleInt(28);
-    const row_height = layout.scaleInt(18);
-    const rank_x = panels.detail_body_x;
-    const name_x = panels.detail_body_x + layout.scaleInt(44);
-    const score_x = panels.detail_body_x + layout.scaleInt(146);
-    const replay_x = panels.detail_body_x + layout.scaleInt(206);
-
-    drawAppText(state, mode.label(), panels.detail_body_x, panels.detail_body_y, layout.fontSize(18), .sky_blue);
-    drawAppText(state, "#", rank_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
-    drawAppText(state, "Name", name_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
-    drawAppText(state, "Score", score_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
-    drawAppText(state, "Replay", replay_x, panels.detail_body_y + layout.scaleInt(26), layout.fontSize(16), .light_gray);
+    const row_start_y: i32 = @intFromFloat(layout.mapPoint(0.0, 111.0).y);
+    const row_height = layout.scaleInt(27);
+    const rank_x: i32 = @intFromFloat(layout.mapPoint(112.0, 0.0).x);
+    const name_x: i32 = @intFromFloat(layout.mapPoint(154.0, 0.0).x);
+    const score_x: i32 = @intFromFloat(layout.mapPoint(430.0, 0.0).x);
+    const replay_x: i32 = @intFromFloat(layout.mapPoint(536.0, 0.0).x);
+    const row_panel_x: i32 = @intFromFloat(layout.mapPoint(96.0, 0.0).x);
+    const row_panel_width = layout.scaleFloat(450.0);
 
     for (entries, 0..) |entry, index| {
         const row_y = row_start_y + @as(i32, @intCast(index)) * row_height;
@@ -2315,10 +2283,10 @@ fn drawHighScoreTable(
         if (row_color.a != 0) {
             rl.drawRectangleRounded(
                 .{
-                    .x = @floatFromInt(panels.detail_body_x - layout.scaleInt(8)),
+                    .x = @floatFromInt(row_panel_x),
                     .y = @floatFromInt(row_y - layout.scaleInt(2)),
-                    .width = @floatFromInt(panels.detail_width - layout.scaleInt(4)),
-                    .height = layout.scaleFloat(18.0),
+                    .width = row_panel_width,
+                    .height = layout.scaleFloat(22.0),
                 },
                 0.16,
                 4,
@@ -2328,17 +2296,17 @@ fn drawHighScoreTable(
 
         var rank_buffer: [8]u8 = undefined;
         const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}.", .{index + 1}) catch "";
-        drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(16), .ray_white);
+        drawAppText(state, rank_text, rank_x, row_y, layout.fontSize(18), .ray_white);
         const display_name = if (highlight_index != null and highlight_index.? == index and editing_name != null)
             editing_name.?
         else
             highScoreDisplayName(&entry);
-        drawAppText(state, display_name, name_x, row_y, layout.fontSize(16), .ray_white);
+        drawAppText(state, display_name, name_x, row_y, layout.fontSize(18), .ray_white);
 
         var score_buffer: [32]u8 = undefined;
         const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{entry.score}) catch "0";
-        drawAppText(state, score_text, score_x, row_y, layout.fontSize(16), .gold);
-        drawAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", replay_x, row_y, layout.fontSize(16), .light_gray);
+        drawAppText(state, score_text, score_x - measureAppText(state, score_text, layout.fontSize(18)), row_y, layout.fontSize(18), .gold);
+        drawAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", replay_x - measureAppText(state, if (!hide_replay and entry.has_replay) "Replay" else "-", layout.fontSize(18)), row_y, layout.fontSize(18), .light_gray);
     }
 }
 
@@ -2359,6 +2327,97 @@ fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel
         layout.fontSize(20),
         .ray_white,
     );
+}
+
+const FrontendTextAlign = enum {
+    left,
+    center,
+    right,
+};
+
+fn drawFrontendTextAligned(
+    state: *const AppState,
+    layout: VirtualLayout,
+    local_x: f32,
+    local_y: f32,
+    text: []const u8,
+    authored_size: i32,
+    color: rl.Color,
+    alignment: FrontendTextAlign,
+) void {
+    const point = layout.mapPoint(local_x, local_y);
+    const font_size = layout.fontSize(authored_size);
+    const width = measureAppText(state, text, font_size);
+    const draw_x = switch (alignment) {
+        .left => @as(i32, @intFromFloat(point.x)),
+        .center => @as(i32, @intFromFloat(point.x)) - @divTrunc(width, 2),
+        .right => @as(i32, @intFromFloat(point.x)) - width,
+    };
+    drawAppText(state, text, draw_x, @intFromFloat(point.y), font_size, color);
+}
+
+fn drawFrontendMenuLabel(
+    state: *const AppState,
+    layout: VirtualLayout,
+    local_x: f32,
+    local_y: f32,
+    text: []const u8,
+    active: bool,
+    alignment: FrontendTextAlign,
+) void {
+    const shadow_color: rl.Color = if (active)
+        .{ .r = 58, .g = 18, .b = 0, .a = 220 }
+    else
+        .{ .r = 0, .g = 0, .b = 0, .a = 176 };
+    drawFrontendTextAligned(state, layout, local_x + 2.0, local_y + 2.0, text, if (active) 28 else 26, shadow_color, alignment);
+    drawFrontendTextAligned(state, layout, local_x, local_y, text, if (active) 28 else 26, if (active) .gold else .ray_white, alignment);
+}
+
+fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
+    try drawFrontendNoticeBlock(state, layout, app_ui.authored_width * 0.5, 438.0, message, .ray_white);
+}
+
+fn drawFrontendNoticeBlock(
+    state: *const AppState,
+    layout: VirtualLayout,
+    center_x: f32,
+    local_y: f32,
+    message: []const u8,
+    color: rl.Color,
+) !void {
+    var line_buffer: [512]u8 = undefined;
+    var line_index: i32 = 0;
+    var parts = std.mem.splitScalar(u8, message, '>');
+    while (parts.next()) |part| {
+        const clipped = if (part.len > line_buffer.len - 1) part[0 .. line_buffer.len - 1] else part;
+        @memcpy(line_buffer[0..clipped.len], clipped);
+        line_buffer[clipped.len] = 0;
+        drawFrontendTextAligned(
+            state,
+            layout,
+            center_x,
+            local_y + @as(f32, @floatFromInt(line_index * 20)),
+            line_buffer[0..clipped.len],
+            20,
+            color,
+            .center,
+        );
+        line_index += 1;
+    }
+}
+
+fn highScoreScreenTitle(mode: high_score.Mode) []const u8 {
+    return switch (mode) {
+        .postal => "Postal High Scores",
+        .challenge => "Challenge High Scores",
+    };
+}
+
+fn highScoreTableToggleLabel(mode: high_score.Mode) []const u8 {
+    return switch (mode) {
+        .postal => "Challenge Scores",
+        .challenge => "Postal Scores",
+    };
 }
 
 fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
@@ -3602,10 +3661,6 @@ fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max
 
 fn drawMenuItem(state: *const AppState, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
     app_ui.drawMenuItem(uiContext(state), layout, index, selected_index, label);
-}
-
-fn drawOptionsSliderRow(state: *const AppState, layout: VirtualLayout, label: []const u8, value: f32, panels: MenuPanels) !void {
-    return app_ui.drawOptionsSliderRow(uiContext(state), layout, label, value, panels);
 }
 
 fn drawRouteSelectionDots(state: *const AppState, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {

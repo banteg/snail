@@ -13,7 +13,7 @@ Code-level convention:
 Current high-signal entries:
 
 - boot and main-menu shell: `scaffold`
-  - evidence: original loading-screen assets and recovered main-menu labels are now wired, but the overall front-end flow and most handlers are still not at original parity
+  - evidence: original loading-screen assets and recovered main-menu labels are now wired, and the main menu, new-game menu, options, and high-score screens now render as direct text overlays on the shipped `Menubg` backdrop instead of the older generic panel shell. The overall front-end flow and most handlers are still not at original parity.
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: title flow, menu assets, menu actions, and front-end copy are ported
 - loading-screen composition: `verified`
@@ -30,6 +30,7 @@ Current high-signal entries:
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `initialize_main_menu`, `destroy_main_menu`, and `initialize_new_game_menu`, plus cross-port Android and iOS symbols for `cRMainMenu::{Init, UnInit}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
+  - note: the current port now positions those labels directly on the `Menubg` board area instead of reusing the older debug-style left-list/detail-panel shell
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
 - shared exit prompt: `partial`
   - evidence: Binary Ninja decompile of `initialize_exit_prompt`, plus cross-port Android and iOS symbols for `cRExit::{Init, AI}`
@@ -39,6 +40,7 @@ Current high-signal entries:
 - front-end options menu fields: `partial`
   - evidence: Binary Ninja decompile of `initialize_options`, `update_options`, `destroy_options`, and `apply_audio_config_volumes`, plus cross-port Android and iOS symbols for `cROptions::{Init, AI, UnInit}`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
+  - note: the current port now renders the recovered fullscreen/music/sound/back rows directly on `Menubg` instead of the older two-panel helper UI
   - replace when: the original slider widgets, audio test feedback, and any remaining option fields are ported
 - help screen flow: `partial`
   - evidence: Binary Ninja decompile of `initialize_help`, `destroy_help`, and `update_help`, plus cross-port Android and iOS symbols for `cRHelp::{Init, AI}`
@@ -60,7 +62,7 @@ Current high-signal entries:
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and Android `cRHighScore::{UnInit, Exit}`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
-  - note: browse mode now behaves like a direct banked score screen instead of a separate postal/challenge/back submenu, and post-level name entry now reuses that same screen owner with an inline editable row, but replay rows are still read-only
+  - note: browse mode now behaves like a direct banked score screen instead of a separate postal/challenge/back submenu, and post-level name entry now reuses that same screen owner with an inline editable row. The current renderer also uses a direct `Menubg` overlay instead of the older panel shell, but replay rows are still read-only.
   - replace when: the original replay row controls and remaining `cRHighScore::AI()` behavior are ported
 - mutable config and score-file root: `partial`
   - evidence: Binary Ninja decompile of `initialize_default_runtime_config`, `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
