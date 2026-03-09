@@ -700,7 +700,7 @@
     {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
-      "description": "Seeds the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state before `update_cutscene` takes over. Cross-port Android symbols match this helper to `cRCutScene::Init()`."
+      "description": "Seeds and polls the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
     },
     {
       "address": "0x443650",
@@ -786,8 +786,8 @@
     },
     {
       "address": "0x448d30",
-      "name": "show_tip_message",
-      "description": "Allocates one of the small gameplay tip-message slots and seeds it with the requested text payload, warning if all slots are already occupied."
+      "name": "enqueue_tip_message",
+      "description": "Allocates one of the three small gameplay tip-message slots, seeds it with the requested text payload, and warns if all slots are already occupied."
     },
     {
       "address": "0x449460",
