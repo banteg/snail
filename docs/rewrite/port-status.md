@@ -91,6 +91,10 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `initialize_subgoldy`, `update_subgoldy`, `initialize_damage_guage`, `update_damage_guage`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRSubGoldy::{Init, AI}`, `cRDamageGuage::{Init, AI}`, `cRCameraman::{Init, AI}`, and the track-build passes `cRSubGame::{SmoothTrack, SlideSmoothTrack}`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
   - replace when: the original `cRSubGame::AI()` loop, camera flow, and remaining mode-specific runtime behaviors are ported
+- damage-gauge hazard and recovery deltas: `partial`
+  - evidence: Android `cRSubGoldy::Collision()` and `cRDamageGuage::Take(float,bool)`, which clamp the gauge to `[0,1]` and apply `-0.5` for health, `+0.04` for garbage, `+0.15` for salt, and `+1.0` for slug collisions
+  - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
+  - replace when: the unresolved `+0.02` collision path, the `bool`-gated suppression semantics, lives or death behavior, and the original gauge presentation are ported
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
 

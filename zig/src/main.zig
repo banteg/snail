@@ -2189,6 +2189,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
     const score_total = if (state.level_runner) |runner| runner.score.total else 0;
+    const damage_gauge = if (state.level_runner) |runner| runner.damage_gauge else 0.0;
     const finished = if (state.level_runner) |runner| runner.finished else false;
     const package_icon = game_font.IconGlyph.package.byte();
     const mouse_icon = game_font.IconGlyph.mouse.byte();
@@ -2202,7 +2203,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  rows {d}",
+        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  damage {d:.2}  rows {d}",
         .{
             loaded_level.mode,
             loaded_level.background orelse "<none>",
@@ -2212,6 +2213,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             parcel_count,
             parcel_target,
             score_total,
+            damage_gauge,
             loaded_track_preview.total_rows,
         },
     );
@@ -2229,7 +2231,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  finished {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  finished {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -2239,6 +2241,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.resolved_lane_index,
                 runner.speed_rows_per_second,
                 runner.recentEventLabel(),
+                runner.damage_gauge,
                 if (runner.finished) "yes" else "no",
             },
         );

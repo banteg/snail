@@ -107,6 +107,14 @@ pub const ScoreTotals = struct {
     completion_bonus: u32 = 0,
 };
 
+// PORT(partial): recovered from Android `cRSubGoldy::Collision()` callsites into
+// `cRDamageGuage::Take(float,bool)`. A separate +0.02 damage path from another pool
+// is still unresolved, so only the identified gameplay hazards are modeled here.
+const health_recover_delta: f32 = -0.5;
+const garbage_damage_delta: f32 = 0.04;
+const salt_damage_delta: f32 = 0.15;
+const slug_damage_delta: f32 = 1.0;
+
 const RowSample = struct {
     global_row: usize,
     traversable_bounds: track.LaneBounds,
@@ -146,6 +154,7 @@ pub const Runner = struct {
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
+    damage_gauge: f32 = 0.0,
     completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
 
@@ -468,6 +477,7 @@ pub const Runner = struct {
             .health => {
                 self.counters.health_pickups += 1;
                 self.recordScore(&self.score.health_collect, 250);
+                self.applyDamageGaugeDelta(health_recover_delta);
                 self.recent_event = .health_pickup;
             },
             .jetpack => {
@@ -476,14 +486,17 @@ pub const Runner = struct {
             },
             .garbage => {
                 self.counters.garbage_hits += 1;
+                self.applyDamageGaugeDelta(garbage_damage_delta);
                 self.recent_event = .garbage_hit;
             },
             .salt => {
                 self.counters.salt_hits += 1;
+                self.applyDamageGaugeDelta(salt_damage_delta);
                 self.recent_event = .salt_hit;
             },
             .slug => {
                 self.counters.slug_hits += 1;
+                self.applyDamageGaugeDelta(slug_damage_delta);
                 self.recent_event = .slug_hit;
             },
         }
@@ -525,6 +538,10 @@ pub const Runner = struct {
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
         self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
+    }
+
+    fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
+        self.damage_gauge = std.math.clamp(self.damage_gauge + delta, 0.0, 1.0);
     }
 };
 
@@ -716,24 +733,31 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
     try std.testing.expectEqual(@as(u32, 250), runner.score.total);
     try std.testing.expectEqual(@as(u32, 250), runner.score.health_collect);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
 
+    runner = Runner.init(&fixture.preview);
     const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, salt);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.salt_hits);
+    try std.testing.expectApproxEqAbs(salt_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("salt_hit", runner.recentEventLabel());
 
+    runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
 
+    runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
 
