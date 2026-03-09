@@ -87,7 +87,7 @@ Current high-signal entries:
   - implementation: [`track.zig`](../../zig/src/track.zig), [`main.zig`](../../zig/src/main.zig)
   - replace when: the original gameplay-side spawn timing and windowing inside `update_subgame` are ported
 - gameplay subgame lifecycle: `partial`
-  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, and `update_subgame`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, UnInit}` and the track-build passes `cRSubGame::{SmoothTrack, SlideSmoothTrack}`
+  - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `update_subgame_camera`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRCameraman::AI()`, and the track-build passes `cRSubGame::{SmoothTrack, SlideSmoothTrack}`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
   - replace when: the original `cRSubGame::AI()` loop, camera flow, and remaining mode-specific runtime behaviors are ported
 - debug asset browser and smoke path: `debug`

@@ -651,6 +651,16 @@
       "description": "Maps movement flag masks onto three queued visual-state channels in the player-side controller rooted at +0x2984."
     },
     {
+      "address": "0x446020",
+      "name": "update_subgame_camera",
+      "description": "Runs the active subgame camera update, choosing between the live cameraman follow pose, cached camera states, and direct identity handoffs before interpolating the view matrix back into the shared camera. Cross-port Android and iOS symbols match this helper to the outer `cRSubGame::CameraAI()` flow."
+    },
+    {
+      "address": "0x4461d0",
+      "name": "update_cameraman",
+      "description": "Builds the live follow-camera pose from player transform, attachment state, motion scalars, and backdrop zoom before handing the matrix back to `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::AI()`."
+    },
+    {
       "address": "0x4466d0",
       "name": "update_cutscene",
       "description": "Advances the player-side cutscene controller, including the completion camera blend and the handoff into `initialize_completion_screen`. Cross-port Android and iOS symbols match this helper to `cRCutScene::AI()`."
