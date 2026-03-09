@@ -84,3 +84,10 @@ Current high-signal entries:
   - replace when: `populate_track_runtime_entities` spawn timing and windowing are ported
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
+
+Deferred plan:
+
+- cross-port asset and content sweep
+  - Windows remains the canonical behavior target
+  - later, compare Android, iOS, and Wii assets against the Windows archive for higher-fidelity replacements, then evaluate whether any port-exclusive levels or content can be backported cleanly
+  - defer until the core Windows gameplay and front-end loop is much closer to done, so content curation does not get mixed into behavior-port work
