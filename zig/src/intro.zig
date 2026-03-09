@@ -332,6 +332,14 @@ fn drawProjectedTextLine(ui_font: *const game_font.Loaded, line: []const u8, top
     const line_width_world = measureLineWorldWidth(ui_font, line);
     var pen_x = -line_width_world * 0.5;
 
+    rl.gl.rlSetTexture(ui_font.texture.id);
+    defer rl.gl.rlSetTexture(0);
+
+    rl.gl.rlBegin(rl.gl.rl_quads);
+    defer rl.gl.rlEnd();
+
+    rl.gl.rlColor4ub(text_color.r, text_color.g, text_color.b, text_color.a);
+
     for (line) |byte| {
         if (byte == '\r' or byte == '\n') continue;
 
@@ -349,7 +357,7 @@ fn drawProjectedTextLine(ui_font: *const game_font.Loaded, line: []const u8, top
                 top_z,
                 top_z - glyph_height_world,
             )) |quad| {
-                drawTexturedQuad(
+                emitTexturedQuad(
                     ui_font.texture,
                     .{
                         .x = slot.source_x,
@@ -358,7 +366,6 @@ fn drawProjectedTextLine(ui_font: *const game_font.Loaded, line: []const u8, top
                         .height = slot.source_height,
                     },
                     quad,
-                    text_color,
                 );
             }
         }
@@ -428,13 +435,6 @@ fn projectQuad(
 fn drawTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: ProjectedQuad, tint: rl.Color) void {
     if (texture.width <= 0 or texture.height <= 0) return;
 
-    const inv_width = 1.0 / @as(f32, @floatFromInt(texture.width));
-    const inv_height = 1.0 / @as(f32, @floatFromInt(texture.height));
-    const tex_u0 = source.x * inv_width;
-    const tex_v0 = source.y * inv_height;
-    const tex_u1 = (source.x + source.width) * inv_width;
-    const tex_v1 = (source.y + source.height) * inv_height;
-
     rl.gl.rlSetTexture(texture.id);
     defer rl.gl.rlSetTexture(0);
 
@@ -442,6 +442,17 @@ fn drawTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: Projected
     defer rl.gl.rlEnd();
 
     rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    emitTexturedQuad(texture, source, quad);
+}
+
+fn emitTexturedQuad(texture: rl.Texture2D, source: rl.Rectangle, quad: ProjectedQuad) void {
+    const inv_width = 1.0 / @as(f32, @floatFromInt(texture.width));
+    const inv_height = 1.0 / @as(f32, @floatFromInt(texture.height));
+    const tex_u0 = source.x * inv_width;
+    const tex_v0 = source.y * inv_height;
+    const tex_u1 = (source.x + source.width) * inv_width;
+    const tex_v1 = (source.y + source.height) * inv_height;
 
     rl.gl.rlTexCoord2f(tex_u0, tex_v0);
     rl.gl.rlVertex2f(quad.top_left.x, quad.top_left.y);
