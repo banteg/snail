@@ -103,6 +103,11 @@ const PendingRunResult = struct {
     return_target: ResultReturnTarget,
 };
 
+const PendingHighScoreEntry = struct {
+    mode: high_score.Mode,
+    rank: usize,
+};
+
 const CompletionAction = enum {
     continue_flow,
     replay_level,
@@ -664,13 +669,16 @@ const AppState = struct {
                 .boot => self.should_exit = true,
                 .main_menu => try self.beginExitPrompt(.main_menu),
                 .intro, .credits => self.frontend_transition.beginFadeOut(.main_menu),
-                .new_game_menu, .high_scores_menu, .help => try self.enterGamePhase(.main_menu),
+                .new_game_menu, .help => try self.enterGamePhase(.main_menu),
+                .high_scores_menu => if (self.postLevelHighScoreContext() != null)
+                    try self.cancelPostLevelHighScoreEntry()
+                else
+                    try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
                 .cutscene => try self.enterGamePhase(.completion_screen),
                 .completion_screen => try self.continueCompletionScreen(),
-                .post_level_high_score => try self.continuePostLevelHighScore(),
             }
             return;
         }
@@ -743,11 +751,24 @@ const AppState = struct {
                 }
             },
             .high_scores_menu => {
-                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                    self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, -1);
-                }
-                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                    self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
+                if (self.postLevelHighScoreContext() != null) {
+                    self.collectPostLevelHighScoreTextInput();
+                    if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                        self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, -1);
+                    }
+                    if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                        self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
+                    }
+                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                        try self.activatePostLevelHighScoreAction(post_level_high_score_actions[self.post_level_high_score_action_index]);
+                    }
+                } else {
+                    if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+                        self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, -1);
+                    }
+                    if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+                        self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
+                    }
                 }
             },
             .exit_prompt => {
@@ -775,18 +796,6 @@ const AppState = struct {
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.activateCompletionAction(completion_actions[self.completion_action_index]);
-                }
-            },
-            .post_level_high_score => {
-                self.collectPostLevelHighScoreTextInput();
-                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                    self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, -1);
-                }
-                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                    self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activatePostLevelHighScoreAction(post_level_high_score_actions[self.post_level_high_score_action_index]);
                 }
             },
             .credits => {
@@ -912,7 +921,7 @@ const AppState = struct {
 
     fn activatePostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
         switch (action) {
-            .cancel => try self.continuePostLevelHighScore(),
+            .cancel => try self.cancelPostLevelHighScoreEntry(),
             .submit => try self.submitPostLevelHighScore(),
         }
     }
@@ -1034,16 +1043,16 @@ const AppState = struct {
     }
 
     fn continueCompletionScreen(self: *AppState) !void {
-        const result = self.pending_run_result orelse return;
-        if (result.high_score_mode != null and result.high_score_rank != null) {
+        if (self.postLevelHighScoreContext()) |context| {
             self.preparePostLevelHighScoreEntry();
-            try self.enterGamePhase(.post_level_high_score);
+            self.high_scores_menu_index = highScoreModeIndex(context.mode);
+            try self.enterGamePhase(.high_scores_menu);
             return;
         }
         try self.finishPendingRunReturn();
     }
 
-    fn continuePostLevelHighScore(self: *AppState) !void {
+    fn cancelPostLevelHighScoreEntry(self: *AppState) !void {
         self.clearPostLevelHighScoreEntry();
         try self.finishPendingRunReturn();
     }
@@ -1086,14 +1095,22 @@ const AppState = struct {
         try self.enterGameplayShell(level_path);
     }
 
+    fn postLevelHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
+        const result = self.pending_run_result orelse return null;
+        const mode = result.high_score_mode orelse return null;
+        const rank = result.high_score_rank orelse return null;
+        return .{
+            .mode = mode,
+            .rank = rank,
+        };
+    }
+
     fn preparePostLevelHighScoreEntry(self: *AppState) void {
         self.clearPostLevelHighScoreEntry();
         self.post_level_high_score_action_index = 1;
 
-        const result = self.pending_run_result orelse return;
-        const mode = result.high_score_mode orelse return;
-        const rank = result.high_score_rank orelse return;
-        const entry = self.highScoreEntry(mode, rank) orelse return;
+        const context = self.postLevelHighScoreContext() orelse return;
+        const entry = self.highScoreEntry(context.mode, context.rank) orelse return;
         const existing_name = entry.name();
         const clipped = existing_name[0..@min(existing_name.len, self.post_level_high_score_name_buf.len)];
         @memcpy(self.post_level_high_score_name_buf[0..clipped.len], clipped);
@@ -1129,19 +1146,15 @@ const AppState = struct {
     }
 
     fn submitPostLevelHighScore(self: *AppState) !void {
-        const result = self.pending_run_result orelse {
+        if (self.pending_run_result == null) {
             try self.enterGamePhase(.main_menu);
             return;
-        };
-        const mode = result.high_score_mode orelse {
+        }
+        const context = self.postLevelHighScoreContext() orelse {
             try self.finishPendingRunReturn();
             return;
         };
-        const rank = result.high_score_rank orelse {
-            try self.finishPendingRunReturn();
-            return;
-        };
-        const entry = self.highScoreEntryMut(mode, rank) orelse {
+        const entry = self.highScoreEntryMut(context.mode, context.rank) orelse {
             try self.finishPendingRunReturn();
             return;
         };
@@ -1243,7 +1256,7 @@ const AppState = struct {
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
-            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .post_level_high_score, .exit_prompt => {
+            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .exit_prompt => {
                 self.active_level_segment_index = null;
                 self.active_level_message = null;
                 self.mouse_level_lane_target = null;
@@ -1899,7 +1912,6 @@ fn drawGameUi(state: *const AppState) !void {
         .exit_prompt => try drawExitPromptUi(state, ui_layout),
         .cutscene => drawCutsceneUi(state, ui_layout),
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
-        .post_level_high_score => try drawPostLevelHighScoreUi(state, ui_layout),
         .credits => drawCurrentTextScript(state, ui_layout),
         .help => drawHelpUi(state, ui_layout),
         .level => try drawGameplayLevelUi(state, ui_layout),
@@ -2084,7 +2096,12 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const panels = app_ui.menuPanels(layout);
-    const selected_mode = high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
+    const pending_entry = state.postLevelHighScoreContext();
+    const selected_mode = if (pending_entry) |context|
+        context.mode
+    else
+        high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
+    const selected_mode_index = highScoreModeIndex(selected_mode);
     rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
     drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
@@ -2094,14 +2111,47 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             .postal => "Postal Scores",
             .challenge => "Challenge Scores",
         };
-        drawMenuItem(state, layout, index, state.high_scores_menu_index, label);
+        drawMenuItem(state, layout, index, selected_mode_index, label);
     }
 
     drawAppText(state, selected_mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
-    drawHighScoreTable(state, selected_mode, layout, panels, null, null, false);
 
-    drawAppText(state, "Up/Down or Left/Right change table", panels.control_x, panels.control_y, layout.fontSize(18), .ray_white);
-    drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(18), .light_gray);
+    if (pending_entry) |context| {
+        const result = state.pending_run_result orelse return;
+
+        var message_buffer: [160]u8 = undefined;
+        const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}>Enter your name here!", .{ context.rank + 1, result.level_name });
+        try drawWrappedText(
+            state,
+            message,
+            panels.detail_body_x,
+            panels.detail_body_y,
+            panels.detail_width,
+            layout.fontSize(18),
+            .sky_blue,
+        );
+
+        var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
+        const draft_name = if (state.postLevelHighScoreDraft().len == 0)
+            "_"
+        else
+            try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
+        drawHighScoreTable(state, selected_mode, layout, panels, context.rank, draft_name, true);
+        drawActionButtons(
+            state,
+            layout,
+            panels.control_x + @divTrunc(layout.scaleInt(132), 2),
+            panels.control_y + layout.scaleInt(10),
+            &[_][]const u8{ post_level_high_score_actions[0].label(), post_level_high_score_actions[1].label() },
+            state.post_level_high_score_action_index,
+        );
+        drawAppText(state, "Type name  Left/Right choose", panels.control_x, panels.control_y + layout.scaleInt(42), layout.fontSize(18), .ray_white);
+        drawAppText(state, "Enter confirm  Esc cancel", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(18), .light_gray);
+    } else {
+        drawHighScoreTable(state, selected_mode, layout, panels, null, null, false);
+        drawAppText(state, "Up/Down or Left/Right change table", panels.control_x, panels.control_y, layout.fontSize(18), .ray_white);
+        drawAppText(state, "Esc back", panels.control_x, panels.control_y + layout.scaleInt(26), layout.fontSize(18), .light_gray);
+    }
 
     if (state.game_status_message) |message| {
         try drawFooterMessage(state, layout, panels.footer_panel, message);
@@ -2506,7 +2556,7 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
     }
 
     const continue_text = if (result.high_score_mode != null and result.high_score_rank != null)
-        "Continue opens name entry"
+        "Continue opens high scores"
     else switch (result.return_target) {
         .postal_route_map, .time_trial_route_map => "Continue returns to the route map",
         .replay_current_level => "Continue follows the current challenge return path",
@@ -2521,48 +2571,6 @@ fn drawCompletionSummaryPanel(state: *const AppState, layout: VirtualLayout, res
         &[_][]const u8{ completion_actions[0].label(), completion_actions[1].label() },
         state.completion_action_index,
     );
-}
-
-fn drawPostLevelHighScoreUi(state: *const AppState, layout: VirtualLayout) !void {
-    const result = state.pending_run_result orelse return;
-    const mode = result.high_score_mode orelse return;
-    const rank = result.high_score_rank orelse return;
-    const panels = app_ui.menuPanels(layout);
-
-    rl.drawRectangleRounded(panels.menu_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-    rl.drawRectangleRounded(panels.detail_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 148 });
-
-    drawAppText(state, "High Scores", panels.title_x, panels.title_y, layout.fontSize(28), .ray_white);
-    drawAppText(state, mode.label(), panels.detail_title_x, panels.detail_title_y, layout.fontSize(30), .gold);
-
-    var message_buffer: [160]u8 = undefined;
-    const message = try std.fmt.bufPrint(&message_buffer, "New rank {d} from {s}>Enter your name here!", .{ rank + 1, result.level_name });
-    try drawWrappedText(
-        state,
-        message,
-        panels.detail_body_x,
-        panels.detail_body_y,
-        panels.detail_width,
-        layout.fontSize(18),
-        .sky_blue,
-    );
-
-    var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
-    const draft_name = if (state.postLevelHighScoreDraft().len == 0)
-        "_"
-    else
-        try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
-    drawHighScoreTable(state, mode, layout, panels, rank, draft_name, true);
-    drawActionButtons(
-        state,
-        layout,
-        panels.control_x + @divTrunc(layout.scaleInt(132), 2),
-        panels.control_y + layout.scaleInt(10),
-        &[_][]const u8{ post_level_high_score_actions[0].label(), post_level_high_score_actions[1].label() },
-        state.post_level_high_score_action_index,
-    );
-    drawAppText(state, "Type name  Left/Right choose", panels.control_x, panels.control_y + layout.scaleInt(42), layout.fontSize(18), .ray_white);
-    drawAppText(state, "Enter confirm  Esc cancel", panels.control_x, panels.control_y + layout.scaleInt(66), layout.fontSize(18), .light_gray);
 }
 
 fn drawActionButtons(
@@ -3438,6 +3446,13 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
     return @intCast(next);
 }
 
+fn highScoreModeIndex(mode: high_score.Mode) usize {
+    for (high_score_screen_modes, 0..) |candidate, index| {
+        if (candidate == mode) return index;
+    }
+    return 0;
+}
+
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: sub_4119d0.
@@ -3460,6 +3475,11 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(!completionBonusAppliesForMode(.time_trial));
     try std.testing.expect(!completionBonusAppliesForMode(.tutorial));
     try std.testing.expect(!completionBonusAppliesForMode(null));
+}
+
+test "high score mode index follows screen order" {
+    try std.testing.expectEqual(@as(usize, 0), highScoreModeIndex(.postal));
+    try std.testing.expectEqual(@as(usize, 1), highScoreModeIndex(.challenge));
 }
 
 test "gameplay camera looks ahead of the runner" {

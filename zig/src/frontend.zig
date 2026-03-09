@@ -41,7 +41,6 @@ pub const GamePhase = enum {
     exit_prompt,
     cutscene,
     completion_screen,
-    post_level_high_score,
     credits,
     help,
     level,
