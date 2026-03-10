@@ -241,6 +241,17 @@ pub fn drawTextButton(
     font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }
 
+pub fn drawNineSliceFrame(
+    layout: app_ui.VirtualLayout,
+    texture: rl.Texture2D,
+    rect: Rect,
+    edge: f32,
+    source_edge_fraction: f32,
+    tint: rl.Color,
+) void {
+    drawNineSlice(layout, texture, rect, edge, source_edge_fraction, tint);
+}
+
 fn expandRect(rect: Rect, padding: f32) Rect {
     return .{
         .left = rect.left - padding,

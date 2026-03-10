@@ -416,6 +416,12 @@ const options_slider_arrow_center_y_offset: f32 = 10.0;
 const route_map_title_x: f32 = 15.0;
 const route_map_title_y: f32 = 15.0;
 const route_map_title_scale: f32 = 0.83;
+// PORT(verified): `initialize_galaxy` seeds sprite `138` at `(300,10)`. The shipped
+// `SPACEMAPLOGO.TGA` art is `256x64`, and the Windows sprite path uses that authored size.
+const route_map_logo_x: f32 = 300.0;
+const route_map_logo_y: f32 = 10.0;
+const route_map_logo_width: f32 = 256.0;
+const route_map_logo_height: f32 = 64.0;
 const route_map_back_x: f32 = 20.0;
 const route_map_back_y: f32 = 420.0;
 const route_map_card_title_scale: f32 = 0.9;
@@ -427,6 +433,9 @@ const route_map_card_star_gap: f32 = 16.0;
 const route_map_card_right_limit: f32 = 631.0;
 const route_map_card_min_top: f32 = 49.0;
 const route_map_card_bottom_y: f32 = 450.0;
+// PORT(verified): `sub_401130` renders the selected route card (`69516`) as a type-20 style
+// 9-slice frame with a recovered authored edge size of `26.0`, not as a stretched quad.
+const route_map_card_frame_edge: f32 = 26.0;
 // PORT(verified): `update_galaxy` draws galaxy sprites `139..148` as `256x256` quads
 // centered on the transformed `sub_4088E0` points, and the inter-route connector uses
 // `LINE.TGA` at width `4.0`.
@@ -4642,13 +4651,12 @@ fn drawRouteMapCard(
     replay_action: ?[]const u8,
 ) void {
     if (state.route_map_art.border) |loaded_texture| {
-        drawTextureLocalRect(
+        frontend_widget.drawNineSliceFrame(
             layout,
-            loaded_texture,
-            card_layout.card_rect.left,
-            card_layout.card_rect.top,
-            card_layout.card_rect.width,
-            card_layout.card_rect.height,
+            loaded_texture.texture,
+            card_layout.card_rect,
+            route_map_card_frame_edge,
+            route_map_card_frame_edge / 128.0,
             .white,
         );
     }
@@ -4687,7 +4695,15 @@ fn drawRouteMapCard(
 
 fn drawRouteMapLogo(state: *const AppState, layout: VirtualLayout) void {
     const loaded_texture = state.route_map_art.logo orelse return;
-    drawTextureLocalRect(layout, loaded_texture, 370.0, 10.0, 251.0, 82.0, .white);
+    drawTextureLocalRect(
+        layout,
+        loaded_texture,
+        route_map_logo_x,
+        route_map_logo_y,
+        route_map_logo_width,
+        route_map_logo_height,
+        .white,
+    );
 }
 
 fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
