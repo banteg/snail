@@ -3,7 +3,10 @@ const archive = @import("archive.zig");
 const assets = @import("assets.zig");
 
 pub const map_galaxy_count = 10;
-pub const map_route_count = 50;
+// PORT(verified): `sub_4088E0` walks a flat 100-point Star Map table at `0x4A1D1C`,
+// sampling each galaxy's authored 10-point block according to its live `StarNumber`.
+// This is route-point capacity, not the shipped route count from `_GALAXY.TXT`.
+pub const map_route_count = 100;
 
 pub const Point = struct {
     x: f32,
@@ -139,6 +142,56 @@ const raw_route_points = [_]Point{
     .{ .x = 768.0, .y = 266.0 },
     .{ .x = 736.0, .y = 286.0 },
     .{ .x = 778.0, .y = 321.0 },
+    .{ .x = 752.0, .y = 347.0 },
+    .{ .x = 758.0, .y = 397.0 },
+    .{ .x = 754.0, .y = 460.0 },
+    .{ .x = 711.0, .y = 409.0 },
+    .{ .x = 700.0, .y = 339.0 },
+    .{ .x = 654.0, .y = 339.0 },
+    .{ .x = 639.0, .y = 386.0 },
+    .{ .x = 670.0, .y = 423.0 },
+    .{ .x = 670.0, .y = 464.0 },
+    .{ .x = 622.0, .y = 426.0 },
+    .{ .x = 637.0, .y = 471.0 },
+    .{ .x = 629.0, .y = 504.0 },
+    .{ .x = 616.0, .y = 534.0 },
+    .{ .x = 560.0, .y = 541.0 },
+    .{ .x = 552.0, .y = 503.0 },
+    .{ .x = 582.0, .y = 472.0 },
+    .{ .x = 536.0, .y = 414.0 },
+    .{ .x = 533.0, .y = 474.0 },
+    .{ .x = 509.0, .y = 527.0 },
+    .{ .x = 486.0, .y = 485.0 },
+    .{ .x = 440.0, .y = 530.0 },
+    .{ .x = 411.0, .y = 519.0 },
+    .{ .x = 396.0, .y = 558.0 },
+    .{ .x = 332.0, .y = 568.0 },
+    .{ .x = 292.0, .y = 536.0 },
+    .{ .x = 324.0, .y = 512.0 },
+    .{ .x = 386.0, .y = 482.0 },
+    .{ .x = 383.0, .y = 443.0 },
+    .{ .x = 340.0, .y = 483.0 },
+    .{ .x = 310.0, .y = 456.0 },
+    .{ .x = 304.0, .y = 424.0 },
+    .{ .x = 264.0, .y = 439.0 },
+    .{ .x = 210.0, .y = 468.0 },
+    .{ .x = 197.0, .y = 421.0 },
+    .{ .x = 236.0, .y = 402.0 },
+    .{ .x = 218.0, .y = 368.0 },
+    .{ .x = 281.0, .y = 344.0 },
+    .{ .x = 308.0, .y = 363.0 },
+    .{ .x = 327.0, .y = 383.0 },
+    .{ .x = 342.0, .y = 248.0 },
+    .{ .x = 376.0, .y = 309.0 },
+    .{ .x = 417.0, .y = 345.0 },
+    .{ .x = 472.0, .y = 357.0 },
+    .{ .x = 461.0, .y = 311.0 },
+    .{ .x = 486.0, .y = 298.0 },
+    .{ .x = 521.0, .y = 232.0 },
+    .{ .x = 483.0, .y = 252.0 },
+    .{ .x = 448.0, .y = 236.0 },
+    .{ .x = 418.0, .y = 219.0 },
+    .{ .x = 376.0, .y = 268.0 },
 };
 
 pub fn galaxyCenter(index: usize) Point {
@@ -263,4 +316,37 @@ test "route point slots sample each galaxy block by star count" {
     for (second_galaxy_slots, 0..) |expected_slot, local_index| {
         try std.testing.expectEqual(expected_slot, parsed.rawRoutePointSlotForRouteIndex(6 + local_index).?);
     }
+}
+
+test "route point slots reach later authored galaxy blocks" {
+    const data =
+        \\Galaxy0:"Pomacea cuprina"
+        \\StarNumber=5
+        \\Galaxy1:"Ferrissia rivularis"
+        \\StarNumber=5
+        \\Galaxy2:"Marisa rotula"
+        \\StarNumber=5
+        \\Galaxy3:"Planoribis rubrum"
+        \\StarNumber=5
+        \\Galaxy4:"Viviparis malleatus"
+        \\StarNumber=5
+        \\Galaxy5:"Melanoides tuberculata"
+        \\StarNumber=5
+        \\Galaxy6:"Helisoma"
+        \\StarNumber=5
+        \\Galaxy7:"Planorbis corneus"
+        \\StarNumber=5
+        \\Galaxy8:"Segmentina victoriae"
+        \\StarNumber=5
+        \\Galaxy9:"Pomacea cuprina aurea"
+        \\StarNumber=5
+    ;
+
+    var parsed = try parseText(std.testing.allocator, data);
+    defer parsed.deinit();
+
+    try std.testing.expectEqual(@as(usize, 50), parsed.rawRoutePointSlotForRouteIndex(26).?);
+    try std.testing.expectEqual(@as(usize, 58), parsed.rawRoutePointSlotForRouteIndex(30).?);
+    try std.testing.expectEqual(@as(usize, 90), parsed.rawRoutePointSlotForRouteIndex(46).?);
+    try std.testing.expectEqual(@as(usize, 98), parsed.rawRoutePointSlotForRouteIndex(50).?);
 }
