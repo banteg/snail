@@ -218,10 +218,13 @@ pub fn widgetTextRect(
 }
 
 pub fn stackBelow(rect: Rect) f32 {
-    // PORT(verified): Windows `sub_4027B0` places the next shell-font widget at
-    // `prev_y + current_gap(26) + prev_text_height`. In the port, `rect.height`
-    // is the authored-space text height for the current widget type.
-    return rect.top + rect.height + type20_stack_gap;
+    return stackBelowWithGap(rect, type20_stack_gap);
+}
+
+pub fn stackBelowWithGap(rect: Rect, child_gap: f32) f32 {
+    // PORT(verified): `stack_widget_below` copies the previous widget's authored-space
+    // X anchor, then places the child at `prev_y + prev_height + child_gap`.
+    return rect.top + rect.height + child_gap;
 }
 
 pub fn hitRect(text_rect: Rect, state: TextButtonState) Rect {
@@ -278,6 +281,10 @@ pub fn drawTextButton(
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
     const scaled_font_size = layout.scaleFloat(metrics.fontSize(font));
+    // PORT(partial): the recovered `draw_frontend_widget` path does not show an explicit
+    // second text draw, but removing this offset dark pass made the menu captures diverge
+    // materially from the shipped reference frames. Keep the current shell-font treatment
+    // until the lower-level text flush path is recovered more precisely.
     font.drawText(text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
     font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }

@@ -429,12 +429,18 @@ const route_map_back_y: f32 = 420.0;
 const route_map_card_title_scale: f32 = 0.9;
 const route_map_card_subtitle_scale: f32 = 0.9;
 const route_map_card_body_scale: f32 = 0.7;
-const route_map_card_bounds_padding: f32 = 8.0;
+// PORT(verified): `open_galaxy_route` expands the selected card bounds by `8` on the
+// left/right and bottom edges only. The top edge stays anchored to the title widget.
+const route_map_card_horizontal_padding: f32 = 8.0;
+const route_map_card_bottom_padding: f32 = 8.0;
 const route_map_card_horizontal_pointer_gap: f32 = 6.0;
 const route_map_card_star_gap: f32 = 16.0;
 const route_map_card_right_limit: f32 = 631.0;
 const route_map_card_min_top: f32 = 49.0;
 const route_map_card_bottom_y: f32 = 450.0;
+const route_map_card_text_gap: f32 = 0.0;
+const route_map_primary_button_gap: f32 = 20.0;
+const route_map_replay_button_gap: f32 = 10.0;
 // PORT(verified): `sub_401130` renders the selected route card (`69516`) as a type-20 style
 // 9-slice frame with a recovered authored edge size of `26.0`, not as a stretched quad.
 const route_map_card_frame_edge: f32 = 26.0;
@@ -4562,21 +4568,22 @@ fn routeMapCardLayout(
         const subtitle_rect = uiFontTextRectAbsolute(
             font,
             route_level_name,
-            title_rect.left,
-            frontend_widget.stackBelow(title_rect),
+            title_left,
+            frontend_widget.stackBelowWithGap(title_rect, route_map_card_text_gap),
             route_map_card_subtitle_scale,
         );
         const body_rect = uiFontTextRectAbsolute(
             font,
             route_body,
-            subtitle_rect.left,
-            frontend_widget.stackBelow(subtitle_rect),
+            title_left,
+            frontend_widget.stackBelowWithGap(subtitle_rect, route_map_card_text_gap),
             route_map_card_body_scale,
         );
         // PORT(verified): `open_galaxy_route` chains the selected route card with the shared
-        // `sub_4027B0` helper: title -> subtitle -> body -> replay? -> primary. It first
-        // centers the action widgets from the title width, then recenters them from the final
-        // card box after the bounds clamp pass.
+        // `stack_widget_below` helper: title -> subtitle -> body -> replay? -> primary. The
+        // title/subtitle/body use zero extra gap, the replay row uses `10`, and the primary
+        // action uses `20`. Windows first centers the action widgets from the title width,
+        // then recenters them from the final card box after the clamp loop.
         const title_center_offset = title_rect.left + title_rect.width * 0.5 - 320.0;
 
         var primary_text_rect = frontend_widget.widgetTextRect(
@@ -4584,7 +4591,7 @@ fn routeMapCardLayout(
             .menu_button,
             .center,
             primary_action,
-            frontend_widget.stackBelow(body_rect),
+            frontend_widget.stackBelowWithGap(body_rect, route_map_primary_button_gap),
             title_center_offset,
         );
         var replay_text_rect: ?frontend_widget.Rect = null;
@@ -4594,7 +4601,7 @@ fn routeMapCardLayout(
                 .route_map_secondary_action,
                 .center,
                 label,
-                frontend_widget.stackBelow(body_rect),
+                frontend_widget.stackBelowWithGap(body_rect, route_map_replay_button_gap),
                 title_center_offset,
             );
             primary_text_rect = frontend_widget.widgetTextRect(
@@ -4602,27 +4609,36 @@ fn routeMapCardLayout(
                 .menu_button,
                 .center,
                 primary_action,
-                frontend_widget.stackBelow(replay_text_rect.?),
+                frontend_widget.stackBelowWithGap(replay_text_rect.?, route_map_primary_button_gap),
                 title_center_offset,
             );
         }
 
-        const left = @min(title_rect.left, @min(subtitle_rect.left, @min(body_rect.left, primary_text_rect.left))) - route_map_card_bounds_padding;
-        const top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top))) - route_map_card_bounds_padding;
-        const right = @max(
+        var left = @min(title_rect.left, @min(subtitle_rect.left, @min(body_rect.left, primary_text_rect.left)));
+        var top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top)));
+        var right = @max(
             title_rect.left + title_rect.width,
             @max(
                 subtitle_rect.left + subtitle_rect.width,
                 @max(body_rect.left + body_rect.width, primary_text_rect.left + primary_text_rect.width),
             ),
-        ) + route_map_card_bounds_padding;
-        const bottom = @max(
+        );
+        var bottom = @max(
             title_rect.top + title_rect.height,
             @max(
                 subtitle_rect.top + subtitle_rect.height,
                 @max(body_rect.top + body_rect.height, primary_text_rect.top + primary_text_rect.height),
             ),
-        ) + route_map_card_bounds_padding;
+        );
+        if (replay_text_rect) |replay_rect| {
+            left = @min(left, replay_rect.left);
+            top = @min(top, replay_rect.top);
+            right = @max(right, replay_rect.left + replay_rect.width);
+            bottom = @max(bottom, replay_rect.top + replay_rect.height);
+        }
+        left -= route_map_card_horizontal_padding;
+        right += route_map_card_horizontal_padding;
+        bottom += route_map_card_bottom_padding;
 
         var adjusted = false;
         if (right > route_map_card_right_limit) {
