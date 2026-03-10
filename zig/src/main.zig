@@ -634,6 +634,7 @@ const AppState = struct {
     frontend_widget_art: FrontendWidgetArt = .{},
     frontend_sound_fx: FrontendSoundFx = .{},
     hovered_frontend_target: ?FrontendHoverTarget = null,
+    keyboard_frontend_focus_visible: bool = false,
     pending_frontend_activation: ?FrontendQueuedActivation = null,
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
@@ -1076,8 +1077,13 @@ const AppState = struct {
         if (self.hovered_frontend_target == target) return;
         self.hovered_frontend_target = target;
         if (target != null) {
+            self.keyboard_frontend_focus_visible = false;
             self.playFrontendHoverSound();
         }
+    }
+
+    fn noteFrontendKeyboardNavigation(self: *AppState) void {
+        self.keyboard_frontend_focus_visible = true;
     }
 
     fn activeFrontendButtonTarget(self: *const AppState) ?FrontendHoverTarget {
@@ -1091,7 +1097,7 @@ const AppState = struct {
         if (self.activeFrontendButtonTarget()) |active_target| {
             return active_target == target;
         }
-        return fallback_selected;
+        return self.keyboard_frontend_focus_visible and fallback_selected;
     }
 
     fn queueFrontendActivation(self: *AppState, action: FrontendQueuedAction) void {
@@ -1521,9 +1527,11 @@ const AppState = struct {
                 try self.updateMainMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
                     self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     self.queueFrontendActivation(.{ .main_menu = main_menu_items[self.menu_index] });
@@ -1533,9 +1541,11 @@ const AppState = struct {
                 try self.updateNewGameMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
                     self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[self.new_game_menu_index] });
@@ -1545,16 +1555,20 @@ const AppState = struct {
                 try self.updateOptionsMouseSelection();
                 if (rl.isKeyPressed(.up)) {
                     self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
                     self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
 
                 const selected = options_menu_items[self.options_menu_index];
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+                    self.noteFrontendKeyboardNavigation();
                     try self.stepOptionsMenuValue(selected, -0.2);
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+                    self.noteFrontendKeyboardNavigation();
                     try self.stepOptionsMenuValue(selected, 0.2);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
@@ -1568,14 +1582,18 @@ const AppState = struct {
                 const route_actions = self.activeRouteMenuActions();
                 if (rl.isKeyPressed(.up)) {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.left)) {
+                    self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(-1);
                 }
                 if (rl.isKeyPressed(.right)) {
+                    self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
@@ -1588,9 +1606,11 @@ const AppState = struct {
                     self.collectPostLevelHighScoreTextInput();
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                         self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, -1);
+                        self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
                         self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
+                        self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                         self.queueFrontendActivation(.{ .post_level_high_scores = post_level_high_score_actions[self.post_level_high_score_action_index] });
@@ -1598,9 +1618,11 @@ const AppState = struct {
                 } else {
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                         self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, -1);
+                        self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
                         self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, 1);
+                        self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                         self.queueFrontendActivation(.{ .high_scores_menu = high_score_menu_actions[self.high_scores_action_index] });
@@ -1611,9 +1633,11 @@ const AppState = struct {
                 try self.updateExitPromptMouseSelection();
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                     self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
                     self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     self.queueFrontendActivation(.{ .exit_prompt = exit_prompt_choices[self.exit_prompt_choice_index] });
@@ -1622,9 +1646,11 @@ const AppState = struct {
             .completion_screen => {
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
                     self.completion_action_index = wrappedIndex(completion_actions.len, self.completion_action_index, -1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
                     self.completion_action_index = wrappedIndex(completion_actions.len, self.completion_action_index, 1);
+                    self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     try self.activateCompletionAction(completion_actions[self.completion_action_index]);
@@ -1693,6 +1719,7 @@ const AppState = struct {
         self.game_phase = phase;
         self.game_phase_ticks = 0;
         self.hovered_frontend_target = null;
+        self.keyboard_frontend_focus_visible = false;
         self.pending_frontend_activation = null;
         try self.syncGamePhaseResources();
         self.snapFrontendWidgetStates();
