@@ -49,7 +49,7 @@ Current high-signal entries:
 - delivery-route map flow: `partial`
   - evidence: Binary Ninja decompile of `initialize_galaxy`, `destroy_galaxy`, `update_galaxy`, `close_galaxy_route`, `open_galaxy_route`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI, BoxOff, Open}` and Android `cRGalaxy::UnInit()`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
-  - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`
+  - note: selected and unlocked route values are now treated as verified 1-based route numbers, so route `1` maps to `ARCADE001`, and the Star Map card now follows the Windows open/close interaction model instead of staying always open
   - replace when: the original Star Map widget layout, replay launch path, and remaining progression semantics are ported
 - front-end background loading plus Distort-driven single-texture motion: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, Binary Ninja decompile of `set_backdrop_distort`, `change_backdrop`, `initialize_backdrop`, `change_backdrop_real`, `draw_split_backdrop`, `render_backdrop`, and `update_backdrop`, plus cross-port Android and iOS symbols for `cRBackdrop::{SetDistort, Change, ChangeReal, Init, Render, AI}`

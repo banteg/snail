@@ -384,6 +384,10 @@ const route_menu_actions_with_replay = [_]RouteMenuAction{
     .back,
 };
 
+const route_menu_actions_closed = [_]RouteMenuAction{
+    .back,
+};
+
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
 // High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
 // `y = 390` first, but immediately overrides it by chaining from Credits.
@@ -550,6 +554,7 @@ const FrontendQueuedAction = union(enum) {
     new_game_menu: NewGameMenuItem,
     options_menu: OptionsMenuItem,
     pause_menu: PauseMenuItem,
+    route_map_menu: RouteMenuAction,
     help_menu: HelpMenuAction,
     high_scores_menu: HighScoreMenuAction,
     high_score_replay: usize,
@@ -686,6 +691,11 @@ fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
             .options => .pause_menu_options,
             .@"resume" => .pause_menu_resume,
         },
+        .route_map_menu => |item| switch (item) {
+            .play => .route_map_play,
+            .watch_best_trial => .route_map_watch_best_trial,
+            .back => .route_map_back,
+        },
         .help_menu => .help_back,
         .high_scores_menu => |item| switch (item) {
             .back => .high_scores_back,
@@ -792,6 +802,8 @@ const AppState = struct {
     frontend_route_index: usize = 0,
     start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
+    route_map_card_open: bool = false,
+    route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
     mode: Mode = .textures,
@@ -1319,6 +1331,7 @@ const AppState = struct {
             .new_game_menu => |item| try self.performNewGameMenuItem(item),
             .options_menu => |item| try self.performOptionsMenuItem(item),
             .pause_menu => |item| try self.performPauseMenuItem(item),
+            .route_map_menu => |item| try self.performRouteMenuAction(item),
             .help_menu => |item| try self.performHelpMenuItem(item),
             .high_scores_menu => |item| try self.performHighScoreMenuAction(item),
             .high_score_replay => |index| try self.performHighScoreReplay(index),
@@ -1384,13 +1397,14 @@ const AppState = struct {
             state.stepFor(.menu_button, pause_menu_active and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
         const route_map_active = self.game_phase == .route_map_menu and !self.frontend_transition.blocksInput();
+        const route_map_card_open = self.routeMapCardIsOpen();
         self.route_map_button_states[route_map_primary_button_index].stepFor(
             .menu_button,
-            route_map_active and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+            route_map_active and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
         self.route_map_button_states[route_map_replay_button_index].stepFor(
             .route_map_secondary_action,
-            route_map_active and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+            route_map_active and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
         self.route_map_button_states[route_map_back_button_index].stepFor(
             .menu_button,
@@ -1437,13 +1451,14 @@ const AppState = struct {
         for (&self.pause_menu_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
+        const route_map_card_open = self.routeMapCardIsOpen();
         self.route_map_button_states[route_map_primary_button_index].snapFor(
             .menu_button,
-            self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+            self.game_phase == .route_map_menu and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
         self.route_map_button_states[route_map_replay_button_index].snapFor(
             .route_map_secondary_action,
-            self.game_phase == .route_map_menu and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+            self.game_phase == .route_map_menu and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
         self.route_map_button_states[route_map_back_button_index].snapFor(
             .menu_button,
@@ -1621,10 +1636,12 @@ const AppState = struct {
 
     fn updateRouteMapMouseSelection(self: *AppState) !void {
         const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(null);
             return;
         };
         const mode = self.frontend_route_mode orelse {
+            self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(null);
             return;
         };
@@ -1638,62 +1655,79 @@ const AppState = struct {
 
         const back_rect = routeMapBackTextRect(self);
         if (frontend_widget.hitRect(back_rect, self.route_map_button_states[route_map_back_button_index]).contains(local_mouse)) {
+            self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.back));
             if (self.routeMenuActionIndexForAction(.back)) |index| {
                 self.route_menu_action_index = index;
             }
             if (rl.isMouseButtonPressed(.left)) {
-                try self.activateRouteMenuAction(.back);
+                self.queueFrontendActivation(.{ .route_map_menu = .back });
             }
             return;
         }
 
-        if (routeMapPointForRouteIndex(self, self.frontend_route_index)) |route_point| {
-            const card_layout = routeMapCardLayout(
-                &self.ui_font,
-                route_point,
-                route_galaxy_name,
-                route_level_name,
-                route_body,
-                routeMenuActionLabel(mode, .play),
-                if (self.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null,
-            );
+        const hovered_route_index = routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode));
+        self.route_map_hovered_index = hovered_route_index;
 
-            if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[route_map_primary_button_index]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
-                if (self.routeMenuActionIndexForAction(.play)) |index| {
-                    self.route_menu_action_index = index;
-                }
-                if (rl.isMouseButtonPressed(.left)) {
-                    try self.activateRouteMenuAction(.play);
-                }
-                return;
-            }
+        if (self.routeMapCardIsOpen()) {
+            if (routeMapPointForRouteIndex(self, self.frontend_route_index)) |route_point| {
+                const card_layout = routeMapCardLayout(
+                    &self.ui_font,
+                    route_point,
+                    route_galaxy_name,
+                    route_level_name,
+                    route_body,
+                    routeMenuActionLabel(mode, .play),
+                    if (self.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null,
+                );
 
-            if (card_layout.replay_text_rect) |replay_rect| {
-                if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[route_map_replay_button_index]).contains(local_mouse)) {
-                    self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
-                    if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
+                if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[route_map_primary_button_index]).contains(local_mouse)) {
+                    self.route_map_hovered_index = null;
+                    self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
+                    if (self.routeMenuActionIndexForAction(.play)) |index| {
                         self.route_menu_action_index = index;
                     }
                     if (rl.isMouseButtonPressed(.left)) {
-                        try self.activateRouteMenuAction(.watch_best_trial);
+                        self.queueFrontendActivation(.{ .route_map_menu = .play });
                     }
+                    return;
+                }
+
+                if (card_layout.replay_text_rect) |replay_rect| {
+                    if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[route_map_replay_button_index]).contains(local_mouse)) {
+                        self.route_map_hovered_index = null;
+                        self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
+                        if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
+                            self.route_menu_action_index = index;
+                        }
+                        if (rl.isMouseButtonPressed(.left)) {
+                            self.queueFrontendActivation(.{ .route_map_menu = .watch_best_trial });
+                        }
+                        return;
+                    }
+                }
+
+                if (card_layout.card_rect.contains(local_mouse)) {
+                    self.route_map_hovered_index = null;
+                    self.setFrontendHoverTarget(null);
                     return;
                 }
             }
         }
 
-        if (routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode))) |hovered_route_index| {
+        if (hovered_route_index) |route_index| {
             self.setFrontendHoverTarget(null);
-            if (rl.isMouseButtonPressed(.left) and hovered_route_index != self.frontend_route_index) {
-                self.frontend_route_index = hovered_route_index;
-                if (self.routeMenuActionIndexForAction(.play)) |index| {
-                    self.route_menu_action_index = index;
-                }
-                try self.reloadFrontendRouteLevel();
+            if (rl.isMouseButtonPressed(.left) and (!self.routeMapCardIsOpen() or route_index != self.frontend_route_index)) {
+                try self.openFrontendRouteCard(route_index);
                 self.playFrontendSelectSound();
             }
+            return;
+        }
+
+        if (self.routeMapCardIsOpen() and rl.isMouseButtonPressed(.left)) {
+            self.closeFrontendRouteCard();
+            self.playFrontendSelectSound();
+            self.setFrontendHoverTarget(null);
             return;
         }
 
@@ -2027,7 +2061,7 @@ const AppState = struct {
                     try self.stepFrontendRouteSelection(1);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.activateRouteMenuAction(route_actions[self.route_menu_action_index]);
+                    self.queueFrontendActivation(.{ .route_map_menu = route_actions[self.route_menu_action_index] });
                 }
             },
             .high_scores_menu => {
@@ -2309,8 +2343,7 @@ const AppState = struct {
         try self.performExitPromptChoice(choice);
     }
 
-    fn activateRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
-        self.playFrontendSelectSound();
+    fn performRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
             .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
@@ -2417,8 +2450,7 @@ const AppState = struct {
             }
             self.start_route_index_override = null;
         }
-        self.route_menu_action_index = 0;
-        try self.reloadFrontendRouteLevel();
+        try self.openFrontendRouteCard(self.frontend_route_index);
         try self.enterGamePhase(.route_map_menu);
     }
 
@@ -2447,7 +2479,33 @@ const AppState = struct {
         return routeMapHasReplayEntry(self.frontend_route_mode, self.frontend_route_index, &self.high_score_tables);
     }
 
+    fn routeMapCardIsOpen(self: *const AppState) bool {
+        return self.route_map_card_open;
+    }
+
+    fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
+        self.route_map_card_open = true;
+        self.route_map_hovered_index = null;
+        self.frontend_route_index = route_index;
+        try self.reloadFrontendRouteLevel();
+        if (self.routeMenuActionIndexForAction(.play)) |index| {
+            self.route_menu_action_index = index;
+        } else {
+            self.route_menu_action_index = 0;
+        }
+    }
+
+    fn closeFrontendRouteCard(self: *AppState) void {
+        self.route_map_card_open = false;
+        self.route_map_hovered_index = null;
+        self.route_menu_action_index = 0;
+    }
+
+    // PORT(verified): `update_galaxy` and `close_galaxy_route` gate the Star Map card actions
+    // on the route-open flag at `this + 8`. When the card is closed, only the absolute Back
+    // control remains actionable; Play and Watch Best Trial are hidden until `open_galaxy_route`.
     fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
+        if (!self.routeMapCardIsOpen()) return &route_menu_actions_closed;
         return if (self.routeMapShowsReplay())
             &route_menu_actions_with_replay
         else
@@ -2796,8 +2854,8 @@ const AppState = struct {
         const mode = self.frontend_route_mode orelse return;
         const route_count = self.availableFrontendRouteLimit(mode);
         if (route_count == 0) return;
-        self.frontend_route_index = wrappedIndex(route_count, self.frontend_route_index - 1, delta) + 1;
-        try self.reloadFrontendRouteLevel();
+        const next_route_index = wrappedIndex(route_count, self.frontend_route_index - 1, delta) + 1;
+        try self.openFrontendRouteCard(next_route_index);
     }
 
     fn syncGamePhaseResources(self: *AppState) !void {
@@ -4012,18 +4070,20 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", route_map_title_x, route_map_title_y, route_map_title_scale, heading_color);
     drawRouteMapLogo(state, layout);
     drawRouteMapStars(state, layout, mode);
-    if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |route_point| {
-        const card_layout = routeMapCardLayout(
-            &state.ui_font,
-            route_point,
-            route_galaxy_name,
-            route_level_name,
-            route_body,
-            primary_label,
-            replay_label,
-        );
-        drawRouteMapConnection(layout, card_layout.pointer_start, card_layout.pointer_end, state.route_map_art.line_star, 4.0, .white);
-        drawRouteMapCard(state, layout, card_layout, route_galaxy_name, route_level_name, route_body, primary_label, replay_label);
+    if (state.routeMapCardIsOpen()) {
+        if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |route_point| {
+            const card_layout = routeMapCardLayout(
+                &state.ui_font,
+                route_point,
+                route_galaxy_name,
+                route_level_name,
+                route_body,
+                primary_label,
+                replay_label,
+            );
+            drawRouteMapConnection(layout, card_layout.pointer_start, card_layout.pointer_end, state.route_map_art.line_star, 4.0, .white);
+            drawRouteMapCard(state, layout, card_layout, route_galaxy_name, route_level_name, route_body, primary_label, replay_label);
+        }
     }
 
     frontend_widget.drawType20Button(
@@ -4775,6 +4835,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
         names.galaxyIndexForRouteIndex(state.frontend_route_index)
     else
         null;
+    const highlighted_route_index = state.route_map_hovered_index orelse if (state.routeMapCardIsOpen()) state.frontend_route_index else null;
 
     for (0..galaxy.map_galaxy_count) |galaxy_index| {
         const center = galaxy.galaxyCenter(galaxy_index);
@@ -4825,9 +4886,11 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
         }
     }
 
-    if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |selected_point| {
-        if (state.route_map_art.level_select) |loaded_texture| {
-            drawTextureCenteredLocal(layout, loaded_texture, selected_point.x, selected_point.y, 64.0, 64.0, .white);
+    if (highlighted_route_index) |route_index| {
+        if (routeMapPointForRouteIndex(state, route_index)) |selected_point| {
+            if (state.route_map_art.level_select) |loaded_texture| {
+                drawTextureCenteredLocal(layout, loaded_texture, selected_point.x, selected_point.y, 64.0, 64.0, .white);
+            }
         }
     }
 }
