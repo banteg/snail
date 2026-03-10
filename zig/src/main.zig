@@ -327,6 +327,7 @@ const high_score_screen_modes = [_]high_score.Mode{
 const ExitPromptMode = enum {
     quit_app,
     abandon_run,
+    leave_route_map,
 };
 
 const ExitPromptChoice = enum {
@@ -392,6 +393,12 @@ const RouteMapHoverState = enum(u8) {
     none = 0,
     card = 1,
     route = 2,
+};
+
+const RouteMapScreenMode = enum(u8) {
+    normal = 0,
+    post_completion_exit = 1,
+    replay = 2,
 };
 
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
@@ -646,6 +653,16 @@ fn newGameMenuIndexForItem(target: NewGameMenuItem) usize {
     return 0;
 }
 
+fn defaultRouteMapScreenMode(mode: FrontendLevelMode) RouteMapScreenMode {
+    // PORT(verified): `initialize_galaxy` uses internal mode `2` for the Time Trial / replay
+    // Star Map path, while normal Postal entry starts in mode `0`.
+    return switch (mode) {
+        .postal => .normal,
+        .time_trial => .replay,
+        .challenge, .tutorial => unreachable,
+    };
+}
+
 fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
     return switch (index) {
         0 => .high_scores_back,
@@ -821,6 +838,7 @@ const AppState = struct {
     level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?usize = null,
     frontend_route_mode: ?FrontendLevelMode = null,
+    route_map_screen_mode: RouteMapScreenMode = .normal,
     frontend_route_index: usize = 0,
     start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
@@ -2361,12 +2379,23 @@ const AppState = struct {
         try self.enterGamePhase(.exit_prompt);
     }
 
+    // PORT(verified): the special postal-return Star Map mode (`initialize_galaxy` with
+    // `this + 4 == 1`) routes its bottom `Exit` control through the shared exit-prompt
+    // controller before returning to the outer front-end flow.
+    fn beginRouteMapExitPrompt(self: *AppState) !void {
+        self.exit_prompt_choice_index = 1;
+        self.exit_prompt_return_phase = .route_map_menu;
+        self.exit_prompt_mode = .leave_route_map;
+        try self.enterGamePhase(.exit_prompt);
+    }
+
     fn performExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
         switch (choice) {
             .no => try self.enterGamePhase(self.exit_prompt_return_phase),
             .yes => switch (self.exit_prompt_mode) {
                 .quit_app => self.should_exit = true,
                 .abandon_run => try self.abandonActiveRun(),
+                .leave_route_map => try self.returnToNewGameMenu(.route_map_menu),
             },
         }
     }
@@ -2380,7 +2409,10 @@ const AppState = struct {
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
             .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
-            .back => try self.returnToNewGameMenu(.route_map_menu),
+            .back => if (self.route_map_screen_mode == .post_completion_exit)
+                try self.beginRouteMapExitPrompt()
+            else
+                try self.returnToNewGameMenu(.route_map_menu),
         }
     }
 
@@ -2493,7 +2525,12 @@ const AppState = struct {
     }
 
     fn enterRouteMapMenu(self: *AppState, mode: FrontendLevelMode) !void {
+        try self.enterRouteMapMenuWithScreenMode(mode, defaultRouteMapScreenMode(mode));
+    }
+
+    fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: RouteMapScreenMode) !void {
         self.frontend_route_mode = mode;
+        self.route_map_screen_mode = screen_mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
         if (self.start_route_index_override) |override| {
             const highest_available = self.highestAvailableFrontendRouteIndex(mode);
@@ -2530,6 +2567,9 @@ const AppState = struct {
     }
 
     fn routeMapShowsReplay(self: *const AppState) bool {
+        // PORT(verified): `open_galaxy_route` only reveals "Watch Best Trial" when the Star
+        // Map is in internal mode `2` and the route's completion slot has replay data.
+        if (self.route_map_screen_mode != .replay) return false;
         const route_index = self.currentRouteMapOpenIndex() orelse return false;
         return routeMapHasReplayEntry(self.frontend_route_mode, route_index, &self.high_score_tables);
     }
@@ -2813,7 +2853,10 @@ const AppState = struct {
 
         switch (result.return_target) {
             .main_menu => try self.enterGamePhase(.main_menu),
-            .postal_route_map => try self.enterRouteMapMenu(.postal),
+            // PORT(verified): Windows re-enters the postal Star Map through the special
+            // `initialize_galaxy` mode `1` after a completed route. That path keeps the
+            // current route card open and relabels the bottom control to `Exit`.
+            .postal_route_map => try self.enterRouteMapMenuWithScreenMode(.postal, .post_completion_exit),
             .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
             .replay_current_level => if (result.mode) |mode|
                 try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
@@ -3936,7 +3979,18 @@ fn pauseMenuTextRect(font: *const game_font.Loaded, item: PauseMenuItem) fronten
 }
 
 fn routeMapBackTextRect(state: *const AppState) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .absolute, "Back", route_map_back_y, route_map_back_x);
+    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .absolute, routeMapBackLabel(state), route_map_back_y, route_map_back_x);
+}
+
+fn routeMapBackLabel(state: *const AppState) []const u8 {
+    return routeMapBackLabelForScreenMode(state.route_map_screen_mode);
+}
+
+fn routeMapBackLabelForScreenMode(screen_mode: RouteMapScreenMode) []const u8 {
+    return switch (screen_mode) {
+        .post_completion_exit => "Exit",
+        .normal, .replay => "Back",
+    };
 }
 
 fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
@@ -4194,7 +4248,7 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         layout,
         widget_art,
         &state.ui_font,
-        "Back",
+        routeMapBackLabel(state),
         routeMapBackTextRect(state),
         state.route_map_button_states[route_map_back_button_index],
         false,
@@ -4783,7 +4837,7 @@ fn routeMapCardLayout(
         }
 
         var left = @min(title_rect.left, @min(subtitle_rect.left, @min(body_rect.left, primary_text_rect.left)));
-        var top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top)));
+        const top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top)));
         var right = @max(
             title_rect.left + title_rect.width,
             @max(
@@ -4798,12 +4852,9 @@ fn routeMapCardLayout(
                 @max(body_rect.top + body_rect.height, primary_text_rect.top + primary_text_rect.height),
             ),
         );
-        if (replay_text_rect) |replay_rect| {
-            left = @min(left, replay_rect.left);
-            top = @min(top, replay_rect.top);
-            right = @max(right, replay_rect.left + replay_rect.width);
-            bottom = @max(bottom, replay_rect.top + replay_rect.height);
-        }
+        // PORT(verified): `open_galaxy_route` clamps the selected card against the title,
+        // subtitle, body, and primary action widgets only. The replay action is recentered
+        // from the finished card box afterwards, but it does not expand the box bounds.
         left -= route_map_card_horizontal_padding;
         right += route_map_card_horizontal_padding;
         bottom += route_map_card_bottom_padding;
@@ -4954,10 +5005,16 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
                 route_cursor += names.starCountForGalaxyIndex(prior_index) orelse 0;
             }
             const star_count = names.starCountForGalaxyIndex(galaxy_index) orelse 0;
-            const visible_star_count = if (available_limit > route_cursor)
+            var visible_star_count = if (available_limit > route_cursor)
                 @min(star_count, available_limit - route_cursor)
             else
                 0;
+            // PORT(verified): the postal post-completion Star Map variant (`this + 4 == 1`)
+            // stops drawing future route stars once it reaches the current route. Only the
+            // normal/replay variants keep the remainder of the available route strip visible.
+            if (state.route_map_screen_mode == .post_completion_exit and active_route_index > route_cursor) {
+                visible_star_count = @min(visible_star_count, active_route_index - route_cursor);
+            }
 
             if (visible_star_count >= 2) {
                 for (0..visible_star_count - 1) |local_index| {
@@ -4966,6 +5023,8 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
                     // PORT(verified): `update_galaxy` iterates route links only up to the
                     // live available-route count in `dword_4DF9B8`, then shades them in two
                     // authored bands: `0.8` before the current route and `0.2` afterwards.
+                    // The postal post-completion variant omits the later `0.2` links entirely.
+                    if (state.route_map_screen_mode == .post_completion_exit and start_route_index >= active_route_index) continue;
                     const line_tint: rl.Color = if (start_route_index < active_route_index)
                         .{ .r = 255, .g = 255, .b = 255, .a = 204 }
                     else
@@ -6596,6 +6655,14 @@ test "route map replay gate follows time-trial completion replays" {
 
     tables.completion[0].has_replay = false;
     try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 1, &tables));
+}
+
+test "route map screen modes follow windows route-map entry paths" {
+    try std.testing.expectEqual(RouteMapScreenMode.normal, defaultRouteMapScreenMode(.postal));
+    try std.testing.expectEqual(RouteMapScreenMode.replay, defaultRouteMapScreenMode(.time_trial));
+    try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.normal));
+    try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.replay));
+    try std.testing.expectEqualStrings("Exit", routeMapBackLabelForScreenMode(.post_completion_exit));
 }
 
 test "failed runs return to the main menu while completions keep mode-specific exits" {
