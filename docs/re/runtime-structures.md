@@ -20,8 +20,13 @@ The current high-confidence `Player` fields are:
 - `+0x308`: `movement_flag_selector`
 - `+0x338`: `movement_flags`
 - `+0x33c`: `previous_movement_flags`
+- `+0x380`: `player_slot`
+  - used as the player index passed to hit-effect dispatch in `handle_subgoldy_collisions`
+  - not the visible life counter
 - `+0x384`: `follow_state`
-- `+0x408`: `subgame`
+- `+0x3c4`: `damage_gauge`
+  - inline `DamageGaugeController`
+- `+0x408`: `game`
 - `+0x40c`: `movement_mode_selector`
 - `+0x410`: `velocity`
 - `+0x41d`: `attachment_exit_pending`
@@ -33,19 +38,74 @@ The current high-confidence `Player` fields are:
 - `+0x43c`: `current_cell`
 - `+0x44c`: `follow_effect_gate_a`
 - `+0x44d`: `follow_effect_gate_b`
-- `+0x4340`: `visible_life_stock`
-  - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
-  - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
-  - decremented by `update_subgoldy_resurrect` on the respawn branch
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
 - `+0x2740`: `track_z_anchor`
+- `+0x2750`: `jetpack_gauge`
+  - inline `JetpackGaugeController`
+- `+0x4340`: `visible_life_stock`
+  - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
+  - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
+  - decremented by `update_subgoldy_resurrect` on the respawn branch
 
 Important caveat:
 
 - the real `Player` object is larger than the currently typed prefix
 - the movement-emitter and visual-state blocks around `player + 0x2984` and beyond are still only partially named
+- the Windows build keeps contact damage and jetpack countdown as two separate inline controllers:
+  - `player + 0x3c4` is the contact or hazard accumulator
+  - `player + 0x2750` is the jetpack warning or auto-shutoff controller
+
+## Damage Gauge Controller
+
+The inline controller at `player + 0x3c4` is now typed as `DamageGaugeController`.
+
+High-confidence current fields:
+
+- `+0x00`: `state`
+- `+0x10`: `transition_progress`
+- `+0x14`: `transition_step`
+- `+0x18`: `transition_counter`
+- `+0x1c`: `fill`
+- `+0x20`: `display_fill`
+- `+0x24`: `hold_progress`
+- `+0x28`: `hold_step`
+
+Current practical read:
+
+- `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
+- `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
+- the currently recovered deltas line up with collision branches:
+  - salt or hazard contact `+0.15`
+  - ambient hazard path `+0.02`
+  - garbage `+0.04`
+  - slug `+1.0`
+  - health pickup `-0.5`
+
+## Jetpack Gauge Controller
+
+The inline controller at `player + 0x2750` is now typed as `JetpackGaugeController`.
+
+High-confidence current fields:
+
+- `+0x00`: `progress`
+- `+0x04`: `cycle_phase`
+- `+0x08`: `cycle_phase_step`
+- `+0x0c`: `state`
+- `+0x10`: `warning_anchor`
+- `+0x14`: `wobble_x`
+- `+0x18`: `wobble_y`
+- `+0x1c`: `wobble_alpha`
+- `+0x200`: `game`
+- `+0x210`: `warning_intensity`
+
+Current practical read:
+
+- `initialize_jetpack_gauge` zeros the controller, sets the cycle phase to `1/600`, and seeds the runtime and warning-anchor pointers
+- `arm_jetpack_gauge` transitions `state` from idle to active and clears the wobble outputs
+- `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, and forces shutoff when the current runtime cell carries flag `0x80`
+- `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
 
 ## Movement Visual State Controller
 
@@ -93,7 +153,7 @@ The current high-confidence `Game` fields are:
 
 Current practical read:
 
-- `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning `SubGame`
+- `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
