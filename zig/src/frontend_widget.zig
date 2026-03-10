@@ -17,7 +17,9 @@ pub const WidgetAlignment = enum(u8) {
 };
 
 pub const type20_idle_padding: f32 = 9.0;
-pub const type20_hot_padding: f32 = 13.0;
+// PORT(verified): `sub_402820` drives the type-20 shell widget toward `+536 = 14.0`
+// while hovered, so the authored-space hot padding is 14 pixels, not the port's old 13.
+pub const type20_hot_padding: f32 = 14.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+620 = 26.0` for the
 // shell-font menu widget, and `sub_4027B0` chains the next button by adding that recovered
 // gap to the previous widget's measured text height.
@@ -26,7 +28,10 @@ pub const type20_stack_gap: f32 = 26.0;
 // with alignment `2`, matching the authored-space offset used by the Windows main/new game
 // menu button stack.
 pub const type20_center_offset_x: f32 = 20.0;
-pub const type20_border_edge: f32 = 20.0;
+// PORT(verified): `sub_401130` renders the type-20 shell border with a fixed authored
+// corner size of `+560 = 22.0`, while the compact/footer variants use a 4px edge path.
+pub const type20_border_edge: f32 = 22.0;
+pub const compact_border_edge: f32 = 4.0;
 pub const cursor_hotspot_x: f32 = 8.0;
 pub const cursor_hotspot_y: f32 = 7.0;
 pub const cursor_size: f32 = 64.0;
@@ -66,6 +71,7 @@ pub const Metrics = struct {
     idle_padding: f32,
     hot_padding: f32,
     border_edge: f32,
+    source_edge_fraction: f32,
 
     pub fn fontSize(self: Metrics, font: *const game_font.Loaded) f32 {
         return font.nominal_height * self.text_scale;
@@ -110,18 +116,21 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .idle_padding = type20_idle_padding,
             .hot_padding = type20_hot_padding,
             .border_edge = type20_border_edge,
+            .source_edge_fraction = type20_border_edge / 128.0,
         },
         .compact_score_row => .{
             .text_scale = 0.65,
             .idle_padding = 1.0,
             .hot_padding = 3.0,
-            .border_edge = 20.0,
+            .border_edge = compact_border_edge,
+            .source_edge_fraction = 0.1,
         },
         .footer_button => .{
             .text_scale = 1.14,
             .idle_padding = 6.0,
             .hot_padding = 7.0,
-            .border_edge = 20.0,
+            .border_edge = compact_border_edge,
+            .source_edge_fraction = 0.1,
         },
     };
 }
@@ -212,7 +221,7 @@ pub fn drawTextButton(
     const metrics = metricsForType(widget_type);
     const colors = colorsForState(state, disabled);
     const pill_rect = pillRect(text_rect, state);
-    drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, colors.fill);
+    drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, metrics.source_edge_fraction, colors.fill);
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
@@ -235,14 +244,15 @@ fn drawNineSlice(
     texture: rl.Texture2D,
     rect: Rect,
     edge: f32,
+    source_edge_fraction: f32,
     tint: rl.Color,
 ) void {
     if (rect.width <= 0.0 or rect.height <= 0.0) return;
 
     const texture_width = @as(f32, @floatFromInt(texture.width));
     const texture_height = @as(f32, @floatFromInt(texture.height));
-    const source_edge_x = texture_width * (type20_border_edge / 128.0);
-    const source_edge_y = texture_height * (type20_border_edge / 128.0);
+    const source_edge_x = texture_width * source_edge_fraction;
+    const source_edge_y = texture_height * source_edge_fraction;
 
     const clamped_edge_x = @min(edge, rect.width * 0.5);
     const clamped_edge_y = @min(edge, rect.height * 0.5);

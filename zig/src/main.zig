@@ -423,6 +423,8 @@ const exit_prompt_button_y: f32 = 330.0;
 const exit_prompt_yes_x: f32 = -80.0;
 const exit_prompt_no_x: f32 = 80.0;
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
+const frontend_canvas_width: i32 = 640;
+const frontend_canvas_height: i32 = 480;
 
 const FrontendHoverTarget = enum(u8) {
     main_menu_new_game,
@@ -653,6 +655,7 @@ const AppState = struct {
     level_index: usize,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
+    frontend_canvas: ?rl.RenderTexture2D = null,
     frontend_cursor_texture: ?assets.LoadedTexture = null,
     frontend_widget_art: FrontendWidgetArt = .{},
     frontend_sound_fx: FrontendSoundFx = .{},
@@ -693,6 +696,13 @@ const AppState = struct {
         errdefer animation_catalog.deinit();
         var ui_font = try game_font.Loaded.load(allocator, &catalog);
         errdefer ui_font.deinit();
+        const frontend_canvas = if (options.command == .game) blk: {
+            const canvas = try rl.loadRenderTexture(frontend_canvas_width, frontend_canvas_height);
+            rl.setTextureWrap(canvas.texture, .clamp);
+            rl.setTextureFilter(canvas.texture, .bilinear);
+            break :blk canvas;
+        } else null;
+        errdefer if (frontend_canvas) |canvas| canvas.unload();
         var frontend_cursor_texture = try catalog.loadTextureByPath(allocator, frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
         var frontend_widget_art = try loadFrontendWidgetArt(allocator, &catalog);
@@ -733,6 +743,7 @@ const AppState = struct {
             .model_index = model_index,
             .object_index = object_index,
             .level_index = level_index,
+            .frontend_canvas = frontend_canvas,
             .frontend_cursor_texture = frontend_cursor_texture,
             .frontend_widget_art = frontend_widget_art,
             .frontend_sound_fx = frontend_sound_fx,
@@ -801,6 +812,10 @@ const AppState = struct {
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
+        }
+        if (self.frontend_canvas) |canvas| {
+            canvas.unload();
+            self.frontend_canvas = null;
         }
         if (self.frontend_cursor_texture) |*texture| {
             texture.unload();
@@ -2685,8 +2700,14 @@ const AppState = struct {
         self.pending_screenshot = null;
         defer request.deinit(self.allocator);
 
-        const screenshot = try rl.loadImageFromScreen();
+        var screenshot = if (self.command == .game and frontendPhaseUsesCanvas(self.game_phase) and self.frontend_canvas != null)
+            try rl.loadImageFromTexture(self.frontend_canvas.?.texture)
+        else
+            try rl.loadImageFromScreen();
         defer screenshot.unload();
+        if (self.command == .game and frontendPhaseUsesCanvas(self.game_phase) and self.frontend_canvas != null) {
+            screenshot.flipVertical();
+        }
         if (!rl.exportImage(screenshot, request.relative_path_z)) {
             return error.ScreenshotExportFailed;
         }
@@ -2988,6 +3009,51 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
     }
 }
 
+fn frontendPhaseUsesCanvas(phase: GamePhase) bool {
+    return switch (phase) {
+        .main_menu,
+        .new_game_menu,
+        .options_menu,
+        .route_map_menu,
+        .high_scores_menu,
+        .exit_prompt,
+        .completion_screen,
+        .help,
+        => true,
+        .boot, .intro, .credits, .level => false,
+    };
+}
+
+fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout: VirtualLayout) !void {
+    if (state.current_game_background) |loaded_background| {
+        if (state.current_game_background_runtime) |runtime| {
+            switch (state.game_phase) {
+                .intro, .credits => runtime.drawStretched(&loaded_background, bounds),
+                else => _ = runtime.draw(&loaded_background, bounds),
+            }
+        } else {
+            _ = loaded_background.draw(bounds);
+        }
+    } else {
+        rl.drawRectangleRec(bounds, .black);
+    }
+
+    switch (state.game_phase) {
+        .boot => unreachable,
+        .intro => drawCurrentTextScript(state, ui_layout),
+        .main_menu => try drawMainMenuUi(state, ui_layout),
+        .new_game_menu => try drawNewGameMenuUi(state, ui_layout),
+        .options_menu => try drawOptionsMenuUi(state, ui_layout),
+        .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
+        .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
+        .exit_prompt => try drawExitPromptUi(state, ui_layout),
+        .completion_screen => try drawCompletionScreenUi(state, ui_layout),
+        .credits => drawCurrentTextScript(state, ui_layout),
+        .help => drawHelpUi(state, ui_layout),
+        .level => try drawGameplayLevelUi(state, ui_layout),
+    }
+}
+
 fn drawGameUi(state: *const AppState) !void {
     const full_bounds: rl.Rectangle = .{
         .x = 0.0,
@@ -3006,35 +3072,46 @@ fn drawGameUi(state: *const AppState) !void {
         return drawGameBootUi(state, ui_layout);
     }
 
-    if (state.current_game_background) |loaded_background| {
-        if (state.current_game_background_runtime) |runtime| {
-            switch (state.game_phase) {
-                .intro, .credits => runtime.drawStretched(&loaded_background, full_bounds),
-                else => _ = runtime.draw(&loaded_background, full_bounds),
+    if (frontendPhaseUsesCanvas(state.game_phase)) {
+        if (state.frontend_canvas) |canvas| {
+            const authored_bounds: rl.Rectangle = .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = app_ui.authored_width,
+                .height = app_ui.authored_height,
+            };
+            const authored_layout = app_ui.virtualLayout(authored_bounds);
+
+            {
+                canvas.begin();
+                defer canvas.end();
+                rl.clearBackground(.black);
+                try drawGamePhaseContents(state, authored_bounds, authored_layout);
+                drawFrontendCursorOverlay(state, authored_layout);
             }
+
+            rl.drawTexturePro(
+                canvas.texture,
+                .{
+                    .x = 0.0,
+                    .y = 0.0,
+                    .width = @floatFromInt(canvas.texture.width),
+                    .height = -@as(f32, @floatFromInt(canvas.texture.height)),
+                },
+                full_bounds,
+                .{ .x = 0.0, .y = 0.0 },
+                0.0,
+                .white,
+            );
         } else {
-            _ = loaded_background.draw(full_bounds);
+            try drawGamePhaseContents(state, full_bounds, ui_layout);
+            drawFrontendCursorOverlay(state, ui_layout);
         }
     } else {
-        rl.drawRectangleRec(full_bounds, .black);
+        try drawGamePhaseContents(state, full_bounds, ui_layout);
+        drawFrontendCursorOverlay(state, ui_layout);
     }
 
-    switch (state.game_phase) {
-        .boot => unreachable,
-        .intro => drawCurrentTextScript(state, ui_layout),
-        .main_menu => try drawMainMenuUi(state, ui_layout),
-        .new_game_menu => try drawNewGameMenuUi(state, ui_layout),
-        .options_menu => try drawOptionsMenuUi(state, ui_layout),
-        .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
-        .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
-        .exit_prompt => try drawExitPromptUi(state, ui_layout),
-        .completion_screen => try drawCompletionScreenUi(state, ui_layout),
-        .credits => drawCurrentTextScript(state, ui_layout),
-        .help => drawHelpUi(state, ui_layout),
-        .level => try drawGameplayLevelUi(state, ui_layout),
-    }
-
-    drawFrontendCursorOverlay(state);
     state.frontend_transition.draw(full_bounds);
 }
 
@@ -3579,10 +3656,9 @@ fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local
     );
 }
 
-fn drawFrontendCursorOverlay(state: *const AppState) void {
+fn drawFrontendCursorOverlay(state: *const AppState, layout: VirtualLayout) void {
     if (state.command != .game) return;
     if (!frontendPhaseShowsCursor(state.game_phase)) return;
-    const layout = state.currentUiLayout();
     const local_mouse = state.currentFrontendMouseLocal() orelse return;
     drawFrontendCursorRocket(state, layout, local_mouse.x, local_mouse.y);
 }

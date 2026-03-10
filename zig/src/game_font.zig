@@ -148,6 +148,8 @@ pub const Loaded = struct {
         if (slot.source_width <= 0.0) return;
 
         const scale = font_size / self.nominal_height;
+        const snapped_x = @as(f32, @floatFromInt(@as(i32, @intFromFloat(x))));
+        const snapped_y = @as(f32, @floatFromInt(@as(i32, @intFromFloat(y))));
         rl.drawTexturePro(
             self.texture,
             .{
@@ -157,8 +159,10 @@ pub const Loaded = struct {
                 .height = slot.source_height,
             },
             .{
-                .x = x,
-                .y = y,
+                // PORT(verified): `draw_font_text_instance` truncates each glyph's authored-space
+                // placement to integer coordinates before submitting the quad.
+                .x = snapped_x,
+                .y = snapped_y,
                 .width = slot.source_width * scale,
                 .height = font_size,
             },
