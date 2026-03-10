@@ -373,10 +373,9 @@ const route_menu_actions_with_replay = [_]RouteMenuAction{
 };
 
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
-// High Scores, Options, and Credits with `sub_4027B0`. Exit is not chained: Windows places
-// it explicitly at `y = 390`.
+// High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
+// `y = 390` first, but immediately overrides it by chaining from Credits.
 const main_menu_start_y: f32 = 90.0;
-const main_menu_exit_y: f32 = 390.0;
 // PORT(verified): `initialize_new_game_menu` seeds Tutorial at `y = 80`, chains Postal,
 // Time Trial, and Challenge Mode with `sub_4027B0`, then places Help and Back explicitly
 // at `y = 350` with center offsets `-220` and `0`.
@@ -3158,7 +3157,7 @@ fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_
         .high_scores => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .new_game)), frontend_widget.type20_center_offset_x),
         .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .high_scores)), frontend_widget.type20_center_offset_x),
         .credits => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .options)), frontend_widget.type20_center_offset_x),
-        .exit => frontend_widget.type20TextRect(font, item.label(), main_menu_exit_y, frontend_widget.type20_center_offset_x),
+        .exit => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .credits)), frontend_widget.type20_center_offset_x),
     };
 }
 
