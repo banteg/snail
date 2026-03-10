@@ -1674,6 +1674,10 @@ const AppState = struct {
                         try self.beginCompletedRun();
                         return;
                     },
+                    .respawn => {
+                        try self.beginRespawnRun();
+                        return;
+                    },
                     .final_loss => |cause| {
                         try self.beginFailedRun(cause);
                         return;
@@ -2289,6 +2293,14 @@ const AppState = struct {
         self.completion_action_index = 0;
         self.pending_run_result = result;
         try self.enterGamePhase(.completion_screen);
+    }
+
+    fn beginRespawnRun(self: *AppState) !void {
+        var loaded_track_preview = self.current_track_preview orelse return;
+        var runner = self.level_runner orelse return;
+        runner.applyRespawn(&loaded_track_preview);
+        self.clearLevelPromptQueue();
+        try self.syncActiveLevelSegment(false);
     }
 
     fn continueCompletionScreen(self: *AppState) !void {

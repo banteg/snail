@@ -73,6 +73,7 @@ pub const DeathCause = enum {
 pub const RunnerHandoff = union(enum) {
     none,
     completion,
+    respawn: DeathCause,
     final_loss: DeathCause,
 };
 
@@ -368,7 +369,7 @@ pub const Runner = struct {
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
         } else if (!self.paused) {
-            self.updatePhaseController(preview);
+            self.updatePhaseController();
         }
         self.endAttachmentIfNeeded(preview);
         self.refreshSample(preview);
@@ -904,7 +905,7 @@ pub const Runner = struct {
         };
     }
 
-    fn updatePhaseController(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    fn updatePhaseController(self: *Runner) void {
         switch (self.phase) {
             .active => {},
             .completion_cutscene => |ticks| {
@@ -952,7 +953,7 @@ pub const Runner = struct {
                 if (self.session_mode == .postal and self.visible_life_stock > 0) {
                     self.visible_life_stock -= 1;
                 }
-                self.applyRespawn(preview);
+                self.pending_handoff = .{ .respawn = state.cause };
             },
         }
     }
@@ -965,7 +966,7 @@ pub const Runner = struct {
         };
     }
 
-    fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    pub fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const session_mode = self.session_mode;
         const score = self.score;
         const visible_life_stock = self.visible_life_stock;
@@ -1337,7 +1338,7 @@ test "stopwatch advances minutes seconds and subsecond counters at 60fps" {
     try std.testing.expectEqual(@as(u32, 1500), stopwatch.elapsedMillis());
 }
 
-test "postal death respawns from the runner-local controller" {
+test "postal death hands off respawn after the death controller finishes" {
     var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
     defer fixture.deinit();
 
@@ -1354,10 +1355,36 @@ test "postal death respawns from the runner-local controller" {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectEqualStrings("active", runner.phaseLabel());
-    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    const handoff = runner.consumeHandoff();
+    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
+    try std.testing.expectEqual(DeathCause.hazard, handoff.respawn);
     try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
+    try std.testing.expectApproxEqAbs(@as(f32, 24.5), runner.row_position, 0.0001);
+}
+
+test "applyRespawn preserves score timer and remaining lives while resetting movement" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.postal);
+    runner.recordScore(&runner.score.ring_collect, 200);
+    runner.visible_life_stock = 2;
+    runner.tick_count = 90;
+    runner.stopwatch.advance(90.0);
+    runner.runtime_track_index = 24;
+    runner.movement_progress = 0.5;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+
+    runner.applyRespawn(&fixture.preview);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
+    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
+    try std.testing.expectEqual(@as(u64, 90), runner.tick_count);
+    try std.testing.expectEqual(@as(u32, 1500), runner.stopwatch.elapsedMillis());
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.row_position, 0.0001);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
 }
