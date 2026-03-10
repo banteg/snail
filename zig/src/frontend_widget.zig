@@ -55,7 +55,6 @@ pub const Rect = struct {
 
 pub const Art = struct {
     border: rl.Texture2D,
-    glow: rl.Texture2D,
 };
 
 pub const Metrics = struct {
@@ -183,9 +182,8 @@ pub fn drawType20Button(
     text_rect: Rect,
     state: TextButtonState,
     disabled: bool,
-    hover_glow_phase: ?f32,
 ) void {
-    drawTextButton(layout, art, font, .menu_button, text, text_rect, state, disabled, hover_glow_phase);
+    drawTextButton(layout, art, font, .menu_button, text, text_rect, state, disabled);
 }
 
 pub fn drawTextButton(
@@ -197,19 +195,10 @@ pub fn drawTextButton(
     text_rect: Rect,
     state: TextButtonState,
     disabled: bool,
-    hover_glow_phase: ?f32,
 ) void {
     const metrics = metricsForType(widget_type);
     const colors = colorsForState(state, disabled);
     const pill_rect = pillRect(text_rect, state);
-    if (!disabled) {
-        if (hover_glow_phase) |phase| {
-            const glow_edge = metrics.border_edge * (1.0 + phase * 0.7);
-            const glow_padding = state.current_padding + (glow_edge - metrics.border_edge);
-            const glow_rect = expandRect(text_rect, glow_padding);
-            drawNineSlice(layout, art.glow, glow_rect, glow_edge, whiteWithAlpha(1.0 - phase));
-        }
-    }
     drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, colors.fill);
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
@@ -338,15 +327,6 @@ fn halfColor(color: rl.Color) rl.Color {
 
 fn colorFromBytes(r: u8, g: u8, b: u8, a: u8) rl.Color {
     return .{ .r = r, .g = g, .b = b, .a = a };
-}
-
-fn whiteWithAlpha(alpha: f32) rl.Color {
-    return .{
-        .r = 255,
-        .g = 255,
-        .b = 255,
-        .a = @intFromFloat(@round(std.math.clamp(alpha, 0.0, 1.0) * 255.0)),
-    };
 }
 
 test "type20 text rect is centered around 320 plus offset" {

@@ -51,6 +51,7 @@ pub const FrontendTransitionState = enum {
     fading_out,
     holding_black,
     handoff,
+    black_idle,
 };
 
 // PORT(partial): intro and credits now reuse the recovered front-end black overlay transition:
@@ -77,6 +78,14 @@ pub const FrontendTransition = struct {
         self.pending_phase = next_phase;
     }
 
+    pub fn beginOverlayFadeOut(self: *FrontendTransition) void {
+        if (self.state != .idle) return;
+        self.state = .fading_out;
+        self.alpha = 0.0;
+        self.progress = 0.0;
+        self.pending_phase = null;
+    }
+
     pub fn update(self: *FrontendTransition) ?GamePhase {
         switch (self.state) {
             .idle => return null,
@@ -98,11 +107,15 @@ pub const FrontendTransition = struct {
             .holding_black => {
                 self.progress = @min(self.progress + frontend_transition_hold_step, 1.0);
                 if (self.progress >= 0.99) {
-                    self.state = .handoff;
-                    return self.pending_phase;
+                    if (self.pending_phase) |phase| {
+                        self.state = .handoff;
+                        return phase;
+                    }
+                    self.state = .black_idle;
                 }
             },
             .handoff => return self.pending_phase,
+            .black_idle => return null,
         }
         return null;
     }
@@ -384,4 +397,19 @@ test "frontend fade-out hands off after black hold" {
     transition.completeHandoff();
     try std.testing.expectEqual(FrontendTransitionState.fading_in, transition.state);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), transition.alpha, 0.001);
+}
+
+test "overlay fade gate reaches black idle without a phase handoff" {
+    var transition: FrontendTransition = .{};
+    transition.beginOverlayFadeOut();
+
+    for (0..21) |_| {
+        try std.testing.expectEqual(@as(?GamePhase, null), transition.update());
+    }
+
+    try std.testing.expectEqual(FrontendTransitionState.black_idle, transition.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), transition.alpha, 0.001);
+
+    transition.completeHandoff();
+    try std.testing.expectEqual(FrontendTransitionState.fading_in, transition.state);
 }

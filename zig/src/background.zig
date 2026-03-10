@@ -170,6 +170,23 @@ pub const Loaded = struct {
         return layout;
     }
 
+    pub fn drawAuthored(self: *const Loaded, bounds: rl.Rectangle) Layout {
+        rl.drawRectangleRec(bounds, self.fogColor());
+
+        const layout = authoredViewportLayout(bounds);
+        const primary_width = @as(f32, @floatFromInt(self.primary_texture.texture.width));
+        const primary_height = @as(f32, @floatFromInt(self.primary_texture.texture.height));
+        drawTextureScaled(self.primary_texture.texture, layout.x, layout.y, primary_width * layout.scale, primary_height * layout.scale);
+
+        if (self.secondary_texture) |texture| {
+            const secondary_width = @as(f32, @floatFromInt(texture.texture.width));
+            const secondary_height = @as(f32, @floatFromInt(texture.texture.height));
+            drawTextureScaled(texture.texture, layout.x + primary_width * layout.scale, layout.y, secondary_width * layout.scale, secondary_height * layout.scale);
+        }
+
+        return layout;
+    }
+
     pub fn drawStretched(self: *const Loaded, bounds: rl.Rectangle) void {
         rl.drawRectangleRec(bounds, self.fogColor());
 
@@ -229,11 +246,11 @@ pub const Runtime = struct {
 
     pub fn draw(self: *const Runtime, loaded: *const Loaded, bounds: rl.Rectangle) Layout {
         if (self.use_split_draw) {
-            return loaded.draw(bounds);
+            return loaded.drawAuthored(bounds);
         }
 
         rl.drawRectangleRec(bounds, loaded.fogColor());
-        const layout = canonicalLayout(bounds);
+        const layout = authoredViewportLayout(bounds);
         drawWarpedTexture(loaded.primary_texture.texture, layout, &self.warp_vertices, self.flipped_uvs);
         return layout;
     }
@@ -245,7 +262,7 @@ pub const Runtime = struct {
         }
 
         rl.drawRectangleRec(bounds, loaded.fogColor());
-        drawWarpedTexture(loaded.primary_texture.texture, canonicalLayout(bounds), &self.warp_vertices, self.flipped_uvs);
+        drawWarpedTexture(loaded.primary_texture.texture, authoredViewportLayout(bounds), &self.warp_vertices, self.flipped_uvs);
     }
 };
 
@@ -397,7 +414,7 @@ const WarpVertex = struct {
     offset_y: f32,
 };
 
-fn canonicalLayout(bounds: rl.Rectangle) Layout {
+fn authoredViewportLayout(bounds: rl.Rectangle) Layout {
     const scale = @min(bounds.width / original_screen_width, bounds.height / original_screen_height);
     const width = original_screen_width * scale;
     const height = original_screen_height * scale;
@@ -514,18 +531,18 @@ fn warpVertexPoint(
 ) rl.Vector2 {
     const vertex = vertices[row * warp_grid_width + col];
     return .{
-        .x = layout.x + (@as(f32, @floatFromInt(col)) * warp_cell_width + vertex.offset_x) * layout.scale,
-        .y = layout.y + (@as(f32, @floatFromInt(row)) * warp_cell_height + vertex.offset_y) * layout.scale,
+        .x = layout.x + (@as(f32, @floatFromInt(row)) * warp_cell_width + vertex.offset_x) * layout.scale,
+        .y = layout.y + (@as(f32, @floatFromInt(col)) * warp_cell_height + vertex.offset_y) * layout.scale,
     };
 }
 
 fn warpCellUvBounds(row: usize, col: usize, flipped_uvs: bool) WarpCellUvBounds {
     const u_step = warp_u_span / @as(f32, @floatFromInt(warp_grid_width - 1));
     const v_step = warp_v_span / @as(f32, @floatFromInt(warp_grid_height - 1));
-    const left_u = @as(f32, @floatFromInt(col)) * u_step;
-    const right_u = @as(f32, @floatFromInt(col + 1)) * u_step;
-    const top_v = @as(f32, @floatFromInt(row)) * v_step;
-    const bottom_v = @as(f32, @floatFromInt(row + 1)) * v_step;
+    const left_u = @as(f32, @floatFromInt(row)) * u_step;
+    const right_u = @as(f32, @floatFromInt(row + 1)) * u_step;
+    const top_v = @as(f32, @floatFromInt(col)) * v_step;
+    const bottom_v = @as(f32, @floatFromInt(col + 1)) * v_step;
     if (!flipped_uvs) {
         return .{
             .left = left_u,

@@ -36,7 +36,6 @@ pub const route_map_galaxy_texture_paths = [_][]const u8{
 };
 pub const frontend_cursor_texture_path = "SPRITES/MOUSE.TGA";
 pub const widget_border_texture_path = "SPRITES/BORDER.TGA";
-pub const widget_border_glow_texture_path = "SPRITES/BORDERGLOW.TGA";
 pub const frontend_highlight_sound_path = "SFX2/HIGHLIGHT.OGG";
 pub const frontend_select_sound_path = "SFX2/SELECT.OGG";
 pub const slider_less_texture_path = "SPRITES/LESS.TGA";

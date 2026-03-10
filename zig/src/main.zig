@@ -39,7 +39,6 @@ const route_map_line_star_texture_path = app.route_map_line_star_texture_path;
 const route_map_galaxy_texture_paths = app.route_map_galaxy_texture_paths;
 const frontend_cursor_texture_path = app.frontend_cursor_texture_path;
 const widget_border_texture_path = app.widget_border_texture_path;
-const widget_border_glow_texture_path = app.widget_border_glow_texture_path;
 const frontend_highlight_sound_path = app.frontend_highlight_sound_path;
 const frontend_select_sound_path = app.frontend_select_sound_path;
 const slider_less_texture_path = app.slider_less_texture_path;
@@ -133,16 +132,11 @@ const SliderArt = struct {
 
 const FrontendWidgetArt = struct {
     border: ?assets.LoadedTexture = null,
-    glow: ?assets.LoadedTexture = null,
 
     fn unload(self: *FrontendWidgetArt) void {
         if (self.border) |*texture| {
             texture.unload();
             self.border = null;
-        }
-        if (self.glow) |*texture| {
-            texture.unload();
-            self.glow = null;
         }
     }
 };
@@ -216,7 +210,6 @@ fn loadFrontendWidgetArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     errdefer art.unload();
 
     art.border = try catalog.loadTextureByPath(allocator, widget_border_texture_path);
-    art.glow = try catalog.loadTextureByPath(allocator, widget_border_glow_texture_path);
 
     return art;
 }
@@ -406,7 +399,7 @@ const exit_prompt_title_y: f32 = 200.0;
 const exit_prompt_button_y: f32 = 330.0;
 const exit_prompt_yes_x: f32 = -80.0;
 const exit_prompt_no_x: f32 = 80.0;
-const frontend_activation_delay_step: f32 = 1.0 / 12.0;
+const frontend_activation_delay_step: f32 = 1.0 / 3.0;
 
 const FrontendHoverTarget = enum(u8) {
     main_menu_new_game,
@@ -443,6 +436,8 @@ const FrontendQueuedAction = union(enum) {
 
 const FrontendQueuedActivation = struct {
     action: FrontendQueuedAction,
+    target: FrontendHoverTarget,
+    requires_fade: bool,
     progress: f32 = 0.0,
 };
 
@@ -500,6 +495,57 @@ fn hoverTargetForExitPrompt(index: usize) FrontendHoverTarget {
         0 => .exit_prompt_yes,
         1 => .exit_prompt_no,
         else => unreachable,
+    };
+}
+
+fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
+    return switch (action) {
+        .main_menu => |item| switch (item) {
+            .new_game => .main_menu_new_game,
+            .high_scores => .main_menu_high_scores,
+            .options => .main_menu_options,
+            .credits => .main_menu_credits,
+            .exit => .main_menu_exit,
+        },
+        .new_game_menu => |item| switch (item) {
+            .tutorial => .new_game_tutorial,
+            .postal_mode => .new_game_postal_mode,
+            .time_trial => .new_game_time_trial,
+            .challenge_mode => .new_game_challenge_mode,
+            .help => .new_game_help,
+            .back => .new_game_back,
+        },
+        .options_menu => |item| switch (item) {
+            .fullscreen => .options_fullscreen,
+            .back => .options_back,
+            .sound_volume, .music_volume => unreachable,
+        },
+        .high_scores_menu => |item| switch (item) {
+            .back => .high_scores_back,
+            .switch_table => .high_scores_switch_table,
+        },
+        .post_level_high_scores => |item| switch (item) {
+            .cancel => .post_level_high_scores_cancel,
+            .submit => .post_level_high_scores_submit,
+        },
+        .exit_prompt => |choice| switch (choice) {
+            .yes => .exit_prompt_yes,
+            .no => .exit_prompt_no,
+        },
+    };
+}
+
+fn queuedActivationRequiresFade(action: FrontendQueuedAction) bool {
+    return switch (action) {
+        .main_menu => |item| switch (item) {
+            .credits => true,
+            else => false,
+        },
+        .new_game_menu => |item| switch (item) {
+            .tutorial, .help => true,
+            else => false,
+        },
+        else => false,
     };
 }
 
@@ -1024,10 +1070,32 @@ const AppState = struct {
         }
     }
 
+    fn activeFrontendButtonTarget(self: *const AppState) ?FrontendHoverTarget {
+        if (self.pending_frontend_activation) |pending| {
+            return pending.target;
+        }
+        return self.hovered_frontend_target;
+    }
+
+    fn frontendButtonHot(self: *const AppState, target: FrontendHoverTarget, fallback_selected: bool) bool {
+        if (self.activeFrontendButtonTarget()) |active_target| {
+            return active_target == target;
+        }
+        return fallback_selected;
+    }
+
     fn queueFrontendActivation(self: *AppState, action: FrontendQueuedAction) void {
         if (self.pending_frontend_activation != null) return;
         self.playFrontendSelectSound();
-        self.pending_frontend_activation = .{ .action = action };
+        const requires_fade = queuedActivationRequiresFade(action);
+        if (requires_fade) {
+            self.frontend_transition.beginOverlayFadeOut();
+        }
+        self.pending_frontend_activation = .{
+            .action = action,
+            .target = queuedActivationTarget(action),
+            .requires_fade = requires_fade,
+        };
     }
 
     fn dispatchFrontendActivation(self: *AppState, action: FrontendQueuedAction) !void {
@@ -1044,10 +1112,15 @@ const AppState = struct {
     fn updatePendingFrontendActivation(self: *AppState) !bool {
         if (self.pending_frontend_activation) |*pending| {
             pending.progress = @min(pending.progress + frontend_activation_delay_step, 1.0);
-            if (pending.progress >= 0.999) {
+            const fade_ready = !pending.requires_fade or self.frontend_transition.state == .black_idle;
+            if (pending.progress >= 0.999 and fade_ready) {
                 const action = pending.action;
+                const should_fade_in = pending.requires_fade and self.frontend_transition.state == .black_idle;
                 self.pending_frontend_activation = null;
                 try self.dispatchFrontendActivation(action);
+                if (should_fade_in) {
+                    self.frontend_transition.completeHandoff();
+                }
                 return true;
             }
         }
@@ -1073,49 +1146,49 @@ const AppState = struct {
     fn updateFrontendWidgetAnimations(self: *AppState) void {
         const main_menu_active = self.game_phase == .main_menu and !self.frontend_transition.blocksInput();
         for (&self.main_menu_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, main_menu_active and self.menu_index == index);
+            state.stepFor(.menu_button, main_menu_active and self.frontendButtonHot(hoverTargetForMainMenu(index), self.menu_index == index));
         }
 
         const new_game_active = self.game_phase == .new_game_menu and !self.frontend_transition.blocksInput();
         for (&self.new_game_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, new_game_active and self.new_game_menu_index == index);
+            state.stepFor(.menu_button, new_game_active and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
         }
 
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
-        self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.options_menu_index == 0);
-        self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.options_menu_index == 3);
+        self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
+        self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
 
         const high_scores_active = self.game_phase == .high_scores_menu and !self.frontend_transition.blocksInput();
         for (&self.high_score_button_states, 0..) |*state, index| {
-            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() == null and self.high_scores_action_index == index);
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
         }
         for (&self.post_level_high_score_button_states, 0..) |*state, index| {
-            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.post_level_high_score_action_index == index);
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.frontendButtonHot(hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
         }
 
         const exit_prompt_active = self.game_phase == .exit_prompt and !self.frontend_transition.blocksInput();
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, exit_prompt_active and self.exit_prompt_choice_index == index);
+            state.stepFor(.menu_button, exit_prompt_active and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
         }
     }
 
     fn snapFrontendWidgetStates(self: *AppState) void {
         for (&self.main_menu_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .main_menu and self.menu_index == index);
+            state.snapFor(.menu_button, self.game_phase == .main_menu and self.frontendButtonHot(hoverTargetForMainMenu(index), self.menu_index == index));
         }
         for (&self.new_game_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.new_game_menu_index == index);
+            state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
         }
-        self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.options_menu_index == 0);
-        self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.options_menu_index == 3);
+        self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
+        self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
         for (&self.high_score_button_states, 0..) |*state, index| {
-            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.high_scores_action_index == index);
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
         }
         for (&self.post_level_high_score_button_states, 0..) |*state, index| {
-            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() != null and self.post_level_high_score_action_index == index);
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() != null and self.frontendButtonHot(hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
         }
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.exit_prompt_choice_index == index);
+            state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
         }
     }
 
@@ -2935,21 +3008,18 @@ fn optionsSliderMoreRect(center_y: f32) frontend_widget.Rect {
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     var anchor_y: f32 = 90.0;
-    const hover_phase = frontendHoverGlowPhase(state);
     for (main_menu_items, 0..) |item, index| {
         const text_rect = frontend_widget.type20TextRect(&state.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
         frontend_widget.drawType20Button(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,
-                .glow = state.frontend_widget_art.glow.?.texture,
             },
             &state.ui_font,
             item.label(),
             text_rect,
             state.main_menu_button_states[index],
             false,
-            if (state.hovered_frontend_target == hoverTargetForMainMenu(index)) hover_phase else null,
         );
         anchor_y = frontend_widget.stackBelow(text_rect);
     }
@@ -2961,21 +3031,18 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     var anchor_y: f32 = 80.0;
-    const hover_phase = frontendHoverGlowPhase(state);
     for (new_game_menu_items[0..4], 0..) |item, index| {
         const text_rect = frontend_widget.type20TextRect(&state.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
         frontend_widget.drawType20Button(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,
-                .glow = state.frontend_widget_art.glow.?.texture,
             },
             &state.ui_font,
             item.label(),
             text_rect,
             state.new_game_button_states[index],
             false,
-            if (state.hovered_frontend_target == hoverTargetForNewGame(index)) hover_phase else null,
         );
         anchor_y = frontend_widget.stackBelow(text_rect);
     }
@@ -2983,27 +3050,23 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
-            .glow = state.frontend_widget_art.glow.?.texture,
         },
         &state.ui_font,
         "Help",
         frontend_widget.type20TextRect(&state.ui_font, "Help", 350.0, -220.0),
         state.new_game_button_states[4],
         false,
-        if (state.hovered_frontend_target == hoverTargetForNewGame(4)) hover_phase else null,
     );
     frontend_widget.drawType20Button(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
-            .glow = state.frontend_widget_art.glow.?.texture,
         },
         &state.ui_font,
         "Back",
         frontend_widget.type20TextRect(&state.ui_font, "Back", 350.0, frontend_widget.type20_center_offset_x),
         state.new_game_button_states[5],
         false,
-        if (state.hovered_frontend_target == hoverTargetForNewGame(5)) hover_phase else null,
     );
 
     if (state.game_status_message) |message| {
@@ -3013,19 +3076,16 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const local_mouse = state.currentFrontendMouseLocal();
-    const hover_phase = frontendHoverGlowPhase(state);
     frontend_widget.drawType20Button(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
-            .glow = state.frontend_widget_art.glow.?.texture,
         },
         &state.ui_font,
         if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
         optionsFullscreenTextRect(state),
         state.options_button_states[options_fullscreen_button_index],
         false,
-        if (state.hovered_frontend_target == hoverTargetForOptions(0)) hover_phase else null,
     );
     drawFrontendSliderPanel(
         state,
@@ -3053,14 +3113,12 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
-            .glow = state.frontend_widget_art.glow.?.texture,
         },
         &state.ui_font,
         "Back",
         optionsBackTextRect(state),
         state.options_button_states[options_back_button_index],
         false,
-        if (state.hovered_frontend_target == hoverTargetForOptions(3)) hover_phase else null,
     );
 
     if (state.game_status_message) |message| {
@@ -3106,10 +3164,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         context.mode
     else
         high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
-    const hover_phase = frontendHoverGlowPhase(state);
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
-        .glow = state.frontend_widget_art.glow.?.texture,
     };
     drawFrontendHeading(
         state,
@@ -3138,7 +3194,6 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             highScoreFooterTextRect(state, post_level_high_score_actions[0].label(), high_score_entry_cancel_x),
             state.post_level_high_score_button_states[0],
             false,
-            if (state.hovered_frontend_target == hoverTargetForPostLevelHighScores(0)) hover_phase else null,
         );
         frontend_widget.drawTextButton(
             layout,
@@ -3149,7 +3204,6 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             highScoreFooterTextRect(state, post_level_high_score_actions[1].label(), high_score_entry_submit_x),
             state.post_level_high_score_button_states[1],
             false,
-            if (state.hovered_frontend_target == hoverTargetForPostLevelHighScores(1)) hover_phase else null,
         );
     } else {
         drawHighScoreTable(state, layout, null, null, false, selected_mode);
@@ -3162,7 +3216,6 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             highScoreFooterTextRect(state, "Back", high_score_back_x),
             state.high_score_button_states[0],
             false,
-            if (state.hovered_frontend_target == hoverTargetForHighScores(0)) hover_phase else null,
         );
         frontend_widget.drawTextButton(
             layout,
@@ -3173,7 +3226,6 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             highScoreFooterTextRect(state, highScoreTableToggleLabel(selected_mode), high_score_toggle_x),
             state.high_score_button_states[1],
             false,
-            if (state.hovered_frontend_target == hoverTargetForHighScores(1)) hover_phase else null,
         );
     }
 
@@ -3183,10 +3235,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    const hover_phase = frontendHoverGlowPhase(state);
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
-        .glow = state.frontend_widget_art.glow.?.texture,
     };
     drawFrontendHeading(state, layout, 320.0, exit_prompt_title_y, "Do you really want to quit?", 26, .center, .ray_white);
     frontend_widget.drawType20Button(
@@ -3197,7 +3247,6 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         exitPromptTextRect(state, exit_prompt_choices[0].label(), exit_prompt_yes_x),
         state.exit_prompt_button_states[0],
         false,
-        if (state.hovered_frontend_target == hoverTargetForExitPrompt(0)) hover_phase else null,
     );
     frontend_widget.drawType20Button(
         layout,
@@ -3207,7 +3256,6 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         exitPromptTextRect(state, exit_prompt_choices[1].label(), exit_prompt_no_x),
         state.exit_prompt_button_states[1],
         false,
-        if (state.hovered_frontend_target == hoverTargetForExitPrompt(1)) hover_phase else null,
     );
 }
 
@@ -3222,7 +3270,6 @@ fn drawHighScoreTable(
     const entries = state.high_score_tables.visibleEntries(mode);
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
-        .glow = state.frontend_widget_art.glow.?.texture,
     };
     const row_background_text = switch (mode) {
         .postal => "                                               ",
@@ -3245,7 +3292,6 @@ fn drawHighScoreTable(
             frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, row_background_text, row_y, -228.0),
             row_state,
             false,
-            null,
         );
 
         var rank_buffer: [8]u8 = undefined;
@@ -3427,11 +3473,6 @@ fn frontendPhaseShowsCursor(phase: GamePhase) bool {
         => true,
         .boot, .intro, .credits, .level => false,
     };
-}
-
-fn frontendHoverGlowPhase(state: *const AppState) f32 {
-    const period_seconds = 0.5;
-    return @floatCast(@mod(state.render_time_seconds / period_seconds, 1.0));
 }
 
 fn drawFrontendHeading(
