@@ -27,6 +27,7 @@ uv run snail format artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT
 uv run snail trace summary /path/to/snailmail-trace.ndjson
 uv run snail trace plan
 uv run snail symbols
+uv run snail screenshots compare artifacts/screenshots/snail-game-main_menu-000006-001.png artifacts/screenshots/reference-original/main-menu-new-game-selected--2026-03-10_01-35-25-36.png --search-offset 8 --search-scale 0.95:1.05:0.01
 ```
 
 The command emits JSON with:
@@ -49,6 +50,7 @@ The format parser adds:
 - `trace summary`: structured JSON rollups for Frida NDJSON runtime captures
 - `trace plan`: ranked level and segment candidates for the next runtime capture, including path-heavy, ring-heavy, no-fall, jetpack-off, authored-salt, and scalar-salt targets
 - `symbols`: validation for the tracked Binary Ninja gameplay symbol manifest in `analysis/symbols/gameplay-functions.json`
+- `screenshots compare`: writes normalized render/reference captures plus signed diff, absolute diff, and montage artifacts under `artifacts/screenshots/compare`
 
 ## Asset Format Notes
 

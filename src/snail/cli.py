@@ -11,6 +11,11 @@ from .archive import extract_archive, parse_archive_index, summarize_archive
 from .formats import parse_text_asset
 from .recon import inspect_path, sha256_bytes
 from .reflexive import decrypt_reflexive_wrapper_config, unwrap_reflexive_executable
+from .screenshots import (
+    DEFAULT_SCREENSHOT_COMPARE_OUTPUT_DIR,
+    compare_screenshots,
+    parse_scale_search,
+)
 from .symbols import (
     DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     load_function_symbol_manifest,
@@ -215,6 +220,57 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write the normalized manifest JSON to this path in addition to printing a summary.",
     )
 
+    screenshots_parser = subparsers.add_parser(
+        "screenshots",
+        help="Compare rendered screenshots against reference captures.",
+    )
+    screenshots_subparsers = screenshots_parser.add_subparsers(dest="screenshots_command", required=True)
+
+    screenshots_compare_parser = screenshots_subparsers.add_parser(
+        "compare",
+        help="Normalize two screenshots to a common size, write diff artifacts, and print metrics.",
+    )
+    screenshots_compare_parser.add_argument(
+        "render",
+        type=Path,
+        help="Path to the current port screenshot.",
+    )
+    screenshots_compare_parser.add_argument(
+        "reference",
+        type=Path,
+        help="Path to the original reference screenshot.",
+    )
+    screenshots_compare_parser.add_argument(
+        "--compare-size",
+        default="reference",
+        help="Comparison size: reference, render, or WIDTHxHEIGHT (default: reference).",
+    )
+    screenshots_compare_parser.add_argument(
+        "--search-scale",
+        help="Optional scale search range in START:STOP:STEP form, for example 0.95:1.05:0.01.",
+    )
+    screenshots_compare_parser.add_argument(
+        "--search-offset",
+        type=int,
+        default=0,
+        help="Optional integer pixel search radius for x/y offsets after normalization.",
+    )
+    screenshots_compare_parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_SCREENSHOT_COMPARE_OUTPUT_DIR,
+        help="Directory that will receive the normalized and diff images.",
+    )
+    screenshots_compare_parser.add_argument(
+        "--prefix",
+        help="Optional filename prefix for generated artifacts.",
+    )
+    screenshots_compare_parser.add_argument(
+        "--write",
+        type=Path,
+        help="Write the JSON summary to this path in addition to stdout.",
+    )
+
     return parser
 
 
@@ -328,6 +384,23 @@ def main(argv: Sequence[str] | None = None) -> int:
         if args.write is not None:
             summary["normalized_output"] = str(args.write)
         print(json.dumps(summary, indent=2, sort_keys=True))
+        return 0
+
+    if args.command == "screenshots" and args.screenshots_command == "compare":
+        summary = compare_screenshots(
+            args.render,
+            args.reference,
+            compare_size_spec=args.compare_size,
+            output_dir=args.output_dir,
+            scale_search=parse_scale_search(args.search_scale) if args.search_scale else None,
+            offset_search=args.search_offset,
+            prefix=args.prefix,
+        )
+        text = json.dumps(summary, indent=2, sort_keys=True)
+        if args.write is not None:
+            args.write.parent.mkdir(parents=True, exist_ok=True)
+            args.write.write_text(text + "\n", encoding="utf-8")
+        print(text)
         return 0
 
     parser.error(f"Unhandled command: {args.command}")

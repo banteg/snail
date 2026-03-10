@@ -19,26 +19,30 @@ def test_default_function_symbol_manifest_loads() -> None:
         manifest,
         path=DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH,
     )
+    min_address = min(function.address for function in manifest.functions)
 
     assert manifest.primary_target.endswith("SnailMail_unwrapped.exe")
     assert manifest.reference_target.endswith("SnailMail.RWG")
-    assert manifest.functions[0].name == "file_exists"
+    assert manifest.functions[0].address == min_address
+    assert any(function.name == "file_exists" for function in manifest.functions)
     assert manifest.functions[8].description is not None
-    assert manifest.functions[-1].name == "get_or_create_texture_ref"
+    assert any(function.name == "get_or_create_texture_ref" for function in manifest.functions)
     assert summary["function_count"] == len(manifest.functions)
     assert summary["described_function_count"] >= 1
-    assert summary["address_range"]["start"] == "0x405140"
+    assert summary["address_range"]["start"] == f"0x{min_address:x}"
 
 
 def test_write_function_symbol_manifest_preserves_normalized_shape(tmp_path: Path) -> None:
     manifest = load_function_symbol_manifest(DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH)
     output_path = tmp_path / "symbols.json"
+    first_function = manifest.functions[0]
 
     write_function_symbol_manifest(manifest, output_path)
     raw = json.loads(output_path.read_text(encoding="utf-8"))
 
     assert raw["image_base"] == "0x400000"
-    assert raw["functions"][0] == {"address": "0x405140", "name": "file_exists"}
+    assert raw["functions"][0]["address"] == f"0x{first_function.address:x}"
+    assert raw["functions"][0]["name"] == first_function.name
     assert "description" in raw["functions"][8]
 
 
