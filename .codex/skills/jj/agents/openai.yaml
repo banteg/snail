@@ -1,7 +1,0 @@
-interface:
-  display_name: "jj"
-  short_description: "Use Jujutsu for version control in this repo"
-  default_prompt: "Use $jj for version control work in this repo instead of default Git commands."
-
-policy:
-  allow_implicit_invocation: true
