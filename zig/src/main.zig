@@ -2302,7 +2302,6 @@ const AppState = struct {
         switch (item) {
             .new_game => try self.enterGamePhase(.new_game_menu),
             .high_scores => {
-                self.high_scores_menu_index = 0;
                 self.high_scores_action_index = 1;
                 try self.enterGamePhase(.high_scores_menu);
             },
@@ -2723,6 +2722,7 @@ const AppState = struct {
 
                 const entry = high_score.Entry{
                     .score = result.score,
+                    .level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
@@ -2736,6 +2736,7 @@ const AppState = struct {
 
                 const entry = high_score.Entry{
                     .score = result.score,
+                    .level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
@@ -2746,8 +2747,9 @@ const AppState = struct {
                 result.score = elapsed_millis;
                 const entry = high_score.Entry{
                     .score = elapsed_millis,
+                    .level_index = @intCast(self.active_frontend_level_index),
                 };
-                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry);
+                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry, true);
                 result.time_trial_record_improved = insert.improved;
                 try self.saveHighScoreTables();
             },
@@ -2787,6 +2789,7 @@ const AppState = struct {
                 result.score = runner.score.total;
                 const entry = high_score.Entry{
                     .score = result.score,
+                    .level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
@@ -2797,6 +2800,7 @@ const AppState = struct {
                 result.score = runner.score.total;
                 const entry = high_score.Entry{
                     .score = result.score,
+                    .level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
@@ -2804,13 +2808,19 @@ const AppState = struct {
                 try self.saveHighScoreTables();
             },
             .time_trial => {
+                // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
+                // failed runs into scratch memory. It does not replace the persistent ScoreC
+                // route record unless the run completed successfully.
                 result.score = elapsed_millis;
-                const entry = high_score.Entry{
-                    .score = elapsed_millis,
-                };
-                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry);
-                result.time_trial_record_improved = insert.improved;
-                try self.saveHighScoreTables();
+                _ = self.high_score_tables.addTimeTrial(
+                    self.allocator,
+                    self.active_frontend_level_index,
+                    .{
+                        .score = elapsed_millis,
+                        .level_index = @intCast(self.active_frontend_level_index),
+                    },
+                    false,
+                );
             },
             .tutorial => {
                 result.score = runner.score.total;
