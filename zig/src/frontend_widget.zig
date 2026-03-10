@@ -16,8 +16,6 @@ pub const WidgetAlignment = enum(u8) {
     right = 3,
 };
 
-pub const type20_font_size: f32 = 26.0;
-pub const type20_text_height: f32 = 28.0;
 pub const type20_idle_padding: f32 = 9.0;
 pub const type20_hot_padding: f32 = 13.0;
 pub const type20_stack_gap: f32 = 26.0;
@@ -58,11 +56,18 @@ pub const Art = struct {
 };
 
 pub const Metrics = struct {
-    font_size: f32,
-    text_height: f32,
+    text_scale: f32,
     idle_padding: f32,
     hot_padding: f32,
     border_edge: f32,
+
+    pub fn fontSize(self: Metrics, font: *const game_font.Loaded) f32 {
+        return font.nominal_height * self.text_scale;
+    }
+
+    pub fn textHeight(self: Metrics, font: *const game_font.Loaded) f32 {
+        return font.nominal_height * self.text_scale;
+    }
 };
 
 pub const TextButtonState = struct {
@@ -93,22 +98,19 @@ pub const ButtonColors = struct {
 pub fn metricsForType(widget_type: WidgetType) Metrics {
     return switch (widget_type) {
         .menu_button => .{
-            .font_size = type20_font_size,
-            .text_height = type20_text_height,
+            .text_scale = 1.3,
             .idle_padding = type20_idle_padding,
             .hot_padding = type20_hot_padding,
             .border_edge = type20_border_edge,
         },
         .compact_score_row => .{
-            .font_size = 18.0,
-            .text_height = 20.0,
+            .text_scale = 0.65,
             .idle_padding = 1.0,
             .hot_padding = 3.0,
             .border_edge = 20.0,
         },
         .footer_button => .{
-            .font_size = 23.0,
-            .text_height = 24.0,
+            .text_scale = 1.14,
             .idle_padding = 6.0,
             .hot_padding = 7.0,
             .border_edge = 20.0,
@@ -129,7 +131,7 @@ pub fn widgetTextRect(
     anchor_x: f32,
 ) Rect {
     const metrics = metricsForType(widget_type);
-    const width = font.measureText(text, metrics.font_size);
+    const width = font.measureText(text, metrics.fontSize(font));
     const base_x = switch (alignment) {
         .absolute => anchor_x,
         .left, .center, .right => 320.0 + anchor_x,
@@ -142,7 +144,7 @@ pub fn widgetTextRect(
         },
         .top = anchor_y,
         .width = width,
-        .height = metrics.text_height,
+        .height = metrics.textHeight(font),
     };
 }
 
@@ -203,7 +205,7 @@ pub fn drawTextButton(
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
-    const scaled_font_size = layout.scaleFloat(metrics.font_size);
+    const scaled_font_size = layout.scaleFloat(metrics.fontSize(font));
     font.drawText(text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
     font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }
@@ -279,7 +281,7 @@ fn drawSlice(
     );
 }
 
-fn alignedTextRect(width: f32, anchor_y: f32, alignment: WidgetAlignment, anchor_x: f32) Rect {
+fn alignedTextRect(width: f32, height: f32, anchor_y: f32, alignment: WidgetAlignment, anchor_x: f32) Rect {
     const base_x = switch (alignment) {
         .absolute => anchor_x,
         .left, .center, .right => 320.0 + anchor_x,
@@ -292,7 +294,7 @@ fn alignedTextRect(width: f32, anchor_y: f32, alignment: WidgetAlignment, anchor
         },
         .top = anchor_y,
         .width = width,
-        .height = type20_text_height,
+        .height = height,
     };
 }
 
@@ -330,28 +332,28 @@ fn colorFromBytes(r: u8, g: u8, b: u8, a: u8) rl.Color {
 }
 
 test "type20 text rect is centered around 320 plus offset" {
-    const rect = alignedTextRect(80.0, 90.0, .center, type20_center_offset_x);
+    const rect = alignedTextRect(80.0, 44.2, 90.0, .center, type20_center_offset_x);
     try std.testing.expectEqual(@as(f32, 300.0), rect.left);
     try std.testing.expectEqual(@as(f32, 90.0), rect.top);
     try std.testing.expectEqual(@as(f32, 80.0), rect.width);
-    try std.testing.expectEqual(type20_text_height, rect.height);
+    try std.testing.expectApproxEqAbs(@as(f32, 44.2), rect.height, 0.001);
 }
 
 test "left aligned text rect uses the authored x anchor directly from center offset space" {
-    const rect = alignedTextRect(80.0, 111.0, .left, -228.0);
+    const rect = alignedTextRect(80.0, 44.2, 111.0, .left, -228.0);
     try std.testing.expectEqual(@as(f32, 92.0), rect.left);
     try std.testing.expectEqual(@as(f32, 111.0), rect.top);
     try std.testing.expectEqual(@as(f32, 80.0), rect.width);
 }
 
 test "right aligned text rect ends at the authored anchor" {
-    const rect = alignedTextRect(80.0, 111.0, .right, 160.0);
+    const rect = alignedTextRect(80.0, 44.2, 111.0, .right, 160.0);
     try std.testing.expectEqual(@as(f32, 400.0), rect.left);
     try std.testing.expectEqual(@as(f32, 111.0), rect.top);
     try std.testing.expectEqual(@as(f32, 80.0), rect.width);
 }
 
 test "stack below uses the recovered 26 pixel gap" {
-    const rect = Rect{ .left = 0.0, .top = 90.0, .width = 80.0, .height = type20_text_height };
-    try std.testing.expectEqual(@as(f32, 144.0), stackBelow(rect));
+    const rect = Rect{ .left = 0.0, .top = 90.0, .width = 80.0, .height = 44.2 };
+    try std.testing.expectApproxEqAbs(@as(f32, 160.2), stackBelow(rect), 0.001);
 }
