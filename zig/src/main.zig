@@ -386,6 +386,7 @@ const options_slider_arrow_size: f32 = 64.0;
 const options_slider_arrow_offset_x: f32 = 172.0;
 const options_slider_arrow_center_y_offset: f32 = 10.0;
 const high_score_button_count = 2;
+const help_button_count = 1;
 const exit_prompt_button_count = 2;
 const high_score_title_y: f32 = 64.0;
 const high_score_row_start_y: f32 = 111.0;
@@ -399,7 +400,7 @@ const exit_prompt_title_y: f32 = 200.0;
 const exit_prompt_button_y: f32 = 330.0;
 const exit_prompt_yes_x: f32 = -80.0;
 const exit_prompt_no_x: f32 = 80.0;
-const frontend_activation_delay_step: f32 = 1.0 / 3.0;
+const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 
 const FrontendHoverTarget = enum(u8) {
     main_menu_new_game,
@@ -417,6 +418,7 @@ const FrontendHoverTarget = enum(u8) {
     options_sound_volume,
     options_music_volume,
     options_back,
+    help_back,
     high_scores_back,
     high_scores_switch_table,
     post_level_high_scores_cancel,
@@ -429,9 +431,14 @@ const FrontendQueuedAction = union(enum) {
     main_menu: MainMenuItem,
     new_game_menu: NewGameMenuItem,
     options_menu: OptionsMenuItem,
+    help_menu: HelpMenuAction,
     high_scores_menu: HighScoreMenuAction,
     post_level_high_scores: PostLevelHighScoreAction,
     exit_prompt: ExitPromptChoice,
+};
+
+const HelpMenuAction = enum {
+    back,
 };
 
 const FrontendQueuedActivation = struct {
@@ -520,6 +527,7 @@ fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
             .back => .options_back,
             .sound_volume, .music_volume => unreachable,
         },
+        .help_menu => .help_back,
         .high_scores_menu => |item| switch (item) {
             .back => .high_scores_back,
             .switch_table => .high_scores_switch_table,
@@ -545,6 +553,7 @@ fn queuedActivationRequiresFade(action: FrontendQueuedAction) bool {
             .tutorial, .help => true,
             else => false,
         },
+        .help_menu => true,
         else => false,
     };
 }
@@ -587,6 +596,7 @@ const AppState = struct {
     new_game_button_states: [new_game_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** new_game_menu_items.len,
     options_menu_index: usize = 0,
     options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
+    help_button_states: [help_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** help_button_count,
     high_scores_menu_index: usize = 0,
     high_scores_action_index: usize = 1,
     high_score_button_states: [high_score_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** high_score_button_count,
@@ -1103,6 +1113,7 @@ const AppState = struct {
             .main_menu => |item| try self.performMainMenuItem(item),
             .new_game_menu => |item| try self.performNewGameMenuItem(item),
             .options_menu => |item| try self.performOptionsMenuItem(item),
+            .help_menu => |item| try self.performHelpMenuItem(item),
             .high_scores_menu => |item| try self.performHighScoreMenuAction(item),
             .post_level_high_scores => |item| try self.performPostLevelHighScoreAction(item),
             .exit_prompt => |choice| try self.performExitPromptChoice(choice),
@@ -1157,6 +1168,8 @@ const AppState = struct {
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
         self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        const help_active = self.game_phase == .help and !self.frontend_transition.blocksInput();
+        self.help_button_states[0].stepFor(.menu_button, help_active and self.frontendButtonHot(.help_back, true));
 
         const high_scores_active = self.game_phase == .high_scores_menu and !self.frontend_transition.blocksInput();
         for (&self.high_score_button_states, 0..) |*state, index| {
@@ -1181,6 +1194,7 @@ const AppState = struct {
         }
         self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        self.help_button_states[0].snapFor(.menu_button, self.game_phase == .help and self.frontendButtonHot(.help_back, true));
         for (&self.high_score_button_states, 0..) |*state, index| {
             state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
         }
@@ -1197,15 +1211,13 @@ const AppState = struct {
             self.setFrontendHoverTarget(null);
             return;
         };
-        var anchor_y: f32 = 90.0;
         var hovered_index: ?usize = null;
 
         for (main_menu_items, 0..) |item, index| {
-            const text_rect = frontend_widget.type20TextRect(&self.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+            const text_rect = mainMenuTextRect(&self.ui_font, item);
             if (frontend_widget.hitRect(text_rect, self.main_menu_button_states[index]).contains(local_mouse)) {
                 hovered_index = index;
             }
-            anchor_y = frontend_widget.stackBelow(text_rect);
         }
 
         if (hovered_index) |index| {
@@ -1306,6 +1318,24 @@ const AppState = struct {
             self.options_menu_index = 3;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .options_menu = .back });
+            }
+            return;
+        }
+
+        self.setFrontendHoverTarget(null);
+    }
+
+    fn updateHelpMouseSelection(self: *AppState) void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+
+        const back_rect = helpBackTextRect(&self.ui_font);
+        if (frontend_widget.hitRect(back_rect, self.help_button_states[0]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(.help_back);
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .help_menu = .back });
             }
             return;
         }
@@ -1606,8 +1636,9 @@ const AppState = struct {
                 }
             },
             .help => {
+                self.updateHelpMouseSelection();
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    try self.enterGamePhase(.main_menu);
+                    self.queueFrontendActivation(.{ .help_menu = .back });
                 }
             },
             .level => {
@@ -1727,6 +1758,12 @@ const AppState = struct {
             .fullscreen => self.toggleFullscreenPreference(),
             .sound_volume, .music_volume => {},
             .back => try self.leaveOptionsMenu(),
+        }
+    }
+
+    fn performHelpMenuItem(self: *AppState, item: HelpMenuAction) !void {
+        switch (item) {
+            .back => try self.enterGamePhase(.main_menu),
         }
     }
 
@@ -2971,6 +3008,20 @@ fn optionsBackTextRect(state: *const AppState) frontend_widget.Rect {
     return frontend_widget.type20TextRect(&state.ui_font, "Back", options_back_anchor_y, options_button_center_offset_x);
 }
 
+fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_widget.Rect {
+    return switch (item) {
+        .new_game => frontend_widget.type20TextRect(font, item.label(), 90.0, frontend_widget.type20_center_offset_x),
+        .high_scores => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .new_game)), frontend_widget.type20_center_offset_x),
+        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .high_scores)), frontend_widget.type20_center_offset_x),
+        .credits => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .options)), frontend_widget.type20_center_offset_x),
+        .exit => frontend_widget.type20TextRect(font, item.label(), 390.0, frontend_widget.type20_center_offset_x),
+    };
+}
+
+fn helpBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
+    return frontend_widget.type20TextRect(font, "Back", 420.0, 0.0);
+}
+
 fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     return frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, text, high_score_footer_y, center_offset_x);
 }
@@ -3007,9 +3058,8 @@ fn optionsSliderMoreRect(center_y: f32) frontend_widget.Rect {
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    var anchor_y: f32 = 90.0;
     for (main_menu_items, 0..) |item, index| {
-        const text_rect = frontend_widget.type20TextRect(&state.ui_font, item.label(), anchor_y, frontend_widget.type20_center_offset_x);
+        const text_rect = mainMenuTextRect(&state.ui_font, item);
         frontend_widget.drawType20Button(
             layout,
             .{
@@ -3021,7 +3071,6 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             state.main_menu_button_states[index],
             false,
         );
-        anchor_y = frontend_widget.stackBelow(text_rect);
     }
 
     if (state.game_status_message) |message| {
@@ -3935,7 +3984,17 @@ fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    drawFrontendMenuButton(state, layout, 320.0, 420.0, "Back", true, .{ .min_width = 92.0 });
+    frontend_widget.drawType20Button(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        "Back",
+        helpBackTextRect(&state.ui_font),
+        state.help_button_states[0],
+        false,
+    );
 }
 
 fn resultTitle(result: PendingRunResult) []const u8 {
