@@ -11,6 +11,12 @@ pub const WidgetType = enum(u8) {
     route_map_secondary_action = 24,
 };
 
+pub const WidgetFlags = enum(u32) {
+    interactive = 0x10,
+    slider = 0x100000,
+    invisible_background = 0x400000,
+};
+
 pub const WidgetAlignment = enum(u8) {
     absolute = 0,
     left = 1,
@@ -97,6 +103,10 @@ pub const Rect = struct {
 
 pub const Art = struct {
     border: rl.Texture2D,
+};
+
+pub const DrawOptions = struct {
+    flags: u32 = 0,
 };
 
 pub const Metrics = struct {
@@ -260,7 +270,7 @@ pub fn drawType20Button(
     state: TextButtonState,
     disabled: bool,
 ) void {
-    drawTextButton(layout, art, font, .menu_button, text, text_rect, state, disabled);
+    drawTextButtonWithOptions(layout, art, font, .menu_button, text, text_rect, state, disabled, .{});
 }
 
 pub fn drawTextButton(
@@ -273,10 +283,26 @@ pub fn drawTextButton(
     state: TextButtonState,
     disabled: bool,
 ) void {
+    drawTextButtonWithOptions(layout, art, font, widget_type, text, text_rect, state, disabled, .{});
+}
+
+pub fn drawTextButtonWithOptions(
+    layout: app_ui.VirtualLayout,
+    art: Art,
+    font: *const game_font.Loaded,
+    widget_type: WidgetType,
+    text: []const u8,
+    text_rect: Rect,
+    state: TextButtonState,
+    disabled: bool,
+    options: DrawOptions,
+) void {
     const metrics = metricsForType(widget_type);
     const colors = colorsForState(state, disabled);
     const pill_rect = pillRect(text_rect, state);
-    drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, metrics.source_edge_fraction, colors.fill);
+    if (!hasFlag(options.flags, .invisible_background)) {
+        drawNineSlice(layout, art.border, pill_rect, metrics.border_edge, metrics.source_edge_fraction, colors.fill);
+    }
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
@@ -609,6 +635,10 @@ fn halfColor(color: rl.Color) rl.Color {
 
 fn colorFromBytes(r: u8, g: u8, b: u8, a: u8) rl.Color {
     return .{ .r = r, .g = g, .b = b, .a = a };
+}
+
+fn hasFlag(flags: u32, needle: WidgetFlags) bool {
+    return (flags & @intFromEnum(needle)) != 0;
 }
 
 test "type20 text rect is centered around 320 plus offset" {

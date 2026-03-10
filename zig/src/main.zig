@@ -4398,6 +4398,12 @@ fn drawHighScoreTable(
         .border = state.frontend_widget_art.border.?.texture,
     };
     const row_background_text = highScoreRowBackgroundText(mode);
+    const text_only_score_cell: frontend_widget.DrawOptions = .{
+        // PORT(verified): `initialize_high_score_screen` gives the rank, name,
+        // and numeric score cells flags `0x20400000`, so those type-22 widgets
+        // render as text-only entries on top of the shared row background.
+        .flags = 0x20400000,
+    };
 
     for (entries, 0..) |table_entry, entry_index| {
         const row_highlighted = highlight_index != null and highlight_index.? == entry_index;
@@ -4424,7 +4430,7 @@ fn drawHighScoreTable(
         else
             highScoreDisplayName(&table_entry);
 
-        frontend_widget.drawTextButton(
+        frontend_widget.drawTextButtonWithOptions(
             layout,
             art,
             &state.ui_font,
@@ -4433,8 +4439,9 @@ fn drawHighScoreTable(
             highScoreRankTextRect(state, row_y, rank_text),
             row_state,
             false,
+            text_only_score_cell,
         );
-        frontend_widget.drawTextButton(
+        frontend_widget.drawTextButtonWithOptions(
             layout,
             art,
             &state.ui_font,
@@ -4443,6 +4450,7 @@ fn drawHighScoreTable(
             highScoreNameTextRect(state, row_y, display_name),
             row_state,
             false,
+            text_only_score_cell,
         );
 
         var score_buffer: [32]u8 = undefined;
@@ -4450,7 +4458,7 @@ fn drawHighScoreTable(
             (std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0")
         else
             "";
-        frontend_widget.drawTextButton(
+        frontend_widget.drawTextButtonWithOptions(
             layout,
             art,
             &state.ui_font,
@@ -4459,6 +4467,7 @@ fn drawHighScoreTable(
             highScoreScoreTextRect(state, mode, row_y, score_text),
             row_state,
             false,
+            text_only_score_cell,
         );
         if (!hide_replay and table_entry.has_replay) {
             frontend_widget.drawTextButton(
@@ -5641,16 +5650,25 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
     };
     var idle_state = frontend_widget.TextButtonState{};
     idle_state.snapFor(.menu_button, false);
+    const completion_text_only: frontend_widget.DrawOptions = .{
+        // PORT(verified): `initialize_completion_screen` builds the title,
+        // package line, bonus line, and continue prompt with flags
+        // `0x20400002`, which suppress the pill background while keeping the
+        // type-20 shell-font metrics.
+        .flags = 0x20400002,
+    };
 
     const title_text = resultTitle(result);
-    frontend_widget.drawType20Button(
+    frontend_widget.drawTextButtonWithOptions(
         layout,
         widget_art,
         &state.ui_font,
+        .menu_button,
         title_text,
         completionTitleTextRect(&state.ui_font, title_text),
         idle_state,
         false,
+        completion_text_only,
     );
 
     var package_buffer: [64]u8 = undefined;
@@ -5658,14 +5676,16 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
         .postal => try completionPackageLine(&package_buffer, result),
         .time_trial, .challenge, .tutorial => result.level_name,
     };
-    frontend_widget.drawType20Button(
+    frontend_widget.drawTextButtonWithOptions(
         layout,
         widget_art,
         &state.ui_font,
+        .menu_button,
         package_text,
         completionPackageTextRect(&state.ui_font, package_text),
         idle_state,
         false,
+        completion_text_only,
     );
 
     if ((result.mode orelse .tutorial) == .postal) {
@@ -5673,25 +5693,29 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
     }
 
     if (try completionBonusLine(&package_buffer, result)) |bonus_text| {
-        frontend_widget.drawType20Button(
+        frontend_widget.drawTextButtonWithOptions(
             layout,
             widget_art,
             &state.ui_font,
+            .menu_button,
             bonus_text,
             completionBonusTextRect(&state.ui_font, bonus_text),
             idle_state,
             false,
+            completion_text_only,
         );
     }
 
-    frontend_widget.drawType20Button(
+    frontend_widget.drawTextButtonWithOptions(
         layout,
         widget_art,
         &state.ui_font,
+        .menu_button,
         "Click to Continue",
         completionContinueTextRect(&state.ui_font, result),
         state.completion_continue_button_state,
         false,
+        completion_text_only,
     );
 }
 
