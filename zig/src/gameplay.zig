@@ -372,6 +372,9 @@ pub const Runner = struct {
         }
         self.endAttachmentIfNeeded(preview);
         self.refreshSample(preview);
+        if (!self.paused and self.phase == .active) {
+            self.updateFallEntry(preview);
+        }
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
@@ -851,6 +854,24 @@ pub const Runner = struct {
         self.jetpack = .{};
     }
 
+    // PORT(partial): Windows enters the death selector once Goldy's world Y falls below -7.0.
+    // The runner still does not simulate vertical motion, so it uses a conservative proxy:
+    // no sampled floor at the current lane, outside attachment-follow, without an active
+    // jetpack, and without an authored `NoFall` annotation triggers the same fall death path.
+    fn updateFallEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.movement_mode == .attachment) return;
+        if (self.jetpack.active) return;
+        if (self.current_annotation == .no_fall) return;
+        if (!rowHasAnyFloor(preview, self.current_global_row)) return;
+        if (preview.sampleFloorHeightAtGridPosition(
+            self.current_global_row,
+            self.resolved_lane_index,
+            self.row_position,
+        ) != null) return;
+
+        self.beginDeathCutscene(.fall);
+    }
+
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
     // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
     // score crosses another 50,000-point bucket, capped at 9. The runner now also mirrors
@@ -1062,6 +1083,44 @@ fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment
         };
     }
     return null;
+}
+
+fn findFirstFloorGap(preview: *const track.LoadedLevelPreview, require_no_fall: bool) ?RowTarget {
+    for (1..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const annotation_tag = if (row_location.row.annotation) |annotation| annotation.tag() else null;
+        const wants_no_fall = annotation_tag == .no_fall;
+        if (wants_no_fall != require_no_fall) continue;
+        if (!rowHasAnyFloor(preview, global_row)) continue;
+
+        const bounds = preview.laneBoundsForRow(row_location);
+        for (bounds.min..bounds.max + 1) |lane| {
+            const gameplay_kind = if (preview.gameplayCellSampleAt(global_row, lane)) |sample| sample.kind else null;
+            if (gameplay_kind == .attachment_entry or gameplay_kind == .attachment_probe) continue;
+            if (preview.sampleFloorHeightAtGridPosition(
+                global_row,
+                lane,
+                @as(f32, @floatFromInt(global_row)) + 0.5,
+            ) != null) continue;
+            return .{
+                .row = global_row,
+                .lane = lane,
+            };
+        }
+    }
+    return null;
+}
+
+fn rowHasAnyFloor(preview: *const track.LoadedLevelPreview, global_row: usize) bool {
+    const row_location = preview.locateRow(global_row) orelse return false;
+    for (row_location.row.cells, 0..) |_, lane| {
+        if (preview.sampleFloorHeightAtGridPosition(
+            global_row,
+            lane,
+            @as(f32, @floatFromInt(global_row)) + 0.5,
+        ) != null) return true;
+    }
+    return false;
 }
 
 fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPreview, target: RowTarget) void {
@@ -1408,6 +1467,46 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
     try std.testing.expect(!runner.jetpack.active);
+}
+
+test "fatal floor gaps enter the fall death path" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const gap = findFirstFloorGap(&fixture.preview, false).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, gap);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
+}
+
+test "authored no-fall rows suppress the fall death path" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const gap = findFirstFloorGap(&fixture.preview, true).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, gap);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
+}
+
+test "active jetpack suppresses fall entry over a floor gap" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const gap = findFirstFloorGap(&fixture.preview, false).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, gap);
+    runner.armJetpackGauge();
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(runner.jetpack.active);
 }
 
 test "runner records trampoline rows from shipped levels" {
