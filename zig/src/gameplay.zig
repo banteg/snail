@@ -722,11 +722,12 @@ pub const Runner = struct {
             },
             .slug => {
                 self.counters.slug_hits += 1;
-                self.applyDamageGaugeDelta(slug_damage_delta);
                 self.recent_event = .slug_hit;
-                // PORT(partial): Windows drives several scripted death entries from a richer
-                // collision pool. Until that pool split is ported, the runner treats the
-                // shipped slug hit as the current lethal hazard handoff.
+                // PORT(partial): Windows first sends slug contact through a dedicated hit/fall
+                // branch that clears attachment-follow and enters the death cutscene state; the
+                // +1.0 damage-gauge delta only appears on repeated slug contact while already in
+                // that state. The runner mirrors the first-hit scripted handoff here, but still
+                // omits the richer repeated-contact path and its separate collision pool.
                 self.beginDeathCutscene(.hazard);
             },
         }
@@ -872,6 +873,8 @@ pub const Runner = struct {
     fn beginDeathCutscene(self: *Runner, cause: DeathCause) void {
         if (self.phase != .active or self.finished) return;
         self.paused = false;
+        self.movement_mode = .track;
+        self.attachment_path_name = null;
         self.phase = .{
             .death_cutscene = .{
                 .cause = cause,
@@ -1174,7 +1177,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
     try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 
@@ -1315,6 +1318,20 @@ test "challenge death hands off final loss" {
     const handoff = runner.consumeHandoff();
     try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.hazard, handoff.final_loss);
+}
+
+test "death cutscene entry clears attachment-follow state" {
+    var fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "SUPERTRAMP";
+    runner.beginDeathCutscene(.hazard);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.attachment_path_name == null);
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 }
 
 test "runner completion reaches a handoff after the local cutscene" {

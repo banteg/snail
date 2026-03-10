@@ -574,6 +574,11 @@
       "description": "Initializes the player jetpack countdown or warning controller at +0x2750, wiring the live Game pointer and warning anchor used by `update_jetpack_gauge`. Cross-port Android symbols still name the owning class `cRDamageGuage::Init()`."
     },
     {
+      "address": "0x43a980",
+      "name": "arm_jetpack_gauge",
+      "description": "Arms the player jetpack countdown controller at +0x2750 from the pickup path: sets the active flag, zeros progress and wobble offsets, plays the jetpack start cue, and seeds the warning visuals."
+    },
+    {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
       "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the jetpack gauge and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
