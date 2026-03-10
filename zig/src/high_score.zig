@@ -104,28 +104,48 @@ pub const Tables = struct {
         return self.entries(mode)[0..visible_entry_count];
     }
 
-    pub fn addArcade(self: *Tables, entry: Entry) InsertResult {
+    pub fn addArcade(self: *Tables, allocator: std.mem.Allocator, entry: Entry) InsertResult {
         return .{
-            .rank = insertDescending(self.postal[0..], entry),
+            .rank = insertDescending(self.postal[0..], allocator, entry),
             .improved = false,
         };
     }
 
-    pub fn addSurvival(self: *Tables, entry: Entry) InsertResult {
+    pub fn addSurvival(self: *Tables, allocator: std.mem.Allocator, entry: Entry) InsertResult {
         return .{
-            .rank = insertDescending(self.challenge[0..], entry),
+            .rank = insertDescending(self.challenge[0..], allocator, entry),
             .improved = false,
         };
     }
 
-    pub fn addTimeTrial(self: *Tables, route_index: usize, entry: Entry) InsertResult {
+    pub fn addTimeTrial(self: *Tables, allocator: std.mem.Allocator, route_index: usize, entry: Entry) InsertResult {
+        var incoming = entry;
+        defer incoming.deinit(allocator);
+
         if (route_index == 0) return .{};
         const completion_index = route_index - 1;
         if (completion_index >= self.completion.len) return .{};
 
         const current = &self.completion[completion_index];
         if (!current.isActive() or entry.score < current.score) {
-            current.* = entry;
+            if (!current.isActive()) {
+                current.deinit(allocator);
+                current.* = incoming;
+                incoming.raw_record = null;
+            } else {
+                current.score = incoming.score;
+                if (incoming.name_len != 0) {
+                    current.setName(incoming.name());
+                }
+                if (incoming.raw_record != null) {
+                    current.deinit(allocator);
+                    current.raw_record = incoming.raw_record;
+                    incoming.raw_record = null;
+                    current.has_replay = incoming.has_replay;
+                } else if (incoming.has_replay) {
+                    current.has_replay = true;
+                }
+            }
             return .{
                 .rank = completion_index,
                 .improved = true,
@@ -214,17 +234,20 @@ fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []c
     try entry.setRawRecord(allocator, record);
 }
 
-fn insertDescending(entries: []Entry, entry: Entry) ?usize {
+fn insertDescending(entries: []Entry, allocator: std.mem.Allocator, entry: Entry) ?usize {
+    var incoming = entry;
     const visible = @min(visible_entry_count, entries.len);
     var rank: usize = 0;
-    while (rank < visible and entry.score <= entries[rank].score and entries[rank].isActive()) : (rank += 1) {}
-    if (rank >= visible) return null;
-
-    var index = entries.len - 1;
-    while (index > rank) : (index -= 1) {
-        entries[index] = entries[index - 1];
+    while (rank < visible and incoming.score <= entries[rank].score and entries[rank].isActive()) : (rank += 1) {}
+    if (rank >= visible) {
+        incoming.deinit(allocator);
+        return null;
     }
-    entries[rank] = entry;
+
+    for (rank..entries.len) |index| {
+        std.mem.swap(Entry, &entries[index], &incoming);
+    }
+    incoming.deinit(allocator);
     return rank;
 }
 
@@ -336,7 +359,7 @@ test "insert arcade score into visible top ten with overflow row" {
         entry.* = .{ .score = @as(u32, @intCast(1000 - index * 10)) };
     }
 
-    const result = tables.addArcade(.{ .score = 955 });
+    const result = tables.addArcade(std.testing.allocator, .{ .score = 955 });
     try std.testing.expectEqual(@as(?usize, 5), result.rank);
     try std.testing.expectEqual(@as(u32, 955), tables.postal[5].score);
     try std.testing.expectEqual(@as(u32, 950), tables.postal[6].score);
@@ -347,18 +370,64 @@ test "time trial score only improves when the new route time is better" {
     var tables = Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
 
-    const first = tables.addTimeTrial(3, .{ .score = 42000 });
+    const first = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 42000 });
     try std.testing.expect(first.improved);
     try std.testing.expectEqual(@as(?usize, 2), first.rank);
     try std.testing.expectEqual(@as(u32, 42000), tables.completion[2].score);
 
-    const worse = tables.addTimeTrial(3, .{ .score = 45000 });
+    const worse = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 45000 });
     try std.testing.expect(!worse.improved);
     try std.testing.expectEqual(@as(u32, 42000), tables.completion[2].score);
 
-    const better = tables.addTimeTrial(3, .{ .score = 41000 });
+    const better = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 41000 });
     try std.testing.expect(better.improved);
     try std.testing.expectEqual(@as(u32, 41000), tables.completion[2].score);
+}
+
+test "arcade insertion shifts opaque records without duplicating ownership" {
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+
+    for (tables.postal[0..visible_entry_count], 0..) |*entry, index| {
+        entry.score = @as(u32, @intCast(1000 - index * 10));
+        var raw_record = try std.testing.allocator.alloc(u8, 1);
+        raw_record[0] = @as(u8, @intCast(index));
+        entry.raw_record = raw_record;
+    }
+
+    const overflow_before = tables.postal[visible_entry_count].raw_record;
+    try std.testing.expect(overflow_before == null);
+
+    const result = tables.addArcade(std.testing.allocator, .{ .score = 955 });
+    try std.testing.expectEqual(@as(?usize, 5), result.rank);
+    try std.testing.expectEqual(@as(u32, 955), tables.postal[5].score);
+    try std.testing.expect(tables.postal[5].raw_record == null);
+    try std.testing.expect(tables.postal[6].raw_record != null);
+    try std.testing.expectEqual(@as(u8, 5), tables.postal[6].raw_record.?[0]);
+    try std.testing.expect(tables.postal[10].raw_record != null);
+    try std.testing.expectEqual(@as(u8, 9), tables.postal[10].raw_record.?[0]);
+}
+
+test "time trial improvements preserve opaque replay payloads when only the score changes" {
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+
+    tables.completion[2].score = 42000;
+    tables.completion[2].has_replay = true;
+    tables.completion[2].setName("Turbo");
+    const raw_record = try std.testing.allocator.alloc(u8, compact_record_header_size + 4);
+    @memset(raw_record, 0xaa);
+    tables.completion[2].raw_record = raw_record;
+
+    const before_ptr = tables.completion[2].raw_record.?.ptr;
+    const improved = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 41000 });
+    try std.testing.expect(improved.improved);
+    try std.testing.expectEqual(@as(u32, 41000), tables.completion[2].score);
+    try std.testing.expectEqualStrings("Turbo", tables.completion[2].name());
+    try std.testing.expect(tables.completion[2].has_replay);
+    try std.testing.expect(tables.completion[2].raw_record != null);
+    try std.testing.expectEqual(before_ptr, tables.completion[2].raw_record.?.ptr);
+    try std.testing.expectEqual(@as(u8, 0xaa), tables.completion[2].raw_record.?[0]);
 }
 
 test "save and load compact high-score tables roundtrip score and names" {

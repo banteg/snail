@@ -2724,7 +2724,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = result.score,
                 };
-                const insert = self.high_score_tables.addArcade(entry);
+                const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
                 result.high_score_rank = insert.rank;
                 result.unlocked_next_route = try self.commitPostalRouteProgress();
@@ -2737,7 +2737,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = result.score,
                 };
-                const insert = self.high_score_tables.addSurvival(entry);
+                const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
                 result.high_score_rank = insert.rank;
                 try self.saveHighScoreTables();
@@ -2747,7 +2747,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = elapsed_millis,
                 };
-                const insert = self.high_score_tables.addTimeTrial(self.active_frontend_level_index, entry);
+                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry);
                 result.time_trial_record_improved = insert.improved;
                 try self.saveHighScoreTables();
             },
@@ -2788,7 +2788,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = result.score,
                 };
-                const insert = self.high_score_tables.addArcade(entry);
+                const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
                 result.high_score_rank = insert.rank;
                 try self.saveHighScoreTables();
@@ -2798,7 +2798,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = result.score,
                 };
-                const insert = self.high_score_tables.addSurvival(entry);
+                const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
                 result.high_score_rank = insert.rank;
                 try self.saveHighScoreTables();
@@ -2808,7 +2808,7 @@ const AppState = struct {
                 const entry = high_score.Entry{
                     .score = elapsed_millis,
                 };
-                const insert = self.high_score_tables.addTimeTrial(self.active_frontend_level_index, entry);
+                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry);
                 result.time_trial_record_improved = insert.improved;
                 try self.saveHighScoreTables();
             },
