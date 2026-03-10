@@ -7,6 +7,36 @@
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
+      "address": "0x401130",
+      "name": "draw_frontend_widget",
+      "description": "Renders one shell-font front-end widget, including nine-slice border styles, slider-track strips, optional glow overlay, icon sprites, and the final text draw."
+    },
+    {
+      "address": "0x401a70",
+      "name": "initialize_frontend_sprite_button",
+      "description": "Constructs one sprite-backed front-end child control, including arrow-button animation ids, authored anchor, and immediate-vs-delayed click behavior."
+    },
+    {
+      "address": "0x401d30",
+      "name": "initialize_frontend_widget",
+      "description": "Constructs one shell-font front-end widget, seeds its border style, text scale, alignment, colors, and optional slider-child controls, then links it into the active widget list."
+    },
+    {
+      "address": "0x4024a0",
+      "name": "layout_frontend_widget",
+      "description": "Recomputes one front-end widget's authored-space position, measured text bounds, and any attached slider-child offsets before the current frame draw."
+    },
+    {
+      "address": "0x4027b0",
+      "name": "stack_widget_below",
+      "description": "Chains one shell-font front-end widget below another by copying the previous widget x anchor and adding the current gap plus the previous measured height."
+    },
+    {
+      "address": "0x402820",
+      "name": "update_frontend_widget_interaction",
+      "description": "Runs one front-end widget's per-frame interaction state, including hover easing, delayed click-bit dispatch, slider-arrow adjustments, bounds refresh, and draw."
+    },
+    {
       "address": "0x404830",
       "name": "flush_row_event_display",
       "description": "Fast-forwards the active gameplay row-event display by paying out any remaining row score awards, destroying its widget actors, and clearing the owning controller state."

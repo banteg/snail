@@ -132,6 +132,17 @@ const SliderArt = struct {
             self.bar_full = null;
         }
     }
+
+    fn textures(self: SliderArt) frontend_widget.SliderTextures {
+        return .{
+            .less = if (self.less) |texture| texture.texture else null,
+            .less_hover = if (self.less_hover) |texture| texture.texture else null,
+            .more = if (self.more) |texture| texture.texture else null,
+            .more_hover = if (self.more_hover) |texture| texture.texture else null,
+            .bar = if (self.bar) |texture| texture.texture else null,
+            .bar_full = if (self.bar_full) |texture| texture.texture else null,
+        };
+    }
 };
 
 const FrontendWidgetArt = struct {
@@ -399,18 +410,6 @@ const options_fullscreen_anchor_y: f32 = 83.0;
 // The constructor's `90.0` seed is only the left-measure start fed into `sub_44abe0`; the final
 // centered X comes from `arg13 + 320 - width*0.5`, and `arg13` stays `0.0` for this screen.
 const options_button_center_offset_x: f32 = 0.0;
-const options_slider_arrow_size: f32 = 64.0;
-const options_slider_bar_width: f32 = 256.0;
-const options_slider_bar_height: f32 = 32.0;
-const options_slider_bar_y_offset: f32 = 50.0;
-const options_slider_arrow_y_offset: f32 = 33.0;
-const options_slider_value_y_offset: f32 = 49.0;
-const options_slider_left_arrow_left: f32 = 118.0;
-const options_slider_right_arrow_left: f32 = 458.0;
-// PORT(partial): the `0x100000` options rows chain as taller widgets than plain type-20 text
-// buttons once the slider bar/value children are attached. The recovered child offsets put the
-// composed row in the mid-80px range; `86` matches the Windows stack spacing and the reference.
-const options_slider_row_height: f32 = 86.0;
 const options_slider_adjust_step: f32 = 0.2;
 const options_slider_display_lerp: f32 = 0.8;
 // PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
@@ -1541,15 +1540,16 @@ const AppState = struct {
         }
 
         var sound_value_buffer: [16]u8 = undefined;
-        const sound_value_text = std.fmt.bufPrint(&sound_value_buffer, "{d:0>2.0}%", .{self.runtime_config.soundVolume() * 100.0}) catch "00%";
-        const sound_frame_rect = optionsSliderFrameRect(self, .sound_volume, self.options_button_states[options_sound_button_index], sound_value_text);
+        const sound_row_rect = optionsTextRect(self, .sound_volume);
+        const sound_value_text = optionsSliderValueText(self.runtime_config.soundVolume(), &sound_value_buffer);
+        const sound_frame_rect = frontend_widget.sliderFrameRect(&self.ui_font, sound_row_rect, self.options_button_states[options_sound_button_index], sound_value_text);
         if (sound_frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(1));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                if (optionsSliderArrowRect(self, .sound_volume, .less).contains(local_mouse)) {
+                if (frontend_widget.sliderArrowRect(sound_row_rect, .less).contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
-                } else if (optionsSliderArrowRect(self, .sound_volume, .more).contains(local_mouse)) {
+                } else if (frontend_widget.sliderArrowRect(sound_row_rect, .more).contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
                 }
             }
@@ -1557,15 +1557,16 @@ const AppState = struct {
         }
 
         var music_value_buffer: [16]u8 = undefined;
-        const music_value_text = std.fmt.bufPrint(&music_value_buffer, "{d:0>2.0}%", .{self.runtime_config.musicVolume() * 100.0}) catch "00%";
-        const music_frame_rect = optionsSliderFrameRect(self, .music_volume, self.options_button_states[options_music_button_index], music_value_text);
+        const music_row_rect = optionsTextRect(self, .music_volume);
+        const music_value_text = optionsSliderValueText(self.runtime_config.musicVolume(), &music_value_buffer);
+        const music_frame_rect = frontend_widget.sliderFrameRect(&self.ui_font, music_row_rect, self.options_button_states[options_music_button_index], music_value_text);
         if (music_frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(2));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                if (optionsSliderArrowRect(self, .music_volume, .less).contains(local_mouse)) {
+                if (frontend_widget.sliderArrowRect(music_row_rect, .less).contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
-                } else if (optionsSliderArrowRect(self, .music_volume, .more).contains(local_mouse)) {
+                } else if (frontend_widget.sliderArrowRect(music_row_rect, .more).contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
                 }
             }
@@ -3703,77 +3704,20 @@ fn optionsTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widge
         .music_volume => frontend_widget.type20TextRect(
             &state.ui_font,
             optionsMenuMeasurementLabel(state, .music_volume),
-            optionsTextRect(state, .sound_volume).top + options_slider_row_height + frontend_widget.type20_stack_gap,
+            frontend_widget.sliderStackBelow(optionsTextRect(state, .sound_volume)),
             options_button_center_offset_x,
         ),
         .back => frontend_widget.type20TextRect(
             &state.ui_font,
             "Back",
-            optionsTextRect(state, .music_volume).top + options_slider_row_height + frontend_widget.type20_stack_gap,
+            frontend_widget.sliderStackBelow(optionsTextRect(state, .music_volume)),
             options_button_center_offset_x,
         ),
     };
 }
 
-fn optionsSliderTitleTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(
-        &state.ui_font,
-        optionsMenuVisibleLabel(state, item),
-        optionsTextRect(state, item).top,
-        options_button_center_offset_x,
-    );
-}
-
-fn optionsSliderBarRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
-    const row_rect = optionsTextRect(state, item);
-    return .{
-        .left = row_rect.centerX() - options_slider_bar_width * 0.5,
-        .top = row_rect.top + options_slider_bar_y_offset,
-        .width = options_slider_bar_width,
-        .height = options_slider_bar_height,
-    };
-}
-
-fn optionsSliderArrowRect(state: *const AppState, item: OptionsMenuItem, direction: enum { less, more }) frontend_widget.Rect {
-    const row_rect = optionsTextRect(state, item);
-    return .{
-        .left = switch (direction) {
-            .less => options_slider_left_arrow_left,
-            .more => options_slider_right_arrow_left,
-        },
-        .top = row_rect.top + options_slider_arrow_y_offset,
-        .width = options_slider_arrow_size,
-        .height = options_slider_arrow_size,
-    };
-}
-
-fn optionsSliderValueTextRect(state: *const AppState, item: OptionsMenuItem, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .slider_value,
-        .center,
-        text,
-        optionsTextRect(state, item).top + options_slider_value_y_offset,
-        0.0,
-    );
-}
-
-fn optionsSliderFrameRect(state: *const AppState, item: OptionsMenuItem, row_state: frontend_widget.TextButtonState, value_text: []const u8) frontend_widget.Rect {
-    const base_rect = frontend_widget.pillRect(optionsTextRect(state, item), row_state);
-    const bar_rect = optionsSliderBarRect(state, item);
-    const less_rect = optionsSliderArrowRect(state, item, .less);
-    const more_rect = optionsSliderArrowRect(state, item, .more);
-    const value_rect = frontend_widget.pillRect(optionsSliderValueTextRect(state, item, value_text), row_state);
-    const bottom = @max(
-        value_rect.top + value_rect.height,
-        @max(bar_rect.top + bar_rect.height + row_state.current_padding, @max(less_rect.top + less_rect.height, more_rect.top + more_rect.height)),
-    );
-    return .{
-        .left = base_rect.left,
-        .top = base_rect.top,
-        .width = base_rect.width,
-        .height = bottom - base_rect.top,
-    };
+fn optionsSliderValueText(value: f32, buffer: []u8) []const u8 {
+    return std.fmt.bufPrint(buffer, "{d:0>2.0}%", .{std.math.clamp(value, 0.0, 1.0) * 100.0}) catch "00%";
 }
 
 fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_widget.Rect {
@@ -3980,8 +3924,8 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.soundVolume(),
         state.options_sound_display_value,
         state.options_button_states[options_sound_button_index],
-        if (local_mouse) |mouse| optionsSliderArrowRect(state, .sound_volume, .less).contains(mouse) else false,
-        if (local_mouse) |mouse| optionsSliderArrowRect(state, .sound_volume, .more).contains(mouse) else false,
+        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .sound_volume), .less).contains(mouse) else false,
+        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .sound_volume), .more).contains(mouse) else false,
     );
     drawOptionsSliderRow(
         state,
@@ -3990,8 +3934,8 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.musicVolume(),
         state.options_music_display_value,
         state.options_button_states[options_music_button_index],
-        if (local_mouse) |mouse| optionsSliderArrowRect(state, .music_volume, .less).contains(mouse) else false,
-        if (local_mouse) |mouse| optionsSliderArrowRect(state, .music_volume, .more).contains(mouse) else false,
+        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .music_volume), .less).contains(mouse) else false,
+        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .music_volume), .more).contains(mouse) else false,
     );
     frontend_widget.drawType20Button(
         layout,
@@ -4567,90 +4511,25 @@ fn drawOptionsSliderRow(
     less_hovered: bool,
     more_hovered: bool,
 ) void {
-    const row_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    const normalized_value = std.math.clamp(value, 0.0, 1.0);
-    const displayed_normalized_value = std.math.clamp(displayed_value, 0.0, 1.0);
-    const colors = frontend_widget.colorsForState(row_state, false);
-    const title_rect = optionsSliderTitleTextRect(state, item);
     var value_buffer: [16]u8 = undefined;
-    const value_text = std.fmt.bufPrint(&value_buffer, "{d:0>2.0}%", .{normalized_value * 100.0}) catch "00%";
-    const frame_rect = optionsSliderFrameRect(state, item, row_state, value_text);
-    const bar_rect = optionsSliderBarRect(state, item);
-    const less_rect = optionsSliderArrowRect(state, item, .less);
-    const more_rect = optionsSliderArrowRect(state, item, .more);
-    const value_rect = optionsSliderValueTextRect(state, item, value_text);
-    const title_metrics = frontend_widget.metricsForType(.menu_button);
-
-    frontend_widget.drawNineSliceFrame(
+    const title_rect = optionsTextRect(state, item);
+    const value_text = optionsSliderValueText(value, &value_buffer);
+    frontend_widget.drawSliderMenuRow(
         layout,
-        row_art.border,
-        frame_rect,
-        frontend_widget.type20_border_edge,
-        frontend_widget.type20_border_edge / 128.0,
-        colors.fill,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        state.slider_art.textures(),
+        &state.ui_font,
+        optionsMenuVisibleLabel(state, item),
+        title_rect,
+        value_text,
+        value,
+        displayed_value,
+        row_state,
+        less_hovered,
+        more_hovered,
     );
-
-    const shadow_point = layout.mapPoint(title_rect.left + 2.0, title_rect.top + 2.0);
-    const text_point = layout.mapPoint(title_rect.left, title_rect.top);
-    const scaled_font_size = layout.scaleFloat(title_metrics.fontSize(&state.ui_font));
-    state.ui_font.drawText(optionsMenuVisibleLabel(state, item), shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
-    state.ui_font.drawText(optionsMenuVisibleLabel(state, item), text_point.x, text_point.y, scaled_font_size, colors.text);
-
-    if (state.slider_art.bar) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height, .white);
-    } else {
-        rl.drawRectangleRounded(layout.mapRect(bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
-    }
-    if (state.slider_art.bar_full) |loaded_texture| {
-        drawTextureLocalRectSource(
-            layout,
-            loaded_texture,
-            .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)) * displayed_normalized_value,
-                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
-            },
-            bar_rect.left,
-            bar_rect.top,
-            bar_rect.width * displayed_normalized_value,
-            bar_rect.height,
-            .white,
-        );
-    } else {
-        rl.drawRectangleRounded(
-            .{
-                .x = layout.mapPoint(bar_rect.left, bar_rect.top).x,
-                .y = layout.mapPoint(bar_rect.left, bar_rect.top).y,
-                .width = layout.scaleFloat(bar_rect.width * displayed_normalized_value),
-                .height = layout.scaleFloat(bar_rect.height),
-            },
-            0.45,
-            8,
-            .{ .r = 252, .g = 198, .b = 40, .a = 255 },
-        );
-    }
-
-    const less_disabled = normalized_value <= 0.001;
-    const more_disabled = normalized_value >= 0.999;
-    const less_texture = if (less_hovered and !less_disabled)
-        state.slider_art.less_hover orelse state.slider_art.less
-    else
-        state.slider_art.less;
-    const more_texture = if (more_hovered and !more_disabled)
-        state.slider_art.more_hover orelse state.slider_art.more
-    else
-        state.slider_art.more;
-    if (less_texture) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, less_rect.left, less_rect.top, less_rect.width, less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
-    }
-    if (more_texture) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, more_rect.left, more_rect.top, more_rect.width, more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
-    }
-
-    frontend_widget.drawTextButton(layout, row_art, &state.ui_font, .slider_value, value_text, value_rect, row_state, false);
 }
 
 fn routeMapCardLayout(

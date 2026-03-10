@@ -18,6 +18,20 @@ pub const WidgetAlignment = enum(u8) {
     right = 3,
 };
 
+pub const SliderDirection = enum {
+    less,
+    more,
+};
+
+pub const SliderTextures = struct {
+    less: ?rl.Texture2D = null,
+    less_hover: ?rl.Texture2D = null,
+    more: ?rl.Texture2D = null,
+    more_hover: ?rl.Texture2D = null,
+    bar: ?rl.Texture2D = null,
+    bar_full: ?rl.Texture2D = null,
+};
+
 pub const type20_idle_padding: f32 = 9.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+536 = 13.0` for the
 // shell-font menu widget hot padding, and `sub_402820` animates toward that target.
@@ -37,6 +51,23 @@ pub const compact_border_edge: f32 = 4.0;
 pub const cursor_hotspot_x: f32 = 8.0;
 pub const cursor_hotspot_y: f32 = 7.0;
 pub const cursor_size: f32 = 64.0;
+// PORT(verified): the `0x100000` slider-widget path lays out its child sprites at these
+// authored offsets during `layout_frontend_widget`, overriding the constructor's temporary
+// `+40` seed. The track itself is drawn by `draw_frontend_widget` as a 256x32 strip at
+// `row_top + 50`.
+pub const slider_arrow_size: f32 = 64.0;
+pub const slider_bar_width: f32 = 256.0;
+pub const slider_bar_height: f32 = 32.0;
+pub const slider_bar_y_offset: f32 = 50.0;
+pub const slider_arrow_y_offset: f32 = 33.0;
+pub const slider_value_y_offset: f32 = 49.0;
+pub const slider_left_arrow_left: f32 = 118.0;
+pub const slider_right_arrow_left: f32 = 458.0;
+// PORT(partial): Windows stacks the next options row using the previous widget's computed
+// `+588` height after the slider children are attached. The exact stored height is not
+// surfaced as a literal in the recovered snippets; `86` still matches the live screen
+// spacing and reference captures.
+pub const slider_stack_height: f32 = 86.0;
 
 const hover_lerp: f32 = 0.1;
 const idle_fill = colorFromBytes(84, 57, 128, 179);
@@ -251,6 +282,148 @@ pub fn drawTextButton(
     font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }
 
+pub fn sliderStackBelow(rect: Rect) f32 {
+    return rect.top + slider_stack_height + type20_stack_gap;
+}
+
+pub fn sliderBarRect(text_rect: Rect) Rect {
+    return .{
+        .left = text_rect.centerX() - slider_bar_width * 0.5,
+        .top = text_rect.top + slider_bar_y_offset,
+        .width = slider_bar_width,
+        .height = slider_bar_height,
+    };
+}
+
+pub fn sliderArrowRect(text_rect: Rect, direction: SliderDirection) Rect {
+    return .{
+        .left = switch (direction) {
+            .less => slider_left_arrow_left,
+            .more => slider_right_arrow_left,
+        },
+        .top = text_rect.top + slider_arrow_y_offset,
+        .width = slider_arrow_size,
+        .height = slider_arrow_size,
+    };
+}
+
+pub fn sliderValueTextRect(font: *const game_font.Loaded, text_rect: Rect, text: []const u8) Rect {
+    return widgetTextRect(font, .slider_value, .center, text, text_rect.top + slider_value_y_offset, 0.0);
+}
+
+pub fn sliderFrameRect(
+    font: *const game_font.Loaded,
+    text_rect: Rect,
+    row_state: TextButtonState,
+    value_text: []const u8,
+) Rect {
+    const base_rect = pillRect(text_rect, row_state);
+    const bar_rect = sliderBarRect(text_rect);
+    const less_rect = sliderArrowRect(text_rect, .less);
+    const more_rect = sliderArrowRect(text_rect, .more);
+    const value_rect = pillRect(sliderValueTextRect(font, text_rect, value_text), row_state);
+    const bottom = @max(
+        value_rect.top + value_rect.height,
+        @max(
+            bar_rect.top + bar_rect.height + row_state.current_padding,
+            @max(less_rect.top + less_rect.height, more_rect.top + more_rect.height),
+        ),
+    );
+    return .{
+        .left = base_rect.left,
+        .top = base_rect.top,
+        .width = base_rect.width,
+        .height = bottom - base_rect.top,
+    };
+}
+
+pub fn drawSliderMenuRow(
+    layout: app_ui.VirtualLayout,
+    art: Art,
+    slider_textures: SliderTextures,
+    font: *const game_font.Loaded,
+    title_text: []const u8,
+    text_rect: Rect,
+    value_text: []const u8,
+    normalized_value: f32,
+    displayed_value: f32,
+    row_state: TextButtonState,
+    less_hovered: bool,
+    more_hovered: bool,
+) void {
+    const clamped_value = std.math.clamp(normalized_value, 0.0, 1.0);
+    const displayed_clamped_value = std.math.clamp(displayed_value, 0.0, 1.0);
+    const colors = colorsForState(row_state, false);
+    const frame_rect = sliderFrameRect(font, text_rect, row_state, value_text);
+    const bar_rect = sliderBarRect(text_rect);
+    const less_rect = sliderArrowRect(text_rect, .less);
+    const more_rect = sliderArrowRect(text_rect, .more);
+    const value_rect = sliderValueTextRect(font, text_rect, value_text);
+    const title_metrics = metricsForType(.menu_button);
+
+    drawNineSliceFrame(layout, art.border, frame_rect, type20_border_edge, type20_border_edge / 128.0, colors.fill);
+
+    const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
+    const text_point = layout.mapPoint(text_rect.left, text_rect.top);
+    const scaled_font_size = layout.scaleFloat(title_metrics.fontSize(font));
+    font.drawText(title_text, shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
+    font.drawText(title_text, text_point.x, text_point.y, scaled_font_size, colors.text);
+
+    if (slider_textures.bar) |texture| {
+        drawTextureLocalRect(layout, texture, bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height, .white);
+    } else {
+        rl.drawRectangleRounded(layout.mapRect(bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
+    }
+    if (slider_textures.bar_full) |texture| {
+        drawTextureLocalRectSource(
+            layout,
+            texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @as(f32, @floatFromInt(texture.width)) * displayed_clamped_value,
+                .height = @as(f32, @floatFromInt(texture.height)),
+            },
+            bar_rect.left,
+            bar_rect.top,
+            bar_rect.width * displayed_clamped_value,
+            bar_rect.height,
+            .white,
+        );
+    } else {
+        rl.drawRectangleRounded(
+            .{
+                .x = layout.mapPoint(bar_rect.left, bar_rect.top).x,
+                .y = layout.mapPoint(bar_rect.left, bar_rect.top).y,
+                .width = layout.scaleFloat(bar_rect.width * displayed_clamped_value),
+                .height = layout.scaleFloat(bar_rect.height),
+            },
+            0.45,
+            8,
+            .{ .r = 252, .g = 198, .b = 40, .a = 255 },
+        );
+    }
+
+    const less_disabled = clamped_value <= 0.001;
+    const more_disabled = clamped_value >= 0.999;
+    const less_texture = if (less_hovered and !less_disabled)
+        slider_textures.less_hover orelse slider_textures.less
+    else
+        slider_textures.less;
+    const more_texture = if (more_hovered and !more_disabled)
+        slider_textures.more_hover orelse slider_textures.more
+    else
+        slider_textures.more;
+    if (less_texture) |texture| {
+        drawTextureLocalRect(layout, texture, less_rect.left, less_rect.top, less_rect.width, less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+    }
+    if (more_texture) |texture| {
+        drawTextureLocalRect(layout, texture, more_rect.left, more_rect.top, more_rect.width, more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+    }
+
+    drawTextButton(layout, art, font, .slider_value, value_text, value_rect, row_state, false);
+}
+
 pub fn drawNineSliceFrame(
     layout: app_ui.VirtualLayout,
     texture: rl.Texture2D,
@@ -334,6 +507,53 @@ fn drawSlice(
     );
 }
 
+fn drawTextureLocalRectSource(
+    layout: app_ui.VirtualLayout,
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    if (local_width <= 0.0 or local_height <= 0.0) return;
+    rl.drawTexturePro(
+        texture,
+        source,
+        layout.mapRect(local_x, local_y, local_width, local_height),
+        .{ .x = 0.0, .y = 0.0 },
+        0.0,
+        tint,
+    );
+}
+
+fn drawTextureLocalRect(
+    layout: app_ui.VirtualLayout,
+    texture: rl.Texture2D,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    drawTextureLocalRectSource(
+        layout,
+        texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(texture.width)),
+            .height = @as(f32, @floatFromInt(texture.height)),
+        },
+        local_x,
+        local_y,
+        local_width,
+        local_height,
+        tint,
+    );
+}
+
 fn alignedTextRect(width: f32, height: f32, anchor_y: f32, alignment: WidgetAlignment, anchor_x: f32) Rect {
     const base_x = switch (alignment) {
         .absolute => anchor_x,
@@ -409,4 +629,14 @@ test "right aligned text rect ends at the authored anchor" {
 test "stack below uses the recovered 26 pixel gap" {
     const rect = Rect{ .left = 0.0, .top = 90.0, .width = 80.0, .height = 44.2 };
     try std.testing.expectApproxEqAbs(@as(f32, 160.2), stackBelow(rect), 0.001);
+}
+
+test "slider arrow rect uses the recovered authored offsets" {
+    const text_rect = Rect{ .left = 260.0, .top = 153.0, .width = 120.0, .height = 44.2 };
+    const less_rect = sliderArrowRect(text_rect, .less);
+    const more_rect = sliderArrowRect(text_rect, .more);
+    try std.testing.expectEqual(@as(f32, 118.0), less_rect.left);
+    try std.testing.expectEqual(@as(f32, 458.0), more_rect.left);
+    try std.testing.expectEqual(@as(f32, 186.0), less_rect.top);
+    try std.testing.expectEqual(@as(f32, 186.0), more_rect.top);
 }
