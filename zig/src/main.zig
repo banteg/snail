@@ -393,23 +393,32 @@ const new_game_back_anchor_y: f32 = 350.0;
 const new_game_back_center_offset_x: f32 = 0.0;
 // PORT(verified): `initialize_help` places the lone Back control at `(center, y=420)`.
 const help_back_anchor_y: f32 = 420.0;
-const options_button_count = 2;
+const options_button_count = 4;
 const options_fullscreen_button_index: usize = 0;
-const options_back_button_index: usize = 1;
+const options_sound_button_index: usize = 1;
+const options_music_button_index: usize = 2;
+const options_back_button_index: usize = 3;
 // PORT(verified): `initialize_options` seeds the fullscreen row at `y = 75`, then nudges
 // the widget down by `+8`, so the final authored-space anchor is `83`.
 const options_fullscreen_anchor_y: f32 = 83.0;
+// PORT(verified): `initialize_options` keeps the options rows on the centered shell-font path.
+// The constructor's `90.0` seed is only the left-measure start fed into `sub_44abe0`; the final
+// centered X comes from `arg13 + 320 - width*0.5`, and `arg13` stays `0.0` for this screen.
 const options_button_center_offset_x: f32 = 0.0;
-const options_slider_center_x: f32 = 320.0;
-const options_sound_slider_center_y: f32 = 183.0;
-const options_music_slider_center_y: f32 = 277.0;
-// PORT(verified): `initialize_options` places Back at `(center, y=390)`.
-const options_back_anchor_y: f32 = 390.0;
-const options_slider_panel_width: f32 = 418.0;
-const options_slider_panel_height: f32 = 86.0;
 const options_slider_arrow_size: f32 = 64.0;
-const options_slider_arrow_offset_x: f32 = 172.0;
-const options_slider_arrow_center_y_offset: f32 = 10.0;
+const options_slider_bar_width: f32 = 256.0;
+const options_slider_bar_height: f32 = 32.0;
+const options_slider_bar_y_offset: f32 = 50.0;
+const options_slider_arrow_y_offset: f32 = 33.0;
+const options_slider_value_y_offset: f32 = 49.0;
+const options_slider_left_arrow_left: f32 = 118.0;
+const options_slider_right_arrow_left: f32 = 458.0;
+// PORT(partial): the `0x100000` options rows chain as taller widgets than plain type-20 text
+// buttons once the slider bar/value children are attached. The recovered child offsets put the
+// composed row in the mid-80px range; `86` matches the Windows stack spacing and the reference.
+const options_slider_row_height: f32 = 86.0;
+const options_slider_adjust_step: f32 = 0.2;
+const options_slider_display_lerp: f32 = 0.8;
 // PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
 // scale `0.83`, the bottom Back/Exit control at `(20,420)` with absolute alignment, and
 // `open_galaxy_route` seeds the selected route card from `(route_x + 60, route_y - 130)`.
@@ -658,10 +667,14 @@ fn queuedActivationRequiresFade(action: FrontendQueuedAction) bool {
             else => false,
         },
         .new_game_menu => |item| switch (item) {
-            .tutorial, .help => true,
+            .tutorial, .postal_mode, .time_trial, .help => true,
             else => false,
         },
         .help_menu => true,
+        .exit_prompt => |choice| switch (choice) {
+            .yes => true,
+            .no => false,
+        },
         else => false,
     };
 }
@@ -756,6 +769,8 @@ const AppState = struct {
     pending_frontend_activation: ?FrontendQueuedActivation = null,
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
+    options_sound_display_value: f32 = 0.0,
+    options_music_display_value: f32 = 0.0,
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
     current_model: ?x2.LoadedModel = null,
@@ -828,6 +843,8 @@ const AppState = struct {
             .window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command),
             .audio_ready = audio_ready,
             .audio_muted = options.hidden_window,
+            .options_sound_display_value = runtime_config_result.blob.soundVolume(),
+            .options_music_display_value = runtime_config_result.blob.musicVolume(),
             .mouse_local_override = options.mouse_local_override,
             .auto_screenshot = options.auto_screenshot,
             .start_route_index_override = options.start_route_index,
@@ -1310,8 +1327,11 @@ const AppState = struct {
         }
 
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
-        self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
-        self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        for (&self.options_button_states, 0..) |*state, index| {
+            state.stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index));
+        }
+        self.options_sound_display_value = stepOptionsSliderDisplay(self.options_sound_display_value, self.runtime_config.soundVolume());
+        self.options_music_display_value = stepOptionsSliderDisplay(self.options_music_display_value, self.runtime_config.musicVolume());
         const pause_menu_active = self.game_phase == .pause_menu and !self.frontend_transition.blocksInput();
         for (&self.pause_menu_button_states, 0..) |*state, index| {
             state.stepFor(.menu_button, pause_menu_active and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
@@ -1353,8 +1373,9 @@ const AppState = struct {
         for (&self.new_game_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
         }
-        self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
-        self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        for (&self.options_button_states, 0..) |*state, index| {
+            state.snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index));
+        }
         for (&self.pause_menu_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
@@ -1448,7 +1469,7 @@ const AppState = struct {
             return;
         };
 
-        const fullscreen_rect = optionsFullscreenTextRect(self);
+        const fullscreen_rect = optionsTextRect(self, .fullscreen);
         if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[options_fullscreen_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(0));
             self.options_menu_index = 0;
@@ -1458,35 +1479,39 @@ const AppState = struct {
             return;
         }
 
-        const sound_panel_rect = optionsSliderPanelRect(options_sound_slider_center_y);
-        if (sound_panel_rect.contains(local_mouse)) {
+        var sound_value_buffer: [16]u8 = undefined;
+        const sound_value_text = std.fmt.bufPrint(&sound_value_buffer, "{d:0>2.0}%", .{self.runtime_config.soundVolume() * 100.0}) catch "00%";
+        const sound_frame_rect = optionsSliderFrameRect(self, .sound_volume, self.options_button_states[options_sound_button_index], sound_value_text);
+        if (sound_frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(1));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                if (optionsSliderLessRect(options_sound_slider_center_y).contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.sound_volume, -0.2);
-                } else if (optionsSliderMoreRect(options_sound_slider_center_y).contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.sound_volume, 0.2);
+                if (optionsSliderArrowRect(self, .sound_volume, .less).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
+                } else if (optionsSliderArrowRect(self, .sound_volume, .more).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
                 }
             }
             return;
         }
 
-        const music_panel_rect = optionsSliderPanelRect(options_music_slider_center_y);
-        if (music_panel_rect.contains(local_mouse)) {
+        var music_value_buffer: [16]u8 = undefined;
+        const music_value_text = std.fmt.bufPrint(&music_value_buffer, "{d:0>2.0}%", .{self.runtime_config.musicVolume() * 100.0}) catch "00%";
+        const music_frame_rect = optionsSliderFrameRect(self, .music_volume, self.options_button_states[options_music_button_index], music_value_text);
+        if (music_frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(2));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                if (optionsSliderLessRect(options_music_slider_center_y).contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.music_volume, -0.2);
-                } else if (optionsSliderMoreRect(options_music_slider_center_y).contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.music_volume, 0.2);
+                if (optionsSliderArrowRect(self, .music_volume, .less).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
+                } else if (optionsSliderArrowRect(self, .music_volume, .more).contains(local_mouse)) {
+                    try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
                 }
             }
             return;
         }
 
-        const back_rect = optionsBackTextRect(self);
+        const back_rect = optionsTextRect(self, .back);
         if (frontend_widget.hitRect(back_rect, self.options_button_states[options_back_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(3));
             self.options_menu_index = 3;
@@ -1844,11 +1869,11 @@ const AppState = struct {
                 const selected = options_menu_items[self.options_menu_index];
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
                     self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, -0.2);
+                    try self.stepOptionsMenuValue(selected, -options_slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
                     self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, 0.2);
+                    try self.stepOptionsMenuValue(selected, options_slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     switch (selected) {
@@ -2699,6 +2724,8 @@ const AppState = struct {
                 try self.playMusicByPath(default_audio_path);
             },
             .options_menu => {
+                self.options_sound_display_value = self.runtime_config.soundVolume();
+                self.options_music_display_value = self.runtime_config.musicVolume();
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 if (self.options_return_phase == .pause_menu) {
@@ -3032,6 +3059,12 @@ const AppState = struct {
                 try self.leaveOptionsMenu();
             },
         }
+    }
+
+    fn stepOptionsSliderDisplay(current: f32, target: f32) f32 {
+        const next = current + (target - current) * options_slider_display_lerp;
+        if (@abs(target - next) < 0.001) return target;
+        return next;
     }
 
     fn currentTextScriptProgress(self: *const AppState) ?f32 {
@@ -3535,17 +3568,112 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     );
 }
 
-fn optionsFullscreenTextRect(state: *const AppState) frontend_widget.Rect {
+fn optionsMenuMeasurementLabel(state: *const AppState, item: OptionsMenuItem) []const u8 {
+    return switch (item) {
+        .fullscreen => if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
+        .sound_volume => "     Sounds Volume     >",
+        .music_volume => "      Music Volume      >",
+        .back => "Back",
+    };
+}
+
+fn optionsMenuVisibleLabel(state: *const AppState, item: OptionsMenuItem) []const u8 {
+    return switch (item) {
+        .fullscreen => optionsMenuMeasurementLabel(state, .fullscreen),
+        .sound_volume => "Sounds Volume",
+        .music_volume => "Music Volume",
+        .back => "Back",
+    };
+}
+
+fn optionsTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
+    return switch (item) {
+        .fullscreen => frontend_widget.type20TextRect(
+            &state.ui_font,
+            optionsMenuMeasurementLabel(state, .fullscreen),
+            options_fullscreen_anchor_y,
+            options_button_center_offset_x,
+        ),
+        .sound_volume => frontend_widget.type20TextRect(
+            &state.ui_font,
+            optionsMenuMeasurementLabel(state, .sound_volume),
+            optionsTextRect(state, .fullscreen).top + optionsTextRect(state, .fullscreen).height + frontend_widget.type20_stack_gap,
+            options_button_center_offset_x,
+        ),
+        .music_volume => frontend_widget.type20TextRect(
+            &state.ui_font,
+            optionsMenuMeasurementLabel(state, .music_volume),
+            optionsTextRect(state, .sound_volume).top + options_slider_row_height + frontend_widget.type20_stack_gap,
+            options_button_center_offset_x,
+        ),
+        .back => frontend_widget.type20TextRect(
+            &state.ui_font,
+            "Back",
+            optionsTextRect(state, .music_volume).top + options_slider_row_height + frontend_widget.type20_stack_gap,
+            options_button_center_offset_x,
+        ),
+    };
+}
+
+fn optionsSliderTitleTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
     return frontend_widget.type20TextRect(
         &state.ui_font,
-        if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
-        options_fullscreen_anchor_y,
+        optionsMenuVisibleLabel(state, item),
+        optionsTextRect(state, item).top,
         options_button_center_offset_x,
     );
 }
 
-fn optionsBackTextRect(state: *const AppState) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(&state.ui_font, "Back", options_back_anchor_y, options_button_center_offset_x);
+fn optionsSliderBarRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
+    const row_rect = optionsTextRect(state, item);
+    return .{
+        .left = row_rect.centerX() - options_slider_bar_width * 0.5,
+        .top = row_rect.top + options_slider_bar_y_offset,
+        .width = options_slider_bar_width,
+        .height = options_slider_bar_height,
+    };
+}
+
+fn optionsSliderArrowRect(state: *const AppState, item: OptionsMenuItem, direction: enum { less, more }) frontend_widget.Rect {
+    const row_rect = optionsTextRect(state, item);
+    return .{
+        .left = switch (direction) {
+            .less => options_slider_left_arrow_left,
+            .more => options_slider_right_arrow_left,
+        },
+        .top = row_rect.top + options_slider_arrow_y_offset,
+        .width = options_slider_arrow_size,
+        .height = options_slider_arrow_size,
+    };
+}
+
+fn optionsSliderValueTextRect(state: *const AppState, item: OptionsMenuItem, text: []const u8) frontend_widget.Rect {
+    return frontend_widget.widgetTextRect(
+        &state.ui_font,
+        .slider_value,
+        .center,
+        text,
+        optionsTextRect(state, item).top + options_slider_value_y_offset,
+        0.0,
+    );
+}
+
+fn optionsSliderFrameRect(state: *const AppState, item: OptionsMenuItem, row_state: frontend_widget.TextButtonState, value_text: []const u8) frontend_widget.Rect {
+    const base_rect = frontend_widget.pillRect(optionsTextRect(state, item), row_state);
+    const bar_rect = optionsSliderBarRect(state, item);
+    const less_rect = optionsSliderArrowRect(state, item, .less);
+    const more_rect = optionsSliderArrowRect(state, item, .more);
+    const value_rect = frontend_widget.pillRect(optionsSliderValueTextRect(state, item, value_text), row_state);
+    const bottom = @max(
+        value_rect.top + value_rect.height,
+        @max(bar_rect.top + bar_rect.height + row_state.current_padding, @max(less_rect.top + less_rect.height, more_rect.top + more_rect.height)),
+    );
+    return .{
+        .left = base_rect.left,
+        .top = base_rect.top,
+        .width = base_rect.width,
+        .height = bottom - base_rect.top,
+    };
 }
 
 fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_widget.Rect {
@@ -3599,33 +3727,6 @@ fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offs
 
 fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .center, text, exit_prompt_button_y, center_offset_x);
-}
-
-fn optionsSliderPanelRect(center_y: f32) frontend_widget.Rect {
-    return .{
-        .left = options_slider_center_x - options_slider_panel_width * 0.5,
-        .top = center_y - options_slider_panel_height * 0.5,
-        .width = options_slider_panel_width,
-        .height = options_slider_panel_height,
-    };
-}
-
-fn optionsSliderLessRect(center_y: f32) frontend_widget.Rect {
-    return .{
-        .left = options_slider_center_x - options_slider_arrow_offset_x - options_slider_arrow_size * 0.5,
-        .top = center_y + options_slider_arrow_center_y_offset - options_slider_arrow_size * 0.5,
-        .width = options_slider_arrow_size,
-        .height = options_slider_arrow_size,
-    };
-}
-
-fn optionsSliderMoreRect(center_y: f32) frontend_widget.Rect {
-    return .{
-        .left = options_slider_center_x + options_slider_arrow_offset_x - options_slider_arrow_size * 0.5,
-        .top = center_y + options_slider_arrow_center_y_offset - options_slider_arrow_size * 0.5,
-        .width = options_slider_arrow_size,
-        .height = options_slider_arrow_size,
-    };
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -3700,32 +3801,30 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             .border = state.frontend_widget_art.border.?.texture,
         },
         &state.ui_font,
-        if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
-        optionsFullscreenTextRect(state),
+        optionsMenuVisibleLabel(state, .fullscreen),
+        optionsTextRect(state, .fullscreen),
         state.options_button_states[options_fullscreen_button_index],
         false,
     );
-    drawFrontendSliderPanel(
+    drawOptionsSliderRow(
         state,
         layout,
-        options_slider_center_x,
-        options_sound_slider_center_y,
-        "Sounds Volume",
+        .sound_volume,
         state.runtime_config.soundVolume(),
-        state.options_menu_index == 1,
-        if (local_mouse) |mouse| optionsSliderLessRect(options_sound_slider_center_y).contains(mouse) else false,
-        if (local_mouse) |mouse| optionsSliderMoreRect(options_sound_slider_center_y).contains(mouse) else false,
+        state.options_sound_display_value,
+        state.options_button_states[options_sound_button_index],
+        if (local_mouse) |mouse| optionsSliderArrowRect(state, .sound_volume, .less).contains(mouse) else false,
+        if (local_mouse) |mouse| optionsSliderArrowRect(state, .sound_volume, .more).contains(mouse) else false,
     );
-    drawFrontendSliderPanel(
+    drawOptionsSliderRow(
         state,
         layout,
-        options_slider_center_x,
-        options_music_slider_center_y,
-        "Music Volume",
+        .music_volume,
         state.runtime_config.musicVolume(),
-        state.options_menu_index == 2,
-        if (local_mouse) |mouse| optionsSliderLessRect(options_music_slider_center_y).contains(mouse) else false,
-        if (local_mouse) |mouse| optionsSliderMoreRect(options_music_slider_center_y).contains(mouse) else false,
+        state.options_music_display_value,
+        state.options_button_states[options_music_button_index],
+        if (local_mouse) |mouse| optionsSliderArrowRect(state, .music_volume, .less).contains(mouse) else false,
+        if (local_mouse) |mouse| optionsSliderArrowRect(state, .music_volume, .more).contains(mouse) else false,
     );
     frontend_widget.drawType20Button(
         layout,
@@ -3734,7 +3833,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         },
         &state.ui_font,
         "Back",
-        optionsBackTextRect(state),
+        optionsTextRect(state, .back),
         state.options_button_states[options_back_button_index],
         false,
     );
@@ -4291,36 +4390,51 @@ fn drawTextureCenteredLocal(
     );
 }
 
-fn drawFrontendSliderPanel(
+fn drawOptionsSliderRow(
     state: *const AppState,
     layout: VirtualLayout,
-    center_x: f32,
-    center_y: f32,
-    label: []const u8,
+    item: OptionsMenuItem,
     value: f32,
-    active: bool,
+    displayed_value: f32,
+    row_state: frontend_widget.TextButtonState,
     less_hovered: bool,
     more_hovered: bool,
 ) void {
-    const panel_width: f32 = 418.0;
-    const panel_height: f32 = 86.0;
-    const colors = frontendButtonColors(active);
+    const row_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
     const normalized_value = std.math.clamp(value, 0.0, 1.0);
+    const displayed_normalized_value = std.math.clamp(displayed_value, 0.0, 1.0);
+    const colors = frontend_widget.colorsForState(row_state, false);
+    const title_rect = optionsSliderTitleTextRect(state, item);
+    var value_buffer: [16]u8 = undefined;
+    const value_text = std.fmt.bufPrint(&value_buffer, "{d:0>2.0}%", .{normalized_value * 100.0}) catch "00%";
+    const frame_rect = optionsSliderFrameRect(state, item, row_state, value_text);
+    const bar_rect = optionsSliderBarRect(state, item);
+    const less_rect = optionsSliderArrowRect(state, item, .less);
+    const more_rect = optionsSliderArrowRect(state, item, .more);
+    const value_rect = optionsSliderValueTextRect(state, item, value_text);
+    const title_metrics = frontend_widget.metricsForType(.menu_button);
 
-    drawFrontendPill(layout, center_x, center_y, panel_width, panel_height, colors.fill, colors.outline);
-    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y - 29.0, label, 22, colors.shadow, .center);
-    drawFrontendTextAligned(state, layout, center_x, center_y - 31.0, label, 22, colors.text, .center);
+    frontend_widget.drawNineSliceFrame(
+        layout,
+        row_art.border,
+        frame_rect,
+        frontend_widget.type20_border_edge,
+        frontend_widget.type20_border_edge / 128.0,
+        colors.fill,
+    );
 
-    const bar_left = center_x - 128.0;
-    const bar_top = center_y - 5.0;
-    const bar_width: f32 = 256.0;
-    const bar_height: f32 = 32.0;
+    const shadow_point = layout.mapPoint(title_rect.left + 2.0, title_rect.top + 2.0);
+    const text_point = layout.mapPoint(title_rect.left, title_rect.top);
+    const scaled_font_size = layout.scaleFloat(title_metrics.fontSize(&state.ui_font));
+    state.ui_font.drawText(optionsMenuVisibleLabel(state, item), shadow_point.x, shadow_point.y, scaled_font_size, colors.shadow);
+    state.ui_font.drawText(optionsMenuVisibleLabel(state, item), text_point.x, text_point.y, scaled_font_size, colors.text);
 
     if (state.slider_art.bar) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, bar_left, bar_top, bar_width, bar_height, .white);
+        drawTextureLocalRect(layout, loaded_texture, bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height, .white);
     } else {
-        const bar_rect = layout.mapRect(bar_left, bar_top, bar_width, bar_height);
-        rl.drawRectangleRounded(bar_rect, 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
+        rl.drawRectangleRounded(layout.mapRect(bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
     }
     if (state.slider_art.bar_full) |loaded_texture| {
         drawTextureLocalRectSource(
@@ -4329,22 +4443,22 @@ fn drawFrontendSliderPanel(
             .{
                 .x = 0.0,
                 .y = 0.0,
-                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)) * normalized_value,
+                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)) * displayed_normalized_value,
                 .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
             },
-            bar_left,
-            bar_top,
-            bar_width * normalized_value,
-            bar_height,
+            bar_rect.left,
+            bar_rect.top,
+            bar_rect.width * displayed_normalized_value,
+            bar_rect.height,
             .white,
         );
     } else {
         rl.drawRectangleRounded(
             .{
-                .x = layout.mapPoint(bar_left, bar_top).x,
-                .y = layout.mapPoint(bar_left, bar_top).y,
-                .width = layout.scaleFloat(bar_width * normalized_value),
-                .height = layout.scaleFloat(bar_height),
+                .x = layout.mapPoint(bar_rect.left, bar_rect.top).x,
+                .y = layout.mapPoint(bar_rect.left, bar_rect.top).y,
+                .width = layout.scaleFloat(bar_rect.width * displayed_normalized_value),
+                .height = layout.scaleFloat(bar_rect.height),
             },
             0.45,
             8,
@@ -4352,25 +4466,24 @@ fn drawFrontendSliderPanel(
         );
     }
 
-    const less_texture = if (less_hovered)
+    const less_disabled = normalized_value <= 0.001;
+    const more_disabled = normalized_value >= 0.999;
+    const less_texture = if (less_hovered and !less_disabled)
         state.slider_art.less_hover orelse state.slider_art.less
     else
         state.slider_art.less;
-    const more_texture = if (more_hovered)
+    const more_texture = if (more_hovered and !more_disabled)
         state.slider_art.more_hover orelse state.slider_art.more
     else
         state.slider_art.more;
     if (less_texture) |loaded_texture| {
-        drawTextureCenteredLocal(layout, loaded_texture, center_x - 172.0, center_y + 10.0, 64.0, 64.0, .white);
+        drawTextureLocalRect(layout, loaded_texture, less_rect.left, less_rect.top, less_rect.width, less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
     }
     if (more_texture) |loaded_texture| {
-        drawTextureCenteredLocal(layout, loaded_texture, center_x + 172.0, center_y + 10.0, 64.0, 64.0, .white);
+        drawTextureLocalRect(layout, loaded_texture, more_rect.left, more_rect.top, more_rect.width, more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
     }
 
-    var value_buffer: [16]u8 = undefined;
-    const value_text = std.fmt.bufPrint(&value_buffer, "{d:.0}%", .{value * 100.0}) catch "0%";
-    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y + 2.0, value_text, 20, .{ .r = 42, .g = 20, .b = 34, .a = 220 }, .center);
-    drawFrontendTextAligned(state, layout, center_x, center_y, value_text, 20, .ray_white, .center);
+    frontend_widget.drawTextButton(layout, row_art, &state.ui_font, .slider_value, value_text, value_rect, row_state, false);
 }
 
 fn routeMapCardLayout(

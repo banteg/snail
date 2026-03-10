@@ -5,6 +5,7 @@ const game_font = @import("game_font.zig");
 
 pub const WidgetType = enum(u8) {
     menu_button = 20,
+    slider_value = 21,
     compact_score_row = 22,
     footer_button = 23,
     route_map_secondary_action = 24,
@@ -114,6 +115,15 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+1776 = 1.3`
             // for the shell-font menu button scale.
             .text_scale = 1.3,
+            .idle_padding = type20_idle_padding,
+            .hot_padding = type20_hot_padding,
+            .border_edge = type20_border_edge,
+            .source_edge_fraction = type20_border_edge / 128.0,
+        },
+        .slider_value => .{
+            // PORT(verified): `sub_401D30(..., widget_type=21, ...)` is the slider readout
+            // child path. It keeps the type-20 shell border metrics but drops text scale to 1.0.
+            .text_scale = 1.0,
             .idle_padding = type20_idle_padding,
             .hot_padding = type20_hot_padding,
             .border_edge = type20_border_edge,
