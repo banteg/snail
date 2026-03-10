@@ -873,7 +873,7 @@ const AppState = struct {
     options_music_display_value: f32 = 0.0,
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
-    current_model: ?x2.Uploaded = null,
+    current_model: ?x2.LoadedModel = null,
     current_animation: ?xanim.Player = null,
     current_object: ?object.LoadedObject = null,
     current_level: ?level.Definition = null,
@@ -3572,7 +3572,12 @@ const AppState = struct {
             }
         }
 
-        self.current_model = try x2.loadFromArchive(self.allocator, &self.catalog, entry, .{ .flip_v = self.model_flip_v });
+        self.current_model = try x2.LoadedModel.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            self.model_flip_v,
+        );
     }
 
     fn reloadObject(self: *AppState) !void {
@@ -3642,7 +3647,7 @@ const AppState = struct {
         self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
     }
 
-    fn activeModel(self: *const AppState) ?*const x2.Uploaded {
+    fn activeModel(self: *const AppState) ?*const x2.LoadedModel {
         if (self.current_animation) |*animation| {
             return &animation.rendered;
         }
@@ -5883,7 +5888,7 @@ fn drawAudioPanel(state: *const AppState) !void {
 fn drawModelPanel(state: *const AppState) !void {
     const entry = state.catalog.model_entries[state.model_index];
     const model = state.activeModel() orelse return;
-    const parsed = &model.doc;
+    const parsed = &model.parsed;
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
@@ -5894,8 +5899,8 @@ fn drawModelPanel(state: *const AppState) !void {
             state.catalog.model_entries.len,
             model.submeshes.len,
             parsed.vertices.len,
-            parsed.polygons.len,
-            parsed.triangle_count,
+            parsed.faces.len,
+            parsed.total_triangle_count,
         },
     );
     drawAppText(state, summary_text, 32, 194, 24, .ray_white);
@@ -5921,11 +5926,11 @@ fn drawModelPanel(state: *const AppState) !void {
     drawAppText(state, "RWG loader notes", 56, 332, 26, .ray_white);
 
     var mesh_buffer: [384]u8 = undefined;
-    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.bounds.center.x, model.bounds.center.y, model.bounds.center.z });
+    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.center.x, model.center.y, model.center.z });
     drawAppText(state, mesh_text, 56, 378, 20, .light_gray);
 
     var material_buffer: [384]u8 = undefined;
-    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.bounds.radius});
+    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.radius});
     drawAppText(state, material_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
@@ -5933,7 +5938,7 @@ fn drawModelPanel(state: *const AppState) !void {
         &texture_buffer,
         "First texture: {s}",
         .{if (model.submeshes.len > 0)
-            (if (model.submeshes[0].texture) |texture| texture.path else model.submeshes[0].texture_filename orelse "<none>")
+            (if (model.submeshes[0].texture) |texture| texture.path else model.submeshes[0].archive_texture_path orelse "<none>")
         else
             "<none>"},
     );
@@ -5982,8 +5987,8 @@ fn drawModelViewport(state: *const AppState) void {
     camera.begin();
     defer rl.endMode3D();
 
-    const grid_slices: i32 = @intFromFloat(@min(@max(model.bounds.radius * 6.0, 10.0), 80.0));
-    const grid_spacing = @max(model.bounds.radius / 2.0, 0.5);
+    const grid_slices: i32 = @intFromFloat(@min(@max(model.radius * 6.0, 10.0), 80.0));
+    const grid_spacing = @max(model.radius / 2.0, 0.5);
     rl.drawGrid(grid_slices, grid_spacing);
     model.draw();
 }
