@@ -77,6 +77,7 @@ pub const Options = struct {
     auto_screenshot: ?AutoScreenshot = null,
     mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
+    start_route_index: ?usize = null,
     timeout_seconds: ?u32 = null,
     window_size_override: ?WindowSize = null,
     fullscreen: bool = false,
@@ -145,6 +146,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             index += 1;
             if (index >= args.len) return error.MissingStartPhase;
             options.start_phase = parseGamePhase(args[index]) orelse return error.InvalidStartPhase;
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--start-route-index")) {
+            index += 1;
+            if (index >= args.len) return error.MissingStartRouteIndex;
+            options.start_route_index = try parseRouteIndex(args[index]);
             continue;
         }
         if (std.mem.eql(u8, arg, "--timeout-seconds")) {
@@ -250,6 +257,12 @@ fn parseTimeoutSeconds(spec: []const u8) !u32 {
     return seconds;
 }
 
+fn parseRouteIndex(spec: []const u8) !usize {
+    const route_index = try std.fmt.parseUnsigned(usize, spec, 10);
+    if (route_index == 0) return error.InvalidStartRouteIndex;
+    return route_index;
+}
+
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: initialize_game_window_and_input.
@@ -283,6 +296,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
     try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
+    try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
     try std.testing.expectEqual(false, options.fullscreen);
@@ -314,6 +328,11 @@ test "parse args accepts start phase override" {
     try std.testing.expectEqual(frontend.GamePhase.main_menu, options.start_phase.?);
 }
 
+test "parse args accepts start route index override" {
+    const options = try parseArgsFromSlice(&.{ "--start-route-index", "3" });
+    try std.testing.expectEqual(@as(usize, 3), options.start_route_index.?);
+}
+
 test "parse args requires timeout for hidden window" {
     try std.testing.expectError(error.HiddenWindowRequiresTimeout, parseArgsFromSlice(&.{"--hidden-window"}));
 }
@@ -341,6 +360,11 @@ test "parse args accepts mouse local override" {
 test "parse args validates start phase" {
     try std.testing.expectError(error.MissingStartPhase, parseArgsFromSlice(&.{"--start-phase"}));
     try std.testing.expectError(error.InvalidStartPhase, parseArgsFromSlice(&.{ "--start-phase", "weird" }));
+}
+
+test "parse args validates start route index" {
+    try std.testing.expectError(error.MissingStartRouteIndex, parseArgsFromSlice(&.{"--start-route-index"}));
+    try std.testing.expectError(error.InvalidStartRouteIndex, parseArgsFromSlice(&.{ "--start-route-index", "0" }));
 }
 
 test "parse args validates timeout seconds" {

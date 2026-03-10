@@ -403,8 +403,36 @@ const options_slider_panel_height: f32 = 86.0;
 const options_slider_arrow_size: f32 = 64.0;
 const options_slider_arrow_offset_x: f32 = 172.0;
 const options_slider_arrow_center_y_offset: f32 = 10.0;
+// PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
+// scale `0.83`, the bottom Back/Exit control at `(20,420)` with absolute alignment, and
+// `open_galaxy_route` seeds the selected route card from `(route_x + 60, route_y - 130)`.
+const route_map_title_x: f32 = 15.0;
+const route_map_title_y: f32 = 15.0;
+const route_map_title_scale: f32 = 0.83;
+const route_map_back_x: f32 = 20.0;
+const route_map_back_y: f32 = 420.0;
+const route_map_card_title_scale: f32 = 0.9;
+const route_map_card_subtitle_scale: f32 = 0.9;
+const route_map_card_body_scale: f32 = 0.7;
+const route_map_card_bounds_padding: f32 = 8.0;
+const route_map_card_horizontal_pointer_gap: f32 = 6.0;
+const route_map_card_star_gap: f32 = 16.0;
+const route_map_card_right_limit: f32 = 631.0;
+const route_map_card_min_top: f32 = 49.0;
+const route_map_card_bottom_y: f32 = 450.0;
+const route_map_card_primary_gap: f32 = 20.0;
+const route_map_card_replay_gap: f32 = 10.0;
+// PORT(verified): `update_galaxy` draws galaxy sprites `139..148` as `256x256` quads
+// centered on the transformed `sub_4088E0` points, and the inter-route connector uses
+// `LINE.TGA` at width `4.0`.
+const route_map_galaxy_size: f32 = 256.0;
+const route_map_path_line_width: f32 = 4.0;
 const high_score_button_count = 2;
 const help_button_count = 1;
+const route_map_button_count = 3;
+const route_map_primary_button_index: usize = 0;
+const route_map_replay_button_index: usize = 1;
+const route_map_back_button_index: usize = 2;
 const exit_prompt_button_count = 2;
 // PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
 // row pitch `27`, and footer row `111 + 10*27 = 381`.
@@ -442,6 +470,9 @@ const FrontendHoverTarget = enum(u8) {
     options_sound_volume,
     options_music_volume,
     options_back,
+    route_map_play,
+    route_map_watch_best_trial,
+    route_map_back,
     help_back,
     high_scores_back,
     high_scores_switch_table,
@@ -502,6 +533,14 @@ fn hoverTargetForOptions(index: usize) FrontendHoverTarget {
         2 => .options_music_volume,
         3 => .options_back,
         else => unreachable,
+    };
+}
+
+fn hoverTargetForRouteMenuAction(action: RouteMenuAction) FrontendHoverTarget {
+    return switch (action) {
+        .play => .route_map_play,
+        .watch_best_trial => .route_map_watch_best_trial,
+        .back => .route_map_back,
     };
 }
 
@@ -623,6 +662,7 @@ const AppState = struct {
     options_menu_index: usize = 0,
     options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
     help_button_states: [help_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** help_button_count,
+    route_map_button_states: [route_map_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** route_map_button_count,
     high_scores_menu_index: usize = 0,
     high_scores_action_index: usize = 1,
     high_score_button_states: [high_score_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** high_score_button_count,
@@ -643,6 +683,7 @@ const AppState = struct {
     mouse_level_lane_target: ?usize = null,
     frontend_route_mode: ?FrontendLevelMode = null,
     frontend_route_index: usize = 0,
+    start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
@@ -739,6 +780,7 @@ const AppState = struct {
             .audio_muted = options.hidden_window,
             .mouse_local_override = options.mouse_local_override,
             .auto_screenshot = options.auto_screenshot,
+            .start_route_index_override = options.start_route_index,
             .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
             .audio_index = audio_index,
@@ -1218,6 +1260,19 @@ const AppState = struct {
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
         self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        const route_map_active = self.game_phase == .route_map_menu and !self.frontend_transition.blocksInput();
+        self.route_map_button_states[route_map_primary_button_index].stepFor(
+            .menu_button,
+            route_map_active and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+        );
+        self.route_map_button_states[route_map_replay_button_index].stepFor(
+            .route_map_secondary_action,
+            route_map_active and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+        );
+        self.route_map_button_states[route_map_back_button_index].stepFor(
+            .menu_button,
+            route_map_active and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
+        );
         const help_active = self.game_phase == .help and !self.frontend_transition.blocksInput();
         self.help_button_states[0].stepFor(.menu_button, help_active and self.frontendButtonHot(.help_back, true));
 
@@ -1244,6 +1299,18 @@ const AppState = struct {
         }
         self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        self.route_map_button_states[route_map_primary_button_index].snapFor(
+            .menu_button,
+            self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+        );
+        self.route_map_button_states[route_map_replay_button_index].snapFor(
+            .route_map_secondary_action,
+            self.game_phase == .route_map_menu and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+        );
+        self.route_map_button_states[route_map_back_button_index].snapFor(
+            .menu_button,
+            self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
+        );
         self.help_button_states[0].snapFor(.menu_button, self.game_phase == .help and self.frontendButtonHot(.help_back, true));
         for (&self.high_score_button_states, 0..) |*state, index| {
             state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
@@ -1366,6 +1433,87 @@ const AppState = struct {
             self.options_menu_index = 3;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .options_menu = .back });
+            }
+            return;
+        }
+
+        self.setFrontendHoverTarget(null);
+    }
+
+    fn updateRouteMapMouseSelection(self: *AppState) !void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+        const mode = self.frontend_route_mode orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+
+        const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
+        const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
+        const route_body = if (self.frontend_route_level) |loaded_level|
+            loaded_level.galaxy_text orelse routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse ""
+        else
+            routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse "";
+
+        const back_rect = routeMapBackTextRect(self);
+        if (frontend_widget.hitRect(back_rect, self.route_map_button_states[route_map_back_button_index]).contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.back));
+            if (self.routeMenuActionIndexForAction(.back)) |index| {
+                self.route_menu_action_index = index;
+            }
+            if (rl.isMouseButtonPressed(.left)) {
+                try self.activateRouteMenuAction(.back);
+            }
+            return;
+        }
+
+        if (routeMapPointForRouteIndex(self, self.frontend_route_index)) |route_point| {
+            const card_layout = routeMapCardLayout(
+                &self.ui_font,
+                route_point,
+                route_galaxy_name,
+                route_level_name,
+                route_body,
+                routeMenuActionLabel(mode, .play),
+                if (self.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null,
+            );
+
+            if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[route_map_primary_button_index]).contains(local_mouse)) {
+                self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
+                if (self.routeMenuActionIndexForAction(.play)) |index| {
+                    self.route_menu_action_index = index;
+                }
+                if (rl.isMouseButtonPressed(.left)) {
+                    try self.activateRouteMenuAction(.play);
+                }
+                return;
+            }
+
+            if (card_layout.replay_text_rect) |replay_rect| {
+                if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[route_map_replay_button_index]).contains(local_mouse)) {
+                    self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
+                    if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
+                        self.route_menu_action_index = index;
+                    }
+                    if (rl.isMouseButtonPressed(.left)) {
+                        try self.activateRouteMenuAction(.watch_best_trial);
+                    }
+                    return;
+                }
+            }
+        }
+
+        if (routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode))) |hovered_route_index| {
+            self.setFrontendHoverTarget(null);
+            if (rl.isMouseButtonPressed(.left) and hovered_route_index != self.frontend_route_index) {
+                self.frontend_route_index = hovered_route_index;
+                if (self.routeMenuActionIndexForAction(.play)) |index| {
+                    self.route_menu_action_index = index;
+                }
+                try self.reloadFrontendRouteLevel();
+                self.playFrontendSelectSound();
             }
             return;
         }
@@ -1621,6 +1769,7 @@ const AppState = struct {
                 }
             },
             .route_map_menu => {
+                try self.updateRouteMapMouseSelection();
                 const route_actions = self.activeRouteMenuActions();
                 if (rl.isKeyPressed(.up)) {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, -1);
@@ -1931,6 +2080,13 @@ const AppState = struct {
     fn enterRouteMapMenu(self: *AppState, mode: FrontendLevelMode) !void {
         self.frontend_route_mode = mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
+        if (self.start_route_index_override) |override| {
+            const highest_available = self.highestAvailableFrontendRouteIndex(mode);
+            if (highest_available > 0) {
+                self.frontend_route_index = std.math.clamp(override, @as(usize, 1), highest_available);
+            }
+            self.start_route_index_override = null;
+        }
         self.route_menu_action_index = 0;
         try self.reloadFrontendRouteLevel();
         try self.enterGamePhase(.route_map_menu);
@@ -1967,6 +2123,18 @@ const AppState = struct {
             &route_menu_actions_with_replay
         else
             &route_menu_actions_without_replay;
+    }
+
+    fn activeRouteMenuHotAction(self: *const AppState) RouteMenuAction {
+        const actions = self.activeRouteMenuActions();
+        return actions[@min(self.route_menu_action_index, actions.len - 1)];
+    }
+
+    fn routeMenuActionIndexForAction(self: *const AppState, action: RouteMenuAction) ?usize {
+        for (self.activeRouteMenuActions(), 0..) |candidate, index| {
+            if (candidate == action) return index;
+        }
+        return null;
     }
 
     fn clearLevelPromptQueue(self: *AppState) void {
@@ -3184,6 +3352,10 @@ fn helpBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
     return frontend_widget.type20TextRect(font, "Back", help_back_anchor_y, 0.0);
 }
 
+fn routeMapBackTextRect(state: *const AppState) frontend_widget.Rect {
+    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .absolute, "Back", route_map_back_y, route_map_back_x);
+}
+
 fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     return frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, text, high_score_footer_y, center_offset_x);
 }
@@ -3335,31 +3507,58 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
+const RouteMapCardLayout = struct {
+    card_rect: frontend_widget.Rect,
+    title_rect: frontend_widget.Rect,
+    subtitle_rect: frontend_widget.Rect,
+    body_rect: frontend_widget.Rect,
+    primary_text_rect: frontend_widget.Rect,
+    replay_text_rect: ?frontend_widget.Rect,
+    pointer_start: galaxy.Point,
+    pointer_end: galaxy.Point,
+};
+
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const route_actions = state.activeRouteMenuActions();
-    const selected_action = route_actions[@min(state.route_menu_action_index, route_actions.len - 1)];
-    drawFrontendHeading(state, layout, 16.0, 18.0, "Intergalactic Delivery Route", 18, .left, .{ .r = 216, .g = 138, .b = 28, .a = 255 });
-    drawRouteMapLogo(state, layout);
+    const selected_action = state.activeRouteMenuHotAction();
     const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
     const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
     const route_body = if (state.frontend_route_level) |loaded_level|
         loaded_level.galaxy_text orelse routeMenuHint(mode, selected_action) orelse ""
     else
         routeMenuHint(mode, selected_action) orelse "";
-    const primary_action = if (selected_action == .back) routeMenuActionLabel(mode, .play) else routeMenuActionLabel(mode, selected_action);
+    const primary_label = routeMenuActionLabel(mode, .play);
+    const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    const heading_color = rl.Color{ .r = 216, .g = 138, .b = 28, .a = 255 };
+
+    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", route_map_title_x, route_map_title_y, route_map_title_scale, heading_color);
+    drawRouteMapLogo(state, layout);
     drawRouteMapStars(state, layout, mode);
-    if (galaxy.routePointForRouteIndex(state.frontend_route_index)) |route_point| {
-        drawRouteMapCard(state, layout, route_point, route_galaxy_name, route_level_name, route_body, primary_action, selected_action != .back);
+    if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |route_point| {
+        const card_layout = routeMapCardLayout(
+            &state.ui_font,
+            route_point,
+            route_galaxy_name,
+            route_level_name,
+            route_body,
+            primary_label,
+            replay_label,
+        );
+        drawRouteMapConnection(layout, card_layout.pointer_start, card_layout.pointer_end, state.route_map_art.line_star, 4.0, .white);
+        drawRouteMapCard(state, layout, card_layout, route_galaxy_name, route_level_name, route_body, primary_label, replay_label);
     }
-    drawFrontendMenuButton(
-        state,
+
+    frontend_widget.drawType20Button(
         layout,
-        49.0,
-        420.0,
+        widget_art,
+        &state.ui_font,
         "Back",
-        selected_action == .back,
-        .{ .min_width = 88.0 },
+        routeMapBackTextRect(state),
+        state.route_map_button_states[route_map_back_button_index],
+        false,
     );
 
     if (state.game_status_message) |message| {
@@ -3697,6 +3896,53 @@ fn drawFrontendHeading(
     drawFrontendTextAligned(state, layout, local_x, local_y, text, authored_size, color, alignment);
 }
 
+fn scaledUiFontSize(font: *const game_font.Loaded, text_scale: f32) f32 {
+    return font.nominal_height * text_scale;
+}
+
+fn multilineUiTextHeight(font: *const game_font.Loaded, text: []const u8, text_scale: f32) f32 {
+    if (text.len == 0) return 0.0;
+    var line_count: usize = 1;
+    for (text) |byte| {
+        if (byte == '\n') line_count += 1;
+    }
+    return @as(f32, @floatFromInt(line_count)) * scaledUiFontSize(font, text_scale);
+}
+
+fn uiFontTextRectAbsolute(font: *const game_font.Loaded, text: []const u8, left: f32, top: f32, text_scale: f32) frontend_widget.Rect {
+    const font_size = scaledUiFontSize(font, text_scale);
+    return .{
+        .left = left,
+        .top = top,
+        .width = font.measureText(text, font_size),
+        .height = multilineUiTextHeight(font, text, text_scale),
+    };
+}
+
+fn drawUiFontTextAbsolute(
+    state: *const AppState,
+    layout: VirtualLayout,
+    text: []const u8,
+    left: f32,
+    top: f32,
+    text_scale: f32,
+    color: rl.Color,
+) void {
+    const point = layout.mapPoint(left, top);
+    state.ui_font.drawText(text, point.x, point.y, layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale)), color);
+}
+
+fn drawUiFontTextRect(
+    state: *const AppState,
+    layout: VirtualLayout,
+    text: []const u8,
+    rect: frontend_widget.Rect,
+    text_scale: f32,
+    color: rl.Color,
+) void {
+    drawUiFontTextAbsolute(state, layout, text, rect.left, rect.top, text_scale, color);
+}
+
 fn drawFrontendMenuButton(
     state: *const AppState,
     layout: VirtualLayout,
@@ -3865,6 +4111,133 @@ fn drawFrontendSliderPanel(
     drawFrontendTextAligned(state, layout, center_x, center_y, value_text, 20, .ray_white, .center);
 }
 
+fn routeMapCardLayout(
+    font: *const game_font.Loaded,
+    route_point: galaxy.Point,
+    route_galaxy_name: []const u8,
+    route_level_name: []const u8,
+    route_body: []const u8,
+    primary_action: []const u8,
+    replay_action: ?[]const u8,
+) RouteMapCardLayout {
+    var title_left = route_point.x + 60.0;
+    var title_top = route_point.y - 130.0;
+
+    while (true) {
+        const title_rect = uiFontTextRectAbsolute(font, route_galaxy_name, title_left, title_top, route_map_card_title_scale);
+        const subtitle_rect = uiFontTextRectAbsolute(font, route_level_name, title_rect.left, title_rect.top + title_rect.height, route_map_card_subtitle_scale);
+        const body_rect = uiFontTextRectAbsolute(font, route_body, subtitle_rect.left, subtitle_rect.top + subtitle_rect.height, route_map_card_body_scale);
+        const button_center_offset = title_rect.left + title_rect.width * 0.5 - 320.0;
+
+        var primary_text_rect = frontend_widget.widgetTextRect(
+            font,
+            .menu_button,
+            .center,
+            primary_action,
+            body_rect.top + body_rect.height + route_map_card_primary_gap,
+            button_center_offset,
+        );
+        var replay_text_rect: ?frontend_widget.Rect = null;
+        if (replay_action) |label| {
+            replay_text_rect = frontend_widget.widgetTextRect(
+                font,
+                .route_map_secondary_action,
+                .center,
+                label,
+                body_rect.top + body_rect.height + route_map_card_replay_gap,
+                button_center_offset,
+            );
+            primary_text_rect = frontend_widget.widgetTextRect(
+                font,
+                .menu_button,
+                .center,
+                primary_action,
+                replay_text_rect.?.top + replay_text_rect.?.height + route_map_card_primary_gap,
+                button_center_offset,
+            );
+        }
+
+        const left = @min(title_rect.left, @min(subtitle_rect.left, @min(body_rect.left, primary_text_rect.left))) - route_map_card_bounds_padding;
+        const top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top))) - route_map_card_bounds_padding;
+        const right = @max(
+            title_rect.left + title_rect.width,
+            @max(
+                subtitle_rect.left + subtitle_rect.width,
+                @max(body_rect.left + body_rect.width, primary_text_rect.left + primary_text_rect.width),
+            ),
+        ) + route_map_card_bounds_padding;
+        const bottom = @max(
+            title_rect.top + title_rect.height,
+            @max(
+                subtitle_rect.top + subtitle_rect.height,
+                @max(body_rect.top + body_rect.height, primary_text_rect.top + primary_text_rect.height),
+            ),
+        ) + route_map_card_bounds_padding;
+
+        var adjusted = false;
+        if (right > route_map_card_right_limit) {
+            title_left = route_point.x - (right - left) - 40.0;
+            adjusted = true;
+        }
+        if (top < route_map_card_min_top) {
+            title_top = 50.0;
+            adjusted = true;
+        }
+        if (bottom > route_map_card_bottom_y) {
+            title_top = route_map_card_bottom_y - (bottom - top);
+            adjusted = true;
+        }
+        if (adjusted) continue;
+
+        const card_rect: frontend_widget.Rect = .{
+            .left = left,
+            .top = top,
+            .width = right - left,
+            .height = bottom - top,
+        };
+        const pointer_start_x = if (card_rect.left <= route_point.x)
+            route_point.x - route_map_card_star_gap
+        else
+            route_point.x + route_map_card_star_gap;
+        const pointer_end_x = if (card_rect.left <= route_point.x)
+            card_rect.left + card_rect.width + route_map_card_horizontal_pointer_gap
+        else
+            card_rect.left - route_map_card_horizontal_pointer_gap;
+        return .{
+            .card_rect = card_rect,
+            .title_rect = title_rect,
+            .subtitle_rect = subtitle_rect,
+            .body_rect = body_rect,
+            .primary_text_rect = primary_text_rect,
+            .replay_text_rect = replay_text_rect,
+            .pointer_start = .{ .x = pointer_start_x, .y = route_point.y },
+            .pointer_end = .{ .x = pointer_end_x, .y = route_point.y },
+        };
+    }
+}
+
+fn routeMapPointForRouteIndex(state: *const AppState, route_index: usize) ?galaxy.Point {
+    if (state.galaxy_names) |names| {
+        if (names.routePointForRouteIndex(route_index)) |point| return point;
+    }
+    return galaxy.routePointForRouteIndex(route_index);
+}
+
+fn routeMapHoveredRouteIndex(state: *const AppState, local_mouse: rl.Vector2, route_limit: usize) ?usize {
+    if (route_limit == 0) return null;
+
+    const selection_radius_squared = 17.0 * 17.0;
+    for (1..@min(route_limit, galaxy.map_route_count) + 1) |route_index| {
+        const point = routeMapPointForRouteIndex(state, route_index) orelse continue;
+        const dx = point.x - local_mouse.x;
+        const dy = point.y - local_mouse.y;
+        if (dx * dx + dy * dy < selection_radius_squared) {
+            return route_index;
+        }
+    }
+    return null;
+}
+
 fn drawRouteMapConnection(
     layout: VirtualLayout,
     start_point: galaxy.Point,
@@ -3915,7 +4288,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
     for (0..galaxy.map_galaxy_count) |galaxy_index| {
         const center = galaxy.galaxyCenter(galaxy_index);
         if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
-            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, 176.0, 176.0, .white);
+            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, route_map_galaxy_size, route_map_galaxy_size, .white);
         }
     }
 
@@ -3929,15 +4302,15 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
 
             if (star_count >= 2) {
                 for (0..star_count - 1) |local_index| {
-                    const start_index = route_cursor + local_index;
-                    const end_index = start_index + 1;
-                    const unlocked = end_index + 1 <= available_limit;
+                    const start_route_index = route_cursor + local_index + 1;
+                    const end_route_index = start_route_index + 1;
+                    const unlocked = end_route_index <= available_limit;
                     drawRouteMapConnection(
                         layout,
-                        galaxy.routePoint(start_index),
-                        galaxy.routePoint(end_index),
+                        names.routePointForRouteIndex(start_route_index).?,
+                        names.routePointForRouteIndex(end_route_index).?,
                         state.route_map_art.line,
-                        6.0,
+                        route_map_path_line_width,
                         if (unlocked)
                             .white
                         else
@@ -3947,9 +4320,9 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
             }
 
             for (0..star_count) |local_index| {
-                const route_index = route_cursor + local_index;
-                const point = galaxy.routePoint(route_index);
-                const unlocked = route_index + 1 <= available_limit;
+                const route_index = route_cursor + local_index + 1;
+                const point = names.routePointForRouteIndex(route_index).?;
+                const unlocked = route_index <= available_limit;
                 const star_tint: rl.Color = if (unlocked)
                     .white
                 else
@@ -3961,7 +4334,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
         }
     }
 
-    if (galaxy.routePointForRouteIndex(state.frontend_route_index)) |selected_point| {
+    if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |selected_point| {
         if (state.route_map_art.level_select) |loaded_texture| {
             drawTextureCenteredLocal(layout, loaded_texture, selected_point.x, selected_point.y, 64.0, 64.0, .white);
         }
@@ -3971,50 +4344,55 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
 fn drawRouteMapCard(
     state: *const AppState,
     layout: VirtualLayout,
-    route_point: galaxy.Point,
+    card_layout: RouteMapCardLayout,
     route_galaxy_name: []const u8,
     route_level_name: []const u8,
     route_body: []const u8,
     primary_action: []const u8,
-    primary_active: bool,
+    replay_action: ?[]const u8,
 ) void {
-    const card_width: f32 = 218.0;
-    const card_height: f32 = 188.0;
-    var card_left = route_point.x + 60.0;
-    var card_top = route_point.y - 130.0;
-    if (card_left + card_width > 630.0) {
-        card_left = route_point.x - card_width - 28.0;
-    }
-    if (card_top < 50.0) {
-        card_top = 50.0;
-    } else if (card_top + card_height > 450.0) {
-        card_top = 450.0 - card_height;
-    }
-
-    const pointer_anchor_x = if (card_left > route_point.x) card_left else card_left + card_width;
-    const pointer_anchor_y = std.math.clamp(route_point.y, card_top + 28.0, card_top + card_height - 28.0);
-    drawRouteMapConnection(layout, route_point, .{ .x = pointer_anchor_x, .y = pointer_anchor_y }, state.route_map_art.line_star, 6.0, .white);
-
     if (state.route_map_art.border) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, card_left, card_top, card_width, card_height, .white);
-    } else {
-        const card = layout.mapRect(card_left, card_top, card_width, card_height);
-        rl.drawRectangleRounded(card, 0.16, 10, .{ .r = 18, .g = 16, .b = 118, .a = 188 });
-        rl.drawRectangleRoundedLinesEx(card, 0.16, 10, layout.scaleFloat(2.0), .{ .r = 76, .g = 210, .b = 255, .a = 255 });
+        drawTextureLocalRect(
+            layout,
+            loaded_texture,
+            card_layout.card_rect.left,
+            card_layout.card_rect.top,
+            card_layout.card_rect.width,
+            card_layout.card_rect.height,
+            .white,
+        );
     }
 
-    drawFrontendTextAligned(state, layout, card_left + 16.0, card_top + 14.0, route_galaxy_name, 16, .ray_white, .left);
-    drawFrontendTextAligned(state, layout, card_left + 16.0, card_top + 44.0, route_level_name, 20, .ray_white, .left);
-    drawWrappedText(
-        state,
-        route_body,
-        @intFromFloat(layout.mapPoint(card_left + 16.0, card_top + 76.0).x),
-        @intFromFloat(layout.mapPoint(card_left + 16.0, card_top + 76.0).y),
-        @intFromFloat(layout.scaleFloat(card_width - 32.0)),
-        layout.fontSize(20),
-        .ray_white,
-    ) catch {};
-    drawFrontendMenuButton(state, layout, card_left + card_width * 0.5, card_top + 156.0, primary_action, primary_active, .{ .min_width = 132.0, .show_cursor = primary_active });
+    drawUiFontTextRect(state, layout, route_galaxy_name, card_layout.title_rect, route_map_card_title_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_level_name, card_layout.subtitle_rect, route_map_card_subtitle_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_body, card_layout.body_rect, route_map_card_body_scale, .ray_white);
+
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    frontend_widget.drawType20Button(
+        layout,
+        widget_art,
+        &state.ui_font,
+        primary_action,
+        card_layout.primary_text_rect,
+        state.route_map_button_states[route_map_primary_button_index],
+        false,
+    );
+    if (replay_action) |label| {
+        if (card_layout.replay_text_rect) |replay_text_rect| {
+            frontend_widget.drawTextButton(
+                layout,
+                widget_art,
+                &state.ui_font,
+                .route_map_secondary_action,
+                label,
+                replay_text_rect,
+                state.route_map_button_states[route_map_replay_button_index],
+                false,
+            );
+        }
+    }
 }
 
 fn drawRouteMapLogo(state: *const AppState, layout: VirtualLayout) void {

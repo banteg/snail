@@ -64,7 +64,7 @@ High-confidence current read:
   - `+0xb2c`
   - `+0xf08`
 
-The transition helpers at `0x444600` and `0x4446e0` appear to be near-identical queue or start routines over adjacent channel structs:
+The transition helpers at `dispatch_cutscene_animation` (`0x444600`) and `0x4446e0` appear to be near-identical queue or start routines over adjacent channel structs:
 
 - when their third argument is non-zero, they immediately begin a selected state
 - when their third argument is zero, they append the requested state id to a small queued-transition list

@@ -7,9 +7,19 @@
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
+      "address": "0x404830",
+      "name": "flush_row_event_display",
+      "description": "Fast-forwards the active gameplay row-event display by paying out any remaining row score awards, destroying its widget actors, and clearing the owning controller state."
+    },
+    {
       "address": "0x404920",
       "name": "initialize_completion_screen",
       "description": "Builds the Delivery Complete screen, seeds its package-count and bonus summary widgets, and lays out the continue prompt. Cross-port Android and iOS symbols match this helper to `cRCompletion::Init(int, bool)`."
+    },
+    {
+      "address": "0x404cf0",
+      "name": "update_row_event_display",
+      "description": "Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`."
     },
     {
       "address": "0x405140",
@@ -731,6 +741,16 @@
       "address": "0x4444b0",
       "name": "project_position_onto_track_attachment",
       "description": "Projects a world-space position onto an active track attachment template."
+    },
+    {
+      "address": "0x444600",
+      "name": "dispatch_cutscene_animation",
+      "description": "Either queues one cutscene or presentation animation id onto the player-side channel or begins it immediately, resetting the live slot state when the immediate path wins."
+    },
+    {
+      "address": "0x4447d0",
+      "name": "update_cutscene_animation_slot",
+      "description": "Advances one queued cutscene or presentation animation slot, applying its loop or ping-pong flags and starting the next queued animation when the current slot finishes."
     },
     {
       "address": "0x444cf0",

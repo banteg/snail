@@ -77,7 +77,7 @@ Current high-signal entries:
   - evidence: Binary Ninja decompile of `sub_449d20`, `sub_449e90`, and `sub_449f50`, plus the shipped `OBJECTS/FONT/FONT-MENU-HOVER.TGA` atlas and tutorial `Message=` strings using `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;`
   - implementation: [`game_font.zig`](../../zig/src/game_font.zig), [`main.zig`](../../zig/src/main.zig)
 - active segment `Sample=` / `Message=` routing in the default level path: `partial`
-  - evidence: authored level metadata, the recovered Windows row-event controller shape around `row_event_*`, `enqueue_tip_message`, `sub_404cf0`, and `sub_404830`, plus current tutorial-level behavior
+  - evidence: authored level metadata, the recovered Windows row-event controller shape around `row_event_*`, `enqueue_tip_message`, `update_row_event_display`, and `flush_row_event_display`, plus current tutorial-level behavior
   - implementation: [`level_prompt.zig`](../../zig/src/level_prompt.zig), [`main.zig`](../../zig/src/main.zig)
   - note: the port now queues up to three transient segment prompts and uses authored `Duration:` values when present instead of pinning the current `Message=` text in the footer for the whole segment. It still does not port the original row-event actor/controller, score-flush behavior, or the small multi-slot gameplay tip presentation.
   - replace when: full front-end voice mixing, row-event timing, prompt-controller behavior, and segment-transition behavior are ported

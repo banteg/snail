@@ -39,6 +39,36 @@ pub const Definition = struct {
         }
         return null;
     }
+
+    pub fn routePointForRouteIndex(self: *const Definition, route_index: usize) ?Point {
+        const raw_slot = self.rawRoutePointSlotForRouteIndex(route_index) orelse return null;
+        return routePoint(raw_slot);
+    }
+
+    // PORT(verified): `sub_4088E0` does not assign route stars sequentially. Each galaxy
+    // owns a 10-point authored block, and the local route index samples that block with
+    // `floor(local_index * 10 / star_count)`.
+    pub fn rawRoutePointSlotForRouteIndex(self: *const Definition, route_index: usize) ?usize {
+        const galaxy_index = self.galaxyIndexForRouteIndex(route_index) orelse return null;
+        const star_count = self.starCountForGalaxyIndex(galaxy_index) orelse return null;
+        if (star_count == 0) return null;
+
+        const local_route_index = route_index - self.firstRouteIndexForGalaxyIndex(galaxy_index);
+        if (local_route_index >= star_count) return null;
+
+        const group_base = galaxy_index * 10;
+        const slot = group_base + @divFloor(local_route_index * 10, star_count);
+        if (slot >= raw_route_points.len) return null;
+        return slot;
+    }
+
+    fn firstRouteIndexForGalaxyIndex(self: *const Definition, galaxy_index: usize) usize {
+        var route_index: usize = 1;
+        for (self.star_counts[0..galaxy_index]) |star_count| {
+            route_index += star_count;
+        }
+        return route_index;
+    }
 };
 
 // PORT(verified): the Windows Star Map initializer at `sub_4088E0` scales these authored
@@ -211,4 +241,26 @@ test "parse galaxy names" {
     try std.testing.expectEqualStrings("Ferrissia rivularis", parsed.nameForRouteIndex(6).?);
     try std.testing.expectEqual(@as(usize, 5), parsed.starCountForGalaxyIndex(0).?);
     try std.testing.expectEqual(@as(usize, 5), parsed.starCountForGalaxyIndex(1).?);
+}
+
+test "route point slots sample each galaxy block by star count" {
+    const data =
+        \\Galaxy0:"Pomacea cuprina"
+        \\StarNumber=5
+        \\Galaxy1:"Ferrissia rivularis"
+        \\StarNumber=4
+    ;
+
+    var parsed = try parseText(std.testing.allocator, data);
+    defer parsed.deinit();
+
+    const first_galaxy_slots = [_]usize{ 0, 2, 4, 6, 8 };
+    for (first_galaxy_slots, 0..) |expected_slot, local_index| {
+        try std.testing.expectEqual(expected_slot, parsed.rawRoutePointSlotForRouteIndex(local_index + 1).?);
+    }
+
+    const second_galaxy_slots = [_]usize{ 10, 12, 15, 17 };
+    for (second_galaxy_slots, 0..) |expected_slot, local_index| {
+        try std.testing.expectEqual(expected_slot, parsed.rawRoutePointSlotForRouteIndex(6 + local_index).?);
+    }
 }

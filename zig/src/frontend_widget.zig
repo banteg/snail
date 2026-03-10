@@ -7,6 +7,7 @@ pub const WidgetType = enum(u8) {
     menu_button = 20,
     compact_score_row = 22,
     footer_button = 23,
+    route_map_secondary_action = 24,
 };
 
 pub const WidgetAlignment = enum(u8) {
@@ -131,6 +132,16 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .hot_padding = 7.0,
             .border_edge = compact_border_edge,
             .source_edge_fraction = 0.1,
+        },
+        .route_map_secondary_action => .{
+            // PORT(verified): `initialize_galaxy` / `open_galaxy_route` keep the replay action
+            // on the type-20 shell border, but override the text scale to `0.8` and idle pad
+            // to `8.0` for the "Watch Best Trial" button.
+            .text_scale = 0.8,
+            .idle_padding = 8.0,
+            .hot_padding = type20_hot_padding,
+            .border_edge = type20_border_edge,
+            .source_edge_fraction = type20_border_edge / 128.0,
         },
     };
 }
