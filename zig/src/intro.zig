@@ -108,15 +108,28 @@ pub const Loaded = struct {
     }
 };
 
+pub const LoadOptions = struct {
+    add_remake_credit: bool = true,
+};
+
 pub fn loadFromArchive(
     allocator: std.mem.Allocator,
     catalog: *const assets.Catalog,
     entry: archive.Entry,
 ) !Loaded {
+    return loadFromArchiveWithOptions(allocator, catalog, entry, .{});
+}
+
+pub fn loadFromArchiveWithOptions(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    entry: archive.Entry,
+    load_options: LoadOptions,
+) !Loaded {
     const decoded = try catalog.readEntryAlloc(allocator, entry);
     defer allocator.free(decoded);
 
-    var definition = try parseText(allocator, decoded, entry.path);
+    var definition = try parseTextWithOptions(allocator, decoded, entry.path, load_options);
     errdefer definition.deinit();
     return loadResolvedEntries(allocator, catalog, definition);
 }
@@ -126,14 +139,32 @@ pub fn loadByPath(
     catalog: *const assets.Catalog,
     path: []const u8,
 ) !Loaded {
+    return loadByPathWithOptions(allocator, catalog, path, .{});
+}
+
+pub fn loadByPathWithOptions(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    path: []const u8,
+    load_options: LoadOptions,
+) !Loaded {
     const entry = catalog.dat.entryByPath(path) orelse return error.EntryNotFound;
-    return loadFromArchive(allocator, catalog, entry);
+    return loadFromArchiveWithOptions(allocator, catalog, entry, load_options);
 }
 
 pub fn parseText(
     allocator: std.mem.Allocator,
     data: []const u8,
     source_path: []const u8,
+) !Definition {
+    return parseTextWithOptions(allocator, data, source_path, .{});
+}
+
+fn parseTextWithOptions(
+    allocator: std.mem.Allocator,
+    data: []const u8,
+    source_path: []const u8,
+    load_options: LoadOptions,
 ) !Definition {
     var arena = std.heap.ArenaAllocator.init(allocator);
     errdefer arena.deinit();
@@ -164,7 +195,7 @@ pub fn parseText(
     }
 
     const resolved_text_block = text_block orelse return error.MissingIntroText;
-    const entries = try parseEntries(arena_allocator, resolved_text_block, source_path);
+    const entries = try parseEntries(arena_allocator, resolved_text_block, source_path, load_options);
 
     return .{
         .arena = arena,
@@ -216,6 +247,7 @@ fn parseEntries(
     allocator: std.mem.Allocator,
     text_block: []const u8,
     source_path: []const u8,
+    load_options: LoadOptions,
 ) ![]Entry {
     var entries: std.ArrayList(Entry) = .empty;
     defer entries.deinit(allocator);
@@ -233,10 +265,9 @@ fn parseEntries(
         try entries.append(allocator, .{ .text = normalized_text });
     }
 
-    if (std.ascii.eqlIgnoreCase(source_path, "INTRO/CREDITS.TXT") and entries.items.len >= 1) {
+    if (load_options.add_remake_credit and std.ascii.eqlIgnoreCase(source_path, "INTRO/CREDITS.TXT") and entries.items.len >= 1) {
         try insertCreditsRemakeLines(allocator, &entries);
     }
-
     return try entries.toOwnedSlice(allocator);
 }
 
@@ -603,6 +634,39 @@ test "parse intro script body into ordered text entries" {
         .text => |text| try std.testing.expectEqualStrings("Programming", text),
         .image => return error.UnexpectedIntroEntry,
     }
+}
+
+test "credits remake lines are optional" {
+    const allocator = std.testing.allocator;
+    const script =
+        \\Duration: 12
+        \\Text Start:
+        \\Credits
+        \\
+        \\Programming
+        \\Text End:
+    ;
+
+    var with_remake = try parseTextWithOptions(allocator, script, "INTRO/CREDITS.TXT", .{});
+    defer with_remake.deinit();
+
+    try std.testing.expectEqual(@as(usize, 6), with_remake.entries.len);
+    try std.testing.expectEqualStrings("Credits", with_remake.entries[0].text);
+    try std.testing.expectEqualStrings("", with_remake.entries[1].text);
+    try std.testing.expectEqualStrings("2026 Remake", with_remake.entries[2].text);
+    try std.testing.expectEqualStrings("banteg", with_remake.entries[3].text);
+    try std.testing.expectEqualStrings("", with_remake.entries[4].text);
+    try std.testing.expectEqualStrings("Programming", with_remake.entries[5].text);
+
+    var vanilla = try parseTextWithOptions(allocator, script, "INTRO/CREDITS.TXT", .{
+        .add_remake_credit = false,
+    });
+    defer vanilla.deinit();
+
+    try std.testing.expectEqual(@as(usize, 3), vanilla.entries.len);
+    try std.testing.expectEqualStrings("Credits", vanilla.entries[0].text);
+    try std.testing.expectEqualStrings("", vanilla.entries[1].text);
+    try std.testing.expectEqualStrings("Programming", vanilla.entries[2].text);
 }
 
 test "parse intro image directive" {

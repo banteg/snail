@@ -573,6 +573,7 @@ const AppState = struct {
     ui_font: game_font.Loaded,
     runtime_root_path: []const u8,
     screenshot_dir: []const u8,
+    credits_with_remake: bool,
     runtime_config: config.Blob,
     runtime_config_loaded_from_file: bool,
     command: AppCommand,
@@ -696,6 +697,7 @@ const AppState = struct {
             .ui_font = ui_font,
             .runtime_root_path = options.runtime_root_path,
             .screenshot_dir = options.screenshot_dir,
+            .credits_with_remake = options.credits_with_remake,
             .runtime_config = runtime_config_result.blob,
             .runtime_config_loaded_from_file = runtime_config_result.loaded_from_file,
             .command = options.command,
@@ -811,13 +813,13 @@ const AppState = struct {
             return error.InvalidIntroBackgroundTexture;
         }
 
-        var loaded_intro_script = try intro.loadByPath(self.allocator, &self.catalog, intro_script_path);
+        var loaded_intro_script = try self.loadConfiguredTextScriptEntry(intro_script_path);
         defer loaded_intro_script.deinit(self.allocator);
         if (loaded_intro_script.entries.len == 0) {
             return error.EmptyIntroScript;
         }
 
-        var loaded_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+        var loaded_credits_script = try self.loadConfiguredTextScriptEntry(credits_script_path);
         defer loaded_credits_script.deinit(self.allocator);
         if (loaded_credits_script.entries.len == 0) {
             return error.EmptyCreditsScript;
@@ -858,11 +860,11 @@ const AppState = struct {
             },
             .load_intro_script => {
                 self.unloadPreloadedTextScript(&self.preloaded_intro_script);
-                self.preloaded_intro_script = try intro.loadByPath(self.allocator, &self.catalog, intro_script_path);
+                self.preloaded_intro_script = try self.loadConfiguredTextScriptEntry(intro_script_path);
             },
             .load_credits_script => {
                 self.unloadPreloadedTextScript(&self.preloaded_credits_script);
-                self.preloaded_credits_script = try intro.loadByPath(self.allocator, &self.catalog, credits_script_path);
+                self.preloaded_credits_script = try self.loadConfiguredTextScriptEntry(credits_script_path);
             },
             .load_intro_music => {
                 self.unloadPreloadedMusic(&self.preloaded_intro_music);
@@ -2473,7 +2475,19 @@ const AppState = struct {
         self.current_text_script = if (self.takePreloadedTextScript(path)) |loaded|
             loaded
         else
-            try intro.loadByPath(self.allocator, &self.catalog, path);
+            try self.loadConfiguredTextScriptEntry(path);
+    }
+
+    fn loadConfiguredTextScriptEntry(self: *AppState, path: []const u8) !intro.Loaded {
+        if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
+            return try intro.loadByPathWithOptions(
+                self.allocator,
+                &self.catalog,
+                path,
+                .{ .add_remake_credit = self.credits_with_remake },
+            );
+        }
+        return try intro.loadByPath(self.allocator, &self.catalog, path);
     }
 
     fn unloadTextScript(self: *AppState) void {
