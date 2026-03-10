@@ -119,7 +119,7 @@ pub const Player = struct {
     allocator: std.mem.Allocator,
     clip: *const Clip,
     keyframes: []KeyframeModel,
-    rendered: x2.LoadedModel,
+    rendered: x2.Uploaded,
     paused: bool = false,
     elapsed_seconds: f64 = 0.0,
     current_from_index: usize = 0,
@@ -151,13 +151,13 @@ pub const Player = struct {
         }
 
         for (keyframes[1..]) |*frame| {
-            if (!x2.topologyCompatible(&keyframes[0].parsed, &frame.parsed)) {
+            if (!x2.sameTopology(&keyframes[0].parsed, &frame.parsed)) {
                 return error.AnimationTopologyMismatch;
             }
         }
 
         const initial_entry = asset_catalog.model_entries[clip.frames[0].entry_index];
-        var rendered = try x2.LoadedModel.loadFromArchive(allocator, asset_catalog, initial_entry, flip_v);
+        var rendered = try x2.Uploaded.loadFromArchive(allocator, asset_catalog, initial_entry, flip_v);
         errdefer rendered.deinit();
 
         var player = Player{
@@ -284,7 +284,7 @@ const Sample = struct {
 
 const KeyframeModel = struct {
     frame_number: usize,
-    parsed: x2.ParsedModel,
+    parsed: x2.Document,
 
     fn load(allocator: std.mem.Allocator, asset_catalog: *const assets.Catalog, frame_ref: FrameRef) !KeyframeModel {
         const entry = asset_catalog.model_entries[frame_ref.entry_index];
@@ -293,7 +293,7 @@ const KeyframeModel = struct {
 
         return .{
             .frame_number = frame_ref.frame_number,
-            .parsed = try x2.parseModel(allocator, decoded),
+            .parsed = try x2.parse(allocator, decoded),
         };
     }
 

@@ -3,6 +3,20 @@ const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 
+// Custom text X2 loader for the small legacy mesh subset used by Snail Mail.
+//
+// The shipped corpus uses:
+//   Frame MeshMaterialList { ... Material ... }
+//   MeshTextureCoords { ... }
+//   Mesh <name> { ... }
+//
+// The loader keeps parsing and GPU upload separate:
+//   - parse(): text -> arena-backed Document
+//   - uploadParsed(): Document -> raylib meshes/materials
+//   - parseAndUpload(): convenience wrapper
+//
+// We validate against the shipped corpus instead of trying to support a larger superset.
+
 pub const Vec2 = struct {
     x: f32,
     y: f32,
@@ -12,45 +26,69 @@ pub const Vec3 = struct {
     x: f32,
     y: f32,
     z: f32,
+
+    fn lerp(a: Vec3, b: Vec3, t: f32) Vec3 {
+        const inv_t = 1.0 - t;
+        return .{
+            .x = a.x * inv_t + b.x * t,
+            .y = a.y * inv_t + b.y * t,
+            .z = a.z * inv_t + b.z * t,
+        };
+    }
 };
 
-pub const MaterialDef = struct {
+pub const MaterialInfo = struct {
     name: []const u8,
     texture_filename: ?[]const u8 = null,
-    archive_texture_path: ?[]const u8 = null,
 };
 
-pub const Face = struct {
+pub const Polygon = struct {
     indices: []const u16,
     material_index: usize = 0,
+
+    pub fn triangleCount(self: Polygon) usize {
+        return self.indices.len -| 2;
+    }
 };
 
-pub const ParsedModel = struct {
+pub const Document = struct {
     arena: std.heap.ArenaAllocator,
-    frame_name: []const u8,
-    mesh_name: []const u8,
-    materials: []const MaterialDef,
-    texcoords: []const Vec2,
-    vertices: []Vec3,
-    faces: []const Face,
-    total_triangle_count: usize,
+    frame_name: []const u8 = "",
+    mesh_name: []const u8 = "",
+    materials: []const MaterialInfo = &.{},
+    texcoords: []const Vec2 = &.{},
+    vertices: []Vec3 = &.{},
+    polygons: []const Polygon = &.{},
+    triangle_count: usize = 0,
 
-    pub fn deinit(self: *ParsedModel) void {
+    pub fn deinit(self: *Document) void {
         self.arena.deinit();
     }
 };
 
-pub const LoadedSubmesh = struct {
+pub const Bounds = struct {
+    min: rl.Vector3,
+    max: rl.Vector3,
+    center: rl.Vector3,
+    radius: f32,
+};
+
+pub const UploadOptions = struct {
+    flip_v: bool = true,
+};
+
+pub const UploadedSubmesh = struct {
     allocator: std.mem.Allocator,
     mesh: rl.Mesh,
     material: rl.Material,
-    texture: ?assets.LoadedTexture,
+    texture: ?assets.LoadedTexture = null,
+    material_slot: usize,
     material_name: []const u8,
-    archive_texture_path: ?[]const u8,
+    texture_filename: ?[]const u8,
     triangle_count: usize,
     source_indices: []u16,
 
-    pub fn unload(self: *LoadedSubmesh) void {
+    pub fn unload(self: *UploadedSubmesh) void {
         self.material.unload();
         if (self.texture) |*texture| {
             texture.unload();
@@ -59,160 +97,240 @@ pub const LoadedSubmesh = struct {
         self.mesh.unload();
         self.allocator.free(self.source_indices);
     }
+
+    fn rewriteGeometry(self: *UploadedSubmesh, vertices: []const Vec3) !void {
+        const vertex_count: usize = @intCast(self.mesh.vertexCount);
+        const positions = @as([*]f32, @ptrCast(self.mesh.vertices))[0 .. vertex_count * 3];
+        const normals = @as([*]f32, @ptrCast(self.mesh.normals))[0 .. vertex_count * 3];
+
+        var pos_at: usize = 0;
+        var normal_at: usize = 0;
+
+        for (0..self.source_indices.len / 3) |tri_index| {
+            const base = tri_index * 3;
+            const index0 = self.source_indices[base];
+            const index1 = self.source_indices[base + 1];
+            const index2 = self.source_indices[base + 2];
+
+            const p0 = try vertexAt(vertices, index0);
+            const p1 = try vertexAt(vertices, index1);
+            const p2 = try vertexAt(vertices, index2);
+            const n = faceNormal(p0, p1, p2);
+
+            writeVec3(positions, &pos_at, p0);
+            writeVec3(positions, &pos_at, p1);
+            writeVec3(positions, &pos_at, p2);
+
+            writeVec3(normals, &normal_at, n);
+            writeVec3(normals, &normal_at, n);
+            writeVec3(normals, &normal_at, n);
+        }
+
+        rl.updateMeshBuffer(
+            self.mesh,
+            0,
+            positions.ptr,
+            @intCast(positions.len * @sizeOf(f32)),
+            0,
+        );
+        rl.updateMeshBuffer(
+            self.mesh,
+            2,
+            normals.ptr,
+            @intCast(normals.len * @sizeOf(f32)),
+            0,
+        );
+    }
 };
 
-pub const LoadedModel = struct {
+pub const Uploaded = struct {
     allocator: std.mem.Allocator,
-    parsed: ParsedModel,
-    submeshes: []LoadedSubmesh,
-    bounds_min: rl.Vector3,
-    bounds_max: rl.Vector3,
-    center: rl.Vector3,
-    radius: f32,
+    doc: Document,
+    submeshes: []UploadedSubmesh,
+    bounds: Bounds,
 
-    pub fn loadFromArchive(
-        allocator: std.mem.Allocator,
-        catalog: *const assets.Catalog,
-        entry: archive.Entry,
-        flip_v: bool,
-    ) !LoadedModel {
-        const decoded = try catalog.readEntryAlloc(allocator, entry);
-        defer allocator.free(decoded);
-
-        var parsed = try parseModel(allocator, decoded);
-        errdefer parsed.deinit();
-
-        const submeshes = try buildSubmeshes(allocator, catalog, &parsed, flip_v);
-        errdefer {
-            for (submeshes) |*submesh| {
-                submesh.unload();
-            }
-            allocator.free(submeshes);
-        }
-
-        const bounds = computeBounds(parsed.vertices);
-
-        return .{
-            .allocator = allocator,
-            .parsed = parsed,
-            .submeshes = submeshes,
-            .bounds_min = bounds.min,
-            .bounds_max = bounds.max,
-            .center = bounds.center,
-            .radius = bounds.radius,
-        };
-    }
-
-    pub fn deinit(self: *LoadedModel) void {
-        for (self.submeshes) |*submesh| {
-            submesh.unload();
-        }
+    pub fn deinit(self: *Uploaded) void {
+        for (self.submeshes) |*submesh| submesh.unload();
         self.allocator.free(self.submeshes);
-        self.parsed.deinit();
+        self.doc.deinit();
     }
 
-    pub fn previewCamera(self: *const LoadedModel, time_seconds: f32) rl.Camera3D {
-        const distance = @max(self.radius * 3.0, 3.0);
+    pub fn draw(self: *const Uploaded) void {
+        self.drawEx(rl.Matrix.identity());
+    }
+
+    pub fn drawEx(self: *const Uploaded, transform: rl.Matrix) void {
+        for (self.submeshes) |submesh| {
+            rl.drawMesh(submesh.mesh, submesh.material, transform);
+        }
+    }
+
+    pub fn previewCamera(self: *const Uploaded, seconds: f32) rl.Camera3D {
+        const distance = @max(self.bounds.radius * 3.0, 3.0);
         return .{
             .position = .{
-                .x = self.center.x + std.math.cos(time_seconds * 0.45) * distance,
-                .y = self.center.y + distance * 0.5,
-                .z = self.center.z + std.math.sin(time_seconds * 0.45) * distance,
+                .x = self.bounds.center.x + std.math.cos(seconds * 0.45) * distance,
+                .y = self.bounds.center.y + distance * 0.5,
+                .z = self.bounds.center.z + std.math.sin(seconds * 0.45) * distance,
             },
-            .target = self.center,
+            .target = self.bounds.center,
             .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
             .fovy = 45.0,
             .projection = .perspective,
         };
     }
 
-    pub fn draw(self: *const LoadedModel) void {
-        for (self.submeshes) |submesh| {
-            rl.drawMesh(submesh.mesh, submesh.material, rl.Matrix.identity());
-        }
-    }
-
-    pub fn applyInterpolatedVertices(
-        self: *LoadedModel,
-        from: *const ParsedModel,
-        to: *const ParsedModel,
-        blend: f32,
+    pub fn applyBlend(
+        self: *Uploaded,
+        from: *const Document,
+        to: *const Document,
+        t: f32,
     ) !void {
-        if (!topologyCompatible(from, to)) {
-            return error.AnimationTopologyMismatch;
-        }
-        if (!topologyCompatible(from, &self.parsed)) {
-            return error.AnimationTopologyMismatch;
-        }
+        if (!sameTopology(from, to)) return error.AnimationTopologyMismatch;
+        if (!sameTopology(from, &self.doc)) return error.AnimationTopologyMismatch;
 
-        const one_minus_blend = 1.0 - blend;
-        for (self.parsed.vertices, 0..) |_, index| {
-            const from_vertex = from.vertices[index];
-            const to_vertex = to.vertices[index];
-            self.parsed.vertices[index] = .{
-                .x = from_vertex.x * one_minus_blend + to_vertex.x * blend,
-                .y = from_vertex.y * one_minus_blend + to_vertex.y * blend,
-                .z = from_vertex.z * one_minus_blend + to_vertex.z * blend,
-            };
+        for (self.doc.vertices, 0..) |_, i| {
+            self.doc.vertices[i] = Vec3.lerp(from.vertices[i], to.vertices[i], t);
         }
 
         for (self.submeshes) |*submesh| {
-            const vertex_count: usize = @intCast(submesh.mesh.vertexCount);
-            const vertices = @as([*]f32, @ptrCast(submesh.mesh.vertices))[0 .. vertex_count * 3];
-            const normals = @as([*]f32, @ptrCast(submesh.mesh.normals))[0 .. vertex_count * 3];
-
-            var vertex_cursor: usize = 0;
-            var normal_cursor: usize = 0;
-            for (0..submesh.source_indices.len / 3) |triangle_index| {
-                const base = triangle_index * 3;
-                const index0 = submesh.source_indices[base];
-                const index1 = submesh.source_indices[base + 1];
-                const index2 = submesh.source_indices[base + 2];
-
-                const p0 = self.parsed.vertices[index0];
-                const p1 = self.parsed.vertices[index1];
-                const p2 = self.parsed.vertices[index2];
-                const normal = computeNormal(p0, p1, p2);
-
-                writeVertex(vertices, &vertex_cursor, p0);
-                writeVertex(vertices, &vertex_cursor, p1);
-                writeVertex(vertices, &vertex_cursor, p2);
-
-                writeVertex(normals, &normal_cursor, normal);
-                writeVertex(normals, &normal_cursor, normal);
-                writeVertex(normals, &normal_cursor, normal);
-            }
-
-            rl.updateMeshBuffer(
-                submesh.mesh,
-                0,
-                vertices.ptr,
-                @intCast(vertices.len * @sizeOf(f32)),
-                0,
-            );
-            rl.updateMeshBuffer(
-                submesh.mesh,
-                2,
-                normals.ptr,
-                @intCast(normals.len * @sizeOf(f32)),
-                0,
-            );
+            try submesh.rewriteGeometry(self.doc.vertices);
         }
 
-        const bounds = computeBounds(self.parsed.vertices);
-        self.bounds_min = bounds.min;
-        self.bounds_max = bounds.max;
-        self.center = bounds.center;
-        self.radius = bounds.radius;
+        self.bounds = computeBounds(self.doc.vertices);
+    }
+
+    pub fn applyInterpolatedVertices(
+        self: *Uploaded,
+        from: *const Document,
+        to: *const Document,
+        t: f32,
+    ) !void {
+        return self.applyBlend(from, to, t);
+    }
+
+    pub fn loadFromArchive(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+        flip_v: bool,
+    ) !Uploaded {
+        return loadFromArchiveWithOptions(allocator, catalog, entry, .{ .flip_v = flip_v });
+    }
+
+    pub fn loadFromArchiveWithOptions(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+        options: UploadOptions,
+    ) !Uploaded {
+        const source = try catalog.readEntryAlloc(allocator, entry);
+        defer allocator.free(source);
+        return parseAndUploadWithCatalog(allocator, catalog, source, options);
     }
 };
 
-const Bounds = struct {
-    min: rl.Vector3,
-    max: rl.Vector3,
-    center: rl.Vector3,
-    radius: f32,
-};
+pub fn parse(allocator: std.mem.Allocator, source: []const u8) !Document {
+    var arena = std.heap.ArenaAllocator.init(allocator);
+    errdefer arena.deinit();
+
+    var parser = Parser{
+        .arena = arena.allocator(),
+        .lexer = .{ .input = source },
+    };
+
+    return parser.parse(arena);
+}
+
+pub fn uploadParsed(
+    allocator: std.mem.Allocator,
+    doc: Document,
+    options: UploadOptions,
+) !Uploaded {
+    const submeshes = try buildSubmeshes(allocator, null, &doc, options);
+    errdefer {
+        for (submeshes) |*submesh| submesh.unload();
+        allocator.free(submeshes);
+    }
+
+    return .{
+        .allocator = allocator,
+        .doc = doc,
+        .submeshes = submeshes,
+        .bounds = computeBounds(doc.vertices),
+    };
+}
+
+pub fn uploadParsedWithCatalog(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    doc: Document,
+    options: UploadOptions,
+) !Uploaded {
+    const submeshes = try buildSubmeshes(allocator, catalog, &doc, options);
+    errdefer {
+        for (submeshes) |*submesh| submesh.unload();
+        allocator.free(submeshes);
+    }
+
+    return .{
+        .allocator = allocator,
+        .doc = doc,
+        .submeshes = submeshes,
+        .bounds = computeBounds(doc.vertices),
+    };
+}
+
+pub fn parseAndUpload(
+    allocator: std.mem.Allocator,
+    source: []const u8,
+    options: UploadOptions,
+) !Uploaded {
+    var doc = try parse(allocator, source);
+    errdefer doc.deinit();
+    return uploadParsed(allocator, doc, options);
+}
+
+pub fn parseAndUploadWithCatalog(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    source: []const u8,
+    options: UploadOptions,
+) !Uploaded {
+    var doc = try parse(allocator, source);
+    errdefer doc.deinit();
+    return uploadParsedWithCatalog(allocator, catalog, doc, options);
+}
+
+pub fn sameTopology(a: *const Document, b: *const Document) bool {
+    if (a.vertices.len != b.vertices.len) return false;
+    if (a.texcoords.len != b.texcoords.len) return false;
+    if (a.polygons.len != b.polygons.len) return false;
+    if (a.materials.len != b.materials.len) return false;
+    if (a.triangle_count != b.triangle_count) return false;
+
+    for (a.texcoords, b.texcoords) |lhs, rhs| {
+        if (lhs.x != rhs.x or lhs.y != rhs.y) return false;
+    }
+
+    for (a.materials, b.materials) |lhs, rhs| {
+        if (!std.mem.eql(u8, lhs.name, rhs.name)) return false;
+        if ((lhs.texture_filename == null) != (rhs.texture_filename == null)) return false;
+        if (lhs.texture_filename) |lhs_tex| {
+            if (!std.mem.eql(u8, lhs_tex, rhs.texture_filename.?)) return false;
+        }
+    }
+
+    for (a.polygons, b.polygons) |lhs, rhs| {
+        if (lhs.material_index != rhs.material_index) return false;
+        if (lhs.indices.len != rhs.indices.len) return false;
+        for (lhs.indices, rhs.indices) |li, ri| {
+            if (li != ri) return false;
+        }
+    }
+
+    return true;
+}
 
 const TokenTag = enum {
     identifier,
@@ -233,11 +351,9 @@ const Lexer = struct {
     index: usize = 0,
 
     fn next(self: *Lexer) !Token {
-        self.skipIgnored();
+        self.skipTrivia();
 
-        if (self.index >= self.input.len) {
-            return .{ .tag = .eof };
-        }
+        if (self.index >= self.input.len) return .{ .tag = .eof };
 
         const start = self.index;
         const ch = self.input[self.index];
@@ -257,9 +373,7 @@ const Lexer = struct {
                     self.index += 1;
                 }
                 const string_end = self.index;
-                if (self.index < self.input.len) {
-                    self.index += 1;
-                }
+                if (self.index < self.input.len) self.index += 1;
                 return .{ .tag = .string, .lexeme = self.input[string_start..string_end] };
             },
             else => {},
@@ -285,7 +399,7 @@ const Lexer = struct {
         return self.next();
     }
 
-    fn skipIgnored(self: *Lexer) void {
+    fn skipTrivia(self: *Lexer) void {
         while (self.index < self.input.len) {
             const ch = self.input[self.index];
             switch (ch) {
@@ -298,9 +412,7 @@ const Lexer = struct {
                     const next_ch = self.input[self.index + 1];
                     if (next_ch == '/') {
                         self.index += 2;
-                        while (self.index < self.input.len and self.input[self.index] != '\n') {
-                            self.index += 1;
-                        }
+                        while (self.index < self.input.len and self.input[self.index] != '\n') self.index += 1;
                         continue;
                     }
                     if (next_ch == '*') {
@@ -324,230 +436,170 @@ const Lexer = struct {
 };
 
 const Parser = struct {
-    allocator: std.mem.Allocator,
+    arena: std.mem.Allocator,
     lexer: Lexer,
-    current: Token = .{ .tag = .eof },
+    tok: Token = .{ .tag = .eof },
 
-    fn parseDocument(self: *Parser) !ParsedModel {
-        var arena = std.heap.ArenaAllocator.init(self.allocator);
-        errdefer arena.deinit();
-        const arena_allocator = arena.allocator();
+    const ParseScratch = struct {
+        frame_name: []const u8 = "",
+        mesh_name: []const u8 = "",
+        materials: []MaterialInfo = &.{},
+        face_materials: []u16 = &.{},
+        texcoords: []Vec2 = &.{},
+        vertices: []Vec3 = &.{},
+        polygons: []Polygon = &.{},
+        triangle_count: usize = 0,
+    };
 
-        var materials_list: std.ArrayList(MaterialDef) = .empty;
-        var faces_list: std.ArrayList(Face) = .empty;
-        errdefer {
-            materials_list.deinit(arena_allocator);
-            faces_list.deinit(arena_allocator);
-        }
+    fn parse(self: *Parser, arena_owner: std.heap.ArenaAllocator) !Document {
+        var materials_buf: std.ArrayList(MaterialInfo) = .empty;
+        var polygons_buf: std.ArrayList(Polygon) = .empty;
+        errdefer materials_buf.deinit(self.arena);
+        errdefer polygons_buf.deinit(self.arena);
 
-        var frame_name: []const u8 = "";
-        var mesh_name: []const u8 = "";
-        var face_material_indices: []u16 = &.{};
-        var texcoords: []Vec2 = &.{};
-        var vertices: []Vec3 = &.{};
-        var total_triangle_count: usize = 0;
+        var scratch: ParseScratch = .{};
 
         try self.advance();
-        while (self.current.tag != .eof) {
-            if (self.current.tag != .identifier) {
-                try self.advance();
+        while (self.tok.tag != .eof) {
+            if (self.at("Frame") and scratch.materials.len == 0) {
+                try self.parseFrame(&materials_buf, &scratch);
                 continue;
             }
-
-            if (std.mem.eql(u8, self.current.lexeme, "Frame") and frame_name.len == 0) {
-                frame_name = try self.parseFrameMaterialList(arena_allocator, &materials_list, &face_material_indices);
+            if (self.at("MeshTextureCoords") and scratch.texcoords.len == 0) {
+                scratch.texcoords = try self.parseTexcoords();
                 continue;
             }
-
-            if (std.mem.eql(u8, self.current.lexeme, "MeshTextureCoords") and texcoords.len == 0) {
-                texcoords = try self.parseMeshTextureCoords(arena_allocator);
+            if (self.at("Mesh") and scratch.vertices.len == 0) {
+                try self.parseMesh(&polygons_buf, &scratch);
                 continue;
             }
-
-            if (std.mem.eql(u8, self.current.lexeme, "Mesh") and mesh_name.len == 0) {
-                const mesh = try self.parseMesh(arena_allocator, &faces_list);
-                mesh_name = mesh.name;
-                vertices = mesh.vertices;
-                total_triangle_count = mesh.total_triangle_count;
-                continue;
-            }
-
-            try self.advance();
+            try self.skipUnknown();
         }
 
-        if (materials_list.items.len == 0) {
-            return error.MissingMaterialList;
-        }
-        if (vertices.len == 0) {
-            return error.MissingMeshVertices;
-        }
-        if (texcoords.len != 0 and texcoords.len != vertices.len) {
-            return error.InvalidTextureCoordinateCount;
-        }
-        if (face_material_indices.len != 0 and face_material_indices.len != faces_list.items.len) {
-            return error.InvalidMaterialIndexCount;
-        }
+        if (scratch.materials.len == 0) return error.MissingMaterialList;
+        if (scratch.vertices.len == 0) return error.MissingMesh;
+        if (scratch.texcoords.len != scratch.vertices.len) return error.InvalidTextureCoordinateCount;
+        if (scratch.face_materials.len != scratch.polygons.len) return error.InvalidMaterialIndexCount;
 
-        const materials = try materials_list.toOwnedSlice(arena_allocator);
-        const faces = try faces_list.toOwnedSlice(arena_allocator);
-
-        for (materials) |*material| {
-            material.archive_texture_path = try resolveTextureArchivePath(arena_allocator, material.texture_filename);
-        }
-
-        for (faces, 0..) |*face, face_index| {
-            const material_index = if (face_material_indices.len > 0) face_material_indices[face_index] else 0;
-            if (material_index >= materials.len) {
-                face.material_index = 0;
-            } else {
-                face.material_index = material_index;
-            }
+        for (scratch.polygons, 0..) |*poly, i| {
+            const material_index: usize = scratch.face_materials[i];
+            if (material_index >= scratch.materials.len) return error.InvalidMaterialIndex;
+            poly.material_index = material_index;
         }
 
         return .{
-            .arena = arena,
-            .frame_name = frame_name,
-            .mesh_name = mesh_name,
-            .materials = materials,
-            .texcoords = texcoords,
-            .vertices = vertices,
-            .faces = faces,
-            .total_triangle_count = total_triangle_count,
+            .arena = arena_owner,
+            .frame_name = scratch.frame_name,
+            .mesh_name = scratch.mesh_name,
+            .materials = scratch.materials,
+            .texcoords = scratch.texcoords,
+            .vertices = scratch.vertices,
+            .polygons = scratch.polygons,
+            .triangle_count = scratch.triangle_count,
         };
     }
 
-    fn parseFrameMaterialList(
+    fn parseFrame(
         self: *Parser,
-        allocator: std.mem.Allocator,
-        materials_list: *std.ArrayList(MaterialDef),
-        face_material_indices: *[]u16,
-    ) ![]const u8 {
-        try self.advance();
-
-        var frame_name: []const u8 = "";
-        if (self.current.tag == .identifier) {
-            frame_name = try allocator.dupe(u8, self.current.lexeme);
-            try self.advance();
-        }
-
+        materials_buf: *std.ArrayList(MaterialInfo),
+        scratch: *ParseScratch,
+    ) !void {
+        _ = try self.expectIdentifier("Frame");
+        scratch.frame_name = try self.takeOptionalName();
         try self.expectTag(.lbrace);
 
         const material_count = try self.expectUnsigned();
         const face_material_count = try self.expectUnsigned();
-        const indices = try allocator.alloc(u16, face_material_count);
-        for (indices) |*index| {
-            index.* = @intCast(try self.expectUnsigned());
-        }
-        face_material_indices.* = indices;
+        const face_materials = try self.arena.alloc(u16, face_material_count);
+        for (face_materials) |*slot| slot.* = try self.expectIndex();
+        scratch.face_materials = face_materials;
 
-        while (self.current.tag != .eof and self.current.tag != .rbrace) {
-            if (self.current.tag == .identifier and std.mem.eql(u8, self.current.lexeme, "Material")) {
-                try materials_list.append(allocator, try self.parseMaterial(allocator));
+        while (self.tok.tag != .eof and self.tok.tag != .rbrace) {
+            if (self.at("Material")) {
+                try materials_buf.append(self.arena, try self.parseMaterial());
                 continue;
             }
-            try self.advance();
+            try self.skipUnknown();
         }
 
-        if (self.current.tag == .rbrace) {
-            try self.advance();
-        }
+        try self.expectTag(.rbrace);
 
-        if (materials_list.items.len != material_count) {
-            return error.InvalidMaterialCount;
-        }
-
-        return frame_name;
+        if (materials_buf.items.len != material_count) return error.InvalidMaterialCount;
+        scratch.materials = try materials_buf.toOwnedSlice(self.arena);
     }
 
-    fn parseMaterial(self: *Parser, allocator: std.mem.Allocator) !MaterialDef {
-        try self.advance();
+    fn parseMaterial(self: *Parser) !MaterialInfo {
+        _ = try self.expectIdentifier("Material");
 
-        var material = MaterialDef{
-            .name = "",
+        var material = MaterialInfo{
+            .name = try self.takeOptionalName(),
             .texture_filename = null,
         };
-        if (self.current.tag == .identifier) {
-            material.name = try allocator.dupe(u8, self.current.lexeme);
-            try self.advance();
-        }
 
         try self.expectTag(.lbrace);
-
-        while (self.current.tag != .eof and self.current.tag != .rbrace) {
-            if (self.current.tag == .identifier and std.mem.eql(u8, self.current.lexeme, "TextureFilename")) {
-                material.texture_filename = try self.parseTextureFilename(allocator);
+        while (self.tok.tag != .eof and self.tok.tag != .rbrace) {
+            if (self.at("TextureFilename") and material.texture_filename == null) {
+                material.texture_filename = try self.parseTextureFilename();
                 continue;
             }
-            try self.advance();
+            try self.skipUnknown();
         }
-
-        if (self.current.tag == .rbrace) {
-            try self.advance();
-        }
+        try self.expectTag(.rbrace);
 
         return material;
     }
 
-    fn parseTextureFilename(self: *Parser, allocator: std.mem.Allocator) !?[]const u8 {
-        try self.advance();
+    fn parseTextureFilename(self: *Parser) !?[]const u8 {
+        _ = try self.expectIdentifier("TextureFilename");
         try self.expectTag(.lbrace);
 
         var filename: ?[]const u8 = null;
-        while (self.current.tag != .eof and self.current.tag != .rbrace) {
-            if (self.current.tag == .string and filename == null) {
-                filename = try allocator.dupe(u8, self.current.lexeme);
-            }
+        if (self.tok.tag == .string) {
+            filename = try self.arena.dupe(u8, self.tok.lexeme);
             try self.advance();
         }
 
-        if (self.current.tag == .rbrace) {
-            try self.advance();
+        while (self.tok.tag != .eof and self.tok.tag != .rbrace) {
+            try self.skipUnknown();
         }
-
+        if (self.tok.tag == .rbrace) {
+            try self.expectTag(.rbrace);
+        }
         return filename;
     }
 
-    fn parseMeshTextureCoords(self: *Parser, allocator: std.mem.Allocator) ![]Vec2 {
-        try self.advance();
+    fn parseTexcoords(self: *Parser) ![]Vec2 {
+        _ = try self.expectIdentifier("MeshTextureCoords");
         try self.expectTag(.lbrace);
 
-        const texture_coord_count = try self.expectUnsigned();
-        const texcoords = try allocator.alloc(Vec2, texture_coord_count);
-        for (texcoords) |*coord| {
-            coord.* = .{
+        const count = try self.expectUnsigned();
+        const texcoords = try self.arena.alloc(Vec2, count);
+        for (texcoords) |*uv| {
+            uv.* = .{
                 .x = try self.expectFloat(),
                 .y = try self.expectFloat(),
             };
         }
 
-        if (self.current.tag == .rbrace) {
-            try self.advance();
+        while (self.tok.tag != .eof and self.tok.tag != .rbrace) {
+            try self.skipUnknown();
         }
+        try self.expectTag(.rbrace);
 
         return texcoords;
     }
 
     fn parseMesh(
         self: *Parser,
-        allocator: std.mem.Allocator,
-        faces_list: *std.ArrayList(Face),
-    ) !struct {
-        name: []const u8,
-        vertices: []Vec3,
-        total_triangle_count: usize,
-    } {
-        try self.advance();
-
-        var mesh_name: []const u8 = "";
-        if (self.current.tag == .identifier) {
-            mesh_name = try allocator.dupe(u8, self.current.lexeme);
-            try self.advance();
-        }
-
+        polygons_buf: *std.ArrayList(Polygon),
+        scratch: *ParseScratch,
+    ) !void {
+        _ = try self.expectIdentifier("Mesh");
+        scratch.mesh_name = try self.takeOptionalName();
         try self.expectTag(.lbrace);
 
         const vertex_count = try self.expectUnsigned();
-        const vertices = try allocator.alloc(Vec3, vertex_count);
+        const vertices = try self.arena.alloc(Vec3, vertex_count);
         for (vertices) |*vertex| {
             vertex.* = .{
                 .x = try self.expectFloat(),
@@ -555,50 +607,67 @@ const Parser = struct {
                 .z = try self.expectFloat(),
             };
         }
+        scratch.vertices = vertices;
 
-        const face_count = try self.expectUnsigned();
-        var total_triangle_count: usize = 0;
-        for (0..face_count) |_| {
+        const polygon_count = try self.expectUnsigned();
+        var triangle_count: usize = 0;
+        for (0..polygon_count) |_| {
             const index_count = try self.expectUnsigned();
-            if (index_count < 3) {
-                return error.UnsupportedFace;
-            }
-            const indices = try allocator.alloc(u16, index_count);
-            for (indices) |*index| {
-                index.* = @intCast(try self.expectUnsigned());
-            }
-            total_triangle_count += index_count - 2;
-            try faces_list.append(allocator, .{ .indices = indices });
-        }
+            if (index_count < 3) return error.UnsupportedPolygon;
 
-        if (self.current.tag == .rbrace) {
-            try self.advance();
-        }
+            const indices = try self.arena.alloc(u16, index_count);
+            for (indices) |*index| index.* = try self.expectIndex();
+            triangle_count += index_count - 2;
 
-        return .{
-            .name = mesh_name,
-            .vertices = vertices,
-            .total_triangle_count = total_triangle_count,
-        };
+            try polygons_buf.append(self.arena, .{
+                .indices = indices,
+            });
+        }
+        scratch.polygons = try polygons_buf.toOwnedSlice(self.arena);
+        scratch.triangle_count = triangle_count;
+
+        while (self.tok.tag != .eof and self.tok.tag != .rbrace) {
+            try self.skipUnknown();
+        }
+        if (self.tok.tag == .rbrace) {
+            try self.expectTag(.rbrace);
+        }
     }
 
     fn advance(self: *Parser) !void {
-        self.current = try self.lexer.next();
+        self.tok = try self.lexer.next();
+    }
+
+    fn at(self: *const Parser, text: []const u8) bool {
+        return self.tok.tag == .identifier and std.mem.eql(u8, self.tok.lexeme, text);
     }
 
     fn expectTag(self: *Parser, tag: TokenTag) !void {
-        if (self.current.tag != tag) {
-            return error.UnexpectedToken;
-        }
+        if (self.tok.tag != tag) return error.UnexpectedToken;
         try self.advance();
     }
 
-    fn expectNumber(self: *Parser) ![]const u8 {
-        if (self.current.tag != .number) {
-            return error.ExpectedNumber;
-        }
+    fn expectIdentifier(self: *Parser, expected: []const u8) ![]const u8 {
+        if (self.tok.tag != .identifier) return error.ExpectedIdentifier;
+        if (!std.mem.eql(u8, self.tok.lexeme, expected)) return error.UnexpectedIdentifier;
 
-        const lexeme = self.current.lexeme;
+        const lexeme = self.tok.lexeme;
+        try self.advance();
+        return lexeme;
+    }
+
+    fn takeOptionalName(self: *Parser) ![]const u8 {
+        if (self.tok.tag != .identifier) return "";
+
+        const out = try self.arena.dupe(u8, self.tok.lexeme);
+        try self.advance();
+        return out;
+    }
+
+    fn expectNumber(self: *Parser) ![]const u8 {
+        if (self.tok.tag != .number) return error.ExpectedNumber;
+
+        const lexeme = self.tok.lexeme;
         try self.advance();
         return lexeme;
     }
@@ -608,93 +677,84 @@ const Parser = struct {
         return std.fmt.parseUnsigned(usize, lexeme, 10);
     }
 
+    fn expectIndex(self: *Parser) !u16 {
+        const value = try self.expectUnsigned();
+        return std.math.cast(u16, value) orelse error.IndexOverflow;
+    }
+
     fn expectFloat(self: *Parser) !f32 {
         const lexeme = try self.expectNumber();
         return std.fmt.parseFloat(f32, lexeme);
     }
+
+    fn skipUnknown(self: *Parser) !void {
+        if (self.tok.tag != .identifier) {
+            try self.advance();
+            return;
+        }
+
+        try self.advance();
+        if (self.tok.tag == .identifier) try self.advance();
+        if (self.tok.tag != .lbrace) return;
+
+        var depth: usize = 1;
+        while (depth > 0) {
+            try self.advance();
+            switch (self.tok.tag) {
+                .lbrace => depth += 1,
+                .rbrace => depth -= 1,
+                .eof => return error.UnexpectedEof,
+                else => {},
+            }
+        }
+        try self.advance();
+    }
 };
-
-pub fn parseModel(allocator: std.mem.Allocator, data: []const u8) !ParsedModel {
-    var parser = Parser{
-        .allocator = allocator,
-        .lexer = .{ .input = data },
-    };
-    return parser.parseDocument();
-}
-
-pub fn topologyCompatible(a: *const ParsedModel, b: *const ParsedModel) bool {
-    if (a.vertices.len != b.vertices.len) return false;
-    if (a.texcoords.len != b.texcoords.len) return false;
-    if (a.faces.len != b.faces.len) return false;
-    if (a.materials.len != b.materials.len) return false;
-    if (a.total_triangle_count != b.total_triangle_count) return false;
-
-    for (a.texcoords, b.texcoords) |lhs, rhs| {
-        if (lhs.x != rhs.x or lhs.y != rhs.y) return false;
-    }
-
-    for (a.materials, b.materials) |lhs, rhs| {
-        if (!std.mem.eql(u8, lhs.name, rhs.name)) return false;
-        if ((lhs.archive_texture_path == null) != (rhs.archive_texture_path == null)) return false;
-        if (lhs.archive_texture_path) |lhs_path| {
-            if (!std.mem.eql(u8, lhs_path, rhs.archive_texture_path.?)) return false;
-        }
-    }
-
-    for (a.faces, b.faces) |lhs, rhs| {
-        if (lhs.material_index != rhs.material_index) return false;
-        if (lhs.indices.len != rhs.indices.len) return false;
-        for (lhs.indices, rhs.indices) |lhs_index, rhs_index| {
-            if (lhs_index != rhs_index) return false;
-        }
-    }
-
-    return true;
-}
 
 fn buildSubmeshes(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
-    parsed: *const ParsedModel,
-    flip_v: bool,
-) ![]LoadedSubmesh {
-    const material_slot_count = @max(parsed.materials.len, 1);
-    const triangles_per_material = try allocator.alloc(usize, material_slot_count);
-    defer allocator.free(triangles_per_material);
-    @memset(triangles_per_material, 0);
+    catalog: ?*const assets.Catalog,
+    doc: *const Document,
+    options: UploadOptions,
+) ![]UploadedSubmesh {
+    const material_slots = @max(doc.materials.len, 1);
+    const triangles_per_slot = try allocator.alloc(usize, material_slots);
+    defer allocator.free(triangles_per_slot);
+    @memset(triangles_per_slot, 0);
 
-    for (parsed.faces) |face| {
-        const material_index = if (face.material_index < material_slot_count) face.material_index else 0;
-        triangles_per_material[material_index] += face.indices.len - 2;
+    for (doc.polygons) |poly| {
+        const slot = if (poly.material_index < material_slots) poly.material_index else 0;
+        triangles_per_slot[slot] += poly.triangleCount();
     }
 
-    var submeshes: std.ArrayList(LoadedSubmesh) = .empty;
-    defer submeshes.deinit(allocator);
+    var out: std.ArrayList(UploadedSubmesh) = .empty;
+    defer out.deinit(allocator);
 
-    for (triangles_per_material, 0..) |triangle_count, material_index| {
+    for (triangles_per_slot, 0..) |triangle_count, slot| {
         if (triangle_count == 0) continue;
-        const submesh = try buildSubmesh(allocator, catalog, parsed, material_index, triangle_count, flip_v);
+        const submesh = try buildSubmesh(allocator, catalog, doc, slot, triangle_count, options);
         errdefer {
             var doomed = submesh;
             doomed.unload();
         }
-        try submeshes.append(allocator, submesh);
+        try out.append(allocator, submesh);
     }
 
-    return submeshes.toOwnedSlice(allocator);
+    return out.toOwnedSlice(allocator);
 }
 
 fn buildSubmesh(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
-    parsed: *const ParsedModel,
-    material_index: usize,
+    catalog: ?*const assets.Catalog,
+    doc: *const Document,
+    slot: usize,
     triangle_count: usize,
-    flip_v: bool,
-) !LoadedSubmesh {
+    options: UploadOptions,
+) !UploadedSubmesh {
     const vertex_count = triangle_count * 3;
-    const vertices = try rl.mem.alloc(f32, vertex_count * 3);
-    errdefer rl.mem.free(vertices);
+
+    const positions = try rl.mem.alloc(f32, vertex_count * 3);
+    errdefer rl.mem.free(positions);
 
     const texcoords = try rl.mem.alloc(f32, vertex_count * 2);
     errdefer rl.mem.free(texcoords);
@@ -705,61 +765,32 @@ fn buildSubmesh(
     const source_indices = try allocator.alloc(u16, vertex_count);
     errdefer allocator.free(source_indices);
 
-    @memset(vertices, 0);
+    @memset(positions, 0);
     @memset(texcoords, 0);
     @memset(normals, 0);
     @memset(source_indices, 0);
 
-    var vertex_cursor: usize = 0;
-    var texcoord_cursor: usize = 0;
-    var normal_cursor: usize = 0;
-    var source_cursor: usize = 0;
+    var writer = MeshWriter{
+        .positions = positions,
+        .texcoords = texcoords,
+        .normals = normals,
+        .source_indices = source_indices,
+        .vertices = doc.vertices,
+        .uvs = doc.texcoords,
+        .flip_v = options.flip_v,
+    };
 
-    for (parsed.faces) |face| {
-        if (face.material_index != material_index) continue;
-        if (face.indices.len < 3) continue;
-
-        for (1..face.indices.len - 1) |fan_index| {
-            const index0 = face.indices[0];
-            const index1 = face.indices[fan_index];
-            const index2 = face.indices[fan_index + 1];
-
-            if (index0 >= parsed.vertices.len or index1 >= parsed.vertices.len or index2 >= parsed.vertices.len) {
-                return error.InvalidVertexIndex;
-            }
-
-            const p0 = parsed.vertices[index0];
-            const p1 = parsed.vertices[index1];
-            const p2 = parsed.vertices[index2];
-            const normal = computeNormal(p0, p1, p2);
-
-            const uv0 = transformTexcoord(texcoordForIndex(parsed, index0), flip_v);
-            const uv1 = transformTexcoord(texcoordForIndex(parsed, index1), flip_v);
-            const uv2 = transformTexcoord(texcoordForIndex(parsed, index2), flip_v);
-
-            writeVertex(vertices, &vertex_cursor, p0);
-            writeVertex(vertices, &vertex_cursor, p1);
-            writeVertex(vertices, &vertex_cursor, p2);
-
-            source_indices[source_cursor] = index0;
-            source_indices[source_cursor + 1] = index1;
-            source_indices[source_cursor + 2] = index2;
-            source_cursor += 3;
-
-            writeTexcoord(texcoords, &texcoord_cursor, uv0);
-            writeTexcoord(texcoords, &texcoord_cursor, uv1);
-            writeTexcoord(texcoords, &texcoord_cursor, uv2);
-
-            writeVertex(normals, &normal_cursor, normal);
-            writeVertex(normals, &normal_cursor, normal);
-            writeVertex(normals, &normal_cursor, normal);
+    for (doc.polygons) |poly| {
+        if (poly.material_index != slot or poly.indices.len < 3) continue;
+        for (1..poly.indices.len - 1) |fan| {
+            try writer.push(poly.indices[0], poly.indices[fan], poly.indices[fan + 1]);
         }
     }
 
     var mesh = std.mem.zeroes(rl.Mesh);
     mesh.vertexCount = @intCast(vertex_count);
     mesh.triangleCount = @intCast(triangle_count);
-    mesh.vertices = @ptrCast(vertices.ptr);
+    mesh.vertices = @ptrCast(positions.ptr);
     mesh.texcoords = @ptrCast(texcoords.ptr);
     mesh.normals = @ptrCast(normals.ptr);
     rl.uploadMesh(&mesh, true);
@@ -768,10 +799,14 @@ fn buildSubmesh(
     errdefer material.unload();
 
     var texture: ?assets.LoadedTexture = null;
-    if (parsed.materials.len > material_index) {
-        if (parsed.materials[material_index].archive_texture_path) |texture_path| {
-            if (catalog.dat.entryByPath(texture_path)) |entry| {
-                const loaded_texture = try catalog.loadTexture(allocator, entry);
+    const texture_filename = if (slot < doc.materials.len) doc.materials[slot].texture_filename else null;
+    if (catalog) |asset_catalog| {
+        if (texture_filename) |filename| {
+            const texture_path = try archiveTexturePath(allocator, filename);
+            defer allocator.free(texture_path);
+
+            if (asset_catalog.findTextureEntry(texture_path)) |texture_entry| {
+                const loaded_texture = try asset_catalog.loadTexture(allocator, texture_entry);
                 rl.setMaterialTexture(&material, .albedo, loaded_texture.texture);
                 texture = loaded_texture;
             }
@@ -783,68 +818,104 @@ fn buildSubmesh(
         .mesh = mesh,
         .material = material,
         .texture = texture,
-        .material_name = if (parsed.materials.len > material_index) parsed.materials[material_index].name else "default",
-        .archive_texture_path = if (parsed.materials.len > material_index) parsed.materials[material_index].archive_texture_path else null,
+        .material_slot = slot,
+        .material_name = if (slot < doc.materials.len) doc.materials[slot].name else "default",
+        .texture_filename = texture_filename,
         .triangle_count = triangle_count,
         .source_indices = source_indices,
     };
 }
 
-fn texcoordForIndex(parsed: *const ParsedModel, index: usize) Vec2 {
-    if (index < parsed.texcoords.len) {
-        return parsed.texcoords[index];
+const MeshWriter = struct {
+    positions: []f32,
+    texcoords: []f32,
+    normals: []f32,
+    source_indices: []u16,
+    vertices: []const Vec3,
+    uvs: []const Vec2,
+    flip_v: bool,
+    pos_at: usize = 0,
+    uv_at: usize = 0,
+    normal_at: usize = 0,
+    src_at: usize = 0,
+
+    fn push(self: *MeshWriter, index0: u16, index1: u16, index2: u16) !void {
+        const p0 = try vertexAt(self.vertices, index0);
+        const p1 = try vertexAt(self.vertices, index1);
+        const p2 = try vertexAt(self.vertices, index2);
+        const n = faceNormal(p0, p1, p2);
+
+        const uv0 = transformUv(try texcoordAt(self.uvs, index0), self.flip_v);
+        const uv1 = transformUv(try texcoordAt(self.uvs, index1), self.flip_v);
+        const uv2 = transformUv(try texcoordAt(self.uvs, index2), self.flip_v);
+
+        writeVec3(self.positions, &self.pos_at, p0);
+        writeVec3(self.positions, &self.pos_at, p1);
+        writeVec3(self.positions, &self.pos_at, p2);
+
+        self.source_indices[self.src_at] = index0;
+        self.source_indices[self.src_at + 1] = index1;
+        self.source_indices[self.src_at + 2] = index2;
+        self.src_at += 3;
+
+        writeVec2(self.texcoords, &self.uv_at, uv0);
+        writeVec2(self.texcoords, &self.uv_at, uv1);
+        writeVec2(self.texcoords, &self.uv_at, uv2);
+
+        writeVec3(self.normals, &self.normal_at, n);
+        writeVec3(self.normals, &self.normal_at, n);
+        writeVec3(self.normals, &self.normal_at, n);
     }
-    return .{ .x = 0.0, .y = 0.0 };
+};
+
+fn vertexAt(vertices: []const Vec3, index: u16) !Vec3 {
+    const i: usize = index;
+    if (i >= vertices.len) return error.InvalidVertexIndex;
+    return vertices[i];
 }
 
-fn transformTexcoord(coord: Vec2, flip_v: bool) Vec2 {
-    if (!flip_v) return coord;
-    return .{
-        .x = coord.x,
-        .y = 1.0 - coord.y,
-    };
+fn texcoordAt(uvs: []const Vec2, index: u16) !Vec2 {
+    const i: usize = index;
+    if (i >= uvs.len) return error.InvalidTextureCoordinateIndex;
+    return uvs[i];
 }
 
-fn writeVertex(buffer: []f32, cursor: *usize, vertex: Vec3) void {
-    buffer[cursor.*] = vertex.x;
-    buffer[cursor.* + 1] = vertex.y;
-    buffer[cursor.* + 2] = vertex.z;
-    cursor.* += 3;
+fn transformUv(uv: Vec2, flip_v: bool) Vec2 {
+    if (!flip_v) return uv;
+    return .{ .x = uv.x, .y = 1.0 - uv.y };
 }
 
-fn writeTexcoord(buffer: []f32, cursor: *usize, coord: Vec2) void {
-    buffer[cursor.*] = coord.x;
-    buffer[cursor.* + 1] = coord.y;
-    cursor.* += 2;
-}
-
-fn computeNormal(a: Vec3, b: Vec3, c: Vec3) Vec3 {
-    const ab = Vec3{
-        .x = b.x - a.x,
-        .y = b.y - a.y,
-        .z = b.z - a.z,
-    };
-    const ac = Vec3{
-        .x = c.x - a.x,
-        .y = c.y - a.y,
-        .z = c.z - a.z,
-    };
+fn faceNormal(a: Vec3, b: Vec3, c: Vec3) Vec3 {
+    const ab = Vec3{ .x = b.x - a.x, .y = b.y - a.y, .z = b.z - a.z };
+    const ac = Vec3{ .x = c.x - a.x, .y = c.y - a.y, .z = c.z - a.z };
 
     const cross = Vec3{
         .x = ab.y * ac.z - ab.z * ac.y,
         .y = ab.z * ac.x - ab.x * ac.z,
         .z = ab.x * ac.y - ab.y * ac.x,
     };
-    const length = std.math.sqrt(cross.x * cross.x + cross.y * cross.y + cross.z * cross.z);
-    if (length <= 0.0001) {
-        return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    }
+
+    const len = std.math.sqrt(cross.x * cross.x + cross.y * cross.y + cross.z * cross.z);
+    if (len <= 0.0001) return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
 
     return .{
-        .x = cross.x / length,
-        .y = cross.y / length,
-        .z = cross.z / length,
+        .x = cross.x / len,
+        .y = cross.y / len,
+        .z = cross.z / len,
     };
+}
+
+fn writeVec3(buffer: []f32, at: *usize, v: Vec3) void {
+    buffer[at.*] = v.x;
+    buffer[at.* + 1] = v.y;
+    buffer[at.* + 2] = v.z;
+    at.* += 3;
+}
+
+fn writeVec2(buffer: []f32, at: *usize, v: Vec2) void {
+    buffer[at.*] = v.x;
+    buffer[at.* + 1] = v.y;
+    at.* += 2;
 }
 
 fn computeBounds(vertices: []const Vec3) Bounds {
@@ -857,20 +928,16 @@ fn computeBounds(vertices: []const Vec3) Bounds {
         };
     }
 
-    var min = rl.Vector3{
-        .x = vertices[0].x,
-        .y = vertices[0].y,
-        .z = vertices[0].z,
-    };
+    var min = rl.Vector3{ .x = vertices[0].x, .y = vertices[0].y, .z = vertices[0].z };
     var max = min;
 
-    for (vertices[1..]) |vertex| {
-        min.x = @min(min.x, vertex.x);
-        min.y = @min(min.y, vertex.y);
-        min.z = @min(min.z, vertex.z);
-        max.x = @max(max.x, vertex.x);
-        max.y = @max(max.y, vertex.y);
-        max.z = @max(max.z, vertex.z);
+    for (vertices[1..]) |v| {
+        min.x = @min(min.x, v.x);
+        min.y = @min(min.y, v.y);
+        min.z = @min(min.z, v.z);
+        max.x = @max(max.x, v.x);
+        max.y = @max(max.y, v.y);
+        max.z = @max(max.z, v.z);
     }
 
     const center = rl.Vector3{
@@ -880,10 +947,10 @@ fn computeBounds(vertices: []const Vec3) Bounds {
     };
 
     var radius: f32 = 0.5;
-    for (vertices) |vertex| {
-        const dx = vertex.x - center.x;
-        const dy = vertex.y - center.y;
-        const dz = vertex.z - center.z;
+    for (vertices) |v| {
+        const dx = v.x - center.x;
+        const dy = v.y - center.y;
+        const dz = v.z - center.z;
         radius = @max(radius, std.math.sqrt(dx * dx + dy * dy + dz * dz));
     }
 
@@ -895,16 +962,15 @@ fn computeBounds(vertices: []const Vec3) Bounds {
     };
 }
 
-fn resolveTextureArchivePath(allocator: std.mem.Allocator, texture_filename: ?[]const u8) !?[]const u8 {
-    const filename = texture_filename orelse return null;
-    const dot_index = std.mem.indexOfScalar(u8, filename, '.') orelse filename.len;
+fn archiveTexturePath(allocator: std.mem.Allocator, texture_filename: []const u8) ![]u8 {
+    const dot_index = std.mem.indexOfScalar(u8, texture_filename, '.') orelse texture_filename.len;
 
     var path: std.ArrayList(u8) = .empty;
     defer path.deinit(allocator);
     try path.appendSlice(allocator, "X/");
-    try path.appendSlice(allocator, filename[0..dot_index]);
+    try path.appendSlice(allocator, texture_filename[0..dot_index]);
     try path.appendSlice(allocator, ".tga");
-    return @as([]const u8, try path.toOwnedSlice(allocator));
+    return path.toOwnedSlice(allocator);
 }
 
 fn isIdentifierStart(ch: u8) bool {
@@ -923,43 +989,104 @@ fn isNumberContinue(ch: u8) bool {
     return std.ascii.isDigit(ch) or ch == '-' or ch == '+' or ch == '.' or ch == 'e' or ch == 'E';
 }
 
+test "parse minimal x2 snippet" {
+    const source =
+        \\Frame MeshMaterialList {
+        \\  1; 1;
+        \\  0;
+        \\  Material mSnail {
+        \\    1.0;1.0;1.0;1.0;;
+        \\    1.0;
+        \\    1.0;1.0;1.0;;
+        \\    0.0;0.0;0.0;;
+        \\    TextureFilename { "snail.tga"; }
+        \\  }
+        \\}
+        \\MeshTextureCoords {
+        \\  3;
+        \\  0.0;0.0;,
+        \\  1.0;0.0;,
+        \\  0.0;1.0;;
+        \\}
+        \\Mesh pSnailShape {
+        \\  3;
+        \\  0;0;0;,
+        \\  1;0;0;,
+        \\  0;1;0;;
+        \\  1;
+        \\  3;0,1,2;;
+        \\}
+    ;
+
+    var doc = try parse(std.testing.allocator, source);
+    defer doc.deinit();
+
+    try std.testing.expectEqualStrings("MeshMaterialList", doc.frame_name);
+    try std.testing.expectEqualStrings("pSnailShape", doc.mesh_name);
+    try std.testing.expectEqual(@as(usize, 1), doc.materials.len);
+    try std.testing.expectEqual(@as(usize, 3), doc.vertices.len);
+    try std.testing.expectEqual(@as(usize, 3), doc.texcoords.len);
+    try std.testing.expectEqual(@as(usize, 1), doc.polygons.len);
+    try std.testing.expectEqual(@as(usize, 1), doc.triangle_count);
+    try std.testing.expectEqualStrings("mSnail", doc.materials[0].name);
+    try std.testing.expectEqualStrings("snail.tga", doc.materials[0].texture_filename.?);
+}
+
+test "topology matches across same mesh with different positions" {
+    const source_a =
+        \\Frame MeshMaterialList { 1; 1; 0; Material m { TextureFilename { "a.tga"; } } }
+        \\MeshTextureCoords { 3; 0;0;, 1;0;, 0;1;; }
+        \\Mesh shape { 3; 0;0;0;, 1;0;0;, 0;1;0;; 1; 3;0,1,2;; }
+    ;
+    const source_b =
+        \\Frame MeshMaterialList { 1; 1; 0; Material m { TextureFilename { "a.tga"; } } }
+        \\MeshTextureCoords { 3; 0;0;, 1;0;, 0;1;; }
+        \\Mesh shape { 3; 0;0;1;, 1;0;1;, 0;1;1;; 1; 3;0,1,2;; }
+    ;
+
+    var a = try parse(std.testing.allocator, source_a);
+    defer a.deinit();
+    var b = try parse(std.testing.allocator, source_b);
+    defer b.deinit();
+
+    try std.testing.expect(sameTopology(&a, &b));
+}
+
 test "parse signstop model" {
     const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/SIGNSTOP.X2", 1 << 20);
     defer std.testing.allocator.free(data);
 
-    var model = try parseModel(std.testing.allocator, data);
-    defer model.deinit();
+    var doc = try parse(std.testing.allocator, data);
+    defer doc.deinit();
 
-    try std.testing.expectEqualStrings("MeshMaterialList", model.frame_name);
-    try std.testing.expectEqualStrings("pStopShape", model.mesh_name);
-    try std.testing.expectEqual(@as(usize, 1), model.materials.len);
-    try std.testing.expectEqual(@as(usize, 4), model.vertices.len);
-    try std.testing.expectEqual(@as(usize, 4), model.texcoords.len);
-    try std.testing.expectEqual(@as(usize, 1), model.faces.len);
-    try std.testing.expectEqual(@as(usize, 2), model.total_triangle_count);
-    try std.testing.expectEqualStrings("mStopSG", model.materials[0].name);
-    try std.testing.expectEqualStrings("signStop.tga", model.materials[0].texture_filename.?);
-    try std.testing.expectEqualStrings("X/signStop.tga", model.materials[0].archive_texture_path.?);
-    try std.testing.expectEqual(@as(usize, 4), model.faces[0].indices.len);
+    try std.testing.expectEqualStrings("MeshMaterialList", doc.frame_name);
+    try std.testing.expectEqualStrings("pStopShape", doc.mesh_name);
+    try std.testing.expectEqual(@as(usize, 1), doc.materials.len);
+    try std.testing.expectEqual(@as(usize, 4), doc.vertices.len);
+    try std.testing.expectEqual(@as(usize, 4), doc.texcoords.len);
+    try std.testing.expectEqual(@as(usize, 1), doc.polygons.len);
+    try std.testing.expectEqual(@as(usize, 2), doc.triangle_count);
+    try std.testing.expectEqualStrings("mStopSG", doc.materials[0].name);
+    try std.testing.expectEqualStrings("signStop.tga", doc.materials[0].texture_filename.?);
+    try std.testing.expectEqual(@as(usize, 4), doc.polygons[0].indices.len);
 }
 
 test "parse pillar model" {
     const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/PILLAR2.X2", 1 << 20);
     defer std.testing.allocator.free(data);
 
-    var model = try parseModel(std.testing.allocator, data);
-    defer model.deinit();
+    var doc = try parse(std.testing.allocator, data);
+    defer doc.deinit();
 
-    try std.testing.expectEqualStrings("polySurfaceShape2", model.mesh_name);
-    try std.testing.expectEqual(@as(usize, 2), model.materials.len);
-    try std.testing.expectEqual(@as(usize, 39), model.vertices.len);
-    try std.testing.expectEqual(@as(usize, 39), model.texcoords.len);
-    try std.testing.expectEqual(@as(usize, 32), model.faces.len);
-    try std.testing.expectEqual(@as(usize, 40), model.total_triangle_count);
-    try std.testing.expectEqualStrings("pillar.tga", model.materials[0].texture_filename.?);
-    try std.testing.expectEqualStrings("X/pillar.tga", model.materials[0].archive_texture_path.?);
-    try std.testing.expectEqual(@as(usize, 4), model.faces[0].indices.len);
-    try std.testing.expectEqual(@as(usize, 3), model.faces[31].indices.len);
+    try std.testing.expectEqualStrings("polySurfaceShape2", doc.mesh_name);
+    try std.testing.expectEqual(@as(usize, 2), doc.materials.len);
+    try std.testing.expectEqual(@as(usize, 39), doc.vertices.len);
+    try std.testing.expectEqual(@as(usize, 39), doc.texcoords.len);
+    try std.testing.expectEqual(@as(usize, 32), doc.polygons.len);
+    try std.testing.expectEqual(@as(usize, 40), doc.triangle_count);
+    try std.testing.expectEqualStrings("pillar.tga", doc.materials[0].texture_filename.?);
+    try std.testing.expectEqual(@as(usize, 4), doc.polygons[0].indices.len);
+    try std.testing.expectEqual(@as(usize, 3), doc.polygons[31].indices.len);
 }
 
 test "animation topology matches across turbo bobalong frames" {
@@ -968,37 +1095,59 @@ test "animation topology matches across turbo bobalong frames" {
     const second = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-001.X2", 1 << 20);
     defer std.testing.allocator.free(second);
 
-    var model_a = try parseModel(std.testing.allocator, first);
-    defer model_a.deinit();
-    var model_b = try parseModel(std.testing.allocator, second);
-    defer model_b.deinit();
+    var doc_a = try parse(std.testing.allocator, first);
+    defer doc_a.deinit();
+    var doc_b = try parse(std.testing.allocator, second);
+    defer doc_b.deinit();
 
-    try std.testing.expect(topologyCompatible(&model_a, &model_b));
+    try std.testing.expect(sameTopology(&doc_a, &doc_b));
 }
 
 test "parse shipped x2 corpus" {
-    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/X", .{ .iterate = true });
-    defer dir.close();
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
 
-    var iterator = dir.iterate();
     var parsed_count: usize = 0;
-    while (try iterator.next()) |entry| {
-        if (entry.kind != .file) continue;
-        if (!std.ascii.endsWithIgnoreCase(entry.name, ".X2")) continue;
-
-        var path_buffer: [512]u8 = undefined;
-        const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/X/{s}", .{entry.name});
-        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 24);
+    for (catalog.model_entries) |entry| {
+        const data = try catalog.readEntryAlloc(std.testing.allocator, entry);
         defer std.testing.allocator.free(data);
 
-        var model = try parseModel(std.testing.allocator, data);
-        defer model.deinit();
+        var doc = try parse(std.testing.allocator, data);
+        defer doc.deinit();
 
-        try std.testing.expect(model.materials.len > 0);
-        try std.testing.expect(model.vertices.len > 0);
-        try std.testing.expect(model.faces.len > 0);
+        try std.testing.expect(doc.materials.len > 0);
+        try std.testing.expect(doc.vertices.len > 0);
+        try std.testing.expect(doc.polygons.len > 0);
+        try std.testing.expectEqual(doc.vertices.len, doc.texcoords.len);
         parsed_count += 1;
     }
 
     try std.testing.expectEqual(@as(usize, 124), parsed_count);
+}
+
+test "only hotspot pseudo-textures are unresolved in shipped x2 corpus" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    var unresolved_count: usize = 0;
+    for (catalog.model_entries) |entry| {
+        const data = try catalog.readEntryAlloc(std.testing.allocator, entry);
+        defer std.testing.allocator.free(data);
+
+        var doc = try parse(std.testing.allocator, data);
+        defer doc.deinit();
+
+        for (doc.materials) |material| {
+            const texture_filename = material.texture_filename orelse continue;
+            const texture_path = try archiveTexturePath(std.testing.allocator, texture_filename);
+            defer std.testing.allocator.free(texture_path);
+
+            if (catalog.findTextureEntry(texture_path) == null) {
+                unresolved_count += 1;
+                try std.testing.expectEqualStrings("X/TURBOHOTSPOTS.X2", entry.path);
+            }
+        }
+    }
+
+    try std.testing.expectEqual(@as(usize, 19), unresolved_count);
 }

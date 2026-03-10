@@ -873,7 +873,7 @@ const AppState = struct {
     options_music_display_value: f32 = 0.0,
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
-    current_model: ?x2.LoadedModel = null,
+    current_model: ?x2.Uploaded = null,
     current_animation: ?xanim.Player = null,
     current_object: ?object.LoadedObject = null,
     current_level: ?level.Definition = null,
@@ -920,8 +920,8 @@ const AppState = struct {
         errdefer slider_art.unload();
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
         errdefer route_map_art.unload();
-        var galaxy_names = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
-        errdefer galaxy_names.deinit();
+        var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
+        errdefer if (galaxy_names) |*names| names.deinit();
 
         const texture_index = catalog.findTextureIndex(default_texture_path) orelse 0;
         const audio_index = catalog.findAudioIndex(default_audio_path) orelse 0;
@@ -964,6 +964,7 @@ const AppState = struct {
             .galaxy_names = galaxy_names,
         };
         errdefer state.deinit();
+        galaxy_names = null;
         state.applyAudioConfigVolumes();
 
         switch (options.command) {
@@ -3572,7 +3573,7 @@ const AppState = struct {
             }
         }
 
-        self.current_model = try x2.LoadedModel.loadFromArchive(
+        self.current_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
@@ -3647,7 +3648,7 @@ const AppState = struct {
         self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
     }
 
-    fn activeModel(self: *const AppState) ?*const x2.LoadedModel {
+    fn activeModel(self: *const AppState) ?*const x2.Uploaded {
         if (self.current_animation) |*animation| {
             return &animation.rendered;
         }
@@ -5888,7 +5889,7 @@ fn drawAudioPanel(state: *const AppState) !void {
 fn drawModelPanel(state: *const AppState) !void {
     const entry = state.catalog.model_entries[state.model_index];
     const model = state.activeModel() orelse return;
-    const parsed = &model.parsed;
+    const parsed = &model.doc;
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
@@ -5899,8 +5900,8 @@ fn drawModelPanel(state: *const AppState) !void {
             state.catalog.model_entries.len,
             model.submeshes.len,
             parsed.vertices.len,
-            parsed.faces.len,
-            parsed.total_triangle_count,
+            parsed.polygons.len,
+            parsed.triangle_count,
         },
     );
     drawAppText(state, summary_text, 32, 194, 24, .ray_white);
@@ -5926,11 +5927,11 @@ fn drawModelPanel(state: *const AppState) !void {
     drawAppText(state, "RWG loader notes", 56, 332, 26, .ray_white);
 
     var mesh_buffer: [384]u8 = undefined;
-    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.center.x, model.center.y, model.center.z });
+    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.bounds.center.x, model.bounds.center.y, model.bounds.center.z });
     drawAppText(state, mesh_text, 56, 378, 20, .light_gray);
 
     var material_buffer: [384]u8 = undefined;
-    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.radius});
+    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.bounds.radius});
     drawAppText(state, material_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
@@ -5938,7 +5939,7 @@ fn drawModelPanel(state: *const AppState) !void {
         &texture_buffer,
         "First texture: {s}",
         .{if (model.submeshes.len > 0)
-            (if (model.submeshes[0].texture) |texture| texture.path else model.submeshes[0].archive_texture_path orelse "<none>")
+            (if (model.submeshes[0].texture) |texture| texture.path else model.submeshes[0].texture_filename orelse "<none>")
         else
             "<none>"},
     );
@@ -5987,8 +5988,8 @@ fn drawModelViewport(state: *const AppState) void {
     camera.begin();
     defer rl.endMode3D();
 
-    const grid_slices: i32 = @intFromFloat(@min(@max(model.radius * 6.0, 10.0), 80.0));
-    const grid_spacing = @max(model.radius / 2.0, 0.5);
+    const grid_slices: i32 = @intFromFloat(@min(@max(model.bounds.radius * 6.0, 10.0), 80.0));
+    const grid_spacing = @max(model.bounds.radius / 2.0, 0.5);
     rl.drawGrid(grid_slices, grid_spacing);
     model.draw();
 }

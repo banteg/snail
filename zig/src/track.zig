@@ -8,7 +8,7 @@ const x2 = @import("x2.zig");
 
 const LoadedModelAsset = struct {
     path: []const u8,
-    loaded: x2.LoadedModel,
+    loaded: x2.Uploaded,
 
     fn deinit(self: *LoadedModelAsset, allocator: std.mem.Allocator) void {
         self.loaded.deinit();
@@ -244,7 +244,7 @@ pub const LoadedLevelPreview = struct {
                         continue;
                     };
 
-                    const loaded_model = try x2.LoadedModel.loadFromArchive(allocator, catalog, model_entry, true);
+                    const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
                     try model_assets_list.append(allocator, .{
                         .path = archive_model_path,
                         .loaded = loaded_model,
@@ -515,13 +515,11 @@ pub const LoadedLevelPreview = struct {
             const asset = &self.model_assets[instance.asset_index].loaded;
 
             const transform = rl.Matrix.translate(
-                position.x - asset.center.x,
-                position.y - asset.bounds_min.y,
-                position.z - asset.center.z,
+                position.x - asset.bounds.center.x,
+                position.y - asset.bounds.min.y,
+                position.z - asset.bounds.center.z,
             );
-            for (asset.submeshes) |submesh| {
-                rl.drawMesh(submesh.mesh, submesh.material, transform);
-            }
+            asset.drawEx(transform);
         }
     }
 };
