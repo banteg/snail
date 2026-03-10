@@ -115,8 +115,8 @@ Current high-signal entries:
 - jetpack pickup and authored-off state: `partial`
   - evidence: shipped jetpack pickup runtime tile `0x19`, authored `JetPack=Off` segment annotations, and Android `cRSubGoldy::JetPackCollect()` plus the collision branch that enters `cRSubHover::On()`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
-  - note: Windows now clearly shows a separate jetpack gauge or auto-shutoff controller at player `+0x2750` through `initialize_jetpack_gauge` and `update_jetpack_gauge`. The current port still only models pickup or off state, not the countdown, near-empty warning, or runtime-cell `0x80` auto-shutoff behavior.
-  - replace when: the original hover movement, fall interaction, jetpack countdown or warning flow, and full `cRSubHover` behavior are ported instead of only the persistent on/off state
+  - note: Windows now clearly shows a separate jetpack gauge or auto-shutoff controller at player `+0x2750` through `initialize_jetpack_gauge` and `update_jetpack_gauge`. The current port now mirrors the `1/600` countdown, the `0.94` near-empty warning band, the route-end auto-shutoff, and a partial gameplay HUD gauge. It still does not port the runtime-cell `0x80` forced-warning branch, the original wobble offsets, lift or fall suppression, or the surrounding `cRSubHover` behavior.
+  - replace when: the original hover movement, fall interaction, runtime-cell forced-warning branch, exact sprite-driven jetpack presentation, and full `cRSubHover` behavior are ported instead of only the timer/warning/shutoff slice
 - debug asset browser and smoke path: `debug`
   - implementation: [`main.zig`](../../zig/src/main.zig)
 

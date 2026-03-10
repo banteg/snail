@@ -206,6 +206,32 @@ pub const DamageWarningState = enum {
     }
 };
 
+pub const JetpackWarningBand = enum {
+    idle,
+    steady,
+    near_empty,
+
+    pub fn label(self: JetpackWarningBand) []const u8 {
+        return switch (self) {
+            .idle => "idle",
+            .steady => "steady",
+            .near_empty => "near_empty",
+        };
+    }
+};
+
+pub const JetpackGauge = struct {
+    active: bool = false,
+    progress: f32 = 0.0,
+    pulse_envelope: f32 = 0.0,
+    warning_band: JetpackWarningBand = .idle,
+
+    pub fn fuelRemaining(self: JetpackGauge) f32 {
+        if (!self.active) return 0.0;
+        return std.math.clamp(1.0 - self.progress, 0.0, 1.0);
+    }
+};
+
 // PORT(partial): Windows now confirms the contact-damage controller is the separate
 // player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
 // not the jetpack gauge at +0x2750. A separate +0.02 damage path from another pool
@@ -216,6 +242,10 @@ const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
 const damage_warning_fill_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
+const jetpack_gauge_tick_step: f32 = 0.0016666667;
+const jetpack_warning_threshold: f32 = 0.94;
+const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
+const jetpack_warning_phase_scale: f32 = 16.666668;
 const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const maximum_visible_life_stock: u32 = 9;
@@ -261,7 +291,7 @@ pub const Runner = struct {
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
     attachment_ticks: u64 = 0,
-    jetpack_active: bool = false,
+    jetpack: JetpackGauge = .{},
     path_center_lane: ?f32 = null,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
     recent_event: RecentEvent = .none,
@@ -335,6 +365,7 @@ pub const Runner = struct {
 
         if (!self.paused and self.phase == .active) {
             self.processVisitedRows(preview);
+            self.updateJetpackGauge(preview);
             self.updateDamageWarning();
         } else if (!self.paused) {
             self.updatePhaseController(preview);
@@ -386,6 +417,14 @@ pub const Runner = struct {
 
     pub fn damageWarningLabel(self: *const Runner) []const u8 {
         return self.damage_warning_state.label();
+    }
+
+    pub fn jetpackWarningLabel(self: *const Runner) []const u8 {
+        return self.jetpack.warning_band.label();
+    }
+
+    pub fn jetpackFuelRemaining(self: *const Runner) f32 {
+        return self.jetpack.fuelRemaining();
     }
 
     pub fn phaseLabel(self: *const Runner) []const u8 {
@@ -628,7 +667,7 @@ pub const Runner = struct {
                 },
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
-                    self.jetpack_active = false;
+                    self.disarmJetpackGauge();
                     self.recent_event = .jetpack_off;
                 },
                 .no_fall => {
@@ -667,9 +706,7 @@ pub const Runner = struct {
             },
             .jetpack => {
                 self.counters.jetpack_pickups += 1;
-                // PORT(partial): the runner currently only tracks the pickup/off state.
-                // The original hover movement and the surrounding cRSubHover behavior are still unported.
-                self.jetpack_active = true;
+                self.armJetpackGauge();
                 self.recent_event = .jetpack_pickup;
             },
             .garbage => {
@@ -770,6 +807,47 @@ pub const Runner = struct {
                 self.applyDamageGaugeDelta(damage_warning_drain_delta);
             },
         }
+    }
+
+    // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
+    // timer/warning/shutoff controller from the contact-damage gauge. The runner mirrors
+    // the 1/600 countdown, the 0.94 near-empty band, and the route-end auto-shutoff, but
+    // it still omits the original wobble offsets, lift/fall suppression, and runtime-cell
+    // flag 0x80 forced-warning path because the current preview does not expose those flags.
+    fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (!self.jetpack.active) return;
+
+        self.jetpack.progress += jetpack_gauge_tick_step;
+        if (self.jetpack.progress > 1.0 or self.rowPositionNearRouteEnd(preview)) {
+            self.disarmJetpackGauge();
+            return;
+        }
+
+        if (self.jetpack.progress <= jetpack_warning_threshold) {
+            self.jetpack.warning_band = .steady;
+            self.jetpack.pulse_envelope = 1.0;
+            return;
+        }
+
+        const warning_phase = std.math.clamp(
+            (1.0 - self.jetpack.progress) * jetpack_warning_phase_scale,
+            0.0,
+            1.0,
+        );
+        self.jetpack.warning_band = .near_empty;
+        self.jetpack.pulse_envelope = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
+    }
+
+    fn armJetpackGauge(self: *Runner) void {
+        self.jetpack = .{
+            .active = true,
+            .warning_band = .steady,
+            .pulse_envelope = 1.0,
+        };
+    }
+
+    fn disarmJetpackGauge(self: *Runner) void {
+        self.jetpack = .{};
     }
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
@@ -875,6 +953,12 @@ pub const Runner = struct {
         self.visible_life_stock = visible_life_stock;
         self.tick_count = tick_count;
         self.stopwatch = stopwatch;
+    }
+
+    fn rowPositionNearRouteEnd(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        if (preview.total_rows == 0) return false;
+        const route_end_row = @as(f32, @floatFromInt(preview.total_rows - 1));
+        return self.row_position > route_end_row - jetpack_auto_shutoff_margin_rows;
     }
 };
 
@@ -1275,15 +1359,38 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack);
     runner.step(&jetpack_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_pickups);
-    try std.testing.expect(runner.jetpack_active);
+    try std.testing.expect(runner.jetpack.active);
+    try std.testing.expect(runner.jetpackFuelRemaining() > 0.99);
+    try std.testing.expectEqual(JetpackWarningBand.steady, runner.jetpack.warning_band);
     try std.testing.expectEqualStrings("jetpack_pickup", runner.recentEventLabel());
 
     const jetpack_off = findFirstAnnotationTag(&jetpack_fixture.preview, .jetpack_off).?;
     primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack_off);
     runner.step(&jetpack_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_off_rows);
-    try std.testing.expect(!runner.jetpack_active);
+    try std.testing.expect(!runner.jetpack.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpackFuelRemaining(), 0.0001);
     try std.testing.expectEqualStrings("jetpack_off", runner.recentEventLabel());
+}
+
+test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.armJetpackGauge();
+    runner.jetpack.progress = 0.94;
+    runner.updateJetpackGauge(&fixture.preview);
+    try std.testing.expectEqual(JetpackWarningBand.near_empty, runner.jetpack.warning_band);
+    try std.testing.expect(runner.jetpack.pulse_envelope > 0.0);
+
+    runner.armJetpackGauge();
+    runner.runtime_track_index = fixture.preview.total_rows - 3;
+    runner.movement_progress = 0.0;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.updateJetpackGauge(&fixture.preview);
+    try std.testing.expect(!runner.jetpack.active);
 }
 
 test "runner records trampoline rows from shipped levels" {

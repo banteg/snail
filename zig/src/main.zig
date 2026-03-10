@@ -4618,7 +4618,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         var runner_buffer: [384]u8 = undefined;
         const runner_text = try std.fmt.bufPrintZ(
             &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {s}  phase {s}",
+            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {d:.2} {s}  phase {s}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
@@ -4631,7 +4631,8 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 runner.damage_gauge,
                 runner.damageWarningLabel(),
                 runner.visible_life_stock,
-                if (runner.jetpack_active) "on" else "off",
+                runner.jetpackFuelRemaining(),
+                runner.jetpackWarningLabel(),
                 runner.phaseLabel(),
             },
         );
@@ -4658,10 +4659,55 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+    drawJetpackGaugeWidget(state, layout, runner);
     drawDamageGaugeWidget(state, layout, runner);
     if (runner.session_mode == .postal) {
         drawVisibleLifeStrip(state, layout, runner.visible_life_stock);
     }
+}
+
+fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+    if (!runner.jetpack.active) return;
+
+    const panel = layout.mapRect(548.0, 108.0, 28.0, 224.0);
+    const fill_margin = layout.scaleFloat(4.0);
+    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
+    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
+    const fill_ratio = runner.jetpackFuelRemaining();
+    const active_fill_height = fill_height * fill_ratio;
+    const pulse = if (runner.jetpack.warning_band == .near_empty) runner.jetpack.pulse_envelope else @as(f32, 0.0);
+    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
+    const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
+    const fill_color = jetpackGaugeColor(runner.jetpack.warning_band, pulse);
+
+    drawAppText(state, "Jet", @intFromFloat(panel.x + layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+
+    const inner = rl.Rectangle{
+        .x = panel.x + fill_margin,
+        .y = panel.y + fill_margin,
+        .width = fill_width,
+        .height = fill_height,
+    };
+    rl.drawRectangleRounded(inner, 0.12, 6, .{ .r = 255, .g = 255, .b = 255, .a = 20 });
+
+    if (active_fill_height > 0.0) {
+        const fill_rect = rl.Rectangle{
+            .x = inner.x,
+            .y = inner.y + (fill_height - active_fill_height),
+            .width = fill_width,
+            .height = active_fill_height,
+        };
+        rl.drawRectangleRounded(fill_rect, 0.12, 6, fill_color);
+    }
+
+    rl.drawRectangleRoundedLinesEx(
+        panel,
+        0.18,
+        8,
+        layout.scaleFloat(2.0),
+        .{ .r = 255, .g = 255, .b = 255, .a = outline_alpha },
+    );
 }
 
 fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
@@ -4761,6 +4807,19 @@ fn damageGaugeColor(fill_ratio: f32, warning_state: gameplay.DamageWarningState,
         return .{ .r = 244, .g = 170, .b = 64, .a = 216 };
     }
     return .{ .r = 94, .g = 204, .b = 122, .a = 208 };
+}
+
+fn jetpackGaugeColor(warning_band: gameplay.JetpackWarningBand, pulse: f32) rl.Color {
+    return switch (warning_band) {
+        .idle => .{ .r = 94, .g = 204, .b = 122, .a = 0 },
+        .steady => .{ .r = 90, .g = 172, .b = 255, .a = 224 },
+        .near_empty => .{
+            .r = 255,
+            .g = @intFromFloat(164.0 + 72.0 * pulse),
+            .b = 84,
+            .a = 232,
+        },
+    };
 }
 
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
