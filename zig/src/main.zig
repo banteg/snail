@@ -77,6 +77,8 @@ const new_game_menu_items = frontend.new_game_menu_items;
 const FrontendLevelMode = frontend.FrontendLevelMode;
 const OptionsMenuItem = frontend.OptionsMenuItem;
 const options_menu_items = frontend.options_menu_items;
+const PauseMenuItem = frontend.PauseMenuItem;
+const pause_menu_items = frontend.pause_menu_items;
 const RouteMenuAction = frontend.RouteMenuAction;
 const frontendRouteModeLabel = frontend.frontendRouteModeLabel;
 const routeMenuActionLabel = frontend.routeMenuActionLabel;
@@ -317,6 +319,11 @@ const high_score_screen_modes = [_]high_score.Mode{
     .challenge,
 };
 
+const ExitPromptMode = enum {
+    quit_app,
+    abandon_run,
+};
+
 const ExitPromptChoice = enum {
     no,
     yes,
@@ -431,6 +438,12 @@ const route_map_button_count = 3;
 const route_map_primary_button_index: usize = 0;
 const route_map_replay_button_index: usize = 1;
 const route_map_back_button_index: usize = 2;
+// PORT(verified): `cRSubPause::Init()` creates the centered pause stack with `End Game`
+// at `y = 145`, then chains `Options` and `Resume` below it with the shared shell-font
+// widget stack helper.
+const pause_menu_start_y: f32 = 145.0;
+const pause_menu_center_offset_x: f32 = 0.0;
+const pause_menu_button_count = pause_menu_items.len;
 const exit_prompt_button_count = 2;
 // PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
 // row pitch `27`, and footer row `111 + 10*27 = 381`.
@@ -438,6 +451,13 @@ const high_score_title_y: f32 = 64.0;
 const high_score_row_start_y: f32 = 111.0;
 const high_score_row_pitch: f32 = 27.0;
 const high_score_footer_y: f32 = 381.0;
+const high_score_rank_marker_x: f32 = -228.0;
+const high_score_rank_number_x: f32 = -222.0;
+const high_score_name_x: f32 = -180.0;
+const high_score_postal_score_x: f32 = 160.0;
+const high_score_postal_replay_x: f32 = 125.0;
+const high_score_challenge_score_x: f32 = 125.0;
+const high_score_challenge_replay_x: f32 = 170.0;
 const high_score_entry_cancel_x: f32 = -110.0;
 const high_score_entry_submit_x: f32 = 55.0;
 const high_score_back_x: f32 = -132.0;
@@ -468,6 +488,9 @@ const FrontendHoverTarget = enum(u8) {
     options_sound_volume,
     options_music_volume,
     options_back,
+    pause_menu_end_game,
+    pause_menu_options,
+    pause_menu_resume,
     route_map_play,
     route_map_watch_best_trial,
     route_map_back,
@@ -484,6 +507,7 @@ const FrontendQueuedAction = union(enum) {
     main_menu: MainMenuItem,
     new_game_menu: NewGameMenuItem,
     options_menu: OptionsMenuItem,
+    pause_menu: PauseMenuItem,
     help_menu: HelpMenuAction,
     high_scores_menu: HighScoreMenuAction,
     post_level_high_scores: PostLevelHighScoreAction,
@@ -530,6 +554,15 @@ fn hoverTargetForOptions(index: usize) FrontendHoverTarget {
         1 => .options_sound_volume,
         2 => .options_music_volume,
         3 => .options_back,
+        else => unreachable,
+    };
+}
+
+fn hoverTargetForPauseMenu(index: usize) FrontendHoverTarget {
+    return switch (index) {
+        0 => .pause_menu_end_game,
+        1 => .pause_menu_options,
+        2 => .pause_menu_resume,
         else => unreachable,
     };
 }
@@ -587,6 +620,11 @@ fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
             .fullscreen => .options_fullscreen,
             .back => .options_back,
             .sound_volume, .music_volume => unreachable,
+        },
+        .pause_menu => |item| switch (item) {
+            .end_game => .pause_menu_end_game,
+            .options => .pause_menu_options,
+            .@"resume" => .pause_menu_resume,
         },
         .help_menu => .help_back,
         .high_scores_menu => |item| switch (item) {
@@ -647,6 +685,7 @@ const AppState = struct {
     auto_screenshot_taken: bool = false,
     frame_capture_index: u32 = 0,
     pending_screenshot: ?ScreenshotRequest = null,
+    start_pause_context: bool = false,
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
     game_phase: GamePhase = .boot,
@@ -659,6 +698,9 @@ const AppState = struct {
     new_game_button_states: [new_game_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** new_game_menu_items.len,
     options_menu_index: usize = 0,
     options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
+    pause_menu_index: usize = 0,
+    pause_menu_button_states: [pause_menu_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** pause_menu_button_count,
+    options_return_phase: GamePhase = .main_menu,
     help_button_states: [help_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** help_button_count,
     route_map_button_states: [route_map_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** route_map_button_count,
     high_scores_menu_index: usize = 0,
@@ -667,6 +709,7 @@ const AppState = struct {
     exit_prompt_choice_index: usize = 0,
     exit_prompt_button_states: [exit_prompt_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** exit_prompt_button_count,
     exit_prompt_return_phase: GamePhase = .main_menu,
+    exit_prompt_mode: ExitPromptMode = .quit_app,
     completion_action_index: usize = 0,
     post_level_high_score_action_index: usize = 1,
     post_level_high_score_button_states: [post_level_high_score_actions.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** post_level_high_score_actions.len,
@@ -779,6 +822,7 @@ const AppState = struct {
             .mouse_local_override = options.mouse_local_override,
             .auto_screenshot = options.auto_screenshot,
             .start_route_index_override = options.start_route_index,
+            .start_pause_context = options.pause_context,
             .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
             .audio_index = audio_index,
@@ -1203,6 +1247,7 @@ const AppState = struct {
             .main_menu => |item| try self.performMainMenuItem(item),
             .new_game_menu => |item| try self.performNewGameMenuItem(item),
             .options_menu => |item| try self.performOptionsMenuItem(item),
+            .pause_menu => |item| try self.performPauseMenuItem(item),
             .help_menu => |item| try self.performHelpMenuItem(item),
             .high_scores_menu => |item| try self.performHighScoreMenuAction(item),
             .post_level_high_scores => |item| try self.performPostLevelHighScoreAction(item),
@@ -1258,6 +1303,10 @@ const AppState = struct {
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
         self.options_button_states[options_fullscreen_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        const pause_menu_active = self.game_phase == .pause_menu and !self.frontend_transition.blocksInput();
+        for (&self.pause_menu_button_states, 0..) |*state, index| {
+            state.stepFor(.menu_button, pause_menu_active and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
+        }
         const route_map_active = self.game_phase == .route_map_menu and !self.frontend_transition.blocksInput();
         self.route_map_button_states[route_map_primary_button_index].stepFor(
             .menu_button,
@@ -1297,6 +1346,9 @@ const AppState = struct {
         }
         self.options_button_states[options_fullscreen_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(0), self.options_menu_index == 0));
         self.options_button_states[options_back_button_index].snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(3), self.options_menu_index == 3));
+        for (&self.pause_menu_button_states, 0..) |*state, index| {
+            state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
+        }
         self.route_map_button_states[route_map_primary_button_index].snapFor(
             .menu_button,
             self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
@@ -1436,6 +1488,31 @@ const AppState = struct {
         }
 
         self.setFrontendHoverTarget(null);
+    }
+
+    fn updatePauseMenuMouseSelection(self: *AppState) void {
+        const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.setFrontendHoverTarget(null);
+            return;
+        };
+        var hovered_index: ?usize = null;
+
+        for (pause_menu_items, 0..) |item, index| {
+            const text_rect = pauseMenuTextRect(&self.ui_font, item);
+            if (frontend_widget.hitRect(text_rect, self.pause_menu_button_states[index]).contains(local_mouse)) {
+                hovered_index = index;
+            }
+        }
+
+        if (hovered_index) |index| {
+            self.setFrontendHoverTarget(hoverTargetForPauseMenu(index));
+            self.pause_menu_index = index;
+            if (rl.isMouseButtonPressed(.left)) {
+                self.queueFrontendActivation(.{ .pause_menu = pause_menu_items[index] });
+            }
+        } else {
+            self.setFrontendHoverTarget(null);
+        }
     }
 
     fn updateRouteMapMouseSelection(self: *AppState) !void {
@@ -1688,7 +1765,7 @@ const AppState = struct {
     fn handleGameInput(self: *AppState) !void {
         if (rl.isKeyPressed(.escape)) {
             switch (self.game_phase) {
-                .level => try self.enterGamePhase(.main_menu),
+                .level => try self.enterPauseMenu(),
                 .boot => self.should_exit = true,
                 .main_menu => try self.beginExitPrompt(.main_menu),
                 .intro, .credits => self.frontend_transition.beginFadeOut(.main_menu),
@@ -1698,6 +1775,7 @@ const AppState = struct {
                 else
                     try self.enterGamePhase(.main_menu),
                 .options_menu => try self.leaveOptionsMenu(),
+                .pause_menu => try self.resumeFromPauseMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
                 .completion_screen => try self.continueCompletionScreen(),
@@ -1768,6 +1846,20 @@ const AppState = struct {
                         .fullscreen, .back => self.queueFrontendActivation(.{ .options_menu = selected }),
                         .sound_volume, .music_volume => {},
                     }
+                }
+            },
+            .pause_menu => {
+                self.updatePauseMenuMouseSelection();
+                if (rl.isKeyPressed(.up)) {
+                    self.pause_menu_index = wrappedIndex(pause_menu_items.len, self.pause_menu_index, -1);
+                    self.noteFrontendKeyboardNavigation();
+                }
+                if (rl.isKeyPressed(.down)) {
+                    self.pause_menu_index = wrappedIndex(pause_menu_items.len, self.pause_menu_index, 1);
+                    self.noteFrontendKeyboardNavigation();
+                }
+                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    self.queueFrontendActivation(.{ .pause_menu = pause_menu_items[self.pause_menu_index] });
                 }
             },
             .route_map_menu => {
@@ -1877,7 +1969,8 @@ const AppState = struct {
                     self.pending_level_input.speed_delta_rows_per_second -= 2.0;
                 }
                 if (accepts_input and rl.isKeyPressed(.space)) {
-                    self.pending_level_input.toggle_pause = true;
+                    try self.enterPauseMenu();
+                    return;
                 }
                 if (rl.isKeyPressed(.r)) {
                     self.mouse_level_lane_target = null;
@@ -1926,12 +2019,31 @@ const AppState = struct {
             .intro,
             .main_menu,
             .new_game_menu,
-            .options_menu,
             .high_scores_menu,
             .help,
             .credits,
             => try self.enterGamePhase(phase),
-            .exit_prompt => try self.beginExitPrompt(.main_menu),
+            .options_menu => {
+                if (self.start_pause_context) {
+                    try self.loadGameLevel(default_level_path);
+                    self.options_return_phase = .pause_menu;
+                } else {
+                    self.options_return_phase = .main_menu;
+                }
+                try self.enterGamePhase(.options_menu);
+            },
+            .pause_menu => {
+                try self.enterGameplayShell(default_level_path);
+                try self.enterPauseMenu();
+            },
+            .exit_prompt => {
+                if (self.start_pause_context) {
+                    try self.loadGameLevel(default_level_path);
+                    try self.beginEndGamePrompt(.pause_menu);
+                } else {
+                    try self.beginExitPrompt(.main_menu);
+                }
+            },
             .route_map_menu => try self.enterRouteMapMenu(.postal),
             .level => try self.enterGameplayShell(default_level_path),
             .completion_screen => return error.UnsupportedStartPhase,
@@ -1946,7 +2058,10 @@ const AppState = struct {
                 self.high_scores_action_index = 1;
                 try self.enterGamePhase(.high_scores_menu);
             },
-            .options => try self.enterGamePhase(.options_menu),
+            .options => {
+                self.options_return_phase = .main_menu;
+                try self.enterGamePhase(.options_menu);
+            },
             .credits => try self.enterGamePhase(.credits),
             .exit => try self.beginExitPrompt(.main_menu),
         }
@@ -1981,6 +2096,17 @@ const AppState = struct {
         }
     }
 
+    fn performPauseMenuItem(self: *AppState, item: PauseMenuItem) !void {
+        switch (item) {
+            .end_game => try self.beginEndGamePrompt(.pause_menu),
+            .options => {
+                self.options_return_phase = .pause_menu;
+                try self.enterGamePhase(.options_menu);
+            },
+            .@"resume" => try self.resumeFromPauseMenu(),
+        }
+    }
+
     fn performHelpMenuItem(self: *AppState, item: HelpMenuAction) !void {
         switch (item) {
             .back => try self.enterGamePhase(.main_menu),
@@ -1995,13 +2121,24 @@ const AppState = struct {
     fn beginExitPrompt(self: *AppState, return_phase: GamePhase) !void {
         self.exit_prompt_choice_index = 1;
         self.exit_prompt_return_phase = return_phase;
+        self.exit_prompt_mode = .quit_app;
+        try self.enterGamePhase(.exit_prompt);
+    }
+
+    fn beginEndGamePrompt(self: *AppState, return_phase: GamePhase) !void {
+        self.exit_prompt_choice_index = 1;
+        self.exit_prompt_return_phase = return_phase;
+        self.exit_prompt_mode = .abandon_run;
         try self.enterGamePhase(.exit_prompt);
     }
 
     fn performExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
         switch (choice) {
             .no => try self.enterGamePhase(self.exit_prompt_return_phase),
-            .yes => self.should_exit = true,
+            .yes => switch (self.exit_prompt_mode) {
+                .quit_app => self.should_exit = true,
+                .abandon_run => try self.abandonActiveRun(),
+            },
         }
     }
 
@@ -2051,6 +2188,33 @@ const AppState = struct {
         try self.performHighScoreMenuAction(action);
     }
 
+    fn enterPauseMenu(self: *AppState) !void {
+        self.pause_menu_index = 0;
+        try self.enterGamePhase(.pause_menu);
+    }
+
+    fn resumeFromPauseMenu(self: *AppState) !void {
+        try self.enterGamePhase(.level);
+    }
+
+    fn abandonActiveRun(self: *AppState) !void {
+        self.pending_run_result = null;
+        self.clearPostLevelHighScoreEntry();
+        self.completion_action_index = 0;
+
+        if (self.active_frontend_mode) |mode| {
+            switch (mode) {
+                .postal => return self.enterRouteMapMenu(.postal),
+                .time_trial => return self.enterRouteMapMenu(.time_trial),
+                .challenge, .tutorial => {},
+            }
+        }
+
+        self.active_frontend_mode = null;
+        self.active_frontend_level_index = 0;
+        try self.enterGamePhase(.main_menu);
+    }
+
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
@@ -2069,7 +2233,7 @@ const AppState = struct {
 
     fn leaveOptionsMenu(self: *AppState) !void {
         try self.saveRuntimeConfig();
-        try self.enterGamePhase(.main_menu);
+        try self.enterGamePhase(self.options_return_phase);
     }
 
     fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
@@ -2516,7 +2680,7 @@ const AppState = struct {
                 try self.playMusicByPath(intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
-            .main_menu, .new_game_menu, .options_menu, .high_scores_menu, .exit_prompt => {
+            .main_menu, .new_game_menu, .high_scores_menu => {
                 self.active_level_segment_index = null;
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
@@ -2524,6 +2688,24 @@ const AppState = struct {
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
                 try self.playMusicByPath(default_audio_path);
+            },
+            .options_menu => {
+                self.unloadTextScript();
+                self.unloadLoadingScreen();
+                if (self.options_return_phase == .pause_menu) {
+                    try self.loadCurrentLevelBackground();
+                } else {
+                    self.active_level_segment_index = null;
+                    self.clearLevelPromptQueue();
+                    self.mouse_level_lane_target = null;
+                    try self.loadGameBackground(main_menu_background_path);
+                    try self.playMusicByPath(default_audio_path);
+                }
+            },
+            .pause_menu => {
+                self.unloadTextScript();
+                self.unloadLoadingScreen();
+                try self.loadCurrentLevelBackground();
             },
             .route_map_menu => {
                 self.active_level_segment_index = null;
@@ -2551,6 +2733,19 @@ const AppState = struct {
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
                 try self.playMusicByPath(default_audio_path);
+            },
+            .exit_prompt => {
+                self.unloadTextScript();
+                self.unloadLoadingScreen();
+                if (self.exit_prompt_return_phase == .pause_menu) {
+                    try self.loadCurrentLevelBackground();
+                } else {
+                    self.active_level_segment_index = null;
+                    self.clearLevelPromptQueue();
+                    self.mouse_level_lane_target = null;
+                    try self.loadGameBackground(main_menu_background_path);
+                    try self.playMusicByPath(default_audio_path);
+                }
             },
             .completion_screen => {
                 self.clearLevelPromptQueue();
@@ -2883,12 +3078,12 @@ const AppState = struct {
         self.pending_screenshot = null;
         defer request.deinit(self.allocator);
 
-        var screenshot = if (self.command == .game and frontendPhaseUsesCanvas(self.game_phase) and self.frontend_canvas != null)
+        var screenshot = if (self.command == .game and frontendPhaseUsesCanvas(self) and self.frontend_canvas != null)
             try rl.loadImageFromTexture(self.frontend_canvas.?.texture)
         else
             try rl.loadImageFromScreen();
         defer screenshot.unload();
-        if (self.command == .game and frontendPhaseUsesCanvas(self.game_phase) and self.frontend_canvas != null) {
+        if (self.command == .game and frontendPhaseUsesCanvas(self) and self.frontend_canvas != null) {
             screenshot.flipVertical();
         }
         if (!rl.exportImage(screenshot, request.relative_path_z)) {
@@ -3192,8 +3387,18 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
     }
 }
 
-fn frontendPhaseUsesCanvas(phase: GamePhase) bool {
-    return switch (phase) {
+fn phaseUsesGameplayBackdrop(state: *const AppState) bool {
+    return switch (state.game_phase) {
+        .pause_menu => true,
+        .options_menu => state.options_return_phase == .pause_menu,
+        .exit_prompt => state.exit_prompt_return_phase == .pause_menu,
+        else => false,
+    };
+}
+
+fn frontendPhaseUsesCanvas(state: *const AppState) bool {
+    if (phaseUsesGameplayBackdrop(state)) return false;
+    return switch (state.game_phase) {
         .main_menu,
         .new_game_menu,
         .options_menu,
@@ -3203,12 +3408,14 @@ fn frontendPhaseUsesCanvas(phase: GamePhase) bool {
         .completion_screen,
         .help,
         => true,
-        .boot, .intro, .credits, .level => false,
+        .boot, .intro, .credits, .pause_menu, .level => false,
     };
 }
 
 fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout: VirtualLayout) !void {
-    if (state.current_game_background) |loaded_background| {
+    if (phaseUsesGameplayBackdrop(state)) {
+        drawGameplayLevelViewport(state);
+    } else if (state.current_game_background) |loaded_background| {
         if (state.current_game_background_runtime) |runtime| {
             switch (state.game_phase) {
                 .intro, .credits => runtime.drawStretched(&loaded_background, bounds),
@@ -3227,6 +3434,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         .main_menu => try drawMainMenuUi(state, ui_layout),
         .new_game_menu => try drawNewGameMenuUi(state, ui_layout),
         .options_menu => try drawOptionsMenuUi(state, ui_layout),
+        .pause_menu => try drawPauseMenuUi(state, ui_layout),
         .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
         .exit_prompt => try drawExitPromptUi(state, ui_layout),
@@ -3255,7 +3463,7 @@ fn drawGameUi(state: *const AppState) !void {
         return drawGameBootUi(state, ui_layout);
     }
 
-    if (frontendPhaseUsesCanvas(state.game_phase)) {
+    if (frontendPhaseUsesCanvas(state)) {
         if (state.frontend_canvas) |canvas| {
             const authored_bounds: rl.Rectangle = .{
                 .x = 0.0,
@@ -3360,6 +3568,14 @@ fn newGameBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
 
 fn helpBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
     return frontend_widget.type20TextRect(font, "Back", help_back_anchor_y, 0.0);
+}
+
+fn pauseMenuTextRect(font: *const game_font.Loaded, item: PauseMenuItem) frontend_widget.Rect {
+    return switch (item) {
+        .end_game => frontend_widget.type20TextRect(font, item.label(), pause_menu_start_y, pause_menu_center_offset_x),
+        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(pauseMenuTextRect(font, .end_game)), pause_menu_center_offset_x),
+        .@"resume" => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(pauseMenuTextRect(font, .options)), pause_menu_center_offset_x),
+    };
 }
 
 fn routeMapBackTextRect(state: *const AppState) frontend_widget.Rect {
@@ -3517,6 +3733,22 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
+fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    for (pause_menu_items, 0..) |item, index| {
+        frontend_widget.drawType20Button(
+            layout,
+            .{
+                .border = state.frontend_widget_art.border.?.texture,
+            },
+            &state.ui_font,
+            item.label(),
+            pauseMenuTextRect(&state.ui_font, item),
+            state.pause_menu_button_states[index],
+            false,
+        );
+    }
+}
+
 const RouteMapCardLayout = struct {
     card_rect: frontend_widget.Rect,
     title_rect: frontend_widget.Rect,
@@ -3585,15 +3817,18 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    drawFrontendHeading(
-        state,
+    var title_state = frontend_widget.TextButtonState{};
+    title_state.snapFor(.footer_button, false);
+    const title_text = if (pending_entry != null) "Enter your name here" else highScoreScreenTitle(selected_mode);
+    frontend_widget.drawTextButton(
         layout,
-        app_ui.authored_width * 0.5,
-        high_score_title_y,
-        if (pending_entry != null) "Enter Your Name Here!" else highScoreScreenTitle(selected_mode),
-        23,
-        .center,
-        .{ .r = 216, .g = 138, .b = 28, .a = 255 },
+        art,
+        &state.ui_font,
+        .footer_button,
+        title_text,
+        frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, title_text, high_score_title_y, 0.0),
+        title_state,
+        false,
     );
 
     if (pending_entry) |context| {
@@ -3693,12 +3928,10 @@ fn drawHighScoreTable(
         .postal => "                                               ",
         .challenge => "                                           ",
     };
+    const row_font_size: i32 = @intFromFloat(@round(frontend_widget.metricsForType(.compact_score_row).fontSize(&state.ui_font)));
 
-    var visible_row: usize = 0;
     for (entries, 0..) |table_entry, entry_index| {
-        if (!table_entry.isActive() and !(highlight_index != null and highlight_index.? == entry_index)) continue;
-
-        const row_y = high_score_row_start_y + @as(f32, @floatFromInt(visible_row)) * high_score_row_pitch;
+        const row_y = high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch;
         var row_state = frontend_widget.TextButtonState{};
         row_state.snapFor(.compact_score_row, highlight_index != null and highlight_index.? == entry_index);
         frontend_widget.drawTextButton(
@@ -3707,7 +3940,7 @@ fn drawHighScoreTable(
             &state.ui_font,
             .compact_score_row,
             row_background_text,
-            frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, row_background_text, row_y, -228.0),
+            frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, row_background_text, row_y, high_score_rank_marker_x),
             row_state,
             false,
         );
@@ -3718,18 +3951,24 @@ fn drawHighScoreTable(
             editing_name.?
         else
             highScoreDisplayName(&table_entry);
-        drawFrontendTextAligned(state, layout, 98.0, row_y, rank_text, 18, .{ .r = 216, .g = 138, .b = 28, .a = 255 }, .left);
-        drawFrontendTextAligned(state, layout, 140.0, row_y, display_name, 18, .ray_white, .left);
+        drawFrontendTextAligned(state, layout, 320.0 + high_score_rank_number_x, row_y, rank_text, row_font_size, .{ .r = 216, .g = 138, .b = 28, .a = 255 }, .left);
+        drawFrontendTextAligned(state, layout, 320.0 + high_score_name_x, row_y, display_name, row_font_size, .ray_white, .left);
 
         var score_buffer: [32]u8 = undefined;
-        const score_text = std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0";
+        const score_text = if (table_entry.isActive())
+            (std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0")
+        else
+            "";
         drawFrontendTextAligned(
             state,
             layout,
-            if (mode == .postal) 480.0 else 445.0,
+            320.0 + switch (mode) {
+                .postal => high_score_postal_score_x,
+                .challenge => high_score_challenge_score_x,
+            },
             row_y,
             score_text,
-            18,
+            row_font_size,
             .{ .r = 216, .g = 138, .b = 28, .a = 255 },
             .right,
         );
@@ -3738,16 +3977,17 @@ fn drawHighScoreTable(
             drawFrontendTextAligned(
                 state,
                 layout,
-                if (mode == .postal) 490.0 else 445.0,
+                320.0 + switch (mode) {
+                    .postal => high_score_postal_replay_x,
+                    .challenge => high_score_challenge_replay_x,
+                },
                 row_y,
                 replay_text,
-                18,
+                row_font_size,
                 .{ .r = 216, .g = 138, .b = 28, .a = 255 },
                 .center,
             );
         }
-
-        visible_row += 1;
     }
 }
 
@@ -3882,6 +4122,7 @@ fn frontendPhaseShowsCursor(phase: GamePhase) bool {
         .main_menu,
         .new_game_menu,
         .options_menu,
+        .pause_menu,
         .route_map_menu,
         .high_scores_menu,
         .exit_prompt,
@@ -4491,7 +4732,7 @@ fn highScoreScreenTitle(mode: high_score.Mode) []const u8 {
 
 fn highScoreTableToggleLabel(mode: high_score.Mode) []const u8 {
     return switch (mode) {
-        .postal => "Challenge Scores",
+        .postal => "Challenge Score",
         .challenge => "Postal Scores",
     };
 }

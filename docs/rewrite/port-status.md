@@ -13,7 +13,7 @@ Code-level convention:
 Current high-signal entries:
 
 - boot and main-menu shell: `scaffold`
-  - evidence: original loading-screen assets and recovered main-menu labels are now wired, and the main menu, new-game menu, options, and high-score screens now render as direct text overlays on the shipped `Menubg` backdrop instead of the older generic panel shell. The overall front-end flow and most handlers are still not at original parity.
+  - evidence: original loading-screen assets and recovered main-menu labels are now wired, and the main menu, new-game menu, options, pause, and high-score screens now render as direct authored-space widget overlays instead of the older generic panel shell. The overall front-end flow and most handlers are still not at original parity.
   - implementation: [`main.zig`](../../zig/src/main.zig)
   - replace when: title flow, menu assets, menu actions, and front-end copy are ported
 - loading-screen composition: `verified`
@@ -62,8 +62,13 @@ Current high-signal entries:
 - high-score screen table branch: `partial`
   - evidence: Binary Ninja decompile of `initialize_high_score_screen`, `destroy_high_score_screen`, `update_high_score_screen`, `initialize_high_score_tables`, `initialize_high_score_entry`, `add_arcade_high_score`, `add_survival_high_score`, `add_time_trial_high_score`, and `exit_high_score_screen`, including the recovered 11-entry postal/challenge banks, 51-entry completion bank, and scratch entry, plus cross-port Android and iOS symbols for `cRHighScore::{Init, AI}` and `cRSubHighScore::{AddArcade, AddSurvival, AddTimeTrial}`, and Android `cRHighScore::{UnInit, Exit}`
   - implementation: [`high_score.zig`](../../zig/src/high_score.zig), [`main.zig`](../../zig/src/main.zig)
-  - note: browse mode now behaves like a direct banked score screen instead of a separate postal/challenge/back submenu, and post-level name entry now reuses that same screen owner with an inline editable row. The current renderer also uses a direct `Menubg` overlay instead of the older panel shell, but replay rows are still read-only.
+  - note: browse mode now behaves like a direct banked score screen instead of a separate postal/challenge/back submenu, and post-level name entry now reuses that same screen owner with an inline editable row. The renderer now also follows the recovered Windows table geometry more closely: type-23 title/footer widgets, type-22 row widgets, 27-pixel row pitch, and the postal/challenge score-vs-replay column swap. Replay rows are still read-only.
   - replace when: the original replay row controls and remaining `cRHighScore::AI()` behavior are ported
+- gameplay pause menu flow: `partial`
+  - evidence: Binary Ninja decompile of `update_subgame` states `3/4`, pause-menu init `sub_440660`, pause-menu update `sub_4407a0`, shared widget helpers `sub_402790` / `sub_4027b0`, and the shared exit-prompt/options constructors
+  - implementation: [`main.zig`](../../zig/src/main.zig), [`frontend.zig`](../../zig/src/frontend.zig)
+  - note: the level path now has a real pause overlay with `End Game`, `Options`, and `Resume`, and the options/quit screens can be entered in pause-owned context instead of only through the main menu. The exact pause-menu widget metadata, owner-specific exit-prompt variants, and the original paused-frame parity are still in progress.
+  - replace when: the remaining pause-widget metadata, pause-owned exit-prompt variants, and the exact frozen gameplay frame behavior are ported
 - mutable config and score-file root: `partial`
   - evidence: Binary Ninja decompile of `initialize_default_runtime_config`, `load_high_scores_from_file`, `save_high_scores_and_config`, `load_config_file`, and `save_config_file`, which read and write `ScoreA.dat`, `ScoreB.dat`, `ScoreC.dat`, and `SnailMail.cfg`
   - implementation: [`runtime_state.zig`](../../zig/src/runtime_state.zig), [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)

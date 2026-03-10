@@ -78,6 +78,7 @@ pub const Options = struct {
     mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
     start_route_index: ?usize = null,
+    pause_context: bool = false,
     timeout_seconds: ?u32 = null,
     window_size_override: ?WindowSize = null,
     fullscreen: bool = false,
@@ -152,6 +153,10 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             index += 1;
             if (index >= args.len) return error.MissingStartRouteIndex;
             options.start_route_index = try parseRouteIndex(args[index]);
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--pause-context")) {
+            options.pause_context = true;
             continue;
         }
         if (std.mem.eql(u8, arg, "--timeout-seconds")) {
@@ -297,6 +302,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
     try std.testing.expectEqual(@as(?usize, null), options.start_route_index);
+    try std.testing.expectEqual(false, options.pause_context);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
     try std.testing.expectEqual(false, options.fullscreen);
@@ -331,6 +337,16 @@ test "parse args accepts start phase override" {
 test "parse args accepts start route index override" {
     const options = try parseArgsFromSlice(&.{ "--start-route-index", "3" });
     try std.testing.expectEqual(@as(usize, 3), options.start_route_index.?);
+}
+
+test "parse args accepts pause context override" {
+    const options = try parseArgsFromSlice(&.{
+        "--pause-context",
+        "--start-phase",
+        "options_menu",
+    });
+    try std.testing.expectEqual(true, options.pause_context);
+    try std.testing.expectEqual(frontend.GamePhase.options_menu, options.start_phase.?);
 }
 
 test "parse args requires timeout for hidden window" {

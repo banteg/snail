@@ -36,6 +36,7 @@ pub const GamePhase = enum {
     main_menu,
     new_game_menu,
     options_menu,
+    pause_menu,
     route_map_menu,
     high_scores_menu,
     exit_prompt,
@@ -237,6 +238,26 @@ pub const options_menu_items = [_]OptionsMenuItem{
     .sound_volume,
     .music_volume,
     .back,
+};
+
+pub const PauseMenuItem = enum {
+    end_game,
+    options,
+    @"resume",
+
+    pub fn label(self: PauseMenuItem) [:0]const u8 {
+        return switch (self) {
+            .end_game => "End Game",
+            .options => "Options",
+            .@"resume" => "Resume",
+        };
+    }
+};
+
+pub const pause_menu_items = [_]PauseMenuItem{
+    .end_game,
+    .options,
+    .@"resume",
 };
 
 pub const RouteMenuAction = enum {
