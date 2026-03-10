@@ -146,6 +146,16 @@ The current high-confidence `Game` fields are:
 - `+0x4c`: `runtime_flags`
 - `+0xa854`: `track_state_latch`
 - `+0xa874`: `row_event_limit`
+- `+0x355e64`: `jetpack_pickup`
+  - one-slot `TrackPickupRuntime`
+- `+0x356000`: `health_pickups`
+  - `8`-slot `TrackPickupRuntime` array
+- `+0x3563a0`: `slug_hazards`
+  - `8`-slot `SlugHazardRuntime` array in Windows
+- `+0x359140`: `active_garbage_hazards`
+  - head pointer for the active garbage list
+- `+0x359144`: `garbage_hazards`
+  - `50`-slot `GarbageHazardRuntime` array
 - `+0xff25d0`: `replay_active`
 - `+0xff25d4`: `replay_track`
 - `+0xff25d8`: `replay_track_index`
@@ -155,9 +165,75 @@ Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
+- the main gameplay collision consumers now line up with the spawn helpers:
+  - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
+  - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
+  - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
+  - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
+- one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
+
+## Track Pickup Runtime
+
+The health and jetpack pickup spawners now line up on one shared runtime slot shape.
+
+High-confidence current fields:
+
+- `+0x10`: `world_position`
+- `+0x38`: `state`
+- `+0x3c`: `owner`
+- `+0x64`: `sprite`
+- `+0x68`: `source_cell`
+- `+0x6c`: `parity_offset`
+
+Current practical read:
+
+- `spawn_track_health_pickup` populates `health_pickups[i]`
+- `spawn_track_jetpack_pickup` populates the single `jetpack_pickup` slot
+- both helpers lift the spawn point above the authored floor height, attach a sprite using `player->player_slot`, and store the source runtime cell
+- Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
+
+## Garbage Hazard Runtime
+
+The Windows garbage hazard pool is now typed as `GarbageHazardRuntime`.
+
+High-confidence current fields:
+
+- `+0x50`: `scale`
+- `+0x68`: `world_position`
+- `+0x80`: `next_active`
+- `+0x84`: `state`
+- `+0x88`: `collision_side`
+- `+0xb4`: `sprite`
+- `+0xb8`: `source_cell`
+- `+0xc0`: `owner`
+
+Current practical read:
+
+- `spawn_track_garbage_hazard` allocates from the `50`-slot pool and threads the slot into `active_garbage_hazards`
+- `handle_subgoldy_collisions` walks that active list directly
+- on collision, the slot flips to state `2`, records the left or right impact side in `collision_side`, and contributes the recovered `+0.04` gauge delta
+- Android `cRSubGame::AddGarbage` confirms the same random scale and active-list pattern, but Windows remains authoritative on the exact storage layout
+
+## Slug Hazard Runtime
+
+The Windows slug hazard pool is now typed as `SlugHazardRuntime`.
+
+High-confidence current fields:
+
+- `+0x68`: `world_position`
+- `+0x80`: `state`
+- `+0x8c`: `velocity`
+- `+0xac`: `sprite`
+- `+0xb0`: `source_cell`
+
+Current practical read:
+
+- `spawn_slug_hazard` allocates from the `8`-slot Windows pool, projects the spawn onto attachments, and seeds forward velocity from `track_center_x`
+- `handle_subgoldy_collisions` reads the same slots back through the `slug_hazards` array
+- later Android and iOS ports still use the same semantic fields, but at least one later build expands the slug capacity beyond the Windows `8`-slot pool
 
 ## Attachment Template Samples
 
