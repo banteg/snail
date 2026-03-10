@@ -362,8 +362,10 @@ pub fn frontendLevelPath(mode: FrontendLevelMode, level_index: usize, path_buffe
             error.InvalidRouteIndex
         else if (level_index <= 0x32)
             try std.fmt.bufPrint(path_buffer, "LEVELS/ARCADE{d:0>3}.TXT", .{level_index})
+        else if (level_index == 0x33)
+            "LEVELS/ARCADEEXTRA000.TXT"
         else
-            "LEVELS/ARCADEEXTRA000.TXT",
+            error.InvalidRouteIndex,
         .time_trial => if (level_index == 0)
             error.InvalidRouteIndex
         else if (level_index <= 0x32)
@@ -381,6 +383,8 @@ test "frontend level mode paths follow recovered launch mapping" {
     try std.testing.expectError(error.InvalidRouteIndex, frontendLevelPath(.postal, 0, &scratch));
     try std.testing.expectEqualStrings("LEVELS/ARCADE001.TXT", try frontendLevelPath(.postal, 1, &scratch));
     try std.testing.expectEqualStrings("LEVELS/ARCADE012.TXT", try frontendLevelPath(.postal, 12, &scratch));
+    try std.testing.expectEqualStrings("LEVELS/ARCADEEXTRA000.TXT", try frontendLevelPath(.postal, 0x33, &scratch));
+    try std.testing.expectError(error.InvalidRouteIndex, frontendLevelPath(.postal, 0x34, &scratch));
     try std.testing.expectError(error.InvalidRouteIndex, frontendLevelPath(.time_trial, 0, &scratch));
     try std.testing.expectEqualStrings("LEVELS/ARCADE001.TXT", try frontendLevelPath(.time_trial, 1, &scratch));
     try std.testing.expectEqualStrings("LEVELS/TIMETRIALEXTRA001.TXT", try frontendLevelPath(.time_trial, 0x33, &scratch));

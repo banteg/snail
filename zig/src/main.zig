@@ -2950,17 +2950,33 @@ const AppState = struct {
     }
 
     fn commitPostalRouteProgress(self: *AppState) !bool {
-        const current_index: u32 = @intCast(self.active_frontend_level_index);
-        self.runtime_config.setRouteSelectionIndex(current_index);
-        const next_unlock = current_index + 1;
-        var unlocked = false;
-        if (next_unlock > self.runtime_config.routeUnlockLimit()) {
-            self.runtime_config.setRouteUnlockLimit(next_unlock);
+        const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
+        if (highest_available == 0) return false;
+
+        const current_index = std.math.clamp(self.active_frontend_level_index, @as(usize, 1), highest_available);
+        self.runtime_config.setRouteSelectionIndex(@intCast(current_index));
+
+        const saved_limit: usize = @intCast(self.runtime_config.routeUnlockLimit());
+        const next_unlock_limit = nextPostalUnlockLimit(current_index, highest_available, saved_limit);
+        const unlocked = current_index < highest_available and next_unlock_limit > std.math.clamp(saved_limit, @as(usize, 1), highest_available);
+        if (next_unlock_limit != saved_limit) {
+            self.runtime_config.setRouteUnlockLimit(@intCast(next_unlock_limit));
+        }
+        if (unlocked) {
             self.setGameStatusMessage("Unlocked the next delivery route.");
-            unlocked = true;
         }
         try self.saveRuntimeConfig();
         return unlocked;
+    }
+
+    fn nextPostalUnlockLimit(current_index: usize, highest_available: usize, saved_limit: usize) usize {
+        if (highest_available == 0) return 0;
+        const clamped_saved = std.math.clamp(saved_limit, @as(usize, 1), highest_available);
+        const clamped_current = std.math.clamp(current_index, @as(usize, 1), highest_available);
+        if (clamped_current < highest_available) {
+            return @max(clamped_saved, clamped_current + 1);
+        }
+        return clamped_saved;
     }
 
     fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
@@ -6699,6 +6715,13 @@ test "new game menu mapping matches frontend route modes" {
     try std.testing.expectEqual(@as(usize, 1), newGameMenuIndexForItem(.postal_mode));
     try std.testing.expectEqual(@as(usize, 2), newGameMenuIndexForItem(.time_trial));
     try std.testing.expectEqual(@as(usize, 4), newGameMenuIndexForItem(.help));
+}
+
+test "postal unlock limit stops at the highest available route" {
+    try std.testing.expectEqual(@as(usize, 2), AppState.nextPostalUnlockLimit(1, 0x32, 1));
+    try std.testing.expectEqual(@as(usize, 0x32), AppState.nextPostalUnlockLimit(0x32, 0x32, 0x32));
+    try std.testing.expectEqual(@as(usize, 0x33), AppState.nextPostalUnlockLimit(0x33, 0x33, 0x33));
+    try std.testing.expectEqual(@as(usize, 0x32), AppState.nextPostalUnlockLimit(0x33, 0x32, 0x40));
 }
 
 test "gameplay camera looks ahead of the runner" {
