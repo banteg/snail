@@ -105,8 +105,8 @@
     },
     {
       "address": "0x408550",
-      "name": "initialize_parcel",
-      "description": "Constructs one parcel runtime object by running the shared body constructor and installing the parcel vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot parcel pool, matching the setup loop inside Android `cRParcelManager::Init()`."
+      "name": "initialize_garbage_hazard",
+      "description": "Constructs one garbage-hazard runtime object by running the shared body constructor and installing the cRSubGarbage vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot garbage pool that later feeds `spawn_track_garbage_hazard`."
     },
     {
       "address": "0x4085c0",
@@ -685,13 +685,13 @@
     },
     {
       "address": "0x43f130",
-      "name": "destroy_parcel",
-      "description": "Removes one live parcel object from the active body lists, kills its sprite, and unlinks it from the parcel chain after collection or expiry."
+      "name": "destroy_garbage_hazard",
+      "description": "Removes one live garbage hazard from the active body lists, kills its sprite, and unlinks it from the active garbage chain after collision or expiry. Cross-port Android symbols match this helper to `cRSubGarbage::Kill()`."
     },
     {
       "address": "0x43f200",
-      "name": "update_parcel",
-      "description": "Advances one live parcel object through its hover, travel-to-player, score burst, and teardown states. Cross-port Android symbols match this helper to `cRParcel::AI()`."
+      "name": "update_garbage_hazard",
+      "description": "Advances one live garbage hazard through its hover, impact-burst, bounce, smoke, and teardown states. Cross-port Android and iOS symbols match this helper to `cRSubGarbage::AI()`."
     },
     {
       "address": "0x440020",

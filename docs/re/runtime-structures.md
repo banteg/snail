@@ -146,6 +146,7 @@ The current high-confidence `Game` fields are:
 - `+0x4c`: `runtime_flags`
 - `+0xa854`: `track_state_latch`
 - `+0xa874`: `row_event_limit`
+- `+0x1b01e0`: `parcel_target_count`
 - `+0x355e64`: `jetpack_pickup`
   - one-slot `TrackPickupRuntime`
 - `+0x356000`: `health_pickups`
@@ -156,6 +157,8 @@ The current high-confidence `Game` fields are:
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`
   - `50`-slot `GarbageHazardRuntime` array
+- `+0x125e430`: `track_parcels`
+  - `50`-slot `TrackParcelRuntime` array
 - `+0xff25d0`: `replay_active`
 - `+0xff25d4`: `replay_track`
 - `+0xff25d8`: `replay_track_index`
@@ -166,14 +169,32 @@ Current practical read:
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - the main gameplay collision consumers now line up with the spawn helpers:
+  - `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
+- the embedded `track_parcels` slots are not the same object family as the live garbage objects seeded at `game + 0x359144` and advanced by `initialize_garbage_hazard`, `update_garbage_hazard`, and `destroy_garbage_hazard`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
+
+## Track Parcel Runtime
+
+The placed parcel pickups now line up on a dedicated embedded runtime slot shape rather than a raw offset block.
+ 
+ High-confidence current fields:
+ 
+ - `+0x60`: `world_position`
+ - `+0x88`: `state`
+ 
+Current practical read:
+
+- `initialize_runtime_pools_and_path_template_bank` seeds a `50`-slot Windows array with `sub_408860`
+- `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
+- `handle_subgoldy_collisions` reads the same slots back, awards the parcel score tier, and flips collected slots from state `1` to state `4`
+- Android and iOS confirm the gameplay semantics through `cRSubGame::AddParcel`, and that parcel-manager family should not be merged with the separate garbage-object runtime at `game + 0x359144`
 
 ## Track Pickup Runtime
 
@@ -197,7 +218,7 @@ Current practical read:
 
 ## Garbage Hazard Runtime
 
-The Windows garbage hazard pool is now typed as `GarbageHazardRuntime`.
+The Windows garbage hazard pool is now typed as `GarbageHazardRuntime`, and the earlier parcel labels on `0x408550`, `0x43f130`, and `0x43f200` were a bad read of this same family.
 
 High-confidence current fields:
 
@@ -206,15 +227,23 @@ High-confidence current fields:
 - `+0x80`: `next_active`
 - `+0x84`: `state`
 - `+0x88`: `collision_side`
+- `+0x8c`: `game`
+- `+0x90`: `velocity`
+- `+0xa0`: `sprite_y_offset`
+- `+0xac`: `smoke_timer`
+- `+0xb0`: `smoke_timer_step`
 - `+0xb4`: `sprite`
 - `+0xb8`: `source_cell`
 - `+0xc0`: `owner`
 
 Current practical read:
 
-- `spawn_track_garbage_hazard` allocates from the `50`-slot pool and threads the slot into `active_garbage_hazards`
+- `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot pool with `initialize_garbage_hazard`
+- `spawn_track_garbage_hazard` allocates from that pool and threads the slot into `active_garbage_hazards`
 - `handle_subgoldy_collisions` walks that active list directly
 - on collision, the slot flips to state `2`, records the left or right impact side in `collision_side`, and contributes the recovered `+0.04` gauge delta
+- `update_garbage_hazard` matches Android and iOS `cRSubGarbage::AI()`: after collision, the slot bursts outward with randomized velocity, emits periodic smoke, and self-destructs when it falls below the track or behind the player
+- `destroy_garbage_hazard` matches Android `cRSubGarbage::Kill()` and unlinks the same `next_active` chain rooted at `game + 0x359140`
 - Android `cRSubGame::AddGarbage` confirms the same random scale and active-list pattern, but Windows remains authoritative on the exact storage layout
 
 ## Slug Hazard Runtime

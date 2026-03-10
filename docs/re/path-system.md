@@ -16,7 +16,7 @@ Primary sources used for these notes:
 High-confidence renamed functions in the tracked manifest and the current Binary Ninja database:
 
 - `find_segment_path_index_by_name` at `0x429ae0`
-- `initialize_parcel` at `0x408550`
+- `initialize_garbage_hazard` at `0x408550`
 - `initialize_path_template_record_pair` at `0x4085c0`
 - `mirror_path_template_pair_x` at `0x421dc0`
 - `load_segment_definitions` at `0x448160`
@@ -45,7 +45,8 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `set_matrix_identity` at `0x44d250`
 - `initialize_subgoldy` at `0x43a9c0`
 - `show_subgoldy_lives` at `0x43af10`
-- `update_parcel` at `0x43f200`
+- `destroy_garbage_hazard` at `0x43f130`
+- `update_garbage_hazard` at `0x43f200`
 - `spawn_track_garbage_hazard` at `0x43da80`
 - `update_subgoldy` at `0x43b120`
 - `initialize_subgoldy_fall_state` at `0x43af60`
@@ -75,6 +76,7 @@ The current high-confidence model is:
 - `P/p` rows consume those indices and install hardcoded sampled path-template objects onto runtime cells
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
+- the placed parcel manager at `game + 0x125e430` is separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
 
