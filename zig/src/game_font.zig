@@ -8,6 +8,8 @@ const max_slot_index = 94;
 const slot_count = max_slot_index + 1;
 pub const fallback_slot_index = 74;
 const space_slot_index = 53;
+// PORT(verified): `initialize_game_assets_and_world` registers FONT-MENU-HOVER with
+// `register_font_texture_sheet(..., font_slot=2, spacing=0.75, scale=1.0)`.
 const recovered_spacing_scale: f32 = 0.75;
 
 // PORT(partial): these named icon tokens are backed by shipped tutorial `Message=` strings

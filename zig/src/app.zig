@@ -65,11 +65,17 @@ pub const AutoScreenshot = struct {
     tick: u64,
 };
 
+pub const MouseLocalOverride = struct {
+    x: f32,
+    y: f32,
+};
+
 pub const Options = struct {
     archive_path: []const u8 = default_archive_path,
     runtime_root_path: []const u8 = runtime_state.default_root_path,
     screenshot_dir: []const u8 = default_screenshot_dir,
     auto_screenshot: ?AutoScreenshot = null,
+    mouse_local_override: ?MouseLocalOverride = null,
     start_phase: ?frontend.GamePhase = null,
     timeout_seconds: ?u32 = null,
     window_size_override: ?WindowSize = null,
@@ -127,6 +133,12 @@ pub fn parseArgsFromSlice(args: []const []const u8) !Options {
             index += 1;
             if (index >= args.len) return error.MissingScreenshotSpec;
             options.auto_screenshot = try parseAutoScreenshot(args[index]);
+            continue;
+        }
+        if (std.mem.eql(u8, arg, "--mouse-local")) {
+            index += 1;
+            if (index >= args.len) return error.MissingMouseLocal;
+            options.mouse_local_override = try parseMouseLocal(args[index]);
             continue;
         }
         if (std.mem.eql(u8, arg, "--start-phase")) {
@@ -197,6 +209,16 @@ pub fn parseAutoScreenshot(spec: []const u8) !AutoScreenshot {
     };
 }
 
+fn parseMouseLocal(spec: []const u8) !MouseLocalOverride {
+    const sep_index = std.mem.indexOfScalar(u8, spec, ',') orelse return error.InvalidMouseLocal;
+    if (sep_index == 0 or sep_index + 1 >= spec.len) return error.InvalidMouseLocal;
+
+    return .{
+        .x = try std.fmt.parseFloat(f32, spec[0..sep_index]),
+        .y = try std.fmt.parseFloat(f32, spec[sep_index + 1 ..]),
+    };
+}
+
 fn parseGamePhase(name: []const u8) ?frontend.GamePhase {
     inline for (std.meta.fields(frontend.GamePhase)) |field| {
         if (std.ascii.eqlIgnoreCase(name, field.name)) {
@@ -259,6 +281,7 @@ test "parse args defaults to game shell" {
     try std.testing.expectEqualStrings(runtime_state.default_root_path, options.runtime_root_path);
     try std.testing.expectEqualStrings(default_screenshot_dir, options.screenshot_dir);
     try std.testing.expectEqual(@as(?AutoScreenshot, null), options.auto_screenshot);
+    try std.testing.expectEqual(@as(?MouseLocalOverride, null), options.mouse_local_override);
     try std.testing.expectEqual(@as(?frontend.GamePhase, null), options.start_phase);
     try std.testing.expectEqual(@as(?u32, null), options.timeout_seconds);
     try std.testing.expectEqual(@as(?WindowSize, null), options.window_size_override);
@@ -307,6 +330,12 @@ test "parse auto screenshot validates phase and tick" {
 
     try std.testing.expectError(error.InvalidScreenshotSpec, parseAutoScreenshot("intro"));
     try std.testing.expectError(error.InvalidScreenshotPhase, parseAutoScreenshot("weird:30"));
+}
+
+test "parse args accepts mouse local override" {
+    const options = try parseArgsFromSlice(&.{ "--mouse-local", "392.5,95.0" });
+    try std.testing.expectApproxEqAbs(@as(f32, 392.5), options.mouse_local_override.?.x, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 95.0), options.mouse_local_override.?.y, 0.001);
 }
 
 test "parse args validates start phase" {

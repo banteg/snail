@@ -61,6 +61,7 @@ const status_message_duration_ticks: u32 = 180;
 const Options = app.Options;
 const AppCommand = app.AppCommand;
 const AutoScreenshot = app.AutoScreenshot;
+const MouseLocalOverride = app.MouseLocalOverride;
 const WindowSize = app.WindowSize;
 const parseArgs = app.parseArgs;
 const defaultWindowSizeForCommand = app.defaultWindowSizeForCommand;
@@ -604,6 +605,7 @@ const AppState = struct {
     window_size: WindowSize,
     audio_ready: bool,
     audio_muted: bool,
+    mouse_local_override: ?MouseLocalOverride = null,
     should_exit: bool = false,
     auto_screenshot: ?AutoScreenshot = null,
     auto_screenshot_taken: bool = false,
@@ -736,6 +738,7 @@ const AppState = struct {
             .window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command),
             .audio_ready = audio_ready,
             .audio_muted = options.hidden_window,
+            .mouse_local_override = options.mouse_local_override,
             .auto_screenshot = options.auto_screenshot,
             .high_score_tables = high_score.Tables.initDefault(),
             .texture_index = texture_index,
@@ -1105,6 +1108,9 @@ const AppState = struct {
     }
 
     fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
+        if (self.mouse_local_override) |mouse| {
+            return .{ .x = mouse.x, .y = mouse.y };
+        }
         const layout = self.currentUiLayout();
         const mouse_x = @as(f32, @floatFromInt(rl.getMouseX()));
         const mouse_y = @as(f32, @floatFromInt(rl.getMouseY()));

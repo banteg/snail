@@ -17,9 +17,9 @@ pub const WidgetAlignment = enum(u8) {
 };
 
 pub const type20_idle_padding: f32 = 9.0;
-// PORT(verified): `sub_402820` drives the type-20 shell widget toward `+536 = 14.0`
-// while hovered, so the authored-space hot padding is 14 pixels, not the port's old 13.
-pub const type20_hot_padding: f32 = 14.0;
+// PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+536 = 13.0` for the
+// shell-font menu widget hot padding, and `sub_402820` animates toward that target.
+pub const type20_hot_padding: f32 = 13.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+620 = 26.0` for the
 // shell-font menu widget, and `sub_4027B0` chains the next button by adding that recovered
 // gap to the previous widget's measured text height.
@@ -29,8 +29,8 @@ pub const type20_stack_gap: f32 = 26.0;
 // menu button stack.
 pub const type20_center_offset_x: f32 = 20.0;
 // PORT(verified): `sub_401130` renders the type-20 shell border with a fixed authored
-// corner size of `+560 = 22.0`, while the compact/footer variants use a 4px edge path.
-pub const type20_border_edge: f32 = 22.0;
+// corner size of `+560 = 20.0`, while the compact/footer variants use a 4px edge path.
+pub const type20_border_edge: f32 = 20.0;
 pub const compact_border_edge: f32 = 4.0;
 pub const cursor_hotspot_x: f32 = 8.0;
 pub const cursor_hotspot_y: f32 = 7.0;
