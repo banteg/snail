@@ -247,7 +247,7 @@
     {
       "address": "0x4168d0",
       "name": "update_help",
-      "description": "Handles the Help-screen Back action, tears down the shell-font scene, and returns to the main menu. Cross-port Android and iOS symbols match this helper to `cRHelp::AI()`."
+      "description": "Handles the Help-screen Back action, tears down the shell-font scene, and returns control to the New Game front-end flow via state `2`. Cross-port Android and iOS symbols match this helper to `cRHelp::AI()`."
     },
     {
       "address": "0x416910",
@@ -314,8 +314,8 @@
     },
     {
       "address": "0x417eb0",
-      "name": "launch_frontend_level_mode",
-      "description": "Starts the selected front-end mode and seeds its initial level handoff through the shared level-path switch."
+      "name": "update_new_game_menu",
+      "description": "Runs the New Game menu controller, dispatching Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine."
     },
     {
       "address": "0x4182f0",
@@ -584,6 +584,11 @@
       "name": "is_floor_cache_tile_family"
     },
     {
+      "address": "0x439d50",
+      "name": "maybe_spawn_wall2_ambient_hazard",
+      "description": "Runs the current best static `Wall2` ambient-hazard spawn gate from one runtime row cell: checks the row or tile conditions, rolls the random gate, derives a spawn point and velocity, and routes the request into the 20-slot pool at `game + 0x356b00`."
+    },
+    {
       "address": "0x43a1a0",
       "name": "update_player_movement_flags",
       "description": "Maps the player movement-flag selector at +0x308 onto movement_flags and a per-state rate scalar at +0x2734, then refreshes the 0x2984 state machine when the mask changes."
@@ -716,7 +721,7 @@
     {
       "address": "0x4413f0",
       "name": "apply_damage_gauge_delta",
-      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and one still-unresolved +0.02 path."
+      "description": "Applies one signed delta to the player contact-damage gauge controller at +0x3c4, clamps the live fill to [0,1], and triggers the matching sound or animation side effects. Windows collision callsites feed this helper with -0.5 health recovery, +0.04 garbage, +0.15 salt, +1.0 slug, and the smaller +0.02 `Wall2` ambient-hazard path."
     },
     {
       "address": "0x441540",
@@ -728,6 +733,16 @@
       "description": "Allocates one live salt.x hazard slot from the 40-slot pool and seeds its runtime state."
     },
     {
+      "address": "0x441650",
+      "name": "initialize_wall2_ambient_hazard_pool",
+      "description": "Clears the 20-slot `Wall2` ambient-hazard pool by zeroing each slot state at +0x80 before a level build."
+    },
+    {
+      "address": "0x441670",
+      "name": "spawn_wall2_ambient_hazard",
+      "description": "Activates one slot from the 20-slot `Wall2` ambient-hazard pool: stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object."
+    },
+    {
       "address": "0x441740",
       "name": "deactivate_salt_hazard",
       "description": "Marks a salt hazard slot inactive after collision or after it leaves the supported path."
@@ -736,6 +751,11 @@
       "address": "0x4417d0",
       "name": "update_salt_hazard",
       "description": "Integrates one active salt hazard, tests track attachment intersection, and deactivates it after collision or exit."
+    },
+    {
+      "address": "0x441ad0",
+      "name": "allocate_wall2_ambient_hazard_slot",
+      "description": "Finds the first inactive slot in the 20-slot `Wall2` ambient-hazard pool, offsets the requested spawn height slightly by slot index, and hands the live activation off to `spawn_wall2_ambient_hazard`."
     },
     {
       "address": "0x441b90",

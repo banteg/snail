@@ -630,6 +630,22 @@ fn hoverTargetForRouteMenuAction(action: RouteMenuAction) FrontendHoverTarget {
     };
 }
 
+fn newGameMenuItemForFrontendMode(mode: FrontendLevelMode) NewGameMenuItem {
+    return switch (mode) {
+        .tutorial => .tutorial,
+        .postal => .postal_mode,
+        .time_trial => .time_trial,
+        .challenge => .challenge_mode,
+    };
+}
+
+fn newGameMenuIndexForItem(target: NewGameMenuItem) usize {
+    for (new_game_menu_items, 0..) |item, index| {
+        if (item == target) return index;
+    }
+    return 0;
+}
+
 fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
     return switch (index) {
         0 => .high_scores_back,
@@ -1739,7 +1755,7 @@ const AppState = struct {
             return;
         }
 
-        if (self.routeMapCardIsOpen() and rl.isMouseButtonPressed(.left)) {
+        if (self.routeMapCanCloseCard() and rl.isMouseButtonPressed(.left)) {
             self.closeFrontendRouteCard();
             self.playFrontendSelectSound();
             self.setFrontendHoverTarget(null);
@@ -2322,7 +2338,7 @@ const AppState = struct {
 
     fn performHelpMenuItem(self: *AppState, item: HelpMenuAction) !void {
         switch (item) {
-            .back => try self.enterGamePhase(.main_menu),
+            .back => try self.returnToNewGameMenu(.help),
         }
     }
 
@@ -2364,7 +2380,7 @@ const AppState = struct {
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
             .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
-            .back => try self.enterGamePhase(.main_menu),
+            .back => try self.returnToNewGameMenu(.route_map_menu),
         }
     }
 
@@ -2450,6 +2466,25 @@ const AppState = struct {
         try self.enterGamePhase(self.options_return_phase);
     }
 
+    // PORT(verified): `update_help` writes frontend state `2` on Back, and the frontend
+    // state machine handles that by rebuilding the New Game screen/controller path rather than
+    // jumping straight to the main menu. The normal Star Map `update_galaxy -> return 3`
+    // path in `update_subgame` also tears down the galaxy screen and returns to the New Game
+    // flow. Preserve that return target in the port instead of routing Help/Star Map Back to
+    // the main menu.
+    fn returnToNewGameMenu(self: *AppState, from_phase: GamePhase) !void {
+        switch (from_phase) {
+            .help => self.new_game_menu_index = newGameMenuIndexForItem(.help),
+            .route_map_menu => {
+                if (self.frontend_route_mode) |mode| {
+                    self.new_game_menu_index = newGameMenuIndexForItem(newGameMenuItemForFrontendMode(mode));
+                }
+            },
+            else => {},
+        }
+        try self.enterGamePhase(.new_game_menu);
+    }
+
     fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
         switch (mode) {
             .postal, .time_trial => try self.enterRouteMapMenu(mode),
@@ -2508,6 +2543,16 @@ const AppState = struct {
     // separately instead of assuming the saved/default route is always the open one.
     fn currentRouteMapOpenIndex(self: *const AppState) ?usize {
         return self.route_map_open_index;
+    }
+
+    // PORT(verified): the late `update_galaxy` close-card branch only fires when the
+    // open-route flag is set and the authored route count is greater than `1`
+    // (`dword_4DF9B8 > 1`). Preserve that gate so the first available route stays pinned
+    // open instead of letting the user dismiss the card into an empty Star Map.
+    fn routeMapCanCloseCard(self: *const AppState) bool {
+        if (!self.routeMapCardIsOpen()) return false;
+        const mode = self.frontend_route_mode orelse return false;
+        return self.availableFrontendRouteLimit(mode) > 1;
     }
 
     fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
@@ -6568,6 +6613,16 @@ test "elapsed millis format as mm:ss.cc" {
 test "high score mode index follows screen order" {
     try std.testing.expectEqual(@as(usize, 0), highScoreModeIndex(.postal));
     try std.testing.expectEqual(@as(usize, 1), highScoreModeIndex(.challenge));
+}
+
+test "new game menu mapping matches frontend route modes" {
+    try std.testing.expectEqual(NewGameMenuItem.postal_mode, newGameMenuItemForFrontendMode(.postal));
+    try std.testing.expectEqual(NewGameMenuItem.time_trial, newGameMenuItemForFrontendMode(.time_trial));
+    try std.testing.expectEqual(NewGameMenuItem.challenge_mode, newGameMenuItemForFrontendMode(.challenge));
+    try std.testing.expectEqual(NewGameMenuItem.tutorial, newGameMenuItemForFrontendMode(.tutorial));
+    try std.testing.expectEqual(@as(usize, 1), newGameMenuIndexForItem(.postal_mode));
+    try std.testing.expectEqual(@as(usize, 2), newGameMenuIndexForItem(.time_trial));
+    try std.testing.expectEqual(@as(usize, 4), newGameMenuIndexForItem(.help));
 }
 
 test "gameplay camera looks ahead of the runner" {

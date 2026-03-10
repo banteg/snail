@@ -164,7 +164,7 @@ pub const MainMenuItem = enum {
 pub const main_menu_items = [_]MainMenuItem{ .new_game, .high_scores, .options, .credits, .exit };
 
 // PORT(partial): these labels and mode actions match the recovered `initialize_new_game_menu`
-// and `launch_frontend_level_mode` new-game flow.
+// and `update_new_game_menu` new-game flow.
 // `Help` is still only a partial screen port, and later progression beyond the first level remains unresolved.
 pub const NewGameMenuItem = enum {
     tutorial,
