@@ -4935,6 +4935,7 @@ fn drawRouteMapConnection(
 
 fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: FrontendLevelMode) void {
     const available_limit = state.availableFrontendRouteLimit(mode);
+    const active_route_index = state.currentRouteMapOpenIndex() orelse state.frontend_route_index;
     const selected_galaxy_index = if (state.galaxy_names) |names|
         names.galaxyIndexForRouteIndex(state.frontend_route_index)
     else
@@ -4953,36 +4954,38 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
                 route_cursor += names.starCountForGalaxyIndex(prior_index) orelse 0;
             }
             const star_count = names.starCountForGalaxyIndex(galaxy_index) orelse 0;
+            const visible_star_count = if (available_limit > route_cursor)
+                @min(star_count, available_limit - route_cursor)
+            else
+                0;
 
-            if (star_count >= 2) {
-                for (0..star_count - 1) |local_index| {
+            if (visible_star_count >= 2) {
+                for (0..visible_star_count - 1) |local_index| {
                     const start_route_index = route_cursor + local_index + 1;
                     const end_route_index = start_route_index + 1;
-                    const unlocked = end_route_index <= available_limit;
+                    // PORT(verified): `update_galaxy` iterates route links only up to the
+                    // live available-route count in `dword_4DF9B8`, then shades them in two
+                    // authored bands: `0.8` before the current route and `0.2` afterwards.
+                    const line_tint: rl.Color = if (start_route_index < active_route_index)
+                        .{ .r = 255, .g = 255, .b = 255, .a = 204 }
+                    else
+                        .{ .r = 255, .g = 255, .b = 255, .a = 51 };
                     drawRouteMapConnection(
                         layout,
                         names.routePointForRouteIndex(start_route_index).?,
                         names.routePointForRouteIndex(end_route_index).?,
                         state.route_map_art.line,
                         route_map_path_line_width,
-                        if (unlocked)
-                            .white
-                        else
-                            .{ .r = 255, .g = 255, .b = 255, .a = 88 },
+                        line_tint,
                     );
                 }
             }
 
-            for (0..star_count) |local_index| {
+            for (0..visible_star_count) |local_index| {
                 const route_index = route_cursor + local_index + 1;
                 const point = names.routePointForRouteIndex(route_index).?;
-                const unlocked = route_index <= available_limit;
-                const star_tint: rl.Color = if (unlocked)
-                    .white
-                else
-                    .{ .r = 255, .g = 255, .b = 255, .a = 88 };
                 if (state.route_map_art.level_star) |loaded_texture| {
-                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, star_tint);
+                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, .white);
                 }
             }
         }
