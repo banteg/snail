@@ -420,8 +420,6 @@ const route_map_card_star_gap: f32 = 16.0;
 const route_map_card_right_limit: f32 = 631.0;
 const route_map_card_min_top: f32 = 49.0;
 const route_map_card_bottom_y: f32 = 450.0;
-const route_map_card_primary_gap: f32 = 20.0;
-const route_map_card_replay_gap: f32 = 10.0;
 // PORT(verified): `update_galaxy` draws galaxy sprites `139..148` as `256x256` quads
 // centered on the transformed `sub_4088E0` points, and the inter-route connector uses
 // `LINE.TGA` at width `4.0`.
@@ -4137,17 +4135,33 @@ fn routeMapCardLayout(
 
     while (true) {
         const title_rect = uiFontTextRectAbsolute(font, route_galaxy_name, title_left, title_top, route_map_card_title_scale);
-        const subtitle_rect = uiFontTextRectAbsolute(font, route_level_name, title_rect.left, title_rect.top + title_rect.height, route_map_card_subtitle_scale);
-        const body_rect = uiFontTextRectAbsolute(font, route_body, subtitle_rect.left, subtitle_rect.top + subtitle_rect.height, route_map_card_body_scale);
-        const button_center_offset = title_rect.left + title_rect.width * 0.5 - 320.0;
+        const subtitle_rect = uiFontTextRectAbsolute(
+            font,
+            route_level_name,
+            title_rect.left,
+            frontend_widget.stackBelow(title_rect),
+            route_map_card_subtitle_scale,
+        );
+        const body_rect = uiFontTextRectAbsolute(
+            font,
+            route_body,
+            subtitle_rect.left,
+            frontend_widget.stackBelow(subtitle_rect),
+            route_map_card_body_scale,
+        );
+        // PORT(verified): `open_galaxy_route` chains the selected route card with the shared
+        // `sub_4027B0` helper: title -> subtitle -> body -> replay? -> primary. It first
+        // centers the action widgets from the title width, then recenters them from the final
+        // card box after the bounds clamp pass.
+        const title_center_offset = title_rect.left + title_rect.width * 0.5 - 320.0;
 
         var primary_text_rect = frontend_widget.widgetTextRect(
             font,
             .menu_button,
             .center,
             primary_action,
-            body_rect.top + body_rect.height + route_map_card_primary_gap,
-            button_center_offset,
+            frontend_widget.stackBelow(body_rect),
+            title_center_offset,
         );
         var replay_text_rect: ?frontend_widget.Rect = null;
         if (replay_action) |label| {
@@ -4156,16 +4170,16 @@ fn routeMapCardLayout(
                 .route_map_secondary_action,
                 .center,
                 label,
-                body_rect.top + body_rect.height + route_map_card_replay_gap,
-                button_center_offset,
+                frontend_widget.stackBelow(body_rect),
+                title_center_offset,
             );
             primary_text_rect = frontend_widget.widgetTextRect(
                 font,
                 .menu_button,
                 .center,
                 primary_action,
-                replay_text_rect.?.top + replay_text_rect.?.height + route_map_card_primary_gap,
-                button_center_offset,
+                frontend_widget.stackBelow(replay_text_rect.?),
+                title_center_offset,
             );
         }
 
@@ -4207,6 +4221,27 @@ fn routeMapCardLayout(
             .width = right - left,
             .height = bottom - top,
         };
+        const card_center_offset = card_rect.left + card_rect.width * 0.5 - 320.0;
+        primary_text_rect = frontend_widget.widgetTextRect(
+            font,
+            .menu_button,
+            .center,
+            primary_action,
+            primary_text_rect.top,
+            card_center_offset,
+        );
+        if (replay_action) |label| {
+            if (replay_text_rect) |replay_rect| {
+                replay_text_rect = frontend_widget.widgetTextRect(
+                    font,
+                    .route_map_secondary_action,
+                    .center,
+                    label,
+                    replay_rect.top,
+                    card_center_offset,
+                );
+            }
+        }
         const pointer_start_x = if (card_rect.left <= route_point.x)
             route_point.x - route_map_card_star_gap
         else
