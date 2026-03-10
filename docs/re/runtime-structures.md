@@ -174,7 +174,7 @@ Current practical read:
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
-- the embedded `track_parcels` slots are not the same object family as the live garbage objects seeded at `game + 0x359144` and advanced by `initialize_garbage_hazard`, `update_garbage_hazard`, and `destroy_garbage_hazard`
+- the embedded `track_parcels` slots are not the same object family as either the parcel-manager path behind `cRSubGame::AddParcel` or the separate garbage runtime seeded at `game + 0x359144`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence

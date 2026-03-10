@@ -389,12 +389,12 @@ const route_menu_actions_with_replay = [_]RouteMenuAction{
 // `y = 390` first, but immediately overrides it by chaining from Credits.
 const main_menu_start_y: f32 = 90.0;
 // PORT(verified): `initialize_new_game_menu` seeds Tutorial at `y = 80`, chains Postal,
-// Time Trial, and Challenge Mode with `sub_4027B0`, then places Help and Back explicitly
-// at `y = 350` with center offsets `-220` and `0`.
+// Time Trial, and Challenge Mode with `stack_widget_below`, places Help explicitly at
+// `(center - 220, y = 350)`, then seeds Back at `y = 350` but immediately stacks it below
+// Challenge Mode. The explicit `350` for Back is only a constructor seed.
 const new_game_start_y: f32 = 80.0;
 const new_game_help_anchor_y: f32 = 350.0;
 const new_game_help_center_offset_x: f32 = -220.0;
-const new_game_back_anchor_y: f32 = 350.0;
 const new_game_back_center_offset_x: f32 = 0.0;
 // PORT(verified): `initialize_help` places the lone Back control at `(center, y=420)`.
 const help_back_anchor_y: f32 = 420.0;
@@ -2444,8 +2444,7 @@ const AppState = struct {
     }
 
     fn routeMapShowsReplay(self: *const AppState) bool {
-        _ = self;
-        return false;
+        return routeMapHasReplayEntry(self.frontend_route_mode, self.frontend_route_index, &self.high_score_tables);
     }
 
     fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
@@ -3754,7 +3753,12 @@ fn newGameHelpTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
 }
 
 fn newGameBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Back", new_game_back_anchor_y, new_game_back_center_offset_x);
+    return frontend_widget.type20TextRect(
+        font,
+        "Back",
+        frontend_widget.stackBelow(newGameMenuTextRect(font, .challenge_mode)),
+        new_game_back_center_offset_x,
+    );
 }
 
 fn helpBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
@@ -4986,6 +4990,22 @@ fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
         .postal => true,
         .challenge, .time_trial, .tutorial => false,
     };
+}
+
+fn routeMapHasReplayEntry(
+    mode: ?FrontendLevelMode,
+    route_index: usize,
+    tables: *const high_score.Tables,
+) bool {
+    // PORT(verified): `open_galaxy_route` only reveals the replay action when the Star Map
+    // controller is in its time-trial mode (`this + 4 == 2`) and the selected completion
+    // slot reports state `1`. The closest persisted Windows-equivalent signal in the port
+    // is a ScoreC completion entry with replay samples still present.
+    if (mode != .time_trial) return false;
+    if (route_index == 0) return false;
+    const completion_index = route_index - 1;
+    if (completion_index >= tables.completion.len) return false;
+    return tables.completion[completion_index].has_replay;
 }
 
 fn completionElapsedMillis(runner: gameplay.Runner) u32 {
@@ -6377,6 +6397,19 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(!completionBonusAppliesForMode(.time_trial));
     try std.testing.expect(!completionBonusAppliesForMode(.tutorial));
     try std.testing.expect(!completionBonusAppliesForMode(null));
+}
+
+test "route map replay gate follows time-trial completion replays" {
+    var tables = high_score.Tables.initDefault();
+    tables.completion[0].has_replay = true;
+
+    try std.testing.expect(routeMapHasReplayEntry(.time_trial, 1, &tables));
+    try std.testing.expect(!routeMapHasReplayEntry(.postal, 1, &tables));
+    try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 0, &tables));
+    try std.testing.expect(!routeMapHasReplayEntry(.time_trial, tables.completion.len + 1, &tables));
+
+    tables.completion[0].has_replay = false;
+    try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 1, &tables));
 }
 
 test "failed runs return to the main menu while completions keep mode-specific exits" {
