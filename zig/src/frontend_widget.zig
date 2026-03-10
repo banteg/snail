@@ -18,7 +18,13 @@ pub const WidgetAlignment = enum(u8) {
 
 pub const type20_idle_padding: f32 = 9.0;
 pub const type20_hot_padding: f32 = 13.0;
+// PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+620 = 26.0` for the
+// shell-font menu widget, and `sub_4027B0` chains the next button by adding that recovered
+// gap to the previous widget's measured text height.
 pub const type20_stack_gap: f32 = 26.0;
+// PORT(verified): the standard centered shell-font menu constructors pass `x = 20.0`
+// with alignment `2`, matching the authored-space offset used by the Windows main/new game
+// menu button stack.
 pub const type20_center_offset_x: f32 = 20.0;
 pub const type20_border_edge: f32 = 20.0;
 pub const cursor_hotspot_x: f32 = 8.0;
@@ -98,6 +104,8 @@ pub const ButtonColors = struct {
 pub fn metricsForType(widget_type: WidgetType) Metrics {
     return switch (widget_type) {
         .menu_button => .{
+            // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+1776 = 1.3`
+            // for the shell-font menu button scale.
             .text_scale = 1.3,
             .idle_padding = type20_idle_padding,
             .hot_padding = type20_hot_padding,
@@ -149,6 +157,9 @@ pub fn widgetTextRect(
 }
 
 pub fn stackBelow(rect: Rect) f32 {
+    // PORT(verified): Windows `sub_4027B0` places the next shell-font widget at
+    // `prev_y + current_gap(26) + prev_text_height`. In the port, `rect.height`
+    // is the authored-space text height for the current widget type.
     return rect.top + rect.height + type20_stack_gap;
 }
 
