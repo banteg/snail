@@ -233,7 +233,24 @@ fn parseEntries(
         try entries.append(allocator, .{ .text = normalized_text });
     }
 
+    if (std.ascii.eqlIgnoreCase(source_path, "INTRO/CREDITS.TXT") and entries.items.len >= 1) {
+        try insertCreditsRemakeLines(allocator, &entries);
+    }
+
     return try entries.toOwnedSlice(allocator);
+}
+
+fn insertCreditsRemakeLines(
+    allocator: std.mem.Allocator,
+    entries: *std.ArrayList(Entry),
+) !void {
+    const blank_line = try allocator.dupe(u8, "");
+    const remake_line = try allocator.dupe(u8, "2026 Remake");
+    const author_line = try allocator.dupe(u8, "banteg");
+
+    try entries.insert(allocator, 1, .{ .text = blank_line });
+    try entries.insert(allocator, 2, .{ .text = remake_line });
+    try entries.insert(allocator, 3, .{ .text = author_line });
 }
 
 fn parseImageDirective(
@@ -561,7 +578,7 @@ test "parse intro script body into ordered text entries" {
     defer definition.deinit();
 
     try std.testing.expectApproxEqAbs(@as(f32, 35.0), definition.duration, 0.001);
-    try std.testing.expectEqual(@as(usize, 3), definition.entries.len);
+    try std.testing.expectEqual(@as(usize, 6), definition.entries.len);
     switch (definition.entries[0]) {
         .text => |text| try std.testing.expectEqualStrings("Credits", text),
         .image => return error.UnexpectedIntroEntry,
@@ -571,6 +588,18 @@ test "parse intro script body into ordered text entries" {
         .image => return error.UnexpectedIntroEntry,
     }
     switch (definition.entries[2]) {
+        .text => |text| try std.testing.expectEqualStrings("2026 Remake", text),
+        .image => return error.UnexpectedIntroEntry,
+    }
+    switch (definition.entries[3]) {
+        .text => |text| try std.testing.expectEqualStrings("banteg", text),
+        .image => return error.UnexpectedIntroEntry,
+    }
+    switch (definition.entries[4]) {
+        .text => |text| try std.testing.expectEqualStrings("", text),
+        .image => return error.UnexpectedIntroEntry,
+    }
+    switch (definition.entries[5]) {
         .text => |text| try std.testing.expectEqualStrings("Programming", text),
         .image => return error.UnexpectedIntroEntry,
     }
