@@ -495,9 +495,9 @@ fn drawWarpedTexture(
     for (0..warp_grid_height - 1) |row| {
         for (0..warp_grid_width - 1) |col| {
             const top_left = warpVertexPoint(layout, vertices, row, col);
-            const top_right = warpVertexPoint(layout, vertices, row, col + 1);
+            const top_right = warpVertexPoint(layout, vertices, row + 1, col);
             const bottom_right = warpVertexPoint(layout, vertices, row + 1, col + 1);
-            const bottom_left = warpVertexPoint(layout, vertices, row + 1, col);
+            const bottom_left = warpVertexPoint(layout, vertices, row, col + 1);
 
             const uvs = warpCellUvBounds(row, col, flipped_uvs);
 
