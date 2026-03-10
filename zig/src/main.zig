@@ -3327,6 +3327,8 @@ pub fn main() !void {
     });
     const initial_window_size = options.window_size_override orelse defaultWindowSizeForCommand(options.command);
     rl.initWindow(initial_window_size.width, initial_window_size.height, "snail");
+    // Keep ESC available for game/frontend input; window close still comes from the platform close event.
+    rl.setExitKey(.null);
     defer rl.closeWindow();
     if (options.command == .game) {
         rl.hideCursor();
