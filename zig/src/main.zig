@@ -458,7 +458,9 @@ const pause_menu_center_offset_x: f32 = 0.0;
 const pause_menu_button_count = pause_menu_items.len;
 const exit_prompt_button_count = 2;
 // PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
-// row pitch `27`, and footer row `111 + 10*27 = 381`.
+// row pitch `27`, and footer row `111 + 10*27 = 381`. Each visible row is a separate
+// type-22 widget bundle anchored at `x = -228/-222/-180/+160/+125` for postal or
+// `x = -228/-222/-180/+125/+170` for challenge, rather than a single freehand text strip.
 const high_score_title_y: f32 = 64.0;
 const high_score_row_start_y: f32 = 111.0;
 const high_score_row_pitch: f32 = 27.0;
@@ -4040,7 +4042,7 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     };
     var title_state = frontend_widget.TextButtonState{};
     title_state.snapFor(.footer_button, false);
-    const title_text = if (pending_entry != null) "Enter your name here" else highScoreScreenTitle(selected_mode);
+    const title_text = if (pending_entry != null) "Enter your name here!" else highScoreScreenTitle(selected_mode);
     frontend_widget.drawTextButton(
         layout,
         art,
@@ -4145,68 +4147,79 @@ fn drawHighScoreTable(
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    const row_background_text = switch (mode) {
-        .postal => "                                               ",
-        .challenge => "                                           ",
-    };
-    const row_font_size: i32 = @intFromFloat(@round(frontend_widget.metricsForType(.compact_score_row).fontSize(&state.ui_font)));
+    const row_background_text = highScoreRowBackgroundText(mode);
 
     for (entries, 0..) |table_entry, entry_index| {
+        const row_highlighted = highlight_index != null and highlight_index.? == entry_index;
+        if (!table_entry.isActive() and !row_highlighted) continue;
+
         const row_y = high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch;
         var row_state = frontend_widget.TextButtonState{};
-        row_state.snapFor(.compact_score_row, highlight_index != null and highlight_index.? == entry_index);
+        row_state.snapFor(.compact_score_row, row_highlighted);
         frontend_widget.drawTextButton(
             layout,
             art,
             &state.ui_font,
             .compact_score_row,
             row_background_text,
-            frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, row_background_text, row_y, high_score_rank_marker_x),
+            highScoreRowBackgroundTextRect(state, mode, row_y),
             row_state,
             false,
         );
 
         var rank_buffer: [8]u8 = undefined;
         const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}", .{entry_index + 1}) catch "";
-        const display_name = if (highlight_index != null and highlight_index.? == entry_index and editing_name != null)
+        const display_name = if (row_highlighted and editing_name != null)
             editing_name.?
         else
             highScoreDisplayName(&table_entry);
-        drawFrontendTextAligned(state, layout, 320.0 + high_score_rank_number_x, row_y, rank_text, row_font_size, .{ .r = 216, .g = 138, .b = 28, .a = 255 }, .left);
-        drawFrontendTextAligned(state, layout, 320.0 + high_score_name_x, row_y, display_name, row_font_size, .ray_white, .left);
+
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .compact_score_row,
+            rank_text,
+            highScoreRankTextRect(state, row_y, rank_text),
+            row_state,
+            false,
+        );
+        frontend_widget.drawTextButton(
+            layout,
+            art,
+            &state.ui_font,
+            .compact_score_row,
+            display_name,
+            highScoreNameTextRect(state, row_y, display_name),
+            row_state,
+            false,
+        );
 
         var score_buffer: [32]u8 = undefined;
         const score_text = if (table_entry.isActive())
             (std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0")
         else
             "";
-        drawFrontendTextAligned(
-            state,
+        frontend_widget.drawTextButton(
             layout,
-            320.0 + switch (mode) {
-                .postal => high_score_postal_score_x,
-                .challenge => high_score_challenge_score_x,
-            },
-            row_y,
+            art,
+            &state.ui_font,
+            .compact_score_row,
             score_text,
-            row_font_size,
-            .{ .r = 216, .g = 138, .b = 28, .a = 255 },
-            .right,
+            highScoreScoreTextRect(state, mode, row_y, score_text),
+            row_state,
+            false,
         );
-        const replay_text = if (!hide_replay and table_entry.has_replay) "Replay" else "";
-        if (replay_text.len != 0) {
-            drawFrontendTextAligned(
-                state,
+        if (!hide_replay and table_entry.has_replay) {
+            frontend_widget.drawTextButton(
                 layout,
-                320.0 + switch (mode) {
-                    .postal => high_score_postal_replay_x,
-                    .challenge => high_score_challenge_replay_x,
-                },
-                row_y,
-                replay_text,
-                row_font_size,
-                .{ .r = 216, .g = 138, .b = 28, .a = 255 },
-                .center,
+                art,
+                &state.ui_font,
+                .compact_score_row,
+                "Replay",
+                highScoreReplayTextRect(state, mode, row_y),
+                state.high_score_replay_button_states[entry_index],
+                false,
             );
         }
     }
