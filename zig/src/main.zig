@@ -388,6 +388,12 @@ const route_menu_actions_closed = [_]RouteMenuAction{
     .back,
 };
 
+const RouteMapHoverState = enum(u8) {
+    none = 0,
+    card = 1,
+    route = 2,
+};
+
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
 // High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
 // `y = 390` first, but immediately overrides it by chaining from Credits.
@@ -802,10 +808,13 @@ const AppState = struct {
     frontend_route_index: usize = 0,
     start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
-    route_map_card_open: bool = false,
+    route_map_open_index: ?usize = null,
+    route_map_hover_state: RouteMapHoverState = .none,
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
+    route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
+    route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
     model_flip_v: bool = true,
     object_flip_v: bool = true,
@@ -830,7 +839,7 @@ const AppState = struct {
     options_music_display_value: f32 = 0.0,
     current_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
-    current_model: ?x2.LoadedModel = null,
+    current_model: ?x2.Uploaded = null,
     current_animation: ?xanim.Player = null,
     current_object: ?object.LoadedObject = null,
     current_level: ?level.Definition = null,
@@ -1636,25 +1645,21 @@ const AppState = struct {
 
     fn updateRouteMapMouseSelection(self: *AppState) !void {
         const local_mouse = self.currentFrontendMouseLocal() orelse {
+            self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(null);
             return;
         };
         const mode = self.frontend_route_mode orelse {
+            self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(null);
             return;
         };
 
-        const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
-        const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-        const route_body = if (self.frontend_route_level) |loaded_level|
-            loaded_level.galaxy_text orelse routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse ""
-        else
-            routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse "";
-
         const back_rect = routeMapBackTextRect(self);
         if (frontend_widget.hitRect(back_rect, self.route_map_button_states[route_map_back_button_index]).contains(local_mouse)) {
+            self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.back));
             if (self.routeMenuActionIndexForAction(.back)) |index| {
@@ -1667,10 +1672,17 @@ const AppState = struct {
         }
 
         const hovered_route_index = routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode));
+        self.route_map_hover_state = if (hovered_route_index != null) .route else .none;
         self.route_map_hovered_index = hovered_route_index;
 
-        if (self.routeMapCardIsOpen()) {
-            if (routeMapPointForRouteIndex(self, self.frontend_route_index)) |route_point| {
+        if (self.currentRouteMapOpenIndex()) |route_index| {
+            const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
+            const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
+            const route_body = if (self.frontend_route_level) |loaded_level|
+                loaded_level.galaxy_text orelse routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse ""
+            else
+                routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse "";
+            if (routeMapPointForRouteIndex(self, route_index)) |route_point| {
                 const card_layout = routeMapCardLayout(
                     &self.ui_font,
                     route_point,
@@ -1682,6 +1694,7 @@ const AppState = struct {
                 );
 
                 if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[route_map_primary_button_index]).contains(local_mouse)) {
+                    self.route_map_hover_state = .card;
                     self.route_map_hovered_index = null;
                     self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
                     if (self.routeMenuActionIndexForAction(.play)) |index| {
@@ -1695,6 +1708,7 @@ const AppState = struct {
 
                 if (card_layout.replay_text_rect) |replay_rect| {
                     if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[route_map_replay_button_index]).contains(local_mouse)) {
+                        self.route_map_hover_state = .card;
                         self.route_map_hovered_index = null;
                         self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
                         if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
@@ -1708,6 +1722,7 @@ const AppState = struct {
                 }
 
                 if (card_layout.card_rect.contains(local_mouse)) {
+                    self.route_map_hover_state = .card;
                     self.route_map_hovered_index = null;
                     self.setFrontendHoverTarget(null);
                     return;
@@ -1717,7 +1732,7 @@ const AppState = struct {
 
         if (hovered_route_index) |route_index| {
             self.setFrontendHoverTarget(null);
-            if (rl.isMouseButtonPressed(.left) and (!self.routeMapCardIsOpen() or route_index != self.frontend_route_index)) {
+            if (rl.isMouseButtonPressed(.left) and self.currentRouteMapOpenIndex() != route_index) {
                 try self.openFrontendRouteCard(route_index);
                 self.playFrontendSelectSound();
             }
@@ -2063,6 +2078,8 @@ const AppState = struct {
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     self.queueFrontendActivation(.{ .route_map_menu = route_actions[self.route_menu_action_index] });
                 }
+                self.syncRouteMapHighlightTargets();
+                self.stepRouteMapHighlightAnimations();
             },
             .high_scores_menu => {
                 try self.updateHighScoresMouseSelection();
@@ -2451,6 +2468,8 @@ const AppState = struct {
             self.start_route_index_override = null;
         }
         try self.openFrontendRouteCard(self.frontend_route_index);
+        self.resetRouteMapHighlightAnimations();
+        self.syncRouteMapHighlightTargets();
         try self.enterGamePhase(.route_map_menu);
     }
 
@@ -2472,21 +2491,31 @@ const AppState = struct {
 
     fn currentFrontendGalaxyName(self: *const AppState) ?[]const u8 {
         const names = self.galaxy_names orelse return null;
-        return names.nameForRouteIndex(self.frontend_route_index);
+        return names.nameForRouteIndex(self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
     fn routeMapShowsReplay(self: *const AppState) bool {
-        return routeMapHasReplayEntry(self.frontend_route_mode, self.frontend_route_index, &self.high_score_tables);
+        const route_index = self.currentRouteMapOpenIndex() orelse return false;
+        return routeMapHasReplayEntry(self.frontend_route_mode, route_index, &self.high_score_tables);
     }
 
     fn routeMapCardIsOpen(self: *const AppState) bool {
-        return self.route_map_card_open;
+        return self.route_map_open_index != null;
+    }
+
+    // PORT(verified): `open_galaxy_route` stores the active route index at `this + 69504`,
+    // while `close_galaxy_route` clears that slot back to `-1`. Model the open-card route
+    // separately instead of assuming the saved/default route is always the open one.
+    fn currentRouteMapOpenIndex(self: *const AppState) ?usize {
+        return self.route_map_open_index;
     }
 
     fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
-        self.route_map_card_open = true;
+        self.route_map_open_index = route_index;
+        self.route_map_hover_state = .none;
         self.route_map_hovered_index = null;
         self.frontend_route_index = route_index;
+        self.syncRouteMapHighlightTargets();
         try self.reloadFrontendRouteLevel();
         if (self.routeMenuActionIndexForAction(.play)) |index| {
             self.route_menu_action_index = index;
@@ -2496,9 +2525,39 @@ const AppState = struct {
     }
 
     fn closeFrontendRouteCard(self: *AppState) void {
-        self.route_map_card_open = false;
+        self.route_map_open_index = null;
+        self.route_map_hover_state = .none;
         self.route_map_hovered_index = null;
         self.route_menu_action_index = 0;
+        self.syncRouteMapHighlightTargets();
+    }
+
+    fn resetRouteMapHighlightAnimations(self: *AppState) void {
+        @memset(&self.route_map_route_highlight_alpha, 0.0);
+        @memset(&self.route_map_route_highlight_target, 0.0);
+    }
+
+    // PORT(verified): `update_galaxy` ticks each route entry through `sub_409BD0`, which
+    // eases the current highlight alpha at `+40` toward the target at `+44` with a `0.1`
+    // step. The target is `1.0` for the hovered route in hover state `2`, otherwise for the
+    // open route while the card is up.
+    fn syncRouteMapHighlightTargets(self: *AppState) void {
+        @memset(&self.route_map_route_highlight_target, 0.0);
+        const highlighted_route_index = switch (self.route_map_hover_state) {
+            .route => self.route_map_hovered_index,
+            .card, .none => self.currentRouteMapOpenIndex(),
+        } orelse return;
+        if (highlighted_route_index < self.route_map_route_highlight_target.len) {
+            self.route_map_route_highlight_target[highlighted_route_index] = 1.0;
+        }
+    }
+
+    fn stepRouteMapHighlightAnimations(self: *AppState) void {
+        for (1..self.route_map_route_highlight_alpha.len) |route_index| {
+            const current = self.route_map_route_highlight_alpha[route_index];
+            const target = self.route_map_route_highlight_target[route_index];
+            self.route_map_route_highlight_alpha[route_index] = current + (target - current) * 0.1;
+        }
     }
 
     // PORT(verified): `update_galaxy` and `close_galaxy_route` gate the Star Map card actions
@@ -2535,7 +2594,7 @@ const AppState = struct {
 
     fn enterSelectedFrontendRoute(self: *AppState) !void {
         const mode = self.frontend_route_mode orelse return;
-        try self.enterFrontendLevelPath(mode, self.frontend_route_index);
+        try self.enterFrontendLevelPath(mode, self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
     fn saveHighScoreTables(self: *AppState) !void {
@@ -3425,7 +3484,7 @@ const AppState = struct {
             }
         }
 
-        self.current_model = try x2.LoadedModel.loadFromArchive(self.allocator, &self.catalog, entry, self.model_flip_v);
+        self.current_model = try x2.loadFromArchive(self.allocator, &self.catalog, entry, .{ .flip_v = self.model_flip_v });
     }
 
     fn reloadObject(self: *AppState) !void {
@@ -3495,7 +3554,7 @@ const AppState = struct {
         self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
     }
 
-    fn activeModel(self: *const AppState) ?*const x2.LoadedModel {
+    fn activeModel(self: *const AppState) ?*const x2.Uploaded {
         if (self.current_animation) |*animation| {
             return &animation.rendered;
         }
@@ -4054,24 +4113,24 @@ const RouteMapCardLayout = struct {
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
     const selected_action = state.activeRouteMenuHotAction();
-    const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
-    const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-    const route_body = if (state.frontend_route_level) |loaded_level|
-        loaded_level.galaxy_text orelse routeMenuHint(mode, selected_action) orelse ""
-    else
-        routeMenuHint(mode, selected_action) orelse "";
-    const primary_label = routeMenuActionLabel(mode, .play);
-    const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    const heading_color = rl.Color{ .r = 216, .g = 138, .b = 28, .a = 255 };
-
-    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", route_map_title_x, route_map_title_y, route_map_title_scale, heading_color);
+    // PORT(verified): `initialize_galaxy` passes an explicit white color into the title
+    // widget constructor instead of reusing the orange menu-heading tint.
+    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", route_map_title_x, route_map_title_y, route_map_title_scale, .ray_white);
     drawRouteMapLogo(state, layout);
     drawRouteMapStars(state, layout, mode);
-    if (state.routeMapCardIsOpen()) {
-        if (routeMapPointForRouteIndex(state, state.frontend_route_index)) |route_point| {
+    if (state.currentRouteMapOpenIndex()) |route_index| {
+        const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
+        const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
+        const route_body = if (state.frontend_route_level) |loaded_level|
+            loaded_level.galaxy_text orelse routeMenuHint(mode, selected_action) orelse ""
+        else
+            routeMenuHint(mode, selected_action) orelse "";
+        const primary_label = routeMenuActionLabel(mode, .play);
+        const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
+        if (routeMapPointForRouteIndex(state, route_index)) |route_point| {
             const card_layout = routeMapCardLayout(
                 &state.ui_font,
                 route_point,
@@ -4835,8 +4894,6 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
         names.galaxyIndexForRouteIndex(state.frontend_route_index)
     else
         null;
-    const highlighted_route_index = state.route_map_hovered_index orelse if (state.routeMapCardIsOpen()) state.frontend_route_index else null;
-
     for (0..galaxy.map_galaxy_count) |galaxy_index| {
         const center = galaxy.galaxyCenter(galaxy_index);
         if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
@@ -4886,10 +4943,25 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
         }
     }
 
-    if (highlighted_route_index) |route_index| {
+    for (1..@min(available_limit, galaxy.map_route_count) + 1) |route_index| {
+        const highlight_alpha = state.route_map_route_highlight_alpha[route_index];
+        if (highlight_alpha <= 0.001) continue;
         if (routeMapPointForRouteIndex(state, route_index)) |selected_point| {
             if (state.route_map_art.level_select) |loaded_texture| {
-                drawTextureCenteredLocal(layout, loaded_texture, selected_point.x, selected_point.y, 64.0, 64.0, .white);
+                drawTextureCenteredLocal(
+                    layout,
+                    loaded_texture,
+                    selected_point.x,
+                    selected_point.y,
+                    64.0,
+                    64.0,
+                    .{
+                        .r = 255,
+                        .g = 255,
+                        .b = 255,
+                        .a = @intFromFloat(std.math.clamp(highlight_alpha * 255.0, 0.0, 255.0)),
+                    },
+                );
             }
         }
     }
@@ -5704,7 +5776,7 @@ fn drawAudioPanel(state: *const AppState) !void {
 fn drawModelPanel(state: *const AppState) !void {
     const entry = state.catalog.model_entries[state.model_index];
     const model = state.activeModel() orelse return;
-    const parsed = &model.parsed;
+    const parsed = &model.doc;
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
@@ -5715,8 +5787,8 @@ fn drawModelPanel(state: *const AppState) !void {
             state.catalog.model_entries.len,
             model.submeshes.len,
             parsed.vertices.len,
-            parsed.faces.len,
-            parsed.total_triangle_count,
+            parsed.polygons.len,
+            parsed.triangle_count,
         },
     );
     drawAppText(state, summary_text, 32, 194, 24, .ray_white);
@@ -5742,18 +5814,21 @@ fn drawModelPanel(state: *const AppState) !void {
     drawAppText(state, "RWG loader notes", 56, 332, 26, .ray_white);
 
     var mesh_buffer: [384]u8 = undefined;
-    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.center.x, model.center.y, model.center.z });
+    const mesh_text = try std.fmt.bufPrintZ(&mesh_buffer, "Bounds center: {d:.2}, {d:.2}, {d:.2}", .{ model.bounds.center.x, model.bounds.center.y, model.bounds.center.z });
     drawAppText(state, mesh_text, 56, 378, 20, .light_gray);
 
     var material_buffer: [384]u8 = undefined;
-    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.radius});
+    const material_text = try std.fmt.bufPrintZ(&material_buffer, "Preview radius: {d:.2}", .{model.bounds.radius});
     drawAppText(state, material_text, 56, 410, 20, .light_gray);
 
     var texture_buffer: [384]u8 = undefined;
     const texture_text = try std.fmt.bufPrintZ(
         &texture_buffer,
         "First texture: {s}",
-        .{if (model.submeshes.len > 0 and model.submeshes[0].archive_texture_path != null) model.submeshes[0].archive_texture_path.? else "<none>"},
+        .{if (model.submeshes.len > 0)
+            (if (model.submeshes[0].texture) |texture| texture.path else model.submeshes[0].texture_filename orelse "<none>")
+        else
+            "<none>"},
     );
     drawAppText(state, texture_text, 56, 442, 20, .light_gray);
 
@@ -5800,8 +5875,8 @@ fn drawModelViewport(state: *const AppState) void {
     camera.begin();
     defer rl.endMode3D();
 
-    const grid_slices: i32 = @intFromFloat(@min(@max(model.radius * 6.0, 10.0), 80.0));
-    const grid_spacing = @max(model.radius / 2.0, 0.5);
+    const grid_slices: i32 = @intFromFloat(@min(@max(model.bounds.radius * 6.0, 10.0), 80.0));
+    const grid_spacing = @max(model.bounds.radius / 2.0, 0.5);
     rl.drawGrid(grid_slices, grid_spacing);
     model.draw();
 }
