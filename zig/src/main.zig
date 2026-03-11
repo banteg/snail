@@ -1803,8 +1803,8 @@ const AppState = struct {
     }
 
     fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
-        if (self.postLevelHighScoreContext() != null) return false;
         const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        if (!highScoreRowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
         const entries = self.high_score_tables.visibleEntries(selected_mode);
         return entry_index < entries.len and entries[entry_index].has_replay;
     }
@@ -1838,15 +1838,17 @@ const AppState = struct {
         } else {
             const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
             const entries = self.high_score_tables.visibleEntries(selected_mode);
-            for (entries, 0..) |entry, entry_index| {
-                if (!entry.has_replay) continue;
-                const replay_rect = highScoreReplayTextRect(self, selected_mode, high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch);
-                if (frontend_widget.hitRect(replay_rect, self.high_score_replay_button_states[entry_index]).contains(local_mouse)) {
-                    self.setFrontendHoverTarget(hoverTargetForHighScoreReplay(entry_index));
-                    if (rl.isMouseButtonPressed(.left)) {
-                        self.queueFrontendActivation(.{ .high_score_replay = entry_index });
+            if (highScoreRowsShowReplay(selected_mode, false)) {
+                for (entries, 0..) |entry, entry_index| {
+                    if (!entry.has_replay) continue;
+                    const replay_rect = highScoreReplayTextRect(self, selected_mode, high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch);
+                    if (frontend_widget.hitRect(replay_rect, self.high_score_replay_button_states[entry_index]).contains(local_mouse)) {
+                        self.setFrontendHoverTarget(hoverTargetForHighScoreReplay(entry_index));
+                        if (rl.isMouseButtonPressed(.left)) {
+                            self.queueFrontendActivation(.{ .high_score_replay = entry_index });
+                        }
+                        return;
                     }
-                    return;
                 }
             }
 
@@ -4490,7 +4492,7 @@ fn drawHighScoreTable(
             false,
             text_only_score_cell,
         );
-        if (!hide_replay and table_entry.has_replay) {
+        if (highScoreRowsShowReplay(mode, hide_replay) and table_entry.has_replay) {
             frontend_widget.drawTextButton(
                 layout,
                 art,
@@ -4509,6 +4511,12 @@ fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
     const name = entry.name();
     if (name.len == 0) return "---";
     return name;
+}
+
+fn highScoreRowsShowReplay(mode: high_score.Mode, in_name_entry: bool) bool {
+    // PORT(verified): `initialize_high_score_screen` only enables the row Replay widgets for the
+    // Challenge table, and `update_high_score_screen` suppresses them while inline name-entry is active.
+    return mode == .challenge and !in_name_entry;
 }
 
 fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
@@ -6722,6 +6730,12 @@ test "route map replay gate follows time-trial completion replays" {
 
     tables.completion[0].has_replay = false;
     try std.testing.expect(!routeMapHasReplayEntry(.time_trial, 1, &tables));
+}
+
+test "high-score row replay is challenge-only" {
+    try std.testing.expect(!highScoreRowsShowReplay(.postal, false));
+    try std.testing.expect(highScoreRowsShowReplay(.challenge, false));
+    try std.testing.expect(!highScoreRowsShowReplay(.challenge, true));
 }
 
 test "route map screen modes follow windows route-map entry paths" {

@@ -161,8 +161,13 @@ pub const Tables = struct {
                     current.raw_record = incoming.raw_record;
                     incoming.raw_record = null;
                     current.has_replay = incoming.has_replay;
-                } else if (incoming.has_replay) {
-                    current.has_replay = true;
+                } else {
+                    // PORT(partial): Windows promotes the whole new time-trial snapshot into the
+                    // per-route completion slot. When the port only has a scalar time update and
+                    // no fresh compact overlay, keeping the old replay/raw payload would mislabel
+                    // the new best as still having the previous run's replay blob.
+                    current.deinit(allocator);
+                    current.has_replay = false;
                 }
             }
             return .{
@@ -432,7 +437,7 @@ test "arcade insertion shifts opaque records without duplicating ownership" {
     try std.testing.expectEqual(@as(u8, 9), tables.postal[10].raw_record.?[0]);
 }
 
-test "time trial improvements preserve opaque replay payloads when only the score changes" {
+test "time trial improvements clear stale replay payloads without a fresh snapshot" {
     var tables = Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
 
@@ -444,16 +449,13 @@ test "time trial improvements preserve opaque replay payloads when only the scor
     @memset(raw_record, 0xaa);
     tables.completion[2].raw_record = raw_record;
 
-    const before_ptr = tables.completion[2].raw_record.?.ptr;
     const improved = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 41000 }, true);
     try std.testing.expect(improved.improved);
     try std.testing.expectEqual(@as(u32, 41000), tables.completion[2].score);
     try std.testing.expectEqual(@as(u32, 3), tables.completion[2].level_index);
     try std.testing.expectEqualStrings("Turbo", tables.completion[2].name());
-    try std.testing.expect(tables.completion[2].has_replay);
-    try std.testing.expect(tables.completion[2].raw_record != null);
-    try std.testing.expectEqual(before_ptr, tables.completion[2].raw_record.?.ptr);
-    try std.testing.expectEqual(@as(u8, 0xaa), tables.completion[2].raw_record.?[0]);
+    try std.testing.expect(!tables.completion[2].has_replay);
+    try std.testing.expect(tables.completion[2].raw_record == null);
 }
 
 test "failed time trial attempt only updates scratch and preserves best route time" {
