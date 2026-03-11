@@ -300,6 +300,7 @@ pub const Runner = struct {
     score: ScoreTotals = .{},
     visible_life_stock: u32 = starting_visible_life_stock,
     damage_gauge: f32 = 0.0,
+    slug_hit_active: bool = false,
     damage_warning_state: DamageWarningState = .idle,
     damage_warning_fill: f32 = 0.0,
     completion_bonus_enabled: bool = false,
@@ -729,9 +730,14 @@ pub const Runner = struct {
                 self.recent_event = .slug_hit;
                 // PORT(partial): Windows first sends slug contact through a dedicated hit/fall
                 // branch that clears attachment-follow and enters the death cutscene state; the
-                // +1.0 damage-gauge delta only appears on repeated slug contact while already in
-                // that state. The runner mirrors the first-hit scripted handoff here, but still
-                // omits the richer repeated-contact path and its separate collision pool.
+                // +1.0 damage-gauge delta appears only on repeated slug contact while already in
+                // that state. The runner mirrors that split locally: first hit arms the slug-hit
+                // latch and enters the scripted handoff, later contacts add the recovered damage.
+                if (self.slug_hit_active) {
+                    self.applyDamageGaugeDelta(1.0);
+                    return;
+                }
+                self.slug_hit_active = true;
                 self.beginDeathCutscene(.hazard);
             },
         }
@@ -1266,6 +1272,22 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "repeated slug contact adds the recovered +1.0 damage delta" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, slug);
+
+    runner.processRow(&fixture.preview, slug.row);
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
+
+    runner.processRow(&fixture.preview, slug.row);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
 }
 
 test "full damage enters warning fill and auto-drain" {
