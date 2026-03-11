@@ -270,31 +270,39 @@ The path-template typing is now firm enough to name the sampled point records ex
 
 High-confidence `PathTemplate` fields:
 
-- `+0x44`: `sample_count`
+- `+0x38`: `kind`
+- `+0x3c`: `is_mirrored_x`
+- `+0x40`: `side_exit_mode`
+- `+0x44`: `segment_count`
+- `+0x4c`: `segment_count_f`
+- `+0x54`: `width_cells`
 - `+0x58`: `primary_points`
 - `+0x5c`: `secondary_points`
-- `+0x98`: `row_scalar_a`
-- `+0x9c`: `row_scalar_b`
-- `+0xa0`: `row_scalar_c`
-- `+0xa4`: `row_scalar_d`
+- `+0x98`: `installed_heading_delta`
+- `+0x9c`: `special_runtime_cell_swaps`
+- `+0xa0`: `runtime_cell_variant_mid`
+- `+0xa4`: `runtime_cell_variant_end`
 
 High-confidence `PathTemplateSample` fields:
 
+- `+0x00`: `basis_right`
+- `+0x10`: `basis_up`
+- `+0x20`: `basis_forward`
 - `+0x30`: `position`
-- `+0x80`: `delta`
+- `+0x80`: `delta_dir_to_next`
 - `+0x8c`: `delta_length`
-- `+0x90`: `orientation_a`
-- `+0x94`: `orientation_b`
-- `+0x98`: `orientation_c`
-- `+0x9c`: `scalar_9c`
-- `+0xa0`: `scalar_a0`
+- `+0x90`: `center_x`
+- `+0x94`: `rotation_scalar_94`
+- `+0x98`: `rotation_scalar_98`
+- `+0x9c`: `lateral_scale`
+- `+0xa0`: `warp_phase`
 
 This matches the recovered follow-state update behavior:
 
-- `sample_count` bounds the active sample index
+- `segment_count` bounds the active sample index
 - the current sample `delta_length` scales the per-tick path factor
-- `position` and `delta` feed the interpolated output pose
-- `scalar_a0` is the field currently consumed by the ride-height smoothing branch in `update_subgoldy`
+- `position` and `delta_dir_to_next` feed the interpolated output pose
+- `warp_phase` is the field consumed by the special nonlinear kind-`42` / `WARP`-like branch
 
 ## Binary Ninja Note
 

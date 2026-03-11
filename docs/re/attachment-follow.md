@@ -45,12 +45,12 @@ Related helper:
 The current high-confidence follow-state layout is:
 
 - `+0x00`: active flag
-- `+0x04`: active attachment-template record pointer
-- `+0x08`: source runtime cell pointer
-- `+0x0c`: current sample index
+- `+0x04`: active attachment-template pointer
+- `+0x08`: owner attachment-runtime record
+- `+0x0c`: current segment index
 - `+0x10`: progress within the current sampled segment
-- `+0x14`: vertical offset seed from `world_y - 0.49`
-- `+0x18..+0x28`: orientation-like values updated each tick
+- `+0x14`: local height above the attachment surface
+- `+0x18..+0x28`: live orientation-like intermediates updated each tick
 - `+0x2c`: interpolated output position written by `update_track_attachment_follow_state`
 - `+0x38`: player pointer
 
@@ -58,10 +58,10 @@ Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 
 - sets the active flag to `1`
 - stores the selected attachment pointer from runtime cell `+0x38`
-- stores the source runtime cell pointer
-- zeros the sample index
+- stores the owner attachment-runtime record
+- zeros the segment index
 - seeds progress from `world_z - cell_anchor_z`
-- seeds vertical offset from `world_y - 0.49`
+- seeds local height from `world_y - 0.49`
 - stores the player pointer
 - copies a row-derived value into `attachment + 0x98` through `get_track_cell_row_index`
 
@@ -123,6 +123,13 @@ Additional static detail from `update_track_attachment_follow_state`:
 - the current output position is written to follow-state `+0x2c`
 - the update terminates the follow state when the sample index reaches the template end
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
+
+The newer Windows-only package also tightened two family reads:
+
+- kind `31` is the dedicated `SUPERTRAMP` launch-exit family
+- kind `42` is the special nonlinear `WARP`-like branch used by both projection and live follow
+
+That distinction matters because path-table slot `30` is still the authored `WARP` name, while runtime kind `42` is a separate field and currently the strongest match for that missing constructor family.
 
 Important caveat for this specific March 8 capture:
 
@@ -195,7 +202,7 @@ Still missing:
 
 - the exact initialization path from the hardcoded path-name table to the path-template pair tables
 - the detailed semantics of each path-template constructor beyond the current family grouping
-- the exact constructor site for the named `WARP` slot
+- the exact constructor body for the named `WARP` slot, even though runtime kind `42` is now the best candidate for that family
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
 
 ## Practical Impact On The Rewrite

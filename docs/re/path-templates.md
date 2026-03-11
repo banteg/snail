@@ -60,10 +60,12 @@ Instead, `find_segment_path_index_by_name` linearly searches a hardcoded string-
 | 49 | `TOADPAIR0` |
 | 50 | `TOADPAIR1` |
 
-Important correction:
+Important corrections:
 
 - the shipped table has `51` names, not `47`
 - no shipped `SEGMENTS/*.TXT` or `LEVELS/*.TXT` currently references `WARP` by name
+- path-table index `42` is still the authored name `HALFPIPE`
+- the recovered **runtime kind** `42` is a different field entirely, and is currently the strongest match for the missing `WARP`-family constructor
 
 ## Path Template Slot Layout
 
@@ -171,7 +173,7 @@ This matches the follow-state code path:
 | 25-27 | `LOOPOUT*` | `sub_41c5f0` | `LOOPOUT`, `LOOPOUT3`, `LOOPOUTBIG` |
 | 28 | `SWEEP` | `sub_422c00` | |
 | 29 | `SNAKE` | `sub_423580` | |
-| 30 | `WARP` | unresolved | no clean aligned constructor site recovered yet |
+| 30 | `WARP` | unresolved | most likely the missing constructor for runtime kind `42` |
 | 31 | `SUPERTRAMP` | `sub_423f10` | both halves are built explicitly |
 | 32 | `SLALOMDOUBLE` | `sub_425050` | |
 | 33-35 | `P0`, `P1`, `P2` | `sub_425a40` | |
@@ -191,11 +193,11 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - kind `31` has the dedicated launch-exit branch, matching `SUPERTRAMP`
 - kinds `33`, `34`, and `35` are the shared `P`-family constructor variants
 - kind `36` is the explicit `START` constructor family
-- kind `42` still has its own nonlinear projection or follow branch in both projection and live-update code, but that new package does not overturn the current `WARP` slot assignment above
+- kind `42` still has its own nonlinear projection or follow branch in both projection and live-update code, and the newest package strengthens the read that this runtime kind is the missing `WARP`-family constructor output
 
 ## Practical Read
 
 - named `Path=` rows choose hardcoded template pairs rather than archive-defined path files
 - most names are family variants built from one constructor plus an X-mirror pass
-- `WARP` remains the one public slot without a clean recovered constructor path
+- `WARP` remains the one public slot without a directly recovered constructor body, but runtime kind `42` is now the strongest candidate for that missing family
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step

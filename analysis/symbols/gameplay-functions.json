@@ -435,6 +435,11 @@
       "description": "Linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1."
     },
     {
+      "address": "0x42b920",
+      "name": "compute_warp_attachment_transform",
+      "description": "Computes the nonlinear temporary transform used by attachment kind 42 during projection and live follow, deriving a warp-like rotation and endpoint offset from the sample's special phase scalar."
+    },
+    {
       "address": "0x42ba80",
       "name": "initialize_loopbow_path_template_pair"
     },
