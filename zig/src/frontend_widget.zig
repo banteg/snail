@@ -50,8 +50,8 @@ pub const type20_stack_gap: f32 = 26.0;
 // with alignment `2`, matching the authored-space offset used by the Windows main/new game
 // menu button stack.
 pub const type20_center_offset_x: f32 = 20.0;
-// PORT(verified): `sub_401130` renders the type-20 shell border with a fixed authored
-// corner size of `+560 = 20.0`, while the compact/footer variants use a 4px edge path.
+// PORT(verified): `sub_401130` renders the standard shell border with a fixed authored
+// corner size of `+560 = 20.0`. Compact score rows use the smaller 4px edge path.
 pub const type20_border_edge: f32 = 20.0;
 pub const compact_border_edge: f32 = 4.0;
 pub const cursor_hotspot_x: f32 = 8.0;
@@ -178,11 +178,13 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .source_edge_fraction = 0.1,
         },
         .footer_button => .{
+            // PORT(verified): type-23 footer widgets keep the standard shell border path
+            // (`edge = 20`) while using their own smaller text scale and padding targets.
             .text_scale = 1.14,
             .idle_padding = 6.0,
             .hot_padding = 7.0,
-            .border_edge = compact_border_edge,
-            .source_edge_fraction = 0.1,
+            .border_edge = type20_border_edge,
+            .source_edge_fraction = type20_border_edge / 128.0,
         },
         .route_map_secondary_action => .{
             // PORT(verified): `initialize_galaxy` / `open_galaxy_route` keep the replay action
@@ -454,7 +456,21 @@ pub fn drawSliderMenuRow(
         drawTextureLocalRect(layout, texture, more_rect.left, more_rect.top, more_rect.width, more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
     }
 
-    drawTextButton(layout, art, font, .slider_value, value_text, value_rect, row_state, false);
+    drawTextButtonWithOptions(
+        layout,
+        art,
+        font,
+        .slider_value,
+        value_text,
+        value_rect,
+        row_state,
+        false,
+        .{
+            // PORT(verified): the options slider readout is a child widget on the slider
+            // parent, but the shell background is suppressed in the shared draw path.
+            .flags = @intFromEnum(WidgetFlags.invisible_background),
+        },
+    );
 }
 
 pub fn drawNineSliceFrame(
@@ -666,6 +682,12 @@ test "right aligned text rect ends at the authored anchor" {
 test "stack below uses the recovered 26 pixel gap" {
     const rect = Rect{ .left = 0.0, .top = 90.0, .width = 80.0, .height = 44.2 };
     try std.testing.expectApproxEqAbs(@as(f32, 160.2), stackBelow(rect), 0.001);
+}
+
+test "footer widgets keep the standard shell edge" {
+    const metrics = metricsForType(.footer_button);
+    try std.testing.expectApproxEqAbs(type20_border_edge, metrics.border_edge, 0.001);
+    try std.testing.expectApproxEqAbs(type20_border_edge / 128.0, metrics.source_edge_fraction, 0.0001);
 }
 
 test "slider arrow rect uses the recovered authored offsets" {
