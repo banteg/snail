@@ -600,31 +600,29 @@ function summarizeInstalledOwner(ownerPtr, gamePtr) {
   let bankRoot = null;
   let bankLabel = null;
   let pathIndex = null;
-  if (ownerU32 >= primaryU32 && ownerU32 < primaryU32 + bankBytes) {
-    const offset = ownerU32 - primaryU32;
-    if (offset % ATTACHMENT.installed_record_stride === 0) {
-      bankRoot = primaryRoot;
-      bankLabel = 'ff2914';
-      pathIndex = Math.floor(offset / ATTACHMENT.installed_record_stride);
-    }
-  } else if (ownerU32 >= secondaryU32 && ownerU32 < secondaryU32 + bankBytes) {
-    const offset = ownerU32 - secondaryU32;
-    if (offset % ATTACHMENT.installed_record_stride === 0) {
-      bankRoot = secondaryRoot;
-      bankLabel = 'ff29bc';
-      pathIndex = Math.floor(offset / ATTACHMENT.installed_record_stride);
-    }
+
+  const primaryOffset = ownerU32 - primaryU32;
+  if (primaryOffset >= 0 && primaryOffset < bankBytes && primaryOffset % ATTACHMENT.installed_record_stride === 0) {
+    bankRoot = primaryRoot;
+    bankLabel = 'ff2914';
+    pathIndex = Math.floor(primaryOffset / ATTACHMENT.installed_record_stride);
   }
 
-  const template = safeReadPointer(owner, ATTACHMENT.gameplay_cell_attachment_offset);
+  const secondaryOffset = ownerU32 - secondaryU32;
+  if (secondaryOffset >= 0 && secondaryOffset < bankBytes && secondaryOffset % ATTACHMENT.installed_record_stride === 0) {
+    bankRoot = secondaryRoot;
+    bankLabel = 'ff29bc';
+    pathIndex = Math.floor(secondaryOffset / ATTACHMENT.installed_record_stride);
+  }
+
   return {
     ptr: hex(owner),
     bank_root: hex(bankRoot),
     bank_root_label: bankLabel,
     path_index: pathIndex,
     path_name: canonicalPathNameFromIndex(pathIndex),
-    template: hex(template),
-    template_summary: summarizeAttachmentTemplate(template),
+    template: hex(owner),
+    template_summary: summarizeAttachmentTemplate(owner),
     world_origin: safeReadVec3(owner, 16),
     segment_rows: safeReadU32(owner, 72),
     render_asset_a: hex(safeReadPointer(owner, 36)),

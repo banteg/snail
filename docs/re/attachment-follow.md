@@ -189,6 +189,40 @@ Operational caveat:
 - that evening capture still used the older grid-cell summarizer, so `player_update` and `floor_sample` cell rows are not trustworthy there
 - the attachment template and follow-state summaries themselves are still useful, and the local Frida script now fixes the gameplay-grid versus row-cell split for the next recapture
 
+## First Path-Oracle Capture
+
+The first focused path-oracle run from March 12, 2026 was useful even though it did not close the `HALFPIPE` gap yet.
+
+What it did confirm:
+
+- startup path resolution really does parse the live public table entries for both `HALFPIPE` and `WARP`
+  - `HALFPIPE` was observed at public path index `42`
+  - `WARP` was observed at public path index `30`
+- the live installed owner record itself carries the template fields we care about for runtime capture
+  - kind
+  - sample count
+  - primary/secondary sample-array pointers
+- the builder-state byte at `this + 2` really matters in practice
+  - level `26` was captured once with `bank_selector_byte = 1` and once with `bank_selector_byte = 0`
+  - those two runs produced different installed attachment sets
+- live attachment-follow in that capture hit these recovered families:
+  - `START` -> kind `36`
+  - `LOOPTHELOOP` -> kind `0`
+  - `WIBBLE` -> kind `40`
+  - `SLALOMBIG` -> kind `23`
+
+What it did **not** show:
+
+- no live attachment install or follow event for public path `HALFPIPE`
+- no live attachment template with runtime kind `42`
+- no live `WARP` follow despite `compute_warp_attachment_transform` firing during startup or constructor-side work
+
+So the current strongest read is:
+
+- `HALFPIPE` is definitely parsed from shipped content at runtime
+- this specific capture did not drive the player through a live installed `HALFPIPE` section
+- kind `42` remains a runtime family that still needs a targeted live capture rather than more inference from this first pass
+
 ## Practical Read
 
 This is the current high-confidence static evidence that:
