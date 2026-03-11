@@ -7,6 +7,7 @@ Use this together with:
 - [Frida runtime trace](frida-runtime-trace.md)
 - [Path system](path-system.md)
 - [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js)
+- [tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js)
 
 ## Goal
 
@@ -37,6 +38,7 @@ From the Windows machine, have all of these available:
 2. The original game files plus a locally generated [SnailMail_unwrapped.exe](../../artifacts/bin/SnailMail_unwrapped.exe). If it is missing, generate it first with `uv run snail unwrap`.
 3. Frida CLI installed and working on Windows.
 4. The trace script at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
+5. The focused path oracle at [tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js) when the target is `HALFPIPE`/`WARP`/loop-family runtime behavior instead of general gameplay.
 
 Recommended quick checks:
 
@@ -74,6 +76,18 @@ The script currently hooks these points:
 - `0x441740` `deactivate_salt_runtime_entity`
 - `0x43dc80` `spawn_slug_runtime_entity`
 - `0x447040` `get_track_cell_row_index` for row tagging when safe
+
+For the narrower path oracle, the current hook set is:
+
+- `0x437eb0` `normalize_level_runtime_fields`
+- `0x429ae0` `find_segment_path_index_by_name`
+- `0x435eb0` `populate_runtime_track_cells_from_segments`
+- `0x4444b0` `project_position_onto_track_attachment`
+- `0x42c770` `try_enter_track_attachment_from_swept_motion`
+- `0x420c40` `begin_track_attachment_follow_state`
+- `0x420cb0` `update_track_attachment_follow_state`
+- `0x43af60` `end_track_attachment_follow_state`
+- `0x42b920` `compute_warp_attachment_transform`
 
 Important payload notes for the current script:
 
@@ -164,6 +178,13 @@ cd .\artifacts\bin
 frida -f .\SnailMail_unwrapped.exe -l ..\..\tools\frida\snailmail-runtime-trace.js
 ```
 
+For the path oracle instead:
+
+```powershell
+cd .\artifacts\bin
+frida -f .\SnailMail_unwrapped.exe -l ..\..\tools\frida\snailmail-path-oracle.js
+```
+
 If spawn still exits immediately, start the game normally from `artifacts\bin` and attach from the repo root instead:
 
 ```powershell
@@ -182,6 +203,13 @@ Before running any new capture, sync the latest repo copy of [tools/frida/snailm
 - the cell-layout split between gameplay grid cells and row-cell attachment records
 
 Without that update, the capture will still be useful for probes, pickups, and hazard spawns, but it will under-report player state and attachment exits.
+
+For the path oracle, the newest script focuses on:
+
+- installed `P/p` row ownership after `populate_runtime_track_cells_from_segments`
+- live bank-root choice (`game + 0xff2914` vs `game + 0xff29bc`)
+- runtime path-family identity by installed owner, template kind, and path-name index
+- projection, entry, follow, exit, and warp-transform events for attachment families
 
 ## Capture Matrix
 

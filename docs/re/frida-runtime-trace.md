@@ -2,7 +2,9 @@
 
 This page describes the Frida harness for capturing the runtime evidence we still need from the original Windows game.
 
-The script lives at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
+The broad runtime script lives at [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js).
+
+For the narrower remaining path-family questions, use the focused oracle at [tools/frida/snailmail-path-oracle.js](../../tools/frida/snailmail-path-oracle.js).
 
 The Windows-side operational handoff lives at [windows-frida-handoff.md](windows-frida-handoff.md).
 
@@ -18,6 +20,16 @@ The remaining static RE gap is no longer basic file formats. It is runtime behav
 - which row and cell positions those systems choose at runtime
 
 The Frida script is intentionally narrow. It only hooks the points that answer those questions.
+
+Use the broad script when you need one capture that covers movement, attachments, pickups, and hazards together.
+
+Use the path oracle when you need to answer the still-open path questions specifically:
+
+- which installed bank root a `P/p` row uses in practice
+- which runtime family or kind `HALFPIPE` resolves to
+- how the installed owner pointer and path index line up on live rows
+- how attachment follow evolves for `HALFPIPE`, `WARP`, and loop families
+- whether the preserved lateral offset changes during follow
 
 ## Hook Set
 
