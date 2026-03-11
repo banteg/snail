@@ -787,15 +787,6 @@ fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
 
 fn queuedActivationRequiresFade(action: FrontendQueuedAction) bool {
     return switch (action) {
-        .main_menu => |item| switch (item) {
-            .credits => true,
-            else => false,
-        },
-        .new_game_menu => |item| switch (item) {
-            .tutorial, .postal_mode, .time_trial, .help => true,
-            else => false,
-        },
-        .help_menu => true,
         .exit_prompt => |choice| switch (choice) {
             .yes => true,
             .no => false,
@@ -3209,6 +3200,12 @@ const AppState = struct {
                 self.unloadLoadingScreen();
                 if (self.exit_prompt_return_phase == .pause_menu) {
                     try self.loadCurrentLevelBackground();
+                } else if (self.exit_prompt_return_phase == .route_map_menu) {
+                    self.active_level_segment_index = null;
+                    self.clearLevelPromptQueue();
+                    self.mouse_level_lane_target = null;
+                    try self.loadGameBackground(route_map_background_path);
+                    try self.playMusicByPath(default_audio_path);
                 } else {
                     self.active_level_segment_index = null;
                     self.clearLevelPromptQueue();
@@ -3481,12 +3478,8 @@ const AppState = struct {
                 }
             },
             .music_volume => {
-                const previous = self.runtime_config.musicVolume();
                 self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
                 self.applyAudioConfigVolumes();
-                if (self.runtime_config.musicVolume() != previous) {
-                    self.playFrontendSelectSound();
-                }
             },
             .back => if (delta != 0.0) {
                 self.playFrontendSelectSound();
@@ -3920,7 +3913,15 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         .pause_menu => try drawPauseMenuUi(state, ui_layout),
         .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
-        .exit_prompt => try drawExitPromptUi(state, ui_layout),
+        .exit_prompt => {
+            switch (state.exit_prompt_return_phase) {
+                .main_menu => try drawMainMenuUi(state, ui_layout),
+                .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
+                .pause_menu => try drawPauseMenuUi(state, ui_layout),
+                else => {},
+            }
+            try drawExitPromptUi(state, ui_layout);
+        },
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
         .credits => drawCurrentTextScript(state, ui_layout),
         .help => drawHelpUi(state, ui_layout),
@@ -4236,9 +4237,9 @@ fn completionContinueTextRect(font: *const game_font.Loaded, result: PendingRunR
 }
 
 fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
-    // PORT(verified): `initialize_exit_prompt` seeds the Yes/No widgets at `330`, but then
-    // immediately runs both through `stack_widget_below(title)`. The live authored Y comes
-    // from the title height plus the shared shell-font stack gap, not the constructor seed.
+    // PORT(partial): owner `10` (main menu) and owner `11` (route map) reuse the originating
+    // button row Y for the shared prompt actions. Other prompt owners still use the generic
+    // stacked shell-font layout until the remaining prompt variants are recovered.
     const title_rect = frontend_widget.widgetTextRect(
         &state.ui_font,
         .menu_button,
@@ -4247,30 +4248,55 @@ fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x:
         exit_prompt_title_y,
         0.0,
     );
+    const action_anchor_y = switch (state.exit_prompt_return_phase) {
+        .main_menu => mainMenuTextRect(&state.ui_font, .exit).top,
+        .route_map_menu => routeMapBackTextRect(state).top,
+        else => frontend_widget.stackBelow(title_rect),
+    };
     return frontend_widget.widgetTextRect(
         &state.ui_font,
         .menu_button,
         .center,
         text,
-        frontend_widget.stackBelow(title_rect),
+        action_anchor_y,
         center_offset_x,
     );
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    const text_only_type20: frontend_widget.DrawOptions = .{
+        // PORT(verified): `initialize_main_menu` gives Credits the type-20 text metrics
+        // but suppresses the normal shell border with flag `0x400000`.
+        .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background),
+    };
     for (main_menu_items, 0..) |item, index| {
         const text_rect = mainMenuTextRect(&state.ui_font, item);
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            item.label(),
-            text_rect,
-            state.main_menu_button_states[index],
-            false,
-        );
+        if (item == .credits) {
+            frontend_widget.drawTextButtonWithOptions(
+                layout,
+                widget_art,
+                &state.ui_font,
+                .menu_button,
+                item.label(),
+                text_rect,
+                state.main_menu_button_states[index],
+                false,
+                text_only_type20,
+            );
+        } else {
+            frontend_widget.drawType20Button(
+                layout,
+                widget_art,
+                &state.ui_font,
+                item.label(),
+                text_rect,
+                state.main_menu_button_states[index],
+                false,
+            );
+        }
     }
 
     if (state.game_status_message) |message| {
@@ -4279,36 +4305,60 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    const text_only_type20: frontend_widget.DrawOptions = .{
+        // PORT(verified): `initialize_new_game_menu` builds Tutorial, Postal Mode,
+        // Time Trial, and Help with the shell-font widget metrics but suppresses the
+        // bordered background via `0x400000`.
+        .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background),
+    };
     for (new_game_menu_items[0..4], 0..) |item, index| {
         const text_rect = newGameMenuTextRect(&state.ui_font, item);
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            item.label(),
-            text_rect,
-            state.new_game_button_states[index],
-            false,
-        );
+        const is_text_only = switch (item) {
+            .tutorial, .postal_mode, .time_trial => true,
+            .challenge_mode => false,
+            else => unreachable,
+        };
+        if (is_text_only) {
+            frontend_widget.drawTextButtonWithOptions(
+                layout,
+                widget_art,
+                &state.ui_font,
+                .menu_button,
+                item.label(),
+                text_rect,
+                state.new_game_button_states[index],
+                false,
+                text_only_type20,
+            );
+        } else {
+            frontend_widget.drawType20Button(
+                layout,
+                widget_art,
+                &state.ui_font,
+                item.label(),
+                text_rect,
+                state.new_game_button_states[index],
+                false,
+            );
+        }
     }
-    frontend_widget.drawType20Button(
+    frontend_widget.drawTextButtonWithOptions(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
+        widget_art,
         &state.ui_font,
+        .menu_button,
         "Help",
         newGameHelpTextRect(&state.ui_font),
         state.new_game_button_states[4],
         false,
+        text_only_type20,
     );
     frontend_widget.drawType20Button(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
+        widget_art,
         &state.ui_font,
         "Back",
         newGameBackTextRect(&state.ui_font),
@@ -5487,16 +5537,22 @@ fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    frontend_widget.drawType20Button(
+    frontend_widget.drawTextButtonWithOptions(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
         },
         &state.ui_font,
+        .menu_button,
         "Back",
         helpBackTextRect(&state.ui_font),
         state.help_button_states[0],
         false,
+        .{
+            // PORT(verified): `initialize_help` uses the shell-font menu metrics for Back
+            // but suppresses the bordered background with `0x400000`.
+            .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background),
+        },
     );
 }
 
