@@ -249,7 +249,7 @@ The strongest current design lesson from replay behavior and the March 8 Frida c
 
 Current caveat:
 
-- the runner is intentionally conservative and still not a full movement port; faithful floor following, curve-accurate attachment-follow motion, off-track fall behavior, and exact ambient hazard spawn timing are still blocked on more runtime evidence from `SnailMail_unwrapped.exe`
+- the runner is intentionally conservative and still not a full movement port; it now preserves lateral offset through attachment rows instead of snapping to the midpoint, but faithful floor following, template-bank-driven attachment-follow motion, off-track fall behavior, and exact ambient hazard spawn timing are still blocked on more runtime evidence from `SnailMail_unwrapped.exe`
 
 ## Non-Goals For Now
 

@@ -276,6 +276,7 @@ const death_resolution_duration_ticks: u16 = 120;
 const RowSample = struct {
     global_row: usize,
     traversable_bounds: track.LaneBounds,
+    path_bounds: ?track.LaneBounds,
     resolved_lane_index: usize,
     cell: u8,
     gameplay_cell: ?track.GameplayCellKind,
@@ -283,6 +284,19 @@ const RowSample = struct {
     annotation: ?segment.Annotation,
     path_center_lane: ?f32,
     path_name: ?[]const u8,
+};
+
+// PORT(partial): Windows attachment-follow keeps an explicit state object with the
+// owner/runtime cell, sample index, segment progress, vertical offset, and cached
+// output pose. The current port still lacks the installed template bank, but it now
+// keeps the minimal state we can drive from authored row metadata so attachment
+// travel preserves lateral offset instead of snapping to the row midpoint.
+const AttachmentFollowState = struct {
+    active: bool = false,
+    source_row: usize = 0,
+    progress: f32 = 0.0,
+    lateral_offset: f32 = 0.0,
+    cached_output_lane_center: f32 = 0.5,
 };
 
 pub const Runner = struct {
@@ -310,6 +324,7 @@ pub const Runner = struct {
     current_path_name: ?[]const u8 = null,
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
+    attachment_follow: AttachmentFollowState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
     path_center_lane: ?f32 = null,
@@ -559,10 +574,13 @@ pub const Runner = struct {
             }
         else
             returnAttachmentHint(sample.path_center_lane);
-        self.lane_center = if (self.movement_mode == .attachment and sample.path_center_lane != null)
-            sample.path_center_lane.?
+        self.lane_center = if (self.movement_mode == .attachment and self.attachment_follow.active and sample.path_center_lane != null and sample.path_bounds != null)
+            self.attachmentTargetLaneCenter(sample.path_bounds.?, sample.path_center_lane.?)
         else
             @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
+        if (self.attachment_follow.active and self.movement_mode == .attachment) {
+            self.attachment_follow.cached_output_lane_center = self.lane_center;
+        }
     }
 
     fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -621,10 +639,13 @@ pub const Runner = struct {
 
         var resolved_lane_index = desired_lane;
         var path_center_lane: ?f32 = null;
-        if (preview.pathBoundsForRow(row_location)) |path_bounds| {
-            path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
-            if (self.movement_mode == .attachment) {
-                resolved_lane_index = (path_bounds.min + path_bounds.max) / 2;
+        const path_bounds = preview.pathBoundsForRow(row_location);
+        if (path_bounds) |bounds| {
+            path_center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+            if (self.movement_mode == .attachment and self.attachment_follow.active) {
+                const target_lane_center = self.attachmentTargetLaneCenter(bounds, path_center_lane.?);
+                const target_lane = @as(usize, @intFromFloat(@floor(target_lane_center - 0.5)));
+                resolved_lane_index = std.math.clamp(target_lane, traversable.min, traversable.max);
             }
         }
 
@@ -638,6 +659,7 @@ pub const Runner = struct {
         return .{
             .global_row = global_row,
             .traversable_bounds = traversable,
+            .path_bounds = path_bounds,
             .resolved_lane_index = resolved_lane_index,
             .cell = cell,
             .gameplay_cell = gameplay_cell,
@@ -715,10 +737,7 @@ pub const Runner = struct {
             },
             .attachment_entry => {
                 if (self.movement_mode != .attachment) {
-                    self.movement_mode = .attachment;
-                    self.attachment_path_name = sample.path_name;
-                    self.counters.attachments_begun += 1;
-                    self.recent_event = .attachment_begin;
+                    self.beginAttachmentFollow(sample);
                 }
             },
             .ring => {},
@@ -769,14 +788,11 @@ pub const Runner = struct {
     }
 
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (self.movement_mode != .attachment or preview.total_rows == 0) return;
+        if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
         const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
         if (sample.path_center_lane != null) return;
 
-        self.movement_mode = .track;
-        self.attachment_path_name = null;
-        self.counters.attachments_completed += 1;
-        self.recent_event = .attachment_end;
+        self.finishAttachmentFollow();
     }
 
     fn recordRing(self: *Runner, ring_kind: segment.RingKind) void {
@@ -1008,8 +1024,7 @@ pub const Runner = struct {
     fn beginDeathCutscene(self: *Runner, cause: DeathCause) void {
         if (self.phase != .active or self.finished) return;
         self.paused = false;
-        self.movement_mode = .track;
-        self.attachment_path_name = null;
+        self.clearAttachmentFollow();
         self.phase = .{
             .death_cutscene = .{
                 .cause = cause,
@@ -1021,8 +1036,7 @@ pub const Runner = struct {
     fn beginDeathResolution(self: *Runner, cause: DeathCause) void {
         if (self.phase != .active or self.finished) return;
         self.paused = false;
-        self.movement_mode = .track;
-        self.attachment_path_name = null;
+        self.clearAttachmentFollow();
         self.phase = .{
             .death_resolution = .{
                 .cause = cause,
@@ -1091,6 +1105,49 @@ pub const Runner = struct {
             .challenge, .time_trial => true,
             .tutorial, .debug => false,
         };
+    }
+
+    fn attachmentTargetLaneCenter(
+        self: *const Runner,
+        path_bounds: track.LaneBounds,
+        path_center_lane: f32,
+    ) f32 {
+        const min_lane_center = @as(f32, @floatFromInt(path_bounds.min)) + 0.5;
+        const max_lane_center = @as(f32, @floatFromInt(path_bounds.max)) + 0.5;
+        return std.math.clamp(
+            path_center_lane + self.attachment_follow.lateral_offset,
+            min_lane_center,
+            max_lane_center,
+        );
+    }
+
+    fn beginAttachmentFollow(self: *Runner, sample: RowSample) void {
+        self.movement_mode = .attachment;
+        self.attachment_path_name = sample.path_name;
+        self.attachment_follow = .{
+            .active = true,
+            .source_row = sample.global_row,
+            .progress = self.row_position - @floor(self.row_position),
+            .lateral_offset = if (sample.path_center_lane) |path_center_lane|
+                self.lane_center - path_center_lane
+            else
+                0.0,
+            .cached_output_lane_center = self.lane_center,
+        };
+        self.counters.attachments_begun += 1;
+        self.recent_event = .attachment_begin;
+    }
+
+    fn clearAttachmentFollow(self: *Runner) void {
+        self.movement_mode = .track;
+        self.attachment_path_name = null;
+        self.attachment_follow = .{};
+    }
+
+    fn finishAttachmentFollow(self: *Runner) void {
+        self.clearAttachmentFollow();
+        self.counters.attachments_completed += 1;
+        self.recent_event = .attachment_end;
     }
 
     pub fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1208,6 +1265,12 @@ const RowTarget = struct {
     lane: usize,
 };
 
+const AttachmentEntryTarget = struct {
+    row: usize,
+    lane: usize,
+    path_center_lane: f32,
+};
+
 fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.GameplayCellKind) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -1219,6 +1282,28 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
                         .lane = lane,
                     };
                 }
+            }
+        }
+    }
+    return null;
+}
+
+fn findFirstOffCenterAttachmentEntry(preview: *const track.LoadedLevelPreview) ?AttachmentEntryTarget {
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const path_bounds = preview.pathBoundsForRow(row_location) orelse continue;
+        const path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
+
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
+                if (sample.kind != .attachment_entry) continue;
+                const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
+                if (@abs(lane_center - path_center_lane) < 0.001) continue;
+                return .{
+                    .row = global_row,
+                    .lane = lane,
+                    .path_center_lane = path_center_lane,
+                };
             }
         }
     }
@@ -1582,10 +1667,12 @@ test "death cutscene entry clears attachment-follow state" {
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
     runner.attachment_path_name = "SUPERTRAMP";
+    runner.attachment_follow.active = true;
     runner.beginDeathCutscene(.hazard);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.attachment_path_name == null);
+    try std.testing.expect(!runner.attachment_follow.active);
     try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 }
 
@@ -1622,6 +1709,7 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
     try std.testing.expectEqualStrings("attachment_begin", runner.recentEventLabel());
     try std.testing.expect(runner.activePathName() != null);
+    try std.testing.expect(runner.attachment_follow.active);
 
     var jetpack_fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer jetpack_fixture.deinit();
@@ -1643,6 +1731,36 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     try std.testing.expect(!runner.jetpack.active);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpackFuelRemaining(), 0.0001);
     try std.testing.expectEqualStrings("jetpack_off", runner.recentEventLabel());
+}
+
+test "attachment follow preserves lateral offset instead of snapping to the path midpoint" {
+    var fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstOffCenterAttachmentEntry(&fixture.preview).?;
+
+    var runner = Runner.init(&fixture.preview);
+    primeRunnerBeforeRow(
+        &runner,
+        &fixture.preview,
+        .{
+            .row = target.row,
+            .lane = target.lane,
+        },
+    );
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(target.lane)) + 0.5, runner.lane_center, 0.001);
+    try std.testing.expectApproxEqAbs(
+        (@as(f32, @floatFromInt(target.lane)) + 0.5) - target.path_center_lane,
+        runner.attachment_follow.lateral_offset,
+        0.001,
+    );
+    try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
+    try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
