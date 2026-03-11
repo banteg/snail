@@ -1706,17 +1706,17 @@ const AppState = struct {
             return;
         }
 
-        const hovered_route_index = routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode));
+        const hovered_route_index = if (routeMapAllowsRouteSwitching(self.route_map_screen_mode))
+            routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode))
+        else
+            null;
         self.route_map_hover_state = if (hovered_route_index != null) .route else .none;
         self.route_map_hovered_index = hovered_route_index;
 
         if (self.currentRouteMapOpenIndex()) |route_index| {
             const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
             const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-            const route_body = if (self.frontend_route_level) |loaded_level|
-                loaded_level.galaxy_text orelse routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse ""
-            else
-                routeMenuHint(mode, self.activeRouteMenuHotAction()) orelse "";
+            const route_body = routeMapBodyText(if (self.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
             if (routeMapPointForRouteIndex(self, route_index)) |route_point| {
                 const card_layout = routeMapCardLayout(
                     &self.ui_font,
@@ -2102,11 +2102,11 @@ const AppState = struct {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, 1);
                     self.noteFrontendKeyboardNavigation();
                 }
-                if (rl.isKeyPressed(.left)) {
+                if (routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.left)) {
                     self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(-1);
                 }
-                if (rl.isKeyPressed(.right)) {
+                if (routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.right)) {
                     self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(1);
                 }
@@ -2591,6 +2591,7 @@ const AppState = struct {
     // open instead of letting the user dismiss the card into an empty Star Map.
     fn routeMapCanCloseCard(self: *const AppState) bool {
         if (!self.routeMapCardIsOpen()) return false;
+        if (!routeMapAllowsRouteSwitching(self.route_map_screen_mode)) return false;
         const mode = self.frontend_route_mode orelse return false;
         return self.availableFrontendRouteLimit(mode) > 1;
     }
@@ -4025,6 +4026,20 @@ fn routeMapBackLabelForScreenMode(screen_mode: RouteMapScreenMode) []const u8 {
     };
 }
 
+fn routeMapAllowsRouteSwitching(screen_mode: RouteMapScreenMode) bool {
+    // PORT(verified): `update_galaxy` skips the open/switch/close route branch entirely
+    // for internal mode `1`, keeping the postal-return Star Map locked on its current
+    // route card while still allowing Play/Exit.
+    return screen_mode != .post_completion_exit;
+}
+
+fn routeMapBodyText(maybe_text: ?[]const u8) []const u8 {
+    // PORT(verified): `open_galaxy_route` copies the route body from the per-route record
+    // once when the card opens. `update_galaxy` does not swap that body text based on
+    // hover state or selected action.
+    return maybe_text orelse "";
+}
+
 fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     return frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, text, high_score_footer_y, center_offset_x);
 }
@@ -4243,7 +4258,6 @@ const RouteMapCardLayout = struct {
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
-    const selected_action = state.activeRouteMenuHotAction();
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
@@ -4255,10 +4269,7 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     if (state.currentRouteMapOpenIndex()) |route_index| {
         const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
         const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-        const route_body = if (state.frontend_route_level) |loaded_level|
-            loaded_level.galaxy_text orelse routeMenuHint(mode, selected_action) orelse ""
-        else
-            routeMenuHint(mode, selected_action) orelse "";
+        const route_body = routeMapBodyText(if (state.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
         const primary_label = routeMenuActionLabel(mode, .play);
         const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
         if (routeMapPointForRouteIndex(state, route_index)) |route_point| {
@@ -6716,9 +6727,17 @@ test "route map replay gate follows time-trial completion replays" {
 test "route map screen modes follow windows route-map entry paths" {
     try std.testing.expectEqual(RouteMapScreenMode.normal, defaultRouteMapScreenMode(.postal));
     try std.testing.expectEqual(RouteMapScreenMode.replay, defaultRouteMapScreenMode(.time_trial));
+    try std.testing.expect(routeMapAllowsRouteSwitching(.normal));
+    try std.testing.expect(routeMapAllowsRouteSwitching(.replay));
+    try std.testing.expect(!routeMapAllowsRouteSwitching(.post_completion_exit));
     try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.normal));
     try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.replay));
     try std.testing.expectEqualStrings("Exit", routeMapBackLabelForScreenMode(.post_completion_exit));
+}
+
+test "route map body text stays empty without route script copy" {
+    try std.testing.expectEqualStrings("", routeMapBodyText(null));
+    try std.testing.expectEqualStrings("My first route!", routeMapBodyText("My first route!"));
 }
 
 test "failed runs return to the main menu while completions keep mode-specific exits" {
