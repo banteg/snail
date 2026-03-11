@@ -97,6 +97,10 @@ const QuadUv = struct {
     bottom: f32,
 };
 
+const gameplay_half_width: f32 = 4.0;
+const gameplay_uv_scale: f32 = 0.125;
+const render_cache_row_chunk: f32 = 24.0;
+
 pub fn normalizeTrackSetIndex(track_set_index: u8) u8 {
     return track_set_index % 4;
 }
@@ -128,10 +132,16 @@ fn drawBackPlane(scene: *const Scene, preview: *const track.LoadedLevelPreview) 
 }
 
 fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
+    if (preview.max_width == 0) return;
     const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
 
     for (0..preview.total_rows) |global_row| {
-        for (0..preview.max_width) |lane_index| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const lane_bounds = preview.laneBoundsForRow(row_location);
+        const max_lane_index = @min(lane_bounds.max, preview.max_width - 1);
+        if (lane_bounds.min > max_lane_index) continue;
+
+        for (lane_bounds.min..max_lane_index + 1) |lane_index| {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = surfaceFamilyForTile(tile_type) orelse continue;
 
@@ -148,7 +158,7 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
                 .{ .x = left, .y = back_height, .z = back },
                 .{ .x = right, .y = back_height, .z = back },
                 .{ .x = right, .y = front_height, .z = front },
-                .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
+                topSurfaceUv(left, right, front, back),
             );
 
             const edge_mask = preview.runtimeEdgeMaskAt(global_row, lane_index) orelse 0;
@@ -257,6 +267,16 @@ fn surfaceHeightAtTileFraction(tile_type: u8, row_origin: f32, row_fraction: f32
     ) orelse 0.0;
 }
 
+fn topSurfaceUv(left: f32, right: f32, front: f32, back: f32) QuadUv {
+    const z_block_base = @floor(front / render_cache_row_chunk) * render_cache_row_chunk;
+    return .{
+        .left = (left + gameplay_half_width) * gameplay_uv_scale,
+        .right = (right + gameplay_half_width) * gameplay_uv_scale,
+        .top = 1.0 - ((front - z_block_base) * gameplay_uv_scale),
+        .bottom = 1.0 - ((back - z_block_base) * gameplay_uv_scale),
+    };
+}
+
 fn drawTexturedQuad(
     texture: rl.Texture2D,
     top_left: rl.Vector3,
@@ -298,4 +318,18 @@ test "surface family maps recovered runtime tile families" {
     try std.testing.expectEqual(@as(?SurfaceFamily, .ramp), surfaceFamilyForTile(0x03));
     try std.testing.expectEqual(@as(?SurfaceFamily, .warn), surfaceFamilyForTile(0x20));
     try std.testing.expectEqual(@as(?SurfaceFamily, null), surfaceFamilyForTile(0x1d));
+}
+
+test "top surface uv follows recovered world mapping" {
+    const uv = topSurfaceUv(-4.0, -3.0, 0.0, 1.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.left, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.125), uv.right, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.875), uv.bottom, 0.0001);
+}
+
+test "top surface uv resets on 24-row cache chunk boundaries" {
+    const uv = topSurfaceUv(-4.0, -3.0, 24.0, 25.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.875), uv.bottom, 0.0001);
 }
