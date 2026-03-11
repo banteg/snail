@@ -80,7 +80,7 @@ The current high-confidence model is:
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
 
-The remaining unknowns are mostly about exact constructor semantics, special cases like `WARP`, and the last details of attachment entry or exit behavior.
+The remaining unknowns are mostly about exact constructor semantics, unresolved public slots like `HALFPIPE`, and the last details of attachment entry or exit behavior.
 
 ## March 8 Runtime Capture
 

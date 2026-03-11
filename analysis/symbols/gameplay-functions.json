@@ -435,6 +435,11 @@
       "description": "Linearly searches the hardcoded 51-entry Path= name table and returns the matching index or -1."
     },
     {
+      "address": "0x429b20",
+      "name": "initialize_warp_path_template_pair",
+      "description": "Builds the nonlinear kind-42 attachment template family used by Path=Warp. The constructor seeds sample_count=66, writes the special per-sample warp phase scalar at +0xa0, and reuses compute_warp_attachment_transform while emitting the generated strip mesh."
+    },
+    {
       "address": "0x42b920",
       "name": "compute_warp_attachment_transform",
       "description": "Computes the nonlinear temporary transform used by attachment kind 42 during projection and live follow, deriving a warp-like rotation and endpoint offset from the sample's special phase scalar."

@@ -126,9 +126,9 @@ Additional static detail from `update_track_attachment_follow_state`:
 The newer Windows-only package also tightened two family reads:
 
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family
-- kind `42` is the special nonlinear `WARP`-like branch used by both projection and live follow
+- kind `42` is the special nonlinear `WARP` branch used by both projection and live follow
 
-That distinction matters because path-table slot `30` is still the authored `WARP` name, while runtime kind `42` is a separate field and currently the strongest match for that missing constructor family.
+That distinction matters because path-table slot `30` is the authored `WARP` name, runtime kind `42` is a separate field, and the constructor sweep now strongly matches that family to `sub_429b20` rather than leaving it as a purely inferred `WARP`-like branch.
 
 Important caveat for this specific March 8 capture:
 
@@ -201,7 +201,7 @@ Still missing:
 
 - the exact initialization path from the hardcoded `51`-name table to concrete runtime template slots
 - the detailed semantics of each path-template constructor beyond the current family grouping
-- the exact constructor body for the named `WARP` slot, even though runtime kind `42` is now the best candidate for that family
+- the exact constructor body for the named `HALFPIPE` slot
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
 - the exact installer that sets row-cell flag `0x40`, row-cell `+0xa4`, and the installed-owner/source-row chain
 
