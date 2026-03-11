@@ -253,6 +253,35 @@ What is still missing even after this capture:
 - the exact authored-name-to-constructor split inside the kind-`42` family
 - whether public `WARP` and public `HALFPIPE` are separate constructors producing the same runtime kind, or aliases into one constructor branch with different installer/bank choices
 
+## Third Path-Oracle Capture
+
+The next focused path-oracle run on March 12, 2026 did not add a new `HALFPIPE` or `WARP` family result, but it did validate the repaired `attachment_end` hook and gave one clean natural-end sample for `LOOPBOW`.
+
+High-confidence facts from [`snailmail-path-oracle-20260312-033520-6240.ndjson`](../../artifacts/frida/snailmail-path-oracle-20260312-033520-6240.ndjson):
+
+- two postal levels were observed:
+  - `ARCADE007` / `To Infinity!` (`level_mode_arg = 7`, `bank_selector_byte = 1`)
+  - `ARCADE009` / `Slugfest!` (`level_mode_arg = 9`, `bank_selector_byte = 0`)
+- `HALFPIPE` again installed and followed live as runtime kind `42`
+  - in this run it appeared on the `ff29bc` installed-bank root
+  - it still used `66` samples
+- `LOOPBOW` followed live as runtime kind `0` on the `ff2914` root
+- `attachment_end` is now trustworthy enough to inspect pre-teardown follow state
+  - all four observed end events in this capture were `LOOPBOW`
+  - they exited with:
+    - runtime kind `0`
+    - sample index `51`
+    - progress `0`
+    - return value `0`
+
+That `LOOPBOW` sample is the first clean dynamic evidence we have for a natural-end style attachment exit from the repaired oracle. It matches the static expectation that ordinary loop families run until the sample index reaches the template end, then fall into the natural-exit path rather than a side-exit branch.
+
+What this capture still did **not** answer:
+
+- no clean `attachment_end` for `HALFPIPE`
+- no live public `WARP` follow
+- no new distinction yet between `HALFPIPE` and `WARP` within the shared nonlinear kind-`42` family
+
 ## Practical Read
 
 This is the current high-confidence static evidence that:

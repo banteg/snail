@@ -314,6 +314,16 @@ Useful confirmations from that capture:
 - the observed probe-side attachment kinds were `0`, `20`, and `45`
 - row `349` was dominated by kind `20`, which makes it a good future recapture target if we want one narrow probe-heavy path family
 - startup path lookup still walked nearly the whole hardcoded name table, and `WARP` still did not appear
+
+The March 12 focused path-oracle captures are now the better source for path-family questions:
+
+- `snailmail-path-oracle-20260312-031147-9596.ndjson`
+  - first live `HALFPIPE` install/follow proof
+  - `HALFPIPE` resolves into runtime kind `42` with `66` samples
+- `snailmail-path-oracle-20260312-033520-6240.ndjson`
+  - validated the repaired `attachment_end` hook
+  - first clean natural-end sample for `LOOPBOW` / kind `0`
+  - still no live public `WARP` follow
 - `track_pair_payload` stayed at zero again, so the current hook is still waiting either on a better target level or on a more precise trigger site
 
 Operational read:
