@@ -2722,14 +2722,22 @@ const AppState = struct {
             .postal => {
                 result.score = runner.score.total;
                 result.score_is_partial = true;
-
-                const entry = high_score.Entry{
-                    .score = result.score,
-                    .level_index = @intCast(self.active_frontend_level_index),
-                };
-                const insert = self.high_score_tables.addArcade(self.allocator, entry);
-                result.high_score_mode = .postal;
-                result.high_score_rank = insert.rank;
+                // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
+                // not the arcade-high-score commit path. Only the last postal route upgrades
+                // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
+                // final shipped route instead of every completed delivery.
+                if (postalCompletionCommitsHighScore(
+                    self.active_frontend_level_index,
+                    self.highestAvailableFrontendRouteIndex(.postal),
+                )) {
+                    const entry = high_score.Entry{
+                        .score = result.score,
+                        .level_index = @intCast(self.active_frontend_level_index),
+                    };
+                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
+                    result.high_score_mode = .postal;
+                    result.high_score_rank = insert.rank;
+                }
                 result.unlocked_next_route = try self.commitPostalRouteProgress();
                 try self.saveHighScoreTables();
             },
@@ -2835,9 +2843,21 @@ const AppState = struct {
     }
 
     fn beginRespawnRun(self: *AppState) !void {
-        var loaded_track_preview = self.current_track_preview orelse return;
-        var runner = self.level_runner orelse return;
-        runner.applyRespawn(&loaded_track_preview);
+        const previous_runner = self.level_runner orelse return;
+        const preserved_session_mode = previous_runner.session_mode;
+        const preserved_score = previous_runner.score;
+        const preserved_visible_life_stock = previous_runner.visible_life_stock;
+        const preserved_tick_count = previous_runner.tick_count;
+        const preserved_stopwatch = previous_runner.stopwatch;
+
+        try self.reloadLevel();
+        if (self.level_runner) |*runner| {
+            runner.session_mode = preserved_session_mode;
+            runner.score = preserved_score;
+            runner.visible_life_stock = preserved_visible_life_stock;
+            runner.tick_count = preserved_tick_count;
+            runner.stopwatch = preserved_stopwatch;
+        }
         self.clearLevelPromptQueue();
         try self.syncActiveLevelSegment(false);
     }
@@ -2980,6 +3000,11 @@ const AppState = struct {
         }
         try self.saveRuntimeConfig();
         return unlocked;
+    }
+
+    fn postalCompletionCommitsHighScore(current_index: usize, highest_available: usize) bool {
+        if (highest_available == 0) return false;
+        return current_index >= highest_available;
     }
 
     fn nextPostalUnlockLimit(current_index: usize, highest_available: usize, saved_limit: usize) usize {
@@ -6789,6 +6814,13 @@ test "postal unlock limit stops at the highest available route" {
     try std.testing.expectEqual(@as(usize, 0x32), AppState.nextPostalUnlockLimit(0x32, 0x32, 0x32));
     try std.testing.expectEqual(@as(usize, 0x33), AppState.nextPostalUnlockLimit(0x33, 0x33, 0x33));
     try std.testing.expectEqual(@as(usize, 0x32), AppState.nextPostalUnlockLimit(0x33, 0x32, 0x40));
+}
+
+test "postal high-score commit gates on the final shipped route" {
+    try std.testing.expect(!AppState.postalCompletionCommitsHighScore(1, 0x32));
+    try std.testing.expect(!AppState.postalCompletionCommitsHighScore(0x31, 0x32));
+    try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x32, 0x32));
+    try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x33, 0x33));
 }
 
 test "gameplay camera looks ahead of the runner" {
