@@ -55,7 +55,7 @@ Current high-signal entries:
 - front-end background loading plus Distort-driven single-texture motion: `partial`
   - evidence: shipped `BACKGROUNDS/*.TXT` scripts and matching TGA assets, Binary Ninja decompile of `set_backdrop_distort`, `change_backdrop`, `initialize_backdrop`, `change_backdrop_real`, `draw_split_backdrop`, `render_backdrop`, and `update_backdrop`, plus cross-port Android and iOS symbols for `cRBackdrop::{SetDistort, Change, ChangeReal, Init, Render, AI}`
   - implementation: [`background.zig`](../../zig/src/background.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: the distortion grid state and any real `Landscape` model path are ported from the original RNG-driven renderer, and the split `_A` / `_B` crop semantics are verified against the original renderer
+  - replace when: the distortion grid state and any real `Landscape` model path are ported from the original RNG-driven renderer, and the exact warped UV orientation plus split `_A` / `_B` crop semantics are verified against the original renderer
 - intro and credits text-screen flow: `partial`
   - evidence: shipped `INTRO/INTRO.TXT`, `INTRO/CREDITS.TXT`, and Binary Ninja decompile of `initialize_intro_screen`, `destroy_intro_screen`, and `update_intro_screen`, plus cross-port Android and iOS symbols for `cRIntro::{Init, AI}` and Android `cRIntro::UnInit()`
   - implementation: [`intro.zig`](../../zig/src/intro.zig), [`main.zig`](../../zig/src/main.zig)

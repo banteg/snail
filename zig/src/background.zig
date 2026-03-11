@@ -725,7 +725,7 @@ test "distortion grid uses recovered 3-to-5 second timing and bounded amplitudes
     }
 }
 
-test "warped backdrop flips vertical crop only" {
+test "warped backdrop flips horizontal crop only" {
     const normal = warpCellUvBounds(2, 3, false);
     const flipped = warpCellUvBounds(2, 3, true);
 
