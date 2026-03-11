@@ -69,12 +69,6 @@ pub const slider_arrow_y_offset: f32 = 33.0;
 pub const slider_value_y_offset: f32 = 49.0;
 pub const slider_left_arrow_left: f32 = 118.0;
 pub const slider_right_arrow_left: f32 = 458.0;
-// PORT(partial): Windows stacks the next options row using the previous widget's computed
-// `+588` height after the slider children are attached. The exact stored height is not
-// surfaced as a literal in the recovered snippets; `86` still matches the live screen
-// spacing and reference captures.
-pub const slider_stack_height: f32 = 86.0;
-
 const hover_lerp: f32 = 0.1;
 const idle_fill = colorFromBytes(84, 57, 128, 179);
 const hot_fill = colorFromBytes(155, 79, 177, 255);
@@ -99,6 +93,14 @@ pub const Rect = struct {
     pub fn centerY(self: Rect) f32 {
         return self.top + self.height * 0.5;
     }
+};
+
+pub const SliderLayout = struct {
+    frame_rect: Rect,
+    bar_rect: Rect,
+    less_rect: Rect,
+    more_rect: Rect,
+    value_text_rect: Rect,
 };
 
 pub const Art = struct {
@@ -317,10 +319,6 @@ pub fn drawTextButtonWithOptions(
     font.drawText(text, text_point.x, text_point.y, scaled_font_size, colors.text);
 }
 
-pub fn sliderStackBelow(rect: Rect) f32 {
-    return rect.top + slider_stack_height + type20_stack_gap;
-}
-
 pub fn sliderBarRect(text_rect: Rect) Rect {
     return .{
         .left = text_rect.centerX() - slider_bar_width * 0.5,
@@ -352,11 +350,21 @@ pub fn sliderFrameRect(
     row_state: TextButtonState,
     value_text: []const u8,
 ) Rect {
+    return sliderLayout(font, text_rect, row_state, value_text).frame_rect;
+}
+
+pub fn sliderLayout(
+    font: *const game_font.Loaded,
+    text_rect: Rect,
+    row_state: TextButtonState,
+    value_text: []const u8,
+) SliderLayout {
     const base_rect = pillRect(text_rect, row_state);
     const bar_rect = sliderBarRect(text_rect);
     const less_rect = sliderArrowRect(text_rect, .less);
     const more_rect = sliderArrowRect(text_rect, .more);
-    const value_rect = pillRect(sliderValueTextRect(font, text_rect, value_text), row_state);
+    const value_text_rect = sliderValueTextRect(font, text_rect, value_text);
+    const value_rect = pillRect(value_text_rect, row_state);
     const bottom = @max(
         value_rect.top + value_rect.height,
         @max(
@@ -365,11 +373,24 @@ pub fn sliderFrameRect(
         ),
     );
     return .{
-        .left = base_rect.left,
-        .top = base_rect.top,
-        .width = base_rect.width,
-        .height = bottom - base_rect.top,
+        .frame_rect = .{
+            .left = base_rect.left,
+            .top = base_rect.top,
+            .width = base_rect.width,
+            .height = bottom - base_rect.top,
+        },
+        .bar_rect = bar_rect,
+        .less_rect = less_rect,
+        .more_rect = more_rect,
+        .value_text_rect = value_text_rect,
     };
+}
+
+pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
+    // PORT(verified): `initialize_options` uses `stack_widget_below` after the slider children
+    // are attached, so the next row should follow the computed parent frame height rather than
+    // a separate hardcoded row-size surrogate.
+    return layout.frame_rect.top + layout.frame_rect.height + type20_stack_gap;
 }
 
 pub fn drawSliderMenuRow(
@@ -389,14 +410,10 @@ pub fn drawSliderMenuRow(
     const clamped_value = std.math.clamp(normalized_value, 0.0, 1.0);
     const displayed_clamped_value = std.math.clamp(displayed_value, 0.0, 1.0);
     const colors = colorsForState(row_state, false);
-    const frame_rect = sliderFrameRect(font, text_rect, row_state, value_text);
-    const bar_rect = sliderBarRect(text_rect);
-    const less_rect = sliderArrowRect(text_rect, .less);
-    const more_rect = sliderArrowRect(text_rect, .more);
-    const value_rect = sliderValueTextRect(font, text_rect, value_text);
+    const slider_layout = sliderLayout(font, text_rect, row_state, value_text);
     const title_metrics = metricsForType(.menu_button);
 
-    drawNineSliceFrame(layout, art.border, frame_rect, type20_border_edge, type20_border_edge / 128.0, colors.fill);
+    drawNineSliceFrame(layout, art.border, slider_layout.frame_rect, type20_border_edge, type20_border_edge / 128.0, colors.fill);
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
@@ -405,9 +422,9 @@ pub fn drawSliderMenuRow(
     font.drawText(title_text, text_point.x, text_point.y, scaled_font_size, colors.text);
 
     if (slider_textures.bar) |texture| {
-        drawTextureLocalRect(layout, texture, bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height, .white);
+        drawTextureLocalRect(layout, texture, slider_layout.bar_rect.left, slider_layout.bar_rect.top, slider_layout.bar_rect.width, slider_layout.bar_rect.height, .white);
     } else {
-        rl.drawRectangleRounded(layout.mapRect(bar_rect.left, bar_rect.top, bar_rect.width, bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
+        rl.drawRectangleRounded(layout.mapRect(slider_layout.bar_rect.left, slider_layout.bar_rect.top, slider_layout.bar_rect.width, slider_layout.bar_rect.height), 0.45, 8, .{ .r = 188, .g = 94, .b = 44, .a = 232 });
     }
     if (slider_textures.bar_full) |texture| {
         drawTextureLocalRectSource(
@@ -419,19 +436,19 @@ pub fn drawSliderMenuRow(
                 .width = @as(f32, @floatFromInt(texture.width)) * displayed_clamped_value,
                 .height = @as(f32, @floatFromInt(texture.height)),
             },
-            bar_rect.left,
-            bar_rect.top,
-            bar_rect.width * displayed_clamped_value,
-            bar_rect.height,
+            slider_layout.bar_rect.left,
+            slider_layout.bar_rect.top,
+            slider_layout.bar_rect.width * displayed_clamped_value,
+            slider_layout.bar_rect.height,
             .white,
         );
     } else {
         rl.drawRectangleRounded(
             .{
-                .x = layout.mapPoint(bar_rect.left, bar_rect.top).x,
-                .y = layout.mapPoint(bar_rect.left, bar_rect.top).y,
-                .width = layout.scaleFloat(bar_rect.width * displayed_clamped_value),
-                .height = layout.scaleFloat(bar_rect.height),
+                .x = layout.mapPoint(slider_layout.bar_rect.left, slider_layout.bar_rect.top).x,
+                .y = layout.mapPoint(slider_layout.bar_rect.left, slider_layout.bar_rect.top).y,
+                .width = layout.scaleFloat(slider_layout.bar_rect.width * displayed_clamped_value),
+                .height = layout.scaleFloat(slider_layout.bar_rect.height),
             },
             0.45,
             8,
@@ -450,10 +467,10 @@ pub fn drawSliderMenuRow(
     else
         slider_textures.more;
     if (less_texture) |texture| {
-        drawTextureLocalRect(layout, texture, less_rect.left, less_rect.top, less_rect.width, less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+        drawTextureLocalRect(layout, texture, slider_layout.less_rect.left, slider_layout.less_rect.top, slider_layout.less_rect.width, slider_layout.less_rect.height, if (less_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
     }
     if (more_texture) |texture| {
-        drawTextureLocalRect(layout, texture, more_rect.left, more_rect.top, more_rect.width, more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
+        drawTextureLocalRect(layout, texture, slider_layout.more_rect.left, slider_layout.more_rect.top, slider_layout.more_rect.width, slider_layout.more_rect.height, if (more_disabled) .{ .r = 255, .g = 255, .b = 255, .a = 128 } else .white);
     }
 
     drawTextButtonWithOptions(
@@ -462,7 +479,7 @@ pub fn drawSliderMenuRow(
         font,
         .slider_value,
         value_text,
-        value_rect,
+        slider_layout.value_text_rect,
         row_state,
         false,
         .{

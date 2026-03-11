@@ -1606,34 +1606,28 @@ const AppState = struct {
             return;
         }
 
-        var sound_value_buffer: [16]u8 = undefined;
-        const sound_row_rect = optionsTextRect(self, .sound_volume);
-        const sound_value_text = optionsSliderValueText(self.runtime_config.soundVolume(), &sound_value_buffer);
-        const sound_frame_rect = frontend_widget.sliderFrameRect(&self.ui_font, sound_row_rect, self.options_button_states[options_sound_button_index], sound_value_text);
-        if (sound_frame_rect.contains(local_mouse)) {
+        const sound_slider = optionsSliderLayout(self, .sound_volume);
+        if (sound_slider.frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(1));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                if (frontend_widget.sliderArrowRect(sound_row_rect, .less).contains(local_mouse)) {
+                if (sound_slider.less_rect.contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
-                } else if (frontend_widget.sliderArrowRect(sound_row_rect, .more).contains(local_mouse)) {
+                } else if (sound_slider.more_rect.contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
                 }
             }
             return;
         }
 
-        var music_value_buffer: [16]u8 = undefined;
-        const music_row_rect = optionsTextRect(self, .music_volume);
-        const music_value_text = optionsSliderValueText(self.runtime_config.musicVolume(), &music_value_buffer);
-        const music_frame_rect = frontend_widget.sliderFrameRect(&self.ui_font, music_row_rect, self.options_button_states[options_music_button_index], music_value_text);
-        if (music_frame_rect.contains(local_mouse)) {
+        const music_slider = optionsSliderLayout(self, .music_volume);
+        if (music_slider.frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(2));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                if (frontend_widget.sliderArrowRect(music_row_rect, .less).contains(local_mouse)) {
+                if (music_slider.less_rect.contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
-                } else if (frontend_widget.sliderArrowRect(music_row_rect, .more).contains(local_mouse)) {
+                } else if (music_slider.more_rect.contains(local_mouse)) {
                     try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
                 }
             }
@@ -3959,6 +3953,32 @@ fn optionsMenuVisibleLabel(state: *const AppState, item: OptionsMenuItem) []cons
     };
 }
 
+fn optionsSliderLayout(state: *const AppState, item: OptionsMenuItem) frontend_widget.SliderLayout {
+    var value_buffer: [16]u8 = undefined;
+    const title_rect = switch (item) {
+        .sound_volume => optionsTextRect(state, .sound_volume),
+        .music_volume => optionsTextRect(state, .music_volume),
+        else => unreachable,
+    };
+    const value = switch (item) {
+        .sound_volume => state.runtime_config.soundVolume(),
+        .music_volume => state.runtime_config.musicVolume(),
+        else => unreachable,
+    };
+    const value_text = optionsSliderValueText(value, &value_buffer);
+    const button_index = switch (item) {
+        .sound_volume => options_sound_button_index,
+        .music_volume => options_music_button_index,
+        else => unreachable,
+    };
+    return frontend_widget.sliderLayout(
+        &state.ui_font,
+        title_rect,
+        state.options_button_states[button_index],
+        value_text,
+    );
+}
+
 fn optionsTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
     return switch (item) {
         .fullscreen => frontend_widget.type20TextRect(
@@ -3976,13 +3996,18 @@ fn optionsTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widge
         .music_volume => frontend_widget.type20TextRect(
             &state.ui_font,
             optionsMenuMeasurementLabel(state, .music_volume),
-            frontend_widget.sliderStackBelow(optionsTextRect(state, .sound_volume)),
+            // PORT(verified): `initialize_options` stacks Music below the full slider parent,
+            // not below a hardcoded surrogate row height. The parent frame height comes from
+            // the child-arrow/value layout in the shared widget pipeline.
+            frontend_widget.sliderStackBelowLayout(optionsSliderLayout(state, .sound_volume)),
             options_button_center_offset_x,
         ),
         .back => frontend_widget.type20TextRect(
             &state.ui_font,
             "Back",
-            frontend_widget.sliderStackBelow(optionsTextRect(state, .music_volume)),
+            // PORT(verified): the Back button is chained from the Music slider widget after
+            // its children are attached, so this needs the live computed slider frame height.
+            frontend_widget.sliderStackBelowLayout(optionsSliderLayout(state, .music_volume)),
             options_button_center_offset_x,
         ),
     };
@@ -4219,6 +4244,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.options_button_states[options_fullscreen_button_index],
         false,
     );
+    const sound_slider = optionsSliderLayout(state, .sound_volume);
     drawOptionsSliderRow(
         state,
         layout,
@@ -4226,9 +4252,10 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.soundVolume(),
         state.options_sound_display_value,
         state.options_button_states[options_sound_button_index],
-        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .sound_volume), .less).contains(mouse) else false,
-        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .sound_volume), .more).contains(mouse) else false,
+        if (local_mouse) |mouse| sound_slider.less_rect.contains(mouse) else false,
+        if (local_mouse) |mouse| sound_slider.more_rect.contains(mouse) else false,
     );
+    const music_slider = optionsSliderLayout(state, .music_volume);
     drawOptionsSliderRow(
         state,
         layout,
@@ -4236,8 +4263,8 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.musicVolume(),
         state.options_music_display_value,
         state.options_button_states[options_music_button_index],
-        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .music_volume), .less).contains(mouse) else false,
-        if (local_mouse) |mouse| frontend_widget.sliderArrowRect(optionsTextRect(state, .music_volume), .more).contains(mouse) else false,
+        if (local_mouse) |mouse| music_slider.less_rect.contains(mouse) else false,
+        if (local_mouse) |mouse| music_slider.more_rect.contains(mouse) else false,
     );
     frontend_widget.drawType20Button(
         layout,
