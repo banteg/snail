@@ -67,6 +67,24 @@ Important corrections:
 - path-table index `42` is still the authored name `HALFPIPE`
 - the recovered **runtime kind** `42` is a different field entirely, and `sub_429b20` now strongly matches the `WARP` constructor rather than `HALFPIPE`
 
+## Installed Pair Bank Bridge
+
+The parser and runtime installer now close most of the old bridge gap:
+
+- `load_segment_definitions` parses `Path=...`, resolves it through `find_segment_path_index_by_name`, and stores the resulting public-table index on each parsed segment row at `+0x8bc`
+- `populate_runtime_track_cells_from_segments` later reads that stored index from the parsed row and selects an installed pair as `path_index * 336 + installed_pair_bank`
+- the two installed-pair bank roots used by the `P/p` branch are:
+  - `game + 0xff2914`
+  - `game + 0xff29bc`
+- uppercase `P` becomes runtime tile `30` and lowercase `p` becomes runtime tile `29`, but the choice between those two installed-pair roots comes from a separate builder-state byte at `this + 2`
+- those roots differ by exactly one `0xa8`-byte record, so one public path id resolves to a `336`-byte installed pair made of two adjacent template records
+
+What this still does **not** prove:
+
+- that the constructor-generation bank at the higher asset/world offsets is laid out identically to the installed runtime pair bank
+- that every constructor family uses the same left/right semantic for the two halves
+- the exact meaning of the `this + 2` branch in the `P/p` installer that chooses which half pointer is installed on the row
+
 ## Path Template Slot Layout
 
 Observed facts:
@@ -82,8 +100,7 @@ Two generic helpers now make that layout clearer:
 
 What is still **not** proven from this package:
 
-- that the runtime universally treats those `126` records as `63` contiguous left/right pairs
-- that one authored path id always steps by `0x150`
+- that the constructor-generation bank universally treats those `126` records as `63` contiguous left/right pairs
 - that the first/second record layout is the same for every constructor family
 
 `initialize_path_template_record_pair` proves record initialization at `+0x0` and `+0x18`, and `mirror_path_template_pair_x` proves one record can be mirrored into another, but the actual call sites that establish universal pair layout are still missing.

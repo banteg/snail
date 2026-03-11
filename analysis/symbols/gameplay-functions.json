@@ -401,6 +401,10 @@
       "name": "initialize_looptheloopw_path_template_pair"
     },
     {
+      "address": "0x41c5f0",
+      "name": "initialize_loopout_path_template_pair"
+    },
+    {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state"
     },
@@ -412,6 +416,14 @@
       "address": "0x421dc0",
       "name": "mirror_path_template_pair_x",
       "description": "Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half."
+    },
+    {
+      "address": "0x422c00",
+      "name": "initialize_sweep_path_template_pair"
+    },
+    {
+      "address": "0x423580",
+      "name": "initialize_snake_path_template_pair"
     },
     {
       "address": "0x423f10",
@@ -426,6 +438,22 @@
       "name": "initialize_start_path_template_pair"
     },
     {
+      "address": "0x426cb0",
+      "name": "initialize_turnover_path_template_pair"
+    },
+    {
+      "address": "0x427640",
+      "name": "initialize_turnoverdouble_path_template_pair"
+    },
+    {
+      "address": "0x427fe0",
+      "name": "initialize_turnunder_path_template_pair"
+    },
+    {
+      "address": "0x4289a0",
+      "name": "initialize_wibble_path_template_pair"
+    },
+    {
       "address": "0x429250",
       "name": "initialize_invert_path_template_pair"
     },
@@ -438,6 +466,14 @@
       "address": "0x429b20",
       "name": "initialize_warp_path_template_pair",
       "description": "Builds the nonlinear kind-42 attachment template family used by Path=Warp. The constructor seeds sample_count=66, writes the special per-sample warp phase scalar at +0xa0, and reuses compute_warp_attachment_transform while emitting the generated strip mesh."
+    },
+    {
+      "address": "0x42a540",
+      "name": "initialize_twister_path_template_pair"
+    },
+    {
+      "address": "0x42af30",
+      "name": "initialize_twister2_path_template_pair"
     },
     {
       "address": "0x42b920",

@@ -13,14 +13,16 @@ Inside `rebuild_track_runtime_from_segments`:
   - an installed attachment record whose `+56` points at the live template
 - `project_position_onto_track_attachment` chooses the active sample by `current_row - owner_row`, so the runtime clearly uses an installed owner/source-row chain rather than raw parser metadata
 
-This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata, but this package does **not** yet prove the exact `P/p` glyph-to-runtime-tile mapping or the final authored-name-to-bank-slot bridge.
+This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata. The remaining unknowns are the exact `P/p` glyph-to-runtime-tile semantics and the fine details of which installed half is chosen in the `P/p` installer branch, not the overall authored-name bridge itself.
 
 ## How Attachments Reach The Player
 
 The strong static chain from this bundle is:
 
 - authored `Path=` name -> `find_segment_path_index_by_name` returns one of `51` hardcoded name-table indices
-- a still-missing installer stage turns that authored index into installed runtime attachment records
+- `load_segment_definitions` stores that resolved public index on the parsed segment-row record at `+0x8bc`
+- `populate_runtime_track_cells_from_segments` later reads that stored index and selects an installed attachment pair as `path_index * 336 + (game + 0xff2914 / 0xff29bc)`
+- in that same installer branch, uppercase `P` becomes runtime tile `30` and lowercase `p` becomes runtime tile `29`, but the installed-bank root itself is chosen by a separate builder-state byte at `this + 2`, not directly by glyph case
 - the generated row cells carry attachment flag bit `0x40` plus an owner pointer at `+0xa4`
 - projection and entry then walk from the current row cell to that installed owner record and into the live template record at owner `+56`
 
@@ -199,11 +201,10 @@ This is the current high-confidence static evidence that:
 
 Still missing:
 
-- the exact initialization path from the hardcoded `51`-name table to concrete runtime template slots
 - the detailed semantics of each path-template constructor beyond the current family grouping
 - the exact constructor body for the named `HALFPIPE` slot
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
-- the exact installer that sets row-cell flag `0x40`, row-cell `+0xa4`, and the installed-owner/source-row chain
+- the remaining installer details around row-cell flag `0x40`, row-cell `+0xa4`, and the installed-owner/source-row chain
 
 ## Practical Impact On The Rewrite
 

@@ -73,14 +73,16 @@ The old path-system page has been broken into focused notes:
 The current high-confidence model is:
 
 - `Path=<name>` resolves through a hardcoded name table in the executable
-- a still-missing installer turns authored path-name indices into installed sampled path-template objects on runtime cells
+- `load_segment_definitions` resolves that authored name to one of the `51` table indices and stores it on the parsed segment-row record at `+0x8bc`
+- `populate_runtime_track_cells_from_segments` later uses that stored index directly as `path_index * 336` into the installed pair bank rooted at `game + 0xff2914` / `game + 0xff29bc`
+- the same `P/p` installer branch maps `P -> 30` and `p -> 29` for the runtime tile id, while the bank-root choice itself is controlled by a separate builder-state byte at `this + 2`
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the placed parcel manager at `game + 0x125e430` is separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
 
-The remaining unknowns are mostly about exact constructor semantics, unresolved public slots like `HALFPIPE`, and the last details of attachment entry or exit behavior.
+The remaining unknowns are mostly about exact constructor semantics, unresolved public slots like `HALFPIPE`, and the last details of attachment entry or exit behavior. The big former gap is now closed: the public `Path=` table does not go through a later mystery remap stage in the runtime installer. The parser stores the 51-name index up front, and the builder uses that index directly when it installs the sampled attachment pair on `P/p` rows.
 
 ## March 8 Runtime Capture
 
