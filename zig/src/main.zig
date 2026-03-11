@@ -2792,7 +2792,7 @@ const AppState = struct {
                 )) {
                     const entry = high_score.Entry{
                         .score = result.score,
-                        .level_index = @intCast(self.active_frontend_level_index),
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
                     };
                     const insert = self.high_score_tables.addArcade(self.allocator, entry);
                     result.high_score_mode = .postal;
@@ -2807,7 +2807,7 @@ const AppState = struct {
 
                 const entry = high_score.Entry{
                     .score = result.score,
-                    .level_index = @intCast(self.active_frontend_level_index),
+                    .replay_level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
@@ -2818,7 +2818,7 @@ const AppState = struct {
                 result.score = elapsed_millis;
                 const entry = high_score.Entry{
                     .score = elapsed_millis,
-                    .level_index = @intCast(self.active_frontend_level_index),
+                    .replay_level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry, true);
                 result.time_trial_record_improved = insert.improved;
@@ -2860,7 +2860,7 @@ const AppState = struct {
                 result.score = runner.score.total;
                 const entry = high_score.Entry{
                     .score = result.score,
-                    .level_index = @intCast(self.active_frontend_level_index),
+                    .replay_level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
@@ -2871,7 +2871,7 @@ const AppState = struct {
                 result.score = runner.score.total;
                 const entry = high_score.Entry{
                     .score = result.score,
-                    .level_index = @intCast(self.active_frontend_level_index),
+                    .replay_level_index = @intCast(self.active_frontend_level_index),
                 };
                 const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
@@ -2888,7 +2888,7 @@ const AppState = struct {
                     self.active_frontend_level_index,
                     .{
                         .score = elapsed_millis,
-                        .level_index = @intCast(self.active_frontend_level_index),
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
                     },
                     false,
                 );
@@ -5426,9 +5426,7 @@ fn routeMapHasReplayEntry(
     // slot reports state `1`. The closest persisted Windows-equivalent signal in the port
     // is a ScoreC completion entry with replay samples still present.
     if (mode != .time_trial) return false;
-    if (route_index == 0) return false;
-    const completion_index = route_index - 1;
-    if (completion_index >= tables.completion.len) return false;
+    const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return false;
     return tables.completion[completion_index].has_replay;
 }
 
