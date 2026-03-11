@@ -485,6 +485,11 @@
       "name": "initialize_loopbow_path_template_pair"
     },
     {
+      "address": "0x42c600",
+      "name": "finalize_path_template_record",
+      "description": "Finalizes one generated path-template record after constructor or mirror edits by recomputing derived per-sample lengths and updating the nested strip-mesh state."
+    },
+    {
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion"
     },

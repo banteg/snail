@@ -64,6 +64,7 @@ Important corrections:
 
 - the shipped table has `51` names, not `47`
 - shipped authored content does reference `WARP` by name via [`SEGMENTS/WARP.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/WARP.TXT)
+- shipped authored content also references `HALFPIPE` by name via [`SEGMENTS/HALFPIPE.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE.TXT), [`SEGMENTS/HALFPIPE2.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE2.TXT), and [`SEGMENTS/HALFPIPE3.TXT`](../../artifacts/extracted/SnailMail.dat/SEGMENTS/HALFPIPE3.TXT)
 - path-table index `42` is still the authored name `HALFPIPE`
 - the recovered **runtime kind** `42` is a different field entirely, and `sub_429b20` now strongly matches the `WARP` constructor rather than `HALFPIPE`
 
@@ -104,6 +105,11 @@ What is still **not** proven from this package:
 - that the first/second record layout is the same for every constructor family
 
 `initialize_path_template_record_pair` proves record initialization at `+0x0` and `+0x18`, and `mirror_path_template_pair_x` proves one record can be mirrored into another, but the actual call sites that establish universal pair layout are still missing.
+
+One more shared helper is now clear from the constructor xrefs:
+
+- `finalize_path_template_record` (`0x42c600`) is the common post-constructor finalizer used by most concrete path families and by `mirror_path_template_pair_x`
+- it is not another family constructor; it recomputes derived per-sample lengths and final strip-mesh state after the primary/secondary sample arrays have been written
 
 ## Dynamic Family Cross-Check
 
@@ -205,7 +211,7 @@ This matches the follow-state code path:
 | 39 | `TURNUNDER` | `sub_427fe0` | |
 | 40 | `WIBBLE` | `sub_4289a0` | |
 | 41 | `INVERT` | `sub_429250` | |
-| 42 | `HALFPIPE` | unresolved | still missing from the current constructor sweep |
+| 42 | `HALFPIPE` | unresolved | still missing from the current constructor sweep despite shipped `HALFPIPE*.TXT` content using it |
 | 43-44 | `TWISTERA`, `TWISTERB` | `sub_42a540` | |
 | 45-46 | `TWISTER2A`, `TWISTER2B` | `sub_42af30` | |
 | 47-50 | `TOAD*` | `sub_42cbf0` | `TOAD0`, `TOAD1`, `TOADPAIR0`, `TOADPAIR1` |
