@@ -858,7 +858,9 @@ pub const Runner = struct {
     // PORT(partial): Windows enters the death selector once Goldy's world Y falls below -7.0.
     // The runner still does not simulate vertical motion, so it uses a conservative proxy:
     // no sampled floor at the current lane, outside attachment-follow, without an active
-    // jetpack, and without an authored `NoFall` annotation triggers the same fall death path.
+    // jetpack, and without an authored `NoFall` annotation triggers the same direct fall-side
+    // death-resolution path. The separate scripted death cutscene remains reserved for hit-side
+    // hazards like slug contact.
     fn updateFallEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode == .attachment) return;
         if (self.jetpack.active) return;
@@ -870,7 +872,7 @@ pub const Runner = struct {
             self.row_position,
         ) != null) return;
 
-        self.beginDeathCutscene(.fall);
+        self.beginDeathResolution(.fall);
     }
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
@@ -900,6 +902,20 @@ pub const Runner = struct {
         self.phase = .{
             .death_cutscene = .{
                 .cause = cause,
+                .ticks = 0,
+            },
+        };
+    }
+
+    fn beginDeathResolution(self: *Runner, cause: DeathCause) void {
+        if (self.phase != .active or self.finished) return;
+        self.paused = false;
+        self.movement_mode = .track;
+        self.attachment_path_name = null;
+        self.phase = .{
+            .death_resolution = .{
+                .cause = cause,
+                .final_loss = self.deathUsesFinalLoss(),
                 .ticks = 0,
             },
         };
@@ -1496,7 +1512,7 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     try std.testing.expect(!runner.jetpack.active);
 }
 
-test "fatal floor gaps enter the fall death path" {
+test "fatal floor gaps enter direct death resolution" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -1505,7 +1521,7 @@ test "fatal floor gaps enter the fall death path" {
     primeRunnerBeforeRow(&runner, &fixture.preview, gap);
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
 }
 
