@@ -1004,8 +1004,8 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
     // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
-    // score crosses another 50,000-point bucket, capped at 9. The runner now also mirrors
-    // the current postal/tutorial respawn decrement path, but not the original reload flow.
+    // score crosses another 50,000-point bucket, capped at 9. Postal life consumption is
+    // committed later by the outer app-side respawn reload path, not inside the runner.
     fn updateVisibleLifeStockFromScore(self: *Runner, previous_total: u32, current_total: u32) void {
         const previous_bucket = @divTrunc(previous_total, score_life_threshold);
         const current_bucket = @divTrunc(current_total, score_life_threshold);
@@ -1091,9 +1091,6 @@ pub const Runner = struct {
                     return;
                 }
 
-                if (self.session_mode == .postal and self.visible_life_stock > 0) {
-                    self.visible_life_stock -= 1;
-                }
                 self.pending_handoff = .{ .respawn = state.cause };
             },
         }
@@ -1592,7 +1589,7 @@ test "stopwatch advances minutes seconds and subsecond counters at 60fps" {
     try std.testing.expectEqual(@as(u32, 1500), stopwatch.elapsedMillis());
 }
 
-test "postal death hands off respawn after the death controller finishes" {
+test "postal death hands off respawn after the death controller finishes without consuming lives yet" {
     var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
     defer fixture.deinit();
 
@@ -1612,7 +1609,7 @@ test "postal death hands off respawn after the death controller finishes" {
     const handoff = runner.consumeHandoff();
     try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.hazard, handoff.respawn);
-    try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
+    try std.testing.expectEqual(@as(u32, 3), runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
     try std.testing.expectApproxEqAbs(@as(f32, 24.5), runner.row_position, 0.0001);
 }

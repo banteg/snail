@@ -2906,7 +2906,13 @@ const AppState = struct {
         const previous_runner = self.level_runner orelse return;
         const preserved_session_mode = previous_runner.session_mode;
         const preserved_score = previous_runner.score;
-        const preserved_visible_life_stock = previous_runner.visible_life_stock;
+        // PORT(verified): `update_subgoldy_resurrect` decrements visible lives only on the
+        // committed postal respawn branch, after fade completion. Keep that decrement at the
+        // app-side rebuild handoff instead of consuming it inside the runner.
+        const preserved_visible_life_stock = switch (previous_runner.session_mode) {
+            .postal => previous_runner.visible_life_stock -| 1,
+            .challenge, .time_trial, .tutorial, .debug => previous_runner.visible_life_stock,
+        };
         const preserved_tick_count = previous_runner.tick_count;
         const preserved_stopwatch = previous_runner.stopwatch;
 
