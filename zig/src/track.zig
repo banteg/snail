@@ -162,6 +162,8 @@ pub const LoadedLevelPreview = struct {
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
     runtime_build_flags: u32,
+    garbage_scalar: f32,
+    salt_scalar: f32,
     runtime_tiles: []u8,
     runtime_edge_masks: []u8,
     runtime_spawn_hints: []u8,
@@ -284,6 +286,8 @@ pub const LoadedLevelPreview = struct {
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
+            .garbage_scalar = level_definition.normalizedGarbageScalar() orelse 0.0,
+            .salt_scalar = level_definition.normalizedSaltScalar() orelse 0.0,
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
@@ -447,6 +451,16 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeSpawnHintMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
         return self.runtime_spawn_hints[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn hasGarbageSpawnHintAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        const mask = self.runtimeSpawnHintMaskAt(global_row, lane_index) orelse return false;
+        return (mask & runtime_spawn_hint_garbage_fallback) != 0;
+    }
+
+    pub fn hasSaltSpawnHintAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        const mask = self.runtimeSpawnHintMaskAt(global_row, lane_index) orelse return false;
+        return (mask & runtime_spawn_hint_salt_fallback) != 0;
     }
 
     pub fn fallbackHazardCandidateCounts(self: *const LoadedLevelPreview) FallbackHazardCandidateCounts {

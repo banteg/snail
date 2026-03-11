@@ -77,6 +77,17 @@ pub const RunnerHandoff = union(enum) {
     final_loss: DeathCause,
 };
 
+const RuntimeHazardKind = enum {
+    garbage,
+    salt,
+};
+
+const RuntimeHazard = struct {
+    row: usize,
+    lane: usize,
+    kind: RuntimeHazardKind,
+};
+
 const RunnerPhase = union(enum) {
     active,
     completion_cutscene: u16,
@@ -237,6 +248,12 @@ pub const JetpackGauge = struct {
 // player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
 // not the jetpack gauge at +0x2750. A separate +0.02 damage path from another pool
 // is still unresolved, so only the identified gameplay hazards are modeled here.
+//
+// PORT(partial): Windows spawns garbage/salt from a forward row scan over an 8-row
+// live strip rather than treating matching runtime tiles as immediate contacts. The
+// runner now mirrors that with a spawned-hazard window and the recovered scalar-based
+// ambient thresholds, but still omits the original suppressor bits, mode gates, and
+// the separate Wall2 ambient pool because the preview does not expose those flags yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 const salt_damage_delta: f32 = 0.15;
@@ -247,6 +264,8 @@ const jetpack_gauge_tick_step: f32 = 0.0016666667;
 const jetpack_warning_threshold: f32 = 0.94;
 const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
 const jetpack_warning_phase_scale: f32 = 16.666668;
+const runtime_hazard_live_window_rows: usize = 8;
+const max_active_runtime_hazards: usize = 128;
 const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const maximum_visible_life_stock: u32 = 9;
@@ -307,6 +326,9 @@ pub const Runner = struct {
     parcel_target: usize = 0,
     completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
+    active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{undefined} ** max_active_runtime_hazards,
+    active_runtime_hazard_count: usize = 0,
+    last_runtime_hazard_scan_end: usize = 0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -366,6 +388,7 @@ pub const Runner = struct {
         }
 
         if (!self.paused and self.phase == .active) {
+            self.refreshLiveRuntimeHazards(preview);
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
@@ -715,12 +738,14 @@ pub const Runner = struct {
                 self.recent_event = .jetpack_pickup;
             },
             .garbage => {
+                if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .garbage)) return;
                 self.counters.garbage_hits += 1;
                 self.recordScore(&self.score.garbage_collision, 10);
                 self.applyDamageGaugeDelta(garbage_damage_delta);
                 self.recent_event = .garbage_hit;
             },
             .salt => {
+                if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .salt)) return;
                 self.counters.salt_hits += 1;
                 self.applyDamageGaugeDelta(salt_damage_delta);
                 self.recent_event = .salt_hit;
@@ -818,6 +843,86 @@ pub const Runner = struct {
                 self.applyDamageGaugeDelta(damage_warning_drain_delta);
             },
         }
+    }
+
+    fn refreshLiveRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) return;
+
+        const window_start = currentRowIndex(preview, self.row_position);
+        const window_end = @min(window_start + runtime_hazard_live_window_rows, preview.total_rows);
+
+        self.pruneRuntimeHazards(window_start, window_end);
+
+        var scan_start = @max(window_start, self.last_runtime_hazard_scan_end);
+        if (scan_start > window_end) scan_start = window_end;
+
+        var global_row = scan_start;
+        while (global_row < window_end) : (global_row += 1) {
+            self.scanRuntimeHazardRow(preview, global_row);
+        }
+        self.last_runtime_hazard_scan_end = window_end;
+    }
+
+    fn pruneRuntimeHazards(self: *Runner, window_start: usize, window_end: usize) void {
+        var write_index: usize = 0;
+        for (0..self.active_runtime_hazard_count) |read_index| {
+            const hazard = self.active_runtime_hazards[read_index];
+            if (hazard.row < window_start or hazard.row >= window_end) continue;
+            self.active_runtime_hazards[write_index] = hazard;
+            write_index += 1;
+        }
+        self.active_runtime_hazard_count = write_index;
+    }
+
+    fn scanRuntimeHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
+        const row_location = preview.locateRow(global_row) orelse return;
+
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
+                switch (sample.kind) {
+                    .garbage => self.addRuntimeHazard(global_row, lane, .garbage),
+                    .salt => self.addRuntimeHazard(global_row, lane, .salt),
+                    else => {},
+                }
+            }
+
+            if (preview.hasGarbageSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.garbage_scalar, .garbage)) {
+                self.addRuntimeHazard(global_row, lane, .garbage);
+            }
+            if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {
+                self.addRuntimeHazard(global_row, lane, .salt);
+            }
+        }
+    }
+
+    fn addRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) void {
+        for (0..self.active_runtime_hazard_count) |index| {
+            const hazard = self.active_runtime_hazards[index];
+            if (hazard.row == row and hazard.lane == lane and hazard.kind == kind) return;
+        }
+        if (self.active_runtime_hazard_count >= self.active_runtime_hazards.len) return;
+
+        self.active_runtime_hazards[self.active_runtime_hazard_count] = .{
+            .row = row,
+            .lane = lane,
+            .kind = kind,
+        };
+        self.active_runtime_hazard_count += 1;
+    }
+
+    fn consumeRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
+        for (0..self.active_runtime_hazard_count) |index| {
+            const hazard = self.active_runtime_hazards[index];
+            if (hazard.row != row or hazard.lane != lane or hazard.kind != kind) continue;
+
+            var shift_index = index;
+            while (shift_index + 1 < self.active_runtime_hazard_count) : (shift_index += 1) {
+                self.active_runtime_hazards[shift_index] = self.active_runtime_hazards[shift_index + 1];
+            }
+            self.active_runtime_hazard_count -= 1;
+            return true;
+        }
+        return false;
     }
 
     // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
@@ -1035,6 +1140,32 @@ fn progressForTicks(ticks: u16, total_ticks: u16) f32 {
         0.0,
         1.0,
     );
+}
+
+fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, kind: RuntimeHazardKind) bool {
+    if (scalar <= 0.0) return false;
+
+    const roll = deterministicRuntimeSpawnRoll(global_row, lane, kind);
+    const threshold = switch (kind) {
+        .garbage => 0.8 + (0.2 * (1.0 - scalar)),
+        .salt => 0.98 + (0.02 * (1.0 - scalar)),
+    };
+    return roll > threshold;
+}
+
+fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
+    const kind_bias: u64 = switch (kind) {
+        .garbage => 0x9e3779b97f4a7c15,
+        .salt => 0xc2b2ae3d27d4eb4f,
+    };
+    var value = (@as(u64, global_row) << 32) ^ (@as(u64, lane) * 0x9e3779b1) ^ kind_bias;
+    value ^= value >> 33;
+    value *%= 0xff51afd7ed558ccd;
+    value ^= value >> 33;
+    value *%= 0xc4ceb9fe1a85ec53;
+    value ^= value >> 33;
+    const bucket: u32 = @truncate(value & 0xffff);
+    return @as(f32, @floatFromInt(bucket)) / 65535.0;
 }
 
 const TestFixture = struct {

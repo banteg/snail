@@ -99,10 +99,11 @@ Current high-signal entries:
   - evidence: March 8 Frida captures plus track-runtime notes
   - implementation: [`track.zig`](../../zig/src/track.zig)
   - replace when: per-mode or per-level build-flag normalization is fully ported
-- ambient garbage and salt candidate overlay: `fallback`
-  - evidence: trace-confirmed fallback tile families on `0x01`, `0x0f`, and `0x15`
-  - implementation: [`track.zig`](../../zig/src/track.zig), [`main.zig`](../../zig/src/main.zig)
-  - replace when: the original gameplay-side spawn timing and windowing inside `update_subgame` are ported
+- ambient garbage and salt spawning: `partial`
+  - evidence: trace-confirmed fallback tile families on `0x01`, `0x0f`, and `0x15`, plus Windows `update_subgame` row-scan/live-strip behavior from the spawn/collision package
+  - implementation: [`track.zig`](../../zig/src/track.zig), [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)
+  - note: the port no longer treats garbage/salt as raw always-live tile contacts. It now seeds authored and ambient candidates into an 8-row runner-local live strip and uses the recovered garbage/salt scalar thresholds for deterministic ambient rolls. The original suppressor bits, neighbor gates, mode gates, and the separate Wall2 `+0.02` pool are still missing.
+  - replace when: the original gameplay-side spawn timing, suppressor bits, mode gates, and the Wall2 ambient hazard family inside `update_subgame` / `handle_subgoldy_collisions` are ported
 - gameplay subgame lifecycle: `partial`
   - evidence: Binary Ninja decompile of `initialize_subgame`, `build_subgame_level`, `complete_subgame`, `destroy_subgame`, `update_subgame`, `initialize_subgoldy`, `show_subgoldy_lives`, `update_subgoldy`, `initialize_subgoldy_fall_state`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, `handle_subgoldy_collisions`, `initialize_jetpack_gauge`, `update_jetpack_gauge`, `update_damage_gauge`, `apply_damage_gauge_delta`, `advance_timer_counters`, `update_subgame_camera`, `initialize_cameraman`, and `update_cameraman`, plus cross-port Android and iOS symbols for `cRSubGame::{Init, BuildLevel, Complete, AI, CameraAI, UnInit}`, `cRSubGoldy::{Init, ShowLives, DeathInit, RessurectAI, Collision, AI}`, `cRDamageGuage::{Init, AI}`, and `cRCameraman::{Init, AI}`
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig), [`track.zig`](../../zig/src/track.zig)
