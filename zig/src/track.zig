@@ -439,6 +439,10 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn draw(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
+        self.drawRawDebug(selected_segment_index);
+    }
+
+    pub fn drawRawDebug(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
         const cell_size: f32 = 1.0;
         const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
 
@@ -454,6 +458,22 @@ pub const LoadedLevelPreview = struct {
         }
 
         self.drawPlacedModels(width_offset, cell_size);
+    }
+
+    pub fn drawDebugOverlay(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
+        const cell_size: f32 = 1.0;
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+
+        for (self.segments, 0..) |loaded_segment, segment_index| {
+            const is_selected = segment_index == selected_segment_index;
+            const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[segment_index])) * cell_size;
+
+            drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
+            drawSegmentCells(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentCenterline(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
+            drawSegmentAnnotations(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
+        }
     }
 
     pub fn activeSegment(self: *const LoadedLevelPreview, selected_segment_index: usize) ?*const segment.Definition {
@@ -645,6 +665,10 @@ pub const LoadedLevelPreview = struct {
             );
             asset.drawEx(transform);
         }
+    }
+
+    pub fn drawPlacedModelsOnly(self: *const LoadedLevelPreview) void {
+        self.drawPlacedModels(@as(f32, @floatFromInt(self.max_width)) * 0.5, 1.0);
     }
 };
 

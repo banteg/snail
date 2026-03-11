@@ -287,7 +287,20 @@ pub fn drawSegmentPanel(state: anytype) !void {
     var runtime_buffer: [256]u8 = undefined;
     const runtime_text = try std.fmt.bufPrintZ(
         &runtime_buffer,
-        "marked {d}  fallback {d}/{d}  build 0x{x:0>8}",
+        "render {s}  track {d}  overlay {s}  grid {s}",
+        .{
+            @tagName(state.segment_render_mode),
+            state.segment_track_set_index,
+            if (state.segment_show_overlay) "on" else "off",
+            if (state.segment_show_grid) "on" else "off",
+        },
+    );
+    drawText(state, runtime_text, 44, 226, 14, .gold);
+
+    var build_buffer: [256]u8 = undefined;
+    const build_text = try std.fmt.bufPrintZ(
+        &build_buffer,
+        "marked {d}  fallback {d}/{d}  build 0x{x:0>8}  attachments no",
         .{
             countMarkedRows(loaded_segment.rows),
             preview.fallbackHazardCandidateCounts().garbage,
@@ -295,7 +308,7 @@ pub fn drawSegmentPanel(state: anytype) !void {
             preview.runtime_build_flags,
         },
     );
-    drawText(state, runtime_text, 44, 226, 14, .gold);
+    drawText(state, build_text, 44, 248, 14, .light_gray);
 
     if (findFirstAnnotatedRow(loaded_segment.rows)) |annotated_row| {
         var row_buffer: [256]u8 = undefined;
@@ -304,14 +317,14 @@ pub fn drawSegmentPanel(state: anytype) !void {
             "first annotation row {d}: {s}",
             .{ annotated_row.index + 1, annotationLabel(annotated_row.row.annotation.?) },
         );
-        drawText(state, row_text, 44, 250, 14, .light_gray);
+        drawText(state, row_text, 44, 270, 14, .light_gray);
 
         if (annotationDescription(annotated_row.row.annotation.?)) |description| {
             var description_buffer: [160]u8 = undefined;
-            drawText(state, clippedText(&description_buffer, description, 54), 44, 272, 14, .ray_white);
+            drawText(state, clippedText(&description_buffer, description, 54), 44, 292, 14, .ray_white);
         }
     } else {
-        drawText(state, "No row annotations on this segment.", 44, 250, 14, .light_gray);
+        drawText(state, "No row annotations on this segment.", 44, 270, 14, .light_gray);
     }
 
     drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
@@ -331,9 +344,24 @@ pub fn drawSegmentViewport(state: anytype) void {
     camera.begin();
     defer rl.endMode3D();
 
-    const grid_slices: i32 = @intCast(@max(preview.total_rows, 10));
-    rl.drawGrid(@min(grid_slices, 80), 1.0);
-    preview.draw(0);
+    if (state.segment_show_grid) {
+        const grid_slices: i32 = @intCast(@max(preview.total_rows, 10));
+        rl.drawGrid(@min(grid_slices, 80), 1.0);
+    }
+
+    switch (state.segment_render_mode) {
+        .game => {
+            if (state.current_standalone_segment_scene) |scene| {
+                scene.draw(&preview, 0);
+            } else {
+                preview.drawRawDebug(0);
+            }
+            if (state.segment_show_overlay) {
+                preview.drawDebugOverlay(0);
+            }
+        },
+        .raw => preview.drawRawDebug(0),
+    }
 }
 
 fn uiContext(state: anytype) app_ui.Context {

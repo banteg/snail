@@ -16,6 +16,7 @@ const intro = @import("intro.zig");
 const level_prompt = @import("level_prompt.zig");
 const sim = @import("sim.zig");
 const track = @import("track.zig");
+const track_render = @import("track_render.zig");
 const loading_screen = @import("loading_screen.zig");
 const object = @import("object.zig");
 const segment = @import("segment.zig");
@@ -805,6 +806,11 @@ const Mode = enum {
     segments,
 };
 
+const DebugSegmentRenderMode = enum {
+    game,
+    raw,
+};
+
 const AppState = struct {
     allocator: std.mem.Allocator,
     catalog: assets.Catalog,
@@ -883,6 +889,10 @@ const AppState = struct {
     object_index: usize,
     level_index: usize,
     segment_index: usize = 0,
+    segment_render_mode: DebugSegmentRenderMode = .game,
+    segment_show_overlay: bool = false,
+    segment_show_grid: bool = false,
+    segment_track_set_index: u8 = 0,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
     frontend_canvas: ?rl.RenderTexture2D = null,
@@ -906,6 +916,7 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
+    current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
     current_game_background_runtime: ?background.Runtime = null,
     current_loading_screen: ?loading_screen.Loaded = null,
@@ -1050,6 +1061,10 @@ const AppState = struct {
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
+        }
+        if (self.current_standalone_segment_scene) |*scene| {
+            scene.deinit();
+            self.current_standalone_segment_scene = null;
         }
         if (self.current_text_script) |*script| {
             script.deinit(self.allocator);
@@ -1309,6 +1324,22 @@ const AppState = struct {
             }
             if (rl.isKeyPressed(.down)) {
                 try self.stepSelection(10);
+            }
+            if (rl.isKeyPressed(.v)) {
+                self.segment_render_mode = switch (self.segment_render_mode) {
+                    .game => .raw,
+                    .raw => .game,
+                };
+            }
+            if (rl.isKeyPressed(.o)) {
+                self.segment_show_overlay = !self.segment_show_overlay;
+            }
+            if (rl.isKeyPressed(.g)) {
+                self.segment_show_grid = !self.segment_show_grid;
+            }
+            if (rl.isKeyPressed(.t)) {
+                self.segment_track_set_index = (self.segment_track_set_index + 1) % 4;
+                try self.reloadStandaloneSegmentScene();
             }
         } else {
             if (rl.isKeyPressed(.left)) {
@@ -3793,6 +3824,10 @@ const AppState = struct {
     }
 
     fn reloadStandaloneSegment(self: *AppState) !void {
+        if (self.current_standalone_segment_scene) |*scene| {
+            scene.deinit();
+            self.current_standalone_segment_scene = null;
+        }
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -3807,6 +3842,20 @@ const AppState = struct {
             self.allocator,
             &self.catalog,
             entry,
+        );
+        try self.reloadStandaloneSegmentScene();
+    }
+
+    fn reloadStandaloneSegmentScene(self: *AppState) !void {
+        if (self.current_standalone_segment_scene) |*scene| {
+            scene.deinit();
+            self.current_standalone_segment_scene = null;
+        }
+        _ = self.current_standalone_segment_preview orelse return;
+        self.current_standalone_segment_scene = try track_render.Scene.buildStandaloneSegmentScene(
+            self.allocator,
+            &self.catalog,
+            self.segment_track_set_index,
         );
     }
 
@@ -6040,7 +6089,7 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
 
     drawAppText(state, "snail debug browser", 24, 18, 24, .ray_white);
     drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments", 24, 48, 16, .light_gray);
-    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset", 24, 70, 16, .light_gray);
+    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset  segments: v render o overlay g grid t track", 24, 70, 16, .light_gray);
 
     var source_buffer: [256]u8 = undefined;
     const source_text = try std.fmt.bufPrintZ(
