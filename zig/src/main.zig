@@ -534,7 +534,11 @@ const FrontendHoverTarget = enum(u8) {
     new_game_back,
     options_fullscreen,
     options_sound_volume,
+    options_sound_less,
+    options_sound_more,
     options_music_volume,
+    options_music_less,
+    options_music_more,
     options_back,
     pause_menu_end_game,
     pause_menu_options,
@@ -617,6 +621,34 @@ fn hoverTargetForOptions(index: usize) FrontendHoverTarget {
         2 => .options_music_volume,
         3 => .options_back,
         else => unreachable,
+    };
+}
+
+fn hoverTargetForOptionsSliderArrow(item: OptionsMenuItem, direction: frontend_widget.SliderDirection) FrontendHoverTarget {
+    return switch (item) {
+        .sound_volume => switch (direction) {
+            .less => .options_sound_less,
+            .more => .options_sound_more,
+        },
+        .music_volume => switch (direction) {
+            .less => .options_music_less,
+            .more => .options_music_more,
+        },
+        else => unreachable,
+    };
+}
+
+fn sliderHoverTargetBelongsToOptionsRow(target: FrontendHoverTarget, item: OptionsMenuItem) bool {
+    return switch (item) {
+        .sound_volume => switch (target) {
+            .options_sound_volume, .options_sound_less, .options_sound_more => true,
+            else => false,
+        },
+        .music_volume => switch (target) {
+            .options_music_volume, .options_music_less, .options_music_more => true,
+            else => false,
+        },
+        else => false,
     };
 }
 
@@ -1432,7 +1464,15 @@ const AppState = struct {
 
         const options_active = self.game_phase == .options_menu and !self.frontend_transition.blocksInput();
         for (&self.options_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, options_active and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index));
+            const item = options_menu_items[index];
+            const hot = switch (item) {
+                .sound_volume, .music_volume => blk: {
+                    const active_target = self.activeFrontendButtonTarget();
+                    break :blk options_active and ((active_target != null and sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
+                },
+                else => options_active and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index),
+            };
+            state.stepFor(.menu_button, hot);
         }
         self.options_sound_display_value = stepOptionsSliderDisplay(self.options_sound_display_value, self.runtime_config.soundVolume());
         self.options_music_display_value = stepOptionsSliderDisplay(self.options_music_display_value, self.runtime_config.musicVolume());
@@ -1490,7 +1530,15 @@ const AppState = struct {
             state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
         }
         for (&self.options_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index));
+            const item = options_menu_items[index];
+            const hot = switch (item) {
+                .sound_volume, .music_volume => blk: {
+                    const active_target = self.activeFrontendButtonTarget();
+                    break :blk self.game_phase == .options_menu and ((active_target != null and sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
+                },
+                else => self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index),
+            };
+            state.snapFor(.menu_button, hot);
         }
         for (&self.pause_menu_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
@@ -1607,30 +1655,48 @@ const AppState = struct {
         }
 
         const sound_slider = optionsSliderLayout(self, .sound_volume);
+        if (sound_slider.less_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .less));
+            self.options_menu_index = 1;
+            if (rl.isMouseButtonPressed(.left)) {
+                try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
+            }
+            return;
+        }
+        if (sound_slider.more_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .more));
+            self.options_menu_index = 1;
+            if (rl.isMouseButtonPressed(.left)) {
+                try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
+            }
+            return;
+        }
         if (sound_slider.frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(1));
             self.options_menu_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                if (sound_slider.less_rect.contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
-                } else if (sound_slider.more_rect.contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
-                }
-            }
             return;
         }
 
         const music_slider = optionsSliderLayout(self, .music_volume);
+        if (music_slider.less_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .less));
+            self.options_menu_index = 2;
+            if (rl.isMouseButtonPressed(.left)) {
+                try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
+            }
+            return;
+        }
+        if (music_slider.more_rect.contains(local_mouse)) {
+            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .more));
+            self.options_menu_index = 2;
+            if (rl.isMouseButtonPressed(.left)) {
+                try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
+            }
+            return;
+        }
         if (music_slider.frame_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(2));
             self.options_menu_index = 2;
-            if (rl.isMouseButtonPressed(.left)) {
-                if (music_slider.less_rect.contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
-                } else if (music_slider.more_rect.contains(local_mouse)) {
-                    try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
-                }
-            }
             return;
         }
 
@@ -4232,7 +4298,6 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const local_mouse = state.currentFrontendMouseLocal();
     frontend_widget.drawType20Button(
         layout,
         .{
@@ -4244,7 +4309,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.options_button_states[options_fullscreen_button_index],
         false,
     );
-    const sound_slider = optionsSliderLayout(state, .sound_volume);
+    const active_target = state.activeFrontendButtonTarget();
     drawOptionsSliderRow(
         state,
         layout,
@@ -4252,10 +4317,9 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.soundVolume(),
         state.options_sound_display_value,
         state.options_button_states[options_sound_button_index],
-        if (local_mouse) |mouse| sound_slider.less_rect.contains(mouse) else false,
-        if (local_mouse) |mouse| sound_slider.more_rect.contains(mouse) else false,
+        if (active_target) |target| target == .options_sound_less else false,
+        if (active_target) |target| target == .options_sound_more else false,
     );
-    const music_slider = optionsSliderLayout(state, .music_volume);
     drawOptionsSliderRow(
         state,
         layout,
@@ -4263,8 +4327,8 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         state.runtime_config.musicVolume(),
         state.options_music_display_value,
         state.options_button_states[options_music_button_index],
-        if (local_mouse) |mouse| music_slider.less_rect.contains(mouse) else false,
-        if (local_mouse) |mouse| music_slider.more_rect.contains(mouse) else false,
+        if (active_target) |target| target == .options_music_less else false,
+        if (active_target) |target| target == .options_music_more else false,
     );
     frontend_widget.drawType20Button(
         layout,
