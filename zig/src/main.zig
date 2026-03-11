@@ -5,6 +5,7 @@ const app_ui = @import("app_ui.zig");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
+const debug_levels = @import("debug_levels.zig");
 const frontend = @import("frontend.zig");
 const frontend_widget = @import("frontend_widget.zig");
 const galaxy = @import("galaxy.zig");
@@ -801,6 +802,7 @@ const Mode = enum {
     models,
     objects,
     levels,
+    segments,
 };
 
 const AppState = struct {
@@ -880,6 +882,7 @@ const AppState = struct {
     model_index: usize,
     object_index: usize,
     level_index: usize,
+    segment_index: usize = 0,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
     frontend_canvas: ?rl.RenderTexture2D = null,
@@ -902,6 +905,7 @@ const AppState = struct {
     current_level: ?level.Definition = null,
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
+    current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_game_background: ?background.Loaded = null,
     current_game_background_runtime: ?background.Runtime = null,
     current_loading_screen: ?loading_screen.Loaded = null,
@@ -951,6 +955,7 @@ const AppState = struct {
         const model_index = catalog.findModelIndex(default_model_path) orelse 0;
         const object_index = catalog.findObjectIndex(default_object_path) orelse 0;
         const level_index = catalog.findLevelIndex(default_level_path) orelse 0;
+        const segment_index: usize = 0;
 
         var state = AppState{
             .allocator = allocator,
@@ -978,6 +983,7 @@ const AppState = struct {
             .model_index = model_index,
             .object_index = object_index,
             .level_index = level_index,
+            .segment_index = segment_index,
             .frontend_canvas = frontend_canvas,
             .frontend_cursor_texture = frontend_cursor_texture,
             .frontend_widget_art = frontend_widget_art,
@@ -997,6 +1003,7 @@ const AppState = struct {
                 try state.reloadModel();
                 try state.reloadObject();
                 try state.reloadLevel();
+                try state.reloadStandaloneSegment();
             },
             .game => if (options.start_phase) |start_phase|
                 try state.enterStartPhase(start_phase)
@@ -1039,6 +1046,10 @@ const AppState = struct {
         if (self.current_track_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
+        }
+        if (self.current_standalone_segment_preview) |*loaded_track_preview| {
+            loaded_track_preview.deinit();
+            self.current_standalone_segment_preview = null;
         }
         if (self.current_text_script) |*script| {
             script.deinit(self.allocator);
@@ -1249,6 +1260,9 @@ const AppState = struct {
         if (rl.isKeyPressed(.five)) {
             try self.setMode(.levels);
         }
+        if (rl.isKeyPressed(.six)) {
+            try self.setMode(.segments);
+        }
 
         if (self.mode == .levels) {
             if (rl.isKeyPressed(.left)) {
@@ -1282,6 +1296,19 @@ const AppState = struct {
             }
             if (rl.isKeyPressed(.r)) {
                 self.pending_level_input.reset = true;
+            }
+        } else if (self.mode == .segments) {
+            if (rl.isKeyPressed(.left)) {
+                try self.stepSelection(-1);
+            }
+            if (rl.isKeyPressed(.right)) {
+                try self.stepSelection(1);
+            }
+            if (rl.isKeyPressed(.up)) {
+                try self.stepSelection(-10);
+            }
+            if (rl.isKeyPressed(.down)) {
+                try self.stepSelection(10);
             }
         } else {
             if (rl.isKeyPressed(.left)) {
@@ -3606,6 +3633,10 @@ const AppState = struct {
                 try self.reloadObject();
             },
             .levels => {},
+            .segments => {
+                self.segment_index = wrappedIndex(self.catalog.segment_entries.len, self.segment_index, delta);
+                try self.reloadStandaloneSegment();
+            },
         }
     }
 
@@ -3761,6 +3792,24 @@ const AppState = struct {
         self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
     }
 
+    fn reloadStandaloneSegment(self: *AppState) !void {
+        if (self.current_standalone_segment_preview) |*loaded_track_preview| {
+            loaded_track_preview.deinit();
+            self.current_standalone_segment_preview = null;
+        }
+        if (self.catalog.segment_entries.len == 0) return;
+        if (self.segment_index >= self.catalog.segment_entries.len) {
+            self.segment_index = self.catalog.segment_entries.len - 1;
+        }
+
+        const entry = self.catalog.segment_entries[self.segment_index];
+        self.current_standalone_segment_preview = try track.LoadedLevelPreview.loadStandaloneSegment(
+            self.allocator,
+            &self.catalog,
+            entry,
+        );
+    }
+
     fn activeModel(self: *const AppState) ?*const x2.Uploaded {
         if (self.current_animation) |*animation| {
             return &animation.rendered;
@@ -3771,7 +3820,7 @@ const AppState = struct {
         return null;
     }
 
-    fn activeLevelSegmentEntry(self: *const AppState) ?*const level.SegmentEntry {
+    pub fn activeLevelSegmentEntry(self: *const AppState) ?*const level.SegmentEntry {
         const loaded_level = self.current_level orelse return null;
         if (loaded_level.segments.len == 0 or self.level_segment_index >= loaded_level.segments.len) return null;
         return &loaded_level.segments[self.level_segment_index];
@@ -5984,11 +6033,13 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     } else if (state.mode == .objects) {
         drawObjectViewport(state);
     } else if (state.mode == .levels) {
-        drawLevelViewport(state);
+        debug_levels.drawLevelViewport(state);
+    } else if (state.mode == .segments) {
+        debug_levels.drawSegmentViewport(state);
     }
 
     drawAppText(state, "snail debug browser", 32, 24, 30, .ray_white);
-    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  tab switch", 32, 62, 18, .light_gray);
+    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments  tab switch", 32, 62, 18, .light_gray);
     drawAppText(state, "arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
 
     var archive_buffer: [512]u8 = undefined;
@@ -6003,13 +6054,15 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     drawModeBadge(state, .models, state.mode, "X2", 280, 156);
     drawModeBadge(state, .objects, state.mode, "Objects", 404, 156);
     drawModeBadge(state, .levels, state.mode, "Levels", 528, 156);
+    drawModeBadge(state, .segments, state.mode, "Segments", 652, 156);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
         .audio => try drawAudioPanel(state),
         .models => try drawModelPanel(state),
         .objects => try drawObjectPanel(state),
-        .levels => try drawLevelPanel(state),
+        .levels => try debug_levels.drawLevelPanel(state),
+        .segments => try debug_levels.drawSegmentPanel(state),
     }
 }
 
@@ -6270,227 +6323,10 @@ fn drawObjectViewport(state: *const AppState) void {
     loaded_object.draw();
 }
 
-fn drawLevelPanel(state: *const AppState) !void {
-    const level_entry = state.catalog.level_entries[state.level_index];
-    const loaded_level = state.current_level orelse return;
-    const loaded_track_preview = state.current_track_preview orelse return;
-    var track_value_buffer: [32]u8 = undefined;
-    var parcels_value_buffer: [32]u8 = undefined;
-    var quota_value_buffer: [32]u8 = undefined;
-    var speed_value_buffer: [32]u8 = undefined;
-    var garbage_value_buffer: [32]u8 = undefined;
-    var salt_value_buffer: [32]u8 = undefined;
-    var garbage_scalar_buffer: [32]u8 = undefined;
-    var salt_scalar_buffer: [32]u8 = undefined;
-
-    var summary_buffer: [384]u8 = undefined;
-    const summary_text = try std.fmt.bufPrintZ(
-        &summary_buffer,
-        "Level {d}/{d}  {s}  mode {s}  segments {d}",
-        .{
-            state.level_index + 1,
-            state.catalog.level_entries.len,
-            loaded_level.name,
-            loaded_level.mode,
-            loaded_track_preview.segments.len,
-        },
-    );
-    drawAppText(state, summary_text, 32, 194, 24, .ray_white);
-
-    var path_buffer: [512]u8 = undefined;
-    const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{level_entry.path});
-    drawAppText(state, path_text, 32, 226, 18, .light_gray);
-
-    var meta_buffer: [384]u8 = undefined;
-    const meta_text = try std.fmt.bufPrintZ(
-        &meta_buffer,
-        "track {s}  parcels {s}  quota {s}  speed {s}  garbage {s}  salt {s}",
-        .{
-            trackToText(&track_value_buffer, loaded_level.track),
-            optionalUsizeToText(&parcels_value_buffer, loaded_level.parcels),
-            optionalUsizeToText(&quota_value_buffer, loaded_level.quota),
-            optionalUsizeToText(&speed_value_buffer, loaded_level.speed),
-            optionalUsizeToText(&garbage_value_buffer, loaded_level.garbage),
-            optionalUsizeToText(&salt_value_buffer, loaded_level.salt),
-        },
-    );
-    drawAppText(state, meta_text, 32, 258, 20, .sky_blue);
-
-    const fallback_counts = loaded_track_preview.fallbackHazardCandidateCounts();
-    var runtime_buffer: [384]u8 = undefined;
-    const runtime_text = try std.fmt.bufPrintZ(
-        &runtime_buffer,
-        "build 0x{x:0>8}  garbage scalar {s}  salt scalar {s}  fallback G {d}  S {d}",
-        .{
-            loaded_track_preview.runtime_build_flags,
-            optionalFloatToText(&garbage_scalar_buffer, loaded_level.normalizedGarbageScalar()),
-            optionalFloatToText(&salt_scalar_buffer, loaded_level.normalizedSaltScalar()),
-            fallback_counts.garbage,
-            fallback_counts.salt,
-        },
-    );
-    drawAppText(state, runtime_text, 32, 284, 18, .light_gray);
-
-    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
-    drawAppText(state, "Level and segment notes", 56, 332, 26, .ray_white);
-
-    if (state.activeLevelSegmentEntry()) |segment_entry| {
-        var segment_buffer: [384]u8 = undefined;
-        const segment_text = try std.fmt.bufPrintZ(
-            &segment_buffer,
-            "Segment {d}/{d}: {s}",
-            .{
-                state.level_segment_index + 1,
-                loaded_level.segments.len,
-                segment_entry.path,
-            },
-        );
-        drawAppText(state, segment_text, 56, 378, 20, .gold);
-
-        var timing_buffer: [384]u8 = undefined;
-        var duration_value_buffer: [32]u8 = undefined;
-        var angle_value_buffer: [32]u8 = undefined;
-        const timing_text = try std.fmt.bufPrintZ(
-            &timing_buffer,
-            "Duration {s}  Angle {s}  Sample {s}",
-            .{
-                optionalFloatToText(&duration_value_buffer, segment_entry.duration),
-                optionalFloatToText(&angle_value_buffer, segment_entry.angle),
-                segment_entry.sample orelse "<none>",
-            },
-        );
-        drawAppText(state, timing_text, 56, 410, 20, .light_gray);
-
-        if (segment_entry.message) |message| {
-            drawAppText(state, "Tutorial message:", 56, 444, 20, .light_gray);
-            try drawWrappedText(state, message, 56, 472, 412, 20, .ray_white);
-        } else {
-            drawAppText(state, "No per-segment tutorial metadata on this entry.", 56, 444, 20, .light_gray);
-        }
-    }
-
-    if (state.current_segment) |loaded_segment| {
-        var dim_buffer: [384]u8 = undefined;
-        const dim_text = try std.fmt.bufPrintZ(
-            &dim_buffer,
-            "Grid {d}x{d}  semantic rows {d}  marked rows {d}  preview rows {d}",
-            .{
-                loaded_segment.width,
-                loaded_segment.height,
-                countAnnotatedRows(loaded_segment.rows),
-                countMarkedRows(loaded_segment.rows),
-                loaded_track_preview.total_rows,
-            },
-        );
-        drawAppText(state, dim_text, 56, 620, 18, .light_gray);
-    }
-
-    if (state.level_runner) |runner| {
-        var sim_buffer: [384]u8 = undefined;
-        const sim_text = try std.fmt.bufPrintZ(
-            &sim_buffer,
-            "Sim row {d:.2}/{d}  cursor {d}+{d:.2}  rate {d:.2}  lane {d}->{d}  speed {d:.1}  tick {d}  mode {s}",
-            .{
-                runner.row_position,
-                loaded_track_preview.total_rows,
-                runner.runtime_track_index,
-                runner.movement_progress,
-                runner.movement_rate_scalar,
-                runner.lane_index,
-                runner.resolved_lane_index,
-                runner.speed_rows_per_second,
-                runner.tick_count,
-                runner.movement_mode.label(),
-            },
-        );
-        drawAppText(state, sim_text, 56, 646, 18, .gold);
-
-        var cell_buffer: [384]u8 = undefined;
-        var path_value_buffer: [96]u8 = undefined;
-        var tile_value_buffer: [32]u8 = undefined;
-        const cell_text = try std.fmt.bufPrintZ(
-            &cell_buffer,
-            "Cell {c} {s}  tile {s}  bounds {d}-{d}  attach {s}  path {s}",
-            .{
-                runner.current_cell,
-                runner.gameplayCellLabel() orelse "<none>",
-                optionalHexU8ToText(&tile_value_buffer, runner.runtimeTileHint()),
-                runner.traversable_bounds.min,
-                runner.traversable_bounds.max,
-                runner.attachment_hint.label(),
-                optionalTextToText(&path_value_buffer, runner.activePathName()),
-            },
-        );
-        drawAppText(state, cell_text, 56, 670, 18, .light_gray);
-
-        var event_buffer: [384]u8 = undefined;
-        const event_text = try std.fmt.bufPrintZ(
-            &event_buffer,
-            "Event {s}  annotation {s}  paused {s}  attachment ticks {d}",
-            .{
-                runner.recentEventLabel(),
-                runner.annotationLabel() orelse "<none>",
-                if (runner.paused) "yes" else "no",
-                runner.attachment_ticks,
-            },
-        );
-        drawAppText(state, event_text, 56, 692, 16, .sky_blue);
-
-        var counter_buffer: [384]u8 = undefined;
-        const counter_text = try std.fmt.bufPrintZ(
-            &counter_buffer,
-            "H {d}  J {d}  G {d}  S {d}  Sl {d}  T {d}  P {d}  A {d}/{d}  NF {d}  JO {d}",
-            .{
-                runner.counters.health_pickups,
-                runner.counters.jetpack_pickups,
-                runner.counters.garbage_hits,
-                runner.counters.salt_hits,
-                runner.counters.slug_hits,
-                runner.counters.trampoline_rows,
-                runner.counters.parcels,
-                runner.counters.attachments_begun,
-                runner.counters.attachments_completed,
-                runner.counters.no_fall_rows,
-                runner.counters.jetpack_off_rows,
-            },
-        );
-        drawAppText(state, counter_text, 56, 712, 16, .light_gray);
-    }
-
-    drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
-}
-
-fn drawLevelViewport(state: *const AppState) void {
-    const loaded_track_preview = state.current_track_preview orelse return;
-    const camera = loaded_track_preview.previewCamera(@floatCast(state.render_time_seconds), state.level_segment_index);
-    camera.begin();
-    defer rl.endMode3D();
-
-    const grid_slices: i32 = @intCast(@max(loaded_track_preview.total_rows, 10));
-    rl.drawGrid(@min(grid_slices, 200), 1.0);
-    loaded_track_preview.draw(state.level_segment_index);
-    if (state.level_runner) |runner| {
-        const position = runner.worldPosition(&loaded_track_preview, 0.58);
-        const color: rl.Color = if (runner.movement_mode == .attachment)
-            .gold
-        else switch (runner.attachment_hint) {
-            .none => .lime,
-            .probe => .orange,
-            .entry => .yellow,
-        };
-        rl.drawSphere(position, if (runner.attachment_hint == .none) 0.18 else 0.22, color);
-        rl.drawLine3D(
-            .{ .x = position.x, .y = 0.04, .z = position.z },
-            position,
-            color,
-        );
-    }
-}
-
 fn drawGameplayLevelViewport(state: *const AppState) void {
     const loaded_track_preview = state.current_track_preview orelse return;
     const runner = state.level_runner orelse {
-        drawLevelViewport(state);
+        debug_levels.drawLevelViewport(state);
         return;
     };
 
@@ -6608,130 +6444,12 @@ fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds
     return bounds.min + lane_offset;
 }
 
-fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
-    rl.drawRectangleLines(x, y, width, height, .dark_gray);
-
-    const usable_width = @as(f32, @floatFromInt(width - 16));
-    const usable_height = @as(f32, @floatFromInt(height - 16));
-    const cell_width = usable_width / @as(f32, @floatFromInt(@max(loaded_segment.width, 1)));
-    const cell_height = usable_height / @as(f32, @floatFromInt(@max(loaded_segment.height, 1)));
-    const cell_size = @min(cell_width, cell_height);
-
-    const grid_width = cell_size * @as(f32, @floatFromInt(loaded_segment.width));
-    const grid_height = cell_size * @as(f32, @floatFromInt(loaded_segment.height));
-    const offset_x = @as(f32, @floatFromInt(x)) + 8.0 + (usable_width - grid_width) * 0.5;
-    const offset_y = @as(f32, @floatFromInt(y)) + 8.0 + (usable_height - grid_height) * 0.5;
-
-    for (loaded_segment.rows, 0..) |row, row_index| {
-        const row_y = offset_y + @as(f32, @floatFromInt(row_index)) * cell_size;
-        for (row.cells, 0..) |cell, col_index| {
-            const draw_x = offset_x + @as(f32, @floatFromInt(col_index)) * cell_size;
-            rl.drawRectangleRec(
-                .{
-                    .x = draw_x,
-                    .y = row_y,
-                    .width = cell_size,
-                    .height = cell_size,
-                },
-                colorForSegmentCell(cell),
-            );
-        }
-
-        if (row.annotation) |annotation| {
-            rl.drawRectangleRec(
-                .{
-                    .x = offset_x,
-                    .y = row_y,
-                    .width = grid_width,
-                    .height = @max(cell_size * 0.12, 2.0),
-                },
-                colorForSegmentAnnotation(annotation),
-            );
-        }
-
-        if (row.marked) {
-            const marker_width = @max(cell_size * 0.14, 3.0);
-            const marker_height = @max(cell_size * 0.55, 4.0);
-            const marker_y = row_y + (cell_size - marker_height) * 0.5;
-            rl.drawRectangleRec(
-                .{
-                    .x = offset_x,
-                    .y = marker_y,
-                    .width = marker_width,
-                    .height = marker_height,
-                },
-                .gold,
-            );
-            rl.drawRectangleRec(
-                .{
-                    .x = offset_x + grid_width - marker_width,
-                    .y = marker_y,
-                    .width = marker_width,
-                    .height = marker_height,
-                },
-                .gold,
-            );
-        }
-    }
-}
-
 fn triangleCountForObject(loaded_object: object.LoadedObject) usize {
     var total: usize = 0;
     for (loaded_object.submeshes) |submesh| {
         total += submesh.triangle_count;
     }
     return total;
-}
-
-fn countAnnotatedRows(rows: []const segment.Row) usize {
-    var total: usize = 0;
-    for (rows) |row| {
-        if (row.annotation != null) total += 1;
-    }
-    return total;
-}
-
-fn countMarkedRows(rows: []const segment.Row) usize {
-    var total: usize = 0;
-    for (rows) |row| {
-        if (row.marked) total += 1;
-    }
-    return total;
-}
-
-fn colorForSegmentAnnotation(annotation: segment.Annotation) rl.Color {
-    return switch (annotation) {
-        .path => .gold,
-        .ring => |ring| switch (ring) {
-            .none => .gray,
-            .normal => .yellow,
-            .powerup => .green,
-            .explode => .orange,
-            .slow => .purple,
-        },
-        .parcel => .green,
-        .model => .purple,
-        .jetpack_off => .red,
-        .no_fall => .sky_blue,
-    };
-}
-
-fn colorForSegmentCell(cell: u8) rl.Color {
-    return switch (cell) {
-        '@' => .dark_blue,
-        '_' => .gray,
-        '.' => .light_gray,
-        'P' => .sky_blue,
-        '#' => .orange,
-        's' => .ray_white,
-        '>' => .gold,
-        '{', '}', ';' => .yellow,
-        '[', 'M', 'R', 'J' => .red,
-        '~' => .green,
-        '$', '&', '(', ')', '-', '<', '=', '0', '1', '2', '3', '|', 'p' => .purple,
-        ' ' => .black,
-        else => .dark_purple,
-    };
 }
 
 fn uiContext(state: *const AppState) app_ui.Context {
@@ -6772,31 +6490,13 @@ fn nextMode(mode: Mode) Mode {
         .audio => .models,
         .models => .objects,
         .objects => .levels,
-        .levels => .textures,
+        .levels => .segments,
+        .segments => .textures,
     };
 }
 
 fn optionalUsizeToText(buffer: []u8, value: ?usize) []const u8 {
     return if (value != null) std.fmt.bufPrint(buffer, "{d}", .{value.?}) catch "?" else "-";
-}
-
-fn optionalTextToText(buffer: []u8, value: ?[]const u8) []const u8 {
-    return if (value) |text| std.fmt.bufPrint(buffer, "{s}", .{text}) catch "?" else "-";
-}
-
-fn optionalHexU8ToText(buffer: []u8, value: ?u8) []const u8 {
-    return if (value) |tile_type| std.fmt.bufPrint(buffer, "0x{x}", .{tile_type}) catch "?" else "-";
-}
-
-fn trackToText(buffer: []u8, value: level.Track) []const u8 {
-    return switch (value) {
-        .index => |track_index| std.fmt.bufPrint(buffer, "{d}", .{track_index}) catch "?",
-        .random => "random",
-    };
-}
-
-fn optionalFloatToText(buffer: []u8, value: ?f32) []const u8 {
-    return if (value != null) std.fmt.bufPrint(buffer, "{d:.1}", .{value.?}) catch "?" else "-";
 }
 
 fn takeOptional(comptime T: type, slot: *?T) ?T {

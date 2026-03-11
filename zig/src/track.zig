@@ -178,6 +178,14 @@ pub const LoadedLevelPreview = struct {
         return loadWithOptions(allocator, catalog, level_definition, .{});
     }
 
+    pub fn loadStandaloneSegment(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+    ) !LoadedLevelPreview {
+        return loadStandaloneSegmentWithOptions(allocator, catalog, entry, .{});
+    }
+
     pub fn loadWithOptions(
         allocator: std.mem.Allocator,
         catalog: *const assets.Catalog,
@@ -288,6 +296,108 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .garbage_scalar = level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = level_definition.normalizedSaltScalar() orelse 0.0,
+            .runtime_tiles = runtime_tiles,
+            .runtime_edge_masks = runtime_edge_masks,
+            .runtime_spawn_hints = runtime_spawn_hints,
+            .total_rows = total_rows,
+            .max_width = max_width,
+        };
+    }
+
+    pub fn loadStandaloneSegmentWithOptions(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+        options: LoadOptions,
+    ) !LoadedLevelPreview {
+        const segments = try allocator.alloc(segment.Definition, 1);
+        errdefer allocator.free(segments);
+
+        const row_offsets = try allocator.alloc(usize, 1);
+        errdefer allocator.free(row_offsets);
+        row_offsets[0] = 0;
+
+        segments[0] = try segment.loadFromArchive(allocator, catalog, entry);
+        errdefer segments[0].deinit();
+
+        var model_assets_list: std.ArrayList(LoadedModelAsset) = .empty;
+        defer model_assets_list.deinit(allocator);
+        errdefer {
+            for (model_assets_list.items) |*asset| {
+                asset.deinit(allocator);
+            }
+        }
+        var model_asset_index_by_path = archive.CaseInsensitiveStringHashMap(usize).init(allocator);
+        defer model_asset_index_by_path.deinit();
+
+        var placed_models_list: std.ArrayList(PlacedModel) = .empty;
+        defer placed_models_list.deinit(allocator);
+
+        const total_rows = segments[0].height;
+        const max_width = segments[0].width;
+
+        for (segments[0].rows, 0..) |row, row_index| {
+            if (!options.load_models) continue;
+
+            const annotation = row.annotation orelse continue;
+            const model_annotation = switch (annotation) {
+                .model => |model| model,
+                else => continue,
+            };
+
+            const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
+            errdefer allocator.free(archive_model_path);
+
+            const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
+                allocator.free(archive_model_path);
+                break :blk existing_index;
+            } else blk: {
+                const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
+                    allocator.free(archive_model_path);
+                    continue;
+                };
+
+                const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
+                try model_assets_list.append(allocator, .{
+                    .path = archive_model_path,
+                    .loaded = loaded_model,
+                });
+                const new_index = model_assets_list.items.len - 1;
+                try model_asset_index_by_path.put(archive_model_path, new_index);
+                break :blk new_index;
+            };
+
+            try placed_models_list.append(allocator, .{
+                .asset_index = asset_index,
+                .segment_index = 0,
+                .row_index = row_index,
+                .offset = model_annotation.offset,
+            });
+        }
+
+        const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
+        errdefer allocator.free(runtime_tiles);
+        const runtime_build_flags = defaultRuntimeBuildFlags;
+        const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
+        errdefer allocator.free(runtime_edge_masks);
+        const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_spawn_hints);
+
+        return .{
+            .allocator = allocator,
+            .segments = segments,
+            .row_offsets = row_offsets,
+            .model_assets = try model_assets_list.toOwnedSlice(allocator),
+            .placed_models = try placed_models_list.toOwnedSlice(allocator),
+            .runtime_build_flags = runtime_build_flags,
+            .garbage_scalar = 0.0,
+            .salt_scalar = 0.0,
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
