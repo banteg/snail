@@ -6038,23 +6038,24 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
         debug_levels.drawSegmentViewport(state);
     }
 
-    drawAppText(state, "snail debug browser", 32, 24, 30, .ray_white);
-    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments  tab switch", 32, 62, 18, .light_gray);
-    drawAppText(state, "arrows: browse current mode  levels up/down segment a/d lane w/s speed space pause r reset", 32, 84, 18, .light_gray);
+    drawAppText(state, "snail debug browser", 24, 18, 24, .ray_white);
+    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments", 24, 48, 16, .light_gray);
+    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset", 24, 70, 16, .light_gray);
 
-    var archive_buffer: [512]u8 = undefined;
-    const archive_text = try std.fmt.bufPrintZ(&archive_buffer, "Archive: {s}", .{archive_path});
-    drawAppText(state, archive_text, 32, 110, 18, .dark_gray);
-    var runtime_buffer: [512]u8 = undefined;
-    const runtime_text = try std.fmt.bufPrintZ(&runtime_buffer, "Runtime: {s}", .{state.runtime_root_path});
-    drawAppText(state, runtime_text, 32, 132, 18, .dark_gray);
+    var source_buffer: [256]u8 = undefined;
+    const source_text = try std.fmt.bufPrintZ(
+        &source_buffer,
+        "{s}  runtime {s}",
+        .{ std.fs.path.basename(archive_path), std.fs.path.basename(state.runtime_root_path) },
+    );
+    drawAppText(state, source_text, 24, 92, 14, .dark_gray);
 
-    drawModeBadge(state, .textures, state.mode, "Textures", 32, 156);
-    drawModeBadge(state, .audio, state.mode, "Audio", 156, 156);
-    drawModeBadge(state, .models, state.mode, "X2", 280, 156);
-    drawModeBadge(state, .objects, state.mode, "Objects", 404, 156);
-    drawModeBadge(state, .levels, state.mode, "Levels", 528, 156);
-    drawModeBadge(state, .segments, state.mode, "Segments", 652, 156);
+    drawModeBadge(state, .textures, state.mode, "Textures", 24, 114);
+    drawModeBadge(state, .audio, state.mode, "Audio", 136, 114);
+    drawModeBadge(state, .models, state.mode, "X2", 248, 114);
+    drawModeBadge(state, .objects, state.mode, "Objects", 360, 114);
+    drawModeBadge(state, .levels, state.mode, "Levels", 472, 114);
+    drawModeBadge(state, .segments, state.mode, "Segments", 584, 114);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
@@ -6068,8 +6069,8 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
 
 fn drawModeBadge(state: *const AppState, mode: Mode, active_mode: Mode, text: [:0]const u8, x: i32, y: i32) void {
     const color: rl.Color = if (mode == active_mode) .orange else .dark_gray;
-    rl.drawRectangleRounded(.{ .x = @floatFromInt(x), .y = @floatFromInt(y), .width = 104, .height = 34 }, 0.22, 8, color);
-    drawAppText(state, text, x + 20, y + 8, 18, .ray_white);
+    rl.drawRectangleRounded(.{ .x = @floatFromInt(x), .y = @floatFromInt(y), .width = 94, .height = 28 }, 0.22, 8, color);
+    drawAppText(state, text, x + 16, y + 6, 16, .ray_white);
 }
 
 fn drawTexturePanel(state: *const AppState) void {

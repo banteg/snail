@@ -10,53 +10,73 @@ pub fn drawLevelPanel(state: anytype) !void {
     const level_entry = state.catalog.level_entries[state.level_index];
     const loaded_level = state.current_level orelse return;
     const loaded_track_preview = state.current_track_preview orelse return;
+    const screen_width = rl.getScreenWidth();
+    const screen_height = rl.getScreenHeight();
     var track_value_buffer: [32]u8 = undefined;
-    var parcels_value_buffer: [32]u8 = undefined;
     var quota_value_buffer: [32]u8 = undefined;
     var speed_value_buffer: [32]u8 = undefined;
     var garbage_value_buffer: [32]u8 = undefined;
     var salt_value_buffer: [32]u8 = undefined;
     var garbage_scalar_buffer: [32]u8 = undefined;
     var salt_scalar_buffer: [32]u8 = undefined;
+    var segment_meta_buffer: [192]u8 = undefined;
 
-    var summary_buffer: [384]u8 = undefined;
+    const summary_card = rl.Rectangle{ .x = 24, .y = 128, .width = 404, .height = if (state.level_runner != null) 340 else 238 };
+    const grid_card = rl.Rectangle{
+        .x = @floatFromInt(@max(screen_width - 276, 452)),
+        .y = @floatFromInt(@max(screen_height - 252, 160)),
+        .width = 244,
+        .height = 220,
+    };
+
+    drawOverlayCard(summary_card);
+    drawInsetCard(grid_card);
+
+    var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
         &summary_buffer,
-        "Level {d}/{d}  {s}  mode {s}  segments {d}",
+        "Level {d}/{d}  {s}",
         .{
             state.level_index + 1,
             state.catalog.level_entries.len,
             loaded_level.name,
-            loaded_level.mode,
-            loaded_track_preview.segments.len,
         },
     );
-    drawText(state, summary_text, 32, 194, 24, .ray_white);
+    drawText(state, summary_text, 44, 150, 22, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{level_entry.path});
-    drawText(state, path_text, 32, 226, 18, .light_gray);
+    drawText(state, path_text, 44, 178, 16, .light_gray);
 
     var meta_buffer: [384]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "track {s}  parcels {s}  quota {s}  speed {s}  garbage {s}  salt {s}",
+        "mode {s}  segments {d}  track {s}",
         .{
+            loaded_level.mode,
+            loaded_track_preview.segments.len,
             trackToText(&track_value_buffer, loaded_level.track),
-            optionalUsizeToText(&parcels_value_buffer, loaded_level.parcels),
+        },
+    );
+    drawText(state, meta_text, 44, 202, 16, .sky_blue);
+
+    const fallback_counts = loaded_track_preview.fallbackHazardCandidateCounts();
+    var runtime_buffer: [384]u8 = undefined;
+    const runtime_text = try std.fmt.bufPrintZ(
+        &runtime_buffer,
+        "quota {s}  speed {s}  garbage {s}  salt {s}",
+        .{
             optionalUsizeToText(&quota_value_buffer, loaded_level.quota),
             optionalUsizeToText(&speed_value_buffer, loaded_level.speed),
             optionalUsizeToText(&garbage_value_buffer, loaded_level.garbage),
             optionalUsizeToText(&salt_value_buffer, loaded_level.salt),
         },
     );
-    drawText(state, meta_text, 32, 258, 20, .sky_blue);
+    drawText(state, runtime_text, 44, 226, 16, .light_gray);
 
-    const fallback_counts = loaded_track_preview.fallbackHazardCandidateCounts();
-    var runtime_buffer: [384]u8 = undefined;
-    const runtime_text = try std.fmt.bufPrintZ(
-        &runtime_buffer,
-        "build 0x{x:0>8}  garbage scalar {s}  salt scalar {s}  fallback G {d}  S {d}",
+    const scalar_text = try std.fmt.bufPrintZ(
+        &segment_meta_buffer,
+        "build 0x{x:0>8}  scalars G {s} / S {s}  fallback {d}/{d}",
         .{
             loaded_track_preview.runtime_build_flags,
             optionalFloatToText(&garbage_scalar_buffer, loaded_level.normalizedGarbageScalar()),
@@ -65,51 +85,48 @@ pub fn drawLevelPanel(state: anytype) !void {
             fallback_counts.salt,
         },
     );
-    drawText(state, runtime_text, 32, 284, 18, .light_gray);
-
-    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
-    drawText(state, "Level and segment notes", 56, 332, 26, .ray_white);
+    drawText(state, scalar_text, 44, 250, 14, .light_gray);
 
     if (state.activeLevelSegmentEntry()) |segment_entry| {
-        var segment_buffer: [384]u8 = undefined;
+        var segment_buffer: [256]u8 = undefined;
         const segment_text = try std.fmt.bufPrintZ(
             &segment_buffer,
-            "Segment {d}/{d}: {s}",
+            "Segment {d}/{d}  {s}",
             .{
                 state.level_segment_index + 1,
                 loaded_level.segments.len,
                 segment_entry.path,
             },
         );
-        drawText(state, segment_text, 56, 378, 20, .gold);
+        drawText(state, segment_text, 44, 286, 16, .gold);
 
-        var timing_buffer: [384]u8 = undefined;
+        var timing_buffer: [256]u8 = undefined;
         var duration_value_buffer: [32]u8 = undefined;
         var angle_value_buffer: [32]u8 = undefined;
         const timing_text = try std.fmt.bufPrintZ(
             &timing_buffer,
-            "Duration {s}  Angle {s}  Sample {s}",
+            "duration {s}  angle {s}  sample {s}",
             .{
                 optionalFloatToText(&duration_value_buffer, segment_entry.duration),
                 optionalFloatToText(&angle_value_buffer, segment_entry.angle),
                 segment_entry.sample orelse "<none>",
             },
         );
-        drawText(state, timing_text, 56, 410, 20, .light_gray);
+        drawText(state, timing_text, 44, 310, 14, .light_gray);
 
         if (segment_entry.message) |message| {
-            drawText(state, "Tutorial message:", 56, 444, 20, .light_gray);
-            try drawWrappedText(state, message, 56, 472, 412, 20, .ray_white);
-        } else {
-            drawText(state, "No per-segment tutorial metadata on this entry.", 56, 444, 20, .light_gray);
+            var message_buffer: [160]u8 = undefined;
+            const clipped_message = clippedText(&message_buffer, message, 58);
+            drawText(state, "message", 44, 334, 14, .sky_blue);
+            drawText(state, clipped_message, 124, 334, 14, .ray_white);
         }
     }
 
     if (state.current_segment) |loaded_segment| {
-        var dim_buffer: [384]u8 = undefined;
+        var dim_buffer: [256]u8 = undefined;
         const dim_text = try std.fmt.bufPrintZ(
             &dim_buffer,
-            "Grid {d}x{d}  semantic rows {d}  marked rows {d}  preview rows {d}",
+            "grid {d}x{d}  annotated {d}  marked {d}  rows {d}",
             .{
                 loaded_segment.width,
                 loaded_segment.height,
@@ -118,82 +135,78 @@ pub fn drawLevelPanel(state: anytype) !void {
                 loaded_track_preview.total_rows,
             },
         );
-        drawText(state, dim_text, 56, 620, 18, .light_gray);
+        drawText(state, dim_text, 44, if (state.level_runner != null) 354 else 334, 14, .light_gray);
     }
 
     if (state.level_runner) |runner| {
-        var sim_buffer: [384]u8 = undefined;
+        var sim_buffer: [256]u8 = undefined;
         const sim_text = try std.fmt.bufPrintZ(
             &sim_buffer,
-            "Sim row {d:.2}/{d}  cursor {d}+{d:.2}  rate {d:.2}  lane {d}->{d}  speed {d:.1}  tick {d}  mode {s}",
+            "row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}",
             .{
                 runner.row_position,
                 loaded_track_preview.total_rows,
                 runner.runtime_track_index,
                 runner.movement_progress,
-                runner.movement_rate_scalar,
                 runner.lane_index,
                 runner.resolved_lane_index,
-                runner.speed_rows_per_second,
-                runner.tick_count,
-                runner.movement_mode.label(),
             },
         );
-        drawText(state, sim_text, 56, 646, 18, .gold);
+        drawText(state, sim_text, 44, 382, 14, .gold);
 
-        var cell_buffer: [384]u8 = undefined;
+        var cell_buffer: [256]u8 = undefined;
         var path_value_buffer: [96]u8 = undefined;
         var tile_value_buffer: [32]u8 = undefined;
         const cell_text = try std.fmt.bufPrintZ(
             &cell_buffer,
-            "Cell {c} {s}  tile {s}  bounds {d}-{d}  attach {s}  path {s}",
+            "cell {c}  tile {s}  attach {s}  path {s}",
             .{
                 runner.current_cell,
-                runner.gameplayCellLabel() orelse "<none>",
                 optionalHexU8ToText(&tile_value_buffer, runner.runtimeTileHint()),
-                runner.traversable_bounds.min,
-                runner.traversable_bounds.max,
                 runner.attachment_hint.label(),
                 optionalTextToText(&path_value_buffer, runner.activePathName()),
             },
         );
-        drawText(state, cell_text, 56, 670, 18, .light_gray);
+        drawText(state, cell_text, 44, 404, 14, .light_gray);
 
-        var event_buffer: [384]u8 = undefined;
+        var event_buffer: [256]u8 = undefined;
         const event_text = try std.fmt.bufPrintZ(
             &event_buffer,
-            "Event {s}  annotation {s}  paused {s}  attachment ticks {d}",
+            "event {s}  paused {s}  speed {d:.1}  tick {d}",
             .{
                 runner.recentEventLabel(),
-                runner.annotationLabel() orelse "<none>",
                 if (runner.paused) "yes" else "no",
-                runner.attachment_ticks,
+                runner.speed_rows_per_second,
+                runner.tick_count,
             },
         );
-        drawText(state, event_text, 56, 692, 16, .sky_blue);
+        drawText(state, event_text, 44, 426, 14, .sky_blue);
 
-        var counter_buffer: [384]u8 = undefined;
+        var counter_buffer: [256]u8 = undefined;
         const counter_text = try std.fmt.bufPrintZ(
             &counter_buffer,
-            "H {d}  J {d}  G {d}  S {d}  Sl {d}  T {d}  P {d}  A {d}/{d}  NF {d}  JO {d}",
+            "H {d}  J {d}  G {d}  S {d}  Sl {d}  A {d}/{d}",
             .{
                 runner.counters.health_pickups,
                 runner.counters.jetpack_pickups,
                 runner.counters.garbage_hits,
                 runner.counters.salt_hits,
                 runner.counters.slug_hits,
-                runner.counters.trampoline_rows,
-                runner.counters.parcels,
                 runner.counters.attachments_begun,
                 runner.counters.attachments_completed,
-                runner.counters.no_fall_rows,
-                runner.counters.jetpack_off_rows,
             },
         );
-        drawText(state, counter_text, 56, 712, 16, .light_gray);
+        drawText(state, counter_text, 44, 448, 14, .light_gray);
     }
 
-    drawSegmentGrid(state.current_segment orelse return, 540, 194, 676, 482);
+    drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
+    drawSegmentGrid(
+        state.current_segment orelse return,
+        @intFromFloat(grid_card.x + 12.0),
+        @intFromFloat(grid_card.y + 34.0),
+        @intFromFloat(grid_card.width - 24.0),
+        @intFromFloat(grid_card.height - 46.0),
+    );
 }
 
 pub fn drawLevelViewport(state: anytype) void {
@@ -228,73 +241,87 @@ pub fn drawSegmentPanel(state: anytype) !void {
     const entry = state.catalog.segment_entries[state.segment_index];
     const preview = state.current_standalone_segment_preview orelse return;
     const loaded_segment = preview.activeSegment(0) orelse return;
+    const screen_width = rl.getScreenWidth();
+    const screen_height = rl.getScreenHeight();
+    const summary_card = rl.Rectangle{ .x = 24, .y = 128, .width = 352, .height = 164 };
+    const grid_card = rl.Rectangle{
+        .x = @floatFromInt(@max(screen_width - 272, 392)),
+        .y = @floatFromInt(@max(screen_height - 246, 160)),
+        .width = 240,
+        .height = 214,
+    };
 
-    var summary_buffer: [384]u8 = undefined;
+    drawOverlayCard(summary_card);
+    drawInsetCard(grid_card);
+
+    var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
         &summary_buffer,
-        "Segment {d}/{d}  id {d}  {s}  {d}x{d}",
+        "Segment {d}/{d}  {s}",
         .{
             state.segment_index + 1,
             state.catalog.segment_entries.len,
-            loaded_segment.segment_id,
             loaded_segment.name,
-            loaded_segment.width,
-            loaded_segment.height,
         },
     );
-    drawText(state, summary_text, 32, 194, 24, .ray_white);
+    drawText(state, summary_text, 44, 150, 22, .ray_white);
 
     var path_buffer: [512]u8 = undefined;
     const path_text = try std.fmt.bufPrintZ(&path_buffer, "{s}", .{entry.path});
-    drawText(state, path_text, 32, 226, 18, .light_gray);
+    drawText(state, path_text, 44, 178, 16, .light_gray);
 
-    var meta_buffer: [384]u8 = undefined;
+    var meta_buffer: [256]u8 = undefined;
     const meta_text = try std.fmt.bufPrintZ(
         &meta_buffer,
-        "rows {d}  marked {d}  annotated {d}  runtime rows {d}  build 0x{x:0>8}",
+        "id {d}  {d}x{d}  rows {d}  annotated {d}",
         .{
+            loaded_segment.segment_id,
+            loaded_segment.width,
+            loaded_segment.height,
             loaded_segment.rows.len,
-            countMarkedRows(loaded_segment.rows),
             countAnnotatedRows(loaded_segment.rows),
-            preview.total_rows,
+        },
+    );
+    drawText(state, meta_text, 44, 202, 16, .sky_blue);
+
+    var runtime_buffer: [256]u8 = undefined;
+    const runtime_text = try std.fmt.bufPrintZ(
+        &runtime_buffer,
+        "marked {d}  fallback {d}/{d}  build 0x{x:0>8}",
+        .{
+            countMarkedRows(loaded_segment.rows),
+            preview.fallbackHazardCandidateCounts().garbage,
+            preview.fallbackHazardCandidateCounts().salt,
             preview.runtime_build_flags,
         },
     );
-    drawText(state, meta_text, 32, 258, 20, .sky_blue);
-
-    rl.drawRectangleRounded(.{ .x = 32, .y = 304, .width = 460, .height = 408 }, 0.03, 8, .dark_blue);
-    drawText(state, "Segment notes", 56, 332, 26, .ray_white);
-
-    var runtime_buffer: [384]u8 = undefined;
-    const runtime_text = try std.fmt.bufPrintZ(
-        &runtime_buffer,
-        "fallback G {d}  S {d}  width {d}  total rows {d}",
-        .{
-            preview.fallbackHazardCandidateCounts().garbage,
-            preview.fallbackHazardCandidateCounts().salt,
-            preview.max_width,
-            preview.total_rows,
-        },
-    );
-    drawText(state, runtime_text, 56, 378, 20, .gold);
+    drawText(state, runtime_text, 44, 226, 14, .gold);
 
     if (findFirstAnnotatedRow(loaded_segment.rows)) |annotated_row| {
-        var row_buffer: [384]u8 = undefined;
+        var row_buffer: [256]u8 = undefined;
         const row_text = try std.fmt.bufPrintZ(
             &row_buffer,
-            "First annotation row {d}: {s}",
+            "first annotation row {d}: {s}",
             .{ annotated_row.index + 1, annotationLabel(annotated_row.row.annotation.?) },
         );
-        drawText(state, row_text, 56, 410, 20, .light_gray);
+        drawText(state, row_text, 44, 250, 14, .light_gray);
 
         if (annotationDescription(annotated_row.row.annotation.?)) |description| {
-            try drawWrappedText(state, description, 56, 442, 412, 20, .ray_white);
+            var description_buffer: [160]u8 = undefined;
+            drawText(state, clippedText(&description_buffer, description, 54), 44, 272, 14, .ray_white);
         }
     } else {
-        drawText(state, "No row annotations on this segment.", 56, 410, 20, .light_gray);
+        drawText(state, "No row annotations on this segment.", 44, 250, 14, .light_gray);
     }
 
-    drawSegmentGrid(loaded_segment.*, 540, 194, 676, 482);
+    drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
+    drawSegmentGrid(
+        loaded_segment.*,
+        @intFromFloat(grid_card.x + 12.0),
+        @intFromFloat(grid_card.y + 34.0),
+        @intFromFloat(grid_card.width - 24.0),
+        @intFromFloat(grid_card.height - 46.0),
+    );
 }
 
 pub fn drawSegmentViewport(state: anytype) void {
@@ -373,7 +400,7 @@ fn colorForSegmentCell(cell: u8) rl.Color {
 }
 
 fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
-    rl.drawRectangleLines(x, y, width, height, .dark_gray);
+    rl.drawRectangleLines(x, y, width, height, .{ .r = 255, .g = 255, .b = 255, .a = 38 });
 
     const usable_width = @as(f32, @floatFromInt(width - 16));
     const usable_height = @as(f32, @floatFromInt(height - 16));
@@ -437,6 +464,16 @@ fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i3
             );
         }
     }
+}
+
+fn drawOverlayCard(rect: rl.Rectangle) void {
+    rl.drawRectangleRounded(rect, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 170 });
+    rl.drawRectangleRoundedLinesEx(rect, 0.08, 8, 1.0, .{ .r = 255, .g = 255, .b = 255, .a = 28 });
+}
+
+fn drawInsetCard(rect: rl.Rectangle) void {
+    rl.drawRectangleRounded(rect, 0.06, 8, .{ .r = 8, .g = 18, .b = 34, .a = 188 });
+    rl.drawRectangleRoundedLinesEx(rect, 0.06, 8, 1.0, .{ .r = 255, .g = 255, .b = 255, .a = 32 });
 }
 
 fn optionalUsizeToText(buffer: []u8, value: ?usize) []const u8 {
@@ -505,4 +542,15 @@ fn annotationDescription(annotation: segment.Annotation) ?[]const u8 {
         .jetpack_off => "JetPack=Off",
         .no_fall => "NoFall",
     };
+}
+
+fn clippedText(buffer: []u8, text: []const u8, max_chars: usize) []const u8 {
+    if (text.len <= max_chars) return text;
+    const clip_len = @min(buffer.len, @max(max_chars, 3));
+    if (clip_len <= 3) return text[0..clip_len];
+    @memcpy(buffer[0 .. clip_len - 3], text[0 .. clip_len - 3]);
+    buffer[clip_len - 3] = '.';
+    buffer[clip_len - 2] = '.';
+    buffer[clip_len - 1] = '.';
+    return buffer[0..clip_len];
 }
