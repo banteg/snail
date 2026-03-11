@@ -128,9 +128,9 @@ Additional static detail from `update_track_attachment_follow_state`:
 The newer Windows-only package also tightened two family reads:
 
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family
-- kind `42` is the special nonlinear `WARP` branch used by both projection and live follow
+- kind `42` is the special nonlinear family used by both projection and live follow
 
-That distinction matters because path-table slot `30` is the authored `WARP` name, runtime kind `42` is a separate field, and the constructor sweep now strongly matches that family to `sub_429b20` rather than leaving it as a purely inferred `WARP`-like branch.
+That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field shared by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only.
 
 Important caveat for this specific March 8 capture:
 
@@ -221,7 +221,37 @@ So the current strongest read is:
 
 - `HALFPIPE` is definitely parsed from shipped content at runtime
 - this specific capture did not drive the player through a live installed `HALFPIPE` section
-- kind `42` remains a runtime family that still needs a targeted live capture rather than more inference from this first pass
+- kind `42` remained a runtime family that still needed a targeted live capture rather than more inference from this first pass
+
+## Second Path-Oracle Capture
+
+The second focused path-oracle run on March 12, 2026 closed the `HALFPIPE` gap.
+
+High-confidence dynamic facts from [`snailmail-path-oracle-20260312-031147-9596.ndjson`](../../artifacts/frida/snailmail-path-oracle-20260312-031147-9596.ndjson):
+
+- runtime level mode arg `7` (`ARCADE007`, `To Infinity!`) was active during the observed follow events
+- `HALFPIPE` was installed live in both runtime installed-bank roots:
+  - `ff2914`
+  - `ff29bc`
+- the installed `HALFPIPE` owner records in that run had:
+  - runtime kind `42`
+  - sample count `66`
+  - owner row `165`
+  - tile type `30` on the installed attachment rows
+- live follow also began on `HALFPIPE` in both roots and produced `277` sampled `attachment_update` events per root
+
+That capture materially changes the strongest current read:
+
+- public path `HALFPIPE` definitely installs into the live nonlinear kind-`42` family
+- runtime kind `42` is therefore not safely `WARP`-only
+- `sub_429b20` still looks like one constructor for the kind-`42` family, but we should now describe the live family as a shared `HALFPIPE` / `WARP` nonlinear branch until the remaining constructor/install mapping is fully closed
+
+What is still missing even after this capture:
+
+- a clean live `attachment_end` interpretation for `HALFPIPE`
+  - the local oracle now emits `follow_state_summary` on `attachment_end` from the pre-teardown snapshot so the next capture can answer this directly
+- the exact authored-name-to-constructor split inside the kind-`42` family
+- whether public `WARP` and public `HALFPIPE` are separate constructors producing the same runtime kind, or aliases into one constructor branch with different installer/bank choices
 
 ## Practical Read
 

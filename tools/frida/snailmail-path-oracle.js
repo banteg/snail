@@ -978,6 +978,7 @@ function installHooks(module) {
           retval: retval.toInt32(),
           player: hex(this.player),
           runtime: makeLevelRuntimeSnapshot(safeReadPointer(this.player, 0x408)),
+          follow_state_summary: this.beforeFollow,
           before_follow_state_summary: this.beforeFollow,
           after_follow_state_summary: afterFollow,
           player_position: safeReadVec3(this.player, 0x68),
