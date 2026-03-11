@@ -495,9 +495,9 @@ fn drawWarpedTexture(
     for (0..warp_grid_height - 1) |row| {
         for (0..warp_grid_width - 1) |col| {
             const top_left = warpVertexPoint(layout, vertices, row, col);
-            const top_right = warpVertexPoint(layout, vertices, row + 1, col);
+            const top_right = warpVertexPoint(layout, vertices, row, col + 1);
             const bottom_right = warpVertexPoint(layout, vertices, row + 1, col + 1);
-            const bottom_left = warpVertexPoint(layout, vertices, row, col + 1);
+            const bottom_left = warpVertexPoint(layout, vertices, row + 1, col);
 
             const uvs = warpCellUvBounds(row, col, flipped_uvs);
 
@@ -531,18 +531,18 @@ fn warpVertexPoint(
 ) rl.Vector2 {
     const vertex = vertices[row * warp_grid_width + col];
     return .{
-        .x = layout.x + (@as(f32, @floatFromInt(row)) * warp_cell_width + vertex.offset_x) * layout.scale,
-        .y = layout.y + (@as(f32, @floatFromInt(col)) * warp_cell_height + vertex.offset_y) * layout.scale,
+        .x = layout.x + (@as(f32, @floatFromInt(col)) * warp_cell_width + vertex.offset_x) * layout.scale,
+        .y = layout.y + (@as(f32, @floatFromInt(row)) * warp_cell_height + vertex.offset_y) * layout.scale,
     };
 }
 
 fn warpCellUvBounds(row: usize, col: usize, flipped_uvs: bool) WarpCellUvBounds {
     const u_step = warp_u_span / @as(f32, @floatFromInt(warp_grid_width - 1));
     const v_step = warp_v_span / @as(f32, @floatFromInt(warp_grid_height - 1));
-    const left_u = @as(f32, @floatFromInt(row)) * u_step;
-    const right_u = @as(f32, @floatFromInt(row + 1)) * u_step;
-    const top_v = @as(f32, @floatFromInt(col)) * v_step;
-    const bottom_v = @as(f32, @floatFromInt(col + 1)) * v_step;
+    const left_u = @as(f32, @floatFromInt(col)) * u_step;
+    const right_u = @as(f32, @floatFromInt(col + 1)) * u_step;
+    const top_v = @as(f32, @floatFromInt(row)) * v_step;
+    const bottom_v = @as(f32, @floatFromInt(row + 1)) * v_step;
     if (!flipped_uvs) {
         return .{
             .left = left_u,
@@ -736,4 +736,31 @@ test "warped backdrop flips vertical crop only" {
     try std.testing.expectApproxEqAbs(normal.right, flipped.right, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.8) - normal.bottom, flipped.top, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.8) - normal.top, flipped.bottom, 0.0001);
+}
+
+test "warped backdrop grid uses row as vertical and col as horizontal" {
+    var vertices: [warp_vertex_count]WarpVertex = [_]WarpVertex{.{
+        .phase = 0.0,
+        .phase_step = 0.0,
+        .amplitude_x = 0.0,
+        .amplitude_y = 0.0,
+        .offset_x = 0.0,
+        .offset_y = 0.0,
+    }} ** warp_vertex_count;
+    const layout = authoredViewportLayout(.{ .x = 0.0, .y = 0.0, .width = 640.0, .height = 480.0 });
+
+    const origin = warpVertexPoint(layout, &vertices, 0, 0);
+    const next_col = warpVertexPoint(layout, &vertices, 0, 1);
+    const next_row = warpVertexPoint(layout, &vertices, 1, 0);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), origin.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), origin.y, 0.0001);
+    try std.testing.expectApproxEqAbs(warp_cell_width, next_col.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), next_col.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), next_row.x, 0.0001);
+    try std.testing.expectApproxEqAbs(warp_cell_height, next_row.y, 0.0001);
+
+    const uvs = warpCellUvBounds(2, 3, false);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0) * (warp_u_span / 7.0), uvs.left, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.0) * (warp_v_span / 7.0), uvs.top, 0.0001);
 }
