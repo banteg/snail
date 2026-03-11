@@ -11,8 +11,8 @@ const warp_grid_height = 8;
 const warp_vertex_count = warp_grid_width * warp_grid_height;
 const warp_cell_width = original_screen_width / @as(f32, @floatFromInt(warp_grid_width - 1));
 const warp_cell_height = original_screen_height / @as(f32, @floatFromInt(warp_grid_height - 1));
-const warp_u_span: f32 = 0.625;
-const warp_v_span: f32 = 0.9375;
+const warp_u_span: f32 = 0.9375;
+const warp_v_span: f32 = 0.625;
 const tau: f32 = std.math.pi * 2.0;
 const frontend_random_range: u32 = 0x8000;
 const frontend_random_center: f32 = 16384.0;
@@ -553,10 +553,13 @@ fn warpCellUvBounds(row: usize, col: usize, flipped_uvs: bool) WarpCellUvBounds 
     }
 
     return .{
-        .left = 0.8 - right_u,
-        .right = 0.8 - left_u,
-        .top = top_v,
-        .bottom = bottom_v,
+        // PORT(verified): `render_backdrop` flips only the vertical crop against `0.8`.
+        // The horizontal span still uses the `0.13392857` step, while the vertical
+        // coordinates use the `0.089285716` step and invert around `0.8`.
+        .left = left_u,
+        .right = right_u,
+        .top = 0.8 - bottom_v,
+        .bottom = 0.8 - top_v,
     };
 }
 
@@ -723,4 +726,14 @@ test "distortion grid uses recovered 3-to-5 second timing and bounded amplitudes
             try std.testing.expect(vertex.amplitude_y >= -0.75 and vertex.amplitude_y < 0.75);
         }
     }
+}
+
+test "warped backdrop flips vertical crop only" {
+    const normal = warpCellUvBounds(2, 3, false);
+    const flipped = warpCellUvBounds(2, 3, true);
+
+    try std.testing.expectApproxEqAbs(normal.left, flipped.left, 0.0001);
+    try std.testing.expectApproxEqAbs(normal.right, flipped.right, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.8) - normal.bottom, flipped.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.8) - normal.top, flipped.bottom, 0.0001);
 }

@@ -511,9 +511,9 @@ const completion_bonus_y: f32 = 302.0;
 const completion_continue_y: f32 = 320.0;
 const completion_continue_y_with_bonus: f32 = 400.0;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
-// places the title at `y = 200` and the Yes/No buttons at `y = 330` with `x = -80/+80`.
+// seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
+// `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
 const exit_prompt_title_y: f32 = 200.0;
-const exit_prompt_button_y: f32 = 330.0;
 const exit_prompt_yes_x: f32 = -80.0;
 const exit_prompt_no_x: f32 = 80.0;
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
@@ -4236,7 +4236,25 @@ fn completionContinueTextRect(font: *const game_font.Loaded, result: PendingRunR
 }
 
 fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .center, text, exit_prompt_button_y, center_offset_x);
+    // PORT(verified): `initialize_exit_prompt` seeds the Yes/No widgets at `330`, but then
+    // immediately runs both through `stack_widget_below(title)`. The live authored Y comes
+    // from the title height plus the shared shell-font stack gap, not the constructor seed.
+    const title_rect = frontend_widget.widgetTextRect(
+        &state.ui_font,
+        .menu_button,
+        .center,
+        "Do you really want to quit?",
+        exit_prompt_title_y,
+        0.0,
+    );
+    return frontend_widget.widgetTextRect(
+        &state.ui_font,
+        .menu_button,
+        .center,
+        text,
+        frontend_widget.stackBelow(title_rect),
+        center_offset_x,
+    );
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
