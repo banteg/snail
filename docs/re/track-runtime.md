@@ -114,8 +114,7 @@ Recovered flat gameplay and hazard anchors:
 - `|` -> runtime tile `0x0e`
 - `(` -> runtime tile `0x16`
 - `-` -> runtime tile `0x15`
-- `P` -> runtime tile `0x1e`
-- `p` -> runtime tile `0x1d`
+- `P` / `p` participate in the attachment-install path, but the exact glyph-to-runtime-tile mapping is still not settled from the current Windows package
 - `$` -> runtime tile `0x17`
 - `J` -> runtime tile `0x19`
 - `M` -> runtime tile `0x12`

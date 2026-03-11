@@ -6,26 +6,25 @@ The hardcoded path templates are not only visual. They feed a real player-follow
 
 Inside `rebuild_track_runtime_from_segments`:
 
-- the builder copies the parsed row `Path=` index into runtime `+0x5ccb68`
-- `P` becomes runtime tile type `0x1e`
-- `p` becomes runtime tile type `0x1d`
-- the `P/p` branch indexes hardcoded path-template pairs at:
-  - `arg1 + 0xff2914`
-  - `arg1 + 0xff29bc`
-- the selected template record is stored on the track-grid cell and then propagated into runtime-cell attachment pointers for neighboring rows
+- the builder calls a missing `populate_runtime_track_cells_from_segments` stage after laying out the segment rows
+- later consumers prove that stage installed:
+  - row-cell attachment flag bit `0x40`
+  - a row-cell owner pointer at `+0xa4`
+  - an installed attachment record whose `+56` points at the live template
+- `project_position_onto_track_attachment` chooses the active sample by `current_row - owner_row`, so the runtime clearly uses an installed owner/source-row chain rather than raw parser metadata
 
-This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata.
+This is the first strong static point where named `Path=` rows clearly affect generated track attachments rather than just parser metadata, but this package does **not** yet prove the exact `P/p` glyph-to-runtime-tile mapping or the final authored-name-to-bank-slot bridge.
 
 ## How Attachments Reach The Player
 
-Inside the `P/p` branch of `rebuild_track_runtime_from_segments`:
+The strong static chain from this bundle is:
 
-- the selected hardcoded path-template record is written to the track cell at `+0x3bfb00`
-- the record's neighbor count at `+0x48` determines how many runtime cells receive attachment flags
-- those runtime cells get flag `0x40` first and then `0x80` for the second attachment lane
-- the same pass stores attachment pointers into runtime `+0x5ccb6c` and `+0x5ccb70`
+- authored `Path=` name -> `find_segment_path_index_by_name` returns one of `51` hardcoded name-table indices
+- a still-missing installer stage turns that authored index into installed runtime attachment records
+- the generated row cells carry attachment flag bit `0x40` plus an owner pointer at `+0xa4`
+- projection and entry then walk from the current row cell to that installed owner record and into the live template record at owner `+56`
 
-Later, `update_subgoldy` checks those flags on the current runtime cell and calls `try_enter_track_attachment_from_swept_motion` on the corresponding attachment pointer.
+Later, `update_subgoldy` can enter `try_enter_track_attachment_from_swept_motion`, but the entry test is against installed sampled geometry, not against row glyph metadata alone.
 
 ## Follow-State Functions
 
@@ -50,7 +49,7 @@ The current high-confidence follow-state layout is:
 - `+0x0c`: current segment index
 - `+0x10`: progress within the current sampled segment
 - `+0x14`: local height above the attachment surface
-- `+0x18..+0x28`: live orientation-like intermediates updated each tick
+- `+0x18..+0x28`: live pose/orientation intermediates updated each tick
 - `+0x2c`: interpolated output position written by `update_track_attachment_follow_state`
 - `+0x38`: player pointer
 
@@ -63,7 +62,7 @@ Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 - seeds progress from `world_z - cell_anchor_z`
 - seeds local height from `world_y - 0.49`
 - stores the player pointer
-- copies a row-derived value into `attachment + 0x98` through `get_track_cell_row_index`
+- copies a row-derived scalar into the live template record at `+0x98` through `get_track_cell_row_index`
 
 Recovered end-state behavior from `end_track_attachment_follow_state`:
 
@@ -116,13 +115,13 @@ That matches the static control flow in `update_track_attachment_follow_state`, 
 
 Additional static detail from `update_track_attachment_follow_state`:
 
-- the live record pointer uses the sampled point array at attachment `+0x5c`
+- the live record pointer uses the sampled point array at template `+0x5c`
 - each sampled point record is `0xa8` bytes
 - the current sample delta length is read from sampled point `+0x8c`
-- template row scalars at `+0xa0` and `+0xa4` are copied into the source row-cell at `+0x24` and `+0x34`
 - the current output position is written to follow-state `+0x2c`
 - the update terminates the follow state when the sample index reaches the template end
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
+- the mid/end row-cell writes in the special branch pull their payloads from the installed runtime record reached through the live source row, not from template `+0xa0/+0xa4` directly
 
 The newer Windows-only package also tightened two family reads:
 
@@ -200,10 +199,11 @@ This is the current high-confidence static evidence that:
 
 Still missing:
 
-- the exact initialization path from the hardcoded path-name table to the path-template pair tables
+- the exact initialization path from the hardcoded `51`-name table to concrete runtime template slots
 - the detailed semantics of each path-template constructor beyond the current family grouping
 - the exact constructor body for the named `WARP` slot, even though runtime kind `42` is now the best candidate for that family
 - the exact tile-id semantics around attachment entry, exit, and special-case movement reactions
+- the exact installer that sets row-cell flag `0x40`, row-cell `+0xa4`, and the installed-owner/source-row chain
 
 ## Practical Impact On The Rewrite
 

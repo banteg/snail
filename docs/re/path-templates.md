@@ -73,20 +73,20 @@ Observed facts:
 
 - the runtime path-template bank is rooted at `arg1 + 0xff2914`
 - the second half of each pair is rooted at `arg1 + 0xff29bc`, exactly `0xa8` bytes after the first
-- the init pass zeroes `126` records of size `0xa8`, which is enough space for `63` path-template pairs
-- one named path id therefore steps by `0x150`, which is `0xa8 + 0xa8`
-- the first record of pair `n` lives at `base + n * 0x150`
-- the second record of pair `n` lives at `base + n * 0x150 + 0xa8`
+- the init pass zeroes `126` records of size `0xa8`, which is enough space for `63` potential two-record pairings
 
 Two generic helpers now make that layout clearer:
 
 - `initialize_path_template_record_pair`
 - `mirror_path_template_pair_x`
 
-The important practical rule is:
+What is still **not** proven from this package:
 
-- most named path slots build the first `0xa8` record with a constructor family, then build the second `0xa8` record by calling `mirror_path_template_pair_x(dst = base + 0xa8, src = base)`
-- `SUPERTRAMP` and `START` are the clear exceptions: both halves are built explicitly instead of through the mirror helper
+- that the runtime universally treats those `126` records as `63` contiguous left/right pairs
+- that one authored path id always steps by `0x150`
+- that the first/second record layout is the same for every constructor family
+
+`initialize_path_template_record_pair` proves record initialization at `+0x0` and `+0x18`, and `mirror_path_template_pair_x` proves one record can be mirrored into another, but the actual call sites that establish universal pair layout are still missing.
 
 ## Dynamic Family Cross-Check
 
@@ -126,8 +126,13 @@ High-confidence fields on the `0xa8`-byte record:
 - `+0x54`: subdivision count used for the generated strip mesh
 - `+0x58`: pointer to the primary sampled point array
 - `+0x5c`: pointer to the mirrored or secondary sampled point array
-- `+0x98/+0x9c/+0xa0/+0xa4`: the four row-scalar fields that the follow or builder code latches into row cells and player exit state
-- `+0x9c`: extra scalar copied by the mirror helper
+- `+0x98`: install-time row scalar written during entry/begin
+- `+0x9c`: template-side special flag checked by live update
+
+Still unresolved from this package:
+
+- whether `+0xa0/+0xa4` belong to the template record at all in the special update path
+- the exact semantic names for the mirror-copied header scalars at `+0x30/+0x34`
 
 High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c` arrays:
 
@@ -136,7 +141,7 @@ High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c`
 - `+0x80/+0x84/+0x88`: delta vector toward the next sample
 - `+0x8c`: delta length, which `update_track_attachment_follow_state` multiplies by the per-tick path factor
 - `+0x90/+0x94/+0x98`: orientation-like vector that gets mirrored on X
-- `+0x9c`: scalar initialized to `1.0` in the recovered `SUPERTRAMP` constructor
+- `+0x9c`: scalar used by the ordinary follow path
 - `+0xa0`: extra scalar copied verbatim by the mirror helper
 
 What the mirror helper actually does:

@@ -280,8 +280,11 @@ High-confidence `PathTemplate` fields:
 - `+0x5c`: `secondary_points`
 - `+0x98`: `installed_heading_delta`
 - `+0x9c`: `special_runtime_cell_swaps`
-- `+0xa0`: `runtime_cell_variant_mid`
-- `+0xa4`: `runtime_cell_variant_end`
+
+Still unresolved from the current Windows package:
+
+- whether `+0xa0/+0xa4` are template fields at all in the special live-update branch
+- the exact producer that sets `special_runtime_cell_swaps`
 
 High-confidence `PathTemplateSample` fields:
 

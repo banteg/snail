@@ -182,7 +182,7 @@ Notes:
 - `zig build run` now defaults to a `1024x768` window, which keeps the original `4:3` presentation while staying larger than the original `640x480` windowed client; `debug` and `smoke` keep the wider tooling window
 - windowed mode stays the development default until a saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` overrides the mutable state root for `SnailMail.cfg` and `ScoreA/B/C.dat`; the default is `artifacts/runtime`, and the port now loads and saves the raw config blob there while applying the recovered sound/music/fullscreen fields
-- current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, `P/p` cells consume those indices through hardcoded path-template pairs, and the original player update can enter a dedicated attachment-follow state on those sampled path objects, but the exact name-to-template mapping is still under investigation
+- current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, and the original player update can enter a dedicated attachment-follow state on installed sampled path objects, but the exact name-to-template mapping and installer path are still under investigation
 
 Interactive controls for `zig build run -- debug`:
 

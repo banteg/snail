@@ -286,11 +286,10 @@ const RowSample = struct {
     path_name: ?[]const u8,
 };
 
-// PORT(partial): Windows attachment-follow keeps an explicit state object with the
-// owner/runtime cell, sample index, segment progress, vertical offset, and cached
-// output pose. The current port still lacks the installed template bank, but it now
-// keeps the minimal state we can drive from authored row metadata so attachment
-// travel preserves lateral offset instead of snapping to the row midpoint.
+// PORT(partial): Windows attachment-follow is driven by installed runtime attachment
+// records plus sampled template geometry. The current port still lacks that installer
+// and bank, so this state is only the minimal authored-metadata fallback we can carry
+// for now. It should not be read as a recovered Windows layout.
 const AttachmentFollowState = struct {
     active: bool = false,
     source_row: usize = 0,

@@ -7,7 +7,7 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Path system overview](path-system.md): current understanding of `Path=` handling and the segment-to-track runtime pipeline
 - [Path templates](path-templates.md): hardcoded path names, slot layout, and constructor families
 - [Track runtime](track-runtime.md): segment metadata, runtime flags, glyph dispatch, and render passes
-- [Attachment follow state](attachment-follow.md): how `P/p` rows become live follow-state transitions
+- [Attachment follow state](attachment-follow.md): how authored `Path=` rows install live follow-state transitions
 - [Runtime structures](runtime-structures.md): current high-confidence `Player`, `Game`, and attachment-template layouts
 - [Symbol workflow](symbols.md): how the curated Binary Ninja function manifest is maintained
 - [Reflexive wrapper](reflexive-wrapper.md): bootstrap and wrapper-obfuscation notes

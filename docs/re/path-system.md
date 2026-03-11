@@ -66,14 +66,14 @@ The old path-system page has been broken into focused notes:
 
 - [Path templates](path-templates.md): hardcoded `Path=` names, slot layout, and constructor families
 - [Track runtime](track-runtime.md): segment metadata layout, normalized runtime flags, glyph dispatch, ring handling, and render passes
-- [Attachment follow state](attachment-follow.md): how `P/p` rows install attachment corridors and how the player enters the follow state
+- [Attachment follow state](attachment-follow.md): how authored `Path=` rows become installed attachment corridors and how the player enters the follow state
 
 ## Current Practical Read
 
 The current high-confidence model is:
 
 - `Path=<name>` resolves through a hardcoded name table in the executable
-- `P/p` rows consume those indices and install hardcoded sampled path-template objects onto runtime cells
+- a still-missing installer turns authored path-name indices into installed sampled path-template objects on runtime cells
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
 - the placed parcel manager at `game + 0x125e430` is separate from the live garbage-object family rooted at `game + 0x359144`
