@@ -158,7 +158,7 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
                 .{ .x = left, .y = back_height, .z = back },
                 .{ .x = right, .y = back_height, .z = back },
                 .{ .x = right, .y = front_height, .z = front },
-                topSurfaceUv(left, right, front, back),
+                topSurfaceUv(family, left, right, front, back),
             );
 
             const edge_mask = preview.runtimeEdgeMaskAt(global_row, lane_index) orelse 0;
@@ -267,7 +267,10 @@ fn surfaceHeightAtTileFraction(tile_type: u8, row_origin: f32, row_fraction: f32
     ) orelse 0.0;
 }
 
-fn topSurfaceUv(left: f32, right: f32, front: f32, back: f32) QuadUv {
+fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
+    if (family == .ramp) {
+        return .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 };
+    }
     const z_block_base = @floor(front / render_cache_row_chunk) * render_cache_row_chunk;
     return .{
         .left = (left + gameplay_half_width) * gameplay_uv_scale,
@@ -321,7 +324,7 @@ test "surface family maps recovered runtime tile families" {
 }
 
 test "top surface uv follows recovered world mapping" {
-    const uv = topSurfaceUv(-4.0, -3.0, 0.0, 1.0);
+    const uv = topSurfaceUv(.floor, -4.0, -3.0, 0.0, 1.0);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.left, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.125), uv.right, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
@@ -329,7 +332,15 @@ test "top surface uv follows recovered world mapping" {
 }
 
 test "top surface uv resets on 24-row cache chunk boundaries" {
-    const uv = topSurfaceUv(-4.0, -3.0, 24.0, 25.0);
+    const uv = topSurfaceUv(.slide, -4.0, -3.0, 24.0, 25.0);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.875), uv.bottom, 0.0001);
+}
+
+test "ramp surface uv keeps per-cell mapping" {
+    const uv = topSurfaceUv(.ramp, -4.0, -3.0, 0.0, 1.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.left, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.right, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.top, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.bottom, 0.0001);
 }
