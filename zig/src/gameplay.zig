@@ -1391,20 +1391,37 @@ pub const Runner = struct {
         preview: *const track.LoadedLevelPreview,
         built: *const attachment_builders.BuiltAttachment,
     ) void {
-        const pose = attachment_builders.worldPositionForTemplate(
+        const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
             self.attachment_follow.progress,
             self.attachment_follow.source_row,
             self.attachment_follow.lateral_offset,
             self.attachment_follow.vertical_offset,
         );
-        const clamped_world_x = std.math.clamp(pose.x, -4.0, 4.0);
-        self.row_position = pose.z;
+        const clamped_world_x = std.math.clamp(world_pose.position.x, -4.0, 4.0);
+        self.row_position = world_pose.position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(clamped_world_x);
         self.resolved_lane_index = self.lane_index;
         self.lane_center = laneCenterFromWorldX(preview, clamped_world_x);
+
+        const floor_y = preview.sampleFloorHeightAtGridPosition(
+            self.runtime_track_index,
+            self.resolved_lane_index,
+            self.row_position,
+        ) orelse 0.0;
+        const exit_height = @max(0.0, world_pose.position.y - floor_y);
+        if (exit_height > 0.001) {
+            self.launch = .{
+                .active = true,
+                .world_x = clamped_world_x,
+                .height = exit_height,
+                .vertical_velocity = 0.0,
+                .basis_forward = world_pose.basis_forward,
+                .basis_up = world_pose.basis_up,
+            };
+        }
     }
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1485,37 +1502,59 @@ pub const Runner = struct {
         global_row: usize,
         sample: RowSample,
     ) ?InstalledAttachmentEntry {
-        if (global_row == built.row.global_row) {
-            const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
-            const row_fraction = std.math.clamp(
-                self.row_position - @as(f32, @floatFromInt(global_row)),
-                0.0,
-                1.0,
-            );
-            const progress = std.math.clamp(
-                row_progress + row_fraction,
-                0.0,
-                @as(f32, @floatFromInt(built.template.sample_count)),
-            );
-            const centered_world_position = attachment_builders.worldPositionForTemplate(
-                &built.template,
-                progress,
-                built.row.global_row,
-                0.0,
-                0.0,
-            );
-            const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
-            const lateral_offset = self.lane_center - centered_lane_center;
-            const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
-            const local_lateral = @abs(lateral_offset * pose.lateral_scale);
-            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-            if (local_lateral > half_width + attachment_side_exit_margin) return null;
-            return .{
-                .progress = progress,
-                .lateral_offset = lateral_offset,
-            };
+        if (self.geometricInstalledAttachmentEntry(preview, built, sample)) |entry| {
+            return entry;
         }
 
+        if (global_row == built.row.global_row) {
+            return self.sourceRowInstalledAttachmentEntry(preview, built, global_row);
+        }
+
+        return null;
+    }
+
+    fn sourceRowInstalledAttachmentEntry(
+        self: *const Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+        global_row: usize,
+    ) ?InstalledAttachmentEntry {
+        const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
+        const row_fraction = std.math.clamp(
+            self.row_position - @as(f32, @floatFromInt(global_row)),
+            0.0,
+            1.0,
+        );
+        const progress = std.math.clamp(
+            row_progress + row_fraction,
+            0.0,
+            @as(f32, @floatFromInt(built.template.sample_count)),
+        );
+        const centered_world_position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            progress,
+            built.row.global_row,
+            0.0,
+            0.0,
+        );
+        const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
+        const lateral_offset = self.lane_center - centered_lane_center;
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
+        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
+        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+        if (local_lateral > half_width + attachment_side_exit_margin) return null;
+        return .{
+            .progress = progress,
+            .lateral_offset = lateral_offset,
+        };
+    }
+
+    fn geometricInstalledAttachmentEntry(
+        self: *const Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+        sample: RowSample,
+    ) ?InstalledAttachmentEntry {
         const start_progress = std.math.clamp(
             self.previous_row_position - @as(f32, @floatFromInt(built.row.global_row)),
             0.0,
@@ -2378,6 +2417,51 @@ test "attachment follow side-exits when lateral drift exceeds template width" {
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
+}
+
+test "loop side-exit preserves airborne launch height" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/LOOPBOW.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    var guard: usize = 0;
+    while (runner.movement_mode == .attachment and guard < 256) : (guard += 1) {
+        const world_position = runner.worldPosition(&fixture.preview, 0.0);
+        const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
+            runner.current_global_row,
+            runner.resolved_lane_index,
+            runner.row_position,
+        ) orelse 0.0;
+        if (world_position.y > floor_height + 1.0) break;
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const required_lateral = half_width + attachment_side_exit_margin + 0.2;
+    const lateral_sign: i8 = if (runner.attachment_follow.lateral_offset < 0.0) -1 else 1;
+    const additional_offset = @max(0.0, required_lateral - @abs(runner.attachment_follow.lateral_offset));
+    const delta_steps: i8 = @intFromFloat(@ceil(additional_offset));
+    const lane_delta: i8 = delta_steps * lateral_sign;
+    runner.step(&fixture.preview, .{ .lane_delta = lane_delta }, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.launch.active);
+
+    const launched_position = runner.worldPosition(&fixture.preview, 0.0);
+    const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
+        runner.current_global_row,
+        runner.resolved_lane_index,
+        runner.row_position,
+    ) orelse 0.0;
+    try std.testing.expect(launched_position.y > floor_height + 0.5);
 }
 
 test "installed attachment entry respects template width" {
