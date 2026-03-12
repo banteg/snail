@@ -6677,7 +6677,7 @@ fn laneCenterTargetForMouseX(
         320.0
     else
         (std.math.clamp(mouse_x, 0.0, screen_width - 1.0) / (screen_width - 1.0)) * 639.0;
-    const target_world_x = (authored_mouse_x - 320.0) * (8.0 / 640.0);
+    const target_world_x = (320.0 - authored_mouse_x) * (8.0 / 640.0);
     const lane_center = width_offset + target_world_x;
     return std.math.clamp(
         lane_center,
@@ -6944,7 +6944,7 @@ test "mouse lane-center target mapping respects bounds" {
     );
     defer loaded_track_preview.deinit();
 
-    try std.testing.expectApproxEqAbs(@as(f32, 2.5), laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 4.0), laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
 }
