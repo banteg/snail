@@ -130,9 +130,9 @@ The newer Windows-only package also tightened two family reads:
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family
 - kind `42` is the special nonlinear family used by both projection and live follow
 
-That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field shared by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only. Android now tightens that further: its named `cRPath::BuildHalfPipe` and `cRPath::HalfPipePos` are strong structural matches for the Windows kind-`42` constructor and transform helper.
+That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field used by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only. Android now tightens that further: its named `cRPath::BuildHalfPipe` and `cRPath::HalfPipePos` are strong structural matches for the Windows kind-`42` constructor and transform helper.
 
-Android also shows that the nonlinear family is not monolithic there: `cRPathFollowGoldy::Traverse` has dedicated `HalfPipePos` and `HalfPolePos` branches, and the same binary exposes both `cRPath::BuildHalfPipe` and `cRPath::BuildHalfPole`. That does not prove the exact Windows public-name mapping yet, but it does strongly suggest the Windows nonlinear branch is at least a halfpipe/halfpole-style family rather than a single `WARP`-only path.
+Android also shows that the nonlinear family is not monolithic there: `cRGame::LoadPaths` directly maps public slot `57` (`HALFPIPE`) to `cRPath::BuildHalfPipe` and slot `58` (`HALFPOLE`) to `cRPath::BuildHalfPole`, while `cRPathFollowGoldy::Traverse` has dedicated `HalfPipePos` and `HalfPolePos` branches. `WARP` is a separate public slot `37` in the same Android path registry, and it does not show up as the same builder family in the recovered `LoadPaths` body. That does not prove the exact Windows public-name mapping yet, but it does strongly argue that Windows public `HALFPIPE` and public `WARP` should not be collapsed into one authored family.
 
 Important caveat for this specific March 8 capture:
 
@@ -246,7 +246,7 @@ That capture materially changes the strongest current read:
 
 - public path `HALFPIPE` definitely installs into the live nonlinear kind-`42` family
 - runtime kind `42` is therefore not safely `WARP`-only
-- `sub_429b20` still looks like one constructor for the kind-`42` family, but we should now describe the live family as a shared `HALFPIPE` / `WARP` nonlinear branch until the remaining constructor/install mapping is fully closed
+- `sub_429b20` still looks like one constructor for the kind-`42` family, but Android now makes it safer to describe that as a `HALFPIPE` / `HALFPOLE`-style nonlinear branch while leaving public `WARP` unresolved
 
 What is still missing even after this capture:
 
@@ -282,7 +282,7 @@ What this capture still did **not** answer:
 
 - no clean `attachment_end` for `HALFPIPE`
 - no live public `WARP` follow
-- no new distinction yet between `HALFPIPE` and `WARP` within the shared nonlinear kind-`42` family
+- no direct live mapping yet from public `WARP` to any specific nonlinear runtime branch
 
 ## Practical Read
 

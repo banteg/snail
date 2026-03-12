@@ -69,6 +69,10 @@ Important corrections:
 - the recovered **runtime kind** `42` is a different field entirely
 - a focused March 12 capture now proves authored `HALFPIPE` installs live into runtime kind `42`
 - `sub_429b20` still strongly matches one constructor for the nonlinear kind-`42` family, but kind `42` is no longer safely describable as `WARP`-only
+- Android now proves a stronger public split in its own path registry:
+  - `HALFPIPE` is public slot `57` and `LoadPaths` builds it directly with `cRPath::BuildHalfPipe`
+  - `HALFPOLE` is public slot `58` and `LoadPaths` builds it directly with `cRPath::BuildHalfPole`
+  - `WARP` is a separate public slot `37`, and it does not appear as the same builder family in the recovered Android `LoadPaths` body
 
 ## Installed Pair Bank Bridge
 
@@ -225,7 +229,7 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - kind `36` is the explicit `START` constructor family
 - kind `42` still has its own nonlinear projection or follow branch in both projection and live-update code
 - a March 12 path-oracle capture now proves authored `HALFPIPE` also resolves into that live kind-`42` family
-- `sub_429b20` remains the strongest current constructor match for one branch of the nonlinear family, but the exact `WARP` versus `HALFPIPE` constructor split is still open
+- `sub_429b20` remains the strongest current constructor match for one branch of the nonlinear family, but the exact Windows public-name mapping inside that family is still open
 
 ## Practical Read
 
@@ -233,6 +237,8 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - most names are family variants built from one constructor plus an X-mirror pass
 - `sub_429b20` remains the strongest recovered constructor for one nonlinear kind-`42` family branch
 - Android's named `cRPath::BuildHalfPipe` is a strong structural match for that constructor body
+- Android's `LoadPaths` also directly maps public slot `57` to `BuildHalfPipe` and slot `58` to `BuildHalfPole`, while keeping `WARP` as a separate public slot `37`
 - Android also has a neighboring `cRPath::BuildHalfPole`, and `cRPathFollowGoldy::Traverse` special-cases both `HalfPipePos` and `HalfPolePos`, so the nonlinear attachment family is at least split into those two named siblings on that port
 - `HALFPIPE` is no longer a purely static gap: it is now proven live as runtime kind `42`, but it still lacks a directly recovered constructor body
+- `WARP` still lacks a directly recovered live family mapping and should not be collapsed into the same public slot as `HALFPIPE`
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
