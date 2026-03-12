@@ -816,8 +816,8 @@ pub const Runner = struct {
         if (self.currentAttachmentBuilt(preview)) |built| {
             if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
                 self.finishAttachmentFollow();
-                return;
             }
+            return;
         }
         const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
         if (sample.path_center_lane != null) return;
