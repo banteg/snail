@@ -1,6 +1,51 @@
 const std = @import("std");
 const segment = @import("segment.zig");
 
+pub const Vec3 = struct {
+    x: f32 = 0.0,
+    y: f32 = 0.0,
+    z: f32 = 0.0,
+
+    pub fn add(a: Vec3, b: Vec3) Vec3 {
+        return .{ .x = a.x + b.x, .y = a.y + b.y, .z = a.z + b.z };
+    }
+
+    pub fn sub(a: Vec3, b: Vec3) Vec3 {
+        return .{ .x = a.x - b.x, .y = a.y - b.y, .z = a.z - b.z };
+    }
+
+    pub fn scale(v: Vec3, scalar: f32) Vec3 {
+        return .{ .x = v.x * scalar, .y = v.y * scalar, .z = v.z * scalar };
+    }
+
+    pub fn lerp(a: Vec3, b: Vec3, t: f32) Vec3 {
+        const inv_t = 1.0 - t;
+        return .{
+            .x = (a.x * inv_t) + (b.x * t),
+            .y = (a.y * inv_t) + (b.y * t),
+            .z = (a.z * inv_t) + (b.z * t),
+        };
+    }
+
+    pub fn cross(a: Vec3, b: Vec3) Vec3 {
+        return .{
+            .x = (a.y * b.z) - (a.z * b.y),
+            .y = (a.z * b.x) - (a.x * b.z),
+            .z = (a.x * b.y) - (a.y * b.x),
+        };
+    }
+
+    pub fn length(v: Vec3) f32 {
+        return std.math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+    }
+
+    pub fn normalize(v: Vec3) Vec3 {
+        const len = length(v);
+        if (len <= 0.0001) return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+        return scale(v, 1.0 / len);
+    }
+};
+
 pub const PublicPath = enum(u8) {
     looptheloop = 0,
     looptheloop2,
@@ -151,8 +196,11 @@ pub const TemplateSpec = struct {
 // PORT(scaffold): this is the future shared shape for Windows-style installed path
 // templates. The current port only fills the authored-path registry and dispatch.
 pub const TemplateSample = struct {
-    position: [3]f32 = .{ 0.0, 0.0, 0.0 },
-    delta_dir_to_next: [3]f32 = .{ 0.0, 0.0, 0.0 },
+    basis_right: Vec3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+    basis_up: Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    basis_forward: Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    position: Vec3 = .{},
+    delta_dir_to_next: Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
     delta_length: f32 = 0.0,
     center_x: f32 = 0.0,
     lateral_scale: f32 = 1.0,
@@ -163,7 +211,34 @@ pub const TemplateSample = struct {
 // recovered Windows constructor families instead of row-local metadata.
 pub const Template = struct {
     spec: TemplateSpec,
-    samples: []const TemplateSample = &.{},
+    width_cells: u16 = 0,
+    sample_count: u16 = 0,
+    exit_tail_extra: f32 = 0.0,
+    samples: []TemplateSample = &.{},
+
+    pub fn deinit(self: *Template, allocator: std.mem.Allocator) void {
+        allocator.free(self.samples);
+        self.samples = &.{};
+    }
+
+    pub fn pointCount(self: *const Template) usize {
+        return self.samples.len;
+    }
+};
+
+pub const BuiltAttachment = struct {
+    row: AuthoredPathRow,
+    template: Template,
+
+    pub fn deinit(self: *BuiltAttachment, allocator: std.mem.Allocator) void {
+        self.template.deinit(allocator);
+    }
+};
+
+pub const AttachmentPose = struct {
+    position: Vec3,
+    center_x: f32,
+    lateral_scale: f32,
 };
 
 pub const AuthoredPathRow = struct {
@@ -181,6 +256,7 @@ pub const AuthoredPathRow = struct {
 pub const Scaffold = struct {
     allocator: std.mem.Allocator,
     authored_rows: []AuthoredPathRow,
+    built_attachments: []BuiltAttachment,
 
     pub fn collect(
         allocator: std.mem.Allocator,
@@ -208,13 +284,35 @@ pub const Scaffold = struct {
             }
         }
 
+        var built_attachments: std.ArrayList(BuiltAttachment) = .empty;
+        defer built_attachments.deinit(allocator);
+        errdefer {
+            for (built_attachments.items) |*built| {
+                built.deinit(allocator);
+            }
+        }
+
+        for (rows.items) |row| {
+            const spec = row.spec() orelse continue;
+            const template = (try buildTemplate(allocator, spec)) orelse continue;
+            try built_attachments.append(allocator, .{
+                .row = row,
+                .template = template,
+            });
+        }
+
         return .{
             .allocator = allocator,
             .authored_rows = try rows.toOwnedSlice(allocator),
+            .built_attachments = try built_attachments.toOwnedSlice(allocator),
         };
     }
 
     pub fn deinit(self: *Scaffold) void {
+        for (self.built_attachments) |*built| {
+            built.deinit(self.allocator);
+        }
+        self.allocator.free(self.built_attachments);
         self.allocator.free(self.authored_rows);
     }
 
@@ -241,7 +339,142 @@ pub const Scaffold = struct {
         }
         return null;
     }
+
+    pub fn activeBuiltAttachmentAtRow(self: *const Scaffold, global_row: usize) ?*const BuiltAttachment {
+        var active_index: ?usize = null;
+        for (self.built_attachments, 0..) |built, index| {
+            if (built.row.global_row > global_row) break;
+            active_index = index;
+        }
+        if (active_index) |index| {
+            return &self.built_attachments[index];
+        }
+        return null;
+    }
 };
+
+pub fn samplePoseAtProgress(template: *const Template, progress: f32) AttachmentPose {
+    if (template.samples.len == 0) {
+        return .{
+            .position = .{},
+            .center_x = 0.0,
+            .lateral_scale = 1.0,
+        };
+    }
+
+    const clamped_progress = std.math.clamp(progress, 0.0, @as(f32, @floatFromInt(template.sample_count)));
+    const base_index: usize = @intFromFloat(@floor(clamped_progress));
+    if (base_index >= template.samples.len - 1) {
+        const sample = template.samples[template.samples.len - 1];
+        return .{
+            .position = sample.position,
+            .center_x = sample.center_x,
+            .lateral_scale = sample.lateral_scale,
+        };
+    }
+
+    const t = clamped_progress - @as(f32, @floatFromInt(base_index));
+    const lhs = template.samples[base_index];
+    const rhs = template.samples[base_index + 1];
+    return .{
+        .position = Vec3.lerp(lhs.position, rhs.position, t),
+        .center_x = std.math.lerp(lhs.center_x, rhs.center_x, t),
+        .lateral_scale = std.math.lerp(lhs.lateral_scale, rhs.lateral_scale, t),
+    };
+}
+
+fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
+    return switch (spec.public_path) {
+        .start => try buildStartTemplate(allocator, spec),
+        else => null,
+    };
+}
+
+fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
+    const curve_steps: usize = @intFromFloat(@floor(4.0 * std.math.pi));
+    const sample_count: usize = curve_steps + 15;
+    const point_count: usize = sample_count + 1;
+    var samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    for (0..5) |index| {
+        samples[index].position = .{
+            .x = 0.0,
+            .y = 8.0,
+            .z = @floatFromInt(index),
+        };
+    }
+
+    const curve_steps_f: f32 = @floatFromInt(curve_steps);
+    for (0..curve_steps) |step| {
+        const angle = (@as(f32, @floatFromInt(step)) * std.math.pi) / curve_steps_f;
+        const index = 5 + step;
+        samples[index].position = .{
+            .x = 0.0,
+            .y = (std.math.cos(angle) + 1.0) * 4.0,
+            .z = @floatFromInt(5 + step),
+        };
+    }
+
+    for (0..11) |offset| {
+        const index = curve_steps + 5 + offset;
+        samples[index].position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = @floatFromInt(curve_steps + 5 + offset),
+        };
+    }
+
+    finalizeTemplateSamples(samples);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .ported,
+            .runtime_kind = spec.runtime_kind,
+            .sample_count = spec.sample_count,
+            .subdivision_count = spec.subdivision_count,
+        },
+        .width_cells = 8,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn finalizeTemplateSamples(samples: []TemplateSample) void {
+    if (samples.len == 0) return;
+    var last_forward = Vec3{ .x = 0.0, .y = 0.0, .z = 1.0 };
+    const right = Vec3{ .x = 1.0, .y = 0.0, .z = 0.0 };
+
+    for (samples, 0..) |*sample, index| {
+        if (index + 1 < samples.len) {
+            const delta = Vec3.sub(samples[index + 1].position, sample.position);
+            const delta_length = Vec3.length(delta);
+            const forward = if (delta_length > 0.0001) Vec3.scale(delta, 1.0 / delta_length) else last_forward;
+            sample.delta_dir_to_next = forward;
+            sample.delta_length = delta_length;
+            sample.basis_forward = forward;
+            last_forward = forward;
+        } else {
+            sample.delta_dir_to_next = last_forward;
+            sample.delta_length = 0.0;
+            sample.basis_forward = last_forward;
+        }
+
+        const up = Vec3.cross(sample.basis_forward, right);
+        sample.basis_right = right;
+        sample.basis_up = if (Vec3.length(up) > 0.0001) Vec3.normalize(up) else .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+        sample.center_x = 0.0;
+        sample.lateral_scale = 1.0;
+        sample.special_scalar = 0.0;
+    }
+}
 
 pub fn publicPathFromName(name: []const u8) ?PublicPath {
     inline for (public_path_names, 0..) |candidate, index| {
@@ -282,7 +515,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .p0 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 33, .sample_count = 16, .subdivision_count = 3 },
         .p1 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 34, .sample_count = 16, .subdivision_count = 3 },
         .p2 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 35, .sample_count = 16, .subdivision_count = 3 },
-        .start => .{ .public_path = public_path, .family = .start, .status = .partial, .runtime_kind = 36, .sample_count = 27, .subdivision_count = 8 },
+        .start => .{ .public_path = public_path, .family = .start, .status = .ported, .runtime_kind = 36, .sample_count = 27, .subdivision_count = 8 },
         .turnover => .{ .public_path = public_path, .family = .turnover, .status = .partial, .runtime_kind = 39 },
         .turnoverdouble => .{ .public_path = public_path, .family = .turnoverdouble, .status = .partial },
         .turnunder => .{ .public_path = public_path, .family = .turnunder, .status = .partial, .runtime_kind = 39, .sample_count = 45, .subdivision_count = 4 },
@@ -356,20 +589,22 @@ test "public path lookup matches recovered windows table" {
 }
 
 test "collect scaffold keeps active authored path row" {
-    const source =
-        \\ID: 1
-        \\Name: 'Scaffold'
-        \\Data:
-        \\.......... Path=START
-        \\PPPPPPPPPP
-        \\.......... Path=HALFPIPE
-        \\pppppppppp
-    ;
-
-    var parsed = try segment.parseText(std.testing.allocator, source, "SEGMENTS/SCAFFOLD.TXT");
-    defer parsed.deinit();
-
-    const segments = [_]segment.Definition{parsed};
+    const rows = [_]segment.Row{
+        .{ .cells = "..........", .annotation = .{ .path = "START" } },
+        .{ .cells = "PPPPPPPPPP" },
+        .{ .cells = "..........", .annotation = .{ .path = "HALFPIPE" } },
+        .{ .cells = "pppppppppp" },
+    };
+    var segments = [_]segment.Definition{.{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "SEGMENTS/SCAFFOLD.TXT",
+        .segment_id = 1,
+        .name = "Scaffold",
+        .width = 10,
+        .height = rows.len,
+        .rows = &rows,
+    }};
+    defer segments[0].deinit();
     const row_offsets = [_]usize{0};
     var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets);
     defer scaffold.deinit();
@@ -377,4 +612,43 @@ test "collect scaffold keeps active authored path row" {
     try std.testing.expectEqual(@as(usize, 2), scaffold.authored_rows.len);
     try std.testing.expectEqual(PublicPath.start, scaffold.activePathAtRow(1).?.public_path.?);
     try std.testing.expectEqual(PublicPath.halfpipe, scaffold.activePathAtRow(3).?.public_path.?);
+}
+
+test "collect scaffold builds start template" {
+    const rows = [_]segment.Row{
+        .{ .cells = "..........", .annotation = .{ .path = "START" } },
+        .{ .cells = "PPPPPPPPPP" },
+    };
+    var segments = [_]segment.Definition{.{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "SEGMENTS/START.TXT",
+        .segment_id = 1,
+        .name = "Start",
+        .width = 10,
+        .height = rows.len,
+        .rows = &rows,
+    }};
+    defer segments[0].deinit();
+    const row_offsets = [_]usize{0};
+    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets);
+    defer scaffold.deinit();
+
+    try std.testing.expectEqual(@as(usize, 1), scaffold.built_attachments.len);
+    const built = scaffold.built_attachments[0];
+    try std.testing.expectEqual(PublicPath.start, built.row.public_path.?);
+    try std.testing.expectEqual(@as(u16, 27), built.template.sample_count);
+    try std.testing.expectEqual(@as(usize, 28), built.template.pointCount());
+    try std.testing.expectApproxEqAbs(@as(f32, 8.0), built.template.samples[0].position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), built.template.samples[17].position.y, 0.0001);
+}
+
+test "start template interpolation follows recovered descent" {
+    const spec = specForPublicPath(.start);
+    var template = (try buildTemplate(std.testing.allocator, spec)).?;
+    defer template.deinit(std.testing.allocator);
+
+    const mid = samplePoseAtProgress(&template, 10.5);
+    try std.testing.expect(mid.position.y < 8.0);
+    try std.testing.expect(mid.position.y > 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.5), mid.position.z, 0.0001);
 }

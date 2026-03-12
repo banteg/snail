@@ -533,6 +533,10 @@ pub const LoadedLevelPreview = struct {
         return self.attachment_scaffold.activePathAtRow(global_row);
     }
 
+    pub fn activeBuiltAttachmentAtRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
+        return self.attachment_scaffold.activeBuiltAttachmentAtRow(global_row);
+    }
+
     pub fn activePathNameAtRow(self: *const LoadedLevelPreview, global_row: usize) ?[]const u8 {
         const row = self.activePathAtRow(global_row) orelse return null;
         return row.raw_name;

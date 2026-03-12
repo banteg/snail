@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const rlgl = rl.gl;
+const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const track = @import("track.zig");
 
@@ -43,6 +44,7 @@ pub const Scene = struct {
     pub fn draw(self: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
         drawBackPlane(self, preview);
         drawRuntimeCells(self, preview);
+        drawAttachmentGeometry(self, preview, selected_segment_index);
         preview.drawPlacedModelsOnly();
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
@@ -253,6 +255,60 @@ fn drawSegmentSelectionOutline(preview: *const track.LoadedLevelPreview, selecte
     rl.drawLine3D(.{ .x = right, .y = y, .z = front }, .{ .x = right, .y = y, .z = back }, .orange);
     rl.drawLine3D(.{ .x = right, .y = y, .z = back }, .{ .x = left, .y = y, .z = back }, .orange);
     rl.drawLine3D(.{ .x = left, .y = y, .z = back }, .{ .x = left, .y = y, .z = front }, .orange);
+}
+
+fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
+    if (preview.attachment_scaffold.built_attachments.len == 0) return;
+
+    for (preview.attachment_scaffold.built_attachments) |*built| {
+        if (built.row.segment_index != selected_segment_index) continue;
+        switch (built.template.spec.public_path) {
+            .start => drawStartAttachment(scene, built),
+            else => {},
+        }
+    }
+}
+
+fn drawStartAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+    const template = &built.template;
+    if (template.samples.len < 2) return;
+
+    const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
+    const subdivisions = template.width_cells;
+    const base_row = @as(f32, @floatFromInt(built.row.global_row));
+
+    for (0..template.samples.len - 1) |sample_index| {
+        const front_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index));
+        const back_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index + 1));
+        const front_world_z = base_row + front_pose.position.z;
+        const back_world_z = base_row + back_pose.position.z;
+
+        for (0..subdivisions) |subdivision| {
+            const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
+            const right_offset = left_offset + 1.0;
+
+            drawTexturedQuad(
+                scene.textures.track.texture,
+                attachmentVertex(front_pose, left_offset, front_world_z),
+                attachmentVertex(back_pose, left_offset, back_world_z),
+                attachmentVertex(back_pose, right_offset, back_world_z),
+                attachmentVertex(front_pose, right_offset, front_world_z),
+                topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
+            );
+        }
+    }
+}
+
+fn attachmentVertex(
+    pose: attachment_builders.AttachmentPose,
+    lateral_offset: f32,
+    world_z: f32,
+) rl.Vector3 {
+    return .{
+        .x = pose.position.x + pose.center_x + (lateral_offset * pose.lateral_scale),
+        .y = pose.position.y,
+        .z = world_z,
+    };
 }
 
 fn textureForFamily(scene: *const Scene, family: SurfaceFamily) rl.Texture2D {
