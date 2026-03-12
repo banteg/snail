@@ -916,6 +916,7 @@ const AppState = struct {
     current_level: ?level.Definition = null,
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
+    current_game_track_scene: ?track_render.Scene = null,
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -1058,6 +1059,10 @@ const AppState = struct {
         if (self.current_track_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
+        }
+        if (self.current_game_track_scene) |*scene| {
+            scene.deinit();
+            self.current_game_track_scene = null;
         }
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
@@ -3789,6 +3794,10 @@ const AppState = struct {
             loaded_track_preview.deinit();
             self.current_track_preview = null;
         }
+        if (self.current_game_track_scene) |*scene| {
+            scene.deinit();
+            self.current_game_track_scene = null;
+        }
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
@@ -3797,6 +3806,13 @@ const AppState = struct {
         if (self.current_level) |*loaded_level| {
             self.current_track_preview = try track.LoadedLevelPreview.load(self.allocator, &self.catalog, loaded_level);
             if (self.current_track_preview) |*loaded_track_preview| {
+                if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
+                    self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
+                        self.allocator,
+                        &self.catalog,
+                        track_set_index,
+                    );
+                }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
                     loaded_level.parcels orelse 0,
@@ -6397,7 +6413,21 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
         row_location.segment_index
     else
         0;
-    loaded_track_preview.draw(selected_segment_index);
+    if (state.current_game_track_scene) |*scene| {
+        scene.draw(&loaded_track_preview, selected_segment_index);
+    } else {
+        loaded_track_preview.draw(selected_segment_index);
+    }
+}
+
+fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
+    return switch (level_track) {
+        .index => |index| switch (index) {
+            0, 1, 2, 3 => @intCast(index),
+            else => null,
+        },
+        .random => null,
+    };
 }
 
 fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) rl.Camera3D {
