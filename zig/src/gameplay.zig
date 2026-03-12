@@ -273,6 +273,7 @@ const maximum_visible_life_stock: u32 = 9;
 const completion_cutscene_duration_ticks: u16 = 72;
 const death_cutscene_duration_ticks: u16 = 72;
 const death_resolution_duration_ticks: u16 = 120;
+const attachment_side_exit_margin: f32 = 0.3;
 
 const RowSample = struct {
     global_row: usize,
@@ -297,7 +298,7 @@ const AttachmentFollowState = struct {
     progress: f32 = 0.0,
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
-    vertical_offset: f32 = 0.82,
+    vertical_offset: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
@@ -393,7 +394,7 @@ pub const Runner = struct {
             return;
         }
 
-        if (self.acceptsGameplayInput() and self.movement_mode != .attachment) {
+        if (self.acceptsGameplayInput()) {
             self.applyLaneDelta(input.lane_delta);
         }
 
@@ -571,6 +572,10 @@ pub const Runner = struct {
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
         if (lane_delta == 0) return;
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            self.attachment_follow.lateral_offset += @floatFromInt(lane_delta);
+            return;
+        }
         if (lane_delta < 0) {
             const amount: usize = @intCast(-lane_delta);
             self.lane_index = if (amount > self.lane_index) 0 else self.lane_index - amount;
@@ -854,6 +859,11 @@ pub const Runner = struct {
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
         if (self.currentAttachmentBuilt(preview)) |built| {
+            if (self.attachmentShouldSideExit(built)) {
+                self.commitAttachmentSideExit(preview, built);
+                self.finishAttachmentFollow();
+                return;
+            }
             if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
                 self.commitAttachmentNaturalExit(preview, built);
                 self.finishAttachmentFollow();
@@ -1206,6 +1216,36 @@ pub const Runner = struct {
         self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
     }
 
+    fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
+        if (self.attachment_follow.vertical_offset > 0.0) return false;
+
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.progress);
+        const local_lateral = @abs(self.attachment_follow.lateral_offset * pose.lateral_scale);
+        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+        return local_lateral > half_width + attachment_side_exit_margin;
+    }
+
+    fn commitAttachmentSideExit(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        const pose = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            self.attachment_follow.progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        const clamped_world_x = std.math.clamp(pose.x, -4.0, 4.0);
+        self.row_position = pose.z;
+        self.runtime_track_index = currentRowIndex(preview, self.row_position);
+        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.lane_index = preview.laneIndexAtWorldX(clamped_world_x);
+        self.resolved_lane_index = self.lane_index;
+        self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
+    }
+
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const built = self.currentAttachmentBuilt(preview) orelse return;
         const position = attachment_builders.worldPositionForTemplate(
@@ -1251,7 +1291,7 @@ pub const Runner = struct {
             else
                 0.0,
             .cached_output_lane_center = self.lane_center,
-            .vertical_offset = 0.82,
+            .vertical_offset = 0.0,
         };
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
@@ -1920,6 +1960,7 @@ test "standalone start segment attachment follow uses built template world heigh
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.vertical_offset, 0.0001);
 
     const world_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
@@ -1952,6 +1993,31 @@ test "standalone start segment attachment exits from the template end pose" {
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row + built.template.sample_count)));
     try std.testing.expect(runner.row_position > exit_progress);
+}
+
+test "attachment follow side-exits when lateral drift exceeds template width" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const required_lateral = half_width + attachment_side_exit_margin + 0.2;
+    const lateral_sign: i8 = if (runner.attachment_follow.lateral_offset < 0.0) -1 else 1;
+    const additional_offset = @max(0.0, required_lateral - @abs(runner.attachment_follow.lateral_offset));
+    const delta_steps: i8 = @intFromFloat(@ceil(additional_offset));
+    const lane_delta: i8 = delta_steps * lateral_sign;
+    runner.step(&fixture.preview, .{ .lane_delta = lane_delta }, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
+    try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
