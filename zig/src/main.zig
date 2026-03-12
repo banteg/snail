@@ -2379,14 +2379,12 @@ const AppState = struct {
                 if (accepts_input) {
                     if (self.current_track_preview) |loaded_track_preview| {
                         if (self.level_runner) |runner| {
-                            const mouse_delta = rl.getMouseDelta();
-                            if (@abs(mouse_delta.x) > 0.01) {
-                                self.mouse_level_lane_target = laneTargetForRunnerMouse(
-                                    loaded_track_preview,
-                                    runner,
-                                    @floatFromInt(rl.getMouseX()),
-                                );
-                            }
+                            self.mouse_level_lane_target = laneTargetForRunnerMouse(
+                                loaded_track_preview,
+                                runner,
+                                @floatFromInt(rl.getMouseX()),
+                                @floatFromInt(rl.getMouseY()),
+                            );
                             if (self.mouse_level_lane_target) |lane_target| {
                                 if (lane_target < runner.lane_index) {
                                     self.pending_level_input.lane_delta -= 1;
@@ -6534,6 +6532,10 @@ fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
     };
 }
 
+fn dotVector3(a: rl.Vector3, b: rl.Vector3) f32 {
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
 fn modelTransformFromBasis(position: rl.Vector3, right: rl.Vector3, up: rl.Vector3, forward: rl.Vector3) rl.Matrix {
     return .{
         .m0 = right.x,
@@ -6651,9 +6653,30 @@ fn laneTargetForRunnerMouse(
     loaded_track_preview: track.LoadedLevelPreview,
     runner: gameplay.Runner,
     mouse_x: f32,
+    mouse_y: f32,
 ) ?usize {
-    const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse return null;
-    return laneTargetForMouseX(mouse_x, @floatFromInt(screenWidth()), loaded_track_preview.laneBoundsForRow(row_location));
+    const probe_row_position = std.math.clamp(
+        runner.row_position + 6.0,
+        0.0,
+        @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.001, 0.0),
+    );
+    const probe_global_row = loaded_track_preview.rowIndexAtWorldZ(probe_row_position);
+    const row_location = loaded_track_preview.locateRow(probe_global_row) orelse return null;
+    const bounds = loaded_track_preview.laneBoundsForRow(row_location);
+    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    return laneTargetForMouseProjection(
+        loaded_track_preview,
+        camera,
+        bounds,
+        probe_global_row,
+        probe_row_position,
+        mouse_x,
+        mouse_y,
+    ) orelse laneTargetForMouseX(
+        mouse_x,
+        @floatFromInt(screenWidth()),
+        bounds,
+    );
 }
 
 fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds) usize {
@@ -6667,6 +6690,81 @@ fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds
         lane_count - 1,
     );
     return bounds.min + lane_offset;
+}
+
+fn laneTargetForMouseProjection(
+    loaded_track_preview: track.LoadedLevelPreview,
+    camera: rl.Camera3D,
+    bounds: track.LaneBounds,
+    global_row: usize,
+    row_position: f32,
+    mouse_x: f32,
+    mouse_y: f32,
+) ?usize {
+    if (bounds.max < bounds.min) return null;
+
+    const probe_lane_center = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+    const probe_lane_index = @as(usize, @intFromFloat(std.math.clamp(
+        std.math.floor(probe_lane_center - 0.5),
+        @as(f32, @floatFromInt(bounds.min)),
+        @as(f32, @floatFromInt(bounds.max)),
+    )));
+    const probe_floor_y = loaded_track_preview.sampleFloorHeightAtGridPosition(
+        global_row,
+        probe_lane_index,
+        row_position,
+    ) orelse 0.0;
+    const probe_center = loaded_track_preview.worldPositionForLane(
+        probe_lane_center,
+        row_position,
+        probe_floor_y + 0.25,
+    );
+    const ray = rl.getScreenToWorldRay(
+        .{ .x = mouse_x, .y = mouse_y },
+        camera,
+    );
+    const plane_normal = normalizeVector3(.{
+        .x = camera.target.x - camera.position.x,
+        .y = camera.target.y - camera.position.y,
+        .z = camera.target.z - camera.position.z,
+    });
+    const ray_dot = dotVector3(plane_normal, ray.direction);
+    if (@abs(ray_dot) <= 0.0001) return null;
+
+    const plane_distance = dotVector3(plane_normal, .{
+        .x = probe_center.x - ray.position.x,
+        .y = probe_center.y - ray.position.y,
+        .z = probe_center.z - ray.position.z,
+    });
+    const travel = plane_distance / ray_dot;
+    if (!std.math.isFinite(travel) or travel <= 0.0) return null;
+
+    const hit_point = rl.Vector3{
+        .x = ray.position.x + (ray.direction.x * travel),
+        .y = ray.position.y + (ray.direction.y * travel),
+        .z = ray.position.z + (ray.direction.z * travel),
+    };
+
+    var best_lane: ?usize = null;
+    var best_distance_sq = std.math.inf(f32);
+    for (bounds.min..bounds.max + 1) |lane| {
+        const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
+        const floor_y = loaded_track_preview.sampleFloorHeightAtGridPosition(global_row, lane, row_position) orelse 0.0;
+        const world_position = loaded_track_preview.worldPositionForLane(
+            lane_center,
+            row_position,
+            floor_y + 0.25,
+        );
+        const dx = world_position.x - hit_point.x;
+        const dy = world_position.y - hit_point.y;
+        const dz = world_position.z - hit_point.z;
+        const distance_sq = (dx * dx) + (dy * dy) + (dz * dz);
+        if (distance_sq < best_distance_sq) {
+            best_distance_sq = distance_sq;
+            best_lane = lane;
+        }
+    }
+    return best_lane;
 }
 
 fn triangleCountForObject(loaded_object: object.LoadedObject) usize {
