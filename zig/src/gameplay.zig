@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -296,6 +297,8 @@ const AttachmentFollowState = struct {
     progress: f32 = 0.0,
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
+    vertical_offset: f32 = 0.82,
+    cached_output_position: attachment_builders.Vec3 = .{},
 };
 
 pub const Runner = struct {
@@ -420,6 +423,18 @@ pub const Runner = struct {
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            if (self.currentAttachmentBuilt(preview)) |built| {
+                const position = attachment_builders.worldPositionForTemplate(
+                    &built.template,
+                    self.attachment_follow.progress,
+                    self.attachment_follow.source_row,
+                    self.attachment_follow.lateral_offset,
+                    self.attachment_follow.vertical_offset + y,
+                );
+                return .{ .x = position.x, .y = position.y, .z = position.z };
+            }
+        }
         const floor_y = preview.sampleFloorHeightAtGridPosition(
             self.current_global_row,
             self.resolved_lane_index,
@@ -573,8 +588,8 @@ pub const Runner = struct {
             }
         else
             returnAttachmentHint(sample.path_center_lane);
-        self.lane_center = if (self.movement_mode == .attachment and self.attachment_follow.active and sample.path_center_lane != null and sample.path_bounds != null)
-            self.attachmentTargetLaneCenter(sample.path_bounds.?, sample.path_center_lane.?)
+        self.lane_center = if (self.movement_mode == .attachment and self.attachment_follow.active)
+            self.attachment_follow.cached_output_lane_center
         else
             @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
         if (self.attachment_follow.active and self.movement_mode == .attachment) {
@@ -584,6 +599,11 @@ pub const Runner = struct {
 
     fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or self.finished) return;
+
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            self.advanceAttachmentFollow(preview);
+            return;
+        }
 
         const last_row = preview.total_rows - 1;
         const max_progress: f32 = 0.999;
@@ -641,11 +661,16 @@ pub const Runner = struct {
         const path_bounds = preview.pathBoundsForRow(row_location);
         if (path_bounds) |bounds| {
             path_center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-            if (self.movement_mode == .attachment and self.attachment_follow.active) {
-                const target_lane_center = self.attachmentTargetLaneCenter(bounds, path_center_lane.?);
-                const target_lane = @as(usize, @intFromFloat(@floor(target_lane_center - 0.5)));
-                resolved_lane_index = std.math.clamp(target_lane, traversable.min, traversable.max);
-            }
+        }
+
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            const target_lane_center = std.math.clamp(
+                self.attachment_follow.cached_output_lane_center,
+                @as(f32, @floatFromInt(traversable.min)) + 0.5,
+                @as(f32, @floatFromInt(traversable.max)) + 0.5,
+            );
+            const target_lane = @as(usize, @intFromFloat(@floor(target_lane_center - 0.5)));
+            resolved_lane_index = std.math.clamp(target_lane, traversable.min, traversable.max);
         }
 
         const cell = row_location.row.cells[resolved_lane_index];
@@ -736,7 +761,7 @@ pub const Runner = struct {
             },
             .attachment_entry => {
                 if (self.movement_mode != .attachment) {
-                    self.beginAttachmentFollow(sample);
+                    self.beginAttachmentFollow(preview, sample);
                 }
             },
             .ring => {},
@@ -788,6 +813,12 @@ pub const Runner = struct {
 
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
+        if (self.currentAttachmentBuilt(preview)) |built| {
+            if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
+                self.finishAttachmentFollow();
+                return;
+            }
+        }
         const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
         if (sample.path_center_lane != null) return;
 
@@ -1103,21 +1134,50 @@ pub const Runner = struct {
         };
     }
 
-    fn attachmentTargetLaneCenter(
-        self: *const Runner,
-        path_bounds: track.LaneBounds,
-        path_center_lane: f32,
-    ) f32 {
-        const min_lane_center = @as(f32, @floatFromInt(path_bounds.min)) + 0.5;
-        const max_lane_center = @as(f32, @floatFromInt(path_bounds.max)) + 0.5;
-        return std.math.clamp(
-            path_center_lane + self.attachment_follow.lateral_offset,
-            min_lane_center,
-            max_lane_center,
-        );
+    fn currentAttachmentBuilt(self: *const Runner, preview: *const track.LoadedLevelPreview) ?*const attachment_builders.BuiltAttachment {
+        if (!self.attachment_follow.active) return null;
+        return preview.builtAttachmentForSourceRow(self.attachment_follow.source_row);
     }
 
-    fn beginAttachmentFollow(self: *Runner, sample: RowSample) void {
+    fn laneCenterFromWorldX(preview: *const track.LoadedLevelPreview, world_x: f32) f32 {
+        const gameplay_width = @min(preview.max_width, 8);
+        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        return world_x + width_offset;
+    }
+
+    fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const built = self.currentAttachmentBuilt(preview) orelse return;
+        const position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            self.attachment_follow.progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        self.attachment_follow.cached_output_position = position;
+        self.row_position = position.z;
+        self.runtime_track_index = currentRowIndex(preview, self.row_position);
+        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.attachment_follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
+        self.lane_center = self.attachment_follow.cached_output_lane_center;
+        self.resolved_lane_index = preview.laneIndexAtWorldX(position.x);
+    }
+
+    fn advanceAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const built = self.currentAttachmentBuilt(preview) orelse {
+            self.syncRowPosition(preview);
+            return;
+        };
+        const sample_count: f32 = @floatFromInt(built.template.sample_count);
+        self.attachment_follow.progress = std.math.clamp(
+            self.attachment_follow.progress + self.movement_rate_scalar,
+            0.0,
+            sample_count,
+        );
+        self.updateAttachmentFollowPosition(preview);
+    }
+
+    fn beginAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, sample: RowSample) void {
         self.movement_mode = .attachment;
         self.attachment_path_name = sample.path_name;
         self.attachment_follow = .{
@@ -1129,7 +1189,9 @@ pub const Runner = struct {
             else
                 0.0,
             .cached_output_lane_center = self.lane_center,
+            .vertical_offset = 0.82,
         };
+        self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
         self.recent_event = .attachment_begin;
     }
@@ -1215,7 +1277,7 @@ fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, kind: RuntimeHa
 
 const TestFixture = struct {
     catalog: assets.Catalog,
-    level_definition: level.Definition,
+    level_definition: ?level.Definition,
     preview: track.LoadedLevelPreview,
 
     fn load(level_path: []const u8) !TestFixture {
@@ -1241,9 +1303,31 @@ const TestFixture = struct {
         };
     }
 
+    fn loadSegment(segment_path: []const u8) !TestFixture {
+        var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+        errdefer catalog.deinit();
+
+        const segment_entry = catalog.segment_entries[catalog.findSegmentIndex(segment_path).?];
+        var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+            std.testing.allocator,
+            &catalog,
+            segment_entry,
+            .{ .load_models = false },
+        );
+        errdefer preview.deinit();
+
+        return .{
+            .catalog = catalog,
+            .level_definition = null,
+            .preview = preview,
+        };
+    }
+
     fn deinit(self: *TestFixture) void {
         self.preview.deinit();
-        self.level_definition.deinit();
+        if (self.level_definition) |*level_definition| {
+            level_definition.deinit();
+        }
         self.catalog.deinit();
     }
 };
@@ -1741,7 +1825,6 @@ test "attachment follow preserves lateral offset instead of snapping to the path
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(target.lane)) + 0.5, runner.lane_center, 0.001);
     try std.testing.expectApproxEqAbs(
         (@as(f32, @floatFromInt(target.lane)) + 0.5) - target.path_center_lane,
         runner.attachment_follow.lateral_offset,
@@ -1749,6 +1832,42 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     );
     try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
     try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
+
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const centered = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        runner.attachment_follow.progress,
+        target.row,
+        0.0,
+        runner.attachment_follow.vertical_offset,
+    );
+    const width_offset = @as(f32, @floatFromInt(@min(fixture.preview.max_width, 8))) * 0.5;
+    const centered_lane_center = centered.x + width_offset;
+    try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment_follow.lateral_offset > 0.0);
+}
+
+test "standalone start segment attachment follow uses built template world height" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.active);
+
+    const world_position = runner.worldPosition(&fixture.preview, 0.0);
+    const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
+        runner.current_global_row,
+        runner.resolved_lane_index,
+        runner.row_position,
+    ) orelse 0.0;
+
+    try std.testing.expect(world_position.y > floor_height + 0.5);
+    try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {

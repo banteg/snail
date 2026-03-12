@@ -242,6 +242,7 @@ pub const AttachmentPose = struct {
     basis_right: Vec3,
     basis_up: Vec3,
     basis_forward: Vec3,
+    special_scalar: f32,
 };
 
 const VerticalLoopParams = struct {
@@ -417,6 +418,7 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
             .basis_right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
             .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
             .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+            .special_scalar = 0.0,
         };
     }
 
@@ -431,6 +433,7 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
             .basis_right = sample.basis_right,
             .basis_up = sample.basis_up,
             .basis_forward = sample.basis_forward,
+            .special_scalar = sample.special_scalar,
         };
     }
 
@@ -444,7 +447,39 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
         .basis_right = Vec3.normalize(Vec3.lerp(lhs.basis_right, rhs.basis_right, t)),
         .basis_up = Vec3.normalize(Vec3.lerp(lhs.basis_up, rhs.basis_up, t)),
         .basis_forward = Vec3.normalize(Vec3.lerp(lhs.basis_forward, rhs.basis_forward, t)),
+        .special_scalar = std.math.lerp(lhs.special_scalar, rhs.special_scalar, t),
     };
+}
+
+pub fn worldPositionForTemplate(
+    template: *const Template,
+    progress: f32,
+    source_row: usize,
+    lateral_offset: f32,
+    vertical_offset: f32,
+) Vec3 {
+    const pose = samplePoseAtProgress(template, progress);
+    const local_lateral = lateral_offset * pose.lateral_scale;
+    const centered_lateral = pose.center_x + local_lateral;
+    const base_row: f32 = @floatFromInt(source_row);
+
+    const surface_height = if (template.spec.family == .kind42)
+        kind42CrossSectionHeight(local_lateral, pose.special_scalar)
+    else
+        0.0;
+    const up_height = surface_height + vertical_offset;
+
+    return .{
+        .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * up_height),
+        .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * up_height),
+        .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * up_height),
+    };
+}
+
+fn kind42CrossSectionHeight(lateral_offset: f32, radius: f32) f32 {
+    const clamped_lateral = std.math.clamp(lateral_offset, -radius, radius);
+    if (radius <= 0.0001) return 0.0;
+    return radius - std.math.sqrt(@max(0.0, (radius * radius) - (clamped_lateral * clamped_lateral)));
 }
 
 fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
