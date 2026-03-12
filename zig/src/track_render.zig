@@ -282,6 +282,9 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
             .looptheloopt4,
             .looptheloopw,
             .loopbow,
+            .loopout,
+            .loopout3,
+            .loopoutbig,
             => drawOrdinaryAttachment(scene, built),
             else => {},
         }

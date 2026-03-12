@@ -262,6 +262,11 @@ const HumpDumpParams = struct {
     height_scalar: f32,
 };
 
+const LoopoutParams = struct {
+    radius: f32,
+    width_cells: u16,
+};
+
 pub const AuthoredPathRow = struct {
     global_row: usize,
     segment_index: usize,
@@ -428,6 +433,10 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .dump,
         .dumpsmall,
         => try buildHumpDumpTemplate(allocator, spec, humpDumpParams(spec.public_path)),
+        .loopout,
+        .loopout3,
+        .loopoutbig,
+        => try buildLoopoutTemplate(allocator, spec, loopoutParams(spec.public_path)),
         else => null,
     };
 }
@@ -742,6 +751,95 @@ fn humpDumpParams(public_path: PublicPath) HumpDumpParams {
     };
 }
 
+fn buildLoopoutTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: LoopoutParams,
+) !Template {
+    const dynamic_count: usize = @intFromFloat(@floor(params.radius * (2.0 * std.math.pi)));
+    const sample_count: usize = dynamic_count + 14;
+    const point_count: usize = sample_count + 1;
+    const start_flat_count: usize = 10;
+    const end_flat_count: usize = 4;
+    var samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    const start_x_base = (@as(f32, @floatFromInt(params.width_cells)) * 0.5) - 4.0;
+    const end_x_base = 4.0 - (@as(f32, @floatFromInt(params.width_cells)) * 0.5);
+    const backface_radius = params.radius + 0.49000001;
+
+    for (0..start_flat_count) |index| {
+        const row_offset: f32 = @floatFromInt(index);
+        const sample = &samples[index];
+        sample.center_x = start_x_base - (row_offset * 0.11111111 * 0.30000001);
+        sample.position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = row_offset,
+        };
+    }
+
+    const dynamic_count_f: f32 = @floatFromInt(dynamic_count);
+    const start_x = samples[0].center_x;
+    const end_x = (1.0 * 0.30000001) + end_x_base;
+    for (0..dynamic_count) |step| {
+        const step_f: f32 = @floatFromInt(step);
+        const theta = (step_f * 2.0 * std.math.pi) / dynamic_count_f;
+        const sample = &samples[start_flat_count + step];
+        const linear_x = std.math.lerp(start_x, end_x, step_f / dynamic_count_f);
+        sample.center_x = linear_x + std.math.sin((theta * 0.5) + 4.712389) * 0.30000001;
+        sample.position = .{
+            .x = 0.0,
+            .y = (std.math.cos(theta) * params.radius) - params.radius,
+            .z = (std.math.sin(theta) * params.radius) + 10.0,
+        };
+        sample.special_scalar = backface_radius;
+    }
+
+    for (0..end_flat_count) |offset| {
+        const index = dynamic_count + start_flat_count + offset;
+        const row_offset: f32 = @floatFromInt(offset);
+        const sample = &samples[index];
+        sample.center_x = ((1.0 - (row_offset * 0.33333334)) * 0.30000001) + end_x_base;
+        sample.position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = @floatFromInt(offset + 10),
+        };
+    }
+
+    samples[point_count - 1] = samples[dynamic_count + start_flat_count + end_flat_count - 1];
+    finalizeTemplateSamples(samples);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = 25,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = params.width_cells,
+        },
+        .width_cells = params.width_cells,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn loopoutParams(public_path: PublicPath) LoopoutParams {
+    return switch (public_path) {
+        .loopout => .{ .radius = 3.0, .width_cells = 4 },
+        .loopout3 => .{ .radius = 3.0, .width_cells = 3 },
+        .loopoutbig => .{ .radius = 5.0, .width_cells = 4 },
+        else => unreachable,
+    };
+}
+
 fn finalizeTemplateSamples(samples: []TemplateSample) void {
     if (samples.len == 0) return;
     var last_forward = Vec3{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -847,7 +945,17 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .slalom => .{ .public_path = public_path, .family = .slalom, .status = .scaffold },
         .slalombig => .{ .public_path = public_path, .family = .slalombig, .status = .partial, .runtime_kind = 23 },
         .worm => .{ .public_path = public_path, .family = .worm, .status = .scaffold },
-        .loopout, .loopout3, .loopoutbig => .{ .public_path = public_path, .family = .loopout, .status = .partial },
+        .loopout, .loopout3, .loopoutbig => blk: {
+            const params = loopoutParams(public_path);
+            break :blk .{
+                .public_path = public_path,
+                .family = .loopout,
+                .status = .partial,
+                .runtime_kind = 25,
+                .sample_count = @as(u16, @intFromFloat(@floor(params.radius * (2.0 * std.math.pi)))) + 14,
+                .subdivision_count = params.width_cells,
+            };
+        },
         .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial },
         .snake => .{ .public_path = public_path, .family = .snake, .status = .partial },
         .warp, .halfpipe => .{ .public_path = public_path, .family = .kind42, .status = .partial, .runtime_kind = 42, .sample_count = 66, .subdivision_count = 8 },
@@ -1101,5 +1209,32 @@ test "build hump and dump family templates from recovered shared constructor par
         } else {
             try std.testing.expect(mid.position.y < -0.1);
         }
+    }
+}
+
+test "build loopout family templates from recovered public slot params" {
+    const cases = [_]struct {
+        path: PublicPath,
+        sample_count: u16,
+        width_cells: u16,
+        radius: f32,
+    }{
+        .{ .path = .loopout, .sample_count = 32, .width_cells = 4, .radius = 3.0 },
+        .{ .path = .loopout3, .sample_count = 32, .width_cells = 3, .radius = 3.0 },
+        .{ .path = .loopoutbig, .sample_count = 45, .width_cells = 4, .radius = 5.0 },
+    };
+
+    for (cases) |case| {
+        const spec = specForPublicPath(case.path);
+        var template = (try buildTemplate(std.testing.allocator, spec)).?;
+        defer template.deinit(std.testing.allocator);
+
+        try std.testing.expectEqual(@as(u8, 25), template.spec.runtime_kind.?);
+        try std.testing.expectEqual(case.sample_count, template.sample_count);
+        try std.testing.expectEqual(case.width_cells, template.width_cells);
+        try std.testing.expect(template.samples[10].position.y <= 0.0);
+
+        const mid = samplePoseAtProgress(&template, 10.0 + (case.radius * std.math.pi));
+        try std.testing.expect(mid.position.y < -(case.radius * 1.5));
     }
 }
