@@ -274,6 +274,8 @@ const completion_cutscene_duration_ticks: u16 = 72;
 const death_cutscene_duration_ticks: u16 = 72;
 const death_resolution_duration_ticks: u16 = 120;
 const attachment_side_exit_margin: f32 = 0.3;
+const supertramp_launch_velocity_scale: f32 = 12.0;
+const supertramp_launch_gravity: f32 = 18.0;
 
 const RowSample = struct {
     global_row: usize,
@@ -303,6 +305,15 @@ const AttachmentFollowState = struct {
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
+const LaunchState = struct {
+    active: bool = false,
+    world_x: f32 = 0.0,
+    height: f32 = 0.0,
+    vertical_velocity: f32 = 0.0,
+    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+};
+
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
     lane_index: usize = 0,
@@ -329,6 +340,7 @@ pub const Runner = struct {
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
     attachment_follow: AttachmentFollowState = .{},
+    launch: LaunchState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
     path_center_lane: ?f32 = null,
@@ -415,6 +427,9 @@ pub const Runner = struct {
             self.updatePhaseController();
         }
         self.endAttachmentIfNeeded(preview);
+        if (!self.paused and self.phase == .active) {
+            self.updateLaunch(preview, delta_seconds);
+        }
         self.refreshSample(preview);
         if (!self.paused and self.phase == .active) {
             self.updateFallEntry(preview);
@@ -436,6 +451,18 @@ pub const Runner = struct {
                 );
                 return .{ .x = position.x, .y = position.y, .z = position.z };
             }
+        }
+        if (self.launch.active) {
+            const floor_y = preview.sampleFloorHeightAtGridPosition(
+                self.current_global_row,
+                self.resolved_lane_index,
+                self.row_position,
+            ) orelse 0.0;
+            return .{
+                .x = self.launch.world_x,
+                .y = floor_y + self.launch.height + y,
+                .z = self.row_position,
+            };
         }
         const floor_y = preview.sampleFloorHeightAtGridPosition(
             self.current_global_row,
@@ -462,6 +489,13 @@ pub const Runner = struct {
                 };
             }
         }
+        if (self.launch.active) {
+            return .{
+                .x = self.launch.basis_forward.x,
+                .y = self.launch.basis_forward.y,
+                .z = self.launch.basis_forward.z,
+            };
+        }
         return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
     }
 
@@ -481,6 +515,13 @@ pub const Runner = struct {
                     .z = pose.basis_up.z,
                 };
             }
+        }
+        if (self.launch.active) {
+            return .{
+                .x = self.launch.basis_up.x,
+                .y = self.launch.basis_up.y,
+                .z = self.launch.basis_up.z,
+            };
         }
         return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
     }
@@ -573,6 +614,7 @@ pub const Runner = struct {
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
         if (lane_delta == 0) return;
+        if (self.launch.active) return;
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             self.attachment_follow.lateral_offset += @floatFromInt(lane_delta);
             return;
@@ -1072,6 +1114,7 @@ pub const Runner = struct {
     // hazards like slug contact.
     fn updateFallEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode == .attachment) return;
+        if (self.launch.active) return;
         if (self.jetpack.active) return;
         if (self.current_annotation == .no_fall) return;
         if (!rowHasAnyFloor(preview, self.current_global_row)) return;
@@ -1106,6 +1149,7 @@ pub const Runner = struct {
     fn beginDeathCutscene(self: *Runner, cause: DeathCause) void {
         if (self.phase != .active or self.finished) return;
         self.paused = false;
+        self.launch = .{};
         self.clearAttachmentFollow();
         self.phase = .{
             .death_cutscene = .{
@@ -1118,6 +1162,7 @@ pub const Runner = struct {
     fn beginDeathResolution(self: *Runner, cause: DeathCause) void {
         if (self.phase != .active or self.finished) return;
         self.paused = false;
+        self.launch = .{};
         self.clearAttachmentFollow();
         self.phase = .{
             .death_resolution = .{
@@ -1202,6 +1247,10 @@ pub const Runner = struct {
         preview: *const track.LoadedLevelPreview,
         built: *const attachment_builders.BuiltAttachment,
     ) void {
+        if (built.template.spec.family == .supertramp) {
+            self.commitSupertrampNaturalExit(preview, built);
+            return;
+        }
         const exit_world_position = attachment_builders.worldPositionForTemplate(
             &built.template,
             @floatFromInt(built.template.sample_count),
@@ -1215,7 +1264,54 @@ pub const Runner = struct {
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
         self.resolved_lane_index = self.lane_index;
-        self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
+        self.lane_center = laneCenterFromWorldX(preview, exit_world_position.x);
+    }
+
+    fn commitSupertrampNaturalExit(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        const sample_count_f: f32 = @floatFromInt(built.template.sample_count);
+        const final_progress = @max(0.0, sample_count_f - 0.001);
+        const end_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            final_progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        const end_position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            sample_count_f,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        const last_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, final_progress);
+        const launch_factor = std.math.clamp(self.movement_rate_scalar * last_delta_length, 0.0, 1.0);
+        const exit_world_x = self.attachment_follow.cached_output_position.x;
+        const exit_lane = preview.laneIndexAtWorldX(exit_world_x);
+        const exit_floor_y = preview.sampleFloorHeightAtGridPosition(
+            currentRowIndex(preview, end_position.z),
+            exit_lane,
+            end_position.z,
+        ) orelse 0.0;
+
+        self.row_position = end_position.z + built.template.exit_tail_extra + self.attachment_follow.exit_overshoot;
+        self.runtime_track_index = currentRowIndex(preview, self.row_position);
+        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.lane_index = exit_lane;
+        self.resolved_lane_index = exit_lane;
+        self.lane_center = laneCenterFromWorldX(preview, exit_world_x);
+        self.launch = .{
+            .active = true,
+            .world_x = exit_world_x,
+            .height = @max(0.0, end_position.y - exit_floor_y),
+            .vertical_velocity = launch_factor * supertramp_launch_velocity_scale,
+            .basis_forward = end_pose.basis_forward,
+            .basis_up = end_pose.basis_up,
+        };
     }
 
     fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
@@ -1245,7 +1341,7 @@ pub const Runner = struct {
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(clamped_world_x);
         self.resolved_lane_index = self.lane_index;
-        self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
+        self.lane_center = laneCenterFromWorldX(preview, clamped_world_x);
     }
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1280,6 +1376,7 @@ pub const Runner = struct {
     }
 
     fn beginAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, sample: RowSample) void {
+        self.launch = .{};
         self.movement_mode = .attachment;
         self.attachment_path_name = sample.path_name;
         self.attachment_follow = .{
@@ -1309,6 +1406,19 @@ pub const Runner = struct {
         self.clearAttachmentFollow();
         self.counters.attachments_completed += 1;
         self.recent_event = .attachment_end;
+    }
+
+    fn updateLaunch(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        if (!self.launch.active) return;
+
+        self.launch.height = @max(0.0, self.launch.height + (self.launch.vertical_velocity * delta_seconds));
+        self.launch.vertical_velocity -= supertramp_launch_gravity * delta_seconds;
+        self.lane_center = laneCenterFromWorldX(preview, self.launch.world_x);
+        self.lane_index = preview.laneIndexAtWorldX(self.launch.world_x);
+        self.resolved_lane_index = self.lane_index;
+
+        if (self.launch.height > 0.0 or self.launch.vertical_velocity > 0.0) return;
+        self.launch = .{};
     }
 
     pub fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2015,6 +2125,37 @@ test "attachment natural exit carries overshoot past the template end" {
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(target.row)) + sample_count + built.template.exit_tail_extra);
+}
+
+test "supertramp natural exit enters a launch state above the floor" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/SUPERTRAMP.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    var guard: usize = 0;
+    while (runner.movement_mode == .attachment and guard < 256) : (guard += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.launch.active);
+
+    const launched_position = runner.worldPosition(&fixture.preview, 0.0);
+    const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
+        runner.current_global_row,
+        runner.resolved_lane_index,
+        runner.row_position,
+    ) orelse 0.0;
+    try std.testing.expect(launched_position.y > floor_height + 0.5);
+
+    const launch_forward = runner.worldForward(&fixture.preview);
+    try std.testing.expect(launch_forward.y > 0.1);
 }
 
 test "attachment follow side-exits when lateral drift exceeds template width" {
