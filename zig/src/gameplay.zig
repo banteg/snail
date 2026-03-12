@@ -1546,16 +1546,30 @@ pub const Runner = struct {
         if (end_local.y > attachment_entry_end_y_tolerance) return null;
         if (@abs(start_local.z) > attachment_entry_local_z_tolerance and @abs(end_local.z) > attachment_entry_local_z_tolerance) return null;
 
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, end_progress);
-        const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
-            end_local.x / pose.lateral_scale
+        const crossing_denominator = start_local.y - end_local.y;
+        const crossing_t = if (@abs(crossing_denominator) <= 0.0001)
+            1.0
         else
-            0.0;
+            std.math.clamp(start_local.y / crossing_denominator, 0.0, 1.0);
+        const crossing_progress = std.math.lerp(start_progress, end_progress, crossing_t);
+        const crossing_local_x = std.math.lerp(start_local.x, end_local.x, crossing_t);
+        const crossing_local_z = std.math.lerp(start_local.z, end_local.z, crossing_t);
+        const progress = std.math.clamp(
+            crossing_progress + crossing_local_z,
+            0.0,
+            @as(f32, @floatFromInt(built.template.sample_count)),
+        );
+
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
+        const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
+            crossing_local_x / pose.lateral_scale
+        else
+            crossing_local_x;
         const local_lateral = @abs(lateral_offset * pose.lateral_scale);
         if (local_lateral > half_width + attachment_side_exit_margin) return null;
 
         return .{
-            .progress = std.math.clamp(end_progress + end_local.z, 0.0, @as(f32, @floatFromInt(built.template.sample_count))),
+            .progress = progress,
             .lateral_offset = lateral_offset,
         };
     }
