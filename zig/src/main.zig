@@ -60,6 +60,7 @@ const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
+const gameplay_salt_model_path = "X/SALT.X2";
 const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
     "SPRITES/SLUG001.TGA",
@@ -1023,6 +1024,7 @@ const AppState = struct {
     current_gameplay_turbo_animation: ?xanim.Player = null,
     current_gameplay_barrier_object: ?object.LoadedObject = null,
     current_gameplay_lazer_object: ?object.LoadedObject = null,
+    current_gameplay_salt_model: ?x2.Uploaded = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
@@ -1174,6 +1176,7 @@ const AppState = struct {
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
         self.unloadGameplayLazer();
+        self.unloadGameplaySalt();
         self.unloadGameplaySprites();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
@@ -1355,6 +1358,13 @@ const AppState = struct {
         }
     }
 
+    fn unloadGameplaySalt(self: *AppState) void {
+        if (self.current_gameplay_salt_model) |*model| {
+            model.deinit();
+            self.current_gameplay_salt_model = null;
+        }
+    }
+
     fn unloadGameplaySprites(self: *AppState) void {
         self.current_gameplay_sprites.unload();
     }
@@ -1406,6 +1416,19 @@ const AppState = struct {
         const entry_index = self.catalog.findObjectIndex(gameplay_lazer_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
         self.current_gameplay_lazer_object = try object.LoadedObject.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            true,
+        );
+    }
+
+    fn reloadGameplaySalt(self: *AppState) !void {
+        self.unloadGameplaySalt();
+
+        const entry_index = self.catalog.findModelIndex(gameplay_salt_model_path) orelse return;
+        const entry = self.catalog.model_entries[entry_index];
+        self.current_gameplay_salt_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
@@ -4009,6 +4032,7 @@ const AppState = struct {
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
         self.unloadGameplayLazer();
+        self.unloadGameplaySalt();
         self.unloadGameplaySprites();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
@@ -4029,6 +4053,7 @@ const AppState = struct {
                     try self.reloadGameplayTurbo();
                     try self.reloadGameplayBarrier();
                     try self.reloadGameplayLazer();
+                    try self.reloadGameplaySalt();
                     try self.reloadGameplaySprites();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
@@ -6704,6 +6729,27 @@ fn drawGameplayGarbageActor(state: *const AppState, preview: *const track.Loaded
 }
 
 fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    if (state.current_gameplay_salt_model) |*model| {
+        const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+        const position = preview.worldPositionForLane(
+            @as(f32, @floatFromInt(lane_index)) + 0.5,
+            @as(f32, @floatFromInt(global_row)),
+            floor_height + 0.18,
+        );
+        const right: rl.Vector3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+        const forward: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+        const world_transform = modelTransformFromBasis(position, right, up, forward);
+        const local_offset = rl.Matrix.translate(
+            -model.bounds.center.x,
+            -model.bounds.center.y,
+            -model.bounds.center.z,
+        );
+        const scale = rl.Matrix.scale(0.46, 0.46, 0.46);
+        model.drawEx(world_transform.multiply(local_offset).multiply(scale));
+        return;
+    }
+
     const slot = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.44);
     drawGameplayBillboardTextureRect(
