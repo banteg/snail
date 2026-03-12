@@ -203,7 +203,7 @@ This matches the follow-state code path:
 | 25-27 | `LOOPOUT*` | `sub_41c5f0` | `LOOPOUT`, `LOOPOUT3`, `LOOPOUTBIG` |
 | 28 | `SWEEP` | `sub_422c00` | |
 | 29 | `SNAKE` | `sub_423580` | |
-| 30 | `WARP` | `sub_429b20` | builds one nonlinear kind-`42` family branch and emits strip geometry through `compute_warp_attachment_transform` |
+| 30 | `WARP` | `sub_429b20`? | no longer safe as a direct public-name mapping; `sub_429b20` is now treated as one nonlinear kind-`42` constructor branch, and Android strongly suggests the same constructor shape as `cRPath::BuildHalfPipe` |
 | 31 | `SUPERTRAMP` | `sub_423f10` | both halves are built explicitly |
 | 32 | `SLALOMDOUBLE` | `sub_425050` | |
 | 33-35 | `P0`, `P1`, `P2` | `sub_425a40` | |
@@ -231,6 +231,8 @@ The March 10 Windows attachment package independently corroborated a few of thes
 
 - named `Path=` rows choose hardcoded template pairs rather than archive-defined path files
 - most names are family variants built from one constructor plus an X-mirror pass
-- `WARP` now has a strong constructor candidate at `sub_429b20`
+- `sub_429b20` remains the strongest recovered constructor for one nonlinear kind-`42` family branch
+- Android's named `cRPath::BuildHalfPipe` is a strong structural match for that constructor body
+- Android also has a neighboring `cRPath::BuildHalfPole`, and `cRPathFollowGoldy::Traverse` special-cases both `HalfPipePos` and `HalfPolePos`, so the nonlinear attachment family is at least split into those two named siblings on that port
 - `HALFPIPE` is no longer a purely static gap: it is now proven live as runtime kind `42`, but it still lacks a directly recovered constructor body
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step

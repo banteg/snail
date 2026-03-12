@@ -464,8 +464,8 @@
     },
     {
       "address": "0x429b20",
-      "name": "initialize_warp_path_template_pair",
-      "description": "Builds the nonlinear kind-42 attachment template family used by Path=Warp. The constructor seeds sample_count=66, writes the special per-sample warp phase scalar at +0xa0, and reuses compute_warp_attachment_transform while emitting the generated strip mesh."
+      "name": "initialize_kind42_path_template_pair",
+      "description": "Builds one nonlinear kind-42 attachment template branch. The constructor seeds sample_count=66, writes the special per-sample scalar at +0xa0, and emits a generated strip mesh through the shared kind-42 transform helper. Android's cRPath::BuildHalfPipe is a strong structural match, but the exact Windows public-path mapping remains open."
     },
     {
       "address": "0x42a540",
@@ -477,8 +477,8 @@
     },
     {
       "address": "0x42b920",
-      "name": "compute_warp_attachment_transform",
-      "description": "Computes the nonlinear temporary transform used by attachment kind 42 during projection and live follow, deriving a warp-like rotation and endpoint offset from the sample's special phase scalar."
+      "name": "compute_kind42_attachment_transform",
+      "description": "Computes the nonlinear temporary transform used by attachment kind 42 during projection, live follow, and constructor-side strip generation. Android's cRPath::HalfPipePos is a strong structural match, but the exact Windows public-path naming for this family remains open."
     },
     {
       "address": "0x42ba80",

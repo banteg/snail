@@ -130,7 +130,9 @@ The newer Windows-only package also tightened two family reads:
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family
 - kind `42` is the special nonlinear family used by both projection and live follow
 
-That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field shared by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only.
+That distinction matters because path-table slot `30` is the authored `WARP` name, path-table slot `42` is the authored `HALFPIPE` name, and runtime kind `42` is a separate field shared by at least part of that live family. The constructor sweep still strongly matches `sub_429b20` to one kind-`42` constructor branch, but kind `42` is no longer safely describable as `WARP`-only. Android now tightens that further: its named `cRPath::BuildHalfPipe` and `cRPath::HalfPipePos` are strong structural matches for the Windows kind-`42` constructor and transform helper.
+
+Android also shows that the nonlinear family is not monolithic there: `cRPathFollowGoldy::Traverse` has dedicated `HalfPipePos` and `HalfPolePos` branches, and the same binary exposes both `cRPath::BuildHalfPipe` and `cRPath::BuildHalfPole`. That does not prove the exact Windows public-name mapping yet, but it does strongly suggest the Windows nonlinear branch is at least a halfpipe/halfpole-style family rather than a single `WARP`-only path.
 
 Important caveat for this specific March 8 capture:
 
@@ -215,7 +217,7 @@ What it did **not** show:
 
 - no live attachment install or follow event for public path `HALFPIPE`
 - no live attachment template with runtime kind `42`
-- no live `WARP` follow despite `compute_warp_attachment_transform` firing during startup or constructor-side work
+- no live `WARP` follow despite the shared kind-`42` transform helper firing during startup or constructor-side work
 
 So the current strongest read is:
 

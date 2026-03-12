@@ -87,7 +87,7 @@ For the narrower path oracle, the current hook set is:
 - `0x420c40` `begin_track_attachment_follow_state`
 - `0x420cb0` `update_track_attachment_follow_state`
 - `0x43af60` `end_track_attachment_follow_state`
-- `0x42b920` `compute_warp_attachment_transform`
+- `0x42b920` `compute_kind42_attachment_transform`
 
 Important payload notes for the current script:
 
