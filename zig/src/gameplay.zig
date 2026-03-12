@@ -1440,6 +1440,7 @@ pub const Runner = struct {
         built: *const attachment_builders.BuiltAttachment,
         global_row: usize,
     ) ?InstalledAttachmentEntry {
+        if (global_row != built.row.global_row) return null;
         const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
         const row_fraction = std.math.clamp(
             self.row_position - @as(f32, @floatFromInt(global_row)),
@@ -2290,6 +2291,33 @@ test "installed attachment entry respects template width" {
         .{
             .row = target.row,
             .lane = outside_lane,
+        },
+    );
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+}
+
+test "installed attachment entry only begins on the source row" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const later_row = target.row + 1;
+    const built_index = for (fixture.preview.attachment_scaffold.built_attachments, 0..) |built, index| {
+        if (built.row.global_row == target.row) break index;
+    } else unreachable;
+    fixture.preview.attachment_scaffold.installed_attachment_rows[later_row] = built_index;
+
+    var runner = Runner.init(&fixture.preview);
+    primeRunnerBeforeRow(
+        &runner,
+        &fixture.preview,
+        .{
+            .row = later_row,
+            .lane = 4,
         },
     );
 
