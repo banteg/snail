@@ -86,6 +86,15 @@ const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
 const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
 const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
 const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
+const gameplay_turbo_fire_sound_path = "SFX2/TURBOFIRE1.OGG";
+const gameplay_laser_sound_path = "SFX2/LASER1.OGG";
+const gameplay_rocket_sound_path = "SFX2/ROCKET1.OGG";
+const gameplay_heart_sound_path = "SFX2/HEART.OGG";
+const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
+const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
+const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
+const gameplay_impact_a_sound_path = "SFX2/ASTEROIDIMPACT1.OGG";
+const gameplay_impact_b_sound_path = "SFX2/ASTEROIDIMPACT2.OGG";
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -264,6 +273,27 @@ const GameplaySpriteArt = struct {
     }
 };
 
+const GameplaySoundFx = struct {
+    turbo_fire: ?assets.LoadedSound = null,
+    laser: ?assets.LoadedSound = null,
+    rocket: ?assets.LoadedSound = null,
+    heart: ?assets.LoadedSound = null,
+    jetpack: ?assets.LoadedSound = null,
+    slow_ring: ?assets.LoadedSound = null,
+    invincible: ?assets.LoadedSound = null,
+    impact_a: ?assets.LoadedSound = null,
+    impact_b: ?assets.LoadedSound = null,
+
+    fn unload(self: *GameplaySoundFx) void {
+        inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
+            if (@field(self, field_name)) |*sound| {
+                sound.unload();
+                @field(self, field_name) = null;
+            }
+        }
+    }
+};
+
 const RouteMapArt = struct {
     logo: ?assets.LoadedTexture = null,
     border: ?assets.LoadedTexture = null,
@@ -387,6 +417,25 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
 
     return art;
+}
+
+fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Catalog, audio_ready: bool) !GameplaySoundFx {
+    if (!audio_ready) return .{};
+
+    var sound_fx = GameplaySoundFx{};
+    errdefer sound_fx.unload();
+
+    sound_fx.turbo_fire = try catalog.loadSoundByPath(allocator, gameplay_turbo_fire_sound_path);
+    sound_fx.laser = try catalog.loadSoundByPath(allocator, gameplay_laser_sound_path);
+    sound_fx.rocket = try catalog.loadSoundByPath(allocator, gameplay_rocket_sound_path);
+    sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
+    sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
+    sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
+    sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
+    sound_fx.impact_a = try catalog.loadSoundByPath(allocator, gameplay_impact_a_sound_path);
+    sound_fx.impact_b = try catalog.loadSoundByPath(allocator, gameplay_impact_b_sound_path);
+
+    return sound_fx;
 }
 
 const ResultReturnTarget = enum {
@@ -1017,6 +1066,7 @@ const AppState = struct {
     options_sound_display_value: f32 = 0.0,
     options_music_display_value: f32 = 0.0,
     current_sound: ?assets.LoadedSound = null,
+    current_voice_sound: ?assets.LoadedSound = null,
     current_music: ?assets.LoadedMusic = null,
     current_model: ?x2.Uploaded = null,
     current_animation: ?xanim.Player = null,
@@ -1036,6 +1086,7 @@ const AppState = struct {
     current_gameplay_weapon_top_model: ?x2.Uploaded = null,
     current_gameplay_invincible_model: ?x2.Uploaded = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
+    current_gameplay_sound_fx: GameplaySoundFx = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -1075,6 +1126,8 @@ const AppState = struct {
         errdefer frontend_widget_art.unload();
         var frontend_sound_fx = try loadFrontendSoundFx(allocator, &catalog, audio_ready);
         errdefer frontend_sound_fx.unload();
+        var gameplay_sound_fx = try loadGameplaySoundFx(allocator, &catalog, audio_ready);
+        errdefer gameplay_sound_fx.unload();
         var slider_art = try loadSliderArt(allocator, &catalog);
         errdefer slider_art.unload();
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
@@ -1120,6 +1173,7 @@ const AppState = struct {
             .frontend_cursor_texture = frontend_cursor_texture,
             .frontend_widget_art = frontend_widget_art,
             .frontend_sound_fx = frontend_sound_fx,
+            .current_gameplay_sound_fx = gameplay_sound_fx,
             .slider_art = slider_art,
             .route_map_art = route_map_art,
             .galaxy_names = galaxy_names,
@@ -1189,6 +1243,7 @@ const AppState = struct {
         self.unloadGameplaySalt();
         self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
+        self.unloadGameplaySoundFx();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -1202,6 +1257,7 @@ const AppState = struct {
             self.current_text_script = null;
         }
 
+        self.stopVoicePlayback();
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
@@ -1403,6 +1459,10 @@ const AppState = struct {
         self.current_gameplay_sprites.unload();
     }
 
+    fn unloadGameplaySoundFx(self: *AppState) void {
+        self.current_gameplay_sound_fx.unload();
+    }
+
     fn reloadGameplayTurbo(self: *AppState) !void {
         self.unloadGameplayTurbo();
 
@@ -1518,6 +1578,11 @@ const AppState = struct {
     fn reloadGameplaySprites(self: *AppState) !void {
         self.unloadGameplaySprites();
         self.current_gameplay_sprites = try loadGameplaySpriteArt(self.allocator, &self.catalog);
+    }
+
+    fn reloadGameplaySoundFx(self: *AppState) !void {
+        self.unloadGameplaySoundFx();
+        self.current_gameplay_sound_fx = try loadGameplaySoundFx(self.allocator, &self.catalog, self.audio_ready);
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
@@ -2398,7 +2463,9 @@ const AppState = struct {
         if (self.game_phase == .level) {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
+                    const previous_runner = runner.*;
                     runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                    self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
                 }
             }
             if (self.current_gameplay_turbo_animation) |*animation| {
@@ -2422,6 +2489,40 @@ const AppState = struct {
                     },
                 }
             }
+        }
+    }
+
+    fn playGameplayRunnerAudio(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
+        if (!self.audio_ready) return;
+
+        if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
+            const fired_sound = switch (current.weapon_level) {
+                0 => self.current_gameplay_sound_fx.turbo_fire,
+                1 => self.current_gameplay_sound_fx.laser,
+                else => self.current_gameplay_sound_fx.rocket,
+            };
+            self.playGameplayEffect(fired_sound);
+        }
+        if (current.counters.health_pickups > previous.counters.health_pickups) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.heart);
+        }
+        if (current.counters.jetpack_pickups > previous.counters.jetpack_pickups) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
+        }
+        if (current.slow_ticks > previous.slow_ticks) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
+        }
+        if (current.invincible_ticks > previous.invincible_ticks) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.invincible);
+        }
+        if (current.counters.garbage_hits > previous.counters.garbage_hits) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_a);
+        }
+        if (current.counters.salt_hits > previous.counters.salt_hits) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_b);
+        }
+        if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_b);
         }
     }
 
@@ -3103,8 +3204,17 @@ const AppState = struct {
         self.level_prompt_queue.clear();
     }
 
+    fn isTutorialGameplay(self: *const AppState) bool {
+        if (self.active_frontend_mode == .tutorial) return true;
+        const loaded_level = self.current_level orelse return false;
+        return std.mem.eql(u8, loaded_level.name, "Snail Mail 101");
+    }
+
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
         const message = segment_entry.message orelse return;
+        if (self.isTutorialGameplay()) {
+            self.level_prompt_queue.clear();
+        }
         self.level_prompt_queue.enqueue(message, level_prompt.durationTicks(segment_entry.duration));
     }
 
@@ -3496,6 +3606,10 @@ const AppState = struct {
 
     fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
+            .level, .pause_menu => {},
+            else => self.stopVoicePlayback(),
+        }
+        switch (self.game_phase) {
             .boot => {
                 self.stopAudioPreview();
                 self.active_level_segment_index = null;
@@ -3648,6 +3762,20 @@ const AppState = struct {
         rl.playSound(self.current_sound.?.sound);
     }
 
+    fn playVoiceByPath(self: *AppState, path: []const u8) !void {
+        if (!self.audio_ready) return;
+        self.stopVoicePlayback();
+        self.current_voice_sound = try self.catalog.loadSoundByPath(self.allocator, path);
+        self.applyAudioConfigVolumes();
+        rl.playSound(self.current_voice_sound.?.sound);
+    }
+
+    fn playGameplayEffect(self: *AppState, sound: ?assets.LoadedSound) void {
+        if (!self.audio_ready) return;
+        const loaded = sound orelse return;
+        rl.playSound(loaded.sound);
+    }
+
     fn syncActiveLevelSegment(self: *AppState, replay_sample_on_match: bool) !void {
         const loaded_level = self.current_level orelse {
             self.active_level_segment_index = null;
@@ -3692,7 +3820,11 @@ const AppState = struct {
 
         if (segment_changed or replay_sample_on_match) {
             if (segment_entry.sample) |sample_path| {
-                try self.playSoundByPath(sample_path);
+                if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
+                    try self.playVoiceByPath(sample_path);
+                } else {
+                    try self.playSoundByPath(sample_path);
+                }
             }
         }
     }
@@ -3811,11 +3943,19 @@ const AppState = struct {
         if (self.current_sound) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
+        if (self.current_voice_sound) |sound| {
+            rl.setSoundVolume(sound.sound, sound_volume);
+        }
         if (self.frontend_sound_fx.highlight) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
         if (self.frontend_sound_fx.select) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
+        }
+        inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
+            if (@field(self.current_gameplay_sound_fx, field_name)) |sound| {
+                rl.setSoundVolume(sound.sound, sound_volume);
+            }
         }
         if (self.current_music) |music| {
             rl.setMusicVolume(music.music, music_volume);
@@ -4031,6 +4171,13 @@ const AppState = struct {
         }
     }
 
+    fn stopVoicePlayback(self: *AppState) void {
+        if (self.current_voice_sound) |*sound| {
+            sound.unload();
+            self.current_voice_sound = null;
+        }
+    }
+
     fn reloadTexture(self: *AppState) !void {
         if (self.current_texture) |*texture| {
             texture.unload();
@@ -4114,6 +4261,8 @@ const AppState = struct {
         self.unloadGameplaySalt();
         self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
+        self.unloadGameplaySoundFx();
+        self.stopVoicePlayback();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
@@ -4136,6 +4285,8 @@ const AppState = struct {
                     try self.reloadGameplaySalt();
                     try self.reloadGameplayActorModels();
                     try self.reloadGameplaySprites();
+                    try self.reloadGameplaySoundFx();
+                    self.applyAudioConfigVolumes();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(

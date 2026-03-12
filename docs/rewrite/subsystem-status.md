@@ -197,8 +197,9 @@ Implemented now:
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
-- authored tutorial/message prompts now use compact stacked gameplay tip cards, with up to three timed entries active at once instead of the old footer debug text block or the earlier invented Turbo speaker panel
+- authored tutorial/message prompts now use a gameplay-facing Turbo tip panel with one active tutorial tip at a time instead of the old footer debug text block or the earlier invented stacked-card behavior
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
+- tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 
 Still missing or approximate:
 
@@ -226,6 +227,7 @@ Implemented now:
 - live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, parcels, and `=` turret rows instead of leaving them as logic-only counters or debug markers
 - salt now uses the shipped `X/SALT.X2` model path, while slug and garbage still use sprite-based presentation that matches the recovered asset split better than the earlier generic placeholders
 - Turbo now carries visible gameplay weapon mounts and an invincible shell using the shipped `BLASTERLEFT`, `BLASTERRIGHT`, `BLASTERTOP`, and `INVINCIBLE` model families
+- gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
