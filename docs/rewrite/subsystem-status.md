@@ -223,7 +223,9 @@ Implemented now:
 - deterministic parcel, ring, health, jetpack, slug, garbage, and salt gameplay counters
 - authored and ambient garbage/salt seeding into an 8-row live strip
 - row-event and prompt metadata surface into the default level path
-- live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, and parcels instead of leaving them as logic-only counters or debug markers
+- live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, parcels, and `=` turret rows instead of leaving them as logic-only counters or debug markers
+- salt now uses the shipped `X/SALT.X2` model path, while slug and garbage still use sprite-based presentation that matches the recovered asset split better than the earlier generic placeholders
+- Turbo now carries visible gameplay weapon mounts and an invincible shell using the shipped `BLASTERLEFT`, `BLASTERRIGHT`, `BLASTERTOP`, and `INVINCIBLE` model families
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
@@ -231,7 +233,7 @@ Still missing or approximate:
 
 - the original suppressor bits and neighbor/mode gates for ambient spawns
 - the `Wall2` `+0.02` ambient pool
-- exact actor ownership, animation/state switching, and any non-billboarded object/model presentation the original runtime uses
+- exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - parcel flight/runtime-object behavior and timing
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 

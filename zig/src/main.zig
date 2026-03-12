@@ -61,6 +61,11 @@ const default_object_path = app.default_object_path;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 const gameplay_salt_model_path = "X/SALT.X2";
+const gameplay_turret_model_path = "X/BLASTERTOP-BASE-000.X2";
+const gameplay_weapon_left_model_path = "X/BLASTERLEFT-BASE-000.X2";
+const gameplay_weapon_right_model_path = "X/BLASTERRIGHT-BASE-000.X2";
+const gameplay_weapon_top_model_path = "X/BLASTERTOP-BASE-000.X2";
+const gameplay_invincible_model_path = "X/INVINCIBLE-BASE-000.X2";
 const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
     "SPRITES/SLUG001.TGA",
@@ -1025,6 +1030,11 @@ const AppState = struct {
     current_gameplay_barrier_object: ?object.LoadedObject = null,
     current_gameplay_lazer_object: ?object.LoadedObject = null,
     current_gameplay_salt_model: ?x2.Uploaded = null,
+    current_gameplay_turret_model: ?x2.Uploaded = null,
+    current_gameplay_weapon_left_model: ?x2.Uploaded = null,
+    current_gameplay_weapon_right_model: ?x2.Uploaded = null,
+    current_gameplay_weapon_top_model: ?x2.Uploaded = null,
+    current_gameplay_invincible_model: ?x2.Uploaded = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
@@ -1177,6 +1187,7 @@ const AppState = struct {
         self.unloadGameplayBarrier();
         self.unloadGameplayLazer();
         self.unloadGameplaySalt();
+        self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
@@ -1365,6 +1376,29 @@ const AppState = struct {
         }
     }
 
+    fn unloadGameplayActorModels(self: *AppState) void {
+        if (self.current_gameplay_turret_model) |*model| {
+            model.deinit();
+            self.current_gameplay_turret_model = null;
+        }
+        if (self.current_gameplay_weapon_left_model) |*model| {
+            model.deinit();
+            self.current_gameplay_weapon_left_model = null;
+        }
+        if (self.current_gameplay_weapon_right_model) |*model| {
+            model.deinit();
+            self.current_gameplay_weapon_right_model = null;
+        }
+        if (self.current_gameplay_weapon_top_model) |*model| {
+            model.deinit();
+            self.current_gameplay_weapon_top_model = null;
+        }
+        if (self.current_gameplay_invincible_model) |*model| {
+            model.deinit();
+            self.current_gameplay_invincible_model = null;
+        }
+    }
+
     fn unloadGameplaySprites(self: *AppState) void {
         self.current_gameplay_sprites.unload();
     }
@@ -1434,6 +1468,51 @@ const AppState = struct {
             entry,
             true,
         );
+    }
+
+    fn reloadGameplayActorModels(self: *AppState) !void {
+        self.unloadGameplayActorModels();
+
+        const turret_index = self.catalog.findModelIndex(gameplay_turret_model_path) orelse return;
+        self.current_gameplay_turret_model = try x2.Uploaded.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            self.catalog.model_entries[turret_index],
+            true,
+        );
+
+        if (self.catalog.findModelIndex(gameplay_weapon_left_model_path)) |entry_index| {
+            self.current_gameplay_weapon_left_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        if (self.catalog.findModelIndex(gameplay_weapon_right_model_path)) |entry_index| {
+            self.current_gameplay_weapon_right_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        if (self.catalog.findModelIndex(gameplay_weapon_top_model_path)) |entry_index| {
+            self.current_gameplay_weapon_top_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        if (self.catalog.findModelIndex(gameplay_invincible_model_path)) |entry_index| {
+            self.current_gameplay_invincible_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
     }
 
     fn reloadGameplaySprites(self: *AppState) !void {
@@ -4033,6 +4112,7 @@ const AppState = struct {
         self.unloadGameplayBarrier();
         self.unloadGameplayLazer();
         self.unloadGameplaySalt();
+        self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
@@ -4054,6 +4134,7 @@ const AppState = struct {
                     try self.reloadGameplayBarrier();
                     try self.reloadGameplayLazer();
                     try self.reloadGameplaySalt();
+                    try self.reloadGameplayActorModels();
                     try self.reloadGameplaySprites();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
@@ -6706,6 +6787,9 @@ fn drawGameplayRuntimeActors(
                 .ring => drawGameplayRingActor(state, loaded_track_preview, camera, row_location, lane_index),
                 .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
+            if (row_location.row.cells[lane_index] == '=') {
+                drawGameplayTurretActor(state, loaded_track_preview, global_row, lane_index);
+            }
         }
 
         if (row_location.row.annotation) |annotation| switch (annotation) {
@@ -6789,6 +6873,25 @@ fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLev
         0.72,
         camera,
         .{ .r = 144, .g = 198, .b = 255, .a = 236 },
+    );
+}
+
+fn drawGameplayTurretActor(state: *const AppState, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) void {
+    const model = state.current_gameplay_turret_model orelse return;
+    const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+    const position = preview.worldPositionForLane(
+        @as(f32, @floatFromInt(lane_index)) + 0.5,
+        @as(f32, @floatFromInt(global_row)),
+        floor_height + 0.18,
+    );
+    drawGameplayUploadedModel(
+        model,
+        position,
+        .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+        .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .{ .x = 0.34, .y = 0.34, .z = 0.34 },
+        null,
     );
 }
 
@@ -7092,6 +7195,118 @@ fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.
         -model.bounds.center.z,
     );
     model.drawEx(world_transform.multiply(local_offset));
+
+    drawGameplayTurboAttachments(state, position, right, corrected_up, forward, runner);
+}
+
+fn drawGameplayTurboAttachments(
+    state: *const AppState,
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    runner: gameplay.Runner,
+) void {
+    if (runner.weapon_level > 0) {
+        if (state.current_gameplay_weapon_left_model) |model| {
+            drawGameplayUploadedModel(
+                model,
+                offsetPosition(position, right, up, forward, -0.26, 0.10, 0.08),
+                right,
+                up,
+                forward,
+                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                null,
+            );
+        }
+        if (state.current_gameplay_weapon_right_model) |model| {
+            drawGameplayUploadedModel(
+                model,
+                offsetPosition(position, right, up, forward, 0.26, 0.10, 0.08),
+                right,
+                up,
+                forward,
+                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                null,
+            );
+        }
+    }
+
+    if (runner.weapon_level >= 2) {
+        if (state.current_gameplay_weapon_top_model) |model| {
+            drawGameplayUploadedModel(
+                model,
+                offsetPosition(position, right, up, forward, 0.0, 0.28, 0.12),
+                right,
+                up,
+                forward,
+                .{ .x = 0.24, .y = 0.24, .z = 0.24 },
+                null,
+            );
+        }
+    }
+
+    if (runner.invincible_ticks > 0) {
+        if (state.current_gameplay_invincible_model) |model| {
+            drawGameplayUploadedModel(
+                model,
+                offsetPosition(position, right, up, forward, 0.0, 0.02, 0.0),
+                right,
+                up,
+                forward,
+                .{ .x = 1.05, .y = 1.05, .z = 1.05 },
+                .{ .r = 220, .g = 240, .b = 255, .a = 180 },
+            );
+        }
+    }
+}
+
+fn drawGameplayUploadedModel(
+    model: x2.Uploaded,
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    scale: rl.Vector3,
+    tint: ?rl.Color,
+) void {
+    const world_transform = modelTransformFromBasis(position, right, up, forward);
+    const local_offset = rl.Matrix.translate(
+        -model.bounds.center.x,
+        -model.bounds.center.y,
+        -model.bounds.center.z,
+    );
+    const model_scale = rl.Matrix.scale(scale.x, scale.y, scale.z);
+    const transform = world_transform.multiply(local_offset).multiply(model_scale);
+    if (tint) |tint_color| {
+        drawGameplayUploadedModelTinted(&model, transform, tint_color);
+    } else {
+        model.drawEx(transform);
+    }
+}
+
+fn drawGameplayUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
+    for (model.submeshes) |submesh| {
+        var material = submesh.material;
+        material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = tint;
+        rl.drawMesh(submesh.mesh, material, transform);
+    }
+}
+
+fn offsetPosition(
+    origin: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    local_x: f32,
+    local_y: f32,
+    local_z: f32,
+) rl.Vector3 {
+    return .{
+        .x = origin.x + (right.x * local_x) + (up.x * local_y) + (forward.x * local_z),
+        .y = origin.y + (right.y * local_x) + (up.y * local_y) + (forward.y * local_z),
+        .z = origin.z + (right.z * local_x) + (up.z * local_y) + (forward.z * local_z),
+    };
 }
 
 fn vectorLength(v: rl.Vector3) f32 {
