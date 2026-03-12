@@ -239,6 +239,9 @@ pub const AttachmentPose = struct {
     position: Vec3,
     center_x: f32,
     lateral_scale: f32,
+    basis_right: Vec3,
+    basis_up: Vec3,
+    basis_forward: Vec3,
 };
 
 const VerticalLoopParams = struct {
@@ -265,6 +268,32 @@ const HumpDumpParams = struct {
 const LoopoutParams = struct {
     radius: f32,
     width_cells: u16,
+};
+
+const TurnoverParams = struct {
+    runtime_kind: u8,
+    radius: f32,
+    width_cells: u16,
+    turn_count: f32,
+    start_sign: f32,
+};
+
+const WaveParams = struct {
+    runtime_kind: ?u8 = null,
+    width_cells: u16,
+    sample_count: u16,
+    lateral_amplitude: f32 = 0.0,
+    lateral_cycles: f32 = 0.0,
+    vertical_amplitude: f32 = 0.0,
+    vertical_cycles: f32 = 0.0,
+    roll_cycles: f32 = 0.0,
+    start_z: f32 = 0.0,
+    center_bias: f32 = 0.0,
+};
+
+const PFamilyParams = struct {
+    runtime_kind: u8,
+    center_curve_scalar: f32,
 };
 
 pub const AuthoredPathRow = struct {
@@ -385,6 +414,9 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
             .position = .{},
             .center_x = 0.0,
             .lateral_scale = 1.0,
+            .basis_right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+            .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+            .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
         };
     }
 
@@ -396,6 +428,9 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
             .position = sample.position,
             .center_x = sample.center_x,
             .lateral_scale = sample.lateral_scale,
+            .basis_right = sample.basis_right,
+            .basis_up = sample.basis_up,
+            .basis_forward = sample.basis_forward,
         };
     }
 
@@ -406,6 +441,9 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
         .position = Vec3.lerp(lhs.position, rhs.position, t),
         .center_x = std.math.lerp(lhs.center_x, rhs.center_x, t),
         .lateral_scale = std.math.lerp(lhs.lateral_scale, rhs.lateral_scale, t),
+        .basis_right = Vec3.normalize(Vec3.lerp(lhs.basis_right, rhs.basis_right, t)),
+        .basis_up = Vec3.normalize(Vec3.lerp(lhs.basis_up, rhs.basis_up, t)),
+        .basis_forward = Vec3.normalize(Vec3.lerp(lhs.basis_forward, rhs.basis_forward, t)),
     };
 }
 
@@ -437,7 +475,28 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .loopout3,
         .loopoutbig,
         => try buildLoopoutTemplate(allocator, spec, loopoutParams(spec.public_path)),
-        else => null,
+        .turnover,
+        .turnoverdouble,
+        .turnunder,
+        => try buildTurnoverTemplate(allocator, spec, turnoverParams(spec.public_path)),
+        .supertramp => try buildSupertrampTemplate(allocator, spec),
+        .p0, .p1, .p2 => try buildPFamilyTemplate(allocator, spec, pFamilyParams(spec.public_path)),
+        .sbend => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 14, .width_cells = 8, .sample_count = 28, .lateral_amplitude = 2.5, .lateral_cycles = 1.0 }),
+        .cage2 => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 15, .width_cells = 3, .sample_count = 24, .vertical_amplitude = 2.5, .vertical_cycles = 1.0, .roll_cycles = 0.5 }),
+        .dip => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 20, .width_cells = 2, .sample_count = 22, .vertical_amplitude = -3.0, .vertical_cycles = 1.0 }),
+        .screw => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 21, .width_cells = 3, .sample_count = 24, .roll_cycles = 1.0 }),
+        .slalom => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 22, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 2.5, .lateral_cycles = 2.0 }),
+        .slalombig => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 23, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 3.5, .lateral_cycles = 2.0 }),
+        .worm => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 24, .width_cells = 4, .sample_count = 28, .lateral_amplitude = 1.75, .lateral_cycles = 2.0, .vertical_amplitude = 1.75, .vertical_cycles = 2.0 }),
+        .sweep => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 28, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 3.0, .lateral_cycles = 0.5 }),
+        .snake => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 29, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
+        .warp, .halfpipe => try buildKind42Template(allocator, spec),
+        .slalomdouble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 32, .width_cells = 4, .sample_count = 70, .lateral_amplitude = 2.5, .lateral_cycles = 4.0 }),
+        .wibble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 40, .width_cells = 8, .sample_count = 32, .lateral_amplitude = 1.5, .lateral_cycles = 3.0, .vertical_amplitude = 0.75, .vertical_cycles = 2.0 }),
+        .invert => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 41, .width_cells = 8, .sample_count = 34, .roll_cycles = 0.5 }),
+        .twistera, .twisterb => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 43, .width_cells = 3, .sample_count = 48, .roll_cycles = 1.5, .lateral_amplitude = 0.5 }),
+        .twister2a, .twister2b => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 45, .width_cells = 3, .sample_count = 52, .roll_cycles = 2.0, .lateral_amplitude = 0.75 }),
+        .toad0, .toad1, .toadpair0, .toadpair1 => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 47, .width_cells = 3, .sample_count = 24, .vertical_amplitude = 1.5, .vertical_cycles = if (spec.public_path == .toadpair0 or spec.public_path == .toadpair1) 2.0 else 1.0 }),
     };
 }
 
@@ -445,7 +504,7 @@ fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templat
     const curve_steps: usize = @intFromFloat(@floor(4.0 * std.math.pi));
     const sample_count: usize = curve_steps + 15;
     const point_count: usize = sample_count + 1;
-    var samples = try allocator.alloc(TemplateSample, point_count);
+    const samples = try allocator.alloc(TemplateSample, point_count);
     errdefer allocator.free(samples);
 
     for (samples) |*sample| {
@@ -517,7 +576,7 @@ fn buildVerticalLoopTemplate(
     const point_count: usize = sample_count + 1;
     const start_flat_count: usize = 7;
     const end_flat_count: usize = 7;
-    var samples = try allocator.alloc(TemplateSample, point_count);
+    const samples = try allocator.alloc(TemplateSample, point_count);
     errdefer allocator.free(samples);
 
     for (samples) |*sample| {
@@ -604,7 +663,7 @@ fn buildHillValleyTemplate(
 ) !Template {
     const sample_count: usize = params.length + 2;
     const point_count: usize = sample_count + 1;
-    var samples = try allocator.alloc(TemplateSample, point_count);
+    const samples = try allocator.alloc(TemplateSample, point_count);
     errdefer allocator.free(samples);
 
     for (samples) |*sample| {
@@ -676,7 +735,7 @@ fn buildHumpDumpTemplate(
     const point_count: usize = sample_count + 1;
     const start_flat_count: usize = 7;
     const end_flat_count: usize = 7;
-    var samples = try allocator.alloc(TemplateSample, point_count);
+    const samples = try allocator.alloc(TemplateSample, point_count);
     errdefer allocator.free(samples);
 
     for (samples) |*sample| {
@@ -761,7 +820,7 @@ fn buildLoopoutTemplate(
     const point_count: usize = sample_count + 1;
     const start_flat_count: usize = 10;
     const end_flat_count: usize = 4;
-    var samples = try allocator.alloc(TemplateSample, point_count);
+    const samples = try allocator.alloc(TemplateSample, point_count);
     errdefer allocator.free(samples);
 
     for (samples) |*sample| {
@@ -840,6 +899,292 @@ fn loopoutParams(public_path: PublicPath) LoopoutParams {
     };
 }
 
+fn buildTurnoverTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: TurnoverParams,
+) !Template {
+    const dynamic_count: usize = @intFromFloat(@floor(params.radius * (params.turn_count * std.math.pi)));
+    const sample_count: usize = dynamic_count + 8;
+    const point_count: usize = sample_count + 1;
+    const start_flat_count: usize = 6;
+    const end_flat_count: usize = 2;
+    const samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    const edge_center = (@as(f32, @floatFromInt(params.width_cells)) * 0.5) - 4.0;
+    const start_center = edge_center * params.start_sign;
+    const end_center = -start_center;
+
+    for (0..start_flat_count) |index| {
+        const sample = &samples[index];
+        sample.center_x = start_center;
+        sample.position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = @floatFromInt(index),
+        };
+    }
+
+    const dynamic_count_f: f32 = @floatFromInt(dynamic_count);
+    for (0..dynamic_count) |step| {
+        const step_f: f32 = @floatFromInt(step);
+        const theta = (step_f * params.turn_count * std.math.pi) / dynamic_count_f;
+        const sample = &samples[start_flat_count + step];
+        sample.center_x = std.math.lerp(start_center, end_center, step_f / dynamic_count_f);
+        sample.position = .{
+            .x = 0.0,
+            .y = (params.radius - (std.math.cos(theta) * params.radius)) * 0.4,
+            .z = @floatFromInt(step + start_flat_count),
+        };
+    }
+
+    for (0..end_flat_count) |offset| {
+        const index = dynamic_count + start_flat_count + offset;
+        const sample = &samples[index];
+        sample.center_x = end_center;
+        sample.position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = @floatFromInt(index),
+        };
+    }
+
+    samples[point_count - 1].center_x = end_center;
+    samples[point_count - 1].position = .{
+        .x = 0.0,
+        .y = 0.0,
+        .z = @floatFromInt(sample_count),
+    };
+
+    finalizeTemplateSamples(samples);
+    applyRoll(samples, turnoverRollCycles(params), 0.0);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = params.runtime_kind,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = params.width_cells,
+        },
+        .width_cells = params.width_cells,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn turnoverParams(public_path: PublicPath) TurnoverParams {
+    return switch (public_path) {
+        .turnover => .{ .runtime_kind = 37, .radius = 6.0, .width_cells = 4, .turn_count = 2.0, .start_sign = 1.0 },
+        .turnoverdouble => .{ .runtime_kind = 38, .radius = 6.0, .width_cells = 4, .turn_count = 3.0, .start_sign = 1.0 },
+        .turnunder => .{ .runtime_kind = 39, .radius = 6.0, .width_cells = 4, .turn_count = 2.0, .start_sign = -1.0 },
+        else => unreachable,
+    };
+}
+
+fn turnoverRollCycles(params: TurnoverParams) f32 {
+    return switch (params.runtime_kind) {
+        37 => 0.5,
+        38 => 1.0,
+        39 => -0.5,
+        else => 0.0,
+    };
+}
+
+fn buildWaveTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: WaveParams,
+) !Template {
+    const point_count: usize = params.sample_count + 1;
+    const samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    const sample_count_f: f32 = @floatFromInt(params.sample_count);
+    for (samples, 0..) |*sample, index| {
+        const t = if (params.sample_count == 0) 0.0 else @as(f32, @floatFromInt(index)) / sample_count_f;
+        const z = @as(f32, @floatFromInt(index)) + params.start_z;
+        const lateral_angle = t * params.lateral_cycles * (2.0 * std.math.pi);
+        const vertical_angle = t * params.vertical_cycles * (2.0 * std.math.pi);
+        sample.* = .{
+            .center_x = params.center_bias + (std.math.sin(lateral_angle) * params.lateral_amplitude),
+            .position = .{
+                .x = 0.0,
+                .y = std.math.sin(vertical_angle) * params.vertical_amplitude,
+                .z = z,
+            },
+        };
+    }
+
+    finalizeTemplateSamples(samples);
+    if (params.roll_cycles != 0.0) {
+        applyRoll(samples, params.roll_cycles, 0.0);
+    }
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = params.runtime_kind,
+            .sample_count = params.sample_count,
+            .subdivision_count = params.width_cells,
+        },
+        .width_cells = params.width_cells,
+        .sample_count = params.sample_count,
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn buildPFamilyTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: PFamilyParams,
+) !Template {
+    const sample_count: usize = 16;
+    const point_count: usize = sample_count + 1;
+    const width_cells: u16 = 3;
+    const samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples, 0..) |*sample, index| {
+        const t = @as(f32, @floatFromInt(index)) / @as(f32, @floatFromInt(sample_count));
+        const theta = t * std.math.pi;
+        sample.* = .{
+            .center_x = std.math.sin(theta) * params.center_curve_scalar,
+            .position = .{
+                .x = 0.0,
+                .y = std.math.sin(theta) * 1.5,
+                .z = @floatFromInt(index),
+            },
+        };
+    }
+
+    finalizeTemplateSamples(samples);
+    applyRoll(samples, 0.25, 0.0);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = params.runtime_kind,
+            .sample_count = 16,
+            .subdivision_count = width_cells,
+        },
+        .width_cells = width_cells,
+        .sample_count = 16,
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn pFamilyParams(public_path: PublicPath) PFamilyParams {
+    return switch (public_path) {
+        .p0 => .{ .runtime_kind = 33, .center_curve_scalar = 0.75 },
+        .p1 => .{ .runtime_kind = 34, .center_curve_scalar = 1.25 },
+        .p2 => .{ .runtime_kind = 35, .center_curve_scalar = 1.75 },
+        else => unreachable,
+    };
+}
+
+fn buildSupertrampTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
+    const width_cells: u16 = 2;
+    const sample_count: usize = 32;
+    const point_count: usize = sample_count + 1;
+    const start_flat_count: usize = 7;
+    const dynamic_count: usize = sample_count - start_flat_count;
+    const samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    for (0..start_flat_count) |index| {
+        samples[index].position = .{
+            .x = 0.0,
+            .y = 0.0,
+            .z = @floatFromInt(index),
+        };
+    }
+
+    const dynamic_count_f: f32 = @floatFromInt(dynamic_count);
+    for (0..dynamic_count + 1) |step| {
+        const t = @as(f32, @floatFromInt(step)) / dynamic_count_f;
+        const theta = t * (0.5 * std.math.pi);
+        const index = start_flat_count + step;
+        if (index >= samples.len) break;
+        samples[index].position = .{
+            .x = 0.0,
+            .y = (1.0 - std.math.cos(theta)) * 8.0,
+            .z = @as(f32, @floatFromInt(start_flat_count)) + (std.math.sin(theta) * 18.0),
+        };
+    }
+
+    finalizeTemplateSamples(samples);
+    applyRoll(samples[start_flat_count..], -0.25, 0.0);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = 31,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = width_cells,
+        },
+        .width_cells = width_cells,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
+    const width_cells: u16 = 8;
+    const sample_count: usize = 66;
+    const point_count: usize = sample_count + 1;
+    const samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples, 0..) |*sample, index| {
+        sample.* = .{
+            .position = .{
+                .x = 0.0,
+                .y = 0.0,
+                .z = @floatFromInt(index),
+            },
+            .special_scalar = 4.0,
+        };
+    }
+
+    finalizeTemplateSamples(samples);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = 42,
+            .sample_count = 66,
+            .subdivision_count = width_cells,
+        },
+        .width_cells = width_cells,
+        .sample_count = 66,
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
 fn finalizeTemplateSamples(samples: []TemplateSample) void {
     if (samples.len == 0) return;
     var last_forward = Vec3{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -863,6 +1208,33 @@ fn finalizeTemplateSamples(samples: []TemplateSample) void {
         const up = Vec3.cross(sample.basis_forward, right);
         sample.basis_right = right;
         sample.basis_up = if (Vec3.length(up) > 0.0001) Vec3.normalize(up) else .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    }
+}
+
+fn applyRoll(samples: []TemplateSample, cycles: f32, phase_offset: f32) void {
+    if (samples.len == 0) return;
+    const world_up = Vec3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    const denom = @as(f32, @floatFromInt(@max(samples.len - 1, 1)));
+    for (samples, 0..) |*sample, index| {
+        const t = @as(f32, @floatFromInt(index)) / denom;
+        const angle = phase_offset + (cycles * 2.0 * std.math.pi * t);
+        var base_right = Vec3.cross(world_up, sample.basis_forward);
+        if (Vec3.length(base_right) <= 0.0001) {
+            base_right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        } else {
+            base_right = Vec3.normalize(base_right);
+        }
+        const base_up = Vec3.normalize(Vec3.cross(sample.basis_forward, base_right));
+        const sin_angle = std.math.sin(angle);
+        const cos_angle = std.math.cos(angle);
+        sample.basis_right = Vec3.normalize(Vec3.add(
+            Vec3.scale(base_right, cos_angle),
+            Vec3.scale(base_up, sin_angle),
+        ));
+        sample.basis_up = Vec3.normalize(Vec3.sub(
+            Vec3.scale(base_up, cos_angle),
+            Vec3.scale(base_right, sin_angle),
+        ));
     }
 }
 
@@ -922,8 +1294,8 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
             .sample_count = 22,
             .subdivision_count = hillValleyParams(public_path).width_cells,
         },
-        .sbend => .{ .public_path = public_path, .family = .sbend, .status = .scaffold },
-        .cage2 => .{ .public_path = public_path, .family = .cage2, .status = .scaffold },
+        .sbend => .{ .public_path = public_path, .family = .sbend, .status = .partial, .runtime_kind = 14, .sample_count = 28, .subdivision_count = 8 },
+        .cage2 => .{ .public_path = public_path, .family = .cage2, .status = .partial, .runtime_kind = 15, .sample_count = 24, .subdivision_count = 3 },
         .hump, .humpsmall => .{
             .public_path = public_path,
             .family = .hump,
@@ -940,11 +1312,11 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
             .sample_count = 30,
             .subdivision_count = 3,
         },
-        .dip => .{ .public_path = public_path, .family = .dip, .status = .scaffold },
-        .screw => .{ .public_path = public_path, .family = .screw, .status = .scaffold },
-        .slalom => .{ .public_path = public_path, .family = .slalom, .status = .scaffold },
-        .slalombig => .{ .public_path = public_path, .family = .slalombig, .status = .partial, .runtime_kind = 23 },
-        .worm => .{ .public_path = public_path, .family = .worm, .status = .scaffold },
+        .dip => .{ .public_path = public_path, .family = .dip, .status = .partial, .runtime_kind = 20, .sample_count = 22, .subdivision_count = 2 },
+        .screw => .{ .public_path = public_path, .family = .screw, .status = .partial, .runtime_kind = 21, .sample_count = 24, .subdivision_count = 3 },
+        .slalom => .{ .public_path = public_path, .family = .slalom, .status = .partial, .runtime_kind = 22, .sample_count = 32, .subdivision_count = 4 },
+        .slalombig => .{ .public_path = public_path, .family = .slalombig, .status = .partial, .runtime_kind = 23, .sample_count = 32, .subdivision_count = 4 },
+        .worm => .{ .public_path = public_path, .family = .worm, .status = .partial, .runtime_kind = 24, .sample_count = 28, .subdivision_count = 4 },
         .loopout, .loopout3, .loopoutbig => blk: {
             const params = loopoutParams(public_path);
             break :blk .{
@@ -956,23 +1328,23 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
                 .subdivision_count = params.width_cells,
             };
         },
-        .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial },
-        .snake => .{ .public_path = public_path, .family = .snake, .status = .partial },
+        .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial, .runtime_kind = 28, .sample_count = 30, .subdivision_count = 4 },
+        .snake => .{ .public_path = public_path, .family = .snake, .status = .partial, .runtime_kind = 29, .sample_count = 30, .subdivision_count = 4 },
         .warp, .halfpipe => .{ .public_path = public_path, .family = .kind42, .status = .partial, .runtime_kind = 42, .sample_count = 66, .subdivision_count = 8 },
-        .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .runtime_kind = 31 },
+        .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .runtime_kind = 31, .sample_count = 32, .subdivision_count = 2 },
         .slalomdouble => .{ .public_path = public_path, .family = .slalomdouble, .status = .partial, .runtime_kind = 32, .sample_count = 70, .subdivision_count = 4 },
         .p0 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 33, .sample_count = 16, .subdivision_count = 3 },
         .p1 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 34, .sample_count = 16, .subdivision_count = 3 },
         .p2 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 35, .sample_count = 16, .subdivision_count = 3 },
         .start => .{ .public_path = public_path, .family = .start, .status = .ported, .runtime_kind = 36, .sample_count = 27, .subdivision_count = 8 },
-        .turnover => .{ .public_path = public_path, .family = .turnover, .status = .partial, .runtime_kind = 39 },
-        .turnoverdouble => .{ .public_path = public_path, .family = .turnoverdouble, .status = .partial },
+        .turnover => .{ .public_path = public_path, .family = .turnover, .status = .partial, .runtime_kind = 37, .sample_count = 45, .subdivision_count = 4 },
+        .turnoverdouble => .{ .public_path = public_path, .family = .turnoverdouble, .status = .partial, .runtime_kind = 38, .sample_count = 64, .subdivision_count = 4 },
         .turnunder => .{ .public_path = public_path, .family = .turnunder, .status = .partial, .runtime_kind = 39, .sample_count = 45, .subdivision_count = 4 },
-        .wibble => .{ .public_path = public_path, .family = .wibble, .status = .partial, .runtime_kind = 40 },
-        .invert => .{ .public_path = public_path, .family = .invert, .status = .partial },
-        .twistera, .twisterb => .{ .public_path = public_path, .family = .twister, .status = .partial },
-        .twister2a, .twister2b => .{ .public_path = public_path, .family = .twister2, .status = .partial },
-        .toad0, .toad1, .toadpair0, .toadpair1 => .{ .public_path = public_path, .family = .toad, .status = .partial },
+        .wibble => .{ .public_path = public_path, .family = .wibble, .status = .partial, .runtime_kind = 40, .sample_count = 32, .subdivision_count = 8 },
+        .invert => .{ .public_path = public_path, .family = .invert, .status = .partial, .runtime_kind = 41, .sample_count = 34, .subdivision_count = 8 },
+        .twistera, .twisterb => .{ .public_path = public_path, .family = .twister, .status = .partial, .runtime_kind = 43, .sample_count = 48, .subdivision_count = 3 },
+        .twister2a, .twister2b => .{ .public_path = public_path, .family = .twister2, .status = .partial, .runtime_kind = 45, .sample_count = 52, .subdivision_count = 3 },
+        .toad0, .toad1, .toadpair0, .toadpair1 => .{ .public_path = public_path, .family = .toad, .status = .partial, .runtime_kind = 47, .sample_count = 24, .subdivision_count = 3 },
     };
 }
 
@@ -1236,5 +1608,20 @@ test "build loopout family templates from recovered public slot params" {
 
         const mid = samplePoseAtProgress(&template, 10.0 + (case.radius * std.math.pi));
         try std.testing.expect(mid.position.y < -(case.radius * 1.5));
+    }
+}
+
+test "all recovered public paths build attachment templates" {
+    inline for (std.meta.tags(PublicPath)) |public_path| {
+        const spec = specForPublicPath(public_path);
+        var template = (try buildTemplate(std.testing.allocator, spec)).?;
+        defer template.deinit(std.testing.allocator);
+
+        try std.testing.expectEqual(public_path, template.spec.public_path);
+        try std.testing.expect(template.sample_count > 0);
+        try std.testing.expect(template.width_cells > 0);
+        try std.testing.expectEqual(@as(usize, template.sample_count) + 1, template.pointCount());
+        try std.testing.expectEqual(spec.runtime_kind, template.spec.runtime_kind);
+        try std.testing.expectEqual(spec.subdivision_count, template.spec.subdivision_count);
     }
 }

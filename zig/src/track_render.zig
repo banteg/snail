@@ -262,31 +262,9 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
 
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
-        switch (built.template.spec.public_path) {
-            .start,
-            .hill,
-            .hill4c,
-            .hill4,
-            .valley,
-            .valley4c,
-            .valley4,
-            .hump,
-            .humpsmall,
-            .dump,
-            .dumpsmall,
-            .looptheloop,
-            .looptheloop2,
-            .looptheloop4,
-            .looptheloopt2,
-            .looptheloopt3,
-            .looptheloopt4,
-            .looptheloopw,
-            .loopbow,
-            .loopout,
-            .loopout3,
-            .loopoutbig,
-            => drawOrdinaryAttachment(scene, built),
-            else => {},
+        switch (built.template.spec.family) {
+            .kind42 => drawKind42Attachment(scene, built),
+            else => drawOrdinaryAttachment(scene, built),
         }
     }
 }
@@ -312,10 +290,43 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
             drawDoubleSidedTexturedQuad(
                 scene.textures.track.texture,
                 scene.textures.track.texture,
-                attachmentVertex(front_pose, left_offset, front_world_z),
-                attachmentVertex(back_pose, left_offset, back_world_z),
-                attachmentVertex(back_pose, right_offset, back_world_z),
-                attachmentVertex(front_pose, right_offset, front_world_z),
+                attachmentVertex(front_pose, left_offset, base_row),
+                attachmentVertex(back_pose, left_offset, base_row),
+                attachmentVertex(back_pose, right_offset, base_row),
+                attachmentVertex(front_pose, right_offset, base_row),
+                topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
+            );
+        }
+    }
+}
+
+fn drawKind42Attachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+    const template = &built.template;
+    if (template.samples.len < 2) return;
+
+    const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
+    const subdivisions = template.width_cells;
+    const base_row = @as(f32, @floatFromInt(built.row.global_row));
+
+    for (0..template.samples.len - 1) |sample_index| {
+        const front_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index));
+        const back_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index + 1));
+        const front_world_z = base_row + front_pose.position.z;
+        const back_world_z = base_row + back_pose.position.z;
+        const front_radius = template.samples[sample_index].special_scalar;
+        const back_radius = template.samples[sample_index + 1].special_scalar;
+
+        for (0..subdivisions) |subdivision| {
+            const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
+            const right_offset = left_offset + 1.0;
+
+            drawDoubleSidedTexturedQuad(
+                scene.textures.track.texture,
+                scene.textures.track.texture,
+                kind42AttachmentVertex(front_pose, left_offset, front_radius, base_row),
+                kind42AttachmentVertex(back_pose, left_offset, back_radius, base_row),
+                kind42AttachmentVertex(back_pose, right_offset, back_radius, base_row),
+                kind42AttachmentVertex(front_pose, right_offset, front_radius, base_row),
                 topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
@@ -325,12 +336,32 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
 fn attachmentVertex(
     pose: attachment_builders.AttachmentPose,
     lateral_offset: f32,
-    world_z: f32,
+    base_row: f32,
 ) rl.Vector3 {
+    const local_lateral = pose.center_x + (lateral_offset * pose.lateral_scale);
     return .{
-        .x = pose.position.x + pose.center_x + (lateral_offset * pose.lateral_scale),
-        .y = pose.position.y,
-        .z = world_z,
+        .x = pose.position.x + (pose.basis_right.x * local_lateral),
+        .y = pose.position.y + (pose.basis_right.y * local_lateral),
+        .z = base_row + pose.position.z + (pose.basis_right.z * local_lateral),
+    };
+}
+
+fn kind42AttachmentVertex(
+    pose: attachment_builders.AttachmentPose,
+    lateral_offset: f32,
+    radius: f32,
+    base_row: f32,
+) rl.Vector3 {
+    const local_lateral = std.math.clamp(lateral_offset, -radius, radius);
+    const centered_lateral = pose.center_x + local_lateral;
+    const cross_section_height = if (radius <= 0.0001)
+        0.0
+    else
+        radius - std.math.sqrt(@max(0.0, (radius * radius) - (local_lateral * local_lateral)));
+    return .{
+        .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * cross_section_height),
+        .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * cross_section_height),
+        .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * cross_section_height),
     };
 }
 
