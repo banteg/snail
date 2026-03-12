@@ -2020,6 +2020,25 @@ test "attachment follow side-exits when lateral drift exceeds template width" {
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
 }
 
+test "halfpipe attachment tilts world up with lateral drift" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/HALFPIPE.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    runner.step(&fixture.preview, .{ .lane_delta = 2 }, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const up = runner.worldUp(&fixture.preview);
+    try std.testing.expect(@abs(up.x) > 0.1);
+    try std.testing.expect(up.y < 0.99);
+}
+
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();

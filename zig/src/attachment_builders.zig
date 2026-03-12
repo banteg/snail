@@ -479,8 +479,17 @@ pub fn worldPoseForTemplate(
     const local_lateral = lateral_offset * pose.lateral_scale;
     const centered_lateral = pose.center_x + local_lateral;
     const base_row: f32 = @floatFromInt(source_row);
+    const use_kind42_surface = template.spec.family == .kind42;
+    const surface_basis: SurfaceBasis = if (use_kind42_surface)
+        kind42SurfaceBasis(pose, local_lateral)
+    else
+        .{
+            .right = pose.basis_right,
+            .up = pose.basis_up,
+            .forward = pose.basis_forward,
+        };
 
-    const surface_height = if (template.spec.family == .kind42)
+    const surface_height = if (use_kind42_surface)
         kind42CrossSectionHeight(local_lateral, pose.special_scalar)
     else
         0.0;
@@ -492,9 +501,9 @@ pub fn worldPoseForTemplate(
             .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * up_height),
             .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * up_height),
         },
-        .basis_right = pose.basis_right,
-        .basis_up = pose.basis_up,
-        .basis_forward = pose.basis_forward,
+        .basis_right = surface_basis.right,
+        .basis_up = surface_basis.up,
+        .basis_forward = surface_basis.forward,
     };
 }
 
@@ -510,6 +519,52 @@ fn kind42CrossSectionHeight(lateral_offset: f32, radius: f32) f32 {
     const clamped_lateral = std.math.clamp(lateral_offset, -radius, radius);
     if (radius <= 0.0001) return 0.0;
     return radius - std.math.sqrt(@max(0.0, (radius * radius) - (clamped_lateral * clamped_lateral)));
+}
+
+const SurfaceBasis = struct {
+    right: Vec3,
+    up: Vec3,
+    forward: Vec3,
+};
+
+fn kind42SurfaceBasis(pose: AttachmentPose, lateral_offset: f32) SurfaceBasis {
+    const radius = pose.special_scalar;
+    if (radius <= 0.0001) {
+        return .{
+            .right = pose.basis_right,
+            .up = pose.basis_up,
+            .forward = pose.basis_forward,
+        };
+    }
+
+    const clamped_lateral = std.math.clamp(lateral_offset, -radius, radius);
+    const vertical_component = std.math.sqrt(@max(0.0, (radius * radius) - (clamped_lateral * clamped_lateral)));
+    const local_normal = Vec3.normalize(.{
+        .x = -clamped_lateral,
+        .y = vertical_component,
+        .z = 0.0,
+    });
+    const local_tangent = Vec3.normalize(.{
+        .x = 1.0,
+        .y = if (vertical_component <= 0.0001) 0.0 else clamped_lateral / vertical_component,
+        .z = 0.0,
+    });
+
+    const up = Vec3.normalize(Vec3.add(
+        Vec3.scale(pose.basis_right, local_normal.x),
+        Vec3.scale(pose.basis_up, local_normal.y),
+    ));
+    const right = Vec3.normalize(Vec3.add(
+        Vec3.scale(pose.basis_right, local_tangent.x),
+        Vec3.scale(pose.basis_up, local_tangent.y),
+    ));
+    const forward = Vec3.normalize(Vec3.cross(right, up));
+
+    return .{
+        .right = right,
+        .up = up,
+        .forward = forward,
+    };
 }
 
 fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
