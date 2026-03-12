@@ -296,6 +296,7 @@ const AttachmentFollowState = struct {
     active: bool = false,
     source_row: usize = 0,
     progress: f32 = 0.0,
+    exit_overshoot: f32 = 0.0,
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
     vertical_offset: f32 = 0.0,
@@ -1209,6 +1210,7 @@ pub const Runner = struct {
             self.attachment_follow.vertical_offset,
         );
         self.row_position = exit_world_position.z + built.template.exit_tail_extra;
+        self.row_position += self.attachment_follow.exit_overshoot;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
@@ -1271,11 +1273,9 @@ pub const Runner = struct {
         };
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
         const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, self.attachment_follow.progress);
-        self.attachment_follow.progress = std.math.clamp(
-            self.attachment_follow.progress + (self.movement_rate_scalar * delta_length),
-            0.0,
-            sample_count,
-        );
+        const advanced_progress = self.attachment_follow.progress + (self.movement_rate_scalar * delta_length);
+        self.attachment_follow.exit_overshoot = @max(0.0, advanced_progress - sample_count);
+        self.attachment_follow.progress = std.math.clamp(advanced_progress, 0.0, sample_count);
         self.updateAttachmentFollowPosition(preview);
     }
 
@@ -1286,6 +1286,7 @@ pub const Runner = struct {
             .active = true,
             .source_row = sample.global_row,
             .progress = self.row_position - @floor(self.row_position),
+            .exit_overshoot = 0.0,
             .lateral_offset = if (sample.path_center_lane) |path_center_lane|
                 self.lane_center - path_center_lane
             else
@@ -1993,6 +1994,27 @@ test "standalone start segment attachment exits from the template end pose" {
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row + built.template.sample_count)));
     try std.testing.expect(runner.row_position > exit_progress);
+}
+
+test "attachment natural exit carries overshoot past the template end" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const sample_count: f32 = @floatFromInt(built.template.sample_count);
+    runner.attachment_follow.progress = sample_count - 0.1;
+    runner.speed_rows_per_second = 48.0;
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(target.row)) + sample_count + built.template.exit_tail_extra);
 }
 
 test "attachment follow side-exits when lateral drift exceeds template width" {
