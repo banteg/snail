@@ -4085,6 +4085,15 @@ fn frontendPhaseUsesCanvas(state: *const AppState) bool {
 
 fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout: VirtualLayout) !void {
     if (phaseUsesGameplayBackdrop(state)) {
+        if (state.current_game_background) |loaded_background| {
+            if (state.current_game_background_runtime) |runtime| {
+                _ = runtime.draw(&loaded_background, bounds);
+            } else {
+                _ = loaded_background.draw(bounds);
+            }
+        } else {
+            rl.drawRectangleRec(bounds, .black);
+        }
         drawGameplayLevelViewport(state);
     } else if (state.current_game_background) |loaded_background| {
         if (state.current_game_background_runtime) |runtime| {
@@ -6517,8 +6526,7 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
         right = normalizeVector3(right);
     }
     const corrected_up = normalizeVector3(crossVector3(forward, right));
-    const gameplay_width = @min(loaded_track_preview.max_width, 8);
-    const center_lane = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+    const center_lane = @as(f32, @floatFromInt(loaded_track_preview.max_width)) * 0.5;
     const barrier_row = runner.row_position;
     const barrier_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
         runner.current_global_row,
