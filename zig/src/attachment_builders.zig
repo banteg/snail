@@ -245,6 +245,13 @@ pub const AttachmentPose = struct {
     special_scalar: f32,
 };
 
+pub const WorldPose = struct {
+    position: Vec3,
+    basis_right: Vec3,
+    basis_up: Vec3,
+    basis_forward: Vec3,
+};
+
 const VerticalLoopParams = struct {
     radius: f32,
     subdivision_count: u16,
@@ -458,6 +465,16 @@ pub fn worldPositionForTemplate(
     lateral_offset: f32,
     vertical_offset: f32,
 ) Vec3 {
+    return worldPoseForTemplate(template, progress, source_row, lateral_offset, vertical_offset).position;
+}
+
+pub fn worldPoseForTemplate(
+    template: *const Template,
+    progress: f32,
+    source_row: usize,
+    lateral_offset: f32,
+    vertical_offset: f32,
+) WorldPose {
     const pose = samplePoseAtProgress(template, progress);
     const local_lateral = lateral_offset * pose.lateral_scale;
     const centered_lateral = pose.center_x + local_lateral;
@@ -470,10 +487,23 @@ pub fn worldPositionForTemplate(
     const up_height = surface_height + vertical_offset;
 
     return .{
-        .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * up_height),
-        .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * up_height),
-        .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * up_height),
+        .position = .{
+            .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * up_height),
+            .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * up_height),
+            .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * up_height),
+        },
+        .basis_right = pose.basis_right,
+        .basis_up = pose.basis_up,
+        .basis_forward = pose.basis_forward,
     };
+}
+
+pub fn deltaLengthAtProgress(template: *const Template, progress: f32) f32 {
+    if (template.samples.len == 0) return 1.0;
+    const clamped_progress = std.math.clamp(progress, 0.0, @as(f32, @floatFromInt(template.sample_count)));
+    const base_index: usize = @intFromFloat(@floor(clamped_progress));
+    const sample_index = @min(base_index, template.samples.len - 1);
+    return @max(template.samples[sample_index].delta_length, 1.0);
 }
 
 fn kind42CrossSectionHeight(lateral_offset: f32, radius: f32) f32 {

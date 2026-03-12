@@ -6406,37 +6406,39 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     }
 
     const player_position = runner.worldPosition(loaded_track_preview, 0.82);
+    const player_forward = runner.worldForward(loaded_track_preview);
+    const player_up = runner.worldUp(loaded_track_preview);
     const player_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
         runner.current_global_row,
         runner.resolved_lane_index,
         runner.row_position,
     ) orelse 0.0;
-    const max_target_row_position = @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.5, 0.5);
-    const target_row_position = std.math.clamp(runner.row_position + 8.0, 0.5, max_target_row_position);
-    const target_global_row = @min(@as(usize, @intFromFloat(@floor(target_row_position))), loaded_track_preview.total_rows - 1);
-    const target_lane_index = if (loaded_track_preview.locateRow(target_global_row)) |row_location| blk: {
-        const bounds = loaded_track_preview.laneBoundsForRow(row_location);
-        break :blk std.math.clamp(runner.resolved_lane_index, bounds.min, bounds.max);
-    } else runner.resolved_lane_index;
-    const target_lane_center = @as(f32, @floatFromInt(target_lane_index)) + 0.5;
-    const target_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
-        target_global_row,
-        target_lane_index,
-        target_row_position,
-    ) orelse 0.0;
-    const target = loaded_track_preview.worldPositionForLane(target_lane_center, target_row_position, target_floor + 0.62);
+    const target = rl.Vector3{
+        .x = player_position.x + (player_forward.x * 8.0) + (player_up.x * 0.62),
+        .y = player_position.y + (player_forward.y * 8.0) + (player_up.y * 0.62),
+        .z = player_position.z + (player_forward.z * 8.0) + (player_up.z * 0.62),
+    };
     // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
     // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
-    const position = rl.Vector3{
-        .x = player_position.x * 0.5,
-        .y = player_floor + 1.8,
-        .z = player_position.z - 0.5,
-    };
+    const attachment_camera = runner.movement_mode == .attachment and runner.attachment_follow.active;
+    const position = if (attachment_camera)
+        rl.Vector3{
+            .x = player_position.x - (player_forward.x * 2.2) + (player_up.x * 1.6),
+            .y = player_position.y - (player_forward.y * 2.2) + (player_up.y * 1.6),
+            .z = player_position.z - (player_forward.z * 2.2) + (player_up.z * 1.6),
+        }
+    else
+        rl.Vector3{
+            .x = player_position.x * 0.5,
+            .y = player_floor + 1.8,
+            .z = player_position.z - 0.5,
+        };
+    const up = if (attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
 
     return .{
         .position = position,
         .target = target,
-        .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+        .up = up,
         .fovy = 68.0,
         .projection = .perspective,
     };

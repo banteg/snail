@@ -443,6 +443,46 @@ pub const Runner = struct {
         return preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
     }
 
+    pub fn worldForward(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            if (self.currentAttachmentBuilt(preview)) |built| {
+                const pose = attachment_builders.worldPoseForTemplate(
+                    &built.template,
+                    self.attachment_follow.progress,
+                    self.attachment_follow.source_row,
+                    self.attachment_follow.lateral_offset,
+                    self.attachment_follow.vertical_offset,
+                );
+                return .{
+                    .x = pose.basis_forward.x,
+                    .y = pose.basis_forward.y,
+                    .z = pose.basis_forward.z,
+                };
+            }
+        }
+        return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+    }
+
+    pub fn worldUp(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            if (self.currentAttachmentBuilt(preview)) |built| {
+                const pose = attachment_builders.worldPoseForTemplate(
+                    &built.template,
+                    self.attachment_follow.progress,
+                    self.attachment_follow.source_row,
+                    self.attachment_follow.lateral_offset,
+                    self.attachment_follow.vertical_offset,
+                );
+                return .{
+                    .x = pose.basis_up.x,
+                    .y = pose.basis_up.y,
+                    .z = pose.basis_up.z,
+                };
+            }
+        }
+        return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    }
+
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
         const tag = self.current_annotation orelse return null;
         return switch (tag) {
@@ -1169,8 +1209,9 @@ pub const Runner = struct {
             return;
         };
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
+        const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, self.attachment_follow.progress);
         self.attachment_follow.progress = std.math.clamp(
-            self.attachment_follow.progress + self.movement_rate_scalar,
+            self.attachment_follow.progress + (self.movement_rate_scalar * delta_length),
             0.0,
             sample_count,
         );
