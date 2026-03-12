@@ -2517,7 +2517,13 @@ const AppState = struct {
                 self.game_status_message = null;
             }
         }
-        self.level_prompt_queue.tick();
+        if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
+            if (self.level_runner) |runner| {
+                if (!runner.paused) {
+                    self.level_prompt_queue.tick();
+                }
+            }
+        }
 
         if (self.frontend_transition.update()) |next_phase| {
             try self.enterGamePhase(next_phase);

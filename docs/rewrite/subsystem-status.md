@@ -200,6 +200,7 @@ Implemented now:
 - authored tutorial/message prompts now use a single top-centered timed banner with one active tutorial tip at a time instead of the old footer debug text block, bottom speaker card, or earlier invented stacked-card behavior
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
+- tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus
 
 Still missing or approximate:
 
@@ -231,6 +232,7 @@ Implemented now:
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles instead of invisible debug-only tiles
+- garbage collisions now apply the missing tutorial “Asteroids slow me down” behavior by shaving forward speed and kicking Turbo sideways instead of only incrementing damage/score
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 

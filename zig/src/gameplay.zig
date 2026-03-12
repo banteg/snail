@@ -282,6 +282,8 @@ const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
+const garbage_speed_scale: f32 = 0.9;
+const garbage_lateral_push: f32 = 0.35;
 const damage_warning_fill_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
 const jetpack_gauge_tick_step: f32 = 0.0016666667;
@@ -1017,6 +1019,7 @@ pub const Runner = struct {
                 if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .garbage)) return;
                 self.counters.garbage_hits += 1;
                 self.recordScore(&self.score.garbage_collision, 10);
+                self.applyGarbageImpact(preview, sample.resolved_lane_index);
                 self.applyDamageGaugeDelta(garbage_damage_delta);
                 self.recent_event = .garbage_hit;
             },
@@ -1103,6 +1106,46 @@ pub const Runner = struct {
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
         self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
+    }
+
+    // PORT(partial): Windows garbage collisions do more than apply the +0.04 damage
+    // delta. They also knock Goldy sideways and shave current forward speed. The exact
+    // velocity fields are still not fully modeled, so the runner applies a conservative
+    // equivalent: a one-shot 10% forward-speed loss plus a lateral push away from the
+    // impacted lane, with the same effect applied to attachment lateral offset when
+    // attached instead of snapping back to lane steps.
+    fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, lane_index: usize) void {
+        self.speed_rows_per_second = std.math.clamp(
+            self.speed_rows_per_second * garbage_speed_scale,
+            2.0,
+            48.0,
+        );
+
+        const gameplay_width = @min(preview.max_width, 8);
+        const track_center = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        const impact_center = @as(f32, @floatFromInt(lane_index)) + 0.5;
+        const push_direction: f32 = if (impact_center < track_center)
+            1.0
+        else if (impact_center > track_center)
+            -1.0
+        else if (self.lane_center < track_center)
+            -1.0
+        else
+            1.0;
+
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            self.attachment_follow.lateral_offset += push_direction * garbage_lateral_push;
+            return;
+        }
+
+        const min_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.min)) + 0.5;
+        const max_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.max)) + 0.5;
+        self.lane_center = std.math.clamp(
+            self.lane_center + (push_direction * garbage_lateral_push),
+            min_lane_center,
+            max_lane_center,
+        );
+        self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
@@ -2409,11 +2452,15 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
+    const speed_before_garbage = runner.speed_rows_per_second;
+    const lane_before_garbage = runner.lane_center;
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqual(@as(u32, 10), runner.score.total);
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
+    try std.testing.expect(runner.speed_rows_per_second < speed_before_garbage);
+    try std.testing.expect(runner.lane_center != lane_before_garbage);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
 
