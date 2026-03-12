@@ -274,6 +274,10 @@ const completion_cutscene_duration_ticks: u16 = 72;
 const death_cutscene_duration_ticks: u16 = 72;
 const death_resolution_duration_ticks: u16 = 120;
 const attachment_side_exit_margin: f32 = 0.3;
+const attachment_entry_start_y_tolerance: f32 = -0.2;
+const attachment_entry_end_y_tolerance: f32 = 0.001;
+const attachment_entry_rider_height: f32 = 0.49;
+const attachment_entry_local_z_tolerance: f32 = 1.5;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 
@@ -328,6 +332,7 @@ pub const Runner = struct {
     movement_progress: f32 = 0.0,
     movement_rate_scalar: f32 = 0.0,
     row_position: f32 = 0.0,
+    previous_row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
     paused: bool = false,
     finished: bool = false,
@@ -349,6 +354,7 @@ pub const Runner = struct {
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
     path_center_lane: ?f32 = null,
+    previous_lane_center: f32 = 0.5,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
@@ -385,6 +391,8 @@ pub const Runner = struct {
         };
         self.syncRowPosition(preview);
         self.refreshSample(preview);
+        self.previous_row_position = self.row_position;
+        self.previous_lane_center = self.lane_center;
         self.last_processed_row = self.current_global_row;
     }
 
@@ -413,6 +421,8 @@ pub const Runner = struct {
         }
 
         if (self.acceptsGameplayInput()) {
+            self.previous_row_position = self.row_position;
+            self.previous_lane_center = self.lane_center;
             self.applyLaneDelta(input.lane_delta);
         }
 
@@ -811,7 +821,7 @@ pub const Runner = struct {
 
         if (self.movement_mode != .attachment) {
             if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                if (self.installedAttachmentEntry(preview, built, global_row)) |entry| {
+                if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
                     self.beginInstalledAttachmentFollow(preview, built, entry);
                 }
             }
@@ -863,7 +873,7 @@ pub const Runner = struct {
             .attachment_entry => {
                 if (self.movement_mode != .attachment) {
                     if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                        if (self.installedAttachmentEntry(preview, built, global_row)) |entry| {
+                        if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
                             self.beginInstalledAttachmentFollow(preview, built, entry);
                         }
                     } else {
@@ -1261,6 +1271,40 @@ pub const Runner = struct {
         return world_x + width_offset;
     }
 
+    fn laneIndexForLaneCenter(preview: *const track.LoadedLevelPreview, lane_center: f32) usize {
+        if (preview.max_width == 0) return 0;
+        const centered_lane = std.math.clamp(
+            lane_center,
+            0.5,
+            @as(f32, @floatFromInt(preview.max_width)) - 0.5,
+        );
+        return @min(
+            preview.max_width - 1,
+            @as(usize, @intFromFloat(@floor(centered_lane - 0.5))),
+        );
+    }
+
+    fn trackEntryWorldPosition(preview: *const track.LoadedLevelPreview, row_position: f32, lane_center: f32) attachment_builders.Vec3 {
+        const lane_index = laneIndexForLaneCenter(preview, lane_center);
+        const global_row = currentRowIndex(preview, row_position);
+        const floor_y = preview.sampleFloorHeightAtGridPosition(global_row, lane_index, row_position) orelse 0.0;
+        const world_position = preview.worldPositionForLane(lane_center, row_position, floor_y + attachment_entry_rider_height);
+        return .{
+            .x = world_position.x,
+            .y = world_position.y,
+            .z = world_position.z,
+        };
+    }
+
+    fn attachmentLocalPosition(pose: attachment_builders.WorldPose, world_position: attachment_builders.Vec3) attachment_builders.Vec3 {
+        const delta = attachment_builders.Vec3.sub(world_position, pose.position);
+        return .{
+            .x = (delta.x * pose.basis_right.x) + (delta.y * pose.basis_right.y) + (delta.z * pose.basis_right.z),
+            .y = (delta.x * pose.basis_up.x) + (delta.y * pose.basis_up.y) + (delta.z * pose.basis_up.z),
+            .z = (delta.x * pose.basis_forward.x) + (delta.y * pose.basis_forward.y) + (delta.z * pose.basis_forward.z),
+        };
+    }
+
     fn commitAttachmentNaturalExit(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
@@ -1439,34 +1483,79 @@ pub const Runner = struct {
         preview: *const track.LoadedLevelPreview,
         built: *const attachment_builders.BuiltAttachment,
         global_row: usize,
+        sample: RowSample,
     ) ?InstalledAttachmentEntry {
-        if (global_row != built.row.global_row) return null;
-        const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
-        const row_fraction = std.math.clamp(
-            self.row_position - @as(f32, @floatFromInt(global_row)),
-            0.0,
-            1.0,
-        );
-        const progress = std.math.clamp(
-            row_progress + row_fraction,
+        if (global_row == built.row.global_row) {
+            const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
+            const row_fraction = std.math.clamp(
+                self.row_position - @as(f32, @floatFromInt(global_row)),
+                0.0,
+                1.0,
+            );
+            const progress = std.math.clamp(
+                row_progress + row_fraction,
+                0.0,
+                @as(f32, @floatFromInt(built.template.sample_count)),
+            );
+            const centered_world_position = attachment_builders.worldPositionForTemplate(
+                &built.template,
+                progress,
+                built.row.global_row,
+                0.0,
+                0.0,
+            );
+            const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
+            const lateral_offset = self.lane_center - centered_lane_center;
+            const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
+            const local_lateral = @abs(lateral_offset * pose.lateral_scale);
+            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+            if (local_lateral > half_width + attachment_side_exit_margin) return null;
+            return .{
+                .progress = progress,
+                .lateral_offset = lateral_offset,
+            };
+        }
+
+        const start_progress = std.math.clamp(
+            self.previous_row_position - @as(f32, @floatFromInt(built.row.global_row)),
             0.0,
             @as(f32, @floatFromInt(built.template.sample_count)),
         );
-        const centered_world_position = attachment_builders.worldPositionForTemplate(
+        const end_progress = std.math.clamp(
+            self.row_position - @as(f32, @floatFromInt(built.row.global_row)),
+            0.0,
+            @as(f32, @floatFromInt(built.template.sample_count)),
+        );
+        if (end_progress <= start_progress) return null;
+
+        const current_lane_center = @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
+        const end_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            progress,
+            end_progress,
             built.row.global_row,
             0.0,
             0.0,
         );
-        const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
-        const lateral_offset = self.lane_center - centered_lane_center;
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
-        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
+        const start_world_position = trackEntryWorldPosition(preview, self.previous_row_position, self.previous_lane_center);
+        const end_world_position = trackEntryWorldPosition(preview, self.row_position, current_lane_center);
+        const start_local = attachmentLocalPosition(end_pose, start_world_position);
+        const end_local = attachmentLocalPosition(end_pose, end_world_position);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+        if (@abs(end_local.x) > half_width + attachment_side_exit_margin) return null;
+        if (start_local.y < attachment_entry_start_y_tolerance) return null;
+        if (end_local.y > attachment_entry_end_y_tolerance) return null;
+        if (@abs(start_local.z) > attachment_entry_local_z_tolerance and @abs(end_local.z) > attachment_entry_local_z_tolerance) return null;
+
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, end_progress);
+        const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
+            end_local.x / pose.lateral_scale
+        else
+            0.0;
+        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
         if (local_lateral > half_width + attachment_side_exit_margin) return null;
+
         return .{
-            .progress = progress,
+            .progress = std.math.clamp(end_progress + end_local.z, 0.0, @as(f32, @floatFromInt(built.template.sample_count))),
             .lateral_offset = lateral_offset,
         };
     }
