@@ -60,11 +60,14 @@ const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
+const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
 const gameplay_salt_model_path = "X/SALT.X2";
 const gameplay_turret_model_path = "X/BLASTERTOP-BASE-000.X2";
-const gameplay_weapon_left_model_path = "X/BLASTERLEFT-BASE-000.X2";
-const gameplay_weapon_right_model_path = "X/BLASTERRIGHT-BASE-000.X2";
-const gameplay_weapon_top_model_path = "X/BLASTERTOP-BASE-000.X2";
+const gameplay_blaster_top_model_path = "X/BLASTERTOP-BASE-000.X2";
+const gameplay_laser_left_model_path = "X/LASERLEFT-BASE-000.X2";
+const gameplay_laser_right_model_path = "X/LASERRIGHT-BASE-000.X2";
+const gameplay_rocket_launcher_model_path = "X/ROCKETLAUNCHER-BASE-000.X2";
+const gameplay_rocket_model_path = "X/ROCKET-BASE-000.X2";
 const gameplay_invincible_model_path = "X/INVINCIBLE-BASE-000.X2";
 const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
@@ -1121,11 +1124,14 @@ const AppState = struct {
     current_gameplay_turbo_animation: ?xanim.Player = null,
     current_gameplay_barrier_object: ?object.LoadedObject = null,
     current_gameplay_lazer_object: ?object.LoadedObject = null,
+    current_gameplay_vapour_lazer_object: ?object.LoadedObject = null,
     current_gameplay_salt_model: ?x2.Uploaded = null,
     current_gameplay_turret_model: ?x2.Uploaded = null,
-    current_gameplay_weapon_left_model: ?x2.Uploaded = null,
-    current_gameplay_weapon_right_model: ?x2.Uploaded = null,
-    current_gameplay_weapon_top_model: ?x2.Uploaded = null,
+    current_gameplay_blaster_top_model: ?x2.Uploaded = null,
+    current_gameplay_laser_left_model: ?x2.Uploaded = null,
+    current_gameplay_laser_right_model: ?x2.Uploaded = null,
+    current_gameplay_rocket_launcher_model: ?x2.Uploaded = null,
+    current_gameplay_rocket_model: ?x2.Uploaded = null,
     current_gameplay_invincible_model: ?x2.Uploaded = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_gameplay_sound_fx: GameplaySoundFx = .{},
@@ -1467,6 +1473,10 @@ const AppState = struct {
             loaded_object.deinit();
             self.current_gameplay_lazer_object = null;
         }
+        if (self.current_gameplay_vapour_lazer_object) |*loaded_object| {
+            loaded_object.deinit();
+            self.current_gameplay_vapour_lazer_object = null;
+        }
     }
 
     fn unloadGameplaySalt(self: *AppState) void {
@@ -1481,17 +1491,25 @@ const AppState = struct {
             model.deinit();
             self.current_gameplay_turret_model = null;
         }
-        if (self.current_gameplay_weapon_left_model) |*model| {
+        if (self.current_gameplay_blaster_top_model) |*model| {
             model.deinit();
-            self.current_gameplay_weapon_left_model = null;
+            self.current_gameplay_blaster_top_model = null;
         }
-        if (self.current_gameplay_weapon_right_model) |*model| {
+        if (self.current_gameplay_laser_left_model) |*model| {
             model.deinit();
-            self.current_gameplay_weapon_right_model = null;
+            self.current_gameplay_laser_left_model = null;
         }
-        if (self.current_gameplay_weapon_top_model) |*model| {
+        if (self.current_gameplay_laser_right_model) |*model| {
             model.deinit();
-            self.current_gameplay_weapon_top_model = null;
+            self.current_gameplay_laser_right_model = null;
+        }
+        if (self.current_gameplay_rocket_launcher_model) |*model| {
+            model.deinit();
+            self.current_gameplay_rocket_launcher_model = null;
+        }
+        if (self.current_gameplay_rocket_model) |*model| {
+            model.deinit();
+            self.current_gameplay_rocket_model = null;
         }
         if (self.current_gameplay_invincible_model) |*model| {
             model.deinit();
@@ -1559,6 +1577,15 @@ const AppState = struct {
             entry,
             true,
         );
+
+        if (self.catalog.findObjectIndex(gameplay_vapour_lazer_object_path)) |vapour_index| {
+            self.current_gameplay_vapour_lazer_object = try object.LoadedObject.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.object_entries[vapour_index],
+                true,
+            );
+        }
     }
 
     fn reloadGameplaySalt(self: *AppState) !void {
@@ -1585,24 +1612,40 @@ const AppState = struct {
             true,
         );
 
-        if (self.catalog.findModelIndex(gameplay_weapon_left_model_path)) |entry_index| {
-            self.current_gameplay_weapon_left_model = try x2.Uploaded.loadFromArchive(
+        if (self.catalog.findModelIndex(gameplay_blaster_top_model_path)) |entry_index| {
+            self.current_gameplay_blaster_top_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
                 &self.catalog,
                 self.catalog.model_entries[entry_index],
                 true,
             );
         }
-        if (self.catalog.findModelIndex(gameplay_weapon_right_model_path)) |entry_index| {
-            self.current_gameplay_weapon_right_model = try x2.Uploaded.loadFromArchive(
+        if (self.catalog.findModelIndex(gameplay_laser_left_model_path)) |entry_index| {
+            self.current_gameplay_laser_left_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
                 &self.catalog,
                 self.catalog.model_entries[entry_index],
                 true,
             );
         }
-        if (self.catalog.findModelIndex(gameplay_weapon_top_model_path)) |entry_index| {
-            self.current_gameplay_weapon_top_model = try x2.Uploaded.loadFromArchive(
+        if (self.catalog.findModelIndex(gameplay_laser_right_model_path)) |entry_index| {
+            self.current_gameplay_laser_right_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        if (self.catalog.findModelIndex(gameplay_rocket_launcher_model_path)) |entry_index| {
+            self.current_gameplay_rocket_launcher_model = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        if (self.catalog.findModelIndex(gameplay_rocket_model_path)) |entry_index| {
+            self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
                 &self.catalog,
                 self.catalog.model_entries[entry_index],
@@ -6296,56 +6339,26 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
 }
 
 fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    var next_bottom = layout.mapPoint(0.0, 448.0).y;
+    const prompt = queue.active() orelse return;
+    const card = layout.mapRect(72.0, 58.0, 496.0, 54.0);
+    rl.drawRectangleRounded(card, 0.12, 8, .{ .r = 10, .g = 10, .b = 18, .a = 216 });
+    rl.drawRectangleRoundedLinesEx(
+        card,
+        0.12,
+        8,
+        layout.scaleFloat(2.0),
+        .{ .r = 88, .g = 116, .b = 164, .a = 156 },
+    );
 
-    for (queue.entries) |slot| {
-        const prompt = slot orelse continue;
-        const line_count = gameplayPromptLineCount(prompt.message);
-        const card_height = @max(layout.scaleFloat(22.0 + @as(f32, @floatFromInt(line_count)) * 20.0), layout.scaleFloat(44.0));
-        const card = rl.Rectangle{
-            .x = layout.x + layout.scaleFloat(18.0),
-            .y = next_bottom - card_height,
-            .width = layout.scaleFloat(284.0),
-            .height = card_height,
-        };
-        next_bottom = card.y - layout.scaleFloat(8.0);
-
-        rl.drawRectangleRounded(card, 0.12, 8, .{ .r = 8, .g = 18, .b = 38, .a = 212 });
-        rl.drawRectangleRoundedLinesEx(
-            card,
-            0.12,
-            8,
-            layout.scaleFloat(2.0),
-            .{ .r = 118, .g = 180, .b = 255, .a = 176 },
-        );
-
-        const accent = rl.Rectangle{
-            .x = card.x + layout.scaleFloat(8.0),
-            .y = card.y + layout.scaleFloat(8.0),
-            .width = layout.scaleFloat(4.0),
-            .height = card.height - layout.scaleFloat(16.0),
-        };
-        rl.drawRectangleRounded(accent, 0.3, 4, .{ .r = 244, .g = 191, .b = 73, .a = 224 });
-
-        try drawWrappedText(
-            state,
-            prompt.message,
-            @intFromFloat(card.x + layout.scaleFloat(22.0)),
-            @intFromFloat(card.y + layout.scaleFloat(12.0)),
-            @intFromFloat(card.width - layout.scaleFloat(34.0)),
-            layout.fontSize(18),
-            .ray_white,
-        );
-    }
-}
-
-fn gameplayPromptLineCount(text: []const u8) usize {
-    var count: usize = 0;
-    var parts = std.mem.splitScalar(u8, text, '>');
-    while (parts.next()) |_| {
-        count += 1;
-    }
-    return @max(count, 1);
+    try drawWrappedText(
+        state,
+        prompt.message,
+        @intFromFloat(card.x + layout.scaleFloat(18.0)),
+        @intFromFloat(card.y + layout.scaleFloat(10.0)),
+        @intFromFloat(card.width - layout.scaleFloat(36.0)),
+        layout.fontSize(20),
+        .ray_white,
+    );
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
@@ -7411,8 +7424,6 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
-    const loaded_object = state.current_gameplay_lazer_object orelse return;
-
     const forward = normalizeVector3(.{
         .x = projectile.dir_x,
         .y = projectile.dir_y,
@@ -7437,15 +7448,65 @@ fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Proj
     };
     const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
     const local_offset = rl.Matrix.translate(
-        -loaded_object.center.x,
-        -loaded_object.center.y,
-        -loaded_object.center.z,
+        0.0,
+        0.0,
+        0.0,
     );
-    const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
-    loaded_object.drawTintedEx(
-        world_transform.multiply(local_offset).multiply(scale),
-        .{ .r = 170, .g = 220, .b = 255, .a = 232 },
-    );
+    _ = local_offset;
+
+    switch (projectile.kind) {
+        .turbo => {
+            const loaded_object = state.current_gameplay_lazer_object orelse return;
+            const offset = rl.Matrix.translate(
+                -loaded_object.center.x,
+                -loaded_object.center.y,
+                -loaded_object.center.z,
+            );
+            const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
+            loaded_object.drawTintedEx(
+                world_transform.multiply(offset).multiply(scale),
+                .{ .r = 170, .g = 220, .b = 255, .a = 232 },
+            );
+        },
+        .laser => {
+            const loaded_object = state.current_gameplay_vapour_lazer_object orelse state.current_gameplay_lazer_object orelse return;
+            const offset = rl.Matrix.translate(
+                -loaded_object.center.x,
+                -loaded_object.center.y,
+                -loaded_object.center.z,
+            );
+            const scale = rl.Matrix.scale(0.22, 0.22, 0.22);
+            loaded_object.drawTintedEx(
+                world_transform.multiply(offset).multiply(scale),
+                .{ .r = 180, .g = 255, .b = 255, .a = 236 },
+            );
+        },
+        .rocket => {
+            const model = state.current_gameplay_rocket_model orelse {
+                const loaded_object = state.current_gameplay_lazer_object orelse return;
+                const offset = rl.Matrix.translate(
+                    -loaded_object.center.x,
+                    -loaded_object.center.y,
+                    -loaded_object.center.z,
+                );
+                const scale = rl.Matrix.scale(0.22, 0.22, 0.22);
+                loaded_object.drawTintedEx(
+                    world_transform.multiply(offset).multiply(scale),
+                    .{ .r = 255, .g = 224, .b = 164, .a = 236 },
+                );
+                return;
+            };
+            drawGameplayUploadedModel(
+                model,
+                position,
+                right,
+                corrected_up,
+                forward,
+                .{ .x = 0.16, .y = 0.16, .z = 0.16 },
+                null,
+            );
+        },
+    }
 }
 
 fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
@@ -7510,43 +7571,57 @@ fn drawGameplayTurboAttachments(
     forward: rl.Vector3,
     runner: gameplay.Runner,
 ) void {
-    if (runner.weapon_level > 0) {
-        if (state.current_gameplay_weapon_left_model) |model| {
-            drawGameplayUploadedModel(
-                model,
-                offsetPosition(position, right, up, forward, -0.26, 0.10, 0.08),
-                right,
-                up,
-                forward,
-                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                null,
-            );
-        }
-        if (state.current_gameplay_weapon_right_model) |model| {
-            drawGameplayUploadedModel(
-                model,
-                offsetPosition(position, right, up, forward, 0.26, 0.10, 0.08),
-                right,
-                up,
-                forward,
-                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                null,
-            );
-        }
-    }
-
-    if (runner.weapon_level >= 2) {
-        if (state.current_gameplay_weapon_top_model) |model| {
-            drawGameplayUploadedModel(
-                model,
-                offsetPosition(position, right, up, forward, 0.0, 0.28, 0.12),
-                right,
-                up,
-                forward,
-                .{ .x = 0.24, .y = 0.24, .z = 0.24 },
-                null,
-            );
-        }
+    switch (runner.weapon_level) {
+        0 => {
+            if (state.current_gameplay_blaster_top_model) |model| {
+                drawGameplayUploadedModel(
+                    model,
+                    offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
+                    right,
+                    up,
+                    forward,
+                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                    null,
+                );
+            }
+        },
+        1 => {
+            if (state.current_gameplay_laser_left_model) |model| {
+                drawGameplayUploadedModel(
+                    model,
+                    offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
+                    right,
+                    up,
+                    forward,
+                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                    null,
+                );
+            }
+            if (state.current_gameplay_laser_right_model) |model| {
+                drawGameplayUploadedModel(
+                    model,
+                    offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
+                    right,
+                    up,
+                    forward,
+                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                    null,
+                );
+            }
+        },
+        else => {
+            if (state.current_gameplay_rocket_launcher_model) |model| {
+                drawGameplayUploadedModel(
+                    model,
+                    offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
+                    right,
+                    up,
+                    forward,
+                    .{ .x = 0.24, .y = 0.24, .z = 0.24 },
+                    null,
+                );
+            }
+        },
     }
 
     if (runner.invincible_ticks > 0) {

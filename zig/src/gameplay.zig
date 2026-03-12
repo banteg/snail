@@ -92,7 +92,14 @@ pub const RuntimeHazard = struct {
 };
 
 pub const Projectile = struct {
+    pub const Kind = enum {
+        turbo,
+        laser,
+        rocket,
+    };
+
     active: bool = false,
+    kind: Kind = .turbo,
     world_x: f32 = 0.0,
     world_y: f32 = 0.0,
     world_z: f32 = 0.0,
@@ -305,6 +312,22 @@ const slow_ring_duration_ticks: u16 = 240;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
 const slug_projectile_kill_score: u32 = 100;
+
+fn shotCooldownTicksForWeaponLevel(weapon_level: u8) u8 {
+    return switch (weapon_level) {
+        0 => 4,
+        1 => 7,
+        else => 4,
+    };
+}
+
+fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
+    return switch (kind) {
+        .turbo => projectile_speed_rows_per_second,
+        .laser => projectile_speed_rows_per_second * 1.15,
+        .rocket => projectile_speed_rows_per_second * 0.8,
+    };
+}
 
 const RowSample = struct {
     global_row: usize,
@@ -1171,7 +1194,7 @@ pub const Runner = struct {
     fn handleFireInput(self: *Runner, preview: *const track.LoadedLevelPreview, fire: bool) void {
         if (!fire or self.shot_cooldown_ticks != 0) return;
         self.spawnProjectiles(preview);
-        self.shot_cooldown_ticks = base_fire_cooldown_ticks;
+        self.shot_cooldown_ticks = shotCooldownTicksForWeaponLevel(self.weapon_level);
     }
 
     fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1187,10 +1210,11 @@ pub const Runner = struct {
         }
         switch (self.weapon_level) {
             0 => {
-                self.spawnProjectile(origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
+                self.spawnProjectile(.turbo, origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
             },
             1 => {
                 self.spawnProjectile(
+                    .laser,
                     origin.x - (right.x * 0.35),
                     origin.y - (right.y * 0.35),
                     origin.z - (right.z * 0.35),
@@ -1199,6 +1223,7 @@ pub const Runner = struct {
                     forward.z,
                 );
                 self.spawnProjectile(
+                    .laser,
                     origin.x + (right.x * 0.35),
                     origin.y + (right.y * 0.35),
                     origin.z + (right.z * 0.35),
@@ -1209,18 +1234,10 @@ pub const Runner = struct {
             },
             else => {
                 self.spawnProjectile(
-                    origin.x - (right.x * 0.42),
-                    origin.y - (right.y * 0.42),
-                    origin.z - (right.z * 0.42),
-                    forward.x,
-                    forward.y,
-                    forward.z,
-                );
-                self.spawnProjectile(origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
-                self.spawnProjectile(
-                    origin.x + (right.x * 0.42),
-                    origin.y + (right.y * 0.42),
-                    origin.z + (right.z * 0.42),
+                    .rocket,
+                    origin.x + (up.x * 0.16) + (forward.x * 0.12),
+                    origin.y + (up.y * 0.16) + (forward.y * 0.12),
+                    origin.z + (up.z * 0.16) + (forward.z * 0.12),
                     forward.x,
                     forward.y,
                     forward.z,
@@ -1229,7 +1246,7 @@ pub const Runner = struct {
         }
     }
 
-    fn spawnProjectile(self: *Runner, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
+    fn spawnProjectile(self: *Runner, kind: Projectile.Kind, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
         var slot_index: ?usize = null;
         for (0..max_active_projectiles) |index| {
             if (!self.active_projectiles[index].active) {
@@ -1240,13 +1257,14 @@ pub const Runner = struct {
         const index = slot_index orelse return;
         self.active_projectiles[index] = .{
             .active = true,
+            .kind = kind,
             .world_x = world_x,
             .world_y = world_y,
             .world_z = world_z,
             .dir_x = dir_x,
             .dir_y = dir_y,
             .dir_z = dir_z,
-            .speed_rows_per_second = projectile_speed_rows_per_second,
+            .speed_rows_per_second = projectileSpeedForKind(kind),
         };
         if (index >= self.active_projectile_count) {
             self.active_projectile_count = index + 1;
@@ -2474,6 +2492,35 @@ test "projectile fire defeats slug after powerup" {
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
+}
+
+test "weapon tiers spawn expected projectile families" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.reset(&fixture.preview);
+
+    runner.weapon_level = 0;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.weapon_level = 1;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[1].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.weapon_level = 2;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.rocket, runner.active_projectiles[0].kind);
 }
 
 test "projectiles stop on salt without consuming the hazard" {
