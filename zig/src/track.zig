@@ -432,8 +432,9 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn previewCamera(self: *const LoadedLevelPreview, time_seconds: f32, selected_segment_index: usize) rl.Camera3D {
-        const target = self.segmentCenter(selected_segment_index);
-        const distance = @max(@as(f32, @floatFromInt(self.total_rows)) * 0.45, 18.0);
+        const bounds = self.segmentPreviewBounds(selected_segment_index);
+        const target = bounds.center;
+        const distance = @max(@as(f32, @floatFromInt(self.total_rows)) * 0.45, @max(bounds.radius * 2.8, 18.0));
         return .{
             .position = .{
                 .x = target.x + std.math.cos(time_seconds * 0.18) * distance,
@@ -662,14 +663,53 @@ pub const LoadedLevelPreview = struct {
         );
     }
 
-    fn segmentCenter(self: *const LoadedLevelPreview, selected_segment_index: usize) rl.Vector3 {
+    const PreviewBounds = struct {
+        center: rl.Vector3,
+        radius: f32,
+    };
+
+    fn segmentPreviewBounds(self: *const LoadedLevelPreview, selected_segment_index: usize) PreviewBounds {
         const safe_index = @min(selected_segment_index, self.segments.len - 1);
         const loaded_segment = self.segments[safe_index];
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
         const start_z = @as(f32, @floatFromInt(self.row_offsets[safe_index]));
+        const end_z = start_z + @as(f32, @floatFromInt(loaded_segment.height));
+
+        var min_x = -width_offset;
+        var max_x = width_offset;
+        var min_y: f32 = 0.0;
+        var max_y: f32 = 0.0;
+        var min_z = start_z;
+        var max_z = end_z;
+
+        for (self.attachment_scaffold.built_attachments) |built| {
+            if (built.row.segment_index != safe_index) continue;
+            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+            const base_row = @as(f32, @floatFromInt(built.row.global_row));
+            for (built.template.samples) |sample| {
+                const lateral_span = half_width * sample.lateral_scale;
+                const center_x = sample.position.x + sample.center_x;
+                const world_z = base_row + sample.position.z;
+                min_x = @min(min_x, center_x - lateral_span);
+                max_x = @max(max_x, center_x + lateral_span);
+                min_y = @min(min_y, sample.position.y);
+                max_y = @max(max_y, sample.position.y);
+                min_z = @min(min_z, world_z);
+                max_z = @max(max_z, world_z);
+            }
+        }
+
+        const center = rl.Vector3{
+            .x = (min_x + max_x) * 0.5,
+            .y = (min_y + max_y) * 0.5,
+            .z = (min_z + max_z) * 0.5,
+        };
+        const dx = max_x - center.x;
+        const dy = max_y - center.y;
+        const dz = max_z - center.z;
         return .{
-            .x = 0.0,
-            .y = 0.0,
-            .z = start_z + @as(f32, @floatFromInt(loaded_segment.height)) * 0.5,
+            .center = center,
+            .radius = @max(std.math.sqrt((dx * dx) + (dy * dy) + (dz * dz)), 1.0),
         };
     }
 

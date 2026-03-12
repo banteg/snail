@@ -241,6 +241,20 @@ pub const AttachmentPose = struct {
     lateral_scale: f32,
 };
 
+const VerticalLoopParams = struct {
+    radius: f32,
+    subdivision_count: u16,
+    bow_scalar: f32,
+    runtime_kind: u8,
+};
+
+const HillValleyParams = struct {
+    width_cells: u16,
+    height_scalar: f32,
+    length: u16,
+    centered: bool,
+};
+
 pub const AuthoredPathRow = struct {
     global_row: usize,
     segment_index: usize,
@@ -386,7 +400,22 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
 fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
     return switch (spec.public_path) {
         .start => try buildStartTemplate(allocator, spec),
+        .looptheloop,
+        .looptheloop2,
+        .looptheloop4,
+        .looptheloopt2,
+        .looptheloopt3,
+        .looptheloopt4,
+        .looptheloopw,
+        => try buildVerticalLoopTemplate(allocator, spec, verticalLoopParams(spec.public_path)),
         .loopbow => try buildLoopbowTemplate(allocator, spec),
+        .hill,
+        .hill4c,
+        .hill4,
+        .valley,
+        .valley4c,
+        .valley4,
+        => try buildHillValleyTemplate(allocator, spec, hillValleyParams(spec.public_path)),
         else => null,
     };
 }
@@ -449,12 +478,22 @@ fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templat
 }
 
 fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
-    const loop_radius: f32 = 6.0;
-    const subdivision_count: usize = 4;
-    const curve_steps: usize = @intFromFloat(@floor(loop_radius * (2.0 * std.math.pi)));
+    return buildVerticalLoopTemplate(allocator, spec, .{
+        .radius = 6.0,
+        .subdivision_count = 4,
+        .bow_scalar = 0.5,
+        .runtime_kind = 0,
+    });
+}
+
+fn buildVerticalLoopTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: VerticalLoopParams,
+) !Template {
+    const curve_steps: usize = @intFromFloat(@floor(params.radius * (2.0 * std.math.pi)));
     const sample_count: usize = curve_steps + 14;
     const point_count: usize = sample_count + 1;
-    const bow_scalar: f32 = 0.5;
     const start_flat_count: usize = 7;
     const end_flat_count: usize = 7;
     var samples = try allocator.alloc(TemplateSample, point_count);
@@ -467,7 +506,7 @@ fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templ
     for (0..start_flat_count) |index| {
         const row_offset = @as(f32, @floatFromInt(index));
         samples[index].position = .{
-            .x = -2.0 - (row_offset * 0.071428575),
+            .x = (@as(f32, @floatFromInt(params.subdivision_count)) * 0.5) - 4.0 - (row_offset * 0.14285715 * params.bow_scalar),
             .y = 0.0,
             .z = row_offset,
         };
@@ -476,7 +515,7 @@ fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templ
     const curve_steps_f: f32 = @floatFromInt(curve_steps);
     const radius = curve_steps_f * 0.15915494;
     const start_x = samples[0].position.x;
-    const end_x = 4.0 - (@as(f32, @floatFromInt(subdivision_count)) * 0.5);
+    const end_x = 4.0 - (@as(f32, @floatFromInt(params.subdivision_count)) * 0.5);
     for (0..curve_steps) |step| {
         const step_f: f32 = @floatFromInt(step);
         const t = step_f / curve_steps_f;
@@ -484,7 +523,7 @@ fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templ
         const index = start_flat_count + step;
         const linear_x = std.math.lerp(start_x, end_x, t);
         samples[index].position = .{
-            .x = linear_x + (-std.math.cos(angle * 0.5) * bow_scalar),
+            .x = linear_x + (-std.math.cos(angle * 0.5) * params.bow_scalar),
             .y = radius * (1.0 - std.math.cos(angle)),
             .z = (std.math.sin(angle) * radius) + 7.0,
         };
@@ -494,7 +533,7 @@ fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templ
         const index = curve_steps + start_flat_count + offset;
         const row_offset = @as(f32, @floatFromInt(offset));
         samples[index].position = .{
-            .x = (1.0 - (row_offset * 0.16666667)) * bow_scalar + end_x,
+            .x = (1.0 - (row_offset * 0.16666667)) * params.bow_scalar + end_x,
             .y = 0.0,
             .z = @as(f32, @floatFromInt(curve_steps + start_flat_count + offset)),
         };
@@ -513,14 +552,96 @@ fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templ
             .public_path = spec.public_path,
             .family = spec.family,
             .status = .partial,
-            .runtime_kind = spec.runtime_kind,
+            .runtime_kind = params.runtime_kind,
             .sample_count = @intCast(sample_count),
-            .subdivision_count = subdivision_count,
+            .subdivision_count = params.subdivision_count,
         },
-        .width_cells = subdivision_count,
+        .width_cells = params.subdivision_count,
         .sample_count = @intCast(sample_count),
         .exit_tail_extra = 1.0,
         .samples = samples,
+    };
+}
+
+fn verticalLoopParams(public_path: PublicPath) VerticalLoopParams {
+    return switch (public_path) {
+        .looptheloop => .{ .radius = 6.0, .subdivision_count = 3, .bow_scalar = 0.0, .runtime_kind = 0 },
+        .looptheloop2 => .{ .radius = 6.0, .subdivision_count = 2, .bow_scalar = 0.0, .runtime_kind = 0 },
+        .looptheloop4 => .{ .radius = 8.0, .subdivision_count = 4, .bow_scalar = 0.3, .runtime_kind = 0 },
+        .looptheloopt2 => .{ .radius = 3.0, .subdivision_count = 2, .bow_scalar = 0.0, .runtime_kind = 0 },
+        .looptheloopt3 => .{ .radius = 3.0, .subdivision_count = 3, .bow_scalar = 0.0, .runtime_kind = 0 },
+        .looptheloopt4 => .{ .radius = 3.0, .subdivision_count = 4, .bow_scalar = 0.3, .runtime_kind = 0 },
+        .looptheloopw => .{ .radius = 8.0, .subdivision_count = 4, .bow_scalar = 0.3, .runtime_kind = 6 },
+        else => unreachable,
+    };
+}
+
+fn buildHillValleyTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: HillValleyParams,
+) !Template {
+    const sample_count: usize = params.length + 2;
+    const point_count: usize = sample_count + 1;
+    var samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    const center_x = if (params.centered) 0.0 else (@as(f32, @floatFromInt(params.width_cells)) * 0.5) - 4.0;
+    samples[0].center_x = center_x;
+    samples[0].position = .{ .x = 0.0, .y = 0.0, .z = 0.0 };
+
+    const length_f: f32 = @floatFromInt(params.length);
+    for (0..params.length) |step| {
+        const progress = @as(f32, @floatFromInt(step)) / length_f;
+        const angle = progress * (2.0 * std.math.pi);
+        const sample = &samples[step + 1];
+        sample.center_x = center_x;
+        sample.position = .{
+            .x = 0.0,
+            .y = (1.0 - std.math.cos(angle)) * 0.5 * params.height_scalar,
+            .z = @floatFromInt(step + 1),
+        };
+    }
+
+    samples[params.length + 1].center_x = center_x;
+    samples[params.length + 1].position = .{
+        .x = 0.0,
+        .y = 0.0,
+        .z = @floatFromInt(params.length + 1),
+    };
+    samples[point_count - 1] = samples[params.length + 1];
+
+    finalizeTemplateSamples(samples[0 .. params.length + 2]);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = 16,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = params.width_cells,
+        },
+        .width_cells = params.width_cells,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn hillValleyParams(public_path: PublicPath) HillValleyParams {
+    return switch (public_path) {
+        .hill => .{ .width_cells = 8, .height_scalar = 4.0, .length = 20, .centered = true },
+        .hill4c => .{ .width_cells = 4, .height_scalar = 4.0, .length = 20, .centered = false },
+        .hill4 => .{ .width_cells = 4, .height_scalar = 4.0, .length = 20, .centered = true },
+        .valley => .{ .width_cells = 8, .height_scalar = -4.0, .length = 20, .centered = true },
+        .valley4c => .{ .width_cells = 4, .height_scalar = -4.0, .length = 20, .centered = false },
+        .valley4 => .{ .width_cells = 4, .height_scalar = -4.0, .length = 20, .centered = true },
+        else => unreachable,
     };
 }
 
@@ -547,9 +668,6 @@ fn finalizeTemplateSamples(samples: []TemplateSample) void {
         const up = Vec3.cross(sample.basis_forward, right);
         sample.basis_right = right;
         sample.basis_up = if (Vec3.length(up) > 0.0001) Vec3.normalize(up) else .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-        sample.center_x = 0.0;
-        sample.lateral_scale = 1.0;
-        sample.special_scalar = 0.0;
     }
 }
 
@@ -570,10 +688,45 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .looptheloopt2,
         .looptheloopt3,
         .looptheloopt4,
-        => .{ .public_path = public_path, .family = .looptheloop, .status = .scaffold },
-        .looptheloopw => .{ .public_path = public_path, .family = .looptheloopw, .status = .scaffold },
+        => blk: {
+            const params = verticalLoopParams(public_path);
+            const sample_count: u16 = @as(u16, @intFromFloat(@floor(params.radius * (2.0 * std.math.pi)))) + 14;
+            break :blk .{
+                .public_path = public_path,
+                .family = .looptheloop,
+                .status = .partial,
+                .runtime_kind = params.runtime_kind,
+                .sample_count = sample_count,
+                .subdivision_count = params.subdivision_count,
+            };
+        },
+        .looptheloopw => blk: {
+            const params = verticalLoopParams(public_path);
+            const sample_count: u16 = @as(u16, @intFromFloat(@floor(params.radius * (2.0 * std.math.pi)))) + 14;
+            break :blk .{
+                .public_path = public_path,
+                .family = .looptheloopw,
+                .status = .partial,
+                .runtime_kind = params.runtime_kind,
+                .sample_count = sample_count,
+                .subdivision_count = params.subdivision_count,
+            };
+        },
         .loopbow => .{ .public_path = public_path, .family = .loopbow, .status = .partial, .runtime_kind = 0, .sample_count = 51, .subdivision_count = 4 },
-        .hill, .hill4c, .hill4, .valley, .valley4c, .valley4 => .{ .public_path = public_path, .family = .hill_valley, .status = .scaffold },
+        .hill,
+        .hill4c,
+        .hill4,
+        .valley,
+        .valley4c,
+        .valley4,
+        => .{
+            .public_path = public_path,
+            .family = .hill_valley,
+            .status = .partial,
+            .runtime_kind = 16,
+            .sample_count = 22,
+            .subdivision_count = hillValleyParams(public_path).width_cells,
+        },
         .sbend => .{ .public_path = public_path, .family = .sbend, .status = .scaffold },
         .cage2 => .{ .public_path = public_path, .family = .cage2, .status = .scaffold },
         .hump, .humpsmall => .{ .public_path = public_path, .family = .hump, .status = .scaffold },
@@ -745,4 +898,63 @@ test "build loopbow template from recovered ordinary family shape" {
     try std.testing.expect(mid.position.y > 10.0);
     try std.testing.expect(mid.position.x > -3.0);
     try std.testing.expect(mid.position.x < 3.0);
+}
+
+test "build vertical loop family templates from recovered public slot params" {
+    const cases = [_]struct {
+        path: PublicPath,
+        sample_count: u16,
+        width_cells: u16,
+        runtime_kind: u8,
+    }{
+        .{ .path = .looptheloop, .sample_count = 51, .width_cells = 3, .runtime_kind = 0 },
+        .{ .path = .looptheloop4, .sample_count = 64, .width_cells = 4, .runtime_kind = 0 },
+        .{ .path = .looptheloopt2, .sample_count = 32, .width_cells = 2, .runtime_kind = 0 },
+        .{ .path = .looptheloopw, .sample_count = 64, .width_cells = 4, .runtime_kind = 6 },
+    };
+
+    for (cases) |case| {
+        const spec = specForPublicPath(case.path);
+        var template = (try buildTemplate(std.testing.allocator, spec)).?;
+        defer template.deinit(std.testing.allocator);
+
+        try std.testing.expectEqual(case.sample_count, template.sample_count);
+        try std.testing.expectEqual(case.width_cells, template.width_cells);
+        try std.testing.expectEqual(case.runtime_kind, template.spec.runtime_kind.?);
+        try std.testing.expectEqual(@as(usize, case.sample_count) + 1, template.pointCount());
+        try std.testing.expect(template.samples[0].position.y == 0.0);
+        try std.testing.expect(template.samples[template.samples.len - 1].position.y == 0.0);
+    }
+}
+
+test "build hill and valley family templates from recovered shared constructor params" {
+    const cases = [_]struct {
+        path: PublicPath,
+        width_cells: u16,
+        runtime_kind: u8,
+        expect_peak_positive: bool,
+        expected_center_x: f32,
+    }{
+        .{ .path = .hill, .width_cells = 8, .runtime_kind = 16, .expect_peak_positive = true, .expected_center_x = 0.0 },
+        .{ .path = .hill4c, .width_cells = 4, .runtime_kind = 16, .expect_peak_positive = true, .expected_center_x = -2.0 },
+        .{ .path = .valley4, .width_cells = 4, .runtime_kind = 16, .expect_peak_positive = false, .expected_center_x = 0.0 },
+    };
+
+    for (cases) |case| {
+        const spec = specForPublicPath(case.path);
+        var template = (try buildTemplate(std.testing.allocator, spec)).?;
+        defer template.deinit(std.testing.allocator);
+
+        try std.testing.expectEqual(@as(u16, 22), template.sample_count);
+        try std.testing.expectEqual(case.width_cells, template.width_cells);
+        try std.testing.expectEqual(case.runtime_kind, template.spec.runtime_kind.?);
+        try std.testing.expectApproxEqAbs(case.expected_center_x, template.samples[0].center_x, 0.0001);
+
+        const mid = samplePoseAtProgress(&template, 10.5);
+        if (case.expect_peak_positive) {
+            try std.testing.expect(mid.position.y > 0.0);
+        } else {
+            try std.testing.expect(mid.position.y < 0.0);
+        }
+    }
 }

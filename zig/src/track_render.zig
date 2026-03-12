@@ -263,7 +263,22 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
         switch (built.template.spec.public_path) {
-            .start, .loopbow => drawOrdinaryAttachment(scene, built),
+            .start,
+            .hill,
+            .hill4c,
+            .hill4,
+            .valley,
+            .valley4c,
+            .valley4,
+            .looptheloop,
+            .looptheloop2,
+            .looptheloop4,
+            .looptheloopt2,
+            .looptheloopt3,
+            .looptheloopt4,
+            .looptheloopw,
+            .loopbow,
+            => drawOrdinaryAttachment(scene, built),
             else => {},
         }
     }
