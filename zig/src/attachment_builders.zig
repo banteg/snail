@@ -320,11 +320,15 @@ pub const Scaffold = struct {
     allocator: std.mem.Allocator,
     authored_rows: []AuthoredPathRow,
     built_attachments: []BuiltAttachment,
+    installed_attachment_rows: []?usize,
 
     pub fn collect(
         allocator: std.mem.Allocator,
         segments: []const segment.Definition,
         row_offsets: []const usize,
+        runtime_tiles: []const u8,
+        total_rows: usize,
+        max_width: usize,
     ) !Scaffold {
         var rows: std.ArrayList(AuthoredPathRow) = .empty;
         defer rows.deinit(allocator);
@@ -364,10 +368,24 @@ pub const Scaffold = struct {
             });
         }
 
+        const installed_attachment_rows = try allocator.alloc(?usize, total_rows);
+        errdefer allocator.free(installed_attachment_rows);
+        @memset(installed_attachment_rows, null);
+
+        for (built_attachments.items, 0..) |built, index| {
+            const attachment_end = @min(total_rows, built.row.global_row + built.template.sample_count + 1);
+            var global_row = built.row.global_row;
+            while (global_row < attachment_end) : (global_row += 1) {
+                if (!rowHasAttachmentRuntimeTile(runtime_tiles, total_rows, max_width, global_row)) continue;
+                installed_attachment_rows[global_row] = index;
+            }
+        }
+
         return .{
             .allocator = allocator,
             .authored_rows = try rows.toOwnedSlice(allocator),
             .built_attachments = try built_attachments.toOwnedSlice(allocator),
+            .installed_attachment_rows = installed_attachment_rows,
         };
     }
 
@@ -375,6 +393,7 @@ pub const Scaffold = struct {
         for (self.built_attachments) |*built| {
             built.deinit(self.allocator);
         }
+        self.allocator.free(self.installed_attachment_rows);
         self.allocator.free(self.built_attachments);
         self.allocator.free(self.authored_rows);
     }
@@ -414,7 +433,22 @@ pub const Scaffold = struct {
         }
         return null;
     }
+
+    pub fn installedBuiltAttachmentAtRow(self: *const Scaffold, global_row: usize) ?*const BuiltAttachment {
+        if (global_row >= self.installed_attachment_rows.len) return null;
+        const built_index = self.installed_attachment_rows[global_row] orelse return null;
+        return &self.built_attachments[built_index];
+    }
 };
+
+fn rowHasAttachmentRuntimeTile(runtime_tiles: []const u8, total_rows: usize, max_width: usize, global_row: usize) bool {
+    if (global_row >= total_rows or max_width == 0) return false;
+    const row_offset = global_row * max_width;
+    for (runtime_tiles[row_offset .. row_offset + max_width]) |tile_type| {
+        if (tile_type == 0x1d or tile_type == 0x1e) return true;
+    }
+    return false;
+}
 
 pub fn samplePoseAtProgress(template: *const Template, progress: f32) AttachmentPose {
     if (template.samples.len == 0) {
@@ -1547,12 +1581,20 @@ test "collect scaffold keeps active authored path row" {
     }};
     defer segments[0].deinit();
     const row_offsets = [_]usize{0};
-    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets);
+    const runtime_tiles = [_]u8{
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d,
+    };
+    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets, &runtime_tiles, rows.len, 10);
     defer scaffold.deinit();
 
     try std.testing.expectEqual(@as(usize, 2), scaffold.authored_rows.len);
     try std.testing.expectEqual(PublicPath.start, scaffold.activePathAtRow(1).?.public_path.?);
     try std.testing.expectEqual(PublicPath.halfpipe, scaffold.activePathAtRow(3).?.public_path.?);
+    try std.testing.expectEqual(PublicPath.start, scaffold.installedBuiltAttachmentAtRow(1).?.row.public_path.?);
+    try std.testing.expectEqual(PublicPath.halfpipe, scaffold.installedBuiltAttachmentAtRow(3).?.row.public_path.?);
 }
 
 test "collect scaffold builds start template" {
@@ -1571,7 +1613,11 @@ test "collect scaffold builds start template" {
     }};
     defer segments[0].deinit();
     const row_offsets = [_]usize{0};
-    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets);
+    const runtime_tiles = [_]u8{
+        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+        0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
+    };
+    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets, &runtime_tiles, rows.len, 10);
     defer scaffold.deinit();
 
     try std.testing.expectEqual(@as(usize, 1), scaffold.built_attachments.len);

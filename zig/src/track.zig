@@ -277,7 +277,14 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
-        var attachment_scaffold = try attachment_builders.Scaffold.collect(allocator, segments, row_offsets);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
         errdefer attachment_scaffold.deinit();
         const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -382,7 +389,14 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
-        var attachment_scaffold = try attachment_builders.Scaffold.collect(allocator, segments, row_offsets);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
         errdefer attachment_scaffold.deinit();
         const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -538,6 +552,10 @@ pub const LoadedLevelPreview = struct {
         return self.attachment_scaffold.activeBuiltAttachmentAtRow(global_row);
     }
 
+    pub fn installedBuiltAttachmentAtRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
+        return self.attachment_scaffold.installedBuiltAttachmentAtRow(global_row);
+    }
+
     pub fn builtAttachmentForSourceRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
         for (self.attachment_scaffold.built_attachments) |*built| {
             if (built.row.global_row == global_row) return built;
@@ -546,6 +564,9 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn activePathNameAtRow(self: *const LoadedLevelPreview, global_row: usize) ?[]const u8 {
+        if (self.installedBuiltAttachmentAtRow(global_row)) |built| {
+            return built.row.raw_name;
+        }
         const row = self.activePathAtRow(global_row) orelse return null;
         return row.raw_name;
     }

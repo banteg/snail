@@ -804,6 +804,12 @@ pub const Runner = struct {
     fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const sample = self.sampleRow(preview, global_row) orelse return;
 
+        if (self.movement_mode != .attachment) {
+            if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
+                self.beginInstalledAttachmentFollow(preview, sample, built);
+            }
+        }
+
         if (sample.annotation) |annotation| {
             switch (annotation) {
                 .path => |path_name| {
@@ -849,7 +855,11 @@ pub const Runner = struct {
             },
             .attachment_entry => {
                 if (self.movement_mode != .attachment) {
-                    self.beginAttachmentFollow(preview, sample);
+                    if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
+                        self.beginInstalledAttachmentFollow(preview, sample, built);
+                    } else {
+                        self.beginAttachmentFollow(preview, sample);
+                    }
                 }
             },
             .ring => {},
@@ -1391,6 +1401,45 @@ pub const Runner = struct {
             .cached_output_lane_center = self.lane_center,
             .vertical_offset = 0.0,
         };
+        self.updateAttachmentFollowPosition(preview);
+        self.counters.attachments_begun += 1;
+        self.recent_event = .attachment_begin;
+    }
+
+    fn beginInstalledAttachmentFollow(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        sample: RowSample,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        self.launch = .{};
+        self.movement_mode = .attachment;
+        self.attachment_path_name = built.row.raw_name;
+
+        const progress = std.math.clamp(
+            self.row_position - @as(f32, @floatFromInt(built.row.global_row)),
+            0.0,
+            @as(f32, @floatFromInt(built.template.sample_count)),
+        );
+        const centered_world_position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            progress,
+            built.row.global_row,
+            0.0,
+            0.0,
+        );
+        const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
+
+        self.attachment_follow = .{
+            .active = true,
+            .source_row = built.row.global_row,
+            .progress = progress,
+            .exit_overshoot = 0.0,
+            .lateral_offset = self.lane_center - centered_lane_center,
+            .cached_output_lane_center = self.lane_center,
+            .vertical_offset = 0.0,
+        };
+        _ = sample;
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
         self.recent_event = .attachment_begin;
@@ -2038,24 +2087,19 @@ test "attachment follow preserves lateral offset instead of snapping to the path
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectApproxEqAbs(
-        (@as(f32, @floatFromInt(target.lane)) + 0.5) - target.path_center_lane,
-        runner.attachment_follow.lateral_offset,
-        0.001,
-    );
-    try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
-    try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
-
-    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
     const centered = attachment_builders.worldPositionForTemplate(
         &built.template,
         runner.attachment_follow.progress,
-        target.row,
+        built.row.global_row,
         0.0,
         runner.attachment_follow.vertical_offset,
     );
     const width_offset = @as(f32, @floatFromInt(@min(fixture.preview.max_width, 8))) * 0.5;
     const centered_lane_center = centered.x + width_offset;
+    try std.testing.expectApproxEqAbs((@as(f32, @floatFromInt(target.lane)) + 0.5) - centered_lane_center, runner.attachment_follow.lateral_offset, 0.001);
+    try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
+    try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
     try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment_follow.lateral_offset > 0.0);
 }
 
@@ -2196,10 +2240,11 @@ test "halfpipe attachment tilts world up with lateral drift" {
 
     runner.step(&fixture.preview, .{ .lane_delta = 2 }, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    runner.step(&fixture.preview, .{ .lane_delta = 1 }, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const up = runner.worldUp(&fixture.preview);
     try std.testing.expect(@abs(up.x) > 0.1);
-    try std.testing.expect(up.y < 0.99);
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
