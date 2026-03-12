@@ -204,7 +204,7 @@ Still missing or approximate:
 - full cutscene camera ownership and transition behavior
 - exact completion/death cutscene handoff
 - the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
-- the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass uses the recovered fixed height plus a conservative runner-driven forward anchor
+- the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass uses the real barrier mesh plus the recovered fixed height, but still anchors it conservatively from the live track row instead of the original owner/update path
 
 Best next work:
 

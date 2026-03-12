@@ -135,6 +135,17 @@ pub const LoadedObject = struct {
             rl.drawMesh(submesh.mesh, submesh.material, transform);
         }
     }
+
+    pub fn drawTintedEx(self: *const LoadedObject, transform: rl.Matrix, tint: rl.Color) void {
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
+            const previous_tint = albedo_map.color;
+            albedo_map.color = tint;
+            rl.drawMesh(submesh.mesh, submesh.material, transform);
+            albedo_map.color = previous_tint;
+        }
+    }
 };
 
 const Bounds = struct {
