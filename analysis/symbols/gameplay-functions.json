@@ -178,7 +178,7 @@
     {
       "address": "0x4107d0",
       "name": "update_frontend_state_machine",
-      "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, and gameplay handoff states."
+      "description": "Dispatches the active front-end screen state, including menu, options, route map, intro, credits, high scores, gameplay handoff, the 26/27/28 subgame bridge states, and the post-run Thanks For Playing owner at states 29/30."
     },
     {
       "address": "0x410c30",
@@ -233,6 +233,21 @@
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
+    },
+    {
+      "address": "0x415f50",
+      "name": "initialize_challenge_setup_screen",
+      "description": "Builds the mode-1 front-end setup screen with Select Difficulty, Select Speed, Play, Watch Replay, and Back controls before challenge gameplay starts."
+    },
+    {
+      "address": "0x4161f0",
+      "name": "destroy_challenge_setup_screen",
+      "description": "Tears down the mode-1 front-end setup screen widgets, including the optional replay control and the difficulty or speed selectors."
+    },
+    {
+      "address": "0x416370",
+      "name": "update_challenge_setup_screen",
+      "description": "Runs the mode-1 front-end setup screen, including difficulty and speed changes, replay launch, Play, and Back handoff into `update_subgame` state 1."
     },
     {
       "address": "0x416800",
@@ -552,6 +567,21 @@
       "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
     },
     {
+      "address": "0x433fd0",
+      "name": "initialize_thanks_for_playing_screen",
+      "description": "Initializes the post-run Thanks For Playing owner, including the Splash backdrop, INTROTEXT.OGG, and the first shell-font message widget before state 30 begins updating it."
+    },
+    {
+      "address": "0x4340f0",
+      "name": "update_thanks_for_playing_screen",
+      "description": "Runs the post-run Thanks For Playing message sequence, including the Challenge Mode and Time Trial prompts, Click to Continue, and the fade-out handoff back through the saved front-end return state."
+    },
+    {
+      "address": "0x434670",
+      "name": "reset_frontend_widget_group_state",
+      "description": "Clears bit 0x40 on every registered widget in one front-end screen controller before a new owner initializes or resumes."
+    },
+    {
       "address": "0x434b60",
       "name": "is_neighbor_cell_solid"
     },
@@ -591,7 +621,7 @@
     {
       "address": "0x4374b0",
       "name": "initialize_subgame",
-      "description": "Initializes the active gameplay subgame state, including menu-backed mode selection, per-mode counters, HUD widgets, and the first galaxy or result handoff after setup. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`."
+      "description": "Initializes the active gameplay subgame state, including the continuation selector at `+0x1270fc8`, per-mode HUD widgets, replay-backed startup, and the first galaxy, challenge-setup, or gameplay handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`."
     },
     {
       "address": "0x437de0",
@@ -616,7 +646,7 @@
     {
       "address": "0x438b90",
       "name": "update_subgame",
-      "description": "Runs the main gameplay subgame state machine, including galaxy or replay handoff, level start or restart, pause and quit flow, HUD timing, camera updates, and the active gameplay tick. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
+      "description": "Runs the main gameplay subgame state machine, including the continuation-controlled galaxy or challenge-setup handoff, replay-backed level start or restart, pause and quit flow, HUD timing, camera updates, and the active gameplay tick. Cross-port Android and iOS symbols match this helper to `cRSubGame::AI()`."
     },
     {
       "address": "0x439a40",

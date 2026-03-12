@@ -267,7 +267,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- the real frontend bridge around Windows states `26/27/28/29`
+- the real frontend bridge around Windows states `26/27/28/29/30`
 - the outer subgame controller that owns rebuild/teardown/return
 - exact final-loss and replay-sensitive return routing
 - completion overlay ownership that matches the Windows cutscene path instead of the current simplified screen routing
@@ -275,6 +275,7 @@ Still missing or approximate:
 Best next work:
 
 - port the outer subgame/frontend bridge before doing more local runner-phase surgery
+- treat `26/27/28` as bridge opcodes and `29/30` as the post-run Thanks For Playing owner instead of folding them into a generic completion screen
 - treat this as the biggest remaining gameplay architecture gap outside attachment follow
 
 ## Replay
