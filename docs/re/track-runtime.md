@@ -44,7 +44,12 @@ Observed uses of the packed row-flags dword at `+0x88c`:
 Known stages:
 
 - `select_track_tile_edge_variants`
+- `promote_track_tiles_to_fringe_variants`
+- `harmonize_center_lane_floor_slide_variants`
 - `merge_track_tile_runs`
+- `mark_track_warning_zones`
+- `build_track_fringe_objects`
+- `build_track_render_caches`
 - `place_parcels_on_track`
 - `place_challenge_parcels_on_track`
 - `get_track_grid_cell_at_world_position`
@@ -52,6 +57,16 @@ Known stages:
 - `get_track_cell_row_index`
 
 The practical read is that the game does not play directly on the authored text grid. It first builds and normalizes a runtime grid, then applies gameplay and render passes on top of that generated state.
+
+Current high-confidence render-normalization read:
+
+- `select_track_tile_edge_variants` is the main edge/corner swap pass
+- `promote_track_tiles_to_fringe_variants` upgrades selected open-below cells before fringe emission
+- `harmonize_center_lane_floor_slide_variants` applies the center-seam floor/slide override bit
+- `merge_track_tile_runs` suppresses follower cells so long horizontal strips render as one run head
+- `mark_track_warning_zones` expands warning footprints around hazard-bearing tiles before cache build
+- `build_track_fringe_objects` allocates directional fringe objects from the post-normalized strip
+- `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches
 
 ## Level Runtime Field Mapping
 

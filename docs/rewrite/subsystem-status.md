@@ -100,7 +100,7 @@ Still missing or approximate:
 - `promote_track_tiles_to_fringe_variants`
 - `harmonize_center_lane_floor_slide_variants`
 - `merge_track_tile_runs` beyond the currently ported conservative ownership slice
-- `sub_4354F0`
+- `mark_track_warning_zones`
 - real directional fringe objects and cache families
 - exact warn-family routing
 
@@ -326,5 +326,5 @@ If work resumes from this page alone, the best current order is:
 
 1. Finish attachment entry/exit against built geometry and reduce the remaining source-row fallback.
 2. Port more of the outer subgame/frontend bridge (`26/27/28/29`, completion vs final-loss vs respawn ownership).
-3. Recover the remaining track render-normalization passes (`sub_4354F0`, fringe solidity, directional fringe ownership).
+3. Recover the remaining track render-normalization passes (`mark_track_warning_zones`, fringe solidity, directional fringe ownership).
 4. Revisit nonlinear kind-`42` family semantics once there is enough evidence to separate `HALFPIPE`, `WARP`, and any sibling families more cleanly.

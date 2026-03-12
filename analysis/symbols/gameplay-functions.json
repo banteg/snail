@@ -596,6 +596,11 @@
       "description": "Collapses repeated horizontal tile runs into longer strip variants where the renderer allows it."
     },
     {
+      "address": "0x4354f0",
+      "name": "mark_track_warning_zones",
+      "description": "Marks warning-zone footprints around hazard-bearing runtime tiles before the fringe-object and cache builders run. Cross-port Android symbols match this pass to `cRSubGame::WarnTrack()`."
+    },
+    {
       "address": "0x4355f0",
       "name": "promote_track_tiles_to_fringe_variants"
     },
