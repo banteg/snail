@@ -92,16 +92,30 @@ const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
 const gameplay_explode_big_sprite_path = "SPRITES/PARTICLEEXPLODE-BIG.TGA";
 const gameplay_explode_small_sprite_path = "SPRITES/PARTICLEEXPLODE-SMALL.TGA";
 const gameplay_slug_goo_sprite_path = "SPRITES/SLUGGOO.TGA";
-const gameplay_turbo_fire_sound_path = "SFX2/TURBOFIRE1.OGG";
-const gameplay_laser_sound_path = "SFX2/LASER1.OGG";
-const gameplay_rocket_sound_path = "SFX2/ROCKET1.OGG";
+const gameplay_smoke_sprite_path = "SPRITES/SMOKE.TGA";
+const gameplay_turbo_fire_sound_paths = [_][]const u8{
+    "SFX2/TURBOFIRE1.OGG",
+    "SFX2/TURBOFIRE2.OGG",
+};
+const gameplay_laser_sound_paths = [_][]const u8{
+    "SFX2/LASER1.OGG",
+    "SFX2/LASER2.OGG",
+    "SFX2/LASER3.OGG",
+};
+const gameplay_rocket_sound_paths = [_][]const u8{
+    "SFX2/ROCKET1.OGG",
+    "SFX2/ROCKET2.OGG",
+    "SFX2/ROCKET3.OGG",
+};
 const gameplay_heart_sound_path = "SFX2/HEART.OGG";
 const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
 const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
 const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
 const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
-const gameplay_impact_a_sound_path = "SFX2/ASTEROIDIMPACT1.OGG";
-const gameplay_impact_b_sound_path = "SFX2/ASTEROIDIMPACT2.OGG";
+const gameplay_asteroid_impact_sound_paths = [_][]const u8{
+    "SFX2/ASTEROIDIMPACT1.OGG",
+    "SFX2/ASTEROIDIMPACT2.OGG",
+};
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -236,6 +250,7 @@ const GameplaySpriteArt = struct {
     explode_big: ?assets.LoadedTexture = null,
     explode_small: ?assets.LoadedTexture = null,
     slug_goo: ?assets.LoadedTexture = null,
+    smoke: ?assets.LoadedTexture = null,
 
     fn unload(self: *GameplaySpriteArt) void {
         for (&self.slug_frames) |*texture| {
@@ -292,26 +307,42 @@ const GameplaySpriteArt = struct {
             texture.unload();
             self.slug_goo = null;
         }
+        if (self.smoke) |*texture| {
+            texture.unload();
+            self.smoke = null;
+        }
     }
 };
 
 const GameplaySoundFx = struct {
-    turbo_fire: ?assets.LoadedSound = null,
-    laser: ?assets.LoadedSound = null,
-    rocket: ?assets.LoadedSound = null,
+    turbo_fire: [gameplay_turbo_fire_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_turbo_fire_sound_paths.len,
+    laser: [gameplay_laser_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_laser_sound_paths.len,
+    rocket: [gameplay_rocket_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_rocket_sound_paths.len,
     heart: ?assets.LoadedSound = null,
     jetpack: ?assets.LoadedSound = null,
     slow_ring: ?assets.LoadedSound = null,
     invincible: ?assets.LoadedSound = null,
     explode_ring: ?assets.LoadedSound = null,
-    impact_a: ?assets.LoadedSound = null,
-    impact_b: ?assets.LoadedSound = null,
+    asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
 
     fn unload(self: *GameplaySoundFx) void {
         inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
-            if (@field(self, field_name)) |*sound| {
-                sound.unload();
-                @field(self, field_name) = null;
+            const field = &@field(self, field_name);
+            switch (@typeInfo(@TypeOf(field.*))) {
+                .array => {
+                    for (field) |*entry| {
+                        if (entry.*) |*sound| {
+                            sound.unload();
+                            entry.* = null;
+                        }
+                    }
+                },
+                else => {
+                    if (field.*) |*sound| {
+                        sound.unload();
+                        field.* = null;
+                    }
+                },
             }
         }
     }
@@ -323,6 +354,7 @@ const GameplayEffectKind = enum {
     explode_big,
     explode_small,
     slug_goo,
+    smoke,
 };
 
 const GameplayEffect = struct {
@@ -459,6 +491,7 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_explode_big_sprite_path);
     art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_explode_small_sprite_path);
     art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_slug_goo_sprite_path);
+    art.smoke = try catalog.loadTextureByPath(allocator, gameplay_smoke_sprite_path);
 
     return art;
 }
@@ -469,16 +502,23 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     var sound_fx = GameplaySoundFx{};
     errdefer sound_fx.unload();
 
-    sound_fx.turbo_fire = try catalog.loadSoundByPath(allocator, gameplay_turbo_fire_sound_path);
-    sound_fx.laser = try catalog.loadSoundByPath(allocator, gameplay_laser_sound_path);
-    sound_fx.rocket = try catalog.loadSoundByPath(allocator, gameplay_rocket_sound_path);
+    for (gameplay_turbo_fire_sound_paths, 0..) |path, index| {
+        sound_fx.turbo_fire[index] = try catalog.loadSoundByPath(allocator, path);
+    }
+    for (gameplay_laser_sound_paths, 0..) |path, index| {
+        sound_fx.laser[index] = try catalog.loadSoundByPath(allocator, path);
+    }
+    for (gameplay_rocket_sound_paths, 0..) |path, index| {
+        sound_fx.rocket[index] = try catalog.loadSoundByPath(allocator, path);
+    }
     sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
     sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
     sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
     sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
     sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
-    sound_fx.impact_a = try catalog.loadSoundByPath(allocator, gameplay_impact_a_sound_path);
-    sound_fx.impact_b = try catalog.loadSoundByPath(allocator, gameplay_impact_b_sound_path);
+    for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
+        sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
+    }
 
     return sound_fx;
 }
@@ -1036,6 +1076,7 @@ const AppState = struct {
     start_pause_context: bool = false,
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
+    gameplay_audio_variant_counter: u32 = 0,
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
     frontend_transition: FrontendTransition = .{},
@@ -2592,9 +2633,18 @@ const AppState = struct {
 
         if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             const fired_sound = switch (current.weapon_level) {
-                0 => self.current_gameplay_sound_fx.turbo_fire,
-                1 => self.current_gameplay_sound_fx.laser,
-                else => self.current_gameplay_sound_fx.rocket,
+                0 => self.pickGameplaySoundVariant(
+                    gameplay_turbo_fire_sound_paths.len,
+                    self.current_gameplay_sound_fx.turbo_fire,
+                ),
+                1 => self.pickGameplaySoundVariant(
+                    gameplay_laser_sound_paths.len,
+                    self.current_gameplay_sound_fx.laser,
+                ),
+                else => self.pickGameplaySoundVariant(
+                    gameplay_rocket_sound_paths.len,
+                    self.current_gameplay_sound_fx.rocket,
+                ),
             };
             self.playGameplayEffect(fired_sound);
         }
@@ -2614,13 +2664,22 @@ const AppState = struct {
             self.playGameplayEffect(self.current_gameplay_sound_fx.explode_ring);
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_a);
+            self.playGameplayEffect(self.pickGameplaySoundVariant(
+                gameplay_asteroid_impact_sound_paths.len,
+                self.current_gameplay_sound_fx.asteroid_impact,
+            ));
         }
         if (current.counters.salt_hits > previous.counters.salt_hits) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_b);
+            self.playGameplayEffect(self.pickGameplaySoundVariant(
+                gameplay_asteroid_impact_sound_paths.len,
+                self.current_gameplay_sound_fx.asteroid_impact,
+            ));
         }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.impact_b);
+            self.playGameplayEffect(self.pickGameplaySoundVariant(
+                gameplay_asteroid_impact_sound_paths.len,
+                self.current_gameplay_sound_fx.asteroid_impact,
+            ));
         }
     }
 
@@ -2686,6 +2745,33 @@ const AppState = struct {
                 0.9,
                 18,
                 .{ .r = 255, .g = 220, .b = 180, .a = 236 },
+            );
+        }
+        if (current.counters.garbage_hits > previous.counters.garbage_hits) {
+            const smoke_origin = current.worldPosition(preview, 0.34);
+            self.spawnGameplayEffect(
+                .smoke,
+                .{
+                    .x = smoke_origin.x - 0.18,
+                    .y = smoke_origin.y + 0.22,
+                    .z = smoke_origin.z,
+                },
+                0.56,
+                0.56,
+                22,
+                .{ .r = 255, .g = 255, .b = 255, .a = 208 },
+            );
+            self.spawnGameplayEffect(
+                .smoke,
+                .{
+                    .x = smoke_origin.x + 0.14,
+                    .y = smoke_origin.y + 0.36,
+                    .z = smoke_origin.z - 0.08,
+                },
+                0.72,
+                0.72,
+                28,
+                .{ .r = 255, .g = 255, .b = 255, .a = 176 },
             );
         }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
@@ -3954,6 +4040,22 @@ const AppState = struct {
         rl.playSound(loaded.sound);
     }
 
+    fn nextGameplaySoundVariantIndex(self: *AppState, comptime count: usize) usize {
+        const index = @as(usize, @intCast(self.gameplay_audio_variant_counter % count));
+        self.gameplay_audio_variant_counter +%= 1;
+        return index;
+    }
+
+    fn pickGameplaySoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
+        var start = self.nextGameplaySoundVariantIndex(count);
+        var remaining = count;
+        while (remaining > 0) : (remaining -= 1) {
+            if (variants[start]) |loaded| return loaded;
+            start = (start + 1) % count;
+        }
+        return null;
+    }
+
     fn syncActiveLevelSegment(self: *AppState, replay_sample_on_match: bool) !void {
         const loaded_level = self.current_level orelse {
             self.active_level_segment_index = null;
@@ -4131,8 +4233,20 @@ const AppState = struct {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
         inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
-            if (@field(self.current_gameplay_sound_fx, field_name)) |sound| {
-                rl.setSoundVolume(sound.sound, sound_volume);
+            const field = &@field(self.current_gameplay_sound_fx, field_name);
+            switch (@typeInfo(@TypeOf(field.*))) {
+                .array => {
+                    for (field) |entry| {
+                        if (entry) |sound| {
+                            rl.setSoundVolume(sound.sound, sound_volume);
+                        }
+                    }
+                },
+                else => {
+                    if (field.*) |sound| {
+                        rl.setSoundVolume(sound.sound, sound_volume);
+                    }
+                },
             }
         }
         if (self.current_music) |music| {
@@ -7523,6 +7637,7 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
             .explode_big => state.current_gameplay_sprites.explode_big,
             .explode_small => state.current_gameplay_sprites.explode_small,
             .slug_goo => state.current_gameplay_sprites.slug_goo,
+            .smoke => state.current_gameplay_sprites.smoke,
         } orelse continue;
         drawGameplayBillboardTexture(
             loaded_texture.texture,

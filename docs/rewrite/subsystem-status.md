@@ -229,10 +229,12 @@ Implemented now:
 - salt now uses the shipped `X/SALT.X2` model path, while slug and garbage still use sprite-based presentation that matches the recovered asset split better than the earlier generic placeholders
 - Turbo now carries visible gameplay weapon tiers and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
 - gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, explosive rings, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
+- weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) instead of one fixed shot sound per weapon tier
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles instead of invisible debug-only tiles
 - garbage collisions now apply the missing tutorial “Asteroids slow me down” behavior by shaving forward speed and kicking Turbo sideways instead of only incrementing damage/score
+- garbage collisions now also emit a first smoke aftermath layer instead of only the generic small explosion billboard
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
