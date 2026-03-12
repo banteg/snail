@@ -867,7 +867,7 @@ const AppState = struct {
     game_status_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
-    mouse_level_lane_target: ?usize = null,
+    mouse_level_lane_target: ?f32 = null,
     frontend_route_mode: ?FrontendLevelMode = null,
     route_map_screen_mode: RouteMapScreenMode = .normal,
     frontend_route_index: usize = 0,
@@ -2379,18 +2379,13 @@ const AppState = struct {
                 if (accepts_input) {
                     if (self.current_track_preview) |loaded_track_preview| {
                         if (self.level_runner) |runner| {
-                            self.mouse_level_lane_target = laneTargetForRunnerMouse(
+                            self.mouse_level_lane_target = laneCenterTargetForRunnerMouse(
                                 loaded_track_preview,
                                 runner,
                                 @floatFromInt(rl.getMouseX()),
-                                @floatFromInt(rl.getMouseY()),
                             );
                             if (self.mouse_level_lane_target) |lane_target| {
-                                if (lane_target < runner.lane_index) {
-                                    self.pending_level_input.lane_delta -= 1;
-                                } else if (lane_target > runner.lane_index) {
-                                    self.pending_level_input.lane_delta += 1;
-                                }
+                                self.pending_level_input.target_lane_center = lane_target;
                             }
                         }
                     }
@@ -6649,12 +6644,11 @@ fn deathCutsceneCamera(
     return camera;
 }
 
-fn laneTargetForRunnerMouse(
+fn laneCenterTargetForRunnerMouse(
     loaded_track_preview: track.LoadedLevelPreview,
     runner: gameplay.Runner,
     mouse_x: f32,
-    mouse_y: f32,
-) ?usize {
+) ?f32 {
     const probe_row_position = std.math.clamp(
         runner.row_position + 6.0,
         0.0,
@@ -6663,108 +6657,33 @@ fn laneTargetForRunnerMouse(
     const probe_global_row = loaded_track_preview.rowIndexAtWorldZ(probe_row_position);
     const row_location = loaded_track_preview.locateRow(probe_global_row) orelse return null;
     const bounds = loaded_track_preview.laneBoundsForRow(row_location);
-    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
-    return laneTargetForMouseProjection(
+    return laneCenterTargetForMouseX(
         loaded_track_preview,
-        camera,
-        bounds,
-        probe_global_row,
-        probe_row_position,
-        mouse_x,
-        mouse_y,
-    ) orelse laneTargetForMouseX(
         mouse_x,
         @floatFromInt(screenWidth()),
         bounds,
     );
 }
 
-fn laneTargetForMouseX(mouse_x: f32, screen_width: f32, bounds: track.LaneBounds) usize {
-    const lane_count = bounds.max - bounds.min + 1;
-    if (lane_count <= 1 or screen_width <= 1.0) return bounds.min;
-
-    const clamped_mouse_x = std.math.clamp(mouse_x, 0.0, screen_width - 1.0);
-    const ratio = clamped_mouse_x / screen_width;
-    const lane_offset = @min(
-        @as(usize, @intFromFloat(@floor(ratio * @as(f32, @floatFromInt(lane_count))))),
-        lane_count - 1,
-    );
-    return bounds.min + lane_offset;
-}
-
-fn laneTargetForMouseProjection(
+fn laneCenterTargetForMouseX(
     loaded_track_preview: track.LoadedLevelPreview,
-    camera: rl.Camera3D,
-    bounds: track.LaneBounds,
-    global_row: usize,
-    row_position: f32,
     mouse_x: f32,
-    mouse_y: f32,
-) ?usize {
-    if (bounds.max < bounds.min) return null;
-
-    const probe_lane_center = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-    const probe_lane_index = @as(usize, @intFromFloat(std.math.clamp(
-        std.math.floor(probe_lane_center - 0.5),
-        @as(f32, @floatFromInt(bounds.min)),
-        @as(f32, @floatFromInt(bounds.max)),
-    )));
-    const probe_floor_y = loaded_track_preview.sampleFloorHeightAtGridPosition(
-        global_row,
-        probe_lane_index,
-        row_position,
-    ) orelse 0.0;
-    const probe_center = loaded_track_preview.worldPositionForLane(
-        probe_lane_center,
-        row_position,
-        probe_floor_y + 0.25,
+    screen_width: f32,
+    bounds: track.LaneBounds,
+) f32 {
+    const gameplay_width = @min(loaded_track_preview.max_width, 8);
+    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+    const authored_mouse_x = if (screen_width <= 1.0)
+        320.0
+    else
+        (std.math.clamp(mouse_x, 0.0, screen_width - 1.0) / (screen_width - 1.0)) * 639.0;
+    const target_world_x = (authored_mouse_x - 320.0) * (8.0 / 640.0);
+    const lane_center = width_offset + target_world_x;
+    return std.math.clamp(
+        lane_center,
+        @as(f32, @floatFromInt(bounds.min)) + 0.5,
+        @as(f32, @floatFromInt(bounds.max)) + 0.5,
     );
-    const ray = rl.getScreenToWorldRay(
-        .{ .x = mouse_x, .y = mouse_y },
-        camera,
-    );
-    const plane_normal = normalizeVector3(.{
-        .x = camera.target.x - camera.position.x,
-        .y = camera.target.y - camera.position.y,
-        .z = camera.target.z - camera.position.z,
-    });
-    const ray_dot = dotVector3(plane_normal, ray.direction);
-    if (@abs(ray_dot) <= 0.0001) return null;
-
-    const plane_distance = dotVector3(plane_normal, .{
-        .x = probe_center.x - ray.position.x,
-        .y = probe_center.y - ray.position.y,
-        .z = probe_center.z - ray.position.z,
-    });
-    const travel = plane_distance / ray_dot;
-    if (!std.math.isFinite(travel) or travel <= 0.0) return null;
-
-    const hit_point = rl.Vector3{
-        .x = ray.position.x + (ray.direction.x * travel),
-        .y = ray.position.y + (ray.direction.y * travel),
-        .z = ray.position.z + (ray.direction.z * travel),
-    };
-
-    var best_lane: ?usize = null;
-    var best_distance_sq = std.math.inf(f32);
-    for (bounds.min..bounds.max + 1) |lane| {
-        const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
-        const floor_y = loaded_track_preview.sampleFloorHeightAtGridPosition(global_row, lane, row_position) orelse 0.0;
-        const world_position = loaded_track_preview.worldPositionForLane(
-            lane_center,
-            row_position,
-            floor_y + 0.25,
-        );
-        const dx = world_position.x - hit_point.x;
-        const dy = world_position.y - hit_point.y;
-        const dz = world_position.z - hit_point.z;
-        const distance_sq = (dx * dx) + (dy * dy) + (dz * dz);
-        if (distance_sq < best_distance_sq) {
-            best_distance_sq = distance_sq;
-            best_lane = lane;
-        }
-    }
-    return best_lane;
 }
 
 fn triangleCountForObject(loaded_object: object.LoadedObject) usize {
@@ -7008,9 +6927,24 @@ test "completion cutscene camera widens the chase view" {
     try std.testing.expect(cutscene_camera.target.z > chase_camera.target.z);
 }
 
-test "lane target mapping respects bounds" {
+test "mouse lane-center target mapping respects bounds" {
     const bounds: track.LaneBounds = .{ .min = 2, .max = 4 };
-    try std.testing.expectEqual(@as(usize, 2), laneTargetForMouseX(0.0, 1280.0, bounds));
-    try std.testing.expectEqual(@as(usize, 3), laneTargetForMouseX(640.0, 1280.0, bounds));
-    try std.testing.expectEqual(@as(usize, 4), laneTargetForMouseX(1279.0, 1280.0, bounds));
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
 }

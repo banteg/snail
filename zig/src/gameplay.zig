@@ -8,6 +8,7 @@ const track = @import("track.zig");
 
 pub const RunnerInput = struct {
     lane_delta: i8 = 0,
+    target_lane_center: ?f32 = null,
     speed_delta_rows_per_second: f32 = 0.0,
     toggle_pause: bool = false,
     reset: bool = false,
@@ -280,6 +281,7 @@ const attachment_entry_rider_height: f32 = 0.49;
 const attachment_entry_local_z_tolerance: f32 = 1.5;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
+const mouse_steer_lerp_scale: f32 = 12.0;
 
 const RowSample = struct {
     global_row: usize,
@@ -424,6 +426,9 @@ pub const Runner = struct {
             self.previous_row_position = self.row_position;
             self.previous_lane_center = self.lane_center;
             self.applyLaneDelta(input.lane_delta);
+            if (input.target_lane_center) |target_lane_center| {
+                self.applyTargetLaneCenter(preview, target_lane_center, delta_seconds);
+            }
         }
 
         if (!self.paused and self.acceptsGameplayInput()) {
@@ -634,12 +639,36 @@ pub const Runner = struct {
             self.attachment_follow.lateral_offset += @floatFromInt(lane_delta);
             return;
         }
-        if (lane_delta < 0) {
-            const amount: usize = @intCast(-lane_delta);
-            self.lane_index = if (amount > self.lane_index) 0 else self.lane_index - amount;
-            return;
+        self.lane_center += @floatFromInt(lane_delta);
+        self.lane_index = @as(usize, @intFromFloat(@max(0.0, @floor(self.lane_center - 0.5))));
+    }
+
+    fn applyTargetLaneCenter(self: *Runner, preview: *const track.LoadedLevelPreview, raw_target_lane_center: f32, delta_seconds: f32) void {
+        if (preview.total_rows == 0 or self.launch.active) return;
+
+        const alpha = std.math.clamp(delta_seconds * mouse_steer_lerp_scale, 0.0, 1.0);
+        const min_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.min)) + 0.5;
+        const max_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.max)) + 0.5;
+        const target_lane_center = std.math.clamp(raw_target_lane_center, min_lane_center, max_lane_center);
+
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            if (self.currentAttachmentBuilt(preview)) |built| {
+                const centered_position = attachment_builders.worldPositionForTemplate(
+                    &built.template,
+                    self.attachment_follow.progress,
+                    self.attachment_follow.source_row,
+                    0.0,
+                    self.attachment_follow.vertical_offset,
+                );
+                const centered_lane_center = laneCenterFromWorldX(preview, centered_position.x);
+                const target_lateral_offset = target_lane_center - centered_lane_center;
+                self.attachment_follow.lateral_offset += (target_lateral_offset - self.attachment_follow.lateral_offset) * alpha;
+                return;
+            }
         }
-        self.lane_index += @intCast(lane_delta);
+
+        self.lane_center += (target_lane_center - self.lane_center) * alpha;
+        self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
     }
 
     fn refreshSample(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -691,12 +720,16 @@ pub const Runner = struct {
             }
         else
             returnAttachmentHint(sample.path_center_lane);
-        self.lane_center = if (self.movement_mode == .attachment and self.attachment_follow.active)
-            self.attachment_follow.cached_output_lane_center
-        else
-            @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
         if (self.attachment_follow.active and self.movement_mode == .attachment) {
+            self.lane_center = self.attachment_follow.cached_output_lane_center;
             self.attachment_follow.cached_output_lane_center = self.lane_center;
+            self.lane_index = sample.resolved_lane_index;
+        } else {
+            const min_lane_center = @as(f32, @floatFromInt(sample.traversable_bounds.min)) + 0.5;
+            const max_lane_center = @as(f32, @floatFromInt(sample.traversable_bounds.max)) + 0.5;
+            self.lane_center = std.math.clamp(self.lane_center, min_lane_center, max_lane_center);
+            self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
+            self.resolved_lane_index = self.lane_index;
         }
     }
 
@@ -757,7 +790,11 @@ pub const Runner = struct {
     fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
         const row_location = preview.locateRow(global_row) orelse return null;
         const traversable = preview.laneBoundsForRow(row_location);
-        const desired_lane = std.math.clamp(self.lane_index, traversable.min, traversable.max);
+        const desired_lane = std.math.clamp(
+            laneIndexForLaneCenter(preview, self.lane_center),
+            traversable.min,
+            traversable.max,
+        );
 
         var resolved_lane_index = desired_lane;
         var path_center_lane: ?f32 = null;
@@ -1567,7 +1604,11 @@ pub const Runner = struct {
         );
         if (end_progress <= start_progress) return null;
 
-        const current_lane_center = @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
+        const current_lane_center = std.math.clamp(
+            self.lane_center,
+            @as(f32, @floatFromInt(sample.traversable_bounds.min)) + 0.5,
+            @as(f32, @floatFromInt(sample.traversable_bounds.max)) + 0.5,
+        );
         const start_world_position = trackEntryWorldPosition(preview, self.previous_row_position, self.previous_lane_center);
         const end_world_position = trackEntryWorldPosition(preview, self.row_position, current_lane_center);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
@@ -1892,6 +1933,7 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     std.debug.assert(target.row > 0);
     runner.reset(preview);
     runner.lane_index = target.lane;
+    runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
     runner.runtime_track_index = target.row - 1;
     runner.movement_progress = 0.99;
     runner.syncRowPosition(preview);
@@ -2509,6 +2551,38 @@ test "installed attachment entry respects template width" {
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+}
+
+test "continuous target lane center preserves fractional track steering" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.step(&fixture.preview, .{ .target_lane_center = 4.5 }, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.lane_center > 0.5);
+    try std.testing.expect(runner.lane_center < 4.5);
+    try std.testing.expect(@abs(runner.lane_center - (@floor(runner.lane_center) + 0.5)) > 0.05);
+}
+
+test "continuous target lane center steers attachment lateral offset" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const before_offset = runner.attachment_follow.lateral_offset;
+    runner.step(&fixture.preview, .{ .target_lane_center = runner.lane_center + 1.5 }, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.lateral_offset > before_offset + 0.05);
+    try std.testing.expect(@abs(runner.attachment_follow.lateral_offset - @round(runner.attachment_follow.lateral_offset)) > 0.05);
 }
 
 test "installed attachment entry only begins on the source row" {
