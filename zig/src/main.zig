@@ -6450,8 +6450,12 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     };
     // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
     // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
-    const attachment_camera = runner.movement_mode == .attachment and runner.attachment_follow.active;
-    const position = if (attachment_camera)
+    // The current port uses the built attachment/launch frame whenever the runner is riding
+    // or launching from an attachment, instead of snapping straight back to the flat chase view.
+    const dynamic_attachment_camera =
+        (runner.movement_mode == .attachment and runner.attachment_follow.active) or
+        runner.launch.active;
+    const position = if (dynamic_attachment_camera)
         rl.Vector3{
             .x = player_position.x - (player_forward.x * 2.2) + (player_up.x * 1.6),
             .y = player_position.y - (player_forward.y * 2.2) + (player_up.y * 1.6),
@@ -6463,7 +6467,7 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
             .y = player_floor + 1.8,
             .z = player_position.z - 0.5,
         };
-    const up = if (attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    const up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
 
     return .{
         .position = position,
