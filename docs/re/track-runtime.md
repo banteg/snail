@@ -68,7 +68,13 @@ Current high-confidence render-normalization read:
 - `build_track_fringe_objects` allocates directional fringe objects from the post-normalized strip
   - it begins by calling `initialize_fringe_manager`
   - then uses `allocate_fringe_object` to draw from a 7000-entry pool of 0x38-byte fringe objects
+  - each emitted fringe object takes its RGBA skirt colour from `get_track_skirt_color`
 - `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches
+
+Related shared color helper:
+
+- `get_track_skirt_color` packages the current track skirt RGB scalars plus a fixed alpha into one RGBA tuple
+- the same helper is used while populating runtime track rows and while emitting fringe objects
 
 ## Level Runtime Field Mapping
 

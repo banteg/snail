@@ -859,6 +859,11 @@
       "description": "Advances Goldy's resurrect or death-resolution state machine after `initialize_subgoldy_death`: starts the fade, decrements the visible life stock on the respawn branch, and only falls through to `complete_subgame` when the final-loss path wins. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectAI()`."
     },
     {
+      "address": "0x442120",
+      "name": "get_track_skirt_color",
+      "description": "Builds the shared RGBA skirt or fringe colour from the current track colour scalars and a fixed alpha, then copies it into one runtime row or fringe object. Cross-port Android symbols match this helper to `cRSubGame::GetSkirtColour(tColourSmall)`."
+    },
+    {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
       "description": "Seeds and polls the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
