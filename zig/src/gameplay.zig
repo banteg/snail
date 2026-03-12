@@ -10,6 +10,7 @@ pub const RunnerInput = struct {
     lane_delta: i8 = 0,
     target_lane_center: ?f32 = null,
     speed_delta_rows_per_second: f32 = 0.0,
+    fire: bool = false,
     toggle_pause: bool = false,
     reset: bool = false,
 };
@@ -88,6 +89,17 @@ pub const RuntimeHazard = struct {
     row: usize,
     lane: usize,
     kind: RuntimeHazardKind,
+};
+
+pub const Projectile = struct {
+    active: bool = false,
+    world_x: f32 = 0.0,
+    world_y: f32 = 0.0,
+    world_z: f32 = 0.0,
+    dir_x: f32 = 0.0,
+    dir_y: f32 = 0.0,
+    dir_z: f32 = 1.0,
+    speed_rows_per_second: f32 = 0.0,
 };
 
 const RunnerPhase = union(enum) {
@@ -268,6 +280,8 @@ const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
 const jetpack_warning_phase_scale: f32 = 16.666668;
 const runtime_hazard_live_window_rows: usize = 8;
 const max_active_runtime_hazards: usize = 128;
+const max_active_projectiles: usize = 16;
+const max_defeated_slug_cells: usize = 64;
 const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const maximum_visible_life_stock: u32 = 9;
@@ -282,6 +296,12 @@ const attachment_entry_local_z_tolerance: f32 = 1.5;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const mouse_steer_lerp_scale: f32 = 12.0;
+const base_fire_cooldown_ticks: u8 = 10;
+const projectile_speed_rows_per_second: f32 = 48.0;
+const slow_ring_duration_ticks: u16 = 240;
+const invincible_duration_ticks: u16 = 480;
+const max_weapon_level: u8 = 2;
+const slug_projectile_kill_score: u32 = 100;
 
 const RowSample = struct {
     global_row: usize,
@@ -363,6 +383,10 @@ pub const Runner = struct {
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
     visible_life_stock: u32 = starting_visible_life_stock,
+    weapon_level: u8 = 0,
+    slow_ticks: u16 = 0,
+    invincible_ticks: u16 = 0,
+    shot_cooldown_ticks: u8 = 0,
     damage_gauge: f32 = 0.0,
     slug_hit_active: bool = false,
     damage_warning_state: DamageWarningState = .idle,
@@ -374,6 +398,10 @@ pub const Runner = struct {
     active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{undefined} ** max_active_runtime_hazards,
     active_runtime_hazard_count: usize = 0,
     last_runtime_hazard_scan_end: usize = 0,
+    active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
+    active_projectile_count: usize = 0,
+    defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
+    defeated_slug_cell_count: usize = 0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -433,17 +461,20 @@ pub const Runner = struct {
         }
 
         if (!self.paused and self.acceptsGameplayInput()) {
-            self.movement_rate_scalar = self.speed_rows_per_second * delta_seconds;
+            self.handleFireInput(preview, input.fire);
+            self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             self.tick_count += 1;
             self.stopwatch.advance(1.0);
         }
 
         if (!self.paused and self.phase == .active) {
+            self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
+            self.stepTemporaryStates();
         } else if (!self.paused) {
             self.updatePhaseController();
         }
@@ -561,6 +592,10 @@ pub const Runner = struct {
 
     pub fn activeRuntimeHazards(self: *const Runner) []const RuntimeHazard {
         return self.active_runtime_hazards[0..self.active_runtime_hazard_count];
+    }
+
+    pub fn activeProjectiles(self: *const Runner) []const Projectile {
+        return self.active_projectiles[0..self.active_projectile_count];
     }
 
     pub fn gameplayCellLabel(self: *const Runner) ?[]const u8 {
@@ -953,6 +988,11 @@ pub const Runner = struct {
                 self.recent_event = .salt_hit;
             },
             .slug => {
+                if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
+                if (self.invincible_ticks > 0) {
+                    self.defeatSlug(global_row, sample.resolved_lane_index);
+                    return;
+                }
                 self.counters.slug_hits += 1;
                 self.recent_event = .slug_hit;
                 // PORT(partial): Windows first sends slug contact through a dedicated hit/fall
@@ -994,9 +1034,18 @@ pub const Runner = struct {
         switch (ring_kind) {
             .none => {},
             .normal => self.counters.ring_normal += 1,
-            .powerup => self.counters.ring_powerup += 1,
-            .explode => self.counters.ring_explode += 1,
-            .slow => self.counters.ring_slow += 1,
+            .powerup => {
+                self.counters.ring_powerup += 1;
+                self.recordPowerupRing();
+            },
+            .explode => {
+                self.counters.ring_explode += 1;
+                self.triggerExplodeRing();
+            },
+            .slow => {
+                self.counters.ring_slow += 1;
+                self.slow_ticks = slow_ring_duration_ticks;
+            },
         }
         if (ring_kind != .none) {
             self.recordScore(&self.score.ring_collect, 100);
@@ -1054,6 +1103,190 @@ pub const Runner = struct {
                 self.applyDamageGaugeDelta(damage_warning_drain_delta);
             },
         }
+    }
+
+    fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
+        if (self.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
+        return self.speed_rows_per_second;
+    }
+
+    fn stepTemporaryStates(self: *Runner) void {
+        if (self.slow_ticks > 0) self.slow_ticks -= 1;
+        if (self.invincible_ticks > 0) self.invincible_ticks -= 1;
+        if (self.shot_cooldown_ticks > 0) self.shot_cooldown_ticks -= 1;
+    }
+
+    fn recordPowerupRing(self: *Runner) void {
+        if (self.weapon_level < max_weapon_level) {
+            self.weapon_level += 1;
+            return;
+        }
+        self.invincible_ticks = invincible_duration_ticks;
+    }
+
+    fn triggerExplodeRing(self: *Runner) void {
+        var write_index: usize = 0;
+        for (0..self.active_runtime_hazard_count) |read_index| {
+            const hazard = self.active_runtime_hazards[read_index];
+            const row_delta = @abs(@as(i32, @intCast(hazard.row)) - @as(i32, @intCast(self.current_global_row)));
+            const lane_delta = @abs(@as(i32, @intCast(hazard.lane)) - @as(i32, @intCast(self.resolved_lane_index)));
+            if (row_delta <= 6 and lane_delta <= 2) continue;
+            self.active_runtime_hazards[write_index] = hazard;
+            write_index += 1;
+        }
+        self.active_runtime_hazard_count = write_index;
+    }
+
+    fn handleFireInput(self: *Runner, preview: *const track.LoadedLevelPreview, fire: bool) void {
+        if (!fire or self.shot_cooldown_ticks != 0) return;
+        self.spawnProjectiles(preview);
+        self.shot_cooldown_ticks = base_fire_cooldown_ticks;
+    }
+
+    fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const origin = self.worldPosition(preview, 0.86);
+        const forward = self.worldForward(preview);
+        const up = self.worldUp(preview);
+        var right = crossVector3(forward, up);
+        const right_length = std.math.sqrt((right.x * right.x) + (right.y * right.y) + (right.z * right.z));
+        if (right_length > 0.0001) {
+            right = .{ .x = right.x / right_length, .y = right.y / right_length, .z = right.z / right_length };
+        } else {
+            right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        }
+        switch (self.weapon_level) {
+            0 => {
+                self.spawnProjectile(origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
+            },
+            1 => {
+                self.spawnProjectile(
+                    origin.x - (right.x * 0.35),
+                    origin.y - (right.y * 0.35),
+                    origin.z - (right.z * 0.35),
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                );
+                self.spawnProjectile(
+                    origin.x + (right.x * 0.35),
+                    origin.y + (right.y * 0.35),
+                    origin.z + (right.z * 0.35),
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                );
+            },
+            else => {
+                self.spawnProjectile(
+                    origin.x - (right.x * 0.42),
+                    origin.y - (right.y * 0.42),
+                    origin.z - (right.z * 0.42),
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                );
+                self.spawnProjectile(origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
+                self.spawnProjectile(
+                    origin.x + (right.x * 0.42),
+                    origin.y + (right.y * 0.42),
+                    origin.z + (right.z * 0.42),
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                );
+            },
+        }
+    }
+
+    fn spawnProjectile(self: *Runner, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
+        var slot_index: ?usize = null;
+        for (0..max_active_projectiles) |index| {
+            if (!self.active_projectiles[index].active) {
+                slot_index = index;
+                break;
+            }
+        }
+        const index = slot_index orelse return;
+        self.active_projectiles[index] = .{
+            .active = true,
+            .world_x = world_x,
+            .world_y = world_y,
+            .world_z = world_z,
+            .dir_x = dir_x,
+            .dir_y = dir_y,
+            .dir_z = dir_z,
+            .speed_rows_per_second = projectile_speed_rows_per_second,
+        };
+        if (index >= self.active_projectile_count) {
+            self.active_projectile_count = index + 1;
+        }
+    }
+
+    fn updateProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        var write_index: usize = 0;
+        for (0..self.active_projectile_count) |read_index| {
+            var projectile = self.active_projectiles[read_index];
+            if (!projectile.active) continue;
+            projectile.world_x += projectile.dir_x * projectile.speed_rows_per_second * delta_seconds;
+            projectile.world_y += projectile.dir_y * projectile.speed_rows_per_second * delta_seconds;
+            projectile.world_z += projectile.dir_z * projectile.speed_rows_per_second * delta_seconds;
+            if (self.resolveProjectileHit(preview, &projectile)) continue;
+            if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
+            self.active_projectiles[write_index] = projectile;
+            write_index += 1;
+        }
+        self.active_projectile_count = write_index;
+        for (write_index..max_active_projectiles) |index| {
+            self.active_projectiles[index].active = false;
+        }
+    }
+
+    fn resolveProjectileHit(self: *Runner, preview: *const track.LoadedLevelPreview, projectile: *Projectile) bool {
+        if (preview.total_rows == 0) return true;
+        const global_row = preview.rowIndexAtWorldZ(projectile.world_z);
+        const lane_index = preview.laneIndexAtWorldX(projectile.world_x);
+        if (global_row >= preview.total_rows or lane_index >= preview.max_width) return false;
+
+        const row_location = preview.locateRow(global_row) orelse return false;
+        const cell = if (lane_index < row_location.row.cells.len) row_location.row.cells[lane_index] else ' ';
+        if (isProjectileBlockingCell(cell)) return true;
+
+        if (self.consumeRuntimeHazard(global_row, lane_index, .garbage)) {
+            return true;
+        }
+
+        if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| switch (kind) {
+            .slug => {
+                if (!self.isSlugDefeated(global_row, lane_index) and self.weapon_level > 0) {
+                    self.defeatSlug(global_row, lane_index);
+                    return true;
+                }
+            },
+            else => {},
+        };
+        return false;
+    }
+
+    fn gameplayCellAt(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) ?track.GameplayCellKind {
+        _ = self;
+        return if (preview.gameplayCellSampleAt(global_row, lane_index)) |sample| sample.kind else null;
+    }
+
+    fn isSlugDefeated(self: *const Runner, global_row: usize, lane_index: usize) bool {
+        for (0..self.defeated_slug_cell_count) |index| {
+            const defeated = self.defeated_slug_cells[index];
+            if (defeated.row == global_row and defeated.lane == lane_index) return true;
+        }
+        return false;
+    }
+
+    fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
+        if (self.isSlugDefeated(global_row, lane_index)) return;
+        if (self.defeated_slug_cell_count < max_defeated_slug_cells) {
+            self.defeated_slug_cells[self.defeated_slug_cell_count] = .{ .row = global_row, .lane = lane_index };
+            self.defeated_slug_cell_count += 1;
+        }
+        self.recordScore(&self.score.garbage_collision, slug_projectile_kill_score);
     }
 
     fn refreshLiveRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1784,6 +2017,21 @@ fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, kind: RuntimeHa
     return @as(f32, @floatFromInt(bucket)) / 65535.0;
 }
 
+fn isProjectileBlockingCell(cell: u8) bool {
+    return switch (cell) {
+        '@', '0', '1', '2', '=' => true,
+        else => false,
+    };
+}
+
+fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = (a.y * b.z) - (a.z * b.y),
+        .y = (a.z * b.x) - (a.x * b.z),
+        .z = (a.x * b.y) - (a.y * b.x),
+    };
+}
+
 const TestFixture = struct {
     catalog: assets.Catalog,
     level_definition: ?level.Definition,
@@ -2110,6 +2358,76 @@ test "repeated slug contact adds the recovered +1.0 damage delta" {
 
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
+}
+
+test "powerup rings upgrade weapon level then grant invincible state" {
+    var runner = Runner{};
+
+    runner.recordRing(.powerup);
+    try std.testing.expectEqual(@as(u8, 1), runner.weapon_level);
+    try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
+
+    runner.recordRing(.powerup);
+    try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
+    try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
+
+    runner.recordRing(.powerup);
+    try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
+    try std.testing.expectEqual(invincible_duration_ticks, runner.invincible_ticks);
+}
+
+test "slow rings reduce effective speed while active" {
+    var runner = Runner{};
+    runner.speed_rows_per_second = 18.0;
+
+    runner.recordRing(.slow);
+    try std.testing.expectEqual(slow_ring_duration_ticks, runner.slow_ticks);
+    try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
+
+    runner.stepTemporaryStates();
+    try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.slow_ticks);
+}
+
+test "projectile fire defeats slug after powerup" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, slug);
+    runner.weapon_level = 1;
+    const gameplay_width = @min(fixture.preview.max_width, 8);
+    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+    const lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
+    var projectile: Projectile = .{
+        .active = true,
+        .world_x = lane_center - width_offset,
+        .world_y = 0.5,
+        .world_z = @as(f32, @floatFromInt(slug.row)) + 0.25,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
+    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
+    try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
+}
+
+test "invincible slug contact defeats slug instead of entering death" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, slug);
+    runner.invincible_ticks = 30;
+
+    runner.processRow(&fixture.preview, slug.row);
+    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectEqual(@as(u32, slug_projectile_kill_score), runner.score.total);
 }
 
 test "full damage enters warning fill and auto-drain" {

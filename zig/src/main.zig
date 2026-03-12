@@ -59,6 +59,7 @@ const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
+const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
     "SPRITES/SLUG001.TGA",
@@ -1021,6 +1022,7 @@ const AppState = struct {
     current_gameplay_turbo_model: ?x2.Uploaded = null,
     current_gameplay_turbo_animation: ?xanim.Player = null,
     current_gameplay_barrier_object: ?object.LoadedObject = null,
+    current_gameplay_lazer_object: ?object.LoadedObject = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
@@ -1171,6 +1173,7 @@ const AppState = struct {
         }
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
+        self.unloadGameplayLazer();
         self.unloadGameplaySprites();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
@@ -1345,6 +1348,13 @@ const AppState = struct {
         }
     }
 
+    fn unloadGameplayLazer(self: *AppState) void {
+        if (self.current_gameplay_lazer_object) |*loaded_object| {
+            loaded_object.deinit();
+            self.current_gameplay_lazer_object = null;
+        }
+    }
+
     fn unloadGameplaySprites(self: *AppState) void {
         self.current_gameplay_sprites.unload();
     }
@@ -1383,6 +1393,19 @@ const AppState = struct {
         const entry_index = self.catalog.findObjectIndex(gameplay_barrier_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
         self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            true,
+        );
+    }
+
+    fn reloadGameplayLazer(self: *AppState) !void {
+        self.unloadGameplayLazer();
+
+        const entry_index = self.catalog.findObjectIndex(gameplay_lazer_object_path) orelse return;
+        const entry = self.catalog.object_entries[entry_index];
+        self.current_gameplay_lazer_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
@@ -2501,6 +2524,9 @@ const AppState = struct {
                 }
                 if (accepts_input and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
                     self.pending_level_input.speed_delta_rows_per_second -= 2.0;
+                }
+                if (accepts_input and rl.isMouseButtonDown(.left)) {
+                    self.pending_level_input.fire = true;
                 }
                 if (accepts_input and rl.isKeyPressed(.space)) {
                     try self.enterPauseMenu();
@@ -3982,6 +4008,7 @@ const AppState = struct {
         }
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
+        self.unloadGameplayLazer();
         self.unloadGameplaySprites();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
@@ -4001,6 +4028,7 @@ const AppState = struct {
                 if (self.command == .game) {
                     try self.reloadGameplayTurbo();
                     try self.reloadGameplayBarrier();
+                    try self.reloadGameplayLazer();
                     try self.reloadGameplaySprites();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
@@ -6644,6 +6672,10 @@ fn drawGameplayRuntimeActors(
             .salt => drawGameplaySaltActor(state, loaded_track_preview, camera, hazard.row, hazard.lane),
         }
     }
+
+    for (runner.activeProjectiles()) |projectile| {
+        drawGameplayProjectileActor(state, projectile);
+    }
 }
 
 fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool {
@@ -6920,6 +6952,44 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     defer rl.endBlendMode();
     const barrier_tint = rl.Color{ .r = 128, .g = 168, .b = 255, .a = 224 };
     loaded_object.drawTintedEx(world_transform, barrier_tint);
+}
+
+fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
+    const loaded_object = state.current_gameplay_lazer_object orelse return;
+
+    const forward = normalizeVector3(.{
+        .x = projectile.dir_x,
+        .y = projectile.dir_y,
+        .z = projectile.dir_z,
+    });
+    var up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    if (@abs(dotVector3(forward, up)) > 0.95) {
+        up = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    }
+
+    var right = crossVector3(up, forward);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    const corrected_up = normalizeVector3(crossVector3(forward, right));
+    const position: rl.Vector3 = .{
+        .x = projectile.world_x,
+        .y = projectile.world_y,
+        .z = projectile.world_z,
+    };
+    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
+    const local_offset = rl.Matrix.translate(
+        -loaded_object.center.x,
+        -loaded_object.center.y,
+        -loaded_object.center.z,
+    );
+    const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
+    loaded_object.drawTintedEx(
+        world_transform.multiply(local_offset).multiply(scale),
+        .{ .r = 170, .g = 220, .b = 255, .a = 232 },
+    );
 }
 
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
