@@ -66,6 +66,8 @@ Current high-confidence render-normalization read:
 - `merge_track_tile_runs` suppresses follower cells so long horizontal strips render as one run head
 - `mark_track_warning_zones` expands warning footprints around hazard-bearing tiles before cache build
 - `build_track_fringe_objects` allocates directional fringe objects from the post-normalized strip
+  - it begins by calling `initialize_fringe_manager`
+  - then uses `allocate_fringe_object` to draw from a 7000-entry pool of 0x38-byte fringe objects
 - `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches
 
 ## Level Runtime Field Mapping

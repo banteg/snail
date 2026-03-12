@@ -102,6 +102,7 @@ Still missing or approximate:
 - `merge_track_tile_runs` beyond the currently ported conservative ownership slice
 - `mark_track_warning_zones`
 - real directional fringe objects and cache families
+  - the underlying Windows pool is clearer now: `initialize_fringe_manager` + `allocate_fringe_object`
 - exact warn-family routing
 
 Best next work:

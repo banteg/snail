@@ -588,7 +588,7 @@
     {
       "address": "0x434be0",
       "name": "build_track_fringe_objects",
-      "description": "Allocates directional fringe objects around runtime cells for the post-build renderer."
+      "description": "Allocates directional fringe objects around runtime cells for the post-build renderer, using the shared fringe-manager pool at `data_4df904 + 0x3d01d4`."
     },
     {
       "address": "0x435180",
@@ -936,6 +936,16 @@
     {
       "address": "0x447040",
       "name": "get_track_cell_row_index"
+    },
+    {
+      "address": "0x447090",
+      "name": "initialize_fringe_manager",
+      "description": "Resets the shared fringe-manager pool counter at `data_4df904 + 0x3d01d4` before one track rebuild emits directional fringe objects. Cross-port Android symbols match this helper to `cRFringeManager::Init()`."
+    },
+    {
+      "address": "0x4470a0",
+      "name": "allocate_fringe_object",
+      "description": "Allocates the next 0x38-byte object from the shared 7000-entry fringe-manager pool, or raises the `Too many Fringes` error if the pool overflows. Cross-port Android symbols match this helper to `cRFringeManager::GetFringe()`."
     },
     {
       "address": "0x447300",
