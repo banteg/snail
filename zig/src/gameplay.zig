@@ -314,6 +314,7 @@ const AttachmentFollowState = struct {
 const InstalledAttachmentEntry = struct {
     progress: f32,
     lateral_offset: f32,
+    vertical_offset: f32,
 };
 
 const LaunchState = struct {
@@ -1525,7 +1526,7 @@ pub const Runner = struct {
             .exit_overshoot = 0.0,
             .lateral_offset = entry.lateral_offset,
             .cached_output_lane_center = self.lane_center,
-            .vertical_offset = 0.0,
+            .vertical_offset = entry.vertical_offset,
         };
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
@@ -1576,13 +1577,21 @@ pub const Runner = struct {
         );
         const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
         const lateral_offset = self.lane_center - centered_lane_center;
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
-        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
+        const entry_world_position = trackEntryWorldPosition(preview, self.row_position, self.lane_center);
+        const entry_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            progress,
+            built.row.global_row,
+            0.0,
+            0.0,
+        );
+        const entry_local = attachmentLocalPosition(entry_pose, entry_world_position);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-        if (local_lateral > half_width + attachment_side_exit_margin) return null;
+        if (@abs(lateral_offset) > half_width + attachment_side_exit_margin) return null;
         return .{
             .progress = progress,
             .lateral_offset = lateral_offset,
+            .vertical_offset = @max(0.0, entry_local.y - attachment_entry_rider_height),
         };
     }
 
@@ -1667,6 +1676,7 @@ pub const Runner = struct {
                     return .{
                         .progress = progress,
                         .lateral_offset = lateral_offset,
+                        .vertical_offset = @max(0.0, start_local.y - attachment_entry_rider_height),
                     };
                 }
             }
