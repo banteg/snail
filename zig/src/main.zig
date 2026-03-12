@@ -5921,9 +5921,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
 
         drawGameplayStatusWidgets(state, layout, runner);
-        if (state.level_prompt_queue.active()) |prompt| {
-            try drawGameplayPromptPanel(state, layout, prompt.message);
-        }
+        try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
     }
 }
 
@@ -5935,31 +5933,57 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
     };
 }
 
-fn drawGameplayPromptPanel(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
-    const panel = layout.mapRect(18.0, 352.0, 356.0, 96.0);
-    const title_x = @as(i32, @intFromFloat(panel.x + layout.scaleFloat(16.0)));
-    const title_y = @as(i32, @intFromFloat(panel.y + layout.scaleFloat(12.0)));
-    const body_x = @as(i32, @intFromFloat(panel.x + layout.scaleFloat(16.0)));
-    const body_y = @as(i32, @intFromFloat(panel.y + layout.scaleFloat(40.0)));
+fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
+    var next_bottom = layout.mapPoint(0.0, 448.0).y;
 
-    rl.drawRectangleRounded(panel, 0.1, 8, .{ .r = 8, .g = 18, .b = 38, .a = 212 });
-    rl.drawRectangleRoundedLinesEx(
-        panel,
-        0.1,
-        8,
-        layout.scaleFloat(2.0),
-        .{ .r = 118, .g = 180, .b = 255, .a = 188 },
-    );
-    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(18), .gold);
-    try drawWrappedText(
-        state,
-        message,
-        body_x,
-        body_y,
-        @as(i32, @intFromFloat(panel.width - layout.scaleFloat(32.0))),
-        layout.fontSize(18),
-        .ray_white,
-    );
+    for (queue.entries) |slot| {
+        const prompt = slot orelse continue;
+        const line_count = gameplayPromptLineCount(prompt.message);
+        const card_height = @max(layout.scaleFloat(22.0 + @as(f32, @floatFromInt(line_count)) * 20.0), layout.scaleFloat(44.0));
+        const card = rl.Rectangle{
+            .x = layout.x + layout.scaleFloat(18.0),
+            .y = next_bottom - card_height,
+            .width = layout.scaleFloat(284.0),
+            .height = card_height,
+        };
+        next_bottom = card.y - layout.scaleFloat(8.0);
+
+        rl.drawRectangleRounded(card, 0.12, 8, .{ .r = 8, .g = 18, .b = 38, .a = 212 });
+        rl.drawRectangleRoundedLinesEx(
+            card,
+            0.12,
+            8,
+            layout.scaleFloat(2.0),
+            .{ .r = 118, .g = 180, .b = 255, .a = 176 },
+        );
+
+        const accent = rl.Rectangle{
+            .x = card.x + layout.scaleFloat(8.0),
+            .y = card.y + layout.scaleFloat(8.0),
+            .width = layout.scaleFloat(4.0),
+            .height = card.height - layout.scaleFloat(16.0),
+        };
+        rl.drawRectangleRounded(accent, 0.3, 4, .{ .r = 244, .g = 191, .b = 73, .a = 224 });
+
+        try drawWrappedText(
+            state,
+            prompt.message,
+            @intFromFloat(card.x + layout.scaleFloat(22.0)),
+            @intFromFloat(card.y + layout.scaleFloat(12.0)),
+            @intFromFloat(card.width - layout.scaleFloat(34.0)),
+            layout.fontSize(18),
+            .ray_white,
+        );
+    }
+}
+
+fn gameplayPromptLineCount(text: []const u8) usize {
+    var count: usize = 0;
+    var parts = std.mem.splitScalar(u8, text, '>');
+    while (parts.next()) |_| {
+        count += 1;
+    }
+    return @max(count, 1);
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {

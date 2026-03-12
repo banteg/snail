@@ -16,18 +16,24 @@ pub const Queue = struct {
     }
 
     pub fn active(self: *const Queue) ?Entry {
-        return self.entries[0];
+        for (self.entries) |slot| {
+            if (slot) |entry| return entry;
+        }
+        return null;
     }
 
     pub fn tick(self: *Queue) void {
-        if (self.entries[0]) |*entry| {
-            if (entry.ticks_remaining > 0) {
-                entry.ticks_remaining -= 1;
-            }
-            if (entry.ticks_remaining == 0) {
-                self.popFront();
+        for (&self.entries) |*slot| {
+            if (slot.*) |*entry| {
+                if (entry.ticks_remaining > 0) {
+                    entry.ticks_remaining -= 1;
+                }
+                if (entry.ticks_remaining == 0) {
+                    slot.* = null;
+                }
             }
         }
+        self.compact();
     }
 
     pub fn enqueue(self: *Queue, message: []const u8, duration_ticks: u32) void {
@@ -44,12 +50,17 @@ pub const Queue = struct {
         }
     }
 
-    fn popFront(self: *Queue) void {
-        var index: usize = 0;
-        while (index + 1 < capacity) : (index += 1) {
-            self.entries[index] = self.entries[index + 1];
+    fn compact(self: *Queue) void {
+        var next_index: usize = 0;
+        for (self.entries) |slot| {
+            if (slot) |entry| {
+                self.entries[next_index] = entry;
+                next_index += 1;
+            }
         }
-        self.entries[capacity - 1] = null;
+        while (next_index < capacity) : (next_index += 1) {
+            self.entries[next_index] = null;
+        }
     }
 };
 
@@ -81,6 +92,22 @@ test "queue ignores new entries when all slots are occupied" {
     try std.testing.expectEqualStrings("One", queue.entries[0].?.message);
     try std.testing.expectEqualStrings("Two", queue.entries[1].?.message);
     try std.testing.expectEqualStrings("Three", queue.entries[2].?.message);
+}
+
+test "queue ticks entries in parallel and compacts expired slots" {
+    var queue = Queue{};
+    queue.enqueue("One", 1);
+    queue.enqueue("Two", 3);
+    queue.enqueue("Three", 2);
+
+    queue.tick();
+    try std.testing.expectEqualStrings("Two", queue.entries[0].?.message);
+    try std.testing.expectEqualStrings("Three", queue.entries[1].?.message);
+    try std.testing.expect(queue.entries[2] == null);
+
+    queue.tick();
+    try std.testing.expectEqualStrings("Two", queue.entries[0].?.message);
+    try std.testing.expect(queue.entries[1] == null);
 }
 
 test "duration ticks use authored seconds when present" {

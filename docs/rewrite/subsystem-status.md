@@ -197,7 +197,7 @@ Implemented now:
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
-- authored tutorial/message prompts are now presented as a gameplay-facing Turbo panel instead of the old footer debug text block
+- authored tutorial/message prompts now use compact stacked gameplay tip cards, with up to three timed entries active at once instead of the old footer debug text block or the earlier invented Turbo speaker panel
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 
 Still missing or approximate:
