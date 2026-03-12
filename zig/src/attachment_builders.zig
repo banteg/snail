@@ -1319,7 +1319,15 @@ fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Templa
                 .y = 0.0,
                 .z = @floatFromInt(index),
             },
-            .special_scalar = 4.0,
+            .special_scalar = switch (spec.public_path) {
+                // PORT(partial): Android `BuildHalfPipe` is a straight longitudinal strip with a
+                // tapered kind-42 cross-section at the entry/exit and a constant-radius trough in
+                // the middle. Windows `HALFPIPE` now proves live runtime kind 42, while public
+                // `WARP` is still unresolved, so only `HALFPIPE` takes the tapered branch here.
+                .halfpipe => kind42HalfpipeRadiusForPoint(index, sample_count),
+                .warp => 4.0,
+                else => 4.0,
+            },
         };
     }
 
@@ -1339,6 +1347,26 @@ fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Templa
         .exit_tail_extra = 1.0,
         .samples = samples,
     };
+}
+
+fn kind42HalfpipeRadiusForPoint(point_index: usize, sample_count: usize) f32 {
+    const edge_count: usize = 16;
+    const middle_start = edge_count;
+    const exit_start = sample_count - edge_count;
+
+    if (point_index < middle_start) {
+        return kind42HalfpipeEdgeRadius((edge_count - 1) - point_index);
+    }
+    if (point_index >= exit_start) {
+        return kind42HalfpipeEdgeRadius(@min(point_index - exit_start, edge_count - 1));
+    }
+    return 4.0;
+}
+
+fn kind42HalfpipeEdgeRadius(step_index: usize) f32 {
+    const phase = (@as(f32, @floatFromInt(step_index)) * 0.0625) - 0.2;
+    const local_depth = (((std.math.sin(phase) * -0.5) + 0.5) * 0.95 + 0.05) * 4.0;
+    return ((local_depth * local_depth) + 16.0) / (local_depth * 2.0);
 }
 
 fn finalizeTemplateSamples(samples: []TemplateSample) void {
@@ -1657,6 +1685,28 @@ test "build loopbow template from recovered ordinary family shape" {
     try std.testing.expect(mid.position.y > 10.0);
     try std.testing.expect(mid.position.x > -3.0);
     try std.testing.expect(mid.position.x < 3.0);
+}
+
+test "build halfpipe template with tapered kind42 radius" {
+    const spec = specForPublicPath(.halfpipe);
+    var template = (try buildTemplate(std.testing.allocator, spec)).?;
+    defer template.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(u16, 66), template.sample_count);
+    try std.testing.expectEqual(@as(u16, 8), template.width_cells);
+    try std.testing.expectEqual(@as(usize, 67), template.pointCount());
+
+    const start_radius = template.samples[0].special_scalar;
+    const edge_radius = template.samples[15].special_scalar;
+    const middle_radius = template.samples[16].special_scalar;
+    const exit_start_radius = template.samples[50].special_scalar;
+    const end_radius = template.samples[66].special_scalar;
+
+    try std.testing.expect(start_radius > middle_radius);
+    try std.testing.expect(edge_radius > middle_radius);
+    try std.testing.expect(exit_start_radius > middle_radius);
+    try std.testing.expect(end_radius > middle_radius);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), middle_radius, 0.0001);
 }
 
 test "build vertical loop family templates from recovered public slot params" {

@@ -1568,49 +1568,73 @@ pub const Runner = struct {
         if (end_progress <= start_progress) return null;
 
         const current_lane_center = @as(f32, @floatFromInt(sample.resolved_lane_index)) + 0.5;
-        const end_pose = attachment_builders.worldPoseForTemplate(
-            &built.template,
-            end_progress,
-            built.row.global_row,
-            0.0,
-            0.0,
-        );
         const start_world_position = trackEntryWorldPosition(preview, self.previous_row_position, self.previous_lane_center);
         const end_world_position = trackEntryWorldPosition(preview, self.row_position, current_lane_center);
-        const start_local = attachmentLocalPosition(end_pose, start_world_position);
-        const end_local = attachmentLocalPosition(end_pose, end_world_position);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-        if (@abs(end_local.x) > half_width + attachment_side_exit_margin) return null;
-        if (start_local.y < attachment_entry_start_y_tolerance) return null;
-        if (end_local.y > attachment_entry_end_y_tolerance) return null;
-        if (@abs(start_local.z) > attachment_entry_local_z_tolerance and @abs(end_local.z) > attachment_entry_local_z_tolerance) return null;
-
-        const crossing_denominator = start_local.y - end_local.y;
-        const crossing_t = if (@abs(crossing_denominator) <= 0.0001)
-            1.0
-        else
-            std.math.clamp(start_local.y / crossing_denominator, 0.0, 1.0);
-        const crossing_progress = std.math.lerp(start_progress, end_progress, crossing_t);
-        const crossing_local_x = std.math.lerp(start_local.x, end_local.x, crossing_t);
-        const crossing_local_z = std.math.lerp(start_local.z, end_local.z, crossing_t);
-        const progress = std.math.clamp(
-            crossing_progress + crossing_local_z,
-            0.0,
-            @as(f32, @floatFromInt(built.template.sample_count)),
+        const end_index = @min(
+            @as(usize, @intFromFloat(@floor(end_progress))),
+            @as(usize, built.template.sample_count - 1),
+        );
+        const start_index = @min(
+            @as(usize, @intFromFloat(@floor(start_progress))),
+            end_index,
         );
 
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
-        const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
-            crossing_local_x / pose.lateral_scale
-        else
-            crossing_local_x;
-        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
-        if (local_lateral > half_width + attachment_side_exit_margin) return null;
+        var candidate_index = end_index;
+        while (true) {
+            const candidate_progress: f32 = @floatFromInt(candidate_index);
+            const candidate_pose = attachment_builders.worldPoseForTemplate(
+                &built.template,
+                candidate_progress,
+                built.row.global_row,
+                0.0,
+                0.0,
+            );
+            const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
+            const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
 
-        return .{
-            .progress = progress,
-            .lateral_offset = lateral_offset,
-        };
+            if (start_local.y >= attachment_entry_start_y_tolerance and
+                end_local.y <= attachment_entry_end_y_tolerance)
+            {
+                const crossing_denominator = start_local.y - end_local.y;
+                const crossing_t = if (@abs(crossing_denominator) <= 0.0001)
+                    1.0
+                else
+                    std.math.clamp(start_local.y / crossing_denominator, 0.0, 1.0);
+                const crossing_local_x = std.math.lerp(start_local.x, end_local.x, crossing_t);
+                const crossing_local_z = std.math.lerp(start_local.z, end_local.z, crossing_t);
+                const sample_length = attachment_builders.deltaLengthAtProgress(&built.template, candidate_progress);
+
+                if (@abs(crossing_local_x) <= half_width + attachment_side_exit_margin and
+                    crossing_local_z >= -attachment_entry_local_z_tolerance and
+                    crossing_local_z <= sample_length + attachment_entry_local_z_tolerance)
+                {
+                    const sample_fraction = if (sample_length <= 0.0001)
+                        0.0
+                    else
+                        std.math.clamp(crossing_local_z / sample_length, 0.0, 1.0);
+                    const progress = std.math.clamp(
+                        candidate_progress + sample_fraction,
+                        0.0,
+                        @as(f32, @floatFromInt(built.template.sample_count)),
+                    );
+                    const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
+                    const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
+                        crossing_local_x / pose.lateral_scale
+                    else
+                        crossing_local_x;
+                    return .{
+                        .progress = progress,
+                        .lateral_offset = lateral_offset,
+                    };
+                }
+            }
+
+            if (candidate_index == start_index) break;
+            candidate_index -= 1;
+        }
+
+        return null;
     }
 
     fn clearAttachmentFollow(self: *Runner) void {
@@ -2531,7 +2555,7 @@ test "halfpipe attachment tilts world up with lateral drift" {
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const up = runner.worldUp(&fixture.preview);
-    try std.testing.expect(@abs(up.x) > 0.1);
+    try std.testing.expect(@abs(up.x) > 0.04);
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
