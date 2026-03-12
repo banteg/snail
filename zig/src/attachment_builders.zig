@@ -386,6 +386,7 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
 fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
     return switch (spec.public_path) {
         .start => try buildStartTemplate(allocator, spec),
+        .loopbow => try buildLoopbowTemplate(allocator, spec),
         else => null,
     };
 }
@@ -447,6 +448,82 @@ fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templat
     };
 }
 
+fn buildLoopbowTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
+    const loop_radius: f32 = 6.0;
+    const subdivision_count: usize = 4;
+    const curve_steps: usize = @intFromFloat(@floor(loop_radius * (2.0 * std.math.pi)));
+    const sample_count: usize = curve_steps + 14;
+    const point_count: usize = sample_count + 1;
+    const bow_scalar: f32 = 0.5;
+    const start_flat_count: usize = 7;
+    const end_flat_count: usize = 7;
+    var samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    for (0..start_flat_count) |index| {
+        const row_offset = @as(f32, @floatFromInt(index));
+        samples[index].position = .{
+            .x = -2.0 - (row_offset * 0.071428575),
+            .y = 0.0,
+            .z = row_offset,
+        };
+    }
+
+    const curve_steps_f: f32 = @floatFromInt(curve_steps);
+    const radius = curve_steps_f * 0.15915494;
+    const start_x = samples[0].position.x;
+    const end_x = 4.0 - (@as(f32, @floatFromInt(subdivision_count)) * 0.5);
+    for (0..curve_steps) |step| {
+        const step_f: f32 = @floatFromInt(step);
+        const t = step_f / curve_steps_f;
+        const angle = (step_f * 2.0 * std.math.pi) / curve_steps_f;
+        const index = start_flat_count + step;
+        const linear_x = std.math.lerp(start_x, end_x, t);
+        samples[index].position = .{
+            .x = linear_x + (-std.math.cos(angle * 0.5) * bow_scalar),
+            .y = radius * (1.0 - std.math.cos(angle)),
+            .z = (std.math.sin(angle) * radius) + 7.0,
+        };
+    }
+
+    for (0..end_flat_count) |offset| {
+        const index = curve_steps + start_flat_count + offset;
+        const row_offset = @as(f32, @floatFromInt(offset));
+        samples[index].position = .{
+            .x = (1.0 - (row_offset * 0.16666667)) * bow_scalar + end_x,
+            .y = 0.0,
+            .z = @as(f32, @floatFromInt(curve_steps + start_flat_count + offset)),
+        };
+    }
+
+    samples[point_count - 1].position = .{
+        .x = end_x,
+        .y = 0.0,
+        .z = @as(f32, @floatFromInt(sample_count)),
+    };
+
+    finalizeTemplateSamples(samples);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = spec.runtime_kind,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = subdivision_count,
+        },
+        .width_cells = subdivision_count,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
 fn finalizeTemplateSamples(samples: []TemplateSample) void {
     if (samples.len == 0) return;
     var last_forward = Vec3{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -495,7 +572,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .looptheloopt4,
         => .{ .public_path = public_path, .family = .looptheloop, .status = .scaffold },
         .looptheloopw => .{ .public_path = public_path, .family = .looptheloopw, .status = .scaffold },
-        .loopbow => .{ .public_path = public_path, .family = .loopbow, .status = .scaffold, .runtime_kind = 0 },
+        .loopbow => .{ .public_path = public_path, .family = .loopbow, .status = .partial, .runtime_kind = 0, .sample_count = 51, .subdivision_count = 4 },
         .hill, .hill4c, .hill4, .valley, .valley4c, .valley4 => .{ .public_path = public_path, .family = .hill_valley, .status = .scaffold },
         .sbend => .{ .public_path = public_path, .family = .sbend, .status = .scaffold },
         .cage2 => .{ .public_path = public_path, .family = .cage2, .status = .scaffold },
@@ -651,4 +728,21 @@ test "start template interpolation follows recovered descent" {
     try std.testing.expect(mid.position.y < 8.0);
     try std.testing.expect(mid.position.y > 0.0);
     try std.testing.expectApproxEqAbs(@as(f32, 10.5), mid.position.z, 0.0001);
+}
+
+test "build loopbow template from recovered ordinary family shape" {
+    const spec = specForPublicPath(.loopbow);
+    var template = (try buildTemplate(std.testing.allocator, spec)).?;
+    defer template.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(u16, 51), template.sample_count);
+    try std.testing.expectEqual(@as(u16, 4), template.width_cells);
+    try std.testing.expectEqual(@as(usize, 52), template.pointCount());
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), template.samples[0].position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), template.samples[template.samples.len - 1].position.y, 0.0001);
+
+    const mid = samplePoseAtProgress(&template, 25.5);
+    try std.testing.expect(mid.position.y > 10.0);
+    try std.testing.expect(mid.position.x > -3.0);
+    try std.testing.expect(mid.position.x < 3.0);
 }

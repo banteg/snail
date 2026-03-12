@@ -263,13 +263,13 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
         switch (built.template.spec.public_path) {
-            .start => drawStartAttachment(scene, built),
+            .start, .loopbow => drawOrdinaryAttachment(scene, built),
             else => {},
         }
     }
 }
 
-fn drawStartAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     const template = &built.template;
     if (template.samples.len < 2) return;
 
