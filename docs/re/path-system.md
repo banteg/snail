@@ -81,6 +81,7 @@ The current high-confidence model is:
 - the placed parcel manager at `game + 0x125e430` is separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
+- the Zig port now mirrors that public `Path=` table in `attachment_builders.zig`, builds templates for every public family, renders them in the segment viewer, and uses those built templates for live follow/camera in gameplay; the remaining gap is the exact Windows installed bank and entry/exit semantics, not the existence of a separate path-template layer itself
 
 The remaining unknowns are mostly about exact constructor semantics, unresolved public slots like `HALFPIPE`, and the last details of attachment entry or exit behavior. The big former gap is now closed: the public `Path=` table does not go through a later mystery remap stage in the runtime installer. The parser stores the 51-name index up front, and the builder uses that index directly when it installs the sampled attachment pair on `P/p` rows.
 

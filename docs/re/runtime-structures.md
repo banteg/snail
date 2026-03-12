@@ -307,6 +307,30 @@ This matches the recovered follow-state update behavior:
 - `position` and `delta_dir_to_next` feed the interpolated output pose
 - `warp_phase` is the field consumed by the special nonlinear kind-`42` / `WARP`-like branch
 
+## Current Zig Port Attachment Types
+
+The Zig port now has its own attachment-side types that are worth keeping distinct from the Windows layouts above.
+
+These are implementation shapes, not recovered Windows structs:
+
+- [`attachment_builders.TemplateSample`](../../zig/src/attachment_builders.zig)
+  - Zig-side sampled point record used by the builder scaffold
+- [`attachment_builders.Template`](../../zig/src/attachment_builders.zig)
+  - Zig-side public-family template with width, sample count, exit-tail extra, and the sample array
+- [`attachment_builders.BuiltAttachment`](../../zig/src/attachment_builders.zig)
+  - one authored row plus its built Zig-side template
+- [`attachment_builders.Scaffold`](../../zig/src/attachment_builders.zig)
+  - current preview-owned authored-row registry, built templates, and first installed-row map
+- `AttachmentFollowState` in [`gameplay.zig`](../../zig/src/gameplay.zig)
+  - current gameplay-side follow state carrying source row, progress, exit overshoot, lateral offset, cached output lane center, vertical offset, and cached output position
+- `LaunchState` in [`gameplay.zig`](../../zig/src/gameplay.zig)
+  - current gameplay-side post-attachment launch state used by `SUPERTRAMP` and elevated exits
+
+Current practical split:
+
+- the RE docs above describe the Windows runtime structures
+- the Zig types above describe the current port-side scaffold that now builds, renders, and follows public attachment families without yet claiming the exact Windows installed-bank layout
+
 ## Binary Ninja Note
 
 These names are now safe to use when reading or extending the current Binary Ninja database.

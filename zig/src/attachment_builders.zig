@@ -193,8 +193,9 @@ pub const TemplateSpec = struct {
     subdivision_count: ?u16 = null,
 };
 
-// PORT(scaffold): this is the future shared shape for Windows-style installed path
-// templates. The current port only fills the authored-path registry and dispatch.
+// PORT(partial): this is the current Zig-side sampled template shape for the public
+// attachment builder scaffold. It is informed by the recovered Windows sample records,
+// but it is still not the exact installed runtime-bank layout.
 pub const TemplateSample = struct {
     basis_right: Vec3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
     basis_up: Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
@@ -207,8 +208,9 @@ pub const TemplateSample = struct {
     special_scalar: f32 = 0.0,
 };
 
-// PORT(scaffold): the builder scaffold will eventually populate these from the
-// recovered Windows constructor families instead of row-local metadata.
+// PORT(partial): the builder scaffold now populates these from the recovered public
+// attachment families and uses them in the segment viewer and gameplay. The remaining
+// gap is the exact Windows installed-bank/owner-record layout.
 pub const Template = struct {
     spec: TemplateSpec,
     width_cells: u16 = 0,

@@ -242,3 +242,20 @@ The March 10 Windows attachment package independently corroborated a few of thes
 - `HALFPIPE` is no longer a purely static gap: it is now proven live as runtime kind `42`, but it still lacks a directly recovered constructor body
 - `WARP` still lacks a directly recovered live family mapping and should not be collapsed into the same public slot as `HALFPIPE`
 - the template bank is constructor-generated runtime data, not a ready-made static blob in the executable, so a faithful extractor will need either constructor emulation or a runtime dump step
+
+## Current Zig Port Scaffold
+
+The current Zig port now mirrors the public authored family set directly:
+
+- [`attachment_builders.zig`](../../zig/src/attachment_builders.zig) carries the full `51`-name public path registry
+- every public name now builds a Zig-side template through one of the recovered builder families
+- the segment viewer renders all public families from those built templates
+- gameplay now also uses those built templates for live attachment progression and camera basis
+
+What this does **not** mean:
+
+- the Zig port does **not** yet claim the exact Windows installed bank layout
+- it does **not** yet hard-code a universal `63`-pair constructor-bank rule
+- it does **not** yet claim the final public-name split inside the nonlinear kind-`42` family
+
+So the current Zig scaffold is the right public-family layer for implementation, while the exact Windows bank/install semantics remain a live RE topic.

@@ -2,7 +2,7 @@
 
 This section captures the intended direction for the playable rewrite of Snail Mail.
 
-The current verified versus fallback or scaffold ledger lives in [port-status.md](port-status.md).
+The short verified/partial/fallback/scaffold ledger lives in [port-status.md](port-status.md). The detailed per-subsystem tracker lives in [subsystem-status.md](subsystem-status.md).
 
 ## Stack Split
 
@@ -183,8 +183,9 @@ Notes:
 - windowed mode stays the development default until a saved runtime config exists; `--fullscreen` or a saved fullscreen preference in `SnailMail.cfg` can still start fullscreen
 - `--runtime-dir` overrides the mutable state root for `SnailMail.cfg` and `ScoreA/B/C.dat`; the default is `artifacts/runtime`, and the port now loads and saves the raw config blob there while applying the recovered sound/music/fullscreen fields
 - current level previews are still sequential approximations: the named `Path=` routes are now confirmed to resolve through a hardcoded `51`-entry table in the gameplay executable, and the original player update can enter a dedicated attachment-follow state on installed sampled path objects, but the exact name-to-template mapping and installer path are still under investigation
-- the debug `Segments` view now carries all public authored attachment families through that scaffold, including the nonlinear kind-`42` family, and the gameplay runner now consumes built templates for live attachment progression, curved-surface camera basis, natural-end exit pose, a first width-based side-exit rule, and a dedicated `SUPERTRAMP` launch exit; attachment entry no longer keys only off raw row tags and now uses a preview-side installed attachment row map derived from the runtime attachment tiles, the live gameplay camera stays on that built attachment/launch frame instead of snapping straight back to the flat chase view, and the remaining gaps are the full Windows bank installer, the swept local-frame entry test, and more exact family-specific follow/exit behavior
-- the default gameplay viewport now also reuses the textured track scene for supported `Track:` sets (`0..3`) instead of always falling back to the raw cube preview, so attachment-heavy levels no longer render those built path families only in the debug browser
+- the debug `Segments` view now builds and renders every public authored `Path=` family through the shared attachment-builder scaffold, including the nonlinear kind-`42` branch, so attachment geometry is no longer just labels and row hints
+- the gameplay runner now also consumes those built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and a dedicated `SUPERTRAMP` launch exit; installed attachment entry now attempts a built-geometry path first and keeps the old source-row fallback only where the geometric entry is still too weak
+- the default gameplay viewport now reuses the textured track scene for supported `Track:` sets (`0..3`) instead of always falling back to the raw cube preview, so attachment-heavy levels render built path families in actual play as well as in the segment browser
 
 Interactive controls for `zig build run -- debug`:
 

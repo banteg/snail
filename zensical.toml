@@ -17,6 +17,7 @@ nav = [
     { "Rewrite" = [
         { "Overview" = "rewrite/index.md" },
         { "Port status" = "rewrite/port-status.md" },
+        { "Subsystem status" = "rewrite/subsystem-status.md" },
     ] },
     { "RE" = [
         { "Overview" = "re/index.md" },

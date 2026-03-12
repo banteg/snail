@@ -315,3 +315,21 @@ What still needs more RE before the Zig runtime can match the original course sh
 - how each named `Path=` row maps onto the hardcoded template-pair tables
 - how the original runtime samples those templates for player movement, object placement, and camera behavior
 - which tile ids and row markers trigger attachment entry and exit versus ordinary floor-following
+
+## Current Zig Port State
+
+The current Zig port now goes materially farther than the old “row hint only” fallback:
+
+- [`attachment_builders.zig`](../../zig/src/attachment_builders.zig) mirrors the public `51`-name `Path=` table and builds Zig-side templates for every public family
+- the `Segments` view renders those built families directly, including the current nonlinear kind-`42` branch
+- gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
+- entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, gameplay attempts a built-geometry installed-row entry first, and only falls back to the old source-row path where the new entry test is still too weak
+
+That is still not the full Windows model.
+
+Current Zig gaps that remain clearly open:
+
+- the real installed runtime bank and owner-record chain
+- the full swept local-frame entry test used by Windows
+- the exact family-specific semantics inside the nonlinear kind-`42` family
+- the exact installed-bank split between public names like `HALFPIPE` and `WARP`

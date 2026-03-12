@@ -295,9 +295,9 @@ const RowSample = struct {
 };
 
 // PORT(partial): Windows attachment-follow is driven by installed runtime attachment
-// records plus sampled template geometry. The current port still lacks that installer
-// and bank, so this state is only the minimal authored-metadata fallback we can carry
-// for now. It should not be read as a recovered Windows layout.
+// records plus sampled template geometry. The current port now uses built templates,
+// a preview-side installed-row map, and a first geometric entry test, but this state
+// is still a Zig-side implementation shape rather than the recovered Windows layout.
 const AttachmentFollowState = struct {
     active: bool = false,
     source_row: usize = 0,
