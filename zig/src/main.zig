@@ -1274,7 +1274,6 @@ const AppState = struct {
     fn reloadGameplayBarrier(self: *AppState) !void {
         self.unloadGameplayBarrier();
 
-        if (self.active_frontend_mode != .tutorial) return;
         const entry_index = self.catalog.findObjectIndex(gameplay_barrier_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
         self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
@@ -6501,12 +6500,68 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
 }
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
-    if (state.active_frontend_mode != .tutorial) return;
-    const loaded_object = state.current_gameplay_barrier_object orelse return;
+    _ = state.current_gameplay_barrier_object orelse return;
+    const tutorial_level_active = if (state.current_level) |loaded_level|
+        std.mem.eql(u8, loaded_level.source_path, "LEVELS/TUTORIAL.TXT")
+    else
+        false;
+    const barrier_active = tutorial_level_active or runner.current_annotation == .no_fall;
+    if (!barrier_active) return;
 
-    const anchor = runner.worldPosition(loaded_track_preview, 0.0);
-    const transform = rl.Matrix.translate(0.0, 0.4, anchor.z);
-    loaded_object.drawEx(transform);
+    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
+    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
+    var right = crossVector3(up, forward);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    const corrected_up = normalizeVector3(crossVector3(forward, right));
+    const position = runner.worldPosition(loaded_track_preview, 0.4);
+    rl.gl.rlDisableDepthTest();
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
+    defer rl.gl.rlEnableDepthTest();
+    rl.beginBlendMode(.additive);
+    defer rl.endBlendMode();
+    const barrier_tint = rl.Color{ .r = 88, .g = 156, .b = 255, .a = 168 };
+    drawGameplayBarrierQuad(position, right, corrected_up, forward, 4.5, barrier_tint);
+    drawGameplayBarrierQuad(position, right, corrected_up, forward, -4.5, barrier_tint);
+}
+
+fn drawGameplayBarrierQuad(
+    origin: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    x_offset: f32,
+    tint: rl.Color,
+) void {
+    const top_near = barrierLocalPoint(origin, right, up, forward, x_offset, 0.3, -29.0);
+    const top_far = barrierLocalPoint(origin, right, up, forward, x_offset, 0.3, 29.0);
+    const bottom_far = barrierLocalPoint(origin, right, up, forward, x_offset, -0.3, 29.0);
+    const bottom_near = barrierLocalPoint(origin, right, up, forward, x_offset, -0.3, -29.0);
+
+    rl.drawTriangle3D(top_near, top_far, bottom_far, tint);
+    rl.drawTriangle3D(top_near, bottom_far, bottom_near, tint);
+    rl.drawTriangle3D(top_near, bottom_far, top_far, tint);
+    rl.drawTriangle3D(top_near, bottom_near, bottom_far, tint);
+}
+
+fn barrierLocalPoint(
+    origin: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    local_x: f32,
+    local_y: f32,
+    local_z: f32,
+) rl.Vector3 {
+    return .{
+        .x = origin.x + (right.x * local_x) + (up.x * local_y) + (forward.x * local_z),
+        .y = origin.y + (right.y * local_x) + (up.y * local_y) + (forward.y * local_z),
+        .z = origin.z + (right.z * local_x) + (up.z * local_y) + (forward.z * local_z),
+    };
 }
 
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
