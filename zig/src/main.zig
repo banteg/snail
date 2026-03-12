@@ -6491,7 +6491,7 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     else
         0;
     if (state.current_game_track_scene) |*scene| {
-        scene.draw(&loaded_track_preview, selected_segment_index);
+        scene.drawGameplay(&loaded_track_preview, selected_segment_index);
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }

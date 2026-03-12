@@ -48,6 +48,12 @@ pub const Scene = struct {
         preview.drawPlacedModelsOnly();
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
+
+    pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
+        drawRuntimeCells(self, preview);
+        drawAttachmentGeometry(self, preview, selected_segment_index);
+        preview.drawPlacedModelsOnly();
+    }
 };
 
 const Textures = struct {
