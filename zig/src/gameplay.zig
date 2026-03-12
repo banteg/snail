@@ -855,6 +855,7 @@ pub const Runner = struct {
         if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
         if (self.currentAttachmentBuilt(preview)) |built| {
             if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
+                self.commitAttachmentNaturalExit(preview, built);
                 self.finishAttachmentFollow();
             }
             return;
@@ -1183,6 +1184,26 @@ pub const Runner = struct {
         const gameplay_width = @min(preview.max_width, 8);
         const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
         return world_x + width_offset;
+    }
+
+    fn commitAttachmentNaturalExit(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        const exit_world_position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            @floatFromInt(built.template.sample_count),
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        self.row_position = exit_world_position.z + built.template.exit_tail_extra;
+        self.runtime_track_index = currentRowIndex(preview, self.row_position);
+        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
+        self.resolved_lane_index = self.lane_index;
+        self.lane_center = @as(f32, @floatFromInt(self.lane_index)) + 0.5;
     }
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1909,6 +1930,28 @@ test "standalone start segment attachment follow uses built template world heigh
 
     try std.testing.expect(world_position.y > floor_height + 0.5);
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
+}
+
+test "standalone start segment attachment exits from the template end pose" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const exit_progress: f32 = @floatFromInt(built.template.sample_count);
+    while (runner.movement_mode == .attachment and runner.attachment_follow.progress < exit_progress) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row + built.template.sample_count)));
+    try std.testing.expect(runner.row_position > exit_progress);
 }
 
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
