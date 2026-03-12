@@ -59,6 +59,26 @@ const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
+const gameplay_slug_sprite_paths = [_][]const u8{
+    "SPRITES/SLUG000.TGA",
+    "SPRITES/SLUG001.TGA",
+};
+const gameplay_garbage_sprite_paths = [_][]const u8{
+    "SPRITES/GARBAGEA.TGA",
+    "SPRITES/GARBAGEB.TGA",
+    "SPRITES/GARBAGEC.TGA",
+    "SPRITES/GARBAGED.TGA",
+};
+const gameplay_health_sprite_path = "SPRITES/HEALTH.TGA";
+const gameplay_jetpack_sprite_paths = [_][]const u8{
+    "SPRITES/JETPACK000.TGA",
+    "SPRITES/JETPACK001.TGA",
+};
+const gameplay_parcel_sprite_path = "SPRITES/PARCEL000.TGA";
+const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
+const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
+const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
+const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -180,6 +200,63 @@ const FrontendSoundFx = struct {
     }
 };
 
+const GameplaySpriteArt = struct {
+    slug_frames: [gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_slug_sprite_paths.len,
+    garbage_variants: [gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_garbage_sprite_paths.len,
+    health: ?assets.LoadedTexture = null,
+    jetpack_frames: [gameplay_jetpack_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_jetpack_sprite_paths.len,
+    parcel: ?assets.LoadedTexture = null,
+    ring: ?assets.LoadedTexture = null,
+    ring_big: ?assets.LoadedTexture = null,
+    slow_ring: ?assets.LoadedTexture = null,
+    powerup: ?assets.LoadedTexture = null,
+
+    fn unload(self: *GameplaySpriteArt) void {
+        for (&self.slug_frames) |*texture| {
+            if (texture.*) |*loaded| {
+                loaded.unload();
+                texture.* = null;
+            }
+        }
+        for (&self.garbage_variants) |*texture| {
+            if (texture.*) |*loaded| {
+                loaded.unload();
+                texture.* = null;
+            }
+        }
+        if (self.health) |*texture| {
+            texture.unload();
+            self.health = null;
+        }
+        for (&self.jetpack_frames) |*texture| {
+            if (texture.*) |*loaded| {
+                loaded.unload();
+                texture.* = null;
+            }
+        }
+        if (self.parcel) |*texture| {
+            texture.unload();
+            self.parcel = null;
+        }
+        if (self.ring) |*texture| {
+            texture.unload();
+            self.ring = null;
+        }
+        if (self.ring_big) |*texture| {
+            texture.unload();
+            self.ring_big = null;
+        }
+        if (self.slow_ring) |*texture| {
+            texture.unload();
+            self.slow_ring = null;
+        }
+        if (self.powerup) |*texture| {
+            texture.unload();
+            self.powerup = null;
+        }
+    }
+};
+
 const RouteMapArt = struct {
     logo: ?assets.LoadedTexture = null,
     border: ?assets.LoadedTexture = null,
@@ -278,6 +355,29 @@ fn loadRouteMapArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog)
     for (route_map_galaxy_texture_paths, 0..) |path, index| {
         art.galaxies[index] = try catalog.loadTextureByPath(allocator, path);
     }
+
+    return art;
+}
+
+fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !GameplaySpriteArt {
+    var art = GameplaySpriteArt{};
+    errdefer art.unload();
+
+    for (gameplay_slug_sprite_paths, 0..) |path, index| {
+        art.slug_frames[index] = try catalog.loadTextureByPath(allocator, path);
+    }
+    for (gameplay_garbage_sprite_paths, 0..) |path, index| {
+        art.garbage_variants[index] = try catalog.loadTextureByPath(allocator, path);
+    }
+    art.health = try catalog.loadTextureByPath(allocator, gameplay_health_sprite_path);
+    for (gameplay_jetpack_sprite_paths, 0..) |path, index| {
+        art.jetpack_frames[index] = try catalog.loadTextureByPath(allocator, path);
+    }
+    art.parcel = try catalog.loadTextureByPath(allocator, gameplay_parcel_sprite_path);
+    art.ring = try catalog.loadTextureByPath(allocator, gameplay_ring_sprite_path);
+    art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_ring_big_sprite_path);
+    art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_slow_ring_sprite_path);
+    art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
 
     return art;
 }
@@ -921,6 +1021,7 @@ const AppState = struct {
     current_gameplay_turbo_model: ?x2.Uploaded = null,
     current_gameplay_turbo_animation: ?xanim.Player = null,
     current_gameplay_barrier_object: ?object.LoadedObject = null,
+    current_gameplay_sprites: GameplaySpriteArt = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -1070,6 +1171,7 @@ const AppState = struct {
         }
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
+        self.unloadGameplaySprites();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -1243,6 +1345,10 @@ const AppState = struct {
         }
     }
 
+    fn unloadGameplaySprites(self: *AppState) void {
+        self.current_gameplay_sprites.unload();
+    }
+
     fn reloadGameplayTurbo(self: *AppState) !void {
         self.unloadGameplayTurbo();
 
@@ -1282,6 +1388,11 @@ const AppState = struct {
             entry,
             true,
         );
+    }
+
+    fn reloadGameplaySprites(self: *AppState) !void {
+        self.unloadGameplaySprites();
+        self.current_gameplay_sprites = try loadGameplaySpriteArt(self.allocator, &self.catalog);
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
@@ -3871,6 +3982,7 @@ const AppState = struct {
         }
         self.unloadGameplayTurbo();
         self.unloadGameplayBarrier();
+        self.unloadGameplaySprites();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
@@ -3889,6 +4001,7 @@ const AppState = struct {
                 if (self.command == .game) {
                     try self.reloadGameplayTurbo();
                     try self.reloadGameplayBarrier();
+                    try self.reloadGameplaySprites();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
@@ -5723,102 +5836,77 @@ fn resultTitle(result: PendingRunResult) []const u8 {
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     drawGameplayLevelViewport(state);
 
-    const hud_panel = layout.mapRect(16.0, 14.0, 608.0, 84.0);
-    const footer_panel = layout.mapRect(16.0, 392.0, 608.0, 72.0);
-
-    rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-
     const loaded_level = state.current_level orelse return;
-    const loaded_track_preview = state.current_track_preview orelse return;
-    const title_point = layout.mapPoint(36.0, 28.0);
-    const meta_point = layout.mapPoint(36.0, 58.0);
-    const control_point = layout.mapPoint(36.0, 82.0);
-    const parcel_target = loaded_level.parcels orelse 0;
-    const parcel_count = if (state.level_runner) |runner| runner.counters.parcels else 0;
-    const score_total = if (state.level_runner) |runner| runner.score.total else 0;
-    const elapsed_millis = if (state.level_runner) |runner| runner.stopwatch.elapsedMillis() else 0;
-    const accepts_input = if (state.level_runner) |runner| runner.acceptsGameplayInput() else false;
-    const package_icon = game_font.IconGlyph.package.byte();
-    const mouse_icon = game_font.IconGlyph.mouse.byte();
-    const title_font_size = layout.fontSize(28);
-    const body_font_size = layout.fontSize(18);
-
-    var level_name_buffer: [128]u8 = undefined;
-    const level_name_text = try std.fmt.bufPrintZ(&level_name_buffer, "{s}", .{loaded_level.name});
-    drawAppText(state, level_name_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
-
-    var elapsed_buffer: [32]u8 = undefined;
-    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
-    var meta_buffer: [384]u8 = undefined;
-    const meta_text = try std.fmt.bufPrintZ(
-        &meta_buffer,
-        "Mode {s}  background {s}  segment {d}/{d}  {c} {d}/{d}  score {d}  time {s}  rows {d}",
-        .{
-            loaded_level.mode,
-            loaded_level.background orelse "<none>",
-            if (state.active_level_segment_index) |segment_index| segment_index + 1 else 1,
-            loaded_level.segments.len,
-            package_icon,
-            parcel_count,
-            parcel_target,
-            score_total,
-            elapsed_text,
-            loaded_track_preview.total_rows,
-        },
-    );
-    drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
-    var control_buffer: [192]u8 = undefined;
-    const control_text = if (!accepts_input)
-        try std.fmt.bufPrintZ(&control_buffer, "Runner cutscene active  R reset  Esc menu", .{})
-    else
-        try std.fmt.bufPrintZ(&control_buffer, "{c}/Left/Right steer  Up/Down speed  Space pause  R reset  Esc menu", .{mouse_icon});
-    drawAppText(state, control_text, @intFromFloat(control_point.x), @intFromFloat(control_point.y), body_font_size, .light_gray);
-
     if (state.level_runner) |runner| {
+        const hud_panel = layout.mapRect(16.0, 14.0, 360.0, 58.0);
+        rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+
+        const title_point = layout.mapPoint(28.0, 24.0);
+        const meta_point = layout.mapPoint(28.0, 50.0);
+        const parcel_target = loaded_level.parcels orelse 0;
+        const parcel_count = runner.counters.parcels;
+        const score_total = runner.score.total;
+        const elapsed_millis = runner.stopwatch.elapsedMillis();
+        const title_text = gameplayHudTitle(loaded_level, runner);
+        const package_icon = game_font.IconGlyph.package.byte();
+        const title_font_size = layout.fontSize(28);
+        const body_font_size = layout.fontSize(18);
+
+        drawAppText(state, title_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
+
+        var elapsed_buffer: [32]u8 = undefined;
+        const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
+        var meta_buffer: [256]u8 = undefined;
+        const meta_text = if (parcel_target > 0)
+            try std.fmt.bufPrintZ(
+                &meta_buffer,
+                "{c} {d}/{d}   Score {d}   Time {s}",
+                .{ package_icon, parcel_count, parcel_target, score_total, elapsed_text },
+            )
+        else
+            try std.fmt.bufPrintZ(&meta_buffer, "Score {d}   Time {s}", .{ score_total, elapsed_text });
+        drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
+
         drawGameplayStatusWidgets(state, layout, runner);
-        rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-
-        var runner_buffer: [384]u8 = undefined;
-        const runner_text = try std.fmt.bufPrintZ(
-            &runner_buffer,
-            "Row {d:.2}/{d}  cursor {d}+{d:.2}  lane {d}->{d}  speed {d:.1}  event {s}  damage {d:.2}  warn {s}  lives {d}  jet {d:.2} {s}  phase {s}",
-            .{
-                runner.row_position,
-                loaded_track_preview.total_rows,
-                runner.runtime_track_index,
-                runner.movement_progress,
-                runner.lane_index,
-                runner.resolved_lane_index,
-                runner.speed_rows_per_second,
-                runner.recentEventLabel(),
-                runner.damage_gauge,
-                runner.damageWarningLabel(),
-                runner.visible_life_stock,
-                runner.jetpackFuelRemaining(),
-                runner.jetpackWarningLabel(),
-                runner.phaseLabel(),
-            },
-        );
-        drawAppText(state, runner_text, @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)), @intFromFloat(footer_panel.y + layout.scaleFloat(18.0)), body_font_size, .ray_white);
-
         if (state.level_prompt_queue.active()) |prompt| {
-            try drawWrappedText(
-                state,
-                prompt.message,
-                @intFromFloat(footer_panel.x + layout.scaleFloat(18.0)),
-                @intFromFloat(footer_panel.y + layout.scaleFloat(42.0)),
-                @intFromFloat(footer_panel.width - layout.scaleFloat(30.0)),
-                body_font_size,
-                .gold,
-            );
+            try drawGameplayPromptPanel(state, layout, prompt.message);
         }
     }
+}
 
-    const crosshair_color: rl.Color = .{ .r = 255, .g = 255, .b = 255, .a = 180 };
-    const crosshair_radius = layout.scaleInt(12);
-    const crosshair_thickness = @max(layout.scaleInt(2), 1);
-    rl.drawRectangle(@divTrunc(screenWidth(), 2) - crosshair_radius, @divTrunc(screenHeight(), 2), crosshair_radius * 2, crosshair_thickness, crosshair_color);
-    rl.drawRectangle(@divTrunc(screenWidth(), 2), @divTrunc(screenHeight(), 2) - crosshair_radius, crosshair_thickness, crosshair_radius * 2, crosshair_color);
+fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0]const u8 {
+    _ = loaded_level;
+    return switch (runner.session_mode) {
+        .tutorial => "Snail Mail 101",
+        else => "Snail Mail",
+    };
+}
+
+fn drawGameplayPromptPanel(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
+    const panel = layout.mapRect(18.0, 352.0, 356.0, 96.0);
+    const title_x = @as(i32, @intFromFloat(panel.x + layout.scaleFloat(16.0)));
+    const title_y = @as(i32, @intFromFloat(panel.y + layout.scaleFloat(12.0)));
+    const body_x = @as(i32, @intFromFloat(panel.x + layout.scaleFloat(16.0)));
+    const body_y = @as(i32, @intFromFloat(panel.y + layout.scaleFloat(40.0)));
+
+    rl.drawRectangleRounded(panel, 0.1, 8, .{ .r = 8, .g = 18, .b = 38, .a = 212 });
+    rl.drawRectangleRoundedLinesEx(
+        panel,
+        0.1,
+        8,
+        layout.scaleFloat(2.0),
+        .{ .r = 118, .g = 180, .b = 255, .a = 188 },
+    );
+    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(18), .gold);
+    try drawWrappedText(
+        state,
+        message,
+        body_x,
+        body_y,
+        @as(i32, @intFromFloat(panel.width - layout.scaleFloat(32.0))),
+        layout.fontSize(18),
+        .ray_white,
+    );
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
@@ -6504,8 +6592,295 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }
+    drawGameplayRuntimeActors(state, &loaded_track_preview, runner, camera);
     drawGameplayBarrier(state, &loaded_track_preview, runner);
     drawGameplayTurbo(state, &loaded_track_preview, runner);
+}
+
+const BillboardUv = struct {
+    left: f32,
+    top: f32,
+    right: f32,
+    bottom: f32,
+};
+
+fn drawGameplayRuntimeActors(
+    state: *const AppState,
+    loaded_track_preview: *const track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    camera: rl.Camera3D,
+) void {
+    const gameplay_width = @min(loaded_track_preview.max_width, 8);
+    if (gameplay_width == 0 or loaded_track_preview.total_rows == 0) return;
+
+    const current_row = loaded_track_preview.rowIndexAtWorldZ(runner.row_position);
+    const start_row = current_row -| 1;
+    const end_row = @min(loaded_track_preview.total_rows, current_row + 72);
+
+    for (start_row..end_row) |global_row| {
+        if (!shouldRenderGameplayActorRow(runner, global_row)) continue;
+        const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
+        for (0..@min(row_location.row.cells.len, gameplay_width)) |lane_index| {
+            const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
+            switch (sample.kind) {
+                .slug => drawGameplaySlugActor(state, loaded_track_preview, camera, global_row, lane_index),
+                .health => drawGameplayHealthActor(state, loaded_track_preview, camera, global_row, lane_index),
+                .jetpack => drawGameplayJetpackActor(state, loaded_track_preview, camera, global_row, lane_index),
+                .ring => drawGameplayRingActor(state, loaded_track_preview, camera, row_location, lane_index),
+                .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
+            }
+        }
+
+        if (row_location.row.annotation) |annotation| switch (annotation) {
+            .parcel => |parcel| drawGameplayParcelActor(state, loaded_track_preview, camera, row_location, parcel),
+            else => {},
+        };
+    }
+
+    for (runner.activeRuntimeHazards()) |hazard| {
+        if (!shouldRenderGameplayActorRow(runner, hazard.row)) continue;
+        switch (hazard.kind) {
+            .garbage => drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard.row, hazard.lane),
+            .salt => drawGameplaySaltActor(state, loaded_track_preview, camera, hazard.row, hazard.lane),
+        }
+    }
+}
+
+fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool {
+    return @as(f32, @floatFromInt(global_row)) + 0.25 >= runner.row_position;
+}
+
+fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_slug_sprite_paths.len))));
+    const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.34);
+    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.7, 0.7, camera, .white);
+}
+
+fn drawGameplayGarbageActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const variant_index = @as(usize, @intCast((global_row + lane_index * 3) % gameplay_garbage_sprite_paths.len));
+    const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.28);
+    drawGameplayBillboardTexture(
+        loaded_texture.texture,
+        position,
+        0.58,
+        0.58,
+        camera,
+        .{ .r = 255, .g = 255, .b = 255, .a = 232 },
+    );
+}
+
+fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const slot = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.44);
+    drawGameplayBillboardTextureRect(
+        state.ui_font.texture,
+        .{
+            .x = slot.source_x,
+            .y = slot.source_y,
+            .width = slot.source_width,
+            .height = slot.source_height,
+        },
+        position,
+        0.58,
+        0.72,
+        camera,
+        .{ .r = 144, .g = 198, .b = 255, .a = 236 },
+    );
+}
+
+fn drawGameplayHealthActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const loaded_texture = state.current_gameplay_sprites.health orelse return;
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.34);
+    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.52, 0.52, camera, .white);
+}
+
+fn drawGameplayJetpackActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_jetpack_sprite_paths.len))));
+    const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.48);
+    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.88, camera, .white);
+}
+
+fn drawGameplayRingActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    camera: rl.Camera3D,
+    row_location: track.RowLocation,
+    lane_index: usize,
+) void {
+    const ring_kind = if (row_location.row.annotation) |annotation|
+        switch (annotation) {
+            .ring => |kind| kind,
+            else => segment.RingKind.normal,
+        }
+    else
+        segment.RingKind.normal;
+    const position = gameplayLaneWorldPosition(preview, row_location.global_row, lane_index, 0.72);
+    switch (ring_kind) {
+        .none => {},
+        .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46, 0.46, camera, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
+        },
+        .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.64, camera, .white);
+        },
+        .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72, 0.72, camera, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
+        },
+        .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5, 0.5, camera, .white);
+        },
+    }
+}
+
+fn drawGameplayParcelActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    camera: rl.Camera3D,
+    row_location: track.RowLocation,
+    parcel: segment.ParcelAnnotation,
+) void {
+    const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
+    const position = gameplayAnnotationWorldPosition(preview, row_location, 0.48, parcel.offset);
+    drawGameplayBillboardTexture(
+        loaded_texture.texture,
+        position,
+        0.56,
+        0.56,
+        camera,
+        if (parcel.id == 0)
+            .white
+        else
+            .{ .r = 196, .g = 255, .b = 196, .a = 232 },
+    );
+}
+
+fn gameplayLaneWorldPosition(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) rl.Vector3 {
+    const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+    return preview.worldPositionForLane(@as(f32, @floatFromInt(lane_index)) + 0.5, @as(f32, @floatFromInt(global_row)), floor_height + y_offset);
+}
+
+fn gameplayAnnotationWorldPosition(
+    preview: *const track.LoadedLevelPreview,
+    row_location: track.RowLocation,
+    y_offset: f32,
+    offset: segment.Vec3,
+) rl.Vector3 {
+    const bounds = preview.laneBoundsForRow(row_location);
+    const center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+    const floor_height = preview.floorHeightAtCellCenter(row_location.global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+    const base = preview.worldPositionForLane(center_lane, @as(f32, @floatFromInt(row_location.global_row)), floor_height + y_offset);
+    return .{
+        .x = base.x + offset.x,
+        .y = base.y + offset.y,
+        .z = base.z + offset.z,
+    };
+}
+
+fn drawGameplayBillboardTexture(
+    texture: rl.Texture2D,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    tint: rl.Color,
+) void {
+    drawGameplayBillboardTextureRect(
+        texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
+        position,
+        width,
+        height,
+        camera,
+        tint,
+    );
+}
+
+fn drawGameplayBillboardTextureRect(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    tint: rl.Color,
+) void {
+    const forward = normalizeVector3(.{
+        .x = camera.target.x - camera.position.x,
+        .y = camera.target.y - camera.position.y,
+        .z = camera.target.z - camera.position.z,
+    });
+    var right = crossVector3(forward, camera.up);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    var up = crossVector3(right, forward);
+    if (vectorLength(up) <= 0.0001) {
+        up = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    } else {
+        up = normalizeVector3(up);
+    }
+
+    const half_width = width * 0.5;
+    const half_height = height * 0.5;
+    const top_left: rl.Vector3 = .{
+        .x = position.x - (right.x * half_width) + (up.x * half_height),
+        .y = position.y - (right.y * half_width) + (up.y * half_height),
+        .z = position.z - (right.z * half_width) + (up.z * half_height),
+    };
+    const bottom_left: rl.Vector3 = .{
+        .x = position.x - (right.x * half_width) - (up.x * half_height),
+        .y = position.y - (right.y * half_width) - (up.y * half_height),
+        .z = position.z - (right.z * half_width) - (up.z * half_height),
+    };
+    const bottom_right: rl.Vector3 = .{
+        .x = position.x + (right.x * half_width) - (up.x * half_height),
+        .y = position.y + (right.y * half_width) - (up.y * half_height),
+        .z = position.z + (right.z * half_width) - (up.z * half_height),
+    };
+    const top_right: rl.Vector3 = .{
+        .x = position.x + (right.x * half_width) + (up.x * half_height),
+        .y = position.y + (right.y * half_width) + (up.y * half_height),
+        .z = position.z + (right.z * half_width) + (up.z * half_height),
+    };
+    const uv = BillboardUv{
+        .left = source.x / @as(f32, @floatFromInt(texture.width)),
+        .top = source.y / @as(f32, @floatFromInt(texture.height)),
+        .right = (source.x + source.width) / @as(f32, @floatFromInt(texture.width)),
+        .bottom = (source.y + source.height) / @as(f32, @floatFromInt(texture.height)),
+    };
+    drawGameplayBillboardQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, tint);
+    drawGameplayBillboardQuad(texture, top_right, bottom_right, bottom_left, top_left, uv, tint);
+}
+
+fn drawGameplayBillboardQuad(
+    texture: rl.Texture2D,
+    top_left: rl.Vector3,
+    bottom_left: rl.Vector3,
+    bottom_right: rl.Vector3,
+    top_right: rl.Vector3,
+    uv: BillboardUv,
+    tint: rl.Color,
+) void {
+    rl.gl.rlSetTexture(texture.id);
+    defer rl.gl.rlSetTexture(0);
+
+    rl.gl.rlBegin(rl.gl.rl_quads);
+    defer rl.gl.rlEnd();
+    rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    rl.gl.rlTexCoord2f(uv.left, uv.top);
+    rl.gl.rlVertex3f(top_left.x, top_left.y, top_left.z);
+    rl.gl.rlTexCoord2f(uv.left, uv.bottom);
+    rl.gl.rlVertex3f(bottom_left.x, bottom_left.y, bottom_left.z);
+    rl.gl.rlTexCoord2f(uv.right, uv.bottom);
+    rl.gl.rlVertex3f(bottom_right.x, bottom_right.y, bottom_right.z);
+    rl.gl.rlTexCoord2f(uv.right, uv.top);
+    rl.gl.rlVertex3f(top_right.x, top_right.y, top_right.z);
 }
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {

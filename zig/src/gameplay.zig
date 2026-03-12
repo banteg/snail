@@ -79,12 +79,12 @@ pub const RunnerHandoff = union(enum) {
     final_loss: DeathCause,
 };
 
-const RuntimeHazardKind = enum {
+pub const RuntimeHazardKind = enum {
     garbage,
     salt,
 };
 
-const RuntimeHazard = struct {
+pub const RuntimeHazard = struct {
     row: usize,
     lane: usize,
     kind: RuntimeHazardKind,
@@ -557,6 +557,10 @@ pub const Runner = struct {
             .jetpack_off => "jetpack_off",
             .no_fall => "no_fall",
         };
+    }
+
+    pub fn activeRuntimeHazards(self: *const Runner) []const RuntimeHazard {
+        return self.active_runtime_hazards[0..self.active_runtime_hazard_count];
     }
 
     pub fn gameplayCellLabel(self: *const Runner) ?[]const u8 {

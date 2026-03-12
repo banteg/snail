@@ -196,6 +196,8 @@ Implemented now:
 - attachment follow and launch states feed the camera with built template forward/up vectors
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
+- the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
+- authored tutorial/message prompts are now presented as a gameplay-facing Turbo panel instead of the old footer debug text block
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 
 Still missing or approximate:
@@ -204,6 +206,7 @@ Still missing or approximate:
 - full cutscene camera ownership and transition behavior
 - exact completion/death cutscene handoff
 - the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
+- the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass uses the real barrier mesh plus the recovered fixed height, but still anchors it conservatively from the live track row instead of the original owner/update path
 
 Best next work:
@@ -220,6 +223,7 @@ Implemented now:
 - deterministic parcel, ring, health, jetpack, slug, garbage, and salt gameplay counters
 - authored and ambient garbage/salt seeding into an 8-row live strip
 - row-event and prompt metadata surface into the default level path
+- live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, and parcels instead of leaving them as logic-only counters or debug markers
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
@@ -227,6 +231,7 @@ Still missing or approximate:
 
 - the original suppressor bits and neighbor/mode gates for ambient spawns
 - the `Wall2` `+0.02` ambient pool
+- exact actor ownership, animation/state switching, and any non-billboarded object/model presentation the original runtime uses
 - parcel flight/runtime-object behavior and timing
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
