@@ -287,7 +287,8 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
             const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
             const right_offset = left_offset + 1.0;
 
-            drawTexturedQuad(
+            drawDoubleSidedTexturedQuad(
+                scene.textures.track.texture,
                 scene.textures.track.texture,
                 attachmentVertex(front_pose, left_offset, front_world_z),
                 attachmentVertex(back_pose, left_offset, back_world_z),
@@ -421,6 +422,19 @@ fn drawTexturedQuad(
 
     rlgl.rlTexCoord2f(uv.right, uv.top);
     rlgl.rlVertex3f(top_right.x, top_right.y, top_right.z);
+}
+
+fn drawDoubleSidedTexturedQuad(
+    front_texture: rl.Texture2D,
+    back_texture: rl.Texture2D,
+    top_left: rl.Vector3,
+    bottom_left: rl.Vector3,
+    bottom_right: rl.Vector3,
+    top_right: rl.Vector3,
+    uv: QuadUv,
+) void {
+    drawTexturedQuad(front_texture, top_left, bottom_left, bottom_right, top_right, uv);
+    drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv);
 }
 
 test "resolve track set index rejects unresolved windows values" {
