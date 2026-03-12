@@ -665,7 +665,7 @@ pub const Runner = struct {
             .runtime_tile_hint = runtime_tile_hint,
             .annotation = annotation,
             .path_center_lane = path_center_lane,
-            .path_name = pathNameFromAnnotation(annotation),
+            .path_name = preview.activePathNameAtRow(global_row),
         };
     }
 
@@ -1177,14 +1177,6 @@ fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) 
 
 fn returnAttachmentHint(path_center_lane: ?f32) AttachmentHint {
     return if (path_center_lane != null) .probe else .none;
-}
-
-fn pathNameFromAnnotation(annotation: ?segment.Annotation) ?[]const u8 {
-    const value = annotation orelse return null;
-    return switch (value) {
-        .path => |path_name| path_name,
-        else => null,
-    };
 }
 
 fn progressForTicks(ticks: u16, total_ticks: u16) f32 {

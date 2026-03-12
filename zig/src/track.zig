@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const attachment_builders = @import("attachment_builders.zig");
 const archive = @import("archive.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -159,6 +160,7 @@ pub const LoadedLevelPreview = struct {
     allocator: std.mem.Allocator,
     segments: []segment.Definition,
     row_offsets: []usize,
+    attachment_scaffold: attachment_builders.Scaffold,
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
     runtime_build_flags: u32,
@@ -275,6 +277,8 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(allocator, segments, row_offsets);
+        errdefer attachment_scaffold.deinit();
         const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
@@ -291,6 +295,7 @@ pub const LoadedLevelPreview = struct {
             .allocator = allocator,
             .segments = segments,
             .row_offsets = row_offsets,
+            .attachment_scaffold = attachment_scaffold,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
@@ -377,6 +382,8 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
         errdefer allocator.free(runtime_tiles);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(allocator, segments, row_offsets);
+        errdefer attachment_scaffold.deinit();
         const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
@@ -393,6 +400,7 @@ pub const LoadedLevelPreview = struct {
             .allocator = allocator,
             .segments = segments,
             .row_offsets = row_offsets,
+            .attachment_scaffold = attachment_scaffold,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
@@ -410,6 +418,7 @@ pub const LoadedLevelPreview = struct {
         for (self.model_assets) |*asset| {
             asset.deinit(self.allocator);
         }
+        self.attachment_scaffold.deinit();
         self.allocator.free(self.placed_models);
         self.allocator.free(self.model_assets);
         self.allocator.free(self.runtime_spawn_hints);
@@ -518,6 +527,23 @@ pub const LoadedLevelPreview = struct {
     pub fn pathBoundsForRow(self: *const LoadedLevelPreview, row_location: RowLocation) ?LaneBounds {
         _ = self;
         return pathBounds(row_location.row.cells);
+    }
+
+    pub fn activePathAtRow(self: *const LoadedLevelPreview, global_row: usize) ?attachment_builders.AuthoredPathRow {
+        return self.attachment_scaffold.activePathAtRow(global_row);
+    }
+
+    pub fn activePathNameAtRow(self: *const LoadedLevelPreview, global_row: usize) ?[]const u8 {
+        const row = self.activePathAtRow(global_row) orelse return null;
+        return row.raw_name;
+    }
+
+    pub fn attachmentPathCountForSegment(self: *const LoadedLevelPreview, segment_index: usize) usize {
+        return self.attachment_scaffold.pathCountForSegment(segment_index);
+    }
+
+    pub fn firstAttachmentPathForSegment(self: *const LoadedLevelPreview, segment_index: usize) ?attachment_builders.AuthoredPathRow {
+        return self.attachment_scaffold.firstPathForSegment(segment_index);
     }
 
     pub fn cellAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {

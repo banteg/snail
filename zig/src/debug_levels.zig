@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const attachment_builders = @import("attachment_builders.zig");
 const app_ui = @import("app_ui.zig");
 const gameplay = @import("gameplay.zig");
 const level = @import("level.zig");
@@ -300,15 +301,38 @@ pub fn drawSegmentPanel(state: anytype) !void {
     var build_buffer: [256]u8 = undefined;
     const build_text = try std.fmt.bufPrintZ(
         &build_buffer,
-        "marked {d}  fallback {d}/{d}  build 0x{x:0>8}  attachments no",
+        "marked {d}  fallback {d}/{d}  build 0x{x:0>8}  attachments {d}",
         .{
             countMarkedRows(loaded_segment.rows),
             preview.fallbackHazardCandidateCounts().garbage,
             preview.fallbackHazardCandidateCounts().salt,
             preview.runtime_build_flags,
+            preview.attachmentPathCountForSegment(state.segment_index),
         },
     );
     drawText(state, build_text, 44, 248, 14, .light_gray);
+
+    if (preview.firstAttachmentPathForSegment(state.segment_index)) |path_row| {
+        var family_buffer: [256]u8 = undefined;
+        const family_text = if (path_row.spec()) |spec|
+            try std.fmt.bufPrintZ(
+                &family_buffer,
+                "first path row {d}: {s}  {s}/{s}",
+                .{
+                    path_row.row_index + 1,
+                    path_row.raw_name,
+                    spec.family.label(),
+                    spec.status.label(),
+                },
+            )
+        else
+            try std.fmt.bufPrintZ(
+                &family_buffer,
+                "first path row {d}: {s}  unresolved",
+                .{ path_row.row_index + 1, path_row.raw_name },
+            );
+        drawText(state, family_text, 44, 270, 14, .gold);
+    }
 
     if (findFirstAnnotatedRow(loaded_segment.rows)) |annotated_row| {
         var row_buffer: [256]u8 = undefined;
@@ -317,14 +341,14 @@ pub fn drawSegmentPanel(state: anytype) !void {
             "first annotation row {d}: {s}",
             .{ annotated_row.index + 1, annotationLabel(annotated_row.row.annotation.?) },
         );
-        drawText(state, row_text, 44, 270, 14, .light_gray);
+        drawText(state, row_text, 44, 292, 14, .light_gray);
 
         if (annotationDescription(annotated_row.row.annotation.?)) |description| {
             var description_buffer: [160]u8 = undefined;
-            drawText(state, clippedText(&description_buffer, description, 54), 44, 292, 14, .ray_white);
+            drawText(state, clippedText(&description_buffer, description, 54), 44, 314, 14, .ray_white);
         }
     } else {
-        drawText(state, "No row annotations on this segment.", 44, 270, 14, .light_gray);
+        drawText(state, "No row annotations on this segment.", 44, 292, 14, .light_gray);
     }
 
     drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
