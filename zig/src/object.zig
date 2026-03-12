@@ -127,8 +127,12 @@ pub const LoadedObject = struct {
     }
 
     pub fn draw(self: *const LoadedObject) void {
+        self.drawEx(rl.Matrix.identity());
+    }
+
+    pub fn drawEx(self: *const LoadedObject, transform: rl.Matrix) void {
         for (self.submeshes) |submesh| {
-            rl.drawMesh(submesh.mesh, submesh.material, rl.Matrix.identity());
+            rl.drawMesh(submesh.mesh, submesh.material, transform);
         }
     }
 };

@@ -58,6 +58,7 @@ const default_texture_path = app.default_texture_path;
 const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
+const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -919,6 +920,7 @@ const AppState = struct {
     current_game_track_scene: ?track_render.Scene = null,
     current_gameplay_turbo_model: ?x2.Uploaded = null,
     current_gameplay_turbo_animation: ?xanim.Player = null,
+    current_gameplay_barrier_object: ?object.LoadedObject = null,
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -1067,6 +1069,7 @@ const AppState = struct {
             self.current_game_track_scene = null;
         }
         self.unloadGameplayTurbo();
+        self.unloadGameplayBarrier();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -1233,6 +1236,13 @@ const AppState = struct {
         }
     }
 
+    fn unloadGameplayBarrier(self: *AppState) void {
+        if (self.current_gameplay_barrier_object) |*loaded_object| {
+            loaded_object.deinit();
+            self.current_gameplay_barrier_object = null;
+        }
+    }
+
     fn reloadGameplayTurbo(self: *AppState) !void {
         self.unloadGameplayTurbo();
 
@@ -1254,6 +1264,20 @@ const AppState = struct {
         }
 
         self.current_gameplay_turbo_model = try x2.Uploaded.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            true,
+        );
+    }
+
+    fn reloadGameplayBarrier(self: *AppState) !void {
+        self.unloadGameplayBarrier();
+
+        if (self.active_frontend_mode != .tutorial) return;
+        const entry_index = self.catalog.findObjectIndex(gameplay_barrier_object_path) orelse return;
+        const entry = self.catalog.object_entries[entry_index];
+        self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
@@ -3847,6 +3871,7 @@ const AppState = struct {
             self.current_game_track_scene = null;
         }
         self.unloadGameplayTurbo();
+        self.unloadGameplayBarrier();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
@@ -3864,6 +3889,7 @@ const AppState = struct {
                 }
                 if (self.command == .game) {
                     try self.reloadGameplayTurbo();
+                    try self.reloadGameplayBarrier();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
@@ -6470,7 +6496,17 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }
+    drawGameplayBarrier(state, &loaded_track_preview, runner);
     drawGameplayTurbo(state, &loaded_track_preview, runner);
+}
+
+fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
+    if (state.active_frontend_mode != .tutorial) return;
+    const loaded_object = state.current_gameplay_barrier_object orelse return;
+
+    const anchor = runner.worldPosition(loaded_track_preview, 0.0);
+    const transform = rl.Matrix.translate(0.0, 0.4, anchor.z);
+    loaded_object.drawEx(transform);
 }
 
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {

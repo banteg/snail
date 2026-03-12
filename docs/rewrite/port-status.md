@@ -120,6 +120,11 @@ Current high-signal entries:
   - implementation: [`main.zig`](../../zig/src/main.zig), [`xanim.zig`](../../zig/src/xanim.zig), [`x2.zig`](../../zig/src/x2.zig)
   - note: the gameplay viewport now draws a live Turbo model instead of only the track scene. The first pass attaches one `TURBO-BOBALONG` animation family to the runner's current world frame, including attachment-follow/launch orientation, but the anchor, facing, and state-specific animation selection are still rough.
   - replace when: Turbo uses the right gameplay anchor/orientation and switches clips by gameplay/cutscene state instead of relying on one generic animation family
+- tutorial side barriers: `partial`
+  - evidence: tutorial `Message=` text about blue barriers, shipped `OBJECTS/BARRIER/_OBJECT.TXT` and `OBJECTS/BARRIER/BARRIER.TGA`, Windows `initialize_game_assets_and_world` loading `Objects/Barrier`, and Android/iOS `cRBarrier::AI()` setting a fixed `y = 0.4` plus an owner-driven forward anchor
+  - implementation: [`main.zig`](../../zig/src/main.zig), [`object.zig`](../../zig/src/object.zig)
+  - note: the live tutorial viewport now draws the archive-backed barrier object instead of only generic track skirts. The current placement is still conservative: centered on the track, fixed-height, and anchored by the runner's forward position. Exact owner semantics and any non-tutorial uses of `cRBarrier` are still unresolved.
+  - replace when: the original barrier owner/update semantics are ported and the placement no longer relies on the current tutorial-only approximation
 - damage-gauge hazard and recovery deltas: `partial`
   - evidence: Windows `update_damage_gauge`, `apply_damage_gauge_delta`, and `handle_subgoldy_collisions`, plus matching Android `cRSubGoldy::Collision()` and `cRDamageGuage::Take(float,bool)` call shapes
   - implementation: [`gameplay.zig`](../../zig/src/gameplay.zig), [`main.zig`](../../zig/src/main.zig)

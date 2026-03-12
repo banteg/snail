@@ -196,6 +196,7 @@ Implemented now:
 - attachment follow and launch states feed the camera with built template forward/up vectors
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
+- tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 
 Still missing or approximate:
 
@@ -203,6 +204,7 @@ Still missing or approximate:
 - full cutscene camera ownership and transition behavior
 - exact completion/death cutscene handoff
 - the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
+- the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass uses the recovered fixed height plus a conservative runner-driven forward anchor
 
 Best next work:
 
