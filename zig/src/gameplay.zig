@@ -305,6 +305,11 @@ const AttachmentFollowState = struct {
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
+const InstalledAttachmentEntry = struct {
+    progress: f32,
+    lateral_offset: f32,
+};
+
 const LaunchState = struct {
     active: bool = false,
     world_x: f32 = 0.0,
@@ -806,7 +811,9 @@ pub const Runner = struct {
 
         if (self.movement_mode != .attachment) {
             if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                self.beginInstalledAttachmentFollow(preview, sample, built);
+                if (self.installedAttachmentEntry(preview, built, global_row)) |entry| {
+                    self.beginInstalledAttachmentFollow(preview, built, entry);
+                }
             }
         }
 
@@ -856,7 +863,9 @@ pub const Runner = struct {
             .attachment_entry => {
                 if (self.movement_mode != .attachment) {
                     if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                        self.beginInstalledAttachmentFollow(preview, sample, built);
+                        if (self.installedAttachmentEntry(preview, built, global_row)) |entry| {
+                            self.beginInstalledAttachmentFollow(preview, built, entry);
+                        }
                     } else {
                         self.beginAttachmentFollow(preview, sample);
                     }
@@ -1406,18 +1415,39 @@ pub const Runner = struct {
         self.recent_event = .attachment_begin;
     }
 
-    fn beginInstalledAttachmentFollow(
-        self: *Runner,
-        preview: *const track.LoadedLevelPreview,
-        sample: RowSample,
-        built: *const attachment_builders.BuiltAttachment,
-    ) void {
+    fn beginInstalledAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, built: *const attachment_builders.BuiltAttachment, entry: InstalledAttachmentEntry) void {
         self.launch = .{};
         self.movement_mode = .attachment;
         self.attachment_path_name = built.row.raw_name;
 
+        self.attachment_follow = .{
+            .active = true,
+            .source_row = built.row.global_row,
+            .progress = entry.progress,
+            .exit_overshoot = 0.0,
+            .lateral_offset = entry.lateral_offset,
+            .cached_output_lane_center = self.lane_center,
+            .vertical_offset = 0.0,
+        };
+        self.updateAttachmentFollowPosition(preview);
+        self.counters.attachments_begun += 1;
+        self.recent_event = .attachment_begin;
+    }
+
+    fn installedAttachmentEntry(
+        self: *const Runner,
+        preview: *const track.LoadedLevelPreview,
+        built: *const attachment_builders.BuiltAttachment,
+        global_row: usize,
+    ) ?InstalledAttachmentEntry {
+        const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
+        const row_fraction = std.math.clamp(
+            self.row_position - @as(f32, @floatFromInt(global_row)),
+            0.0,
+            1.0,
+        );
         const progress = std.math.clamp(
-            self.row_position - @as(f32, @floatFromInt(built.row.global_row)),
+            row_progress + row_fraction,
             0.0,
             @as(f32, @floatFromInt(built.template.sample_count)),
         );
@@ -1429,20 +1459,15 @@ pub const Runner = struct {
             0.0,
         );
         const centered_lane_center = laneCenterFromWorldX(preview, centered_world_position.x);
-
-        self.attachment_follow = .{
-            .active = true,
-            .source_row = built.row.global_row,
+        const lateral_offset = self.lane_center - centered_lane_center;
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
+        const local_lateral = @abs(lateral_offset * pose.lateral_scale);
+        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+        if (local_lateral > half_width + attachment_side_exit_margin) return null;
+        return .{
             .progress = progress,
-            .exit_overshoot = 0.0,
-            .lateral_offset = self.lane_center - centered_lane_center,
-            .cached_output_lane_center = self.lane_center,
-            .vertical_offset = 0.0,
+            .lateral_offset = lateral_offset,
         };
-        _ = sample;
-        self.updateAttachmentFollowPosition(preview);
-        self.counters.attachments_begun += 1;
-        self.recent_event = .attachment_begin;
     }
 
     fn clearAttachmentFollow(self: *Runner) void {
@@ -1705,6 +1730,30 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     runner.syncRowPosition(preview);
     runner.refreshSample(preview);
     runner.last_processed_row = target.row - 1;
+}
+
+fn laneOutsideAttachmentWidth(
+    preview: *const track.LoadedLevelPreview,
+    built: *const attachment_builders.BuiltAttachment,
+    global_row: usize,
+) ?usize {
+    const progress: f32 = @floatFromInt(global_row - built.row.global_row);
+    const centered = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        progress,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const centered_lane_center = Runner.laneCenterFromWorldX(preview, centered.x);
+    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const minimum_offset = half_width + attachment_side_exit_margin + 0.2;
+
+    for (0..preview.max_width) |lane| {
+        const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
+        if (@abs(lane_center - centered_lane_center) > minimum_offset) return lane;
+    }
+    return null;
 }
 
 test "runner advances deterministically over fixed time" {
@@ -2225,6 +2274,29 @@ test "attachment follow side-exits when lateral drift exceeds template width" {
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
+}
+
+test "installed attachment entry respects template width" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const outside_lane = laneOutsideAttachmentWidth(&fixture.preview, built, target.row).?;
+    primeRunnerBeforeRow(
+        &runner,
+        &fixture.preview,
+        .{
+            .row = target.row,
+            .lane = outside_lane,
+        },
+    );
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
 }
 
 test "halfpipe attachment tilts world up with lateral drift" {
