@@ -94,6 +94,7 @@ pub fn parseText(
     var segment_id: ?usize = null;
     var name: ?[]const u8 = null;
     var in_data = false;
+    var saw_data_guard = false;
     var width: usize = 0;
 
     var lines = std.mem.splitScalar(u8, data, '\n');
@@ -101,6 +102,15 @@ pub fn parseText(
         if (in_data) {
             const line = std.mem.trimRight(u8, raw_line, "\r");
             if (line.len == 0) continue;
+            // Windows treats the full-@ guard rows as segment data fences, not as real rows.
+            if (!saw_data_guard) {
+                if (isSegmentDataFence(line)) {
+                    saw_data_guard = true;
+                    continue;
+                }
+            } else if (isSegmentDataFence(line)) {
+                break;
+            }
 
             const cell_end = @min(@as(usize, 10), line.len);
             const cells = try arena_allocator.dupe(u8, line[0..cell_end]);
@@ -150,6 +160,10 @@ pub fn parseText(
         .height = rows.items.len,
         .rows = try rows.toOwnedSlice(arena_allocator),
     };
+}
+
+fn isSegmentDataFence(line: []const u8) bool {
+    return line.len >= 3 and line[0] == '@' and line[1] == '@' and line[2] == '@';
 }
 
 fn parseAnnotation(allocator: std.mem.Allocator, raw: []const u8) !Annotation {
@@ -273,10 +287,10 @@ test "parse start segment" {
     try std.testing.expectEqual(@as(usize, 1), segment.segment_id);
     try std.testing.expectEqualStrings("Start", segment.name);
     try std.testing.expectEqual(@as(usize, 10), segment.width);
-    try std.testing.expectEqual(@as(usize, 33), segment.height);
-    try std.testing.expectEqualStrings("@PPPPPPPP@", segment.rows[5].cells);
-    try std.testing.expectEqual(false, segment.rows[5].marked);
-    switch (segment.rows[5].annotation.?) {
+    try std.testing.expectEqual(@as(usize, 31), segment.height);
+    try std.testing.expectEqualStrings("@PPPPPPPP@", segment.rows[4].cells);
+    try std.testing.expectEqual(false, segment.rows[4].marked);
+    switch (segment.rows[4].annotation.?) {
         .path => |path_name| try std.testing.expectEqualStrings("Start", path_name),
         else => return error.ExpectedPathAnnotation,
     }
@@ -289,8 +303,8 @@ test "parse big jump segment annotation" {
     var segment = try parseText(std.testing.allocator, data, "SEGMENTS/BIG JUMP.TXT");
     defer segment.deinit();
 
-    try std.testing.expectEqualStrings("@  {}{}  @", segment.rows[9].cells);
-    switch (segment.rows[9].annotation.?) {
+    try std.testing.expectEqualStrings("@  {}{}  @", segment.rows[8].cells);
+    switch (segment.rows[8].annotation.?) {
         .ring => |ring| try std.testing.expectEqual(.explode, ring),
         else => return error.ExpectedRingAnnotation,
     }
@@ -303,7 +317,7 @@ test "parse parcel, no fall, and row mark semantics" {
     var hump = try parseText(std.testing.allocator, hump_data, "SEGMENTS/HUMP.TXT");
     defer hump.deinit();
 
-    const parcel = hump.rows[24].annotation.?;
+    const parcel = hump.rows[23].annotation.?;
     switch (parcel) {
         .parcel => |parcel_annotation| {
             try std.testing.expectEqual(@as(i32, 0), parcel_annotation.id);
@@ -320,7 +334,7 @@ test "parse parcel, no fall, and row mark semantics" {
     var supertramp = try parseText(std.testing.allocator, supertramp_data, "SEGMENTS/SUPERTRAMP2.TXT");
     defer supertramp.deinit();
 
-    try std.testing.expectEqual(Annotation.Tag.no_fall, supertramp.rows[11].annotation.?.tag());
+    try std.testing.expectEqual(Annotation.Tag.no_fall, supertramp.rows[10].annotation.?.tag());
 
     const gap_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/EASY GAP.TXT", 1 << 16);
     defer std.testing.allocator.free(gap_data);
@@ -328,7 +342,7 @@ test "parse parcel, no fall, and row mark semantics" {
     var gap = try parseText(std.testing.allocator, gap_data, "SEGMENTS/EASY GAP.TXT");
     defer gap.deinit();
 
-    try std.testing.expect(gap.rows[7].marked);
+    try std.testing.expect(gap.rows[6].marked);
 }
 
 test "normalize explosive and jetpack annotations" {
@@ -338,7 +352,7 @@ test "normalize explosive and jetpack annotations" {
     var tutorial = try parseText(std.testing.allocator, tutorial_data, "SEGMENTS/TUTORIAL 11.TXT");
     defer tutorial.deinit();
 
-    switch (tutorial.rows[28].annotation.?) {
+    switch (tutorial.rows[27].annotation.?) {
         .ring => |ring| try std.testing.expectEqual(.explode, ring),
         else => return error.ExpectedRingAnnotation,
     }
@@ -349,7 +363,7 @@ test "normalize explosive and jetpack annotations" {
     var jetpack = try parseText(std.testing.allocator, jetpack_data, "SEGMENTS/JETPACKOFF.TXT");
     defer jetpack.deinit();
 
-    try std.testing.expectEqual(Annotation.Tag.jetpack_off, jetpack.rows[1].annotation.?.tag());
+    try std.testing.expectEqual(Annotation.Tag.jetpack_off, jetpack.rows[0].annotation.?.tag());
 }
 
 test "parse shipped segment corpus" {

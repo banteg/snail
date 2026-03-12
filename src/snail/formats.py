@@ -205,11 +205,19 @@ def parse_segment_text(text: str, source: str | None = None) -> SegmentDefinitio
     name: str | None = None
     rows: list[SegmentRow] = []
     in_data = False
+    saw_data_guard = False
 
     for raw_line in text.splitlines():
         if in_data:
             if not raw_line:
                 continue
+            # Windows uses the full-@ guard rows as segment data fences.
+            if not saw_data_guard:
+                if _is_segment_data_fence(raw_line):
+                    saw_data_guard = True
+                    continue
+            elif _is_segment_data_fence(raw_line):
+                break
             cells = raw_line[:10]
             suffix = raw_line[10:].strip()
             rows.append(
@@ -244,6 +252,10 @@ def parse_segment_text(text: str, source: str | None = None) -> SegmentDefinitio
         height=len(rows),
         rows=tuple(rows),
     )
+
+
+def _is_segment_data_fence(line: str) -> bool:
+    return len(line) >= 3 and line[0] == "@" and line[1] == "@" and line[2] == "@"
 
 
 def parse_level_text(text: str, source: str | None = None) -> LevelDefinition:

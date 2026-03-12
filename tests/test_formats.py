@@ -32,10 +32,11 @@ def test_parse_start_segment_definition() -> None:
     assert parsed.segment_id == 1
     assert parsed.name == "Start"
     assert parsed.width == 10
-    assert parsed.rows[5].cells == "@PPPPPPPP@"
-    assert parsed.rows[5].annotation is not None
-    assert parsed.rows[5].annotation.key == "Path"
-    assert parsed.rows[5].annotation.value == "Start"
+    assert parsed.height == 31
+    assert parsed.rows[4].cells == "@PPPPPPPP@"
+    assert parsed.rows[4].annotation is not None
+    assert parsed.rows[4].annotation.key == "Path"
+    assert parsed.rows[4].annotation.value == "Start"
 
 
 def test_parse_big_jump_segment_annotation() -> None:
