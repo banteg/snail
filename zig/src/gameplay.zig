@@ -128,6 +128,7 @@ pub const RecentEvent = union(enum) {
     garbage_hit,
     salt_hit,
     slug_hit,
+    turret_hit,
     no_fall,
     jetpack_off,
     ring: segment.RingKind,
@@ -145,6 +146,7 @@ pub const RecentEvent = union(enum) {
             .garbage_hit => "garbage_hit",
             .salt_hit => "salt_hit",
             .slug_hit => "slug_hit",
+            .turret_hit => "turret_hit",
             .no_fall => "no_fall",
             .jetpack_off => "jetpack_off",
             .ring => |ring_kind| switch (ring_kind) {
@@ -168,6 +170,7 @@ pub const EncounterCounters = struct {
     garbage_hits: u32 = 0,
     salt_hits: u32 = 0,
     slug_hits: u32 = 0,
+    turret_hits: u32 = 0,
     no_fall_rows: u32 = 0,
     jetpack_off_rows: u32 = 0,
     ring_normal: u32 = 0,
@@ -914,7 +917,7 @@ pub const Runner = struct {
                 .ring => |ring_kind| {
                     if (sample.gameplay_cell) |kind| {
                         if (kind == .ring) {
-                            self.recordRing(ring_kind);
+                            self.recordRing(preview, ring_kind);
                         }
                     }
                 },
@@ -938,6 +941,19 @@ pub const Runner = struct {
                 },
                 .model => {},
             }
+        }
+
+        // PORT(partial): attached travel and supertramp-style launch are still driven from the
+        // built attachment surface, not the original installed collision volumes. Until the
+        // remaining local-frame collision ownership is ported, do not consume floor-level
+        // gameplay cells beneath the rider while attached or airborne off an attachment.
+        if (self.movement_mode == .attachment or self.launch.active) return;
+
+        if (sample.cell == '=') {
+            self.counters.turret_hits += 1;
+            self.recent_event = .turret_hit;
+            self.beginDeathCutscene(.hazard);
+            return;
         }
 
         const gameplay_cell = sample.gameplay_cell orelse return;
@@ -1030,7 +1046,7 @@ pub const Runner = struct {
         self.finishAttachmentFollow();
     }
 
-    fn recordRing(self: *Runner, ring_kind: segment.RingKind) void {
+    fn recordRing(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind) void {
         switch (ring_kind) {
             .none => {},
             .normal => self.counters.ring_normal += 1,
@@ -1040,7 +1056,7 @@ pub const Runner = struct {
             },
             .explode => {
                 self.counters.ring_explode += 1;
-                self.triggerExplodeRing();
+                self.triggerExplodeRing(preview);
             },
             .slow => {
                 self.counters.ring_slow += 1;
@@ -1124,17 +1140,32 @@ pub const Runner = struct {
         self.invincible_ticks = invincible_duration_ticks;
     }
 
-    fn triggerExplodeRing(self: *Runner) void {
+    fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         var write_index: usize = 0;
         for (0..self.active_runtime_hazard_count) |read_index| {
             const hazard = self.active_runtime_hazards[read_index];
             const row_delta = @abs(@as(i32, @intCast(hazard.row)) - @as(i32, @intCast(self.current_global_row)));
             const lane_delta = @abs(@as(i32, @intCast(hazard.lane)) - @as(i32, @intCast(self.resolved_lane_index)));
-            if (row_delta <= 6 and lane_delta <= 2) continue;
+            if (hazard.kind == .garbage and row_delta <= 6 and lane_delta <= 2) continue;
             self.active_runtime_hazards[write_index] = hazard;
             write_index += 1;
         }
         self.active_runtime_hazard_count = write_index;
+
+        const start_row = self.current_global_row -| 6;
+        const end_row = @min(preview.total_rows, self.current_global_row + 7);
+        const gameplay_width = @min(preview.max_width, 8);
+        const start_lane = self.resolved_lane_index -| 2;
+        const end_lane = @min(gameplay_width, self.resolved_lane_index + 3);
+        for (start_row..end_row) |global_row| {
+            for (start_lane..end_lane) |lane_index| {
+                if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| {
+                    if (kind == .slug) {
+                        self.defeatSlug(global_row, lane_index);
+                    }
+                }
+            }
+        }
     }
 
     fn handleFireInput(self: *Runner, preview: *const track.LoadedLevelPreview, fire: bool) void {
@@ -1251,6 +1282,10 @@ pub const Runner = struct {
         const cell = if (lane_index < row_location.row.cells.len) row_location.row.cells[lane_index] else ' ';
         if (isProjectileBlockingCell(cell)) return true;
 
+        if (self.hasRuntimeHazard(global_row, lane_index, .salt)) {
+            return true;
+        }
+
         if (self.consumeRuntimeHazard(global_row, lane_index, .garbage)) {
             return true;
         }
@@ -1352,6 +1387,14 @@ pub const Runner = struct {
             .kind = kind,
         };
         self.active_runtime_hazard_count += 1;
+    }
+
+    fn hasRuntimeHazard(self: *const Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
+        for (0..self.active_runtime_hazard_count) |index| {
+            const hazard = self.active_runtime_hazards[index];
+            if (hazard.row == row and hazard.lane == lane and hazard.kind == kind) return true;
+        }
+        return false;
     }
 
     fn consumeRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
@@ -1645,8 +1688,8 @@ pub const Runner = struct {
         self.launch = .{
             .active = true,
             .world_x = exit_world_x,
-            .height = @max(0.0, end_position.y - exit_floor_y),
-            .vertical_velocity = launch_factor * supertramp_launch_velocity_scale,
+            .height = @max(0.6, end_position.y - exit_floor_y),
+            .vertical_velocity = @max(0.15, launch_factor) * supertramp_launch_velocity_scale,
             .basis_forward = end_pose.basis_forward,
             .basis_up = end_pose.basis_up,
         };
@@ -2153,6 +2196,18 @@ fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment
     return null;
 }
 
+fn findFirstRawCell(preview: *const track.LoadedLevelPreview, cell: u8) ?RowTarget {
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        for (row_location.row.cells, 0..) |row_cell, lane| {
+            if (row_cell == cell) {
+                return .{ .row = global_row, .lane = lane };
+            }
+        }
+    }
+    return null;
+}
+
 fn findFirstFloorGap(preview: *const track.LoadedLevelPreview, require_no_fall: bool) ?RowTarget {
     for (1..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -2361,26 +2416,32 @@ test "repeated slug contact adds the recovered +1.0 damage delta" {
 }
 
 test "powerup rings upgrade weapon level then grant invincible state" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
     var runner = Runner{};
 
-    runner.recordRing(.powerup);
+    runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 1), runner.weapon_level);
     try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
 
-    runner.recordRing(.powerup);
+    runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
     try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
 
-    runner.recordRing(.powerup);
+    runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
     try std.testing.expectEqual(invincible_duration_ticks, runner.invincible_ticks);
 }
 
 test "slow rings reduce effective speed while active" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
     var runner = Runner{};
     runner.speed_rows_per_second = 18.0;
 
-    runner.recordRing(.slow);
+    runner.recordRing(&fixture.preview, .slow);
     try std.testing.expectEqual(slow_ring_duration_ticks, runner.slow_ticks);
     try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
 
@@ -2413,6 +2474,64 @@ test "projectile fire defeats slug after powerup" {
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
+}
+
+test "projectiles stop on salt without consuming the hazard" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 13.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
+    runner.addRuntimeHazard(salt.row, salt.lane, .salt);
+
+    const gameplay_width = @min(fixture.preview.max_width, 8);
+    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+    const lane_center = @as(f32, @floatFromInt(salt.lane)) + 0.5;
+    var projectile: Projectile = .{
+        .active = true,
+        .world_x = lane_center - width_offset,
+        .world_y = 0.5,
+        .world_z = @as(f32, @floatFromInt(salt.row)) + 0.25,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = 1.0,
+        .speed_rows_per_second = projectile_speed_rows_per_second,
+    };
+
+    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
+    try std.testing.expect(runner.hasRuntimeHazard(salt.row, salt.lane, .salt));
+}
+
+test "explode rings defeat nearby slugs and clear nearby garbage only" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 11.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    runner.current_global_row = slug.row;
+    runner.resolved_lane_index = slug.lane;
+    runner.addRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage);
+    runner.addRuntimeHazard(slug.row, slug.lane, .salt);
+
+    runner.triggerExplodeRing(&fixture.preview);
+
+    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
+    try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
+    try std.testing.expect(runner.hasRuntimeHazard(slug.row, slug.lane, .salt));
+}
+
+test "turret contact enters the hazard death cutscene" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const turret = findFirstRawCell(&fixture.preview, '=').?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, turret);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
+    try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 }
 
 test "invincible slug contact defeats slug instead of entering death" {
@@ -2456,7 +2575,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     var runner = Runner{};
     const step_seconds = 1.0 / 60.0;
 
-    runner.recordRing(.normal);
+    runner.recordRing(&arcade_fixture.preview, .normal);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.ring_collect);
 

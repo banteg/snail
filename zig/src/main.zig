@@ -86,6 +86,9 @@ const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
 const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
 const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
 const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
+const gameplay_explode_big_sprite_path = "SPRITES/PARTICLEEXPLODE-BIG.TGA";
+const gameplay_explode_small_sprite_path = "SPRITES/PARTICLEEXPLODE-SMALL.TGA";
+const gameplay_slug_goo_sprite_path = "SPRITES/SLUGGOO.TGA";
 const gameplay_turbo_fire_sound_path = "SFX2/TURBOFIRE1.OGG";
 const gameplay_laser_sound_path = "SFX2/LASER1.OGG";
 const gameplay_rocket_sound_path = "SFX2/ROCKET1.OGG";
@@ -93,6 +96,7 @@ const gameplay_heart_sound_path = "SFX2/HEART.OGG";
 const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
 const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
 const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
+const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
 const gameplay_impact_a_sound_path = "SFX2/ASTEROIDIMPACT1.OGG";
 const gameplay_impact_b_sound_path = "SFX2/ASTEROIDIMPACT2.OGG";
 const default_level_path = app.default_level_path;
@@ -226,6 +230,9 @@ const GameplaySpriteArt = struct {
     ring_big: ?assets.LoadedTexture = null,
     slow_ring: ?assets.LoadedTexture = null,
     powerup: ?assets.LoadedTexture = null,
+    explode_big: ?assets.LoadedTexture = null,
+    explode_small: ?assets.LoadedTexture = null,
+    slug_goo: ?assets.LoadedTexture = null,
 
     fn unload(self: *GameplaySpriteArt) void {
         for (&self.slug_frames) |*texture| {
@@ -270,6 +277,18 @@ const GameplaySpriteArt = struct {
             texture.unload();
             self.powerup = null;
         }
+        if (self.explode_big) |*texture| {
+            texture.unload();
+            self.explode_big = null;
+        }
+        if (self.explode_small) |*texture| {
+            texture.unload();
+            self.explode_small = null;
+        }
+        if (self.slug_goo) |*texture| {
+            texture.unload();
+            self.slug_goo = null;
+        }
     }
 };
 
@@ -281,6 +300,7 @@ const GameplaySoundFx = struct {
     jetpack: ?assets.LoadedSound = null,
     slow_ring: ?assets.LoadedSound = null,
     invincible: ?assets.LoadedSound = null,
+    explode_ring: ?assets.LoadedSound = null,
     impact_a: ?assets.LoadedSound = null,
     impact_b: ?assets.LoadedSound = null,
 
@@ -292,6 +312,24 @@ const GameplaySoundFx = struct {
             }
         }
     }
+};
+
+const max_active_gameplay_effects = 64;
+
+const GameplayEffectKind = enum {
+    explode_big,
+    explode_small,
+    slug_goo,
+};
+
+const GameplayEffect = struct {
+    active: bool = false,
+    kind: GameplayEffectKind = .explode_small,
+    position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    width: f32 = 0.8,
+    height: f32 = 0.8,
+    tint: rl.Color = .white,
+    ticks_remaining: u16 = 0,
 };
 
 const RouteMapArt = struct {
@@ -415,6 +453,9 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_ring_big_sprite_path);
     art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_slow_ring_sprite_path);
     art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
+    art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_explode_big_sprite_path);
+    art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_explode_small_sprite_path);
+    art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_slug_goo_sprite_path);
 
     return art;
 }
@@ -432,6 +473,7 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
     sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
     sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
+    sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
     sound_fx.impact_a = try catalog.loadSoundByPath(allocator, gameplay_impact_a_sound_path);
     sound_fx.impact_b = try catalog.loadSoundByPath(allocator, gameplay_impact_b_sound_path);
 
@@ -1087,6 +1129,8 @@ const AppState = struct {
     current_gameplay_invincible_model: ?x2.Uploaded = null,
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_gameplay_sound_fx: GameplaySoundFx = .{},
+    active_gameplay_effects: [max_active_gameplay_effects]GameplayEffect = [_]GameplayEffect{.{}} ** max_active_gameplay_effects,
+    active_gameplay_effect_count: usize = 0,
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -2466,8 +2510,10 @@ const AppState = struct {
                     const previous_runner = runner.*;
                     runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                     self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
+                    self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                 }
             }
+            self.updateGameplayEffects();
             if (self.current_gameplay_turbo_animation) |*animation| {
                 try animation.step(self.simulation_clock.step_seconds);
             }
@@ -2515,6 +2561,9 @@ const AppState = struct {
         if (current.invincible_ticks > previous.invincible_ticks) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.invincible);
         }
+        if (current.counters.ring_explode > previous.counters.ring_explode) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.explode_ring);
+        }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.impact_a);
         }
@@ -2523,6 +2572,86 @@ const AppState = struct {
         }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.impact_b);
+        }
+    }
+
+    fn updateGameplayEffects(self: *AppState) void {
+        var write_index: usize = 0;
+        for (0..self.active_gameplay_effect_count) |read_index| {
+            var effect = self.active_gameplay_effects[read_index];
+            if (!effect.active or effect.ticks_remaining == 0) continue;
+            effect.ticks_remaining -= 1;
+            if (effect.ticks_remaining == 0) continue;
+            self.active_gameplay_effects[write_index] = effect;
+            write_index += 1;
+        }
+        self.active_gameplay_effect_count = write_index;
+        for (write_index..max_active_gameplay_effects) |index| {
+            self.active_gameplay_effects[index].active = false;
+        }
+    }
+
+    fn spawnGameplayEffect(
+        self: *AppState,
+        kind: GameplayEffectKind,
+        position: rl.Vector3,
+        width: f32,
+        height: f32,
+        ticks_remaining: u16,
+        tint: rl.Color,
+    ) void {
+        if (self.active_gameplay_effect_count >= max_active_gameplay_effects) return;
+        self.active_gameplay_effects[self.active_gameplay_effect_count] = .{
+            .active = true,
+            .kind = kind,
+            .position = position,
+            .width = width,
+            .height = height,
+            .tint = tint,
+            .ticks_remaining = ticks_remaining,
+        };
+        self.active_gameplay_effect_count += 1;
+    }
+
+    fn spawnGameplayRunnerEffects(
+        self: *AppState,
+        previous: gameplay.Runner,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+    ) void {
+        if (current.counters.ring_explode > previous.counters.ring_explode) {
+            self.spawnGameplayEffect(
+                .explode_big,
+                current.worldPosition(preview, 0.52),
+                1.8,
+                1.8,
+                28,
+                .{ .r = 255, .g = 228, .b = 168, .a = 244 },
+            );
+        }
+        if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
+            self.spawnGameplayEffect(
+                .explode_small,
+                current.worldPosition(preview, 0.44),
+                0.9,
+                0.9,
+                18,
+                .{ .r = 255, .g = 220, .b = 180, .a = 236 },
+            );
+        }
+        if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
+            for (previous.defeated_slug_cell_count..current.defeated_slug_cell_count) |index| {
+                const defeated = current.defeated_slug_cells[index];
+                const position = gameplayLaneWorldPosition(preview, defeated.row, defeated.lane, 0.38);
+                self.spawnGameplayEffect(
+                    .slug_goo,
+                    position,
+                    0.82,
+                    0.82,
+                    24,
+                    .white,
+                );
+            }
         }
     }
 
@@ -4262,6 +4391,7 @@ const AppState = struct {
         self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
         self.unloadGameplaySoundFx();
+        self.active_gameplay_effect_count = 0;
         self.stopVoicePlayback();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
@@ -6960,6 +7090,8 @@ fn drawGameplayRuntimeActors(
     for (runner.activeProjectiles()) |projectile| {
         drawGameplayProjectileActor(state, projectile);
     }
+
+    drawGameplayEffects(state, camera);
 }
 
 fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool {
@@ -7314,6 +7446,26 @@ fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Proj
         world_transform.multiply(local_offset).multiply(scale),
         .{ .r = 170, .g = 220, .b = 255, .a = 232 },
     );
+}
+
+fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
+    for (0..state.active_gameplay_effect_count) |index| {
+        const effect = state.active_gameplay_effects[index];
+        if (!effect.active or effect.ticks_remaining == 0) continue;
+        const loaded_texture = switch (effect.kind) {
+            .explode_big => state.current_gameplay_sprites.explode_big,
+            .explode_small => state.current_gameplay_sprites.explode_small,
+            .slug_goo => state.current_gameplay_sprites.slug_goo,
+        } orelse continue;
+        drawGameplayBillboardTexture(
+            loaded_texture.texture,
+            effect.position,
+            effect.width,
+            effect.height,
+            camera,
+            effect.tint,
+        );
+    }
 }
 
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
