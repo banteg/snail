@@ -513,33 +513,38 @@ pub fn worldPoseForTemplate(
 ) WorldPose {
     const pose = samplePoseAtProgress(template, progress);
     const local_lateral = lateral_offset * pose.lateral_scale;
-    const centered_lateral = pose.center_x + local_lateral;
     const base_row: f32 = @floatFromInt(source_row);
-    const use_kind42_surface = template.spec.family == .kind42;
-    const surface_basis: SurfaceBasis = if (use_kind42_surface)
-        kind42SurfaceBasis(pose, local_lateral)
-    else
-        .{
-            .right = pose.basis_right,
-            .up = pose.basis_up,
-            .forward = pose.basis_forward,
+    if (template.spec.family == .kind42) {
+        const local_transform = kind42LocalTransform(pose.special_scalar, local_lateral, kind42_rider_height + vertical_offset);
+        return .{
+            .position = .{
+                .x = pose.position.x + (pose.basis_right.x * (pose.center_x + local_transform.position.x)) + (pose.basis_up.x * local_transform.position.y),
+                .y = pose.position.y + (pose.basis_right.y * (pose.center_x + local_transform.position.x)) + (pose.basis_up.y * local_transform.position.y),
+                .z = base_row + pose.position.z + (pose.basis_right.z * (pose.center_x + local_transform.position.x)) + (pose.basis_up.z * local_transform.position.y),
+            },
+            .basis_right = Vec3.normalize(Vec3.add(
+                Vec3.scale(pose.basis_right, local_transform.right.x),
+                Vec3.scale(pose.basis_up, local_transform.right.y),
+            )),
+            .basis_up = Vec3.normalize(Vec3.add(
+                Vec3.scale(pose.basis_right, local_transform.up.x),
+                Vec3.scale(pose.basis_up, local_transform.up.y),
+            )),
+            .basis_forward = pose.basis_forward,
         };
+    }
 
-    const surface_height = if (use_kind42_surface)
-        kind42CrossSectionHeight(local_lateral, pose.special_scalar)
-    else
-        0.0;
-    const up_height = surface_height + vertical_offset;
+    const centered_lateral = pose.center_x + local_lateral;
 
     return .{
         .position = .{
-            .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * up_height),
-            .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * up_height),
-            .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * up_height),
+            .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * vertical_offset),
+            .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * vertical_offset),
+            .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * vertical_offset),
         },
-        .basis_right = surface_basis.right,
-        .basis_up = surface_basis.up,
-        .basis_forward = surface_basis.forward,
+        .basis_right = pose.basis_right,
+        .basis_up = pose.basis_up,
+        .basis_forward = pose.basis_forward,
     };
 }
 
@@ -551,55 +556,51 @@ pub fn deltaLengthAtProgress(template: *const Template, progress: f32) f32 {
     return @max(template.samples[sample_index].delta_length, 1.0);
 }
 
-fn kind42CrossSectionHeight(lateral_offset: f32, radius: f32) f32 {
-    const clamped_lateral = std.math.clamp(lateral_offset, -radius, radius);
-    if (radius <= 0.0001) return 0.0;
-    return radius - std.math.sqrt(@max(0.0, (radius * radius) - (clamped_lateral * clamped_lateral)));
-}
-
 const SurfaceBasis = struct {
     right: Vec3,
     up: Vec3,
     forward: Vec3,
 };
 
-fn kind42SurfaceBasis(pose: AttachmentPose, lateral_offset: f32) SurfaceBasis {
-    const radius = pose.special_scalar;
-    if (radius <= 0.0001) {
-        return .{
-            .right = pose.basis_right,
-            .up = pose.basis_up,
-            .forward = pose.basis_forward,
-        };
+const kind42_rider_height: f32 = 0.49;
+
+const Kind42LocalTransform = struct {
+    position: Vec3,
+    right: Vec3,
+    up: Vec3,
+};
+
+fn kind42LocalTransform(radius: f32, lateral_offset: f32, rider_height: f32) Kind42LocalTransform {
+    if (radius <= 4.0001) {
+        const angle = std.math.clamp(lateral_offset * (std.math.pi * 0.125), -std.math.pi * 0.5, std.math.pi * 0.5);
+        return kind42LocalTransformForAngle(radius, angle, rider_height);
     }
 
-    const clamped_lateral = std.math.clamp(lateral_offset, -radius, radius);
-    const vertical_component = std.math.sqrt(@max(0.0, (radius * radius) - (clamped_lateral * clamped_lateral)));
-    const local_normal = Vec3.normalize(.{
-        .x = -clamped_lateral,
-        .y = vertical_component,
-        .z = 0.0,
-    });
-    const local_tangent = Vec3.normalize(.{
-        .x = 1.0,
-        .y = if (vertical_component <= 0.0001) 0.0 else clamped_lateral / vertical_component,
-        .z = 0.0,
-    });
+    const chord = std.math.sqrt(@max(0.0, (radius * radius) - 16.0));
+    const lateral_angle = std.math.atan2(4.0, chord) * lateral_offset * 0.25;
+    return kind42LocalTransformForAngle(radius, lateral_angle, rider_height);
+}
 
-    const up = Vec3.normalize(Vec3.add(
-        Vec3.scale(pose.basis_right, local_normal.x),
-        Vec3.scale(pose.basis_up, local_normal.y),
-    ));
-    const right = Vec3.normalize(Vec3.add(
-        Vec3.scale(pose.basis_right, local_tangent.x),
-        Vec3.scale(pose.basis_up, local_tangent.y),
-    ));
-    const forward = Vec3.normalize(Vec3.cross(right, up));
-
+fn kind42LocalTransformForAngle(radius: f32, lateral_angle: f32, rider_height: f32) Kind42LocalTransform {
+    const travel_radius = @max(0.0, radius - rider_height);
+    const sin_angle = std.math.sin(lateral_angle);
+    const cos_angle = std.math.cos(lateral_angle);
     return .{
-        .right = right,
-        .up = up,
-        .forward = forward,
+        .position = .{
+            .x = sin_angle * travel_radius,
+            .y = radius - (cos_angle * travel_radius),
+            .z = 0.0,
+        },
+        .right = Vec3.normalize(.{
+            .x = cos_angle,
+            .y = sin_angle,
+            .z = 0.0,
+        }),
+        .up = Vec3.normalize(.{
+            .x = -sin_angle,
+            .y = cos_angle,
+            .z = 0.0,
+        }),
     };
 }
 

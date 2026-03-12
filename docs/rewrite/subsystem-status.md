@@ -120,6 +120,7 @@ Implemented now:
 - all `51` public authored path names are represented
 - every public path now builds a Zig-side template through one of the builder families
 - neutral runtime-family treatment for the nonlinear kind-`42` branch instead of overnaming it as `WARP`
+- the nonlinear kind-`42` viewer/gameplay pose now uses the recovered transform-helper shape instead of a separate circle-height approximation
 
 Still missing or approximate:
 

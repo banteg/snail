@@ -323,6 +323,7 @@ The current Zig port now goes materially farther than the old â€œrow hint onlyâ€
 - [`attachment_builders.zig`](../../zig/src/attachment_builders.zig) mirrors the public `51`-name `Path=` table and builds Zig-side templates for every public family
 - the `Segments` view renders those built families directly, including the current nonlinear kind-`42` branch
 - gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
+- the current nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
 - entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, gameplay attempts a built-geometry installed-row entry first, and only falls back to the old source-row path where the new entry test is still too weak
 
 That is still not the full Windows model.

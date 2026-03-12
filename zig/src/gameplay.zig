@@ -2558,6 +2558,26 @@ test "halfpipe attachment tilts world up with lateral drift" {
     try std.testing.expect(@abs(up.x) > 0.04);
 }
 
+test "halfpipe attachment rides above the trough floor" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/HALFPIPE.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const world_position = runner.worldPosition(&fixture.preview, 0.0);
+    const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
+        runner.current_global_row,
+        runner.resolved_lane_index,
+        runner.row_position,
+    ) orelse 0.0;
+    try std.testing.expect(world_position.y > floor_height + 0.35);
+}
+
 test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();

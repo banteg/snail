@@ -306,15 +306,14 @@ fn drawKind42Attachment(scene: *const Scene, built: *const attachment_builders.B
 
     const half_width = @as(f32, @floatFromInt(template.width_cells)) * 0.5;
     const subdivisions = template.width_cells;
-    const base_row = @as(f32, @floatFromInt(built.row.global_row));
 
     for (0..template.samples.len - 1) |sample_index| {
-        const front_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index));
-        const back_pose = attachment_builders.samplePoseAtProgress(template, @floatFromInt(sample_index + 1));
-        const front_world_z = base_row + front_pose.position.z;
-        const back_world_z = base_row + back_pose.position.z;
-        const front_radius = template.samples[sample_index].special_scalar;
-        const back_radius = template.samples[sample_index + 1].special_scalar;
+        const front_progress: f32 = @floatFromInt(sample_index);
+        const back_progress: f32 = @floatFromInt(sample_index + 1);
+        const front_pose = attachment_builders.samplePoseAtProgress(template, front_progress);
+        const back_pose = attachment_builders.samplePoseAtProgress(template, back_progress);
+        const front_world_z = @as(f32, @floatFromInt(built.row.global_row)) + front_pose.position.z;
+        const back_world_z = @as(f32, @floatFromInt(built.row.global_row)) + back_pose.position.z;
 
         for (0..subdivisions) |subdivision| {
             const left_offset = -half_width + @as(f32, @floatFromInt(subdivision));
@@ -323,10 +322,10 @@ fn drawKind42Attachment(scene: *const Scene, built: *const attachment_builders.B
             drawDoubleSidedTexturedQuad(
                 scene.textures.track.texture,
                 scene.textures.track.texture,
-                kind42AttachmentVertex(front_pose, left_offset, front_radius, base_row),
-                kind42AttachmentVertex(back_pose, left_offset, back_radius, base_row),
-                kind42AttachmentVertex(back_pose, right_offset, back_radius, base_row),
-                kind42AttachmentVertex(front_pose, right_offset, front_radius, base_row),
+                kind42AttachmentVertex(template, built.row.global_row, front_progress, left_offset),
+                kind42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
+                kind42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
+                kind42AttachmentVertex(template, built.row.global_row, front_progress, right_offset),
                 topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
@@ -347,21 +346,22 @@ fn attachmentVertex(
 }
 
 fn kind42AttachmentVertex(
-    pose: attachment_builders.AttachmentPose,
+    template: *const attachment_builders.Template,
+    source_row: usize,
+    progress: f32,
     lateral_offset: f32,
-    radius: f32,
-    base_row: f32,
 ) rl.Vector3 {
-    const local_lateral = std.math.clamp(lateral_offset, -radius, radius);
-    const centered_lateral = pose.center_x + local_lateral;
-    const cross_section_height = if (radius <= 0.0001)
-        0.0
-    else
-        radius - std.math.sqrt(@max(0.0, (radius * radius) - (local_lateral * local_lateral)));
+    const world = attachment_builders.worldPositionForTemplate(
+        template,
+        progress,
+        source_row,
+        lateral_offset,
+        -0.49,
+    );
     return .{
-        .x = pose.position.x + (pose.basis_right.x * centered_lateral) + (pose.basis_up.x * cross_section_height),
-        .y = pose.position.y + (pose.basis_right.y * centered_lateral) + (pose.basis_up.y * cross_section_height),
-        .z = base_row + pose.position.z + (pose.basis_right.z * centered_lateral) + (pose.basis_up.z * cross_section_height),
+        .x = world.x,
+        .y = world.y,
+        .z = world.z,
     };
 }
 
