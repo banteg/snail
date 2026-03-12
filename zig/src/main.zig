@@ -892,6 +892,7 @@ const AppState = struct {
     segment_render_mode: DebugSegmentRenderMode = .game,
     segment_show_overlay: bool = false,
     segment_show_grid: bool = false,
+    segment_show_attachments: bool = true,
     segment_track_set_index: u8 = 0,
     level_segment_index: usize = 0,
     current_texture: ?assets.LoadedTexture = null,
@@ -1336,6 +1337,9 @@ const AppState = struct {
             }
             if (rl.isKeyPressed(.g)) {
                 self.segment_show_grid = !self.segment_show_grid;
+            }
+            if (rl.isKeyPressed(.a)) {
+                self.segment_show_attachments = !self.segment_show_attachments;
             }
             if (rl.isKeyPressed(.t)) {
                 self.segment_track_set_index = (self.segment_track_set_index + 1) % 4;
@@ -6089,7 +6093,7 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
 
     drawAppText(state, "snail debug browser", 24, 18, 24, .ray_white);
     drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments", 24, 48, 16, .light_gray);
-    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset  segments: v render o overlay g grid t track", 24, 70, 16, .light_gray);
+    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset  segments: v render o overlay g grid a attachments t track", 24, 70, 16, .light_gray);
 
     var source_buffer: [256]u8 = undefined;
     const source_text = try std.fmt.bufPrintZ(

@@ -202,7 +202,10 @@ pub fn drawLevelPanel(state: anytype) !void {
 
     drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
     drawSegmentGrid(
+        &loaded_track_preview,
         state.current_segment orelse return,
+        state.level_segment_index,
+        false,
         @intFromFloat(grid_card.x + 12.0),
         @intFromFloat(grid_card.y + 34.0),
         @intFromFloat(grid_card.width - 24.0),
@@ -288,12 +291,13 @@ pub fn drawSegmentPanel(state: anytype) !void {
     var runtime_buffer: [256]u8 = undefined;
     const runtime_text = try std.fmt.bufPrintZ(
         &runtime_buffer,
-        "render {s}  track {d}  overlay {s}  grid {s}",
+        "render {s}  track {d}  overlay {s}  grid {s}  attachments {s}",
         .{
             @tagName(state.segment_render_mode),
             state.segment_track_set_index,
             if (state.segment_show_overlay) "on" else "off",
             if (state.segment_show_grid) "on" else "off",
+            if (state.segment_show_attachments) "on" else "off",
         },
     );
     drawText(state, runtime_text, 44, 226, 14, .gold);
@@ -312,26 +316,9 @@ pub fn drawSegmentPanel(state: anytype) !void {
     );
     drawText(state, build_text, 44, 248, 14, .light_gray);
 
-    if (preview.firstAttachmentPathForSegment(state.segment_index)) |path_row| {
-        var family_buffer: [256]u8 = undefined;
-        const family_text = if (path_row.spec()) |spec|
-            try std.fmt.bufPrintZ(
-                &family_buffer,
-                "first path row {d}: {s}  {s}/{s}",
-                .{
-                    path_row.row_index + 1,
-                    path_row.raw_name,
-                    spec.family.label(),
-                    spec.status.label(),
-                },
-            )
-        else
-            try std.fmt.bufPrintZ(
-                &family_buffer,
-                "first path row {d}: {s}  unresolved",
-                .{ path_row.row_index + 1, path_row.raw_name },
-            );
-        drawText(state, family_text, 44, 270, 14, .gold);
+    var details_y: i32 = 270;
+    if (state.segment_show_attachments) {
+        details_y = try drawSegmentAttachmentSummary(state, &preview, state.segment_index, details_y);
     }
 
     if (findFirstAnnotatedRow(loaded_segment.rows)) |annotated_row| {
@@ -341,19 +328,22 @@ pub fn drawSegmentPanel(state: anytype) !void {
             "first annotation row {d}: {s}",
             .{ annotated_row.index + 1, annotationLabel(annotated_row.row.annotation.?) },
         );
-        drawText(state, row_text, 44, 292, 14, .light_gray);
+        drawText(state, row_text, 44, details_y, 14, .light_gray);
 
         if (annotationDescription(annotated_row.row.annotation.?)) |description| {
             var description_buffer: [160]u8 = undefined;
-            drawText(state, clippedText(&description_buffer, description, 54), 44, 314, 14, .ray_white);
+            drawText(state, clippedText(&description_buffer, description, 54), 44, details_y + 22, 14, .ray_white);
         }
     } else {
-        drawText(state, "No row annotations on this segment.", 44, 292, 14, .light_gray);
+        drawText(state, "No row annotations on this segment.", 44, details_y, 14, .light_gray);
     }
 
     drawText(state, "segment grid", @intFromFloat(grid_card.x + 18.0), @intFromFloat(grid_card.y + 14.0), 14, .light_gray);
     drawSegmentGrid(
+        &preview,
         loaded_segment.*,
+        state.segment_index,
+        state.segment_show_attachments,
         @intFromFloat(grid_card.x + 12.0),
         @intFromFloat(grid_card.y + 34.0),
         @intFromFloat(grid_card.width - 24.0),
@@ -451,7 +441,16 @@ fn colorForSegmentCell(cell: u8) rl.Color {
     };
 }
 
-fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i32, height: i32) void {
+fn drawSegmentGrid(
+    preview: *const track.LoadedLevelPreview,
+    loaded_segment: segment.Definition,
+    segment_index: usize,
+    show_attachments: bool,
+    x: i32,
+    y: i32,
+    width: i32,
+    height: i32,
+) void {
     rl.drawRectangleLines(x, y, width, height, .{ .r = 255, .g = 255, .b = 255, .a = 38 });
 
     const usable_width = @as(f32, @floatFromInt(width - 16));
@@ -467,6 +466,26 @@ fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i3
 
     for (loaded_segment.rows, 0..) |row, row_index| {
         const row_y = offset_y + @as(f32, @floatFromInt(row_index)) * cell_size;
+        if (show_attachments) {
+            if (attachmentRowForSegment(preview, segment_index, row_index)) |path_row| {
+                const highlight_rect = rl.Rectangle{
+                    .x = offset_x - 2.0,
+                    .y = row_y - 1.0,
+                    .width = grid_width + 4.0,
+                    .height = cell_size + 2.0,
+                };
+                rl.drawRectangleRounded(highlight_rect, 0.12, 6, .{ .r = 255, .g = 180, .b = 0, .a = 22 });
+                rl.drawRectangleRoundedLinesEx(highlight_rect, 0.12, 6, 1.0, .{ .r = 255, .g = 208, .b = 96, .a = 128 });
+
+                var label_buffer: [32]u8 = undefined;
+                const label_source = if (path_row.public_path) |public_path| public_path.authoredName() else path_row.raw_name;
+                const label = clippedText(&label_buffer, label_source, 10);
+                var label_z_buffer: [32]u8 = undefined;
+                const label_z = std.fmt.bufPrintZ(&label_z_buffer, "{s}", .{label}) catch "path";
+                rl.drawText(label_z, @intFromFloat(offset_x + grid_width + 6.0), @intFromFloat(row_y + 1.0), 10, .gold);
+            }
+        }
+
         for (row.cells, 0..) |cell, col_index| {
             const draw_x = offset_x + @as(f32, @floatFromInt(col_index)) * cell_size;
             rl.drawRectangleRec(
@@ -516,6 +535,61 @@ fn drawSegmentGrid(loaded_segment: segment.Definition, x: i32, y: i32, width: i3
             );
         }
     }
+}
+
+fn drawSegmentAttachmentSummary(state: anytype, preview: *const track.LoadedLevelPreview, segment_index: usize, start_y: i32) !i32 {
+    var total: usize = 0;
+    var drawn: usize = 0;
+    var y = start_y;
+
+    for (preview.attachment_scaffold.authored_rows) |path_row| {
+        if (path_row.segment_index != segment_index) continue;
+        total += 1;
+        if (drawn >= 4) continue;
+
+        var line_buffer: [256]u8 = undefined;
+        const line = if (path_row.spec()) |spec|
+            try std.fmt.bufPrintZ(
+                &line_buffer,
+                "path {d}: {s}  {s}/{s}",
+                .{
+                    path_row.row_index + 1,
+                    path_row.raw_name,
+                    spec.family.label(),
+                    spec.status.label(),
+                },
+            )
+        else
+            try std.fmt.bufPrintZ(
+                &line_buffer,
+                "path {d}: {s}  unresolved",
+                .{ path_row.row_index + 1, path_row.raw_name },
+            );
+        drawText(state, line, 44, y, 14, .gold);
+        y += 20;
+        drawn += 1;
+    }
+
+    if (total > drawn) {
+        var more_buffer: [64]u8 = undefined;
+        const more_text = try std.fmt.bufPrintZ(&more_buffer, "+{d} more path rows", .{total - drawn});
+        drawText(state, more_text, 44, y, 14, .light_gray);
+        y += 20;
+    } else if (total == 0) {
+        drawText(state, "No Path= rows in this segment.", 44, y, 14, .light_gray);
+        y += 20;
+    }
+
+    return y + 2;
+}
+
+fn attachmentRowForSegment(preview: *const track.LoadedLevelPreview, segment_index: usize, row_index: usize) ?attachment_builders.AuthoredPathRow {
+    for (preview.attachment_scaffold.authored_rows) |path_row| {
+        if (path_row.segment_index == segment_index and path_row.row_index == row_index) {
+            return path_row;
+        }
+    }
+    return null;
 }
 
 fn drawOverlayCard(rect: rl.Rectangle) void {
