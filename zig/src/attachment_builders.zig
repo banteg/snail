@@ -255,6 +255,13 @@ const HillValleyParams = struct {
     centered: bool,
 };
 
+const HumpDumpParams = struct {
+    runtime_kind: u8,
+    width_cells: u16,
+    path_length: f32,
+    height_scalar: f32,
+};
+
 pub const AuthoredPathRow = struct {
     global_row: usize,
     segment_index: usize,
@@ -416,6 +423,11 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .valley4c,
         .valley4,
         => try buildHillValleyTemplate(allocator, spec, hillValleyParams(spec.public_path)),
+        .hump,
+        .humpsmall,
+        .dump,
+        .dumpsmall,
+        => try buildHumpDumpTemplate(allocator, spec, humpDumpParams(spec.public_path)),
         else => null,
     };
 }
@@ -645,6 +657,91 @@ fn hillValleyParams(public_path: PublicPath) HillValleyParams {
     };
 }
 
+fn buildHumpDumpTemplate(
+    allocator: std.mem.Allocator,
+    spec: TemplateSpec,
+    params: HumpDumpParams,
+) !Template {
+    const dynamic_count: usize = @intFromFloat(@floor(params.path_length * 4.0));
+    const sample_count: usize = dynamic_count + 14;
+    const point_count: usize = sample_count + 1;
+    const start_flat_count: usize = 7;
+    const end_flat_count: usize = 7;
+    var samples = try allocator.alloc(TemplateSample, point_count);
+    errdefer allocator.free(samples);
+
+    for (samples) |*sample| {
+        sample.* = .{};
+    }
+
+    const edge_center = (@as(f32, @floatFromInt(params.width_cells)) * 0.5) - 4.0;
+    const start_center = if (params.runtime_kind == 16) edge_center else -edge_center;
+    const end_center = -start_center;
+    const height_sign: f32 = if (params.runtime_kind == 16) 1.0 else -1.0;
+    const curve_height_scale = @as(f32, @floatFromInt(dynamic_count)) * 0.095492966 * params.height_scalar;
+
+    for (0..start_flat_count) |index| {
+        const z: f32 = @floatFromInt(index);
+        const sample = &samples[index];
+        sample.center_x = start_center;
+        sample.position = .{ .x = 0.0, .y = 0.0, .z = z };
+    }
+
+    const dynamic_count_f: f32 = @floatFromInt(dynamic_count);
+    for (0..dynamic_count) |step| {
+        const theta = (@as(f32, @floatFromInt(step)) * 2.0 * std.math.pi) / dynamic_count_f;
+        const sample = &samples[start_flat_count + step];
+        sample.center_x = std.math.cos(theta * 0.5) * start_center;
+        sample.position = .{
+            .x = 0.0,
+            .y = (1.0 - std.math.cos(theta)) * curve_height_scale * height_sign,
+            .z = @floatFromInt(step + start_flat_count),
+        };
+    }
+
+    for (0..end_flat_count) |offset| {
+        const index = dynamic_count + start_flat_count + offset;
+        const z: f32 = @floatFromInt(index);
+        const sample = &samples[index];
+        sample.center_x = end_center;
+        sample.position = .{ .x = 0.0, .y = 0.0, .z = z };
+    }
+
+    samples[point_count - 1].center_x = end_center;
+    samples[point_count - 1].position = .{
+        .x = 0.0,
+        .y = 0.0,
+        .z = @floatFromInt(sample_count),
+    };
+
+    finalizeTemplateSamples(samples);
+
+    return .{
+        .spec = .{
+            .public_path = spec.public_path,
+            .family = spec.family,
+            .status = .partial,
+            .runtime_kind = params.runtime_kind,
+            .sample_count = @intCast(sample_count),
+            .subdivision_count = params.width_cells,
+        },
+        .width_cells = params.width_cells,
+        .sample_count = @intCast(sample_count),
+        .exit_tail_extra = 1.0,
+        .samples = samples,
+    };
+}
+
+fn humpDumpParams(public_path: PublicPath) HumpDumpParams {
+    return switch (public_path) {
+        .hump => .{ .runtime_kind = 16, .width_cells = 3, .path_length = 4.0, .height_scalar = 1.0 },
+        .humpsmall => .{ .runtime_kind = 16, .width_cells = 3, .path_length = 4.0, .height_scalar = 0.30000001 },
+        .dump => .{ .runtime_kind = 17, .width_cells = 3, .path_length = 4.0, .height_scalar = 1.0 },
+        .dumpsmall => .{ .runtime_kind = 17, .width_cells = 3, .path_length = 4.0, .height_scalar = 0.30000001 },
+        else => unreachable,
+    };
+}
+
 fn finalizeTemplateSamples(samples: []TemplateSample) void {
     if (samples.len == 0) return;
     var last_forward = Vec3{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -729,8 +826,22 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         },
         .sbend => .{ .public_path = public_path, .family = .sbend, .status = .scaffold },
         .cage2 => .{ .public_path = public_path, .family = .cage2, .status = .scaffold },
-        .hump, .humpsmall => .{ .public_path = public_path, .family = .hump, .status = .scaffold },
-        .dump, .dumpsmall => .{ .public_path = public_path, .family = .dump, .status = .scaffold },
+        .hump, .humpsmall => .{
+            .public_path = public_path,
+            .family = .hump,
+            .status = .partial,
+            .runtime_kind = 16,
+            .sample_count = 30,
+            .subdivision_count = 3,
+        },
+        .dump, .dumpsmall => .{
+            .public_path = public_path,
+            .family = .dump,
+            .status = .partial,
+            .runtime_kind = 17,
+            .sample_count = 30,
+            .subdivision_count = 3,
+        },
         .dip => .{ .public_path = public_path, .family = .dip, .status = .scaffold },
         .screw => .{ .public_path = public_path, .family = .screw, .status = .scaffold },
         .slalom => .{ .public_path = public_path, .family = .slalom, .status = .scaffold },
@@ -955,6 +1066,40 @@ test "build hill and valley family templates from recovered shared constructor p
             try std.testing.expect(mid.position.y > 0.0);
         } else {
             try std.testing.expect(mid.position.y < 0.0);
+        }
+    }
+}
+
+test "build hump and dump family templates from recovered shared constructor params" {
+    const cases = [_]struct {
+        path: PublicPath,
+        runtime_kind: u8,
+        width_cells: u16,
+        expected_start_center: f32,
+        expect_peak_positive: bool,
+    }{
+        .{ .path = .hump, .runtime_kind = 16, .width_cells = 3, .expected_start_center = -2.5, .expect_peak_positive = true },
+        .{ .path = .humpsmall, .runtime_kind = 16, .width_cells = 3, .expected_start_center = -2.5, .expect_peak_positive = true },
+        .{ .path = .dump, .runtime_kind = 17, .width_cells = 3, .expected_start_center = 2.5, .expect_peak_positive = false },
+        .{ .path = .dumpsmall, .runtime_kind = 17, .width_cells = 3, .expected_start_center = 2.5, .expect_peak_positive = false },
+    };
+
+    for (cases) |case| {
+        const spec = specForPublicPath(case.path);
+        var template = (try buildTemplate(std.testing.allocator, spec)).?;
+        defer template.deinit(std.testing.allocator);
+
+        try std.testing.expectEqual(case.runtime_kind, template.spec.runtime_kind.?);
+        try std.testing.expectEqual(@as(u16, 30), template.sample_count);
+        try std.testing.expectEqual(case.width_cells, template.width_cells);
+        try std.testing.expectApproxEqAbs(case.expected_start_center, template.samples[0].center_x, 0.0001);
+        try std.testing.expectApproxEqAbs(-case.expected_start_center, template.samples[template.sample_count].center_x, 0.0001);
+
+        const mid = samplePoseAtProgress(&template, 15.0);
+        if (case.expect_peak_positive) {
+            try std.testing.expect(mid.position.y > 0.1);
+        } else {
+            try std.testing.expect(mid.position.y < -0.1);
         }
     }
 }
