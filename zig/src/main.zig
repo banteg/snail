@@ -917,6 +917,8 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_track_scene: ?track_render.Scene = null,
+    current_gameplay_turbo_model: ?x2.Uploaded = null,
+    current_gameplay_turbo_animation: ?xanim.Player = null,
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
@@ -1064,6 +1066,7 @@ const AppState = struct {
             scene.deinit();
             self.current_game_track_scene = null;
         }
+        self.unloadGameplayTurbo();
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -1217,6 +1220,55 @@ const AppState = struct {
             loaded.unload();
             slot.* = null;
         }
+    }
+
+    fn unloadGameplayTurbo(self: *AppState) void {
+        if (self.current_gameplay_turbo_animation) |*animation| {
+            animation.deinit();
+            self.current_gameplay_turbo_animation = null;
+        }
+        if (self.current_gameplay_turbo_model) |*model| {
+            model.deinit();
+            self.current_gameplay_turbo_model = null;
+        }
+    }
+
+    fn reloadGameplayTurbo(self: *AppState) !void {
+        self.unloadGameplayTurbo();
+
+        const entry_index = self.catalog.findModelIndex(default_model_path) orelse return;
+        const entry = self.catalog.model_entries[entry_index];
+
+        if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
+            const clip = &self.animation_catalog.clips[clip_index];
+            if (clip.frames.len > 1) {
+                self.current_gameplay_turbo_animation = try xanim.Player.load(
+                    self.allocator,
+                    &self.catalog,
+                    clip,
+                    true,
+                    xanim.frameNumberFromPath(entry.path),
+                );
+                return;
+            }
+        }
+
+        self.current_gameplay_turbo_model = try x2.Uploaded.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            true,
+        );
+    }
+
+    fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
+        if (self.current_gameplay_turbo_animation) |*animation| {
+            return &animation.rendered;
+        }
+        if (self.current_gameplay_turbo_model) |*model| {
+            return model;
+        }
+        return null;
     }
 
     fn saveRuntimeConfig(self: *const AppState) !void {
@@ -2089,6 +2141,9 @@ const AppState = struct {
                 if (self.level_runner) |*runner| {
                     runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                 }
+            }
+            if (self.current_gameplay_turbo_animation) |*animation| {
+                try animation.step(self.simulation_clock.step_seconds);
             }
             try self.syncActiveLevelSegment(false);
             if (self.level_runner) |*runner| {
@@ -3798,6 +3853,7 @@ const AppState = struct {
             scene.deinit();
             self.current_game_track_scene = null;
         }
+        self.unloadGameplayTurbo();
         self.level_runner = null;
         if (self.catalog.level_entries.len == 0) return;
 
@@ -3812,6 +3868,9 @@ const AppState = struct {
                         &self.catalog,
                         track_set_index,
                     );
+                }
+                if (self.command == .game) {
+                    try self.reloadGameplayTurbo();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
@@ -6418,6 +6477,82 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }
+    drawGameplayTurbo(state, &loaded_track_preview, runner);
+}
+
+fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
+    const model = state.activeGameplayTurbo() orelse return;
+
+    // PORT(partial): this is the first live gameplay Turbo draw. It now follows the
+    // runner's built attachment-aware world frame, but the exact model anchor and
+    // state-specific animation selection are still rough compared with the original.
+    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
+    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
+    const base_position = runner.worldPosition(loaded_track_preview, 0.82);
+    const position = rl.Vector3{
+        .x = base_position.x + (forward.x * 0.9),
+        .y = base_position.y + (forward.y * 0.9),
+        .z = base_position.z + (forward.z * 0.9),
+    };
+
+    var right = crossVector3(up, forward);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    const corrected_up = normalizeVector3(crossVector3(forward, right));
+
+    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
+    const local_offset = rl.Matrix.translate(
+        -model.bounds.center.x,
+        -model.bounds.center.y,
+        -model.bounds.center.z,
+    );
+    model.drawEx(world_transform.multiply(local_offset));
+}
+
+fn vectorLength(v: rl.Vector3) f32 {
+    return std.math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+fn normalizeVector3(v: rl.Vector3) rl.Vector3 {
+    const len = vectorLength(v);
+    if (len <= 0.0001) return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+    return .{
+        .x = v.x / len,
+        .y = v.y / len,
+        .z = v.z / len,
+    };
+}
+
+fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = (a.y * b.z) - (a.z * b.y),
+        .y = (a.z * b.x) - (a.x * b.z),
+        .z = (a.x * b.y) - (a.y * b.x),
+    };
+}
+
+fn modelTransformFromBasis(position: rl.Vector3, right: rl.Vector3, up: rl.Vector3, forward: rl.Vector3) rl.Matrix {
+    return .{
+        .m0 = right.x,
+        .m4 = up.x,
+        .m8 = forward.x,
+        .m12 = position.x,
+        .m1 = right.y,
+        .m5 = up.y,
+        .m9 = forward.y,
+        .m13 = position.y,
+        .m2 = right.z,
+        .m6 = up.z,
+        .m10 = forward.z,
+        .m14 = position.z,
+        .m3 = 0.0,
+        .m7 = 0.0,
+        .m11 = 0.0,
+        .m15 = 1.0,
+    };
 }
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {

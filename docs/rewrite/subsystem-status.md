@@ -195,12 +195,14 @@ Implemented now:
 - default gameplay camera follows the runner instead of reusing the debug orbit camera
 - attachment follow and launch states feed the camera with built template forward/up vectors
 - textured gameplay rendering is now used in actual play for supported track sets
+- the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 
 Still missing or approximate:
 
 - the full Windows `cameraman` controller
 - full cutscene camera ownership and transition behavior
 - exact completion/death cutscene handoff
+- the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
 
 Best next work:
 
