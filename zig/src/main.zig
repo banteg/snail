@@ -8270,6 +8270,11 @@ fn gameplaySaltPresentationScale(runner: gameplay.Runner, global_row: usize) f32
     return std.math.clamp(1.0 + delta / -48.0, 0.0, 1.0);
 }
 
+fn gameplaySaltPresentationAlpha(runner: gameplay.Runner, global_row: usize) u8 {
+    const scale = gameplaySaltPresentationScale(runner, global_row);
+    return @intFromFloat(std.math.clamp(scale * 0.9, 0.0, 0.9) * 255.0);
+}
+
 fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
     var seed: u64 = 0x9e3779b97f4a7c15;
     seed ^= @as(u64, @intCast(global_row)) *% 0xbf58476d1ce4e5b9;
@@ -8279,10 +8284,29 @@ fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
 }
 
 fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
-    const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_slug_sprite_paths.len))));
+    const base_phase = deterministicGameplayActorYaw(global_row, lane_index);
+    const frame_index: usize = @intFromFloat(@mod(
+        @floor((state.render_time_seconds * 8.0) + @as(f64, base_phase * 2.0)),
+        @as(f64, @floatFromInt(gameplay_slug_sprite_paths.len)),
+    ));
     const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.34);
-    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.7, 0.7, camera, .white);
+    const bob_phase = base_phase + @as(f32, @floatCast(state.render_time_seconds * 3.0));
+    const position = gameplayLaneWorldPosition(
+        preview,
+        global_row,
+        lane_index,
+        0.34 + (std.math.sin(bob_phase) * 0.04),
+    );
+    drawGameplayBillboardTextureRectRolled(
+        loaded_texture.texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
+        position,
+        0.7,
+        0.7,
+        camera,
+        std.math.sin(bob_phase * 0.5) * 0.08,
+        .white,
+    );
 }
 
 fn drawGameplayGarbageActor(
@@ -8293,13 +8317,21 @@ fn drawGameplayGarbageActor(
 ) void {
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_garbage_sprite_paths.len));
     const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
-    const position = gameplayLaneWorldPosition(preview, hazard.row, hazard.lane, hazard.presentation_scale);
-    drawGameplayBillboardTexture(
+    const bob_phase = hazard.presentation_phase + @as(f32, @floatCast(state.render_time_seconds * 2.5));
+    const position = gameplayLaneWorldPosition(
+        preview,
+        hazard.row,
+        hazard.lane,
+        hazard.presentation_scale + (std.math.sin(bob_phase) * 0.05),
+    );
+    drawGameplayBillboardTextureRectRolled(
         loaded_texture.texture,
+        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         position,
         hazard.presentation_scale,
         hazard.presentation_scale,
         camera,
+        hazard.presentation_phase + (@as(f32, @floatCast(state.render_time_seconds)) * 1.75),
         .{ .r = 255, .g = 255, .b = 255, .a = 232 },
     );
 }
@@ -8313,6 +8345,7 @@ fn drawGameplaySaltActor(
 ) void {
     const presentation_scale = gameplaySaltPresentationScale(runner, hazard.row);
     if (presentation_scale <= 0.01) return;
+    const presentation_alpha = gameplaySaltPresentationAlpha(runner, hazard.row);
     if (state.current_gameplay_salt_model) |*model| {
         const floor_height = preview.floorHeightAtCellCenter(hazard.row, hazard.lane) orelse 0.0;
         const position = preview.worldPositionForLane(
@@ -8320,7 +8353,7 @@ fn drawGameplaySaltActor(
             @as(f32, @floatFromInt(hazard.row)),
             floor_height + 0.18,
         );
-        const yaw = hazard.presentation_phase;
+        const yaw = hazard.presentation_phase + @as(f32, @floatCast(state.render_time_seconds * 0.75));
         const yaw_sin = std.math.sin(yaw);
         const yaw_cos = std.math.cos(yaw);
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
@@ -8336,7 +8369,7 @@ fn drawGameplaySaltActor(
         const scale = rl.Matrix.scale(scale_value, scale_value, scale_value);
         model.drawTintedEx(
             world_transform.multiply(local_offset).multiply(scale),
-            .{ .r = 255, .g = 255, .b = 255, .a = @intFromFloat(0.9 * 255.0) },
+            .{ .r = 255, .g = 255, .b = 255, .a = presentation_alpha },
         );
         return;
     }
@@ -8355,7 +8388,7 @@ fn drawGameplaySaltActor(
         0.58,
         0.72,
         camera,
-        .{ .r = 144, .g = 198, .b = 255, .a = @intFromFloat(0.9 * 255.0) },
+        .{ .r = 144, .g = 198, .b = 255, .a = presentation_alpha },
     );
 }
 
@@ -8545,13 +8578,14 @@ fn drawGameplayBillboardTexture(
     );
 }
 
-fn drawGameplayBillboardTextureRect(
+fn drawGameplayBillboardTextureRectRolled(
     texture: rl.Texture2D,
     source: rl.Rectangle,
     position: rl.Vector3,
     width: f32,
     height: f32,
     camera: rl.Camera3D,
+    roll_radians: f32,
     tint: rl.Color,
 ) void {
     const forward = normalizeVector3(.{
@@ -8570,6 +8604,23 @@ fn drawGameplayBillboardTextureRect(
         up = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
     } else {
         up = normalizeVector3(up);
+    }
+
+    if (@abs(roll_radians) > 0.0001) {
+        const roll_cos = std.math.cos(roll_radians);
+        const roll_sin = std.math.sin(roll_radians);
+        const rotated_right: rl.Vector3 = .{
+            .x = (right.x * roll_cos) - (up.x * roll_sin),
+            .y = (right.y * roll_cos) - (up.y * roll_sin),
+            .z = (right.z * roll_cos) - (up.z * roll_sin),
+        };
+        const rotated_up: rl.Vector3 = .{
+            .x = (right.x * roll_sin) + (up.x * roll_cos),
+            .y = (right.y * roll_sin) + (up.y * roll_cos),
+            .z = (right.z * roll_sin) + (up.z * roll_cos),
+        };
+        right = rotated_right;
+        up = rotated_up;
     }
 
     const half_width = width * 0.5;
@@ -8602,6 +8653,18 @@ fn drawGameplayBillboardTextureRect(
     };
     drawGameplayBillboardQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, tint);
     drawGameplayBillboardQuad(texture, top_right, bottom_right, bottom_left, top_left, uv, tint);
+}
+
+fn drawGameplayBillboardTextureRect(
+    texture: rl.Texture2D,
+    source: rl.Rectangle,
+    position: rl.Vector3,
+    width: f32,
+    height: f32,
+    camera: rl.Camera3D,
+    tint: rl.Color,
+) void {
+    drawGameplayBillboardTextureRectRolled(texture, source, position, width, height, camera, 0.0, tint);
 }
 
 fn drawGameplayBillboardQuad(
