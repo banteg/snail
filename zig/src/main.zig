@@ -7894,7 +7894,7 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     const camera = if (startup_cutscene_active)
         tutorialClickStartCamera(state, &loaded_track_preview, runner, state.gameplay_click_start_ticks)
     else if (state.gameplay_click_start_active)
-        tutorialClickStartWaitCamera(state, &loaded_track_preview, runner)
+        gameplayLevelCamera(&loaded_track_preview, runner)
     else if (runner.acceptsGameplayInput())
         gameplayLevelCamera(&loaded_track_preview, runner)
     else if (runner.finished)
@@ -8462,7 +8462,7 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const model = state.activeGameplayTurbo() orelse return;
     const startup_cutscene_active = state.tutorialClickStartCutsceneActive();
-    const pose = if (state.gameplay_click_start_active)
+    const pose = if (startup_cutscene_active)
         tutorialClickStartTurboPose(model, loaded_track_preview, runner)
     else
         gameplayTurboPose(model, loaded_track_preview, runner);
@@ -8797,40 +8797,6 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     };
 }
 
-fn tutorialClickStartWaitCamera(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) rl.Camera3D {
-    if (loaded_track_preview.total_rows == 0) {
-        return loaded_track_preview.previewCamera(0.0, 0);
-    }
-
-    const model = state.activeGameplayTurbo() orelse return gameplayLevelCamera(loaded_track_preview, runner);
-    const pose = tutorialClickStartTurboPose(model, loaded_track_preview, runner);
-    const target = offsetPosition(
-        pose.position,
-        pose.right,
-        pose.up,
-        pose.forward,
-        0.0,
-        0.14,
-        0.9,
-    );
-    const position = offsetPosition(
-        pose.position,
-        pose.right,
-        pose.up,
-        pose.forward,
-        0.0,
-        0.92,
-        -1.7,
-    );
-    return .{
-        .position = position,
-        .target = target,
-        .up = pose.up,
-        .fovy = 68.0,
-        .projection = .perspective,
-    };
-}
-
 fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, startup_ticks: u32) rl.Camera3D {
     if (loaded_track_preview.total_rows == 0) {
         return loaded_track_preview.previewCamera(0.0, 0);
@@ -8875,7 +8841,7 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         .y = camera_hotspot_world.y,
         .z = camera_hotspot_world.z,
     };
-    const gameplay_camera = tutorialClickStartWaitCamera(state, loaded_track_preview, runner);
+    const gameplay_camera = gameplayLevelCamera(loaded_track_preview, runner);
     const blend = std.math.sin(phase * (std.math.pi * 0.5));
 
     return .{
