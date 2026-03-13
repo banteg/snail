@@ -8752,11 +8752,16 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     const chase_target_position = runner.worldPosition(loaded_track_preview, 0.28);
     // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
     // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
+    // The important gameplay-facing part is that lateral motion does not directly aim the camera
+    // at the player. The cameraman uses separate X scales for the eye and focus, which keeps the
+    // view trailing behind Turbo instead of swinging off-axis when steering left/right.
     // The current port uses the built attachment/launch frame whenever the runner is riding
     // or launching from an attachment, instead of snapping straight back to the flat chase view.
     const dynamic_attachment_camera =
         (runner.movement_mode == .attachment and runner.attachment_follow.active) or
         runner.launch.active;
+    const chase_eye_x = player_position.x / 2.5;
+    const chase_target_x = chase_target_position.x / 3.0;
     const target = if (dynamic_attachment_camera)
         rl.Vector3{
             .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
@@ -8765,9 +8770,9 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         }
     else
         rl.Vector3{
-            .x = chase_target_position.x + (player_forward.x * 1.45) + (player_up.x * 0.18),
-            .y = chase_target_position.y + (player_forward.y * 1.45) + (player_up.y * 0.18),
-            .z = chase_target_position.z + (player_forward.z * 1.45) + (player_up.z * 0.18),
+            .x = chase_target_x,
+            .y = player_floor + 0.4,
+            .z = chase_target_position.z + 1.45,
         };
     const position = if (dynamic_attachment_camera)
         rl.Vector3{
@@ -8777,8 +8782,8 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         }
     else
         rl.Vector3{
-            .x = player_position.x * 0.4,
-            .y = player_floor + 1.35,
+            .x = chase_eye_x,
+            .y = player_floor + 1.8,
             .z = player_position.z - 1.85,
         };
     const up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
@@ -9180,6 +9185,37 @@ test "gameplay camera looks ahead of the runner" {
     try std.testing.expect(camera.position.y > player_position.y);
     try std.testing.expect(camera.target.y >= 0.0);
     try std.testing.expectApproxEqAbs(@as(f32, 68.0), camera.fovy, 0.001);
+}
+
+test "gameplay camera keeps lateral steering mostly behind turbo" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.lane_center = 6.5;
+    runner.lane_index = 6;
+    runner.resolved_lane_index = 6;
+
+    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
+
+    try std.testing.expect(player_position.x > 0.0);
+    try std.testing.expect(camera.position.x > 0.0);
+    try std.testing.expect(camera.target.x > 0.0);
+    try std.testing.expect(camera.target.x < player_position.x);
+    try std.testing.expect(camera.position.x > camera.target.x);
 }
 
 test "completion cutscene camera widens the chase view" {
