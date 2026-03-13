@@ -165,6 +165,17 @@ pub const Uploaded = struct {
         }
     }
 
+    pub fn drawTintedEx(self: *const Uploaded, transform: rl.Matrix, tint: rl.Color) void {
+        const submeshes = @constCast(self.submeshes);
+        for (submeshes) |*submesh| {
+            const albedo_map = &submesh.material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)];
+            const previous_tint = albedo_map.color;
+            albedo_map.color = tint;
+            rl.drawMesh(submesh.mesh, submesh.material, transform);
+            albedo_map.color = previous_tint;
+        }
+    }
+
     pub fn previewCamera(self: *const Uploaded, seconds: f32) rl.Camera3D {
         const distance = @max(self.bounds.radius * 3.0, 3.0);
         return .{

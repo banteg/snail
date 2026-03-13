@@ -30,6 +30,7 @@ pub const Queue = struct {
     pub fn tick(self: *Queue) void {
         for (&self.entries) |*slot| {
             if (slot.*) |*entry| {
+                if (entry.interactive) continue;
                 if (entry.ticks_remaining > 0) {
                     entry.ticks_remaining -= 1;
                 }
@@ -156,6 +157,18 @@ test "entry options are preserved when enqueued" {
     queue.enqueueWithOptions("Prompt", 12, .{ .interactive = true });
 
     try std.testing.expect(queue.active().?.interactive);
+}
+
+test "interactive entries do not expire while ticking" {
+    var queue = Queue{};
+    queue.enqueueWithOptions("Prompt", 2, .{ .interactive = true });
+
+    queue.tick();
+    queue.tick();
+    queue.tick();
+
+    try std.testing.expect(queue.active() != null);
+    try std.testing.expectEqualStrings("Prompt", queue.active().?.message);
 }
 
 test "duration ticks use authored seconds when present" {
