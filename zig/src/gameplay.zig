@@ -706,8 +706,10 @@ pub const Runner = struct {
         return std.math.clamp(self.effectiveSpeedRowsPerSecond() * (0.49 / 12.0), 0.2, 1.1);
     }
 
-    pub fn cameramanRowBlend(self: *const Runner) f32 {
-        return self.row_position - @floor(self.row_position);
+    pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
+        if (preview.total_rows == 0) return 1.0;
+        const total_rows = @as(f32, @floatFromInt(preview.total_rows));
+        return std.math.clamp(((self.row_position / total_rows) * 1.4) - 0.4, 0.0, 1.0);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -1370,13 +1372,15 @@ pub const Runner = struct {
         self.cameraman.follow_target_x = std.math.lerp(self.cameraman.follow_target_x.?, chase_target_x, 0.18);
         self.cameraman.follow_floor_y = std.math.lerp(self.cameraman.follow_floor_y.?, player_floor, 0.18);
         const speed_scalar = self.cameramanSpeedScalar();
-        const row_blend = self.cameramanRowBlend();
-        const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, row_blend);
-        const pitch_radians = std.math.clamp(
+        const progress_blend = self.cameramanProgressBlend(preview);
+        const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, progress_blend);
+        const speed_pitch_radians = std.math.clamp(
             (-2.0 - ((speed_scalar - 0.49) * 5.0)) * 0.0174499992,
             -1.22149992,
             1.22149992,
         );
+        const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
+        const total_pitch_radians = intro_pitch_radians + speed_pitch_radians;
         const desired_target = if (dynamic_attachment_camera)
             rl.Vector3{
                 .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
@@ -1386,8 +1390,8 @@ pub const Runner = struct {
         else
             rl.Vector3{
                 .x = self.cameraman.follow_target_x.?,
-                .y = (self.cameraman.follow_floor_y.? + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
-                .z = self.cameramanEyeZ() + (std.math.cos(pitch_radians) * 3.3),
+                .y = (self.cameraman.follow_floor_y.? + 1.8 + vertical_lift) + (std.math.sin(total_pitch_radians) * 3.3),
+                .z = self.cameramanEyeZ() + (std.math.cos(total_pitch_radians) * 3.3),
             };
         const desired_position = if (dynamic_attachment_camera)
             rl.Vector3{

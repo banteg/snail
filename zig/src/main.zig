@@ -7058,16 +7058,17 @@ fn tutorialPromptCardLocalRect(state: *const AppState, text: []const u8, line_co
     const lines = tutorialPromptLines(text, &line_storage);
     const metrics = frontend_widget.metricsForType(.menu_button);
     const font_size = metrics.fontSize(&state.ui_font);
+    const line_height = metrics.textHeight(&state.ui_font) + 2.0;
     var max_width: f32 = 0.0;
     for (lines) |line| {
         max_width = @max(max_width, state.ui_font.measureText(line, font_size));
     }
-    const card_width = std.math.clamp(max_width + 28.0, 220.0, 380.0);
-    const body_height = 20.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
-    const vertical_padding: f32 = if (interactive) 18.0 else 14.0;
+    const card_width = std.math.clamp(max_width + 44.0, 240.0, 420.0);
+    const body_height = line_height * @as(f32, @floatFromInt(@max(line_count, 1)));
+    const vertical_padding: f32 = if (interactive) 22.0 else 18.0;
     return .{
         .x = (640.0 - card_width) * 0.5,
-        .y = if (interactive) 178.0 else 120.0,
+        .y = if (interactive) 176.0 else 116.0,
         .width = card_width,
         .height = body_height + vertical_padding,
     };
@@ -7112,7 +7113,8 @@ fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const 
 fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_local_rect: rl.Rectangle, text: []const u8) void {
     var line_storage: [8][]const u8 = undefined;
     const lines = tutorialPromptLines(text, &line_storage);
-    const line_height = 20.0;
+    const metrics = frontend_widget.metricsForType(.menu_button);
+    const line_height = metrics.textHeight(&state.ui_font) + 2.0;
     const body_height = line_height * @as(f32, @floatFromInt(lines.len));
     var line_y = card_local_rect.y + ((card_local_rect.height - body_height) * 0.5) - 1.0;
     const widget_art: frontend_widget.Art = .{
@@ -8850,7 +8852,7 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const model = state.activeGameplayTurbo() orelse return;
     const click_start_active = state.gameplay_click_start_active;
-    const pose = if (click_start_active)
+    const pose = if (click_start_active and state.tutorialClickStartCutsceneActive())
         tutorialClickStartTurboPose(model, loaded_track_preview, runner)
     else
         gameplayTurboPose(model, loaded_track_preview, runner);
@@ -9190,7 +9192,12 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         return loaded_track_preview.previewCamera(0.0, 0);
     }
 
-    const model = state.activeGameplayTurbo() orelse return gameplayLevelCamera(loaded_track_preview, runner);
+    const gameplay_camera = gameplayLevelCamera(loaded_track_preview, runner);
+    if (startup_ticks >= tutorial_click_start_cutscene_ticks) {
+        return gameplay_camera;
+    }
+
+    const model = state.activeGameplayTurbo() orelse return gameplay_camera;
     const pose = tutorialClickStartTurboPose(model, loaded_track_preview, runner);
     const frame: TutorialClickStartFrame = .{
         .position = pose.position,
@@ -9233,14 +9240,13 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         0.55,
         -1.75,
     );
-    const click_start_camera = tutorialClickStartPromptCamera(loaded_track_preview, runner);
     const blend = std.math.sin(phase * (std.math.pi * 0.5));
 
     return .{
-        .position = lerpVector3(side_position, click_start_camera.position, blend),
-        .target = lerpVector3(camera_hotspot_world, click_start_camera.target, blend),
-        .up = normalizeVector3(lerpVector3(frame.up, click_start_camera.up, blend)),
-        .fovy = std.math.lerp(110.0, click_start_camera.fovy, blend),
+        .position = lerpVector3(side_position, gameplay_camera.position, blend),
+        .target = lerpVector3(camera_hotspot_world, gameplay_camera.target, blend),
+        .up = normalizeVector3(lerpVector3(frame.up, gameplay_camera.up, blend)),
+        .fovy = std.math.lerp(110.0, gameplay_camera.fovy, blend),
         .projection = .perspective,
     };
 }
