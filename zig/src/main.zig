@@ -7527,7 +7527,7 @@ fn drawGameplayRuntimeActors(
                 .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
             if (row_location.row.cells[lane_index] == '=') {
-                drawGameplayTurretActor(state, loaded_track_preview, global_row, lane_index);
+                drawGameplayTurretActor(state, loaded_track_preview, runner, global_row, lane_index);
             }
         }
 
@@ -7617,8 +7617,20 @@ fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLev
     );
 }
 
-fn drawGameplayTurretActor(state: *const AppState, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) void {
-    const model = state.current_gameplay_turret_model orelse return;
+fn drawGameplayTurretActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    global_row: usize,
+    lane_index: usize,
+) void {
+    const flash_ticks = runner.turretFlashTicksAt(global_row, lane_index);
+    const model = blk: {
+        if (flash_ticks > 0) {
+            if (state.current_gameplay_blaster_top_models.fire) |*fire_model| break :blk fire_model.*;
+        }
+        break :blk state.current_gameplay_turret_model orelse return;
+    };
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     const position = preview.worldPositionForLane(
         @as(f32, @floatFromInt(lane_index)) + 0.5,

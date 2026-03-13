@@ -91,6 +91,13 @@ pub const RuntimeHazard = struct {
     kind: RuntimeHazardKind,
 };
 
+const TurretState = struct {
+    row: usize,
+    lane: usize,
+    seconds: f32 = 0.0,
+    flash_ticks: u8 = 0,
+};
+
 pub const Projectile = struct {
     pub const Kind = enum {
         turbo,
@@ -316,6 +323,8 @@ const turret_fire_interval_seconds: f32 = 1.0;
 const turret_projectile_spawn_rows_ahead: usize = 24;
 const turret_projectile_hit_z_tolerance: f32 = 0.5;
 const turret_projectile_hit_x_tolerance: f32 = 0.6;
+const turret_flash_duration_ticks: u8 = 6;
+const max_active_turret_states: usize = 64;
 const slow_ring_duration_ticks: u16 = 240;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
@@ -435,7 +444,8 @@ pub const Runner = struct {
     last_runtime_hazard_scan_end: usize = 0,
     active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
     active_projectile_count: usize = 0,
-    turret_fire_seconds: f32 = 0.0,
+    active_turret_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states,
+    active_turret_state_count: usize = 0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
 
@@ -1387,18 +1397,12 @@ pub const Runner = struct {
 
     fn updateTurretFire(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
         if (preview.total_rows == 0) return;
-        self.turret_fire_seconds += delta_seconds;
-        while (self.turret_fire_seconds >= turret_fire_interval_seconds) {
-            self.turret_fire_seconds -= turret_fire_interval_seconds;
-            self.spawnTurretProjectiles(preview);
-        }
-    }
-
-    fn spawnTurretProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const start_row = currentRowIndex(preview, self.row_position);
         const end_row = @min(start_row + turret_projectile_spawn_rows_ahead, preview.total_rows);
         const gameplay_width = @min(preview.max_width, 8);
         const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        var next_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states;
+        var next_state_count: usize = 0;
 
         var global_row = start_row;
         while (global_row < end_row) : (global_row += 1) {
@@ -1406,17 +1410,45 @@ pub const Runner = struct {
             const width = @min(row_location.row.cells.len, preview.max_width);
             for (0..width) |lane_index| {
                 if (row_location.row.cells[lane_index] != '=') continue;
-                self.spawnProjectile(
-                    .enemy_laser,
-                    (@as(f32, @floatFromInt(lane_index)) + 0.5) - width_offset,
-                    0.4,
-                    @as(f32, @floatFromInt(global_row)),
-                    0.0,
-                    0.0,
-                    -1.0,
-                );
+                if (next_state_count >= max_active_turret_states) continue;
+                var state = self.findTurretState(global_row, lane_index) orelse TurretState{
+                    .row = global_row,
+                    .lane = lane_index,
+                };
+                if (state.flash_ticks > 0) state.flash_ticks -= 1;
+                state.seconds += delta_seconds;
+                while (state.seconds >= turret_fire_interval_seconds) {
+                    state.seconds -= turret_fire_interval_seconds;
+                    state.flash_ticks = turret_flash_duration_ticks;
+                    self.spawnProjectile(
+                        .enemy_laser,
+                        (@as(f32, @floatFromInt(lane_index)) + 0.5) - width_offset,
+                        0.4,
+                        @as(f32, @floatFromInt(global_row)),
+                        0.0,
+                        0.0,
+                        -1.0,
+                    );
+                }
+                next_states[next_state_count] = state;
+                next_state_count += 1;
             }
         }
+        self.active_turret_states = next_states;
+        self.active_turret_state_count = next_state_count;
+    }
+
+    fn findTurretState(self: *const Runner, row: usize, lane: usize) ?TurretState {
+        for (0..self.active_turret_state_count) |index| {
+            const state = self.active_turret_states[index];
+            if (state.row == row and state.lane == lane) return state;
+        }
+        return null;
+    }
+
+    pub fn turretFlashTicksAt(self: *const Runner, row: usize, lane: usize) u8 {
+        if (self.findTurretState(row, lane)) |state| return state.flash_ticks;
+        return 0;
     }
 
     fn gameplayCellAt(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) ?track.GameplayCellKind {
@@ -2695,6 +2727,32 @@ test "turret rows spawn enemy laser projectiles" {
 
     try std.testing.expect(runner.active_projectile_count > 0);
     try std.testing.expectEqual(Projectile.Kind.enemy_laser, runner.active_projectiles[0].kind);
+    try std.testing.expect(runner.active_turret_state_count > 0);
+    try std.testing.expect(runner.turretFlashTicksAt(turret.row, turret.lane) > 0);
+}
+
+test "multiple visible turrets keep independent controller state" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = 20.0;
+    runner.refreshSample(&fixture.preview);
+    runner.previous_row_position = runner.row_position;
+    runner.previous_lane_center = runner.lane_center;
+
+    runner.updateTurretFire(&fixture.preview, 0.5);
+    try std.testing.expect(runner.active_turret_state_count >= 2);
+    for (0..runner.active_turret_state_count) |index| {
+        try std.testing.expectEqual(@as(u8, 0), runner.active_turret_states[index].flash_ticks);
+    }
+
+    runner.updateTurretFire(&fixture.preview, 0.5);
+    var flashing_count: usize = 0;
+    for (0..runner.active_turret_state_count) |index| {
+        if (runner.active_turret_states[index].flash_ticks > 0) flashing_count += 1;
+    }
+    try std.testing.expect(flashing_count >= 2);
 }
 
 test "enemy laser projectile hits player and enters hazard death cutscene" {

@@ -233,7 +233,7 @@ Implemented now:
 - weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
-- `=` rows now act as visible lethal turret obstacles instead of invisible debug-only tiles
+- `=` rows now act as visible lethal turret obstacles with per-row fire state and short `BLASTERTOP-FIRE` flashes instead of invisible debug-only tiles or one shared timer
 - garbage collisions now apply the missing tutorial “Asteroids slow me down” behavior by shaving forward speed and kicking Turbo sideways instead of only incrementing damage/score
 - garbage collisions now also emit a first smoke aftermath layer instead of only the generic small explosion billboard
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
