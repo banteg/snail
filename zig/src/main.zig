@@ -59,6 +59,9 @@ const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_turbo_talk_model_path = "X/TURBO-TALK-000.X2";
+const gameplay_turbo_into_shell_model_path = "X/TURBO-INTOSHELL-000.X2";
+const tutorial_click_start_cutscene_phase_ticks: u32 = 120;
+const tutorial_click_start_cutscene_ticks: u32 = tutorial_click_start_cutscene_phase_ticks * 2;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
@@ -1300,6 +1303,7 @@ const AppState = struct {
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
+    gameplay_click_start_ticks: u32 = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?f32 = null,
@@ -1783,7 +1787,7 @@ const AppState = struct {
     fn syncGameplayTurboAnimation(self: *AppState) !void {
         if (self.game_phase != .level) return;
         if (!self.isTutorialGameplay()) return;
-        const desired_model_path = if (self.level_prompt_queue.active() != null)
+        const desired_model_path = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
             gameplay_turbo_talk_model_path
         else
             default_model_path;
@@ -2830,6 +2834,9 @@ const AppState = struct {
         }
 
         if (self.game_phase == .level) {
+            if (self.gameplay_click_start_active) {
+                self.gameplay_click_start_ticks +|= 1;
+            }
             try self.syncGameplayTurboAnimation();
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
@@ -3815,8 +3822,15 @@ const AppState = struct {
 
     fn isTutorialGameplay(self: *const AppState) bool {
         if (self.active_frontend_mode == .tutorial) return true;
+        if (self.level_runner) |runner| {
+            if (runner.session_mode == .tutorial) return true;
+        }
         const loaded_level = self.current_level orelse return false;
         return std.mem.eql(u8, loaded_level.name, "Snail Mail 101");
+    }
+
+    fn tutorialClickStartCutsceneActive(self: *const AppState) bool {
+        return self.gameplay_click_start_active and self.gameplay_click_start_ticks < tutorial_click_start_cutscene_ticks;
     }
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
@@ -3832,6 +3846,7 @@ const AppState = struct {
     fn activateGameplayClickStart(self: *AppState) !void {
         if (!self.gameplay_click_start_active) return;
         self.gameplay_click_start_active = false;
+        self.gameplay_click_start_ticks = 0;
         self.mouse_level_lane_target = null;
         self.pending_level_input = .{};
         if (self.audio_ready) {
@@ -4922,6 +4937,7 @@ const AppState = struct {
         self.stopVoicePlayback();
         self.level_runner = null;
         self.gameplay_click_start_active = false;
+        self.gameplay_click_start_ticks = 0;
         if (self.catalog.level_entries.len == 0) return;
 
         const entry = self.catalog.level_entries[self.level_index];
@@ -4953,6 +4969,7 @@ const AppState = struct {
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
                 self.gameplay_click_start_active = self.command == .game and self.isTutorialGameplay();
+                self.gameplay_click_start_ticks = 0;
             }
         }
         self.level_segment_index = 0;
@@ -6943,11 +6960,20 @@ fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_l
 }
 
 fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
-    const panel_local = rl.Rectangle{ .x = 220.0, .y = 196.0, .width = 200.0, .height = 34.0 };
-    const panel = layout.mapRect(panel_local.x, panel_local.y, panel_local.width, panel_local.height);
-    rl.drawRectangleRounded(panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-    rl.drawRectangleRoundedLinesEx(panel, 0.2, 8, layout.scaleFloat(1.5), .{ .r = 182, .g = 204, .b = 255, .a = 188 });
-    drawCenteredGameplayHudText(state, layout, 320.0, 201.0, "Click to Start", 28, .ray_white);
+    var idle_state = frontend_widget.TextButtonState{};
+    idle_state.snapFor(.menu_button, false);
+    frontend_widget.drawTextButton(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        .menu_button,
+        "Click to Start",
+        frontend_widget.type20TextRect(&state.ui_font, "Click to Start", 200.0, 0.0),
+        idle_state,
+        false,
+    );
 }
 
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
@@ -7020,6 +7046,7 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
         drawJetpackGaugeWidget(state, layout, runner);
     }
     if (state.gameplay_click_start_active) {
+        if (state.tutorialClickStartCutsceneActive()) return;
         drawTutorialClickStartPrompt(state, layout);
         return;
     }
@@ -7862,8 +7889,13 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
         debug_levels.drawLevelViewport(state);
         return;
     };
+    const startup_cutscene_active = state.tutorialClickStartCutsceneActive();
 
-    const camera = if (runner.acceptsGameplayInput())
+    const camera = if (startup_cutscene_active)
+        tutorialClickStartCamera(state, &loaded_track_preview, runner, state.gameplay_click_start_ticks)
+    else if (state.gameplay_click_start_active)
+        tutorialClickStartWaitCamera(state, &loaded_track_preview, runner)
+    else if (runner.acceptsGameplayInput())
         gameplayLevelCamera(&loaded_track_preview, runner)
     else if (runner.finished)
         completionCutsceneCamera(&loaded_track_preview, runner, runner.phaseProgress())
@@ -8129,6 +8161,53 @@ fn gameplayAnnotationWorldPosition(
     };
 }
 
+const TutorialClickStartFrame = struct {
+    position: rl.Vector3,
+    forward: rl.Vector3,
+    up: rl.Vector3,
+    right: rl.Vector3,
+};
+
+// Extracted from X/TURBOHOTSPOTS.X2, material CameraIntroTalk.tga. During the
+// tutorial startup cutscene the original camera/Turbo staging is authored
+// around this hotspot instead of the model bounds center.
+const tutorial_click_start_hotspot_local = rl.Vector3{
+    .x = 0.86145,
+    .y = -0.1559,
+    .z = 1.86435,
+};
+
+fn tutorialClickStartFrame(preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, y_offset: f32) TutorialClickStartFrame {
+    const position = runner.worldPosition(preview, y_offset);
+    const forward = normalizeVector3(runner.worldForward(preview));
+    const up = normalizeVector3(runner.worldUp(preview));
+    var right = crossVector3(up, forward);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    const corrected_up = normalizeVector3(crossVector3(forward, right));
+    return .{
+        .position = position,
+        .forward = forward,
+        .up = corrected_up,
+        .right = right,
+    };
+}
+
+fn tutorialClickStartHotspotWorld(frame: TutorialClickStartFrame) rl.Vector3 {
+    return offsetPosition(
+        frame.position,
+        frame.right,
+        frame.up,
+        frame.forward,
+        tutorial_click_start_hotspot_local.x,
+        tutorial_click_start_hotspot_local.y,
+        tutorial_click_start_hotspot_local.z,
+    );
+}
+
 fn drawGameplayBillboardTexture(
     texture: rl.Texture2D,
     position: rl.Vector3,
@@ -8383,36 +8462,15 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
 
 fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const model = state.activeGameplayTurbo() orelse return;
+    const startup_cutscene_active = state.tutorialClickStartCutsceneActive();
+    const pose = if (state.gameplay_click_start_active)
+        tutorialClickStartTurboPose(model, loaded_track_preview, runner)
+    else
+        gameplayTurboPose(model, loaded_track_preview, runner);
+    model.drawEx(pose.transform);
 
-    // PORT(partial): this is the first live gameplay Turbo draw. It now follows the
-    // runner's built attachment-aware world frame, but the exact model anchor and
-    // state-specific animation selection are still rough compared with the original.
-    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
-    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
-    const base_position = runner.worldPosition(loaded_track_preview, 0.82);
-    const position = rl.Vector3{
-        .x = base_position.x + (forward.x * 0.9),
-        .y = base_position.y + (forward.y * 0.9),
-        .z = base_position.z + (forward.z * 0.9),
-    };
-
-    var right = crossVector3(up, forward);
-    if (vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = normalizeVector3(right);
-    }
-    const corrected_up = normalizeVector3(crossVector3(forward, right));
-
-    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
-    const local_offset = rl.Matrix.translate(
-        -model.bounds.center.x,
-        -model.bounds.center.y,
-        -model.bounds.center.z,
-    );
-    model.drawEx(world_transform.multiply(local_offset));
-
-    drawGameplayTurboAttachments(state, position, right, corrected_up, forward, runner);
+    if (startup_cutscene_active) return;
+    drawGameplayTurboAttachments(state, pose.position, pose.right, pose.up, pose.forward, runner);
 }
 
 fn drawGameplayTurboAttachments(
@@ -8535,6 +8593,69 @@ fn drawGameplayUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matr
     }
 }
 
+const GameplayTurboPose = struct {
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    transform: rl.Matrix,
+};
+
+const gameplay_turbo_body_height: f32 = 0.02;
+const tutorial_click_start_body_height: f32 = 0.32;
+
+fn gameplayTurboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) GameplayTurboPose {
+    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
+    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
+    var right = crossVector3(up, forward);
+    if (vectorLength(right) <= 0.0001) {
+        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    } else {
+        right = normalizeVector3(right);
+    }
+    const corrected_up = normalizeVector3(crossVector3(forward, right));
+    const position = runner.worldPosition(loaded_track_preview, gameplay_turbo_body_height);
+    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
+    const local_offset = groundedCharacterModelOffset(model);
+    return .{
+        .position = position,
+        .right = right,
+        .up = corrected_up,
+        .forward = forward,
+        .transform = world_transform.multiply(local_offset),
+    };
+}
+
+fn tutorialClickStartTurboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) GameplayTurboPose {
+    const base_pose = gameplayTurboPose(model, loaded_track_preview, runner);
+    const position = runner.worldPosition(loaded_track_preview, tutorial_click_start_body_height);
+    const world_transform = modelTransformFromBasis(position, base_pose.right, base_pose.up, base_pose.forward);
+    const local_offset = centeredModelOffset(model);
+    return .{
+        .position = position,
+        .right = base_pose.right,
+        .up = base_pose.up,
+        .forward = base_pose.forward,
+        .transform = world_transform.multiply(local_offset),
+    };
+}
+
+fn groundedCharacterModelOffset(model: *const x2.Uploaded) rl.Matrix {
+    return rl.Matrix.translate(
+        -model.bounds.center.x,
+        -model.bounds.min.y,
+        -model.bounds.center.z,
+    );
+}
+
+fn centeredModelOffset(model: *const x2.Uploaded) rl.Matrix {
+    return rl.Matrix.translate(
+        -model.bounds.center.x,
+        -model.bounds.center.y,
+        -model.bounds.center.z,
+    );
+}
+
 fn offsetPosition(
     origin: rl.Vector3,
     right: rl.Vector3,
@@ -8570,6 +8691,14 @@ fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
         .x = (a.y * b.z) - (a.z * b.y),
         .y = (a.z * b.x) - (a.x * b.z),
         .z = (a.x * b.y) - (a.y * b.x),
+    };
+}
+
+fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
+    return .{
+        .x = std.math.lerp(a.x, b.x, t),
+        .y = std.math.lerp(a.y, b.y, t),
+        .z = std.math.lerp(a.z, b.z, t),
     };
 }
 
@@ -8621,11 +8750,7 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         runner.resolved_lane_index,
         runner.row_position,
     ) orelse 0.0;
-    const target = rl.Vector3{
-        .x = player_position.x + (player_forward.x * 8.0) + (player_up.x * 0.62),
-        .y = player_position.y + (player_forward.y * 8.0) + (player_up.y * 0.62),
-        .z = player_position.z + (player_forward.z * 8.0) + (player_up.z * 0.62),
-    };
+    const chase_target_position = runner.worldPosition(loaded_track_preview, 0.28);
     // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
     // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
     // The current port uses the built attachment/launch frame whenever the runner is riding
@@ -8633,17 +8758,29 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     const dynamic_attachment_camera =
         (runner.movement_mode == .attachment and runner.attachment_follow.active) or
         runner.launch.active;
-    const position = if (dynamic_attachment_camera)
+    const target = if (dynamic_attachment_camera)
         rl.Vector3{
-            .x = player_position.x - (player_forward.x * 2.2) + (player_up.x * 1.6),
-            .y = player_position.y - (player_forward.y * 2.2) + (player_up.y * 1.6),
-            .z = player_position.z - (player_forward.z * 2.2) + (player_up.z * 1.6),
+            .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
+            .y = player_position.y + (player_forward.y * 0.7) + (player_up.y * 0.18),
+            .z = player_position.z + (player_forward.z * 0.7) + (player_up.z * 0.18),
         }
     else
         rl.Vector3{
-            .x = player_position.x * 0.5,
-            .y = player_floor + 1.8,
-            .z = player_position.z - 0.5,
+            .x = chase_target_position.x + (player_forward.x * 1.45) + (player_up.x * 0.18),
+            .y = chase_target_position.y + (player_forward.y * 1.45) + (player_up.y * 0.18),
+            .z = chase_target_position.z + (player_forward.z * 1.45) + (player_up.z * 0.18),
+        };
+    const position = if (dynamic_attachment_camera)
+        rl.Vector3{
+            .x = player_position.x - (player_forward.x * 2.0) + (player_up.x * 1.35),
+            .y = player_position.y - (player_forward.y * 2.0) + (player_up.y * 1.35),
+            .z = player_position.z - (player_forward.z * 2.0) + (player_up.z * 1.35),
+        }
+    else
+        rl.Vector3{
+            .x = player_position.x * 0.4,
+            .y = player_floor + 1.35,
+            .z = player_position.z - 1.85,
         };
     const up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
 
@@ -8652,6 +8789,96 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         .target = target,
         .up = up,
         .fovy = 68.0,
+        .projection = .perspective,
+    };
+}
+
+fn tutorialClickStartWaitCamera(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) rl.Camera3D {
+    if (loaded_track_preview.total_rows == 0) {
+        return loaded_track_preview.previewCamera(0.0, 0);
+    }
+
+    const model = state.activeGameplayTurbo() orelse return gameplayLevelCamera(loaded_track_preview, runner);
+    const pose = tutorialClickStartTurboPose(model, loaded_track_preview, runner);
+    const target = offsetPosition(
+        pose.position,
+        pose.right,
+        pose.up,
+        pose.forward,
+        0.0,
+        0.14,
+        0.9,
+    );
+    const position = offsetPosition(
+        pose.position,
+        pose.right,
+        pose.up,
+        pose.forward,
+        0.0,
+        0.92,
+        -1.7,
+    );
+    return .{
+        .position = position,
+        .target = target,
+        .up = pose.up,
+        .fovy = 68.0,
+        .projection = .perspective,
+    };
+}
+
+fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, startup_ticks: u32) rl.Camera3D {
+    if (loaded_track_preview.total_rows == 0) {
+        return loaded_track_preview.previewCamera(0.0, 0);
+    }
+
+    const model = state.activeGameplayTurbo() orelse return gameplayLevelCamera(loaded_track_preview, runner);
+    const pose = tutorialClickStartTurboPose(model, loaded_track_preview, runner);
+    const frame: TutorialClickStartFrame = .{
+        .position = pose.position,
+        .forward = pose.forward,
+        .up = pose.up,
+        .right = pose.right,
+    };
+    const camera_hotspot_world = tutorialClickStartHotspotWorld(frame);
+    const body_position = offsetPosition(
+        pose.position,
+        pose.right,
+        pose.up,
+        pose.forward,
+        0.0,
+        0.18,
+        0.1,
+    );
+    if (startup_ticks < tutorial_click_start_cutscene_phase_ticks) {
+        return .{
+            .position = camera_hotspot_world,
+            .target = body_position,
+            .up = frame.up,
+            .fovy = 68.0,
+            .projection = .perspective,
+        };
+    }
+
+    const phase_ticks = startup_ticks - tutorial_click_start_cutscene_phase_ticks;
+    const phase = std.math.clamp(
+        @as(f32, @floatFromInt(phase_ticks)) / @as(f32, @floatFromInt(tutorial_click_start_cutscene_phase_ticks)),
+        0.0,
+        1.0,
+    );
+    const side_position = rl.Vector3{
+        .x = camera_hotspot_world.x + (std.math.sin(phase * std.math.pi) * 2.0),
+        .y = camera_hotspot_world.y,
+        .z = camera_hotspot_world.z,
+    };
+    const gameplay_camera = tutorialClickStartWaitCamera(state, loaded_track_preview, runner);
+    const blend = std.math.sin(phase * (std.math.pi * 0.5));
+
+    return .{
+        .position = lerpVector3(side_position, gameplay_camera.position, blend),
+        .target = body_position,
+        .up = normalizeVector3(lerpVector3(frame.up, gameplay_camera.up, blend)),
+        .fovy = std.math.lerp(68.0, gameplay_camera.fovy, blend),
         .projection = .perspective,
     };
 }
