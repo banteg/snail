@@ -6960,9 +6960,9 @@ fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_l
 }
 
 fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
-    var idle_state = frontend_widget.TextButtonState{};
-    idle_state.snapFor(.menu_button, false);
-    frontend_widget.drawTextButton(
+    var prompt_state = frontend_widget.TextButtonState{};
+    prompt_state.snapFor(.menu_button, true);
+    frontend_widget.drawTextButtonWithOptions(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
@@ -6971,8 +6971,11 @@ fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) v
         .menu_button,
         "Click to Start",
         frontend_widget.type20TextRect(&state.ui_font, "Click to Start", 200.0, 0.0),
-        idle_state,
+        prompt_state,
         false,
+        .{
+            .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background),
+        },
     );
 }
 
@@ -8846,7 +8849,7 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
 
     return .{
         .position = lerpVector3(side_position, gameplay_camera.position, blend),
-        .target = body_position,
+        .target = lerpVector3(body_position, gameplay_camera.target, blend),
         .up = normalizeVector3(lerpVector3(frame.up, gameplay_camera.up, blend)),
         .fovy = std.math.lerp(68.0, gameplay_camera.fovy, blend),
         .projection = .perspective,
