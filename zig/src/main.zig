@@ -64,11 +64,42 @@ const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
 const gameplay_salt_model_path = "X/SALT.X2";
 const gameplay_turret_model_path = "X/BLASTERTOP-BASE-000.X2";
 const gameplay_blaster_top_model_path = "X/BLASTERTOP-BASE-000.X2";
+const gameplay_blaster_top_draw_model_paths = [_][]const u8{
+    "X/BLASTERTOP-DRAW-000.X2",
+    "X/BLASTERTOP-DRAW-001.X2",
+    "X/BLASTERTOP-DRAW-002.X2",
+    "X/BLASTERTOP-DRAW-003.X2",
+    "X/BLASTERTOP-DRAW-004.X2",
+    "X/BLASTERTOP-DRAW-005.X2",
+};
+const gameplay_blaster_top_fire_model_path = "X/BLASTERTOP-FIRE-000.X2";
 const gameplay_laser_left_model_path = "X/LASERLEFT-BASE-000.X2";
+const gameplay_laser_left_draw_model_paths = [_][]const u8{
+    "X/LASERLEFT-DRAW-000.X2",
+    "X/LASERLEFT-DRAW-001.X2",
+    "X/LASERLEFT-DRAW-002.X2",
+    "X/LASERLEFT-DRAW-003.X2",
+};
 const gameplay_laser_right_model_path = "X/LASERRIGHT-BASE-000.X2";
+const gameplay_laser_right_draw_model_paths = [_][]const u8{
+    "X/LASERRIGHT-DRAW-000.X2",
+    "X/LASERRIGHT-DRAW-001.X2",
+    "X/LASERRIGHT-DRAW-002.X2",
+    "X/LASERRIGHT-DRAW-003.X2",
+};
 const gameplay_rocket_launcher_model_path = "X/ROCKETLAUNCHER-BASE-000.X2";
+const gameplay_rocket_launcher_draw_model_paths = [_][]const u8{
+    "X/ROCKETLAUNCHER-DRAW-000.X2",
+    "X/ROCKETLAUNCHER-DRAW-001.X2",
+    "X/ROCKETLAUNCHER-DRAW-002.X2",
+};
 const gameplay_rocket_model_path = "X/ROCKET-BASE-000.X2";
-const gameplay_invincible_model_path = "X/INVINCIBLE-BASE-000.X2";
+const gameplay_invincible_model_paths = [_][]const u8{
+    "X/INVINCIBLE-BASE-000.X2",
+    "X/INVINCIBLE-BASE-001.X2",
+    "X/INVINCIBLE-BASE-002.X2",
+    "X/INVINCIBLE-BASE-003.X2",
+};
 const gameplay_slug_sprite_paths = [_][]const u8{
     "SPRITES/SLUG000.TGA",
     "SPRITES/SLUG001.TGA",
@@ -349,6 +380,101 @@ const GameplaySoundFx = struct {
 };
 
 const max_active_gameplay_effects = 64;
+const max_gameplay_mount_draw_frames = 6;
+
+const GameplayWeaponModelSet = struct {
+    base: ?x2.Uploaded = null,
+    draw_frames: [max_gameplay_mount_draw_frames]?x2.Uploaded = [_]?x2.Uploaded{null} ** max_gameplay_mount_draw_frames,
+    draw_frame_count: u8 = 0,
+    fire: ?x2.Uploaded = null,
+
+    fn unload(self: *GameplayWeaponModelSet) void {
+        if (self.base) |*model| {
+            model.deinit();
+            self.base = null;
+        }
+        for (&self.draw_frames) |*model| {
+            if (model.*) |*loaded| {
+                loaded.deinit();
+                model.* = null;
+            }
+        }
+        if (self.fire) |*model| {
+            model.deinit();
+            self.fire = null;
+        }
+        self.draw_frame_count = 0;
+    }
+
+    fn currentModel(self: *const GameplayWeaponModelSet, draw_ticks: u8, fire_ticks: u8) ?*const x2.Uploaded {
+        if (fire_ticks > 0) {
+            if (self.fire) |*model| return model;
+        }
+        if (draw_ticks > 0 and self.draw_frame_count > 0) {
+            const capped_ticks = @min(draw_ticks, self.draw_frame_count);
+            const frame_index = self.draw_frame_count - capped_ticks;
+            if (self.draw_frames[frame_index]) |*model| return model;
+        }
+        if (self.base) |*model| return model;
+        return null;
+    }
+};
+
+const GameplayInvincibleModelSet = struct {
+    frames: [gameplay_invincible_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_invincible_model_paths.len,
+
+    fn unload(self: *GameplayInvincibleModelSet) void {
+        for (&self.frames) |*model| {
+            if (model.*) |*loaded| {
+                loaded.deinit();
+                model.* = null;
+            }
+        }
+    }
+
+    fn currentModel(self: *const GameplayInvincibleModelSet, render_time_seconds: f64) ?*const x2.Uploaded {
+        const frame_count = comptime gameplay_invincible_model_paths.len;
+        const frame_index: usize = @intFromFloat(@mod(@floor(render_time_seconds * 10.0), @as(f64, @floatFromInt(frame_count))));
+        if (self.frames[frame_index]) |*model| return model;
+        if (self.frames[0]) |*model| return model;
+        return null;
+    }
+};
+
+const GameplayWeaponVisualState = struct {
+    top_draw_ticks: u8 = 0,
+    side_draw_ticks: u8 = 0,
+    rocket_draw_ticks: u8 = 0,
+    top_fire_ticks: u8 = 0,
+
+    fn tick(self: *GameplayWeaponVisualState) void {
+        if (self.top_draw_ticks > 0) self.top_draw_ticks -= 1;
+        if (self.side_draw_ticks > 0) self.side_draw_ticks -= 1;
+        if (self.rocket_draw_ticks > 0) self.rocket_draw_ticks -= 1;
+        if (self.top_fire_ticks > 0) self.top_fire_ticks -= 1;
+    }
+
+    fn noteWeaponLevelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
+        if (previous == current) return;
+        switch (current) {
+            0 => self.top_draw_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
+            1 => self.side_draw_ticks = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
+            else => self.rocket_draw_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+        }
+    }
+
+    fn noteFire(self: *GameplayWeaponVisualState, weapon_level: u8) void {
+        switch (weapon_level) {
+            0 => self.top_fire_ticks = 3,
+            1 => {
+                if (self.side_draw_ticks == 0) self.side_draw_ticks = 1;
+            },
+            else => {
+                if (self.rocket_draw_ticks == 0) self.rocket_draw_ticks = 1;
+            },
+        }
+    }
+};
 
 const GameplayEffectKind = enum {
     explode_big,
@@ -361,6 +487,7 @@ const GameplayEffect = struct {
     active: bool = false,
     kind: GameplayEffectKind = .explode_small,
     position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     width: f32 = 0.8,
     height: f32 = 0.8,
     tint: rl.Color = .white,
@@ -1168,12 +1295,13 @@ const AppState = struct {
     current_gameplay_vapour_lazer_object: ?object.LoadedObject = null,
     current_gameplay_salt_model: ?x2.Uploaded = null,
     current_gameplay_turret_model: ?x2.Uploaded = null,
-    current_gameplay_blaster_top_model: ?x2.Uploaded = null,
-    current_gameplay_laser_left_model: ?x2.Uploaded = null,
-    current_gameplay_laser_right_model: ?x2.Uploaded = null,
-    current_gameplay_rocket_launcher_model: ?x2.Uploaded = null,
+    current_gameplay_blaster_top_models: GameplayWeaponModelSet = .{},
+    current_gameplay_laser_left_models: GameplayWeaponModelSet = .{},
+    current_gameplay_laser_right_models: GameplayWeaponModelSet = .{},
+    current_gameplay_rocket_launcher_models: GameplayWeaponModelSet = .{},
     current_gameplay_rocket_model: ?x2.Uploaded = null,
-    current_gameplay_invincible_model: ?x2.Uploaded = null,
+    current_gameplay_invincible_models: GameplayInvincibleModelSet = .{},
+    gameplay_weapon_visual_state: GameplayWeaponVisualState = .{},
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_gameplay_sound_fx: GameplaySoundFx = .{},
     active_gameplay_effects: [max_active_gameplay_effects]GameplayEffect = [_]GameplayEffect{.{}} ** max_active_gameplay_effects,
@@ -1532,30 +1660,16 @@ const AppState = struct {
             model.deinit();
             self.current_gameplay_turret_model = null;
         }
-        if (self.current_gameplay_blaster_top_model) |*model| {
-            model.deinit();
-            self.current_gameplay_blaster_top_model = null;
-        }
-        if (self.current_gameplay_laser_left_model) |*model| {
-            model.deinit();
-            self.current_gameplay_laser_left_model = null;
-        }
-        if (self.current_gameplay_laser_right_model) |*model| {
-            model.deinit();
-            self.current_gameplay_laser_right_model = null;
-        }
-        if (self.current_gameplay_rocket_launcher_model) |*model| {
-            model.deinit();
-            self.current_gameplay_rocket_launcher_model = null;
-        }
+        self.current_gameplay_blaster_top_models.unload();
+        self.current_gameplay_laser_left_models.unload();
+        self.current_gameplay_laser_right_models.unload();
+        self.current_gameplay_rocket_launcher_models.unload();
         if (self.current_gameplay_rocket_model) |*model| {
             model.deinit();
             self.current_gameplay_rocket_model = null;
         }
-        if (self.current_gameplay_invincible_model) |*model| {
-            model.deinit();
-            self.current_gameplay_invincible_model = null;
-        }
+        self.current_gameplay_invincible_models.unload();
+        self.gameplay_weapon_visual_state = .{};
     }
 
     fn unloadGameplaySprites(self: *AppState) void {
@@ -1642,6 +1756,44 @@ const AppState = struct {
         );
     }
 
+    fn loadGameplayWeaponModelSet(
+        self: *AppState,
+        set: *GameplayWeaponModelSet,
+        base_path: []const u8,
+        draw_paths: []const []const u8,
+        fire_path: ?[]const u8,
+    ) !void {
+        if (self.catalog.findModelIndex(base_path)) |entry_index| {
+            set.base = try x2.Uploaded.loadFromArchive(
+                self.allocator,
+                &self.catalog,
+                self.catalog.model_entries[entry_index],
+                true,
+            );
+        }
+        set.draw_frame_count = @intCast(draw_paths.len);
+        for (draw_paths, 0..) |path, index| {
+            if (self.catalog.findModelIndex(path)) |entry_index| {
+                set.draw_frames[index] = try x2.Uploaded.loadFromArchive(
+                    self.allocator,
+                    &self.catalog,
+                    self.catalog.model_entries[entry_index],
+                    true,
+                );
+            }
+        }
+        if (fire_path) |path| {
+            if (self.catalog.findModelIndex(path)) |entry_index| {
+                set.fire = try x2.Uploaded.loadFromArchive(
+                    self.allocator,
+                    &self.catalog,
+                    self.catalog.model_entries[entry_index],
+                    true,
+                );
+            }
+        }
+    }
+
     fn reloadGameplayActorModels(self: *AppState) !void {
         self.unloadGameplayActorModels();
 
@@ -1653,38 +1805,30 @@ const AppState = struct {
             true,
         );
 
-        if (self.catalog.findModelIndex(gameplay_blaster_top_model_path)) |entry_index| {
-            self.current_gameplay_blaster_top_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
-                true,
-            );
-        }
-        if (self.catalog.findModelIndex(gameplay_laser_left_model_path)) |entry_index| {
-            self.current_gameplay_laser_left_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
-                true,
-            );
-        }
-        if (self.catalog.findModelIndex(gameplay_laser_right_model_path)) |entry_index| {
-            self.current_gameplay_laser_right_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
-                true,
-            );
-        }
-        if (self.catalog.findModelIndex(gameplay_rocket_launcher_model_path)) |entry_index| {
-            self.current_gameplay_rocket_launcher_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
-                true,
-            );
-        }
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_blaster_top_models,
+            gameplay_blaster_top_model_path,
+            &gameplay_blaster_top_draw_model_paths,
+            gameplay_blaster_top_fire_model_path,
+        );
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_laser_left_models,
+            gameplay_laser_left_model_path,
+            &gameplay_laser_left_draw_model_paths,
+            null,
+        );
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_laser_right_models,
+            gameplay_laser_right_model_path,
+            &gameplay_laser_right_draw_model_paths,
+            null,
+        );
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_rocket_launcher_models,
+            gameplay_rocket_launcher_model_path,
+            &gameplay_rocket_launcher_draw_model_paths,
+            null,
+        );
         if (self.catalog.findModelIndex(gameplay_rocket_model_path)) |entry_index| {
             self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
@@ -1693,13 +1837,15 @@ const AppState = struct {
                 true,
             );
         }
-        if (self.catalog.findModelIndex(gameplay_invincible_model_path)) |entry_index| {
-            self.current_gameplay_invincible_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
-                true,
-            );
+        for (gameplay_invincible_model_paths, 0..) |path, index| {
+            if (self.catalog.findModelIndex(path)) |entry_index| {
+                self.current_gameplay_invincible_models.frames[index] = try x2.Uploaded.loadFromArchive(
+                    self.allocator,
+                    &self.catalog,
+                    self.catalog.model_entries[entry_index],
+                    true,
+                );
+            }
         }
     }
 
@@ -2599,6 +2745,7 @@ const AppState = struct {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
                     runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                    self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                     self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
                     self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                 }
@@ -2683,11 +2830,24 @@ const AppState = struct {
         }
     }
 
+    fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
+        self.gameplay_weapon_visual_state.tick();
+        self.gameplay_weapon_visual_state.noteWeaponLevelChange(previous.weapon_level, current.weapon_level);
+        if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
+            self.gameplay_weapon_visual_state.noteFire(current.weapon_level);
+        }
+    }
+
     fn updateGameplayEffects(self: *AppState) void {
         var write_index: usize = 0;
         for (0..self.active_gameplay_effect_count) |read_index| {
             var effect = self.active_gameplay_effects[read_index];
             if (!effect.active or effect.ticks_remaining == 0) continue;
+            effect.position = .{
+                .x = effect.position.x + effect.velocity.x,
+                .y = effect.position.y + effect.velocity.y,
+                .z = effect.position.z + effect.velocity.z,
+            };
             effect.ticks_remaining -= 1;
             if (effect.ticks_remaining == 0) continue;
             self.active_gameplay_effects[write_index] = effect;
@@ -2708,11 +2868,25 @@ const AppState = struct {
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
+        self.spawnGameplayEffectWithVelocity(kind, position, .{ .x = 0.0, .y = 0.0, .z = 0.0 }, width, height, ticks_remaining, tint);
+    }
+
+    fn spawnGameplayEffectWithVelocity(
+        self: *AppState,
+        kind: GameplayEffectKind,
+        position: rl.Vector3,
+        velocity: rl.Vector3,
+        width: f32,
+        height: f32,
+        ticks_remaining: u16,
+        tint: rl.Color,
+    ) void {
         if (self.active_gameplay_effect_count >= max_active_gameplay_effects) return;
         self.active_gameplay_effects[self.active_gameplay_effect_count] = .{
             .active = true,
             .kind = kind,
             .position = position,
+            .velocity = velocity,
             .width = width,
             .height = height,
             .tint = tint,
@@ -2727,6 +2901,7 @@ const AppState = struct {
         current: gameplay.Runner,
         preview: *const track.LoadedLevelPreview,
     ) void {
+        const forward = current.worldForward(preview);
         if (current.counters.ring_explode > previous.counters.ring_explode) {
             self.spawnGameplayEffect(
                 .explode_big,
@@ -2749,29 +2924,59 @@ const AppState = struct {
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
             const smoke_origin = current.worldPosition(preview, 0.34);
-            self.spawnGameplayEffect(
+            self.spawnGameplayEffectWithVelocity(
                 .smoke,
                 .{
                     .x = smoke_origin.x - 0.18,
                     .y = smoke_origin.y + 0.22,
                     .z = smoke_origin.z,
                 },
+                .{
+                    .x = forward.x * 0.02,
+                    .y = 0.012,
+                    .z = forward.z * 0.02,
+                },
                 0.56,
                 0.56,
                 22,
                 .{ .r = 255, .g = 255, .b = 255, .a = 208 },
             );
-            self.spawnGameplayEffect(
+            self.spawnGameplayEffectWithVelocity(
                 .smoke,
                 .{
                     .x = smoke_origin.x + 0.14,
                     .y = smoke_origin.y + 0.36,
                     .z = smoke_origin.z - 0.08,
                 },
+                .{
+                    .x = forward.x * 0.014,
+                    .y = 0.018,
+                    .z = (forward.z * 0.014) - 0.004,
+                },
                 0.72,
                 0.72,
                 28,
                 .{ .r = 255, .g = 255, .b = 255, .a = 176 },
+            );
+        }
+        if (current.counters.salt_hits > previous.counters.salt_hits) {
+            const smoke_origin = current.worldPosition(preview, 0.52);
+            self.spawnGameplayEffectWithVelocity(
+                .smoke,
+                .{
+                    .x = smoke_origin.x,
+                    .y = smoke_origin.y + 0.6,
+                    .z = smoke_origin.z,
+                },
+                .{
+                    .x = 0.0,
+                    .y = 0.02,
+                    .z = forward.z * 0.01,
+                },
+                0.68,
+                0.82,
+                24,
+                .{ .r = 255, .g = 255, .b = 255, .a = 192 },
             );
         }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
@@ -7694,9 +7899,12 @@ fn drawGameplayTurboAttachments(
 ) void {
     switch (runner.weapon_level) {
         0 => {
-            if (state.current_gameplay_blaster_top_model) |model| {
+            if (state.current_gameplay_blaster_top_models.currentModel(
+                state.gameplay_weapon_visual_state.top_draw_ticks,
+                state.gameplay_weapon_visual_state.top_fire_ticks,
+            )) |model| {
                 drawGameplayUploadedModel(
-                    model,
+                    model.*,
                     offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
                     right,
                     up,
@@ -7707,9 +7915,12 @@ fn drawGameplayTurboAttachments(
             }
         },
         1 => {
-            if (state.current_gameplay_laser_left_model) |model| {
+            if (state.current_gameplay_laser_left_models.currentModel(
+                state.gameplay_weapon_visual_state.side_draw_ticks,
+                0,
+            )) |model| {
                 drawGameplayUploadedModel(
-                    model,
+                    model.*,
                     offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
                     right,
                     up,
@@ -7718,9 +7929,12 @@ fn drawGameplayTurboAttachments(
                     null,
                 );
             }
-            if (state.current_gameplay_laser_right_model) |model| {
+            if (state.current_gameplay_laser_right_models.currentModel(
+                state.gameplay_weapon_visual_state.side_draw_ticks,
+                0,
+            )) |model| {
                 drawGameplayUploadedModel(
-                    model,
+                    model.*,
                     offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
                     right,
                     up,
@@ -7731,9 +7945,12 @@ fn drawGameplayTurboAttachments(
             }
         },
         else => {
-            if (state.current_gameplay_rocket_launcher_model) |model| {
+            if (state.current_gameplay_rocket_launcher_models.currentModel(
+                state.gameplay_weapon_visual_state.rocket_draw_ticks,
+                0,
+            )) |model| {
                 drawGameplayUploadedModel(
-                    model,
+                    model.*,
                     offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
                     right,
                     up,
@@ -7746,9 +7963,9 @@ fn drawGameplayTurboAttachments(
     }
 
     if (runner.invincible_ticks > 0) {
-        if (state.current_gameplay_invincible_model) |model| {
+        if (state.current_gameplay_invincible_models.currentModel(state.render_time_seconds)) |model| {
             drawGameplayUploadedModel(
-                model,
+                model.*,
                 offsetPosition(position, right, up, forward, 0.0, 0.02, 0.0),
                 right,
                 up,
