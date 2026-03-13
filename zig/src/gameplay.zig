@@ -89,6 +89,8 @@ pub const RuntimeHazard = struct {
     row: usize,
     lane: usize,
     kind: RuntimeHazardKind,
+    presentation_scale: f32 = 1.0,
+    presentation_phase: f32 = 0.0,
 };
 
 const TurretState = struct {
@@ -427,6 +429,8 @@ pub const Runner = struct {
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
+    recent_score_award: u32 = 0,
+    recent_score_award_ticks: u8 = 0,
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
@@ -983,9 +987,6 @@ pub const Runner = struct {
                 .parcel => |parcel| {
                     self.counters.parcels += 1;
                     self.recordScore(&self.score.parcel_pickup, 100);
-                    // PORT(partial): until parcel-flight objects and `RegisterParcel` timing are ported,
-                    // the current runner collapses parcel pickup and parcel registration onto the same row event.
-                    self.recordScore(&self.score.parcel_register, 100);
                     self.maybeRecordCompletionBonus();
                     self.recent_event = .{ .parcel = parcel.id };
                 },
@@ -1040,7 +1041,6 @@ pub const Runner = struct {
             },
             .health => {
                 self.counters.health_pickups += 1;
-                self.recordScore(&self.score.health_collect, 250);
                 self.applyDamageGaugeDelta(health_recover_delta);
                 self.recent_event = .health_pickup;
             },
@@ -1125,8 +1125,10 @@ pub const Runner = struct {
                 self.slow_ticks = slow_ring_duration_ticks;
             },
         }
-        if (ring_kind != .none) {
+        if (ring_kind == .normal or ring_kind == .powerup or ring_kind == .explode) {
             self.recordScore(&self.score.ring_collect, 100);
+        }
+        if (ring_kind != .none) {
             self.recent_event = .{ .ring = ring_kind };
         }
     }
@@ -1141,6 +1143,8 @@ pub const Runner = struct {
         const previous_total = self.score.total;
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
         self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
+        self.recent_score_award = points;
+        self.recent_score_award_ticks = 45;
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
     }
 
@@ -1232,6 +1236,7 @@ pub const Runner = struct {
         if (self.slow_ticks > 0) self.slow_ticks -= 1;
         if (self.invincible_ticks > 0) self.invincible_ticks -= 1;
         if (self.shot_cooldown_ticks > 0) self.shot_cooldown_ticks -= 1;
+        if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
     }
 
     fn recordPowerupRing(self: *Runner) void {
@@ -1474,7 +1479,7 @@ pub const Runner = struct {
         return if (preview.gameplayCellSampleAt(global_row, lane_index)) |sample| sample.kind else null;
     }
 
-    fn isSlugDefeated(self: *const Runner, global_row: usize, lane_index: usize) bool {
+    pub fn isSlugDefeated(self: *const Runner, global_row: usize, lane_index: usize) bool {
         for (0..self.defeated_slug_cell_count) |index| {
             const defeated = self.defeated_slug_cells[index];
             if (defeated.row == global_row and defeated.lane == lane_index) return true;
@@ -1552,8 +1557,34 @@ pub const Runner = struct {
             .row = row,
             .lane = lane,
             .kind = kind,
+            .presentation_scale = runtimeHazardPresentationScale(row, lane, kind),
+            .presentation_phase = runtimeHazardPresentationPhase(row, lane, kind),
         };
         self.active_runtime_hazard_count += 1;
+    }
+
+    fn runtimeHazardPresentationScale(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
+        const seed = runtimeHazardSeed(row, lane, kind);
+        const normalized = @as(f32, @floatFromInt(@as(u16, @truncate(seed >> 16)))) / 65535.0;
+        return switch (kind) {
+            // Android `cRSubGame::AddGarbage` scales garbage with `(RAND(0.4) + 1.0) * 0.6`.
+            .garbage => (1.0 + normalized * 0.4) * 0.6,
+            .salt => 1.0,
+        };
+    }
+
+    fn runtimeHazardPresentationPhase(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
+        const seed = runtimeHazardSeed(row, lane, kind);
+        const normalized = @as(f32, @floatFromInt(@as(u16, @truncate(seed)))) / 65535.0;
+        return normalized * std.math.tau;
+    }
+
+    fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
+        var seed: u64 = 0x517cc1b727220a95;
+        seed ^= @as(u64, @intCast(row + 1)) *% 0x9e3779b97f4a7c15;
+        seed ^= @as(u64, @intCast(lane + 3)) *% 0xbf58476d1ce4e5b9;
+        seed ^= (@as(u64, @intFromEnum(kind)) + 1) *% 0x94d049bb133111eb;
+        return seed;
     }
 
     fn hasRuntimeHazard(self: *const Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
@@ -2308,7 +2339,7 @@ const TestFixture = struct {
     }
 };
 
-const RowTarget = struct {
+pub const RowTarget = struct {
     row: usize,
     lane: usize,
 };
@@ -2542,8 +2573,8 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, health);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
-    try std.testing.expectEqual(@as(u32, 250), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 250), runner.score.health_collect);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.health_collect);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
 
@@ -2623,6 +2654,8 @@ test "slow rings reduce effective speed while active" {
 
     runner.recordRing(&fixture.preview, .slow);
     try std.testing.expectEqual(slow_ring_duration_ticks, runner.slow_ticks);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.ring_collect);
     try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
 
     runner.stepTemporaryStates();
@@ -2806,6 +2839,20 @@ test "enemy laser projectile hits player and enters hazard death cutscene" {
     try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 }
 
+test "runtime hazards preserve recovered presentation scalars" {
+    var runner = Runner{};
+    runner.addRuntimeHazard(32, 4, .garbage);
+    runner.addRuntimeHazard(48, 1, .salt);
+
+    try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeHazards().len);
+    const garbage = runner.activeRuntimeHazards()[0];
+    const salt = runner.activeRuntimeHazards()[1];
+
+    try std.testing.expect(garbage.presentation_scale >= 0.6);
+    try std.testing.expect(garbage.presentation_scale <= 0.84);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), salt.presentation_scale, 0.0001);
+}
+
 test "invincible slug contact defeats slug instead of entering death" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -2855,15 +2902,15 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     const parcel = findFirstAnnotationTag(&arcade_fixture.preview, .parcel).?;
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     runner.step(&arcade_fixture.preview, .{}, step_seconds);
-    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
 
     runner = Runner.init(&arcade_fixture.preview);
     runner.configureCompletionBonus(1, true);
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     runner.step(&arcade_fixture.preview, .{}, step_seconds);
-    try std.testing.expectEqual(@as(u32, 300), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.completion_bonus);
 }
 
@@ -3460,4 +3507,17 @@ test "runner records trampoline rows from shipped levels" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.trampoline_rows);
     try std.testing.expectEqualStrings("trampoline", runner.recentEventLabel());
     try std.testing.expectEqualStrings("trampoline", runner.gameplayCellLabel().?);
+}
+
+test "score awards update transient tutorial hud state" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.recordScore(&runner.score.ring_collect, 100);
+    try std.testing.expectEqual(@as(u32, 100), runner.recent_score_award);
+    try std.testing.expectEqual(@as(u8, 45), runner.recent_score_award_ticks);
+
+    runner.stepTemporaryStates();
+    try std.testing.expectEqual(@as(u8, 44), runner.recent_score_award_ticks);
 }

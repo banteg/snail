@@ -155,9 +155,26 @@ const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
 const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
 const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
 const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
+const gameplay_enemy_fire_sound_path = "SFX2/ENEMYFIRE.OGG";
 const gameplay_asteroid_impact_sound_paths = [_][]const u8{
     "SFX2/ASTEROIDIMPACT1.OGG",
     "SFX2/ASTEROIDIMPACT2.OGG",
+};
+const gameplay_wall_hit_sound_path = "SFX2/WALLHIT.OGG";
+const gameplay_slug_hit_voice_paths = [_][]const u8{
+    "VOICE/SLUG-HIT1.OGG",
+    "VOICE/SLUG-HIT2.OGG",
+    "VOICE/SLUG-HIT3.OGG",
+};
+const gameplay_slug_ambient_voice_paths = [_][]const u8{
+    "VOICE/BACKOFFSLUGS.OGG",
+    "VOICE/SLUG-SNAILALERT.OGG",
+    "VOICE/SLUG-HESTOOFAST.OGG",
+    "VOICE/SLUG-GOTHIM.OGG",
+};
+const gameplay_slug_death_voice_paths = [_][]const u8{
+    "VOICE/SLUG-DEATH1.OGG",
+    "VOICE/SLUG-DEATH2.OGG",
 };
 const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
 const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
@@ -409,7 +426,9 @@ const GameplaySoundFx = struct {
     slow_ring: ?assets.LoadedSound = null,
     invincible: ?assets.LoadedSound = null,
     explode_ring: ?assets.LoadedSound = null,
+    enemy_fire: ?assets.LoadedSound = null,
     asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
+    wall_hit: ?assets.LoadedSound = null,
     postal_warning: ?assets.LoadedSound = null,
 
     fn unload(self: *GameplaySoundFx) void {
@@ -462,13 +481,18 @@ const GameplayWeaponModelSet = struct {
         self.draw_frame_count = 0;
     }
 
-    fn currentModel(self: *const GameplayWeaponModelSet, draw_ticks: u8, fire_ticks: u8) ?*const x2.Uploaded {
+    fn currentModel(self: *const GameplayWeaponModelSet, draw_ticks: u8, fire_ticks: u8, hide_ticks: u8) ?*const x2.Uploaded {
         if (fire_ticks > 0) {
             if (self.fire) |*model| return model;
         }
         if (draw_ticks > 0 and self.draw_frame_count > 0) {
             const capped_ticks = @min(draw_ticks, self.draw_frame_count);
             const frame_index = self.draw_frame_count - capped_ticks;
+            if (self.draw_frames[frame_index]) |*model| return model;
+        }
+        if (hide_ticks > 0 and self.draw_frame_count > 0) {
+            const capped_ticks = @min(hide_ticks, self.draw_frame_count);
+            const frame_index = capped_ticks - 1;
             if (self.draw_frames[frame_index]) |*model| return model;
         }
         if (self.base) |*model| return model;
@@ -499,19 +523,30 @@ const GameplayInvincibleModelSet = struct {
 
 const GameplayWeaponVisualState = struct {
     top_draw_ticks: u8 = 0,
+    top_hide_ticks: u8 = 0,
     side_draw_ticks: u8 = 0,
+    side_hide_ticks: u8 = 0,
     rocket_draw_ticks: u8 = 0,
+    rocket_hide_ticks: u8 = 0,
     top_fire_ticks: u8 = 0,
 
     fn tick(self: *GameplayWeaponVisualState) void {
         if (self.top_draw_ticks > 0) self.top_draw_ticks -= 1;
+        if (self.top_hide_ticks > 0) self.top_hide_ticks -= 1;
         if (self.side_draw_ticks > 0) self.side_draw_ticks -= 1;
+        if (self.side_hide_ticks > 0) self.side_hide_ticks -= 1;
         if (self.rocket_draw_ticks > 0) self.rocket_draw_ticks -= 1;
+        if (self.rocket_hide_ticks > 0) self.rocket_hide_ticks -= 1;
         if (self.top_fire_ticks > 0) self.top_fire_ticks -= 1;
     }
 
     fn noteWeaponLevelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
         if (previous == current) return;
+        switch (previous) {
+            0 => self.top_hide_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
+            1 => self.side_hide_ticks = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
+            else => self.rocket_hide_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+        }
         switch (current) {
             0 => self.top_draw_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
             1 => self.side_draw_ticks = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
@@ -538,6 +573,32 @@ const GameplayEffectKind = enum {
     slug_goo,
     smoke,
 };
+
+const GameplayVoiceManager = struct {
+    active: bool = false,
+    progress: f32 = 0.0,
+    delta: f32 = 1.0 / 60.0,
+
+    fn tick(self: *GameplayVoiceManager) void {
+        if (!self.active or self.progress <= 0.0) return;
+        self.progress += self.delta;
+        if (self.progress > 1.0) {
+            self.active = false;
+            self.progress = 0.0;
+        }
+    }
+
+    fn arm(self: *GameplayVoiceManager) void {
+        self.active = true;
+        self.progress = self.delta;
+    }
+
+    fn clear(self: *GameplayVoiceManager) void {
+        self.* = .{};
+    }
+};
+
+const max_announced_slug_voice_cells: usize = 64;
 
 const GameplayEffect = struct {
     active: bool = false,
@@ -708,9 +769,11 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
     sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
     sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
+    sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_enemy_fire_sound_path);
     for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
         sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
     }
+    sound_fx.wall_hit = try catalog.loadSoundByPath(allocator, gameplay_wall_hit_sound_path);
     sound_fx.postal_warning = try catalog.loadSoundByPath(allocator, gameplay_postal_warning_sound_path);
 
     return sound_fx;
@@ -1304,6 +1367,10 @@ const AppState = struct {
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
     gameplay_click_start_ticks: u32 = 0,
+    tutorial_reference_score: u32 = 0,
+    gameplay_voice_manager: GameplayVoiceManager = .{},
+    announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
+    announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?f32 = null,
@@ -2797,10 +2864,14 @@ const AppState = struct {
                 self.game_status_message = null;
             }
         }
+        self.gameplay_voice_manager.tick();
         if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
             if (self.level_runner) |runner| {
                 if (!runner.paused and !self.gameplay_click_start_active) {
                     self.level_prompt_queue.tick();
+                }
+                if (self.isTutorialGameplay() and runner.score.total > self.tutorial_reference_score) {
+                    self.tutorial_reference_score = runner.score.total;
                 }
             }
         }
@@ -2845,6 +2916,7 @@ const AppState = struct {
                         runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                         self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
+                        self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     }
                 }
@@ -2905,10 +2977,7 @@ const AppState = struct {
             self.playGameplayEffect(fired_sound);
         }
         if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
-            self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_laser_sound_paths.len,
-                self.current_gameplay_sound_fx.laser,
-            ));
+            self.playGameplayEffect(self.current_gameplay_sound_fx.enemy_fire);
         }
         if (current.weapon_level != previous.weapon_level) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
@@ -2940,11 +3009,24 @@ const AppState = struct {
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
         }
+        if (current.counters.turret_hits > previous.counters.turret_hits) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.wall_hit);
+        }
+        if (current.counters.slug_hits > previous.counters.slug_hits) {
+            self.tryPlayGameplayVoiceVariant(
+                gameplay_slug_hit_voice_paths.len,
+                gameplay_slug_hit_voice_paths,
+            ) catch {};
+        }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
             self.playGameplayEffect(self.pickGameplaySoundVariant(
                 gameplay_asteroid_impact_sound_paths.len,
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
+            self.tryPlayGameplayVoiceVariant(
+                gameplay_slug_death_voice_paths.len,
+                gameplay_slug_death_voice_paths,
+            ) catch {};
         }
     }
 
@@ -3825,12 +3907,21 @@ const AppState = struct {
     }
 
     fn isTutorialGameplay(self: *const AppState) bool {
+        if (self.isTutorialFlow()) return true;
+        return self.isTutorialLevel();
+    }
+
+    fn isTutorialFlow(self: *const AppState) bool {
         if (self.active_frontend_mode == .tutorial) return true;
         if (self.level_runner) |runner| {
             if (runner.session_mode == .tutorial) return true;
         }
+        return false;
+    }
+
+    fn isTutorialLevel(self: *const AppState) bool {
         const loaded_level = self.current_level orelse return false;
-        return std.mem.eql(u8, loaded_level.name, "Snail Mail 101");
+        return std.mem.eql(u8, loaded_level.source_path, "LEVELS/TUTORIAL.TXT");
     }
 
     fn tutorialClickStartCutsceneActive(self: *const AppState) bool {
@@ -3841,7 +3932,7 @@ const AppState = struct {
         const message = segment_entry.message orelse return;
         const duration_ticks = level_prompt.durationTicks(segment_entry.duration);
         if (self.isTutorialGameplay()) {
-            self.level_prompt_queue.replaceSingleWithOptions(message, duration_ticks, .{});
+            self.level_prompt_queue.replaceSingleWithOptions(message, duration_ticks, .{ .interactive = true });
             return;
         }
         self.level_prompt_queue.enqueue(message, duration_ticks);
@@ -4414,6 +4505,68 @@ const AppState = struct {
         rl.playSound(self.current_voice_sound.?.sound);
     }
 
+    fn gameplayVoiceBusy(self: *const AppState) bool {
+        if (self.current_voice_sound) |sound| {
+            return rl.isSoundPlaying(sound.sound);
+        }
+        return false;
+    }
+
+    fn tryPlayGameplayVoiceVariant(self: *AppState, comptime count: usize, variants: [count][]const u8) !void {
+        if (!self.audio_ready) return;
+        if (self.gameplay_click_start_active) return;
+        if (self.level_prompt_queue.active() != null) return;
+        if (self.gameplay_voice_manager.active) return;
+        if (self.gameplayVoiceBusy()) return;
+
+        const index = self.nextGameplaySoundVariantIndex(count);
+        try self.playVoiceByPath(variants[index]);
+        self.gameplay_voice_manager.arm();
+    }
+
+    fn gameplaySlugVoiceCellAnnounced(self: *const AppState, row: usize, lane: usize) bool {
+        for (0..self.announced_slug_voice_cell_count) |index| {
+            const announced = self.announced_slug_voice_cells[index];
+            if (announced.row == row and announced.lane == lane) return true;
+        }
+        return false;
+    }
+
+    fn noteGameplaySlugVoiceCell(self: *AppState, row: usize, lane: usize) void {
+        if (self.gameplaySlugVoiceCellAnnounced(row, lane)) return;
+        if (self.announced_slug_voice_cell_count >= self.announced_slug_voice_cells.len) return;
+        self.announced_slug_voice_cells[self.announced_slug_voice_cell_count] = .{ .row = row, .lane = lane };
+        self.announced_slug_voice_cell_count += 1;
+    }
+
+    fn updateGameplayAmbientVoices(self: *AppState, runner: gameplay.Runner, preview: *const track.LoadedLevelPreview) void {
+        if (!self.isTutorialGameplay()) return;
+        if (runner.paused or self.gameplay_click_start_active) return;
+        if (self.level_prompt_queue.active() != null) return;
+        if (self.gameplay_voice_manager.active or self.gameplayVoiceBusy()) return;
+
+        const current_row_floor = @as(usize, @intFromFloat(@floor(runner.row_position)));
+        const bark_row_limit = @min(preview.total_rows, current_row_floor + 2);
+        var row = current_row_floor;
+        while (row < bark_row_limit) : (row += 1) {
+            for (0..preview.max_width) |lane| {
+                if (runner.isSlugDefeated(row, lane)) continue;
+                const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
+                if (sample.kind != .slug) continue;
+                if (self.gameplaySlugVoiceCellAnnounced(row, lane)) continue;
+
+                self.noteGameplaySlugVoiceCell(row, lane);
+                if (deterministicGameplayAmbientSlugRoll(row, lane) > 0.6) {
+                    self.tryPlayGameplayVoiceVariant(
+                        gameplay_slug_ambient_voice_paths.len,
+                        gameplay_slug_ambient_voice_paths,
+                    ) catch {};
+                }
+                return;
+            }
+        }
+    }
+
     fn playGameplayEffect(self: *AppState, sound: ?assets.LoadedSound) void {
         if (!self.audio_ready) return;
         const loaded = sound orelse return;
@@ -4939,9 +5092,12 @@ const AppState = struct {
         self.unloadGameplaySoundFx();
         self.active_gameplay_effect_count = 0;
         self.stopVoicePlayback();
+        self.gameplay_voice_manager.clear();
+        self.announced_slug_voice_cell_count = 0;
         self.level_runner = null;
         self.gameplay_click_start_active = false;
         self.gameplay_click_start_ticks = 0;
+        self.tutorial_reference_score = 0;
         if (self.catalog.level_entries.len == 0) return;
 
         const entry = self.catalog.level_entries[self.level_index];
@@ -4972,8 +5128,11 @@ const AppState = struct {
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
-                self.gameplay_click_start_active = self.command == .game and self.isTutorialGameplay();
+                self.gameplay_click_start_active = self.command == .game and self.isTutorialFlow();
                 self.gameplay_click_start_ticks = 0;
+                if (self.isTutorialGameplay()) {
+                    self.tutorial_reference_score = self.high_score_tables.postal[0].score;
+                }
             }
         }
         self.level_segment_index = 0;
@@ -6686,7 +6845,7 @@ fn completionBonusLine(buffer: []u8, result: PendingRunResult) !?[]const u8 {
 
 fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
     if (outcome == .failed) return .main_menu;
-    return switch (mode orelse .tutorial) {
+    return switch (mode orelse .postal) {
         .postal => .postal_route_map,
         .time_trial => .time_trial_route_map,
         .challenge => .replay_current_level,
@@ -6695,7 +6854,7 @@ fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) R
 }
 
 fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
-    return switch (mode orelse .tutorial) {
+    return switch (mode orelse .postal) {
         .postal => .postal,
         .time_trial => .time_trial,
         .challenge => .challenge,
@@ -6704,7 +6863,7 @@ fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMo
 }
 
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
-    return switch (mode orelse .tutorial) {
+    return switch (mode orelse .postal) {
         .postal => true,
         .challenge, .time_trial, .tutorial => false,
     };
@@ -6736,12 +6895,12 @@ fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
     return std.fmt.bufPrint(buffer, "{d:0>2}:{d:0>2}.{d:0>2}", .{ minutes, seconds, centiseconds });
 }
 
-// PORT(partial): this now follows the recovered `cRSubGoldy::ScoreAdd` constants for the
+// PORT(partial): this now follows the recovered Windows `cRSubGoldy::ScoreAdd` constants for the
 // score events the current runner actually models:
-// ring collect (+100), parcel pickup/register (+100 each), and the postal-only completion bonus,
-// and health pickup (+250).
-// Slug kills (+500), garbage-side score events (+10), jetpack/speed-up scoring, and the rest
-// of the original `cRSubGoldy::AI()` path remain unported.
+// ring collect (+100 for the scoring ring families), parcel pickup (+100), and the postal-only
+// completion bonus. Health pickup no longer scores in the Windows-targeted path.
+// Slug kills (+500), delayed parcel registration (+10), garbage-side score events (+10),
+// jetpack/speed-up scoring, and the rest of the original `cRSubGoldy::AI()` path remain unported.
 fn bootPhaseProgress(state: *const AppState) f32 {
     if (boot_tasks.len == 0) return 1.0;
     return std.math.clamp(
@@ -6893,21 +7052,15 @@ fn tutorialPromptLineCount(text: []const u8) i32 {
 }
 
 fn tutorialPromptCardLocalRect(line_count: i32, interactive: bool) rl.Rectangle {
-    const body_height = 20.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
-    const card_width = 392.0;
-    const footer_height: f32 = if (interactive) 34.0 else 12.0;
-    const card_height = 22.0 + body_height + footer_height;
+    const body_height = 24.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
+    const card_width = 420.0;
+    const vertical_padding: f32 = if (interactive) 28.0 else 22.0;
     return .{
         .x = (640.0 - card_width) * 0.5,
-        .y = if (interactive) 312.0 else 30.0,
+        .y = if (interactive) 184.0 else 112.0,
         .width = card_width,
-        .height = card_height,
+        .height = body_height + vertical_padding,
     };
-}
-
-fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32, interactive: bool) rl.Rectangle {
-    const local_rect = tutorialPromptCardLocalRect(line_count, interactive);
-    return layout.mapRect(local_rect.x, local_rect.y, local_rect.width, local_rect.height);
 }
 
 fn tutorialPromptOkButtonRect(card_local_rect: rl.Rectangle) rl.Rectangle {
@@ -6915,7 +7068,7 @@ fn tutorialPromptOkButtonRect(card_local_rect: rl.Rectangle) rl.Rectangle {
     const button_height = 24.0;
     return .{
         .x = card_local_rect.x + ((card_local_rect.width - button_width) * 0.5),
-        .y = card_local_rect.y + card_local_rect.height - button_height - 8.0,
+        .y = card_local_rect.y + card_local_rect.height + 10.0,
         .width = button_width,
         .height = button_height,
     };
@@ -6949,39 +7102,61 @@ fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const 
 fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_local_rect: rl.Rectangle, text: []const u8) void {
     var line_storage: [8][]const u8 = undefined;
     const lines = tutorialPromptLines(text, &line_storage);
-    const line_height = 20.0;
+    const line_height = 28.0;
     var line_y = card_local_rect.y + 14.0;
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
     for (lines) |line| {
-        drawCenteredGameplayHudText(
-            state,
-            layout,
-            card_local_rect.x + card_local_rect.width * 0.5,
-            line_y,
+        const text_rect = frontend_widget.widgetTextRect(
+            &state.ui_font,
+            .menu_button,
+            .center,
             line,
-            18,
-            .ray_white,
+            line_y,
+            0.0,
+        );
+        var text_state = frontend_widget.TextButtonState{};
+        text_state.snapFor(.menu_button, true);
+        frontend_widget.drawTextButtonWithOptions(
+            layout,
+            widget_art,
+            &state.ui_font,
+            .menu_button,
+            line,
+            text_rect,
+            text_state,
+            false,
+            .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
         );
         line_y += line_height;
     }
 }
 
 fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
-    var prompt_state = frontend_widget.TextButtonState{};
-    prompt_state.snapFor(.menu_button, true);
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    const text_rect = frontend_widget.widgetTextRect(
+        &state.ui_font,
+        .menu_button,
+        .center,
+        "Click to Start",
+        200.0,
+        0.0,
+    );
+    var text_state = frontend_widget.TextButtonState{};
+    text_state.snapFor(.menu_button, true);
     frontend_widget.drawTextButtonWithOptions(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
+        widget_art,
         &state.ui_font,
         .menu_button,
         "Click to Start",
-        frontend_widget.type20TextRect(&state.ui_font, "Click to Start", 200.0, 0.0),
-        prompt_state,
+        text_rect,
+        text_state,
         false,
-        .{
-            .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background),
-        },
+        .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
     );
 }
 
@@ -6989,9 +7164,6 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
     const prompt = queue.active() orelse return;
     const line_count = tutorialPromptLineCount(prompt.message);
     const card_local_rect = tutorialPromptCardLocalRect(line_count, prompt.interactive);
-    var border_state = frontend_widget.TextButtonState{};
-    border_state.snapFor(.menu_button, false);
-    const border_colors = frontend_widget.colorsForState(border_state, false);
     frontend_widget.drawNineSliceFrame(
         layout,
         state.frontend_widget_art.border.?.texture,
@@ -7003,14 +7175,13 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
         },
         frontend_widget.type20_border_edge,
         frontend_widget.type20_border_edge / 128.0,
-        border_colors.fill,
+        .{ .r = 84, .g = 57, .b = 128, .a = 214 },
     );
     drawTutorialPromptLines(state, layout, card_local_rect, prompt.message);
 
     if (!prompt.interactive) return;
 
     const local_button = tutorialPromptOkButtonRect(card_local_rect);
-    const button = layout.mapRect(local_button.x, local_button.y, local_button.width, local_button.height);
     const hovered = if (state.isTutorialGameplay())
         if (state.currentUiMouseLocal()) |mouse|
             rectContainsLocalPoint(local_button, mouse)
@@ -7018,38 +7189,30 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
             false
     else
         false;
-    rl.drawRectangleRounded(
-        button,
-        0.22,
-        6,
-        if (hovered)
-            .{ .r = 84, .g = 104, .b = 160, .a = 228 }
-        else
-            .{ .r = 42, .g = 48, .b = 86, .a = 220 },
+    var ok_state = frontend_widget.TextButtonState{};
+    ok_state.snapFor(.menu_button, hovered);
+    const ok_metrics = frontend_widget.metricsForType(.menu_button);
+    const ok_font_size = ok_metrics.fontSize(&state.ui_font);
+    const ok_text_width = state.ui_font.measureText("OK", ok_font_size);
+    frontend_widget.drawTextButton(
+        layout,
+        .{ .border = state.frontend_widget_art.border.?.texture },
+        &state.ui_font,
+        .menu_button,
+        "OK",
+        .{
+            .left = local_button.x + local_button.width * 0.5 - ok_text_width * 0.5,
+            .top = local_button.y + (local_button.height - ok_metrics.textHeight(&state.ui_font)) * 0.5 - 1.0,
+            .width = ok_text_width,
+            .height = ok_metrics.textHeight(&state.ui_font),
+        },
+        ok_state,
+        false,
     );
-    rl.drawRectangleRoundedLinesEx(
-        button,
-        0.22,
-        6,
-        layout.scaleFloat(1.0),
-        .{ .r = 182, .g = 204, .b = 255, .a = 220 },
-    );
-    drawCenteredGameplayHudText(state, layout, local_button.x + local_button.width * 0.5, local_button.y + 2.0, "OK", 18, .ray_white);
 }
 
 fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
-    const parcel_target = loaded_level.parcels orelse 0;
-    const parcel_count = runner.counters.parcels;
-    var score_buffer: [24]u8 = undefined;
-    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
-    drawCenteredGameplayHudText(state, layout, 320.0, 12.0, score_text, 32, .ray_white);
-
-    if (parcel_target > 0) {
-        var parcel_buffer: [24]u8 = undefined;
-        const parcel_text = try std.fmt.bufPrintZ(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target });
-        drawGameplayIconCounter(state, layout, game_font.IconGlyph.package, parcel_text, 12.0, 42.0, 22, .ray_white);
-    }
-
+    try drawTutorialGameplayHud(state, layout, loaded_level, runner);
     drawTutorialProgressBar(state, layout, runner);
     drawTutorialLives(state, layout, runner.visible_life_stock);
     drawDamageGaugeWidget(state, layout, runner, false);
@@ -7057,11 +7220,46 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
         drawJetpackGaugeWidget(state, layout, runner);
     }
     if (state.gameplay_click_start_active) {
-        if (state.tutorialClickStartCutsceneActive()) return;
         drawTutorialClickStartPrompt(state, layout);
         return;
     }
     try drawTutorialPromptStack(state, layout, &state.level_prompt_queue);
+}
+
+fn tutorialGameplayBestScore(state: *const AppState) u32 {
+    return state.tutorial_reference_score;
+}
+
+fn drawTutorialGameplayHud(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
+    const parcel_target = loaded_level.parcels orelse 0;
+    const parcel_count = runner.counters.parcels;
+
+    var parcel_buffer: [32]u8 = undefined;
+    const parcel_text = if (parcel_target > 0)
+        try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target })
+    else
+        try std.fmt.bufPrint(&parcel_buffer, "{d}", .{parcel_count});
+    drawGameplayIconCounter(
+        state,
+        layout,
+        .package,
+        parcel_text,
+        12.0,
+        10.0,
+        22,
+        .white,
+    );
+
+    const best_score = tutorialGameplayBestScore(state);
+    if (best_score > 0) {
+        var best_buffer: [32]u8 = undefined;
+        const best_text = try formatScoreWithCommas(&best_buffer, best_score);
+        drawCenteredGameplayHudTextShadowed(state, layout, 320.0, 10.0, best_text, 22, .white);
+    }
+
+    var score_buffer: [32]u8 = undefined;
+    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
+    drawRightAlignedGameplayHudTextShadowed(state, layout, 628.0, 10.0, score_text, 22, .white);
 }
 
 fn drawCenteredGameplayHudText(
@@ -7079,6 +7277,65 @@ fn drawCenteredGameplayHudText(
     drawAppText(state, text, @intFromFloat(point.x - @as(f32, @floatFromInt(width)) * 0.5), @intFromFloat(point.y), font_size, color);
 }
 
+fn drawGameplayHudTextShadowed(
+    state: *const AppState,
+    layout: VirtualLayout,
+    authored_x: f32,
+    authored_y: f32,
+    text: []const u8,
+    authored_size: i32,
+    color: rl.Color,
+) void {
+    const font_size = layout.fontSize(authored_size);
+    const point = layout.mapPoint(authored_x, authored_y);
+    drawAppText(state, text, @intFromFloat(point.x + layout.scaleFloat(2.0)), @intFromFloat(point.y + layout.scaleFloat(2.0)), font_size, .black);
+    drawAppText(state, text, @intFromFloat(point.x), @intFromFloat(point.y), font_size, color);
+}
+
+fn drawRightAlignedGameplayHudTextShadowed(
+    state: *const AppState,
+    layout: VirtualLayout,
+    authored_right_x: f32,
+    authored_y: f32,
+    text: []const u8,
+    authored_size: i32,
+    color: rl.Color,
+) void {
+    const font_size = layout.fontSize(authored_size);
+    const width = measureAppText(state, text, font_size);
+    drawGameplayHudTextShadowed(
+        state,
+        layout,
+        authored_right_x - @as(f32, @floatFromInt(width)),
+        authored_y,
+        text,
+        authored_size,
+        color,
+    );
+}
+
+fn drawCenteredGameplayHudTextShadowed(
+    state: *const AppState,
+    layout: VirtualLayout,
+    authored_center_x: f32,
+    authored_y: f32,
+    text: []const u8,
+    authored_size: i32,
+    color: rl.Color,
+) void {
+    const font_size = layout.fontSize(authored_size);
+    const width = measureAppText(state, text, font_size);
+    drawGameplayHudTextShadowed(
+        state,
+        layout,
+        authored_center_x - @as(f32, @floatFromInt(width)) * 0.5,
+        authored_y,
+        text,
+        authored_size,
+        color,
+    );
+}
+
 fn drawGameplayIconCounter(
     state: *const AppState,
     layout: VirtualLayout,
@@ -7093,6 +7350,12 @@ fn drawGameplayIconCounter(
     const point = layout.mapPoint(authored_x, authored_y);
     state.ui_font.drawText(&[_]u8{glyph.byte()}, point.x, point.y, @floatFromInt(font_size), .white);
     drawAppText(state, text, @intFromFloat(point.x + layout.scaleFloat(26.0)), @intFromFloat(point.y), font_size, color);
+}
+
+fn deterministicGameplayAmbientSlugRoll(row: usize, lane: usize) f32 {
+    const mixed = (@as(u64, row) *% 0x9e3779b97f4a7c15) ^ (@as(u64, lane) *% 0xc2b2ae3d27d4eb4f);
+    const normalized = @as(f64, @floatFromInt(mixed & 0xffff)) / 65535.0;
+    return @floatCast(normalized);
 }
 
 fn drawTutorialProgressBar(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
@@ -7905,7 +8168,7 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
     const camera = if (startup_cutscene_active)
         tutorialClickStartCamera(state, &loaded_track_preview, runner, state.gameplay_click_start_ticks)
     else if (state.gameplay_click_start_active)
-        gameplayLevelCamera(&loaded_track_preview, runner)
+        tutorialClickStartPromptCamera(&loaded_track_preview, runner)
     else if (runner.acceptsGameplayInput())
         gameplayLevelCamera(&loaded_track_preview, runner)
     else if (runner.finished)
@@ -7973,10 +8236,15 @@ fn drawGameplayRuntimeActors(
     }
 
     for (runner.activeRuntimeHazards()) |hazard| {
-        if (!shouldRenderGameplayActorRow(runner, hazard.row)) continue;
         switch (hazard.kind) {
-            .garbage => drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard.row, hazard.lane),
-            .salt => drawGameplaySaltActor(state, loaded_track_preview, camera, hazard.row, hazard.lane),
+            .garbage => {
+                if (!shouldRenderGameplayActorRow(runner, hazard.row)) continue;
+                drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard);
+            },
+            .salt => {
+                if (!shouldRenderGameplaySaltRow(runner, hazard.row)) continue;
+                drawGameplaySaltActor(state, loaded_track_preview, camera, runner, hazard);
+            },
         }
     }
 
@@ -7991,6 +8259,23 @@ fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool
     return @as(f32, @floatFromInt(global_row)) + 0.25 >= runner.row_position;
 }
 
+fn shouldRenderGameplaySaltRow(runner: gameplay.Runner, global_row: usize) bool {
+    return @as(f32, @floatFromInt(global_row)) + 48.0 >= runner.row_position;
+}
+
+fn gameplaySaltPresentationScale(runner: gameplay.Runner, global_row: usize) f32 {
+    const delta = @as(f32, @floatFromInt(global_row)) - runner.row_position;
+    return std.math.clamp(1.0 + delta / -48.0, 0.0, 1.0);
+}
+
+fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
+    var seed: u64 = 0x9e3779b97f4a7c15;
+    seed ^= @as(u64, @intCast(global_row)) *% 0xbf58476d1ce4e5b9;
+    seed ^= @as(u64, @intCast(lane_index + 1)) *% 0x94d049bb133111eb;
+    const angle_fraction = @as(f32, @floatFromInt(@as(u16, @truncate(seed >> 16)))) / 65535.0;
+    return (angle_fraction * std.math.tau) - std.math.pi;
+}
+
 fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_slug_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
@@ -7998,44 +8283,64 @@ fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLev
     drawGameplayBillboardTexture(loaded_texture.texture, position, 0.7, 0.7, camera, .white);
 }
 
-fn drawGameplayGarbageActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
-    const variant_index = @as(usize, @intCast((global_row + lane_index * 3) % gameplay_garbage_sprite_paths.len));
+fn drawGameplayGarbageActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    camera: rl.Camera3D,
+    hazard: gameplay.RuntimeHazard,
+) void {
+    const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_garbage_sprite_paths.len));
     const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.28);
+    const position = gameplayLaneWorldPosition(preview, hazard.row, hazard.lane, hazard.presentation_scale);
     drawGameplayBillboardTexture(
         loaded_texture.texture,
         position,
-        0.58,
-        0.58,
+        hazard.presentation_scale,
+        hazard.presentation_scale,
         camera,
         .{ .r = 255, .g = 255, .b = 255, .a = 232 },
     );
 }
 
-fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+fn drawGameplaySaltActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    camera: rl.Camera3D,
+    runner: gameplay.Runner,
+    hazard: gameplay.RuntimeHazard,
+) void {
+    const presentation_scale = gameplaySaltPresentationScale(runner, hazard.row);
+    if (presentation_scale <= 0.01) return;
     if (state.current_gameplay_salt_model) |*model| {
-        const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+        const floor_height = preview.floorHeightAtCellCenter(hazard.row, hazard.lane) orelse 0.0;
         const position = preview.worldPositionForLane(
-            @as(f32, @floatFromInt(lane_index)) + 0.5,
-            @as(f32, @floatFromInt(global_row)),
+            @as(f32, @floatFromInt(hazard.lane)) + 0.5,
+            @as(f32, @floatFromInt(hazard.row)),
             floor_height + 0.18,
         );
-        const right: rl.Vector3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        const yaw = hazard.presentation_phase;
+        const yaw_sin = std.math.sin(yaw);
+        const yaw_cos = std.math.cos(yaw);
+        const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
         const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-        const forward: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+        const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
         const world_transform = modelTransformFromBasis(position, right, up, forward);
         const local_offset = rl.Matrix.translate(
             -model.bounds.center.x,
             -model.bounds.center.y,
             -model.bounds.center.z,
         );
-        const scale = rl.Matrix.scale(0.46, 0.46, 0.46);
-        model.drawEx(world_transform.multiply(local_offset).multiply(scale));
+        const scale_value = 0.46 * presentation_scale;
+        const scale = rl.Matrix.scale(scale_value, scale_value, scale_value);
+        model.drawTintedEx(
+            world_transform.multiply(local_offset).multiply(scale),
+            .{ .r = 255, .g = 255, .b = 255, .a = @intFromFloat(0.9 * 255.0) },
+        );
         return;
     }
 
     const slot = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.44);
+    const position = gameplayLaneWorldPosition(preview, hazard.row, hazard.lane, 0.44);
     drawGameplayBillboardTextureRect(
         state.ui_font.texture,
         .{
@@ -8048,7 +8353,7 @@ fn drawGameplaySaltActor(state: *const AppState, preview: *const track.LoadedLev
         0.58,
         0.72,
         camera,
-        .{ .r = 144, .g = 198, .b = 255, .a = 236 },
+        .{ .r = 144, .g = 198, .b = 255, .a = @intFromFloat(0.9 * 255.0) },
     );
 }
 
@@ -8325,10 +8630,7 @@ fn drawGameplayBillboardQuad(
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const loaded_object = state.current_gameplay_barrier_object orelse return;
-    const tutorial_level_active = if (state.current_level) |loaded_level|
-        std.mem.eql(u8, loaded_level.source_path, "LEVELS/TUTORIAL.TXT")
-    else
-        false;
+    const tutorial_level_active = state.isTutorialLevel();
     const barrier_active = tutorial_level_active or runner.current_annotation == .no_fall;
     if (!barrier_active) return;
 
@@ -8338,15 +8640,11 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     // in the correct orientation, so gameplay should follow the owner without
     // inventing an extra upright rotation.
     const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
-    rl.gl.rlDisableDepthTest();
-    rl.gl.rlDisableDepthMask();
-    defer rl.gl.rlEnableDepthMask();
-    defer rl.gl.rlEnableDepthTest();
     rl.gl.rlDisableBackfaceCulling();
     defer rl.gl.rlEnableBackfaceCulling();
-    rl.beginBlendMode(.additive);
-    defer rl.endBlendMode();
-    const barrier_tint = rl.Color{ .r = 128, .g = 168, .b = 255, .a = 224 };
+    // Android `ObjectProcBarrier` only modulates alpha on the authored object.
+    // Preserve the original material colours and just apply translucency here.
+    const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
     loaded_object.drawTintedEx(world_transform, barrier_tint);
 }
 
@@ -8491,69 +8789,82 @@ fn drawGameplayTurboAttachments(
     forward: rl.Vector3,
     runner: gameplay.Runner,
 ) void {
-    switch (runner.weapon_level) {
-        0 => {
-            if (state.current_gameplay_blaster_top_models.currentModel(
-                state.gameplay_weapon_visual_state.top_draw_ticks,
-                state.gameplay_weapon_visual_state.top_fire_ticks,
-            )) |model| {
-                drawGameplayUploadedModel(
-                    model.*,
-                    offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
-                    right,
-                    up,
-                    forward,
-                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                    null,
-                );
-            }
-        },
-        1 => {
-            if (state.current_gameplay_laser_left_models.currentModel(
-                state.gameplay_weapon_visual_state.side_draw_ticks,
-                0,
-            )) |model| {
-                drawGameplayUploadedModel(
-                    model.*,
-                    offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
-                    right,
-                    up,
-                    forward,
-                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                    null,
-                );
-            }
-            if (state.current_gameplay_laser_right_models.currentModel(
-                state.gameplay_weapon_visual_state.side_draw_ticks,
-                0,
-            )) |model| {
-                drawGameplayUploadedModel(
-                    model.*,
-                    offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
-                    right,
-                    up,
-                    forward,
-                    .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                    null,
-                );
-            }
-        },
-        else => {
-            if (state.current_gameplay_rocket_launcher_models.currentModel(
-                state.gameplay_weapon_visual_state.rocket_draw_ticks,
-                0,
-            )) |model| {
-                drawGameplayUploadedModel(
-                    model.*,
-                    offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
-                    right,
-                    up,
-                    forward,
-                    .{ .x = 0.24, .y = 0.24, .z = 0.24 },
-                    null,
-                );
-            }
-        },
+    const top_active = runner.weapon_level == 0 or
+        state.gameplay_weapon_visual_state.top_draw_ticks > 0 or
+        state.gameplay_weapon_visual_state.top_hide_ticks > 0;
+    if (top_active) {
+        if (state.current_gameplay_blaster_top_models.currentModel(
+            state.gameplay_weapon_visual_state.top_draw_ticks,
+            state.gameplay_weapon_visual_state.top_fire_ticks,
+            state.gameplay_weapon_visual_state.top_hide_ticks,
+        )) |model| {
+            drawGameplayUploadedModel(
+                model.*,
+                offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
+                right,
+                up,
+                forward,
+                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                null,
+            );
+        }
+    }
+
+    const side_active = runner.weapon_level == 1 or
+        state.gameplay_weapon_visual_state.side_draw_ticks > 0 or
+        state.gameplay_weapon_visual_state.side_hide_ticks > 0;
+    if (side_active) {
+        if (state.current_gameplay_laser_left_models.currentModel(
+            state.gameplay_weapon_visual_state.side_draw_ticks,
+            0,
+            state.gameplay_weapon_visual_state.side_hide_ticks,
+        )) |model| {
+            drawGameplayUploadedModel(
+                model.*,
+                offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
+                right,
+                up,
+                forward,
+                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                null,
+            );
+        }
+        if (state.current_gameplay_laser_right_models.currentModel(
+            state.gameplay_weapon_visual_state.side_draw_ticks,
+            0,
+            state.gameplay_weapon_visual_state.side_hide_ticks,
+        )) |model| {
+            drawGameplayUploadedModel(
+                model.*,
+                offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
+                right,
+                up,
+                forward,
+                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                null,
+            );
+        }
+    }
+
+    const rocket_active = runner.weapon_level >= 2 or
+        state.gameplay_weapon_visual_state.rocket_draw_ticks > 0 or
+        state.gameplay_weapon_visual_state.rocket_hide_ticks > 0;
+    if (rocket_active) {
+        if (state.current_gameplay_rocket_launcher_models.currentModel(
+            state.gameplay_weapon_visual_state.rocket_draw_ticks,
+            0,
+            state.gameplay_weapon_visual_state.rocket_hide_ticks,
+        )) |model| {
+            drawGameplayUploadedModel(
+                model.*,
+                offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
+                right,
+                up,
+                forward,
+                .{ .x = 0.24, .y = 0.24, .z = 0.24 },
+                null,
+            );
+        }
     }
 
     if (runner.invincible_ticks > 0) {
@@ -8612,7 +8923,7 @@ const GameplayTurboPose = struct {
 };
 
 const gameplay_turbo_body_height: f32 = 0.02;
-const tutorial_click_start_body_height: f32 = 0.32;
+const tutorial_click_start_body_height: f32 = 0.08;
 
 fn gameplayTurboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) GameplayTurboPose {
     const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
@@ -8640,7 +8951,7 @@ fn tutorialClickStartTurboPose(model: *const x2.Uploaded, loaded_track_preview: 
     const base_pose = gameplayTurboPose(model, loaded_track_preview, runner);
     const position = runner.worldPosition(loaded_track_preview, tutorial_click_start_body_height);
     const world_transform = modelTransformFromBasis(position, base_pose.right, base_pose.up, base_pose.forward);
-    const local_offset = centeredModelOffset(model);
+    const local_offset = groundedCharacterModelOffset(model);
     return .{
         .position = position,
         .right = base_pose.right,
@@ -8771,7 +9082,7 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     const dynamic_attachment_camera =
         (runner.movement_mode == .attachment and runner.attachment_follow.active) or
         runner.launch.active;
-    const chase_eye_x = player_position.x / 2.5;
+    const chase_eye_x = player_position.x / 3.0;
     const chase_target_x = chase_target_position.x / 3.0;
     const target = if (dynamic_attachment_camera)
         rl.Vector3{
@@ -8808,6 +9119,10 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     };
 }
 
+fn tutorialClickStartPromptCamera(loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) rl.Camera3D {
+    return gameplayLevelCamera(loaded_track_preview, runner);
+}
+
 fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, startup_ticks: u32) rl.Camera3D {
     if (loaded_track_preview.total_rows == 0) {
         return loaded_track_preview.previewCamera(0.0, 0);
@@ -8822,19 +9137,19 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         .right = pose.right,
     };
     const camera_hotspot_world = tutorialClickStartHotspotWorld(frame);
-    const body_position = offsetPosition(
-        pose.position,
-        pose.right,
-        pose.up,
-        pose.forward,
-        0.0,
-        0.18,
-        0.1,
-    );
     if (startup_ticks < tutorial_click_start_cutscene_phase_ticks) {
+        const eye = offsetPosition(
+            camera_hotspot_world,
+            frame.right,
+            frame.up,
+            frame.forward,
+            -1.15,
+            0.55,
+            -1.75,
+        );
         return .{
-            .position = camera_hotspot_world,
-            .target = body_position,
+            .position = eye,
+            .target = camera_hotspot_world,
             .up = frame.up,
             .fovy = 68.0,
             .projection = .perspective,
@@ -8847,17 +9162,21 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         0.0,
         1.0,
     );
-    const side_position = rl.Vector3{
-        .x = camera_hotspot_world.x + (std.math.sin(phase * std.math.pi) * 2.0),
-        .y = camera_hotspot_world.y,
-        .z = camera_hotspot_world.z,
-    };
-    const gameplay_camera = gameplayLevelCamera(loaded_track_preview, runner);
+    const side_position = offsetPosition(
+        camera_hotspot_world,
+        frame.right,
+        frame.up,
+        frame.forward,
+        -1.15 + (std.math.sin(phase * std.math.pi) * 0.45),
+        0.55,
+        -1.75,
+    );
+    const gameplay_camera = tutorialClickStartPromptCamera(loaded_track_preview, runner);
     const blend = std.math.sin(phase * (std.math.pi * 0.5));
 
     return .{
         .position = lerpVector3(side_position, gameplay_camera.position, blend),
-        .target = lerpVector3(body_position, gameplay_camera.target, blend),
+        .target = lerpVector3(camera_hotspot_world, gameplay_camera.target, blend),
         .up = normalizeVector3(lerpVector3(frame.up, gameplay_camera.up, blend)),
         .fovy = std.math.lerp(68.0, gameplay_camera.fovy, blend),
         .projection = .perspective,
@@ -9047,7 +9366,7 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(!completionBonusAppliesForMode(.challenge));
     try std.testing.expect(!completionBonusAppliesForMode(.time_trial));
     try std.testing.expect(!completionBonusAppliesForMode(.tutorial));
-    try std.testing.expect(!completionBonusAppliesForMode(null));
+    try std.testing.expect(completionBonusAppliesForMode(null));
 }
 
 test "route map replay gate follows time-trial completion replays" {
@@ -9192,7 +9511,7 @@ test "gameplay camera keeps lateral steering mostly behind turbo" {
     try std.testing.expect(camera.position.x > 0.0);
     try std.testing.expect(camera.target.x > 0.0);
     try std.testing.expect(camera.target.x < player_position.x);
-    try std.testing.expect(camera.position.x > camera.target.x);
+    try std.testing.expect(camera.position.x <= player_position.x);
 }
 
 test "completion cutscene camera widens the chase view" {
