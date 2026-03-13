@@ -399,7 +399,31 @@ const LaunchState = struct {
 const CameramanState = struct {
     follow_z: ?f32 = null,
     fov_degrees: f32 = 110.0,
+    position: ?rl.Vector3 = null,
+    target: ?rl.Vector3 = null,
+    up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
+
+fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
+    return .{
+        .x = std.math.lerp(a.x, b.x, t),
+        .y = std.math.lerp(a.y, b.y, t),
+        .z = std.math.lerp(a.z, b.z, t),
+    };
+}
+
+fn normalizeVector3(v: rl.Vector3) rl.Vector3 {
+    const length_squared = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
+    if (length_squared <= 0.000001) {
+        return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    }
+    const inv_length = @as(f32, 1.0) / @sqrt(length_squared);
+    return .{
+        .x = v.x * inv_length,
+        .y = v.y * inv_length,
+        .z = v.z * inv_length,
+    };
+}
 
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
@@ -565,7 +589,7 @@ pub const Runner = struct {
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
-        self.updateCameraman();
+        self.updateCameraman(preview);
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
@@ -661,6 +685,18 @@ pub const Runner = struct {
 
     pub fn cameramanFovDegrees(self: *const Runner) f32 {
         return self.cameraman.fov_degrees;
+    }
+
+    pub fn cameramanPosition(self: *const Runner) ?rl.Vector3 {
+        return self.cameraman.position;
+    }
+
+    pub fn cameramanTarget(self: *const Runner) ?rl.Vector3 {
+        return self.cameraman.target;
+    }
+
+    pub fn cameramanUp(self: *const Runner) rl.Vector3 {
+        return self.cameraman.up;
     }
 
     pub fn cameramanSpeedScalar(self: *const Runner) f32 {
@@ -1291,7 +1327,7 @@ pub const Runner = struct {
         return self.speed_rows_per_second;
     }
 
-    fn updateCameraman(self: *Runner) void {
+    fn updateCameraman(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const dynamic_attachment_camera =
             (self.movement_mode == .attachment and self.attachment_follow.active) or
             self.launch.active;
@@ -1308,6 +1344,62 @@ pub const Runner = struct {
         } else if (delta < 1.70000005) {
             self.cameraman.follow_z = anchor_z - 1.70000005;
         }
+
+        const player_position = self.worldPosition(preview, 0.82);
+        const player_forward = self.worldForward(preview);
+        const player_up = self.worldUp(preview);
+        const player_floor = preview.sampleFloorHeightAtGridPosition(
+            self.current_global_row,
+            self.resolved_lane_index,
+            self.row_position,
+        ) orelse 0.0;
+        const chase_target_position = self.worldPosition(preview, 0.28);
+        const chase_eye_x = player_position.x / 3.0;
+        const chase_target_x = chase_target_position.x / 3.0;
+        const speed_scalar = self.cameramanSpeedScalar();
+        const row_blend = self.cameramanRowBlend();
+        const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, row_blend);
+        const pitch_radians = std.math.clamp(
+            (-2.0 - ((speed_scalar - 0.49) * 5.0)) * 0.0174499992,
+            -1.22149992,
+            1.22149992,
+        );
+        const desired_target = if (dynamic_attachment_camera)
+            rl.Vector3{
+                .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
+                .y = player_position.y + (player_forward.y * 0.7) + (player_up.y * 0.18),
+                .z = player_position.z + (player_forward.z * 0.7) + (player_up.z * 0.18),
+            }
+        else
+            rl.Vector3{
+                .x = chase_target_x,
+                .y = (player_floor + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
+                .z = self.cameramanEyeZ() + (std.math.cos(pitch_radians) * 3.3),
+            };
+        const desired_position = if (dynamic_attachment_camera)
+            rl.Vector3{
+                .x = player_position.x - (player_forward.x * 2.0) + (player_up.x * 1.35),
+                .y = player_position.y - (player_forward.y * 2.0) + (player_up.y * 1.35),
+                .z = player_position.z - (player_forward.z * 2.0) + (player_up.z * 1.35),
+            }
+        else
+            rl.Vector3{
+                .x = chase_eye_x,
+                .y = player_floor + 1.8 + vertical_lift,
+                .z = self.cameramanEyeZ(),
+            };
+        const desired_up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+
+        if (self.cameraman.position == null or self.cameraman.target == null) {
+            self.cameraman.position = desired_position;
+            self.cameraman.target = desired_target;
+            self.cameraman.up = desired_up;
+            return;
+        }
+
+        self.cameraman.position = lerpVector3(self.cameraman.position.?, desired_position, 0.3);
+        self.cameraman.target = lerpVector3(self.cameraman.target.?, desired_target, 0.3);
+        self.cameraman.up = normalizeVector3(lerpVector3(self.cameraman.up, desired_up, 0.3));
     }
 
     fn stepTemporaryStates(self: *Runner) void {

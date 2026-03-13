@@ -3934,7 +3934,7 @@ const AppState = struct {
         const message = segment_entry.message orelse return;
         const duration_ticks = level_prompt.durationTicks(segment_entry.duration);
         if (self.isTutorialGameplay()) {
-            self.level_prompt_queue.replaceSingleWithOptions(message, duration_ticks, .{ .interactive = true });
+            self.level_prompt_queue.replaceSingle(message, duration_ticks);
             return;
         }
         self.level_prompt_queue.enqueue(message, duration_ticks);
@@ -9128,60 +9128,9 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         return loaded_track_preview.previewCamera(0.0, 0);
     }
 
-    const player_position = runner.worldPosition(loaded_track_preview, 0.82);
-    const player_forward = runner.worldForward(loaded_track_preview);
-    const player_up = runner.worldUp(loaded_track_preview);
-    const player_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
-        runner.current_global_row,
-        runner.resolved_lane_index,
-        runner.row_position,
-    ) orelse 0.0;
-    const chase_target_position = runner.worldPosition(loaded_track_preview, 0.28);
-    // PORT(partial): `cRCameraman::AI()` seeds the chase camera from the player's world X,
-    // a fixed +1.8 Y offset, and a -0.5 Z offset before applying the richer matrix blend path.
-    // The important gameplay-facing part is that lateral motion does not directly aim the camera
-    // at the player. The cameraman uses separate X scales for the eye and focus, which keeps the
-    // view trailing behind Turbo instead of swinging off-axis when steering left/right.
-    // The current port uses the built attachment/launch frame whenever the runner is riding
-    // or launching from an attachment, instead of snapping straight back to the flat chase view.
-    const dynamic_attachment_camera =
-        (runner.movement_mode == .attachment and runner.attachment_follow.active) or
-        runner.launch.active;
-    const chase_eye_x = player_position.x / 3.0;
-    const chase_target_x = chase_target_position.x / 3.0;
-    const speed_scalar = runner.cameramanSpeedScalar();
-    const row_blend = runner.cameramanRowBlend();
-    const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, row_blend);
-    const pitch_radians = std.math.clamp(
-        (-2.0 - ((speed_scalar - 0.49) * 5.0)) * 0.0174499992,
-        -1.22149992,
-        1.22149992,
-    );
-    const target = if (dynamic_attachment_camera)
-        rl.Vector3{
-            .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
-            .y = player_position.y + (player_forward.y * 0.7) + (player_up.y * 0.18),
-            .z = player_position.z + (player_forward.z * 0.7) + (player_up.z * 0.18),
-        }
-    else
-        rl.Vector3{
-            .x = chase_target_x,
-            .y = (player_floor + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
-            .z = runner.cameramanEyeZ() + (std.math.cos(pitch_radians) * 3.3),
-        };
-    const position = if (dynamic_attachment_camera)
-        rl.Vector3{
-            .x = player_position.x - (player_forward.x * 2.0) + (player_up.x * 1.35),
-            .y = player_position.y - (player_forward.y * 2.0) + (player_up.y * 1.35),
-            .z = player_position.z - (player_forward.z * 2.0) + (player_up.z * 1.35),
-        }
-    else
-        rl.Vector3{
-            .x = chase_eye_x,
-            .y = player_floor + 1.8 + vertical_lift,
-            .z = runner.cameramanEyeZ(),
-        };
-    const up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    const position = runner.cameramanPosition() orelse runner.worldPosition(loaded_track_preview, 0.82);
+    const target = runner.cameramanTarget() orelse runner.worldPosition(loaded_track_preview, 0.28);
+    const up = runner.cameramanUp();
 
     return .{
         .position = position,
@@ -9576,6 +9525,7 @@ test "gameplay camera keeps lateral steering mostly behind turbo" {
     runner.lane_center = 6.5;
     runner.lane_index = 6;
     runner.resolved_lane_index = 6;
+    runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
 
     const camera = gameplayLevelCamera(&loaded_track_preview, runner);
     const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
