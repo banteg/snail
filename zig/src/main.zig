@@ -3032,9 +3032,10 @@ const AppState = struct {
             );
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
+            const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
             self.spawnGameplayEffect(
                 .explode_small,
-                current.worldPosition(preview, 0.44),
+                impact_origin,
                 0.9,
                 0.9,
                 18,
@@ -3042,7 +3043,7 @@ const AppState = struct {
             );
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
-            const smoke_origin = current.worldPosition(preview, 0.34);
+            const smoke_origin = current.last_garbage_hit_position orelse current.worldPosition(preview, 0.34);
             self.spawnGameplayEffectWithVelocity(
                 .smoke,
                 .{
@@ -3079,7 +3080,7 @@ const AppState = struct {
             );
         }
         if (current.counters.salt_hits > previous.counters.salt_hits) {
-            const smoke_origin = current.worldPosition(preview, 0.52);
+            const smoke_origin = current.last_salt_hit_position orelse current.worldPosition(preview, 0.52);
             self.spawnGameplayEffectWithVelocity(
                 .smoke,
                 .{
@@ -6870,18 +6871,29 @@ fn tutorialPromptLineCount(text: []const u8) i32 {
     return count;
 }
 
-fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32) rl.Rectangle {
-    const body_height = 18.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
-    const card_height = 28.0 + body_height + 34.0;
-    return layout.mapRect(16.0, 330.0, 340.0, card_height);
+fn tutorialPromptCardLocalRect(line_count: i32) rl.Rectangle {
+    const body_height = 20.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
+    const card_width = 392.0;
+    const card_height = 22.0 + body_height + 34.0;
+    return .{
+        .x = (640.0 - card_width) * 0.5,
+        .y = 312.0,
+        .width = card_width,
+        .height = card_height,
+    };
 }
 
-fn tutorialPromptOkButtonRect(card_local_y: f32, card_local_height: f32) rl.Rectangle {
+fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32) rl.Rectangle {
+    const local_rect = tutorialPromptCardLocalRect(line_count);
+    return layout.mapRect(local_rect.x, local_rect.y, local_rect.width, local_rect.height);
+}
+
+fn tutorialPromptOkButtonRect(card_local_rect: rl.Rectangle) rl.Rectangle {
     const button_width = 56.0;
     const button_height = 24.0;
     return .{
-        .x = 16.0 + ((340.0 - button_width) * 0.5),
-        .y = card_local_y + card_local_height - button_height - 10.0,
+        .x = card_local_rect.x + ((card_local_rect.width - button_width) * 0.5),
+        .y = card_local_rect.y + card_local_rect.height - button_height - 8.0,
         .width = button_width,
         .height = button_height,
     };
@@ -6890,15 +6902,58 @@ fn tutorialPromptOkButtonRect(card_local_y: f32, card_local_height: f32) rl.Rect
 fn activeTutorialPromptOkButtonRect(queue: *const level_prompt.Queue) ?rl.Rectangle {
     const prompt = queue.active() orelse return null;
     const line_count = tutorialPromptLineCount(prompt.message);
-    const card_local_height = 28.0 + 18.0 * @as(f32, @floatFromInt(@max(line_count, 1))) + 34.0;
-    return tutorialPromptOkButtonRect(330.0, card_local_height);
+    return tutorialPromptOkButtonRect(tutorialPromptCardLocalRect(line_count));
+}
+
+fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const u8 {
+    var count: usize = 0;
+    var start: usize = 0;
+    for (text, 0..) |char, index| {
+        if (char != '>') continue;
+        if (count < lines.len) {
+            lines[count] = text[start..index];
+            count += 1;
+        }
+        start = index + 1;
+    }
+    if (count < lines.len) {
+        lines[count] = text[start..];
+        count += 1;
+    }
+    return lines[0..count];
+}
+
+fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_local_rect: rl.Rectangle, text: []const u8) void {
+    var line_storage: [8][]const u8 = undefined;
+    const lines = tutorialPromptLines(text, &line_storage);
+    const line_height = 20.0;
+    var line_y = card_local_rect.y + 14.0;
+    for (lines) |line| {
+        drawCenteredGameplayHudText(
+            state,
+            layout,
+            card_local_rect.x + card_local_rect.width * 0.5,
+            line_y,
+            line,
+            18,
+            .ray_white,
+        );
+        line_y += line_height;
+    }
+}
+
+fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
+    const panel_local = rl.Rectangle{ .x = 220.0, .y = 196.0, .width = 200.0, .height = 34.0 };
+    const panel = layout.mapRect(panel_local.x, panel_local.y, panel_local.width, panel_local.height);
+    rl.drawRectangleRounded(panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+    rl.drawRectangleRoundedLinesEx(panel, 0.2, 8, layout.scaleFloat(1.5), .{ .r = 182, .g = 204, .b = 255, .a = 188 });
+    drawCenteredGameplayHudText(state, layout, 320.0, 201.0, "Click to Start", 28, .ray_white);
 }
 
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
     const prompt = queue.active() orelse return;
     const line_count = tutorialPromptLineCount(prompt.message);
-    const card_local_y = 330.0;
-    const card_local_height = 28.0 + 18.0 * @as(f32, @floatFromInt(@max(line_count, 1))) + 34.0;
+    const card_local_rect = tutorialPromptCardLocalRect(line_count);
     const card = tutorialPromptCardRect(layout, line_count);
     const shadow_card = rl.Rectangle{
         .x = card.x + layout.scaleFloat(4.0),
@@ -6915,18 +6970,9 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
         layout.scaleFloat(2.0),
         .{ .r = 112, .g = 160, .b = 228, .a = 184 },
     );
+    drawTutorialPromptLines(state, layout, card_local_rect, prompt.message);
 
-    try drawWrappedText(
-        state,
-        prompt.message,
-        @intFromFloat(card.x + layout.scaleFloat(18.0)),
-        @intFromFloat(card.y + layout.scaleFloat(16.0)),
-        @intFromFloat(card.width - layout.scaleFloat(36.0)),
-        layout.fontSize(18),
-        .ray_white,
-    );
-
-    const local_button = tutorialPromptOkButtonRect(card_local_y, card_local_height);
+    const local_button = tutorialPromptOkButtonRect(card_local_rect);
     const button = layout.mapRect(local_button.x, local_button.y, local_button.width, local_button.height);
     const hovered = if (state.isTutorialGameplay())
         if (state.currentUiMouseLocal()) |mouse|
@@ -6974,7 +7020,7 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
         drawJetpackGaugeWidget(state, layout, runner);
     }
     if (state.gameplay_click_start_active) {
-        drawCenteredGameplayHudText(state, layout, 320.0, 180.0, "Click to Start", 30, .ray_white);
+        drawTutorialClickStartPrompt(state, layout);
         return;
     }
     try drawTutorialPromptStack(state, layout, &state.level_prompt_queue);

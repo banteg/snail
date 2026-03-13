@@ -426,6 +426,8 @@ pub const Runner = struct {
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
+    last_garbage_hit_position: ?rl.Vector3 = null,
+    last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
     weapon_level: u8 = 0,
     slow_ticks: u16 = 0,
@@ -1037,6 +1039,7 @@ pub const Runner = struct {
             .garbage => {
                 if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .garbage)) return;
                 self.counters.garbage_hits += 1;
+                self.last_garbage_hit_position = runtimeCellWorldPosition(preview, global_row, sample.resolved_lane_index, 0.28);
                 self.recordScore(&self.score.garbage_collision, 10);
                 self.applyGarbageImpact(preview, sample.resolved_lane_index);
                 self.applyDamageGaugeDelta(garbage_damage_delta);
@@ -1045,6 +1048,7 @@ pub const Runner = struct {
             .salt => {
                 if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .salt)) return;
                 self.counters.salt_hits += 1;
+                self.last_salt_hit_position = runtimeCellWorldPosition(preview, global_row, sample.resolved_lane_index, 0.18);
                 self.applyDamageGaugeDelta(salt_damage_delta);
                 self.recent_event = .salt_hit;
             },
@@ -1380,6 +1384,7 @@ pub const Runner = struct {
         }
 
         if (self.consumeRuntimeHazard(global_row, lane_index, .garbage)) {
+            self.last_garbage_hit_position = runtimeCellWorldPosition(preview, global_row, lane_index, 0.28);
             return true;
         }
 
@@ -1559,6 +1564,15 @@ pub const Runner = struct {
             return true;
         }
         return false;
+    }
+
+    fn runtimeCellWorldPosition(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) rl.Vector3 {
+        const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+        return preview.worldPositionForLane(
+            @as(f32, @floatFromInt(lane_index)) + 0.5,
+            @as(f32, @floatFromInt(global_row)),
+            floor_height + y_offset,
+        );
     }
 
     // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
