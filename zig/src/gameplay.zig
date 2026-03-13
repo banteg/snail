@@ -393,6 +393,11 @@ const LaunchState = struct {
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
 
+const CameramanState = struct {
+    follow_z: ?f32 = null,
+    fov_degrees: f32 = 110.0,
+};
+
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
     lane_index: usize = 0,
@@ -421,6 +426,7 @@ pub const Runner = struct {
     attachment_path_name: ?[]const u8 = null,
     attachment_follow: AttachmentFollowState = .{},
     launch: LaunchState = .{},
+    cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
     path_center_lane: ?f32 = null,
@@ -555,6 +561,7 @@ pub const Runner = struct {
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
+        self.updateCameraman();
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
@@ -642,6 +649,22 @@ pub const Runner = struct {
             };
         }
         return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    }
+
+    pub fn cameramanEyeZ(self: *const Runner) f32 {
+        return self.cameraman.follow_z orelse (self.row_position - 1.85);
+    }
+
+    pub fn cameramanFovDegrees(self: *const Runner) f32 {
+        return self.cameraman.fov_degrees;
+    }
+
+    pub fn cameramanSpeedScalar(self: *const Runner) f32 {
+        return std.math.clamp(self.effectiveSpeedRowsPerSecond() * (0.49 / 12.0), 0.2, 1.1);
+    }
+
+    pub fn cameramanRowBlend(self: *const Runner) f32 {
+        return self.row_position - @floor(self.row_position);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -1230,6 +1253,25 @@ pub const Runner = struct {
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
         if (self.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
         return self.speed_rows_per_second;
+    }
+
+    fn updateCameraman(self: *Runner) void {
+        const dynamic_attachment_camera =
+            (self.movement_mode == .attachment and self.attachment_follow.active) or
+            self.launch.active;
+        const desired_fov: f32 = if (dynamic_attachment_camera) 160.0 else 110.0;
+        self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * 0.3;
+
+        const anchor_z = self.row_position + 0.4;
+        if (self.cameraman.follow_z == null) {
+            self.cameraman.follow_z = anchor_z - 1.85;
+        }
+        const delta = anchor_z - self.cameraman.follow_z.?;
+        if (delta > 3.0) {
+            self.cameraman.follow_z = anchor_z - 3.0;
+        } else if (delta < 1.70000005) {
+            self.cameraman.follow_z = anchor_z - 1.70000005;
+        }
     }
 
     fn stepTemporaryStates(self: *Runner) void {

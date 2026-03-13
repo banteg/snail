@@ -9084,6 +9084,14 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         runner.launch.active;
     const chase_eye_x = player_position.x / 3.0;
     const chase_target_x = chase_target_position.x / 3.0;
+    const speed_scalar = runner.cameramanSpeedScalar();
+    const row_blend = runner.cameramanRowBlend();
+    const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, row_blend);
+    const pitch_radians = std.math.clamp(
+        (-2.0 - ((speed_scalar - 0.49) * 5.0)) * 0.0174499992,
+        -1.22149992,
+        1.22149992,
+    );
     const target = if (dynamic_attachment_camera)
         rl.Vector3{
             .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
@@ -9093,8 +9101,8 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     else
         rl.Vector3{
             .x = chase_target_x,
-            .y = player_floor + 0.4,
-            .z = chase_target_position.z + 1.45,
+            .y = (player_floor + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
+            .z = runner.cameramanEyeZ() + (std.math.cos(pitch_radians) * 3.3),
         };
     const position = if (dynamic_attachment_camera)
         rl.Vector3{
@@ -9105,8 +9113,8 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
     else
         rl.Vector3{
             .x = chase_eye_x,
-            .y = player_floor + 1.8,
-            .z = player_position.z - 1.85,
+            .y = player_floor + 1.8 + vertical_lift,
+            .z = runner.cameramanEyeZ(),
         };
     const up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
 
@@ -9114,7 +9122,7 @@ fn gameplayLevelCamera(loaded_track_preview: *const track.LoadedLevelPreview, ru
         .position = position,
         .target = target,
         .up = up,
-        .fovy = 68.0,
+        .fovy = runner.cameramanFovDegrees(),
         .projection = .perspective,
     };
 }
@@ -9151,7 +9159,7 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
             .position = eye,
             .target = camera_hotspot_world,
             .up = frame.up,
-            .fovy = 68.0,
+            .fovy = 110.0,
             .projection = .perspective,
         };
     }
@@ -9178,7 +9186,7 @@ fn tutorialClickStartCamera(state: *const AppState, loaded_track_preview: *const
         .position = lerpVector3(side_position, gameplay_camera.position, blend),
         .target = lerpVector3(camera_hotspot_world, gameplay_camera.target, blend),
         .up = normalizeVector3(lerpVector3(frame.up, gameplay_camera.up, blend)),
-        .fovy = std.math.lerp(68.0, gameplay_camera.fovy, blend),
+        .fovy = std.math.lerp(110.0, gameplay_camera.fovy, blend),
         .projection = .perspective,
     };
 }
@@ -9480,7 +9488,7 @@ test "gameplay camera looks ahead of the runner" {
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.position.y > player_position.y);
     try std.testing.expect(camera.target.y >= 0.0);
-    try std.testing.expectApproxEqAbs(@as(f32, 68.0), camera.fovy, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), camera.fovy, 0.001);
 }
 
 test "gameplay camera keeps lateral steering mostly behind turbo" {
@@ -9512,6 +9520,31 @@ test "gameplay camera keeps lateral steering mostly behind turbo" {
     try std.testing.expect(camera.target.x > 0.0);
     try std.testing.expect(camera.target.x < player_position.x);
     try std.testing.expect(camera.position.x <= player_position.x);
+}
+
+test "gameplay camera keeps z follow inside recovered deadzone" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
+    const camera = gameplayLevelCamera(&loaded_track_preview, runner);
+    const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
+    const delta_z = (player_position.z + 0.4) - camera.position.z;
+    try std.testing.expect(delta_z >= 1.70000005 - 0.001);
+    try std.testing.expect(delta_z <= 3.0 + 0.001);
 }
 
 test "completion cutscene camera widens the chase view" {
