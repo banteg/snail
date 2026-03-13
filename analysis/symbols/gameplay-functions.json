@@ -7,6 +7,18 @@
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
+      "address": "0x401030",
+      "name": "border_add_text_number"
+    },
+    {
+      "address": "0x4010e0",
+      "name": "hide_border_init"
+    },
+    {
+      "address": "0x401110",
+      "name": "unhide_border_init"
+    },
+    {
       "address": "0x401130",
       "name": "draw_frontend_widget",
       "description": "Renders one shell-font front-end widget, including nine-slice border styles, slider-track strips, optional glow overlay, icon sprites, and the final text draw."
@@ -32,9 +44,65 @@
       "description": "Chains one shell-font front-end widget below another by copying the previous widget x anchor and adding the current gap plus the previous measured height."
     },
     {
+      "address": "0x4027e0",
+      "name": "unhighlight_border"
+    },
+    {
+      "address": "0x402800",
+      "name": "highlight_border"
+    },
+    {
       "address": "0x402820",
       "name": "update_frontend_widget_interaction",
       "description": "Runs one front-end widget's per-frame interaction state, including hover easing, delayed click-bit dispatch, slider-arrow adjustments, bounds refresh, and draw."
+    },
+    {
+      "address": "0x4032a0",
+      "name": "allocate_border"
+    },
+    {
+      "address": "0x403300",
+      "name": "activate_all_borders"
+    },
+    {
+      "address": "0x403360",
+      "name": "kill_border"
+    },
+    {
+      "address": "0x4033c0",
+      "name": "kill_all_borders"
+    },
+    {
+      "address": "0x4033f0",
+      "name": "hide_all_borders"
+    },
+    {
+      "address": "0x403400",
+      "name": "unhide_all_borders"
+    },
+    {
+      "address": "0x403410",
+      "name": "border_input_text_init"
+    },
+    {
+      "address": "0x4035b0",
+      "name": "border_input_text"
+    },
+    {
+      "address": "0x403fc0",
+      "name": "update_border_manager"
+    },
+    {
+      "address": "0x404540",
+      "name": "border_sprite_extend"
+    },
+    {
+      "address": "0x404580",
+      "name": "border_mouse_test"
+    },
+    {
+      "address": "0x404730",
+      "name": "set_border_justify_centre"
     },
     {
       "address": "0x404830",
@@ -152,6 +220,10 @@
       "name": "run_frame_update"
     },
     {
+      "address": "0x40a490",
+      "name": "render_game_frame"
+    },
+    {
       "address": "0x40ab00",
       "name": "initialize_frontend_overlay_color_lerp",
       "description": "Seeds the secondary full-screen RGBA overlay interpolator stored at `data_4df904 + 0x2a8`."
@@ -179,6 +251,14 @@
     {
       "address": "0x40acf0",
       "name": "initialize_game_assets_and_world"
+    },
+    {
+      "address": "0x410710",
+      "name": "initialize_distort"
+    },
+    {
+      "address": "0x410720",
+      "name": "initialize_game_last"
     },
     {
       "address": "0x410730",
@@ -362,6 +442,10 @@
       "description": "Runs the New Game menu controller, dispatching Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine."
     },
     {
+      "address": "0x4182e0",
+      "name": "reset_landscape_manager"
+    },
+    {
       "address": "0x4182f0",
       "name": "load_landscape_script_by_name",
       "description": "Loads or reuses one `Backgrounds/<name>` landscape script, parses its `ID`, `Fog`, `Picture`, `Landscape`, and `Distort` fields, registers the referenced backdrop textures, and returns the cached landscape index."
@@ -417,6 +501,10 @@
       "description": "Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`."
     },
     {
+      "address": "0x41aa50",
+      "name": "apply_distort_to_object"
+    },
+    {
       "address": "0x41ace0",
       "name": "initialize_options",
       "description": "Constructs the Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls. Cross-port Android and iOS symbols match this helper to `cROptions::Init()`."
@@ -437,6 +525,10 @@
       "description": "Pushes the saved sound and music scalar fields from SnailMail.cfg into the audio engine."
     },
     {
+      "address": "0x41b0a0",
+      "name": "allocate_path_nodes"
+    },
+    {
       "address": "0x41b0f0",
       "name": "initialize_looptheloop_path_template_pair"
     },
@@ -449,6 +541,26 @@
       "name": "initialize_loopout_path_template_pair"
     },
     {
+      "address": "0x41d030",
+      "name": "initialize_halfpipe_path_template_pair"
+    },
+    {
+      "address": "0x41da30",
+      "name": "initialize_halfpole_path_template_pair"
+    },
+    {
+      "address": "0x41eda0",
+      "name": "initialize_screw_path_template_pair"
+    },
+    {
+      "address": "0x41f760",
+      "name": "initialize_slalomdouble_path_template_pair"
+    },
+    {
+      "address": "0x420170",
+      "name": "initialize_shimmy_path_template_pair"
+    },
+    {
       "address": "0x420c40",
       "name": "begin_track_attachment_follow_state"
     },
@@ -457,9 +569,17 @@
       "name": "update_track_attachment_follow_state"
     },
     {
+      "address": "0x4217b0",
+      "name": "calc_path_length_z"
+    },
+    {
       "address": "0x421dc0",
       "name": "mirror_path_template_pair_x",
       "description": "Clones one path-template pair, negates X-space samples, and flips strip winding for the mirrored half."
+    },
+    {
+      "address": "0x4221f0",
+      "name": "initialize_slalom_path_template_pair"
     },
     {
       "address": "0x422c00",
@@ -472,6 +592,10 @@
     {
       "address": "0x423f10",
       "name": "initialize_supertramp_path_template_pair"
+    },
+    {
+      "address": "0x425050",
+      "name": "initialize_dip_path_template_pair"
     },
     {
       "address": "0x425a40",
@@ -548,6 +672,14 @@
     {
       "address": "0x42d570",
       "name": "initialize_hill_valley_path_template_pair"
+    },
+    {
+      "address": "0x42df00",
+      "name": "initialize_sbend_path_template_pair"
+    },
+    {
+      "address": "0x42e720",
+      "name": "initialize_detour_path_template_pair"
     },
     {
       "address": "0x42f470",
@@ -844,16 +976,24 @@
       "description": "Maps ring or special-effect modes onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families."
     },
     {
+      "address": "0x43e690",
+      "name": "emit_ring_star_shower"
+    },
+    {
       "address": "0x43e830",
-      "name": "update_ring_hazard_ai"
+      "name": "update_subgoldy_bullet"
+    },
+    {
+      "address": "0x43ecc0",
+      "name": "update_track_health_pickup"
     },
     {
       "address": "0x43ee50",
-      "name": "update_fringe_ai"
+      "name": "update_track_jetpack_pickup"
     },
     {
       "address": "0x43efb0",
-      "name": "update_tramp_ring_ai"
+      "name": "update_wall2_ambient_hazard"
     },
     {
       "address": "0x43f130",
@@ -872,6 +1012,14 @@
     {
       "address": "0x43f560",
       "name": "play_slug_voice"
+    },
+    {
+      "address": "0x43f5c0",
+      "name": "initialize_slug_voice_manager"
+    },
+    {
+      "address": "0x43f5e0",
+      "name": "update_slug_voice_manager"
     },
     {
       "address": "0x43f620",
@@ -911,6 +1059,18 @@
     {
       "address": "0x4404d0",
       "name": "calc_subgame_rate"
+    },
+    {
+      "address": "0x440600",
+      "name": "uninit_pause_menu"
+    },
+    {
+      "address": "0x440660",
+      "name": "initialize_pause_menu"
+    },
+    {
+      "address": "0x4407a0",
+      "name": "update_pause_menu"
     },
     {
       "address": "0x440910",
@@ -967,6 +1127,10 @@
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
       "description": "Finds a free projectile slot, seeds its launch state from Goldy's current weapon mode, and dispatches the matching player shot sound."
+    },
+    {
+      "address": "0x441b70",
+      "name": "zero_timer_counters"
     },
     {
       "address": "0x441b90",
@@ -1066,6 +1230,14 @@
       "name": "build_snail_hotspots"
     },
     {
+      "address": "0x445e20",
+      "name": "update_times_up"
+    },
+    {
+      "address": "0x445e70",
+      "name": "uninit_times_up"
+    },
+    {
       "address": "0x445e90",
       "name": "show_times_up_message",
       "description": "Spawns the floating `Time's Up` gameplay message once the subgame timer hits its terminal threshold."
@@ -1156,6 +1328,10 @@
       "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
     },
     {
+      "address": "0x448960",
+      "name": "format_time_trial_string"
+    },
+    {
       "address": "0x448cf0",
       "name": "initialize_tip_manager"
     },
@@ -1171,6 +1347,54 @@
     {
       "address": "0x448d80",
       "name": "update_tip_manager"
+    },
+    {
+      "address": "0x448da0",
+      "name": "initialize_tutorial"
+    },
+    {
+      "address": "0x448dd0",
+      "name": "uninit_tutorial"
+    },
+    {
+      "address": "0x448de0",
+      "name": "update_tutorial"
+    },
+    {
+      "address": "0x448df0",
+      "name": "initialize_voice_set"
+    },
+    {
+      "address": "0x448e60",
+      "name": "shuffle_voice_set"
+    },
+    {
+      "address": "0x448ec0",
+      "name": "reset_voice_manager"
+    },
+    {
+      "address": "0x448ee0",
+      "name": "initialize_voice_manager"
+    },
+    {
+      "address": "0x4492a0",
+      "name": "update_voice_manager"
+    },
+    {
+      "address": "0x4492d0",
+      "name": "play_voice_manager"
+    },
+    {
+      "address": "0x449360",
+      "name": "update_voice_set"
+    },
+    {
+      "address": "0x449390",
+      "name": "play_voice_set"
+    },
+    {
+      "address": "0x449410",
+      "name": "is_voice_playing"
     },
     {
       "address": "0x449460",
@@ -1238,6 +1462,10 @@
       "address": "0x44d250",
       "name": "set_matrix_identity",
       "description": "Resets one 4x4 transform matrix to identity. Windows callers use it for player, cutscene, and path-template transform setup."
+    },
+    {
+      "address": "0x44dcb0",
+      "name": "initialize_sound_bank"
     },
     {
       "address": "0x44dde0",
