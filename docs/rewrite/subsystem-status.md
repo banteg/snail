@@ -197,7 +197,7 @@ Implemented now:
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
-- authored tutorial/message prompts now use a single titled `Tutorial` card with one active tip at a time instead of the older debug footer/banner scaffolding
+- authored tutorial/message prompts now use a single titled `Turbo` card with one active tip at a time instead of the older debug footer/banner scaffolding
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 - tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus
@@ -209,7 +209,7 @@ Still missing or approximate:
 - exact completion/death cutscene handoff
 - the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
 - the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
-- the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass uses the real barrier mesh plus the recovered fixed height, but still anchors it conservatively from the live track row instead of the original owner/update path
+- the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
 
 Best next work:
 

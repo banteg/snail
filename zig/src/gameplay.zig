@@ -96,6 +96,7 @@ pub const Projectile = struct {
         turbo,
         laser,
         rocket,
+        enemy_laser,
     };
 
     active: bool = false,
@@ -310,6 +311,11 @@ const supertramp_launch_gravity: f32 = 18.0;
 const mouse_steer_lerp_scale: f32 = 12.0;
 const base_fire_cooldown_ticks: u8 = 10;
 const projectile_speed_rows_per_second: f32 = 48.0;
+const turret_projectile_speed_rows_per_second: f32 = 20.0;
+const turret_fire_interval_seconds: f32 = 1.0;
+const turret_projectile_spawn_rows_ahead: usize = 24;
+const turret_projectile_hit_z_tolerance: f32 = 0.5;
+const turret_projectile_hit_x_tolerance: f32 = 0.6;
 const slow_ring_duration_ticks: u16 = 240;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
@@ -328,6 +334,7 @@ fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
         .turbo => projectile_speed_rows_per_second,
         .laser => projectile_speed_rows_per_second * 1.15,
         .rocket => projectile_speed_rows_per_second * 0.8,
+        .enemy_laser => turret_projectile_speed_rows_per_second,
     };
 }
 
@@ -428,6 +435,7 @@ pub const Runner = struct {
     last_runtime_hazard_scan_end: usize = 0,
     active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
     active_projectile_count: usize = 0,
+    turret_fire_seconds: f32 = 0.0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
 
@@ -497,6 +505,7 @@ pub const Runner = struct {
         }
 
         if (!self.paused and self.phase == .active) {
+            self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.processVisitedRows(preview);
@@ -1323,7 +1332,9 @@ pub const Runner = struct {
             projectile.world_y += projectile.dir_y * projectile.speed_rows_per_second * delta_seconds;
             projectile.world_z += projectile.dir_z * projectile.speed_rows_per_second * delta_seconds;
             if (self.resolveProjectileHit(preview, &projectile)) continue;
-            if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
+            if (projectile.kind == .enemy_laser) {
+                if (projectile.world_z < self.row_position - 8.0) continue;
+            } else if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
             self.active_projectiles[write_index] = projectile;
             write_index += 1;
         }
@@ -1335,6 +1346,17 @@ pub const Runner = struct {
 
     fn resolveProjectileHit(self: *Runner, preview: *const track.LoadedLevelPreview, projectile: *Projectile) bool {
         if (preview.total_rows == 0) return true;
+        if (projectile.kind == .enemy_laser) {
+            const player_position = self.worldPosition(preview, 0.4);
+            if (@abs(projectile.world_z - player_position.z) <= turret_projectile_hit_z_tolerance and
+                @abs(projectile.world_x - player_position.x) <= turret_projectile_hit_x_tolerance)
+            {
+                self.counters.turret_hits += 1;
+                self.recent_event = .turret_hit;
+                self.beginDeathCutscene(.hazard);
+                return true;
+            }
+        }
         const global_row = preview.rowIndexAtWorldZ(projectile.world_z);
         const lane_index = preview.laneIndexAtWorldX(projectile.world_x);
         if (global_row >= preview.total_rows or lane_index >= preview.max_width) return false;
@@ -1361,6 +1383,40 @@ pub const Runner = struct {
             else => {},
         };
         return false;
+    }
+
+    fn updateTurretFire(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        if (preview.total_rows == 0) return;
+        self.turret_fire_seconds += delta_seconds;
+        while (self.turret_fire_seconds >= turret_fire_interval_seconds) {
+            self.turret_fire_seconds -= turret_fire_interval_seconds;
+            self.spawnTurretProjectiles(preview);
+        }
+    }
+
+    fn spawnTurretProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const start_row = currentRowIndex(preview, self.row_position);
+        const end_row = @min(start_row + turret_projectile_spawn_rows_ahead, preview.total_rows);
+        const gameplay_width = @min(preview.max_width, 8);
+        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+
+        var global_row = start_row;
+        while (global_row < end_row) : (global_row += 1) {
+            const row_location = preview.locateRow(global_row) orelse continue;
+            const width = @min(row_location.row.cells.len, preview.max_width);
+            for (0..width) |lane_index| {
+                if (row_location.row.cells[lane_index] != '=') continue;
+                self.spawnProjectile(
+                    .enemy_laser,
+                    (@as(f32, @floatFromInt(lane_index)) + 0.5) - width_offset,
+                    0.4,
+                    @as(f32, @floatFromInt(global_row)),
+                    0.0,
+                    0.0,
+                    -1.0,
+                );
+            }
+        }
     }
 
     fn gameplayCellAt(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) ?track.GameplayCellKind {
@@ -2628,6 +2684,43 @@ test "turret contact enters the hazard death cutscene" {
     try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
 }
 
+test "turret rows spawn enemy laser projectiles" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const turret = findFirstRawCell(&fixture.preview, '=').?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, turret);
+    runner.updateTurretFire(&fixture.preview, turret_fire_interval_seconds);
+
+    try std.testing.expect(runner.active_projectile_count > 0);
+    try std.testing.expectEqual(Projectile.Kind.enemy_laser, runner.active_projectiles[0].kind);
+}
+
+test "enemy laser projectile hits player and enters hazard death cutscene" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const player_position = runner.worldPosition(&fixture.preview, 0.4);
+    var projectile: Projectile = .{
+        .active = true,
+        .kind = .enemy_laser,
+        .world_x = player_position.x,
+        .world_y = player_position.y,
+        .world_z = player_position.z,
+        .dir_x = 0.0,
+        .dir_y = 0.0,
+        .dir_z = -1.0,
+        .speed_rows_per_second = projectileSpeedForKind(.enemy_laser),
+    };
+
+    try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
+    try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
+    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+}
+
 test "invincible slug contact defeats slug instead of entering death" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -2981,14 +3074,27 @@ test "supertramp natural exit enters a launch state above the floor" {
     var runner = Runner.init(&fixture.preview);
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, target);
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const centered = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        0.0,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const center_lane = Runner.laneCenterFromWorldX(&fixture.preview, centered.x);
+    runner.lane_center = center_lane;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, center_lane);
+    runner.resolved_lane_index = runner.lane_index;
+    runner.refreshSample(&fixture.preview);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-
-    var guard: usize = 0;
-    while (runner.movement_mode == .attachment and guard < 256) : (guard += 1) {
-        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    }
+    const sample_count: f32 = @floatFromInt(built.template.sample_count);
+    runner.attachment_follow.progress = sample_count - 0.1;
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+    runner.speed_rows_per_second = 48.0;
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.launch.active);

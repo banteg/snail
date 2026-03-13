@@ -2840,6 +2840,12 @@ const AppState = struct {
             };
             self.playGameplayEffect(fired_sound);
         }
+        if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
+            self.playGameplayEffect(self.pickGameplaySoundVariant(
+                gameplay_laser_sound_paths.len,
+                self.current_gameplay_sound_fx.laser,
+            ));
+        }
         if (current.weapon_level != previous.weapon_level) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
         }
@@ -2876,6 +2882,14 @@ const AppState = struct {
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
         }
+    }
+
+    fn countGameplayProjectiles(runner: gameplay.Runner, kind: gameplay.Projectile.Kind) usize {
+        var count: usize = 0;
+        for (runner.activeProjectiles()) |projectile| {
+            if (projectile.kind == kind) count += 1;
+        }
+        return count;
     }
 
     fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
@@ -3729,9 +3743,6 @@ const AppState = struct {
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
         const message = segment_entry.message orelse return;
-        if (self.isTutorialGameplay()) {
-            self.level_prompt_queue.clear();
-        }
         self.level_prompt_queue.enqueue(message, level_prompt.durationTicks(segment_entry.duration));
     }
 
@@ -6713,24 +6724,32 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
 
 fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
     const prompt = queue.active() orelse return;
-    const card = layout.mapRect(56.0, 54.0, 508.0, 78.0);
-    rl.drawRectangleRounded(card, 0.12, 8, .{ .r = 10, .g = 10, .b = 18, .a = 216 });
+    const card = layout.mapRect(16.0, 330.0, 340.0, 86.0);
+    const shadow_card = rl.Rectangle{
+        .x = card.x + layout.scaleFloat(4.0),
+        .y = card.y + layout.scaleFloat(4.0),
+        .width = card.width,
+        .height = card.height,
+    };
+    rl.drawRectangleRounded(shadow_card, 0.11, 8, .{ .r = 0, .g = 0, .b = 0, .a = 72 });
+    rl.drawRectangleRounded(card, 0.11, 8, .{ .r = 16, .g = 18, .b = 30, .a = 224 });
     rl.drawRectangleRoundedLinesEx(
         card,
-        0.12,
+        0.11,
         8,
         layout.scaleFloat(2.0),
-        .{ .r = 88, .g = 116, .b = 164, .a = 156 },
+        .{ .r = 112, .g = 160, .b = 228, .a = 184 },
     );
+
     const title_x: i32 = @intFromFloat(card.x + layout.scaleFloat(18.0));
     const title_y: i32 = @intFromFloat(card.y + layout.scaleFloat(10.0));
-    drawAppText(state, "Tutorial", title_x, title_y, layout.fontSize(22), .gold);
+    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(22), .gold);
 
     try drawWrappedText(
         state,
         prompt.message,
         @intFromFloat(card.x + layout.scaleFloat(18.0)),
-        @intFromFloat(card.y + layout.scaleFloat(34.0)),
+        @intFromFloat(card.y + layout.scaleFloat(36.0)),
         @intFromFloat(card.width - layout.scaleFloat(36.0)),
         layout.fontSize(18),
         .ray_white,
@@ -7819,24 +7838,8 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     const barrier_active = tutorial_level_active or runner.current_annotation == .no_fall;
     if (!barrier_active) return;
 
-    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
-    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
-    var right = crossVector3(up, forward);
-    if (vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = normalizeVector3(right);
-    }
-    const corrected_up = normalizeVector3(crossVector3(forward, right));
-    const center_lane = @as(f32, @floatFromInt(loaded_track_preview.max_width)) * 0.5;
-    const barrier_row = runner.row_position;
-    const barrier_floor = loaded_track_preview.sampleFloorHeightAtGridPosition(
-        runner.current_global_row,
-        loaded_track_preview.laneIndexAtWorldX(0.0),
-        barrier_row,
-    ) orelse 0.0;
-    const position = loaded_track_preview.worldPositionForLane(center_lane, barrier_row, barrier_floor + 0.4);
-    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
+    const runner_position = runner.worldPosition(loaded_track_preview, 0.4);
+    const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
     rl.gl.rlDisableDepthTest();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
@@ -7905,6 +7908,19 @@ fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Proj
             loaded_object.drawTintedEx(
                 world_transform.multiply(offset).multiply(scale),
                 .{ .r = 180, .g = 255, .b = 255, .a = 236 },
+            );
+        },
+        .enemy_laser => {
+            const loaded_object = state.current_gameplay_vapour_lazer_object orelse state.current_gameplay_lazer_object orelse return;
+            const offset = rl.Matrix.translate(
+                -loaded_object.center.x,
+                -loaded_object.center.y,
+                -loaded_object.center.z,
+            );
+            const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
+            loaded_object.drawTintedEx(
+                world_transform.multiply(offset).multiply(scale),
+                .{ .r = 255, .g = 136, .b = 96, .a = 236 },
             );
         },
         .rocket => {
