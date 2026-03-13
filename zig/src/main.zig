@@ -120,6 +120,10 @@ const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
 const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
 const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
 const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
+const gameplay_damage_gauge_sprite_path = "SPRITES/DAMAGEGUAGE.TGA";
+const gameplay_damage_gauge_full_sprite_path = "SPRITES/DAMAGEGUAGEFULL.TGA";
+const gameplay_damage_gauge_bright_sprite_path = "SPRITES/DAMAGEGUAGEBRIGHT.TGA";
+const gameplay_warning_sprite_path = "SPRITES/WARNING.TGA";
 const gameplay_explode_big_sprite_path = "SPRITES/PARTICLEEXPLODE-BIG.TGA";
 const gameplay_explode_small_sprite_path = "SPRITES/PARTICLEEXPLODE-SMALL.TGA";
 const gameplay_slug_goo_sprite_path = "SPRITES/SLUGGOO.TGA";
@@ -148,6 +152,7 @@ const gameplay_asteroid_impact_sound_paths = [_][]const u8{
     "SFX2/ASTEROIDIMPACT2.OGG",
 };
 const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
+const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -279,6 +284,10 @@ const GameplaySpriteArt = struct {
     ring_big: ?assets.LoadedTexture = null,
     slow_ring: ?assets.LoadedTexture = null,
     powerup: ?assets.LoadedTexture = null,
+    damage_gauge: ?assets.LoadedTexture = null,
+    damage_gauge_full: ?assets.LoadedTexture = null,
+    damage_gauge_bright: ?assets.LoadedTexture = null,
+    warning: ?assets.LoadedTexture = null,
     explode_big: ?assets.LoadedTexture = null,
     explode_small: ?assets.LoadedTexture = null,
     slug_goo: ?assets.LoadedTexture = null,
@@ -327,6 +336,22 @@ const GameplaySpriteArt = struct {
             texture.unload();
             self.powerup = null;
         }
+        if (self.damage_gauge) |*texture| {
+            texture.unload();
+            self.damage_gauge = null;
+        }
+        if (self.damage_gauge_full) |*texture| {
+            texture.unload();
+            self.damage_gauge_full = null;
+        }
+        if (self.damage_gauge_bright) |*texture| {
+            texture.unload();
+            self.damage_gauge_bright = null;
+        }
+        if (self.warning) |*texture| {
+            texture.unload();
+            self.warning = null;
+        }
         if (self.explode_big) |*texture| {
             texture.unload();
             self.explode_big = null;
@@ -357,6 +382,7 @@ const GameplaySoundFx = struct {
     invincible: ?assets.LoadedSound = null,
     explode_ring: ?assets.LoadedSound = null,
     asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
+    postal_warning: ?assets.LoadedSound = null,
 
     fn unload(self: *GameplaySoundFx) void {
         inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
@@ -617,6 +643,10 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_ring_big_sprite_path);
     art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_slow_ring_sprite_path);
     art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
+    art.damage_gauge = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_sprite_path);
+    art.damage_gauge_full = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_full_sprite_path);
+    art.damage_gauge_bright = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_bright_sprite_path);
+    art.warning = try catalog.loadTextureByPath(allocator, gameplay_warning_sprite_path);
     art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_explode_big_sprite_path);
     art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_explode_small_sprite_path);
     art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_slug_goo_sprite_path);
@@ -649,6 +679,7 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
         sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
     }
+    sound_fx.postal_warning = try catalog.loadSoundByPath(allocator, gameplay_postal_warning_sound_path);
 
     return sound_fx;
 }
@@ -1207,6 +1238,7 @@ const AppState = struct {
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
     gameplay_audio_variant_counter: u32 = 0,
+    gameplay_warning_sound_seconds: f32 = 0.0,
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
     frontend_transition: FrontendTransition = .{},
@@ -2780,6 +2812,16 @@ const AppState = struct {
 
     fn playGameplayRunnerAudio(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
         if (!self.audio_ready) return;
+
+        if (current.damage_warning_state != .idle) {
+            self.gameplay_warning_sound_seconds += @floatCast(self.simulation_clock.step_seconds);
+            if (self.gameplay_warning_sound_seconds >= 1.0) {
+                self.gameplay_warning_sound_seconds -= 1.0;
+                self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
+            }
+        } else {
+            self.gameplay_warning_sound_seconds = 0.0;
+        }
 
         if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             const fired_sound = switch (current.weapon_level) {
@@ -6749,22 +6791,74 @@ fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner:
 
 fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
     const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
-    const fill_margin = layout.scaleFloat(4.0);
-    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
-    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
     const fill_ratio = std.math.clamp(runner.damage_gauge, 0.0, 1.0);
-    const active_fill_height = fill_height * fill_ratio;
     const pulse = if (runner.damage_warning_state == .idle)
         @as(f32, 0.0)
     else
         (@sin(@as(f32, @floatCast(state.render_time_seconds * 8.0))) + 1.0) * 0.5;
-    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
     const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
-    const fill_color = damageGaugeColor(fill_ratio, runner.damage_warning_state, pulse);
+    const warning_alpha: u8 = @intFromFloat(168.0 + 87.0 * pulse);
+    const bright_alpha: u8 = @intFromFloat(144.0 + 96.0 * pulse);
 
     drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
-    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+    if (state.current_gameplay_sprites.damage_gauge_full) |loaded_texture| {
+        if (fill_ratio > 0.0) {
+            const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
+            const source_width = @as(f32, @floatFromInt(loaded_texture.texture.width));
+            const source = rl.Rectangle{
+                .x = 0.0,
+                .y = source_height * (1.0 - fill_ratio),
+                .width = source_width,
+                .height = source_height * fill_ratio,
+            };
+            drawTextureLocalRectSource(
+                layout,
+                loaded_texture,
+                source,
+                586.0,
+                108.0 + (224.0 * (1.0 - fill_ratio)),
+                28.0,
+                224.0 * fill_ratio,
+                .white,
+            );
+        }
+    }
+    if (runner.damage_warning_state != .idle) {
+        if (state.current_gameplay_sprites.damage_gauge_bright) |loaded_texture| {
+            drawTextureLocalRect(
+                layout,
+                loaded_texture,
+                586.0,
+                108.0,
+                28.0,
+                224.0,
+                .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha },
+            );
+        }
+        if (state.current_gameplay_sprites.warning) |loaded_texture| {
+            drawTextureLocalRect(
+                layout,
+                loaded_texture,
+                288.0,
+                64.0,
+                64.0,
+                64.0,
+                .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha },
+            );
+        }
+    }
+    if (state.current_gameplay_sprites.damage_gauge) |loaded_texture| {
+        drawTextureLocalRect(layout, loaded_texture, 586.0, 108.0, 28.0, 224.0, .white);
+        return;
+    }
 
+    const fill_margin = layout.scaleFloat(4.0);
+    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
+    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
+    const active_fill_height = fill_height * fill_ratio;
+    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
+    const fill_color = damageGaugeColor(fill_ratio, runner.damage_warning_state, pulse);
+    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
     const inner = rl.Rectangle{
         .x = panel.x + fill_margin,
         .y = panel.y + fill_margin,
@@ -6772,7 +6866,6 @@ fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: 
         .height = fill_height,
     };
     rl.drawRectangleRounded(inner, 0.12, 6, .{ .r = 255, .g = 255, .b = 255, .a = 20 });
-
     if (active_fill_height > 0.0) {
         const fill_rect = rl.Rectangle{
             .x = inner.x,
@@ -6782,7 +6875,6 @@ fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: 
         };
         rl.drawRectangleRounded(fill_rect, 0.12, 6, fill_color);
     }
-
     rl.drawRectangleRoundedLinesEx(
         panel,
         0.18,

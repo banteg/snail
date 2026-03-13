@@ -261,6 +261,8 @@ Implemented now:
 
 - separate damage and jetpack controllers on the Zig side, matching the current Windows split
 - damage-gauge fill, warning, and drain behavior on the right general path
+- shipped `DamageGuage`, `DamageGuageFull`, `DamageGuageBright`, and `Warning` HUD art in live gameplay instead of the old generic gauge block
+- once-per-second postal warning sound playback while the warning actor is active
 - slug first-hit vs repeated-hit split
 - visible life seed `3`, bonus-life thresholds, and postal-only consumption rules
 - dedicated HUD damage gauge and postal life strip
@@ -268,7 +270,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- exact warning actor presentation and remaining sprite-driven behavior
+- exact warning owner/controller object behavior beyond the current art/audio presentation
 - runtime-cell `0x80` jetpack warning/shutoff branch
 - remaining hazard deltas and presentation details
 - full death/fall timing around these controllers
