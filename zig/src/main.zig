@@ -3315,15 +3315,19 @@ const AppState = struct {
                     }
                     return;
                 }
-                if (self.isTutorialGameplay() and self.level_prompt_queue.active() != null) {
-                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        self.level_prompt_queue.dismissActive();
-                    } else if (rl.isMouseButtonPressed(.left)) {
-                        if (self.currentUiMouseLocal()) |mouse| {
-                            if (activeTutorialPromptOkButtonRect(&self.level_prompt_queue)) |ok_button| {
-                                if (rectContainsLocalPoint(ok_button, mouse)) {
-                                    self.level_prompt_queue.dismissActive();
-                                    return;
+                if (self.isTutorialGameplay()) {
+                    if (self.level_prompt_queue.active()) |prompt| {
+                        if (prompt.interactive) {
+                            if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                                self.level_prompt_queue.dismissActive();
+                            } else if (rl.isMouseButtonPressed(.left)) {
+                                if (self.currentUiMouseLocal()) |mouse| {
+                                    if (activeTutorialPromptOkButtonRect(&self.level_prompt_queue)) |ok_button| {
+                                        if (rectContainsLocalPoint(ok_button, mouse)) {
+                                            self.level_prompt_queue.dismissActive();
+                                            return;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -3837,7 +3841,7 @@ const AppState = struct {
         const message = segment_entry.message orelse return;
         const duration_ticks = level_prompt.durationTicks(segment_entry.duration);
         if (self.isTutorialGameplay()) {
-            self.level_prompt_queue.replaceSingle(message, duration_ticks);
+            self.level_prompt_queue.replaceSingleWithOptions(message, duration_ticks, .{});
             return;
         }
         self.level_prompt_queue.enqueue(message, duration_ticks);
@@ -6888,20 +6892,21 @@ fn tutorialPromptLineCount(text: []const u8) i32 {
     return count;
 }
 
-fn tutorialPromptCardLocalRect(line_count: i32) rl.Rectangle {
+fn tutorialPromptCardLocalRect(line_count: i32, interactive: bool) rl.Rectangle {
     const body_height = 20.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
     const card_width = 392.0;
-    const card_height = 22.0 + body_height + 34.0;
+    const footer_height: f32 = if (interactive) 34.0 else 12.0;
+    const card_height = 22.0 + body_height + footer_height;
     return .{
         .x = (640.0 - card_width) * 0.5,
-        .y = 312.0,
+        .y = if (interactive) 312.0 else 30.0,
         .width = card_width,
         .height = card_height,
     };
 }
 
-fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32) rl.Rectangle {
-    const local_rect = tutorialPromptCardLocalRect(line_count);
+fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32, interactive: bool) rl.Rectangle {
+    const local_rect = tutorialPromptCardLocalRect(line_count, interactive);
     return layout.mapRect(local_rect.x, local_rect.y, local_rect.width, local_rect.height);
 }
 
@@ -6918,8 +6923,9 @@ fn tutorialPromptOkButtonRect(card_local_rect: rl.Rectangle) rl.Rectangle {
 
 fn activeTutorialPromptOkButtonRect(queue: *const level_prompt.Queue) ?rl.Rectangle {
     const prompt = queue.active() orelse return null;
+    if (!prompt.interactive) return null;
     const line_count = tutorialPromptLineCount(prompt.message);
-    return tutorialPromptOkButtonRect(tutorialPromptCardLocalRect(line_count));
+    return tutorialPromptOkButtonRect(tutorialPromptCardLocalRect(line_count, true));
 }
 
 fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const u8 {
@@ -6982,24 +6988,26 @@ fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) v
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
     const prompt = queue.active() orelse return;
     const line_count = tutorialPromptLineCount(prompt.message);
-    const card_local_rect = tutorialPromptCardLocalRect(line_count);
-    const card = tutorialPromptCardRect(layout, line_count);
-    const shadow_card = rl.Rectangle{
-        .x = card.x + layout.scaleFloat(4.0),
-        .y = card.y + layout.scaleFloat(4.0),
-        .width = card.width,
-        .height = card.height,
-    };
-    rl.drawRectangleRounded(shadow_card, 0.11, 8, .{ .r = 0, .g = 0, .b = 0, .a = 72 });
-    rl.drawRectangleRounded(card, 0.11, 8, .{ .r = 16, .g = 18, .b = 30, .a = 224 });
-    rl.drawRectangleRoundedLinesEx(
-        card,
-        0.11,
-        8,
-        layout.scaleFloat(2.0),
-        .{ .r = 112, .g = 160, .b = 228, .a = 184 },
+    const card_local_rect = tutorialPromptCardLocalRect(line_count, prompt.interactive);
+    var border_state = frontend_widget.TextButtonState{};
+    border_state.snapFor(.menu_button, false);
+    const border_colors = frontend_widget.colorsForState(border_state, false);
+    frontend_widget.drawNineSliceFrame(
+        layout,
+        state.frontend_widget_art.border.?.texture,
+        .{
+            .left = card_local_rect.x,
+            .top = card_local_rect.y,
+            .width = card_local_rect.width,
+            .height = card_local_rect.height,
+        },
+        frontend_widget.type20_border_edge,
+        frontend_widget.type20_border_edge / 128.0,
+        border_colors.fill,
     );
     drawTutorialPromptLines(state, layout, card_local_rect, prompt.message);
+
+    if (!prompt.interactive) return;
 
     const local_button = tutorialPromptOkButtonRect(card_local_rect);
     const button = layout.mapRect(local_button.x, local_button.y, local_button.width, local_button.height);

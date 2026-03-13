@@ -198,7 +198,7 @@ Implemented now:
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 - active tutorial prompts now also switch Turbo into the shipped `turbo-talk` animation family instead of leaving gameplay guidance as UI/voice-only
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
-- authored tutorial/message prompts now use a centered single-owner gameplay tip border with an `OK` button instead of the older debug footer/banner scaffolding or the earlier custom `Turbo` dialogue card
+- authored tutorial/message prompts now use the single-owner gameplay tip path instead of the older debug footer/banner scaffolding or the earlier custom `Turbo` dialogue card, and the common tutorial row-event guidance now behaves like timed non-interactive tips rather than `OK`-button prompts
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 - tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus

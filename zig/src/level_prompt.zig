@@ -6,6 +6,11 @@ pub const capacity: usize = 3;
 pub const Entry = struct {
     message: []const u8,
     ticks_remaining: u32,
+    interactive: bool = false,
+};
+
+pub const Options = struct {
+    interactive: bool = false,
 };
 
 pub const Queue = struct {
@@ -37,6 +42,10 @@ pub const Queue = struct {
     }
 
     pub fn enqueue(self: *Queue, message: []const u8, duration_ticks: u32) void {
+        self.enqueueWithOptions(message, duration_ticks, .{});
+    }
+
+    pub fn enqueueWithOptions(self: *Queue, message: []const u8, duration_ticks: u32, options: Options) void {
         if (message.len == 0) return;
 
         for (&self.entries) |*slot| {
@@ -44,6 +53,7 @@ pub const Queue = struct {
                 slot.* = .{
                     .message = message,
                     .ticks_remaining = @max(duration_ticks, 1),
+                    .interactive = options.interactive,
                 };
                 return;
             }
@@ -51,8 +61,12 @@ pub const Queue = struct {
     }
 
     pub fn replaceSingle(self: *Queue, message: []const u8, duration_ticks: u32) void {
+        self.replaceSingleWithOptions(message, duration_ticks, .{});
+    }
+
+    pub fn replaceSingleWithOptions(self: *Queue, message: []const u8, duration_ticks: u32, options: Options) void {
         self.clear();
-        self.enqueue(message, duration_ticks);
+        self.enqueueWithOptions(message, duration_ticks, options);
     }
 
     pub fn dismissActive(self: *Queue) void {
@@ -135,6 +149,13 @@ test "replace single clears older entries before showing the new one" {
     try std.testing.expectEqualStrings("Three", queue.active().?.message);
     try std.testing.expect(queue.entries[1] == null);
     try std.testing.expect(queue.entries[2] == null);
+}
+
+test "entry options are preserved when enqueued" {
+    var queue = Queue{};
+    queue.enqueueWithOptions("Prompt", 12, .{ .interactive = true });
+
+    try std.testing.expect(queue.active().?.interactive);
 }
 
 test "duration ticks use authored seconds when present" {
