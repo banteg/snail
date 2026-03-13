@@ -2912,7 +2912,7 @@ const AppState = struct {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
-                    if (!self.gameplay_click_start_active) {
+                    if (!self.gameplay_click_start_active and !self.tutorialPromptBlocksGameplay()) {
                         runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                         self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
@@ -3397,23 +3397,19 @@ const AppState = struct {
                     }
                     return;
                 }
-                if (self.isTutorialGameplay()) {
-                    if (self.level_prompt_queue.active()) |prompt| {
-                        if (prompt.interactive) {
-                            if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                                self.level_prompt_queue.dismissActive();
-                            } else if (rl.isMouseButtonPressed(.left)) {
-                                if (self.currentUiMouseLocal()) |mouse| {
-                                    if (activeTutorialPromptOkButtonRect(&self.level_prompt_queue)) |ok_button| {
-                                        if (rectContainsLocalPoint(ok_button, mouse)) {
-                                            self.level_prompt_queue.dismissActive();
-                                            return;
-                                        }
-                                    }
+                if (self.tutorialPromptBlocksGameplay()) {
+                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                        self.level_prompt_queue.dismissActive();
+                    } else if (rl.isMouseButtonPressed(.left)) {
+                        if (self.currentUiMouseLocal()) |mouse| {
+                            if (activeTutorialPromptOkButtonRect(&self.level_prompt_queue)) |ok_button| {
+                                if (rectContainsLocalPoint(ok_button, mouse)) {
+                                    self.level_prompt_queue.dismissActive();
                                 }
                             }
                         }
                     }
+                    return;
                 }
                 const accepts_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
                 if (accepts_input and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
@@ -3922,6 +3918,12 @@ const AppState = struct {
     fn isTutorialLevel(self: *const AppState) bool {
         const loaded_level = self.current_level orelse return false;
         return std.mem.eql(u8, loaded_level.source_path, "LEVELS/TUTORIAL.TXT");
+    }
+
+    fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
+        if (!self.isTutorialGameplay()) return false;
+        const prompt = self.level_prompt_queue.active() orelse return false;
+        return prompt.interactive;
     }
 
     fn tutorialClickStartCutsceneActive(self: *const AppState) bool {
