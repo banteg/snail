@@ -304,6 +304,7 @@ const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
 const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
+const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
 const completion_cutscene_duration_ticks: u16 = 72;
 const death_cutscene_duration_ticks: u16 = 72;
@@ -468,8 +469,20 @@ pub const Runner = struct {
             .parcel_target = parcel_target,
             .visible_life_stock = starting_visible_life_stock,
         };
+        if (preview.total_rows > 0) {
+            self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
+            self.movement_progress = 0.0;
+        }
         self.syncRowPosition(preview);
         self.refreshSample(preview);
+        if (preview.total_rows > 0) {
+            const centered_lane_center =
+                (@as(f32, @floatFromInt(self.traversable_bounds.min + self.traversable_bounds.max)) * 0.5) + 0.5;
+            self.lane_center = centered_lane_center;
+            self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
+            self.resolved_lane_index = self.lane_index;
+            self.refreshSample(preview);
+        }
         self.previous_row_position = self.row_position;
         self.previous_lane_center = self.lane_center;
         self.last_processed_row = self.current_global_row;
@@ -2461,8 +2474,8 @@ test "runner advances deterministically over fixed time" {
         runner.step(&preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectApproxEqAbs(@as(f32, 24.0), runner.row_position, 0.001);
-    try std.testing.expectEqual(@as(usize, 24), runner.runtime_track_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 28.0), runner.row_position, 0.001);
+    try std.testing.expectEqual(@as(usize, 28), runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
@@ -2481,17 +2494,17 @@ test "runner keeps discrete track cursor and fractional movement progress" {
 
     var runner = Runner.init(&preview);
     runner.step(&preview, .{}, 1.0 / 60.0);
-    try std.testing.expectEqual(@as(usize, 0), runner.runtime_track_index);
+    try std.testing.expectEqual(@as(usize, 4), runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.2), runner.row_position, 0.0001);
 
     for (0..4) |_| {
         runner.step(&preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectEqual(@as(usize, 1), runner.runtime_track_index);
+    try std.testing.expectEqual(@as(usize, 5), runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.row_position, 0.0001);
 }
 
 test "runner discovers attachment hint rows in shipped corpus" {
@@ -2941,7 +2954,7 @@ test "applyRespawn preserves score timer and remaining lives while resetting mov
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
     try std.testing.expectEqual(@as(u64, 90), runner.tick_count);
     try std.testing.expectEqual(@as(u32, 1500), runner.stopwatch.elapsedMillis());
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), runner.row_position, 0.0001);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
 }
 
@@ -3284,8 +3297,8 @@ test "continuous target lane center preserves fractional track steering" {
     runner.step(&fixture.preview, .{ .target_lane_center = 4.5 }, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(runner.lane_center > 0.5);
-    try std.testing.expect(runner.lane_center < 4.5);
+    try std.testing.expect(runner.lane_center > 4.5);
+    try std.testing.expect(runner.lane_center < 5.5);
     try std.testing.expect(@abs(runner.lane_center - (@floor(runner.lane_center) + 0.5)) > 0.05);
 }
 
