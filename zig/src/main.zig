@@ -1271,6 +1271,7 @@ const AppState = struct {
     pending_run_result: ?PendingRunResult = null,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
+    gameplay_click_start_active: bool = false,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?f32 = null,
@@ -2762,7 +2763,7 @@ const AppState = struct {
         }
         if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
             if (self.level_runner) |runner| {
-                if (!runner.paused) {
+                if (!runner.paused and !self.gameplay_click_start_active) {
                     self.level_prompt_queue.tick();
                 }
             }
@@ -2801,10 +2802,12 @@ const AppState = struct {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
-                    runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
-                    self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
-                    self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
-                    self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
+                    if (!self.gameplay_click_start_active) {
+                        runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                        self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
+                        self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
+                        self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
+                    }
                 }
             }
             self.updateGameplayEffects();
@@ -3266,6 +3269,12 @@ const AppState = struct {
                 }
             },
             .level => {
+                if (self.gameplay_click_start_active) {
+                    if (rl.isMouseButtonPressed(.left) or rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                        try self.activateGameplayClickStart();
+                    }
+                    return;
+                }
                 const accepts_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
                 if (accepts_input and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
                     self.mouse_level_lane_target = null;
@@ -3766,6 +3775,20 @@ const AppState = struct {
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
         const message = segment_entry.message orelse return;
         self.level_prompt_queue.enqueue(message, level_prompt.durationTicks(segment_entry.duration));
+    }
+
+    fn activateGameplayClickStart(self: *AppState) !void {
+        if (!self.gameplay_click_start_active) return;
+        self.gameplay_click_start_active = false;
+        self.mouse_level_lane_target = null;
+        self.pending_level_input = .{};
+        if (self.audio_ready) {
+            if (self.frontend_sound_fx.select) |loaded| {
+                rl.playSound(loaded.sound);
+            }
+        }
+        rl.setMousePosition(@divTrunc(rl.getScreenWidth(), 2), @divTrunc(rl.getScreenHeight(), 2));
+        try self.syncActiveLevelSegment(true);
     }
 
     fn enterSelectedFrontendRoute(self: *AppState) !void {
@@ -4375,16 +4398,19 @@ const AppState = struct {
         const previous_segment_index = self.active_level_segment_index;
         const segment_changed = previous_segment_index == null or previous_segment_index.? != row_location.segment_index;
         self.active_level_segment_index = row_location.segment_index;
+        const suppress_segment_events = self.gameplay_click_start_active;
         if (segment_changed) {
             if (previous_segment_index) |previous_index| {
                 if (row_location.segment_index < previous_index) {
                     self.clearLevelPromptQueue();
                 }
             }
-            self.queueLevelSegmentPrompt(segment_entry);
+            if (!suppress_segment_events) {
+                self.queueLevelSegmentPrompt(segment_entry);
+            }
         }
 
-        if (segment_changed or replay_sample_on_match) {
+        if (!suppress_segment_events and (segment_changed or replay_sample_on_match)) {
             if (segment_entry.sample) |sample_path| {
                 if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
                     try self.playVoiceByPath(sample_path);
@@ -4843,6 +4869,7 @@ const AppState = struct {
         self.active_gameplay_effect_count = 0;
         self.stopVoicePlayback();
         self.level_runner = null;
+        self.gameplay_click_start_active = false;
         if (self.catalog.level_entries.len == 0) return;
 
         const entry = self.catalog.level_entries[self.level_index];
@@ -4873,10 +4900,12 @@ const AppState = struct {
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
+                self.gameplay_click_start_active = self.command == .game and self.isTutorialGameplay();
             }
         }
         self.level_segment_index = 0;
         try self.reloadLevelSegment();
+        try self.syncActiveLevelSegment(false);
     }
 
     fn reloadLevelSegment(self: *AppState) !void {
@@ -6702,37 +6731,41 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
 
     const loaded_level = state.current_level orelse return;
     if (state.level_runner) |runner| {
-        const hud_panel = layout.mapRect(16.0, 14.0, 360.0, 58.0);
-        rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
+        if (state.isTutorialGameplay()) {
+            try drawTutorialGameplayUi(state, layout, loaded_level, runner);
+        } else {
+            const hud_panel = layout.mapRect(16.0, 14.0, 360.0, 58.0);
+            rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
 
-        const title_point = layout.mapPoint(28.0, 24.0);
-        const meta_point = layout.mapPoint(28.0, 50.0);
-        const parcel_target = loaded_level.parcels orelse 0;
-        const parcel_count = runner.counters.parcels;
-        const score_total = runner.score.total;
-        const elapsed_millis = runner.stopwatch.elapsedMillis();
-        const title_text = gameplayHudTitle(loaded_level, runner);
-        const package_icon = game_font.IconGlyph.package.byte();
-        const title_font_size = layout.fontSize(28);
-        const body_font_size = layout.fontSize(18);
+            const title_point = layout.mapPoint(28.0, 24.0);
+            const meta_point = layout.mapPoint(28.0, 50.0);
+            const parcel_target = loaded_level.parcels orelse 0;
+            const parcel_count = runner.counters.parcels;
+            const score_total = runner.score.total;
+            const elapsed_millis = runner.stopwatch.elapsedMillis();
+            const title_text = gameplayHudTitle(loaded_level, runner);
+            const package_icon = game_font.IconGlyph.package.byte();
+            const title_font_size = layout.fontSize(28);
+            const body_font_size = layout.fontSize(18);
 
-        drawAppText(state, title_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
+            drawAppText(state, title_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
 
-        var elapsed_buffer: [32]u8 = undefined;
-        const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
-        var meta_buffer: [256]u8 = undefined;
-        const meta_text = if (parcel_target > 0)
-            try std.fmt.bufPrintZ(
-                &meta_buffer,
-                "{c} {d}/{d}   Score {d}   Time {s}",
-                .{ package_icon, parcel_count, parcel_target, score_total, elapsed_text },
-            )
-        else
-            try std.fmt.bufPrintZ(&meta_buffer, "Score {d}   Time {s}", .{ score_total, elapsed_text });
-        drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
+            var elapsed_buffer: [32]u8 = undefined;
+            const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
+            var meta_buffer: [256]u8 = undefined;
+            const meta_text = if (parcel_target > 0)
+                try std.fmt.bufPrintZ(
+                    &meta_buffer,
+                    "{c} {d}/{d}   Score {d}   Time {s}",
+                    .{ package_icon, parcel_count, parcel_target, score_total, elapsed_text },
+                )
+            else
+                try std.fmt.bufPrintZ(&meta_buffer, "Score {d}   Time {s}", .{ score_total, elapsed_text });
+            drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
 
-        drawGameplayStatusWidgets(state, layout, runner);
-        try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
+            drawGameplayStatusWidgets(state, layout, runner);
+            try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
+        }
     }
 }
 
@@ -6776,6 +6809,129 @@ fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue:
         layout.fontSize(18),
         .ray_white,
     );
+}
+
+fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
+    const parcel_target = loaded_level.parcels orelse 0;
+    const parcel_count = runner.counters.parcels;
+    var score_buffer: [24]u8 = undefined;
+    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
+    drawCenteredGameplayHudText(state, layout, 150.0, 18.0, score_text, 32, .ray_white);
+
+    if (parcel_target > 0) {
+        var parcel_buffer: [24]u8 = undefined;
+        const parcel_text = try std.fmt.bufPrintZ(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target });
+        drawGameplayIconCounter(state, layout, game_font.IconGlyph.package, parcel_text, 12.0, 48.0, 22, .ray_white);
+    }
+
+    drawTutorialProgressBar(state, layout, runner);
+    drawTutorialLives(state, layout, runner.visible_life_stock);
+    drawDamageGaugeWidget(state, layout, runner);
+    if (runner.jetpack.active) {
+        drawJetpackGaugeWidget(state, layout, runner);
+    }
+    if (state.gameplay_click_start_active) {
+        drawCenteredGameplayHudText(state, layout, 320.0, 180.0, "Click to Start", 30, .ray_white);
+        return;
+    }
+    try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
+}
+
+fn drawCenteredGameplayHudText(
+    state: *const AppState,
+    layout: VirtualLayout,
+    authored_center_x: f32,
+    authored_y: f32,
+    text: []const u8,
+    authored_size: i32,
+    color: rl.Color,
+) void {
+    const font_size = layout.fontSize(authored_size);
+    const width = measureAppText(state, text, font_size);
+    const point = layout.mapPoint(authored_center_x, authored_y);
+    drawAppText(state, text, @intFromFloat(point.x - @as(f32, @floatFromInt(width)) * 0.5), @intFromFloat(point.y), font_size, color);
+}
+
+fn drawGameplayIconCounter(
+    state: *const AppState,
+    layout: VirtualLayout,
+    glyph: game_font.IconGlyph,
+    text: []const u8,
+    authored_x: f32,
+    authored_y: f32,
+    authored_size: i32,
+    color: rl.Color,
+) void {
+    const font_size = layout.fontSize(authored_size);
+    const point = layout.mapPoint(authored_x, authored_y);
+    state.ui_font.drawText(&[_]u8{glyph.byte()}, point.x, point.y, @floatFromInt(font_size), .white);
+    drawAppText(state, text, @intFromFloat(point.x + layout.scaleFloat(26.0)), @intFromFloat(point.y), font_size, color);
+}
+
+fn drawTutorialProgressBar(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+    const preview = state.current_track_preview orelse return;
+    const total_rows = @max(preview.total_rows, 1);
+    const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
+    const x = layout.mapPoint(20.0, 148.0).x;
+    const y = layout.mapPoint(20.0, 148.0).y;
+    const height = layout.scaleFloat(220.0);
+    const line_rect = rl.Rectangle{
+        .x = x,
+        .y = y,
+        .width = layout.scaleFloat(2.0),
+        .height = height,
+    };
+    rl.drawRectangleRounded(line_rect, 0.4, 6, .{ .r = 216, .g = 204, .b = 255, .a = 176 });
+    const marker_y = y + (1.0 - progress) * height;
+    state.ui_font.drawText(&[_]u8{game_font.IconGlyph.package.byte()}, x - layout.scaleFloat(12.0), marker_y - layout.scaleFloat(10.0), layout.scaleFloat(24.0), .white);
+    drawAppText(state, "<", @intFromFloat(x + layout.scaleFloat(10.0)), @intFromFloat(marker_y - layout.scaleFloat(4.0)), layout.fontSize(18), .{ .r = 255, .g = 184, .b = 80, .a = 236 });
+}
+
+fn drawTutorialLives(_: *const AppState, layout: VirtualLayout, visible_life_stock: u32) void {
+    const start = layout.mapPoint(14.0, 446.0);
+    const width = layout.scaleFloat(14.0);
+    const height = layout.scaleFloat(10.0);
+    const gap = layout.scaleFloat(18.0);
+    const count = @min(visible_life_stock, 9);
+    for (0..count) |slot_index| {
+        const center_x = start.x + @as(f32, @floatFromInt(slot_index)) * gap + width * 0.5;
+        const center_y = start.y + height * 0.5;
+        rl.drawEllipse(
+            @intFromFloat(center_x),
+            @intFromFloat(center_y),
+            width * 0.48,
+            height * 0.42,
+            .{ .r = 246, .g = 180, .b = 84, .a = 236 },
+        );
+        rl.drawEllipseLines(
+            @intFromFloat(center_x),
+            @intFromFloat(center_y),
+            width * 0.48,
+            height * 0.42,
+            .{ .r = 255, .g = 232, .b = 180, .a = 255 },
+        );
+    }
+}
+
+fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {
+    var digits_buffer: [16]u8 = undefined;
+    const digits = try std.fmt.bufPrint(&digits_buffer, "{d}", .{score});
+
+    var write_index: usize = 0;
+    const remainder = digits.len % 3;
+    for (digits, 0..) |digit, index| {
+        if (index != 0 and (index % 3 == remainder or (remainder == 0 and index % 3 == 0))) {
+            if (write_index >= buffer.len - 1) return error.NoSpaceLeft;
+            buffer[write_index] = ',';
+            write_index += 1;
+        }
+        if (write_index >= buffer.len - 1) return error.NoSpaceLeft;
+        buffer[write_index] = digit;
+        write_index += 1;
+    }
+    if (write_index >= buffer.len) return error.NoSpaceLeft;
+    buffer[write_index] = 0;
+    return buffer[0..write_index :0];
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
@@ -7873,7 +8029,12 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     if (!barrier_active) return;
 
     const runner_position = runner.worldPosition(loaded_track_preview, 0.4);
-    const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
+    // The shipped Barrier object is authored as two long side quads. In gameplay the
+    // original presents them as tall tutorial side walls, so rotate the mesh upright
+    // and anchor its base near the track instead of drawing it flat on the floor.
+    const world_transform = rl.Matrix
+        .translate(0.0, 18.4, runner_position.z)
+        .multiply(rl.Matrix.rotateX(-std.math.pi / 2.0));
     rl.gl.rlDisableDepthTest();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
@@ -8511,6 +8672,12 @@ test "elapsed millis format as mm:ss.cc" {
     var buffer: [32]u8 = undefined;
     const text = try formatElapsedMillis(&buffer, 91_230);
     try std.testing.expectEqualStrings("01:31.23", text);
+}
+
+test "tutorial score format uses commas" {
+    var buffer: [24]u8 = undefined;
+    const text = try formatScoreWithCommas(&buffer, 61_450);
+    try std.testing.expectEqualStrings("61,450", text);
 }
 
 test "high score mode index follows screen order" {
