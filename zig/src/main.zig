@@ -58,6 +58,7 @@ const default_texture_path = app.default_texture_path;
 const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
+const gameplay_turbo_talk_model_path = "X/TURBO-TALK-000.X2";
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
@@ -1325,6 +1326,7 @@ const AppState = struct {
     current_game_track_scene: ?track_render.Scene = null,
     current_gameplay_turbo_model: ?x2.Uploaded = null,
     current_gameplay_turbo_animation: ?xanim.Player = null,
+    current_gameplay_turbo_model_path: ?[]const u8 = null,
     current_gameplay_barrier_object: ?object.LoadedObject = null,
     current_gameplay_lazer_object: ?object.LoadedObject = null,
     current_gameplay_vapour_lazer_object: ?object.LoadedObject = null,
@@ -1663,6 +1665,7 @@ const AppState = struct {
             model.deinit();
             self.current_gameplay_turbo_model = null;
         }
+        self.current_gameplay_turbo_model_path = null;
     }
 
     fn unloadGameplayBarrier(self: *AppState) void {
@@ -1716,10 +1719,15 @@ const AppState = struct {
     }
 
     fn reloadGameplayTurbo(self: *AppState) !void {
+        try self.reloadGameplayTurboForPath(default_model_path);
+    }
+
+    fn reloadGameplayTurboForPath(self: *AppState, model_path: []const u8) !void {
         self.unloadGameplayTurbo();
 
-        const entry_index = self.catalog.findModelIndex(default_model_path) orelse return;
+        const entry_index = self.catalog.findModelIndex(model_path) orelse return;
         const entry = self.catalog.model_entries[entry_index];
+        self.current_gameplay_turbo_model_path = entry.path;
 
         if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
             const clip = &self.animation_catalog.clips[clip_index];
@@ -1741,6 +1749,19 @@ const AppState = struct {
             entry,
             true,
         );
+    }
+
+    fn syncGameplayTurboAnimation(self: *AppState) !void {
+        if (self.game_phase != .level) return;
+        if (!self.isTutorialGameplay()) return;
+        const desired_model_path = if (self.level_prompt_queue.active() != null)
+            gameplay_turbo_talk_model_path
+        else
+            default_model_path;
+        if (self.current_gameplay_turbo_model_path) |current_path| {
+            if (std.ascii.eqlIgnoreCase(current_path, desired_model_path)) return;
+        }
+        try self.reloadGameplayTurboForPath(desired_model_path);
     }
 
     fn reloadGameplayBarrier(self: *AppState) !void {
@@ -2776,6 +2797,7 @@ const AppState = struct {
         }
 
         if (self.game_phase == .level) {
+            try self.syncGameplayTurboAnimation();
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;

@@ -196,6 +196,7 @@ Implemented now:
 - attachment follow and launch states feed the camera with built template forward/up vectors
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
+- active tutorial prompts now also switch Turbo into the shipped `turbo-talk` animation family instead of leaving gameplay guidance as UI/voice-only
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
 - authored tutorial/message prompts now use a single titled `Turbo` card with one active tip at a time instead of the older debug footer/banner scaffolding
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
@@ -207,7 +208,7 @@ Still missing or approximate:
 - the full Windows `cameraman` controller
 - full cutscene camera ownership and transition behavior
 - exact completion/death cutscene handoff
-- the exact gameplay model anchor/orientation and state-specific animation switching for Turbo
+- the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
 - the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
 
