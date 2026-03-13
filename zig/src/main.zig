@@ -8322,12 +8322,11 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     if (!barrier_active) return;
 
     const runner_position = runner.worldPosition(loaded_track_preview, 0.4);
-    // The shipped Barrier object is authored as two long side quads. In gameplay the
-    // original presents them as tall tutorial side walls, so rotate the mesh upright
-    // and anchor its base near the track instead of drawing it flat on the floor.
-    const world_transform = rl.Matrix
-        .translate(0.0, 18.4, runner_position.z)
-        .multiply(rl.Matrix.rotateX(-std.math.pi / 2.0));
+    // Android `cRBarrier::AI()` only updates the object-space Y/Z slots:
+    // `y = 0.4`, `z = owner->+100`. The barrier mesh itself is already authored
+    // in the correct orientation, so gameplay should follow the owner without
+    // inventing an extra upright rotation.
+    const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
     rl.gl.rlDisableDepthTest();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
