@@ -121,6 +121,10 @@ const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
 const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
 const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
 const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
+const gameplay_life_sprite_path = "SPRITES/LIFE.TGA";
+const gameplay_progress_bar_sprite_path = "SPRITES/PROGRESS-BAR.TGA";
+const gameplay_progress_bar_lit_sprite_path = "SPRITES/PROGRESS-BAR-LIT.TGA";
+const gameplay_progress_cursor_sprite_path = "SPRITES/PROGRESS-CURSOR.TGA";
 const gameplay_damage_gauge_sprite_path = "SPRITES/DAMAGEGUAGE.TGA";
 const gameplay_damage_gauge_full_sprite_path = "SPRITES/DAMAGEGUAGEFULL.TGA";
 const gameplay_damage_gauge_bright_sprite_path = "SPRITES/DAMAGEGUAGEBRIGHT.TGA";
@@ -279,12 +283,16 @@ const GameplaySpriteArt = struct {
     slug_frames: [gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_slug_sprite_paths.len,
     garbage_variants: [gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_garbage_sprite_paths.len,
     health: ?assets.LoadedTexture = null,
+    life: ?assets.LoadedTexture = null,
     jetpack_frames: [gameplay_jetpack_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_jetpack_sprite_paths.len,
     parcel: ?assets.LoadedTexture = null,
     ring: ?assets.LoadedTexture = null,
     ring_big: ?assets.LoadedTexture = null,
     slow_ring: ?assets.LoadedTexture = null,
     powerup: ?assets.LoadedTexture = null,
+    progress_bar: ?assets.LoadedTexture = null,
+    progress_bar_lit: ?assets.LoadedTexture = null,
+    progress_cursor: ?assets.LoadedTexture = null,
     damage_gauge: ?assets.LoadedTexture = null,
     damage_gauge_full: ?assets.LoadedTexture = null,
     damage_gauge_bright: ?assets.LoadedTexture = null,
@@ -311,6 +319,10 @@ const GameplaySpriteArt = struct {
             texture.unload();
             self.health = null;
         }
+        if (self.life) |*texture| {
+            texture.unload();
+            self.life = null;
+        }
         for (&self.jetpack_frames) |*texture| {
             if (texture.*) |*loaded| {
                 loaded.unload();
@@ -336,6 +348,18 @@ const GameplaySpriteArt = struct {
         if (self.powerup) |*texture| {
             texture.unload();
             self.powerup = null;
+        }
+        if (self.progress_bar) |*texture| {
+            texture.unload();
+            self.progress_bar = null;
+        }
+        if (self.progress_bar_lit) |*texture| {
+            texture.unload();
+            self.progress_bar_lit = null;
+        }
+        if (self.progress_cursor) |*texture| {
+            texture.unload();
+            self.progress_cursor = null;
         }
         if (self.damage_gauge) |*texture| {
             texture.unload();
@@ -636,6 +660,7 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
         art.garbage_variants[index] = try catalog.loadTextureByPath(allocator, path);
     }
     art.health = try catalog.loadTextureByPath(allocator, gameplay_health_sprite_path);
+    art.life = try catalog.loadTextureByPath(allocator, gameplay_life_sprite_path);
     for (gameplay_jetpack_sprite_paths, 0..) |path, index| {
         art.jetpack_frames[index] = try catalog.loadTextureByPath(allocator, path);
     }
@@ -644,6 +669,9 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_ring_big_sprite_path);
     art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_slow_ring_sprite_path);
     art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
+    art.progress_bar = try catalog.loadTextureByPath(allocator, gameplay_progress_bar_sprite_path);
+    art.progress_bar_lit = try catalog.loadTextureByPath(allocator, gameplay_progress_bar_lit_sprite_path);
+    art.progress_cursor = try catalog.loadTextureByPath(allocator, gameplay_progress_cursor_sprite_path);
     art.damage_gauge = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_sprite_path);
     art.damage_gauge_full = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_full_sprite_path);
     art.damage_gauge_bright = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_bright_sprite_path);
@@ -2115,6 +2143,10 @@ const AppState = struct {
     }
 
     fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
+        return self.currentUiMouseLocal();
+    }
+
+    fn currentUiMouseLocal(self: *const AppState) ?rl.Vector2 {
         if (self.mouse_local_override) |mouse| {
             return .{ .x = mouse.x, .y = mouse.y };
         }
@@ -3275,6 +3307,18 @@ const AppState = struct {
                     }
                     return;
                 }
+                if (self.isTutorialGameplay() and self.level_prompt_queue.active() != null) {
+                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                        self.level_prompt_queue.dismissActive();
+                    } else if (rl.isMouseButtonPressed(.left)) {
+                        if (self.currentUiMouseLocal()) |mouse| {
+                            if (rectContainsLocalPoint(tutorialPromptOkButtonRect(), mouse)) {
+                                self.level_prompt_queue.dismissActive();
+                                return;
+                            }
+                        }
+                    }
+                }
                 const accepts_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
                 if (accepts_input and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
                     self.mouse_level_lane_target = null;
@@ -3774,7 +3818,12 @@ const AppState = struct {
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
         const message = segment_entry.message orelse return;
-        self.level_prompt_queue.enqueue(message, level_prompt.durationTicks(segment_entry.duration));
+        const duration_ticks = level_prompt.durationTicks(segment_entry.duration);
+        if (self.isTutorialGameplay()) {
+            self.level_prompt_queue.replaceSingle(message, duration_ticks);
+            return;
+        }
+        self.level_prompt_queue.enqueue(message, duration_ticks);
     }
 
     fn activateGameplayClickStart(self: *AppState) !void {
@@ -6811,22 +6860,96 @@ fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue:
     );
 }
 
+fn tutorialPromptCardRect(layout: VirtualLayout) rl.Rectangle {
+    return layout.mapRect(16.0, 330.0, 340.0, 102.0);
+}
+
+fn tutorialPromptOkButtonRect() rl.Rectangle {
+    return .{
+        .x = 278.0,
+        .y = 399.0,
+        .width = 56.0,
+        .height = 24.0,
+    };
+}
+
+fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
+    const prompt = queue.active() orelse return;
+    const card = tutorialPromptCardRect(layout);
+    const shadow_card = rl.Rectangle{
+        .x = card.x + layout.scaleFloat(4.0),
+        .y = card.y + layout.scaleFloat(4.0),
+        .width = card.width,
+        .height = card.height,
+    };
+    rl.drawRectangleRounded(shadow_card, 0.11, 8, .{ .r = 0, .g = 0, .b = 0, .a = 72 });
+    rl.drawRectangleRounded(card, 0.11, 8, .{ .r = 16, .g = 18, .b = 30, .a = 224 });
+    rl.drawRectangleRoundedLinesEx(
+        card,
+        0.11,
+        8,
+        layout.scaleFloat(2.0),
+        .{ .r = 112, .g = 160, .b = 228, .a = 184 },
+    );
+
+    const title_x: i32 = @intFromFloat(card.x + layout.scaleFloat(18.0));
+    const title_y: i32 = @intFromFloat(card.y + layout.scaleFloat(10.0));
+    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(22), .gold);
+
+    try drawWrappedText(
+        state,
+        prompt.message,
+        @intFromFloat(card.x + layout.scaleFloat(18.0)),
+        @intFromFloat(card.y + layout.scaleFloat(36.0)),
+        @intFromFloat(card.width - layout.scaleFloat(36.0)),
+        layout.fontSize(18),
+        .ray_white,
+    );
+
+    const local_button = tutorialPromptOkButtonRect();
+    const button = layout.mapRect(local_button.x, local_button.y, local_button.width, local_button.height);
+    const hovered = if (state.isTutorialGameplay())
+        if (state.currentUiMouseLocal()) |mouse|
+            rectContainsLocalPoint(local_button, mouse)
+        else
+            false
+    else
+        false;
+    rl.drawRectangleRounded(
+        button,
+        0.22,
+        6,
+        if (hovered)
+            .{ .r = 84, .g = 104, .b = 160, .a = 228 }
+        else
+            .{ .r = 42, .g = 48, .b = 86, .a = 220 },
+    );
+    rl.drawRectangleRoundedLinesEx(
+        button,
+        0.22,
+        6,
+        layout.scaleFloat(1.0),
+        .{ .r = 182, .g = 204, .b = 255, .a = 220 },
+    );
+    drawCenteredGameplayHudText(state, layout, local_button.x + local_button.width * 0.5, local_button.y + 2.0, "OK", 18, .ray_white);
+}
+
 fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
     const parcel_target = loaded_level.parcels orelse 0;
     const parcel_count = runner.counters.parcels;
     var score_buffer: [24]u8 = undefined;
     const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
-    drawCenteredGameplayHudText(state, layout, 150.0, 18.0, score_text, 32, .ray_white);
+    drawCenteredGameplayHudText(state, layout, 320.0, 12.0, score_text, 32, .ray_white);
 
     if (parcel_target > 0) {
         var parcel_buffer: [24]u8 = undefined;
         const parcel_text = try std.fmt.bufPrintZ(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target });
-        drawGameplayIconCounter(state, layout, game_font.IconGlyph.package, parcel_text, 12.0, 48.0, 22, .ray_white);
+        drawGameplayIconCounter(state, layout, game_font.IconGlyph.package, parcel_text, 12.0, 42.0, 22, .ray_white);
     }
 
     drawTutorialProgressBar(state, layout, runner);
     drawTutorialLives(state, layout, runner.visible_life_stock);
-    drawDamageGaugeWidget(state, layout, runner);
+    drawDamageGaugeWidget(state, layout, runner, false);
     if (runner.jetpack.active) {
         drawJetpackGaugeWidget(state, layout, runner);
     }
@@ -6834,7 +6957,7 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
         drawCenteredGameplayHudText(state, layout, 320.0, 180.0, "Click to Start", 30, .ray_white);
         return;
     }
-    try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
+    try drawTutorialPromptStack(state, layout, &state.level_prompt_queue);
 }
 
 fn drawCenteredGameplayHudText(
@@ -6872,43 +6995,66 @@ fn drawTutorialProgressBar(state: *const AppState, layout: VirtualLayout, runner
     const preview = state.current_track_preview orelse return;
     const total_rows = @max(preview.total_rows, 1);
     const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
-    const x = layout.mapPoint(20.0, 148.0).x;
-    const y = layout.mapPoint(20.0, 148.0).y;
-    const height = layout.scaleFloat(220.0);
-    const line_rect = rl.Rectangle{
-        .x = x,
-        .y = y,
-        .width = layout.scaleFloat(2.0),
-        .height = height,
-    };
-    rl.drawRectangleRounded(line_rect, 0.4, 6, .{ .r = 216, .g = 204, .b = 255, .a = 176 });
-    const marker_y = y + (1.0 - progress) * height;
-    state.ui_font.drawText(&[_]u8{game_font.IconGlyph.package.byte()}, x - layout.scaleFloat(12.0), marker_y - layout.scaleFloat(10.0), layout.scaleFloat(24.0), .white);
-    drawAppText(state, "<", @intFromFloat(x + layout.scaleFloat(10.0)), @intFromFloat(marker_y - layout.scaleFloat(4.0)), layout.fontSize(18), .{ .r = 255, .g = 184, .b = 80, .a = 236 });
+    const remaining_height = (1.0 - progress) * 232.0 + 12.0;
+    if (state.current_gameplay_sprites.progress_bar_lit) |loaded_texture| {
+        drawTextureLocalRectSource(
+            layout,
+            loaded_texture,
+            rl.Rectangle{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @floatFromInt(loaded_texture.texture.width),
+                .height = remaining_height,
+            },
+            13.0,
+            150.0,
+            64.0,
+            remaining_height,
+            .white,
+        );
+    }
+    if (state.current_gameplay_sprites.progress_bar) |loaded_texture| {
+        drawTextureLocalRectSource(
+            layout,
+            loaded_texture,
+            rl.Rectangle{
+                .x = 0.0,
+                .y = remaining_height,
+                .width = @floatFromInt(loaded_texture.texture.width),
+                .height = 256.0 - remaining_height,
+            },
+            13.0,
+            150.0 + remaining_height,
+            64.0,
+            256.0 - remaining_height,
+            .white,
+        );
+    }
+    if (state.current_gameplay_sprites.progress_cursor) |loaded_texture| {
+        drawTextureLocalRect(
+            layout,
+            loaded_texture,
+            12.0,
+            remaining_height + 111.0,
+            64.0,
+            64.0,
+            .white,
+        );
+    }
 }
 
-fn drawTutorialLives(_: *const AppState, layout: VirtualLayout, visible_life_stock: u32) void {
-    const start = layout.mapPoint(14.0, 446.0);
-    const width = layout.scaleFloat(14.0);
-    const height = layout.scaleFloat(10.0);
-    const gap = layout.scaleFloat(18.0);
+fn drawTutorialLives(state: *const AppState, layout: VirtualLayout, visible_life_stock: u32) void {
     const count = @min(visible_life_stock, 9);
+    const loaded_texture = state.current_gameplay_sprites.life orelse return;
     for (0..count) |slot_index| {
-        const center_x = start.x + @as(f32, @floatFromInt(slot_index)) * gap + width * 0.5;
-        const center_y = start.y + height * 0.5;
-        rl.drawEllipse(
-            @intFromFloat(center_x),
-            @intFromFloat(center_y),
-            width * 0.48,
-            height * 0.42,
-            .{ .r = 246, .g = 180, .b = 84, .a = 236 },
-        );
-        rl.drawEllipseLines(
-            @intFromFloat(center_x),
-            @intFromFloat(center_y),
-            width * 0.48,
-            height * 0.42,
-            .{ .r = 255, .g = 232, .b = 180, .a = 255 },
+        drawTextureLocalRect(
+            layout,
+            loaded_texture,
+            12.0 + @as(f32, @floatFromInt(slot_index)) * 20.0,
+            438.0,
+            32.0,
+            32.0,
+            .white,
         );
     }
 }
@@ -6936,7 +7082,7 @@ fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
     drawJetpackGaugeWidget(state, layout, runner);
-    drawDamageGaugeWidget(state, layout, runner);
+    drawDamageGaugeWidget(state, layout, runner, true);
     if (runner.session_mode == .postal) {
         drawVisibleLifeStrip(state, layout, runner.visible_life_stock);
     }
@@ -6986,7 +7132,7 @@ fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner:
     );
 }
 
-fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
     const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
     const fill_ratio = std.math.clamp(runner.damage_gauge, 0.0, 1.0);
     const pulse = if (runner.damage_warning_state == .idle)
@@ -6997,7 +7143,9 @@ fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: 
     const warning_alpha: u8 = @intFromFloat(168.0 + 87.0 * pulse);
     const bright_alpha: u8 = @intFromFloat(144.0 + 96.0 * pulse);
 
-    drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    if (show_label) {
+        drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    }
     if (state.current_gameplay_sprites.damage_gauge_full) |loaded_texture| {
         if (fill_ratio > 0.0) {
             const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
@@ -8544,6 +8692,10 @@ fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max
 
 fn drawMenuItem(state: *const AppState, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
     app_ui.drawMenuItem(uiContext(state), layout, index, selected_index, label);
+}
+
+fn rectContainsLocalPoint(rect: rl.Rectangle, point: rl.Vector2) bool {
+    return point.x >= rect.x and point.x <= rect.x + rect.width and point.y >= rect.y and point.y <= rect.y + rect.height;
 }
 
 fn drawRouteSelectionDots(state: *const AppState, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {

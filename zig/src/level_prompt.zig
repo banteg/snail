@@ -50,6 +50,21 @@ pub const Queue = struct {
         }
     }
 
+    pub fn replaceSingle(self: *Queue, message: []const u8, duration_ticks: u32) void {
+        self.clear();
+        self.enqueue(message, duration_ticks);
+    }
+
+    pub fn dismissActive(self: *Queue) void {
+        for (&self.entries) |*slot| {
+            if (slot.* != null) {
+                slot.* = null;
+                break;
+            }
+        }
+        self.compact();
+    }
+
     fn compact(self: *Queue) void {
         var next_index: usize = 0;
         for (self.entries) |slot| {
@@ -108,6 +123,18 @@ test "queue ticks entries in parallel and compacts expired slots" {
     queue.tick();
     try std.testing.expectEqualStrings("Two", queue.entries[0].?.message);
     try std.testing.expect(queue.entries[1] == null);
+}
+
+test "replace single clears older entries before showing the new one" {
+    var queue = Queue{};
+    queue.enqueue("One", 5);
+    queue.enqueue("Two", 5);
+
+    queue.replaceSingle("Three", 7);
+
+    try std.testing.expectEqualStrings("Three", queue.active().?.message);
+    try std.testing.expect(queue.entries[1] == null);
+    try std.testing.expect(queue.entries[2] == null);
 }
 
 test "duration ticks use authored seconds when present" {
