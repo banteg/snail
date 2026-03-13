@@ -398,6 +398,9 @@ const LaunchState = struct {
 
 const CameramanState = struct {
     follow_z: ?f32 = null,
+    follow_floor_y: ?f32 = null,
+    follow_eye_x: ?f32 = null,
+    follow_target_x: ?f32 = null,
     fov_degrees: f32 = 110.0,
     position: ?rl.Vector3 = null,
     target: ?rl.Vector3 = null,
@@ -1356,6 +1359,16 @@ pub const Runner = struct {
         const chase_target_position = self.worldPosition(preview, 0.28);
         const chase_eye_x = player_position.x / 3.0;
         const chase_target_x = chase_target_position.x / 3.0;
+        if (self.cameraman.follow_eye_x == null) {
+            self.cameraman.follow_eye_x = chase_eye_x;
+            self.cameraman.follow_target_x = chase_target_x;
+        }
+        if (self.cameraman.follow_floor_y == null) {
+            self.cameraman.follow_floor_y = player_floor;
+        }
+        self.cameraman.follow_eye_x = std.math.lerp(self.cameraman.follow_eye_x.?, chase_eye_x, 0.18);
+        self.cameraman.follow_target_x = std.math.lerp(self.cameraman.follow_target_x.?, chase_target_x, 0.18);
+        self.cameraman.follow_floor_y = std.math.lerp(self.cameraman.follow_floor_y.?, player_floor, 0.18);
         const speed_scalar = self.cameramanSpeedScalar();
         const row_blend = self.cameramanRowBlend();
         const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, row_blend);
@@ -1372,8 +1385,8 @@ pub const Runner = struct {
             }
         else
             rl.Vector3{
-                .x = chase_target_x,
-                .y = (player_floor + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
+                .x = self.cameraman.follow_target_x.?,
+                .y = (self.cameraman.follow_floor_y.? + 1.8 + vertical_lift) + (std.math.sin(pitch_radians) * 3.3),
                 .z = self.cameramanEyeZ() + (std.math.cos(pitch_radians) * 3.3),
             };
         const desired_position = if (dynamic_attachment_camera)
@@ -1384,8 +1397,8 @@ pub const Runner = struct {
             }
         else
             rl.Vector3{
-                .x = chase_eye_x,
-                .y = player_floor + 1.8 + vertical_lift,
+                .x = self.cameraman.follow_eye_x.?,
+                .y = self.cameraman.follow_floor_y.? + 1.8 + vertical_lift,
                 .z = self.cameramanEyeZ(),
             };
         const desired_up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
