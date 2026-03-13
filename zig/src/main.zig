@@ -147,6 +147,7 @@ const gameplay_asteroid_impact_sound_paths = [_][]const u8{
     "SFX2/ASTEROIDIMPACT1.OGG",
     "SFX2/ASTEROIDIMPACT2.OGG",
 };
+const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -349,6 +350,7 @@ const GameplaySoundFx = struct {
     turbo_fire: [gameplay_turbo_fire_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_turbo_fire_sound_paths.len,
     laser: [gameplay_laser_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_laser_sound_paths.len,
     rocket: [gameplay_rocket_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_rocket_sound_paths.len,
+    weapon_change: ?assets.LoadedSound = null,
     heart: ?assets.LoadedSound = null,
     jetpack: ?assets.LoadedSound = null,
     slow_ring: ?assets.LoadedSound = null,
@@ -638,6 +640,7 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     for (gameplay_rocket_sound_paths, 0..) |path, index| {
         sound_fx.rocket[index] = try catalog.loadSoundByPath(allocator, path);
     }
+    sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_weapon_change_sound_path);
     sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
     sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
     sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
@@ -2794,6 +2797,9 @@ const AppState = struct {
                 ),
             };
             self.playGameplayEffect(fired_sound);
+        }
+        if (current.weapon_level != previous.weapon_level) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.heart);
@@ -6665,7 +6671,7 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
 
 fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
     const prompt = queue.active() orelse return;
-    const card = layout.mapRect(72.0, 58.0, 496.0, 54.0);
+    const card = layout.mapRect(56.0, 54.0, 508.0, 78.0);
     rl.drawRectangleRounded(card, 0.12, 8, .{ .r = 10, .g = 10, .b = 18, .a = 216 });
     rl.drawRectangleRoundedLinesEx(
         card,
@@ -6674,14 +6680,17 @@ fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue:
         layout.scaleFloat(2.0),
         .{ .r = 88, .g = 116, .b = 164, .a = 156 },
     );
+    const title_x: i32 = @intFromFloat(card.x + layout.scaleFloat(18.0));
+    const title_y: i32 = @intFromFloat(card.y + layout.scaleFloat(10.0));
+    drawAppText(state, "Tutorial", title_x, title_y, layout.fontSize(22), .gold);
 
     try drawWrappedText(
         state,
         prompt.message,
         @intFromFloat(card.x + layout.scaleFloat(18.0)),
-        @intFromFloat(card.y + layout.scaleFloat(10.0)),
+        @intFromFloat(card.y + layout.scaleFloat(34.0)),
         @intFromFloat(card.width - layout.scaleFloat(36.0)),
-        layout.fontSize(20),
+        layout.fontSize(18),
         .ray_white,
     );
 }

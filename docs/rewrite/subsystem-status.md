@@ -197,7 +197,7 @@ Implemented now:
 - textured gameplay rendering is now used in actual play for supported track sets
 - the gameplay viewport now also draws a live Turbo model from the runner's current world frame, so the player is finally visible in the actual level path instead of only in the debug model viewer
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
-- authored tutorial/message prompts now use a single top-centered timed banner with one active tutorial tip at a time instead of the old footer debug text block, bottom speaker card, or earlier invented stacked-card behavior
+- authored tutorial/message prompts now use a single titled `Tutorial` card with one active tip at a time instead of the older debug footer/banner scaffolding
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 - tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus
@@ -230,6 +230,7 @@ Implemented now:
 - Turbo now carries visible gameplay weapon tiers and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
 - gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, explosive rings, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
 - weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) instead of one fixed shot sound per weapon tier
+- weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles instead of invisible debug-only tiles
