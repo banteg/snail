@@ -294,6 +294,9 @@ const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
 const garbage_speed_scale: f32 = 0.9;
 const garbage_lateral_push: f32 = 0.35;
+const garbage_collision_distance_threshold: f32 = 0.98;
+const salt_collision_distance_threshold: f32 = 0.49;
+const runtime_hazard_collision_z_tolerance: f32 = 1.0;
 const damage_warning_fill_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
 const jetpack_gauge_tick_step: f32 = 0.0016666667;
@@ -543,6 +546,7 @@ pub const Runner = struct {
             self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
+            self.processRuntimeHazardCollisions(preview);
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
@@ -1072,22 +1076,8 @@ pub const Runner = struct {
                 self.armJetpackGauge();
                 self.recent_event = .jetpack_pickup;
             },
-            .garbage => {
-                if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .garbage)) return;
-                self.counters.garbage_hits += 1;
-                self.last_garbage_hit_position = runtimeCellWorldPosition(preview, global_row, sample.resolved_lane_index, 0.28);
-                self.recordScore(&self.score.garbage_collision, 10);
-                self.applyGarbageImpact(preview, sample.resolved_lane_index);
-                self.applyDamageGaugeDelta(garbage_damage_delta);
-                self.recent_event = .garbage_hit;
-            },
-            .salt => {
-                if (!self.consumeRuntimeHazard(global_row, sample.resolved_lane_index, .salt)) return;
-                self.counters.salt_hits += 1;
-                self.last_salt_hit_position = runtimeCellWorldPosition(preview, global_row, sample.resolved_lane_index, 0.18);
-                self.applyDamageGaugeDelta(salt_damage_delta);
-                self.recent_event = .salt_hit;
-            },
+            .garbage => {},
+            .salt => {},
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
                 if (self.invincible_ticks > 0) {
@@ -1171,40 +1161,86 @@ pub const Runner = struct {
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
     }
 
+    fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const player_position = self.worldPosition(preview, 0.4);
+        var index: usize = 0;
+        while (index < self.active_runtime_hazard_count) {
+            const hazard = self.active_runtime_hazards[index];
+            const y_offset: f32 = switch (hazard.kind) {
+                .garbage => 0.28,
+                .salt => 0.18,
+            };
+            const hazard_position = runtimeCellWorldPosition(preview, hazard.row, hazard.lane, y_offset);
+            const delta_x = player_position.x - hazard_position.x;
+            const delta_y = player_position.y - hazard_position.y;
+            const delta_z = player_position.z - hazard_position.z;
+            if (@abs(delta_z) > runtime_hazard_collision_z_tolerance) {
+                index += 1;
+                continue;
+            }
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            const threshold = switch (hazard.kind) {
+                .garbage => garbage_collision_distance_threshold,
+                .salt => salt_collision_distance_threshold,
+            };
+            if (distance > threshold) {
+                index += 1;
+                continue;
+            }
+            _ = self.consumeRuntimeHazard(hazard.row, hazard.lane, hazard.kind);
+            switch (hazard.kind) {
+                .garbage => {
+                    self.counters.garbage_hits += 1;
+                    self.last_garbage_hit_position = hazard_position;
+                    self.recordScore(&self.score.garbage_collision, 10);
+                    self.applyGarbageImpact(preview, hazard_position);
+                    self.applyDamageGaugeDelta(garbage_damage_delta);
+                    self.recent_event = .garbage_hit;
+                },
+                .salt => {
+                    self.counters.salt_hits += 1;
+                    self.last_salt_hit_position = hazard_position;
+                    self.applyDamageGaugeDelta(salt_damage_delta);
+                    self.recent_event = .salt_hit;
+                },
+            }
+            return;
+        }
+    }
+
     // PORT(partial): Windows garbage collisions do more than apply the +0.04 damage
     // delta. They also knock Goldy sideways and shave current forward speed. The exact
     // velocity fields are still not fully modeled, so the runner applies a conservative
     // equivalent: a one-shot 10% forward-speed loss plus a lateral push away from the
     // impacted lane, with the same effect applied to attachment lateral offset when
     // attached instead of snapping back to lane steps.
-    fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, lane_index: usize) void {
+    fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, impact_position: rl.Vector3) void {
+        const player_position = self.worldPosition(preview, 0.4);
+        const delta_x = player_position.x - impact_position.x;
+        const delta_z = player_position.z - impact_position.z;
+        const planar_distance = @max(@sqrt((delta_x * delta_x) + (delta_z * delta_z)), 0.0001);
+        const delta_x_normalized = delta_x / planar_distance;
+        const delta_z_normalized = delta_z / planar_distance;
+        const speed_before = self.speed_rows_per_second;
+
         self.speed_rows_per_second = std.math.clamp(
-            self.speed_rows_per_second * garbage_speed_scale,
+            speed_before - (@abs(delta_z_normalized) * speed_before * 0.10),
             2.0,
             48.0,
         );
 
-        const gameplay_width = @min(preview.max_width, 8);
-        const track_center = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
-        const impact_center = @as(f32, @floatFromInt(lane_index)) + 0.5;
-        const push_direction: f32 = if (impact_center < track_center)
-            1.0
-        else if (impact_center > track_center)
-            -1.0
-        else if (self.lane_center < track_center)
-            -1.0
-        else
-            1.0;
+        const lateral_push = (-delta_x_normalized) * garbage_lateral_push *
+            std.math.clamp(speed_before / 12.0, 0.5, 2.0);
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.attachment_follow.lateral_offset += push_direction * garbage_lateral_push;
+            self.attachment_follow.lateral_offset += lateral_push;
             return;
         }
 
         const min_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.min)) + 0.5;
         const max_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.max)) + 0.5;
         self.lane_center = std.math.clamp(
-            self.lane_center + (push_direction * garbage_lateral_push),
+            self.lane_center + lateral_push,
             min_lane_center,
             max_lane_center,
         );
@@ -2641,15 +2677,56 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, garbage);
     const speed_before_garbage = runner.speed_rows_per_second;
-    const lane_before_garbage = runner.lane_center;
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqual(@as(u32, 10), runner.score.total);
     try std.testing.expectEqual(@as(u32, 10), runner.score.garbage_collision);
     try std.testing.expectApproxEqAbs(garbage_damage_delta, runner.damage_gauge, 0.0001);
     try std.testing.expect(runner.speed_rows_per_second < speed_before_garbage);
-    try std.testing.expect(runner.lane_center != lane_before_garbage);
+    try std.testing.expect(runner.last_garbage_hit_position != null);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "runtime garbage hazards collide by distance before exact row crossing" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    runner.reset(&fixture.preview);
+    runner.lane_index = garbage.lane;
+    runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.5;
+    runner.runtime_track_index = garbage.row - 1;
+    runner.movement_progress = 0.6;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.addRuntimeHazard(garbage.row, garbage.lane, .garbage);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
+    runner.processRuntimeHazardCollisions(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
+    try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "oblique garbage collisions push the runner sideways" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    runner.reset(&fixture.preview);
+    runner.lane_index = garbage.lane;
+    runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.8;
+    runner.runtime_track_index = garbage.row - 1;
+    runner.movement_progress = 0.6;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.addRuntimeHazard(garbage.row, garbage.lane, .garbage);
+
+    const lane_before = runner.lane_center;
+    runner.processRuntimeHazardCollisions(&fixture.preview);
+    try std.testing.expect(runner.lane_center != lane_before);
 }
 
 test "repeated slug contact adds the recovered +1.0 damage delta" {
