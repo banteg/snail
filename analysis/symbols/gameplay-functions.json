@@ -52,6 +52,11 @@
       "description": "Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`."
     },
     {
+      "address": "0x405040",
+      "name": "register_parcel_delivery",
+      "description": "Records one delivered parcel on the completion controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives."
+    },
+    {
       "address": "0x405140",
       "name": "file_exists"
     },
@@ -62,6 +67,10 @@
     {
       "address": "0x405640",
       "name": "load_x_mesh"
+    },
+    {
+      "address": "0x405c90",
+      "name": "initialize_directx_loader"
     },
     {
       "address": "0x405d60",
@@ -233,6 +242,26 @@
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
+    },
+    {
+      "address": "0x414670",
+      "name": "kill_golb"
+    },
+    {
+      "address": "0x414820",
+      "name": "update_golb_ai"
+    },
+    {
+      "address": "0x415280",
+      "name": "create_golb"
+    },
+    {
+      "address": "0x415c60",
+      "name": "spawn_golb_smoke"
+    },
+    {
+      "address": "0x415e30",
+      "name": "search_path_for_golb"
     },
     {
       "address": "0x415f50",
@@ -615,6 +644,18 @@
       "description": "Computes neighbor masks and chooses edge or corner variants for special runtime tile classes. Cross-port Android and iOS symbols match this pass to `cRSubGame::SmoothTrack()`."
     },
     {
+      "address": "0x435d40",
+      "name": "build_track_colours"
+    },
+    {
+      "address": "0x435df0",
+      "name": "set_subgame_features"
+    },
+    {
+      "address": "0x435e60",
+      "name": "switch_track_mirror"
+    },
+    {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
       "description": "Copies authored segment rows into the generated runtime grid, including Random and Length handling, and seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs."
@@ -675,6 +716,10 @@
       "description": "Runs the current best static `Wall2` ambient-hazard spawn gate from one runtime row cell: checks the row or tile conditions, rolls the random gate, derives a spawn point and velocity, and routes the request into the 20-slot pool at `game + 0x356b00`."
     },
     {
+      "address": "0x43a010",
+      "name": "health_collect_particles"
+    },
+    {
       "address": "0x43a1a0",
       "name": "update_player_movement_flags",
       "description": "Maps the player movement-flag selector at +0x308 onto movement_flags and a per-state rate scalar at +0x2734, then refreshes the 0x2984 state machine when the mask changes."
@@ -685,9 +730,25 @@
       "description": "Iterates the 12 effect slots at player+0x450 and feeds the slot updater with one of three emitter classes derived from movement_flags."
     },
     {
+      "address": "0x43a370",
+      "name": "end_jetpack_hover"
+    },
+    {
       "address": "0x43a390",
       "name": "update_jetpack_gauge",
       "description": "Advances the player jetpack countdown or warning controller at +0x2750: animates the near-empty meter, triggers the auto-shutoff branch when the current runtime cell carries flag 0x80, and clears the controller once the jetpack gauge drains. Cross-port Android and iOS symbols still name the owning class `cRDamageGuage::AI()`."
+    },
+    {
+      "address": "0x43a580",
+      "name": "uninit_jet_particles"
+    },
+    {
+      "address": "0x43a5b0",
+      "name": "initialize_jet_particles"
+    },
+    {
+      "address": "0x43a690",
+      "name": "update_jet_particles"
     },
     {
       "address": "0x43a930",
@@ -725,6 +786,10 @@
       "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
+      "address": "0x43d230",
+      "name": "initialize_subgoldy_ghost"
+    },
+    {
       "address": "0x43d3d0",
       "name": "mark_current_track_pair_with_payload",
       "description": "Sets flag 0x40 on the two cached track cells at +0x98/+0x9c and writes the supplied scalar payload into each cell payload slot at +0x50."
@@ -743,6 +808,10 @@
       "address": "0x43d4d0",
       "name": "sample_track_floor_height_at_position",
       "description": "Evaluates the runtime floor-height sampler for the current gameplay-grid cell, including ramp tiles and the special cell-stored height used by tile 0x16."
+    },
+    {
+      "address": "0x43d5a0",
+      "name": "spawn_garbage_smoke_particle"
     },
     {
       "address": "0x43d6c0",
@@ -775,6 +844,18 @@
       "description": "Maps ring or special-effect modes onto the ParticleRing, ParticleExplode, and ParticleSlow sprite families."
     },
     {
+      "address": "0x43e830",
+      "name": "update_ring_hazard_ai"
+    },
+    {
+      "address": "0x43ee50",
+      "name": "update_fringe_ai"
+    },
+    {
+      "address": "0x43efb0",
+      "name": "update_tramp_ring_ai"
+    },
+    {
       "address": "0x43f130",
       "name": "destroy_garbage_hazard",
       "description": "Removes one live garbage hazard from the active body lists, kills its sprite, and unlinks it from the active garbage chain after collision or expiry. Cross-port Android symbols match this helper to `cRSubGarbage::Kill()`."
@@ -783,6 +864,30 @@
       "address": "0x43f200",
       "name": "update_garbage_hazard",
       "description": "Advances one live garbage hazard through its hover, impact-burst, bounce, smoke, and teardown states. Cross-port Android and iOS symbols match this helper to `cRSubGarbage::AI()`."
+    },
+    {
+      "address": "0x43f520",
+      "name": "update_slug_voice_ai"
+    },
+    {
+      "address": "0x43f560",
+      "name": "play_slug_voice"
+    },
+    {
+      "address": "0x43f620",
+      "name": "hit_slug_hazard"
+    },
+    {
+      "address": "0x43f680",
+      "name": "explode_slug_hazard"
+    },
+    {
+      "address": "0x43f8b0",
+      "name": "kill_slug_hazard"
+    },
+    {
+      "address": "0x43f930",
+      "name": "update_slug_hazard_ai"
     },
     {
       "address": "0x440020",
@@ -798,6 +903,26 @@
       "address": "0x4402c0",
       "name": "add_subgoldy_score",
       "description": "Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
+    },
+    {
+      "address": "0x4404c0",
+      "name": "set_subgame_rate"
+    },
+    {
+      "address": "0x4404d0",
+      "name": "calc_subgame_rate"
+    },
+    {
+      "address": "0x440910",
+      "name": "remove_subgame_bods"
+    },
+    {
+      "address": "0x440f80",
+      "name": "update_barrier_ai"
+    },
+    {
+      "address": "0x440fa0",
+      "name": "initialize_damage_gauge"
     },
     {
       "address": "0x440fd0",
@@ -840,8 +965,8 @@
     },
     {
       "address": "0x441ad0",
-      "name": "allocate_wall2_ambient_hazard_slot",
-      "description": "Finds the first inactive slot in the 20-slot `Wall2` ambient-hazard pool, offsets the requested spawn height slightly by slot index, and hands the live activation off to `spawn_wall2_ambient_hazard`."
+      "name": "shoot_subgoldy",
+      "description": "Finds a free projectile slot, seeds its launch state from Goldy's current weapon mode, and dispatches the matching player shot sound."
     },
     {
       "address": "0x441b90",
@@ -864,9 +989,21 @@
       "description": "Builds the shared RGBA skirt or fringe colour from the current track colour scalars and a fixed alpha, then copies it into one runtime row or fringe object. Cross-port Android symbols match this helper to `cRSubGame::GetSkirtColour(tColourSmall)`."
     },
     {
+      "address": "0x442170",
+      "name": "initialize_click_start"
+    },
+    {
+      "address": "0x442290",
+      "name": "update_click_start"
+    },
+    {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
       "description": "Seeds and polls the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
+    },
+    {
+      "address": "0x442e40",
+      "name": "release_snail_weapons"
     },
     {
       "address": "0x443650",
@@ -899,19 +1036,43 @@
       "description": "Advances one queued cutscene or presentation animation slot, applying its loop or ping-pong flags and starting the next queued animation when the current slot finishes."
     },
     {
+      "address": "0x444960",
+      "name": "initialize_score_stats"
+    },
+    {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
       "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the contact-damage gauge side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
     },
     {
+      "address": "0x445840",
+      "name": "kill_subgoldy"
+    },
+    {
+      "address": "0x445860",
+      "name": "set_snail_jetpack"
+    },
+    {
       "address": "0x445920",
-      "name": "update_movement_visual_state_controller",
-      "description": "Maps movement flag masks onto three queued visual-state channels in the player-side controller rooted at +0x2984."
+      "name": "set_snail_weapon",
+      "description": "Maps the requested player weapon state onto the three visual-state channels rooted at +0x2984 and refreshes the active weapon presentation."
+    },
+    {
+      "address": "0x445cd0",
+      "name": "update_snail_skin"
+    },
+    {
+      "address": "0x445d50",
+      "name": "build_snail_hotspots"
     },
     {
       "address": "0x445e90",
       "name": "show_times_up_message",
       "description": "Spawns the floating `Time's Up` gameplay message once the subgame timer hits its terminal threshold."
+    },
+    {
+      "address": "0x445f60",
+      "name": "initialize_snail_skin"
     },
     {
       "address": "0x446020",
@@ -937,6 +1098,30 @@
       "address": "0x446e30",
       "name": "initialize_subgoldy_death",
       "description": "Chooses Goldy's death outcome from the current gameplay mode and visible life stock, then enters the resurrect state machine in either respawn or final-loss mode. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::DeathInit()`."
+    },
+    {
+      "address": "0x446e80",
+      "name": "initialize_warning"
+    },
+    {
+      "address": "0x446f10",
+      "name": "uninit_warning"
+    },
+    {
+      "address": "0x446f30",
+      "name": "start_warning"
+    },
+    {
+      "address": "0x446f50",
+      "name": "stop_warning"
+    },
+    {
+      "address": "0x446f60",
+      "name": "stop_warning_sample"
+    },
+    {
+      "address": "0x446f80",
+      "name": "update_warning"
     },
     {
       "address": "0x447040",
@@ -971,9 +1156,21 @@
       "description": "Composes level descriptors and segment sequences from LEVELS/*.TXT."
     },
     {
+      "address": "0x448cf0",
+      "name": "initialize_tip_manager"
+    },
+    {
+      "address": "0x448d10",
+      "name": "uninit_tips"
+    },
+    {
       "address": "0x448d30",
       "name": "enqueue_tip_message",
       "description": "Allocates one of the three small gameplay tip-message slots, seeds it with the requested text payload, and warns if all slots are already occupied."
+    },
+    {
+      "address": "0x448d80",
+      "name": "update_tip_manager"
     },
     {
       "address": "0x449460",
@@ -1020,6 +1217,22 @@
     {
       "address": "0x44c420",
       "name": "load_object_definition"
+    },
+    {
+      "address": "0x44cca0",
+      "name": "normalize_vector"
+    },
+    {
+      "address": "0x44ccf0",
+      "name": "vector_magnitude"
+    },
+    {
+      "address": "0x44ce30",
+      "name": "rotate_matrix_world_x"
+    },
+    {
+      "address": "0x44cec0",
+      "name": "rotate_matrix_world_y"
     },
     {
       "address": "0x44d250",
