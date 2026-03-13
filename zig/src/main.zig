@@ -3312,9 +3312,11 @@ const AppState = struct {
                         self.level_prompt_queue.dismissActive();
                     } else if (rl.isMouseButtonPressed(.left)) {
                         if (self.currentUiMouseLocal()) |mouse| {
-                            if (rectContainsLocalPoint(tutorialPromptOkButtonRect(), mouse)) {
-                                self.level_prompt_queue.dismissActive();
-                                return;
+                            if (activeTutorialPromptOkButtonRect(&self.level_prompt_queue)) |ok_button| {
+                                if (rectContainsLocalPoint(ok_button, mouse)) {
+                                    self.level_prompt_queue.dismissActive();
+                                    return;
+                                }
                             }
                         }
                     }
@@ -6860,22 +6862,44 @@ fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue:
     );
 }
 
-fn tutorialPromptCardRect(layout: VirtualLayout) rl.Rectangle {
-    return layout.mapRect(16.0, 330.0, 340.0, 102.0);
+fn tutorialPromptLineCount(text: []const u8) i32 {
+    var count: i32 = 1;
+    for (text) |char| {
+        if (char == '>') count += 1;
+    }
+    return count;
 }
 
-fn tutorialPromptOkButtonRect() rl.Rectangle {
+fn tutorialPromptCardRect(layout: VirtualLayout, line_count: i32) rl.Rectangle {
+    const body_height = 18.0 * @as(f32, @floatFromInt(@max(line_count, 1)));
+    const card_height = 28.0 + body_height + 34.0;
+    return layout.mapRect(16.0, 330.0, 340.0, card_height);
+}
+
+fn tutorialPromptOkButtonRect(card_local_y: f32, card_local_height: f32) rl.Rectangle {
+    const button_width = 56.0;
+    const button_height = 24.0;
     return .{
-        .x = 278.0,
-        .y = 399.0,
-        .width = 56.0,
-        .height = 24.0,
+        .x = 16.0 + ((340.0 - button_width) * 0.5),
+        .y = card_local_y + card_local_height - button_height - 10.0,
+        .width = button_width,
+        .height = button_height,
     };
+}
+
+fn activeTutorialPromptOkButtonRect(queue: *const level_prompt.Queue) ?rl.Rectangle {
+    const prompt = queue.active() orelse return null;
+    const line_count = tutorialPromptLineCount(prompt.message);
+    const card_local_height = 28.0 + 18.0 * @as(f32, @floatFromInt(@max(line_count, 1))) + 34.0;
+    return tutorialPromptOkButtonRect(330.0, card_local_height);
 }
 
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
     const prompt = queue.active() orelse return;
-    const card = tutorialPromptCardRect(layout);
+    const line_count = tutorialPromptLineCount(prompt.message);
+    const card_local_y = 330.0;
+    const card_local_height = 28.0 + 18.0 * @as(f32, @floatFromInt(@max(line_count, 1))) + 34.0;
+    const card = tutorialPromptCardRect(layout, line_count);
     const shadow_card = rl.Rectangle{
         .x = card.x + layout.scaleFloat(4.0),
         .y = card.y + layout.scaleFloat(4.0),
@@ -6892,21 +6916,17 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
         .{ .r = 112, .g = 160, .b = 228, .a = 184 },
     );
 
-    const title_x: i32 = @intFromFloat(card.x + layout.scaleFloat(18.0));
-    const title_y: i32 = @intFromFloat(card.y + layout.scaleFloat(10.0));
-    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(22), .gold);
-
     try drawWrappedText(
         state,
         prompt.message,
         @intFromFloat(card.x + layout.scaleFloat(18.0)),
-        @intFromFloat(card.y + layout.scaleFloat(36.0)),
+        @intFromFloat(card.y + layout.scaleFloat(16.0)),
         @intFromFloat(card.width - layout.scaleFloat(36.0)),
         layout.fontSize(18),
         .ray_white,
     );
 
-    const local_button = tutorialPromptOkButtonRect();
+    const local_button = tutorialPromptOkButtonRect(card_local_y, card_local_height);
     const button = layout.mapRect(local_button.x, local_button.y, local_button.width, local_button.height);
     const hovered = if (state.isTutorialGameplay())
         if (state.currentUiMouseLocal()) |mouse|
