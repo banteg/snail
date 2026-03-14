@@ -82,7 +82,14 @@ For the trace schema and partial Binary Ninja typing, those exit-side fields are
 - `player + 0x430` -> `post_follow_value_b`
 - `player + 0x434` -> `attachment_exit_progress`
 - `player + 0x438` -> `attachment_exit_progress_step`
-- `player + 0x44c` / `+0x44d` -> `follow_effect_gate_a` / `follow_effect_gate_b`
+- `player + 0x44c` / `+0x44d` -> `attachment_exit_gate_a` / `attachment_exit_gate_b`
+
+Current practical read of the thresholds in `update_subgoldy`:
+
+- `attachment_exit_progress > 0.7` arms `attachment_exit_gate_a` and plays the first one-shot voice
+- if `player + 0x2d8 == 0`, that same first gate also dispatches cutscene animation `5` once `world_y < -6`
+- `attachment_exit_gate_b` is the deeper one-shot voice gate at `world_y < -7`
+- the actual death selector remains the separate `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
 
 Those names describe stable behavior without overcommitting to the final gameplay meaning yet.
 

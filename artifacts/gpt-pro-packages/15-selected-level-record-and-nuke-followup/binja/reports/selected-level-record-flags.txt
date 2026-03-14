@@ -43,4 +43,5 @@ Interpreted names:
 
 - There is enough evidence now to reject tutorial-only or replay-only naming.
 - The cluster is a frontend-selected level-record override path that can persist across rebuild/front-end transitions.
+- Exact-offset sweeps in the refreshed full HLIL export still only recover the known `build_subgame_level`, `update_subgame`, and `update_subgoldy_resurrect` references.
 - The exact writer for `selected_level_record_persistent` is still unresolved in this slice.

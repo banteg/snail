@@ -60,8 +60,8 @@ Current hooks in the script:
     - `post_follow_value_b`
     - `attachment_exit_progress`
     - `attachment_exit_progress_step`
-    - `follow_effect_gate_a`
-    - `follow_effect_gate_b`
+    - `attachment_exit_gate_a`
+    - `attachment_exit_gate_b`
   - now also emits the higher-level movement and row-event fields recovered from the typed `Game` and `Player` structs:
     - `level_mode`
     - `level_mode_arg`

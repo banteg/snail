@@ -10,6 +10,7 @@ No typed reader xrefs were recovered.
 Full HLIL reexport sanity check:
 
 - Raw `0x430...` searches mostly hit unrelated globals or follow-state storage at `data_4df904 + 0x430060`, `0x430100`, `0x430170`, and nearby addresses.
+- The two other `arg1[0x430]` hits at `0x459961` and `0x45dae0` are unrelated container/format helpers, not `Player` methods.
 - No additional `player + 0x430` read surfaced beyond the typed fall-state writes above.
 
 Conclusion:

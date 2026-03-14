@@ -33,7 +33,9 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
 
 * **`play_movement_state_sound` did not unlock the `-6 / -7` thresholds.**
   It still has only two callsites, both in `update_subgoldy`.
-  The remaining threshold question stays inside the `update_subgoldy` fall slice, not in another nearby helper.
+  The thresholds themselves are now better pinned down from that fall slice:
+  `attachment_exit_progress > 0.7` arms the first one-shot gate, `world_y < -6` can dispatch cutscene animation `5` on that branch, and `world_y < -7` arms the second one-shot gate.
+  So those thresholds are attachment-exit voice/cutscene gates, not the final respawn or game-over selector.
 
 ## Net
 
@@ -42,6 +44,7 @@ Bundle 15 confirms three things more firmly:
 1. Failure handoff still lives in the player cutscene/death selector.
 2. The `0xff25d0 / 0xff25d1 / 0xff25d4` cluster is a selected-level-record override path, not tutorial-only ownership.
 3. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
+4. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
 
 ## Remaining best targets
 
@@ -54,5 +57,5 @@ Bundle 15 confirms three things more firmly:
 3. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
    Typed BN xrefs came back write-only.
 
-4. **A tighter `update_subgoldy` fall slice around `0x43ce75 .. 0x43cffc`.**
-   That is still the likeliest place to settle what the `-6 / -7` thresholds actually gate.
+4. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
+   The broad threshold meaning is now clear, but the remaining question is how those gates interact with the later `progress_timer` branch and the `player + 0x2d8` flag.

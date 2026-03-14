@@ -36,8 +36,8 @@ The current high-confidence `Player` fields are:
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
 - `+0x43c`: `current_cell`
-- `+0x44c`: `follow_effect_gate_a`
-- `+0x44d`: `follow_effect_gate_b`
+- `+0x44c`: `attachment_exit_gate_a`
+- `+0x44d`: `attachment_exit_gate_b`
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -169,6 +169,17 @@ Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
+- `initialize_subgoldy_fall_state` seeds the attachment-exit handoff:
+  - `post_follow_value_a` from `follow_state.orientation_b`
+  - `post_follow_value_b` from `follow_state.template_record->row_scalar_a` or zero
+  - `attachment_exit_pending = 1`
+  - `attachment_exit_progress = 0`
+  - `attachment_exit_gate_a = 0`
+  - `attachment_exit_gate_b = 0`
+- `update_subgoldy` uses those exit-side latches as threshold gates inside fall handling, not as the final death selector:
+  - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
+  - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
+  - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`

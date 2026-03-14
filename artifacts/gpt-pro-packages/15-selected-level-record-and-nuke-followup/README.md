@@ -33,7 +33,9 @@ This bundle only carries:
 
 - the `player + 6208 / +6280` anchor writer is still unresolved; the full HLIL reexport still only shows `update_cutscene` reads
 
-- `play_movement_state_sound` still only has two `update_subgoldy` callsites, so the remaining `-6 / -7` question is still inside that fall slice
+- the `-6 / -7` question is now narrower:
+  - `play_movement_state_sound` still only has two movement-branch callsites
+  - the actual `-6 / -7` thresholds in `update_subgoldy` gate one-shot attachment-exit voice/cutscene triggers, not the final respawn or game-over handoff
 
 ## Contents
 
