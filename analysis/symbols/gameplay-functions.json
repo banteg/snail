@@ -1821,6 +1821,16 @@
       "name": "vector_magnitude"
     },
     {
+      "address": "0x44cd20",
+      "name": "normalize_vector_from_source",
+      "description": "Copies a source vector and normalizes it in place. Android symbols match this helper to `tVector::Normalize(const tVector&)`."
+    },
+    {
+      "address": "0x44cd40",
+      "name": "cross_vectors",
+      "description": "Computes the 3D cross product of two vectors into a destination output. Android symbols match this helper to `tVector::Cross(const tVector&, const tVector&)`."
+    },
+    {
       "address": "0x44ce30",
       "name": "rotate_matrix_world_x"
     },

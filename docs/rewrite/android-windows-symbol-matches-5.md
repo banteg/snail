@@ -69,6 +69,8 @@ These small vector helpers are used under the same camera and attachment math pa
 | `tVector::Dot(const tVector&)` | 0x44cb70 | `sub_44cb70` | `dot_vector` | NEW -- member-style 3D dot-product overload used by attachment and edge helpers |
 | `tVector::Multiply(const tMatrix&)` | 0x44cb90 | `sub_44cb90` | `multiply_vector_by_matrix` | NEW -- in-place affine transform that includes translation |
 | `tVector::Rotate(const tMatrix&)` | 0x44cc20 | `sub_44cc20` | `rotate_vector_by_matrix` | NEW -- in-place 3x3 basis rotation without translation |
+| `tVector::Normalize(const tVector&)` | 0x44cd20 | `sub_44cd20` | `normalize_vector_from_source` | NEW -- copy-and-normalize helper used by `SetZDir` before basis construction |
+| `tVector::Cross(const tVector&, const tVector&)` | 0x44cd40 | `sub_44cd40` | `cross_vectors` | NEW -- shared cross-product output helper used by `SetZDir`, `Orthoganalize`, and attachment builders |
 
 ---
 
@@ -96,4 +98,5 @@ Android `cRClickStart::AI` writes the player-side startup field from a game-glob
 - The helper behind the shared-camera blend in both `cRCameraman::AI` and `cRSubGame::CameraAI` is now confirmed as `tMatrix::LinearInterpolate`, not a bespoke game-local matrix routine.
 - The full rotation-interpolation internals are now named too: Windows converts `matrix -> quaternion -> axis-angle -> scaled quaternion -> matrix`, which removes most of the remaining ambiguity around the camera blend path.
 - The vector helper split is clearer too: Windows uses separate affine-transform and rotation-only vector paths, which matters when following attachment frames versus rotating pure direction vectors.
+- The camera-basis build in `set_matrix_z_direction` is now explicit: normalize the target direction with `Normalize(const tVector&)`, then derive the perpendicular axes through the shared cross-product helper.
 - The unresolved tip widgets are now confirmed as `cRTip` instances, which means the current port should not borrow behavior from the unrelated `cRToolTip` system.
