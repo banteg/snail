@@ -1793,9 +1793,24 @@
       "name": "load_object_definition"
     },
     {
+      "address": "0x44c8d0",
+      "name": "initialize_math_random_table",
+      "description": "Fills the shared 0x1fff-entry gameplay random table from the underlying linear-congruential generator and resets the ring index. Android symbols match this helper family to `gRMathRand2Init()`."
+    },
+    {
+      "address": "0x44c900",
+      "name": "next_math_random_value",
+      "description": "Advances the shared gameplay random-table index modulo 0x1fff and returns the next cached 15-bit value. Android symbols match this helper family to the shared `Rand()` / `gRMathRand2()` accessors."
+    },
+    {
       "address": "0x44c930",
       "name": "initialize_trigonometry_tables",
       "description": "Builds the shared cosine and sine lookup tables used by the gameplay math wrappers during startup, then resets the companion random table state."
+    },
+    {
+      "address": "0x44c970",
+      "name": "set_math_random_seed",
+      "description": "Stores one caller-provided seed into the shared gameplay linear-congruential generator before the random table is consumed. Android symbols match this helper family to `RandSeed(int)`."
     },
     {
       "address": "0x44c980",
