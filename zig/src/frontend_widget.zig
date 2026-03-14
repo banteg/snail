@@ -38,6 +38,8 @@ pub const SliderTextures = struct {
     bar_full: ?rl.Texture2D = null,
 };
 
+pub const multiline_prompt_max_lines: usize = 8;
+
 pub const type20_idle_padding: f32 = 9.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+536 = 13.0` for the
 // shell-font menu widget hot padding, and `sub_402820` animates toward that target.
@@ -101,6 +103,23 @@ pub const SliderLayout = struct {
     less_rect: Rect,
     more_rect: Rect,
     value_text_rect: Rect,
+};
+
+pub const MultilinePromptLayout = struct {
+    frame_rect: Rect = .{
+        .left = 0.0,
+        .top = 0.0,
+        .width = 0.0,
+        .height = 0.0,
+    },
+    line_rects: [multiline_prompt_max_lines]Rect = [_]Rect{.{
+        .left = 0.0,
+        .top = 0.0,
+        .width = 0.0,
+        .height = 0.0,
+    }} ** multiline_prompt_max_lines,
+    line_count: usize = 0,
+    ok_text_rect: ?Rect = null,
 };
 
 pub const Art = struct {
@@ -384,6 +403,56 @@ pub fn sliderLayout(
         .more_rect = more_rect,
         .value_text_rect = value_text_rect,
     };
+}
+
+pub fn type20PromptLayout(
+    font: *const game_font.Loaded,
+    lines: []const []const u8,
+    anchor_y: f32,
+    interactive: bool,
+) MultilinePromptLayout {
+    const metrics = metricsForType(.menu_button);
+    const line_count = @max(lines.len, 1);
+    const line_height = metrics.textHeight(font) + 2.0;
+    var max_width: f32 = 0.0;
+    for (lines) |line| {
+        max_width = @max(max_width, font.measureText(line, metrics.fontSize(font)));
+    }
+
+    const frame_width = std.math.clamp(max_width + 44.0, 240.0, 420.0);
+    const text_block_height = line_height * @as(f32, @floatFromInt(line_count));
+    const vertical_padding: f32 = if (interactive) 22.0 else 18.0;
+    const frame_rect = alignedTextRect(frame_width, text_block_height + vertical_padding, anchor_y, .center, 0.0);
+    var prompt_layout = MultilinePromptLayout{
+        .frame_rect = frame_rect,
+        .line_count = @min(lines.len, multiline_prompt_max_lines),
+    };
+
+    var line_y = frame_rect.top + ((frame_rect.height - text_block_height) * 0.5) - 1.0;
+    for (lines, 0..) |line, index| {
+        if (index >= prompt_layout.line_rects.len) break;
+        prompt_layout.line_rects[index] = widgetTextRect(
+            font,
+            .menu_button,
+            .center,
+            line,
+            line_y,
+            0.0,
+        );
+        line_y += line_height;
+    }
+
+    if (interactive) {
+        prompt_layout.ok_text_rect = widgetTextRect(
+            font,
+            .menu_button,
+            .center,
+            "OK",
+            stackBelow(frame_rect),
+            0.0,
+        );
+    }
+    return prompt_layout;
 }
 
 pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
@@ -715,4 +784,19 @@ test "slider arrow rect uses the recovered authored offsets" {
     try std.testing.expectEqual(@as(f32, 458.0), more_rect.left);
     try std.testing.expectEqual(@as(f32, 186.0), less_rect.top);
     try std.testing.expectEqual(@as(f32, 186.0), more_rect.top);
+}
+
+test "type20 prompt layout stacks an ok button below the frame" {
+    var font: game_font.Loaded = undefined;
+    font.nominal_height = 0.0;
+
+    const lines = [_][]const u8{
+        "Hi! I'm Turbo the Snail.",
+        "Steer with the mouse!",
+    };
+    const layout = type20PromptLayout(&font, &lines, 176.0, true);
+
+    try std.testing.expect(layout.ok_text_rect != null);
+    try std.testing.expect(layout.frame_rect.width >= 240.0);
+    try std.testing.expectApproxEqAbs(stackBelow(layout.frame_rect), layout.ok_text_rect.?.top, 0.001);
 }

@@ -73,11 +73,27 @@ pub const DeathCause = enum {
     }
 };
 
+pub const cutscene_none_id: u8 = 0;
+pub const cutscene_intro_id: u8 = 1;
+pub const cutscene_completion_id: u8 = 5;
+pub const cutscene_death_id: u8 = 10;
+
 pub const RunnerHandoff = union(enum) {
     none,
     completion,
     respawn: DeathCause,
     final_loss: DeathCause,
+};
+
+const FallState = struct {
+    cause: DeathCause,
+    final_loss: bool,
+    world_x: f32,
+    world_y: f32,
+    world_z: f32,
+    vertical_velocity: f32 = 0.0,
+    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
 
 pub const RuntimeHazardKind = enum {
@@ -121,16 +137,8 @@ pub const Projectile = struct {
 
 const RunnerPhase = union(enum) {
     active,
-    completion_cutscene: u16,
-    death_cutscene: struct {
-        cause: DeathCause,
-        ticks: u16,
-    },
-    death_resolution: struct {
-        cause: DeathCause,
-        final_loss: bool,
-        ticks: u16,
-    },
+    fall: FallState,
+    completion_handoff,
 };
 
 pub const RecentEvent = union(enum) {
@@ -311,9 +319,12 @@ const score_life_threshold: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
-const completion_cutscene_duration_ticks: u16 = 72;
-const death_cutscene_duration_ticks: u16 = 72;
-const death_resolution_duration_ticks: u16 = 120;
+pub const intro_cutscene_duration_ticks: u16 = 240;
+pub const completion_cutscene_duration_ticks: u16 = 72;
+pub const death_cutscene_duration_ticks: u16 = 72;
+const fall_gravity: f32 = 10.0;
+const fall_world_y_threshold: f32 = -7.0;
+const attachment_exit_progress_step_default: f32 = 1.0 / 60.0;
 const attachment_side_exit_margin: f32 = 0.3;
 const attachment_entry_start_y_tolerance: f32 = -0.2;
 const attachment_entry_end_y_tolerance: f32 = 0.001;
@@ -427,6 +438,12 @@ const LaunchState = struct {
     vertical_velocity: f32 = 0.0,
     basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+};
+
+const WorldFrame = struct {
+    position: rl.Vector3,
+    forward: rl.Vector3,
+    up: rl.Vector3,
 };
 
 const CameraAnchorState = struct {
@@ -647,6 +664,8 @@ pub const Runner = struct {
     paused: bool = false,
     finished: bool = false,
     phase: RunnerPhase = .active,
+    cutscene_id: u8 = cutscene_none_id,
+    cutscene_ticks: u16 = 0,
     pending_handoff: RunnerHandoff = .none,
     tick_count: u64 = 0,
     stopwatch: Stopwatch = .{},
@@ -661,6 +680,12 @@ pub const Runner = struct {
     attachment_path_name: ?[]const u8 = null,
     attachment_follow: AttachmentFollowState = .{},
     launch: LaunchState = .{},
+    attachment_exit_pending: bool = false,
+    attachment_exit_anchor_z: f32 = 0.0,
+    post_follow_value_a: f32 = 0.0,
+    post_follow_value_b: f32 = 0.0,
+    attachment_exit_progress: f32 = 0.0,
+    attachment_exit_progress_step: f32 = 0.0,
     camera_anchor: CameraAnchorState = .{},
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
@@ -786,7 +811,7 @@ pub const Runner = struct {
             self.updateDamageWarning();
             self.stepTemporaryStates();
         } else if (!self.paused) {
-            self.updatePhaseController();
+            self.updatePhaseController(delta_seconds);
         }
         self.endAttachmentIfNeeded(preview);
         if (!self.paused and self.phase == .active) {
@@ -803,6 +828,14 @@ pub const Runner = struct {
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
+        if (self.phase == .fall) {
+            const state = self.phase.fall;
+            return .{
+                .x = state.world_x,
+                .y = state.world_y + y,
+                .z = state.world_z,
+            };
+        }
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const position = attachment_builders.worldPositionForTemplate(
@@ -836,6 +869,14 @@ pub const Runner = struct {
     }
 
     pub fn worldForward(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        if (self.phase == .fall) {
+            const state = self.phase.fall;
+            return .{
+                .x = state.basis_forward.x,
+                .y = state.basis_forward.y,
+                .z = state.basis_forward.z,
+            };
+        }
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
@@ -863,6 +904,14 @@ pub const Runner = struct {
     }
 
     pub fn worldUp(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        if (self.phase == .fall) {
+            const state = self.phase.fall;
+            return .{
+                .x = state.basis_up.x,
+                .y = state.basis_up.y,
+                .z = state.basis_up.z,
+            };
+        }
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
@@ -960,25 +1009,19 @@ pub const Runner = struct {
     pub fn phaseLabel(self: *const Runner) []const u8 {
         return switch (self.phase) {
             .active => "active",
-            .completion_cutscene => "completion_cutscene",
-            .death_cutscene => "death_cutscene",
-            .death_resolution => "death_resolution",
+            .fall => "fall",
+            .completion_handoff => "completion_handoff",
         };
     }
 
     pub fn phaseProgress(self: *const Runner) f32 {
-        return switch (self.phase) {
-            .active => 0.0,
-            .completion_cutscene => |ticks| progressForTicks(ticks, completion_cutscene_duration_ticks),
-            .death_cutscene => |state| progressForTicks(state.ticks, death_cutscene_duration_ticks),
-            .death_resolution => |state| progressForTicks(state.ticks, death_resolution_duration_ticks),
-        };
+        const duration_ticks = cutsceneDurationTicks(self.cutscene_id) orelse return 0.0;
+        return progressForTicks(self.cutscene_ticks, duration_ticks);
     }
 
     pub fn deathCause(self: *const Runner) ?DeathCause {
         return switch (self.phase) {
-            .death_cutscene => |state| state.cause,
-            .death_resolution => |state| state.cause,
+            .fall => |state| state.cause,
             else => null,
         };
     }
@@ -1000,6 +1043,16 @@ pub const Runner = struct {
 
     pub fn configureSessionMode(self: *Runner, session_mode: SessionMode) void {
         self.session_mode = session_mode;
+    }
+
+    pub fn setCutscene(self: *Runner, cutscene_id: u8) void {
+        self.cutscene_id = cutscene_id;
+        self.cutscene_ticks = 0;
+    }
+
+    pub fn clearCutscene(self: *Runner) void {
+        self.cutscene_id = cutscene_none_id;
+        self.cutscene_ticks = 0;
     }
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
@@ -1276,7 +1329,7 @@ pub const Runner = struct {
         if (sample.cell == '=') {
             self.counters.turret_hits += 1;
             self.recent_event = .turret_hit;
-            self.beginDeathCutscene(.hazard);
+            self.beginFallState(preview, .hazard, cutscene_death_id);
             return;
         }
 
@@ -1333,7 +1386,7 @@ pub const Runner = struct {
                     return;
                 }
                 self.slug_hit_active = true;
-                self.beginDeathCutscene(.hazard);
+                self.beginFallState(preview, .hazard, cutscene_death_id);
             },
         }
     }
@@ -1784,7 +1837,7 @@ pub const Runner = struct {
             {
                 self.counters.turret_hits += 1;
                 self.recent_event = .turret_hit;
-                self.beginDeathCutscene(.hazard);
+                self.beginFallState(preview, .hazard, cutscene_death_id);
                 return true;
             }
         }
@@ -2077,7 +2130,7 @@ pub const Runner = struct {
             self.row_position,
         ) != null) return;
 
-        self.beginDeathResolution(.fall);
+        self.beginFallState(preview, .fall, cutscene_none_id);
     }
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
@@ -2096,84 +2149,100 @@ pub const Runner = struct {
     fn beginCompletionCutscene(self: *Runner) void {
         if (self.phase != .active) return;
         self.finished = true;
-        self.phase = .{ .completion_cutscene = 0 };
+        self.phase = .completion_handoff;
+        self.setCutscene(cutscene_completion_id);
     }
 
-    fn beginDeathCutscene(self: *Runner, cause: DeathCause) void {
-        if (self.phase != .active or self.finished) return;
-        self.paused = false;
-        self.launch = .{};
-        self.clearAttachmentFollow();
-        self.phase = .{
-            .death_cutscene = .{
-                .cause = cause,
-                .ticks = 0,
-            },
+    fn captureWorldFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) WorldFrame {
+        return .{
+            .position = self.worldPosition(preview, 0.0),
+            .forward = normalizeVector3(self.worldForward(preview)),
+            .up = normalizeVector3(self.worldUp(preview)),
         };
     }
 
-    fn beginDeathResolution(self: *Runner, cause: DeathCause) void {
+    fn syncTrackPositionFromWorld(self: *Runner, preview: *const track.LoadedLevelPreview, world_x: f32, world_z: f32) void {
+        if (preview.total_rows == 0) return;
+
+        const max_row = @max(@as(f32, @floatFromInt(preview.total_rows)) - 0.001, 0.0);
+        const clamped_row_position = std.math.clamp(world_z, 0.0, max_row);
+        const runtime_track_index = preview.rowIndexAtWorldZ(clamped_row_position);
+        self.runtime_track_index = runtime_track_index;
+        self.movement_progress = std.math.clamp(
+            clamped_row_position - @as(f32, @floatFromInt(runtime_track_index)),
+            0.0,
+            0.999,
+        );
+        self.row_position = clamped_row_position;
+        self.lane_center = laneCenterFromWorldX(preview, world_x);
+        self.lane_index = preview.laneIndexAtWorldX(world_x);
+        self.resolved_lane_index = self.lane_index;
+    }
+
+    fn beginFallState(self: *Runner, preview: *const track.LoadedLevelPreview, cause: DeathCause, cutscene_id: u8) void {
         if (self.phase != .active or self.finished) return;
+        const frame = self.captureWorldFrame(preview);
+        const initial_vertical_velocity = if (self.launch.active) self.launch.vertical_velocity else 0.0;
         self.paused = false;
         self.launch = .{};
         self.clearAttachmentFollow();
+        self.syncTrackPositionFromWorld(preview, frame.position.x, frame.position.z);
+        self.attachment_exit_pending = true;
+        self.attachment_exit_anchor_z = frame.position.z;
+        self.attachment_exit_progress = 0.0;
+        self.attachment_exit_progress_step = attachment_exit_progress_step_default;
+        self.setCutscene(cutscene_id);
         self.phase = .{
-            .death_resolution = .{
+            .fall = .{
                 .cause = cause,
                 .final_loss = self.deathUsesFinalLoss(),
-                .ticks = 0,
+                .world_x = frame.position.x,
+                .world_y = frame.position.y,
+                .world_z = frame.position.z,
+                .vertical_velocity = initial_vertical_velocity,
+                .basis_forward = vector3ToAttachmentVec3(frame.forward),
+                .basis_up = vector3ToAttachmentVec3(frame.up),
             },
         };
     }
 
-    fn updatePhaseController(self: *Runner) void {
+    fn updatePhaseController(self: *Runner, delta_seconds: f32) void {
         switch (self.phase) {
             .active => {},
-            .completion_cutscene => |ticks| {
-                if (ticks + 1 >= completion_cutscene_duration_ticks) {
+            .completion_handoff => {
+                if (self.advanceCutsceneTicks()) {
                     self.pending_handoff = .completion;
                     return;
                 }
-                self.phase = .{ .completion_cutscene = ticks + 1 };
             },
-            .death_cutscene => |state| {
-                if (state.ticks + 1 >= death_cutscene_duration_ticks) {
-                    self.phase = .{
-                        .death_resolution = .{
-                            .cause = state.cause,
-                            .final_loss = self.deathUsesFinalLoss(),
-                            .ticks = 0,
-                        },
-                    };
-                    return;
+            .fall => |state| {
+                var next_state = state;
+                next_state.world_y += next_state.vertical_velocity * delta_seconds;
+                next_state.vertical_velocity -= fall_gravity * delta_seconds;
+                self.phase = .{ .fall = next_state };
+                _ = self.advanceCutsceneTicks();
+                if (self.attachment_exit_pending) {
+                    self.attachment_exit_progress += self.attachment_exit_progress_step;
                 }
-                self.phase = .{
-                    .death_cutscene = .{
-                        .cause = state.cause,
-                        .ticks = state.ticks + 1,
-                    },
-                };
-            },
-            .death_resolution => |state| {
-                if (state.ticks + 1 < death_resolution_duration_ticks) {
-                    self.phase = .{
-                        .death_resolution = .{
-                            .cause = state.cause,
-                            .final_loss = state.final_loss,
-                            .ticks = state.ticks + 1,
-                        },
-                    };
-                    return;
-                }
+                if (next_state.world_y > fall_world_y_threshold) return;
 
-                if (state.final_loss) {
-                    self.pending_handoff = .{ .final_loss = state.cause };
+                if (next_state.final_loss) {
+                    self.pending_handoff = .{ .final_loss = next_state.cause };
                     return;
                 }
-
-                self.pending_handoff = .{ .respawn = state.cause };
+                self.pending_handoff = .{ .respawn = next_state.cause };
             },
         }
+    }
+
+    fn advanceCutsceneTicks(self: *Runner) bool {
+        const duration_ticks = cutsceneDurationTicks(self.cutscene_id) orelse return false;
+        if (self.cutscene_ticks >= duration_ticks) return true;
+        self.cutscene_ticks +|= 1;
+        if (self.cutscene_ticks > duration_ticks) {
+            self.cutscene_ticks = duration_ticks;
+        }
+        return self.cutscene_ticks >= duration_ticks;
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -2640,6 +2709,23 @@ fn progressForTicks(ticks: u16, total_ticks: u16) f32 {
     );
 }
 
+fn cutsceneDurationTicks(cutscene_id: u8) ?u16 {
+    return switch (cutscene_id) {
+        cutscene_intro_id => intro_cutscene_duration_ticks,
+        cutscene_completion_id => completion_cutscene_duration_ticks,
+        cutscene_death_id => death_cutscene_duration_ticks,
+        else => null,
+    };
+}
+
+fn vector3ToAttachmentVec3(vector: rl.Vector3) attachment_builders.Vec3 {
+    return .{
+        .x = vector.x,
+        .y = vector.y,
+        .z = vector.z,
+    };
+}
+
 fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, kind: RuntimeHazardKind) bool {
     if (scalar <= 0.0) return false;
 
@@ -2856,6 +2942,14 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     runner.last_processed_row = target.row - 1;
 }
 
+fn stepUntilHandoff(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
+    var steps: usize = 0;
+    while (steps < max_steps and runner.pending_handoff == .none) : (steps += 1) {
+        runner.step(preview, .{}, 1.0 / 60.0);
+    }
+    return steps;
+}
+
 fn laneOutsideAttachmentWidth(
     preview: *const track.LoadedLevelPreview,
     built: *const attachment_builders.BuiltAttachment,
@@ -3033,7 +3127,8 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.slug_hits);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
 
     runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
@@ -3091,7 +3186,7 @@ test "oblique garbage collisions push the runner sideways" {
     try std.testing.expect(runner.lane_center != lane_before);
 }
 
-test "repeated slug contact adds the recovered +1.0 damage delta" {
+test "slug hit latches the shared fall path" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -3100,11 +3195,10 @@ test "repeated slug contact adds the recovered +1.0 damage delta" {
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
 
     runner.processRow(&fixture.preview, slug.row);
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
-
-    runner.processRow(&fixture.preview, slug.row);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge, 0.0001);
+    try std.testing.expect(runner.slug_hit_active);
 }
 
 test "powerup rings upgrade weapon level then grant invincible state" {
@@ -3243,7 +3337,7 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     try std.testing.expect(runner.hasRuntimeHazard(slug.row, slug.lane, .salt));
 }
 
-test "turret contact enters the hazard death cutscene" {
+test "turret contact enters the shared fall state with the hazard cutscene id" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
     defer fixture.deinit();
 
@@ -3254,7 +3348,8 @@ test "turret contact enters the hazard death cutscene" {
 
     try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
     try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
 }
 
 test "turret rows spawn enemy laser projectiles" {
@@ -3296,7 +3391,7 @@ test "multiple visible turrets keep independent controller state" {
     try std.testing.expect(flashing_count >= 2);
 }
 
-test "enemy laser projectile hits player and enters hazard death cutscene" {
+test "enemy laser projectile hits player and enters the shared fall state" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
     defer fixture.deinit();
 
@@ -3317,7 +3412,8 @@ test "enemy laser projectile hits player and enters hazard death cutscene" {
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
     try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
 }
 
 test "runtime hazards preserve recovered presentation scalars" {
@@ -3446,18 +3542,18 @@ test "postal death hands off respawn after the death controller finishes without
     runner.movement_progress = 0.5;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    runner.beginDeathCutscene(.hazard);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
 
-    for (0..death_cutscene_duration_ticks + death_resolution_duration_ticks) |_| {
-        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    }
+    const steps = stepUntilHandoff(&runner, &fixture.preview, 256);
+    try std.testing.expect(steps < 256);
 
     const handoff = runner.consumeHandoff();
-    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectEqual(DeathCause.hazard, handoff.respawn);
     try std.testing.expectEqual(@as(u32, 3), runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
-    try std.testing.expectApproxEqAbs(@as(f32, 24.5), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 25.0), runner.row_position, 0.0001);
 }
 
 test "applyRespawn preserves score timer and remaining lives while resetting movement" {
@@ -3492,18 +3588,18 @@ test "challenge death hands off final loss" {
 
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.challenge);
-    runner.beginDeathCutscene(.hazard);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
 
-    for (0..death_cutscene_duration_ticks + death_resolution_duration_ticks) |_| {
-        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    }
+    const steps = stepUntilHandoff(&runner, &fixture.preview, 256);
+    try std.testing.expect(steps < 256);
 
     const handoff = runner.consumeHandoff();
-    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectEqual(DeathCause.hazard, handoff.final_loss);
 }
 
-test "death cutscene entry clears attachment-follow state" {
+test "fall entry clears attachment-follow state and seeds attachment exit fields" {
     var fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
     defer fixture.deinit();
 
@@ -3511,12 +3607,14 @@ test "death cutscene entry clears attachment-follow state" {
     runner.movement_mode = .attachment;
     runner.attachment_path_name = "SUPERTRAMP";
     runner.attachment_follow.active = true;
-    runner.beginDeathCutscene(.hazard);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.attachment_path_name == null);
     try std.testing.expect(!runner.attachment_follow.active);
-    try std.testing.expectEqualStrings("death_cutscene", runner.phaseLabel());
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
 }
 
 test "runner completion reaches a handoff after the local cutscene" {
@@ -3530,7 +3628,8 @@ test "runner completion reaches a handoff after the local cutscene" {
     runner.refreshSample(&fixture.preview);
     runner.beginCompletionCutscene();
 
-    try std.testing.expectEqualStrings("completion_cutscene", runner.phaseLabel());
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
     for (0..completion_cutscene_duration_ticks + 1) |_| {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
@@ -3936,7 +4035,7 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     try std.testing.expect(!runner.jetpack.active);
 }
 
-test "fatal floor gaps enter direct death resolution" {
+test "fatal floor gaps enter the shared fall state without a cutscene override" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -3945,8 +4044,9 @@ test "fatal floor gaps enter direct death resolution" {
     primeRunnerBeforeRow(&runner, &fixture.preview, gap);
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
-    try std.testing.expectEqualStrings("death_resolution", runner.phaseLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
 }
 
 test "authored no-fall rows suppress the fall death path" {

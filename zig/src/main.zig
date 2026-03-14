@@ -60,8 +60,6 @@ const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
 const gameplay_turbo_talk_model_path = "X/TURBO-TALK-000.X2";
 const gameplay_turbo_into_shell_model_path = "X/TURBO-INTOSHELL-000.X2";
-const tutorial_click_start_cutscene_phase_ticks: u32 = 120;
-const tutorial_click_start_cutscene_ticks: u32 = tutorial_click_start_cutscene_phase_ticks * 2;
 const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
 const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
 const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
@@ -1399,7 +1397,6 @@ const AppState = struct {
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
-    gameplay_click_start_ticks: u32 = 0,
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
     gameplay_voice_manager: GameplayVoiceManager = .{},
@@ -2939,12 +2936,15 @@ const AppState = struct {
         }
 
         if (self.game_phase == .level) {
-            if (self.gameplay_click_start_active) {
-                self.gameplay_click_start_ticks +|= 1;
-            }
             try self.syncGameplayTurboAnimation();
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
+                    if (self.gameplay_click_start_active and
+                        runner.cutscene_id == gameplay.cutscene_intro_id and
+                        runner.cutscene_ticks < gameplay.intro_cutscene_duration_ticks)
+                    {
+                        runner.cutscene_ticks +|= 1;
+                    }
                     const previous_runner = runner.*;
                     if (!self.gameplay_click_start_active and !self.tutorialPromptBlocksGameplay()) {
                         runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
@@ -3439,8 +3439,8 @@ const AppState = struct {
                         self.level_prompt_queue.dismissActive();
                     } else if (rl.isMouseButtonPressed(.left)) {
                         if (self.currentUiMouseLocal()) |mouse| {
-                            if (activeTutorialPromptOkButtonRect(self, &self.level_prompt_queue)) |ok_button| {
-                                if (rectContainsLocalPoint(ok_button, mouse)) {
+                            if (activeLevelPromptOkHitRect(self, &self.level_prompt_queue, true)) |ok_button| {
+                                if (ok_button.contains(mouse)) {
                                     self.level_prompt_queue.dismissActive();
                                 }
                             }
@@ -3964,7 +3964,9 @@ const AppState = struct {
     }
 
     fn tutorialClickStartCutsceneActive(self: *const AppState) bool {
-        return self.gameplay_click_start_active and self.gameplay_click_start_ticks < tutorial_click_start_cutscene_ticks;
+        if (!self.gameplay_click_start_active) return false;
+        const runner = self.level_runner orelse return false;
+        return runner.cutscene_id == gameplay.cutscene_intro_id and runner.cutscene_ticks < gameplay.intro_cutscene_duration_ticks;
     }
 
     fn resetSubgameCamera(self: *AppState) void {
@@ -3992,7 +3994,9 @@ const AppState = struct {
     fn activateGameplayClickStart(self: *AppState) !void {
         if (!self.gameplay_click_start_active) return;
         self.gameplay_click_start_active = false;
-        self.gameplay_click_start_ticks = 0;
+        if (self.level_runner) |*runner| {
+            runner.clearCutscene();
+        }
         self.mouse_level_lane_target = null;
         self.pending_level_input = .{};
         if (self.audio_ready) {
@@ -5147,7 +5151,6 @@ const AppState = struct {
         self.announced_slug_voice_cell_count = 0;
         self.level_runner = null;
         self.gameplay_click_start_active = false;
-        self.gameplay_click_start_ticks = 0;
         self.resetSubgameCamera();
         self.tutorial_reference_score = 0;
         if (self.catalog.level_entries.len == 0) return;
@@ -5181,7 +5184,11 @@ const AppState = struct {
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
                 self.gameplay_click_start_active = self.command == .game and self.isTutorialFlow();
-                self.gameplay_click_start_ticks = 0;
+                if (self.gameplay_click_start_active) {
+                    self.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
+                } else {
+                    self.level_runner.?.clearCutscene();
+                }
                 self.updateSubgameCamera(self.level_runner.?);
                 if (self.isTutorialGameplay()) {
                     self.tutorial_reference_score = self.high_score_tables.postal[0].score;
@@ -7062,88 +7069,17 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
     };
 }
 
-fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    const prompt = queue.active() orelse return;
-    const card = layout.mapRect(16.0, 330.0, 340.0, 86.0);
-    const shadow_card = rl.Rectangle{
-        .x = card.x + layout.scaleFloat(4.0),
-        .y = card.y + layout.scaleFloat(4.0),
-        .width = card.width,
-        .height = card.height,
-    };
-    rl.drawRectangleRounded(shadow_card, 0.11, 8, .{ .r = 0, .g = 0, .b = 0, .a = 72 });
-    rl.drawRectangleRounded(card, 0.11, 8, .{ .r = 16, .g = 18, .b = 30, .a = 224 });
-    rl.drawRectangleRoundedLinesEx(
-        card,
-        0.11,
-        8,
-        layout.scaleFloat(2.0),
-        .{ .r = 112, .g = 160, .b = 228, .a = 184 },
-    );
+const gameplay_prompt_anchor_y: f32 = 330.0;
+const tutorial_prompt_anchor_y: f32 = 116.0;
+const tutorial_prompt_interactive_anchor_y: f32 = 176.0;
 
-    const title_x: i32 = @intFromFloat(card.x + layout.scaleFloat(18.0));
-    const title_y: i32 = @intFromFloat(card.y + layout.scaleFloat(10.0));
-    drawAppText(state, "Turbo", title_x, title_y, layout.fontSize(22), .gold);
+const ActiveLevelPromptLayout = struct {
+    lines: [frontend_widget.multiline_prompt_max_lines][]const u8 = [_][]const u8{""} ** frontend_widget.multiline_prompt_max_lines,
+    line_count: usize = 0,
+    widget_layout: frontend_widget.MultilinePromptLayout = .{},
+};
 
-    try drawWrappedText(
-        state,
-        prompt.message,
-        @intFromFloat(card.x + layout.scaleFloat(18.0)),
-        @intFromFloat(card.y + layout.scaleFloat(36.0)),
-        @intFromFloat(card.width - layout.scaleFloat(36.0)),
-        layout.fontSize(18),
-        .ray_white,
-    );
-}
-
-fn tutorialPromptLineCount(text: []const u8) i32 {
-    var count: i32 = 1;
-    for (text) |char| {
-        if (char == '>') count += 1;
-    }
-    return count;
-}
-
-fn tutorialPromptCardLocalRect(state: *const AppState, text: []const u8, line_count: i32, interactive: bool) rl.Rectangle {
-    var line_storage: [8][]const u8 = undefined;
-    const lines = tutorialPromptLines(text, &line_storage);
-    const metrics = frontend_widget.metricsForType(.menu_button);
-    const font_size = metrics.fontSize(&state.ui_font);
-    const line_height = metrics.textHeight(&state.ui_font) + 2.0;
-    var max_width: f32 = 0.0;
-    for (lines) |line| {
-        max_width = @max(max_width, state.ui_font.measureText(line, font_size));
-    }
-    const card_width = std.math.clamp(max_width + 44.0, 240.0, 420.0);
-    const body_height = line_height * @as(f32, @floatFromInt(@max(line_count, 1)));
-    const vertical_padding: f32 = if (interactive) 22.0 else 18.0;
-    return .{
-        .x = (640.0 - card_width) * 0.5,
-        .y = if (interactive) 176.0 else 116.0,
-        .width = card_width,
-        .height = body_height + vertical_padding,
-    };
-}
-
-fn tutorialPromptOkButtonRect(card_local_rect: rl.Rectangle) rl.Rectangle {
-    const button_width = 56.0;
-    const button_height = 24.0;
-    return .{
-        .x = card_local_rect.x + ((card_local_rect.width - button_width) * 0.5),
-        .y = card_local_rect.y + card_local_rect.height + 10.0,
-        .width = button_width,
-        .height = button_height,
-    };
-}
-
-fn activeTutorialPromptOkButtonRect(state: *const AppState, queue: *const level_prompt.Queue) ?rl.Rectangle {
-    const prompt = queue.active() orelse return null;
-    if (!prompt.interactive) return null;
-    const line_count = tutorialPromptLineCount(prompt.message);
-    return tutorialPromptOkButtonRect(tutorialPromptCardLocalRect(state, prompt.message, line_count, true));
-}
-
-fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const u8 {
+fn levelPromptLines(text: []const u8, lines: *[frontend_widget.multiline_prompt_max_lines][]const u8) []const []const u8 {
     var count: usize = 0;
     var start: usize = 0;
     for (text, 0..) |char, index| {
@@ -7161,25 +7097,40 @@ fn tutorialPromptLines(text: []const u8, lines: *[8][]const u8) []const []const 
     return lines[0..count];
 }
 
-fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_local_rect: rl.Rectangle, text: []const u8) void {
-    var line_storage: [8][]const u8 = undefined;
-    const lines = tutorialPromptLines(text, &line_storage);
-    const metrics = frontend_widget.metricsForType(.menu_button);
-    const line_height = metrics.textHeight(&state.ui_font) + 2.0;
-    const body_height = line_height * @as(f32, @floatFromInt(lines.len));
-    var line_y = card_local_rect.y + ((card_local_rect.height - body_height) * 0.5) - 1.0;
+fn levelPromptAnchorY(tutorial: bool, interactive: bool) f32 {
+    if (!tutorial) return gameplay_prompt_anchor_y;
+    return if (interactive) tutorial_prompt_interactive_anchor_y else tutorial_prompt_anchor_y;
+}
+
+fn activeLevelPromptLayout(state: *const AppState, prompt: level_prompt.Entry, tutorial: bool) ActiveLevelPromptLayout {
+    var prompt_layout = ActiveLevelPromptLayout{};
+    const lines = levelPromptLines(prompt.message, &prompt_layout.lines);
+    prompt_layout.line_count = lines.len;
+    prompt_layout.widget_layout = frontend_widget.type20PromptLayout(
+        &state.ui_font,
+        lines,
+        levelPromptAnchorY(tutorial, prompt.interactive),
+        prompt.interactive,
+    );
+    return prompt_layout;
+}
+
+fn activeLevelPromptOkHitRect(state: *const AppState, queue: *const level_prompt.Queue, tutorial: bool) ?frontend_widget.Rect {
+    const prompt = queue.active() orelse return null;
+    if (!prompt.interactive) return null;
+    const prompt_layout = activeLevelPromptLayout(state, prompt, tutorial);
+    const ok_text_rect = prompt_layout.widget_layout.ok_text_rect orelse return null;
+    var idle_state = frontend_widget.TextButtonState{};
+    idle_state.snapFor(.menu_button, false);
+    return frontend_widget.hitRect(ok_text_rect, idle_state);
+}
+
+fn drawLevelPromptMessageLines(state: *const AppState, layout: VirtualLayout, prompt_layout: ActiveLevelPromptLayout) void {
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    for (lines) |line| {
-        const text_rect = frontend_widget.widgetTextRect(
-            &state.ui_font,
-            .menu_button,
-            .center,
-            line,
-            line_y,
-            0.0,
-        );
+    for (0..prompt_layout.line_count) |index| {
+        const line = prompt_layout.lines[index];
         var text_state = frontend_widget.TextButtonState{};
         text_state.snapFor(.menu_button, true);
         frontend_widget.drawTextButtonWithOptions(
@@ -7188,13 +7139,55 @@ fn drawTutorialPromptLines(state: *const AppState, layout: VirtualLayout, card_l
             &state.ui_font,
             .menu_button,
             line,
-            text_rect,
+            prompt_layout.widget_layout.line_rects[index],
             text_state,
             false,
             .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
         );
-        line_y += line_height;
     }
+}
+
+fn drawLevelPromptWidget(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue, tutorial: bool) !void {
+    const prompt = queue.active() orelse return;
+    const prompt_layout = activeLevelPromptLayout(state, prompt, tutorial);
+    var frame_state = frontend_widget.TextButtonState{};
+    frame_state.snapFor(.menu_button, false);
+    const colors = frontend_widget.colorsForState(frame_state, false);
+    frontend_widget.drawNineSliceFrame(
+        layout,
+        state.frontend_widget_art.border.?.texture,
+        prompt_layout.widget_layout.frame_rect,
+        frontend_widget.type20_border_edge,
+        frontend_widget.type20_border_edge / 128.0,
+        colors.fill,
+    );
+    drawLevelPromptMessageLines(state, layout, prompt_layout);
+
+    if (prompt_layout.widget_layout.ok_text_rect) |ok_text_rect| {
+        var idle_state = frontend_widget.TextButtonState{};
+        idle_state.snapFor(.menu_button, false);
+        const hit_rect = frontend_widget.hitRect(ok_text_rect, idle_state);
+        const hovered = if (state.currentUiMouseLocal()) |mouse|
+            hit_rect.contains(mouse)
+        else
+            false;
+        var ok_state = frontend_widget.TextButtonState{};
+        ok_state.snapFor(.menu_button, hovered);
+        frontend_widget.drawTextButton(
+            layout,
+            .{ .border = state.frontend_widget_art.border.?.texture },
+            &state.ui_font,
+            .menu_button,
+            "OK",
+            ok_text_rect,
+            ok_state,
+            false,
+        );
+    }
+}
+
+fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
+    try drawLevelPromptWidget(state, layout, queue, false);
 }
 
 fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
@@ -7225,57 +7218,7 @@ fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) v
 }
 
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    const prompt = queue.active() orelse return;
-    const line_count = tutorialPromptLineCount(prompt.message);
-    const card_local_rect = tutorialPromptCardLocalRect(state, prompt.message, line_count, prompt.interactive);
-    var card_state = frontend_widget.TextButtonState{};
-    card_state.snapFor(.menu_button, false);
-    const colors = frontend_widget.colorsForState(card_state, false);
-    frontend_widget.drawNineSliceFrame(
-        layout,
-        state.frontend_widget_art.border.?.texture,
-        .{
-            .left = card_local_rect.x,
-            .top = card_local_rect.y,
-            .width = card_local_rect.width,
-            .height = card_local_rect.height,
-        },
-        frontend_widget.type20_border_edge,
-        frontend_widget.type20_border_edge / 128.0,
-        colors.fill,
-    );
-    drawTutorialPromptLines(state, layout, card_local_rect, prompt.message);
-
-    if (!prompt.interactive) return;
-
-    const local_button = tutorialPromptOkButtonRect(card_local_rect);
-    const hovered = if (state.isTutorialGameplay())
-        if (state.currentUiMouseLocal()) |mouse|
-            rectContainsLocalPoint(local_button, mouse)
-        else
-            false
-    else
-        false;
-    var ok_state = frontend_widget.TextButtonState{};
-    ok_state.snapFor(.menu_button, hovered);
-    const ok_metrics = frontend_widget.metricsForType(.menu_button);
-    const ok_font_size = ok_metrics.fontSize(&state.ui_font);
-    const ok_text_width = state.ui_font.measureText("OK", ok_font_size);
-    frontend_widget.drawTextButton(
-        layout,
-        .{ .border = state.frontend_widget_art.border.?.texture },
-        &state.ui_font,
-        .menu_button,
-        "OK",
-        .{
-            .left = local_button.x + local_button.width * 0.5 - ok_text_width * 0.5,
-            .top = local_button.y + (local_button.height - ok_metrics.textHeight(&state.ui_font)) * 0.5 - 1.0,
-            .width = ok_text_width,
-            .height = ok_metrics.textHeight(&state.ui_font),
-        },
-        ok_state,
-        false,
-    );
+    try drawLevelPromptWidget(state, layout, queue, true);
 }
 
 fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
@@ -8232,18 +8175,8 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
         debug_levels.drawLevelViewport(state);
         return;
     };
-    const camera = if (runner.acceptsGameplayInput())
-        gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees())
-    else if (runner.finished)
-        completionCutsceneCamera(
-            gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees()),
-            runner.phaseProgress(),
-        )
-    else
-        deathCutsceneCamera(
-            gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees()),
-            runner.phaseProgress(),
-        );
+    const base_camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
+    const camera = gameplayCameraForRunner(state, &loaded_track_preview, runner, base_camera);
     camera.begin();
     defer rl.endMode3D();
 
@@ -9280,6 +9213,26 @@ fn gameplayLevelCamera(subgame_camera: *const SubgameCameraState, loaded_track_p
     return camera3DFromCameraWorldMatrix(subgame_camera.shared_matrix, fov_degrees);
 }
 
+fn tutorialClickStartCamera(base_camera: rl.Camera3D, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, progress: f32) rl.Camera3D {
+    const frame = tutorialClickStartFrame(loaded_track_preview, runner, tutorial_click_start_body_height);
+    const hotspot = tutorialClickStartHotspotWorld(frame);
+    const intro_camera = rl.Camera3D{
+        .position = offsetPosition(hotspot, frame.right, frame.up, frame.forward, 0.0, 0.42, -1.55),
+        .target = offsetPosition(hotspot, frame.right, frame.up, frame.forward, 0.0, 0.18, 0.0),
+        .up = frame.up,
+        .fovy = 70.0,
+        .projection = .perspective,
+    };
+    const eased = progress * progress * (3.0 - 2.0 * progress);
+    return .{
+        .position = lerpVector3(intro_camera.position, base_camera.position, eased),
+        .target = lerpVector3(intro_camera.target, base_camera.target, eased),
+        .up = normalizeVector3(lerpVector3(intro_camera.up, base_camera.up, eased)),
+        .fovy = std.math.lerp(intro_camera.fovy, base_camera.fovy, eased),
+        .projection = .perspective,
+    };
+}
+
 // PORT(partial): `cRCutScene::Init()` and `cRCutScene::AI()` own a distinct post-finish camera
 // handoff before `initialize_completion_screen`. The original blend path is richer; for now we
 // widen and raise the recovered chase view over the cutscene duration instead of jumping straight
@@ -9304,6 +9257,18 @@ fn deathCutsceneCamera(base_camera: rl.Camera3D, progress: f32) rl.Camera3D {
     camera.position.z -= 1.4 * eased;
     camera.target.y -= 0.2 * eased;
     return camera;
+}
+
+fn gameplayCameraForRunner(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, base_camera: rl.Camera3D) rl.Camera3D {
+    return switch (runner.cutscene_id) {
+        gameplay.cutscene_intro_id => if (state.tutorialClickStartCutsceneActive())
+            tutorialClickStartCamera(base_camera, loaded_track_preview, runner, runner.phaseProgress())
+        else
+            base_camera,
+        gameplay.cutscene_completion_id => completionCutsceneCamera(base_camera, runner.phaseProgress()),
+        gameplay.cutscene_death_id => deathCutsceneCamera(base_camera, runner.phaseProgress()),
+        else => base_camera,
+    };
 }
 
 fn laneCenterTargetForRunnerMouse(
@@ -9374,10 +9339,6 @@ fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max
 
 fn drawMenuItem(state: *const AppState, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
     app_ui.drawMenuItem(uiContext(state), layout, index, selected_index, label);
-}
-
-fn rectContainsLocalPoint(rect: rl.Rectangle, point: rl.Vector2) bool {
-    return point.x >= rect.x and point.x <= rect.x + rect.width and point.y >= rect.y and point.y <= rect.y + rect.height;
 }
 
 fn drawRouteSelectionDots(state: *const AppState, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {
