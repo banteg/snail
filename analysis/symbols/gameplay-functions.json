@@ -1793,6 +1793,26 @@
       "name": "load_object_definition"
     },
     {
+      "address": "0x44cb50",
+      "name": "dot_vectors",
+      "description": "Computes the 3D dot product of two vectors. Android symbols match this helper to the static overload `tVector::Dot(const tVector&, const tVector&)`."
+    },
+    {
+      "address": "0x44cb70",
+      "name": "dot_vector",
+      "description": "Computes the 3D dot product of one vector against another through the member-style overload `tVector::Dot(const tVector&)`."
+    },
+    {
+      "address": "0x44cb90",
+      "name": "multiply_vector_by_matrix",
+      "description": "Applies one affine matrix to a vector in place, including translation. Android symbols match this helper to `tVector::Multiply(const tMatrix&)`."
+    },
+    {
+      "address": "0x44cc20",
+      "name": "rotate_vector_by_matrix",
+      "description": "Applies only the 3x3 rotational basis of a matrix to a vector in place, leaving translation out. Android symbols match this helper to `tVector::Rotate(const tMatrix&)`."
+    },
+    {
       "address": "0x44cca0",
       "name": "normalize_vector"
     },
