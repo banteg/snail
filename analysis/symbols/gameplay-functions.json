@@ -1793,6 +1793,16 @@
       "name": "load_object_definition"
     },
     {
+      "address": "0x44c890",
+      "name": "convert_math_type32_to_16",
+      "description": "Converts one float into the shared signed-16 gameplay math representation by scaling with `65536 / scale` and truncating. Android symbols match this helper to `MathType32to16(float, float)`, and both Android and Windows only xref it from the SubGoldy update path."
+    },
+    {
+      "address": "0x44c8b0",
+      "name": "convert_math_type16_to_32",
+      "description": "Converts one signed-16 gameplay math value back into float form by scaling with `scale / 65536`. Android symbols match this helper to `MathType16to32(short, float)`, and both Android and Windows only xref it from the SubGoldy update path."
+    },
+    {
       "address": "0x44c8d0",
       "name": "initialize_math_random_table",
       "description": "Fills the shared 0x1fff-entry gameplay random table from the underlying linear-congruential generator and resets the ring index. Android symbols match this helper family to `gRMathRand2Init()`."
@@ -1879,6 +1889,11 @@
       "address": "0x44cd40",
       "name": "cross_vectors",
       "description": "Computes the 3D cross product of two vectors into a destination output. Android symbols match this helper to `tVector::Cross(const tVector&, const tVector&)`."
+    },
+    {
+      "address": "0x44cde0",
+      "name": "initialize_uniform_scale_matrix",
+      "description": "Initializes a matrix from one scalar by writing the same value across the xyz diagonal, zeroing the off-diagonal and translation slots, and setting homogeneous `w` to 1.0. Android symbols match this helper to the single-float `tMatrix::tMatrix(float)` constructor."
     },
     {
       "address": "0x44ce30",
