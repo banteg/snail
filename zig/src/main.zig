@@ -1335,9 +1335,16 @@ const SubgameCameraSource = enum {
 
 const SubgameCameraState = struct {
     shared_matrix: rl.Matrix = identity_subgame_camera_matrix,
-    override_matrix: ?rl.Matrix = null,
+    fov_degrees: f32 = 110.0,
     source: SubgameCameraSource = .live,
     snap_next: bool = true,
+};
+
+const SubgameCameraSelection = struct {
+    source: SubgameCameraSource,
+    matrix: rl.Matrix,
+    fov_degrees: f32,
+    snap_next: bool,
 };
 
 const AppState = struct {
@@ -2939,12 +2946,6 @@ const AppState = struct {
             try self.syncGameplayTurboAnimation();
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
-                    if (self.gameplay_click_start_active and
-                        runner.cutscene_id == gameplay.cutscene_intro_id and
-                        runner.cutscene_ticks < gameplay.intro_cutscene_duration_ticks)
-                    {
-                        runner.cutscene_ticks +|= 1;
-                    }
                     const previous_runner = runner.*;
                     if (!self.gameplay_click_start_active and !self.tutorialPromptBlocksGameplay()) {
                         runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
@@ -2955,7 +2956,7 @@ const AppState = struct {
                     } else {
                         runner.refreshCameraState(loaded_track_preview);
                     }
-                    self.updateSubgameCamera(runner.*);
+                    self.updateSubgameCamera(runner);
                 }
             }
             self.updateGameplayEffects();
@@ -3973,12 +3974,9 @@ const AppState = struct {
         self.subgame_camera = .{};
     }
 
-    fn updateSubgameCamera(self: *AppState, runner: gameplay.Runner) void {
-        const selected_source: SubgameCameraSource = if (self.subgame_camera.override_matrix != null)
-            .override
-        else
-            .live;
-        updateSubgameCameraState(&self.subgame_camera, runner.cameramanMatrix(), selected_source);
+    fn updateSubgameCamera(self: *AppState, runner: *gameplay.Runner) void {
+        const selection = subgameCameraSelectionForRunner(runner);
+        updateSubgameCameraState(&self.subgame_camera, selection);
     }
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
@@ -5189,7 +5187,9 @@ const AppState = struct {
                 } else {
                     self.level_runner.?.clearCutscene();
                 }
-                self.updateSubgameCamera(self.level_runner.?);
+                if (self.level_runner) |*runner| {
+                    self.updateSubgameCamera(runner);
+                }
                 if (self.isTutorialGameplay()) {
                     self.tutorial_reference_score = self.high_score_tables.postal[0].score;
                 }
@@ -7103,14 +7103,18 @@ fn levelPromptAnchorY(tutorial: bool, interactive: bool) f32 {
 }
 
 fn activeLevelPromptLayout(state: *const AppState, prompt: level_prompt.Entry, tutorial: bool) ActiveLevelPromptLayout {
+    return promptLayoutForText(state, prompt.message, tutorial, prompt.interactive);
+}
+
+fn promptLayoutForText(state: *const AppState, text: []const u8, tutorial: bool, interactive: bool) ActiveLevelPromptLayout {
     var prompt_layout = ActiveLevelPromptLayout{};
-    const lines = levelPromptLines(prompt.message, &prompt_layout.lines);
+    const lines = levelPromptLines(text, &prompt_layout.lines);
     prompt_layout.line_count = lines.len;
     prompt_layout.widget_layout = frontend_widget.type20PromptLayout(
         &state.ui_font,
         lines,
-        levelPromptAnchorY(tutorial, prompt.interactive),
-        prompt.interactive,
+        levelPromptAnchorY(tutorial, interactive),
+        interactive,
     );
     return prompt_layout;
 }
@@ -7190,31 +7194,9 @@ fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue:
     try drawLevelPromptWidget(state, layout, queue, false);
 }
 
-fn drawTutorialClickStartPrompt(state: *const AppState, layout: VirtualLayout) void {
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    const text_rect = frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .menu_button,
-        .center,
-        "Click to Start",
-        200.0,
-        0.0,
-    );
-    var text_state = frontend_widget.TextButtonState{};
-    text_state.snapFor(.menu_button, true);
-    frontend_widget.drawTextButtonWithOptions(
-        layout,
-        widget_art,
-        &state.ui_font,
-        .menu_button,
-        "Click to Start",
-        text_rect,
-        text_state,
-        false,
-        .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
-    );
+fn drawStaticPromptWidget(state: *const AppState, layout: VirtualLayout, text: []const u8, tutorial: bool) void {
+    const prompt_layout = promptLayoutForText(state, text, tutorial, false);
+    drawLevelPromptMessageLines(state, layout, prompt_layout);
 }
 
 fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
@@ -7231,7 +7213,7 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
     }
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
-            drawTutorialClickStartPrompt(state, layout);
+            drawStaticPromptWidget(state, layout, "Click to Start", true);
         }
         return;
     }
@@ -8175,8 +8157,7 @@ fn drawGameplayLevelViewport(state: *const AppState) void {
         debug_levels.drawLevelViewport(state);
         return;
     };
-    const base_camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
-    const camera = gameplayCameraForRunner(state, &loaded_track_preview, runner, base_camera);
+    const camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
     camera.begin();
     defer rl.endMode3D();
 
@@ -8513,53 +8494,6 @@ fn gameplayAnnotationWorldPosition(
         .y = base.y + offset.y,
         .z = base.z + offset.z,
     };
-}
-
-const TutorialClickStartFrame = struct {
-    position: rl.Vector3,
-    forward: rl.Vector3,
-    up: rl.Vector3,
-    right: rl.Vector3,
-};
-
-// Extracted from X/TURBOHOTSPOTS.X2, material CameraIntroTalk.tga. During the
-// tutorial startup cutscene the original camera/Turbo staging is authored
-// around this hotspot instead of the model bounds center.
-const tutorial_click_start_hotspot_local = rl.Vector3{
-    .x = 0.86145,
-    .y = -0.1559,
-    .z = 1.86435,
-};
-
-fn tutorialClickStartFrame(preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, y_offset: f32) TutorialClickStartFrame {
-    const position = runner.worldPosition(preview, y_offset);
-    const forward = normalizeVector3(runner.worldForward(preview));
-    const up = normalizeVector3(runner.worldUp(preview));
-    var right = crossVector3(up, forward);
-    if (vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = normalizeVector3(right);
-    }
-    const corrected_up = normalizeVector3(crossVector3(forward, right));
-    return .{
-        .position = position,
-        .forward = forward,
-        .up = corrected_up,
-        .right = right,
-    };
-}
-
-fn tutorialClickStartHotspotWorld(frame: TutorialClickStartFrame) rl.Vector3 {
-    return offsetPosition(
-        frame.position,
-        frame.right,
-        frame.up,
-        frame.forward,
-        tutorial_click_start_hotspot_local.x,
-        tutorial_click_start_hotspot_local.y,
-        tutorial_click_start_hotspot_local.z,
-    );
 }
 
 fn drawGameplayBillboardTexture(
@@ -9161,24 +9095,34 @@ fn blendCameraWorldMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
     return modelTransformFromBasis(blended.position, blended.right, blended.up, blended.forward);
 }
 
-fn subgameCameraMatrixForSource(state: *const SubgameCameraState, live_matrix: rl.Matrix, source: SubgameCameraSource) rl.Matrix {
-    return switch (source) {
-        .live => live_matrix,
-        .override => state.override_matrix orelse live_matrix,
-        .identity => identity_subgame_camera_matrix,
+fn subgameCameraSelectionForRunner(runner: *gameplay.Runner) SubgameCameraSelection {
+    if (runner.cutsceneCameraActive()) {
+        return .{
+            .source = .override,
+            .matrix = runner.cutsceneCameraMatrix(),
+            .fov_degrees = 110.0,
+            .snap_next = runner.takeCutsceneCameraSnap(),
+        };
+    }
+    return .{
+        .source = .live,
+        .matrix = runner.cameramanMatrix(),
+        .fov_degrees = runner.cameramanFovDegrees(),
+        .snap_next = runner.takeCameramanSnap(),
     };
 }
 
-fn updateSubgameCameraState(state: *SubgameCameraState, live_matrix: rl.Matrix, selected_source: SubgameCameraSource) void {
-    const selected_matrix = subgameCameraMatrixForSource(state, live_matrix, selected_source);
-    if (state.snap_next or state.source != selected_source) {
-        state.shared_matrix = selected_matrix;
-        state.source = selected_source;
+fn updateSubgameCameraState(state: *SubgameCameraState, selection: SubgameCameraSelection) void {
+    if (state.snap_next or selection.snap_next or state.source != selection.source) {
+        state.shared_matrix = selection.matrix;
+        state.fov_degrees = selection.fov_degrees;
+        state.source = selection.source;
         state.snap_next = false;
         return;
     }
-    state.shared_matrix = blendCameraWorldMatrices(state.shared_matrix, selected_matrix, subgame_camera_blend_factor);
-    state.source = selected_source;
+    state.shared_matrix = blendCameraWorldMatrices(state.shared_matrix, selection.matrix, subgame_camera_blend_factor);
+    state.fov_degrees = selection.fov_degrees;
+    state.source = selection.source;
 }
 
 fn camera3DFromCameraWorldMatrix(matrix: rl.Matrix, fov_degrees: f32) rl.Camera3D {
@@ -9211,64 +9155,6 @@ fn gameplayLevelCamera(subgame_camera: *const SubgameCameraState, loaded_track_p
         return loaded_track_preview.previewCamera(0.0, 0);
     }
     return camera3DFromCameraWorldMatrix(subgame_camera.shared_matrix, fov_degrees);
-}
-
-fn tutorialClickStartCamera(base_camera: rl.Camera3D, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, progress: f32) rl.Camera3D {
-    const frame = tutorialClickStartFrame(loaded_track_preview, runner, tutorial_click_start_body_height);
-    const hotspot = tutorialClickStartHotspotWorld(frame);
-    const intro_camera = rl.Camera3D{
-        .position = offsetPosition(hotspot, frame.right, frame.up, frame.forward, 0.0, 0.42, -1.55),
-        .target = offsetPosition(hotspot, frame.right, frame.up, frame.forward, 0.0, 0.18, 0.0),
-        .up = frame.up,
-        .fovy = 70.0,
-        .projection = .perspective,
-    };
-    const eased = progress * progress * (3.0 - 2.0 * progress);
-    return .{
-        .position = lerpVector3(intro_camera.position, base_camera.position, eased),
-        .target = lerpVector3(intro_camera.target, base_camera.target, eased),
-        .up = normalizeVector3(lerpVector3(intro_camera.up, base_camera.up, eased)),
-        .fovy = std.math.lerp(intro_camera.fovy, base_camera.fovy, eased),
-        .projection = .perspective,
-    };
-}
-
-// PORT(partial): `cRCutScene::Init()` and `cRCutScene::AI()` own a distinct post-finish camera
-// handoff before `initialize_completion_screen`. The original blend path is richer; for now we
-// widen and raise the recovered chase view over the cutscene duration instead of jumping straight
-// into the completion summary.
-fn completionCutsceneCamera(base_camera: rl.Camera3D, progress: f32) rl.Camera3D {
-    var camera = base_camera;
-    const eased = progress * progress * (3.0 - 2.0 * progress);
-
-    camera.position.y += 1.4 * eased;
-    camera.position.z -= 2.2 * eased;
-    camera.target.y += 0.4 * eased;
-    camera.target.z += 0.8 * eased;
-    return camera;
-}
-
-fn deathCutsceneCamera(base_camera: rl.Camera3D, progress: f32) rl.Camera3D {
-    var camera = base_camera;
-    const eased = progress * progress * (3.0 - 2.0 * progress);
-
-    camera.position.x += 0.6 * eased;
-    camera.position.y += 0.6 * eased;
-    camera.position.z -= 1.4 * eased;
-    camera.target.y -= 0.2 * eased;
-    return camera;
-}
-
-fn gameplayCameraForRunner(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner, base_camera: rl.Camera3D) rl.Camera3D {
-    return switch (runner.cutscene_id) {
-        gameplay.cutscene_intro_id => if (state.tutorialClickStartCutsceneActive())
-            tutorialClickStartCamera(base_camera, loaded_track_preview, runner, runner.phaseProgress())
-        else
-            base_camera,
-        gameplay.cutscene_completion_id => completionCutsceneCamera(base_camera, runner.phaseProgress()),
-        gameplay.cutscene_death_id => deathCutsceneCamera(base_camera, runner.phaseProgress()),
-        else => base_camera,
-    };
 }
 
 fn laneCenterTargetForRunnerMouse(
@@ -9504,9 +9390,10 @@ test "postal high-score commit gates on the final shipped route" {
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x33, 0x33));
 }
 
-fn seededLiveSubgameCamera(runner: gameplay.Runner) SubgameCameraState {
+fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {
+    var runner = runner_input;
     var subgame_camera = SubgameCameraState{};
-    updateSubgameCameraState(&subgame_camera, runner.cameramanMatrix(), .live);
+    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
     return subgame_camera;
 }
 
@@ -9530,7 +9417,7 @@ test "gameplay camera looks ahead of the runner" {
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
     const subgame_camera = seededLiveSubgameCamera(runner);
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
+    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
     const transform = cameraWorldTransformFromMatrix(subgame_camera.shared_matrix);
     const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
     try std.testing.expect(camera.target.z > camera.position.z);
@@ -9566,7 +9453,7 @@ test "gameplay camera keeps lateral steering mostly behind turbo" {
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
     const subgame_camera = seededLiveSubgameCamera(runner);
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
+    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
     const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
 
     try std.testing.expect(player_position.x > 0.0);
@@ -9595,7 +9482,7 @@ test "shared gameplay camera derives target and up from the shared matrix" {
     var runner = gameplay.Runner.init(&loaded_track_preview);
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
     const subgame_camera = seededLiveSubgameCamera(runner);
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
+    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
     const transform = cameraWorldTransformFromMatrix(subgame_camera.shared_matrix);
     try std.testing.expectApproxEqAbs(transform.position.x, camera.position.x, 0.001);
     try std.testing.expectApproxEqAbs(transform.position.y, camera.position.y, 0.001);
@@ -9606,7 +9493,7 @@ test "shared gameplay camera derives target and up from the shared matrix" {
     try std.testing.expectApproxEqAbs(transform.position.z + transform.forward.z, camera.target.z, 0.001);
 }
 
-test "completion cutscene camera widens the chase view" {
+test "intro cutscene override seeds the shared camera and later clears back to live" {
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
@@ -9623,15 +9510,21 @@ test "completion cutscene camera widens the chase view" {
     defer loaded_track_preview.deinit();
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
-    runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
-    const subgame_camera = seededLiveSubgameCamera(runner);
+    var subgame_camera = SubgameCameraState{};
+    runner.setCutscene(gameplay.cutscene_intro_id);
+    runner.refreshCameraState(&loaded_track_preview);
+    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
 
-    const chase_camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
-    const cutscene_camera = completionCutsceneCamera(chase_camera, 1.0);
+    try std.testing.expectEqual(SubgameCameraSource.override, subgame_camera.source);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), subgame_camera.fov_degrees, 0.001);
 
-    try std.testing.expect(cutscene_camera.position.y > chase_camera.position.y);
-    try std.testing.expect(cutscene_camera.position.z < chase_camera.position.z);
-    try std.testing.expect(cutscene_camera.target.z > chase_camera.target.z);
+    for (0..gameplay.intro_cutscene_duration_ticks + 2) |_| {
+        runner.refreshCameraState(&loaded_track_preview);
+        updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+    }
+
+    try std.testing.expectEqual(gameplay.cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(SubgameCameraSource.live, subgame_camera.source);
 }
 
 test "blocked click-start refresh path still seeds the shared gameplay camera" {
@@ -9654,9 +9547,9 @@ test "blocked click-start refresh path still seeds the shared gameplay camera" {
     var subgame_camera = SubgameCameraState{};
 
     runner.refreshCameraState(&loaded_track_preview);
-    updateSubgameCameraState(&subgame_camera, runner.cameramanMatrix(), .live);
+    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, runner.cameramanFovDegrees());
+    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(subgame_camera.source == .live);
@@ -9672,27 +9565,47 @@ test "shared subgame camera snaps on source change and blends on later frames" {
     const next_live_matrix = modelTransformFromBasis(.{ .x = 9.0, .y = 10.0, .z = 11.0 }, basis_right, basis_up, basis_forward);
     var state = SubgameCameraState{};
 
-    updateSubgameCameraState(&state, live_matrix, .live);
+    updateSubgameCameraState(&state, .{
+        .source = .live,
+        .matrix = live_matrix,
+        .fov_degrees = 110.0,
+        .snap_next = true,
+    });
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), state.shared_matrix.m12, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 2.0), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 3.0), state.shared_matrix.m14, 0.001);
 
-    state.override_matrix = override_matrix;
-    updateSubgameCameraState(&state, live_matrix, .override);
+    updateSubgameCameraState(&state, .{
+        .source = .override,
+        .matrix = override_matrix,
+        .fov_degrees = 110.0,
+        .snap_next = true,
+    });
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), state.shared_matrix.m12, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.0), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 7.0), state.shared_matrix.m14, 0.001);
 
-    state.override_matrix = null;
-    updateSubgameCameraState(&state, live_matrix, .live);
+    updateSubgameCameraState(&state, .{
+        .source = .live,
+        .matrix = live_matrix,
+        .fov_degrees = 120.0,
+        .snap_next = true,
+    });
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), state.shared_matrix.m12, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 2.0), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 3.0), state.shared_matrix.m14, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 120.0), state.fov_degrees, 0.001);
 
-    updateSubgameCameraState(&state, next_live_matrix, .live);
+    updateSubgameCameraState(&state, .{
+        .source = .live,
+        .matrix = next_live_matrix,
+        .fov_degrees = 130.0,
+        .snap_next = false,
+    });
     try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 1.0), @as(f32, 9.0), subgame_camera_blend_factor), state.shared_matrix.m12, 0.001);
     try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 2.0), @as(f32, 10.0), subgame_camera_blend_factor), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 3.0), @as(f32, 11.0), subgame_camera_blend_factor), state.shared_matrix.m14, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 130.0), state.fov_degrees, 0.001);
 }
 
 test "mouse lane-center target mapping respects bounds" {

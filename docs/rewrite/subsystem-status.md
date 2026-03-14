@@ -206,9 +206,8 @@ Implemented now:
 
 Still missing or approximate:
 
-- the full Windows `cameraman` controller
-- full cutscene camera ownership and transition behavior
-- exact completion/death cutscene handoff
+- the remaining Windows `cameraman` lift/attachment semantics beyond the current roll-order port
+- the exact cutscene shot anchors and any still-missing `cRCutScene::AI()` branches
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
 - the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
@@ -216,7 +215,7 @@ Still missing or approximate:
 Best next work:
 
 - keep the attachment-driven camera path aligned with the same pose data gameplay uses
-- revisit the broader cameraman/cutscene split once the outer subgame bridge is ported
+- tighten the remaining cutscene-anchor and attachment-exit semantics now that the override camera lives on the runner instead of in app-side helpers
 
 ## Hazards, Pickups, Parcels, And Score Events
 
