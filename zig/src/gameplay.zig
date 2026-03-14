@@ -531,16 +531,6 @@ fn offsetPosition(
     };
 }
 
-fn rotateVectorWorldY(v: rl.Vector3, radians: f32) rl.Vector3 {
-    const sin_theta = std.math.sin(radians);
-    const cos_theta = std.math.cos(radians);
-    return .{
-        .x = (v.x * cos_theta) + (v.z * sin_theta),
-        .y = v.y,
-        .z = (v.z * cos_theta) - (v.x * sin_theta),
-    };
-}
-
 fn rotateVectorWorldX(v: rl.Vector3, radians: f32) rl.Vector3 {
     const sin_theta = std.math.sin(radians);
     const cos_theta = std.math.cos(radians);
@@ -1128,11 +1118,6 @@ pub const Runner = struct {
             .fall => "fall",
             .completion_handoff => "completion_handoff",
         };
-    }
-
-    pub fn phaseProgress(self: *const Runner) f32 {
-        const duration_ticks = cutsceneDurationTicks(self.cutscene_id) orelse return 0.0;
-        return progressForTicks(self.cutscene_ticks, duration_ticks);
     }
 
     pub fn deathCause(self: *const Runner) ?DeathCause {

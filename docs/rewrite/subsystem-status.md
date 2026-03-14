@@ -202,7 +202,7 @@ Implemented now:
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 - tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus
-- the tutorial startup prompt now uses the recovered centered text-only shell-font widget path instead of custom HUD text, which is closer to `cRClickStart`
+- the tutorial startup prompt now goes through the same shared type-20 prompt/widget layout path as the other tutorial prompts instead of a custom HUD text path
 
 Still missing or approximate:
 
