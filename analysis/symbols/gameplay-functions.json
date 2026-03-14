@@ -1454,7 +1454,7 @@
     {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
-      "description": "Seeds and polls the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
+      "description": "Seeds and polls the player-side cutscene controller from the live player transform, the cached snail-hotspot transforms, and the completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
     },
     {
       "address": "0x442e40",
@@ -1558,11 +1558,13 @@
     },
     {
       "address": "0x445cd0",
-      "name": "update_snail_skin"
+      "name": "update_snail_skin",
+      "description": "Transforms the 19-entry local snail hotspot bank at `+0x16cc` into the live world-space hotspot bank at `+0x17b0`, using two cached matrices and feeding the cutscene anchor points later consumed by `update_cutscene`."
     },
     {
       "address": "0x445d50",
-      "name": "build_snail_hotspots"
+      "name": "build_snail_hotspots",
+      "description": "Builds the 19-entry local snail hotspot bank from named hotpoint textures on the loaded snail model, seeding the vector table later transformed by `update_snail_skin` and consumed by the cutscene path."
     },
     {
       "address": "0x445e20",
@@ -1611,7 +1613,7 @@
     {
       "address": "0x4466d0",
       "name": "update_cutscene",
-      "description": "Advances the player-side cutscene controller, including the completion camera blend and the handoff into `initialize_completion_screen`. Cross-port Android and iOS symbols match this helper to `cRCutScene::AI()`."
+      "description": "Advances the player-side cutscene controller, consuming the live snail hotspot bank as the intro/completion/death camera anchor source and handling the handoff into `initialize_completion_screen`. Cross-port Android and iOS symbols match this helper to `cRCutScene::AI()`."
     },
     {
       "address": "0x446e30",

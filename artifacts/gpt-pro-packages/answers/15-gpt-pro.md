@@ -1,4 +1,4 @@
-Bundle 15 closes two of bundle 14's highest-value targets outright and narrows the remaining three.
+Bundle 15 now closes the cutscene-anchor writer question too and narrows the remaining unresolved offsets further.
 
 ## Findings
 
@@ -55,9 +55,10 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
   Typed BN xrefs still show only the known writes in `initialize_subgoldy_fall_state`.
   The full HLIL reexport did not add any new player-side read.
 
-* **The player cutscene anchors at `+6208` / `+6280` are still writer-less.**
-  The refreshed full HLIL export still reduces to the same `update_cutscene` reads already known from bundle 14.
-  Exact-offset raw disassembly search still does not surface a writer.
+* **The player cutscene anchors at `+6208` / `+6280` are no longer writer-less.**
+  `build_snail_hotspots` seeds a `19`-entry local hotspot bank at `player + 0x16cc`, and `update_snail_skin` writes the world-space bank at `player + 0x17b0`.
+  That makes `+0x1840` / `+0x1888` `snail_hotspots_world[12]` and `snail_hotspots_world[18]`, with `update_cutscene` using hotspot `18` as the repeated snapshot target and the `12 -> 18` lerp as the state-`5` completion blend.
+  The exact gameplay names of the two source matrices and the individual hotspot indices are still not clean enough to freeze.
 
 * **`play_movement_state_sound` did not unlock the `-6 / -7` thresholds.**
   It still has only two callsites, both in `update_subgoldy`.
@@ -74,22 +75,23 @@ Bundle 15 confirms three things more firmly:
 3. `game + 0x12727d8` is a gameplay row-event display controller, and the old `+0x12727ec/+0x12727f0` pair belongs to that controller rather than standing alone as subgame flags.
 4. `game + 0x125e480` is the real gameplay parcel-slot array, and `0x443160 / 0x443190 / 0x4431d0` are the slot reset, allocator, and parcel-AI path behind `cRSubGame::AddParcel`.
 5. `player + 0x440 / +0x444 / +0x448 / +0x44e` is the completion-handoff controller that owns the `2s` voice and `5s` fade/`complete_subgame` transition.
-6. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
-7. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
+6. The old `player + 6208 / +6280` mystery is the live transformed snail-hotspot bank, not a pair of isolated cutscene-only fields.
+7. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
+8. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
 
 ## Remaining best targets
 
-1. **Writers for player `+6208` / `+6280`.**
-   That is still the biggest missing piece for exact intro/completion/death shot geometry.
-
-2. **The real setter for `selected_level_record_persistent`.**
+1. **The real setter for `selected_level_record_persistent`.**
    The reads are now clear, but the upstream writer still is not.
 
-3. **The exact meaning of `row_event_display + 0x18`.**
+2. **The exact meaning of `row_event_display + 0x18`.**
    It is no longer a floating `Game` flag, and it now narrows to a completion-handoff fast-forward gate, but its real gameplay name is still unresolved.
 
-4. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
+3. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
    Typed BN xrefs came back write-only.
 
-5. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
+4. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
    The broad threshold meaning is now clear, but the remaining question is how those gates interact with the later `progress_timer` branch and the `player + 0x2d8` flag.
+
+5. **The exact gameplay names of the two cutscene-hotspot matrices and the hotspot indices used by `update_cutscene`.**
+   The writer path is now clear, but the higher-level camera semantics are still not clean enough to freeze.

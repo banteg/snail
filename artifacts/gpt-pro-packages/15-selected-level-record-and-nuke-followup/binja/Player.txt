@@ -43,6 +43,8 @@ struct Player // size=0x4360
 0x044c: uint8_t attachment_exit_gate_a
 0x044d: uint8_t attachment_exit_gate_b
 0x044e: uint8_t completion_handoff_voice_gate
+0x16cc: struct Vec3[0x13] snail_hotspots_local
+0x17b0: struct Vec3[0x13] snail_hotspots_world
 0x2730: float movement_progress
 0x2734: float movement_rate_scalar
 0x2738: float some_float

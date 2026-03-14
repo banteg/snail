@@ -1,0 +1,7 @@
+xrefs to 0x445cd0
+
+code refs:
+- 0x442dda | initialize_cutscene
+
+data refs:
+- none

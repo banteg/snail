@@ -42,6 +42,10 @@ The current high-confidence `Player` fields are:
 - `+0x44c`: `attachment_exit_gate_a`
 - `+0x44d`: `attachment_exit_gate_b`
 - `+0x44e`: `completion_handoff_voice_gate`
+- `+0x16cc`: `snail_hotspots_local`
+  - `19`-entry `Vec3` array
+- `+0x17b0`: `snail_hotspots_world`
+  - `19`-entry `Vec3` array
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -52,6 +56,16 @@ The current high-confidence `Player` fields are:
   - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
   - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
   - decremented by `update_subgoldy_resurrect` on the respawn branch
+
+Current practical read for the hotspot bank:
+
+- `build_snail_hotspots` seeds `snail_hotspots_local` from the snail model's named hotpoint textures
+- `update_snail_skin` transforms that `19`-entry local bank into `snail_hotspots_world`
+  - slots `0..10` use the cached matrix at `player + 0x1684`
+  - slots `11..18` use the cached matrix at `player + 0x1604`
+- the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` and `snail_hotspots_world[18]`
+- `update_cutscene` snapshots hotspot `18` in the repeated intro or death or completion camera states and uses the `12 -> 18` lerp as the state-`5` completion blend
+- the exact gameplay names of the two source matrices and the individual hotspot indices are still unresolved
 
 Important caveat:
 
