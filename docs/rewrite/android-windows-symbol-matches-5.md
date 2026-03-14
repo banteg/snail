@@ -43,11 +43,18 @@ The Android matrix method names line up cleanly with the Windows helpers exporte
 |---|---|---|---|---|
 | `tMatrix::tMatrix(float, ..., float)` | 0x44cfe0 | `sub_44cfe0` | `initialize_matrix_from_values` | NEW -- direct 16-float store, exact constructor body |
 | `tMatrix::RotWorldZ` | 0x44cf50 | `sub_44cf50` | `rotate_matrix_world_z` | NEW -- cos/sin mix across basis columns 0 and 1, exact Android `RotWorldZ` layout |
+| `tMatrix::Multiply(const tMatrix&, const tMatrix&)` | 0x44d060 | `sub_44d060` | `multiply_matrices` | NEW -- core affine `out = lhs * rhs` helper used by both in-place multiply variants |
 | `tMatrix::operator*=(const tMatrix&)` / `tMatrix::Multiply(const tMatrix&)` | 0x44d1a0 | `sub_44d1a0` | `multiply_matrix_in_place` | NEW -- wrapper copies `this` to a temp and calls the full multiply helper, matching Android `operator*=` / `Multiply` |
 | `tMatrix::Identity` | 0x44d210 | `set_matrix_identity` | -- | EXISTS |
 | `tMatrix::RotIdentity` | 0x44d250 | `set_matrix_identity` | `set_matrix_rotation_identity` | NEW -- resets the basis to identity while preserving translation slots |
+| `tMatrix::Invert()` | 0x44d280 | `sub_44d280` | `invert_matrix_in_place` | NEW -- transpose the basis, then negate the transformed translation in place |
+| `tMatrix::Invert(const tMatrix&)` | 0x44d330 | `sub_44d330` | `invert_matrix_from_source` | NEW -- writes the inverse of a source transform into a destination matrix |
 | `tMatrix::Orthoganalize` | 0x44d3d0 | `sub_44d3d0` | `orthogonalize_matrix` | NEW -- normalize 3 basis vectors, then rebuild orthogonality with cross products |
 | `tMatrix::LookAt(const tVector&)` | 0x44d4e0 | `sub_44d4e0` | `look_at_point` | NEW -- subtract target-position, then tailcall `SetZDir` |
+| `tQuaternian::tQuaternian(const tAxis&)` | 0x44d530 | `sub_44d530` | `initialize_quaternion_from_axis` | NEW -- `xyz *= sin(angle / 2)`, `w = cos(angle / 2)` |
+| `tAxis::operator=(const tQuaternian&)` | 0x44d580 | `sub_44d580` | `initialize_axis_from_quaternion` | NEW -- axis-angle unpack via `acos(w)` and `sin(theta / 2)` |
+| `tQuaternian::tQuaternian(const tMatrix&)` | 0x44d5d0 | `sub_44d5d0` | `initialize_quaternion_from_matrix` | NEW -- branchy trace/diagonal quaternion constructor from matrix basis |
+| `tMatrix::tMatrix(const tQuaternian&)` | 0x44d820 | `sub_44d820` | `initialize_matrix_from_quaternion` | NEW -- quaternion-to-matrix constructor with cleared translation row |
 | `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)` | 0x44da90 | `sub_44da90` | `linear_interpolate_matrix` | NEW -- exact Android sequence: invert / multiply / interpolate / pre-multiply / orthogonalize, then translation lerp |
 
 ---
@@ -74,4 +81,5 @@ Android `cRClickStart::AI` writes the player-side startup field from a game-glob
 
 - The exact matrix-axis uncertainty is materially reduced now that `sub_44cf50` is confirmed as `tMatrix::RotWorldZ`.
 - The helper behind the shared-camera blend in both `cRCameraman::AI` and `cRSubGame::CameraAI` is now confirmed as `tMatrix::LinearInterpolate`, not a bespoke game-local matrix routine.
+- The full rotation-interpolation internals are now named too: Windows converts `matrix -> quaternion -> axis-angle -> scaled quaternion -> matrix`, which removes most of the remaining ambiguity around the camera blend path.
 - The unresolved tip widgets are now confirmed as `cRTip` instances, which means the current port should not borrow behavior from the unrelated `cRToolTip` system.
