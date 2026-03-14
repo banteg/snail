@@ -1,0 +1,5 @@
+00441fa4        *(arg1 + 0x84) = 1
+00441fab        *(arg1 + 0x80) = arg2
+00441fb1        *(arg1 + 0x8c) = 0
+00441fbb        *(arg1 + 0x90) = 0x3c088889
+00441fc5        return arg2

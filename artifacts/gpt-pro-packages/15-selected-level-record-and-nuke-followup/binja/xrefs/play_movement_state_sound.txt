@@ -1,0 +1,8 @@
+xrefs to 0x43afd0
+
+code refs:
+- 0x43d143 | update_subgoldy
+- 0x43d19e | update_subgoldy
+
+data refs:
+- none

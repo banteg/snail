@@ -1,0 +1,21 @@
+# Player anchor follow-up for `+6208` (`0x1840`) and `+6280` (`0x1888`)
+
+`update_cutscene` still owns every recovered code reference:
+
+- `0x44675c` | `update_cutscene` | `arg1[0x10] = *(eax_2 + 0x1888)`
+- `0x4467d0` | `update_cutscene` | `int32_t* eax_5 = *arg1 + 0x1888`
+- `0x4469b0` | `update_cutscene` | `int32_t* edx_8 = *arg1 + 0x1888`
+- `0x446ac4` | `update_cutscene` | `arg1[0x10] = *(ecx_26 + 0x1888)`
+- `0x446c29` | `update_cutscene` | `float edx_16 = *(eax_22 + 0x1840)`
+- `0x446caa` | `update_cutscene` | `lerp(*(eax_22 + 0x1840), *(eax_22 + 0x1888), ...)`
+- `0x446dbe` | `update_cutscene` | `arg1[0x10] = *(eax_26 + 0x1888)`
+
+Full HLIL reexport check:
+
+- `0x1840` / `0x1888` code hits still reduce to the same `update_cutscene` statements.
+- The remaining raw matches in the monolithic HLIL dump are unrelated data addresses.
+
+Conclusion:
+
+- No writer for either anchor was recovered in this pass.
+- Intro/completion/death camera geometry is still anchored on `update_cutscene`, but the source fields remain unnamed/unseeded.

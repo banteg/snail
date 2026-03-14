@@ -109,6 +109,6 @@ Current best Windows mode mapping, combining that capture with `load_frontend_le
 - `1` is challenge
 - `4` is the time-trial family
 - `7` is tutorial
-- replay is not its own `level_mode`; it rides the separate `replay_active` or `replay_track` path
+- replay is not its own `level_mode`; it rides the separate selected-level-record path (`selected_level_record_active` / `selected_level_record`)
 
 That leaves `2` and `3` unresolved as front-end or replay-adjacent helper modes, but it is enough to reject the earlier `4 == replay` read.

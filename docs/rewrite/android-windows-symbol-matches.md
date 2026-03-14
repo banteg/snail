@@ -87,9 +87,9 @@ Cross-reference of unstripped Android (`libsnailmail.so`) symbols against the st
 
 | Android Symbol | Windows Addr | Current Name | Proposed Name | Evidence |
 |---|---|---|---|---|
-| `cRNuke::Init` | 0x43a5b0 | `sub_43a5b0` | `initialize_nuke` | Creates sprite ring, flag |=0x800, alpha 0x3f7fbe77 |
-| `cRNuke::AI` | 0x43a690 | `sub_43a690` | `update_nuke` | State==1, Sin/Cos orbital motion |
-| `cRNuke::UnInit` | 0x43a580 | `sub_43a580` | `uninit_nuke` | Kill sprites loop, state=0 |
+| `cRNuke::Init` | 0x447110 | `sub_447110` | `initialize_nuke` | 25-sprite ring, immediate tail-call into update, `y-5`, `2*dt`, radius `7.0`, collision-only caller |
+| `cRNuke::AI` | 0x4471e0 | `sub_4471e0` | `update_nuke` | State==1, Sin/Cos orbital motion over 25 sprites, radius `7.0` |
+| `cRNuke::UnInit` | 0x4470e0 | `sub_4470e0` | `uninit_nuke` | Kill 25 sprites loop, state=0 |
 
 ---
 
@@ -263,7 +263,7 @@ The Android binary reveals the original class architecture:
 - **`cRSubGolb`** = the enemy/parcel-flight projectile. Currently `sub_414820` etc. "Golb" is "Gölb" — the enemy snails. The massive `sub_414820` that was previously unclear is confirmed as the Golb AI with path-following, homing, and collision against garbage/slugs.
 - **`cRSubHover`** = the jetpack hover subsystem. The `sub_43a5b0`/`sub_43a690` cluster that was grouped near the jetpack gauge is confirmed as JetInit/Jets particle effects, separate from the gauge timer.
 - **`cRWarning`** = the damage warning overlay. The `sub_446e80`–`sub_446f80` cluster near the invincible controller is the warning system, not part of invincibility.
-- **`cRNuke`** = the explode-ring clearance effect. `sub_43a5b0` (JetInit) and `sub_43a690` (Jets) were incorrectly suspected as nuke; the actual nuke sprites are a separate ring effect system.
+- **`cRNuke`** = the explode-ring clearance effect. The real Windows match is the `sub_447110` / `sub_4471e0` / `sub_4470e0` cluster, not the earlier jet-particle guess at `sub_43a5b0` / `sub_43a690`.
 - **`cRInvincible`** = the invincibility shell controller. Separate from the warning system — both use similar sprite patterns but track different state.
 - **`cRCompletion::RegisterParcel`** = `sub_405040`. This is the parcel delivery scoring function that awards ScoreAdd type 4 (100 pts) per delivery and optionally type 5 (custom bonus) when all parcels delivered.
 - **`cRCutScene`** = `sub_4428d0` (Init) and `sub_4466d0` (AI). The 12-case cutscene state machine handles both death and completion camera sequences.

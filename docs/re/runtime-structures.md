@@ -159,8 +159,9 @@ The current high-confidence `Game` fields are:
   - `50`-slot `GarbageHazardRuntime` array
 - `+0x125e430`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
-- `+0xff25d0`: `replay_active`
-- `+0xff25d4`: `replay_track`
+- `+0xff25d0`: `selected_level_record_active`
+- `+0xff25d1`: `selected_level_record_persistent`
+- `+0xff25d4`: `selected_level_record`
 - `+0xff25d8`: `replay_track_index`
 - `+0xff25dc`: `runtime_track_index`
 
@@ -168,6 +169,9 @@ Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
+- `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
+- `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
+- `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
@@ -177,7 +181,7 @@ Current practical read:
 - the embedded `track_parcels` slots are not the same object family as either the parcel-manager path behind `cRSubGame::AddParcel` or the separate garbage runtime seeded at `game + 0x359144`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
-- `replay_track_index` remains a separate tracked scalar and should not be merged with the live cursor without more evidence
+- the scalar at `+0xff25d8` remains separate from `selected_level_record` and should not be merged with the live cursor without more evidence
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
 ## Track Parcel Runtime

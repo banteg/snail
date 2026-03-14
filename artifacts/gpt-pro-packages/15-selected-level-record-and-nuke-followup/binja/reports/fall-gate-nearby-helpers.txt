@@ -1,0 +1,21 @@
+# Fall / gate nearby helper follow-up
+
+`play_movement_state_sound` xrefs:
+
+- `0x43d143` | `update_subgoldy`
+- `0x43d19e` | `update_subgoldy`
+
+`initialize_nuke` xrefs:
+
+- `0x4457a4` | `handle_subgoldy_collisions`
+
+Nuke cluster meaning:
+
+- `0x447110` `initialize_nuke` seeds 25 sprites, `owner_y - 5`, a phase step of `2 * dt`, then tail-calls `update_nuke`
+- `0x4471e0` `update_nuke` orbits the 25 sprites at radius `7.0`
+- `0x4470e0` `uninit_nuke` kills the 25 sprites and clears state
+
+Conclusion:
+
+- The `0x4470e0 / 0x447110 / 0x4471e0` cluster is not a fall or movement-sound gate.
+- The remaining `-6 / -7` threshold question still lives in the `update_subgoldy` fall window around `0x43ce75 .. 0x43cffc`.

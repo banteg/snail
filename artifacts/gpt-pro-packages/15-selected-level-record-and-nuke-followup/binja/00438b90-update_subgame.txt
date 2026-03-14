@@ -1,0 +1,492 @@
+00438b97        struct Game* game = arg1
+00438b99        int16_t x87control = calc_subgame_rate(arg1)
+00438baf        int32_t eax
+00438baf        switch (game->_pad_3c)
+00438c44        case 0
+00438c44        int32_t eax_5 = game->__offset(0x1270fc8).d
+00438c4a        game->_pad_3c[0] = 1
+00438c4a        game->_pad_3c[1] = 0
+00438c4a        game->_pad_3c[2] = 0
+00438c4a        game->_pad_3c[3] = 0
+00438c4f        if (eax_5 != 1)
+00438c60        if (eax_5 == 0 || eax_5 == 3)
+00438d6c        return build_subgame_level(game, game->level_mode_arg)
+00438c6d        if (game->selected_level_record_persistent == 1)
+00438c6f        void* selected_level_record = game->selected_level_record
+00438c75        game->selected_level_record_active = 1
+00438c8e        return build_subgame_level(game, *(selected_level_record + 0x28))
+00438c8f        game->selected_level_record_active = 0
+00438ca2        hide_star_field(data_4df904 + 0x4f33c)
+00438c6d        goto label_438ca7
+00438ca7        case 1
+00438ca7        label_438ca7:
+00438ca7        int32_t var_50_2 = 0
+00438cae        sub_44dc90(1f)
+00438cb3        int32_t ecx_9 = data_4df958
+00438cb9        uint32_t level_mode = game->level_mode
+00438cbc        game->_pad_00[0x28] = ecx_9.b
+00438cbc        game->_pad_00[0x29] = ecx_9:1.b
+00438cbc        game->_pad_00[0x2a] = ecx_9:2.b
+00438cbc        game->_pad_00[0x2b] = ecx_9:3.b
+00438cbf        int32_t edx_3 = data_4df960
+00438ccd        game->_pad_00[0x2c] = edx_3.b
+00438ccd        game->_pad_00[0x2d] = edx_3:1.b
+00438ccd        game->_pad_00[0x2e] = edx_3:2.b
+00438ccd        game->_pad_00[0x2f] = edx_3:3.b
+00438cd6        int32_t eax_7
+00438cd6        switch (level_mode)
+00438ce3        case 0
+00438ce3        eax_7 = update_galaxy(&game->_pad_00[0x1260020])
+00438cea        if (eax_7 == 1)
+00438cec        uint32_t level_mode_arg = game->level_mode_arg
+00438cef        game->__offset(0x1270fc8).d = 3
+00438cf9        data_4df9bc = level_mode_arg
+00438d10        return build_subgame_level(game, game->level_mode_arg)
+00438d14        if (eax_7 != 2)
+00438cea        goto label_438d6d
+00438d16        uint32_t level_mode_arg_1 = game->level_mode_arg
+00438d19        game->__offset(0x1270fc8).d = 1
+00438d1f        data_4df9bc = level_mode_arg_1
+00438d37        return build_subgame_level(game, game->level_mode_arg)
+00438d9b        case 1
+00438d9b        int32_t eax_14 = update_challenge_setup_screen(&game->_pad_00[0x125ffe0])
+00438da2        if (eax_14 == 1)
+00438da8        game->__offset(0x1270fc8).d = 2
+00438dbe        return build_subgame_level(game, 0)
+00438dc2        if (eax_14 == 3)
+00438dca        int32_t eax_16 = destroy_subgame(game)
+00438dd8        *(data_4df904 + 0x1b8) = 2
+00438de6        return eax_16
+00438d3e        case 4
+00438d3e        eax_7 = update_galaxy(&game->_pad_00[0x1260020])
+00438d45        if (eax_7 == 1)
+00438d47        uint32_t level_mode_arg_2 = game->level_mode_arg
+00438d4a        game->__offset(0x1270fc8).d = 2
+00438d54        data_4df9bc = level_mode_arg_2
+00438d6c        return build_subgame_level(game, game->level_mode_arg)
+00438d6d        label_438d6d:
+00438d70        if (eax_7 == 3)
+00438d78        int32_t eax_13 = destroy_subgame(game)
+00438d86        *(data_4df904 + 0x1b8) = 2
+00438d94        return eax_13
+00438da8        case 7
+00438da8        game->__offset(0x1270fc8).d = 2
+00438dbe        return build_subgame_level(game, 0)
+00438de7        case 2
+00438de7        eax.b = game->selected_level_record_active
+00438e09        if (eax.b == 1 && *(data_4df904 + 0x4f2e0) == 0)
+00438e33        int32_t var_7c
+00438e33        int32_t* var_68_1
+00438e33        if (game->level_mode != 3)
+00438e63        void var_20
+00438e63        var_68_1 = sub_44db60(&var_20, 0x3f800000, 0x3f800000, 0x3f800000, 0x3ecccccd)
+00438e78        __builtin_memcpy(&var_7c, "\x00\x00\x90\x43\x00\x00\x20\x41\x00\x00\x80\x42\x00\x00\x80\x42\x00\x00\x00\x01", 0x14)
+00438e3e        void var_30
+00438e3e        var_68_1 = sub_44db60(&var_30, 0x3f800000, 0x3f800000, 0x3f800000, 0x3ecccccd)
+00438e53        __builtin_memcpy(&var_7c, "\x00\x00\x11\x44\x00\x00\xc0\x40\x00\x00\x80\x42\x00\x00\x80\x42\x00\x00\x00\x01", 0x14)
+00438e7f        int32_t var_78
+00438e7f        sub_44a9b0(0x1b, var_7c, var_78, 64f, 64f, 0x1000000, var_68_1, 0, 0, 0x3f800000, 0x3f800000, 1, 0)
+00438e87        eax.b = game->__offset(0x3bbba4).b
+00438e9c        if (eax.b == 0 && game->__offset(0x3bb884).d != 2)
+00438ea9        x87control = advance_timer_counters(&game->__offset(0x3bba4c).d, 1f)
+00438eb2        if (game->level_mode == 7)
+00438eba        x87control = update_tutorial(&game->_pad_a855[3])
+00438ec5        update_slug_voice_manager(&game->__offset(0x35bb7c).d)
+00438ece        if (game->_pad_00[8] == 1)
+00438ed6        game->_pad_00[9] = 0
+00438eda        game->_pad_00[8] = 0
+00438ede        sub_44e540(&data_790f30, 0)
+00438ee3        int16_t eax_20
+00438ee3        eax_20.b = game->selected_level_record_active
+00438ee9        void* ecx_26 = data_4df904
+00438ef1        long double x87_r7_3
+00438ef1        long double temp0_1
+00438ef1        if (eax_20.b != 0)
+00438ef3        x87_r7_3 = fconvert.t(game->_pad_00[0xc].d)
+00438ef6        temp0_1 = fconvert.t(0f)
+00438ef6        x87_r7_3 - temp0_1
+00438f0f        float eax_22
+00438f0f        if (eax_20.b != 0 && (((x87_r7_3 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0 && ((*(game->__offset(0x3bbba0).d + 4)).w:1.b & 0x40) != 0)
+00439984        label_439984:
+00439984        eax_20.b = game->selected_level_record_persistent
+0043998c        if (eax_20.b == 0)
+004399b2        *(ecx_26 + 0x1bc) = *(ecx_26 + 0x1b8)
+004399bd        *(data_4df904 i+ 0x1b8) = 0x1b
+00439994        *(ecx_26 + 0x1bc) = *(ecx_26 + 0x1b8)
+004399a0        *(data_4df904 + 0x1b8) = 0x1a
+004399c7        void* ecx_97 = data_4df904
+004399cd        long double x87_r7_23 = fconvert.t(*(ecx_97 + 0x4f2e4))
+004399d3        long double temp1_1 = fconvert.t(1f)
+004399d3        x87_r7_23 - temp1_1
+004399d9        eax_22.w = (x87_r7_23 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_23, temp1_1) ? 1 : 0) << 0xa | (x87_r7_23 == temp1_1 ? 1 : 0) << 0xe
+004399de        if ((eax_22:1.b & 0x41) == 0)
+00439906        return eax_22
+004399e7        *(ecx_97 + 0x4f2e0) = 0
+004399f2        return eax_22
+00438f15        eax_20.b = *(ecx_26 + 0x4f2e0)
+00438f1d        if (eax_20.b != 0)
+00438f1d        goto label_439984
+00438f3d        if ((sub_432440().b == 0xb || data_4b7654 == 1) && *(data_4df904 + 0x24) == 0)
+00438f3f        game->_pad_00[9] = 1
+00438f4a        game->_pad_3c[0] = 3
+00438f4a        game->_pad_3c[1] = 0
+00438f4a        game->_pad_3c[2] = 0
+00438f4a        game->_pad_3c[3] = 0
+00438f4d        eax_22 = sub_44e540(&data_790f30, 1)
+00438f58        if (game->__offset(0x3bb884).d == 2)
+00438f70        return hide_border_init(game->__offset(0x3bb888).d)
+00439906        return eax_22
+00438f71        long double x87_r7_4 = fconvert.t(game->_pad_00[0xc].d)
+00438f74        long double temp2_1 = fconvert.t(0f)
+00438f74        x87_r7_4 - temp2_1
+00438f7a        void* eax_21
+00438f7a        eax_21.w = (x87_r7_4 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_4, temp2_1) ? 1 : 0) << 0xa | (x87_r7_4 == temp2_1 ? 1 : 0) << 0xe
+00438f7f        if ((eax_21:1.b & 0x41) == 0)
+00438f84        long double x87_r7_6 = fconvert.t(game->_pad_00[0x10].d) + fconvert.t(game->_pad_00[0xc].d)
+00438f87        game->_pad_00[0xc].d = fconvert.s(x87_r7_6)
+00438f8a        long double temp3_1 = fconvert.t(1f)
+00438f8a        x87_r7_6 - temp3_1
+00438f90        eax_21.w = (x87_r7_6 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_6, temp3_1) ? 1 : 0) << 0xa | (x87_r7_6 == temp3_1 ? 1 : 0) << 0xe
+00438f95        if ((eax_21:1.b & 0x41) == 0)
+00438f97        game->_pad_00[0xc] = 0
+00438f97        game->_pad_00[0xd] = 0
+00438f97        game->_pad_00[0xe] = 0
+00438f97        game->_pad_00[0xf] = 0
+00438fa0        if (game->__offset(0x3bb884).d == 2)
+00438fa8        unhide_border_init(game->__offset(0x3bb888).d)
+00438fb0        int32_t eax_25
+00438fb0        if (game->_pad_00[0] == 0)
+00438fd7        int32_t edi_4 = game->_pad_00[0x24].d
+00438fda        bool cond:3_1 = game->level_mode != 2
+00438fdc        game->_pad_00[0x20] = edi_4.b
+00438fdc        game->_pad_00[0x21] = edi_4:1.b
+00438fdc        game->_pad_00[0x22] = edi_4:2.b
+00438fdc        game->_pad_00[0x23] = edi_4:3.b
+00438fdf        if (cond:3_1)
+00438ff4        eax_25 = __ftol(x87control, fconvert.t(game->__offset(0x3be0e4).d)) + 0x2e
+00438ff9        if (eax_25 s> edi_4)
+00438ff9        goto label_438ffb
+00438fe1        int32_t edx_6 = game->_pad_50[4].d
+00438fe4        game->_pad_00[0x24] = edx_6.b
+00438fe4        game->_pad_00[0x25] = edx_6:1.b
+00438fe4        game->_pad_00[0x26] = edx_6:2.b
+00438fe4        game->_pad_00[0x27] = edx_6:3.b
+00438fb2        uint32_t level_mode_1 = game->level_mode
+00438fb5        game->_pad_00[0x20] = 0
+00438fb5        game->_pad_00[0x21] = 0
+00438fb5        game->_pad_00[0x22] = 0
+00438fb5        game->_pad_00[0x23] = 0
+00438fba        if (level_mode_1 != 2)
+00438fcf        eax_25 = __ftol(x87control, fconvert.t(game->__offset(0x3be0e4).d)) + 0x2e
+00438ffb        label_438ffb:
+00438ffb        game->_pad_00[0x24] = eax_25.b
+00438ffb        game->_pad_00[0x25] = eax_25:1.b
+00438ffb        game->_pad_00[0x26] = eax_25:2.b
+00438ffb        game->_pad_00[0x27] = eax_25:3.b
+00438fbc        int32_t ecx_29 = game->_pad_50[4].d
+00438fbf        game->_pad_00[0x24] = ecx_29.b
+00438fbf        game->_pad_00[0x25] = ecx_29:1.b
+00438fbf        game->_pad_00[0x26] = ecx_29:2.b
+00438fbf        game->_pad_00[0x27] = ecx_29:3.b
+00439004        int32_t eax_29 = game->_pad_50[8].d + 0x14
+00439009        if (game->_pad_00[0x24].d s> eax_29)
+0043900b        game->_pad_00[0x24] = eax_29.b
+0043900b        game->_pad_00[0x25] = eax_29:1.b
+0043900b        game->_pad_00[0x26] = eax_29:2.b
+0043900b        game->_pad_00[0x27] = eax_29:3.b
+0043900e        int32_t ebp_1 = game->_pad_00[0x20].d
+00439016        if (ebp_1 s< game->_pad_00[0x24].d)
+00439872        bool cond:6_1
+00439027        int32_t ecx_31 = ebp_1 * 0x3d
+0043902b        int32_t eax_32
+0043902b        eax_32.b = game->_pad_00[(ecx_31 << 2) + 0x5ccac8]
+00439034        void* edi_5 = &game->_pad_00[ecx_31 << 2]
+0043903b        if ((eax_32.b & 2) != 0)
+0043904c        if (((*(edi_5 + 0x5ccad0)).w:1.b & 2) == 0)
+0043905d        void* edx_7 = data_4df904
+00439069        void* edx_8 = *(edx_7 + 0x5ac)
+00439071        if (edx_8 != 0)
+0043907f        *(edx_8 + 8) = edi_5 + 0x5ccacc
+00439082        void* edx_9 = *(edx_7 + 0x5ac)
+00439087        *(*(edx_9 + 8) + 0xc) = edx_9
+0043908e        void* edx_11 = *(*(edx_7 + 0x5ac) + 8)
+00439091        *(edx_7 + 0x5ac) = edx_11
+00439093        *(edx_11 + 8) = 0
+00439073        *(edx_7 + 0x5ac) = edi_5 + 0x5ccacc
+00439075        *(edi_5 + 0x5ccad4) = 0
+0043907a        *(*(edx_7 + 0x5ac) + 0xc) = 0
+00439099        int32_t eax_36
+00439099        eax_36:1.b = (*(edi_5 + 0x5ccad0)):1.b | 2
+0043909c        *(edi_5 + 0x5ccad0) = eax_36
+00439053        sub_431cc0("List ADD")
+004390af        if ((*(edi_5 + 0x5ccac8) & 0x10) != 0 && (game->runtime_flags & 0x800000) != 0)
+004390bd        void* __offset(Game, 0x3bb764) var_50_6 = &game->__offset(0x3bb764).d
+004390c1        spawn_track_parcel(game, edi_5 + 0x5ccb58)
+004390c6        struct Game* var_3c_1 = nullptr
+004390d5        if (ebp_1 s>= 0 && ebp_1 s< game->_pad_50[4].d)
+004390eb        void* edx_12 = &var_3c_1->_pad_00[ebp_1 << 3] * 0x15
+004390f8        void* edi_7 = &game->_pad_00[edx_12 << 2]
+004390fb        if (((*(game + (edx_12 << 2) + 0x3bfacc)).w:1.b & 2) == 0)
+0043910a        if (((*(edi_7 + 0x3bfb08)).w:1.b & 0x40) != 0)
+00439110        int16_t eax_41
+00439110        eax_41.b = *(edi_7 + 0x3bfb04)
+0043911c        if (eax_41.b == 0x1d || eax_41.b == 0x1e)
+00439171        if (*(edi_7 + 0x3bfaec) != 0)
+00439190        if ((0x200 & *(edi_7 + 0x3bfacc)) == 0)
+004391a1        *(edi_7 + 0x3bfad0) = &game->__offset(0x355cb4).d
+004391a7        *(edi_7 + 0x3bfad4) = game->__offset(0x355cc0).d
+004391aa        game->__offset(0x355cc0).d = edi_7 + 0x3bfac8
+004391ad        void* ecx_39 = *(edi_7 + 0x3bfad4)
+004391b2        if (ecx_39 != 0)
+004391b4        *(ecx_39 + 8) = edi_7 + 0x3bfac8
+004391b7        *(edi_7 + 0x3bfacc) |= 0x200
+00439197        sub_431cc0("List ADDafter")
+004391bc        int32_t eax_46 = ebp_1 & 0x80000007
+004391c1        if (eax_46 s< 0)
+004391c7        eax_46 = ((eax_46 - 1) | 0xfffffff8) + 1
+004391e6        *(edi_7 + 0x3bfae8) = fconvert.s(float.t(eax_46) * fconvert.t(0.125f))
+004391f2        if (((*(edi_5 + 0x5ccb7c)).w:1.b & 2) == 0)
+00439203        *(edi_5 + 0x5ccb80) = &game->__offset(0x355b64).d
+00439209        *(edi_5 + 0x5ccb84) = game->__offset(0x355b70).d
+0043920c        game->__offset(0x355b70).d = edi_5 + 0x5ccb78
+0043920f        void* ecx_41 = *(edi_5 + 0x5ccb84)
+00439214        if (ecx_41 != 0)
+00439216        *(ecx_41 + 8) = edi_5 + 0x5ccb78
+0043921c        int32_t ecx_42
+0043921c        ecx_42:1.b = (*(edi_5 + 0x5ccb7c)):1.b | 2
+0043921f        *(edi_5 + 0x5ccb7c) = ecx_42
+004391f9        sub_431cc0("List ADDafter")
+00439230        *(edi_5 + 0x5ccb88) = *(edi_7 + 0x3bfad8)
+00439235        *(edi_5 + 0x5ccb8c) = *(edi_7 + 0x3bfadc)
+0043923b        *(edi_5 + 0x5ccb90) = *(edi_7 + 0x3bfae0)
+00439137        if ((0x200 & *(edi_7 + 0x3bfacc)) == 0)
+0043914b        *(edi_7 + 0x3bfad0) = &game->__offset(0x355b9c).d
+00439151        *(edi_7 + 0x3bfad4) = game->__offset(0x355ba8).d
+00439154        game->__offset(0x355ba8).d = edi_7 + 0x3bfac8
+00439157        void* ecx_37 = *(edi_7 + 0x3bfad4)
+0043915c        if (ecx_37 != 0)
+0043915e        *(ecx_37 + 8) = edi_7 + 0x3bfac8
+00439161        *(edi_7 + 0x3bfacc) |= 0x200
+0043913e        sub_431cc0("List ADDafter")
+0043924a        (**(edi_7 + 0x3bfac8))()
+0043924c        int32_t* ebx_8 = edi_7 + 0x3bfb0c
+00439252        uint32_t var_38_2 = 4
+004392d9        bool cond:8_1
+0043925a        void* eax_52 = *ebx_8
+0043925e        if (eax_52 != 0)
+0043926c        if (((*(eax_52 + 4)).w:1.b & 2) == 0)
+0043927d        *(eax_52 + 8) = &game->__offset(0x355b64).d
+00439283        *(eax_52 + 0xc) = game->__offset(0x355b70).d
+00439286        game->__offset(0x355b70).d = eax_52
+00439289        void* ecx_46 = *(eax_52 + 0xc)
+0043928e        if (ecx_46 != 0)
+00439290        *(ecx_46 + 8) = eax_52
+00439296        int32_t ecx_47
+00439296        ecx_47:1.b = (*(eax_52 + 4)):1.b | 2
+00439299        *(eax_52 + 4) = ecx_47
+00439273        sub_431cc0("List ADDafter")
+004392ad        void var_10
+004392ad        int32_t* eax_53 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
+004392b6        int32_t* edx_20 = *ebx_8 + 0x28
+004392b9        *edx_20 = *eax_53
+004392be        edx_20[1] = eax_53[1]
+004392c4        edx_20[2] = eax_53[2]
+004392ca        edx_20[3] = eax_53[3]
+004392d1        ebx_8 = &ebx_8[1]
+004392d4        cond:8_1 = var_38_2 != 1
+004392d5        var_38_2 -= 1
+004392d9        do while (cond:8_1)
+004392f8        uint32_t eax_56
+004392f8        struct Game* ecx_35
+004392f8        if (*(edi_7 + 0x3bfb04) == 0x17 && (game->runtime_flags:1.b & 8) != 0 && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+0043930a        eax_56, ecx_35 = spawn_track_health_pickup(game, edi_7 + 0x3bfac8, &game->__offset(0x3bb764).d)
+00439320        if (*(edi_7 + 0x3bfb04) == 0x18 && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+0043932e        uint32_t var_50_9 = &game->__offset(0x3bb764).d
+0043932f        void* var_54_3 = edi_7 + 0x3bfac8
+00439348        if (*(edi_7 + 0x3bfb04) == 0x19 && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+0043935a        eax_56, ecx_35 = spawn_track_jetpack_pickup(game, edi_7 + 0x3bfac8, &game->__offset(0x3bb764).d)
+0043935f        eax_56.b = *(edi_7 + 0x3bfb04)
+00439367        if (eax_56.b == 0x21)
+0043949f        eax_56, ecx_35 = spawn_track_garbage_hazard(game, edi_7 + 0x3bfac8, &game->__offset(0x3bb764).d)
+00439399        if ((*(edi_7 + 0x3bfb08) & 0x10) == 0 && (eax_56.b == 1 || eax_56.b == 0x15) && (game->runtime_flags.b & 2) != 0)
+0043939f        void* var_50_12 = &data_4a4dbc
+004393a9        long double st0_2
+004393a9        st0_2, eax_56, ecx_35 = sub_44dc90(1f)
+004393c3        long double x87_r6_4 = (fconvert.t(1f) - fconvert.t(game->__offset(0x125ffd8).d)) * fconvert.t(0.200000003f) + fconvert.t(0.800000012f)
+004393c9        x87_r6_4 - st0_2
+004393cb        eax_56.w = (x87_r6_4 < st0_2 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_4, st0_2) ? 1 : 0) << 0xa | (x87_r6_4 == st0_2 ? 1 : 0) << 0xe
+004393d0        if ((eax_56:1.b & 1) != 0)
+004393dc        if (var_3c_1 != 0)
+004393de        eax_56.b = *(edi_7 + 0x3bfab0)
+004393f2        if (var_3c_1 == 0 || eax_56.b == 1 || eax_56.b == 0x14 || eax_56.b == 0x15 || eax_56.b == 0x20)
+004393fb        if (var_3c_1 != 7)
+004393fd        eax_56.b = *(edi_7 + 0x3bfb58)
+00439411        if ((var_3c_1 == 7 || eax_56.b == 1 || eax_56.b == 0x14 || eax_56.b == 0x15 || eax_56.b == 0x20) && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d && game->__offset(0x3bb884).d != 2)
+00439432        if (game->level_mode == 4)
+00439434        void* var_50_13 = &data_4a4db8
+0043943e        long double st0_3
+0043943e        st0_3, eax_56, ecx_35 = sub_44dc90(1f)
+0043944f        long double x87_r6_7 = fconvert.t(game->_pad_48) * fconvert.t(0.300000012f) + fconvert.t(0.699999988f)
+00439455        x87_r6_7 - st0_3
+00439457        eax_56.w = (x87_r6_7 < st0_3 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_7, st0_3) ? 1 : 0) << 0xa | (x87_r6_7 == st0_3 ? 1 : 0) << 0xe
+0043945c        if (game->level_mode != 4 || (eax_56:1.b & 1) == 0)
+00439463        if (game->level_mode == 0)
+00439465        void* var_50_14 = &data_4a4db4
+0043946f        long double st0_4
+0043946f        st0_4, eax_56, ecx_35 = sub_44dc90(1f)
+00439480        long double x87_r6_10 = fconvert.t(game->_pad_48) * fconvert.t(0.600000024f) + fconvert.t(0.400000006f)
+00439486        x87_r6_10 - st0_4
+00439488        eax_56.w = (x87_r6_10 < st0_4 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_10, st0_4) ? 1 : 0) << 0xa | (x87_r6_10 == st0_4 ? 1 : 0) << 0xe
+0043948d        if (game->level_mode != 0 || (eax_56:1.b & 1) == 0)
+0043949f        eax_56, ecx_35 = spawn_track_garbage_hazard(game, edi_7 + 0x3bfac8, &game->__offset(0x3bb764).d)
+004394a4        eax_56.b = *(edi_7 + 0x3bfb04)
+004394ac        if (eax_56.b != 0x22)
+004394e6        if ((*(edi_7 + 0x3bfb08) & 8) == 0 && (eax_56.b == 1 || eax_56.b == 0xf) && game->__offset(0x3bb884).d != 2 && (game->runtime_flags & 0x10000) != 0)
+004394e8        void* var_50_16 = &data_4a4db0
+004394f2        long double st0_5
+004394f2        st0_5, eax_56, ecx_35 = sub_44dc90(1f)
+0043950c        long double x87_r6_14 = (fconvert.t(1f) - fconvert.t(game->__offset(0x125ffdc).d)) * fconvert.t(0.0199999996f) + fconvert.t(0.980000019f)
+00439512        x87_r6_14 - st0_5
+00439514        eax_56.w = (x87_r6_14 < st0_5 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_14, st0_5) ? 1 : 0) << 0xa | (x87_r6_14 == st0_5 ? 1 : 0) << 0xe
+00439523        if ((eax_56:1.b & 1) != 0 && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+00439532        eax_56, ecx_35 = spawn_salt_hazard(&game->__offset(0x3578c0).d, edi_7 + 0x3bfad8)
+004394ba        if (ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+00439532        eax_56, ecx_35 = spawn_salt_hazard(&game->__offset(0x3578c0).d, edi_7 + 0x3bfad8)
+0043954e        if ((game->runtime_flags.b & 0x80) != 0 && *(edi_7 + 0x3bfb04) == 0x12 && ebp_1 s>= game->_pad_50[0].d && ebp_1 s< game->_pad_50[8].d)
+00439560        eax_56, ecx_35 = spawn_slug_hazard(game, edi_7 + 0x3bfac8, &game->__offset(0x3bb764).d)
+00439569        int16_t edx_26 = (*(edi_5 + 0x5ccac8)).w
+00439572        if ((edx_26:1.b & 2) == 0)
+00439578        ecx_35.b = *(edi_7 + 0x3bfb04)
+00439581        int32_t var_58_1
+00439581        void* __offset(Game, 0x3bb764) var_54_7
+00439581        float var_50_18
+00439581        if (ecx_35.b != 0x23)
+00439647        if (ecx_35.b == 2 || ecx_35.b == 3 || ecx_35.b == 4 || ecx_35.b == 5 || ecx_35.b == 6 || ecx_35.b == 7)
+00439653        long double x87_r7_16 = fconvert.t(game->__offset(0x3bbae0).d) + fconvert.t(10f)
+00439659        long double temp5_1 = fconvert.t(*(edi_7 + 0x3bfae0))
+00439659        x87_r7_16 - temp5_1
+0043965f        eax_56.w = (x87_r7_16 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp5_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp5_1 ? 1 : 0) << 0xe
+00439647        if ((ecx_35.b != 2 && ecx_35.b != 3 && ecx_35.b != 4 && ecx_35.b != 5 && ecx_35.b != 6 && ecx_35.b != 7) || (eax_56:1.b & 1) == 0 || ebp_1 s>= game->_pad_50[8].d)
+004397c2        if (ecx_35.b == 8 || ecx_35.b == 9 || ecx_35.b == 0xa)
+004397ce        long double x87_r7_21 = fconvert.t(game->__offset(0x3bbae0).d) + fconvert.t(10f)
+004397d4        long double temp6_1 = fconvert.t(*(edi_7 + 0x3bfae0))
+004397d4        x87_r7_21 - temp6_1
+004397da        eax_56.w = (x87_r7_21 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_21, temp6_1) ? 1 : 0) << 0xa | (x87_r7_21 == temp6_1 ? 1 : 0) << 0xe
+004397e4        if ((eax_56:1.b & 1) != 0 && ebp_1 s< game->_pad_50[8].d)
+004397e9        if ((edx_26:1.b & 8) != 0)
+004397ff        var_50_18 = *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2))
+0043983a        label_43983a:
+0043983a        var_54_7 = &game->__offset(0x3bb764).d
+0043983b        var_58_1 = 2
+0043983b        goto label_439846
+00439802        void* var_50_23 = &data_4a4da8
+0043980c        long double st0_7 = sub_44dc90(1f)
+00439811        long double temp7_1 = fconvert.t(0.699999988f)
+00439811        st0_7 - temp7_1
+00439830        if ((((st0_7 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_7, temp7_1) ? 1 : 0) << 0xa | (st0_7 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7 || ((*(edi_5 + 0x5ccac8)).w:1.b & 8) != 0)
+00439832        var_50_18 = 0f
+00439832        goto label_43983a
+00439676        if ((edx_26:1.b & 0x20) != 0)
+0043969f        spawn_track_ring_or_special_effect(game, edi_7 + 0x3c0a88, 8, &game->__offset(0x3bb764).d, *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->__offset(0x3bbae0).d = *(edi_7 + 0x3c0aa0)
+004396b2        if ((edx_26:1.b & 8) != 0)
+004396db        spawn_track_ring_or_special_effect(game, edi_7 + 0x3c0a88, 6, &game->__offset(0x3bb764).d, *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->__offset(0x3bbae0).d = *(edi_7 + 0x3c0aa0)
+004396ee        if ((edx_26:1.b & 0x10) != 0)
+00439717        spawn_track_ring_or_special_effect(game, edi_7 + 0x3c0a88, 7, &game->__offset(0x3bb764).d, *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2)))
+00439851        game->__offset(0x3bbae0).d = *(edi_7 + 0x3c0aa0)
+0043972b        if ((game->runtime_flags.b & 8) != 0)
+00439731        void* var_50_22 = &data_4a4dac
+0043973b        long double st0_6 = sub_44dc90(1f)
+00439740        long double temp8_1 = fconvert.t(0.699999988f)
+00439740        st0_6 - temp8_1
+00439754        if ((((st0_6 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(st0_6, temp8_1) ? 1 : 0) << 0xa | (st0_6 == temp8_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 || game->level_mode == 7)
+0043975a        int16_t eax_82
+0043975a        eax_82.b = *(edi_7 + 0x3bfb04)
+00439772        if (eax_82.b != 5 && eax_82.b != 6 && eax_82.b != 7)
+0043978c        spawn_track_ring_or_special_effect(game, edi_7 + 0x3bfac8, 4, &game->__offset(0x3bb764).d, 0f)
+00439798        if (game->__offset(0x3bbb68).d s< 0xa)
+00439851        game->__offset(0x3bbae0).d = *(edi_7 + 0x3bfae0)
+004397aa        game->__offset(0x3bbae0).d = fconvert.s(fconvert.t(*(edi_7 + 0x3bfae0)) + fconvert.t(35f))
+0043958a        if ((edx_26:1.b & 4) == 0)
+004395b2        if ((edx_26:1.b & 0x20) != 0)
+004395ce        var_50_18 = *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2))
+004395cf        var_54_7 = &game->__offset(0x3bb764).d
+004395d0        var_58_1 = 8
+004395d2        goto label_439846
+004395da        if ((edx_26:1.b & 8) != 0)
+004395f6        var_50_18 = *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2))
+004395f7        var_54_7 = &game->__offset(0x3bb764).d
+004395f8        var_58_1 = 6
+004395fa        goto label_439846
+00439602        if ((edx_26:1.b & 0x10) != 0)
+00439622        var_50_18 = *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2))
+00439623        var_54_7 = &game->__offset(0x3bb764).d
+00439624        var_58_1 = 7
+00439626        goto label_439846
+004395a6        var_50_18 = *(game + ((ebp_1 + (ebp_1 * 3 + 0x12414) * 0x14 + 0x615c) << 2))
+004395a7        var_54_7 = &game->__offset(0x3bb764).d
+004395a8        var_58_1 = 5
+00439846        label_439846:
+00439846        spawn_track_ring_or_special_effect(game, edi_7 + 0x3bfac8, var_58_1, var_54_7, var_50_18)
+00439851        game->__offset(0x3bbae0).d = *(edi_7 + 0x3bfae0)
+0043985f        var_3c_1 = &var_3c_1->_pad_00[1]
+00439863        do while (&var_3c_1->_pad_00[1] s< 8)
+0043986c        ebp_1 += 1
+0043986d        cond:6_1 = ebp_1 s< game->_pad_00[0x24].d
+0043986f        game->_pad_00[0] = 0
+00439872        do while (cond:6_1)
+0043987b        sub_433b30(&game->_pad_50[0xc])
+00439884        if (game->level_mode != 4)
+00439927        *(game->__offset(0x35bb88).d + 0x2cc) = 0
+0043993b        border_add_text_number(game->__offset(0x35bb88).d, game->__offset(0x3bba48).d)
+00439940        int32_t eax_100 = game->__offset(0x3bba48).d
+0043994e        if (eax_100 s> game->__offset(0x355d94).d)
+00439950        void* ecx_93 = game->__offset(0x35bb8c).d
+00439956        game->__offset(0x355d94).d = eax_100
+0043995c        *(ecx_93 + 0x2cc) = 0
+00439970        border_add_text_number(game->__offset(0x35bb8c).d, game->__offset(0x355d94).d)
+0043988a        &game->__offset(0xff25e0).d
+00439899        format_time_trial_string(&game->__offset(0x3bba4c).d)
+004398ac        sub_44e5b0(game->__offset(0x35bb88).d + 0x2cc, 0x751478)
+004398ca        void* eax_96 = &game->_pad_00[game->level_mode_arg * 0x1fac0]
+004398d3        if (*(eax_96 + 0x944150) != 1)
+0043990d        hide_border_init(game->__offset(0x35bb8c).d)
+00439920        return update_subgame_camera(game)
+004398dd        format_time_trial_string(eax_96 + 0x944158)
+004398f0        sub_44e5b0(game->__offset(0x35bb8c).d + 0x2cc, 0x751478)
+00438bb6        case 3
+00438bb6        game->_pad_3c[0] = 4
+00438bb6        game->_pad_3c[1] = 0
+00438bb6        game->_pad_3c[2] = 0
+00438bb6        game->_pad_3c[3] = 0
+00438bbd        game->_pad_00[9] = 1
+00438bc1        int32_t eax_1 = game->_pad_00[0x10].d
+00438bc7        game->_pad_00[0xc] = eax_1.b
+00438bc7        game->_pad_00[0xd] = eax_1:1.b
+00438bc7        game->_pad_00[0xe] = eax_1:2.b
+00438bc7        game->_pad_00[0xf] = eax_1:3.b
+00438bca        initialize_pause_menu(&game->_pad_00[0x14])
+00438bde        return update_pause_menu(&game->_pad_00[0x14])
+00438bde        case 4
+00438bde        return update_pause_menu(&game->_pad_00[0x14])
+00438bdf        case 7
+00438bdf        eax.b = game->selected_level_record_persistent
+00438bec        if (eax.b != 1)
+00438c1d        game->selected_level_record_active = 0
+00438c24        int32_t eax_4
+00438c24        void* esi_1
+00438c24        int32_t edi_3
+00438c24        eax_4, esi_1, edi_3 = build_subgame_level(game, 0)
+00438c29        *(esi_1 + 0x3c) = 2
+00438c36        *(data_4df904 + 0x56c) = edi_3
+00438c43        return eax_4
+00438bf2        game->selected_level_record_active = 1
+00438bf9        int32_t eax_3
+00438bf9        void* esi
+00438bf9        int32_t edi_2
+00438bf9        eax_3, esi, edi_2 = build_subgame_level(game, 0)
+00438bfe        *(esi + 0x3c) = 2
+00438c0b        *(data_4df904 + 0x56c) = edi_2
+00438c18        return eax_3
+004398fa        return update_subgame_camera(game)
