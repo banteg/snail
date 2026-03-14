@@ -13,5 +13,6 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Reflexive wrapper](reflexive-wrapper.md): bootstrap and wrapper-obfuscation notes
 - [Frida runtime trace](frida-runtime-trace.md): the Windows tracing harness and capture strategy
 - [Windows Frida handoff](windows-frida-handoff.md): operator-oriented runbook for collecting traces
+- [Windows debugging wants](windows-debugging-wants.md): prioritized runtime-debug targets for the remaining camera and handoff gaps
 
 Published docs stay here. Repo-only analysis artifacts, including the tracked symbol manifest JSON, live under `analysis/`.
