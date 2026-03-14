@@ -22,6 +22,7 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
   - `selected_level_record_persistent`
   - `selected_level_record`
   `update_galaxy` and `update_challenge_setup_screen` seed the active bit and record pointer, then `set_subgame_features`, `populate_runtime_track_cells_from_segments`, `build_subgame_level`, and `update_subgame` consume them to override course metadata and rebuild routing.
+  Exact-offset HLIL and raw-disassembly sweeps still do not recover any `selected_level_record_persistent = 1` writer.
 
 * **`Player.post_follow_value_b` still has no recovered consumer.**
   Typed BN xrefs still show only the known writes in `initialize_subgoldy_fall_state`.
@@ -29,7 +30,7 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
 
 * **The player cutscene anchors at `+6208` / `+6280` are still writer-less.**
   The refreshed full HLIL export still reduces to the same `update_cutscene` reads already known from bundle 14.
-  No new writer surfaced.
+  Exact-offset raw disassembly search still does not surface a writer.
 
 * **`play_movement_state_sound` did not unlock the `-6 / -7` thresholds.**
   It still has only two callsites, both in `update_subgoldy`.

@@ -28,6 +28,7 @@ This bundle only carries:
   - `selected_level_record_persistent`
   - `selected_level_record`
   Writers come from the galaxy/challenge frontend flow; consumers come from subgame build/update logic.
+  Exact-offset sweeps still do not recover a setter for `selected_level_record_persistent`.
 
 - `Player.post_follow_value_b` still has only the known writes in `initialize_subgoldy_fall_state`
 

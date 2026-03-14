@@ -15,6 +15,11 @@ Full HLIL reexport check:
 - `0x1840` / `0x1888` code hits still reduce to the same `update_cutscene` statements.
 - The remaining raw matches in the monolithic HLIL dump are unrelated data addresses.
 
+Exact-offset raw disassembly sweep on the unwrapped PC binary:
+
+- still only recovers the same `update_cutscene` references
+- does not surface any additional store to `0x1840` or `0x1888`
+
 Conclusion:
 
 - No writer for either anchor was recovered in this pass.
