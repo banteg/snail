@@ -335,6 +335,39 @@ const slow_ring_duration_ticks: u16 = 240;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
 const slug_projectile_kill_score: u32 = 100;
+const cameraman_base_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
+const cameraman_base_up = rl.Vector3{ .x = 0.0, .y = 0.946145, .z = 0.323752 };
+const cameraman_base_forward = rl.Vector3{ .x = 0.0, .y = -0.323752, .z = 0.946145 };
+const cameraman_identity_matrix = rl.Matrix{
+    .m0 = 1.0,
+    .m4 = 0.0,
+    .m8 = 0.0,
+    .m12 = 0.0,
+    .m1 = 0.0,
+    .m5 = 1.0,
+    .m9 = 0.0,
+    .m13 = 0.0,
+    .m2 = 0.0,
+    .m6 = 0.0,
+    .m10 = 1.0,
+    .m14 = 0.0,
+    .m3 = 0.0,
+    .m7 = 0.0,
+    .m11 = 0.0,
+    .m15 = 1.0,
+};
+const camera_anchor_local_y: f32 = 0.82;
+const camera_anchor_local_z: f32 = 0.4;
+const cameraman_base_translation_y: f32 = 1.8;
+const cameraman_base_translation_z: f32 = -0.5;
+const cameraman_forward_distance: f32 = 3.3;
+const cameraman_vertical_lift_early_weight: f32 = 1.15;
+const cameraman_vertical_lift_late_weight: f32 = 0.35;
+const cameraman_deadzone_min_z_delta: f32 = 1.70000005;
+const cameraman_deadzone_max_z_delta: f32 = 3.0;
+const cameraman_fov_blend: f32 = 0.3;
+const cameraman_attachment_lift_blend: f32 = 0.18;
+const cameraman_launch_lift_blend: f32 = 0.18;
 
 fn shotCooldownTicksForWeaponLevel(weapon_level: u8) u8 {
     return switch (weapon_level) {
@@ -396,14 +429,17 @@ const LaunchState = struct {
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
 
+const CameraAnchorState = struct {
+    world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+};
+
 const CameramanState = struct {
-    follow_z: ?f32 = null,
-    follow_eye_x: ?f32 = null,
-    follow_target_x: ?f32 = null,
+    out_matrix: rl.Matrix = cameraman_identity_matrix,
+    current_desired_matrix: rl.Matrix = cameraman_identity_matrix,
+    previous_desired_matrix: rl.Matrix = cameraman_identity_matrix,
     fov_degrees: f32 = 110.0,
-    position: ?rl.Vector3 = null,
-    target: ?rl.Vector3 = null,
-    up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    attachment_lift_accumulator: f32 = 0.0,
+    launch_lift_accumulator: f32 = 0.0,
 };
 
 fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
@@ -411,6 +447,14 @@ fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
         .x = std.math.lerp(a.x, b.x, t),
         .y = std.math.lerp(a.y, b.y, t),
         .z = std.math.lerp(a.z, b.z, t),
+    };
+}
+
+fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = (a.y * b.z) - (a.z * b.y),
+        .y = (a.z * b.x) - (a.x * b.z),
+        .z = (a.x * b.y) - (a.y * b.x),
     };
 }
 
@@ -425,6 +469,168 @@ fn normalizeVector3(v: rl.Vector3) rl.Vector3 {
         .y = v.y * inv_length,
         .z = v.z * inv_length,
     };
+}
+
+fn rotateVectorWorldY(v: rl.Vector3, radians: f32) rl.Vector3 {
+    const sin_theta = std.math.sin(radians);
+    const cos_theta = std.math.cos(radians);
+    return .{
+        .x = (v.x * cos_theta) + (v.z * sin_theta),
+        .y = v.y,
+        .z = (v.z * cos_theta) - (v.x * sin_theta),
+    };
+}
+
+fn rotateVectorWorldX(v: rl.Vector3, radians: f32) rl.Vector3 {
+    const sin_theta = std.math.sin(radians);
+    const cos_theta = std.math.cos(radians);
+    return .{
+        .x = v.x,
+        .y = (v.y * cos_theta) + (v.z * sin_theta),
+        .z = (v.z * cos_theta) - (v.y * sin_theta),
+    };
+}
+
+const CameraTransform = struct {
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+};
+
+fn cameraMatrixFromTransform(transform: CameraTransform) rl.Matrix {
+    return .{
+        .m0 = transform.right.x,
+        .m4 = transform.up.x,
+        .m8 = transform.forward.x,
+        .m12 = transform.position.x,
+        .m1 = transform.right.y,
+        .m5 = transform.up.y,
+        .m9 = transform.forward.y,
+        .m13 = transform.position.y,
+        .m2 = transform.right.z,
+        .m6 = transform.up.z,
+        .m10 = transform.forward.z,
+        .m14 = transform.position.z,
+        .m3 = 0.0,
+        .m7 = 0.0,
+        .m11 = 0.0,
+        .m15 = 1.0,
+    };
+}
+
+fn cameraTransformFromMatrix(matrix: rl.Matrix) CameraTransform {
+    return .{
+        .position = .{ .x = matrix.m12, .y = matrix.m13, .z = matrix.m14 },
+        .right = .{ .x = matrix.m0, .y = matrix.m1, .z = matrix.m2 },
+        .up = .{ .x = matrix.m4, .y = matrix.m5, .z = matrix.m6 },
+        .forward = .{ .x = matrix.m8, .y = matrix.m9, .z = matrix.m10 },
+    };
+}
+
+fn normalizeCameraTransform(transform: CameraTransform) CameraTransform {
+    const forward = normalizeVector3(transform.forward);
+    var right = crossVector3(transform.up, forward);
+    if ((right.x * right.x) + (right.y * right.y) + (right.z * right.z) <= 0.000001) {
+        right = normalizeVector3(transform.right);
+    } else {
+        right = normalizeVector3(right);
+    }
+    const up = normalizeVector3(crossVector3(forward, right));
+    return .{
+        .position = transform.position,
+        .right = right,
+        .up = up,
+        .forward = forward,
+    };
+}
+
+fn rotateCameraTransformWorldX(transform: CameraTransform, radians: f32) CameraTransform {
+    return normalizeCameraTransform(.{
+        .position = transform.position,
+        .right = rotateVectorWorldX(transform.right, radians),
+        .up = rotateVectorWorldX(transform.up, radians),
+        .forward = rotateVectorWorldX(transform.forward, radians),
+    });
+}
+
+fn rotateCameraTransformWorldY(transform: CameraTransform, radians: f32) CameraTransform {
+    return normalizeCameraTransform(.{
+        .position = transform.position,
+        .right = rotateVectorWorldY(transform.right, radians),
+        .up = rotateVectorWorldY(transform.up, radians),
+        .forward = rotateVectorWorldY(transform.forward, radians),
+    });
+}
+
+fn blendCameraTransforms(lhs: CameraTransform, rhs: CameraTransform, t: f32) CameraTransform {
+    return normalizeCameraTransform(.{
+        .position = lerpVector3(lhs.position, rhs.position, t),
+        .right = lerpVector3(lhs.right, rhs.right, t),
+        .up = lerpVector3(lhs.up, rhs.up, t),
+        .forward = lerpVector3(lhs.forward, rhs.forward, t),
+    });
+}
+
+fn orthonormalFrameFromForwardUp(forward: rl.Vector3, up_hint: rl.Vector3) CameraTransform {
+    const normalized_forward = normalizeVector3(forward);
+    var right = crossVector3(up_hint, normalized_forward);
+    if ((right.x * right.x) + (right.y * right.y) + (right.z * right.z) <= 0.000001) {
+        right = cameraman_base_right;
+    } else {
+        right = normalizeVector3(right);
+    }
+    const up = normalizeVector3(crossVector3(normalized_forward, right));
+    return .{
+        .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .right = right,
+        .up = up,
+        .forward = normalized_forward,
+    };
+}
+
+fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, translation_z: f32, intro_pitch_radians: f32, speed_pitch_radians: f32, yaw_radians: f32) CameraTransform {
+    var transform: CameraTransform = .{
+        .position = .{
+            .x = translation_x,
+            .y = translation_y,
+            .z = translation_z,
+        },
+        .right = cameraman_base_right,
+        .up = cameraman_base_up,
+        .forward = cameraman_base_forward,
+    };
+    transform = rotateCameraTransformWorldX(transform, intro_pitch_radians);
+    transform = rotateCameraTransformWorldX(transform, speed_pitch_radians);
+    transform = rotateCameraTransformWorldY(transform, yaw_radians);
+    return transform;
+}
+
+fn cameramanVerticalLift(anchor_y: f32, progress_blend: f32) f32 {
+    return std.math.lerp(
+        anchor_y * cameraman_vertical_lift_early_weight,
+        anchor_y * cameraman_vertical_lift_late_weight,
+        progress_blend,
+    );
+}
+
+fn cameramanPitchRadiansFromAnchorY(anchor_y: f32) f32 {
+    return std.math.clamp(
+        (-2.0 - ((anchor_y - 0.49) * 5.0)) * 0.0174499992,
+        -1.22149992,
+        1.22149992,
+    );
+}
+
+fn clampedPreviousDesiredCameraZ(anchor_z: f32, previous_z: f32) f32 {
+    const previous_delta_z = anchor_z - previous_z;
+    if (previous_delta_z > cameraman_deadzone_max_z_delta) {
+        return anchor_z - cameraman_deadzone_max_z_delta;
+    }
+    if (previous_delta_z < cameraman_deadzone_min_z_delta) {
+        return anchor_z - cameraman_deadzone_min_z_delta;
+    }
+    return previous_z;
 }
 
 pub const Runner = struct {
@@ -455,6 +661,7 @@ pub const Runner = struct {
     attachment_path_name: ?[]const u8 = null,
     attachment_follow: AttachmentFollowState = .{},
     launch: LaunchState = .{},
+    camera_anchor: CameraAnchorState = .{},
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
@@ -525,6 +732,7 @@ pub const Runner = struct {
         self.previous_row_position = self.row_position;
         self.previous_lane_center = self.lane_center;
         self.last_processed_row = self.current_global_row;
+        self.refreshCameraState(preview);
     }
 
     pub fn step(self: *Runner, preview: *const track.LoadedLevelPreview, input: RunnerInput, delta_seconds: f32) void {
@@ -591,7 +799,7 @@ pub const Runner = struct {
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
-        self.updateCameraman(preview);
+        self.refreshCameraState(preview);
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {
@@ -681,34 +889,23 @@ pub const Runner = struct {
         return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
     }
 
-    pub fn cameramanEyeZ(self: *const Runner) f32 {
-        return self.cameraman.follow_z orelse (self.row_position - 1.85);
-    }
-
     pub fn cameramanFovDegrees(self: *const Runner) f32 {
         return self.cameraman.fov_degrees;
     }
 
-    pub fn cameramanPosition(self: *const Runner) ?rl.Vector3 {
-        return self.cameraman.position;
+    pub fn cameramanMatrix(self: *const Runner) rl.Matrix {
+        return self.cameraman.out_matrix;
     }
 
-    pub fn cameramanTarget(self: *const Runner) ?rl.Vector3 {
-        return self.cameraman.target;
-    }
-
-    pub fn cameramanUp(self: *const Runner) rl.Vector3 {
-        return self.cameraman.up;
-    }
-
-    pub fn cameramanSpeedScalar(self: *const Runner) f32 {
-        return std.math.clamp(self.effectiveSpeedRowsPerSecond() * (0.49 / 12.0), 0.2, 1.1);
+    pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        self.refreshCameraAnchor(preview);
+        self.updateCameraman(preview);
     }
 
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         if (preview.total_rows == 0) return 1.0;
         const total_rows = @as(f32, @floatFromInt(preview.total_rows));
-        return std.math.clamp(((self.row_position / total_rows) * 1.4) - 0.4, 0.0, 1.0);
+        return std.math.clamp(((self.camera_anchor.world.z / total_rows) * 1.4) - 0.4, 0.0, 1.0);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -1331,85 +1528,107 @@ pub const Runner = struct {
         return self.speed_rows_per_second;
     }
 
-    fn updateCameraman(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        const dynamic_attachment_camera =
-            (self.movement_mode == .attachment and self.attachment_follow.active) or
-            self.launch.active;
-        const desired_fov: f32 = if (dynamic_attachment_camera) 160.0 else 110.0;
-        self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * 0.3;
-
-        const anchor_z = self.row_position + 0.4;
-        if (self.cameraman.follow_z == null) {
-            self.cameraman.follow_z = anchor_z - 1.85;
-        }
-        const delta = anchor_z - self.cameraman.follow_z.?;
-        if (delta > 3.0) {
-            self.cameraman.follow_z = anchor_z - 3.0;
-        } else if (delta < 1.70000005) {
-            self.cameraman.follow_z = anchor_z - 1.70000005;
-        }
-
-        const player_position = self.worldPosition(preview, 0.82);
-        const player_forward = self.worldForward(preview);
-        const player_up = self.worldUp(preview);
-        const chase_target_position = self.worldPosition(preview, 0.28);
-        const chase_eye_x = player_position.x / 3.0;
-        const chase_target_x = chase_target_position.x / 3.0;
-        if (self.cameraman.follow_eye_x == null) {
-            self.cameraman.follow_eye_x = chase_eye_x;
-            self.cameraman.follow_target_x = chase_target_x;
-        }
-        self.cameraman.follow_eye_x = std.math.lerp(self.cameraman.follow_eye_x.?, chase_eye_x, 0.18);
-        self.cameraman.follow_target_x = std.math.lerp(self.cameraman.follow_target_x.?, chase_target_x, 0.18);
-        const speed_scalar = self.cameramanSpeedScalar();
-        const progress_blend = self.cameramanProgressBlend(preview);
-        const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, progress_blend);
-        const speed_pitch_radians = std.math.clamp(
-            (-2.0 - ((speed_scalar - 0.49) * 5.0)) * 0.0174499992,
-            -1.22149992,
-            1.22149992,
-        );
-        const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
-        const total_pitch_radians = intro_pitch_radians + speed_pitch_radians;
-        const desired_target = if (dynamic_attachment_camera)
-            rl.Vector3{
-                .x = player_position.x + (player_forward.x * 0.7) + (player_up.x * 0.18),
-                .y = player_position.y + (player_forward.y * 0.7) + (player_up.y * 0.18),
-                .z = player_position.z + (player_forward.z * 0.7) + (player_up.z * 0.18),
-            }
-        else
-            rl.Vector3{
-                .x = self.cameraman.follow_target_x.?,
-                // Windows starts from a base camera matrix that is already pitched downward.
-                // The extra world-X rotations in `update_cameraman` deepen or relax that look,
-                // so the forward target must move down from the eye, not up into the backdrop.
-                .y = (1.8 + vertical_lift) - (std.math.sin(total_pitch_radians) * 3.3),
-                .z = self.cameramanEyeZ() + (std.math.cos(total_pitch_radians) * 3.3),
-            };
-        const desired_position = if (dynamic_attachment_camera)
-            rl.Vector3{
-                .x = player_position.x - (player_forward.x * 2.0) + (player_up.x * 1.35),
-                .y = player_position.y - (player_forward.y * 2.0) + (player_up.y * 1.35),
-                .z = player_position.z - (player_forward.z * 2.0) + (player_up.z * 1.35),
-            }
-        else
-            rl.Vector3{
-                .x = self.cameraman.follow_eye_x.?,
-                .y = 1.8 + vertical_lift,
-                .z = self.cameramanEyeZ(),
-            };
-        const desired_up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
-
-        if (self.cameraman.position == null or self.cameraman.target == null) {
-            self.cameraman.position = desired_position;
-            self.cameraman.target = desired_target;
-            self.cameraman.up = desired_up;
+    fn refreshCameraAnchor(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) {
+            self.camera_anchor = .{};
             return;
         }
 
-        self.cameraman.position = lerpVector3(self.cameraman.position.?, desired_position, 0.3);
-        self.cameraman.target = lerpVector3(self.cameraman.target.?, desired_target, 0.3);
-        self.cameraman.up = normalizeVector3(lerpVector3(self.cameraman.up, desired_up, 0.3));
+        const base_position = self.worldPosition(preview, 0.0);
+        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        self.camera_anchor.world = .{
+            .x = base_position.x + (frame.up.x * camera_anchor_local_y) + (frame.forward.x * camera_anchor_local_z),
+            .y = base_position.y + (frame.up.y * camera_anchor_local_y) + (frame.forward.y * camera_anchor_local_z),
+            .z = base_position.z + (frame.up.z * camera_anchor_local_y) + (frame.forward.z * camera_anchor_local_z),
+        };
+    }
+
+    fn wantsKind24CameraFovBoost(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        const built = self.currentAttachmentBuilt(preview) orelse return false;
+        const runtime_kind = built.template.spec.runtime_kind orelse return false;
+        return runtime_kind == 24;
+    }
+
+    fn updateCameraman(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) {
+            self.cameraman = .{};
+            return;
+        }
+
+        const desired_fov: f32 = if (self.wantsKind24CameraFovBoost(preview)) 160.0 else 110.0;
+        self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * cameraman_fov_blend;
+
+        const anchor_x = self.camera_anchor.world.x;
+        const anchor_y = self.camera_anchor.world.y;
+        const anchor_z = self.camera_anchor.world.z;
+        const progress_blend = self.cameramanProgressBlend(preview);
+        const vertical_lift = cameramanVerticalLift(anchor_y, progress_blend);
+        const anchor_pitch_radians = cameramanPitchRadiansFromAnchorY(anchor_y);
+        const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
+        const yaw_radians = anchor_x * (-8.0 * 0.0174499992 * 0.170000002);
+        const floor_height = preview.sampleFloorHeightAtGridPosition(
+            self.current_global_row,
+            self.resolved_lane_index,
+            self.row_position,
+        ) orelse 0.0;
+        const extra_vertical = @max(self.camera_anchor.world.y - (floor_height + camera_anchor_local_y), 0.0);
+        const desired_attachment_lift = if (self.movement_mode == .attachment and self.attachment_follow.active)
+            extra_vertical
+        else
+            0.0;
+        const desired_launch_lift = if (self.launch.active) extra_vertical else 0.0;
+        self.cameraman.attachment_lift_accumulator +=
+            (desired_attachment_lift - self.cameraman.attachment_lift_accumulator) * cameraman_attachment_lift_blend;
+        self.cameraman.launch_lift_accumulator +=
+            (desired_launch_lift - self.cameraman.launch_lift_accumulator) * cameraman_launch_lift_blend;
+
+        var desired_transform = buildNormalCameramanTransform(
+            anchor_x * 0.40000001,
+            cameraman_base_translation_y,
+            cameraman_base_translation_z,
+            intro_pitch_radians,
+            anchor_pitch_radians,
+            yaw_radians,
+        );
+        desired_transform.position.x += anchor_x * 0.33333334;
+        desired_transform.position.y += vertical_lift +
+            self.cameraman.attachment_lift_accumulator +
+            self.cameraman.launch_lift_accumulator;
+        desired_transform.position.z += anchor_z + 0.4;
+
+        if ((self.movement_mode == .attachment and self.attachment_follow.active) or self.launch.active) {
+            const attachment_frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+            desired_transform = normalizeCameraTransform(.{
+                .position = desired_transform.position,
+                .right = lerpVector3(desired_transform.right, attachment_frame.right, 0.2),
+                .up = lerpVector3(desired_transform.up, attachment_frame.up, 0.35),
+                .forward = lerpVector3(desired_transform.forward, attachment_frame.forward, 0.35),
+            });
+        }
+
+        if (self.cameraman.current_desired_matrix.m15 == 1.0 and
+            self.cameraman.current_desired_matrix.m0 == 1.0 and
+            self.cameraman.current_desired_matrix.m5 == 1.0 and
+            self.cameraman.current_desired_matrix.m10 == 1.0 and
+            self.cameraman.current_desired_matrix.m12 == 0.0 and
+            self.cameraman.current_desired_matrix.m13 == 0.0 and
+            self.cameraman.current_desired_matrix.m14 == 0.0 and
+            self.tick_count == 0)
+        {
+            const desired_matrix = cameraMatrixFromTransform(desired_transform);
+            self.cameraman.out_matrix = desired_matrix;
+            self.cameraman.current_desired_matrix = desired_matrix;
+            self.cameraman.previous_desired_matrix = desired_matrix;
+            return;
+        }
+
+        var previous_desired_transform = cameraTransformFromMatrix(self.cameraman.previous_desired_matrix);
+        previous_desired_transform.position.z = clampedPreviousDesiredCameraZ(anchor_z, previous_desired_transform.position.z);
+
+        const out_transform = blendCameraTransforms(previous_desired_transform, desired_transform, 0.3);
+        self.cameraman.out_matrix = cameraMatrixFromTransform(out_transform);
+        self.cameraman.current_desired_matrix = cameraMatrixFromTransform(desired_transform);
+        self.cameraman.previous_desired_matrix = self.cameraman.current_desired_matrix;
     }
 
     fn stepTemporaryStates(self: *Runner) void {
@@ -2454,14 +2673,6 @@ fn isProjectileBlockingCell(cell: u8) bool {
     };
 }
 
-fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = (a.y * b.z) - (a.z * b.y),
-        .y = (a.z * b.x) - (a.x * b.z),
-        .z = (a.x * b.y) - (a.y * b.x),
-    };
-}
-
 const TestFixture = struct {
     catalog: assets.Catalog,
     level_definition: ?level.Definition,
@@ -2667,6 +2878,55 @@ fn laneOutsideAttachmentWidth(
         if (@abs(lane_center - centered_lane_center) > minimum_offset) return lane;
     }
     return null;
+}
+
+test "cameraman vertical lift weights anchor height early and late" {
+    try std.testing.expectApproxEqAbs(@as(f32, 1.15), cameramanVerticalLift(1.0, 0.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.35), cameramanVerticalLift(1.0, 1.0), 0.0001);
+    try std.testing.expect(cameramanVerticalLift(1.0, 0.0) > cameramanVerticalLift(1.0, 1.0));
+}
+
+test "cameraman deadzone clamps previous desired z around the anchor" {
+    try std.testing.expectApproxEqAbs(@as(f32, 9.0), clampedPreviousDesiredCameraZ(12.0, 2.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.29999995), clampedPreviousDesiredCameraZ(12.0, 11.5), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 10.0), clampedPreviousDesiredCameraZ(12.0, 10.0), 0.0001);
+}
+
+test "template kind 24 alone boosts cameraman fov" {
+    var worm_fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer worm_fixture.deinit();
+
+    var worm_runner = Runner.init(&worm_fixture.preview);
+    const worm_target = findFirstGameplayCell(&worm_fixture.preview, .attachment_entry).?;
+    const worm_built = worm_fixture.preview.installedBuiltAttachmentAtRow(worm_target.row).?;
+    const worm_centered = attachment_builders.worldPositionForTemplate(
+        &worm_built.template,
+        0.0,
+        worm_built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const worm_center_lane = Runner.laneCenterFromWorldX(&worm_fixture.preview, worm_centered.x);
+    primeRunnerBeforeRow(&worm_runner, &worm_fixture.preview, worm_target);
+    worm_runner.lane_center = worm_center_lane;
+    worm_runner.lane_index = Runner.laneIndexForLaneCenter(&worm_fixture.preview, worm_center_lane);
+    worm_runner.resolved_lane_index = worm_runner.lane_index;
+    worm_runner.refreshSample(&worm_fixture.preview);
+    worm_runner.step(&worm_fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.attachment, worm_runner.movement_mode);
+    try std.testing.expect(worm_runner.cameramanFovDegrees() > 110.0);
+
+    var start_fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer start_fixture.deinit();
+
+    var start_runner = Runner.init(&start_fixture.preview);
+    const start_target = findFirstGameplayCell(&start_fixture.preview, .attachment_entry).?;
+    primeRunnerBeforeRow(&start_runner, &start_fixture.preview, start_target);
+    start_runner.step(&start_fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.attachment, start_runner.movement_mode);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), start_runner.cameramanFovDegrees(), 0.001);
 }
 
 test "runner advances deterministically over fixed time" {
