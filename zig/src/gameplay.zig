@@ -398,7 +398,6 @@ const LaunchState = struct {
 
 const CameramanState = struct {
     follow_z: ?f32 = null,
-    follow_floor_y: ?f32 = null,
     follow_eye_x: ?f32 = null,
     follow_target_x: ?f32 = null,
     fov_degrees: f32 = 110.0,
@@ -1353,11 +1352,6 @@ pub const Runner = struct {
         const player_position = self.worldPosition(preview, 0.82);
         const player_forward = self.worldForward(preview);
         const player_up = self.worldUp(preview);
-        const player_floor = preview.sampleFloorHeightAtGridPosition(
-            self.current_global_row,
-            self.resolved_lane_index,
-            self.row_position,
-        ) orelse 0.0;
         const chase_target_position = self.worldPosition(preview, 0.28);
         const chase_eye_x = player_position.x / 3.0;
         const chase_target_x = chase_target_position.x / 3.0;
@@ -1365,12 +1359,8 @@ pub const Runner = struct {
             self.cameraman.follow_eye_x = chase_eye_x;
             self.cameraman.follow_target_x = chase_target_x;
         }
-        if (self.cameraman.follow_floor_y == null) {
-            self.cameraman.follow_floor_y = player_floor;
-        }
         self.cameraman.follow_eye_x = std.math.lerp(self.cameraman.follow_eye_x.?, chase_eye_x, 0.18);
         self.cameraman.follow_target_x = std.math.lerp(self.cameraman.follow_target_x.?, chase_target_x, 0.18);
-        self.cameraman.follow_floor_y = std.math.lerp(self.cameraman.follow_floor_y.?, player_floor, 0.18);
         const speed_scalar = self.cameramanSpeedScalar();
         const progress_blend = self.cameramanProgressBlend(preview);
         const vertical_lift = std.math.lerp(speed_scalar * 0.35, speed_scalar * 1.15, progress_blend);
@@ -1390,7 +1380,10 @@ pub const Runner = struct {
         else
             rl.Vector3{
                 .x = self.cameraman.follow_target_x.?,
-                .y = (self.cameraman.follow_floor_y.? + 1.8 + vertical_lift) + (std.math.sin(total_pitch_radians) * 3.3),
+                // Windows starts from a base camera matrix that is already pitched downward.
+                // The extra world-X rotations in `update_cameraman` deepen or relax that look,
+                // so the forward target must move down from the eye, not up into the backdrop.
+                .y = (1.8 + vertical_lift) - (std.math.sin(total_pitch_radians) * 3.3),
                 .z = self.cameramanEyeZ() + (std.math.cos(total_pitch_radians) * 3.3),
             };
         const desired_position = if (dynamic_attachment_camera)
@@ -1402,7 +1395,7 @@ pub const Runner = struct {
         else
             rl.Vector3{
                 .x = self.cameraman.follow_eye_x.?,
-                .y = self.cameraman.follow_floor_y.? + 1.8 + vertical_lift,
+                .y = 1.8 + vertical_lift,
                 .z = self.cameramanEyeZ(),
             };
         const desired_up = if (dynamic_attachment_camera) player_up else rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };

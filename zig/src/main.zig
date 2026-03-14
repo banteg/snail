@@ -9547,7 +9547,7 @@ test "gameplay camera looks ahead of the runner" {
     try std.testing.expect(camera.position.z < player_position.z);
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.position.y > player_position.y);
-    try std.testing.expect(camera.target.y >= 0.0);
+    try std.testing.expect(camera.target.y < camera.position.y);
     try std.testing.expectApproxEqAbs(@as(f32, 110.0), camera.fovy, 0.001);
 }
 
@@ -9606,6 +9606,7 @@ test "gameplay camera keeps z follow inside recovered deadzone" {
     const delta_z = (player_position.z + 0.4) - camera.position.z;
     try std.testing.expect(delta_z >= 1.70000005 - 0.001);
     try std.testing.expect(delta_z <= 3.0 + 0.001);
+    try std.testing.expect(camera.target.y < camera.position.y);
 }
 
 test "completion cutscene camera widens the chase view" {
