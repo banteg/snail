@@ -36,8 +36,12 @@ The current high-confidence `Player` fields are:
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
 - `+0x43c`: `current_cell`
+- `+0x440`: `completion_handoff_active`
+- `+0x444`: `completion_handoff_timer`
+- `+0x448`: `completion_handoff_timer_step`
 - `+0x44c`: `attachment_exit_gate_a`
 - `+0x44d`: `attachment_exit_gate_b`
+- `+0x44e`: `completion_handoff_voice_gate`
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -182,6 +186,12 @@ Current practical read:
   - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
   - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
   - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
+- `update_subgoldy` also owns a separate completion handoff block:
+  - once the player reaches the course-end threshold at `game + 0x58` and no attachment-exit handoff is pending, it arms `completion_handoff_active = 1`
+  - it seeds `completion_handoff_timer = 0`, `completion_handoff_timer_step = 1/60`, and `completion_handoff_voice_gate = 0`
+  - while active, it clamps the forward presentation offsets (`track_z_offset` / `track_z_anchor`) to the fixed completion lane and advances the timer every tick
+  - after `2.0` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
+  - after `5.0` seconds, the same block begins the frontend fade, flushes `row_event_display` if needed, and routes through `complete_subgame`
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
@@ -189,7 +199,7 @@ Current practical read:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
-  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate
+  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate, but its one recovered gameplay read is now narrower: when it is `1` and the current runtime cell carries flag `0x40`, `update_subgoldy` fast-forwards `completion_handoff_timer` to `5.1`
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array

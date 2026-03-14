@@ -38,9 +38,18 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
   `0x43f520` is only a tiny phase helper called from `update_slug_hazard_ai`.
   The real Windows parcel AI is `update_track_parcel` at `0x4431d0`, which runs the bobbing pickup, mailbox homing, and final delivery arc before calling `register_parcel_delivery(&parcel->game->row_event_display)`.
 
+* **The player-side completion handoff is now typed, not just inferred from offsets.**
+  `player + 0x440 / +0x444 / +0x448 / +0x44e` are now:
+  - `completion_handoff_active`
+  - `completion_handoff_timer`
+  - `completion_handoff_timer_step`
+  - `completion_handoff_voice_gate`
+  `update_subgoldy` arms that block when the player reaches the course-end threshold, uses it to clamp the fixed completion lane, fires the one-shot voice at `2.0` seconds, and routes into fade plus `complete_subgame` after `5.0` seconds.
+
 * **The old `game + 0x12727f0` byte is now narrowed to one unresolved controller gate.**
   It lives inside `row_event_display + 0x18`, not beside it as a separate ownership flag.
   `update_subgoldy` still consumes it with current-cell flag `0x40`, and `update_row_event_display` clears it during the `state == 3` leg, but the exact gameplay name is still not clean enough to freeze.
+  The new narrow read is: it can fast-forward `completion_handoff_timer` to `5.1`, which is enough to skip the normal handoff delay and fall straight into the completion fade path.
 
 * **`Player.post_follow_value_b` still has no recovered consumer.**
   Typed BN xrefs still show only the known writes in `initialize_subgoldy_fall_state`.
@@ -64,8 +73,9 @@ Bundle 15 confirms three things more firmly:
 2. The `0xff25d0 / 0xff25d1 / 0xff25d4` cluster is a selected-level-record override path, not tutorial-only ownership.
 3. `game + 0x12727d8` is a gameplay row-event display controller, and the old `+0x12727ec/+0x12727f0` pair belongs to that controller rather than standing alone as subgame flags.
 4. `game + 0x125e480` is the real gameplay parcel-slot array, and `0x443160 / 0x443190 / 0x4431d0` are the slot reset, allocator, and parcel-AI path behind `cRSubGame::AddParcel`.
-5. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
-6. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
+5. `player + 0x440 / +0x444 / +0x448 / +0x44e` is the completion-handoff controller that owns the `2s` voice and `5s` fade/`complete_subgame` transition.
+6. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
+7. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
 
 ## Remaining best targets
 
@@ -76,7 +86,7 @@ Bundle 15 confirms three things more firmly:
    The reads are now clear, but the upstream writer still is not.
 
 3. **The exact meaning of `row_event_display + 0x18`.**
-   It is no longer a floating `Game` flag, but its real gameplay meaning is still unresolved.
+   It is no longer a floating `Game` flag, and it now narrows to a completion-handoff fast-forward gate, but its real gameplay name is still unresolved.
 
 4. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
    Typed BN xrefs came back write-only.
