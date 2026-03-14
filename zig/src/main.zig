@@ -1336,7 +1336,7 @@ const SubgameCameraSource = enum {
 const SubgameCameraState = struct {
     shared_matrix: rl.Matrix = identity_subgame_camera_matrix,
     fov_degrees: f32 = 110.0,
-    source: SubgameCameraSource = .live,
+    source: SubgameCameraSource = .identity,
     snap_next: bool = true,
 };
 
@@ -1404,6 +1404,7 @@ const AppState = struct {
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
+    seed_level_intro_cutscene: bool = false,
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
     gameplay_voice_manager: GameplayVoiceManager = .{},
@@ -2905,7 +2906,7 @@ const AppState = struct {
         self.gameplay_voice_manager.tick();
         if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
             if (self.level_runner) |runner| {
-                if (!runner.paused and !self.gameplay_click_start_active) {
+                if (!runner.paused and !self.startupGameplayBlockActive()) {
                     self.level_prompt_queue.tick();
                 }
                 if (self.isTutorialGameplay() and runner.score.total > self.tutorial_reference_score) {
@@ -2947,7 +2948,7 @@ const AppState = struct {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
-                    if (!self.gameplay_click_start_active and !self.tutorialPromptBlocksGameplay()) {
+                    if (!self.startupGameplayBlockActive() and !self.tutorialPromptBlocksGameplay()) {
                         runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                         self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
@@ -3435,6 +3436,9 @@ const AppState = struct {
                     }
                     return;
                 }
+                if (self.level_runner) |runner| {
+                    if (runner.introCutsceneBlocksGameplay()) return;
+                }
                 if (self.tutorialPromptBlocksGameplay()) {
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                         self.level_prompt_queue.dismissActive();
@@ -3756,6 +3760,7 @@ const AppState = struct {
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
+        self.seed_level_intro_cutscene = true;
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
     }
@@ -3967,7 +3972,13 @@ const AppState = struct {
     fn tutorialClickStartCutsceneActive(self: *const AppState) bool {
         if (!self.gameplay_click_start_active) return false;
         const runner = self.level_runner orelse return false;
-        return runner.cutscene_id == gameplay.cutscene_intro_id and runner.cutscene_ticks < gameplay.intro_cutscene_duration_ticks;
+        return runner.introCutsceneBlocksGameplay();
+    }
+
+    fn startupGameplayBlockActive(self: *const AppState) bool {
+        if (self.gameplay_click_start_active) return true;
+        const runner = self.level_runner orelse return false;
+        return runner.introCutsceneBlocksGameplay();
     }
 
     fn resetSubgameCamera(self: *AppState) void {
@@ -3992,9 +4003,6 @@ const AppState = struct {
     fn activateGameplayClickStart(self: *AppState) !void {
         if (!self.gameplay_click_start_active) return;
         self.gameplay_click_start_active = false;
-        if (self.level_runner) |*runner| {
-            runner.clearCutscene();
-        }
         self.mouse_level_lane_target = null;
         self.pending_level_input = .{};
         if (self.audio_ready) {
@@ -5120,6 +5128,8 @@ const AppState = struct {
     }
 
     fn reloadLevel(self: *AppState) !void {
+        const seed_intro_cutscene = self.command == .game and self.seed_level_intro_cutscene;
+        self.seed_level_intro_cutscene = false;
         if (self.current_level) |*loaded_level| {
             loaded_level.deinit();
             self.current_level = null;
@@ -5181,8 +5191,8 @@ const AppState = struct {
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
-                self.gameplay_click_start_active = self.command == .game and self.isTutorialFlow();
-                if (self.gameplay_click_start_active) {
+                self.gameplay_click_start_active = seed_intro_cutscene and self.isTutorialFlow();
+                if (seed_intro_cutscene) {
                     self.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
                 } else {
                     self.level_runner.?.clearCutscene();
@@ -9095,19 +9105,26 @@ fn blendCameraWorldMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
     return modelTransformFromBasis(blended.position, blended.right, blended.up, blended.forward);
 }
 
+fn fovDegreesForSubgameCameraSource(source: SubgameCameraSource, live_fov_degrees: f32) f32 {
+    return switch (source) {
+        .live => live_fov_degrees,
+        .override, .identity => 110.0,
+    };
+}
+
 fn subgameCameraSelectionForRunner(runner: *gameplay.Runner) SubgameCameraSelection {
     if (runner.cutsceneCameraActive()) {
         return .{
             .source = .override,
             .matrix = runner.cutsceneCameraMatrix(),
-            .fov_degrees = 110.0,
+            .fov_degrees = fovDegreesForSubgameCameraSource(.override, runner.cameramanFovDegrees()),
             .snap_next = runner.takeCutsceneCameraSnap(),
         };
     }
     return .{
         .source = .live,
         .matrix = runner.cameramanMatrix(),
-        .fov_degrees = runner.cameramanFovDegrees(),
+        .fov_degrees = fovDegreesForSubgameCameraSource(.live, runner.cameramanFovDegrees()),
         .snap_next = runner.takeCameramanSnap(),
     };
 }
@@ -9606,6 +9623,12 @@ test "shared subgame camera snaps on source change and blends on later frames" {
     try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 2.0), @as(f32, 10.0), subgame_camera_blend_factor), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 3.0), @as(f32, 11.0), subgame_camera_blend_factor), state.shared_matrix.m14, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 130.0), state.fov_degrees, 0.001);
+}
+
+test "non-live subgame camera sources force the recovered 110-degree FOV" {
+    try std.testing.expectApproxEqAbs(@as(f32, 160.0), fovDegreesForSubgameCameraSource(.live, 160.0), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), fovDegreesForSubgameCameraSource(.override, 160.0), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), fovDegreesForSubgameCameraSource(.identity, 160.0), 0.001);
 }
 
 test "mouse lane-center target mapping respects bounds" {

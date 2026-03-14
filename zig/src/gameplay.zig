@@ -327,6 +327,9 @@ const intro_cutscene_blend_ticks: u16 = intro_cutscene_duration_ticks - intro_cu
 const completion_cutscene_blend_ticks: u16 = completion_cutscene_duration_ticks / 2;
 const death_cutscene_blend_ticks: u16 = death_cutscene_duration_ticks / 2;
 const fall_gravity: f32 = 10.0;
+// PORT(partial): bundle 14 only ties the recovered `-7` window to in-fall transition logic,
+// not to the final respawn/game-over rule. Keep this as a provisional handoff gate until the
+// death/resurrect path is recovered more fully.
 const fall_world_y_threshold: f32 = -7.0;
 const attachment_exit_progress_step_default: f32 = 1.0 / 60.0;
 const attachment_side_exit_margin: f32 = 0.3;
@@ -435,6 +438,8 @@ const AttachmentFollowState = struct {
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
     vertical_offset: f32 = 0.0,
+    orientation_b: f32 = 0.0,
+    template_row_scalar_a: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
@@ -541,6 +546,16 @@ fn rotateVectorWorldX(v: rl.Vector3, radians: f32) rl.Vector3 {
     };
 }
 
+fn rotateVectorWorldZ(v: rl.Vector3, radians: f32) rl.Vector3 {
+    const sin_theta = std.math.sin(radians);
+    const cos_theta = std.math.cos(radians);
+    return .{
+        .x = (v.x * cos_theta) - (v.y * sin_theta),
+        .y = (v.x * sin_theta) + (v.y * cos_theta),
+        .z = v.z,
+    };
+}
+
 const CameraTransform = struct {
     position: rl.Vector3,
     right: rl.Vector3,
@@ -601,6 +616,15 @@ fn rotateCameraTransformWorldX(transform: CameraTransform, radians: f32) CameraT
         .right = rotateVectorWorldX(transform.right, radians),
         .up = rotateVectorWorldX(transform.up, radians),
         .forward = rotateVectorWorldX(transform.forward, radians),
+    });
+}
+
+fn rotateCameraTransformWorldZ(transform: CameraTransform, radians: f32) CameraTransform {
+    return normalizeCameraTransform(.{
+        .position = transform.position,
+        .right = rotateVectorWorldZ(transform.right, radians),
+        .up = rotateVectorWorldZ(transform.up, radians),
+        .forward = rotateVectorWorldZ(transform.forward, radians),
     });
 }
 
@@ -896,6 +920,9 @@ pub const Runner = struct {
         }
         self.endAttachmentIfNeeded(preview);
         if (!self.paused and self.phase == .active) {
+            self.stepAttachmentExitState();
+        }
+        if (!self.paused and self.phase == .active) {
             self.updateLaunch(preview, delta_seconds);
         }
         if (!self.paused) {
@@ -1048,6 +1075,10 @@ pub const Runner = struct {
         const snap_next = self.cutscene_camera.snap_next;
         self.cutscene_camera.snap_next = false;
         return snap_next;
+    }
+
+    pub fn introCutsceneBlocksGameplay(self: *const Runner) bool {
+        return self.cutscene_id == cutscene_intro_id and self.cutsceneCameraActive();
     }
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1745,6 +1776,8 @@ pub const Runner = struct {
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.attachment_pre_roll = 0.0;
         self.attachment_post_roll = 0.0;
+        self.attachment_follow.orientation_b = 0.0;
+        self.attachment_follow.template_row_scalar_a = 0.0;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             const surface_roll = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
@@ -1753,6 +1786,12 @@ pub const Runner = struct {
             self.heading_roll = normalizeRadians(self.heading_roll + delta_roll);
             self.attachment_pre_roll = surface_roll * attachment_pre_roll_scale;
             self.attachment_post_roll = surface_roll;
+            self.attachment_follow.orientation_b = self.attachment_post_roll;
+            // PORT(partial): the current preview still does not expose the Windows-installed
+            // template header `row_scalar_a`, so keep the nearest roll-derived approximation in
+            // the live follow state until that runtime field exists.
+            self.attachment_follow.template_row_scalar_a =
+                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll);
             return;
         }
 
@@ -1969,8 +2008,8 @@ pub const Runner = struct {
             desired_transform = rotateCameraTransformLocalZ(desired_transform, self.attachment_pre_roll);
             desired_transform = rotateCameraTransformLocalZ(desired_transform, self.attachment_post_roll);
         }
-        if (self.phase == .fall) {
-            desired_transform = rotateCameraTransformLocalZ(desired_transform, self.post_follow_value_a);
+        if (self.attachment_exit_pending) {
+            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.post_follow_value_a);
         }
         desired_transform = rotateCameraTransformLocalZ(desired_transform, self.heading_roll);
 
@@ -2535,12 +2574,7 @@ pub const Runner = struct {
                 next_state.world_z = self.attachment_exit_anchor_z;
                 self.phase = .{ .fall = next_state };
                 _ = self.advanceCutsceneTicks();
-                if (self.attachment_exit_pending) {
-                    self.attachment_exit_progress += self.attachment_exit_progress_step;
-                    self.post_follow_value_a = normalizeRadians(
-                        self.post_follow_value_a + (self.post_follow_value_b * self.attachment_exit_progress_step),
-                    );
-                }
+                self.stepAttachmentExitState();
                 if (next_state.world_y > fall_world_y_threshold) return;
 
                 if (next_state.final_loss) {
@@ -2560,6 +2594,20 @@ pub const Runner = struct {
             self.cutscene_ticks = duration_ticks;
         }
         return self.cutscene_ticks >= duration_ticks;
+    }
+
+    fn stepAttachmentExitState(self: *Runner) void {
+        if (!self.attachment_exit_pending) return;
+        const progress_step = self.attachment_exit_progress_step;
+        self.attachment_exit_progress = std.math.clamp(
+            self.attachment_exit_progress + progress_step,
+            0.0,
+            1.0,
+        );
+        self.post_follow_value_a = normalizeRadians(self.post_follow_value_a + (self.post_follow_value_b * progress_step));
+        if (self.attachment_exit_progress >= 1.0) {
+            self.attachment_exit_pending = false;
+        }
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -2973,8 +3021,16 @@ pub const Runner = struct {
         self.attachment_exit_progress_step = attachment_exit_progress_step_default;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.post_follow_value_a = self.attachment_post_roll;
-            self.post_follow_value_b = normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll);
+            self.post_follow_value_a = if (self.attachment_follow.orientation_b != 0.0 or
+                self.attachment_follow.template_row_scalar_a != 0.0)
+                self.attachment_follow.orientation_b
+            else
+                self.attachment_post_roll;
+            self.post_follow_value_b = if (self.attachment_follow.orientation_b != 0.0 or
+                self.attachment_follow.template_row_scalar_a != 0.0)
+                self.attachment_follow.template_row_scalar_a
+            else
+                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll);
             self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
             return;
         }
@@ -4000,6 +4056,23 @@ test "fall state keeps Z anchored and advances carried follow roll" {
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
     try std.testing.expect(runner.post_follow_value_a > 0.25);
+}
+
+test "attachment exit pending applies a world-Z camera roll" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.refreshCameraState(&fixture.preview);
+    const baseline = cameraTransformFromMatrix(runner.cameramanMatrix());
+
+    runner.attachment_exit_pending = true;
+    runner.post_follow_value_a = std.math.pi / 6.0;
+    runner.refreshCameraState(&fixture.preview);
+    const rotated = cameraTransformFromMatrix(runner.cameramanMatrix());
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), baseline.forward.x, 0.0001);
+    try std.testing.expect(@abs(rotated.forward.x) > 0.05);
 }
 
 test "runner completion reaches a handoff after the local cutscene" {
