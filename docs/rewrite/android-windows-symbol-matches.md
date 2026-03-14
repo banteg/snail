@@ -37,7 +37,7 @@ Cross-reference of unstripped Android (`libsnailmail.so`) symbols against the st
 | `cRSnail::SetAnimation` | 0x444600 | `dispatch_cutscene_animation` | — | EXISTS |
 | `cRSnail::SetWeapon` | 0x445920 | `sub_445920` | `set_snail_weapon` | 3 weapon slots, bitmask switch (0x10,2,1,4,8,0x40,0x90,0xc0,0x20) |
 | `cRSnail::SetJetPack` | 0x445860 | `sub_445860` | `set_snail_jetpack` | Maps 0→0, 1→4; sounds 0x1a/0x10 |
-| `cRSnail::BuildHotSpots` | 0x445d50 | `sub_445d50` | `build_snail_hotspots` | 19 named hotpoint textures, local hotspot bank at `+0x16cc` |
+| `cRSnail::BuildHotSpots` | 0x445d50 | `sub_445d50` | `build_snail_hotspots` | 19 named hotpoints, including `CameraSkidStop` / `CameraSlugDeath` / `CameraIntroTalk` |
 | `cRSnail::ReleaseWeapons` | 0x442e40 | `sub_442e40` | `release_snail_weapons` | 4 random velocities × 0.3f, hover end |
 | `cRSnailSkin::AI` | 0x445cd0 | `sub_445cd0` | `update_snail_skin` | 19 hotspot transforms into `+0x17b0`, dual matrix source |
 | `cRSnailSkin::Init` | 0x445f60 | `sub_445f60` | `initialize_snail_skin` | Sets state=0, links Game+0x432700 |
@@ -55,7 +55,7 @@ Cross-reference of unstripped Android (`libsnailmail.so`) symbols against the st
 | `cRCompletion::UnInit` | 0x406060 | `destroy_completion_screen` | — | EXISTS |
 | `cRCompletion::RegisterParcel` | 0x405040 | `register_parcel_delivery` | — | ScoreAdd type 4, bonus type 5, parcel counter; Windows caller is the gameplay row-event display controller rather than the completion screen |
 | `cRCutScene::Init` | 0x4428d0 | `sub_4428d0` | `initialize_cutscene` | Camera matrix copy, constants -0.785f/6.283f/1.4f |
-| `cRCutScene::AI` | 0x4466d0 | `sub_4466d0` | `update_cutscene` | 12-case switch, death/completion voice dispatch, consumes hotspots `12` and `18` |
+| `cRCutScene::AI` | 0x4466d0 | `sub_4466d0` | `update_cutscene` | 12-case switch, death/completion voice dispatch, `CameraSkidStop -> CameraIntroTalk` blend |
 | `cRClickStart::Init` | 0x442170 | `sub_442170` | `initialize_click_start` | "Click to Start", linked list add, state=2 |
 | `cRClickStart::AI` | 0x442290 | `sub_442290` | `update_click_start` | Level select, click detect, RandSeed, states 2/3/4 |
 | `cRContinue::*` | — | — | — | Integrated into `update_frontend_state_machine` (states 0x1a–0x1c) |

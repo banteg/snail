@@ -58,9 +58,10 @@ This bundle only carries:
 - the `player + 6208 / +6280` anchor question is now resolved as the snail hotspot chain.
   - `build_snail_hotspots` seeds a `19`-entry local hotspot bank at `player + 0x16cc`
   - `update_snail_skin` writes the world-space hotspot bank at `player + 0x17b0`
-  - `+0x1840` / `+0x1888` are `snail_hotspots_world[12]` and `snail_hotspots_world[18]`
-  - `update_cutscene` uses hotspot `18` as the repeated snapshot target and the `12 -> 18` lerp as the state-`5` completion blend
-  - the exact gameplay names of the two source matrices and the individual hotspot indices are still not clean enough to freeze
+  - `+0x1840` / `+0x1888` are `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`)
+  - `build_snail_hotspots` also seeds hotspot `17` as `CameraSlugDeath`, but no direct runtime consumer for that slot was recovered in this pass
+  - `update_cutscene` uses `CameraIntroTalk` as the repeated snapshot target and the `CameraSkidStop -> CameraIntroTalk` lerp as the state-`5` completion blend
+  - the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still not clean enough to freeze
 
 - `Player.post_follow_value_b` still has only the known writes in `initialize_subgoldy_fall_state`
 

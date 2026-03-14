@@ -57,8 +57,9 @@ Bundle 15 now closes the cutscene-anchor writer question too and narrows the rem
 
 * **The player cutscene anchors at `+6208` / `+6280` are no longer writer-less.**
   `build_snail_hotspots` seeds a `19`-entry local hotspot bank at `player + 0x16cc`, and `update_snail_skin` writes the world-space bank at `player + 0x17b0`.
-  That makes `+0x1840` / `+0x1888` `snail_hotspots_world[12]` and `snail_hotspots_world[18]`, with `update_cutscene` using hotspot `18` as the repeated snapshot target and the `12 -> 18` lerp as the state-`5` completion blend.
-  The exact gameplay names of the two source matrices and the individual hotspot indices are still not clean enough to freeze.
+  That makes `+0x1840` / `+0x1888` `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`), with hotspot `17` (`CameraSlugDeath`) also present in the authored table but still without a recovered runtime read.
+  `update_cutscene` uses `CameraIntroTalk` as the repeated snapshot target and the `CameraSkidStop -> CameraIntroTalk` lerp as the state-`5` completion blend.
+  The exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still not clean enough to freeze.
 
 * **`play_movement_state_sound` did not unlock the `-6 / -7` thresholds.**
   It still has only two callsites, both in `update_subgoldy`.
@@ -93,5 +94,5 @@ Bundle 15 confirms three things more firmly:
 4. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
    The broad threshold meaning is now clear, but the remaining question is how those gates interact with the later `progress_timer` branch and the `player + 0x2d8` flag.
 
-5. **The exact gameplay names of the two cutscene-hotspot matrices and the hotspot indices used by `update_cutscene`.**
-   The writer path is now clear, but the higher-level camera semantics are still not clean enough to freeze.
+5. **The exact gameplay roles of the two cutscene-hotspot matrices, and why later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot.**
+   The writer path and the hotspot names are now clear, but the higher-level camera semantics are still not clean enough to freeze.

@@ -60,12 +60,17 @@ The current high-confidence `Player` fields are:
 Current practical read for the hotspot bank:
 
 - `build_snail_hotspots` seeds `snail_hotspots_local` from the snail model's named hotpoint textures
+- the recovered authored hotspot names include:
+  - index `12`: `X/CameraSkidStop.tga`
+  - index `17`: `X/CameraSlugDeath`
+  - index `18`: `X/CameraIntroTalk`
 - `update_snail_skin` transforms that `19`-entry local bank into `snail_hotspots_world`
   - slots `0..10` use the cached matrix at `player + 0x1684`
   - slots `11..18` use the cached matrix at `player + 0x1604`
-- the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` and `snail_hotspots_world[18]`
+- the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`)
 - `update_cutscene` snapshots hotspot `18` in the repeated intro or death or completion camera states and uses the `12 -> 18` lerp as the state-`5` completion blend
-- the exact gameplay names of the two source matrices and the individual hotspot indices are still unresolved
+- no direct runtime consumer for hotspot `17` (`CameraSlugDeath`) was recovered in this pass
+- the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still unresolved
 
 Important caveat:
 

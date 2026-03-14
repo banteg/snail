@@ -9,8 +9,14 @@ Recovered writer chain:
 
 That resolves the old standalone offsets:
 
-- `+0x1840` is `snail_hotspots_world[12].x`
-- `+0x1888` is `snail_hotspots_world[18].x`
+- `+0x1840` is `snail_hotspots_world[12].x` (`CameraSkidStop`)
+- `+0x1888` is `snail_hotspots_world[18].x` (`CameraIntroTalk`)
+
+Recovered authored hotspot names from `build_snail_hotspots`:
+
+- index `12`: `X/CameraSkidStop.tga`
+- index `17`: `X/CameraSlugDeath`
+- index `18`: `X/CameraIntroTalk`
 
 Recovered cutscene consumers:
 
@@ -21,4 +27,5 @@ Interpretation:
 
 - the old `+6208 / +6280` mystery is not a pair of isolated cutscene-only fields
 - intro or completion or death shot geometry is sourced from the transformed snail-hotspot bank maintained by `update_snail_skin`
-- the exact gameplay names of the two source matrices and the individual hotspot indices are still not clean enough to freeze
+- no direct runtime consumer for hotspot `17` (`CameraSlugDeath`) was recovered in this pass
+- the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still not clean enough to freeze
