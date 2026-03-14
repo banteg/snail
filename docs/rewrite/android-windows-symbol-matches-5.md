@@ -45,6 +45,7 @@ The Android matrix method names line up cleanly with the Windows helpers exporte
 | `tMatrix::RotWorldZ` | 0x44cf50 | `sub_44cf50` | `rotate_matrix_world_z` | NEW -- cos/sin mix across basis columns 0 and 1, exact Android `RotWorldZ` layout |
 | `tMatrix::operator*=(const tMatrix&)` / `tMatrix::Multiply(const tMatrix&)` | 0x44d1a0 | `sub_44d1a0` | `multiply_matrix_in_place` | NEW -- wrapper copies `this` to a temp and calls the full multiply helper, matching Android `operator*=` / `Multiply` |
 | `tMatrix::Identity` | 0x44d210 | `set_matrix_identity` | -- | EXISTS |
+| `tMatrix::RotIdentity` | 0x44d250 | `set_matrix_identity` | `set_matrix_rotation_identity` | NEW -- resets the basis to identity while preserving translation slots |
 | `tMatrix::Orthoganalize` | 0x44d3d0 | `sub_44d3d0` | `orthogonalize_matrix` | NEW -- normalize 3 basis vectors, then rebuild orthogonality with cross products |
 | `tMatrix::LookAt(const tVector&)` | 0x44d4e0 | `sub_44d4e0` | `look_at_point` | NEW -- subtract target-position, then tailcall `SetZDir` |
 | `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)` | 0x44da90 | `sub_44da90` | `linear_interpolate_matrix` | NEW -- exact Android sequence: invert / multiply / interpolate / pre-multiply / orthogonalize, then translation lerp |
