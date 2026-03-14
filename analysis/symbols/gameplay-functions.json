@@ -246,6 +246,10 @@
       "description": "Runs the Star Map galaxy-screen state machine, including route selection, replay launch, and Deliver/Play actions through the shared level-path handoff. Cross-port Android and iOS symbols match this helper to `cRGalaxy::AI()`."
     },
     {
+      "address": "0x409b00",
+      "name": "draw_galaxy_line"
+    },
+    {
       "address": "0x409bf0",
       "name": "close_galaxy_route",
       "description": "Closes the currently open Star Map route card, clears its active replay or play controls, and resets the open-route selection before another route is opened. Cross-port Android and iOS symbols match this helper to `cRGalaxy::BoxOff()`."
@@ -633,16 +637,20 @@
       "name": "initialize_halfpole_path_template_pair"
     },
     {
+      "address": "0x41e440",
+      "name": "initialize_cage2_path_template_pair"
+    },
+    {
       "address": "0x41eda0",
       "name": "initialize_screw_path_template_pair"
     },
     {
       "address": "0x41f760",
-      "name": "initialize_slalomdouble_path_template_pair"
+      "name": "initialize_slalom_path_template_pair"
     },
     {
       "address": "0x420170",
-      "name": "initialize_shimmy_path_template_pair"
+      "name": "initialize_worm_path_template_pair"
     },
     {
       "address": "0x420c40",
@@ -651,6 +659,10 @@
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state"
+    },
+    {
+      "address": "0x421770",
+      "name": "initialize_path_follow_golb"
     },
     {
       "address": "0x4217b0",
@@ -663,7 +675,7 @@
     },
     {
       "address": "0x4221f0",
-      "name": "initialize_slalom_path_template_pair"
+      "name": "initialize_slalombig_path_template_pair"
     },
     {
       "address": "0x422c00",
@@ -676,6 +688,14 @@
     {
       "address": "0x423f10",
       "name": "initialize_supertramp_path_template_pair"
+    },
+    {
+      "address": "0x4246a0",
+      "name": "build_track_fringe_mesh"
+    },
+    {
+      "address": "0x424ad0",
+      "name": "build_track_fringe_supertramp_mesh"
     },
     {
       "address": "0x425050",
@@ -733,6 +753,10 @@
       "description": "Computes the nonlinear temporary transform used by attachment kind 42 during projection, live follow, and constructor-side strip generation. Android's cRPath::HalfPipePos is a strong structural match, but the exact Windows public-path naming for this family remains open."
     },
     {
+      "address": "0x42b9c0",
+      "name": "get_path_position_at_node"
+    },
+    {
       "address": "0x42ba80",
       "name": "initialize_loopbow_path_template_pair"
     },
@@ -782,6 +806,10 @@
       "name": "set_bod_object"
     },
     {
+      "address": "0x42f680",
+      "name": "apply_bod_position"
+    },
+    {
       "address": "0x42f6f0",
       "name": "initialize_object"
     },
@@ -823,7 +851,7 @@
     },
     {
       "address": "0x42fa80",
-      "name": "request_object_toon_buffers"
+      "name": "apply_object_toon"
     },
     {
       "address": "0x42fad0",
@@ -848,6 +876,10 @@
     {
       "address": "0x430570",
       "name": "request_object_edges"
+    },
+    {
+      "address": "0x4305a0",
+      "name": "add_object_edge"
     },
     {
       "address": "0x4308b0",
@@ -1002,6 +1034,10 @@
       "description": "Initializes the active gameplay subgame state, including the continuation selector at `+0x1270fc8`, per-mode HUD widgets, replay-backed startup, and the first galaxy, challenge-setup, or gameplay handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`."
     },
     {
+      "address": "0x437b10",
+      "name": "reset_subgame"
+    },
+    {
       "address": "0x437c40",
       "name": "update_progress_bar"
     },
@@ -1009,6 +1045,10 @@
       "address": "0x437de0",
       "name": "rebuild_track_runtime_from_segments",
       "description": "Normalizes the generated runtime grid, copies authored metadata into runtime cells, and runs the post-build render passes."
+    },
+    {
+      "address": "0x437e80",
+      "name": "calc_slider_to_rate"
     },
     {
       "address": "0x437eb0",
@@ -1155,6 +1195,10 @@
       "description": "Allocates and seeds one live health pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddHealth(cRSubLoc*, cRSubGoldy*)`."
     },
     {
+      "address": "0x43d880",
+      "name": "spawn_track_speedup"
+    },
+    {
       "address": "0x43d890",
       "name": "spawn_track_jetpack_pickup",
       "description": "Allocates and seeds one live jetpack pickup from the active runtime row state. Cross-port Android and iOS symbols match this helper to `cRSubGame::AddJetPack(cRSubLoc*, cRSubGoldy*)`."
@@ -1257,6 +1301,10 @@
       "description": "Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
     },
     {
+      "address": "0x4403c0",
+      "name": "display_score_stats"
+    },
+    {
       "address": "0x4404c0",
       "name": "set_subgame_rate"
     },
@@ -1275,6 +1323,14 @@
     {
       "address": "0x4407a0",
       "name": "update_pause_menu"
+    },
+    {
+      "address": "0x4408a0",
+      "name": "advance_blink_random"
+    },
+    {
+      "address": "0x4408c0",
+      "name": "initialize_blink_random"
     },
     {
       "address": "0x440910",
@@ -1346,6 +1402,10 @@
       "name": "update_banner"
     },
     {
+      "address": "0x441dd0",
+      "name": "firework_shoot"
+    },
+    {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
       "description": "Seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
@@ -1405,6 +1465,10 @@
       "address": "0x443650",
       "name": "load_frontend_level_by_mode_and_index",
       "description": "Formats the mode-specific level filename for postal, challenge, time-trial, or tutorial front-end launches and then loads that level definition file."
+    },
+    {
+      "address": "0x443730",
+      "name": "spawn_track_parcel"
     },
     {
       "address": "0x4438e0",
@@ -1495,8 +1559,20 @@
       "description": "Spawns the floating `Time's Up` gameplay message once the subgame timer hits its terminal threshold."
     },
     {
+      "address": "0x445f10",
+      "name": "hide_gameplay_scores"
+    },
+    {
+      "address": "0x445f40",
+      "name": "unhide_gameplay_scores"
+    },
+    {
       "address": "0x445f60",
       "name": "initialize_snail_skin"
+    },
+    {
+      "address": "0x445fd0",
+      "name": "change_snail_skin"
     },
     {
       "address": "0x446020",
