@@ -1,0 +1,22 @@
+struct TrackParcelRuntime // size=0x8c
+0x0000: void* vtable
+0x0004: uint8_t[0xc] _pad_04
+0x0010: struct Vec3 world_position
+0x001c: uint8_t[0x1c] _pad_1c
+0x0038: uint32_t state
+0x003c: struct Game* game
+0x0040: uint8_t[0x14] _pad_40
+0x0054: void* sprite
+0x0058: uint8_t[0x4] _pad_58
+0x005c: float bob_phase
+0x0060: float bob_phase_step
+0x0064: void* owner
+0x0068: float progress
+0x006c: float progress_step
+0x0070: float target_distance
+0x0074: float travel_dir_x
+0x0078: float travel_dir_y
+0x007c: float travel_dir_z
+0x0080: float delivery_offset_x
+0x0084: float delivery_offset_y
+0x0088: float delivery_offset_z

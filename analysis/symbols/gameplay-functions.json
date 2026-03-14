@@ -233,6 +233,11 @@
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
     },
     {
+      "address": "0x408860",
+      "name": "initialize_track_parcel_runtime",
+      "description": "Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`."
+    },
+    {
       "address": "0x408c10",
       "name": "destroy_galaxy",
       "description": "Tears down the active Star Map galaxy-screen widgets before replay launch, route handoff, or return to the owning front-end state. Cross-port Android symbols match this helper to `cRGalaxy::UnInit()`."
@@ -1460,8 +1465,19 @@
       "name": "update_row_model"
     },
     {
+      "address": "0x443160",
+      "name": "initialize_track_parcel_slots",
+      "description": "Clears the live state on the 50-slot gameplay parcel array and reseeds each slot's `game` pointer before any authored parcel placements are spawned for the current level."
+    },
+    {
+      "address": "0x443190",
+      "name": "allocate_track_parcel_slot",
+      "description": "Scans the gameplay parcel array for the first inactive slot and returns it, logging `Too Many Parcels increase RPARCEL_MAXIMUM` if the 50-slot pool is exhausted."
+    },
+    {
       "address": "0x4431d0",
-      "name": "update_jetpack_visual"
+      "name": "update_track_parcel",
+      "description": "Runs one live gameplay parcel slot through its bobbing, homing, and final delivery-arc states, then registers the delivered parcel on `game->row_event_display` before tearing down the sprite."
     },
     {
       "address": "0x443650",
@@ -1470,7 +1486,8 @@
     },
     {
       "address": "0x443730",
-      "name": "spawn_track_parcel"
+      "name": "spawn_track_parcel",
+      "description": "Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot."
     },
     {
       "address": "0x4438e0",

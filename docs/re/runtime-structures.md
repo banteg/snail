@@ -157,7 +157,7 @@ The current high-confidence `Game` fields are:
   - head pointer for the active garbage list
 - `+0x359144`: `garbage_hazards`
   - `50`-slot `GarbageHazardRuntime` array
-- `+0x125e430`: `track_parcels`
+- `+0x125e480`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
 - `+0x12727d8`: `row_event_display`
   - inline `RowEventDisplayController`
@@ -191,12 +191,12 @@ Current practical read:
   - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
   - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate
 - the main gameplay collision consumers now line up with the spawn helpers:
-  - `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` share `parcel_target_count` and the `track_parcels` array
+  - `initialize_track_parcel_slots`, `spawn_track_parcel`, `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` all share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
-- the embedded `track_parcels` slots are not the same object family as either the parcel-manager path behind `cRSubGame::AddParcel` or the separate garbage runtime seeded at `game + 0x359144`
+- the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-track reads in that function
 - the scalar at `+0xff25d8` remains separate from `selected_level_record` and should not be merged with the live cursor without more evidence
@@ -232,19 +232,36 @@ Current practical read:
 
 ## Track Parcel Runtime
 
-The placed parcel pickups now line up on a dedicated embedded runtime slot shape rather than a raw offset block.
- 
- High-confidence current fields:
- 
- - `+0x60`: `world_position`
- - `+0x88`: `state`
- 
+The placed parcel pickups now line up on a dedicated embedded runtime slot shape rooted at `game + 0x125e480`.
+
+High-confidence current fields:
+
+- `+0x10`: `world_position`
+- `+0x38`: `state`
+- `+0x3c`: `game`
+- `+0x54`: `sprite`
+- `+0x5c`: `bob_phase`
+- `+0x60`: `bob_phase_step`
+- `+0x64`: `owner`
+- `+0x68`: `progress`
+- `+0x6c`: `progress_step`
+- `+0x70`: `target_distance`
+- `+0x74`: `travel_dir_x`
+- `+0x78`: `travel_dir_y`
+- `+0x7c`: `travel_dir_z`
+- `+0x80`: `delivery_offset_x`
+- `+0x84`: `delivery_offset_y`
+- `+0x88`: `delivery_offset_z`
+
 Current practical read:
 
-- `initialize_runtime_pools_and_path_template_bank` seeds a `50`-slot Windows array with `sub_408860`
+- `initialize_runtime_pools_and_path_template_bank` seeds the `50`-slot array with `initialize_track_parcel_runtime`
+- `build_subgame_level` clears the live array for the current run through `initialize_track_parcel_slots`
+- `spawn_track_parcel` is the Windows `cRSubGame::AddParcel` path: it allocates one free slot from `game->track_parcels`, seeds the spawn position, installs the sprite, and stores the parcel-owner pointer
+- `update_track_parcel` runs the parcel's bobbing, homing, and final delivery arc, then calls `register_parcel_delivery(&parcel->game->row_event_display)` before killing the sprite and clearing the slot state
 - `place_parcels_on_track` and `place_challenge_parcels_on_track` decide how many authored parcel rows stay live and feed the HUD-facing `parcel_target_count`
 - `handle_subgoldy_collisions` reads the same slots back, awards the parcel score tier, and flips collected slots from state `1` to state `4`
-- Android and iOS confirm the gameplay semantics through `cRSubGame::AddParcel`, and that parcel-manager family should not be merged with the separate garbage-object runtime at `game + 0x359144`
+- these slots are the gameplay parcel runtime behind `cRSubGame::AddParcel`, not a separate manager path from it
 
 ## Track Pickup Runtime
 

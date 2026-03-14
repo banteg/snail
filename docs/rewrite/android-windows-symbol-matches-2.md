@@ -184,7 +184,7 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 | `cRSubLazer::AI` | 0x43e830 | `sub_43e830` | `update_subgoldy_bullet` | NEW — position advance, path collision flags |
 | `cRGolbLazer::AI` | 0x43d880 | `sub_43d880` | — | Empty stub (both platforms) |
 | `cRGolbRocket::AI` | 0x43d880 | `sub_43d880` | — | Empty stub (both platforms) |
-| `cRParcel::AI` | 0x43f520 | `sub_43f520` | `update_parcel_flight` | NEW — 7-state machine, homing to mailbox, RegisterParcel on arrival |
+| `cRParcel::AI` | 0x4431d0 | `update_track_parcel` | — | EXISTS — 7-state machine, homing to mailbox, RegisterParcel on arrival |
 | `cRSubRingStar::AI` | 0x43e830 | `sub_43e830` | `update_ring_star_system` | NEW — orbital angle, 10-star array |
 | `cRSubRingStar::Shower` | 0x43e690 | `sub_43e690` | `emit_ring_star_shower` | NEW — pi/3 angular, velocity×0.3 radial |
 | `cRWall::AI` | 0x43efb0 | `sub_43efb0` | `update_wall2_ambient_hazard` | NEW — phase advance, SubLazer shoot at -0.1 |
@@ -201,7 +201,7 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 - **cRSubTracks**: `load_frontend_level_by_mode_and_index` at 0x443650 is the central level-loading dispatcher. It uses format strings like "Arcade%03i.txt" to locate level definitions, confirming the level naming convention. The typo "Tutourial" in the mode parser is present in both platforms.
 - **cRSure (confirmation dialog)**: Entirely absent from Windows. The "Are you sure?" dialog before starting a new adventure only exists on Android/iOS.
 - **cRQuit (in-game menu button)**: Not a standalone class on Windows — the quit button sprite (0x7a) is initialized inline in `initialize_subgame` and handled inline in `update_subgame`.
-- **cRParcel::AI**: The 7-state parcel flight machine confirms the parcel delivery path described in the binary comparison report — parcels are physics-driven flight objects that home to the mailbox, not instant row-event pickups.
+- **cRParcel::AI**: The 7-state parcel flight machine confirms the parcel delivery path described in the binary comparison report — parcels are physics-driven flight objects that home to the mailbox, not instant row-event pickups. The earlier `0x43f520` guess is rejected; that function is only a tiny phase helper under `update_slug_hazard_ai`.
 - **cRWall::AI**: Confirms the Wall2 ambient hazard fires a -0.1 velocity laser downward through the SubLazer manager, matching the `+0.02` damage path identified in the first report.
 - **Path builders**: The `BuildSBend`, `BuildScrew`, `BuildSlalom`, `BuildShimmy`, `BuildHalfPipe`, `BuildHalfPole`, `BuildDip`, and `BuildDetour` functions are all confirmed as separate path template initializers, extending the already-identified set. `CalcLengthZ` and `GetNodes` (allocate_path_nodes) are shared infrastructure used by all builders.
 

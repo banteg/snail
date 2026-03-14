@@ -78,7 +78,7 @@ The current high-confidence model is:
 - the same `P/p` installer branch maps `P -> 30` and `p -> 29` for the runtime tile id, while the bank-root choice itself is controlled by a separate builder-state byte at `this + 2`
 - the generated runtime track is not the raw text grid; it is a normalized structure with additional gameplay and render passes
 - `populate_runtime_track_cells_from_segments` also seeds Goldy's visible life stock to `3` at `subgame + 0x3bfaa4` before `initialize_subgoldy` runs
-- the placed parcel manager at `game + 0x125e430` is separate from the live garbage-object family rooted at `game + 0x359144`
+- the placed parcel runtime at `game + 0x125e480` is a dedicated 50-slot array that `spawn_track_parcel` allocates from, and it remains separate from the live garbage-object family rooted at `game + 0x359144`
 - the player update can transition from ordinary floor-following into a dedicated attachment-follow state backed by those path-template objects
 - contact damage and jetpack countdown are separate controllers in Windows: the live collision deltas feed `apply_damage_gauge_delta` and `update_damage_gauge` at player `+0x3c4`, while `initialize_jetpack_gauge` and `update_jetpack_gauge` own the independent jetpack warning or auto-shutoff logic at player `+0x2750`
 - the Zig port now mirrors that public `Path=` table in `attachment_builders.zig`, builds templates for every public family, renders them in the segment viewer, and uses those built templates for live follow/camera in gameplay; the remaining gap is the exact Windows installed bank and entry/exit semantics, not the existence of a separate path-template layer itself

@@ -29,6 +29,15 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
   The old `+0x12727ec` dword is `row_event_display.state`, and `flush_row_event_display`, `update_row_event_display`, and `register_parcel_delivery` all line up cleanly once the controller is typed.
   That also corrects one earlier mismatch: `register_parcel_delivery` updates the row-event display controller, not the completion screen.
 
+* **The gameplay parcel runtime is now typed cleanly, and the old `+0x125e430` placement is rejected.**
+  The live slot array is `game + 0x125e480`, not `+0x125e430`.
+  `initialize_runtime_pools_and_path_template_bank` seeds it with `initialize_track_parcel_runtime`, `build_subgame_level` clears it through `initialize_track_parcel_slots`, `spawn_track_parcel` allocates from it through `allocate_track_parcel_slot`, and the old `update_jetpack_visual` body at `0x4431d0` is now correctly `update_track_parcel`.
+  That also settles one earlier split: these embedded slots are the actual Windows runtime behind `cRSubGame::AddParcel`, not a separate parcel-manager family.
+
+* **The earlier `cRParcel::AI -> 0x43f520` guess is wrong.**
+  `0x43f520` is only a tiny phase helper called from `update_slug_hazard_ai`.
+  The real Windows parcel AI is `update_track_parcel` at `0x4431d0`, which runs the bobbing pickup, mailbox homing, and final delivery arc before calling `register_parcel_delivery(&parcel->game->row_event_display)`.
+
 * **The old `game + 0x12727f0` byte is now narrowed to one unresolved controller gate.**
   It lives inside `row_event_display + 0x18`, not beside it as a separate ownership flag.
   `update_subgoldy` still consumes it with current-cell flag `0x40`, and `update_row_event_display` clears it during the `state == 3` leg, but the exact gameplay name is still not clean enough to freeze.
@@ -54,8 +63,9 @@ Bundle 15 confirms three things more firmly:
 1. Failure handoff still lives in the player cutscene/death selector.
 2. The `0xff25d0 / 0xff25d1 / 0xff25d4` cluster is a selected-level-record override path, not tutorial-only ownership.
 3. `game + 0x12727d8` is a gameplay row-event display controller, and the old `+0x12727ec/+0x12727f0` pair belongs to that controller rather than standing alone as subgame flags.
-4. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
-5. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
+4. `game + 0x125e480` is the real gameplay parcel-slot array, and `0x443160 / 0x443190 / 0x4431d0` are the slot reset, allocator, and parcel-AI path behind `cRSubGame::AddParcel`.
+5. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
+6. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
 
 ## Remaining best targets
 

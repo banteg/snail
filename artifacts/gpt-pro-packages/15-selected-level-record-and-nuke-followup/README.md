@@ -6,6 +6,7 @@ Assume the recipient already has bundles `12` through `14`. This bundle is pure 
 
 This bundle only carries:
 - fresh Binary Ninja and IDA exports for the death/resurrect path, selected-level-record routing, the newly mapped nuke cluster, and the gameplay row-event display controller
+- fresh Binary Ninja and IDA exports for the gameplay parcel runtime cluster (`initialize_track_parcel_runtime`, `initialize_track_parcel_slots`, `allocate_track_parcel_slot`, `update_track_parcel`, and `spawn_track_parcel`)
 - narrow Binary Ninja xref and search reports for the still-unresolved bundle `14` offsets
 - the symbol/field renames that were applied to the live Binary Ninja database and synced back into the repo maps
 
@@ -35,6 +36,14 @@ This bundle only carries:
   - the old loose `+0x12727ec` dword is `row_event_display.state`
   - the old loose `+0x12727f0` byte is now known to live inside the same controller, though its exact meaning is still unresolved
 
+- the gameplay parcel runtime is now typed and named cleanly.
+  - the live slot array base is `game + 0x125e480`, not `+0x125e430`
+  - `initialize_runtime_pools_and_path_template_bank` seeds it through `initialize_track_parcel_runtime`
+  - `build_subgame_level` resets it through `initialize_track_parcel_slots`
+  - `spawn_track_parcel` allocates from it through `allocate_track_parcel_slot`
+  - the old `update_jetpack_visual` name at `0x4431d0` is rejected; that body is `update_track_parcel`
+  - the earlier `cRParcel::AI -> 0x43f520` guess is also rejected; `0x43f520` is only a small slug-hazard helper
+
 - `Player.post_follow_value_b` still has only the known writes in `initialize_subgoldy_fall_state`
 
 - the `player + 6208 / +6280` anchor writer is still unresolved; the full HLIL reexport still only shows `update_cutscene` reads
@@ -53,6 +62,7 @@ This bundle only carries:
   - direct caller/field-xref evidence for the renamed paths
 - `binja/reports/`
   - narrow text reports for the still-unresolved offsets, the selected-level-record interpretation, and the row-event display controller mapping
+  - the parcel-runtime correction report for the renamed `track_parcels` / `update_track_parcel` path
 
 ## Suggested Reading Order
 
@@ -70,17 +80,29 @@ This bundle only carries:
 12. `binja/00405040-register_parcel_delivery.txt`
 13. `binja/00404830-flush_row_event_display.txt`
 14. `binja/reports/row-event-display-controller.txt`
-15. `ida/00404cf0-update_row_event_display.c`
-16. `ida/00405040-register_parcel_delivery.c`
-17. `ida/00404830-flush_row_event_display.c`
-18. `ida/004092f0-update_galaxy.c`
-19. `ida/00416370-update_challenge_setup_screen.c`
-20. `ida/00435df0-set_subgame_features.c`
-21. `ida/00435eb0-populate_runtime_track_cells_from_segments.c`
-22. `ida/00437eb0-build_subgame_level.c`
-23. `ida/00438b90-update_subgame.c`
-24. `binja/reports/player-anchor-offsets-6208-6280.txt`
-25. `binja/xrefs/field-Player.post_follow_value_b.txt`
-26. `binja/reports/post-follow-value-b.txt`
-27. `binja/xrefs/play_movement_state_sound.txt`
-28. `binja/reports/fall-gate-nearby-helpers.txt`
+15. `binja/TrackParcelRuntime.txt`
+16. `binja/00408860-initialize_track_parcel_runtime.txt`
+17. `binja/00443160-initialize_track_parcel_slots.txt`
+18. `binja/00443190-allocate_track_parcel_slot.txt`
+19. `binja/004431d0-update_track_parcel.txt`
+20. `binja/00443730-spawn_track_parcel.txt`
+21. `binja/reports/track-parcel-runtime.txt`
+22. `ida/00404cf0-update_row_event_display.c`
+23. `ida/00405040-register_parcel_delivery.c`
+24. `ida/00404830-flush_row_event_display.c`
+25. `ida/00408860-initialize_track_parcel_runtime.c`
+26. `ida/00443160-initialize_track_parcel_slots.c`
+27. `ida/00443190-allocate_track_parcel_slot.c`
+28. `ida/004431d0-update_track_parcel.c`
+29. `ida/00443730-spawn_track_parcel.c`
+30. `ida/004092f0-update_galaxy.c`
+31. `ida/00416370-update_challenge_setup_screen.c`
+32. `ida/00435df0-set_subgame_features.c`
+33. `ida/00435eb0-populate_runtime_track_cells_from_segments.c`
+34. `ida/00437eb0-build_subgame_level.c`
+35. `ida/00438b90-update_subgame.c`
+36. `binja/reports/player-anchor-offsets-6208-6280.txt`
+37. `binja/xrefs/field-Player.post_follow_value_b.txt`
+38. `binja/reports/post-follow-value-b.txt`
+39. `binja/xrefs/play_movement_state_sound.txt`
+40. `binja/reports/fall-gate-nearby-helpers.txt`

@@ -53,7 +53,7 @@ Cross-reference of unstripped Android (`libsnailmail.so`) symbols against the st
 | `cRCompletion::Init` | 0x404920 | `initialize_completion_screen` | — | EXISTS |
 | `cRCompletion::AI` | 0x4067e0 | `update_completion_screen` | — | EXISTS |
 | `cRCompletion::UnInit` | 0x406060 | `destroy_completion_screen` | — | EXISTS |
-| `cRCompletion::RegisterParcel` | 0x405040 | `sub_405040` | `register_parcel_delivery` | ScoreAdd type 4, bonus type 5, parcel counter |
+| `cRCompletion::RegisterParcel` | 0x405040 | `register_parcel_delivery` | — | ScoreAdd type 4, bonus type 5, parcel counter; Windows caller is the gameplay row-event display controller rather than the completion screen |
 | `cRCutScene::Init` | 0x4428d0 | `sub_4428d0` | `initialize_cutscene` | Camera matrix copy, constants -0.785f/6.283f/1.4f |
 | `cRCutScene::AI` | 0x4466d0 | `sub_4466d0` | `update_cutscene` | 12-case switch, death/completion voice dispatch |
 | `cRClickStart::Init` | 0x442170 | `sub_442170` | `initialize_click_start` | "Click to Start", linked list add, state=2 |
@@ -265,7 +265,7 @@ The Android binary reveals the original class architecture:
 - **`cRWarning`** = the damage warning overlay. The `sub_446e80`–`sub_446f80` cluster near the invincible controller is the warning system, not part of invincibility.
 - **`cRNuke`** = the explode-ring clearance effect. The real Windows match is the `sub_447110` / `sub_4471e0` / `sub_4470e0` cluster, not the earlier jet-particle guess at `sub_43a5b0` / `sub_43a690`.
 - **`cRInvincible`** = the invincibility shell controller. Separate from the warning system — both use similar sprite patterns but track different state.
-- **`cRCompletion::RegisterParcel`** = `sub_405040`. This is the parcel delivery scoring function that awards ScoreAdd type 4 (100 pts) per delivery and optionally type 5 (custom bonus) when all parcels delivered.
+- **`cRCompletion::RegisterParcel`** = `register_parcel_delivery`. This is the parcel delivery scoring function that awards ScoreAdd type 4 (100 pts) per delivery and optionally type 5 (custom bonus) when all parcels delivered, but in Windows it is owned by the gameplay row-event display controller rather than the completion screen.
 - **`cRCutScene`** = `sub_4428d0` (Init) and `sub_4466d0` (AI). The 12-case cutscene state machine handles both death and completion camera sequences.
 - **`cRClickStart`** = `sub_442170`/`sub_442290`. The tutorial "Click to Start" prompt controller.
 - **`cRContinue`** has no standalone Windows equivalent — its functionality is folded into `update_frontend_state_machine` states 0x1a–0x1c.

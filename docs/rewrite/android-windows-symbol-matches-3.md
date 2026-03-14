@@ -256,9 +256,10 @@ Additional object infrastructure found during matching:
 | `cRTwinkleManager::AI` | 0x404030 | `sub_404030` | `update_twinkle_manager` | NEW — iterates twinkles at stride 0xc |
 | `cRInputOK::Init` | 0x403560 | `sub_403560` | `initialize_input_ok` | NEW — "OK" widget |
 | `cRInputOK::AI` | 0x4034d0 | `sub_4034d0` | `update_input_ok` | NEW — flag 4/8, position calc |
-| `cRJetPack::AI` | 0x4431d0 | `sub_4431d0` | `update_jetpack_visual` | NEW — Sin×0.3f oscillation |
 
 ---
+
+The earlier `cRJetPack::AI -> 0x4431d0` hypothesis is rejected. Live Windows decompile now shows that body is the parcel-slot AI (`update_track_parcel`) and ends in `register_parcel_delivery`.
 
 ## cRCheat
 

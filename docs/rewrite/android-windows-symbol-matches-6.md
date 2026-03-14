@@ -28,7 +28,7 @@ Android exposes a small global random-helper family that lines up with the remai
   - `spawn_slug_hazard`
   - `firework_shoot`
   - `release_snail_weapons`
-  - `update_jetpack_visual`
+  - `update_track_parcel`
 - `set_math_random_seed` currently shows two clear Windows callsites:
   - `update_click_start`, seeded from `Game + 0x1047190`
   - `populate_runtime_track_cells_from_segments`, seeded from the current runtime build context
@@ -43,4 +43,3 @@ Android exposes a small global random-helper family that lines up with the remai
 - The remaining unnamed helpers in this strip are now mostly local-only utilities:
   - the fixed-point conversion pair at `0x44c890` / `0x44c8b0`
   - the scale-matrix helper at `0x44cde0` and its thin wrapper at `0x44c880`
-
