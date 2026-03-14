@@ -85,12 +85,40 @@
       "name": "border_input_text_init"
     },
     {
+      "address": "0x4034d0",
+      "name": "update_input_ok"
+    },
+    {
+      "address": "0x403560",
+      "name": "initialize_input_ok"
+    },
+    {
       "address": "0x4035b0",
       "name": "border_input_text"
     },
     {
+      "address": "0x403be0",
+      "name": "reset_tooltip"
+    },
+    {
+      "address": "0x403c20",
+      "name": "update_tooltip"
+    },
+    {
       "address": "0x403fc0",
       "name": "update_border_manager"
+    },
+    {
+      "address": "0x404030",
+      "name": "update_twinkle_manager"
+    },
+    {
+      "address": "0x404070",
+      "name": "draw_twinkle"
+    },
+    {
+      "address": "0x404080",
+      "name": "update_twinkle"
     },
     {
       "address": "0x404540",
@@ -103,6 +131,18 @@
     {
       "address": "0x404730",
       "name": "set_border_justify_centre"
+    },
+    {
+      "address": "0x404740",
+      "name": "initialize_cheat"
+    },
+    {
+      "address": "0x404750",
+      "name": "update_cheat"
+    },
+    {
+      "address": "0x4047d0",
+      "name": "match_cheat_text"
     },
     {
       "address": "0x404830",
@@ -216,12 +256,36 @@
       "description": "Opens one selected Star Map route card, loads its preview label and widget stack, and toggles the replay-only controls for locked or cleared routes. Cross-port Android and iOS symbols match this helper to `cRGalaxy::Open(int)`."
     },
     {
+      "address": "0x40a0c0",
+      "name": "galaxy_border_bound"
+    },
+    {
+      "address": "0x40a1b0",
+      "name": "update_overlay"
+    },
+    {
+      "address": "0x40a240",
+      "name": "initialize_overlay"
+    },
+    {
       "address": "0x40a2a0",
       "name": "run_frame_update"
     },
     {
       "address": "0x40a490",
       "name": "render_game_frame"
+    },
+    {
+      "address": "0x40aa50",
+      "name": "initialize_input"
+    },
+    {
+      "address": "0x40aa80",
+      "name": "update_input"
+    },
+    {
+      "address": "0x40aab0",
+      "name": "update_game_input"
     },
     {
       "address": "0x40ab00",
@@ -338,6 +402,10 @@
     {
       "address": "0x415c60",
       "name": "spawn_golb_smoke"
+    },
+    {
+      "address": "0x415e20",
+      "name": "initialize_enemy_manager"
     },
     {
       "address": "0x415e30",
@@ -471,6 +539,10 @@
       "description": "Advances the normalized loader percentage, draws the loading background, and clips the LoadingBarOn fill quad into the recovered 192x289 to 448x321 window."
     },
     {
+      "address": "0x419110",
+      "name": "open_logo"
+    },
+    {
       "address": "0x4191e0",
       "name": "initialize_intro_screen",
       "description": "Loads SpaceRed plus INTROTEXT.OGG, parses the intro or credits script into centered text and image renderables on the tilted crawl plane, and derives the shared scroll delta from Duration. Cross-port Android and iOS symbols match this helper to `cRIntro::Init()`."
@@ -486,6 +558,10 @@
       "description": "Advances the normalized intro or credits crawl, tears down its renderables once the scroll completes, and exits early on skip input. Cross-port Android and iOS symbols match this helper to `cRIntro::AI()`."
     },
     {
+      "address": "0x419a90",
+      "name": "update_logo_row"
+    },
+    {
       "address": "0x419b30",
       "name": "destroy_main_menu",
       "description": "Clears the active menu shell-font scene and tears down the current main-menu widget set before control leaves the front-end. Cross-port Android and iOS symbols match the owning flow to `cRMainMenu::UnInit()`."
@@ -499,6 +575,14 @@
       "address": "0x419e00",
       "name": "update_main_menu",
       "description": "Handles main-menu selection, front-end screen transitions, and the tutorial launch handoff. Cross-port Android and iOS symbols match this helper to `cRMainMenu::AI()`."
+    },
+    {
+      "address": "0x419f50",
+      "name": "initialize_duplicate_vertices"
+    },
+    {
+      "address": "0x419f80",
+      "name": "clean_duplicate_vertices"
     },
     {
       "address": "0x41aa50",
@@ -690,6 +774,90 @@
       "name": "save_config_file"
     },
     {
+      "address": "0x42f5c0",
+      "name": "is_bod_after_sprites"
+    },
+    {
+      "address": "0x42f5d0",
+      "name": "set_bod_object"
+    },
+    {
+      "address": "0x42f6f0",
+      "name": "initialize_object"
+    },
+    {
+      "address": "0x42f710",
+      "name": "request_object_vertices"
+    },
+    {
+      "address": "0x42f790",
+      "name": "copy_object_vertices"
+    },
+    {
+      "address": "0x42f7d0",
+      "name": "request_object_vertices_copy"
+    },
+    {
+      "address": "0x42f800",
+      "name": "request_object_facequad_normals"
+    },
+    {
+      "address": "0x42f850",
+      "name": "request_object_vertex_colours"
+    },
+    {
+      "address": "0x42f8c0",
+      "name": "request_object_facequads"
+    },
+    {
+      "address": "0x42f930",
+      "name": "request_object_texture_groups"
+    },
+    {
+      "address": "0x42f990",
+      "name": "initialize_object_list"
+    },
+    {
+      "address": "0x42f9e0",
+      "name": "build_all_objects"
+    },
+    {
+      "address": "0x42fa80",
+      "name": "request_object_toon_buffers"
+    },
+    {
+      "address": "0x42fad0",
+      "name": "add_object_to_list"
+    },
+    {
+      "address": "0x42fb10",
+      "name": "calc_object_bounding_box"
+    },
+    {
+      "address": "0x42fcb0",
+      "name": "calc_object_facequad_normals"
+    },
+    {
+      "address": "0x430230",
+      "name": "calc_object_facequad_normals_simple"
+    },
+    {
+      "address": "0x4303f0",
+      "name": "calc_object_texture_groups"
+    },
+    {
+      "address": "0x430570",
+      "name": "request_object_edges"
+    },
+    {
+      "address": "0x4308b0",
+      "name": "calc_object_edges"
+    },
+    {
+      "address": "0x430a70",
+      "name": "request_object_animation"
+    },
+    {
       "address": "0x430e40",
       "name": "initialize_game_data_archive"
     },
@@ -728,9 +896,17 @@
       "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
     },
     {
+      "address": "0x433fc0",
+      "name": "open_thanks_screen"
+    },
+    {
       "address": "0x433fd0",
       "name": "initialize_thanks_for_playing_screen",
       "description": "Initializes the post-run Thanks For Playing owner, including the Splash backdrop, INTROTEXT.OGG, and the first shell-font message widget before state 30 begins updating it."
+    },
+    {
+      "address": "0x4340c0",
+      "name": "uninit_thanks_screen"
     },
     {
       "address": "0x4340f0",
@@ -738,9 +914,33 @@
       "description": "Runs the post-run Thanks For Playing message sequence, including the Challenge Mode and Time Trial prompts, Click to Continue, and the fade-out handoff back through the saved front-end return state."
     },
     {
+      "address": "0x434270",
+      "name": "destroy_star_field"
+    },
+    {
+      "address": "0x4342c0",
+      "name": "open_star_field"
+    },
+    {
+      "address": "0x434310",
+      "name": "initialize_star_field"
+    },
+    {
       "address": "0x434670",
-      "name": "reset_frontend_widget_group_state",
-      "description": "Clears bit 0x40 on every registered widget in one front-end screen controller before a new owner initializes or resumes."
+      "name": "hide_star_field",
+      "description": "Clears bit 0x40 on every live star-field sprite, hiding the background star pass without destroying its controller state."
+    },
+    {
+      "address": "0x4346b0",
+      "name": "unhide_star_field"
+    },
+    {
+      "address": "0x4346f0",
+      "name": "update_star_field"
+    },
+    {
+      "address": "0x434800",
+      "name": "update_star_positions"
     },
     {
       "address": "0x434b60",
@@ -800,6 +1000,10 @@
       "address": "0x4374b0",
       "name": "initialize_subgame",
       "description": "Initializes the active gameplay subgame state, including the continuation selector at `+0x1270fc8`, per-mode HUD widgets, replay-backed startup, and the first galaxy, challenge-setup, or gameplay handoff. Cross-port Android and iOS symbols match this helper to `cRSubGame::Init()`."
+    },
+    {
+      "address": "0x437c40",
+      "name": "update_progress_bar"
     },
     {
       "address": "0x437de0",
@@ -1138,6 +1342,10 @@
       "description": "Accumulates one generic timer record from a 60 Hz-scaled delta, rolls the frame counter at 60, and refreshes the derived hundredths and thousandths fields from the fractional remainder."
     },
     {
+      "address": "0x441d40",
+      "name": "update_banner"
+    },
+    {
       "address": "0x441fa0",
       "name": "initialize_subgoldy_resurrect",
       "description": "Seeds Goldy's resurrect state machine by storing the respawn-or-final-loss selector, enabling the resurrect-active flag, and resetting the shared fade timer. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::RessurectInit(int)`."
@@ -1161,6 +1369,22 @@
       "name": "update_click_start"
     },
     {
+      "address": "0x442500",
+      "name": "initialize_vapour"
+    },
+    {
+      "address": "0x442540",
+      "name": "reset_vapour"
+    },
+    {
+      "address": "0x442560",
+      "name": "add_vapour_point"
+    },
+    {
+      "address": "0x4425f0",
+      "name": "update_vapour"
+    },
+    {
       "address": "0x4428d0",
       "name": "initialize_cutscene",
       "description": "Seeds and polls the player-side cutscene controller from the live player transform, cached effect anchors, and completion handoff state; Windows `update_subgoldy` calls it every tick, and it dispatches `update_cutscene` whenever the controller is active. Cross-port Android symbols still match the helper family to `cRCutScene::Init()`."
@@ -1168,6 +1392,14 @@
     {
       "address": "0x442e40",
       "name": "release_snail_weapons"
+    },
+    {
+      "address": "0x443070",
+      "name": "update_row_model"
+    },
+    {
+      "address": "0x4431d0",
+      "name": "update_jetpack_visual"
     },
     {
       "address": "0x443650",
@@ -1195,13 +1427,33 @@
       "description": "Either queues one cutscene or presentation animation id onto the player-side channel or begins it immediately, resetting the live slot state when the immediate path wins."
     },
     {
+      "address": "0x4446e0",
+      "name": "set_weapon_animation"
+    },
+    {
+      "address": "0x4447c0",
+      "name": "initialize_anim_manager"
+    },
+    {
       "address": "0x4447d0",
-      "name": "update_cutscene_animation_slot",
-      "description": "Advances one queued cutscene or presentation animation slot, applying its loop or ping-pong flags and starting the next queued animation when the current slot finishes."
+      "name": "update_anim_manager",
+      "description": "Advances one queued presentation animation channel, applying loop, bounce, or clamp flags and starting the next queued entry when the current one finishes."
     },
     {
       "address": "0x444960",
       "name": "initialize_score_stats"
+    },
+    {
+      "address": "0x444980",
+      "name": "start_squidge_y"
+    },
+    {
+      "address": "0x4449a0",
+      "name": "start_squidge_z"
+    },
+    {
+      "address": "0x4449c0",
+      "name": "update_squidge"
     },
     {
       "address": "0x444cf0",
@@ -1435,6 +1687,18 @@
       "name": "initialize_keyboard_input"
     },
     {
+      "address": "0x44bc50",
+      "name": "update_mouse"
+    },
+    {
+      "address": "0x44c060",
+      "name": "click_mouse_screen"
+    },
+    {
+      "address": "0x44c100",
+      "name": "convert_mouse_screen_xy"
+    },
+    {
       "address": "0x44c310",
       "name": "initialize_mouse_input"
     },
@@ -1473,8 +1737,44 @@
       "description": "Thin gameplay sound wrapper that forwards one effect id into the shared audio backend with the default volume, pitch, and pan parameters."
     },
     {
+      "address": "0x44de90",
+      "name": "initialize_sprite"
+    },
+    {
+      "address": "0x44df30",
+      "name": "update_sprite"
+    },
+    {
       "address": "0x44e0f0",
       "name": "register_sprite_texture"
+    },
+    {
+      "address": "0x44e160",
+      "name": "initialize_sprite_manager"
+    },
+    {
+      "address": "0x44e200",
+      "name": "kill_sprite"
+    },
+    {
+      "address": "0x44e2a0",
+      "name": "allocate_sprite"
+    },
+    {
+      "address": "0x44e3d0",
+      "name": "kill_game_sprites"
+    },
+    {
+      "address": "0x44e550",
+      "name": "set_sprite_texture_ref"
+    },
+    {
+      "address": "0x44e570",
+      "name": "get_sprite_texture"
+    },
+    {
+      "address": "0x44e580",
+      "name": "get_sprite_texture_ref"
     },
     {
       "address": "0x44e5a0",
@@ -1484,6 +1784,10 @@
       "address": "0x44e600",
       "name": "find_case_insensitive_substring",
       "description": "Parser-side metadata matcher used for case-insensitive, prefix-friendly tag probes."
+    },
+    {
+      "address": "0x44e800",
+      "name": "initialize_texture_list"
     },
     {
       "address": "0x44e810",
