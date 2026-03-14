@@ -164,7 +164,7 @@
     {
       "address": "0x405040",
       "name": "register_parcel_delivery",
-      "description": "Records one delivered parcel on the completion controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives."
+      "description": "Records one delivered parcel on the gameplay row-event display controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives."
     },
     {
       "address": "0x405140",

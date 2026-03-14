@@ -24,6 +24,15 @@ Bundle 15 closes two of bundle 14's highest-value targets outright and narrows t
   `update_galaxy` and `update_challenge_setup_screen` seed the active bit and record pointer, then `set_subgame_features`, `populate_runtime_track_cells_from_segments`, `build_subgame_level`, and `update_subgame` consume them to override course metadata and rebuild routing.
   Exact-offset HLIL and raw-disassembly sweeps still do not recover any `selected_level_record_persistent = 1` writer.
 
+* **`game + 0x12727d8` is not another loose subgame flag block.**
+  It is the gameplay `row_event_display` controller.
+  The old `+0x12727ec` dword is `row_event_display.state`, and `flush_row_event_display`, `update_row_event_display`, and `register_parcel_delivery` all line up cleanly once the controller is typed.
+  That also corrects one earlier mismatch: `register_parcel_delivery` updates the row-event display controller, not the completion screen.
+
+* **The old `game + 0x12727f0` byte is now narrowed to one unresolved controller gate.**
+  It lives inside `row_event_display + 0x18`, not beside it as a separate ownership flag.
+  `update_subgoldy` still consumes it with current-cell flag `0x40`, and `update_row_event_display` clears it during the `state == 3` leg, but the exact gameplay name is still not clean enough to freeze.
+
 * **`Player.post_follow_value_b` still has no recovered consumer.**
   Typed BN xrefs still show only the known writes in `initialize_subgoldy_fall_state`.
   The full HLIL reexport did not add any new player-side read.
@@ -44,8 +53,9 @@ Bundle 15 confirms three things more firmly:
 
 1. Failure handoff still lives in the player cutscene/death selector.
 2. The `0xff25d0 / 0xff25d1 / 0xff25d4` cluster is a selected-level-record override path, not tutorial-only ownership.
-3. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
-4. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
+3. `game + 0x12727d8` is a gameplay row-event display controller, and the old `+0x12727ec/+0x12727f0` pair belongs to that controller rather than standing alone as subgame flags.
+4. The nearby `0x4471xx` helper cluster is a collision ring effect system, not part of the fall gate.
+5. The `-6 / -7` thresholds are in-fall attachment-exit gates, not death-resolution timing.
 
 ## Remaining best targets
 
@@ -55,8 +65,11 @@ Bundle 15 confirms three things more firmly:
 2. **The real setter for `selected_level_record_persistent`.**
    The reads are now clear, but the upstream writer still is not.
 
-3. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
+3. **The exact meaning of `row_event_display + 0x18`.**
+   It is no longer a floating `Game` flag, but its real gameplay meaning is still unresolved.
+
+4. **Any untyped/raw consumer of `Player.post_follow_value_b`.**
    Typed BN xrefs came back write-only.
 
-4. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
+5. **A tighter `update_subgoldy` fall slice around `0x43cf25 .. 0x43cfe2`.**
    The broad threshold meaning is now clear, but the remaining question is how those gates interact with the later `progress_timer` branch and the `player + 0x2d8` flag.

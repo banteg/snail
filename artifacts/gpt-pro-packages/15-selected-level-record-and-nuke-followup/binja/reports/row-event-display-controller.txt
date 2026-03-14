@@ -1,0 +1,58 @@
+Row-event display controller mapping
+===================================
+
+New high-confidence controller mapping:
+
+- `game + 0x12727d8` is now typed as `row_event_display`
+- the old loose `game + 0x12727ec` dword is `row_event_display.state`
+- the old loose `game + 0x12727f0` byte is part of the same controller at `row_event_display + 0x18`
+
+Direct evidence:
+
+- `initialize_subgoldy`
+  - clears `game->row_event_display.state`
+- `destroy_subgame`
+  - flushes `game->row_event_display`
+- `update_subgoldy`
+  - flushes `game->row_event_display` on the completion leg
+  - reads `row_event_display.state` and the unresolved `+0x18` byte during the same path
+- `register_parcel_delivery`
+  - increments `delivered_parcel_count`
+  - compares against `parcel_target_count`
+  - awards score tier `4` per parcel
+  - awards score tier `5` from `bonus_score` when the final parcel lands and `bonus_enabled != 0`
+  - sets `state = 3`
+- `update_row_event_display`
+  - consumes `state`, `parcel_target_count`, `bonus_enabled`, `staged_parcel_count`,
+    `delivered_parcel_count`, `progress`, `progress_step`, `bonus_blink_progress`,
+    `bonus_blink_step`, `bonus_score`, and `widget_world_{x,y,z}`
+  - clears the unresolved `+0x18` byte as it transitions out of state `3`
+- `flush_row_event_display`
+  - fast-forwards remaining parcel-score payout until `delivered_parcel_count == parcel_target_count`
+  - destroys the five owned widgets
+  - writes `display_token` back into the global presentation slot
+  - clears `state`
+
+Recovered controller fields:
+
+- `+0x14`: `state`
+- `+0x1c`: `parcel_target_count`
+- `+0x20`: `bonus_enabled`
+- `+0x24`: `staged_parcel_count`
+- `+0x28`: `delivered_parcel_count`
+- `+0x2c`: `progress`
+- `+0x30`: `progress_step`
+- `+0x34`: `widget_world_x`
+- `+0x38`: `widget_world_y`
+- `+0x3c`: `widget_world_z`
+- `+0x40`: `bonus_blink_progress`
+- `+0x44`: `bonus_blink_step`
+- `+0x48`: `bonus_score`
+- `+0x4c`: `display_token`
+
+Still unresolved:
+
+- the byte at `row_event_display + 0x18`:
+  - `update_subgoldy` still consumes it together with current-cell flag `0x40`
+  - `update_row_event_display` clears it during the `state == 3` leg
+  - current evidence is enough to keep it inside the controller, not enough to name it cleanly

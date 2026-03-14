@@ -159,6 +159,8 @@ The current high-confidence `Game` fields are:
   - `50`-slot `GarbageHazardRuntime` array
 - `+0x125e430`: `track_parcels`
   - `50`-slot `TrackParcelRuntime` array
+- `+0x12727d8`: `row_event_display`
+  - inline `RowEventDisplayController`
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`
@@ -183,6 +185,11 @@ Current practical read:
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
+- `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
+  - `initialize_subgoldy` clears `row_event_display.state`
+  - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
+  - `register_parcel_delivery`, `update_row_event_display`, and `flush_row_event_display` recover the controller's parcel-count, bonus, and state fields
+  - the old `game + 0x12727f0` byte now sits inside `row_event_display + 0x18` and remains an unresolved controller gate
 - the main gameplay collision consumers now line up with the spawn helpers:
   - `place_parcels_on_track`, `place_challenge_parcels_on_track`, and `handle_subgoldy_collisions` share `parcel_target_count` and the `track_parcels` array
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
@@ -194,6 +201,34 @@ Current practical read:
 - the same cursor also drives the replay-track reads in that function
 - the scalar at `+0xff25d8` remains separate from `selected_level_record` and should not be merged with the live cursor without more evidence
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
+
+## Row Event Display Controller
+
+The inline controller at `game + 0x12727d8` is now typed as `RowEventDisplayController`.
+
+High-confidence current fields:
+
+- `+0x14`: `state`
+- `+0x1c`: `parcel_target_count`
+- `+0x20`: `bonus_enabled`
+- `+0x24`: `staged_parcel_count`
+- `+0x28`: `delivered_parcel_count`
+- `+0x2c`: `progress`
+- `+0x30`: `progress_step`
+- `+0x34`: `widget_world_x`
+- `+0x38`: `widget_world_y`
+- `+0x3c`: `widget_world_z`
+- `+0x40`: `bonus_blink_progress`
+- `+0x44`: `bonus_blink_step`
+- `+0x48`: `bonus_score`
+- `+0x4c`: `display_token`
+
+Current practical read:
+
+- `update_row_event_display` drives the controller state machine and the staged parcel-widget reveal path
+- `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and sets `state = 3`
+- `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and clears `state`
+- the byte at `+0x18` still contains the old `game + 0x12727f0` gate and should stay unnamed until its exact gameplay meaning is recovered
 
 ## Track Parcel Runtime
 
