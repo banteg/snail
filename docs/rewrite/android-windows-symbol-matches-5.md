@@ -74,6 +74,27 @@ These small vector helpers are used under the same camera and attachment math pa
 
 ---
 
+## Trigonometry And Output-Transform Helpers
+
+The same Android math block also exposes the scalar trig wrappers and the copy-returning vector-times-matrix overload that still showed up as unnamed locals on Windows:
+
+| Android Symbol | Windows Addr | Current Name | Proposed Name | Status |
+|---|---|---|---|---|
+| `Cos(float)` | 0x44c980 | `sub_44c980` | `cosine` | NEW -- shared cosine wrapper used by the cameraman, path builders, and matrix rotation helpers |
+| `Sin(float)` | 0x44c9d0 | `sub_44c9d0` | `sine` | NEW -- shared sine wrapper used across the same camera and path math block |
+| `ACos(float)` | 0x44ca00 | `sub_44ca00` | `arccosine` | NEW -- direct arccosine wrapper used by quaternion-to-axis unpacking |
+| `ATan(float, float)` | 0x44ca10 | `sub_44ca10` | `atan2_positive` | NEW -- quadrant-aware two-argument arctangent that wraps into a positive full-turn range |
+| `Sqrt(float)` | 0x44cab0 | `sub_44cab0` | `square_root` | NEW -- scalar square-root wrapper used by vector normalization and quaternion extraction |
+| `tVector::operator*(const tMatrix&) const` | 0x44cac0 | `sub_44cac0` | `multiply_vector_by_matrix_copy` | NEW -- copy-returning affine vector-times-matrix helper, used by body-vertex transforms |
+
+Windows also has one startup-only local helper here:
+
+| Windows Addr | Current Name | Proposed Name | Status |
+|---|---|---|---|
+| 0x44c930 | `sub_44c930` | `initialize_trigonometry_tables` | NEW -- fills the shared sine/cosine lookup tables during startup before gameplay begins |
+
+---
+
 ## Strong Implied Follow-On Names
 
 These were not the main unresolved bundle-12 targets, but the Android call graph now makes them much less ambiguous:
@@ -99,4 +120,5 @@ Android `cRClickStart::AI` writes the player-side startup field from a game-glob
 - The full rotation-interpolation internals are now named too: Windows converts `matrix -> quaternion -> axis-angle -> scaled quaternion -> matrix`, which removes most of the remaining ambiguity around the camera blend path.
 - The vector helper split is clearer too: Windows uses separate affine-transform and rotation-only vector paths, which matters when following attachment frames versus rotating pure direction vectors.
 - The camera-basis build in `set_matrix_z_direction` is now explicit: normalize the target direction with `Normalize(const tVector&)`, then derive the perpendicular axes through the shared cross-product helper.
+- The remaining scalar math in the camera block is now almost entirely explicit too: the blend and basis code is using named `sine`, `cosine`, `arccosine`, `atan2_positive`, and `square_root` wrappers rather than bespoke game-local formulas.
 - The unresolved tip widgets are now confirmed as `cRTip` instances, which means the current port should not borrow behavior from the unrelated `cRToolTip` system.

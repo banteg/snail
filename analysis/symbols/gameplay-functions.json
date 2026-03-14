@@ -1793,6 +1793,41 @@
       "name": "load_object_definition"
     },
     {
+      "address": "0x44c930",
+      "name": "initialize_trigonometry_tables",
+      "description": "Builds the shared cosine and sine lookup tables used by the gameplay math wrappers during startup, then resets the companion random table state."
+    },
+    {
+      "address": "0x44c980",
+      "name": "cosine",
+      "description": "Computes one cosine value through the shared gameplay trigonometry wrapper. Android symbols match this helper to `Cos(float)`."
+    },
+    {
+      "address": "0x44c9d0",
+      "name": "sine",
+      "description": "Computes one sine value through the shared gameplay trigonometry wrapper. Android symbols match this helper to `Sin(float)`."
+    },
+    {
+      "address": "0x44ca00",
+      "name": "arccosine",
+      "description": "Computes the arccosine of one float input. Android symbols match this helper to `ACos(float)`."
+    },
+    {
+      "address": "0x44ca10",
+      "name": "atan2_positive",
+      "description": "Computes a two-argument arctangent with the result wrapped into the positive full-turn range. Android symbols match this helper to `ATan(float, float)`."
+    },
+    {
+      "address": "0x44cab0",
+      "name": "square_root",
+      "description": "Computes the square root of one float input. Android symbols match this helper to `Sqrt(float)`."
+    },
+    {
+      "address": "0x44cac0",
+      "name": "multiply_vector_by_matrix_copy",
+      "description": "Writes an out-of-place affine vector-by-matrix transform into a destination output. Android symbols match this helper to `tVector::operator*(const tMatrix&) const`."
+    },
+    {
       "address": "0x44cb50",
       "name": "dot_vectors",
       "description": "Computes the 3D dot product of two vectors. Android symbols match this helper to the static overload `tVector::Dot(const tVector&, const tVector&)`."
