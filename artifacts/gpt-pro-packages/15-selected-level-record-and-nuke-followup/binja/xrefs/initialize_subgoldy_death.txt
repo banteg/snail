@@ -1,8 +1,0 @@
-xrefs to 0x446e30
-
-code refs:
-- 0x43c093 | update_subgoldy
-- 0x446b04 | update_cutscene
-
-data refs:
-- none

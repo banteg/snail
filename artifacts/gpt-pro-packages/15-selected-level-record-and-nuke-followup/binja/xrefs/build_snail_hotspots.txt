@@ -1,7 +1,0 @@
-xrefs to 0x445d50
-
-code refs:
-- 0x40f4df | initialize_game_assets_and_world
-
-data refs:
-- none

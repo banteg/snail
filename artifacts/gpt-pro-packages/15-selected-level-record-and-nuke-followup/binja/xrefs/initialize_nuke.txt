@@ -1,7 +1,0 @@
-xrefs to 0x447110
-
-code refs:
-- 0x4457a4 | handle_subgoldy_collisions
-
-data refs:
-- none
