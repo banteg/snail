@@ -1015,6 +1015,12 @@ const completion_parcel_icon_height: f32 = 64.0;
 const completion_bonus_y: f32 = 302.0;
 const completion_continue_y: f32 = 320.0;
 const completion_continue_y_with_bonus: f32 = 400.0;
+// PORT(verified): `initialize_completion_screen` seeds an owner-local reveal step of `1/24`
+// and starts the bonus plus continue widgets hidden. Stage those UI elements in instead of
+// drawing the whole summary immediately.
+const completion_reveal_step: f32 = 1.0 / 24.0;
+const completion_reveal_bonus_threshold: f32 = 1.0;
+const completion_reveal_continue_threshold: f32 = 2.0;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -1456,6 +1462,7 @@ const AppState = struct {
     keyboard_frontend_focus_visible: bool = false,
     pending_frontend_activation: ?FrontendQueuedActivation = null,
     completion_continue_button_state: frontend_widget.TextButtonState = .{},
+    completion_screen_reveal_progress: f32 = 0.0,
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
     options_sound_display_value: f32 = 0.0,
@@ -2427,7 +2434,7 @@ const AppState = struct {
         const completion_active = self.game_phase == .completion_screen and !self.frontend_transition.blocksInput();
         self.completion_continue_button_state.stepFor(
             .menu_button,
-            completion_active and self.frontendButtonHot(.completion_continue, true),
+            completion_active and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
         );
 
         const exit_prompt_active = self.game_phase == .exit_prompt and !self.frontend_transition.blocksInput();
@@ -2485,7 +2492,7 @@ const AppState = struct {
         }
         self.completion_continue_button_state.snapFor(
             .menu_button,
-            self.game_phase == .completion_screen and self.frontendButtonHot(.completion_continue, true),
+            self.game_phase == .completion_screen and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
         );
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
@@ -2855,6 +2862,10 @@ const AppState = struct {
             self.setFrontendHoverTarget(null);
             return;
         };
+        if (!self.completionContinueVisible()) {
+            self.setFrontendHoverTarget(null);
+            return;
+        }
         const local_mouse = self.currentFrontendMouseLocal() orelse {
             self.setFrontendHoverTarget(null);
             return;
@@ -2933,6 +2944,7 @@ const AppState = struct {
         }
 
         self.updateFrontendWidgetAnimations();
+        self.stepCompletionScreenReveal();
 
         if (self.game_phase == .boot) {
             if (try self.advanceBootTask()) {
@@ -3266,7 +3278,7 @@ const AppState = struct {
                 .pause_menu => try self.resumeFromPauseMenu(),
                 .route_map_menu => try self.enterGamePhase(.main_menu),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
-                .completion_screen => try self.continueCompletionScreen(),
+                .completion_screen => if (self.completionContinueVisible()) try self.continueCompletionScreen(),
             }
             return;
         }
@@ -3420,7 +3432,7 @@ const AppState = struct {
             },
             .completion_screen => {
                 self.updateCompletionScreenMouseSelection();
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                if (self.completionContinueVisible() and (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space))) {
                     self.noteFrontendKeyboardNavigation();
                     self.queueFrontendActivation(.{ .completion_screen = .continue_flow });
                 }
@@ -4177,6 +4189,35 @@ const AppState = struct {
         try self.syncActiveLevelSegment(false);
     }
 
+    fn resetCompletionScreenReveal(self: *AppState) void {
+        const result = self.pending_run_result orelse {
+            self.completion_screen_reveal_progress = 0.0;
+            return;
+        };
+        self.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else completionRevealTarget(result);
+    }
+
+    fn stepCompletionScreenReveal(self: *AppState) void {
+        if (self.game_phase != .completion_screen) return;
+        const result = self.pending_run_result orelse return;
+        const target = completionRevealTarget(result);
+        if (self.completion_screen_reveal_progress >= target) return;
+        self.completion_screen_reveal_progress = std.math.clamp(
+            self.completion_screen_reveal_progress + completion_reveal_step,
+            0.0,
+            target,
+        );
+    }
+
+    fn completionBonusVisible(self: *const AppState, result: PendingRunResult) bool {
+        return completionBonusVisibleAtProgress(result, self.completion_screen_reveal_progress);
+    }
+
+    fn completionContinueVisible(self: *const AppState) bool {
+        const result = self.pending_run_result orelse return false;
+        return completionContinueVisibleAtProgress(result, self.completion_screen_reveal_progress);
+    }
+
     fn commitPendingRunResultIfNeeded(self: *AppState) !void {
         const result = self.pending_run_result orelse return;
         if (result.persistence == .none) return;
@@ -4578,6 +4619,7 @@ const AppState = struct {
                 }
             },
             .completion_screen => {
+                self.resetCompletionScreenReveal();
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
@@ -6974,11 +7016,30 @@ fn completionHasBonusLine(result: PendingRunResult) bool {
     return result.outcome == .completed and result.score_totals.completion_bonus > 0;
 }
 
+fn completionRevealTarget(result: PendingRunResult) f32 {
+    if (result.outcome != .completed) return completion_reveal_bonus_threshold;
+    return if (completionHasBonusLine(result))
+        completion_reveal_continue_threshold
+    else
+        completion_reveal_bonus_threshold;
+}
+
+fn completionBonusVisibleAtProgress(result: PendingRunResult, progress: f32) bool {
+    return completionHasBonusLine(result) and progress >= completion_reveal_bonus_threshold;
+}
+
+fn completionContinueVisibleAtProgress(result: PendingRunResult, progress: f32) bool {
+    return progress >= if (completionHasBonusLine(result))
+        completion_reveal_continue_threshold
+    else
+        completion_reveal_bonus_threshold;
+}
+
 fn completionPackageLine(buffer: []u8, result: PendingRunResult) ![]const u8 {
     return if (result.parcel_count == 1)
-        std.fmt.bufPrint(buffer, "1 Package Delivered!", .{})
+        std.fmt.bufPrint(buffer, "1 Package Delivered", .{})
     else
-        std.fmt.bufPrint(buffer, "{d:0>2} Packages Delivered!", .{result.parcel_count});
+        std.fmt.bufPrint(buffer, "{d:0>2} Packages Delivered", .{result.parcel_count});
 }
 
 fn completionBonusLine(buffer: []u8, result: PendingRunResult) !?[]const u8 {
@@ -7085,7 +7146,7 @@ fn resultTitle(result: PendingRunResult) []const u8 {
     return switch (result.outcome) {
         .completed => if (result.mode) |mode|
             switch (mode) {
-                .postal => "Delivery Complete",
+                .postal => "Delivery Complete!",
                 .time_trial => "Route Complete",
                 .challenge => "Challenge Complete",
                 .tutorial => "Tutorial Complete",
@@ -7814,31 +7875,35 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
         drawCompletionParcelIcon(state, layout);
     }
 
-    if (try completionBonusLine(&package_buffer, result)) |bonus_text| {
+    if (state.completionBonusVisible(result)) {
+        if (try completionBonusLine(&package_buffer, result)) |bonus_text| {
+            frontend_widget.drawTextButtonWithOptions(
+                layout,
+                widget_art,
+                &state.ui_font,
+                .menu_button,
+                bonus_text,
+                completionBonusTextRect(&state.ui_font, bonus_text),
+                idle_state,
+                false,
+                completion_text_only,
+            );
+        }
+    }
+
+    if (state.completionContinueVisible()) {
         frontend_widget.drawTextButtonWithOptions(
             layout,
             widget_art,
             &state.ui_font,
             .menu_button,
-            bonus_text,
-            completionBonusTextRect(&state.ui_font, bonus_text),
-            idle_state,
+            "Click to Continue",
+            completionContinueTextRect(&state.ui_font, result),
+            state.completion_continue_button_state,
             false,
             completion_text_only,
         );
     }
-
-    frontend_widget.drawTextButtonWithOptions(
-        layout,
-        widget_art,
-        &state.ui_font,
-        .menu_button,
-        "Click to Continue",
-        completionContinueTextRect(&state.ui_font, result),
-        state.completion_continue_button_state,
-        false,
-        completion_text_only,
-    );
 }
 
 fn drawFailedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: PendingRunResult) !void {
@@ -9440,6 +9505,77 @@ test "failed runs return to the main menu while completions keep mode-specific e
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .postal));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .challenge));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
+}
+
+test "completion reveal stages the bonus line before continue" {
+    const result = PendingRunResult{
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 7,
+        .parcel_target = 7,
+        .score = 50_000,
+        .score_is_partial = false,
+        .score_totals = .{ .completion_bonus = 50_000 },
+        .return_target = .postal_route_map,
+    };
+
+    try std.testing.expect(!completionBonusVisibleAtProgress(result, 0.999));
+    try std.testing.expect(!completionContinueVisibleAtProgress(result, 0.999));
+    try std.testing.expect(completionBonusVisibleAtProgress(result, 1.0));
+    try std.testing.expect(!completionContinueVisibleAtProgress(result, 1.999));
+    try std.testing.expect(completionContinueVisibleAtProgress(result, 2.0));
+}
+
+test "completion reveal skips the bonus stage when no bonus line exists" {
+    const result = PendingRunResult{
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 5,
+        .parcel_target = 7,
+        .score = 0,
+        .score_is_partial = true,
+        .return_target = .postal_route_map,
+    };
+
+    try std.testing.expect(!completionBonusVisibleAtProgress(result, 1.0));
+    try std.testing.expect(!completionContinueVisibleAtProgress(result, 0.999));
+    try std.testing.expect(completionContinueVisibleAtProgress(result, 1.0));
+}
+
+test "postal completion copy matches the recovered widget strings" {
+    var buffer: [64]u8 = undefined;
+    try std.testing.expectEqualStrings("Delivery Complete!", resultTitle(.{
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 1,
+        .parcel_target = 1,
+        .score = 0,
+        .score_is_partial = false,
+        .return_target = .postal_route_map,
+    }));
+    try std.testing.expectEqualStrings("1 Package Delivered", try completionPackageLine(&buffer, .{
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 1,
+        .parcel_target = 1,
+        .score = 0,
+        .score_is_partial = false,
+        .return_target = .postal_route_map,
+    }));
+    try std.testing.expectEqualStrings("07 Packages Delivered", try completionPackageLine(&buffer, .{
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 7,
+        .parcel_target = 7,
+        .score = 0,
+        .score_is_partial = false,
+        .return_target = .postal_route_map,
+    }));
 }
 
 test "elapsed millis format as mm:ss.cc" {
