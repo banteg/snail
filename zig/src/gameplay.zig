@@ -1460,7 +1460,9 @@ pub const Runner = struct {
     fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const sample = self.sampleRow(preview, global_row) orelse return;
 
-        if (self.movement_mode != .attachment) {
+        if (self.movement_mode != .attachment and
+            rowHasRuntimeGameplayCellKind(preview, global_row, .attachment_entry))
+        {
             if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
                 if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
                     self.beginInstalledAttachmentFollow(preview, built, entry);
@@ -3409,6 +3411,19 @@ fn rowHasAnyFloor(preview: *const track.LoadedLevelPreview, global_row: usize) b
     return false;
 }
 
+fn rowHasRuntimeGameplayCellKind(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    kind: track.GameplayCellKind,
+) bool {
+    if (global_row >= preview.total_rows) return false;
+    for (0..preview.max_width) |lane| {
+        const tile_type = preview.runtimeTileAt(global_row, lane) orelse continue;
+        if (track.runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags) == kind) return true;
+    }
+    return false;
+}
+
 fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPreview, target: RowTarget) void {
     std.debug.assert(target.row > 0);
     runner.reset(preview);
@@ -4741,6 +4756,28 @@ test "installed attachment entry only begins on the source row" {
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+}
+
+test "installed attachment probes stay probe-only even when an installed row exists" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const row_tile_base = target.row * fixture.preview.max_width;
+    for (0..fixture.preview.max_width) |lane| {
+        const tile_index = row_tile_base + lane;
+        if (fixture.preview.runtime_tiles[tile_index] == 0x1e) {
+            fixture.preview.runtime_tiles[tile_index] = 0x1d;
+        }
+    }
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+    try std.testing.expectEqual(RecentEvent.attachment_probe, runner.recent_event);
 }
 
 test "halfpipe attachment tilts world up with lateral drift" {
