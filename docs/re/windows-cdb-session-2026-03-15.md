@@ -947,3 +947,26 @@ Most useful current conclusion:
 - the camera bug in the Zig port is unlikely to be only "wrong hotspot id"
 - intro, completion, and death all show the cutscene hotspots being synthesized from runtime matrix state
 - the next high-value step is to recover the exact formula inside `build_snail_hotspots` or the source-matrix setup feeding `1604` and `1684`, because that is now the most likely place where the port diverges from Windows
+
+### Intro Source-Matrix Dump
+
+A later clean intro repro was instrumented to dump the full `1604` and `1684` matrices at the first `update_snail_skin` hit after `cutscene.state = 1` had been observed. The useful capture landed at `cutscene.state = 2`, with both hotspot vectors still zero before the rebuild:
+
+- `[intro_update_snail_skin_matrix_dump] subgame=0x0d33b720 player=0x0d338d9c state=2 hotspot17=(0,0,0) hotspot18=(0,0,0)`
+- `1604` matrix:
+  - row 0: `(0x3f7ffffb, 0x3a490fda, 0x00000000, 0x00000000)`
+  - row 1: `(0xba490fda, 0x3f7ffffb, 0x00000000, 0x00000000)`
+  - row 2: `(0x00000000, 0x00000000, 0x3f800000, 0x00000000)`
+  - translation: `(0xba82f25b, 0x410216a6, 0x40800000)`
+- `1684` matrix:
+  - row 0: `(0x3f800000, 0x00000000, 0x00000000, 0x00000000)`
+  - row 1: `(0x00000000, 0x3f800000, 0x00000000, 0x00000000)`
+  - row 2: `(0x00000000, 0x00000000, 0x3f800000, 0x00000000)`
+  - translation: `(0x00000000, 0x41020c33, 0x40800000)`
+
+Practical read from that matrix dump:
+
+- `1684` is effectively an identity-orientation source with only a world translation
+- `1604` is almost the same translation but with a tiny planar rotation and a very small X offset
+- so the intro hotspot rebuild is not combining two dramatically different source frames at this point; it is operating on two nearly coincident sources, one of which already carries a small rotation or local offset
+- this strengthens the current read that the port bug is likely in the exact hotspot-construction math or source-matrix preparation, not in broad cutscene-state selection
