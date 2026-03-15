@@ -2531,12 +2531,15 @@ pub const Runner = struct {
 
     fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
         if (preview.total_rows == 0) return false;
-        const last_row = preview.total_rows - 1;
-        return self.runtime_track_index >= last_row and self.movement_progress >= 0.999;
+        // Windows arms completion from a continuous `player.z >= course_end_threshold`
+        // check in `update_subgoldy`, not from "end of the final row" progress.
+        const last_row = @as(f32, @floatFromInt(preview.total_rows - 1));
+        return self.row_position >= last_row;
     }
 
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.attachment_exit_pending) return;
+        if (self.movement_mode == .attachment and self.attachment_follow.active) return;
         if (!self.routeEndReached(preview)) return;
         self.beginCompletionCutscene();
     }
@@ -4287,13 +4290,53 @@ test "runner completion reaches a handoff after the local cutscene" {
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
+test "completion handoff arms at the final row threshold" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.01;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+
+    try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(fixture.preview.total_rows - 1)));
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+}
+
+test "completion does not arm while attachment follow is still active at route end" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    fixture.preview.total_rows = built.row.global_row + built.template.sample_count + 1;
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "START";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = @as(f32, @floatFromInt(built.template.sample_count)) - 0.5,
+    };
+    runner.row_position = @as(f32, @floatFromInt(fixture.preview.total_rows - 1)) + 0.01;
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+}
+
 test "route-end completion waits for attachment exit handoff to clear" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.999;
+    runner.movement_progress = 0.01;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.attachment_exit_pending = true;
