@@ -14,6 +14,7 @@ const compact_record_replay_level_index_offset = 0x2c;
 const compact_record_replay_mode_id_offset = 0x30;
 const compact_record_runtime_build_flags_offset = 0x38;
 const compact_record_replay_speed_scalar_offset = 0x48;
+const compact_record_challenge_speed_value_offset = 0x4c;
 const compact_record_challenge_difficulty_value_offset = 0x50;
 const compact_record_challenge_difficulty_scalar_offset = 0x54;
 const compact_record_runtime_build_seed_offset = 0x70;
@@ -41,6 +42,7 @@ pub const Entry = struct {
     score: u32 = 0,
     replay_level_index: u32 = 0,
     replay_mode_id: u32 = 0,
+    challenge_speed_value: u32 = 0,
     runtime_build_flags: u32 = 0,
     replay_speed_scalar: f32 = 0.0,
     challenge_difficulty_value: u32 = 0,
@@ -147,6 +149,7 @@ pub const Tables = struct {
             .score = incoming.score,
             .replay_level_index = incoming.replay_level_index,
             .replay_mode_id = incoming.replay_mode_id,
+            .challenge_speed_value = incoming.challenge_speed_value,
             .runtime_build_flags = incoming.runtime_build_flags,
             .replay_speed_scalar = incoming.replay_speed_scalar,
             .challenge_difficulty_value = incoming.challenge_difficulty_value,
@@ -177,6 +180,7 @@ pub const Tables = struct {
                 current.score = incoming.score;
                 current.replay_level_index = incoming.replay_level_index;
                 current.replay_mode_id = incoming.replay_mode_id;
+                current.challenge_speed_value = incoming.challenge_speed_value;
                 current.runtime_build_flags = incoming.runtime_build_flags;
                 current.replay_speed_scalar = incoming.replay_speed_scalar;
                 current.challenge_difficulty_value = incoming.challenge_difficulty_value;
@@ -287,6 +291,7 @@ fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []c
     entry.score = score;
     entry.replay_level_index = readU32(record, compact_record_replay_level_index_offset);
     entry.replay_mode_id = readU32(record, compact_record_replay_mode_id_offset);
+    entry.challenge_speed_value = readU32(record, compact_record_challenge_speed_value_offset);
     entry.runtime_build_flags = readU32(record, compact_record_runtime_build_flags_offset);
     entry.replay_speed_scalar = @bitCast(readU32(record, compact_record_replay_speed_scalar_offset));
     entry.challenge_difficulty_value = readU32(record, compact_record_challenge_difficulty_value_offset);
@@ -358,6 +363,7 @@ fn saveBankFile(
         std.mem.writeInt(u32, owned_record[compact_record_score_offset .. compact_record_score_offset + 4], entry.score, .little);
         std.mem.writeInt(u32, owned_record[compact_record_replay_level_index_offset .. compact_record_replay_level_index_offset + 4], entry.replay_level_index, .little);
         std.mem.writeInt(u32, owned_record[compact_record_replay_mode_id_offset .. compact_record_replay_mode_id_offset + 4], entry.replay_mode_id, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_challenge_speed_value_offset .. compact_record_challenge_speed_value_offset + 4], entry.challenge_speed_value, .little);
         std.mem.writeInt(u32, owned_record[compact_record_runtime_build_flags_offset .. compact_record_runtime_build_flags_offset + 4], entry.runtime_build_flags, .little);
         std.mem.writeInt(u32, owned_record[compact_record_replay_speed_scalar_offset .. compact_record_replay_speed_scalar_offset + 4], @bitCast(entry.replay_speed_scalar), .little);
         std.mem.writeInt(u32, owned_record[compact_record_challenge_difficulty_value_offset .. compact_record_challenge_difficulty_value_offset + 4], entry.challenge_difficulty_value, .little);
@@ -408,6 +414,7 @@ test "parse compact high-score record into recovered bank slots" {
     std.mem.writeInt(u32, payload[0x30..0x34], 4, .little);
     std.mem.writeInt(u32, payload[0x38..0x3c], 0x00f5cfff, .little);
     std.mem.writeInt(u32, payload[0x48..0x4c], @bitCast(@as(f32, 0.56)), .little);
+    std.mem.writeInt(u32, payload[0x4c..0x50], 55, .little);
     std.mem.writeInt(u32, payload[0x50..0x54], 40, .little);
     std.mem.writeInt(u32, payload[0x54..0x58], @bitCast(@as(f32, 0.4)), .little);
     std.mem.writeInt(u32, payload[0x70..0x74], 123, .little);
@@ -426,6 +433,7 @@ test "parse compact high-score record into recovered bank slots" {
     try std.testing.expectEqual(@as(u32, 4242), tables.postal[2].score);
     try std.testing.expectEqual(@as(u32, 17), tables.postal[2].replay_level_index);
     try std.testing.expectEqual(@as(u32, 4), tables.postal[2].replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 55), tables.postal[2].challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0x00f5cfff), tables.postal[2].runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), tables.postal[2].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), tables.postal[2].challenge_difficulty_value);
@@ -554,6 +562,7 @@ test "failed time trial attempt only updates scratch and preserves best route ti
         .score = 2000,
         .replay_level_index = 3,
         .replay_mode_id = 4,
+        .challenge_speed_value = 55,
         .runtime_build_flags = 0x00f5cfff,
         .replay_speed_scalar = 0.56,
         .challenge_difficulty_value = 40,
@@ -569,6 +578,7 @@ test "failed time trial attempt only updates scratch and preserves best route ti
     try std.testing.expectEqual(@as(u32, 2000), tables.scratch.score);
     try std.testing.expectEqual(@as(u32, 3), tables.scratch.replay_level_index);
     try std.testing.expectEqual(@as(u32, 4), tables.scratch.replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 55), tables.scratch.challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0x00f5cfff), tables.scratch.runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), tables.scratch.replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), tables.scratch.challenge_difficulty_value);
@@ -596,6 +606,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     tables.postal[0].score = 12345;
     tables.postal[0].replay_level_index = 7;
     tables.postal[0].replay_mode_id = 0;
+    tables.postal[0].challenge_speed_value = 0;
     tables.postal[0].runtime_build_flags = 0x00f5cfff;
     tables.postal[0].replay_speed_scalar = 0.65;
     tables.postal[0].challenge_difficulty_scalar = 0.0;
@@ -606,6 +617,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     tables.challenge[1].score = 777;
     tables.challenge[1].replay_level_index = 9;
     tables.challenge[1].replay_mode_id = 1;
+    tables.challenge[1].challenge_speed_value = 55;
     tables.challenge[1].runtime_build_flags = 0x0000ffff;
     tables.challenge[1].replay_speed_scalar = 0.56;
     tables.challenge[1].challenge_difficulty_value = 40;
@@ -617,6 +629,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     tables.completion[2].score = 54321;
     tables.completion[2].replay_level_index = 3;
     tables.completion[2].replay_mode_id = 4;
+    tables.completion[2].challenge_speed_value = 0;
     tables.completion[2].runtime_build_flags = 0x00001234;
     tables.completion[2].replay_speed_scalar = 0.74;
     tables.completion[2].challenge_difficulty_scalar = 0.0;
@@ -634,6 +647,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectEqual(@as(u32, 12345), loaded.postal[0].score);
     try std.testing.expectEqual(@as(u32, 7), loaded.postal[0].replay_level_index);
     try std.testing.expectEqual(@as(u32, 0), loaded.postal[0].replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 0), loaded.postal[0].challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0x00f5cfff), loaded.postal[0].runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.65), loaded.postal[0].replay_speed_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), loaded.postal[0].challenge_difficulty_scalar, 0.0001);
@@ -644,6 +658,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectEqual(@as(u32, 777), loaded.challenge[1].score);
     try std.testing.expectEqual(@as(u32, 9), loaded.challenge[1].replay_level_index);
     try std.testing.expectEqual(@as(u32, 1), loaded.challenge[1].replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 55), loaded.challenge[1].challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0x0000ffff), loaded.challenge[1].runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), loaded.challenge[1].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), loaded.challenge[1].challenge_difficulty_value);
@@ -655,6 +670,7 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectEqual(@as(u32, 54321), loaded.completion[2].score);
     try std.testing.expectEqual(@as(u32, 3), loaded.completion[2].replay_level_index);
     try std.testing.expectEqual(@as(u32, 4), loaded.completion[2].replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 0), loaded.completion[2].challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0x00001234), loaded.completion[2].runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.74), loaded.completion[2].replay_speed_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), loaded.completion[2].challenge_difficulty_scalar, 0.0001);
@@ -682,6 +698,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     std.mem.writeInt(u32, payload[0x30..0x34], 1, .little);
     std.mem.writeInt(u32, payload[0x38..0x3c], 0x00f5cfff, .little);
     std.mem.writeInt(u32, payload[0x48..0x4c], @bitCast(@as(f32, 0.75)), .little);
+    std.mem.writeInt(u32, payload[0x4c..0x50], 55, .little);
     std.mem.writeInt(u32, payload[0x50..0x54], 40, .little);
     std.mem.writeInt(u32, payload[0x54..0x58], @bitCast(@as(f32, 0.4)), .little);
     std.mem.writeInt(u32, payload[0x70..0x74], 88, .little);
@@ -715,6 +732,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     try std.testing.expectEqual(@as(u32, 5000), readU32(saved_bytes, compact_record_score_offset));
     try std.testing.expectEqual(@as(u32, 11), readU32(saved_bytes, compact_record_replay_level_index_offset));
     try std.testing.expectEqual(@as(u32, 1), readU32(saved_bytes, compact_record_replay_mode_id_offset));
+    try std.testing.expectEqual(@as(u32, 55), readU32(saved_bytes, compact_record_challenge_speed_value_offset));
     try std.testing.expectEqual(@as(u32, 0x00f5cfff), readU32(saved_bytes, compact_record_runtime_build_flags_offset));
     try std.testing.expectEqual(@as(u32, @bitCast(@as(f32, 0.75))), readU32(saved_bytes, compact_record_replay_speed_scalar_offset));
     try std.testing.expectEqual(@as(u32, 40), readU32(saved_bytes, compact_record_challenge_difficulty_value_offset));
@@ -735,6 +753,7 @@ test "time trial improvement replaces zero-valued runtime fields" {
     tables.completion[2].score = 42000;
     tables.completion[2].replay_level_index = 3;
     tables.completion[2].replay_mode_id = 4;
+    tables.completion[2].challenge_speed_value = 55;
     tables.completion[2].runtime_build_flags = 0x00f5cfff;
     tables.completion[2].replay_speed_scalar = 0.74;
     tables.completion[2].challenge_difficulty_value = 40;
@@ -747,6 +766,7 @@ test "time trial improvement replaces zero-valued runtime fields" {
         .score = 41000,
         .replay_level_index = 0,
         .replay_mode_id = 0,
+        .challenge_speed_value = 0,
         .runtime_build_flags = 0,
         .replay_speed_scalar = 0.2,
         .challenge_difficulty_value = 0,
@@ -758,6 +778,7 @@ test "time trial improvement replaces zero-valued runtime fields" {
     try std.testing.expect(improved.improved);
     try std.testing.expectEqual(@as(u32, 0), tables.completion[2].replay_level_index);
     try std.testing.expectEqual(@as(u32, 0), tables.completion[2].replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 0), tables.completion[2].challenge_speed_value);
     try std.testing.expectEqual(@as(u32, 0), tables.completion[2].runtime_build_flags);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), tables.completion[2].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 0), tables.completion[2].challenge_difficulty_value);

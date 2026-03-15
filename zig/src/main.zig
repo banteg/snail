@@ -4074,6 +4074,13 @@ const AppState = struct {
         };
     }
 
+    fn currentRunChallengeSpeedValue(self: *const AppState) u32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => self.runtime_config.challengeReplaySpeedValue(),
+            .postal, .time_trial, .tutorial => 0,
+        };
+    }
+
     fn challengeRuntimeHazardScalar(value: u32) f32 {
         return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
     }
@@ -4121,6 +4128,7 @@ const AppState = struct {
                 @as(u32, @intCast(@intFromEnum(mode)))
             else
                 0,
+            .challenge_speed_value = self.currentRunChallengeSpeedValue(),
             .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
             .replay_speed_scalar = self.currentRunReplaySpeedScalar(),
             .challenge_difficulty_value = self.currentRunChallengeDifficultyValue(),
@@ -9770,6 +9778,7 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
     try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
     try std.testing.expectEqual(@as(u32, 1), entry.replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 100), entry.challenge_speed_value);
     try std.testing.expectApproxEqAbs(@as(f32, 1.1), entry.replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 55), entry.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, track.defaultRuntimeBuildFlags), entry.runtime_build_flags);
