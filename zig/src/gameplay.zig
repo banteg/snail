@@ -443,6 +443,11 @@ const AttachmentFollowState = struct {
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
+const AttachmentExitCarryover = struct {
+    value_a: f32 = 0.0,
+    value_b: f32 = 0.0,
+};
+
 const InstalledAttachmentEntry = struct {
     progress: f32,
     lateral_offset: f32,
@@ -783,6 +788,8 @@ pub const Runner = struct {
     attachment_exit_anchor_z: f32 = 0.0,
     post_follow_value_a: f32 = 0.0,
     post_follow_value_b: f32 = 0.0,
+    attachment_exit_carryover_a: f32 = 0.0,
+    attachment_exit_carryover_b: f32 = 0.0,
     attachment_exit_progress: f32 = 0.0,
     attachment_exit_progress_step: f32 = 0.0,
     attachment_exit_gate_a: bool = false,
@@ -1798,12 +1805,14 @@ pub const Runner = struct {
             self.heading_roll = normalizeRadians(self.heading_roll + delta_roll);
             self.attachment_pre_roll = surface_roll * attachment_pre_roll_scale;
             self.attachment_post_roll = surface_roll;
-            self.attachment_follow.orientation_b = self.attachment_post_roll;
+            const carryover = self.currentAttachmentExitCarryover();
+            self.attachment_follow.orientation_b = carryover.value_a;
             // PORT(partial): the current preview still does not expose the Windows-installed
             // template header `row_scalar_a`, so keep the nearest roll-derived approximation in
             // the live follow state until that runtime field exists.
-            self.attachment_follow.template_row_scalar_a =
-                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll);
+            self.attachment_follow.template_row_scalar_a = carryover.value_b;
+            self.attachment_exit_carryover_a = carryover.value_a;
+            self.attachment_exit_carryover_b = carryover.value_b;
             return;
         }
 
@@ -2562,8 +2571,12 @@ pub const Runner = struct {
         if (self.phase != .active or self.finished) return;
         const frame = self.captureWorldFrame(preview);
         const initial_vertical_velocity = if (self.launch.active) self.launch.vertical_velocity else 0.0;
-        if (cause == .fall or self.movement_mode == .attachment or self.attachment_exit_pending) {
-            self.seedAttachmentExitState(preview, frame.position.z);
+        if (self.movement_mode == .attachment) {
+            self.seedAttachmentExitStateFromCarryover(preview, frame.position.z);
+        } else if (self.attachment_exit_pending) {
+            self.seedAttachmentExitStateFromCurrentExit(frame.position.z);
+        } else if (cause == .fall) {
+            self.seedAttachmentExitStateZeroed(frame.position.z);
         }
         self.paused = false;
         self.launch = .{};
@@ -3062,29 +3075,56 @@ pub const Runner = struct {
         self.attachment_follow = .{};
     }
 
-    fn seedAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
+    fn currentAttachmentExitCarryover(self: *const Runner) AttachmentExitCarryover {
+        return .{
+            .value_a = if (self.attachment_follow.orientation_b != 0.0 or
+                self.attachment_follow.template_row_scalar_a != 0.0)
+                self.attachment_follow.orientation_b
+            else
+                self.attachment_post_roll,
+            .value_b = if (self.attachment_follow.orientation_b != 0.0 or
+                self.attachment_follow.template_row_scalar_a != 0.0)
+                self.attachment_follow.template_row_scalar_a
+            else
+                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll),
+        };
+    }
+
+    fn beginAttachmentExitState(self: *Runner, anchor_z: f32) void {
         self.attachment_exit_pending = true;
         self.attachment_exit_anchor_z = anchor_z;
         self.attachment_exit_progress = 0.0;
         self.attachment_exit_progress_step = attachment_exit_progress_step_default;
         self.attachment_exit_gate_a = false;
         self.attachment_exit_gate_b = false;
+    }
 
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.post_follow_value_a = if (self.attachment_follow.orientation_b != 0.0 or
-                self.attachment_follow.template_row_scalar_a != 0.0)
-                self.attachment_follow.orientation_b
-            else
-                self.attachment_post_roll;
-            self.post_follow_value_b = if (self.attachment_follow.orientation_b != 0.0 or
-                self.attachment_follow.template_row_scalar_a != 0.0)
-                self.attachment_follow.template_row_scalar_a
-            else
-                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll);
-            self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-            return;
-        }
+    fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
+        const carryover = if (self.movement_mode == .attachment and self.attachment_follow.active)
+            self.currentAttachmentExitCarryover()
+        else
+            AttachmentExitCarryover{
+                .value_a = self.attachment_exit_carryover_a,
+                .value_b = self.attachment_exit_carryover_b,
+            };
+        self.beginAttachmentExitState(anchor_z);
+        self.post_follow_value_a = carryover.value_a;
+        self.post_follow_value_b = carryover.value_b;
+        self.attachment_exit_carryover_a = carryover.value_a;
+        self.attachment_exit_carryover_b = carryover.value_b;
+        self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+    }
 
+    fn seedAttachmentExitStateFromCurrentExit(self: *Runner, anchor_z: f32) void {
+        const post_follow_value_a = self.post_follow_value_a;
+        const post_follow_value_b = self.post_follow_value_b;
+        self.beginAttachmentExitState(anchor_z);
+        self.post_follow_value_a = post_follow_value_a;
+        self.post_follow_value_b = post_follow_value_b;
+    }
+
+    fn seedAttachmentExitStateZeroed(self: *Runner, anchor_z: f32) void {
+        self.beginAttachmentExitState(anchor_z);
         self.post_follow_value_a = 0.0;
         self.post_follow_value_b = 0.0;
     }
@@ -3101,7 +3141,7 @@ pub const Runner = struct {
     }
 
     fn finishAttachmentFollowWithExitHandoff(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.seedAttachmentExitState(preview, self.row_position);
+        self.seedAttachmentExitStateFromCarryover(preview, self.row_position);
         self.finishAttachmentFollowDirect();
     }
 
@@ -4090,6 +4130,42 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.post_follow_value_b, 0.0001);
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+}
+
+test "latched attachment carryover can reseed the exit handoff after follow clears" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.attachment_exit_carryover_a = 0.6;
+    runner.attachment_exit_carryover_b = 0.4;
+
+    runner.seedAttachmentExitStateFromCarryover(&fixture.preview, 12.0);
+
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.attachment_exit_anchor_z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.post_follow_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.post_follow_value_b, 0.0001);
+}
+
+test "fall entry preserves current post-follow carryover when exit handoff is already pending" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.attachment_exit_pending = true;
+    runner.attachment_exit_progress = 0.5;
+    runner.attachment_exit_gate_a = true;
+    runner.post_follow_value_a = 0.25;
+    runner.post_follow_value_b = 0.5;
+
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
+
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_exit_progress, 0.0001);
+    try std.testing.expect(!runner.attachment_exit_gate_a);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.post_follow_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.post_follow_value_b, 0.0001);
 }
 
 test "on-track hazard death does not arm the attachment exit handoff" {
