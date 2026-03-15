@@ -4098,11 +4098,19 @@ const AppState = struct {
         };
     }
 
+    fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
+        return switch (mode orelse .tutorial) {
+            .postal, .challenge => track.postalChallengeRuntimeBuildFlags,
+            .time_trial => track.timeTrialRuntimeBuildFlags,
+            .tutorial => track.tutorialRuntimeBuildFlags,
+        };
+    }
+
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
         return if (self.current_track_preview) |preview|
             preview.runtime_build_flags
         else
-            track.defaultRuntimeBuildFlags;
+            runtimeBuildFlagsForFrontendMode(self.active_frontend_mode);
     }
 
     fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
@@ -5361,6 +5369,7 @@ const AppState = struct {
                 &self.catalog,
                 loaded_level,
                 .{
+                    .runtime_build_flags = runtimeBuildFlagsForFrontendMode(self.active_frontend_mode),
                     .runtime_build_seed = runtime_build_seed,
                     .garbage_scalar_override = self.currentRunGarbageScalar(),
                     .salt_scalar_override = self.currentRunSaltScalar(),
@@ -9768,6 +9777,23 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.garbage_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.salt_scalar, 0.0001);
+}
+
+test "mode-specific runtime build flags follow recovered subgame presets" {
+    var state: AppState = undefined;
+    state.current_track_preview = null;
+
+    state.active_frontend_mode = .postal;
+    try std.testing.expectEqual(@as(u32, track.postalChallengeRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
+
+    state.active_frontend_mode = .challenge;
+    try std.testing.expectEqual(@as(u32, track.postalChallengeRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
+
+    state.active_frontend_mode = .time_trial;
+    try std.testing.expectEqual(@as(u32, track.timeTrialRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
+
+    state.active_frontend_mode = .tutorial;
+    try std.testing.expectEqual(@as(u32, track.tutorialRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {

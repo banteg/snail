@@ -129,9 +129,12 @@ pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
     };
 }
 
-// PORT(partial): this is the currently confirmed common gameplay preset from captures.
-// Replace the constant once per-mode or per-level build-flag normalization is ported.
-pub const defaultRuntimeBuildFlags: u32 = 0x00f5cfff;
+// PORT(verified): `set_subgame_features` picks distinct runtime-flag presets by mode:
+// postal/challenge `0x00f5cfff`, time-trial `0x0075cfff`, tutorial `0x00e4cfff`.
+pub const postalChallengeRuntimeBuildFlags: u32 = 0x00f5cfff;
+pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
+pub const tutorialRuntimeBuildFlags: u32 = 0x00e4cfff;
+pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
 
 // PORT(fallback): these are candidate overlays for trace-confirmed ambient hazard families.
 // They are not the original gameplay-side spawn timing inside update_subgame.

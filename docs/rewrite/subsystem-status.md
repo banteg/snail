@@ -69,7 +69,7 @@ Implemented now:
 - parse `SEGMENTS/*.TXT` and `LEVELS/*.TXT`
 - preserve row annotations like `Path`, `Parcel`, `3DModel`, `JetPack=Off`, `NoFall`, `Sample`, and `Message`
 - rebuild a normalized runtime grid with the recovered `normalize_segment_glyph_for_track_flags` helper shape, the shared math-RNG seed lane, and the current known runtime tile families and floor-height sampling
-- reuse the recovered gameplay build preset `0x00f5cfff`
+- reuse the recovered mode-specific gameplay build presets (`0x00f5cfff`, `0x0075cfff`, `0x00e4cfff`) instead of forcing every mode through one shared flag set
 - derive installed attachment-row ownership from runtime attachment tiles and now choose the mirrored installed-template half from the recovered builder-state lane instead of always using one canonical template
 - preserve the chosen gameplay build seed across app-side respawn rebuilds instead of silently rebuilding the same route from seed `0`
 - feed the live garbage/salt gameplay scalars from the recovered mode-dependent runtime lane instead of always falling back to raw level metadata
