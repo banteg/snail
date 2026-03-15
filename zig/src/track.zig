@@ -180,6 +180,7 @@ pub const LoadedLevelPreview = struct {
     parcel_target_count: usize,
     runtime_tiles: []u8,
     runtime_flag_b40_grid: []bool,
+    runtime_flag_b80_grid: []bool,
     runtime_edge_masks: []u8,
     runtime_spawn_hints: []u8,
     total_rows: usize,
@@ -315,6 +316,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b80_grid);
         const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
@@ -359,6 +368,7 @@ pub const LoadedLevelPreview = struct {
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
+            .runtime_flag_b80_grid = runtime_flag_b80_grid,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
@@ -464,6 +474,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b80_grid);
         const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
@@ -508,6 +526,7 @@ pub const LoadedLevelPreview = struct {
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
+            .runtime_flag_b80_grid = runtime_flag_b80_grid,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
@@ -524,6 +543,7 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.model_assets);
         self.allocator.free(self.runtime_spawn_hints);
         self.allocator.free(self.runtime_edge_masks);
+        self.allocator.free(self.runtime_flag_b80_grid);
         self.allocator.free(self.runtime_flag_b40_grid);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
@@ -766,6 +786,11 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
         return self.runtime_flag_b40_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB80At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b80_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
@@ -1565,6 +1590,32 @@ fn buildRuntimeFlagB40Grid(
     return flag_grid;
 }
 
+fn buildRuntimeFlagB80Grid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() != .jetpack_off) continue;
+
+            const global_row = row_base + row_index;
+            for (row.cells, 0..) |_, lane_index| {
+                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] = true;
+            }
+        }
+    }
+
+    return flag_grid;
+}
+
 const ParcelRowLocation = struct {
     segment_index: usize,
     row_index: usize,
@@ -2164,6 +2215,25 @@ test "runtime flag b40 matches recovered populated-cell cases" {
     try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('.', 0x01, defaultRuntimeBuildFlags));
     try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('_', 0x0f, defaultRuntimeBuildFlags));
     try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('0', 0x0f, timeTrialRuntimeBuildFlags));
+}
+
+test "runtime flag b80 follows JetPack=Off annotations" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("SEGMENTS/JETPACKOFF.TXT") orelse return error.EntryNotFound;
+    var preview = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        entry,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    for (0..preview.max_width) |lane_index| {
+        try std.testing.expect(preview.runtimeFlagB80At(0, lane_index));
+        try std.testing.expect(!preview.runtimeFlagB80At(1, lane_index));
+    }
 }
 
 test "runtime build mirror latch matches recovered threshold logic" {

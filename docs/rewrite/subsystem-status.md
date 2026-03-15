@@ -285,12 +285,11 @@ Implemented now:
 - slug first-hit vs repeated-hit split
 - visible life seed `3`, bonus-life thresholds, and postal-only consumption rules
 - dedicated HUD damage gauge and postal life strip
-- jetpack countdown, warning band, route-end shutoff, and gameplay HUD presentation
+- jetpack countdown, warning band, `JetPack=Off` runtime warning snap from the recovered `flags_b & 0x80` lane, route-end shutoff, and gameplay HUD presentation
 
 Still missing or approximate:
 
 - exact warning owner/controller object behavior beyond the current art/audio presentation
-- runtime-cell `0x80` jetpack warning/shutoff branch
 - remaining hazard deltas and presentation details
 - full death/fall timing around these controllers
 

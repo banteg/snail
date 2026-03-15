@@ -1585,6 +1585,11 @@ pub const Runner = struct {
         };
     }
 
+    fn currentRuntimeSample(self: *const Runner, preview: *const track.LoadedLevelPreview) ?RowSample {
+        if (preview.total_rows == 0) return null;
+        return self.sampleRow(preview, currentRowIndex(preview, self.row_position));
+    }
+
     fn processVisitedRows(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) return;
         const current_row = currentRowIndex(preview, self.row_position);
@@ -1629,7 +1634,6 @@ pub const Runner = struct {
                 .parcel => {},
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
-                    self.disarmJetpackGauge();
                     self.recent_event = .jetpack_off;
                 },
                 .no_fall => {
@@ -2739,7 +2743,8 @@ pub const Runner = struct {
         if (self.row_event_display.bonus_blink_progress > 1.0) {
             self.row_event_display.bonus_blink_progress = 0.0;
         }
-        if (preview.runtimeFlagB40At(self.current_global_row, self.resolved_lane_index)) {
+        const current_sample = self.currentRuntimeSample(preview) orelse return;
+        if (preview.runtimeFlagB40At(current_sample.global_row, current_sample.resolved_lane_index)) {
             self.row_event_display.state = .complete;
         }
     }
@@ -2908,9 +2913,9 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
     // timer/warning/shutoff controller from the contact-damage gauge. The runner mirrors
-    // the 1/600 countdown, the 0.94 near-empty band, and the route-end auto-shutoff, but
-    // it still omits the original wobble offsets, lift/fall suppression, and runtime-cell
-    // flag 0x80 forced-warning path because the current preview does not expose those flags.
+    // the 1/600 countdown, the 0.94 near-empty band, the runtime-cell `flags_b & 0x80`
+    // warning snap seeded from `JetPack=Off`, and the route-end auto-shutoff, but it still
+    // omits the original wobble offsets and lift/fall suppression.
     fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.jetpack.active) return;
 
@@ -2920,7 +2925,18 @@ pub const Runner = struct {
             return;
         }
 
+        const current_sample = self.currentRuntimeSample(preview);
+        const forced_warning = if (current_sample) |sample|
+            preview.runtimeFlagB80At(sample.global_row, sample.resolved_lane_index)
+        else
+            false;
         if (self.jetpack.progress <= jetpack_warning_threshold) {
+            if (forced_warning) {
+                self.jetpack.progress = jetpack_warning_threshold;
+                self.jetpack.warning_band = .near_empty;
+                self.jetpack.pulse_envelope = 1.0;
+                return;
+            }
             self.jetpack.warning_band = .steady;
             self.jetpack.pulse_envelope = 1.0;
             return;
@@ -3866,7 +3882,8 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
 fn findFirstRuntimeFlagB40Cell(preview: *const track.LoadedLevelPreview, expected: bool) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
-        for (row_location.row.cells, 0..) |_, lane| {
+        const bounds = preview.laneBoundsForRow(row_location);
+        for (bounds.min..bounds.max + 1) |lane| {
             if (preview.runtimeFlagB40At(global_row, lane) == expected) {
                 return .{ .row = global_row, .lane = lane };
             }
@@ -3972,6 +3989,12 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     runner.syncRowPosition(preview);
     runner.refreshSample(preview);
     runner.last_processed_row = target.row - 1;
+}
+
+fn setRunnerLiveRowTarget(runner: *Runner, target: RowTarget) void {
+    runner.lane_index = target.lane;
+    runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.01;
 }
 
 fn stepUntilHandoff(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
@@ -4775,8 +4798,7 @@ test "final parcel delivery can complete the row event on the same tick" {
 
     var runner = Runner.init(&fixture.preview);
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
-    runner.current_global_row = target.row;
-    runner.resolved_lane_index = target.lane;
+    setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .final_delivery;
     runner.row_event_display.completion_gate = 1;
     runner.row_event_display.bonus_blink_step = 1.0;
@@ -5204,14 +5226,16 @@ test "route-end completion can start while parcel delivery registration is still
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
-test "row event bonus prompt promotes to complete when runtime flag b40 is set" {
+test "row event bonus prompt promotes to complete when live runtime flag b40 is set" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
-    runner.current_global_row = target.row;
-    runner.resolved_lane_index = target.lane;
+    const stale = findFirstRuntimeFlagB40Cell(&fixture.preview, false).?;
+    runner.current_global_row = stale.row;
+    runner.resolved_lane_index = stale.lane;
+    setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .bonus_prompt;
 
     runner.updateRowEventDisplay(&fixture.preview);
@@ -5225,8 +5249,10 @@ test "row event bonus prompt waits while runtime flag b40 is clear" {
 
     var runner = Runner.init(&fixture.preview);
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, false).?;
-    runner.current_global_row = target.row;
-    runner.resolved_lane_index = target.lane;
+    const stale = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
+    runner.current_global_row = stale.row;
+    runner.resolved_lane_index = stale.lane;
+    setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .bonus_prompt;
 
     runner.updateRowEventDisplay(&fixture.preview);
@@ -5295,8 +5321,7 @@ test "postal completion handoff waits for the row event controller to complete" 
     try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
-    runner.current_global_row = target.row;
-    runner.resolved_lane_index = target.lane;
+    setRunnerLiveRowTarget(&runner, target);
     runner.updateRowEventDisplay(&fixture.preview);
     runner.updatePhaseController(0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
@@ -5334,10 +5359,14 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
 
     const jetpack_off = findFirstAnnotationTag(&jetpack_fixture.preview, .jetpack_off).?;
     primeRunnerBeforeRow(&runner, &jetpack_fixture.preview, jetpack_off);
+    runner.armJetpackGauge();
+    runner.jetpack.progress = 0.25;
     runner.step(&jetpack_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_off_rows);
-    try std.testing.expect(!runner.jetpack.active);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpackFuelRemaining(), 0.0001);
+    try std.testing.expect(runner.jetpack.active);
+    try std.testing.expectApproxEqAbs(jetpack_warning_threshold, runner.jetpack.progress, 0.0001);
+    try std.testing.expectEqual(JetpackWarningBand.near_empty, runner.jetpack.warning_band);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.06), runner.jetpackFuelRemaining(), 0.0001);
     try std.testing.expectEqualStrings("jetpack_off", runner.recentEventLabel());
 }
 
