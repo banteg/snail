@@ -4779,6 +4779,28 @@ test "route-end completion waits for attachment exit handoff to clear" {
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
+test "route-end completion waits for parcel delivery registration" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.01;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.counters.parcels = 1;
+    runner.registered_parcel_count = 0;
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+
+    runner.registered_parcel_count = 1;
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+}
+
 test "route-end natural attachment retirement bypasses the exit handoff" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
