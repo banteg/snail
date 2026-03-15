@@ -1021,6 +1021,8 @@ const completion_continue_y_with_bonus: f32 = 400.0;
 const completion_reveal_step: f32 = 1.0 / 24.0;
 const completion_reveal_bonus_threshold: f32 = 1.0;
 const completion_reveal_continue_threshold: f32 = 2.0;
+const default_challenge_replay_speed_value: u32 = 40;
+const default_challenge_replay_difficulty_value: u32 = 40;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -4042,6 +4044,33 @@ const AppState = struct {
         try self.enterFrontendLevelPath(mode, self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
+    fn replaySpeedScalarForSliderValue(value: u32) f32 {
+        const normalized = @as(f32, @floatFromInt(value)) * 0.01;
+        return if (normalized >= 1.0)
+            1.1
+        else
+            (normalized * 0.9) + 0.2;
+    }
+
+    fn currentRunReplaySpeedScalar(self: *const AppState) f32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            // PORT(partial): challenge setup is still missing, so use the recovered
+            // `initialize_default_runtime_config` defaults until the real setup path owns them.
+            .challenge => replaySpeedScalarForSliderValue(default_challenge_replay_speed_value),
+            .postal, .time_trial, .tutorial => replaySpeedScalarForSliderValue(if (self.current_level) |loaded_level|
+                @as(u32, @intCast(loaded_level.speed orelse 0))
+            else
+                0),
+        };
+    }
+
+    fn currentRunChallengeDifficultyValue(self: *const AppState) u32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => default_challenge_replay_difficulty_value,
+            .postal, .time_trial, .tutorial => 0,
+        };
+    }
+
     fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
         return .{
             .score = score,
@@ -4050,6 +4079,8 @@ const AppState = struct {
                 @as(u32, @intCast(@intFromEnum(mode)))
             else
                 0,
+            .replay_speed_scalar = self.currentRunReplaySpeedScalar(),
+            .challenge_difficulty_value = self.currentRunChallengeDifficultyValue(),
             .runtime_build_seed = self.current_runtime_build_seed,
         };
     }
@@ -9674,16 +9705,18 @@ test "preview descending high-score rank matches visible insertion rules" {
     try std.testing.expectEqual(@as(?usize, null), AppState.previewDescendingHighScoreRank(tables.postal[0..], 900));
 }
 
-test "current run high-score entry carries the runtime build seed" {
+test "current run high-score entry carries replay mode and build settings" {
     var state: AppState = undefined;
-    state.active_frontend_mode = .time_trial;
+    state.active_frontend_mode = .challenge;
     state.active_frontend_level_index = 7;
     state.current_runtime_build_seed = 321;
 
     const entry = state.currentRunHighScoreEntry(12_345);
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
     try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
-    try std.testing.expectEqual(@as(u32, 4), entry.replay_mode_id);
+    try std.testing.expectEqual(@as(u32, 1), entry.replay_mode_id);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.56), entry.replay_speed_scalar, 0.0001);
+    try std.testing.expectEqual(@as(u32, 40), entry.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
 }
 
