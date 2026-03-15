@@ -2527,6 +2527,7 @@ pub const Runner = struct {
         self.finished = true;
         self.phase = .completion_handoff;
         self.setCutscene(cutscene_completion_id);
+        self.pending_handoff = .completion;
     }
 
     fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -2602,12 +2603,7 @@ pub const Runner = struct {
     fn updatePhaseController(self: *Runner, delta_seconds: f32) void {
         switch (self.phase) {
             .active => {},
-            .completion_handoff => {
-                if (self.advanceCutsceneTicks()) {
-                    self.pending_handoff = .completion;
-                    return;
-                }
-            },
+            .completion_handoff => {},
             .fall => |state| {
                 var next_state = state;
                 next_state.world_z = self.attachment_exit_anchor_z;
@@ -4270,7 +4266,7 @@ test "attachment exit pending applies a world-Z camera roll" {
     try std.testing.expect(@abs(rotated.forward.x) > 0.05);
 }
 
-test "runner completion reaches a handoff after the local cutscene" {
+test "runner completion queues a handoff immediately" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -4283,10 +4279,6 @@ test "runner completion reaches a handoff after the local cutscene" {
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    for (0..completion_cutscene_duration_ticks + 1) |_| {
-        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    }
-
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
@@ -4305,6 +4297,7 @@ test "completion handoff arms at the final row threshold" {
     try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(fixture.preview.total_rows - 1)));
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
 test "completion does not arm while attachment follow is still active at route end" {
@@ -4351,6 +4344,7 @@ test "route-end completion waits for attachment exit handoff to clear" {
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
 test "route-end natural attachment retirement bypasses the exit handoff" {
@@ -4381,6 +4375,7 @@ test "route-end natural attachment retirement bypasses the exit handoff" {
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {
