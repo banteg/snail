@@ -1436,6 +1436,10 @@ const AppState = struct {
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
+    math_random_state: u32 = 1,
+    current_runtime_build_seed: u32 = 0,
+    current_runtime_build_seed_level_index: ?usize = null,
+    current_runtime_build_seed_mode: ?FrontendLevelMode = null,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
@@ -4640,6 +4644,7 @@ const AppState = struct {
 
     fn loadGameLevel(self: *AppState, level_path: []const u8) !void {
         self.level_index = self.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
+        self.invalidateTrackBuildSeed();
         try self.reloadLevel();
     }
 
@@ -5284,8 +5289,15 @@ const AppState = struct {
         const entry = self.catalog.level_entries[self.level_index];
         self.current_level = try level.loadFromArchive(self.allocator, &self.catalog, entry);
         if (self.current_level) |*loaded_level| {
-            self.current_track_preview = try track.LoadedLevelPreview.load(self.allocator, &self.catalog, loaded_level);
+            const runtime_build_seed = self.trackBuildSeedForCurrentLoad();
+            self.current_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+                self.allocator,
+                &self.catalog,
+                loaded_level,
+                .{ .runtime_build_seed = runtime_build_seed },
+            );
             if (self.current_track_preview) |*loaded_track_preview| {
+                self.math_random_state = loaded_track_preview.runtime_build_final_random_state;
                 if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
                     self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
                         self.allocator,
@@ -5326,6 +5338,34 @@ const AppState = struct {
         self.level_segment_index = 0;
         try self.reloadLevelSegment();
         try self.syncActiveLevelSegment(false);
+    }
+
+    fn nextMathRandomInt15(self: *AppState) u32 {
+        self.math_random_state = (self.math_random_state *% 0x343fd) +% 0x269ec3;
+        return (self.math_random_state >> 16) & 0x7fff;
+    }
+
+    fn trackBuildSeedForCurrentLoad(self: *AppState) u32 {
+        if (self.command != .game) return 0;
+
+        const mode = self.active_frontend_mode;
+        if (self.current_runtime_build_seed_level_index == self.level_index and self.current_runtime_build_seed_mode == mode) {
+            return self.current_runtime_build_seed;
+        }
+
+        const seed: u32 = switch (mode orelse return 0) {
+            .tutorial, .time_trial => 0,
+            .postal, .challenge => self.nextMathRandomInt15(),
+        };
+        self.current_runtime_build_seed = seed;
+        self.current_runtime_build_seed_level_index = self.level_index;
+        self.current_runtime_build_seed_mode = mode;
+        return seed;
+    }
+
+    fn invalidateTrackBuildSeed(self: *AppState) void {
+        self.current_runtime_build_seed_level_index = null;
+        self.current_runtime_build_seed_mode = null;
     }
 
     fn reloadLevelSegment(self: *AppState) !void {

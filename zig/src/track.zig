@@ -169,6 +169,7 @@ pub const LoadedLevelPreview = struct {
     placed_models: []PlacedModel,
     runtime_build_flags: u32,
     runtime_build_seed: u32,
+    runtime_build_final_random_state: u32,
     garbage_scalar: f32,
     salt_scalar: f32,
     runtime_tiles: []u8,
@@ -297,14 +298,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
-        const source_row_mirror_states = try buildAttachmentSourceRowMirrorStates(
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
             row_offsets,
             total_rows,
             runtime_build_config,
         );
-        defer allocator.free(source_row_mirror_states);
+        defer allocator.free(mirror_state_build.states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -312,7 +313,7 @@ pub const LoadedLevelPreview = struct {
             runtime_tiles,
             total_rows,
             max_width,
-            source_row_mirror_states,
+            mirror_state_build.states,
         );
         errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -335,6 +336,7 @@ pub const LoadedLevelPreview = struct {
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
+            .runtime_build_final_random_state = mirror_state_build.final_random_state,
             .garbage_scalar = level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = level_definition.normalizedSaltScalar() orelse 0.0,
             .runtime_tiles = runtime_tiles,
@@ -433,14 +435,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
-        const source_row_mirror_states = try buildAttachmentSourceRowMirrorStates(
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
             row_offsets,
             total_rows,
             runtime_build_config,
         );
-        defer allocator.free(source_row_mirror_states);
+        defer allocator.free(mirror_state_build.states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -448,7 +450,7 @@ pub const LoadedLevelPreview = struct {
             runtime_tiles,
             total_rows,
             max_width,
-            source_row_mirror_states,
+            mirror_state_build.states,
         );
         errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -471,6 +473,7 @@ pub const LoadedLevelPreview = struct {
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
+            .runtime_build_final_random_state = mirror_state_build.final_random_state,
             .garbage_scalar = 0.0,
             .salt_scalar = 0.0,
             .runtime_tiles = runtime_tiles,
@@ -1342,6 +1345,11 @@ fn beginRuntimeBuildSegment(build_state: *RuntimeBuildState, loaded_segment: seg
     _ = build_state.switchTrackMirror();
 }
 
+const AttachmentSourceRowMirrorStateBuild = struct {
+    states: []bool,
+    final_random_state: u32,
+};
+
 fn buildRuntimeTileGrid(
     allocator: std.mem.Allocator,
     segments: []const segment.Definition,
@@ -1398,7 +1406,7 @@ fn buildAttachmentSourceRowMirrorStates(
     row_offsets: []const usize,
     total_rows: usize,
     config: RuntimeBuildConfig,
-) ![]bool {
+) !AttachmentSourceRowMirrorStateBuild {
     const mirror_states = try allocator.alloc(bool, total_rows);
     @memset(mirror_states, false);
     var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
@@ -1431,7 +1439,10 @@ fn buildAttachmentSourceRowMirrorStates(
         }
     }
 
-    return mirror_states;
+    return .{
+        .states = mirror_states,
+        .final_random_state = build_state.math_random.state,
+    };
 }
 
 fn buildRuntimeEdgeMaskGrid(

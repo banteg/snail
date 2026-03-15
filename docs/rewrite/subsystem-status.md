@@ -69,10 +69,11 @@ Implemented now:
 - rebuild a normalized runtime grid with the recovered `normalize_segment_glyph_for_track_flags` helper shape, the shared math-RNG seed lane, and the current known runtime tile families and floor-height sampling
 - reuse the recovered gameplay build preset `0x00f5cfff`
 - derive installed attachment-row ownership from runtime attachment tiles and now choose the mirrored installed-template half from the recovered builder-state lane instead of always using one canonical template
+- preserve the chosen gameplay build seed across app-side respawn rebuilds instead of silently rebuilding the same route from seed `0`
 
 Still missing or approximate:
 
-- the exact Windows seed ownership path for non-replay track builds
+- the exact replay-seed handoff and any remaining non-track consumers that advance the shared math RNG before a level rebuild
 - the exact active-row band selection that feeds the `_` normalization helper lane
 - the full render-normalization chain between runtime tiles and final cache/object ownership
 - some unresolved runtime tile families and late render passes
