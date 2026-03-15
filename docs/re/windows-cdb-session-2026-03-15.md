@@ -970,3 +970,98 @@ Practical read from that matrix dump:
 - `1604` is almost the same translation but with a tiny planar rotation and a very small X offset
 - so the intro hotspot rebuild is not combining two dramatically different source frames at this point; it is operating on two nearly coincident sources, one of which already carries a small rotation or local offset
 - this strengthens the current read that the port bug is likely in the exact hotspot-construction math or source-matrix preparation, not in broad cutscene-state selection
+
+### Intro Camera Driver-Chain Capture
+
+After the constructor traces, the probe pack moved one level upstream:
+
+- `look_at_point`
+- `linear_interpolate_matrix`
+- the source switch inside `update_subgame_camera`
+
+The purpose was to stop sampling downstream hotspot outputs and instead capture the actual driver chain that publishes the live intro camera.
+
+Static recovery first:
+
+- `look_at_point` callsites inside `update_cutscene`:
+  - `0x446771`
+  - `0x44680f`
+  - `0x446a1e`
+  - `0x446af3`
+  - `0x446d20`
+  - `0x446dd3`
+- `linear_interpolate_matrix` callsites inside `update_cutscene`:
+  - `0x446850`
+  - `0x446a5f`
+  - `0x446d61`
+
+The fresh intro repro produced two important state families.
+
+#### State `2`: direct `look_at_point` drive into `cutscene + 0x10`
+
+Early intro repeatedly hit the `look_at_point` call returning to `0x446771`:
+
+- `[cutscene_look_at] ret=00446771 state=2 dst=0x0d33d088 dst_t=(0x3f5c154d,0x40f87c88,0x40bccf42) target=0x0d33b788 target=(0x00000000,0x40f480a1,0x40800000)`
+- later samples in the same state kept the same destination matrix and moved the target gradually, for example:
+  - `target=(0x3d521673,0x40f4ce3b,0x408a9547)`
+  - `target=(0x3e310116,0x40f56388,0x4095c15e)`
+
+At the same time, `update_subgame_camera` reported the override source becoming active:
+
+- `[camera_source_override] state=2 override_t=(0x3f5c154d,0x40f87c88,0x40bccf42) shared_t=(0x00000000,0x40400000,0x00000000) shared_fov=0x42dc0000`
+
+Practical read from state `2`:
+
+- the live cutscene matrix at `cutscene + 0x10` is already the active override source
+- `update_cutscene` is not snapping to a prebuilt hotspot here; it is repeatedly reorienting that live matrix toward a moving target vector with `look_at_point`
+- translation is already on the intro-talk lane at this phase, while orientation is still being actively recomputed
+
+#### State `8`: blend from a temporary look-at matrix into the cameraman matrix
+
+Later intro repeatedly hit the second `look_at_point` / `linear_interpolate_matrix` pair:
+
+- `[cutscene_look_at] ret=0044680f state=8 dst=0x0019fc10 dst_t=(0x3f4a6a39,0x4102eac3,0x40be1e1a) target=0x0d33b788 target=(0x3c9fd3e7,0x41019ba2,0x40800814)`
+- `[cutscene_lerp] ret=00446850 state=8 dst=0x0d33d088 a=0x0019fc10 b=0x0019fc50 alpha=0x00000000 a_t=(0x3f4a6a39,0x4102eac3,0x40be1e1a) b_t=(0x00000000,0x41325ad4,0x4019436c)`
+
+As state `8` progressed:
+
+- `a_t` kept moving through a long sequence of look-at positions
+- `b_t` stayed fixed at `(0x00000000,0x41325ad4,0x4019436c)`
+- `alpha` ramped upward from `0` toward `1.0`
+
+Representative later samples:
+
+- `alpha=0x3db851ec` with `a_t=(0x3f0560af,0x410c3159,0x40c5a59b)`
+- `alpha=0x3ec7bbfd` with `a_t=(0xbece2fdb,0x4113ff4f,0x40c5dd38)`
+- `alpha=0x3f20d4fd` with `a_t=(0xbf1fba92,0x411881f4,0x40bc13ed)`
+- `alpha=0x3f51ec00` with `a_t=(0xbf4d88f0,0x411e4bf9,0x40a72d2d)`
+- `alpha=0x3f68ba31` with `a_t=(0xbf638d5d,0x41247f1c,0x40842c91)`
+- `alpha=0x3f851ece` with `a_t=(0xbf81ddd8,0x412cfabf,0x402f2f74)`
+- `alpha=0x3fa2f98f` with `a_t=(0xbf9f79b8,0x413579b9,0x3f7f71eb)`
+- `alpha=0x3fc1de00` with `a_t=(0xbfbc5051,0x413df897,0xbed3fe5a)`
+- `alpha=0x3fe03fbd` with `a_t=(0xbfd88bfe,0x414677ef,0xbfa5f2df)`
+- `alpha=0x3fff1108` with `a_t=(0xbff4917c,0x414ef697,0xc017e6c0)`
+
+Practical read from state `8`:
+
+- `update_cutscene` first builds a temporary stack matrix with `look_at_point`
+- it then blends the live cutscene matrix at `cutscene + 0x10` between:
+  - `a`: that temporary look-at matrix
+  - `b`: another stack matrix whose translation matches the cameraman lane
+- the intro handoff back to gameplay is therefore an explicit matrix interpolation, not a hotspot swap or a direct snap to the cameraman output
+
+#### End of intro: shared source flips back to cameraman
+
+Once the interpolation completed, `update_subgame_camera` flipped the shared camera source back to cameraman:
+
+- `[camera_source_cameraman] state=0 cameraman_t=(0x00000000,0x41325ad4,0x4019436c) shared_t=(0x37568f35,0x41325aae,0x40194429) shared_fov=0x42dc0000`
+
+The cameraman translation matches the fixed `b_t` used throughout the state `8` interpolation.
+
+Most useful current conclusion:
+
+- the intro camera is actively driven upstream by `update_cutscene`
+- state `2` repeatedly orients the live cutscene matrix toward a moving target with `look_at_point`
+- state `8` blends that live matrix back toward the cameraman matrix with `linear_interpolate_matrix`
+- `update_subgame_camera` only publishes the result and then flips the shared source back to cameraman once the handoff completes
+- hotspot rebuilds are therefore downstream artifacts of the same cutscene state, not the best place to understand the camera motion itself
