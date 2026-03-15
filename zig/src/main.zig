@@ -8534,13 +8534,12 @@ fn drawGameplayRuntimeActors(
                 drawGameplayTurretActor(state, loaded_track_preview, runner, global_row, lane_index);
             }
         }
+    }
 
-        if (row_location.row.annotation) |annotation| switch (annotation) {
-            .parcel => |parcel| if (!runner.isParcelCollected(row_location.global_row)) {
-                drawGameplayParcelActor(state, loaded_track_preview, camera, row_location, parcel);
-            },
-            else => {},
-        };
+    for (runner.activeTrackParcels()) |parcel| {
+        if (!parcel.active()) continue;
+        if (!shouldRenderGameplayActorRow(runner, parcel.row)) continue;
+        drawGameplayTrackParcelActor(state, camera, parcel);
     }
 
     for (runner.activeRuntimeHazards()) |hazard| {
@@ -8774,22 +8773,20 @@ fn drawGameplayRingActor(
     }
 }
 
-fn drawGameplayParcelActor(
+fn drawGameplayTrackParcelActor(
     state: *const AppState,
-    preview: *const track.LoadedLevelPreview,
     camera: rl.Camera3D,
-    row_location: track.RowLocation,
-    parcel: segment.ParcelAnnotation,
+    parcel: gameplay.TrackParcelRuntime,
 ) void {
     const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
-    const position = gameplayAnnotationWorldPosition(preview, row_location, 0.48, parcel.offset);
+    const position = parcel.presentationPosition();
     drawGameplayBillboardTexture(
         loaded_texture.texture,
         position,
         0.56,
         0.56,
         camera,
-        if (parcel.id == 0)
+        if (parcel.parcel_id == 0)
             .white
         else
             .{ .r = 196, .g = 255, .b = 196, .a = 232 },
@@ -8799,23 +8796,6 @@ fn drawGameplayParcelActor(
 fn gameplayLaneWorldPosition(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) rl.Vector3 {
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     return preview.worldPositionForLane(@as(f32, @floatFromInt(lane_index)) + 0.5, @as(f32, @floatFromInt(global_row)), floor_height + y_offset);
-}
-
-fn gameplayAnnotationWorldPosition(
-    preview: *const track.LoadedLevelPreview,
-    row_location: track.RowLocation,
-    y_offset: f32,
-    offset: segment.Vec3,
-) rl.Vector3 {
-    const bounds = preview.laneBoundsForRow(row_location);
-    const center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
-    const floor_height = preview.floorHeightAtCellCenter(row_location.global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
-    const base = preview.worldPositionForLane(center_lane, @as(f32, @floatFromInt(row_location.global_row)), floor_height + y_offset);
-    return .{
-        .x = base.x + offset.x,
-        .y = base.y + offset.y,
-        .z = base.z + offset.z,
-    };
 }
 
 fn drawGameplayBillboardTexture(
