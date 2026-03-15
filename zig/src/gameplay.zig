@@ -239,6 +239,53 @@ pub const ScoreTotals = struct {
     completion_bonus: u32 = 0,
 };
 
+const RowEventDisplayState = enum(u32) {
+    inactive = 0,
+    staging = 1,
+    hold = 2,
+    final_delivery = 3,
+    bonus_prompt = 4,
+    complete = 5,
+    final_delivery_delay = 6,
+};
+
+const RowEventDisplayController = struct {
+    state: RowEventDisplayState = .inactive,
+    completion_gate: u8 = 0,
+    parcel_target_count: u32 = 0,
+    bonus_enabled: bool = false,
+    staged_parcel_count: u32 = 0,
+    delivered_parcel_count: u32 = 0,
+    progress: f32 = 0.0,
+    progress_step: f32 = 0.0,
+    widget_world_x: f32 = 0.0,
+    widget_world_y: f32 = 0.0,
+    widget_world_z: f32 = 0.0,
+    bonus_blink_progress: f32 = 0.0,
+    bonus_blink_step: f32 = 0.0,
+    bonus_score: u32 = postal_completion_bonus_score,
+    display_token: u32 = 0,
+
+    fn configureForRun(self: *RowEventDisplayController, parcel_target: usize, bonus_enabled: bool) void {
+        const delivered_parcel_count = self.delivered_parcel_count;
+        const staged_parcel_count = self.staged_parcel_count;
+        self.* = .{
+            .parcel_target_count = @intCast(parcel_target),
+            .bonus_enabled = bonus_enabled,
+            .staged_parcel_count = staged_parcel_count,
+            .delivered_parcel_count = delivered_parcel_count,
+            .bonus_score = postal_completion_bonus_score,
+            .bonus_blink_step = 1.0,
+        };
+    }
+
+    fn reconfigureCompletion(self: *RowEventDisplayController, parcel_target: usize, bonus_enabled: bool) void {
+        self.parcel_target_count = @intCast(parcel_target);
+        self.bonus_enabled = bonus_enabled;
+        self.bonus_score = postal_completion_bonus_score;
+    }
+};
+
 pub const Stopwatch = struct {
     total_seconds: f32 = 0.0,
     minutes: u32 = 0,
@@ -848,7 +895,7 @@ pub const Runner = struct {
     score: ScoreTotals = .{},
     recent_score_award: u32 = 0,
     recent_score_award_ticks: u8 = 0,
-    registered_parcel_count: u32 = 0,
+    row_event_display: RowEventDisplayController = .{},
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
@@ -860,9 +907,6 @@ pub const Runner = struct {
     slug_hit_active: bool = false,
     damage_warning_state: DamageWarningState = .idle,
     damage_warning_fill: f32 = 0.0,
-    completion_bonus_enabled: bool = false,
-    parcel_target: usize = 0,
-    completion_bonus_applied: bool = false,
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
@@ -885,14 +929,25 @@ pub const Runner = struct {
     }
 
     pub fn reset(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        const completion_bonus_enabled = self.completion_bonus_enabled;
-        const parcel_target = self.parcel_target;
+        const configured_parcel_target_count = if (self.row_event_display.parcel_target_count != 0)
+            self.row_event_display.parcel_target_count
+        else
+            @as(u32, @intCast(preview.parcel_target_count));
+        const row_event_config = .{
+            .parcel_target_count = configured_parcel_target_count,
+            .bonus_enabled = self.row_event_display.bonus_enabled,
+            .bonus_score = self.row_event_display.bonus_score,
+        };
         const session_mode = self.session_mode;
         self.* = .{
             .session_mode = session_mode,
             .speed_rows_per_second = 12.0,
-            .completion_bonus_enabled = completion_bonus_enabled,
-            .parcel_target = parcel_target,
+            .row_event_display = .{
+                .parcel_target_count = row_event_config.parcel_target_count,
+                .bonus_enabled = row_event_config.bonus_enabled,
+                .bonus_score = row_event_config.bonus_score,
+                .bonus_blink_step = 1.0,
+            },
             .visible_life_stock = starting_visible_life_stock,
         };
         if (preview.total_rows > 0) {
@@ -961,6 +1016,7 @@ pub const Runner = struct {
         }
         if (!self.paused) {
             self.updateTrackParcels(preview);
+            self.updateRowEventDisplay();
         }
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
@@ -1233,12 +1289,15 @@ pub const Runner = struct {
     }
 
     pub fn configureCompletionBonus(self: *Runner, parcel_target: usize, enabled: bool) void {
-        self.parcel_target = parcel_target;
-        self.completion_bonus_enabled = enabled;
+        self.row_event_display.configureForRun(parcel_target, enabled);
     }
 
     pub fn configureSessionMode(self: *Runner, session_mode: SessionMode) void {
         self.session_mode = session_mode;
+    }
+
+    pub fn registeredParcelCount(self: *const Runner) u32 {
+        return self.row_event_display.delivered_parcel_count;
     }
 
     pub fn setCutscene(self: *Runner, cutscene_id: u8) void {
@@ -1668,9 +1727,8 @@ pub const Runner = struct {
     }
 
     pub fn applyCompletionBonus(self: *Runner, parcel_target: usize) void {
-        self.parcel_target = parcel_target;
-        self.completion_bonus_enabled = true;
-        self.maybeRecordCompletionBonus();
+        self.row_event_display.reconfigureCompletion(parcel_target, true);
+        self.maybeAwardRowEventCompletionBonus();
     }
 
     pub fn flushPendingParcelDeliveries(self: *Runner) void {
@@ -1678,9 +1736,13 @@ pub const Runner = struct {
             if (!parcel.active() or parcel.state == 1) continue;
             parcel.state = 0;
         }
-        while (self.registered_parcel_count < self.counters.parcels) {
-            self.recordParcelDelivery();
+        while (self.row_event_display.delivered_parcel_count < self.counters.parcels) {
+            self.registerParcelDelivery();
         }
+        self.row_event_display.state = .inactive;
+        self.row_event_display.progress = 0.0;
+        self.row_event_display.progress_step = 0.0;
+        self.row_event_display.completion_gate = 0;
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
@@ -1692,10 +1754,14 @@ pub const Runner = struct {
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
     }
 
-    fn recordParcelDelivery(self: *Runner) void {
-        self.registered_parcel_count += 1;
+    fn registerParcelDelivery(self: *Runner) void {
+        if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) return;
+        self.row_event_display.delivered_parcel_count += 1;
         self.recordScore(&self.score.parcel_register, 100);
-        self.maybeRecordCompletionBonus();
+        if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) {
+            self.maybeAwardRowEventCompletionBonus();
+            self.row_event_display.state = .final_delivery;
+        }
     }
 
     fn processTrackParcelCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1818,11 +1884,11 @@ pub const Runner = struct {
         }
     }
 
-    fn maybeRecordCompletionBonus(self: *Runner) void {
-        if (self.completion_bonus_applied or !self.completion_bonus_enabled) return;
-        if (self.parcel_target == 0 or self.registered_parcel_count < self.parcel_target) return;
+    fn maybeAwardRowEventCompletionBonus(self: *Runner) void {
+        if (self.score.completion_bonus != 0 or !self.row_event_display.bonus_enabled) return;
+        if (self.row_event_display.parcel_target_count == 0 or
+            self.row_event_display.delivered_parcel_count < self.row_event_display.parcel_target_count) return;
 
-        self.completion_bonus_applied = true;
         self.recordScore(&self.score.completion_bonus, postal_completion_bonus_score);
     }
 
@@ -2590,8 +2656,38 @@ pub const Runner = struct {
         parcel.world_position.z += parcel.delivery_offset.z * arc;
         parcel.progress += parcel.progress_step;
         if (parcel.progress < 1.0) return;
-        self.recordParcelDelivery();
+        self.registerParcelDelivery();
         parcel.state = 0;
+    }
+
+    // PORT(partial): Windows `update_row_event_display` owns the parcel-delivery widget
+    // controller and the post-delivery completion state. The port now mirrors the proven
+    // state `3 -> 4` transition on the gameplay side, but still omits the unresolved
+    // widget owner, staged parcel visuals, and the exact `state 4 -> 5` gate at `+0x18`.
+    fn updateRowEventDisplay(self: *Runner) void {
+        switch (self.row_event_display.state) {
+            .inactive, .staging, .hold, .complete => {},
+            .final_delivery => {
+                self.row_event_display.completion_gate = 0;
+                self.row_event_display.state = .bonus_prompt;
+            },
+            .bonus_prompt => {
+                self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
+                if (self.row_event_display.bonus_blink_progress > 1.0) {
+                    self.row_event_display.bonus_blink_progress = 0.0;
+                }
+            },
+            .final_delivery_delay => {
+                self.row_event_display.progress = std.math.clamp(
+                    self.row_event_display.progress + self.row_event_display.progress_step,
+                    0.0,
+                    1.0,
+                );
+                if (self.row_event_display.progress >= 1.0) {
+                    self.row_event_display.state = .final_delivery;
+                }
+            },
+        }
     }
 
     fn refreshLiveRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2811,7 +2907,7 @@ pub const Runner = struct {
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.attachment_exit_pending) return;
         if (self.movement_mode == .attachment and self.attachment_follow.active) return;
-        if (self.registered_parcel_count < self.counters.parcels) return;
+        if (self.row_event_display.delivered_parcel_count < self.counters.parcels) return;
         if (!self.routeEndReached(preview)) return;
         self.beginCompletionCutscene();
     }
@@ -3448,8 +3544,7 @@ pub const Runner = struct {
         const tick_count = self.tick_count;
         const stopwatch = self.stopwatch;
         const parcel_count = self.counters.parcels;
-        const registered_parcel_count = self.registered_parcel_count;
-        const completion_bonus_applied = self.completion_bonus_applied;
+        const row_event_display = self.row_event_display;
         const collected_parcel_rows = self.collected_parcel_rows;
         const collected_parcel_row_count = self.collected_parcel_row_count;
         self.reset(preview);
@@ -3459,8 +3554,7 @@ pub const Runner = struct {
         self.tick_count = tick_count;
         self.stopwatch = stopwatch;
         self.counters.parcels = parcel_count;
-        self.registered_parcel_count = registered_parcel_count;
-        self.completion_bonus_applied = completion_bonus_applied;
+        self.row_event_display = row_event_display;
         self.collected_parcel_rows = collected_parcel_rows;
         self.collected_parcel_row_count = collected_parcel_row_count;
     }
@@ -3760,7 +3854,7 @@ fn stepUntilParcelPickup(runner: *Runner, preview: *const track.LoadedLevelPrevi
 
 fn stepUntilParcelRegistered(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
     var steps: usize = 0;
-    while (steps < max_steps and runner.registered_parcel_count == 0) : (steps += 1) {
+    while (steps < max_steps and runner.registeredParcelCount() == 0) : (steps += 1) {
         runner.step(preview, .{}, 1.0 / 60.0);
     }
     return steps;
@@ -4325,13 +4419,13 @@ test "runner consumes parcel rows only once" {
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.registeredParcelCount());
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.registeredParcelCount());
 }
 
 test "runner spawns live parcel slots ahead of the current row" {
@@ -4378,14 +4472,30 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     const register_steps = stepUntilParcelRegistered(&runner, &fixture.preview, 256);
     try std.testing.expect(register_steps < 256);
-    try std.testing.expectEqual(@as(u32, 1), runner.registered_parcel_count);
+    try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+    try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
+}
+
+test "final parcel delivery enters the row event bonus prompt state" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureCompletionBonus(1, false);
+    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
+
+    try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
+    try std.testing.expect(stepUntilParcelRegistered(&runner, &fixture.preview, 256) < 256);
+    try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
+    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
 }
 
 test "runner applies the completion bonus once" {
     var runner = Runner{};
-    runner.registered_parcel_count = 3;
+    runner.row_event_display.delivered_parcel_count = 3;
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
@@ -4505,16 +4615,17 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.registeredParcelCount());
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     runner.applyRespawn(&fixture.preview);
 
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 1), runner.registered_parcel_count);
-    try std.testing.expect(runner.completion_bonus_applied);
+    try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
@@ -4789,12 +4900,12 @@ test "route-end completion waits for parcel delivery registration" {
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.counters.parcels = 1;
-    runner.registered_parcel_count = 0;
+    runner.row_event_display.delivered_parcel_count = 0;
 
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
 
-    runner.registered_parcel_count = 1;
+    runner.row_event_display.delivered_parcel_count = 1;
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);

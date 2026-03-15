@@ -249,6 +249,7 @@ Implemented now:
 - collected parcel rows now stay consumed across respawn and stop rendering as live world pickups instead of reappearing until the row scrolls away
 - visible world parcels now come from a runner-local 50-slot live runtime scaffold with the shipped state-`1` bobbing and expiry rules instead of static annotation billboards
 - the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the live parcel-flight controller owns register score payout and the final postal bonus
+- parcel register score and the final-delivery handoff no longer hang off loose runner fields; the port now keeps a runner-local `row_event_display` controller with the recovered target, delivered-count, bonus, and state lanes, including the proven final-delivery `state 3 -> 4` transition
 - route-end completion no longer starts while a collected parcel is still in flight, so end-of-course handoff no longer freezes the recovered parcel runtime mid-delivery
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
@@ -258,6 +259,7 @@ Still missing or approximate:
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
+- the unresolved `row_event_display + 0x18` finish gate and the exact `state 4 -> 5` promotion that Windows uses to release the late completion handoff
 - exact parcel flight/runtime-object behavior, row-event widget ownership, and timing
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
