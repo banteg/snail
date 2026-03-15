@@ -433,8 +433,10 @@ const track_parcel_bob_amplitude: f32 = 0.3;
 const track_parcel_bob_phase_step: f32 = 0.012820513;
 const track_parcel_home_progress_step: f32 = 0.0416666679;
 const track_parcel_delivery_progress_step: f32 = 0.0166666675;
+const math_random_center: f32 = 16384.0;
+const math_random_inv_center: f32 = 1.0 / math_random_center;
+const track_parcel_delivery_random_y_scale: f32 = 1.5 * math_random_inv_center;
 const track_parcel_home_arc_height: f32 = 0.5;
-const track_parcel_delivery_arc_height: f32 = 1.0;
 const completion_cutscene_x_offset: f32 = 0.5;
 const death_cutscene_x_offset: f32 = 2.0;
 const death_cutscene_y_floor: f32 = 0.0;
@@ -932,6 +934,7 @@ pub const Runner = struct {
     defeated_slug_cell_count: usize = 0,
     collected_parcel_rows: [max_collected_parcel_rows]usize = [_]usize{0} ** max_collected_parcel_rows,
     collected_parcel_row_count: usize = 0,
+    math_random_state: u32 = 0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -960,6 +963,7 @@ pub const Runner = struct {
                 .bonus_blink_step = 1.0,
             },
             .visible_life_stock = starting_visible_life_stock,
+            .math_random_state = preview.runtime_build_final_random_state,
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
@@ -1239,6 +1243,11 @@ pub const Runner = struct {
 
     pub fn activeTrackParcels(self: *const Runner) []const TrackParcelRuntime {
         return self.active_track_parcels[0..];
+    }
+
+    fn nextMathRandomInt15(self: *Runner) u32 {
+        self.math_random_state = (self.math_random_state *% 0x343fd) +% 0x269ec3;
+        return (self.math_random_state >> 16) & 0x7fff;
     }
 
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
@@ -2658,10 +2667,15 @@ pub const Runner = struct {
     }
 
     fn beginTrackParcelDelivery(self: *Runner, parcel: *TrackParcelRuntime) void {
-        _ = self;
         parcel.progress = 0.0;
         parcel.progress_step = track_parcel_delivery_progress_step;
-        parcel.delivery_offset = .{ .x = 0.0, .y = track_parcel_delivery_arc_height, .z = 0.0 };
+        const random_x = @as(f32, @floatFromInt(self.nextMathRandomInt15()));
+        const random_y = @as(f32, @floatFromInt(self.nextMathRandomInt15()));
+        parcel.delivery_offset = .{
+            .x = (random_x - math_random_center) * math_random_inv_center,
+            .y = 1.0 + ((random_y - math_random_center) * track_parcel_delivery_random_y_scale),
+            .z = 0.0,
+        };
         parcel.state = 7;
     }
 
@@ -4586,6 +4600,24 @@ test "parcel delivery homes to the row event widget world target" {
     try std.testing.expectApproxEqAbs(expected.x, parcel.world_position.x, 0.0001);
     try std.testing.expectApproxEqAbs(expected.y, parcel.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(expected.z, parcel.world_position.z, 0.0001);
+}
+
+test "parcel delivery seeds the recovered random arc coefficients" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.math_random_state = 0;
+
+    var parcel = TrackParcelRuntime{};
+    runner.beginTrackParcelDelivery(&parcel);
+
+    try std.testing.expectEqual(@as(u32, 7), parcel.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), parcel.progress, 0.0001);
+    try std.testing.expectApproxEqAbs(track_parcel_delivery_progress_step, parcel.progress_step, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.99768066), parcel.delivery_offset.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.20669556), parcel.delivery_offset.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), parcel.delivery_offset.z, 0.0001);
 }
 
 test "runner registers parcel delivery after the parcel flight finishes" {
