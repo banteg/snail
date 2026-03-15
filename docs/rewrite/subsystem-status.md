@@ -336,6 +336,7 @@ Implemented now:
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source and feed its compact replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
+- selected replay sessions no longer feed completion or failure back into live high-score persistence, and they now return to the launch surface instead of staying on the generic run-result path
 
 Still missing or approximate:
 

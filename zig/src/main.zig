@@ -782,6 +782,7 @@ const ResultReturnTarget = enum {
     main_menu,
     postal_route_map,
     time_trial_route_map,
+    high_scores_menu,
     replay_current_level,
     thanks_screen,
 };
@@ -4430,6 +4431,8 @@ const AppState = struct {
             .tutorial => result.persistence = .none,
         }
 
+        self.applySelectedReplayResultOverrides(&result);
+
         self.pending_run_result = result;
         try self.enterGamePhase(.completion_screen);
     }
@@ -4484,6 +4487,8 @@ const AppState = struct {
                 result.persistence = .none;
             },
         }
+
+        self.applySelectedReplayResultOverrides(&result);
 
         self.pending_run_result = result;
         try self.enterGamePhase(.completion_screen);
@@ -4651,7 +4656,17 @@ const AppState = struct {
             // `initialize_galaxy` mode `1` after a completed route. That path keeps the
             // current route card open and relabels the bottom control to `Exit`.
             .postal_route_map => try self.enterRouteMapMenuWithScreenMode(.postal, .post_completion_exit),
-            .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
+            .time_trial_route_map => {
+                if (self.selectedReplayPlaybackActive()) {
+                    self.start_route_index_override = self.active_frontend_level_index;
+                }
+                try self.enterRouteMapMenu(.time_trial);
+            },
+            .high_scores_menu => {
+                self.selected_level_record_override = null;
+                self.selected_level_record_source = null;
+                try self.enterGamePhase(.high_scores_menu);
+            },
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
             .replay_current_level => if (self.selected_level_record_override) |record|
                 try self.beginFrontendLevelPath(record.mode, record.level_index, record, self.selected_level_record_source)
@@ -4786,6 +4801,25 @@ const AppState = struct {
     fn selectedReplayDirectiveForRunner(self: *const AppState, runner: *const gameplay.Runner) gameplay.ReplayDirective {
         const entry = self.selectedReplayEntry() orelse return .{};
         return selectedReplayDirectiveForEntry(entry, runner.runtime_track_index);
+    }
+
+    fn resultReturnTargetForSelectedReplaySource(source: SelectedLevelRecordSource) ResultReturnTarget {
+        return switch (source) {
+            .completion => .time_trial_route_map,
+            .postal, .challenge => .high_scores_menu,
+        };
+    }
+
+    fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
+        if (!self.selectedReplayPlaybackActive()) return;
+        result.persistence = .none;
+        result.high_score_mode = null;
+        result.high_score_rank = null;
+        result.time_trial_record_improved = false;
+        result.unlocked_next_route = false;
+        if (self.selected_level_record_source) |source| {
+            result.return_target = resultReturnTargetForSelectedReplaySource(source);
+        }
     }
 
     fn highScoreReplayEntry(self: *const AppState, entry_index: usize) ?*const high_score.Entry {
@@ -9957,6 +9991,21 @@ test "failed runs return to the main menu while completions keep mode-specific e
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
 }
 
+test "selected replay return targets follow the launch surface" {
+    try std.testing.expectEqual(
+        ResultReturnTarget.time_trial_route_map,
+        AppState.resultReturnTargetForSelectedReplaySource(.{ .completion = 7 }),
+    );
+    try std.testing.expectEqual(
+        ResultReturnTarget.high_scores_menu,
+        AppState.resultReturnTargetForSelectedReplaySource(.{ .postal = 2 }),
+    );
+    try std.testing.expectEqual(
+        ResultReturnTarget.high_scores_menu,
+        AppState.resultReturnTargetForSelectedReplaySource(.{ .challenge = 5 }),
+    );
+}
+
 test "final postal completion returns through the thanks screen" {
     try std.testing.expectEqual(ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
     try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
@@ -10251,6 +10300,43 @@ test "selected replay directive decodes compact lateral x and stays active past 
     try std.testing.expect(tail.active);
     try std.testing.expect(tail.lateral_world_x == null);
     try std.testing.expectEqual(@as(u8, 0), tail.flag_bits);
+}
+
+test "selected replay results skip persistence and score-table awards" {
+    var state: AppState = undefined;
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.selected_level_record_source = .{ .challenge = 2 };
+
+    const raw_record = try std.testing.allocator.alloc(u8, 0x88 + 5);
+    @memset(raw_record, 0);
+    std.mem.writeInt(u32, raw_record[0x74..0x78], 1, .little);
+    state.high_score_tables.challenge[2].raw_record = raw_record;
+    state.high_score_tables.challenge[2].has_replay = true;
+
+    var result = PendingRunResult{
+        .level_name = "Replay",
+        .mode = .challenge,
+        .elapsed_millis = 1234,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 42_000,
+        .score_is_partial = true,
+        .high_score_mode = .challenge,
+        .high_score_rank = 3,
+        .time_trial_record_improved = true,
+        .unlocked_next_route = true,
+        .persistence = .completed,
+        .return_target = .main_menu,
+    };
+    state.applySelectedReplayResultOverrides(&result);
+
+    try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
+    try std.testing.expect(result.high_score_mode == null);
+    try std.testing.expect(result.high_score_rank == null);
+    try std.testing.expect(!result.time_trial_record_improved);
+    try std.testing.expect(!result.unlocked_next_route);
+    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
 }
 
 test "selected level record override drives live run tuning lanes" {
