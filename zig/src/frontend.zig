@@ -348,7 +348,7 @@ pub fn routeMenuHint(mode: FrontendLevelMode, action: RouteMenuAction) ?[]const 
             "Launch the selected delivery route using the recovered front-end route index."
         else
             "Launch the selected route using the recovered front-end route index.",
-        .watch_best_trial => "The original front end can launch saved replay trials from here, but replay playback is not ported yet.",
+        .watch_best_trial => "Launch the saved replay-backed course setup. Recorded input playback is still not ported.",
         .back => "Return to the main menu.",
     };
 }

@@ -331,12 +331,13 @@ Implemented now:
 
 - enough score/config structure to preserve replay-bearing records
 - route-map and high-score UI have the right broad replay concepts in place
+- selected replay actions now launch the recovered selected-level-record path instead of dead-end stubs
+- replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 
 Still missing or approximate:
 
-- actual replay launch in route map
-- actual replay launch in high scores
-- the replay-backed rebuild path
+- actual recorded-input replay playback in route map
+- actual recorded-input replay playback in high scores
 - full replay payload read/write parity
 
 Best next work:

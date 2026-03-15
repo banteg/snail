@@ -899,6 +899,36 @@ const PendingHighScoreEntry = struct {
     rank: usize,
 };
 
+const SelectedLevelRecordOverride = struct {
+    mode: FrontendLevelMode,
+    level_index: usize,
+    runtime_build_flags: u32,
+    replay_speed_scalar: f32,
+    challenge_speed_value: u32,
+    challenge_difficulty_value: u32,
+    challenge_difficulty_scalar: f32,
+    runtime_build_seed: u32,
+    garbage_scalar: f32,
+    salt_scalar: f32,
+
+    fn fromHighScoreEntry(entry: *const high_score.Entry) ?SelectedLevelRecordOverride {
+        const raw_mode = std.math.cast(i32, entry.replay_mode_id) orelse return null;
+        const mode = std.meta.intToEnum(FrontendLevelMode, raw_mode) catch return null;
+        return .{
+            .mode = mode,
+            .level_index = @intCast(entry.replay_level_index),
+            .runtime_build_flags = entry.runtime_build_flags,
+            .replay_speed_scalar = entry.replay_speed_scalar,
+            .challenge_speed_value = entry.challenge_speed_value,
+            .challenge_difficulty_value = entry.challenge_difficulty_value,
+            .challenge_difficulty_scalar = entry.challenge_difficulty_scalar,
+            .runtime_build_seed = entry.runtime_build_seed,
+            .garbage_scalar = entry.garbage_scalar,
+            .salt_scalar = entry.salt_scalar,
+        };
+    }
+};
+
 const CompletionAction = enum {
     continue_flow,
 };
@@ -1525,6 +1555,7 @@ const AppState = struct {
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
     current_runtime_build_seed_mode: ?FrontendLevelMode = null,
+    selected_level_record_override: ?SelectedLevelRecordOverride = null,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
@@ -3804,7 +3835,11 @@ const AppState = struct {
     fn performRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
-            .watch_best_trial => self.setGameStatusMessage("Best-trial replay playback is not ported."),
+            .watch_best_trial => {
+                const entry = self.routeMapReplayEntry() orelse return;
+                const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
+                try self.enterSelectedLevelRecordPath(record);
+            },
             .back => if (self.route_map_screen_mode == .post_completion_exit)
                 try self.beginRouteMapExitPrompt()
             else
@@ -3839,7 +3874,9 @@ const AppState = struct {
 
     fn performHighScoreReplay(self: *AppState, entry_index: usize) !void {
         if (!self.highScoreReplayAvailable(entry_index)) return;
-        self.setGameStatusMessage("High-score replay playback is not ported.");
+        const entry = self.highScoreReplayEntry(entry_index) orelse return;
+        const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
+        try self.enterSelectedLevelRecordPath(record);
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
@@ -3881,8 +3918,22 @@ const AppState = struct {
     }
 
     fn enterFrontendLevelPath(self: *AppState, mode: FrontendLevelMode, level_index: usize) !void {
+        try self.beginFrontendLevelPath(mode, level_index, null);
+    }
+
+    fn enterSelectedLevelRecordPath(self: *AppState, record: SelectedLevelRecordOverride) !void {
+        try self.beginFrontendLevelPath(record.mode, record.level_index, record);
+    }
+
+    fn beginFrontendLevelPath(
+        self: *AppState,
+        mode: FrontendLevelMode,
+        level_index: usize,
+        selected_level_record_override: ?SelectedLevelRecordOverride,
+    ) !void {
         var path_buffer: [64]u8 = undefined;
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
+        self.selected_level_record_override = selected_level_record_override;
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
         self.seed_level_intro_cutscene = true;
@@ -3926,6 +3977,7 @@ const AppState = struct {
     }
 
     fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: RouteMapScreenMode) !void {
+        self.selected_level_record_override = null;
         self.frontend_route_mode = mode;
         self.route_map_screen_mode = screen_mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
@@ -4153,6 +4205,7 @@ const AppState = struct {
     }
 
     fn currentRunReplaySpeedScalar(self: *const AppState) f32 {
+        if (self.selected_level_record_override) |record| return record.replay_speed_scalar;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => replaySpeedScalarForSliderValue(self.runtime_config.challengeReplaySpeedValue()),
             .postal, .time_trial, .tutorial => replaySpeedScalarForSliderValue(if (self.current_level) |loaded_level|
@@ -4163,6 +4216,7 @@ const AppState = struct {
     }
 
     fn currentRunChallengeDifficultyValue(self: *const AppState) u32 {
+        if (self.selected_level_record_override) |record| return record.challenge_difficulty_value;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => self.runtime_config.challengeReplayDifficultyValue(),
             .postal, .time_trial, .tutorial => 0,
@@ -4170,6 +4224,7 @@ const AppState = struct {
     }
 
     fn currentRunChallengeDifficultyScalar(self: *const AppState) f32 {
+        if (self.selected_level_record_override) |record| return record.challenge_difficulty_scalar;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => @as(f32, @floatFromInt(self.currentRunChallengeDifficultyValue())) * 0.01,
             .postal, .time_trial, .tutorial => 0.0,
@@ -4177,6 +4232,7 @@ const AppState = struct {
     }
 
     fn currentRunChallengeSpeedValue(self: *const AppState) u32 {
+        if (self.selected_level_record_override) |record| return record.challenge_speed_value;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => self.runtime_config.challengeReplaySpeedValue(),
             .postal, .time_trial, .tutorial => 0,
@@ -4194,6 +4250,7 @@ const AppState = struct {
     }
 
     fn currentRunGarbageScalar(self: *const AppState) f32 {
+        if (self.selected_level_record_override) |record| return record.garbage_scalar;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
             .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
@@ -4204,6 +4261,7 @@ const AppState = struct {
     }
 
     fn currentRunSaltScalar(self: *const AppState) f32 {
+        if (self.selected_level_record_override) |record| return record.salt_scalar;
         return switch (self.active_frontend_mode orelse .tutorial) {
             .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
             .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
@@ -4245,6 +4303,8 @@ const AppState = struct {
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
         return if (self.current_track_preview) |preview|
             preview.runtime_build_flags
+        else if (self.selected_level_record_override) |record|
+            record.runtime_build_flags
         else
             runtimeBuildFlagsForFrontendMode(self.active_frontend_mode);
     }
@@ -4565,7 +4625,9 @@ const AppState = struct {
             .postal_route_map => try self.enterRouteMapMenuWithScreenMode(.postal, .post_completion_exit),
             .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
-            .replay_current_level => if (result.mode) |mode|
+            .replay_current_level => if (self.selected_level_record_override) |record|
+                try self.enterSelectedLevelRecordPath(record)
+            else if (result.mode) |mode|
                 try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
             else
                 try self.enterGamePhase(.main_menu),
@@ -4653,6 +4715,17 @@ const AppState = struct {
             .postal => if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
             .challenge => if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
         };
+    }
+
+    fn routeMapReplayEntry(self: *const AppState) ?*const high_score.Entry {
+        const route_index = self.currentRouteMapOpenIndex() orelse return null;
+        const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return null;
+        return &self.high_score_tables.completion[completion_index];
+    }
+
+    fn highScoreReplayEntry(self: *const AppState, entry_index: usize) ?*const high_score.Entry {
+        const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        return self.highScoreEntry(selected_mode, entry_index);
     }
 
     fn commitPostalRouteProgress(self: *AppState) !bool {
@@ -5539,7 +5612,7 @@ const AppState = struct {
                 &self.catalog,
                 loaded_level,
                 .{
-                    .runtime_build_flags = runtimeBuildFlagsForFrontendMode(self.active_frontend_mode),
+                    .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
                     .runtime_build_seed = runtime_build_seed,
                     .garbage_scalar_override = self.currentRunGarbageScalar(),
                     .salt_scalar_override = self.currentRunSaltScalar(),
@@ -5599,6 +5672,14 @@ const AppState = struct {
         if (self.command != .game) return 0;
 
         const mode = self.active_frontend_mode;
+        if (self.selected_level_record_override) |record| {
+            if (mode == record.mode and self.active_frontend_level_index == record.level_index) {
+                self.current_runtime_build_seed = record.runtime_build_seed;
+                self.current_runtime_build_seed_level_index = self.level_index;
+                self.current_runtime_build_seed_mode = mode;
+                return record.runtime_build_seed;
+            }
+        }
         if (self.current_runtime_build_seed_level_index == self.level_index and self.current_runtime_build_seed_mode == mode) {
             return self.current_runtime_build_seed;
         }
@@ -9992,6 +10073,7 @@ test "current run high-score entry carries replay mode and build settings" {
     state.active_frontend_level_index = 7;
     state.current_track_preview = null;
     state.current_runtime_build_seed = 321;
+    state.selected_level_record_override = null;
 
     const entry = state.currentRunHighScoreEntry(12_345);
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
@@ -10031,6 +10113,7 @@ test "current parcel target prefers live preview count" {
 test "mode-specific runtime build flags follow recovered subgame presets" {
     var state: AppState = undefined;
     state.current_track_preview = null;
+    state.selected_level_record_override = null;
 
     state.active_frontend_mode = .postal;
     try std.testing.expectEqual(@as(u32, track.postalChallengeRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
@@ -10043,6 +10126,97 @@ test "mode-specific runtime build flags follow recovered subgame presets" {
 
     state.active_frontend_mode = .tutorial;
     try std.testing.expectEqual(@as(u32, track.tutorialRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
+}
+
+test "selected level record override follows recovered compact lanes" {
+    const entry = high_score.Entry{
+        .replay_level_index = 12,
+        .replay_mode_id = 4,
+        .runtime_build_flags = 0x0075cfff,
+        .replay_speed_scalar = 0.74,
+        .challenge_speed_value = 55,
+        .challenge_difficulty_value = 40,
+        .challenge_difficulty_scalar = 0.4,
+        .runtime_build_seed = 222,
+        .garbage_scalar = 0.32,
+        .salt_scalar = 0.45,
+    };
+    const record = SelectedLevelRecordOverride.fromHighScoreEntry(&entry) orelse return error.TestUnexpectedResult;
+
+    try std.testing.expectEqual(FrontendLevelMode.time_trial, record.mode);
+    try std.testing.expectEqual(@as(usize, 12), record.level_index);
+    try std.testing.expectEqual(@as(u32, 0x0075cfff), record.runtime_build_flags);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.74), record.replay_speed_scalar, 0.0001);
+    try std.testing.expectEqual(@as(u32, 55), record.challenge_speed_value);
+    try std.testing.expectEqual(@as(u32, 40), record.challenge_difficulty_value);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), record.challenge_difficulty_scalar, 0.0001);
+    try std.testing.expectEqual(@as(u32, 222), record.runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), record.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.45), record.salt_scalar, 0.0001);
+}
+
+test "selected level record override rejects unresolved mode ids" {
+    const entry = high_score.Entry{
+        .replay_level_index = 1,
+        .replay_mode_id = 3,
+    };
+    try std.testing.expect(SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
+}
+
+test "selected level record override drives live run tuning lanes" {
+    var state: AppState = undefined;
+    state.runtime_config = config.Blob.initDefault();
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.active_frontend_mode = .challenge;
+    state.selected_level_record_override = .{
+        .mode = .challenge,
+        .level_index = 0,
+        .runtime_build_flags = 0x00f5cfff,
+        .replay_speed_scalar = 0.56,
+        .challenge_speed_value = 40,
+        .challenge_difficulty_value = 55,
+        .challenge_difficulty_scalar = 0.55,
+        .runtime_build_seed = 444,
+        .garbage_scalar = 0.12,
+        .salt_scalar = 0.34,
+    };
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.56), state.currentRunReplaySpeedScalar(), 0.0001);
+    try std.testing.expectEqual(@as(u32, 40), state.currentRunChallengeSpeedValue());
+    try std.testing.expectEqual(@as(u32, 55), state.currentRunChallengeDifficultyValue());
+    try std.testing.expectApproxEqAbs(@as(f32, 0.55), state.currentRunChallengeDifficultyScalar(), 0.0001);
+    try std.testing.expectEqual(@as(u32, 0x00f5cfff), state.currentRunRuntimeBuildFlags());
+    try std.testing.expectApproxEqAbs(@as(f32, 0.12), state.currentRunGarbageScalar(), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.34), state.currentRunSaltScalar(), 0.0001);
+}
+
+test "selected level record override seeds track rebuilds without frontend rng" {
+    var state: AppState = undefined;
+    state.command = .game;
+    state.active_frontend_mode = .time_trial;
+    state.active_frontend_level_index = 9;
+    state.level_index = 123;
+    state.current_runtime_build_seed = 0;
+    state.current_runtime_build_seed_level_index = null;
+    state.current_runtime_build_seed_mode = null;
+    state.selected_level_record_override = .{
+        .mode = .time_trial,
+        .level_index = 9,
+        .runtime_build_flags = track.timeTrialRuntimeBuildFlags,
+        .replay_speed_scalar = 0.74,
+        .challenge_speed_value = 0,
+        .challenge_difficulty_value = 0,
+        .challenge_difficulty_scalar = 0.0,
+        .runtime_build_seed = 777,
+        .garbage_scalar = 0.11,
+        .salt_scalar = 0.22,
+    };
+
+    try std.testing.expectEqual(@as(u32, 777), state.trackBuildSeedForCurrentLoad());
+    try std.testing.expectEqual(@as(u32, 777), state.current_runtime_build_seed);
+    try std.testing.expectEqual(@as(?usize, 123), state.current_runtime_build_seed_level_index);
+    try std.testing.expectEqual(@as(?FrontendLevelMode, .time_trial), state.current_runtime_build_seed_mode);
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {
