@@ -4176,10 +4176,11 @@ const AppState = struct {
         const loaded_level = self.current_level orelse return;
         const active_mode = self.active_frontend_mode;
         const parcel_target = self.currentParcelTarget();
-        if (completionBonusAppliesForMode(active_mode)) {
-            if (self.level_runner) |*runner| {
+        if (self.level_runner) |*runner| {
+            if (completionBonusAppliesForMode(active_mode)) {
                 runner.applyCompletionBonus(parcel_target);
             }
+            runner.flushPendingParcelDeliveries();
         }
         const runner = self.level_runner orelse return;
         const parcel_count = runner.counters.parcels;
@@ -4244,9 +4245,12 @@ const AppState = struct {
         if (self.pending_run_result != null) return;
 
         const loaded_level = self.current_level orelse return;
-        const runner = self.level_runner orelse return;
         const active_mode = self.active_frontend_mode;
         const parcel_target = self.currentParcelTarget();
+        if (self.level_runner) |*runner| {
+            runner.flushPendingParcelDeliveries();
+        }
+        const runner = self.level_runner orelse return;
         const elapsed_millis = completionElapsedMillis(runner);
         var result = PendingRunResult{
             .outcome = .failed,
@@ -4292,7 +4296,8 @@ const AppState = struct {
     }
 
     fn beginRespawnRun(self: *AppState) !void {
-        const previous_runner = self.level_runner orelse return;
+        var previous_runner = self.level_runner orelse return;
+        previous_runner.flushPendingParcelDeliveries();
         const preserved_session_mode = previous_runner.session_mode;
         const preserved_score = previous_runner.score;
         // PORT(verified): `update_subgoldy_resurrect` decrements visible lives only on the
@@ -7259,9 +7264,9 @@ fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
 
 // PORT(partial): this now follows the recovered Windows `cRSubGoldy::ScoreAdd` constants for the
 // score events the current runner actually models:
-// ring collect (+100 for the scoring ring families), parcel pickup (+100), and the postal-only
-// completion bonus. Health pickup no longer scores in the Windows-targeted path.
-// Slug kills (+500), delayed parcel registration (+10), garbage-side score events (+10),
+// ring collect (+100 for the scoring ring families), parcel pickup/register (+100 each), and the
+// postal-only completion bonus (+50,000). Health pickup no longer scores in the Windows-targeted path.
+// Slug kills (+500), garbage-side score events (+10),
 // jetpack/speed-up scoring, and the rest of the original `cRSubGoldy::AI()` path remain unported.
 fn bootPhaseProgress(state: *const AppState) f32 {
     if (boot_tasks.len == 0) return 1.0;

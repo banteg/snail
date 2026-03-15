@@ -244,6 +244,7 @@ Implemented now:
 - garbage and salt aftermath now spawn from the hazard positions instead of the player position, so tutorial combat feedback is no longer centered on Turbo when those hazards are hit
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
+- parcel pickup no longer collapses directly into parcel delivery score/count; the runner now stages parcel registration through a delayed delivery queue and flushes outstanding deliveries on run teardown before building results
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:
@@ -252,7 +253,7 @@ Still missing or approximate:
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
-- parcel flight/runtime-object behavior and timing
+- exact parcel flight/runtime-object behavior, row-event widget ownership, and timing
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
 Best next work:

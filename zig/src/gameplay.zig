@@ -315,6 +315,7 @@ const max_active_runtime_hazards: usize = 128;
 const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
 const score_life_threshold: u32 = 50_000;
+const postal_completion_bonus_score: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
@@ -343,6 +344,7 @@ const lane_lean_duration_seconds: f32 = 0.25;
 const lane_lean_amplitude_scale: f32 = 0.05;
 const lane_lean_max_amplitude: f32 = 0.08;
 const attachment_pre_roll_scale: f32 = 0.35;
+const parcel_delivery_progress_step: f32 = 1.0 / 120.0;
 const completion_cutscene_x_offset: f32 = 0.5;
 const death_cutscene_x_offset: f32 = 2.0;
 const death_cutscene_y_floor: f32 = 0.0;
@@ -811,6 +813,8 @@ pub const Runner = struct {
     score: ScoreTotals = .{},
     recent_score_award: u32 = 0,
     recent_score_award_ticks: u8 = 0,
+    pending_parcel_deliveries: u32 = 0,
+    parcel_delivery_progress: f32 = 0.0,
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
@@ -920,6 +924,7 @@ pub const Runner = struct {
             self.refreshLiveRuntimeHazards(preview);
             self.processRuntimeHazardCollisions(preview);
             self.processVisitedRows(preview);
+            self.updateParcelDeliveryQueue();
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
             self.stepTemporaryStates();
@@ -1480,9 +1485,8 @@ pub const Runner = struct {
                     }
                 },
                 .parcel => |parcel| {
-                    self.counters.parcels += 1;
                     self.recordScore(&self.score.parcel_pickup, 100);
-                    self.maybeRecordCompletionBonus();
+                    self.queueParcelDelivery();
                     self.recent_event = .{ .parcel = parcel.id };
                 },
                 .jetpack_off => {
@@ -1625,6 +1629,14 @@ pub const Runner = struct {
         self.maybeRecordCompletionBonus();
     }
 
+    pub fn flushPendingParcelDeliveries(self: *Runner) void {
+        while (self.pending_parcel_deliveries > 0) {
+            self.pending_parcel_deliveries -= 1;
+            self.recordParcelDelivery();
+        }
+        self.parcel_delivery_progress = 0.0;
+    }
+
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
         const previous_total = self.score.total;
         slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
@@ -1632,6 +1644,34 @@ pub const Runner = struct {
         self.recent_score_award = points;
         self.recent_score_award_ticks = 45;
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
+    }
+
+    fn queueParcelDelivery(self: *Runner) void {
+        self.pending_parcel_deliveries = std.math.add(u32, self.pending_parcel_deliveries, 1) catch std.math.maxInt(u32);
+    }
+
+    fn updateParcelDeliveryQueue(self: *Runner) void {
+        if (self.pending_parcel_deliveries == 0) {
+            self.parcel_delivery_progress = 0.0;
+            return;
+        }
+
+        self.parcel_delivery_progress = std.math.clamp(
+            self.parcel_delivery_progress + parcel_delivery_progress_step,
+            0.0,
+            1.0,
+        );
+        if (self.parcel_delivery_progress < 0.999) return;
+
+        self.parcel_delivery_progress = 0.0;
+        self.pending_parcel_deliveries -= 1;
+        self.recordParcelDelivery();
+    }
+
+    fn recordParcelDelivery(self: *Runner) void {
+        self.counters.parcels += 1;
+        self.recordScore(&self.score.parcel_register, 100);
+        self.maybeRecordCompletionBonus();
     }
 
     fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1733,7 +1773,7 @@ pub const Runner = struct {
         if (self.parcel_target == 0 or self.counters.parcels < self.parcel_target) return;
 
         self.completion_bonus_applied = true;
-        self.recordScore(&self.score.completion_bonus, 100);
+        self.recordScore(&self.score.completion_bonus, postal_completion_bonus_score);
     }
 
     // PORT(partial): recovered from Android `cRDamageGuage::AI()`. Filling the gauge enters a
@@ -3976,13 +4016,19 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
 
     runner = Runner.init(&arcade_fixture.preview);
     runner.configureCompletionBonus(1, true);
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
     runner.step(&arcade_fixture.preview, .{}, step_seconds);
-    try std.testing.expectEqual(@as(u32, 200), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.completion_bonus);
+    runner.flushPendingParcelDeliveries();
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
 }
 
 test "runner applies the completion bonus once" {
@@ -3990,11 +4036,11 @@ test "runner applies the completion bonus once" {
     runner.counters.parcels = 3;
 
     runner.applyCompletionBonus(3);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
 
     runner.applyCompletionBonus(3);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
 }
 
 test "runner seeds visible life stock at 3 and caps score-side awards at 9" {
