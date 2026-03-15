@@ -243,6 +243,7 @@ Implemented now:
 - garbage collisions now apply the missing tutorial “Asteroids slow me down” behavior by shaving forward speed and kicking Turbo sideways instead of only incrementing damage/score
 - garbage and salt aftermath now spawn from the hazard positions instead of the player position, so tutorial combat feedback is no longer centered on Turbo when those hazards are hit
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
+- challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:

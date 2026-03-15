@@ -4081,6 +4081,12 @@ const AppState = struct {
         };
     }
 
+    fn challengeParcelTargetCount(speed_value: u32, difficulty_scalar: f32) usize {
+        const scaled_target = (@as(f32, @floatFromInt(speed_value)) * 50.0 * 0.01) +
+            (difficulty_scalar * 50.0);
+        return @as(usize, @intFromFloat(@floor(@max(scaled_target, 0.0)))) + 1;
+    }
+
     fn challengeRuntimeHazardScalar(value: u32) f32 {
         return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
     }
@@ -4103,6 +4109,27 @@ const AppState = struct {
             else
                 0.0,
         };
+    }
+
+    fn currentParcelTarget(self: *const AppState) usize {
+        if (self.current_track_preview) |preview| return preview.parcel_target_count;
+        return if (self.current_level) |loaded_level|
+            loaded_level.parcels orelse 0
+        else
+            0;
+    }
+
+    fn configureRuntimeParcels(self: *AppState, loaded_track_preview: *track.LoadedLevelPreview) !void {
+        switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => {
+                const target_count = challengeParcelTargetCount(
+                    self.currentRunChallengeSpeedValue(),
+                    self.currentRunChallengeDifficultyScalar(),
+                );
+                _ = try loaded_track_preview.trimParcelAnnotationsToTarget(&self.math_random_state, target_count);
+            },
+            .postal, .time_trial, .tutorial => {},
+        }
     }
 
     fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
@@ -4148,7 +4175,7 @@ const AppState = struct {
 
         const loaded_level = self.current_level orelse return;
         const active_mode = self.active_frontend_mode;
-        const parcel_target = loaded_level.parcels orelse 0;
+        const parcel_target = self.currentParcelTarget();
         if (completionBonusAppliesForMode(active_mode)) {
             if (self.level_runner) |*runner| {
                 runner.applyCompletionBonus(parcel_target);
@@ -4219,7 +4246,7 @@ const AppState = struct {
         const loaded_level = self.current_level orelse return;
         const runner = self.level_runner orelse return;
         const active_mode = self.active_frontend_mode;
-        const parcel_target = loaded_level.parcels orelse 0;
+        const parcel_target = self.currentParcelTarget();
         const elapsed_millis = completionElapsedMillis(runner);
         var result = PendingRunResult{
             .outcome = .failed,
@@ -5385,6 +5412,7 @@ const AppState = struct {
             );
             if (self.current_track_preview) |*loaded_track_preview| {
                 self.math_random_state = loaded_track_preview.runtime_build_final_random_state;
+                try self.configureRuntimeParcels(loaded_track_preview);
                 if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
                     self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
                         self.allocator,
@@ -5404,7 +5432,7 @@ const AppState = struct {
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
-                    loaded_level.parcels orelse 0,
+                    self.currentParcelTarget(),
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
@@ -7305,7 +7333,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
 
             const title_point = layout.mapPoint(28.0, 24.0);
             const meta_point = layout.mapPoint(28.0, 50.0);
-            const parcel_target = loaded_level.parcels orelse 0;
+            const parcel_target = state.currentParcelTarget();
             const parcel_count = runner.counters.parcels;
             const score_total = runner.score.total;
             const elapsed_millis = runner.stopwatch.elapsedMillis();
@@ -7499,7 +7527,8 @@ fn tutorialGameplayBestScore(state: *const AppState) u32 {
 }
 
 fn drawTutorialGameplayHud(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
-    const parcel_target = loaded_level.parcels orelse 0;
+    _ = loaded_level;
+    const parcel_target = state.currentParcelTarget();
     const parcel_count = runner.counters.parcels;
 
     var parcel_buffer: [32]u8 = undefined;
@@ -9786,6 +9815,27 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.garbage_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.salt_scalar, 0.0001);
+}
+
+test "challenge parcel target matches recovered placement formula" {
+    try std.testing.expectEqual(@as(usize, 1), AppState.challengeParcelTargetCount(0, 0.0));
+    try std.testing.expectEqual(@as(usize, 41), AppState.challengeParcelTargetCount(40, 0.4));
+    try std.testing.expectEqual(@as(usize, 78), AppState.challengeParcelTargetCount(100, 0.55));
+}
+
+test "current parcel target prefers live preview count" {
+    var state: AppState = undefined;
+    var preview: track.LoadedLevelPreview = undefined;
+    preview.parcel_target_count = 37;
+    state.current_track_preview = preview;
+    state.current_level = null;
+    try std.testing.expectEqual(@as(usize, 37), state.currentParcelTarget());
+
+    var loaded_level: level.Definition = undefined;
+    loaded_level.parcels = 9;
+    state.current_track_preview = null;
+    state.current_level = loaded_level;
+    try std.testing.expectEqual(@as(usize, 9), state.currentParcelTarget());
 }
 
 test "mode-specific runtime build flags follow recovered subgame presets" {

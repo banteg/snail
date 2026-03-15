@@ -177,6 +177,7 @@ pub const LoadedLevelPreview = struct {
     runtime_build_final_random_state: u32,
     garbage_scalar: f32,
     salt_scalar: f32,
+    parcel_target_count: usize,
     runtime_tiles: []u8,
     runtime_edge_masks: []u8,
     runtime_spawn_hints: []u8,
@@ -344,6 +345,7 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
             .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
+            .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
@@ -481,6 +483,7 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
             .garbage_scalar = options.garbage_scalar_override orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse 0.0,
+            .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
@@ -504,6 +507,44 @@ pub const LoadedLevelPreview = struct {
         }
         self.allocator.free(self.row_offsets);
         self.allocator.free(self.segments);
+    }
+
+    pub fn activeParcelCount(self: *const LoadedLevelPreview) usize {
+        return countActiveParcelAnnotations(self.segments);
+    }
+
+    pub fn trimParcelAnnotationsToTarget(
+        self: *LoadedLevelPreview,
+        random_state: *u32,
+        target_count: usize,
+    ) !usize {
+        var parcel_rows: std.ArrayList(ParcelRowLocation) = .empty;
+        defer parcel_rows.deinit(self.allocator);
+
+        for (self.segments, 0..) |loaded_segment, segment_index| {
+            for (loaded_segment.rows, 0..) |row, row_index| {
+                const annotation = row.annotation orelse continue;
+                if (annotation.tag() != .parcel) continue;
+                try parcel_rows.append(self.allocator, .{
+                    .segment_index = segment_index,
+                    .row_index = row_index,
+                });
+            }
+        }
+
+        const keep_count = @min(target_count, parcel_rows.items.len);
+        var remaining = parcel_rows.items.len;
+        while (remaining > keep_count) {
+            const remove_index = nextMathRandomScaledIndex(random_state, remaining);
+            const last_index = remaining - 1;
+            const remove_row = parcel_rows.items[remove_index];
+            @constCast(self.segments[remove_row.segment_index].rows)[remove_row.row_index].annotation = null;
+            parcel_rows.items[remove_index] = parcel_rows.items[last_index];
+            remaining = last_index;
+        }
+
+        self.parcel_target_count = keep_count;
+        return keep_count;
     }
 
     pub fn previewCamera(self: *const LoadedLevelPreview, time_seconds: f32, selected_segment_index: usize) rl.Camera3D {
@@ -1450,6 +1491,33 @@ fn buildAttachmentSourceRowMirrorStates(
     };
 }
 
+const ParcelRowLocation = struct {
+    segment_index: usize,
+    row_index: usize,
+};
+
+fn countActiveParcelAnnotations(segments: []const segment.Definition) usize {
+    var count: usize = 0;
+    for (segments) |loaded_segment| {
+        for (loaded_segment.rows) |row| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() == .parcel) {
+                count += 1;
+            }
+        }
+    }
+    return count;
+}
+
+fn nextMathRandomScaledIndex(random_state: *u32, upper_bound: usize) usize {
+    if (upper_bound <= 1) return 0;
+    random_state.* = (random_state.* *% 0x343fd) +% 0x269ec3;
+    const random_value = (random_state.* >> 16) & 0x7fff;
+    const scaled = @as(f32, @floatFromInt(random_value)) *
+        @as(f32, @floatFromInt(upper_bound)) * 0.0000305175781;
+    return @min(@as(usize, @intFromFloat(scaled)), upper_bound - 1);
+}
+
 fn buildRuntimeEdgeMaskGrid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
@@ -1835,6 +1903,54 @@ test "load tutorial level preview" {
     try std.testing.expectEqual(@as(usize, 0), first_row.segment_index);
     try std.testing.expectEqual(@as(usize, 0), first_row.row_index);
     try std.testing.expect(preview.cellAt(0, 0) != null);
+}
+
+test "challenge preview counts live parcel rows instead of level metadata" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/CHALLENGE000.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    try std.testing.expectEqual(@as(?usize, 0), level_definition.parcels);
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    try std.testing.expect(preview.parcel_target_count > 0);
+    try std.testing.expectEqual(preview.parcel_target_count, preview.activeParcelCount());
+}
+
+test "challenge parcel trim reduces live parcel rows to the requested target" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/CHALLENGE000.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    const initial_count = preview.parcel_target_count;
+    try std.testing.expect(initial_count > 5);
+
+    var random_state = preview.runtime_build_final_random_state;
+    const kept_count = try preview.trimParcelAnnotationsToTarget(&random_state, 5);
+    try std.testing.expectEqual(@as(usize, 5), kept_count);
+    try std.testing.expectEqual(@as(usize, 5), preview.parcel_target_count);
+    try std.testing.expectEqual(@as(usize, 5), preview.activeParcelCount());
 }
 
 test "resolve segment x model path" {
