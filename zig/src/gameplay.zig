@@ -958,6 +958,7 @@ pub const Runner = struct {
         if (!self.paused and self.phase == .active) {
             self.refreshLiveTrackParcels(preview);
             self.updateTrackParcels();
+            self.processTrackParcelCollisions(preview);
             self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
@@ -1527,15 +1528,7 @@ pub const Runner = struct {
                         }
                     }
                 },
-                .parcel => |parcel| {
-                    if (self.collectParcelRow(global_row)) {
-                        self.collectLiveTrackParcel(global_row);
-                        self.counters.parcels += 1;
-                        self.recordScore(&self.score.parcel_pickup, 100);
-                        self.queueParcelDelivery();
-                        self.recent_event = .{ .parcel = parcel.id };
-                    }
-                },
+                .parcel => {},
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
                     self.disarmJetpackGauge();
@@ -1719,6 +1712,39 @@ pub const Runner = struct {
         self.registered_parcel_count += 1;
         self.recordScore(&self.score.parcel_register, 100);
         self.maybeRecordCompletionBonus();
+    }
+
+    fn processTrackParcelCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const current_row = currentRowIndex(preview, self.row_position);
+        const floor_height = preview.sampleFloorHeightAtGridPosition(
+            current_row,
+            laneIndexForLaneCenter(preview, self.lane_center),
+            self.row_position,
+        ) orelse 0.0;
+        const player_position = preview.worldPositionForLane(self.lane_center, self.row_position, floor_height + 0.4);
+        for (&self.active_track_parcels) |*parcel| {
+            if (parcel.state != 1) continue;
+
+            const delta_x = parcel.world_position.x - player_position.x;
+            const delta_y = parcel.world_position.y - player_position.y;
+            const delta_z = parcel.world_position.z - player_position.z;
+            if (delta_z >= 1.0) continue;
+
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            if (distance >= 1.24) continue;
+
+            if (!self.collectParcelRow(parcel.row)) {
+                parcel.state = 0;
+                continue;
+            }
+
+            self.counters.parcels += 1;
+            self.recordScore(&self.score.parcel_pickup, 100);
+            self.queueParcelDelivery();
+            self.recent_event = .{ .parcel = parcel.parcel_id };
+            parcel.state = 0;
+            return;
+        }
     }
 
     fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3582,9 +3608,10 @@ fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment
         const annotation = row_location.row.annotation orelse continue;
         if (annotation.tag() != tag) continue;
         const bounds = preview.laneBoundsForRow(row_location);
+        const center_lane = (bounds.min + bounds.max) / 2;
         return .{
             .row = global_row,
-            .lane = bounds.min,
+            .lane = center_lane,
         };
     }
     return null;
@@ -3655,6 +3682,14 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
 fn stepUntilHandoff(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
     var steps: usize = 0;
     while (steps < max_steps and runner.pending_handoff == .none) : (steps += 1) {
+        runner.step(preview, .{}, 1.0 / 60.0);
+    }
+    return steps;
+}
+
+fn stepUntilParcelPickup(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
+    var steps: usize = 0;
+    while (steps < max_steps and runner.counters.parcels == 0) : (steps += 1) {
         runner.step(preview, .{}, 1.0 / 60.0);
     }
     return steps;
@@ -4179,7 +4214,6 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     defer arcade_fixture.deinit();
 
     var runner = Runner{};
-    const step_seconds = 1.0 / 60.0;
 
     runner.recordRing(&arcade_fixture.preview, .normal);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
@@ -4188,7 +4222,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     runner = Runner.init(&arcade_fixture.preview);
     const parcel = findFirstAnnotationTag(&arcade_fixture.preview, .parcel).?;
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
-    runner.step(&arcade_fixture.preview, .{}, step_seconds);
+    try std.testing.expect(stepUntilParcelPickup(&runner, &arcade_fixture.preview, 32) < 32);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
@@ -4197,7 +4231,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     runner = Runner.init(&arcade_fixture.preview);
     runner.configureCompletionBonus(1, true);
     primeRunnerBeforeRow(&runner, &arcade_fixture.preview, parcel);
-    runner.step(&arcade_fixture.preview, .{}, step_seconds);
+    try std.testing.expect(stepUntilParcelPickup(&runner, &arcade_fixture.preview, 32) < 32);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 0), runner.score.completion_bonus);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
@@ -4214,14 +4248,14 @@ test "runner consumes parcel rows only once" {
 
     var runner = Runner.init(&fixture.preview);
     const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
-
-    runner.processRow(&fixture.preview, parcel.row);
+    primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
+    try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
 
-    runner.processRow(&fixture.preview, parcel.row);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
@@ -4255,7 +4289,7 @@ test "runner removes live parcel slots on pickup" {
     runner.refreshLiveTrackParcels(&fixture.preview);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
-    runner.processRow(&fixture.preview, parcel.row);
+    try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
 
@@ -4377,7 +4411,8 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     runner.configureCompletionBonus(1, true);
     const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
 
-    runner.processRow(&fixture.preview, parcel.row);
+    primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
+    try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
@@ -4391,7 +4426,7 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     try std.testing.expect(runner.completion_bonus_applied);
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
 
-    runner.processRow(&fixture.preview, parcel.row);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
 }
