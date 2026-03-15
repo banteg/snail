@@ -2923,7 +2923,6 @@ pub const Runner = struct {
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.attachment_exit_pending) return;
         if (self.movement_mode == .attachment and self.attachment_follow.active) return;
-        if (self.row_event_display.delivered_parcel_count < self.counters.parcels) return;
         if (!self.routeEndReached(preview)) return;
         self.beginCompletionCutscene();
     }
@@ -4934,6 +4933,25 @@ test "route-end completion waits for attachment exit handoff to clear" {
     runner.attachment_exit_progress = 0.99;
     runner.stepAttachmentExitState();
     runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+}
+
+test "route-end completion can start while parcel delivery registration is still pending" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.01;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.counters.parcels = 1;
+    runner.row_event_display.delivered_parcel_count = 0;
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());

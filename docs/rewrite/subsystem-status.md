@@ -250,7 +250,7 @@ Implemented now:
 - visible world parcels now come from a runner-local 50-slot live runtime scaffold with the shipped state-`1` bobbing and expiry rules instead of static annotation billboards
 - the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the live parcel-flight controller owns register score payout and the final postal bonus
 - parcel register score and the final-delivery handoff no longer hang off loose runner fields; the port now keeps a runner-local `row_event_display` controller with the recovered target, delivered-count, bonus, and state lanes, including the proven `state 3 -> 4 -> 5` finish path
-- route-end completion no longer starts while a collected parcel is still in flight, so end-of-course handoff no longer freezes the recovered parcel runtime mid-delivery
+- route-end completion can now arm while a collected parcel is still in flight, but the runner-local completion handoff no longer returns early; it waits for the row-event controller to settle before the app-level completion bridge fires
 - completion handoff no longer collapses straight into an app return; the runner now holds a recovered `2s` voice / `5s` release controller and only releases postal or time-trial completion once the row-event controller reaches its terminal state
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
