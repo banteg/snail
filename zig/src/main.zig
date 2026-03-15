@@ -4309,6 +4309,10 @@ const AppState = struct {
         };
         const preserved_tick_count = previous_runner.tick_count;
         const preserved_stopwatch = previous_runner.stopwatch;
+        const preserved_parcel_count = previous_runner.counters.parcels;
+        const preserved_completion_bonus_applied = previous_runner.completion_bonus_applied;
+        const preserved_collected_parcel_rows = previous_runner.collected_parcel_rows;
+        const preserved_collected_parcel_row_count = previous_runner.collected_parcel_row_count;
 
         try self.reloadLevel();
         if (self.level_runner) |*runner| {
@@ -4317,6 +4321,10 @@ const AppState = struct {
             runner.visible_life_stock = preserved_visible_life_stock;
             runner.tick_count = preserved_tick_count;
             runner.stopwatch = preserved_stopwatch;
+            runner.counters.parcels = preserved_parcel_count;
+            runner.completion_bonus_applied = preserved_completion_bonus_applied;
+            runner.collected_parcel_rows = preserved_collected_parcel_rows;
+            runner.collected_parcel_row_count = preserved_collected_parcel_row_count;
         }
         self.clearLevelPromptQueue();
         try self.syncActiveLevelSegment(false);
@@ -8528,7 +8536,9 @@ fn drawGameplayRuntimeActors(
         }
 
         if (row_location.row.annotation) |annotation| switch (annotation) {
-            .parcel => |parcel| drawGameplayParcelActor(state, loaded_track_preview, camera, row_location, parcel),
+            .parcel => |parcel| if (!runner.isParcelCollected(row_location.global_row)) {
+                drawGameplayParcelActor(state, loaded_track_preview, camera, row_location, parcel);
+            },
             else => {},
         };
     }

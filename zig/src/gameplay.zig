@@ -314,6 +314,7 @@ const runtime_hazard_live_window_rows: usize = 8;
 const max_active_runtime_hazards: usize = 128;
 const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
+const max_collected_parcel_rows: usize = 1024;
 const score_life_threshold: u32 = 50_000;
 const postal_completion_bonus_score: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
@@ -839,6 +840,8 @@ pub const Runner = struct {
     active_turret_state_count: usize = 0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
+    collected_parcel_rows: [max_collected_parcel_rows]usize = [_]usize{0} ** max_collected_parcel_rows,
+    collected_parcel_row_count: usize = 0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -1485,9 +1488,11 @@ pub const Runner = struct {
                     }
                 },
                 .parcel => |parcel| {
-                    self.recordScore(&self.score.parcel_pickup, 100);
-                    self.queueParcelDelivery();
-                    self.recent_event = .{ .parcel = parcel.id };
+                    if (self.collectParcelRow(global_row)) {
+                        self.recordScore(&self.score.parcel_pickup, 100);
+                        self.queueParcelDelivery();
+                        self.recent_event = .{ .parcel = parcel.id };
+                    }
                 },
                 .jetpack_off => {
                     self.counters.jetpack_off_rows += 1;
@@ -2348,6 +2353,22 @@ pub const Runner = struct {
         return false;
     }
 
+    pub fn isParcelCollected(self: *const Runner, global_row: usize) bool {
+        for (0..self.collected_parcel_row_count) |index| {
+            if (self.collected_parcel_rows[index] == global_row) return true;
+        }
+        return false;
+    }
+
+    fn collectParcelRow(self: *Runner, global_row: usize) bool {
+        if (self.isParcelCollected(global_row)) return false;
+        if (self.collected_parcel_row_count < max_collected_parcel_rows) {
+            self.collected_parcel_rows[self.collected_parcel_row_count] = global_row;
+            self.collected_parcel_row_count += 1;
+        }
+        return true;
+    }
+
     fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
         if (self.isSlugDefeated(global_row, lane_index)) return;
         if (self.defeated_slug_cell_count < max_defeated_slug_cells) {
@@ -3203,17 +3224,26 @@ pub const Runner = struct {
     }
 
     pub fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        self.flushPendingParcelDeliveries();
         const session_mode = self.session_mode;
         const score = self.score;
         const visible_life_stock = self.visible_life_stock;
         const tick_count = self.tick_count;
         const stopwatch = self.stopwatch;
+        const parcel_count = self.counters.parcels;
+        const completion_bonus_applied = self.completion_bonus_applied;
+        const collected_parcel_rows = self.collected_parcel_rows;
+        const collected_parcel_row_count = self.collected_parcel_row_count;
         self.reset(preview);
         self.session_mode = session_mode;
         self.score = score;
         self.visible_life_stock = visible_life_stock;
         self.tick_count = tick_count;
         self.stopwatch = stopwatch;
+        self.counters.parcels = parcel_count;
+        self.completion_bonus_applied = completion_bonus_applied;
+        self.collected_parcel_rows = collected_parcel_rows;
+        self.collected_parcel_row_count = collected_parcel_row_count;
     }
 
     fn rowPositionNearRouteEnd(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -4031,6 +4061,23 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
 }
 
+test "runner consumes parcel rows only once" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+
+    runner.processRow(&fixture.preview, parcel.row);
+    try std.testing.expect(runner.isParcelCollected(parcel.row));
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+
+    runner.processRow(&fixture.preview, parcel.row);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+}
+
 test "runner applies the completion bonus once" {
     var runner = Runner{};
     runner.counters.parcels = 3;
@@ -4139,6 +4186,31 @@ test "applyRespawn preserves score timer and remaining lives while resetting mov
     try std.testing.expectEqual(@as(u32, 1500), runner.stopwatch.elapsedMillis());
     try std.testing.expectApproxEqAbs(@as(f32, 4.0), runner.row_position, 0.0001);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
+}
+
+test "applyRespawn preserves delivered parcel progress and consumed parcel rows" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureCompletionBonus(1, true);
+    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+
+    runner.processRow(&fixture.preview, parcel.row);
+    try std.testing.expect(runner.isParcelCollected(parcel.row));
+    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+
+    runner.applyRespawn(&fixture.preview);
+
+    try std.testing.expect(runner.isParcelCollected(parcel.row));
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
+    try std.testing.expectEqual(@as(u32, 0), runner.pending_parcel_deliveries);
+    try std.testing.expect(runner.completion_bonus_applied);
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+
+    runner.processRow(&fixture.preview, parcel.row);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
+    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
 }
 
 test "challenge death hands off final loss" {
