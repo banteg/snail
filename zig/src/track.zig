@@ -154,6 +154,10 @@ pub const GameplayCellSample = struct {
 
 pub const LoadOptions = struct {
     load_models: bool = true,
+    runtime_build_flags: u32 = defaultRuntimeBuildFlags,
+    runtime_build_seed: u32 = 0,
+    runtime_active_row_start: usize = 0,
+    runtime_active_row_end: ?usize = null,
 };
 
 pub const LoadedLevelPreview = struct {
@@ -164,6 +168,7 @@ pub const LoadedLevelPreview = struct {
     model_assets: []LoadedModelAsset,
     placed_models: []PlacedModel,
     runtime_build_flags: u32,
+    runtime_build_seed: u32,
     garbage_scalar: f32,
     salt_scalar: f32,
     runtime_tiles: []u8,
@@ -275,7 +280,21 @@ pub const LoadedLevelPreview = struct {
             }
         }
 
-        const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
+        const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_tiles = try buildRuntimeTileGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            .{
+                .build_flags = runtime_build_flags,
+                .build_seed = options.runtime_build_seed,
+                .active_row_start = options.runtime_active_row_start,
+                .active_row_end = runtime_active_row_end,
+            },
+        );
         errdefer allocator.free(runtime_tiles);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
@@ -286,7 +305,6 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer attachment_scaffold.deinit();
-        const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
@@ -306,6 +324,7 @@ pub const LoadedLevelPreview = struct {
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
+            .runtime_build_seed = options.runtime_build_seed,
             .garbage_scalar = level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = level_definition.normalizedSaltScalar() orelse 0.0,
             .runtime_tiles = runtime_tiles,
@@ -387,7 +406,21 @@ pub const LoadedLevelPreview = struct {
             });
         }
 
-        const runtime_tiles = try buildRuntimeTileGrid(allocator, segments, row_offsets, total_rows, max_width);
+        const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_tiles = try buildRuntimeTileGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            .{
+                .build_flags = runtime_build_flags,
+                .build_seed = options.runtime_build_seed,
+                .active_row_start = options.runtime_active_row_start,
+                .active_row_end = runtime_active_row_end,
+            },
+        );
         errdefer allocator.free(runtime_tiles);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
@@ -398,7 +431,6 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer attachment_scaffold.deinit();
-        const runtime_build_flags = defaultRuntimeBuildFlags;
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
         errdefer allocator.free(runtime_edge_masks);
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
@@ -418,6 +450,7 @@ pub const LoadedLevelPreview = struct {
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
             .placed_models = try placed_models_list.toOwnedSlice(allocator),
             .runtime_build_flags = runtime_build_flags,
+            .runtime_build_seed = options.runtime_build_seed,
             .garbage_scalar = 0.0,
             .salt_scalar = 0.0,
             .runtime_tiles = runtime_tiles,
@@ -1226,26 +1259,93 @@ const RuntimeTileTransition = struct {
     previous_override: ?u8 = null,
 };
 
+const RuntimeBuildConfig = struct {
+    build_flags: u32,
+    build_seed: u32,
+    active_row_start: usize,
+    active_row_end: usize,
+};
+
+const MathRandom = struct {
+    state: u32,
+
+    fn init(seed: u32) MathRandom {
+        return .{ .state = seed };
+    }
+
+    fn nextInt15(self: *MathRandom) u32 {
+        self.state = (self.state *% 0x343fd) +% 0x269ec3;
+        return (self.state >> 16) & 0x7fff;
+    }
+};
+
+const RuntimeBuildState = struct {
+    build_flags: u32,
+    math_random: MathRandom,
+    mirror_state: bool = false,
+    mirror_counter: u32 = 0,
+
+    fn init(build_flags: u32, build_seed: u32) RuntimeBuildState {
+        return .{
+            .build_flags = build_flags,
+            .math_random = MathRandom.init(build_seed),
+        };
+    }
+
+    fn applyMirrorDecision(self: *RuntimeBuildState, decision: bool) bool {
+        const previous_state = self.mirror_state;
+        if (decision != previous_state) {
+            self.mirror_counter += 1;
+        } else {
+            self.mirror_counter = 0;
+        }
+        if (self.mirror_counter < 4) {
+            self.mirror_state = decision;
+            return decision;
+        }
+        self.mirror_counter = 0;
+        self.mirror_state = !decision;
+        return self.mirror_state;
+    }
+
+    fn switchTrackMirror(self: *RuntimeBuildState) bool {
+        const decision = self.math_random.nextInt15() >= 0x4000;
+        return self.applyMirrorDecision(decision);
+    }
+};
+
 fn buildRuntimeTileGrid(
     allocator: std.mem.Allocator,
     segments: []const segment.Definition,
     row_offsets: []const usize,
     total_rows: usize,
     max_width: usize,
+    config: RuntimeBuildConfig,
 ) ![]u8 {
     const runtime_tiles = try allocator.alloc(u8, total_rows * max_width);
     @memset(runtime_tiles, 0);
+    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
 
     for (segments, 0..) |loaded_segment, segment_index| {
         const row_base = row_offsets[segment_index];
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
+            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
             for (row.cells, 0..) |cell, lane_index| {
+                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
+                    cell,
+                    build_state.build_flags,
+                    build_state.mirror_state,
+                    outside_active_rows,
+                );
+                if (normalized_cell == '@') {
+                    _ = build_state.switchTrackMirror();
+                }
                 const previous_tile = if (global_row > 0 and lane_index < max_width)
                     runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)]
                 else
                     null;
-                const transition = runtimeTileTransitionForShippedGlyph(cell, previous_tile);
+                const transition = runtimeTileTransitionForNormalizedGlyph(normalized_cell, previous_tile);
                 const tile_type = if (transition) |value| value.current else 0;
                 runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)] = tile_type;
 
@@ -1370,9 +1470,85 @@ fn runtimeFallbackSpawnHintMask(tile_type: u8, build_flags: u32) u8 {
     return mask;
 }
 
+fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: bool, outside_active_rows: bool) u8 {
+    return switch (cell) {
+        ' ' => if ((build_flags & 0x400) == 0)
+            ','
+        else if ((build_flags & 0x1) == 0)
+            '.'
+        else
+            cell,
+        '$' => if ((build_flags & 0x800) == 0)
+            if ((build_flags & 0x40) != 0) '_' else '.'
+        else
+            cell,
+        '-' => if ((build_flags & 0x40) == 0) '.' else cell,
+        '<', '>' => if ((build_flags & 0x200) == 0) '.' else cell,
+        '=' => if ((build_flags & 0x100) != 0)
+            cell
+        else if ((build_flags & 0x1) == 0)
+            '.'
+        else if ((build_flags & 0x400) != 0)
+            ' '
+        else
+            ',',
+        '[' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '<'
+        else if (mirror_state)
+            '['
+        else
+            cell,
+        ']' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '<'
+        else if (mirror_state)
+            '{'
+        else
+            cell,
+        '_' => if ((build_flags & 0x40) != 0 or outside_active_rows) cell else '.',
+        'o' => if ((build_flags & 0x4) == 0)
+            if ((build_flags & 0x40) != 0) '_' else '.'
+        else
+            cell,
+        '{' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '>'
+        else if (mirror_state)
+            '}'
+        else
+            cell,
+        '|' => if ((build_flags & 0x100) != 0)
+            cell
+        else if ((build_flags & 0x1) == 0)
+            ' '
+        else if ((build_flags & 0x400) != 0)
+            '='
+        else
+            ',',
+        '}' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '>'
+        else if (mirror_state)
+            '['
+        else
+            cell,
+        else => cell,
+    };
+}
+
 fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
+    return runtimeTileTransitionForNormalizedGlyph(cell, previous_tile);
+}
+
+fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
     return switch (cell) {
         ' ', '@' => .{ .current = 0x00 },
+        ',' => .{ .current = 0x1c },
         '#' => .{ .current = 0x20 },
         '$' => .{ .current = 0x17 },
         '&' => .{ .current = 0x22 },
@@ -1388,6 +1564,7 @@ fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTi
             .{ .current = 0x03, .previous_override = if (previous_tile != null) 0x0c else null },
         'J' => .{ .current = 0x19 },
         'M' => .{ .current = 0x12 },
+        'o' => .{ .current = 0x10 },
         'P' => .{ .current = 0x1e },
         'R' => .{ .current = 0x23 },
         '[' => .{ .current = 0x05 },
@@ -1648,6 +1825,14 @@ test "runtime tile transitions match recovered shipped glyph mapping" {
         RuntimeTileTransition{ .current = 0x05 },
         runtimeTileTransitionForShippedGlyph('[', null).?,
     );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x1c },
+        runtimeTileTransitionForNormalizedGlyph(',', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x10 },
+        runtimeTileTransitionForNormalizedGlyph('o', null).?,
+    );
 }
 
 test "runtime tile kinds map to recovered gameplay families" {
@@ -1682,6 +1867,26 @@ test "runtime fallback spawn hint mask follows recovered tile families" {
         runtimeFallbackSpawnHintMask(0x0f, defaultRuntimeBuildFlags),
     );
     try std.testing.expectEqual(@as(u8, 0), runtimeFallbackSpawnHintMask(0x22, defaultRuntimeBuildFlags));
+}
+
+test "normalize segment glyph for track flags matches recovered helper cases" {
+    try std.testing.expectEqual(@as(u8, ' '), normalizeSegmentGlyphForTrackFlags(' ', defaultRuntimeBuildFlags, false, false));
+    try std.testing.expectEqual(@as(u8, ','), normalizeSegmentGlyphForTrackFlags(' ', 0, false, false));
+    try std.testing.expectEqual(@as(u8, ' '), normalizeSegmentGlyphForTrackFlags('=', 0x401, false, false));
+    try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('$', 0x40, false, false));
+    try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('o', 0, false, false));
+    try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags(']', defaultRuntimeBuildFlags, true, false));
+    try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('_', 0, false, true));
+    try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
+}
+
+test "runtime build mirror latch matches recovered threshold logic" {
+    var state = RuntimeBuildState.init(defaultRuntimeBuildFlags, 0);
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(!state.applyMirrorDecision(false));
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(state.applyMirrorDecision(false));
+    try std.testing.expect(!state.applyMirrorDecision(false));
 }
 
 test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {

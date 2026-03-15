@@ -66,13 +66,14 @@ Implemented now:
 
 - parse `SEGMENTS/*.TXT` and `LEVELS/*.TXT`
 - preserve row annotations like `Path`, `Parcel`, `3DModel`, `JetPack=Off`, `NoFall`, `Sample`, and `Message`
-- rebuild a normalized runtime grid with the current known runtime tile families and floor-height sampling
+- rebuild a normalized runtime grid with the recovered `normalize_segment_glyph_for_track_flags` helper shape, the shared math-RNG seed lane, and the current known runtime tile families and floor-height sampling
 - reuse the recovered gameplay build preset `0x00f5cfff`
 - derive a first installed attachment-row map from runtime attachment tiles for gameplay/template entry
 
 Still missing or approximate:
 
 - the exact Windows installed attachment bank and owner-record installer
+- the exact active-row band selection that feeds the `_` normalization helper lane
 - the full render-normalization chain between runtime tiles and final cache/object ownership
 - some unresolved runtime tile families and late render passes
 
