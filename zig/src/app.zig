@@ -15,6 +15,7 @@ pub const intro_background_path = "BACKGROUNDS/SPACERED.TXT";
 pub const main_menu_background_path = "BACKGROUNDS/MENUBG.TXT";
 pub const help_background_path = "BACKGROUNDS/HELP.TXT";
 pub const route_map_background_path = "BACKGROUNDS/STARMAP.TXT";
+pub const thanks_screen_background_path = "BACKGROUNDS/SPLASH.TXT";
 pub const route_map_logo_texture_path = "GALAXY/SPACEMAPLOGO.TGA";
 pub const route_map_border_texture_path = "GALAXY/BORDERSPACEMAP.TGA";
 pub const route_map_galaxy_select_texture_path = "GALAXY/GALAXYSELECT.TGA";

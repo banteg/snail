@@ -303,6 +303,7 @@ Implemented now:
 - postal completion no longer blindly inserts an arcade high score on every route clear
 - lives are consumed at respawn rebuild commit time instead of during the earlier runner-local phase
 - app-level reload is closer to the Windows rebuild split than the old hidden in-place runner reset
+- final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before returning to the shell
 
 Still missing or approximate:
 

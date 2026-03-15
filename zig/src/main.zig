@@ -31,6 +31,7 @@ const intro_background_path = app.intro_background_path;
 const main_menu_background_path = app.main_menu_background_path;
 const help_background_path = app.help_background_path;
 const route_map_background_path = app.route_map_background_path;
+const thanks_screen_background_path = app.thanks_screen_background_path;
 const route_map_logo_texture_path = app.route_map_logo_texture_path;
 const route_map_border_texture_path = app.route_map_border_texture_path;
 const route_map_galaxy_select_texture_path = app.route_map_galaxy_select_texture_path;
@@ -782,6 +783,7 @@ const ResultReturnTarget = enum {
     postal_route_map,
     time_trial_route_map,
     replay_current_level,
+    thanks_screen,
 };
 
 const RunOutcome = enum {
@@ -793,6 +795,83 @@ const PendingRunPersistence = enum {
     none,
     completed,
     failed,
+};
+
+const ThanksScreenStage = enum(u8) {
+    title_visible = 0,
+    title_hidden = 1,
+    challenge_visible = 2,
+    challenge_hidden = 3,
+    time_trial_visible = 4,
+    time_trial_hidden = 5,
+    continue_visible = 6,
+    continue_hold = 7,
+};
+
+const ThanksScreenController = struct {
+    stage: ThanksScreenStage = .title_visible,
+    progress: f32 = 0.0,
+    progress_step: f32 = thanks_screen_hold_step,
+
+    fn reset(self: *ThanksScreenController) void {
+        self.* = .{};
+    }
+
+    fn step(self: *ThanksScreenController) void {
+        if (self.progress_step <= 0.0) return;
+
+        self.progress += self.progress_step;
+        if (self.progress <= 1.0) return;
+
+        self.progress = 0.0;
+        switch (self.stage) {
+            .title_visible => {
+                self.stage = .title_hidden;
+                self.progress_step = thanks_screen_hide_step;
+            },
+            .title_hidden => {
+                self.stage = .challenge_visible;
+                self.progress_step = thanks_screen_hold_step;
+            },
+            .challenge_visible => {
+                self.stage = .challenge_hidden;
+                self.progress_step = thanks_screen_hide_step;
+            },
+            .challenge_hidden => {
+                self.stage = .time_trial_visible;
+                self.progress_step = thanks_screen_hold_step;
+            },
+            .time_trial_visible => {
+                self.stage = .time_trial_hidden;
+                self.progress_step = thanks_screen_hide_step;
+            },
+            .time_trial_hidden => {
+                self.stage = .continue_visible;
+                self.progress_step = thanks_screen_hold_step;
+            },
+            .continue_visible => {
+                self.stage = .continue_hold;
+                self.progress_step = 0.0;
+            },
+            .continue_hold => {},
+        }
+    }
+
+    fn allowsContinue(self: *const ThanksScreenController) bool {
+        return @intFromEnum(self.stage) >= @intFromEnum(ThanksScreenStage.challenge_visible);
+    }
+
+    fn currentText(self: *const ThanksScreenController) ?[]const u8 {
+        return switch (self.stage) {
+            .title_visible => "Thanks For Playing!",
+            .title_hidden => null,
+            .challenge_visible => "Test your reflexes in Challenge Mode!",
+            .challenge_hidden => null,
+            .time_trial_visible => "Improve your skills in Time Trial!",
+            .time_trial_hidden => null,
+            .continue_visible, .continue_hold => "Click to Continue",
+        };
+    }
 };
 
 const PendingRunResult = struct {
@@ -1021,6 +1100,12 @@ const completion_continue_y_with_bonus: f32 = 400.0;
 const completion_reveal_step: f32 = 1.0 / 24.0;
 const completion_reveal_bonus_threshold: f32 = 1.0;
 const completion_reveal_continue_threshold: f32 = 2.0;
+// PORT(verified): `initialize_thanks_screen` and `update_thanks_screen` keep one centered
+// type-20 widget at `y = 435`, revealing each message for 240 ticks and hiding the first
+// two between swaps over 30 ticks before settling on `Click to Continue`.
+const thanks_screen_message_y: f32 = 435.0;
+const thanks_screen_hold_step: f32 = 1.0 / 240.0;
+const thanks_screen_hide_step: f32 = 1.0 / 30.0;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -1467,6 +1552,7 @@ const AppState = struct {
     pending_frontend_activation: ?FrontendQueuedActivation = null,
     completion_continue_button_state: frontend_widget.TextButtonState = .{},
     completion_screen_reveal_progress: f32 = 0.0,
+    thanks_screen_controller: ThanksScreenController = .{},
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
     options_sound_display_value: f32 = 0.0,
@@ -1710,6 +1796,12 @@ const AppState = struct {
         defer loaded_intro_background.deinit();
         if (loaded_intro_background.primary_texture.texture.width <= 0) {
             return error.InvalidIntroBackgroundTexture;
+        }
+
+        var loaded_thanks_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, thanks_screen_background_path);
+        defer loaded_thanks_background.deinit();
+        if (loaded_thanks_background.primary_texture.texture.width <= 0) {
+            return error.InvalidThanksBackgroundTexture;
         }
 
         var loaded_intro_script = try self.loadConfiguredTextScriptEntry(intro_script_path);
@@ -2949,6 +3041,9 @@ const AppState = struct {
 
         self.updateFrontendWidgetAnimations();
         self.stepCompletionScreenReveal();
+        if (self.game_phase == .thanks_screen) {
+            self.thanks_screen_controller.step();
+        }
 
         if (self.game_phase == .boot) {
             if (try self.advanceBootTask()) {
@@ -3283,6 +3378,7 @@ const AppState = struct {
                 .route_map_menu => try self.enterGamePhase(.main_menu),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
                 .completion_screen => if (self.completionContinueVisible()) try self.continueCompletionScreen(),
+                .thanks_screen => self.beginThanksScreenExit(),
             }
             return;
         }
@@ -3441,6 +3537,11 @@ const AppState = struct {
                     self.queueFrontendActivation(.{ .completion_screen = .continue_flow });
                 }
             },
+            .thanks_screen => {
+                if (rl.isMouseButtonPressed(.left) or rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
+                    self.beginThanksScreenExit();
+                }
+            },
             .credits => {
                 if (rl.isMouseButtonPressed(.left)) {
                     self.frontend_transition.beginFadeOut(.main_menu);
@@ -3541,6 +3642,7 @@ const AppState = struct {
             .high_scores_menu,
             .help,
             .credits,
+            .thanks_screen,
             => try self.enterGamePhase(phase),
             .options_menu => {
                 if (self.start_pause_context) {
@@ -4206,6 +4308,10 @@ const AppState = struct {
                 result.score = runner.score.total;
                 result.score_is_partial = true;
                 const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
+                result.return_target = postalCompletionReturnTarget(
+                    self.active_frontend_level_index,
+                    highest_available,
+                );
                 // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
                 // not the arcade-high-score commit path. Only the last postal route upgrades
                 // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
@@ -4352,6 +4458,11 @@ const AppState = struct {
         );
     }
 
+    fn beginThanksScreenExit(self: *AppState) void {
+        if (!self.thanks_screen_controller.allowsContinue()) return;
+        self.frontend_transition.beginFadeOut(.main_menu);
+    }
+
     fn completionBonusVisible(self: *const AppState, result: PendingRunResult) bool {
         return completionBonusVisibleAtProgress(result, self.completion_screen_reveal_progress);
     }
@@ -4455,6 +4566,7 @@ const AppState = struct {
             // current route card open and relabels the bottom control to `Exit`.
             .postal_route_map => try self.enterRouteMapMenuWithScreenMode(.postal, .post_completion_exit),
             .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
+            .thanks_screen => try self.enterGamePhase(.thanks_screen),
             .replay_current_level => if (result.mode) |mode|
                 try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
             else
@@ -4753,6 +4865,16 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadCurrentLevelBackground();
+            },
+            .thanks_screen => {
+                self.thanks_screen_controller.reset();
+                self.active_level_segment_index = null;
+                self.clearLevelPromptQueue();
+                self.mouse_level_lane_target = null;
+                self.unloadTextScript();
+                self.unloadLoadingScreen();
+                try self.loadGameBackground(thanks_screen_background_path);
+                try self.playMusicByPath(intro_music_path);
             },
             .level => {
                 self.stopAudioPreview();
@@ -5673,6 +5795,7 @@ fn frontendPhaseUsesCanvas(state: *const AppState) bool {
         .high_scores_menu,
         .exit_prompt,
         .completion_screen,
+        .thanks_screen,
         .help,
         => true,
         .boot, .intro, .credits, .pause_menu, .level => false,
@@ -5715,6 +5838,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
         .exit_prompt => try drawExitPromptUi(state, ui_layout),
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
+        .thanks_screen => drawThanksScreenUi(state, ui_layout),
         .credits => drawCurrentTextScript(state, ui_layout),
         .help => drawHelpUi(state, ui_layout),
         .level => try drawGameplayLevelUi(state, ui_layout),
@@ -6582,6 +6706,7 @@ fn frontendPhaseShowsCursor(phase: GamePhase) bool {
         .high_scores_menu,
         .exit_prompt,
         .completion_screen,
+        .thanks_screen,
         .help,
         => true,
         .boot, .intro, .credits, .level => false,
@@ -7228,6 +7353,13 @@ fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) R
         .challenge => .replay_current_level,
         .tutorial => .main_menu,
     };
+}
+
+fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) ResultReturnTarget {
+    return if (AppState.postalCompletionCommitsHighScore(current_index, highest_available))
+        .thanks_screen
+    else
+        .postal_route_map;
 }
 
 fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
@@ -7983,6 +8115,26 @@ fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
     } else {
         try drawFailedRunScreenUi(state, layout, result);
     }
+}
+
+fn drawThanksScreenUi(state: *const AppState, layout: VirtualLayout) void {
+    const text = state.thanks_screen_controller.currentText() orelse return;
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    var idle_state = frontend_widget.TextButtonState{};
+    idle_state.snapFor(.menu_button, false);
+    frontend_widget.drawTextButtonWithOptions(
+        layout,
+        widget_art,
+        &state.ui_font,
+        .menu_button,
+        text,
+        frontend_widget.type20TextRect(&state.ui_font, text, thanks_screen_message_y, 0.0),
+        idle_state,
+        false,
+        .{ .flags = 0x20400002 },
+    );
 }
 
 fn drawCompletionParcelIcon(state: *const AppState, layout: VirtualLayout) void {
@@ -9660,6 +9812,12 @@ test "failed runs return to the main menu while completions keep mode-specific e
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
 }
 
+test "final postal completion returns through the thanks screen" {
+    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
+    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
+    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x33, 0x33));
+}
+
 test "completion reveal stages the bonus line before continue" {
     const result = PendingRunResult{
         .level_name = "To Infinity!",
@@ -9776,6 +9934,42 @@ test "postal high-score commit gates on the final shipped route" {
     try std.testing.expect(!AppState.postalCompletionCommitsHighScore(0x31, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x32, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x33, 0x33));
+}
+
+test "thanks screen message sequence matches the recovered owner timing" {
+    var controller = ThanksScreenController{};
+    try std.testing.expectEqualStrings("Thanks For Playing!", controller.currentText().?);
+    try std.testing.expect(!controller.allowsContinue());
+
+    for (0..241) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.title_hidden, controller.stage);
+    try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
+
+    for (0..31) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.challenge_visible, controller.stage);
+    try std.testing.expectEqualStrings("Test your reflexes in Challenge Mode!", controller.currentText().?);
+    try std.testing.expect(controller.allowsContinue());
+
+    for (0..241) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.challenge_hidden, controller.stage);
+    try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
+
+    for (0..31) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.time_trial_visible, controller.stage);
+    try std.testing.expectEqualStrings("Improve your skills in Time Trial!", controller.currentText().?);
+
+    for (0..241) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.time_trial_hidden, controller.stage);
+    try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
+
+    for (0..31) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.continue_visible, controller.stage);
+    try std.testing.expectEqualStrings("Click to Continue", controller.currentText().?);
+
+    for (0..241) |_| controller.step();
+    try std.testing.expectEqual(ThanksScreenStage.continue_hold, controller.stage);
+    try std.testing.expectEqualStrings("Click to Continue", controller.currentText().?);
+    try std.testing.expectEqual(@as(f32, 0.0), controller.progress_step);
 }
 
 test "preview descending high-score rank matches visible insertion rules" {
