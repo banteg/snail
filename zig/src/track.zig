@@ -309,12 +309,9 @@ pub const LoadedLevelPreview = struct {
         errdefer allocator.free(runtime_tiles);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
-            segments,
-            row_offsets,
             runtime_tiles,
             total_rows,
             max_width,
-            runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
         const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
@@ -476,12 +473,9 @@ pub const LoadedLevelPreview = struct {
         errdefer allocator.free(runtime_tiles);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
-            segments,
-            row_offsets,
             runtime_tiles,
             total_rows,
             max_width,
-            runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
         const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
@@ -1570,45 +1564,89 @@ fn buildAttachmentSourceRowMirrorStates(
     };
 }
 
-fn runtimeFlagB40ForNormalizedGlyph(cell: u8, tile_type: u8, build_flags: u32) bool {
-    if (tile_type == 0x00 or tile_type == 0x23) return false;
-    if (build_flags == timeTrialRuntimeBuildFlags and cell == '0') return false;
-    return true;
+fn runtimeFlagB40BaseForTile(tile_type: u8) bool {
+    return tile_type != 0x00 and tile_type != 0x23;
+}
+
+fn isRuntimeFlagB40FloorCondenseTile(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x14, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+fn runtimeFlagB40RunLength(
+    runtime_tiles: []const u8,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) usize {
+    const start_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    var run_length: usize = 1;
+
+    if (start_tile == 0x0e) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (next_tile != 0x0e) break;
+        }
+        return run_length;
+    }
+
+    if (isRuntimeFlagB40FloorCondenseTile(start_tile)) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (!isRuntimeFlagB40FloorCondenseTile(next_tile)) break;
+        }
+        return run_length;
+    }
+
+    if (isRuntimeFlagB40SlideCondenseTile(start_tile)) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (!isRuntimeFlagB40SlideCondenseTile(next_tile)) break;
+        }
+        return run_length;
+    }
+
+    return run_length;
 }
 
 fn buildRuntimeFlagB40Grid(
     allocator: std.mem.Allocator,
-    segments: []const segment.Definition,
-    row_offsets: []const usize,
     runtime_tiles: []const u8,
     total_rows: usize,
     max_width: usize,
-    config: RuntimeBuildConfig,
 ) ![]bool {
     const flag_grid = try allocator.alloc(bool, total_rows * max_width);
     @memset(flag_grid, false);
-    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
 
-    for (segments, 0..) |loaded_segment, segment_index| {
-        beginRuntimeBuildSegment(&build_state, loaded_segment);
-        const row_base = row_offsets[segment_index];
-        for (loaded_segment.rows, 0..) |row, row_index| {
-            const global_row = row_base + row_index;
-            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
-            for (row.cells, 0..) |cell, lane_index| {
-                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
-                    cell,
-                    build_state.build_flags,
-                    build_state.mirror_state,
-                    outside_active_rows,
-                );
-                if (normalized_cell == '@') {
-                    _ = build_state.switchTrackMirror();
-                }
-                const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
-                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] =
-                    runtimeFlagB40ForNormalizedGlyph(normalized_cell, tile_type, config.build_flags);
+    for (0..total_rows) |global_row| {
+        var lane_index: usize = 0;
+        while (lane_index < max_width) {
+            const current_index = runtimeTileIndex(max_width, global_row, lane_index);
+            const tile_type = runtime_tiles[current_index];
+            flag_grid[current_index] = runtimeFlagB40BaseForTile(tile_type);
+            if (!flag_grid[current_index]) {
+                lane_index += 1;
+                continue;
             }
+
+            // Windows seeds `flags_b & 0x40` broadly and then clears it on horizontal
+            // follower cells during `CondenseTrack`.
+            const run_length = runtimeFlagB40RunLength(runtime_tiles, max_width, global_row, lane_index);
+            if (run_length > 1) {
+                for (1..run_length) |offset| {
+                    flag_grid[current_index + offset] = false;
+                }
+            }
+            lane_index += run_length;
         }
     }
 
@@ -2259,13 +2297,49 @@ test "normalize segment glyph for track flags matches recovered helper cases" {
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
 }
 
-test "runtime flag b40 matches recovered populated-cell cases" {
-    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph(' ', 0x00, defaultRuntimeBuildFlags));
-    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('@', 0x00, defaultRuntimeBuildFlags));
-    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('R', 0x23, defaultRuntimeBuildFlags));
-    try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('.', 0x01, defaultRuntimeBuildFlags));
-    try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('_', 0x0f, defaultRuntimeBuildFlags));
-    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('0', 0x0f, timeTrialRuntimeBuildFlags));
+test "runtime flag b40 clears followers across recovered floor-strip runs" {
+    const runtime_tiles = [_]u8{ 0x01, 0x15, 0x21, 0x22, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(!flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+    try std.testing.expect(!flags[4]);
+}
+
+test "runtime flag b40 keeps separate heads across floor and slide strip families" {
+    const runtime_tiles = [_]u8{ 0x01, 0x14, 0x15, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+}
+
+test "runtime flag b40 clears followers on recovered tile 0x0e strips" {
+    const runtime_tiles = [_]u8{ 0x0e, 0x0e, 0x0e, 0x23 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(!flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+}
+
+test "runtime flag b40 preserves non-condensed populated tiles" {
+    const runtime_tiles = [_]u8{ 0x0f, 0x1d, 0x1e, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(flags[1]);
+    try std.testing.expect(flags[2]);
+    try std.testing.expect(!flags[3]);
 }
 
 test "runtime flag b80 follows JetPack=Off annotations" {
