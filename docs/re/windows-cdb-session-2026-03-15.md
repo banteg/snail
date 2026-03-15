@@ -850,3 +850,70 @@ Most useful current conclusion:
 - death, like intro and completion, uses the override-camera lane in `update_subgame_camera`
 - this widened slug-death capture does **not** support hotspot `17` (`CameraSlugDeath`) as the live death-camera anchor for the observed respawn path
 - the best present read is stronger than before: the first usable death override is already on the hotspot-`18` lane, and the later closeness to hotspot `18` is not just an artifact of the respawn intro handoff
+
+## Hotspot `18` Constructor Captures: `initialize_cutscene` And `update_snail_skin`
+
+After the hotspot comparisons, the probe pack was narrowed to the actual constructor path:
+
+- `initialize_cutscene`
+- `update_snail_skin`
+- static readback from `build_snail_hotspots`
+
+The purpose was to settle whether hotspot `18` is a fixed authored world-space anchor or a runtime product of the cutscene/player matrix setup.
+
+### Intro Constructor Capture
+
+One clean intro transition from the black level-start screen produced the following sequence:
+
+- first stop at `initialize_cutscene` entry:
+  - live state after one instruction:
+    - `cutscene.state = 1`
+    - `player = 0x0d338d9c`
+    - `src1604_t = (0x00000000, 0x40f480a1, 0x40800000)`
+    - `src1684_t = (0x00000000, 0x40f47644, 0x40800000)`
+    - hotspot `18` was still zero before the rebuild
+- second stop at `update_snail_skin` entry:
+  - `player = 0x0d33b720`
+  - `hotspot18_before = (0xc018e52e, 0x3f248a6e, 0x441ed5ca)` from the prior level state
+  - `src1604_t = (0x00000000, 0x40f480a1, 0x40800000)`
+  - `src1684_t = (0x00000000, 0x40f47644, 0x40800000)`
+- after stepping out of `update_snail_skin`, hotspot `18` became:
+  - `(0x3f5c154d, 0x40f87c88, 0x40bccf42)`
+
+Practical read from the intro constructor capture:
+
+- hotspot `18` is rebuilt during the intro path rather than treated as a fixed authored constant
+- the rebuild happens through `update_snail_skin` / `build_snail_hotspots`
+- the two source translations feeding the rebuild are already populated before the hotspot update and are nearly identical during intro start
+- the rebuilt hotspot `18` exactly matches the earlier intro-camera override sample
+
+### Completion Constructor Capture
+
+One normal level finish produced the matching completion-side sequence:
+
+- first stop at `update_cutscene` state `5` entry:
+  - `cutscene = 0x0d33d078`
+  - `player = 0x0d33b720`
+  - `hotspot18 = (0x3f678197, 0x3f4a9266, 0x4402f3a3)`
+  - `cutscene_xyz = (0x00000000, 0x4132ac86, 0x40690d9f)`
+- second stop at `update_snail_skin` during `cutscene.state = 6`:
+  - `subgame = 0x0d33b720`
+  - `player = 0x0d338d9c`
+  - `hotspot18_before = (0x00000000, 0x00000000, 0x00000000)`
+  - `src1604_t = (0xbe6cf236, 0x3efbd016, 0x440295fd)`
+  - `src1684_t = (0xbe584000, 0x3f05325b, 0x440295d2)`
+- after stepping out of `update_snail_skin`, hotspot `18` became:
+  - `(0x3f498b24, 0x3f2a67f2, 0x44030a36)`
+
+Practical read from the completion constructor capture:
+
+- completion uses the same hotspot rebuild lane as intro
+- hotspot `18` is again synthesized during the cutscene path, not simply read as a fixed authored world-space marker
+- the rebuild is fed by the same two source matrices, but unlike intro they are measurably different during completion
+- the rebuilt hotspot `18` lands in the same neighborhood as the earlier completion camera trace, which is consistent with a live matrix-driven rebuild rather than a single static anchor lookup
+
+Most useful current conclusion:
+
+- the camera bug in the Zig port is unlikely to be only "wrong hotspot id"
+- intro and completion both show hotspot `18` being synthesized from runtime matrix state
+- the next high-value comparison is to capture the same constructor path on spare-life slug death so intro, completion, and death can be compared on the exact same rebuild lane
