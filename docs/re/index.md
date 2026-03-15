@@ -14,5 +14,6 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Frida runtime trace](frida-runtime-trace.md): the Windows tracing harness and capture strategy
 - [Windows Frida handoff](windows-frida-handoff.md): operator-oriented runbook for collecting traces
 - [Windows debugging wants](windows-debugging-wants.md): prioritized runtime-debug targets for the remaining camera and handoff gaps
+- [Windows CDB session (2026-03-15)](windows-cdb-session-2026-03-15.md): live `cdb` setup, breakpoint targets, and findings from the first Windows debugger session
 
 Published docs stay here. Repo-only analysis artifacts, including the tracked symbol manifest JSON, live under `analysis/`.

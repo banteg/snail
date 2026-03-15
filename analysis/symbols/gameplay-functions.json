@@ -661,11 +661,13 @@
     },
     {
       "address": "0x420c40",
-      "name": "begin_track_attachment_follow_state"
+      "name": "begin_track_attachment_follow_state",
+      "description": "Starts one live attachment-follow session from the selected runtime attachment cell by marking the follow struct active, storing the template and owner cell, zeroing the segment index, seeding progress from `world_z - cell_anchor_z`, seeding local height from `world_y - 0.49`, caching the player pointer, and copying the row payload into template `+0x98`. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe entries hit this helper with entry progress around `0.03595` and near-zero entry height."
     },
     {
       "address": "0x420cb0",
-      "name": "update_track_attachment_follow_state"
+      "name": "update_track_attachment_follow_state",
+      "description": "Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`."
     },
     {
       "address": "0x421770",
@@ -774,7 +776,8 @@
     },
     {
       "address": "0x42c770",
-      "name": "try_enter_track_attachment_from_swept_motion"
+      "name": "try_enter_track_attachment_from_swept_motion",
+      "description": "Scans the authored runtime attachment samples against the player's swept motion box, seeds the shared scratch follow-state block when a candidate hit survives the local bounds tests, and immediately runs one follow update to validate the candidate. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches the live follow-state path driven by this entry family."
     },
     {
       "address": "0x42ca90",
@@ -1156,7 +1159,7 @@
     {
       "address": "0x43af60",
       "name": "initialize_subgoldy_fall_state",
-      "description": "Clears any active attachment-follow state, seeds the falling-state timers and sound guards, and marks Goldy as airborne until landing or death resolves."
+      "description": "Seeds Goldy's post-follow fall state. If the active follow byte is still set, it copies the current attachment payload and cached carryover scalar into the post-follow slots at `+0x430` and `+0x42c`, clears `+0x384`, sets `+0x41d`, latches player z into `attachment_exit_anchor_z` at `+0x424`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path."
     },
     {
       "address": "0x43afd0",
@@ -1166,7 +1169,7 @@
     {
       "address": "0x43b120",
       "name": "update_subgoldy",
-      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
+      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `initialize_subgoldy_fall_state`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those fall-helper lanes are real, but at least one clean level-complete path bypasses all four of them. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
       "address": "0x43d230",
