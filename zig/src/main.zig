@@ -789,6 +789,12 @@ const RunOutcome = enum {
     failed,
 };
 
+const PendingRunPersistence = enum {
+    none,
+    completed,
+    failed,
+};
+
 const PendingRunResult = struct {
     outcome: RunOutcome = .completed,
     level_name: []const u8,
@@ -805,6 +811,7 @@ const PendingRunResult = struct {
     high_score_rank: ?usize = null,
     time_trial_record_improved: bool = false,
     unlocked_next_route: bool = false,
+    persistence: PendingRunPersistence = .none,
     return_target: ResultReturnTarget,
 };
 
@@ -4049,6 +4056,7 @@ const AppState = struct {
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
+            .persistence = .completed,
             .return_target = resultReturnTargetForOutcome(.completed, active_mode),
         };
 
@@ -4056,49 +4064,35 @@ const AppState = struct {
             .postal => {
                 result.score = runner.score.total;
                 result.score_is_partial = true;
+                const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
                 // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
                 // not the arcade-high-score commit path. Only the last postal route upgrades
                 // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
                 // final shipped route instead of every completed delivery.
-                if (postalCompletionCommitsHighScore(
-                    self.active_frontend_level_index,
-                    self.highestAvailableFrontendRouteIndex(.postal),
-                )) {
-                    const entry = high_score.Entry{
-                        .score = result.score,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    };
-                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
+                if (postalCompletionCommitsHighScore(self.active_frontend_level_index, highest_available)) {
                     result.high_score_mode = .postal;
-                    result.high_score_rank = insert.rank;
+                    result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
                 }
-                result.unlocked_next_route = try self.commitPostalRouteProgress();
-                try self.saveHighScoreTables();
+                result.unlocked_next_route = previewPostalRouteUnlock(
+                    self.active_frontend_level_index,
+                    highest_available,
+                    @intCast(self.runtime_config.routeUnlockLimit()),
+                );
             },
             .challenge => {
                 result.score = runner.score.total;
                 result.score_is_partial = true;
-
-                const entry = high_score.Entry{
-                    .score = result.score,
-                    .replay_level_index = @intCast(self.active_frontend_level_index),
-                };
-                const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
-                result.high_score_rank = insert.rank;
-                try self.saveHighScoreTables();
+                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
             },
             .time_trial => {
                 result.score = elapsed_millis;
-                const entry = high_score.Entry{
-                    .score = elapsed_millis,
-                    .replay_level_index = @intCast(self.active_frontend_level_index),
-                };
-                const insert = self.high_score_tables.addTimeTrial(self.allocator, self.active_frontend_level_index, entry, true);
-                result.time_trial_record_improved = insert.improved;
-                try self.saveHighScoreTables();
+                result.time_trial_record_improved = self.previewTimeTrialRecordImproved(
+                    self.active_frontend_level_index,
+                    elapsed_millis,
+                );
             },
-            .tutorial => {},
+            .tutorial => result.persistence = .none,
         }
 
         self.pending_run_result = result;
@@ -4126,49 +4120,30 @@ const AppState = struct {
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
+            .persistence = .failed,
             .return_target = resultReturnTargetForOutcome(.failed, active_mode),
         };
 
         switch (active_mode orelse .tutorial) {
             .postal => {
                 result.score = runner.score.total;
-                const entry = high_score.Entry{
-                    .score = result.score,
-                    .replay_level_index = @intCast(self.active_frontend_level_index),
-                };
-                const insert = self.high_score_tables.addArcade(self.allocator, entry);
                 result.high_score_mode = .postal;
-                result.high_score_rank = insert.rank;
-                try self.saveHighScoreTables();
+                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
             },
             .challenge => {
                 result.score = runner.score.total;
-                const entry = high_score.Entry{
-                    .score = result.score,
-                    .replay_level_index = @intCast(self.active_frontend_level_index),
-                };
-                const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                 result.high_score_mode = .challenge;
-                result.high_score_rank = insert.rank;
-                try self.saveHighScoreTables();
+                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
             },
             .time_trial => {
                 // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
                 // failed runs into scratch memory. It does not replace the persistent ScoreC
                 // route record unless the run completed successfully.
                 result.score = elapsed_millis;
-                _ = self.high_score_tables.addTimeTrial(
-                    self.allocator,
-                    self.active_frontend_level_index,
-                    .{
-                        .score = elapsed_millis,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    },
-                    false,
-                );
             },
             .tutorial => {
                 result.score = runner.score.total;
+                result.persistence = .none;
             },
         }
 
@@ -4202,7 +4177,86 @@ const AppState = struct {
         try self.syncActiveLevelSegment(false);
     }
 
+    fn commitPendingRunResultIfNeeded(self: *AppState) !void {
+        const result = self.pending_run_result orelse return;
+        if (result.persistence == .none) return;
+
+        var updated = result;
+        switch (result.persistence) {
+            .none => return,
+            .completed => switch (result.mode orelse .tutorial) {
+                .postal => {
+                    if (postalCompletionCommitsHighScore(
+                        self.active_frontend_level_index,
+                        self.highestAvailableFrontendRouteIndex(.postal),
+                    )) {
+                        const entry = high_score.Entry{
+                            .score = result.score,
+                            .replay_level_index = @intCast(self.active_frontend_level_index),
+                        };
+                        const insert = self.high_score_tables.addArcade(self.allocator, entry);
+                        updated.high_score_mode = .postal;
+                        updated.high_score_rank = insert.rank;
+                        try self.saveHighScoreTables();
+                    }
+                    updated.unlocked_next_route = try self.commitPostalRouteProgress();
+                },
+                .challenge => {
+                    const entry = high_score.Entry{
+                        .score = result.score,
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
+                    };
+                    const insert = self.high_score_tables.addSurvival(self.allocator, entry);
+                    updated.high_score_mode = .challenge;
+                    updated.high_score_rank = insert.rank;
+                    try self.saveHighScoreTables();
+                },
+                .time_trial => {
+                    const entry = high_score.Entry{
+                        .score = result.score,
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
+                    };
+                    const insert = self.high_score_tables.addTimeTrial(
+                        self.allocator,
+                        self.active_frontend_level_index,
+                        entry,
+                        true,
+                    );
+                    updated.time_trial_record_improved = insert.improved;
+                    try self.saveHighScoreTables();
+                },
+                .tutorial => {},
+            },
+            .failed => switch (result.mode orelse .tutorial) {
+                .postal => {
+                    const entry = high_score.Entry{
+                        .score = result.score,
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
+                    };
+                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
+                    updated.high_score_mode = .postal;
+                    updated.high_score_rank = insert.rank;
+                    try self.saveHighScoreTables();
+                },
+                .challenge => {
+                    const entry = high_score.Entry{
+                        .score = result.score,
+                        .replay_level_index = @intCast(self.active_frontend_level_index),
+                    };
+                    const insert = self.high_score_tables.addSurvival(self.allocator, entry);
+                    updated.high_score_mode = .challenge;
+                    updated.high_score_rank = insert.rank;
+                    try self.saveHighScoreTables();
+                },
+                .time_trial, .tutorial => {},
+            },
+        }
+        updated.persistence = .none;
+        self.pending_run_result = updated;
+    }
+
     fn continueCompletionScreen(self: *AppState) !void {
+        try self.commitPendingRunResultIfNeeded();
         if (self.postLevelHighScoreContext()) |context| {
             self.preparePostLevelHighScoreEntry();
             self.high_scores_menu_index = highScoreModeIndex(context.mode);
@@ -4345,6 +4399,28 @@ const AppState = struct {
     fn postalCompletionCommitsHighScore(current_index: usize, highest_available: usize) bool {
         if (highest_available == 0) return false;
         return current_index >= highest_available;
+    }
+
+    fn previewDescendingHighScoreRank(entries: []const high_score.Entry, score: u32) ?usize {
+        const visible = @min(high_score.visible_entry_count, entries.len);
+        var rank: usize = 0;
+        while (rank < visible and score <= entries[rank].score and entries[rank].isActive()) : (rank += 1) {}
+        if (rank >= visible) return null;
+        return rank;
+    }
+
+    fn previewPostalRouteUnlock(current_index: usize, highest_available: usize, saved_limit: usize) bool {
+        if (highest_available == 0) return false;
+        const clamped_saved = std.math.clamp(saved_limit, @as(usize, 1), highest_available);
+        const clamped_current = std.math.clamp(current_index, @as(usize, 1), highest_available);
+        const next_unlock_limit = nextPostalUnlockLimit(clamped_current, highest_available, clamped_saved);
+        return clamped_current < highest_available and next_unlock_limit > clamped_saved;
+    }
+
+    fn previewTimeTrialRecordImproved(self: *const AppState, route_index: usize, elapsed_millis: u32) bool {
+        const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return false;
+        const current = &self.high_score_tables.completion[completion_index];
+        return !current.isActive() or elapsed_millis < current.score;
     }
 
     fn nextPostalUnlockLimit(current_index: usize, highest_available: usize, saved_limit: usize) usize {
@@ -9400,11 +9476,29 @@ test "postal unlock limit stops at the highest available route" {
     try std.testing.expectEqual(@as(usize, 0x32), AppState.nextPostalUnlockLimit(0x33, 0x32, 0x40));
 }
 
+test "postal unlock preview only reports newly unlocked routes" {
+    try std.testing.expect(AppState.previewPostalRouteUnlock(1, 0x32, 1));
+    try std.testing.expect(!AppState.previewPostalRouteUnlock(0x32, 0x32, 0x32));
+    try std.testing.expect(!AppState.previewPostalRouteUnlock(0x33, 0x32, 0x40));
+}
+
 test "postal high-score commit gates on the final shipped route" {
     try std.testing.expect(!AppState.postalCompletionCommitsHighScore(1, 0x32));
     try std.testing.expect(!AppState.postalCompletionCommitsHighScore(0x31, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x32, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x33, 0x33));
+}
+
+test "preview descending high-score rank matches visible insertion rules" {
+    var tables = high_score.Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+
+    for (tables.postal[0..high_score.visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(1000 - index * 10)) };
+    }
+
+    try std.testing.expectEqual(@as(?usize, 5), AppState.previewDescendingHighScoreRank(tables.postal[0..], 955));
+    try std.testing.expectEqual(@as(?usize, null), AppState.previewDescendingHighScoreRank(tables.postal[0..], 900));
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {
