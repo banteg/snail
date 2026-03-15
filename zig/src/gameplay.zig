@@ -845,6 +845,7 @@ pub const Runner = struct {
     score: ScoreTotals = .{},
     recent_score_award: u32 = 0,
     recent_score_award_ticks: u8 = 0,
+    registered_parcel_count: u32 = 0,
     pending_parcel_deliveries: u32 = 0,
     parcel_delivery_progress: f32 = 0.0,
     last_garbage_hit_position: ?rl.Vector3 = null,
@@ -1529,6 +1530,7 @@ pub const Runner = struct {
                 .parcel => |parcel| {
                     if (self.collectParcelRow(global_row)) {
                         self.collectLiveTrackParcel(global_row);
+                        self.counters.parcels += 1;
                         self.recordScore(&self.score.parcel_pickup, 100);
                         self.queueParcelDelivery();
                         self.recent_event = .{ .parcel = parcel.id };
@@ -1714,7 +1716,7 @@ pub const Runner = struct {
     }
 
     fn recordParcelDelivery(self: *Runner) void {
-        self.counters.parcels += 1;
+        self.registered_parcel_count += 1;
         self.recordScore(&self.score.parcel_register, 100);
         self.maybeRecordCompletionBonus();
     }
@@ -1815,7 +1817,7 @@ pub const Runner = struct {
 
     fn maybeRecordCompletionBonus(self: *Runner) void {
         if (self.completion_bonus_applied or !self.completion_bonus_enabled) return;
-        if (self.parcel_target == 0 or self.counters.parcels < self.parcel_target) return;
+        if (self.parcel_target == 0 or self.registered_parcel_count < self.parcel_target) return;
 
         self.completion_bonus_applied = true;
         self.recordScore(&self.score.completion_bonus, postal_completion_bonus_score);
@@ -3357,6 +3359,7 @@ pub const Runner = struct {
         const tick_count = self.tick_count;
         const stopwatch = self.stopwatch;
         const parcel_count = self.counters.parcels;
+        const registered_parcel_count = self.registered_parcel_count;
         const completion_bonus_applied = self.completion_bonus_applied;
         const collected_parcel_rows = self.collected_parcel_rows;
         const collected_parcel_row_count = self.collected_parcel_row_count;
@@ -3367,6 +3370,7 @@ pub const Runner = struct {
         self.tick_count = tick_count;
         self.stopwatch = stopwatch;
         self.counters.parcels = parcel_count;
+        self.registered_parcel_count = registered_parcel_count;
         self.completion_bonus_applied = completion_bonus_applied;
         self.collected_parcel_rows = collected_parcel_rows;
         self.collected_parcel_row_count = collected_parcel_row_count;
@@ -4188,7 +4192,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
-    try std.testing.expectEqual(@as(u32, 0), runner.counters.parcels);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
 
     runner = Runner.init(&arcade_fixture.preview);
     runner.configureCompletionBonus(1, true);
@@ -4196,6 +4200,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     runner.step(&arcade_fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 0), runner.score.completion_bonus);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     runner.flushPendingParcelDeliveries();
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
@@ -4213,10 +4218,12 @@ test "runner consumes parcel rows only once" {
     runner.processRow(&fixture.preview, parcel.row);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
 
     runner.processRow(&fixture.preview, parcel.row);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
 }
 
@@ -4254,7 +4261,7 @@ test "runner removes live parcel slots on pickup" {
 
 test "runner applies the completion bonus once" {
     var runner = Runner{};
-    runner.counters.parcels = 3;
+    runner.registered_parcel_count = 3;
 
     runner.applyCompletionBonus(3);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.total);
@@ -4372,12 +4379,14 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
 
     runner.processRow(&fixture.preview, parcel.row);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
 
     runner.applyRespawn(&fixture.preview);
 
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
+    try std.testing.expectEqual(@as(u32, 1), runner.registered_parcel_count);
     try std.testing.expectEqual(@as(u32, 0), runner.pending_parcel_deliveries);
     try std.testing.expect(runner.completion_bonus_applied);
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
