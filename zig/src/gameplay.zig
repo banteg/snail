@@ -2733,6 +2733,19 @@ pub const Runner = struct {
     // controller and the post-delivery completion state. The port now mirrors the proven
     // `3 -> 4 -> 5` state path on the gameplay side, but still omits the unresolved
     // widget owner, staged parcel visuals, and the separate `+0x18` completion gate byte.
+    fn stepRowEventBonusPrompt(self: *Runner) void {
+        self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
+        if (self.row_event_display.bonus_blink_progress > 1.0) {
+            self.row_event_display.bonus_blink_progress = 0.0;
+        }
+        // Inference from the recovered runtime-cell `0x40` check in
+        // `update_row_event_display`: the shipped finish segment exposes that lane
+        // through `_` cells, so promote the row-event controller once Goldy reaches it.
+        if (self.current_cell == '_') {
+            self.row_event_display.state = .complete;
+        }
+    }
+
     fn updateRowEventDisplay(self: *Runner) void {
         self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
@@ -2740,19 +2753,9 @@ pub const Runner = struct {
             .final_delivery => {
                 self.row_event_display.completion_gate = 0;
                 self.row_event_display.state = .bonus_prompt;
+                self.stepRowEventBonusPrompt();
             },
-            .bonus_prompt => {
-                self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
-                if (self.row_event_display.bonus_blink_progress > 1.0) {
-                    self.row_event_display.bonus_blink_progress = 0.0;
-                }
-                // Inference from the recovered runtime-cell `0x40` check in
-                // `update_row_event_display`: the shipped finish segment exposes that lane
-                // through `_` cells, so promote the row-event controller once Goldy reaches it.
-                if (self.current_cell == '_') {
-                    self.row_event_display.state = .complete;
-                }
-            },
+            .bonus_prompt => self.stepRowEventBonusPrompt(),
             .final_delivery_delay => {
                 self.row_event_display.progress = std.math.clamp(
                     self.row_event_display.progress + self.row_event_display.progress_step,
@@ -4754,6 +4757,22 @@ test "final parcel delivery enters the row event bonus prompt state" {
     try std.testing.expect(stepUntilParcelRegistered(&runner, &fixture.preview, 256) < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
     try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
+}
+
+test "final parcel delivery can complete the row event on the same tick" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.current_cell = '_';
+    runner.row_event_display.state = .final_delivery;
+    runner.row_event_display.completion_gate = 1;
+    runner.row_event_display.bonus_blink_step = 1.0;
+
+    runner.updateRowEventDisplay();
+
+    try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.completion_gate);
 }
 
 test "runner applies the completion bonus once" {
