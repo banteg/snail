@@ -357,6 +357,9 @@ pub const Scaffold = struct {
         total_rows: usize,
         max_width: usize,
     ) !Scaffold {
+        _ = runtime_tiles;
+        _ = max_width;
+
         var rows: std.ArrayList(AuthoredPathRow) = .empty;
         defer rows.deinit(allocator);
 
@@ -405,7 +408,6 @@ pub const Scaffold = struct {
             const attachment_end = @min(total_rows, built.row.global_row + built.template.sample_count + 1);
             var global_row = built.row.global_row;
             while (global_row < attachment_end) : (global_row += 1) {
-                if (!rowHasAttachmentRuntimeTile(runtime_tiles, total_rows, max_width, global_row)) continue;
                 // Windows row records expose two installed-owner slots at +0xa4/+0xa8.
                 installed_attachment_rows[global_row].append(index);
             }
@@ -483,15 +485,6 @@ pub const Scaffold = struct {
         return self.installedBuiltAttachmentsAtRow(global_row).primary;
     }
 };
-
-fn rowHasAttachmentRuntimeTile(runtime_tiles: []const u8, total_rows: usize, max_width: usize, global_row: usize) bool {
-    if (global_row >= total_rows or max_width == 0) return false;
-    const row_offset = global_row * max_width;
-    for (runtime_tiles[row_offset .. row_offset + max_width]) |tile_type| {
-        if (tile_type == 0x1d or tile_type == 0x1e) return true;
-    }
-    return false;
-}
 
 pub fn samplePoseAtProgress(template: *const Template, progress: f32) AttachmentPose {
     if (template.samples.len == 0) {
@@ -1637,10 +1630,10 @@ test "public path lookup matches recovered windows table" {
 
 test "collect scaffold keeps active authored path row" {
     const rows = [_]segment.Row{
-        .{ .cells = "..........", .annotation = .{ .path = "START" } },
-        .{ .cells = "PPPPPPPPPP" },
-        .{ .cells = "..........", .annotation = .{ .path = "HALFPIPE" } },
-        .{ .cells = "pppppppppp" },
+        .{ .cells = "PPPPPPPPPP", .annotation = .{ .path = "START" } },
+        .{ .cells = ".........." },
+        .{ .cells = "pppppppppp", .annotation = .{ .path = "HALFPIPE" } },
+        .{ .cells = ".........." },
     };
     var segments = [_]segment.Definition{.{
         .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
@@ -1654,10 +1647,10 @@ test "collect scaffold keeps active authored path row" {
     defer segments[0].deinit();
     const row_offsets = [_]usize{0};
     const runtime_tiles = [_]u8{
-        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
-        0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d, 0x1d,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     };
     var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets, &runtime_tiles, rows.len, 10);
     defer scaffold.deinit();
@@ -1673,8 +1666,8 @@ test "collect scaffold keeps active authored path row" {
 
 test "collect scaffold builds start template" {
     const rows = [_]segment.Row{
-        .{ .cells = "..........", .annotation = .{ .path = "START" } },
-        .{ .cells = "PPPPPPPPPP" },
+        .{ .cells = "PPPPPPPPPP", .annotation = .{ .path = "START" } },
+        .{ .cells = ".........." },
     };
     var segments = [_]segment.Definition{.{
         .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
