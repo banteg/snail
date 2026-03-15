@@ -1264,6 +1264,12 @@ pub const Runner = struct {
         return self.replay_fade_requested;
     }
 
+    pub fn consumeReplayFadeRequest(self: *Runner) bool {
+        const requested = self.replay_fade_requested;
+        self.replay_fade_requested = false;
+        return requested;
+    }
+
     pub fn introCutsceneBlocksGameplay(self: *const Runner) bool {
         return self.cutscene_id == cutscene_intro_id and self.cutsceneCameraActive();
     }
@@ -5977,4 +5983,6 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expectEqual(@as(usize, 0), runner.resolved_lane_index);
     try std.testing.expect(runner.replayTrackStateLatched());
     try std.testing.expect(runner.replayFadeRequested());
+    try std.testing.expect(runner.consumeReplayFadeRequest());
+    try std.testing.expect(!runner.consumeReplayFadeRequest());
 }

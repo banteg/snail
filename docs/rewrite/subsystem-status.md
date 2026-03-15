@@ -337,11 +337,12 @@ Implemented now:
 - selected replay runs now preserve the exact saved score entry as a live replay source and feed its compact replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - selected replay sessions no longer feed completion or failure back into live high-score persistence, and they now return to the launch surface instead of staying on the generic run-result path
+- replay flag bit `0x8` now terminates selected playback at the recorded tail instead of letting the sim run on past the saved sample stream
 
 Still missing or approximate:
 
 - the saved forward `i16` lane and replay flag bits `0x1/0x2` are still not wired into movement/audio parity
-- the replay-end fade/return handoff behind flag bit `0x8` is still unresolved at the app level
+- the replay-end handoff now exits to the right surface, but it still uses the port's direct phase swap instead of the native frontend fade owner
 - full replay payload read/write parity
 
 Best next work:

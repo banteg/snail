@@ -3112,6 +3112,10 @@ const AppState = struct {
                             self.selectedReplayDirectiveForRunner(runner),
                             @floatCast(self.simulation_clock.step_seconds),
                         );
+                        if (runner.consumeReplayFadeRequest()) {
+                            try self.exitSelectedReplayOnMarker();
+                            return;
+                        }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                         self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
@@ -4819,6 +4823,28 @@ const AppState = struct {
         result.unlocked_next_route = false;
         if (self.selected_level_record_source) |source| {
             result.return_target = resultReturnTargetForSelectedReplaySource(source);
+        }
+    }
+
+    fn exitSelectedReplayOnMarker(self: *AppState) !void {
+        const source = self.selected_level_record_source orelse return;
+        switch (source) {
+            .completion => {
+                self.start_route_index_override = self.active_frontend_level_index;
+                try self.enterRouteMapMenu(.time_trial);
+            },
+            .postal => {
+                self.selected_level_record_override = null;
+                self.selected_level_record_source = null;
+                self.high_scores_menu_index = highScoreModeIndex(.postal);
+                try self.enterGamePhase(.high_scores_menu);
+            },
+            .challenge => {
+                self.selected_level_record_override = null;
+                self.selected_level_record_source = null;
+                self.high_scores_menu_index = highScoreModeIndex(.challenge);
+                try self.enterGamePhase(.high_scores_menu);
+            },
         }
     }
 
