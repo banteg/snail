@@ -4046,6 +4046,10 @@ const AppState = struct {
         return .{
             .score = score,
             .replay_level_index = @intCast(self.active_frontend_level_index),
+            .replay_mode_id = if (self.active_frontend_mode) |mode|
+                @as(u32, @intCast(@intFromEnum(mode)))
+            else
+                0,
             .runtime_build_seed = self.current_runtime_build_seed,
         };
     }
@@ -9672,12 +9676,14 @@ test "preview descending high-score rank matches visible insertion rules" {
 
 test "current run high-score entry carries the runtime build seed" {
     var state: AppState = undefined;
+    state.active_frontend_mode = .time_trial;
     state.active_frontend_level_index = 7;
     state.current_runtime_build_seed = 321;
 
     const entry = state.currentRunHighScoreEntry(12_345);
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
     try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
+    try std.testing.expectEqual(@as(u32, 4), entry.replay_mode_id);
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
 }
 

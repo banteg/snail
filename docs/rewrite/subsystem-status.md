@@ -44,7 +44,7 @@ Implemented now:
 - explicit runtime root at `artifacts/runtime`
 - load and save `SnailMail.cfg`
 - load and save compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`
-- preserve the recovered compact-record runtime-build seed at offset `0x70` and write the current gameplay build seed into new score records
+- preserve the recovered compact-record replay-mode (`0x30`) and runtime-build-seed (`0x70`) lanes, and write the current gameplay values into new score records
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
 - inline name-entry flow inside the shared high-score screen
 
