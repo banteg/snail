@@ -926,6 +926,9 @@ pub const Runner = struct {
             self.stepAttachmentExitState();
         }
         if (!self.paused and self.phase == .active) {
+            self.maybeBeginCompletionCutscene(preview);
+        }
+        if (!self.paused and self.phase == .active) {
             self.updateLaunch(preview, delta_seconds);
         }
         if (!self.paused) {
@@ -1358,7 +1361,6 @@ pub const Runner = struct {
             remaining -= available_progress;
             if (self.runtime_track_index >= last_row) {
                 self.movement_progress = max_progress;
-                self.beginCompletionCutscene();
                 remaining = 0.0;
                 break;
             }
@@ -2509,6 +2511,18 @@ pub const Runner = struct {
         self.finished = true;
         self.phase = .completion_handoff;
         self.setCutscene(cutscene_completion_id);
+    }
+
+    fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        if (preview.total_rows == 0) return false;
+        const last_row = preview.total_rows - 1;
+        return self.runtime_track_index >= last_row and self.movement_progress >= 0.999;
+    }
+
+    fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.attachment_exit_pending) return;
+        if (!self.routeEndReached(preview)) return;
+        self.beginCompletionCutscene();
     }
 
     fn captureWorldFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) WorldFrame {
@@ -4141,6 +4155,29 @@ test "runner completion reaches a handoff after the local cutscene" {
     }
 
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+}
+
+test "route-end completion waits for attachment exit handoff to clear" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.999;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.attachment_exit_pending = true;
+    runner.attachment_exit_progress = 0.0;
+    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+
+    runner.attachment_exit_progress = 0.99;
+    runner.stepAttachmentExitState();
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {
