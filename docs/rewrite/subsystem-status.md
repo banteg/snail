@@ -44,7 +44,7 @@ Implemented now:
 - explicit runtime root at `artifacts/runtime`
 - load and save `SnailMail.cfg`
 - load and save compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`
-- preserve the recovered compact-record replay-mode (`0x30`), replay-speed (`0x48`), challenge-difficulty (`0x50`), runtime-build-flags (`0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
+- preserve the recovered compact-record replay-mode (`0x30`), runtime-build-flags (`0x38`), replay-speed (`0x48`), challenge-difficulty raw/scalar (`0x50/0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
 - inline name-entry flow inside the shared high-score screen

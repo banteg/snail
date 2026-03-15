@@ -4067,6 +4067,13 @@ const AppState = struct {
         };
     }
 
+    fn currentRunChallengeDifficultyScalar(self: *const AppState) f32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => @as(f32, @floatFromInt(self.currentRunChallengeDifficultyValue())) * 0.01,
+            .postal, .time_trial, .tutorial => 0.0,
+        };
+    }
+
     fn challengeRuntimeHazardScalar(value: u32) f32 {
         return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
     }
@@ -4106,9 +4113,10 @@ const AppState = struct {
                 @as(u32, @intCast(@intFromEnum(mode)))
             else
                 0,
+            .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
             .replay_speed_scalar = self.currentRunReplaySpeedScalar(),
             .challenge_difficulty_value = self.currentRunChallengeDifficultyValue(),
-            .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
+            .challenge_difficulty_scalar = self.currentRunChallengeDifficultyScalar(),
             .runtime_build_seed = self.current_runtime_build_seed,
             .garbage_scalar = self.currentRunGarbageScalar(),
             .salt_scalar = self.currentRunSaltScalar(),
@@ -9756,6 +9764,7 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.1), entry.replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 55), entry.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, track.defaultRuntimeBuildFlags), entry.runtime_build_flags);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.55), entry.challenge_difficulty_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.garbage_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.salt_scalar, 0.0001);
