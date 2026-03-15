@@ -374,9 +374,12 @@ const lane_lean_duration_seconds: f32 = 0.25;
 const lane_lean_amplitude_scale: f32 = 0.05;
 const lane_lean_max_amplitude: f32 = 0.08;
 const attachment_pre_roll_scale: f32 = 0.35;
-const parcel_delivery_progress_step: f32 = 1.0 / 120.0;
 const track_parcel_bob_amplitude: f32 = 0.3;
 const track_parcel_bob_phase_step: f32 = 0.012820513;
+const track_parcel_home_progress_step: f32 = 0.0416666679;
+const track_parcel_delivery_progress_step: f32 = 0.0166666675;
+const track_parcel_home_arc_height: f32 = 0.5;
+const track_parcel_delivery_arc_height: f32 = 1.0;
 const completion_cutscene_x_offset: f32 = 0.5;
 const death_cutscene_x_offset: f32 = 2.0;
 const death_cutscene_y_floor: f32 = 0.0;
@@ -846,8 +849,6 @@ pub const Runner = struct {
     recent_score_award: u32 = 0,
     recent_score_award_ticks: u8 = 0,
     registered_parcel_count: u32 = 0,
-    pending_parcel_deliveries: u32 = 0,
-    parcel_delivery_progress: f32 = 0.0,
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
@@ -957,14 +958,17 @@ pub const Runner = struct {
 
         if (!self.paused and self.phase == .active) {
             self.refreshLiveTrackParcels(preview);
-            self.updateTrackParcels();
+        }
+        if (!self.paused) {
+            self.updateTrackParcels(preview);
+        }
+        if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
             self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.processRuntimeHazardCollisions(preview);
             self.processVisitedRows(preview);
-            self.updateParcelDeliveryQueue();
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
             self.stepTemporaryStates();
@@ -1670,11 +1674,13 @@ pub const Runner = struct {
     }
 
     pub fn flushPendingParcelDeliveries(self: *Runner) void {
-        while (self.pending_parcel_deliveries > 0) {
-            self.pending_parcel_deliveries -= 1;
+        for (&self.active_track_parcels) |*parcel| {
+            if (!parcel.active() or parcel.state == 1) continue;
+            parcel.state = 0;
+        }
+        while (self.registered_parcel_count < self.counters.parcels) {
             self.recordParcelDelivery();
         }
-        self.parcel_delivery_progress = 0.0;
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
@@ -1686,28 +1692,6 @@ pub const Runner = struct {
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
     }
 
-    fn queueParcelDelivery(self: *Runner) void {
-        self.pending_parcel_deliveries = std.math.add(u32, self.pending_parcel_deliveries, 1) catch std.math.maxInt(u32);
-    }
-
-    fn updateParcelDeliveryQueue(self: *Runner) void {
-        if (self.pending_parcel_deliveries == 0) {
-            self.parcel_delivery_progress = 0.0;
-            return;
-        }
-
-        self.parcel_delivery_progress = std.math.clamp(
-            self.parcel_delivery_progress + parcel_delivery_progress_step,
-            0.0,
-            1.0,
-        );
-        if (self.parcel_delivery_progress < 0.999) return;
-
-        self.parcel_delivery_progress = 0.0;
-        self.pending_parcel_deliveries -= 1;
-        self.recordParcelDelivery();
-    }
-
     fn recordParcelDelivery(self: *Runner) void {
         self.registered_parcel_count += 1;
         self.recordScore(&self.score.parcel_register, 100);
@@ -1715,13 +1699,7 @@ pub const Runner = struct {
     }
 
     fn processTrackParcelCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        const current_row = currentRowIndex(preview, self.row_position);
-        const floor_height = preview.sampleFloorHeightAtGridPosition(
-            current_row,
-            laneIndexForLaneCenter(preview, self.lane_center),
-            self.row_position,
-        ) orelse 0.0;
-        const player_position = preview.worldPositionForLane(self.lane_center, self.row_position, floor_height + 0.4);
+        const player_position = self.trackParcelPlayerAnchor(preview);
         for (&self.active_track_parcels) |*parcel| {
             if (parcel.state != 1) continue;
 
@@ -1740,9 +1718,8 @@ pub const Runner = struct {
 
             self.counters.parcels += 1;
             self.recordScore(&self.score.parcel_pickup, 100);
-            self.queueParcelDelivery();
             self.recent_event = .{ .parcel = parcel.parcel_id };
-            parcel.state = 0;
+            parcel.state = 4;
             return;
         }
     }
@@ -2513,7 +2490,7 @@ pub const Runner = struct {
         };
     }
 
-    fn updateTrackParcels(self: *Runner) void {
+    fn updateTrackParcels(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         for (&self.active_track_parcels) |*parcel| {
             if (!parcel.active()) continue;
             switch (parcel.state) {
@@ -2527,9 +2504,94 @@ pub const Runner = struct {
                         parcel.bob_phase -= 1.0;
                     }
                 },
+                4 => self.beginTrackParcelHome(preview, parcel),
+                5 => self.stepTrackParcelHome(preview, parcel),
+                6 => self.beginTrackParcelDelivery(parcel),
+                7 => self.stepTrackParcelDelivery(preview, parcel),
                 else => {},
             }
         }
+    }
+
+    fn trackParcelPlayerAnchor(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        const current_row = currentRowIndex(preview, self.row_position);
+        const lane_index = laneIndexForLaneCenter(preview, self.lane_center);
+        const floor_height = preview.sampleFloorHeightAtGridPosition(
+            current_row,
+            lane_index,
+            self.row_position,
+        ) orelse 0.0;
+        return preview.worldPositionForLane(self.lane_center, self.row_position, floor_height + 0.4);
+    }
+
+    fn trackParcelDeliveryTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        return offsetPosition(
+            self.camera_anchor.world,
+            frame.right,
+            frame.up,
+            frame.forward,
+            0.0,
+            1.0,
+            0.6,
+        );
+    }
+
+    fn beginTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
+        const bob_offset = std.math.sin(parcel.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
+        parcel.world_position.y += bob_offset;
+        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const delta = rl.Vector3{
+            .x = player_anchor.x - parcel.world_position.x,
+            .y = player_anchor.y - parcel.world_position.y,
+            .z = player_anchor.z - parcel.world_position.z,
+        };
+        parcel.progress = 0.0;
+        parcel.progress_step = track_parcel_home_progress_step;
+        parcel.target_distance = @sqrt((delta.x * delta.x) + (delta.y * delta.y) + (delta.z * delta.z));
+        parcel.travel_dir = normalizeVector3(.{
+            .x = parcel.world_position.x - player_anchor.x,
+            .y = parcel.world_position.y - player_anchor.y,
+            .z = parcel.world_position.z - player_anchor.z,
+        });
+        parcel.state = 5;
+    }
+
+    fn stepTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
+        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const remaining_distance = (1.0 - parcel.progress) * parcel.target_distance;
+        parcel.world_position = .{
+            .x = player_anchor.x + (remaining_distance * parcel.travel_dir.x),
+            .y = player_anchor.y + (remaining_distance * parcel.travel_dir.y),
+            .z = player_anchor.z + (remaining_distance * parcel.travel_dir.z),
+        };
+        parcel.world_position.y += std.math.sin(parcel.progress * std.math.pi) * track_parcel_home_arc_height;
+        parcel.progress += parcel.progress_step;
+        if (parcel.progress < 1.0) return;
+        parcel.state = 6;
+    }
+
+    fn beginTrackParcelDelivery(self: *Runner, parcel: *TrackParcelRuntime) void {
+        _ = self;
+        parcel.progress = 0.0;
+        parcel.progress_step = track_parcel_delivery_progress_step;
+        parcel.delivery_offset = .{ .x = 0.0, .y = track_parcel_delivery_arc_height, .z = 0.0 };
+        parcel.state = 7;
+    }
+
+    fn stepTrackParcelDelivery(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
+        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const delivery_target = self.trackParcelDeliveryTarget(preview);
+        const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
+        parcel.world_position = lerpVector3(player_anchor, delivery_target, progress);
+        const arc = std.math.sin(progress * std.math.pi);
+        parcel.world_position.x += parcel.delivery_offset.x * arc;
+        parcel.world_position.y += parcel.delivery_offset.y * arc;
+        parcel.world_position.z += parcel.delivery_offset.z * arc;
+        parcel.progress += parcel.progress_step;
+        if (parcel.progress < 1.0) return;
+        self.recordParcelDelivery();
+        parcel.state = 0;
     }
 
     fn refreshLiveRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2749,6 +2811,7 @@ pub const Runner = struct {
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.attachment_exit_pending) return;
         if (self.movement_mode == .attachment and self.attachment_follow.active) return;
+        if (self.registered_parcel_count < self.counters.parcels) return;
         if (!self.routeEndReached(preview)) return;
         self.beginCompletionCutscene();
     }
@@ -3695,6 +3758,14 @@ fn stepUntilParcelPickup(runner: *Runner, preview: *const track.LoadedLevelPrevi
     return steps;
 }
 
+fn stepUntilParcelRegistered(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
+    var steps: usize = 0;
+    while (steps < max_steps and runner.registered_parcel_count == 0) : (steps += 1) {
+        runner.step(preview, .{}, 1.0 / 60.0);
+    }
+    return steps;
+}
+
 fn laneOutsideAttachmentWidth(
     preview: *const track.LoadedLevelPreview,
     built: *const attachment_builders.BuiltAttachment,
@@ -4227,6 +4298,7 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_pickup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.parcel_register);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
+    try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     runner = Runner.init(&arcade_fixture.preview);
     runner.configureCompletionBonus(1, true);
@@ -4253,12 +4325,13 @@ test "runner consumes parcel rows only once" {
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
+    try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 100), runner.score.total);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
 }
 
 test "runner spawns live parcel slots ahead of the current row" {
@@ -4273,12 +4346,12 @@ test "runner spawns live parcel slots ahead of the current row" {
     const live_parcel = runner.liveTrackParcelAt(parcel.row).?;
     const initial_phase = live_parcel.bob_phase;
 
-    runner.updateTrackParcels();
+    runner.updateTrackParcels(&fixture.preview);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row).?.bob_phase != initial_phase);
 }
 
-test "runner removes live parcel slots on pickup" {
+test "runner promotes live parcel slots into flight on pickup" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
@@ -4290,6 +4363,23 @@ test "runner removes live parcel slots on pickup" {
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
+    try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
+    try std.testing.expectEqual(@as(u32, 4), runner.liveTrackParcelAt(parcel.row).?.state);
+}
+
+test "runner registers parcel delivery after the parcel flight finishes" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const parcel = findFirstAnnotationTag(&fixture.preview, .parcel).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, parcel);
+
+    try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
+    const register_steps = stepUntilParcelRegistered(&runner, &fixture.preview, 256);
+    try std.testing.expect(register_steps < 256);
+    try std.testing.expectEqual(@as(u32, 1), runner.registered_parcel_count);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
 
@@ -4415,16 +4505,17 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 1), runner.pending_parcel_deliveries);
+    try std.testing.expectEqual(@as(u32, 0), runner.registered_parcel_count);
+    try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
 
     runner.applyRespawn(&fixture.preview);
 
     try std.testing.expect(runner.isParcelCollected(parcel.row));
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.registered_parcel_count);
-    try std.testing.expectEqual(@as(u32, 0), runner.pending_parcel_deliveries);
     try std.testing.expect(runner.completion_bonus_applied);
     try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);

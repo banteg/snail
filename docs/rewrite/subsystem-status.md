@@ -245,10 +245,11 @@ Implemented now:
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
-- parcel pickup no longer collapses directly into parcel delivery score/count; the runner now stages parcel registration through a delayed delivery queue and flushes outstanding deliveries on run teardown before building results
+- parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot and advance through the recovered `state 4/5/6/7` handoff before `parcel_register` lands
 - collected parcel rows now stay consumed across respawn and stop rendering as live world pickups instead of reappearing until the row scrolls away
 - visible world parcels now come from a runner-local 50-slot live runtime scaffold with the shipped state-`1` bobbing and expiry rules instead of static annotation billboards
-- the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the delayed controller only owns register score payout and the final postal bonus
+- the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the live parcel-flight controller owns register score payout and the final postal bonus
+- route-end completion no longer starts while a collected parcel is still in flight, so end-of-course handoff no longer freezes the recovered parcel runtime mid-delivery
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:
