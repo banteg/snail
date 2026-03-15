@@ -757,3 +757,96 @@ Practical conclusion:
 - once both arrive at `initialize_subgoldy_death`, the zero-life selector outcome is the same:
   - `lives == 0` takes `death_select_final_loss`
   - `lives > 0` takes `death_select_respawn`
+
+## Intro Camera Trace: `update_cutscene` And `update_subgame_camera`
+
+After the death-path work, the live `cdb` session was repurposed to a narrow intro-camera logging pass with three probes:
+
+- `0x4466d0` `update_cutscene`
+  - log only on state changes
+  - captures current cutscene state, player world position, hotspot `12` (`CameraSkidStop`), hotspot `18` (`CameraIntroTalk`), and the cutscene controller translation at `cutscene + 0x40/+0x44/+0x48`
+- `0x4460a4` `update_subgame_camera`
+  - log only when the shared camera selects the override source
+- `0x4460c1` `update_subgame_camera`
+  - log only when the shared camera selects the live cameraman source
+
+One fresh level start produced a clean intro sequence:
+
+- `[cutscene_state_change] ... state=1 ... hotspot12=(0xbf136114,0x40f34c9c,0x40bcfaad) hotspot18=(0x3f5c154d,0x40f87c88,0x40bccf42) cutscene_xyz=(0x3f728032,0x400c78a0,0x41b9a77f)`
+- `[camera_source_override] ... active=2 snap=1 override_xyz=(0x3f5c154d,0x40f87c88,0x40bccf42) ...`
+- `[cutscene_state_change] ... state=2 ... hotspot18=(0x3f5bcd8e,0x410415d8,0x40bccf42) cutscene_xyz=(0x3f5c154d,0x40f87c88,0x40bccf42)`
+- `[cutscene_state_change] ... state=8 ... hotspot18=(0x3f4a6a39,0x4102e94e,0x40be1e1a) cutscene_xyz=(0x3f4abc01,0x4102e82a,0x40be19bd)`
+- `[cutscene_state_change] ... state=9 ... cutscene_xyz=(0x34922b3e,0x41325927,0x401ab3dc)`
+- `[camera_source_cameraman] ... snap=0 cameraman_xyz=(0x00000000,0x41325927,0x401ab3d8) ...`
+
+Practical read from that intro trace:
+
+- the runtime intro state order `1 -> 2 -> 8 -> 9` is now confirmed by direct capture
+- `update_subgame_camera` does switch the shared camera to the override source during intro
+- the first override translation exactly matches hotspot `18` (`CameraIntroTalk`), not hotspot `12`
+- later intro states continue to track very close to hotspot `18`
+- the handoff back to gameplay happens when the shared camera source flips back to the live cameraman path, and the cameraman translation at that moment is almost identical to the final cutscene translation
+
+Most important current conclusion:
+
+- the intro camera is not just "cameraman with a different FOV"
+- it really does route through the cutscene override lane in `update_subgame_camera`
+- for the captured intro leg, hotspot `18` (`CameraIntroTalk`) is the dominant anchor; hotspot `12` (`CameraSkidStop`) did not win the first source-selection decision
+
+## Completion Camera Trace: `update_cutscene` And `update_subgame_camera`
+
+The same logging probes were then left armed across one full level completion.
+
+The completion side produced a clean second cutscene sequence:
+
+- `[cutscene_state_change] ... state=5 ... hotspot12=(0xbf712072,0x3ed08330,0x44023d49) hotspot18=(0x3ef70b57,0x3f2345fc,0x440238f4) cutscene_xyz=(0x00000000,0x41325ad8,0x401940e6)`
+- `[camera_source_override] subgame=0x0cf7d638 active=6 snap=1 override_xyz=(0xbea25fa2,0x3ffc5a1c,0x44014ef5) shared_xyz=(0xbea25a65,0x3ffc5a1c,0x44014ce5) shared_fov=0x42dc0000`
+- `[cutscene_state_change] ... state=6 ... hotspot12=(0xbf80c70d,0x3ecf44e8,0x44024eba) hotspot18=(0x3ed6e0c9,0x3f22d956,0x44024d77) cutscene_xyz=(0xbea25fa2,0x3ffc5a1c,0x44014ef5)`
+- `[cutscene_state_change] ... state=7 ... hotspot12=(0xbfdc56fc,0x3ef59546,0x4405604c) hotspot18=(0xc01e8693,0x3f2c4833,0x4405ae1e) cutscene_xyz=(0xc01e8995,0x3f2c6b4c,0x4405ae0a)`
+
+Practical read from the completion trace:
+
+- the runtime completion order `5 -> 6 -> 7` is now confirmed by direct capture
+- `update_subgame_camera` again switches the shared camera onto the override source during completion
+- the first completion override does **not** equal hotspot `12` or hotspot `18` exactly
+  - that is consistent with the recovered state-`5` `CameraSkidStop -> CameraIntroTalk` blend path rather than a direct snap to one authored hotspot
+- by state `7`, the cutscene translation is extremely close to hotspot `18` (`CameraIntroTalk`)
+
+Current best interpretation:
+
+- intro and completion both use the override-camera lane in `update_subgame_camera`
+- intro begins by snapping to hotspot `18`
+- completion begins from a blended override that is distinct from both source hotspots and then converges toward hotspot `18`
+- this is directionally consistent with the static `state 5` blend recovery and explains why the current Zig cutscene camera is still wrong if it treats completion as only a delayed frontend handoff or as one fixed anchor
+
+## Slug Death Camera Trace: `update_cutscene` And `update_subgame_camera`
+
+The same logging probes remained armed for one slug death with spare lives. After an earlier ambiguity about whether the trace had already crossed into the respawn intro-talk handoff, the probe pack was widened to log hotspot `17` (`CameraSlugDeath`) alongside hotspots `12` and `18`.
+
+The death path again produced the expected state order:
+
+- `[cutscene_state_change] ... state=a ... hotspot12=(0xc0458d82,0x3ee4e6f4,0x432076e0) hotspot17=(0xbffdcbc8,0x3f9b7c42,0x4319196f) hotspot18=(0xbfd5250f,0x3f2ee0fe,0x4320909b) cutscene_xyz=(0x00000000,0x41325ada,0x40193ecd)`
+- `[camera_source_override] subgame=0x0cf7d638 active=0xb snap=1 override_xyz=(0xbfd54201,0x3ffc5a1c,0x431ccffc) shared_xyz=(0xbfd4bf0a,0x3ffc5a1c,0x431cc9db) shared_fov=0x42dc0000`
+- `[cutscene_state_change] ... state=b ... hotspot12=(0xc046be0b,0x3f0879c7,0x432062bf) hotspot17=(0xc004f1db,0x3fa65ff9,0x43190278) hotspot18=(0xbfd76e39,0x3f454038,0x432078c0) cutscene_xyz=(0xbfd54201,0x3ffc5a1c,0x431ccffc)`
+- `[cutscene_state_change] ... state=c ... hotspot12=(0xc05afd42,0x3f00b38c,0x431e5321) hotspot17=(0xc020f298,0x3f99d0e8,0x4316ed10) hotspot18=(0xbffdb834,0x3f1ca996,0x431e5ffc) cutscene_xyz=(0xbffde6b3,0x3f1c4617,0x431e6050)`
+- immediately after death state `c`, the respawn intro reappeared and again showed the usual hotspot-`18` intro lane:
+  - `[cutscene_state_change] ... state=1 ... hotspot18=(0x3f5c154d,0x40f87c88,0x40bccf42) cutscene_xyz=(0xc002aacb,0x3f190b28,0x431e6395)`
+  - `[cutscene_state_change] ... state=2 ... hotspot18=(0x3f5bcd8e,0x41041752,0x40bccf42) cutscene_xyz=(0x3f5c154d,0x40f87c88,0x40bccf42)`
+  - `[cutscene_state_change] ... state=8 ... hotspot18=(0x3f4a6a39,0x4102eac8,0x40be1e1a) cutscene_xyz=(0x3f4abc01,0x4102e9a4,0x40be19bd)`
+
+Practical read from the widened death trace:
+
+- the runtime death order `a -> b -> c` is confirmed again by direct capture
+- `update_subgame_camera` again switches the shared camera onto the override source during death
+- the `state=a` cutscene translation is still the pre-death gameplay value, so the first usable death-camera sample is the immediate override written between `state=a` and `state=b`
+- that first usable death override is already much closer to hotspot `18` than hotspot `17`
+  - at the `state=b` sample, the active death override is about `0.01697` units from hotspot `18` and about `0.41118` units from hotspot `17`
+- by `state=c`, the cutscene translation is effectively on hotspot `18`
+  - the `state=c` translation is about `0.00142` units from hotspot `18` and about `0.53120` units from hotspot `17`
+- the later respawn intro still converges onto hotspot `18` in the same way as a fresh level start
+
+Most useful current conclusion:
+
+- death, like intro and completion, uses the override-camera lane in `update_subgame_camera`
+- this widened slug-death capture does **not** support hotspot `17` (`CameraSlugDeath`) as the live death-camera anchor for the observed respawn path
+- the best present read is stronger than before: the first usable death override is already on the hotspot-`18` lane, and the later closeness to hotspot `18` is not just an artifact of the respawn intro handoff
