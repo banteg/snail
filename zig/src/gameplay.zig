@@ -170,6 +170,9 @@ const completion_handoff_timer_step: f32 = 1.0 / 60.0;
 const completion_handoff_voice_delay_seconds: f32 = 2.0;
 const completion_handoff_release_seconds: f32 = 5.0;
 const completion_handoff_release_force_seconds: f32 = 5.1;
+const row_event_widget_local_x: f32 = 7.30000019;
+const row_event_widget_local_y: f32 = 2.0;
+const row_event_widget_local_z: f32 = 6.0;
 
 pub const RecentEvent = union(enum) {
     none,
@@ -2599,6 +2602,15 @@ pub const Runner = struct {
     }
 
     fn trackParcelDeliveryTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        const widget_world = rl.Vector3{
+            .x = self.row_event_display.widget_world_x,
+            .y = self.row_event_display.widget_world_y,
+            .z = self.row_event_display.widget_world_z,
+        };
+        if ((widget_world.x * widget_world.x) + (widget_world.y * widget_world.y) + (widget_world.z * widget_world.z) > 0.000001) {
+            return widget_world;
+        }
+
         const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
         return offsetPosition(
             self.camera_anchor.world,
@@ -2673,6 +2685,7 @@ pub const Runner = struct {
     // `3 -> 4 -> 5` state path on the gameplay side, but still omits the unresolved
     // widget owner, staged parcel visuals, and the separate `+0x18` completion gate byte.
     fn updateRowEventDisplay(self: *Runner) void {
+        self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
             .inactive, .staging, .hold, .complete => {},
             .final_delivery => {
@@ -2702,6 +2715,22 @@ pub const Runner = struct {
                 }
             },
         }
+    }
+
+    fn updateRowEventWidgetWorld(self: *Runner) void {
+        const camera_transform = normalizeCameraTransform(cameraTransformFromMatrix(self.cameraman.out_matrix));
+        const widget_world = offsetPosition(
+            camera_transform.position,
+            camera_transform.right,
+            camera_transform.up,
+            camera_transform.forward,
+            row_event_widget_local_x,
+            row_event_widget_local_y,
+            row_event_widget_local_z,
+        );
+        self.row_event_display.widget_world_x = widget_world.x;
+        self.row_event_display.widget_world_y = widget_world.y;
+        self.row_event_display.widget_world_z = widget_world.z;
     }
 
     fn refreshLiveRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -4506,6 +4535,57 @@ test "runner promotes live parcel slots into flight on pickup" {
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) != null);
     try std.testing.expectEqual(@as(u32, 4), runner.liveTrackParcelAt(parcel.row).?.state);
+}
+
+test "row event display updates the parcel widget world from the cameraman matrix" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.refreshCameraState(&fixture.preview);
+
+    const transform = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.out_matrix));
+    const expected = offsetPosition(
+        transform.position,
+        transform.right,
+        transform.up,
+        transform.forward,
+        row_event_widget_local_x,
+        row_event_widget_local_y,
+        row_event_widget_local_z,
+    );
+
+    runner.updateRowEventDisplay();
+
+    try std.testing.expectApproxEqAbs(expected.x, runner.row_event_display.widget_world_x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.y, runner.row_event_display.widget_world_y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.z, runner.row_event_display.widget_world_z, 0.0001);
+}
+
+test "parcel delivery homes to the row event widget world target" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_event_display.widget_world_x = 9.0;
+    runner.row_event_display.widget_world_y = 3.0;
+    runner.row_event_display.widget_world_z = 14.0;
+
+    var parcel = TrackParcelRuntime{
+        .state = 7,
+        .progress = 0.5,
+        .progress_step = 0.0,
+        .delivery_offset = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    };
+
+    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
+    const expected = lerpVector3(player_anchor, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
+
+    runner.stepTrackParcelDelivery(&fixture.preview, &parcel);
+
+    try std.testing.expectApproxEqAbs(expected.x, parcel.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.y, parcel.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.z, parcel.world_position.z, 0.0001);
 }
 
 test "runner registers parcel delivery after the parcel flight finishes" {
