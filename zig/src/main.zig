@@ -1021,8 +1021,6 @@ const completion_continue_y_with_bonus: f32 = 400.0;
 const completion_reveal_step: f32 = 1.0 / 24.0;
 const completion_reveal_bonus_threshold: f32 = 1.0;
 const completion_reveal_continue_threshold: f32 = 2.0;
-const default_challenge_replay_speed_value: u32 = 40;
-const default_challenge_replay_difficulty_value: u32 = 40;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -4054,9 +4052,7 @@ const AppState = struct {
 
     fn currentRunReplaySpeedScalar(self: *const AppState) f32 {
         return switch (self.active_frontend_mode orelse .tutorial) {
-            // PORT(partial): challenge setup is still missing, so use the recovered
-            // `initialize_default_runtime_config` defaults until the real setup path owns them.
-            .challenge => replaySpeedScalarForSliderValue(default_challenge_replay_speed_value),
+            .challenge => replaySpeedScalarForSliderValue(self.runtime_config.challengeReplaySpeedValue()),
             .postal, .time_trial, .tutorial => replaySpeedScalarForSliderValue(if (self.current_level) |loaded_level|
                 @as(u32, @intCast(loaded_level.speed orelse 0))
             else
@@ -4066,7 +4062,7 @@ const AppState = struct {
 
     fn currentRunChallengeDifficultyValue(self: *const AppState) u32 {
         return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => default_challenge_replay_difficulty_value,
+            .challenge => self.runtime_config.challengeReplayDifficultyValue(),
             .postal, .time_trial, .tutorial => 0,
         };
     }
@@ -4077,7 +4073,7 @@ const AppState = struct {
 
     fn currentRunGarbageScalar(self: *const AppState) f32 {
         return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => challengeRuntimeHazardScalar(default_challenge_replay_difficulty_value),
+            .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
             .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
                 loaded_level.normalizedGarbageScalar() orelse 0.0
             else
@@ -4087,7 +4083,7 @@ const AppState = struct {
 
     fn currentRunSaltScalar(self: *const AppState) f32 {
         return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => challengeRuntimeHazardScalar(default_challenge_replay_difficulty_value),
+            .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
             .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
                 loaded_level.normalizedSaltScalar() orelse 0.0
             else
@@ -9745,6 +9741,9 @@ test "preview descending high-score rank matches visible insertion rules" {
 
 test "current run high-score entry carries replay mode and build settings" {
     var state: AppState = undefined;
+    state.runtime_config = config.Blob.initDefault();
+    state.runtime_config.setChallengeReplaySpeedValue(100);
+    state.runtime_config.setChallengeReplayDifficultyValue(55);
     state.active_frontend_mode = .challenge;
     state.active_frontend_level_index = 7;
     state.current_track_preview = null;
@@ -9754,12 +9753,12 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
     try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
     try std.testing.expectEqual(@as(u32, 1), entry.replay_mode_id);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.56), entry.replay_speed_scalar, 0.0001);
-    try std.testing.expectEqual(@as(u32, 40), entry.challenge_difficulty_value);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.1), entry.replay_speed_scalar, 0.0001);
+    try std.testing.expectEqual(@as(u32, 55), entry.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, track.defaultRuntimeBuildFlags), entry.runtime_build_flags);
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.32), entry.garbage_scalar, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.32), entry.salt_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.44), entry.salt_scalar, 0.0001);
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {

@@ -10,6 +10,8 @@ const legacy_display_mode_offset = 0x1c;
 const legacy_display_mode_default: u32 = 0x5fe;
 const startup_flag_offset = 0x31;
 const gameplay_tuning_offset = 0x34;
+const challenge_replay_speed_value_offset = gameplay_tuning_offset + 0x0c;
+const challenge_replay_difficulty_value_offset = gameplay_tuning_offset + 0x14;
 const route_unlock_limit_offset = 0xa0;
 const route_selection_index_offset = 0xa4;
 const runtime_flag_offset = 0xa8;
@@ -133,6 +135,22 @@ pub const Blob = struct {
     pub fn setRouteSelectionIndex(self: *Blob, value: u32) void {
         writeU32(self.bytes[route_selection_index_offset .. route_selection_index_offset + 4], value);
     }
+
+    pub fn challengeReplaySpeedValue(self: *const Blob) u32 {
+        return readU32(self.bytes[challenge_replay_speed_value_offset .. challenge_replay_speed_value_offset + 4]);
+    }
+
+    pub fn setChallengeReplaySpeedValue(self: *Blob, value: u32) void {
+        writeU32(self.bytes[challenge_replay_speed_value_offset .. challenge_replay_speed_value_offset + 4], value);
+    }
+
+    pub fn challengeReplayDifficultyValue(self: *const Blob) u32 {
+        return readU32(self.bytes[challenge_replay_difficulty_value_offset .. challenge_replay_difficulty_value_offset + 4]);
+    }
+
+    pub fn setChallengeReplayDifficultyValue(self: *Blob, value: u32) void {
+        writeU32(self.bytes[challenge_replay_difficulty_value_offset .. challenge_replay_difficulty_value_offset + 4], value);
+    }
 };
 
 fn clampUnit(value: f32) f32 {
@@ -164,6 +182,8 @@ test "default config blob matches recovered startup defaults" {
     try std.testing.expectEqual(@as(u32, legacy_display_mode_default), readU32(blob.bytes[legacy_display_mode_offset .. legacy_display_mode_offset + 4]));
     try std.testing.expectEqual(@as(u8, 1), blob.bytes[startup_flag_offset]);
     try std.testing.expectEqualSlices(u8, &default_gameplay_tuning, blob.bytes[gameplay_tuning_offset .. gameplay_tuning_offset + default_gameplay_tuning.len]);
+    try std.testing.expectEqual(@as(u32, 40), blob.challengeReplaySpeedValue());
+    try std.testing.expectEqual(@as(u32, 40), blob.challengeReplayDifficultyValue());
     try std.testing.expectEqual(@as(u32, 1), blob.routeUnlockLimit());
     try std.testing.expectEqual(@as(u32, 1), blob.routeSelectionIndex());
     try std.testing.expectEqual(@as(u32, 0), readU32(blob.bytes[runtime_flag_offset .. runtime_flag_offset + 4]));
@@ -180,6 +200,8 @@ test "config blob load overlays saved bytes onto recovered defaults" {
     saved.setSoundVolume(0.25);
     saved.setMusicVolume(0.75);
     saved.setFullscreenEnabled(false);
+    saved.setChallengeReplaySpeedValue(55);
+    saved.setChallengeReplayDifficultyValue(60);
     saved.setRouteUnlockLimit(7);
 
     var file = try temp_dir.dir.createFile(config_path, .{});
@@ -197,6 +219,8 @@ test "config blob load overlays saved bytes onto recovered defaults" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.25), loaded.blob.soundVolume(), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.75), loaded.blob.musicVolume(), 0.0001);
     try std.testing.expect(!loaded.blob.fullscreenEnabled());
+    try std.testing.expectEqual(@as(u32, 55), loaded.blob.challengeReplaySpeedValue());
+    try std.testing.expectEqual(@as(u32, 60), loaded.blob.challengeReplayDifficultyValue());
     try std.testing.expectEqual(@as(u32, 7), loaded.blob.routeUnlockLimit());
     try std.testing.expectEqualSlices(u8, &default_camera_tuning, loaded.blob.bytes[camera_tuning_offset .. camera_tuning_offset + default_camera_tuning.len]);
 }
