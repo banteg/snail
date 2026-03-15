@@ -2979,14 +2979,14 @@ pub const Runner = struct {
     // PORT(partial): Windows enters the death selector once Goldy's world Y falls below -7.0.
     // The runner still does not simulate vertical motion, so it uses a conservative proxy:
     // no sampled floor at the current lane, outside attachment-follow, without an active
-    // jetpack, and without an authored `NoFall` annotation triggers the same direct fall-side
-    // death-resolution path. The separate scripted death cutscene remains reserved for hit-side
-    // hazards like slug contact.
+    // jetpack, and without the recovered runtime `NoFall` lane set triggers the same direct
+    // fall-side death-resolution path. The separate scripted death cutscene remains reserved
+    // for hit-side hazards like slug contact.
     fn updateFallEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.movement_mode == .attachment) return;
         if (self.launch.active) return;
         if (self.jetpack.active) return;
-        if (self.current_annotation == .no_fall) return;
+        if (preview.runtimeFlagB01At(self.current_global_row, self.resolved_lane_index)) return;
         if (!rowHasAnyFloor(preview, self.current_global_row)) return;
         if (preview.sampleFloorHeightAtGridPosition(
             self.current_global_row,
@@ -5819,6 +5819,24 @@ test "authored no-fall rows suppress the fall death path" {
 
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
+}
+
+test "runtime no-fall lane suppresses fall entry without current annotation state" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const gap = findFirstFloorGap(&fixture.preview, true).?;
+    runner.current_global_row = gap.row;
+    runner.resolved_lane_index = gap.lane;
+    runner.lane_index = gap.lane;
+    runner.lane_center = @as(f32, @floatFromInt(gap.lane)) + 0.5;
+    runner.row_position = @as(f32, @floatFromInt(gap.row)) + 0.5;
+    runner.current_annotation = null;
+
+    runner.updateFallEntry(&fixture.preview);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
 }
 
 test "active jetpack suppresses fall entry over a floor gap" {

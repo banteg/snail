@@ -179,6 +179,7 @@ pub const LoadedLevelPreview = struct {
     salt_scalar: f32,
     parcel_target_count: usize,
     runtime_tiles: []u8,
+    runtime_flag_b01_grid: []bool,
     runtime_flag_b40_grid: []bool,
     runtime_flag_b80_grid: []bool,
     runtime_edge_masks: []u8,
@@ -316,6 +317,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b01_grid);
         const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
             allocator,
             segments,
@@ -367,6 +376,7 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
             .runtime_edge_masks = runtime_edge_masks,
@@ -474,6 +484,14 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b01_grid);
         const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
             allocator,
             segments,
@@ -525,6 +543,7 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
             .runtime_edge_masks = runtime_edge_masks,
@@ -543,6 +562,7 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.model_assets);
         self.allocator.free(self.runtime_spawn_hints);
         self.allocator.free(self.runtime_edge_masks);
+        self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
         self.allocator.free(self.runtime_flag_b40_grid);
         self.allocator.free(self.runtime_tiles);
@@ -786,6 +806,11 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
         return self.runtime_flag_b40_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB01At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b01_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeFlagB80At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1616,6 +1641,32 @@ fn buildRuntimeFlagB80Grid(
     return flag_grid;
 }
 
+fn buildRuntimeFlagB01Grid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() != .no_fall) continue;
+
+            const global_row = row_base + row_index;
+            for (row.cells, 0..) |_, lane_index| {
+                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] = true;
+            }
+        }
+    }
+
+    return flag_grid;
+}
+
 const ParcelRowLocation = struct {
     segment_index: usize,
     row_index: usize,
@@ -2234,6 +2285,31 @@ test "runtime flag b80 follows JetPack=Off annotations" {
         try std.testing.expect(preview.runtimeFlagB80At(0, lane_index));
         try std.testing.expect(!preview.runtimeFlagB80At(1, lane_index));
     }
+}
+
+test "runtime flag b01 follows NoFall annotations" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("SEGMENTS/TRAMPOLINE.TXT") orelse return error.EntryNotFound;
+    var preview = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        entry,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    var saw_no_fall = false;
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const expects_flag = if (row_location.row.annotation) |annotation| annotation.tag() == .no_fall else false;
+        for (0..preview.max_width) |lane_index| {
+            try std.testing.expectEqual(expects_flag, preview.runtimeFlagB01At(global_row, lane_index));
+        }
+        saw_no_fall = saw_no_fall or expects_flag;
+    }
+    try std.testing.expect(saw_no_fall);
 }
 
 test "runtime build mirror latch matches recovered threshold logic" {
