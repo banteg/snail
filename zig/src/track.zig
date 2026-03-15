@@ -552,6 +552,10 @@ pub const LoadedLevelPreview = struct {
         return self.attachment_scaffold.activeBuiltAttachmentAtRow(global_row);
     }
 
+    pub fn installedBuiltAttachmentsAtRow(self: *const LoadedLevelPreview, global_row: usize) attachment_builders.InstalledBuiltAttachmentSlots {
+        return self.attachment_scaffold.installedBuiltAttachmentsAtRow(global_row);
+    }
+
     pub fn installedBuiltAttachmentAtRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
         return self.attachment_scaffold.installedBuiltAttachmentAtRow(global_row);
     }
@@ -564,7 +568,8 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn activePathNameAtRow(self: *const LoadedLevelPreview, global_row: usize) ?[]const u8 {
-        if (self.installedBuiltAttachmentAtRow(global_row)) |built| {
+        const installed = self.installedBuiltAttachmentsAtRow(global_row);
+        if (installed.primary orelse installed.secondary) |built| {
             return built.row.raw_name;
         }
         const row = self.activePathAtRow(global_row) orelse return null;

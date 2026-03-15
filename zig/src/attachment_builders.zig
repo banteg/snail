@@ -318,11 +318,36 @@ pub const AuthoredPathRow = struct {
     }
 };
 
+pub const InstalledAttachmentIndexSlots = struct {
+    primary: ?usize = null,
+    secondary: ?usize = null,
+
+    pub fn append(self: *InstalledAttachmentIndexSlots, built_index: usize) void {
+        if (self.primary == built_index or self.secondary == built_index) return;
+        if (self.primary == null) {
+            self.primary = built_index;
+            return;
+        }
+        if (self.secondary == null) {
+            self.secondary = built_index;
+        }
+    }
+};
+
+pub const InstalledBuiltAttachmentSlots = struct {
+    primary: ?*const BuiltAttachment = null,
+    secondary: ?*const BuiltAttachment = null,
+
+    pub fn any(self: InstalledBuiltAttachmentSlots) bool {
+        return self.primary != null or self.secondary != null;
+    }
+};
+
 pub const Scaffold = struct {
     allocator: std.mem.Allocator,
     authored_rows: []AuthoredPathRow,
     built_attachments: []BuiltAttachment,
-    installed_attachment_rows: []?usize,
+    installed_attachment_rows: []InstalledAttachmentIndexSlots,
 
     pub fn collect(
         allocator: std.mem.Allocator,
@@ -370,16 +395,19 @@ pub const Scaffold = struct {
             });
         }
 
-        const installed_attachment_rows = try allocator.alloc(?usize, total_rows);
+        const installed_attachment_rows = try allocator.alloc(InstalledAttachmentIndexSlots, total_rows);
         errdefer allocator.free(installed_attachment_rows);
-        @memset(installed_attachment_rows, null);
+        for (installed_attachment_rows) |*slot_row| {
+            slot_row.* = .{};
+        }
 
         for (built_attachments.items, 0..) |built, index| {
             const attachment_end = @min(total_rows, built.row.global_row + built.template.sample_count + 1);
             var global_row = built.row.global_row;
             while (global_row < attachment_end) : (global_row += 1) {
                 if (!rowHasAttachmentRuntimeTile(runtime_tiles, total_rows, max_width, global_row)) continue;
-                installed_attachment_rows[global_row] = index;
+                // Windows row records expose two installed-owner slots at +0xa4/+0xa8.
+                installed_attachment_rows[global_row].append(index);
             }
         }
 
@@ -436,10 +464,23 @@ pub const Scaffold = struct {
         return null;
     }
 
+    fn resolveInstalledBuiltAttachment(self: *const Scaffold, built_index: ?usize) ?*const BuiltAttachment {
+        const index = built_index orelse return null;
+        return &self.built_attachments[index];
+    }
+
+    pub fn installedBuiltAttachmentsAtRow(self: *const Scaffold, global_row: usize) InstalledBuiltAttachmentSlots {
+        if (global_row >= self.installed_attachment_rows.len) return .{};
+        const row_slots = self.installed_attachment_rows[global_row];
+        return .{
+            .primary = self.resolveInstalledBuiltAttachment(row_slots.primary),
+            .secondary = self.resolveInstalledBuiltAttachment(row_slots.secondary),
+        };
+    }
+
     pub fn installedBuiltAttachmentAtRow(self: *const Scaffold, global_row: usize) ?*const BuiltAttachment {
         if (global_row >= self.installed_attachment_rows.len) return null;
-        const built_index = self.installed_attachment_rows[global_row] orelse return null;
-        return &self.built_attachments[built_index];
+        return self.installedBuiltAttachmentsAtRow(global_row).primary;
     }
 };
 
@@ -1625,7 +1666,9 @@ test "collect scaffold keeps active authored path row" {
     try std.testing.expectEqual(PublicPath.start, scaffold.activePathAtRow(1).?.public_path.?);
     try std.testing.expectEqual(PublicPath.halfpipe, scaffold.activePathAtRow(3).?.public_path.?);
     try std.testing.expectEqual(PublicPath.start, scaffold.installedBuiltAttachmentAtRow(1).?.row.public_path.?);
-    try std.testing.expectEqual(PublicPath.halfpipe, scaffold.installedBuiltAttachmentAtRow(3).?.row.public_path.?);
+    const overlap = scaffold.installedBuiltAttachmentsAtRow(3);
+    try std.testing.expectEqual(PublicPath.start, overlap.primary.?.row.public_path.?);
+    try std.testing.expectEqual(PublicPath.halfpipe, overlap.secondary.?.row.public_path.?);
 }
 
 test "collect scaffold builds start template" {

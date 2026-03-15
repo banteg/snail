@@ -1459,15 +1459,10 @@ pub const Runner = struct {
 
     fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const sample = self.sampleRow(preview, global_row) orelse return;
+        var began_installed_attachment = false;
 
-        if (self.movement_mode != .attachment and
-            rowHasRuntimeGameplayCellKind(preview, global_row, .attachment_entry))
-        {
-            if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
-                    self.beginInstalledAttachmentFollow(preview, built, entry);
-                }
-            }
+        if (self.movement_mode != .attachment) {
+            began_installed_attachment = self.tryBeginInstalledAttachmentFollow(preview, global_row, sample);
         }
 
         if (sample.annotation) |annotation| {
@@ -1524,14 +1519,11 @@ pub const Runner = struct {
                 }
             },
             .attachment_entry => {
-                if (self.movement_mode != .attachment) {
-                    if (preview.installedBuiltAttachmentAtRow(global_row)) |built| {
-                        if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
-                            self.beginInstalledAttachmentFollow(preview, built, entry);
-                        }
-                    } else {
-                        self.beginAttachmentFollow(preview, sample);
-                    }
+                if (self.movement_mode != .attachment and
+                    !began_installed_attachment and
+                    !preview.installedBuiltAttachmentsAtRow(global_row).any())
+                {
+                    self.beginAttachmentFollow(preview, sample);
                 }
             },
             .ring => {},
@@ -2914,6 +2906,27 @@ pub const Runner = struct {
         self.recent_event = .attachment_begin;
     }
 
+    fn tryBeginInstalledAttachmentFollow(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        sample: RowSample,
+    ) bool {
+        const installed = preview.installedBuiltAttachmentsAtRow(global_row);
+        const candidates = [_]?*const attachment_builders.BuiltAttachment{
+            installed.primary,
+            installed.secondary,
+        };
+        for (candidates) |maybe_built| {
+            const built = maybe_built orelse continue;
+            if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
+                self.beginInstalledAttachmentFollow(preview, built, entry);
+                return true;
+            }
+        }
+        return false;
+    }
+
     fn installedAttachmentEntry(
         self: *const Runner,
         preview: *const track.LoadedLevelPreview,
@@ -3407,19 +3420,6 @@ fn rowHasAnyFloor(preview: *const track.LoadedLevelPreview, global_row: usize) b
             lane,
             @as(f32, @floatFromInt(global_row)) + 0.5,
         ) != null) return true;
-    }
-    return false;
-}
-
-fn rowHasRuntimeGameplayCellKind(
-    preview: *const track.LoadedLevelPreview,
-    global_row: usize,
-    kind: track.GameplayCellKind,
-) bool {
-    if (global_row >= preview.total_rows) return false;
-    for (0..preview.max_width) |lane| {
-        const tile_type = preview.runtimeTileAt(global_row, lane) orelse continue;
-        if (track.runtimeGameplayCellKindForTile(tile_type, preview.runtime_build_flags) == kind) return true;
     }
     return false;
 }
@@ -4731,34 +4731,7 @@ test "continuous target lane center steers attachment lateral offset" {
     try std.testing.expect(@abs(runner.attachment_follow.lateral_offset - @round(runner.attachment_follow.lateral_offset)) > 0.05);
 }
 
-test "installed attachment entry only begins on the source row" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
-    defer fixture.deinit();
-
-    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
-    const later_row = target.row + 1;
-    const built_index = for (fixture.preview.attachment_scaffold.built_attachments, 0..) |built, index| {
-        if (built.row.global_row == target.row) break index;
-    } else unreachable;
-    fixture.preview.attachment_scaffold.installed_attachment_rows[later_row] = built_index;
-
-    var runner = Runner.init(&fixture.preview);
-    primeRunnerBeforeRow(
-        &runner,
-        &fixture.preview,
-        .{
-            .row = later_row,
-            .lane = 4,
-        },
-    );
-
-    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-
-    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
-}
-
-test "installed attachment probes stay probe-only even when an installed row exists" {
+test "installed attachment probe tiles still allow installed begins" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -4775,9 +4748,9 @@ test "installed attachment probes stay probe-only even when an installed row exi
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
-    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
-    try std.testing.expectEqual(RecentEvent.attachment_probe, runner.recent_event);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
+    try std.testing.expectEqual(RecentEvent.attachment_begin, runner.recent_event);
 }
 
 test "halfpipe attachment tilts world up with lateral drift" {
