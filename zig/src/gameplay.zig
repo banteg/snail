@@ -15,6 +15,12 @@ pub const RunnerInput = struct {
     reset: bool = false,
 };
 
+pub const ReplayDirective = struct {
+    active: bool = false,
+    lateral_world_x: ?f32 = null,
+    flag_bits: u8 = 0,
+};
+
 pub const AttachmentHint = enum {
     none,
     probe,
@@ -183,6 +189,8 @@ const completion_handoff_timer_step: f32 = 1.0 / 60.0;
 const completion_handoff_voice_delay_seconds: f32 = 2.0;
 const completion_handoff_release_seconds: f32 = 5.0;
 const completion_handoff_release_force_seconds: f32 = 5.1;
+const replay_world_x_min: f32 = -4.0;
+const replay_world_x_max: f32 = 4.0;
 const row_event_widget_local_x: f32 = 7.30000019;
 const row_event_widget_local_y: f32 = 2.0;
 const row_event_widget_local_z: f32 = 6.0;
@@ -895,6 +903,10 @@ pub const Runner = struct {
     current_gameplay_cell: ?track.GameplayCellKind = null,
     current_runtime_tile_hint: ?u8 = null,
     current_path_name: ?[]const u8 = null,
+    replay_world_x_override: ?f32 = null,
+    replay_flag_bits: u8 = 0,
+    replay_track_state_latch: bool = false,
+    replay_fade_requested: bool = false,
     attachment_hint: AttachmentHint = .none,
     attachment_path_name: ?[]const u8 = null,
     attachment_follow: AttachmentFollowState = .{},
@@ -1005,6 +1017,16 @@ pub const Runner = struct {
     }
 
     pub fn step(self: *Runner, preview: *const track.LoadedLevelPreview, input: RunnerInput, delta_seconds: f32) void {
+        self.stepWithReplay(preview, input, .{}, delta_seconds);
+    }
+
+    pub fn stepWithReplay(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        input: RunnerInput,
+        replay: ReplayDirective,
+        delta_seconds: f32,
+    ) void {
         if (input.reset) {
             self.reset(preview);
             return;
@@ -1041,6 +1063,9 @@ pub const Runner = struct {
             self.handleFireInput(preview, input.fire);
             self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
+            if (replay.active) {
+                self.applyReplayDirective(preview, replay);
+            }
             self.tick_count += 1;
             self.stopwatch.advance(1.0);
         }
@@ -1126,7 +1151,11 @@ pub const Runner = struct {
             self.resolved_lane_index,
             self.row_position,
         ) orelse 0.0;
-        return preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
+        var world = preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
+        if (self.currentReplayWorldX()) |world_x| {
+            world.x = world_x;
+        }
+        return world;
     }
 
     pub fn worldForward(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
@@ -1225,6 +1254,14 @@ pub const Runner = struct {
         const snap_next = self.cutscene_camera.snap_next;
         self.cutscene_camera.snap_next = false;
         return snap_next;
+    }
+
+    pub fn replayTrackStateLatched(self: *const Runner) bool {
+        return self.replay_track_state_latch;
+    }
+
+    pub fn replayFadeRequested(self: *const Runner) bool {
+        return self.replay_fade_requested;
     }
 
     pub fn introCutsceneBlocksGameplay(self: *const Runner) bool {
@@ -1480,6 +1517,14 @@ pub const Runner = struct {
             self.lane_center = self.attachment_follow.cached_output_lane_center;
             self.attachment_follow.cached_output_lane_center = self.lane_center;
             self.lane_index = sample.resolved_lane_index;
+        } else if (self.replay_world_x_override) |world_x| {
+            self.lane_center = laneCenterFromWorldX(preview, world_x);
+            self.lane_index = sample.resolved_lane_index;
+            self.resolved_lane_index = sample.resolved_lane_index;
+        } else if (self.currentReplayWorldX()) |world_x| {
+            self.lane_center = laneCenterFromWorldX(preview, world_x);
+            self.lane_index = sample.resolved_lane_index;
+            self.resolved_lane_index = sample.resolved_lane_index;
         } else {
             const min_lane_center = @as(f32, @floatFromInt(sample.traversable_bounds.min)) + 0.5;
             const max_lane_center = @as(f32, @floatFromInt(sample.traversable_bounds.max)) + 0.5;
@@ -1487,6 +1532,32 @@ pub const Runner = struct {
             self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
             self.resolved_lane_index = self.lane_index;
         }
+    }
+
+    fn applyReplayDirective(self: *Runner, preview: *const track.LoadedLevelPreview, replay: ReplayDirective) void {
+        if (!replay.active) return;
+        if (replay.lateral_world_x) |raw_world_x| {
+            if (self.phase != .active or self.movement_mode != .track or self.launch.active) return;
+            const world_x = std.math.clamp(raw_world_x, replay_world_x_min, replay_world_x_max);
+            self.replay_world_x_override = world_x;
+            self.lane_center = laneCenterFromWorldX(preview, world_x);
+            const lane_index = preview.laneIndexAtWorldX(world_x);
+            self.lane_index = lane_index;
+            self.resolved_lane_index = lane_index;
+        }
+
+        self.replay_flag_bits = replay.flag_bits;
+        self.replay_track_state_latch = (replay.flag_bits & 0x04) != 0;
+        if ((replay.flag_bits & 0x08) != 0) {
+            self.replay_fade_requested = true;
+        }
+    }
+
+    fn currentReplayWorldX(self: *const Runner) ?f32 {
+        if (self.phase != .active) return null;
+        if (self.movement_mode != .track) return null;
+        if (self.launch.active) return null;
+        return self.replay_world_x_override;
     }
 
     fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1545,11 +1616,16 @@ pub const Runner = struct {
     fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
         const row_location = preview.locateRow(global_row) orelse return null;
         const traversable = preview.laneBoundsForRow(row_location);
-        const desired_lane = std.math.clamp(
-            laneIndexForLaneCenter(preview, self.lane_center),
-            traversable.min,
-            traversable.max,
-        );
+        const row_width = @min(row_location.row.cells.len, preview.max_width);
+        if (row_width == 0) return null;
+        const desired_lane = if (self.currentReplayWorldX()) |world_x|
+            @min(preview.laneIndexAtWorldX(world_x), row_width - 1)
+        else
+            std.math.clamp(
+                laneIndexForLaneCenter(preview, self.lane_center),
+                traversable.min,
+                traversable.max,
+            );
 
         var resolved_lane_index = desired_lane;
         var path_center_lane: ?f32 = null;
@@ -5878,4 +5954,27 @@ test "score awards update transient tutorial hud state" {
 
     runner.stepTemporaryStates();
     try std.testing.expectEqual(@as(u8, 44), runner.recent_score_award_ticks);
+}
+
+test "replay directive overrides world x and latches replay flags" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.stepWithReplay(
+        &fixture.preview,
+        .{},
+        .{
+            .active = true,
+            .lateral_world_x = -3.25,
+            .flag_bits = 0x0c,
+        },
+        1.0 / 60.0,
+    );
+
+    const world = runner.worldPosition(&fixture.preview, 0.82);
+    try std.testing.expectApproxEqAbs(@as(f32, -3.25), world.x, 0.0001);
+    try std.testing.expectEqual(@as(usize, 0), runner.resolved_lane_index);
+    try std.testing.expect(runner.replayTrackStateLatched());
+    try std.testing.expect(runner.replayFadeRequested());
 }

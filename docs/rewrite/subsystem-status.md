@@ -334,11 +334,13 @@ Implemented now:
 - route-map and high-score UI have the right broad replay concepts in place
 - selected replay actions now launch the recovered selected-level-record path instead of dead-end stubs
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
+- selected replay runs now preserve the exact saved score entry as a live replay source and feed its compact replay samples into gameplay instead of dropping the payload on launch
+- replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 
 Still missing or approximate:
 
-- actual recorded-input replay playback in route map
-- actual recorded-input replay playback in high scores
+- the saved forward `i16` lane and replay flag bits `0x1/0x2` are still not wired into movement/audio parity
+- the replay-end fade/return handoff behind flag bit `0x8` is still unresolved at the app level
 - full replay payload read/write parity
 
 Best next work:

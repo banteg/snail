@@ -899,6 +899,12 @@ const PendingHighScoreEntry = struct {
     rank: usize,
 };
 
+const SelectedLevelRecordSource = union(enum) {
+    postal: usize,
+    challenge: usize,
+    completion: usize,
+};
+
 const SelectedLevelRecordOverride = struct {
     mode: FrontendLevelMode,
     level_index: usize,
@@ -1556,6 +1562,7 @@ const AppState = struct {
     current_runtime_build_seed_level_index: ?usize = null,
     current_runtime_build_seed_mode: ?FrontendLevelMode = null,
     selected_level_record_override: ?SelectedLevelRecordOverride = null,
+    selected_level_record_source: ?SelectedLevelRecordSource = null,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
@@ -3098,7 +3105,12 @@ const AppState = struct {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
                     if (!self.startupGameplayBlockActive() and !self.tutorialPromptBlocksGameplay()) {
-                        runner.step(loaded_track_preview, runner_input, @floatCast(self.simulation_clock.step_seconds));
+                        runner.stepWithReplay(
+                            loaded_track_preview,
+                            runner_input,
+                            self.selectedReplayDirectiveForRunner(runner),
+                            @floatCast(self.simulation_clock.step_seconds),
+                        );
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
                         self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
@@ -3608,25 +3620,27 @@ const AppState = struct {
                     }
                     return;
                 }
-                const accepts_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
-                if (accepts_input and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
+                const accepts_runner_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
+                const accepts_live_replay_controls = accepts_runner_input and !self.selectedReplayPlaybackActive();
+                self.mouse_level_lane_target = null;
+                if (accepts_live_replay_controls and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta -= 1;
                 }
-                if (accepts_input and (rl.isKeyPressed(.right) or rl.isKeyPressed(.d))) {
+                if (accepts_live_replay_controls and (rl.isKeyPressed(.right) or rl.isKeyPressed(.d))) {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.lane_delta += 1;
                 }
-                if (accepts_input and (rl.isKeyPressed(.up) or rl.isKeyPressed(.w))) {
+                if (accepts_live_replay_controls and (rl.isKeyPressed(.up) or rl.isKeyPressed(.w))) {
                     self.pending_level_input.speed_delta_rows_per_second += 2.0;
                 }
-                if (accepts_input and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
+                if (accepts_live_replay_controls and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
                     self.pending_level_input.speed_delta_rows_per_second -= 2.0;
                 }
-                if (accepts_input and rl.isMouseButtonDown(.left)) {
+                if (accepts_live_replay_controls and rl.isMouseButtonDown(.left)) {
                     self.pending_level_input.fire = true;
                 }
-                if (accepts_input and rl.isKeyPressed(.space)) {
+                if (accepts_runner_input and rl.isKeyPressed(.space)) {
                     try self.enterPauseMenu();
                     return;
                 }
@@ -3634,7 +3648,7 @@ const AppState = struct {
                     self.mouse_level_lane_target = null;
                     self.pending_level_input.reset = true;
                 }
-                if (accepts_input) {
+                if (accepts_live_replay_controls) {
                     if (self.current_track_preview) |loaded_track_preview| {
                         if (self.level_runner) |runner| {
                             self.mouse_level_lane_target = laneCenterTargetForRunnerMouse(
@@ -3836,9 +3850,9 @@ const AppState = struct {
         switch (action) {
             .play => try self.enterSelectedFrontendRoute(),
             .watch_best_trial => {
-                const entry = self.routeMapReplayEntry() orelse return;
-                const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
-                try self.enterSelectedLevelRecordPath(record);
+                const route_index = self.currentRouteMapOpenIndex() orelse return;
+                const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return;
+                try self.enterSelectedLevelRecordSource(.{ .completion = completion_index });
             },
             .back => if (self.route_map_screen_mode == .post_completion_exit)
                 try self.beginRouteMapExitPrompt()
@@ -3874,9 +3888,12 @@ const AppState = struct {
 
     fn performHighScoreReplay(self: *AppState, entry_index: usize) !void {
         if (!self.highScoreReplayAvailable(entry_index)) return;
-        const entry = self.highScoreReplayEntry(entry_index) orelse return;
-        const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
-        try self.enterSelectedLevelRecordPath(record);
+        const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        const source: SelectedLevelRecordSource = switch (selected_mode) {
+            .postal => .{ .postal = entry_index },
+            .challenge => .{ .challenge = entry_index },
+        };
+        try self.enterSelectedLevelRecordSource(source);
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
@@ -3913,16 +3930,24 @@ const AppState = struct {
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
+        self.selected_level_record_override = null;
+        self.selected_level_record_source = null;
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
     }
 
     fn enterFrontendLevelPath(self: *AppState, mode: FrontendLevelMode, level_index: usize) !void {
-        try self.beginFrontendLevelPath(mode, level_index, null);
+        try self.beginFrontendLevelPath(mode, level_index, null, null);
     }
 
     fn enterSelectedLevelRecordPath(self: *AppState, record: SelectedLevelRecordOverride) !void {
-        try self.beginFrontendLevelPath(record.mode, record.level_index, record);
+        try self.beginFrontendLevelPath(record.mode, record.level_index, record, self.selected_level_record_source);
+    }
+
+    fn enterSelectedLevelRecordSource(self: *AppState, source: SelectedLevelRecordSource) !void {
+        const entry = self.selectedReplayEntryForSource(source) orelse return;
+        const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
+        try self.beginFrontendLevelPath(record.mode, record.level_index, record, source);
     }
 
     fn beginFrontendLevelPath(
@@ -3930,10 +3955,12 @@ const AppState = struct {
         mode: FrontendLevelMode,
         level_index: usize,
         selected_level_record_override: ?SelectedLevelRecordOverride,
+        selected_level_record_source: ?SelectedLevelRecordSource,
     ) !void {
         var path_buffer: [64]u8 = undefined;
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
         self.selected_level_record_override = selected_level_record_override;
+        self.selected_level_record_source = selected_level_record_source;
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
         self.seed_level_intro_cutscene = true;
@@ -3978,6 +4005,7 @@ const AppState = struct {
 
     fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: RouteMapScreenMode) !void {
         self.selected_level_record_override = null;
+        self.selected_level_record_source = null;
         self.frontend_route_mode = mode;
         self.route_map_screen_mode = screen_mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
@@ -4626,7 +4654,7 @@ const AppState = struct {
             .time_trial_route_map => try self.enterRouteMapMenu(.time_trial),
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
             .replay_current_level => if (self.selected_level_record_override) |record|
-                try self.enterSelectedLevelRecordPath(record)
+                try self.beginFrontendLevelPath(record.mode, record.level_index, record, self.selected_level_record_source)
             else if (result.mode) |mode|
                 try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
             else
@@ -4721,6 +4749,43 @@ const AppState = struct {
         const route_index = self.currentRouteMapOpenIndex() orelse return null;
         const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return null;
         return &self.high_score_tables.completion[completion_index];
+    }
+
+    fn selectedReplayEntryForSource(self: *const AppState, source: SelectedLevelRecordSource) ?*const high_score.Entry {
+        return switch (source) {
+            .postal => |index| if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
+            .challenge => |index| if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
+            .completion => |index| if (index < self.high_score_tables.completion.len) &self.high_score_tables.completion[index] else null,
+        };
+    }
+
+    fn selectedReplayEntry(self: *const AppState) ?*const high_score.Entry {
+        const source = self.selected_level_record_source orelse return null;
+        return self.selectedReplayEntryForSource(source);
+    }
+
+    fn selectedReplayPlaybackActive(self: *const AppState) bool {
+        const entry = self.selectedReplayEntry() orelse return false;
+        return entry.replaySampleCount() != 0;
+    }
+
+    fn replayMathType16To32(value: i16, scale: f32) f32 {
+        return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
+    }
+
+    fn selectedReplayDirectiveForEntry(entry: *const high_score.Entry, runtime_track_index: usize) gameplay.ReplayDirective {
+        if (entry.replaySampleCount() == 0) return .{};
+        const sample = entry.replaySampleAt(runtime_track_index) orelse return .{ .active = true };
+        return .{
+            .active = true,
+            .lateral_world_x = replayMathType16To32(sample.lateral, 16.0),
+            .flag_bits = sample.flags,
+        };
+    }
+
+    fn selectedReplayDirectiveForRunner(self: *const AppState, runner: *const gameplay.Runner) gameplay.ReplayDirective {
+        const entry = self.selectedReplayEntry() orelse return .{};
+        return selectedReplayDirectiveForEntry(entry, runner.runtime_track_index);
     }
 
     fn highScoreReplayEntry(self: *const AppState, entry_index: usize) ?*const high_score.Entry {
@@ -10161,6 +10226,31 @@ test "selected level record override rejects unresolved mode ids" {
         .replay_mode_id = 3,
     };
     try std.testing.expect(SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
+}
+
+test "selected replay directive decodes compact lateral x and stays active past the tail" {
+    var tables = high_score.Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+
+    const record_len = 0x88 + 5;
+    const raw_record = try std.testing.allocator.alloc(u8, record_len);
+    @memset(raw_record, 0);
+    std.mem.writeInt(u32, raw_record[0x74..0x78], 1, .little);
+    std.mem.writeInt(i16, raw_record[0x88..0x8a], 0x1800, .little);
+    std.mem.writeInt(i16, raw_record[0x8a..0x8c], 0, .little);
+    raw_record[0x8c] = 0x0c;
+    tables.completion[0].raw_record = raw_record;
+    tables.completion[0].has_replay = true;
+
+    const first = AppState.selectedReplayDirectiveForEntry(&tables.completion[0], 0);
+    try std.testing.expect(first.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.5), first.lateral_world_x.?, 0.0001);
+    try std.testing.expectEqual(@as(u8, 0x0c), first.flag_bits);
+
+    const tail = AppState.selectedReplayDirectiveForEntry(&tables.completion[0], 1);
+    try std.testing.expect(tail.active);
+    try std.testing.expect(tail.lateral_world_x == null);
+    try std.testing.expectEqual(@as(u8, 0), tail.flag_bits);
 }
 
 test "selected level record override drives live run tuning lanes" {
