@@ -336,7 +336,6 @@ const attachment_side_exit_margin: f32 = 0.3;
 const attachment_entry_start_y_tolerance: f32 = -0.2;
 const attachment_entry_end_y_tolerance: f32 = 0.001;
 const attachment_entry_rider_height: f32 = 0.49;
-const attachment_entry_local_z_tolerance: f32 = 1.5;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const mouse_steer_lerp_scale: f32 = 12.0;
@@ -3021,28 +3020,19 @@ pub const Runner = struct {
                 0.0,
             );
             const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
-            const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
+            const sample_length = attachment_builders.deltaLengthAtProgress(&built.template, candidate_progress);
 
-            if (start_local.y >= attachment_entry_start_y_tolerance and
-                end_local.y <= attachment_entry_end_y_tolerance)
+            if (@abs(start_local.x) <= half_width + attachment_side_exit_margin and
+                start_local.y >= attachment_entry_start_y_tolerance and
+                start_local.z >= 0.0 and
+                start_local.z <= sample_length)
             {
-                const crossing_denominator = start_local.y - end_local.y;
-                const crossing_t = if (@abs(crossing_denominator) <= 0.0001)
-                    1.0
-                else
-                    std.math.clamp(start_local.y / crossing_denominator, 0.0, 1.0);
-                const crossing_local_x = std.math.lerp(start_local.x, end_local.x, crossing_t);
-                const crossing_local_z = std.math.lerp(start_local.z, end_local.z, crossing_t);
-                const sample_length = attachment_builders.deltaLengthAtProgress(&built.template, candidate_progress);
-
-                if (@abs(crossing_local_x) <= half_width + attachment_side_exit_margin and
-                    crossing_local_z >= -attachment_entry_local_z_tolerance and
-                    crossing_local_z <= sample_length + attachment_entry_local_z_tolerance)
-                {
+                const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
+                if (end_local.y <= attachment_entry_end_y_tolerance) {
                     const sample_fraction = if (sample_length <= 0.0001)
                         0.0
                     else
-                        std.math.clamp(crossing_local_z / sample_length, 0.0, 1.0);
+                        std.math.clamp(start_local.z / sample_length, 0.0, 1.0);
                     const progress = std.math.clamp(
                         candidate_progress + sample_fraction,
                         0.0,
@@ -3050,9 +3040,9 @@ pub const Runner = struct {
                     );
                     const pose = attachment_builders.samplePoseAtProgress(&built.template, progress);
                     const lateral_offset = if (@abs(pose.lateral_scale) > 0.0001)
-                        crossing_local_x / pose.lateral_scale
+                        start_local.x / pose.lateral_scale
                     else
-                        crossing_local_x;
+                        start_local.x;
                     return .{
                         .progress = progress,
                         .lateral_offset = lateral_offset,
@@ -4484,6 +4474,34 @@ test "kind42 entry height preserves the recovered raw local offset" {
 
 test "ordinary entry height still subtracts the rider baseline" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.start, attachment_entry_rider_height), 0.0001);
+}
+
+test "swept installed entry rejects source-row positions before the sample start" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const centered = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        0.0,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const center_lane = Runner.laneCenterFromWorldX(&fixture.preview, centered.x);
+
+    runner.lane_center = center_lane;
+    runner.previous_lane_center = center_lane;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, center_lane);
+    runner.resolved_lane_index = runner.lane_index;
+    runner.previous_row_position = @as(f32, @floatFromInt(target.row)) - 0.01;
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.2;
+
+    const sample = runner.sampleRow(&fixture.preview, target.row).?;
+    try std.testing.expect(runner.geometricInstalledAttachmentEntry(&fixture.preview, built, sample) == null);
+    try std.testing.expect(runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row) != null);
 }
 
 test "standalone start segment attachment exits from the template end pose" {
