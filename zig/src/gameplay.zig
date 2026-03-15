@@ -370,8 +370,12 @@ pub const JetpackWarningBand = enum {
 pub const JetpackGauge = struct {
     active: bool = false,
     progress: f32 = 0.0,
+    warning_intensity: f32 = 0.0,
     pulse_envelope: f32 = 0.0,
     warning_band: JetpackWarningBand = .idle,
+    wobble_x: f32 = 0.0,
+    wobble_y: f32 = 0.0,
+    wobble_alpha: f32 = 0.0,
 
     pub fn fuelRemaining(self: JetpackGauge) f32 {
         if (!self.active) return 0.0;
@@ -2914,8 +2918,9 @@ pub const Runner = struct {
     // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
     // timer/warning/shutoff controller from the contact-damage gauge. The runner mirrors
     // the 1/600 countdown, the 0.94 near-empty band, the runtime-cell `flags_b & 0x80`
-    // warning snap seeded from `JetPack=Off`, and the route-end auto-shutoff, but it still
-    // omits the original wobble offsets and lift/fall suppression.
+    // warning snap seeded from `JetPack=Off`, the recovered warning-intensity/wobble fields,
+    // and the route-end auto-shutoff, but it still omits lift/fall suppression and the
+    // separate weapon-animation side effects behind `set_snail_jetpack`.
     fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.jetpack.active) return;
 
@@ -2930,25 +2935,33 @@ pub const Runner = struct {
             preview.runtimeFlagB80At(sample.global_row, sample.resolved_lane_index)
         else
             false;
-        if (self.jetpack.progress <= jetpack_warning_threshold) {
+
+        var warning_phase: f32 = 1.0;
+        self.jetpack.warning_band = .steady;
+
+        if (self.jetpack.progress < 0.1) {
+            warning_phase = self.jetpack.progress * 10.0;
+        } else if (self.jetpack.progress <= jetpack_warning_threshold) {
             if (forced_warning) {
                 self.jetpack.progress = jetpack_warning_threshold;
                 self.jetpack.warning_band = .near_empty;
-                self.jetpack.pulse_envelope = 1.0;
-                return;
             }
-            self.jetpack.warning_band = .steady;
-            self.jetpack.pulse_envelope = 1.0;
-            return;
+            warning_phase = 1.0;
+        } else {
+            self.jetpack.warning_band = .near_empty;
+            warning_phase = std.math.clamp(
+                (1.0 - self.jetpack.progress) * jetpack_warning_phase_scale,
+                0.0,
+                1.0,
+            );
         }
 
-        const warning_phase = std.math.clamp(
-            (1.0 - self.jetpack.progress) * jetpack_warning_phase_scale,
-            0.0,
-            1.0,
-        );
-        self.jetpack.warning_band = .near_empty;
-        self.jetpack.pulse_envelope = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
+        const warning_intensity = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
+        self.jetpack.warning_intensity = warning_intensity;
+        self.jetpack.pulse_envelope = warning_intensity;
+        self.jetpack.wobble_x = @sin(self.jetpack.progress * 25.1327419) * warning_intensity * 0.25;
+        self.jetpack.wobble_y = ((@sin(self.jetpack.progress * 37.6991119) * 0.25) + 1.0) * warning_intensity;
+        self.jetpack.wobble_alpha = 0.0;
     }
 
     fn armJetpackGauge(self: *Runner) void {
@@ -5752,6 +5765,7 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     runner.updateJetpackGauge(&fixture.preview);
     try std.testing.expectEqual(JetpackWarningBand.near_empty, runner.jetpack.warning_band);
     try std.testing.expect(runner.jetpack.pulse_envelope > 0.0);
+    try std.testing.expect(runner.jetpack.wobble_y > 0.0);
 
     runner.armJetpackGauge();
     runner.runtime_track_index = fixture.preview.total_rows - 3;
@@ -5760,6 +5774,24 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
     try std.testing.expect(!runner.jetpack.active);
+}
+
+test "jetpack gauge ramps warning intensity during the startup tenth" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.armJetpackGauge();
+    runner.jetpack.progress = 0.048333332;
+
+    runner.updateJetpackGauge(&fixture.preview);
+
+    try std.testing.expectEqual(JetpackWarningBand.steady, runner.jetpack.warning_band);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.jetpack.warning_intensity, 0.01);
+    try std.testing.expectApproxEqAbs(runner.jetpack.warning_intensity, runner.jetpack.pulse_envelope, 0.0001);
+    try std.testing.expect(runner.jetpack.wobble_x != 0.0);
+    try std.testing.expect(runner.jetpack.wobble_y > 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpack.wobble_alpha, 0.0001);
 }
 
 test "fatal floor gaps enter the shared fall state without a cutscene override" {
