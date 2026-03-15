@@ -158,6 +158,8 @@ pub const LoadOptions = struct {
     runtime_build_seed: u32 = 0,
     runtime_active_row_start: usize = 0,
     runtime_active_row_end: ?usize = null,
+    garbage_scalar_override: ?f32 = null,
+    salt_scalar_override: ?f32 = null,
 };
 
 pub const LoadedLevelPreview = struct {
@@ -337,8 +339,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
-            .garbage_scalar = level_definition.normalizedGarbageScalar() orelse 0.0,
-            .salt_scalar = level_definition.normalizedSaltScalar() orelse 0.0,
+            .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
+            .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
@@ -474,8 +476,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
-            .garbage_scalar = 0.0,
-            .salt_scalar = 0.0,
+            .garbage_scalar = options.garbage_scalar_override orelse 0.0,
+            .salt_scalar = options.salt_scalar_override orelse 0.0,
             .runtime_tiles = runtime_tiles,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
@@ -2031,6 +2033,30 @@ test "level preview builds derived runtime tiles for shipped glyphs across the c
     try std.testing.expect(saw_trampoline);
     try std.testing.expect(saw_garbage);
     try std.testing.expect(saw_salt);
+}
+
+test "level preview applies runtime hazard scalar overrides" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .garbage_scalar_override = 0.32,
+            .salt_scalar_override = 0.45,
+        },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), preview.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.45), preview.salt_scalar, 0.0001);
 }
 
 test "runtime tile family helpers match recovered cache predicates" {

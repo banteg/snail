@@ -4071,6 +4071,30 @@ const AppState = struct {
         };
     }
 
+    fn challengeRuntimeHazardScalar(value: u32) f32 {
+        return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
+    }
+
+    fn currentRunGarbageScalar(self: *const AppState) f32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => challengeRuntimeHazardScalar(default_challenge_replay_difficulty_value),
+            .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
+                loaded_level.normalizedGarbageScalar() orelse 0.0
+            else
+                0.0,
+        };
+    }
+
+    fn currentRunSaltScalar(self: *const AppState) f32 {
+        return switch (self.active_frontend_mode orelse .tutorial) {
+            .challenge => challengeRuntimeHazardScalar(default_challenge_replay_difficulty_value),
+            .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
+                loaded_level.normalizedSaltScalar() orelse 0.0
+            else
+                0.0,
+        };
+    }
+
     fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
         return .{
             .score = score,
@@ -4082,6 +4106,8 @@ const AppState = struct {
             .replay_speed_scalar = self.currentRunReplaySpeedScalar(),
             .challenge_difficulty_value = self.currentRunChallengeDifficultyValue(),
             .runtime_build_seed = self.current_runtime_build_seed,
+            .garbage_scalar = self.currentRunGarbageScalar(),
+            .salt_scalar = self.currentRunSaltScalar(),
         };
     }
 
@@ -5322,7 +5348,11 @@ const AppState = struct {
                 self.allocator,
                 &self.catalog,
                 loaded_level,
-                .{ .runtime_build_seed = runtime_build_seed },
+                .{
+                    .runtime_build_seed = runtime_build_seed,
+                    .garbage_scalar_override = self.currentRunGarbageScalar(),
+                    .salt_scalar_override = self.currentRunSaltScalar(),
+                },
             );
             if (self.current_track_preview) |*loaded_track_preview| {
                 self.math_random_state = loaded_track_preview.runtime_build_final_random_state;
@@ -9718,6 +9748,8 @@ test "current run high-score entry carries replay mode and build settings" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), entry.replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), entry.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), entry.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), entry.salt_scalar, 0.0001);
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {

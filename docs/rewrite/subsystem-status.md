@@ -44,7 +44,7 @@ Implemented now:
 - explicit runtime root at `artifacts/runtime`
 - load and save `SnailMail.cfg`
 - load and save compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`
-- preserve the recovered compact-record replay-mode (`0x30`), replay-speed (`0x48`), challenge-difficulty (`0x50`), and runtime-build-seed (`0x70`) lanes, and write the current gameplay values into new score records
+- preserve the recovered compact-record replay-mode (`0x30`), replay-speed (`0x48`), challenge-difficulty (`0x50`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
 - inline name-entry flow inside the shared high-score screen
 
@@ -71,6 +71,7 @@ Implemented now:
 - reuse the recovered gameplay build preset `0x00f5cfff`
 - derive installed attachment-row ownership from runtime attachment tiles and now choose the mirrored installed-template half from the recovered builder-state lane instead of always using one canonical template
 - preserve the chosen gameplay build seed across app-side respawn rebuilds instead of silently rebuilding the same route from seed `0`
+- feed the live garbage/salt gameplay scalars from the recovered mode-dependent runtime lane instead of always falling back to raw level metadata
 
 Still missing or approximate:
 

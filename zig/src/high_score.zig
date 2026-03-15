@@ -15,6 +15,8 @@ const compact_record_replay_mode_id_offset = 0x30;
 const compact_record_replay_speed_scalar_offset = 0x48;
 const compact_record_challenge_difficulty_value_offset = 0x50;
 const compact_record_runtime_build_seed_offset = 0x70;
+const compact_record_garbage_scalar_offset = 0x78;
+const compact_record_salt_scalar_offset = 0x7c;
 const compact_record_bank_selector_offset = 0x3c;
 const compact_record_entry_index_offset = 0x40;
 const compact_record_score_offset = 0x04;
@@ -40,6 +42,8 @@ pub const Entry = struct {
     replay_speed_scalar: f32 = 0.0,
     challenge_difficulty_value: u32 = 0,
     runtime_build_seed: u32 = 0,
+    garbage_scalar: f32 = 0.0,
+    salt_scalar: f32 = 0.0,
     has_replay: bool = false,
     name_len: usize = 0,
     name_buf: [name_capacity]u8 = [_]u8{0} ** name_capacity,
@@ -142,6 +146,8 @@ pub const Tables = struct {
             .replay_speed_scalar = incoming.replay_speed_scalar,
             .challenge_difficulty_value = incoming.challenge_difficulty_value,
             .runtime_build_seed = incoming.runtime_build_seed,
+            .garbage_scalar = incoming.garbage_scalar,
+            .salt_scalar = incoming.salt_scalar,
             .has_replay = incoming.has_replay,
             .name_len = incoming.name_len,
             .name_buf = incoming.name_buf,
@@ -163,21 +169,13 @@ pub const Tables = struct {
                 incoming.raw_record = null;
             } else {
                 current.score = incoming.score;
-                if (incoming.replay_level_index != 0) {
-                    current.replay_level_index = incoming.replay_level_index;
-                }
-                if (incoming.replay_mode_id != 0) {
-                    current.replay_mode_id = incoming.replay_mode_id;
-                }
-                if (incoming.replay_speed_scalar != 0.0) {
-                    current.replay_speed_scalar = incoming.replay_speed_scalar;
-                }
-                if (incoming.challenge_difficulty_value != 0) {
-                    current.challenge_difficulty_value = incoming.challenge_difficulty_value;
-                }
-                if (incoming.runtime_build_seed != 0) {
-                    current.runtime_build_seed = incoming.runtime_build_seed;
-                }
+                current.replay_level_index = incoming.replay_level_index;
+                current.replay_mode_id = incoming.replay_mode_id;
+                current.replay_speed_scalar = incoming.replay_speed_scalar;
+                current.challenge_difficulty_value = incoming.challenge_difficulty_value;
+                current.runtime_build_seed = incoming.runtime_build_seed;
+                current.garbage_scalar = incoming.garbage_scalar;
+                current.salt_scalar = incoming.salt_scalar;
                 if (incoming.name_len != 0) {
                     current.setName(incoming.name());
                 }
@@ -284,6 +282,8 @@ fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []c
     entry.replay_speed_scalar = @bitCast(readU32(record, compact_record_replay_speed_scalar_offset));
     entry.challenge_difficulty_value = readU32(record, compact_record_challenge_difficulty_value_offset);
     entry.runtime_build_seed = readU32(record, compact_record_runtime_build_seed_offset);
+    entry.garbage_scalar = @bitCast(readU32(record, compact_record_garbage_scalar_offset));
+    entry.salt_scalar = @bitCast(readU32(record, compact_record_salt_scalar_offset));
     entry.has_replay = replay_sample_count > 0;
     entry.setName(name);
     try entry.setRawRecord(allocator, record);
@@ -351,6 +351,8 @@ fn saveBankFile(
         std.mem.writeInt(u32, owned_record[compact_record_replay_speed_scalar_offset .. compact_record_replay_speed_scalar_offset + 4], @bitCast(entry.replay_speed_scalar), .little);
         std.mem.writeInt(u32, owned_record[compact_record_challenge_difficulty_value_offset .. compact_record_challenge_difficulty_value_offset + 4], entry.challenge_difficulty_value, .little);
         std.mem.writeInt(u32, owned_record[compact_record_runtime_build_seed_offset .. compact_record_runtime_build_seed_offset + 4], entry.runtime_build_seed, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_garbage_scalar_offset .. compact_record_garbage_scalar_offset + 4], @bitCast(entry.garbage_scalar), .little);
+        std.mem.writeInt(u32, owned_record[compact_record_salt_scalar_offset .. compact_record_salt_scalar_offset + 4], @bitCast(entry.salt_scalar), .little);
         std.mem.writeInt(u32, owned_record[compact_record_checksum_offset .. compact_record_checksum_offset + 4], (entry.score *% entry.score) ^ 0xdeadbabe, .little);
         std.mem.writeInt(u32, owned_record[compact_record_bank_selector_offset .. compact_record_bank_selector_offset + 4], bank_selector, .little);
         std.mem.writeInt(u32, owned_record[compact_record_entry_index_offset .. compact_record_entry_index_offset + 4], @intCast(entry_index), .little);
@@ -395,6 +397,8 @@ test "parse compact high-score record into recovered bank slots" {
     std.mem.writeInt(u32, payload[0x48..0x4c], @bitCast(@as(f32, 0.56)), .little);
     std.mem.writeInt(u32, payload[0x50..0x54], 40, .little);
     std.mem.writeInt(u32, payload[0x70..0x74], 123, .little);
+    std.mem.writeInt(u32, payload[0x78..0x7c], @bitCast(@as(f32, 0.32)), .little);
+    std.mem.writeInt(u32, payload[0x7c..0x80], @bitCast(@as(f32, 0.45)), .little);
     std.mem.writeInt(u32, payload[0x28..0x2c], (4242 *% 4242) ^ 0xdeadbabe, .little);
     std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
     std.mem.writeInt(u32, payload[0x40..0x44], 2, .little);
@@ -411,6 +415,8 @@ test "parse compact high-score record into recovered bank slots" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), tables.postal[2].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), tables.postal[2].challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, 123), tables.postal[2].runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), tables.postal[2].garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.45), tables.postal[2].salt_scalar, 0.0001);
     try std.testing.expect(tables.postal[2].has_replay);
     try std.testing.expectEqualStrings("Turbo", tables.postal[2].name());
     try std.testing.expect(tables.postal[2].raw_record != null);
@@ -503,7 +509,12 @@ test "time trial improvements clear stale replay payloads without a fresh snapsh
     @memset(raw_record, 0xaa);
     tables.completion[2].raw_record = raw_record;
 
-    const improved = tables.addTimeTrial(std.testing.allocator, 3, .{ .score = 41000 }, true);
+    const improved = tables.addTimeTrial(std.testing.allocator, 3, .{
+        .score = 41000,
+        .replay_level_index = 3,
+        .replay_mode_id = 4,
+        .replay_speed_scalar = 0.56,
+    }, true);
     try std.testing.expect(improved.improved);
     try std.testing.expectEqual(@as(u32, 41000), tables.completion[2].score);
     try std.testing.expectEqual(@as(u32, 3), tables.completion[2].replay_level_index);
@@ -530,6 +541,8 @@ test "failed time trial attempt only updates scratch and preserves best route ti
         .replay_speed_scalar = 0.56,
         .challenge_difficulty_value = 40,
         .runtime_build_seed = 55,
+        .garbage_scalar = 0.32,
+        .salt_scalar = 0.45,
         .has_replay = true,
         .raw_record = owned_raw,
     }, false);
@@ -541,6 +554,8 @@ test "failed time trial attempt only updates scratch and preserves best route ti
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), tables.scratch.replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), tables.scratch.challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, 55), tables.scratch.runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), tables.scratch.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.45), tables.scratch.salt_scalar, 0.0001);
     try std.testing.expect(tables.scratch.has_replay);
     try std.testing.expect(tables.scratch.raw_record != null);
     try std.testing.expectEqualSlices(u8, &expected_raw, tables.scratch.raw_record.?);
@@ -563,6 +578,8 @@ test "save and load compact high-score tables roundtrip score and names" {
     tables.postal[0].replay_mode_id = 0;
     tables.postal[0].replay_speed_scalar = 0.65;
     tables.postal[0].runtime_build_seed = 101;
+    tables.postal[0].garbage_scalar = 0.25;
+    tables.postal[0].salt_scalar = 0.5;
     tables.postal[0].setName("Turbo");
     tables.challenge[1].score = 777;
     tables.challenge[1].replay_level_index = 9;
@@ -570,12 +587,16 @@ test "save and load compact high-score tables roundtrip score and names" {
     tables.challenge[1].replay_speed_scalar = 0.56;
     tables.challenge[1].challenge_difficulty_value = 40;
     tables.challenge[1].runtime_build_seed = 202;
+    tables.challenge[1].garbage_scalar = 0.32;
+    tables.challenge[1].salt_scalar = 0.32;
     tables.challenge[1].setName("Slug");
     tables.completion[2].score = 54321;
     tables.completion[2].replay_level_index = 3;
     tables.completion[2].replay_mode_id = 4;
     tables.completion[2].replay_speed_scalar = 0.74;
     tables.completion[2].runtime_build_seed = 303;
+    tables.completion[2].garbage_scalar = 0.65;
+    tables.completion[2].salt_scalar = 0.35;
     tables.completion[2].setName("Route");
 
     try tables.saveToRuntimeRoot(std.testing.allocator, "runtime");
@@ -589,6 +610,8 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectEqual(@as(u32, 0), loaded.postal[0].replay_mode_id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.65), loaded.postal[0].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 101), loaded.postal[0].runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), loaded.postal[0].garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), loaded.postal[0].salt_scalar, 0.0001);
     try std.testing.expectEqualStrings("Turbo", loaded.postal[0].name());
     try std.testing.expectEqual(@as(u32, 777), loaded.challenge[1].score);
     try std.testing.expectEqual(@as(u32, 9), loaded.challenge[1].replay_level_index);
@@ -596,12 +619,16 @@ test "save and load compact high-score tables roundtrip score and names" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.56), loaded.challenge[1].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 40), loaded.challenge[1].challenge_difficulty_value);
     try std.testing.expectEqual(@as(u32, 202), loaded.challenge[1].runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), loaded.challenge[1].garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), loaded.challenge[1].salt_scalar, 0.0001);
     try std.testing.expectEqualStrings("Slug", loaded.challenge[1].name());
     try std.testing.expectEqual(@as(u32, 54321), loaded.completion[2].score);
     try std.testing.expectEqual(@as(u32, 3), loaded.completion[2].replay_level_index);
     try std.testing.expectEqual(@as(u32, 4), loaded.completion[2].replay_mode_id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.74), loaded.completion[2].replay_speed_scalar, 0.0001);
     try std.testing.expectEqual(@as(u32, 303), loaded.completion[2].runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.65), loaded.completion[2].garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.35), loaded.completion[2].salt_scalar, 0.0001);
     try std.testing.expectEqualStrings("Route", loaded.completion[2].name());
 }
 
@@ -624,6 +651,8 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     std.mem.writeInt(u32, payload[0x48..0x4c], @bitCast(@as(f32, 0.75)), .little);
     std.mem.writeInt(u32, payload[0x50..0x54], 40, .little);
     std.mem.writeInt(u32, payload[0x70..0x74], 88, .little);
+    std.mem.writeInt(u32, payload[0x78..0x7c], @bitCast(@as(f32, 0.2)), .little);
+    std.mem.writeInt(u32, payload[0x7c..0x80], @bitCast(@as(f32, 0.9)), .little);
     std.mem.writeInt(u32, payload[0x28..0x2c], (4242 *% 4242) ^ 0xdeadbabe, .little);
     std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
     std.mem.writeInt(u32, payload[0x40..0x44], 0, .little);
@@ -655,8 +684,43 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     try std.testing.expectEqual(@as(u32, @bitCast(@as(f32, 0.75))), readU32(saved_bytes, compact_record_replay_speed_scalar_offset));
     try std.testing.expectEqual(@as(u32, 40), readU32(saved_bytes, compact_record_challenge_difficulty_value_offset));
     try std.testing.expectEqual(@as(u32, 88), readU32(saved_bytes, compact_record_runtime_build_seed_offset));
+    try std.testing.expectEqual(@as(u32, @bitCast(@as(f32, 0.2))), readU32(saved_bytes, compact_record_garbage_scalar_offset));
+    try std.testing.expectEqual(@as(u32, @bitCast(@as(f32, 0.9))), readU32(saved_bytes, compact_record_salt_scalar_offset));
     try std.testing.expectEqual(@as(u32, (5000 *% 5000) ^ 0xdeadbabe), readU32(saved_bytes, compact_record_checksum_offset));
     try std.testing.expectEqual(@as(u32, 7), readU32(saved_bytes, compact_record_replay_sample_count_offset));
     try std.testing.expectEqualStrings("Turb0", std.mem.trimRight(u8, saved_bytes[compact_record_name_offset .. compact_record_name_offset + 5], " "));
     try std.testing.expectEqualSlices(u8, &[_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 }, saved_bytes[compact_record_header_size..]);
+}
+
+test "time trial improvement replaces zero-valued runtime fields" {
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+
+    tables.completion[2].score = 42000;
+    tables.completion[2].replay_level_index = 3;
+    tables.completion[2].replay_mode_id = 4;
+    tables.completion[2].replay_speed_scalar = 0.74;
+    tables.completion[2].challenge_difficulty_value = 40;
+    tables.completion[2].runtime_build_seed = 123;
+    tables.completion[2].garbage_scalar = 0.32;
+    tables.completion[2].salt_scalar = 0.45;
+
+    const improved = tables.addTimeTrial(std.testing.allocator, 3, .{
+        .score = 41000,
+        .replay_level_index = 0,
+        .replay_mode_id = 0,
+        .replay_speed_scalar = 0.2,
+        .challenge_difficulty_value = 0,
+        .runtime_build_seed = 0,
+        .garbage_scalar = 0.0,
+        .salt_scalar = 0.0,
+    }, true);
+    try std.testing.expect(improved.improved);
+    try std.testing.expectEqual(@as(u32, 0), tables.completion[2].replay_level_index);
+    try std.testing.expectEqual(@as(u32, 0), tables.completion[2].replay_mode_id);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), tables.completion[2].replay_speed_scalar, 0.0001);
+    try std.testing.expectEqual(@as(u32, 0), tables.completion[2].challenge_difficulty_value);
+    try std.testing.expectEqual(@as(u32, 0), tables.completion[2].runtime_build_seed);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), tables.completion[2].garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), tables.completion[2].salt_scalar, 0.0001);
 }
