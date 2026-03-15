@@ -332,6 +332,7 @@ const fall_gravity: f32 = 10.0;
 // death/resurrect path is recovered more fully.
 const fall_world_y_threshold: f32 = -7.0;
 const attachment_exit_progress_step_default: f32 = 1.0 / 60.0;
+const attachment_exit_gate_a_progress_threshold: f32 = 0.7;
 const attachment_side_exit_margin: f32 = 0.3;
 const attachment_entry_start_y_tolerance: f32 = -0.2;
 const attachment_entry_end_y_tolerance: f32 = 0.001;
@@ -785,6 +786,8 @@ pub const Runner = struct {
     post_follow_value_b: f32 = 0.0,
     attachment_exit_progress: f32 = 0.0,
     attachment_exit_progress_step: f32 = 0.0,
+    attachment_exit_gate_a: bool = false,
+    attachment_exit_gate_b: bool = false,
     lane_lean_amplitude: f32 = 0.0,
     lane_lean_progress: f32 = 1.0,
     attachment_pre_roll: f32 = 0.0,
@@ -2575,6 +2578,9 @@ pub const Runner = struct {
                 self.phase = .{ .fall = next_state };
                 _ = self.advanceCutsceneTicks();
                 self.stepAttachmentExitState();
+                if (!self.attachment_exit_gate_b and next_state.world_y < fall_world_y_threshold) {
+                    self.attachment_exit_gate_b = true;
+                }
                 if (next_state.world_y > fall_world_y_threshold) return;
 
                 if (next_state.final_loss) {
@@ -2604,6 +2610,9 @@ pub const Runner = struct {
             0.0,
             1.0,
         );
+        if (!self.attachment_exit_gate_a and self.attachment_exit_progress > attachment_exit_gate_a_progress_threshold) {
+            self.attachment_exit_gate_a = true;
+        }
         self.post_follow_value_a = normalizeRadians(self.post_follow_value_a + (self.post_follow_value_b * progress_step));
         if (self.attachment_exit_progress >= 1.0) {
             self.attachment_exit_pending = false;
@@ -3028,6 +3037,8 @@ pub const Runner = struct {
         self.attachment_exit_anchor_z = anchor_z;
         self.attachment_exit_progress = 0.0;
         self.attachment_exit_progress_step = attachment_exit_progress_step_default;
+        self.attachment_exit_gate_a = false;
+        self.attachment_exit_gate_b = false;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             self.post_follow_value_a = if (self.attachment_follow.orientation_b != 0.0 or
@@ -4015,6 +4026,8 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     try std.testing.expect(runner.attachment_path_name == null);
     try std.testing.expect(!runner.attachment_follow.active);
     try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expect(!runner.attachment_exit_gate_a);
+    try std.testing.expect(!runner.attachment_exit_gate_b);
     try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.post_follow_value_a, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.post_follow_value_b, 0.0001);
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
@@ -4065,6 +4078,32 @@ test "fall state keeps Z anchored and advances carried follow roll" {
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
     try std.testing.expect(runner.post_follow_value_a > 0.25);
+}
+
+test "attachment exit progress arms gate a after the recovered threshold" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.attachment_exit_progress = attachment_exit_gate_a_progress_threshold;
+
+    runner.stepAttachmentExitState();
+
+    try std.testing.expect(runner.attachment_exit_gate_a);
+}
+
+test "fall state arms gate b at the deep threshold" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.phase.fall.world_y = fall_world_y_threshold - 0.01;
+
+    runner.updatePhaseController(0.0);
+
+    try std.testing.expect(runner.attachment_exit_gate_b);
 }
 
 test "attachment exit pending applies a world-Z camera roll" {
