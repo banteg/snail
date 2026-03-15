@@ -333,3 +333,375 @@ Practical implication:
 
 - at least one clean-finish level-complete path is bypassing the `update_subgoldy -> initialize_subgoldy_fall_state` fall-helper lane entirely
 - the helper and the post-exit progress gates are therefore real runtime behavior, but they are not the only way attachment-follow is retired during ordinary play
+
+## `cdb` Breakpoint Pack Pivot: Completion And Death Handoff
+
+Timestamp: `2026-03-15T11:26:55.9277158+04:00`
+
+After the attachment-follow pass, the live `cdb` session was pivoted to the next higher-value questions:
+
+- first write to `completion_handoff_active`
+- exact `update_cutscene` callsite that invokes `initialize_completion_screen`
+- exact `update_subgoldy` callsite that invokes `complete_subgame`
+- exact death selector branch that chooses respawn versus final loss
+- visible-life decrement writer
+
+The armed live breakpoint set is:
+
+- `0x43a9c0` `initialize_subgoldy`
+  - log only
+  - refreshes the stable live `player` pointer for the session
+- `0x446b04` `update_cutscene -> initialize_subgoldy_death`
+  - log only
+  - captures death-handoff entry with current mode, lives, `world_y`, and gate bytes
+- `0x446e51` `initialize_subgoldy_death -> initialize_subgoldy_resurrect(player, 1)`
+  - stop
+  - labeled `death_select_final_loss`
+- `0x446e59` `initialize_subgoldy_death -> initialize_subgoldy_resurrect(player, 0)`
+  - stop
+  - labeled `death_select_respawn`
+- `0x441fa0` `initialize_subgoldy_resurrect`
+  - log only
+  - confirms the branch argument as observed by the callee
+- `0x446bfe` `update_cutscene -> initialize_completion_screen`
+  - stop
+  - captures the first cutscene-side completion-screen handoff with current cutscene state and completion-handoff fields
+- `0x43c981`
+- `0x43c9af`
+- `0x43c9c8`
+  - stop
+  - the three direct `update_subgoldy -> complete_subgame` callsites
+
+Two hardware write watches were also armed against the currently stable live player object `0x0d338d9c`:
+
+- `player + 0x4340 = 0x0d33d0dc`
+  - `visible_life_stock`
+  - stop on the exact writer
+- `player + 0x440 = 0x0d3391dc`
+  - `completion_handoff_active`
+  - stop on the first arm or clear site
+
+Observed immediately after arming:
+
+- `initialize_subgoldy` fired with `player=0x0d338d9c mode=0 lives=2 current_cell=0x0cf0909c`
+- the player object remained stable across the current session, so absolute watchpoints are acceptable for this run
+- one existing completion transition hit `0x43c9af`, showing `complete_subgame_call_1` with:
+  - `game=0x0cf7d638`
+  - `player=0x0d338d9c`
+  - `mode=0`
+  - `completion_handoff_active=1`
+  - `completion_handoff_timer=0x40a33333`
+  - `completion_handoff_voice_gate=1`
+
+Planned repro order for this pivot:
+
+1. normal level completion from galaxy start
+2. hazard death with spare lives in Postal mode
+3. hazard death with zero spare lives in Postal mode
+4. floor-gap fall for comparison
+
+Practical read:
+
+- the anchor-writer question from the earlier wish list is now lower priority because the old `player + 0x1840` / `+0x1888` reads are already better explained as `snail_hotspots_world` outputs maintained by `update_snail_skin`
+- the current best `cdb` return is now precise handoff timing and selector ownership rather than more generic attachment tracing
+
+The first stop after arming the new watch set happened immediately on level selection from the galaxy screen and clarified the startup write path for `visible_life_stock`.
+
+Live `cdb` stop:
+
+- watchpoint: `player + 0x4340 = 0x0d33d0dc`
+- printed as:
+  - `[visible_life_stock_write] eip=00435f6c lives=3 mode=0`
+
+Important caveat:
+
+- the processor watch fired after the actual write completed
+- the instruction at the stop site, `0x435f6c`, is the following `lea`
+- the real writer is the immediately preceding instruction at `0x435f66`
+
+Recovered block in `populate_runtime_track_cells_from_segments`:
+
+- `0x435f41`: `*(arg1 + 0xff25dc) = 0`
+- `0x435f49`: `if (eax_9 == 3)`
+- `0x435f51`: `*(arg1 + 0x1270fc8) = 1`
+- `0x435f5b`: `*(arg1 + 0x3bba48) = 0`
+- `0x435f61`: `sub_4403a0(arg1 + 0x3bb764)`
+- `0x435f66`: `*(arg1 + 0x3bfaa4) = 3`
+- `0x435f72`: `zero_timer_counters()`
+
+Practical conclusion:
+
+- `visible_life_stock` is definitely reseeded to `3` during course build in `populate_runtime_track_cells_from_segments`
+- this is the startup or rebuild seed, not the gameplay decrement
+- the current `cdb` watch was tightened after this stop to auto-continue when the new value is `3`, so subsequent life-stock stops should represent non-seed writes
+
+The same cleanup pass also tightened the completion watch:
+
+- `player + 0x440` now auto-continues when the new value is `0`
+- it should stop only on the first arm of `completion_handoff_active`
+
+That filtered watch immediately paid off on the next clean level finish.
+
+First completion-handoff arm:
+
+- watchpoint: `player + 0x440 = 0x0d3391dc`
+- printed as:
+  - `[completion_handoff_active_arm] eip=0043c7b7 active=1 timer=0 step=3c888889 voice_gate=0`
+
+As with the earlier life-stock watch, the processor stop landed after the write completed. The actual write sequence in `update_subgoldy` is the block immediately before `0x43c7b7`:
+
+- `0x43c797`: `*(ebp + 0x42e8) = 5`
+- `0x43c79d`: `play_sound_effect(0)`
+- `0x43c7a2`: `*(ebp + 0x41c) = 0`
+- `0x43c7b0`: `*(ebp + 0x440) = 1`
+
+Live state at the arm stop:
+
+- `player = 0x0d338d9c`
+- `game = 0x0cf7d638`
+- `mode = 0`
+- `completion_handoff_active = 1`
+- `completion_handoff_timer = 0`
+- `completion_handoff_timer_step = 0x3c888889` -> `1/60`
+- `completion_handoff_voice_gate = 0`
+- `player + 0x42e8 = 5`
+
+Useful nearby values:
+
+- `game + 0x58 = 0x2f1` -> `753`
+- the float constant compared in the immediately following gate is `0x40200000` -> `2.5f`
+- `player.z = *(player + 0x70) = 0x443c40b6` -> about `753.01f`
+
+Practical interpretation:
+
+- this is the first frame where the completion handoff becomes active
+- the handoff is armed inside `update_subgoldy`, not only later in frontend code
+- the arm path also clears `attachment_exit_pending`-adjacent state at `player + 0x41c`, seeds the one-shot presentation field at `player + 0x42e8`, and resets the timer lane to `0` with `1/60` step
+
+The same replay then hit the cutscene-side completion-screen initializer.
+
+Live stop at `0x446bfe` inside `update_cutscene`:
+
+- `cutscene = 0x0d33d078`
+- `cutscene.player = 0x0d338d9c`
+- `cutscene.state = 6`
+- `initialize_completion_screen(...)` is called from that state-`6` leg
+
+Recovered pre-call block:
+
+- `0x446b88`: `arg1[3] = 6`
+- `0x446b8f`: `arg1[0x14] = 0`
+- `0x446b96`: `arg1[0x15] = 0x3c088889`
+- `0x446bb6`: `arg1[0x16].b = 1`
+- `0x446bf7`: `var_100 = *(arg1[1] + 0x4338)`
+- `0x446bfe`: `initialize_completion_screen(data_4df904 + 0x12e6df0, var_100, var_fc_24)`
+
+Live values at that call:
+
+- `player + 0x4338 = 0x0000000f`
+- `completion_handoff_active = 1`
+- `completion_handoff_timer = 0x3c888889` -> `1/60`
+- `completion_handoff_timer_step = 0x3c888889` -> `1/60`
+- packed gate dword at `player + 0x44c` read `0x00000101`
+  - `attachment_exit_gate_a = 1`
+  - `attachment_exit_gate_b = 1`
+  - `completion_handoff_voice_gate = 0`
+
+Practical conclusion:
+
+- the completion screen is initialized almost immediately after the handoff arm, not only at the later `5.0s` frontend exit
+- in this build, the observed call site is `update_cutscene` state `6`
+- the first `initialize_completion_screen` call happened with the completion timer at exactly one tick (`1/60`)
+
+At the end of this capture, the debugger remained armed for the later `update_subgoldy -> complete_subgame` callsites. That last transition appears to require advancing beyond the completion screen rather than occurring at the instant the screen is created.
+
+Advancing past the completion screen in the same session then hit the final completion handoff:
+
+- breakpoint label: `complete_subgame_call_1`
+- stop site: `0x43c9af` inside `update_subgoldy`
+- live print:
+  - `[complete_subgame_call_1] game=0x0cf7d638 player=0x0d338d9c mode=0 active=1 timer=40a2aaaa voice_gate=1`
+
+Useful immediate context:
+
+- `esi = 0`, and this callsite is the `push esi; call complete_subgame` leg
+- the call is therefore `complete_subgame(game, 0)` on this replay
+- `completion_handoff_timer = 0x40a2aaaa` -> `5.083333f`
+- `completion_handoff_timer_step = 0x3c888889` -> `1/60`
+- packed byte lane at `player + 0x44c` read `0x00010101`
+  - `attachment_exit_gate_a = 1`
+  - `attachment_exit_gate_b = 1`
+  - `completion_handoff_voice_gate = 1`
+
+Recovered nearby block:
+
+- `0x43c8fb`: subtract `player + 0x448` from `player + 0x444`
+- `0x43c907`: write back adjusted timer
+- `0x43c913`: compare `player + 0x444` against `5.0f`
+- `0x43c934`: `begin_frontend_fade_out(...)`
+- `0x43c953`: if `game + 0x12727ec != 0`, `flush_row_event_display(game + 0x12727d8)`
+- `0x43c960`: load `game`
+- `0x43c969`: if `game->mode != 0`, branch toward the non-Postal completion call
+- `0x43c97d`: separate branch for the final-level case
+- `0x43c9af`: `complete_subgame(game, 0)`
+- `0x43c9ba`: `*(game + 0x1270fc8) = 1`
+
+Practical completion-chain result:
+
+1. `update_subgoldy` arms `completion_handoff_active`
+2. `update_cutscene` state `6` calls `initialize_completion_screen`
+3. once the handoff timer passes roughly `5.0s`, `update_subgoldy` begins the frontend fade, flushes row-event display if needed, and calls `complete_subgame`
+4. on this Postal-mode replay, the observed final callsite was `complete_subgame(game, 0)` at `0x43c9af`
+
+This resolves the main completion-timing uncertainty:
+
+- Windows does initialize the completion screen almost immediately from cutscene state `6`
+- the later `~5s` delay belongs to the frontend fade and final `complete_subgame` exit, not to the first completion-screen creation
+
+## Slug Death With Spare Lives: Respawn Selector And Life Decrement
+
+After the completion pass, a separate live repro used a slug enemy collision in Postal mode while the player still had all three visible lives.
+
+First death-path stop:
+
+- log line:
+  - `[death_handoff_entry] player=0x0d338d9c mode=0 lives=3 world_y=0x3efae148 exit_pending=0 gate_a=1 gate_b=0 cutscene_state=0xc`
+
+Useful conversion:
+
+- `world_y = 0x3efae148` -> `0.49f`
+
+Practical meaning:
+
+- this slug death entered the death handoff while the player was still on-track at positive height
+- it is therefore distinct from the older floor-gap or deep-fall path and confirms that `initialize_subgoldy_death` is not reserved for `world_y < -7`
+
+The selector immediately chose the respawn branch:
+
+- log line:
+  - `[death_select_respawn] player=0x0d338d9c mode=0 lives=3 world_y=0x3efae148`
+- stop site:
+  - `0x446e59`
+- recovered pre-call block:
+  - `0x446e45`: `eax = *(ecx + 0x4340)`
+  - `0x446e4b`: `test eax, eax`
+  - `0x446e4d`: `jg 0x446e57`
+  - `0x446e57`: `push 0`
+  - `0x446e59`: `call initialize_subgoldy_resurrect`
+
+Practical conclusion:
+
+- Postal mode (`mode = 0`) with `visible_life_stock > 0` takes the `initialize_subgoldy_resurrect(player, 0)` branch
+- this runtime capture matches the earlier static branch recovery exactly
+
+The callee-side log confirmed the same branch argument:
+
+- `[initialize_subgoldy_resurrect] player=0x0d338d9c final_loss=0 lives=3 mode=0`
+
+An immediate respawn-state sample after initialization showed:
+
+- `visible_life_stock = 3`
+- `final_loss = 0`
+- `flag84 = 1`
+- `player + 0x8c = 0x3c888889`
+- `player + 0x90 = 0x3c088889`
+- `frontend_fade_state = 0`
+
+Later in the same respawn sequence, the first `update_subgoldy_resurrect` tick was captured:
+
+- `[update_subgoldy_resurrect_tick] player=0x0d338d9c lives=3 final_loss=0 flag84=1 t8c=0x3c888889 t90=0x3c088889 fade=0`
+
+The actual visible-life decrement then fired at the predicted site:
+
+- direct breakpoint stop:
+  - `0x44205b`: `dec dword ptr [esi+0x4340]`
+- live watchpoint confirmation immediately afterward:
+  - `[visible_life_stock_nonseed_write] eip=0x442061 lives=2 mode=0`
+
+Recovered surrounding block:
+
+- `0x44204c`: `eax = *(esi + 0x408)`
+- `0x442052`: `jne 0x442084`
+- `0x442054`: `ecx = *(eax + 0x40)`
+- `0x442057`: `test ecx, ecx`
+- `0x442059`: `jne 0x442061`
+- `0x44205b`: `dec dword ptr [esi + 0x4340]`
+- `0x442061`: load global app pointer
+- `0x442079`: `*(app + 0x1b8) = 0x1c`
+
+Practical result:
+
+- the visible-life decrement is committed inside `update_subgoldy_resurrect`, not at death selection time
+- for the captured Postal respawn branch, the decrement is an actual `dec` on `player + 0x4340`
+- the selector and the decrement are therefore cleanly separated in time:
+  - selector at `initialize_subgoldy_death`
+  - commit later in `update_subgoldy_resurrect`
+
+This settles the spare-life hazard-death case:
+
+- slug death uses the generic death handoff
+- Postal mode with `lives > 0` chooses respawn
+- the life counter drops later in the respawn-update path, not during the initial death selector
+
+## Slug Death At Zero Lives: Final-Loss Branch
+
+After two more identical slug deaths, the same session drove the visible life stock from `2 -> 1 -> 0`.
+
+The final decrement replay was:
+
+- selector:
+  - `[death_handoff_entry] player=0x0d338d9c mode=0 lives=1 world_y=0x3efae148 exit_pending=0 gate_a=1 gate_b=0 cutscene_state=0xc`
+  - `[death_select_respawn] player=0x0d338d9c mode=0 lives=1 world_y=0x3efae148`
+- delayed commit:
+  - `[respawn_life_decrement] player=0x0d338d9c lives_before=1 mode=0 progress=0x3f81110c fade=0 final_loss=0`
+  - watchpoint confirmation immediately after:
+    - `[visible_life_stock_nonseed_write] eip=0x442061 lives=0 mode=0`
+- post-restart confirmation:
+  - `[init_subgoldy] player=0x0d338d9c mode=0 lives=0 current_cell=0x0cf0909c`
+
+With the counter now at zero, the next slug death finally took the other selector branch:
+
+- `[death_handoff_entry] player=0x0d338d9c mode=0 lives=0 world_y=0x3efae148 exit_pending=0 gate_a=1 gate_b=0 cutscene_state=0xc`
+- `[death_select_final_loss] player=0x0d338d9c mode=0 lives=0 world_y=0x3efae148`
+- stop site:
+  - `0x446e51`
+
+Recovered selector block:
+
+- `0x446e45`: `eax = *(ecx + 0x4340)`
+- `0x446e4b`: `test eax, eax`
+- `0x446e4d`: `jg 0x446e57`
+- `0x446e4f`: `push 1`
+- `0x446e51`: `call initialize_subgoldy_resurrect`
+
+The callee-side probe immediately confirmed the branch argument:
+
+- `[initialize_subgoldy_resurrect] player=0x0d338d9c final_loss=1 lives=0 mode=0`
+
+Later in the same `update_subgoldy_resurrect` path, the branch-specific stop landed at `0x442084`:
+
+- `[respawn_complete_subgame_branch] player=0x0d338d9c mode=0 progress=0x3f81110c fade=0 final_loss=1`
+
+Recovered final-loss block:
+
+- `0x442084`: `*(game + 0x1270fc8) = 2`
+- `0x442094`: `push 1`
+- `0x442096`: `complete_subgame(game, 1)`
+- `0x4420a1`: read `game + 0xff25d1`
+- `0x4420c2`: one return leg sets `app + 0x1b8 = 0x1a`
+
+Important contrast with the respawn branch:
+
+- `player + 0x4340` was already `0`
+- the final-loss path did **not** execute the decrement at `0x44205b`
+- instead, it routed through `complete_subgame(game, 1)` after setting `game + 0x1270fc8 = 2`
+
+This settles the Postal hazard-death selector completely:
+
+- `visible_life_stock > 0`:
+  - `initialize_subgoldy_death -> initialize_subgoldy_resurrect(player, 0)`
+  - later decrement in `update_subgoldy_resurrect`
+- `visible_life_stock == 0`:
+  - `initialize_subgoldy_death -> initialize_subgoldy_resurrect(player, 1)`
+  - no further life decrement
+  - later `update_subgoldy_resurrect` routes through `complete_subgame(game, 1)`
