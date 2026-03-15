@@ -957,15 +957,18 @@
     },
     {
       "address": "0x434270",
-      "name": "destroy_star_field"
+      "name": "destroy_star_field",
+      "description": "Destroys the live star-field sprite pool, tears down its per-entry records, and returns the controller to state 0."
     },
     {
       "address": "0x4342c0",
-      "name": "open_star_field"
+      "name": "open_star_field",
+      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes one sprite-based streak entry per requested slot."
     },
     {
       "address": "0x434310",
-      "name": "initialize_star_field"
+      "name": "initialize_star_field",
+      "description": "Builds the live star-field streak sprites: allocates one sprite per entry, seeds camera-relative positions, randomizes direction and speed, tints them pale blue-white, and primes the per-streak length or fade fields."
     },
     {
       "address": "0x434670",
@@ -974,15 +977,18 @@
     },
     {
       "address": "0x4346b0",
-      "name": "unhide_star_field"
+      "name": "unhide_star_field",
+      "description": "Sets bit 0x40 on every live star-field sprite, re-enabling the background streak pass without rebuilding the controller."
     },
     {
       "address": "0x4346f0",
-      "name": "update_star_field"
+      "name": "update_star_field",
+      "description": "Runs the star-field controller state machine, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update."
     },
     {
       "address": "0x434800",
-      "name": "update_star_positions"
+      "name": "update_star_positions",
+      "description": "Advances each star-field streak along its cached direction, resets wrapped entries against the current camera origin, and scales the visible sprite trail by both per-streak speed and the controller fade factor."
     },
     {
       "address": "0x434b60",

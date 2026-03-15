@@ -8,6 +8,7 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Path templates](path-templates.md): hardcoded path names, slot layout, and constructor families
 - [Track runtime](track-runtime.md): segment metadata, runtime flags, glyph dispatch, and render passes
 - [Attachment follow state](attachment-follow.md): how authored `Path=` rows install live follow-state transitions
+- [Background light streaks](background-light-streaks.md): the separate star-field sprite pass layered on top of the Distort backdrop warp
 - [Runtime structures](runtime-structures.md): current high-confidence `Player`, `Game`, and attachment-template layouts
 - [Symbol workflow](symbols.md): how the curated Binary Ninja function manifest is maintained
 - [Reflexive wrapper](reflexive-wrapper.md): bootstrap and wrapper-obfuscation notes
