@@ -282,20 +282,29 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_build_flags = options.runtime_build_flags;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_build_config: RuntimeBuildConfig = .{
+            .build_flags = runtime_build_flags,
+            .build_seed = options.runtime_build_seed,
+            .active_row_start = options.runtime_active_row_start,
+            .active_row_end = runtime_active_row_end,
+        };
         const runtime_tiles = try buildRuntimeTileGrid(
             allocator,
             segments,
             row_offsets,
             total_rows,
             max_width,
-            .{
-                .build_flags = runtime_build_flags,
-                .build_seed = options.runtime_build_seed,
-                .active_row_start = options.runtime_active_row_start,
-                .active_row_end = runtime_active_row_end,
-            },
+            runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const source_row_mirror_states = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        defer allocator.free(source_row_mirror_states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -303,6 +312,7 @@ pub const LoadedLevelPreview = struct {
             runtime_tiles,
             total_rows,
             max_width,
+            source_row_mirror_states,
         );
         errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -408,20 +418,29 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_build_flags = options.runtime_build_flags;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_build_config: RuntimeBuildConfig = .{
+            .build_flags = runtime_build_flags,
+            .build_seed = options.runtime_build_seed,
+            .active_row_start = options.runtime_active_row_start,
+            .active_row_end = runtime_active_row_end,
+        };
         const runtime_tiles = try buildRuntimeTileGrid(
             allocator,
             segments,
             row_offsets,
             total_rows,
             max_width,
-            .{
-                .build_flags = runtime_build_flags,
-                .build_seed = options.runtime_build_seed,
-                .active_row_start = options.runtime_active_row_start,
-                .active_row_end = runtime_active_row_end,
-            },
+            runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const source_row_mirror_states = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        defer allocator.free(source_row_mirror_states);
         var attachment_scaffold = try attachment_builders.Scaffold.collect(
             allocator,
             segments,
@@ -429,6 +448,7 @@ pub const LoadedLevelPreview = struct {
             runtime_tiles,
             total_rows,
             max_width,
+            source_row_mirror_states,
         );
         errdefer attachment_scaffold.deinit();
         const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
@@ -1314,6 +1334,14 @@ const RuntimeBuildState = struct {
     }
 };
 
+fn beginRuntimeBuildSegment(build_state: *RuntimeBuildState, loaded_segment: segment.Definition) void {
+    if (loaded_segment.rows.len == 0) return;
+    // Windows advances the mirror selector when the builder rolls onto the next installed
+    // segment span. In the current sequential preview build, that boundary is the authored
+    // segment start.
+    _ = build_state.switchTrackMirror();
+}
+
 fn buildRuntimeTileGrid(
     allocator: std.mem.Allocator,
     segments: []const segment.Definition,
@@ -1327,6 +1355,7 @@ fn buildRuntimeTileGrid(
     var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
 
     for (segments, 0..) |loaded_segment, segment_index| {
+        beginRuntimeBuildSegment(&build_state, loaded_segment);
         const row_base = row_offsets[segment_index];
         for (loaded_segment.rows, 0..) |row, row_index| {
             const global_row = row_base + row_index;
@@ -1361,6 +1390,48 @@ fn buildRuntimeTileGrid(
     }
 
     return runtime_tiles;
+}
+
+fn buildAttachmentSourceRowMirrorStates(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    config: RuntimeBuildConfig,
+) ![]bool {
+    const mirror_states = try allocator.alloc(bool, total_rows);
+    @memset(mirror_states, false);
+    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
+            var recorded = false;
+            for (row.cells, 0..) |cell, lane_index| {
+                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
+                    cell,
+                    build_state.build_flags,
+                    build_state.mirror_state,
+                    outside_active_rows,
+                );
+                if (normalized_cell == '@') {
+                    _ = build_state.switchTrackMirror();
+                }
+                if (lane_index == 0) {
+                    mirror_states[global_row] = build_state.mirror_state;
+                    recorded = true;
+                }
+            }
+            if (!recorded) {
+                mirror_states[global_row] = build_state.mirror_state;
+            }
+        }
+    }
+
+    return mirror_states;
 }
 
 fn buildRuntimeEdgeMaskGrid(

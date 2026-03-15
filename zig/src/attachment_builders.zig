@@ -213,6 +213,7 @@ pub const TemplateSample = struct {
 // gap is the exact Windows installed-bank/owner-record layout.
 pub const Template = struct {
     spec: TemplateSpec,
+    mirror_or_variant: bool = false,
     width_cells: u16 = 0,
     sample_count: u16 = 0,
     exit_tail_extra: f32 = 0.0,
@@ -236,6 +237,25 @@ pub const BuiltAttachment = struct {
         self.template.deinit(allocator);
     }
 };
+
+fn mirrorVectorX(v: Vec3) Vec3 {
+    return .{
+        .x = -v.x,
+        .y = v.y,
+        .z = v.z,
+    };
+}
+
+fn mirrorTemplateXInPlace(template: *Template) void {
+    template.mirror_or_variant = !template.mirror_or_variant;
+    for (template.samples) |*sample| {
+        sample.position = mirrorVectorX(sample.position);
+        sample.delta_dir_to_next = mirrorVectorX(sample.delta_dir_to_next);
+        sample.basis_right = mirrorVectorX(sample.basis_right);
+        sample.basis_up = mirrorVectorX(sample.basis_up);
+        sample.basis_forward = mirrorVectorX(sample.basis_forward);
+    }
+}
 
 pub const AttachmentPose = struct {
     position: Vec3,
@@ -356,6 +376,7 @@ pub const Scaffold = struct {
         runtime_tiles: []const u8,
         total_rows: usize,
         max_width: usize,
+        source_row_mirror_states: []const bool,
     ) !Scaffold {
         _ = runtime_tiles;
         _ = max_width;
@@ -391,7 +412,10 @@ pub const Scaffold = struct {
 
         for (rows.items) |row| {
             const spec = row.spec() orelse continue;
-            const template = (try buildTemplate(allocator, spec)) orelse continue;
+            var template = (try buildTemplate(allocator, spec)) orelse continue;
+            if (row.global_row < source_row_mirror_states.len and source_row_mirror_states[row.global_row]) {
+                mirrorTemplateXInPlace(&template);
+            }
             try built_attachments.append(allocator, .{
                 .row = row,
                 .template = template,
@@ -1652,7 +1676,16 @@ test "collect scaffold keeps active authored path row" {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     };
-    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets, &runtime_tiles, rows.len, 10);
+    const source_row_mirror_states = [_]bool{ false, false, false, false };
+    var scaffold = try Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &runtime_tiles,
+        rows.len,
+        10,
+        &source_row_mirror_states,
+    );
     defer scaffold.deinit();
 
     try std.testing.expectEqual(@as(usize, 2), scaffold.authored_rows.len);
@@ -1684,7 +1717,16 @@ test "collect scaffold builds start template" {
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
         0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
     };
-    var scaffold = try Scaffold.collect(std.testing.allocator, &segments, &row_offsets, &runtime_tiles, rows.len, 10);
+    const source_row_mirror_states = [_]bool{ false, false };
+    var scaffold = try Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &runtime_tiles,
+        rows.len,
+        10,
+        &source_row_mirror_states,
+    );
     defer scaffold.deinit();
 
     try std.testing.expectEqual(@as(usize, 1), scaffold.built_attachments.len);
@@ -1694,6 +1736,46 @@ test "collect scaffold builds start template" {
     try std.testing.expectEqual(@as(usize, 28), built.template.pointCount());
     try std.testing.expectApproxEqAbs(@as(f32, 8.0), built.template.samples[0].position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), built.template.samples[17].position.y, 0.0001);
+}
+
+test "collect scaffold mirrors installed template variant from source-row state" {
+    const base_spec = specForPublicPath(.p0);
+    var base_template = (try buildTemplate(std.testing.allocator, base_spec)).?;
+    defer base_template.deinit(std.testing.allocator);
+
+    const rows = [_]segment.Row{
+        .{ .cells = "PPPPPPPPPP", .annotation = .{ .path = "P0" } },
+    };
+    var segments = [_]segment.Definition{.{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "SEGMENTS/P0.TXT",
+        .segment_id = 1,
+        .name = "P0",
+        .width = 10,
+        .height = rows.len,
+        .rows = &rows,
+    }};
+    defer segments[0].deinit();
+    const row_offsets = [_]usize{0};
+    const runtime_tiles = [_]u8{
+        0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
+    };
+    const source_row_mirror_states = [_]bool{true};
+    var scaffold = try Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &runtime_tiles,
+        rows.len,
+        10,
+        &source_row_mirror_states,
+    );
+    defer scaffold.deinit();
+
+    const built = scaffold.built_attachments[0];
+    try std.testing.expect(built.template.mirror_or_variant);
+    try std.testing.expectApproxEqAbs(-base_template.samples[0].position.x, built.template.samples[0].position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(-base_template.samples[0].basis_right.x, built.template.samples[0].basis_right.x, 0.0001);
 }
 
 test "start template interpolation follows recovered descent" {
