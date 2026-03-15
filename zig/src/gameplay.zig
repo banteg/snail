@@ -2554,7 +2554,9 @@ pub const Runner = struct {
         if (self.phase != .active or self.finished) return;
         const frame = self.captureWorldFrame(preview);
         const initial_vertical_velocity = if (self.launch.active) self.launch.vertical_velocity else 0.0;
-        self.seedAttachmentExitState(preview, frame.position.z);
+        if (cause == .fall or self.movement_mode == .attachment or self.attachment_exit_pending) {
+            self.seedAttachmentExitState(preview, frame.position.z);
+        }
         self.paused = false;
         self.launch = .{};
         self.clearAttachmentFollow();
@@ -4073,6 +4075,16 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
 }
 
+test "on-track hazard death does not arm the attachment exit handoff" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+
+    try std.testing.expect(!runner.attachment_exit_pending);
+}
+
 test "local Z roll keeps the forward basis fixed" {
     const transform = CameraTransform{
         .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
@@ -4108,7 +4120,7 @@ test "fall state keeps Z anchored and advances carried follow roll" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
     runner.post_follow_value_a = 0.25;
     runner.post_follow_value_b = 0.5;
     const anchor_z = runner.attachment_exit_anchor_z;
@@ -4124,7 +4136,7 @@ test "attachment exit progress arms gate a after the recovered threshold" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
     runner.attachment_exit_progress = attachment_exit_gate_a_progress_threshold;
 
     runner.stepAttachmentExitState();
