@@ -275,15 +275,15 @@ const RowEventDisplayController = struct {
     display_token: u32 = 0,
 
     fn configureForRun(self: *RowEventDisplayController, parcel_target: usize, bonus_enabled: bool) void {
-        const delivered_parcel_count = self.delivered_parcel_count;
-        const staged_parcel_count = self.staged_parcel_count;
         self.* = .{
+            .state = .staging,
+            .completion_gate = 1,
             .parcel_target_count = @intCast(parcel_target),
             .bonus_enabled = bonus_enabled,
-            .staged_parcel_count = staged_parcel_count,
-            .delivered_parcel_count = delivered_parcel_count,
+            .progress = row_event_stage_start_progress,
+            .progress_step = (@as(f32, @floatFromInt(parcel_target + 1))) / row_event_stage_progress_divisor,
             .bonus_score = postal_completion_bonus_score,
-            .bonus_blink_step = 1.0,
+            .bonus_blink_step = row_event_bonus_blink_step,
         };
     }
 
@@ -404,6 +404,10 @@ const postal_completion_bonus_score: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
+const row_event_stage_start_progress: f32 = 0.833333313;
+const row_event_stage_progress_divisor: f32 = 204.0;
+const row_event_bonus_blink_step: f32 = 0.0416666679;
+const row_event_final_delay_step: f32 = 0.00833333377;
 pub const intro_cutscene_duration_ticks: u16 = 240;
 pub const completion_cutscene_duration_ticks: u16 = 72;
 pub const death_cutscene_duration_ticks: u16 = 72;
@@ -2696,12 +2700,32 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `update_row_event_display` owns the parcel-delivery widget
     // controller and the post-delivery completion state. The port now mirrors the proven
-    // `3 -> 4 -> 5` state path on the gameplay side, but still omits the unresolved
-    // widget owner, staged parcel visuals, and the separate `+0x18` completion gate byte.
+    // state transitions and gate byte, but still omits the unresolved widget owner and
+    // the staged parcel visual spawns behind `spawn_track_parcel`.
     fn updateRowEventDisplay(self: *Runner) void {
         self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
-            .inactive, .staging, .hold, .complete => {},
+            .inactive, .hold, .complete => {},
+            .staging => {
+                self.row_event_display.progress = std.math.clamp(
+                    self.row_event_display.progress + self.row_event_display.progress_step,
+                    0.0,
+                    1.0,
+                );
+                if (self.row_event_display.progress < 1.0) return;
+                if (self.row_event_display.staged_parcel_count < self.row_event_display.parcel_target_count) {
+                    self.row_event_display.staged_parcel_count += 1;
+                }
+                self.row_event_display.progress = 0.0;
+                if (self.row_event_display.staged_parcel_count != self.row_event_display.parcel_target_count) return;
+                if (self.row_event_display.parcel_target_count == 0) {
+                    self.row_event_display.state = .final_delivery_delay;
+                    self.row_event_display.progress = 0.0;
+                    self.row_event_display.progress_step = row_event_final_delay_step;
+                    return;
+                }
+                self.row_event_display.state = .hold;
+            },
             .final_delivery => {
                 self.row_event_display.completion_gate = 0;
                 self.row_event_display.state = .bonus_prompt;
@@ -4618,6 +4642,41 @@ test "parcel delivery seeds the recovered random arc coefficients" {
     try std.testing.expectApproxEqAbs(@as(f32, -0.99768066), parcel.delivery_offset.x, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.20669556), parcel.delivery_offset.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), parcel.delivery_offset.z, 0.0001);
+}
+
+test "configure completion bonus seeds the row event staging controller" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureCompletionBonus(2, true);
+
+    try std.testing.expectEqual(RowEventDisplayState.staging, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 1), runner.row_event_display.completion_gate);
+    try std.testing.expectEqual(@as(u32, 2), runner.row_event_display.parcel_target_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.row_event_display.staged_parcel_count);
+    try std.testing.expectEqual(@as(u32, 0), runner.row_event_display.delivered_parcel_count);
+    try std.testing.expectApproxEqAbs(row_event_stage_start_progress, runner.row_event_display.progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0 / 204.0), runner.row_event_display.progress_step, 0.0001);
+    try std.testing.expectApproxEqAbs(row_event_bonus_blink_step, runner.row_event_display.bonus_blink_step, 0.0001);
+}
+
+test "row event staging advances to hold after the target parcels are staged" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureCompletionBonus(1, false);
+
+    for (0..32) |_| {
+        runner.updateRowEventDisplay();
+        if (runner.row_event_display.state != .staging) break;
+    }
+
+    try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 1), runner.row_event_display.completion_gate);
+    try std.testing.expectEqual(@as(u32, 1), runner.row_event_display.staged_parcel_count);
+    try std.testing.expectEqual(@as(f32, 0.0), runner.row_event_display.progress);
 }
 
 test "runner registers parcel delivery after the parcel flight finishes" {
