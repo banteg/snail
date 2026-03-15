@@ -113,6 +113,8 @@ pub const TrackParcelRuntime = struct {
     row: usize = 0,
     parcel_id: i32 = 0,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_scale: f32 = 1.0,
     bob_phase: f32 = 0.0,
     bob_phase_step: f32 = track_parcel_bob_phase_step,
     progress: f32 = 0.0,
@@ -126,11 +128,22 @@ pub const TrackParcelRuntime = struct {
     }
 
     pub fn presentationPosition(self: TrackParcelRuntime) rl.Vector3 {
-        var position = self.world_position;
-        if (self.state == 1) {
-            position.y += std.math.sin(self.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
-        }
-        return position;
+        return switch (self.state) {
+            1 => blk: {
+                var position = self.world_position;
+                position.y += std.math.sin(self.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
+                break :blk position;
+            },
+            5, 7 => self.presentation_position,
+            else => self.world_position,
+        };
+    }
+
+    pub fn presentationScale(self: TrackParcelRuntime) f32 {
+        return switch (self.state) {
+            5, 7 => self.presentation_scale,
+            else => 1.0,
+        };
     }
 };
 
@@ -433,6 +446,8 @@ const track_parcel_bob_amplitude: f32 = 0.3;
 const track_parcel_bob_phase_step: f32 = 0.012820513;
 const track_parcel_home_progress_step: f32 = 0.0416666679;
 const track_parcel_delivery_progress_step: f32 = 0.0166666675;
+const track_parcel_presentation_min_scale: f32 = 0.4;
+const track_parcel_presentation_scale_delta: f32 = 0.6;
 const math_random_center: f32 = 16384.0;
 const math_random_inv_center: f32 = 1.0 / math_random_center;
 const track_parcel_delivery_random_y_scale: f32 = 1.5 * math_random_inv_center;
@@ -2590,9 +2605,15 @@ pub const Runner = struct {
                         parcel.bob_phase -= 1.0;
                     }
                 },
-                4 => self.beginTrackParcelHome(preview, parcel),
+                4 => {
+                    self.beginTrackParcelHome(preview, parcel);
+                    self.stepTrackParcelHome(preview, parcel);
+                },
                 5 => self.stepTrackParcelHome(preview, parcel),
-                6 => self.beginTrackParcelDelivery(parcel),
+                6 => {
+                    self.beginTrackParcelDelivery(parcel);
+                    self.stepTrackParcelDelivery(preview, parcel);
+                },
                 7 => self.stepTrackParcelDelivery(preview, parcel),
                 else => {},
             }
@@ -2652,15 +2673,23 @@ pub const Runner = struct {
         parcel.state = 5;
     }
 
+    fn trackParcelHomePresentationScale(progress: f32) f32 {
+        return track_parcel_presentation_min_scale +
+            ((1.0 - progress) * track_parcel_presentation_scale_delta);
+    }
+
     fn stepTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
         const player_anchor = self.trackParcelPlayerAnchor(preview);
-        const remaining_distance = (1.0 - parcel.progress) * parcel.target_distance;
+        const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
+        const remaining_distance = (1.0 - progress) * parcel.target_distance;
         parcel.world_position = .{
             .x = player_anchor.x + (remaining_distance * parcel.travel_dir.x),
             .y = player_anchor.y + (remaining_distance * parcel.travel_dir.y),
             .z = player_anchor.z + (remaining_distance * parcel.travel_dir.z),
         };
-        parcel.world_position.y += std.math.sin(parcel.progress * std.math.pi) * track_parcel_home_arc_height;
+        parcel.presentation_position = parcel.world_position;
+        parcel.presentation_position.y += std.math.sin(progress * std.math.pi) * track_parcel_home_arc_height;
+        parcel.presentation_scale = trackParcelHomePresentationScale(progress);
         parcel.progress += parcel.progress_step;
         if (parcel.progress < 1.0) return;
         parcel.state = 6;
@@ -2679,15 +2708,21 @@ pub const Runner = struct {
         parcel.state = 7;
     }
 
+    fn trackParcelDeliveryPresentationScale(progress: f32) f32 {
+        return track_parcel_presentation_min_scale + (progress * track_parcel_presentation_scale_delta);
+    }
+
     fn stepTrackParcelDelivery(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
         const player_anchor = self.trackParcelPlayerAnchor(preview);
         const delivery_target = self.trackParcelDeliveryTarget(preview);
         const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
         parcel.world_position = lerpVector3(player_anchor, delivery_target, progress);
+        parcel.presentation_position = parcel.world_position;
+        parcel.presentation_scale = trackParcelDeliveryPresentationScale(progress);
         const arc = std.math.sin(progress * std.math.pi);
-        parcel.world_position.x += parcel.delivery_offset.x * arc;
-        parcel.world_position.y += parcel.delivery_offset.y * arc;
-        parcel.world_position.z += parcel.delivery_offset.z * arc;
+        parcel.presentation_position.x += parcel.delivery_offset.x * arc;
+        parcel.presentation_position.y += parcel.delivery_offset.y * arc;
+        parcel.presentation_position.z += parcel.delivery_offset.z * arc;
         parcel.progress += parcel.progress_step;
         if (parcel.progress < 1.0) return;
         self.registerParcelDelivery();
@@ -4576,7 +4611,72 @@ test "row event display updates the parcel widget world from the cameraman matri
     try std.testing.expectApproxEqAbs(expected.z, runner.row_event_display.widget_world_z, 0.0001);
 }
 
-test "parcel delivery homes to the row event widget world target" {
+test "parcel home flight advances on the pickup frame" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.active_track_parcels[0] = .{
+        .state = 4,
+        .world_position = .{ .x = 5.0, .y = 2.0, .z = 9.0 },
+    };
+
+    runner.updateTrackParcels(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u32, 5), runner.active_track_parcels[0].state);
+    try std.testing.expectApproxEqAbs(track_parcel_home_progress_step, runner.active_track_parcels[0].progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.active_track_parcels[0].presentationScale(), 0.0001);
+}
+
+test "parcel delivery advances on the staging frame" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_event_display.widget_world_x = 9.0;
+    runner.row_event_display.widget_world_y = 3.0;
+    runner.row_event_display.widget_world_z = 14.0;
+    runner.active_track_parcels[0] = .{
+        .state = 6,
+    };
+
+    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
+    runner.updateTrackParcels(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u32, 7), runner.active_track_parcels[0].state);
+    try std.testing.expectApproxEqAbs(track_parcel_delivery_progress_step, runner.active_track_parcels[0].progress, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.x, runner.active_track_parcels[0].world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.y, runner.active_track_parcels[0].world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.z, runner.active_track_parcels[0].world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.active_track_parcels[0].presentationScale(), 0.0001);
+}
+
+test "parcel home flight keeps linear world position and curved presentation separate" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
+    var parcel = TrackParcelRuntime{
+        .state = 5,
+        .progress = 0.25,
+        .progress_step = 0.0,
+        .target_distance = 4.0,
+        .travel_dir = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+    };
+
+    runner.stepTrackParcelHome(&fixture.preview, &parcel);
+
+    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0, parcel.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.y, parcel.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.z, parcel.world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0, parcel.presentationPosition().x, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.y + (std.math.sin(@as(f32, 0.25) * std.math.pi) * track_parcel_home_arc_height), parcel.presentationPosition().y, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.z, parcel.presentationPosition().z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.85), parcel.presentationScale(), 0.0001);
+}
+
+test "parcel delivery keeps linear world position and curved presentation separate" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
@@ -4589,7 +4689,7 @@ test "parcel delivery homes to the row event widget world target" {
         .state = 7,
         .progress = 0.5,
         .progress_step = 0.0,
-        .delivery_offset = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+        .delivery_offset = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
 
     const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
@@ -4600,6 +4700,10 @@ test "parcel delivery homes to the row event widget world target" {
     try std.testing.expectApproxEqAbs(expected.x, parcel.world_position.x, 0.0001);
     try std.testing.expectApproxEqAbs(expected.y, parcel.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(expected.z, parcel.world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.x + 1.0, parcel.presentationPosition().x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.y + 2.0, parcel.presentationPosition().y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected.z + 3.0, parcel.presentationPosition().z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.7), parcel.presentationScale(), 0.0001);
 }
 
 test "parcel delivery seeds the recovered random arc coefficients" {

@@ -247,6 +247,7 @@ Implemented now:
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
 - parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot and advance through the recovered `state 4/5/6/7` handoff before `parcel_register` lands
 - parcel delivery state `7` now homes to the controller-owned `row_event_display.widget_world` anchor using the recovered local offset `(right=7.3, up=2.0, forward=6.0)`, and seeds the shipped per-flight arc coefficients from the carried gameplay LCG instead of the old fixed `{0, 1, 0}` offset
+- parcel runtime states `4` and `6` now fall through into their flight updates on the same tick like `update_track_parcel`, and parcel rendering now keeps the recovered sprite-only presentation position/scale separate from the base parcel world position during states `5` and `7`
 - collected parcel rows now stay consumed across respawn and stop rendering as live world pickups instead of reappearing until the row scrolls away
 - visible world parcels now come from a runner-local 50-slot live runtime scaffold with the shipped state-`1` bobbing and expiry rules instead of static annotation billboards
 - the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the live parcel-flight controller owns register score payout and the final postal bonus
@@ -262,7 +263,7 @@ Still missing or approximate:
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
 - the unresolved `row_event_display + 0x18` finish gate that Windows uses to snap the late completion handoff forward before the row-event controller reaches its terminal state
-- exact parcel flight/runtime-object behavior, row-event widget ownership before the recovered target offset is computed, and timing
+- exact parcel flight/runtime-object behavior, especially the unresolved home-flight arc basis at `game + 0x3be130/134/138`, row-event widget ownership before the recovered target offset is computed, and timing
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
 Best next work:

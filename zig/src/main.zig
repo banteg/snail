@@ -8932,11 +8932,12 @@ fn drawGameplayTrackParcelActor(
 ) void {
     const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
     const position = parcel.presentationPosition();
+    const scale = parcel.presentationScale();
     drawGameplayBillboardTexture(
         loaded_texture.texture,
         position,
-        0.56,
-        0.56,
+        0.56 * scale,
+        0.56 * scale,
         camera,
         if (parcel.parcel_id == 0)
             .white
