@@ -166,6 +166,11 @@ const RunnerPhase = union(enum) {
     completion_handoff,
 };
 
+const completion_handoff_timer_step: f32 = 1.0 / 60.0;
+const completion_handoff_voice_delay_seconds: f32 = 2.0;
+const completion_handoff_release_seconds: f32 = 5.0;
+const completion_handoff_release_force_seconds: f32 = 5.1;
+
 pub const RecentEvent = union(enum) {
     none,
     attachment_probe,
@@ -854,6 +859,9 @@ pub const Runner = struct {
     cutscene_ticks: u16 = 0,
     cutscene_camera: CutsceneCameraController = .{},
     pending_handoff: RunnerHandoff = .none,
+    completion_handoff_timer: f32 = 0.0,
+    completion_handoff_timer_step: f32 = completion_handoff_timer_step,
+    completion_handoff_voice_gate: bool = false,
     tick_count: u64 = 0,
     stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
@@ -2662,8 +2670,8 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `update_row_event_display` owns the parcel-delivery widget
     // controller and the post-delivery completion state. The port now mirrors the proven
-    // state `3 -> 4` transition on the gameplay side, but still omits the unresolved
-    // widget owner, staged parcel visuals, and the exact `state 4 -> 5` gate at `+0x18`.
+    // `3 -> 4 -> 5` state path on the gameplay side, but still omits the unresolved
+    // widget owner, staged parcel visuals, and the separate `+0x18` completion gate byte.
     fn updateRowEventDisplay(self: *Runner) void {
         switch (self.row_event_display.state) {
             .inactive, .staging, .hold, .complete => {},
@@ -2675,6 +2683,12 @@ pub const Runner = struct {
                 self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
                 if (self.row_event_display.bonus_blink_progress > 1.0) {
                     self.row_event_display.bonus_blink_progress = 0.0;
+                }
+                // Inference from the recovered runtime-cell `0x40` check in
+                // `update_row_event_display`: the shipped finish segment exposes that lane
+                // through `_` cells, so promote the row-event controller once Goldy reaches it.
+                if (self.current_cell == '_') {
+                    self.row_event_display.state = .complete;
                 }
             },
             .final_delivery_delay => {
@@ -2892,8 +2906,10 @@ pub const Runner = struct {
         if (self.phase != .active) return;
         self.finished = true;
         self.phase = .completion_handoff;
+        self.completion_handoff_timer = 0.0;
+        self.completion_handoff_timer_step = completion_handoff_timer_step;
+        self.completion_handoff_voice_gate = false;
         self.setCutscene(cutscene_completion_id);
-        self.pending_handoff = .completion;
     }
 
     fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -2910,6 +2926,13 @@ pub const Runner = struct {
         if (self.row_event_display.delivered_parcel_count < self.counters.parcels) return;
         if (!self.routeEndReached(preview)) return;
         self.beginCompletionCutscene();
+    }
+
+    fn completionHandoffRequiresRowEventResolution(self: *const Runner) bool {
+        return switch (self.session_mode) {
+            .postal, .time_trial => self.row_event_display.parcel_target_count != 0,
+            .challenge, .tutorial, .debug => false,
+        };
     }
 
     fn captureWorldFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) WorldFrame {
@@ -2970,7 +2993,32 @@ pub const Runner = struct {
     fn updatePhaseController(self: *Runner, delta_seconds: f32) void {
         switch (self.phase) {
             .active => {},
-            .completion_handoff => {},
+            .completion_handoff => {
+                _ = self.advanceCutsceneTicks();
+                self.completion_handoff_timer += self.completion_handoff_timer_step;
+                if (!self.completion_handoff_voice_gate and
+                    self.completion_handoff_timer >= completion_handoff_voice_delay_seconds)
+                {
+                    self.completion_handoff_voice_gate = true;
+                }
+                if (self.row_event_display.state == .complete) {
+                    self.completion_handoff_timer = @max(
+                        self.completion_handoff_timer,
+                        completion_handoff_release_force_seconds,
+                    );
+                }
+                if (self.completion_handoff_timer < completion_handoff_release_seconds) return;
+                if (self.completionHandoffRequiresRowEventResolution() and
+                    self.row_event_display.state != .complete)
+                {
+                    self.completion_handoff_timer = @max(
+                        0.0,
+                        self.completion_handoff_timer - self.completion_handoff_timer_step,
+                    );
+                    return;
+                }
+                self.pending_handoff = .completion;
+            },
             .fall => |state| {
                 var next_state = state;
                 next_state.world_z = self.attachment_exit_anchor_z;
@@ -4809,7 +4857,7 @@ test "attachment exit pending applies a world-Z camera roll" {
     try std.testing.expect(@abs(rotated.forward.x) > 0.05);
 }
 
-test "runner completion queues a handoff immediately" {
+test "runner completion enters the delayed handoff controller" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -4822,7 +4870,8 @@ test "runner completion queues a handoff immediately" {
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expectEqual(@as(f32, 0.0), runner.completion_handoff_timer);
 }
 
 test "completion handoff arms at the final row threshold" {
@@ -4840,7 +4889,7 @@ test "completion handoff arms at the final row threshold" {
     try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(fixture.preview.total_rows - 1)));
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
 test "completion does not arm while attachment follow is still active at route end" {
@@ -4887,29 +4936,20 @@ test "route-end completion waits for attachment exit handoff to clear" {
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
-test "route-end completion waits for parcel delivery registration" {
+test "row event bonus prompt promotes to complete on the finish lane" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.01;
-    runner.syncRowPosition(&fixture.preview);
-    runner.refreshSample(&fixture.preview);
-    runner.counters.parcels = 1;
-    runner.row_event_display.delivered_parcel_count = 0;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.current_cell = '_';
 
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    runner.updateRowEventDisplay();
 
-    runner.row_event_display.delivered_parcel_count = 1;
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
 }
 
 test "route-end natural attachment retirement bypasses the exit handoff" {
@@ -4940,6 +4980,42 @@ test "route-end natural attachment retirement bypasses the exit handoff" {
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+}
+
+test "tutorial completion handoff releases after the recovered timer" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginCompletionCutscene();
+
+    const steps = stepUntilHandoff(&runner, &fixture.preview, 360);
+
+    try std.testing.expect(steps < 360);
+    try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_release_seconds);
+    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+}
+
+test "postal completion handoff waits for the row event controller to complete" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.session_mode = .postal;
+    runner.row_event_display.parcel_target_count = 1;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.beginCompletionCutscene();
+    runner.completion_handoff_timer = completion_handoff_release_seconds;
+
+    runner.updatePhaseController(0.0);
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
+
+    runner.current_cell = '_';
+    runner.updateRowEventDisplay();
+    runner.updatePhaseController(0.0);
+    try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
 }
 
