@@ -705,3 +705,55 @@ This settles the Postal hazard-death selector completely:
   - `initialize_subgoldy_death -> initialize_subgoldy_resurrect(player, 1)`
   - no further life decrement
   - later `update_subgoldy_resurrect` routes through `complete_subgame(game, 1)`
+
+## Floor-Gap Fall: Direct `update_subgoldy` Death Caller
+
+After the slug-death work, the same session was re-armed specifically for a clean void fall with only four death-path stops enabled:
+
+- `0x43c093`: direct `update_subgoldy -> initialize_subgoldy_death`
+- `0x446b04`: `update_cutscene -> initialize_subgoldy_death`
+- `0x446e59`: respawn selector
+- `0x446e51`: final-loss selector
+
+The next clean floor-gap repro finally hit the direct caller first:
+
+- `[fall_death_via_update_subgoldy] player=0x0d338d9c mode=0 lives=1 world_y=0xc0e0e49c move=0 death_flag84=0 exit_pending=1 gate_a=1 gate_b=0`
+- stop site:
+  - `0x43c093`: `call initialize_subgoldy_death`
+
+`world_y = 0xc0e0e49c` converts to roughly `-7.027906f`, which is below the static `-7.0f` threshold already recovered from `update_subgoldy`:
+
+- `0x43c07a`: `fcomp dword ptr [0x4975bc]`
+- `0x43c087`: `mov al, byte ptr [ebp + 0x84]`
+- `0x43c08f`: `jne 0x43c098`
+- `0x43c093`: `call initialize_subgoldy_death`
+
+This confirms that at least one ordinary floor-gap death path does **not** begin in `update_cutscene`; it begins directly in `update_subgoldy` once the live player state crosses the void threshold with `flag84 == 0`.
+
+Continuing from that stop immediately reached the same selector family used by slug death:
+
+- `[death_select_respawn] player=0x0d338d9c mode=0 lives=1 world_y=0xc0e0e49c`
+- stop site:
+  - `0x446e59`: `call initialize_subgoldy_resurrect`
+
+Practical result:
+
+- floor-gap fall and hazard death share the same downstream `initialize_subgoldy_death` selector
+- the important difference is the entry lane:
+  - slug death was observed entering from the `update_cutscene` side with positive `world_y = 0.49f`
+  - floor-gap fall was observed entering directly from `update_subgoldy` with negative `world_y ~= -7.03f`
+- this resolves the earlier ambiguity about why some gap falls never touched the cutscene-side probe
+
+The follow-up zero-life repro confirmed that the selector result also matches the slug-death final-loss case:
+
+- `[fall_death_via_update_subgoldy] player=0x0d338d9c mode=0 lives=0 world_y=0xc0e0e49c move=0 death_flag84=0 exit_pending=1 gate_a=1 gate_b=0`
+- immediate selector stop:
+  - `[death_select_final_loss] player=0x0d338d9c mode=0 lives=0 world_y=0xc0e0e49c`
+  - `0x446e51`: `call initialize_subgoldy_resurrect`
+
+Practical conclusion:
+
+- ordinary floor-gap fall uses a different entry lane than slug death
+- once both arrive at `initialize_subgoldy_death`, the zero-life selector outcome is the same:
+  - `lives == 0` takes `death_select_final_loss`
+  - `lives > 0` takes `death_select_respawn`
