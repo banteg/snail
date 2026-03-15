@@ -2663,6 +2663,15 @@ pub const Runner = struct {
         };
     }
 
+    fn attachmentEntryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f32) f32 {
+        return switch (family) {
+            // Windows seeds nonlinear kind-42 follow height from the raw local rider offset.
+            // That path legitimately reaches `-0.49` once Goldy is riding the trough floor.
+            .kind42 => local_y,
+            else => @max(0.0, local_y - attachment_entry_rider_height),
+        };
+    }
+
     fn commitAttachmentNaturalExit(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
@@ -2911,7 +2920,7 @@ pub const Runner = struct {
         return .{
             .progress = progress,
             .lateral_offset = lateral_offset,
-            .vertical_offset = @max(0.0, entry_local.y - attachment_entry_rider_height),
+            .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, entry_local.y),
         };
     }
 
@@ -2996,7 +3005,7 @@ pub const Runner = struct {
                     return .{
                         .progress = progress,
                         .lateral_offset = lateral_offset,
-                        .vertical_offset = @max(0.0, start_local.y - attachment_entry_rider_height),
+                        .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, start_local.y),
                     };
                 }
             }
@@ -4192,6 +4201,15 @@ test "standalone start segment attachment follow uses built template world heigh
 
     try std.testing.expect(world_position.y > floor_height + 0.5);
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
+}
+
+test "kind42 entry height preserves the recovered raw local offset" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.kind42, 0.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.49), Runner.attachmentEntryVerticalOffset(.kind42, -0.49), 0.0001);
+}
+
+test "ordinary entry height still subtracts the rider baseline" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.start, attachment_entry_rider_height), 0.0001);
 }
 
 test "standalone start segment attachment exits from the template end pose" {
