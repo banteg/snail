@@ -1571,19 +1571,27 @@ pub const Runner = struct {
         if (self.currentAttachmentBuilt(preview)) |built| {
             if (self.attachmentShouldSideExit(built)) {
                 self.commitAttachmentSideExit(preview, built);
-                self.finishAttachmentFollow(preview);
+                self.finishAttachmentFollowWithExitHandoff(preview);
                 return;
             }
             if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
                 self.commitAttachmentNaturalExit(preview, built);
-                self.finishAttachmentFollow(preview);
+                if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
+                    self.finishAttachmentFollowDirect();
+                } else {
+                    self.finishAttachmentFollowWithExitHandoff(preview);
+                }
             }
             return;
         }
         const sample = self.sampleRow(preview, currentRowIndex(preview, self.row_position)) orelse return;
         if (sample.path_center_lane != null) return;
 
-        self.finishAttachmentFollow(preview);
+        if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
+            self.finishAttachmentFollowDirect();
+            return;
+        }
+        self.finishAttachmentFollowWithExitHandoff(preview);
     }
 
     fn recordRing(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind) void {
@@ -3081,11 +3089,20 @@ pub const Runner = struct {
         self.post_follow_value_b = 0.0;
     }
 
-    fn finishAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.seedAttachmentExitState(preview, self.row_position);
+    fn shouldRetireAttachmentDirectlyForCompletion(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        if (self.launch.active) return false;
+        return self.routeEndReached(preview);
+    }
+
+    fn finishAttachmentFollowDirect(self: *Runner) void {
         self.clearAttachmentFollow();
         self.counters.attachments_completed += 1;
         self.recent_event = .attachment_end;
+    }
+
+    fn finishAttachmentFollowWithExitHandoff(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        self.seedAttachmentExitState(preview, self.row_position);
+        self.finishAttachmentFollowDirect();
     }
 
     fn updateLaunch(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
@@ -4213,6 +4230,36 @@ test "route-end completion waits for attachment exit handoff to clear" {
     runner.attachment_exit_progress = 0.99;
     runner.stepAttachmentExitState();
     runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+}
+
+test "route-end natural attachment retirement bypasses the exit handoff" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    fixture.preview.total_rows = built.row.global_row + built.template.sample_count + 1;
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "START";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = @floatFromInt(built.template.sample_count),
+        .exit_overshoot = 0.999,
+    };
+
+    runner.endAttachmentIfNeeded(&fixture.preview);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(!runner.attachment_exit_pending);
+    try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
+
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
 }
