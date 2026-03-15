@@ -1046,7 +1046,7 @@ pub const Runner = struct {
         }
         if (!self.paused) {
             self.updateTrackParcels(preview);
-            self.updateRowEventDisplay();
+            self.updateRowEventDisplay(preview);
         }
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
@@ -2731,31 +2731,29 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `update_row_event_display` owns the parcel-delivery widget
     // controller and the post-delivery completion state. The port now mirrors the proven
-    // `3 -> 4 -> 5` state path on the gameplay side, but still omits the unresolved
-    // widget owner, staged parcel visuals, and the separate `+0x18` completion gate byte.
-    fn stepRowEventBonusPrompt(self: *Runner) void {
+    // `3 -> 4 -> 5` state path on the gameplay side and consumes the recovered
+    // `TrackRowCell.flags_b & 0x40` lane from the preview, but it still omits the
+    // unresolved widget owner, staged parcel visuals, and the separate `+0x18` gate byte.
+    fn stepRowEventBonusPrompt(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
         if (self.row_event_display.bonus_blink_progress > 1.0) {
             self.row_event_display.bonus_blink_progress = 0.0;
         }
-        // Inference from the recovered runtime-cell `0x40` check in
-        // `update_row_event_display`: the shipped finish segment exposes that lane
-        // through `_` cells, so promote the row-event controller once Goldy reaches it.
-        if (self.current_cell == '_') {
+        if (preview.runtimeFlagB40At(self.current_global_row, self.resolved_lane_index)) {
             self.row_event_display.state = .complete;
         }
     }
 
-    fn updateRowEventDisplay(self: *Runner) void {
+    fn updateRowEventDisplay(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
             .inactive, .staging, .hold, .complete => {},
             .final_delivery => {
                 self.row_event_display.completion_gate = 0;
                 self.row_event_display.state = .bonus_prompt;
-                self.stepRowEventBonusPrompt();
+                self.stepRowEventBonusPrompt(preview);
             },
-            .bonus_prompt => self.stepRowEventBonusPrompt(),
+            .bonus_prompt => self.stepRowEventBonusPrompt(preview),
             .final_delivery_delay => {
                 self.row_event_display.progress = std.math.clamp(
                     self.row_event_display.progress + self.row_event_display.progress_step,
@@ -3865,6 +3863,18 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
     return null;
 }
 
+fn findFirstRuntimeFlagB40Cell(preview: *const track.LoadedLevelPreview, expected: bool) ?RowTarget {
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.runtimeFlagB40At(global_row, lane) == expected) {
+                return .{ .row = global_row, .lane = lane };
+            }
+        }
+    }
+    return null;
+}
+
 fn findFirstOffCenterAttachmentEntry(preview: *const track.LoadedLevelPreview) ?AttachmentEntryTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -4607,7 +4617,7 @@ test "row event display updates the parcel widget world from the cameraman matri
         row_event_widget_local_z,
     );
 
-    runner.updateRowEventDisplay();
+    runner.updateRowEventDisplay(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(expected.x, runner.row_event_display.widget_world_x, 0.0001);
     try std.testing.expectApproxEqAbs(expected.y, runner.row_event_display.widget_world_y, 0.0001);
@@ -4764,12 +4774,14 @@ test "final parcel delivery can complete the row event on the same tick" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.current_cell = '_';
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
+    runner.current_global_row = target.row;
+    runner.resolved_lane_index = target.lane;
     runner.row_event_display.state = .final_delivery;
     runner.row_event_display.completion_gate = 1;
     runner.row_event_display.bonus_blink_step = 1.0;
 
-    runner.updateRowEventDisplay();
+    runner.updateRowEventDisplay(&fixture.preview);
 
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.completion_gate);
@@ -5192,17 +5204,34 @@ test "route-end completion can start while parcel delivery registration is still
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
-test "row event bonus prompt promotes to complete on the finish lane" {
+test "row event bonus prompt promotes to complete when runtime flag b40 is set" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
+    runner.current_global_row = target.row;
+    runner.resolved_lane_index = target.lane;
     runner.row_event_display.state = .bonus_prompt;
-    runner.current_cell = '_';
 
-    runner.updateRowEventDisplay();
+    runner.updateRowEventDisplay(&fixture.preview);
 
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
+}
+
+test "row event bonus prompt waits while runtime flag b40 is clear" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, false).?;
+    runner.current_global_row = target.row;
+    runner.resolved_lane_index = target.lane;
+    runner.row_event_display.state = .bonus_prompt;
+
+    runner.updateRowEventDisplay(&fixture.preview);
+
+    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
 }
 
 test "route-end natural attachment retirement bypasses the exit handoff" {
@@ -5265,8 +5294,10 @@ test "postal completion handoff waits for the row event controller to complete" 
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
     try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
 
-    runner.current_cell = '_';
-    runner.updateRowEventDisplay();
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
+    runner.current_global_row = target.row;
+    runner.resolved_lane_index = target.lane;
+    runner.updateRowEventDisplay(&fixture.preview);
     runner.updatePhaseController(0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());

@@ -179,6 +179,7 @@ pub const LoadedLevelPreview = struct {
     salt_scalar: f32,
     parcel_target_count: usize,
     runtime_tiles: []u8,
+    runtime_flag_b40_grid: []bool,
     runtime_edge_masks: []u8,
     runtime_spawn_hints: []u8,
     total_rows: usize,
@@ -304,6 +305,16 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_config,
+        );
+        errdefer allocator.free(runtime_flag_b40_grid);
         const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
@@ -347,6 +358,7 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
@@ -442,6 +454,16 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_config,
+        );
+        errdefer allocator.free(runtime_flag_b40_grid);
         const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
             allocator,
             segments,
@@ -485,6 +507,7 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
@@ -501,6 +524,7 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.model_assets);
         self.allocator.free(self.runtime_spawn_hints);
         self.allocator.free(self.runtime_edge_masks);
+        self.allocator.free(self.runtime_flag_b40_grid);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
@@ -737,6 +761,11 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeTileAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
         return self.runtime_tiles[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b40_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
@@ -1491,6 +1520,51 @@ fn buildAttachmentSourceRowMirrorStates(
     };
 }
 
+fn runtimeFlagB40ForNormalizedGlyph(cell: u8, tile_type: u8, build_flags: u32) bool {
+    if (tile_type == 0x00 or tile_type == 0x23) return false;
+    if (build_flags == timeTrialRuntimeBuildFlags and cell == '0') return false;
+    return true;
+}
+
+fn buildRuntimeFlagB40Grid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    config: RuntimeBuildConfig,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
+            for (row.cells, 0..) |cell, lane_index| {
+                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
+                    cell,
+                    build_state.build_flags,
+                    build_state.mirror_state,
+                    outside_active_rows,
+                );
+                if (normalized_cell == '@') {
+                    _ = build_state.switchTrackMirror();
+                }
+                const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] =
+                    runtimeFlagB40ForNormalizedGlyph(normalized_cell, tile_type, config.build_flags);
+            }
+        }
+    }
+
+    return flag_grid;
+}
+
 const ParcelRowLocation = struct {
     segment_index: usize,
     row_index: usize,
@@ -2081,6 +2155,15 @@ test "normalize segment glyph for track flags matches recovered helper cases" {
     try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags(']', defaultRuntimeBuildFlags, true, false));
     try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('_', 0, false, true));
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
+}
+
+test "runtime flag b40 matches recovered populated-cell cases" {
+    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph(' ', 0x00, defaultRuntimeBuildFlags));
+    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('@', 0x00, defaultRuntimeBuildFlags));
+    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('R', 0x23, defaultRuntimeBuildFlags));
+    try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('.', 0x01, defaultRuntimeBuildFlags));
+    try std.testing.expect(runtimeFlagB40ForNormalizedGlyph('_', 0x0f, defaultRuntimeBuildFlags));
+    try std.testing.expect(!runtimeFlagB40ForNormalizedGlyph('0', 0x0f, timeTrialRuntimeBuildFlags));
 }
 
 test "runtime build mirror latch matches recovered threshold logic" {
