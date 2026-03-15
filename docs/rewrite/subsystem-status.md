@@ -47,6 +47,7 @@ Implemented now:
 - preserve the recovered compact-record replay-mode (`0x30`), runtime-build-flags (`0x38`), challenge-speed raw/scalar (`0x4c/0x48`), challenge-difficulty raw/scalar (`0x50/0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
+- expose the recovered 5-byte replay payload lanes (`lateral`, `forward`, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
 - inline name-entry flow inside the shared high-score screen
 
 Still missing or approximate:

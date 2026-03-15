@@ -59,6 +59,30 @@ pub const Entry = struct {
         return self.name_buf[0..self.name_len];
     }
 
+    pub fn replaySampleCount(self: *const Entry) usize {
+        const record = self.raw_record orelse return 0;
+        if (record.len < compact_record_header_size) return 0;
+        return @intCast(readU32(record, compact_record_replay_sample_count_offset));
+    }
+
+    pub fn replaySampleAt(self: *const Entry, index: usize) ?ReplaySample {
+        const record = self.raw_record orelse return null;
+        const sample_count = self.replaySampleCount();
+        if (index >= sample_count) return null;
+
+        const required_len = compact_record_header_size + (sample_count * 5);
+        if (record.len < required_len) return null;
+
+        const lateral_offset = compact_record_header_size + (index * 2);
+        const forward_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
+        const flags_offset = compact_record_header_size + (sample_count * 4) + index;
+        return .{
+            .lateral = readI16(record, lateral_offset),
+            .forward = readI16(record, forward_offset),
+            .flags = record[flags_offset],
+        };
+    }
+
     pub fn setName(self: *Entry, value: []const u8) void {
         const clipped = value[0..@min(value.len, self.name_buf.len)];
         @memset(&self.name_buf, 0);
@@ -81,6 +105,12 @@ pub const Entry = struct {
         self.deinit(allocator);
         self.raw_record = try allocator.dupe(u8, record);
     }
+};
+
+pub const ReplaySample = struct {
+    lateral: i16,
+    forward: i16,
+    flags: u8,
 };
 
 pub const InsertResult = struct {
@@ -394,6 +424,10 @@ fn readU32(buffer: []const u8, offset: usize) u32 {
     return std.mem.readInt(u32, @as(*const [4]u8, @ptrCast(buffer[offset .. offset + 4].ptr)), .little);
 }
 
+fn readI16(buffer: []const u8, offset: usize) i16 {
+    return std.mem.readInt(i16, @as(*const [2]u8, @ptrCast(buffer[offset .. offset + 2].ptr)), .little);
+}
+
 test "default tables seed the recovered startup bank shape" {
     var tables = Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
@@ -445,6 +479,66 @@ test "parse compact high-score record into recovered bank slots" {
     try std.testing.expectEqualStrings("Turbo", tables.postal[2].name());
     try std.testing.expect(tables.postal[2].raw_record != null);
     try std.testing.expectEqual(@as(u32, 0), tables.challenge[2].score);
+}
+
+test "compact high-score record exposes replay payload lanes" {
+    var payload: [compact_record_header_size + 15]u8 = [_]u8{0} ** (compact_record_header_size + 15);
+    std.mem.writeInt(u32, payload[0x00..0x04], payload.len, .little);
+    std.mem.writeInt(u32, payload[0x04..0x08], 9001, .little);
+    std.mem.writeInt(u32, payload[0x28..0x2c], (9001 *% 9001) ^ 0xdeadbabe, .little);
+    std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
+    std.mem.writeInt(u32, payload[0x40..0x44], 0, .little);
+    std.mem.writeInt(u32, payload[0x74..0x78], 3, .little);
+    std.mem.writeInt(i16, payload[0x88..0x8a], -12, .little);
+    std.mem.writeInt(i16, payload[0x8a..0x8c], 7, .little);
+    std.mem.writeInt(i16, payload[0x8c..0x8e], 25, .little);
+    std.mem.writeInt(i16, payload[0x8e..0x90], 100, .little);
+    std.mem.writeInt(i16, payload[0x90..0x92], 200, .little);
+    std.mem.writeInt(i16, payload[0x92..0x94], 300, .little);
+    payload[0x94] = 0x01;
+    payload[0x95] = 0x04;
+    payload[0x96] = 0x0a;
+
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+    try parseCompactRecord(&tables, std.testing.allocator, &payload);
+
+    const entry = &tables.postal[0];
+    try std.testing.expectEqual(@as(usize, 3), entry.replaySampleCount());
+    try std.testing.expectEqualDeep(ReplaySample{
+        .lateral = -12,
+        .forward = 100,
+        .flags = 0x01,
+    }, entry.replaySampleAt(0).?);
+    try std.testing.expectEqualDeep(ReplaySample{
+        .lateral = 7,
+        .forward = 200,
+        .flags = 0x04,
+    }, entry.replaySampleAt(1).?);
+    try std.testing.expectEqualDeep(ReplaySample{
+        .lateral = 25,
+        .forward = 300,
+        .flags = 0x0a,
+    }, entry.replaySampleAt(2).?);
+    try std.testing.expect(entry.replaySampleAt(3) == null);
+}
+
+test "replay payload access rejects truncated compact records" {
+    var payload: [compact_record_header_size]u8 = [_]u8{0} ** compact_record_header_size;
+    std.mem.writeInt(u32, payload[0x00..0x04], payload.len, .little);
+    std.mem.writeInt(u32, payload[0x04..0x08], 77, .little);
+    std.mem.writeInt(u32, payload[0x28..0x2c], (77 *% 77) ^ 0xdeadbabe, .little);
+    std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
+    std.mem.writeInt(u32, payload[0x40..0x44], 0, .little);
+    std.mem.writeInt(u32, payload[0x74..0x78], 1, .little);
+
+    var tables = Tables.initDefault();
+    defer tables.deinit(std.testing.allocator);
+    try parseCompactRecord(&tables, std.testing.allocator, &payload);
+
+    const entry = &tables.postal[0];
+    try std.testing.expectEqual(@as(usize, 1), entry.replaySampleCount());
+    try std.testing.expect(entry.replaySampleAt(0) == null);
 }
 
 test "ignore compact high-score records with invalid checksum" {
