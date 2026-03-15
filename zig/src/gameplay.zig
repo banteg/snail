@@ -87,7 +87,6 @@ pub const RunnerHandoff = union(enum) {
 
 const FallState = struct {
     cause: DeathCause,
-    final_loss: bool,
     world_x: f32,
     world_y: f32,
     world_z: f32,
@@ -2564,7 +2563,6 @@ pub const Runner = struct {
         self.phase = .{
             .fall = .{
                 .cause = cause,
-                .final_loss = self.deathUsesFinalLoss(),
                 .world_x = frame.position.x,
                 .world_y = frame.position.y,
                 .world_z = frame.position.z,
@@ -2586,18 +2584,26 @@ pub const Runner = struct {
             },
             .fall => |state| {
                 var next_state = state;
-                next_state.world_y += next_state.vertical_velocity * delta_seconds;
-                next_state.vertical_velocity -= fall_gravity * delta_seconds;
                 next_state.world_z = self.attachment_exit_anchor_z;
                 self.phase = .{ .fall = next_state };
-                _ = self.advanceCutsceneTicks();
+                const cutscene_finished = self.advanceCutsceneTicks();
                 self.stepAttachmentExitState();
-                if (!self.attachment_exit_gate_b and next_state.world_y < fall_world_y_threshold) {
-                    self.attachment_exit_gate_b = true;
+                switch (next_state.cause) {
+                    .fall => {
+                        next_state.world_y += next_state.vertical_velocity * delta_seconds;
+                        next_state.vertical_velocity -= fall_gravity * delta_seconds;
+                        self.phase = .{ .fall = next_state };
+                        if (!self.attachment_exit_gate_b and next_state.world_y < fall_world_y_threshold) {
+                            self.attachment_exit_gate_b = true;
+                        }
+                        if (next_state.world_y > fall_world_y_threshold) return;
+                    },
+                    .hazard, .damage => {
+                        if (!cutscene_finished) return;
+                    },
                 }
-                if (next_state.world_y > fall_world_y_threshold) return;
 
-                if (next_state.final_loss) {
+                if (self.deathUsesFinalLoss()) {
                     self.pending_handoff = .{ .final_loss = next_state.cause };
                     return;
                 }
@@ -3981,6 +3987,25 @@ test "postal death hands off respawn after the death controller finishes without
     try std.testing.expectApproxEqAbs(@as(f32, 25.0), runner.row_position, 0.0001);
 }
 
+test "hazard death keeps on-track height until the selector handoff" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.postal);
+    runner.runtime_track_index = 24;
+    runner.movement_progress = 0.5;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    const starting_world_y = runner.phase.fall.world_y;
+
+    const steps = stepUntilHandoff(&runner, &fixture.preview, 256);
+    try std.testing.expect(steps < 256);
+    try std.testing.expectApproxEqAbs(starting_world_y, runner.phase.fall.world_y, 0.0001);
+    try std.testing.expect(runner.phase.fall.world_y > fall_world_y_threshold);
+}
+
 test "applyRespawn preserves score timer and remaining lives while resetting movement" {
     var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
     defer fixture.deinit();
@@ -4112,7 +4137,7 @@ test "fall state arms gate b at the deep threshold" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
     runner.phase.fall.world_y = fall_world_y_threshold - 0.01;
 
     runner.updatePhaseController(0.0);
