@@ -4042,6 +4042,14 @@ const AppState = struct {
         try self.enterFrontendLevelPath(mode, self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
+    fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
+        return .{
+            .score = score,
+            .replay_level_index = @intCast(self.active_frontend_level_index),
+            .runtime_build_seed = self.current_runtime_build_seed,
+        };
+    }
+
     fn saveHighScoreTables(self: *AppState) !void {
         try self.high_score_tables.saveToRuntimeRoot(self.allocator, self.runtime_root_path);
     }
@@ -4235,10 +4243,7 @@ const AppState = struct {
                         self.active_frontend_level_index,
                         self.highestAvailableFrontendRouteIndex(.postal),
                     )) {
-                        const entry = high_score.Entry{
-                            .score = result.score,
-                            .replay_level_index = @intCast(self.active_frontend_level_index),
-                        };
+                        const entry = self.currentRunHighScoreEntry(result.score);
                         const insert = self.high_score_tables.addArcade(self.allocator, entry);
                         updated.high_score_mode = .postal;
                         updated.high_score_rank = insert.rank;
@@ -4247,20 +4252,14 @@ const AppState = struct {
                     updated.unlocked_next_route = try self.commitPostalRouteProgress();
                 },
                 .challenge => {
-                    const entry = high_score.Entry{
-                        .score = result.score,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    };
+                    const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                     updated.high_score_mode = .challenge;
                     updated.high_score_rank = insert.rank;
                     try self.saveHighScoreTables();
                 },
                 .time_trial => {
-                    const entry = high_score.Entry{
-                        .score = result.score,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    };
+                    const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addTimeTrial(
                         self.allocator,
                         self.active_frontend_level_index,
@@ -4274,20 +4273,14 @@ const AppState = struct {
             },
             .failed => switch (result.mode orelse .tutorial) {
                 .postal => {
-                    const entry = high_score.Entry{
-                        .score = result.score,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    };
+                    const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addArcade(self.allocator, entry);
                     updated.high_score_mode = .postal;
                     updated.high_score_rank = insert.rank;
                     try self.saveHighScoreTables();
                 },
                 .challenge => {
-                    const entry = high_score.Entry{
-                        .score = result.score,
-                        .replay_level_index = @intCast(self.active_frontend_level_index),
-                    };
+                    const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                     updated.high_score_mode = .challenge;
                     updated.high_score_rank = insert.rank;
@@ -9675,6 +9668,17 @@ test "preview descending high-score rank matches visible insertion rules" {
 
     try std.testing.expectEqual(@as(?usize, 5), AppState.previewDescendingHighScoreRank(tables.postal[0..], 955));
     try std.testing.expectEqual(@as(?usize, null), AppState.previewDescendingHighScoreRank(tables.postal[0..], 900));
+}
+
+test "current run high-score entry carries the runtime build seed" {
+    var state: AppState = undefined;
+    state.active_frontend_level_index = 7;
+    state.current_runtime_build_seed = 321;
+
+    const entry = state.currentRunHighScoreEntry(12_345);
+    try std.testing.expectEqual(@as(u32, 12_345), entry.score);
+    try std.testing.expectEqual(@as(u32, 7), entry.replay_level_index);
+    try std.testing.expectEqual(@as(u32, 321), entry.runtime_build_seed);
 }
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {

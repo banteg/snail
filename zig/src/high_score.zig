@@ -12,6 +12,7 @@ const compact_record_name_offset = 0x5c;
 const compact_record_name_len = compact_name_capacity;
 const compact_record_replay_level_index_offset = 0x2c;
 const compact_record_replay_handoff_value_offset = 0x30;
+const compact_record_runtime_build_seed_offset = 0x70;
 const compact_record_bank_selector_offset = 0x3c;
 const compact_record_entry_index_offset = 0x40;
 const compact_record_score_offset = 0x04;
@@ -34,6 +35,7 @@ pub const Entry = struct {
     score: u32 = 0,
     replay_level_index: u32 = 0,
     replay_handoff_value: u32 = 0,
+    runtime_build_seed: u32 = 0,
     has_replay: bool = false,
     name_len: usize = 0,
     name_buf: [name_capacity]u8 = [_]u8{0} ** name_capacity,
@@ -133,6 +135,7 @@ pub const Tables = struct {
             .score = incoming.score,
             .replay_level_index = incoming.replay_level_index,
             .replay_handoff_value = incoming.replay_handoff_value,
+            .runtime_build_seed = incoming.runtime_build_seed,
             .has_replay = incoming.has_replay,
             .name_len = incoming.name_len,
             .name_buf = incoming.name_buf,
@@ -159,6 +162,9 @@ pub const Tables = struct {
                 }
                 if (incoming.replay_handoff_value != 0) {
                     current.replay_handoff_value = incoming.replay_handoff_value;
+                }
+                if (incoming.runtime_build_seed != 0) {
+                    current.runtime_build_seed = incoming.runtime_build_seed;
                 }
                 if (incoming.name_len != 0) {
                     current.setName(incoming.name());
@@ -187,7 +193,8 @@ pub const Tables = struct {
     }
 
     // PORT(partial): this reads the compact score overlays from ScoreA/B/C.dat,
-    // but only surfaces score, name, replay presence, and raw record preservation in the current port.
+    // but only surfaces the recovered seed/header lanes, replay presence, name,
+    // and raw record preservation in the current port.
     pub fn loadFromRuntimeRoot(self: *Tables, allocator: std.mem.Allocator, root_path: []const u8) !void {
         self.deinit(allocator);
         self.* = Tables.initDefault();
@@ -262,6 +269,7 @@ fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []c
     entry.score = score;
     entry.replay_level_index = readU32(record, compact_record_replay_level_index_offset);
     entry.replay_handoff_value = readU32(record, compact_record_replay_handoff_value_offset);
+    entry.runtime_build_seed = readU32(record, compact_record_runtime_build_seed_offset);
     entry.has_replay = replay_sample_count > 0;
     entry.setName(name);
     try entry.setRawRecord(allocator, record);
@@ -326,6 +334,7 @@ fn saveBankFile(
         std.mem.writeInt(u32, owned_record[compact_record_score_offset .. compact_record_score_offset + 4], entry.score, .little);
         std.mem.writeInt(u32, owned_record[compact_record_replay_level_index_offset .. compact_record_replay_level_index_offset + 4], entry.replay_level_index, .little);
         std.mem.writeInt(u32, owned_record[compact_record_replay_handoff_value_offset .. compact_record_replay_handoff_value_offset + 4], entry.replay_handoff_value, .little);
+        std.mem.writeInt(u32, owned_record[compact_record_runtime_build_seed_offset .. compact_record_runtime_build_seed_offset + 4], entry.runtime_build_seed, .little);
         std.mem.writeInt(u32, owned_record[compact_record_checksum_offset .. compact_record_checksum_offset + 4], (entry.score *% entry.score) ^ 0xdeadbabe, .little);
         std.mem.writeInt(u32, owned_record[compact_record_bank_selector_offset .. compact_record_bank_selector_offset + 4], bank_selector, .little);
         std.mem.writeInt(u32, owned_record[compact_record_entry_index_offset .. compact_record_entry_index_offset + 4], @intCast(entry_index), .little);
@@ -367,6 +376,7 @@ test "parse compact high-score record into recovered bank slots" {
     std.mem.writeInt(u32, payload[0x04..0x08], 4242, .little);
     std.mem.writeInt(u32, payload[0x2c..0x30], 17, .little);
     std.mem.writeInt(u32, payload[0x30..0x34], 91, .little);
+    std.mem.writeInt(u32, payload[0x70..0x74], 123, .little);
     std.mem.writeInt(u32, payload[0x28..0x2c], (4242 *% 4242) ^ 0xdeadbabe, .little);
     std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
     std.mem.writeInt(u32, payload[0x40..0x44], 2, .little);
@@ -380,6 +390,7 @@ test "parse compact high-score record into recovered bank slots" {
     try std.testing.expectEqual(@as(u32, 4242), tables.postal[2].score);
     try std.testing.expectEqual(@as(u32, 17), tables.postal[2].replay_level_index);
     try std.testing.expectEqual(@as(u32, 91), tables.postal[2].replay_handoff_value);
+    try std.testing.expectEqual(@as(u32, 123), tables.postal[2].runtime_build_seed);
     try std.testing.expect(tables.postal[2].has_replay);
     try std.testing.expectEqualStrings("Turbo", tables.postal[2].name());
     try std.testing.expect(tables.postal[2].raw_record != null);
@@ -496,6 +507,7 @@ test "failed time trial attempt only updates scratch and preserves best route ti
         .score = 2000,
         .replay_level_index = 3,
         .replay_handoff_value = 44,
+        .runtime_build_seed = 55,
         .has_replay = true,
         .raw_record = owned_raw,
     }, false);
@@ -504,6 +516,7 @@ test "failed time trial attempt only updates scratch and preserves best route ti
     try std.testing.expectEqual(@as(u32, 2000), tables.scratch.score);
     try std.testing.expectEqual(@as(u32, 3), tables.scratch.replay_level_index);
     try std.testing.expectEqual(@as(u32, 44), tables.scratch.replay_handoff_value);
+    try std.testing.expectEqual(@as(u32, 55), tables.scratch.runtime_build_seed);
     try std.testing.expect(tables.scratch.has_replay);
     try std.testing.expect(tables.scratch.raw_record != null);
     try std.testing.expectEqualSlices(u8, &expected_raw, tables.scratch.raw_record.?);
@@ -523,12 +536,15 @@ test "save and load compact high-score tables roundtrip score and names" {
     defer tables.deinit(std.testing.allocator);
     tables.postal[0].score = 12345;
     tables.postal[0].replay_level_index = 7;
+    tables.postal[0].runtime_build_seed = 101;
     tables.postal[0].setName("Turbo");
     tables.challenge[1].score = 777;
     tables.challenge[1].replay_level_index = 9;
+    tables.challenge[1].runtime_build_seed = 202;
     tables.challenge[1].setName("Slug");
     tables.completion[2].score = 54321;
     tables.completion[2].replay_level_index = 3;
+    tables.completion[2].runtime_build_seed = 303;
     tables.completion[2].setName("Route");
 
     try tables.saveToRuntimeRoot(std.testing.allocator, "runtime");
@@ -539,12 +555,15 @@ test "save and load compact high-score tables roundtrip score and names" {
 
     try std.testing.expectEqual(@as(u32, 12345), loaded.postal[0].score);
     try std.testing.expectEqual(@as(u32, 7), loaded.postal[0].replay_level_index);
+    try std.testing.expectEqual(@as(u32, 101), loaded.postal[0].runtime_build_seed);
     try std.testing.expectEqualStrings("Turbo", loaded.postal[0].name());
     try std.testing.expectEqual(@as(u32, 777), loaded.challenge[1].score);
     try std.testing.expectEqual(@as(u32, 9), loaded.challenge[1].replay_level_index);
+    try std.testing.expectEqual(@as(u32, 202), loaded.challenge[1].runtime_build_seed);
     try std.testing.expectEqualStrings("Slug", loaded.challenge[1].name());
     try std.testing.expectEqual(@as(u32, 54321), loaded.completion[2].score);
     try std.testing.expectEqual(@as(u32, 3), loaded.completion[2].replay_level_index);
+    try std.testing.expectEqual(@as(u32, 303), loaded.completion[2].runtime_build_seed);
     try std.testing.expectEqualStrings("Route", loaded.completion[2].name());
 }
 
@@ -564,6 +583,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     std.mem.writeInt(u32, payload[0x04..0x08], 4242, .little);
     std.mem.writeInt(u32, payload[0x2c..0x30], 11, .little);
     std.mem.writeInt(u32, payload[0x30..0x34], 77, .little);
+    std.mem.writeInt(u32, payload[0x70..0x74], 88, .little);
     std.mem.writeInt(u32, payload[0x28..0x2c], (4242 *% 4242) ^ 0xdeadbabe, .little);
     std.mem.writeInt(u32, payload[0x3c..0x40], 0, .little);
     std.mem.writeInt(u32, payload[0x40..0x44], 0, .little);
@@ -592,6 +612,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     try std.testing.expectEqual(@as(u32, 5000), readU32(saved_bytes, compact_record_score_offset));
     try std.testing.expectEqual(@as(u32, 11), readU32(saved_bytes, compact_record_replay_level_index_offset));
     try std.testing.expectEqual(@as(u32, 77), readU32(saved_bytes, compact_record_replay_handoff_value_offset));
+    try std.testing.expectEqual(@as(u32, 88), readU32(saved_bytes, compact_record_runtime_build_seed_offset));
     try std.testing.expectEqual(@as(u32, (5000 *% 5000) ^ 0xdeadbabe), readU32(saved_bytes, compact_record_checksum_offset));
     try std.testing.expectEqual(@as(u32, 7), readU32(saved_bytes, compact_record_replay_sample_count_offset));
     try std.testing.expectEqualStrings("Turb0", std.mem.trimRight(u8, saved_bytes[compact_record_name_offset .. compact_record_name_offset + 5], " "));
