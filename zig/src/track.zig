@@ -161,6 +161,7 @@ pub const LoadOptions = struct {
     runtime_build_seed: u32 = 0,
     runtime_active_row_start: usize = 0,
     runtime_active_row_end: ?usize = null,
+    course_end_threshold_override: ?f32 = null,
     garbage_scalar_override: ?f32 = null,
     salt_scalar_override: ?f32 = null,
 };
@@ -175,6 +176,7 @@ pub const LoadedLevelPreview = struct {
     runtime_build_flags: u32,
     runtime_build_seed: u32,
     runtime_build_final_random_state: u32,
+    course_end_threshold: f32,
     garbage_scalar: f32,
     salt_scalar: f32,
     parcel_target_count: usize,
@@ -292,6 +294,7 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_build_flags = options.runtime_build_flags;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const course_end_threshold = options.course_end_threshold_override orelse fallbackCourseEndThreshold(total_rows);
         const runtime_build_config: RuntimeBuildConfig = .{
             .build_flags = runtime_build_flags,
             .build_seed = options.runtime_build_seed,
@@ -369,6 +372,7 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
@@ -456,6 +460,7 @@ pub const LoadedLevelPreview = struct {
 
         const runtime_build_flags = options.runtime_build_flags;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const course_end_threshold = options.course_end_threshold_override orelse fallbackCourseEndThreshold(total_rows);
         const runtime_build_config: RuntimeBuildConfig = .{
             .build_flags = runtime_build_flags,
             .build_seed = options.runtime_build_seed,
@@ -533,6 +538,7 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
@@ -949,6 +955,11 @@ pub const LoadedLevelPreview = struct {
         self.drawPlacedModels(@as(f32, @floatFromInt(self.max_width)) * 0.5, 1.0);
     }
 };
+
+fn fallbackCourseEndThreshold(total_rows: usize) f32 {
+    if (total_rows == 0) return 0.0;
+    return @floatFromInt(total_rows - 1);
+}
 
 fn resolveSegmentModelArchivePath(allocator: std.mem.Allocator, model_name: []const u8) ![]const u8 {
     const stem = if (std.mem.lastIndexOfScalar(u8, model_name, '.')) |dot_index| model_name[0..dot_index] else model_name;
@@ -2479,6 +2490,47 @@ test "level preview applies runtime hazard scalar overrides" {
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.32), preview.garbage_scalar, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.45), preview.salt_scalar, 0.0001);
+}
+
+test "level preview seeds course-end threshold from the fallback when unset" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(preview.total_rows - 1)), preview.course_end_threshold, 0.0001);
+}
+
+test "level preview applies explicit course-end threshold overrides" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .course_end_threshold_override = 123.5,
+        },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 123.5), preview.course_end_threshold, 0.0001);
 }
 
 test "runtime tile family helpers match recovered cache predicates" {

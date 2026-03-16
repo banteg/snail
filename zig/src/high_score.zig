@@ -74,11 +74,11 @@ pub const Entry = struct {
         if (record.len < required_len) return null;
 
         const lateral_offset = compact_record_header_size + (index * 2);
-        const ghost_delta_z_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
+        const secondary_lane_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
         const flags_offset = compact_record_header_size + (sample_count * 4) + index;
         return .{
             .lateral = readI16(record, lateral_offset),
-            .ghost_delta_z = readI16(record, ghost_delta_z_offset),
+            .secondary_lane_raw = readI16(record, secondary_lane_offset),
             .flags = record[flags_offset],
         };
     }
@@ -105,12 +105,60 @@ pub const Entry = struct {
         self.deinit(allocator);
         self.raw_record = try allocator.dupe(u8, record);
     }
+
+    pub fn decodeReplay(self: *const Entry, allocator: std.mem.Allocator) !DecodedReplay {
+        const sample_count = self.replaySampleCount();
+        const decoded_samples = try allocator.alloc(DecodedReplaySample, sample_count);
+        errdefer allocator.free(decoded_samples);
+
+        var secondary_lane: i32 = 0;
+        for (decoded_samples, 0..) |*decoded, index| {
+            const sample = self.replaySampleAt(index) orelse return error.InvalidReplayRecord;
+            if (index == 0) {
+                secondary_lane = @as(i32, sample.secondary_lane_raw);
+            } else {
+                secondary_lane += @as(i32, sample.secondary_lane_raw);
+            }
+
+            decoded.* = .{
+                .lateral = sample.lateral,
+                .secondary_lane = secondary_lane,
+                .flags = sample.flags,
+            };
+        }
+
+        return .{
+            .allocator = allocator,
+            .samples = decoded_samples,
+        };
+    }
 };
 
 pub const ReplaySample = struct {
     lateral: i16,
-    ghost_delta_z: i16,
+    secondary_lane_raw: i16,
     flags: u8,
+};
+
+pub const DecodedReplaySample = struct {
+    lateral: i16,
+    secondary_lane: i32,
+    flags: u8,
+};
+
+pub const DecodedReplay = struct {
+    allocator: std.mem.Allocator,
+    samples: []DecodedReplaySample,
+
+    pub fn deinit(self: *DecodedReplay) void {
+        self.allocator.free(self.samples);
+        self.* = undefined;
+    }
+
+    pub fn sampleAt(self: *const DecodedReplay, index: usize) ?DecodedReplaySample {
+        if (index >= self.samples.len) return null;
+        return self.samples[index];
+    }
 };
 
 pub const InsertResult = struct {
@@ -507,20 +555,45 @@ test "compact high-score record exposes replay payload lanes" {
     try std.testing.expectEqual(@as(usize, 3), entry.replaySampleCount());
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = -12,
-        .ghost_delta_z = 100,
+        .secondary_lane_raw = 100,
         .flags = 0x01,
     }, entry.replaySampleAt(0).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 7,
-        .ghost_delta_z = 200,
+        .secondary_lane_raw = 200,
         .flags = 0x04,
     }, entry.replaySampleAt(1).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 25,
-        .ghost_delta_z = 300,
+        .secondary_lane_raw = 300,
         .flags = 0x0a,
     }, entry.replaySampleAt(2).?);
     try std.testing.expect(entry.replaySampleAt(3) == null);
+}
+
+test "decoded replay accumulates the secondary lane after the first sample" {
+    var entry = Entry{};
+    const raw_record = try std.testing.allocator.alloc(u8, compact_record_header_size + (3 * 5));
+    defer std.testing.allocator.free(raw_record);
+    @memset(raw_record, 0);
+    std.mem.writeInt(u32, raw_record[compact_record_replay_sample_count_offset .. compact_record_replay_sample_count_offset + 4], 3, .little);
+    std.mem.writeInt(i16, raw_record[0x88..0x8a], 1, .little);
+    std.mem.writeInt(i16, raw_record[0x8a..0x8c], 2, .little);
+    std.mem.writeInt(i16, raw_record[0x8c..0x8e], 3, .little);
+    std.mem.writeInt(i16, raw_record[0x8e..0x90], 100, .little);
+    std.mem.writeInt(i16, raw_record[0x90..0x92], 25, .little);
+    std.mem.writeInt(i16, raw_record[0x92..0x94], -5, .little);
+    raw_record[0x94] = 0x01;
+    raw_record[0x95] = 0x02;
+    raw_record[0x96] = 0x04;
+    entry.raw_record = raw_record;
+
+    var decoded = try entry.decodeReplay(std.testing.allocator);
+    defer decoded.deinit();
+
+    try std.testing.expectEqual(@as(i32, 100), decoded.sampleAt(0).?.secondary_lane);
+    try std.testing.expectEqual(@as(i32, 125), decoded.sampleAt(1).?.secondary_lane);
+    try std.testing.expectEqual(@as(i32, 120), decoded.sampleAt(2).?.secondary_lane);
 }
 
 test "replay payload access rejects truncated compact records" {

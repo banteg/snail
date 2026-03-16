@@ -47,7 +47,7 @@ Implemented now:
 - preserve the recovered compact-record replay-mode (`0x30`), runtime-build-flags (`0x38`), challenge-speed raw/scalar (`0x4c/0x48`), challenge-difficulty raw/scalar (`0x50/0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults
 - preserve opaque compact-record tails for loaded entries instead of flattening everything to header-only rewrites
-- expose the recovered 5-byte replay payload lanes (`lateral`, `forward`, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
+- expose the recovered 5-byte replay payload lanes (`lateral`, neutral secondary lane, `flags`) from loaded compact records instead of treating the saved replay tail as a totally opaque blob
 - inline name-entry flow inside the shared high-score screen
 
 Still missing or approximate:
@@ -248,14 +248,16 @@ Implemented now:
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
 - parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot and advance through the recovered `state 4/5/6/7` handoff before `parcel_register` lands
 - parcel delivery state `7` now homes to the controller-owned `row_event_display.widget_world` anchor using the recovered local offset `(right=7.3, up=2.0, forward=6.0)`, and seeds the shipped per-flight arc coefficients from the carried gameplay LCG instead of the old fixed `{0, 1, 0}` offset
+- parcel runtime states `4/5/6/7` now reuse a cached game-owned home anchor instead of resampling the live player position during flight, which matches the current recovered native consumer shape more closely than the old player-anchor shortcut
 - parcel runtime states `4` and `6` now fall through into their flight updates on the same tick like `update_track_parcel`, parcel rendering now keeps the recovered sprite-only presentation position/scale separate from the base parcel world position during states `5` and `7`, and the home-flight arc now lifts along the live `basis_up` vector instead of hard-coding world `y`
 - collected parcel rows now stay consumed across respawn and stop rendering as live world pickups instead of reappearing until the row scrolls away
 - visible world parcels now come from a runner-local 50-slot live runtime scaffold with the shipped state-`1` bobbing and expiry rules instead of static annotation billboards
 - the visible parcel-progress counter now advances on pickup like `handle_subgoldy_collisions`, while the live parcel-flight controller owns register score payout and the final postal bonus
-- parcel register score and the final-delivery handoff no longer hang off loose runner fields; the port now keeps a runner-local `row_event_display` controller with the recovered target, delivered-count, bonus, and state lanes, including the proven `state 3 -> 4 -> 5` finish path
+- parcel register score and the final-delivery handoff no longer hang off loose runner fields; the port now keeps a runner-local `row_event_display` controller with the recovered target, delivered-count, bonus, and state lanes, including live `staging`, `hold`, `final_delivery_delay`, and the proven `state 3 -> 4 -> 5` finish path
 - row-event bonus-prompt completion no longer keys off the authored `'_'` proxy; gameplay now consumes the recovered `TrackRowCell.flags_b & 0x40` lane rebuilt on the preview from the shipped cell-population and `CondenseTrack` follower-clear pass instead of the older "any populated tile" shortcut
+- route-end completion can now arm from a dedicated `course_end_threshold` field instead of only the older final-row heuristic; the current producer is still provisional, so the preview seeds that field from a last-row fallback until the native source is recovered
 - route-end completion can now arm while a collected parcel is still in flight, but the runner-local completion handoff no longer returns early; it waits for the row-event controller to settle before the app-level completion bridge fires
-- completion handoff no longer collapses straight into an app return; the runner now holds a recovered `2s` voice / `5s` release controller, snaps that timer forward from the separate `row_event_display + 0x18` gate when the live completion cell is armed, and only releases postal or time-trial completion once the row-event controller reaches its terminal state
+- completion handoff no longer collapses straight into an app return; the runner now holds a recovered `2s` voice / `5s` release controller, snaps that timer forward from the separate `gate_18` byte when the live completion cell is armed, and only releases postal or time-trial completion once the row-event controller reaches its terminal state
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:
@@ -264,7 +266,7 @@ Still missing or approximate:
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
-- the unresolved `row_event_display + 0x18` finish gate that Windows uses to snap the late completion handoff forward before the row-event controller reaches its terminal state
+- the unresolved `gate_18` writer path that Windows uses to snap the late completion handoff forward before the row-event controller reaches its terminal state
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
@@ -334,15 +336,15 @@ Implemented now:
 - route-map and high-score UI have the right broad replay concepts in place
 - selected replay actions now launch the recovered selected-level-record path instead of dead-end stubs
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
-- selected replay runs now preserve the exact saved score entry as a live replay source and feed its compact replay samples into gameplay instead of dropping the payload on launch
+- selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - selected replay sessions no longer feed completion or failure back into live high-score persistence, and they now return to the launch surface instead of staying on the generic run-result path
-- replay flag bit `0x8` now terminates selected playback at the recorded tail instead of letting the sim run on past the saved sample stream
+- replay flag bit `0x8` now routes selected playback through the shared fade overlay at the recorded tail instead of swapping phases immediately or letting the sim run past the saved sample stream
 
 Still missing or approximate:
 
-- the saved ghost-delta-`z` `i16` lane and replay flag bits `0x1/0x2` are still not wired into movement/audio parity
-- the replay-end handoff now exits to the right surface, but it still uses the port's direct phase swap instead of the native frontend fade owner
+- the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
+- replay flag bits `0x1/0x2` are now preserved through replay playback, but they still do not drive a grounded audio/effect parity path
 - full replay payload read/write parity
 
 Best next work:

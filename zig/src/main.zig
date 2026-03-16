@@ -1564,6 +1564,8 @@ const AppState = struct {
     current_runtime_build_seed_mode: ?FrontendLevelMode = null,
     selected_level_record_override: ?SelectedLevelRecordOverride = null,
     selected_level_record_source: ?SelectedLevelRecordSource = null,
+    selected_replay_cache: ?high_score.DecodedReplay = null,
+    selected_replay_fade_exit_pending: bool = false,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
@@ -1742,6 +1744,7 @@ const AppState = struct {
         self.unloadLoadingScreen();
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
+        self.clearSelectedReplayCache();
         if (self.pending_screenshot) |*request| {
             request.deinit(self.allocator);
             self.pending_screenshot = null;
@@ -3101,6 +3104,7 @@ const AppState = struct {
         }
 
         if (self.game_phase == .level) {
+            if (try self.handleSelectedReplayFadeExit()) return;
             try self.syncGameplayTurboAnimation();
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
@@ -3113,7 +3117,10 @@ const AppState = struct {
                             @floatCast(self.simulation_clock.step_seconds),
                         );
                         if (runner.consumeReplayFadeRequest()) {
-                            try self.exitSelectedReplayOnMarker();
+                            self.selected_replay_fade_exit_pending = true;
+                            if (self.frontend_transition.state == .idle) {
+                                self.frontend_transition.beginOverlayFadeOut();
+                            }
                             return;
                         }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
@@ -3935,8 +3942,7 @@ const AppState = struct {
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
-        self.selected_level_record_override = null;
-        self.selected_level_record_source = null;
+        try self.setSelectedLevelRecordContext(null, null);
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
     }
@@ -3964,8 +3970,7 @@ const AppState = struct {
     ) !void {
         var path_buffer: [64]u8 = undefined;
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
-        self.selected_level_record_override = selected_level_record_override;
-        self.selected_level_record_source = selected_level_record_source;
+        try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_source);
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
         self.seed_level_intro_cutscene = true;
@@ -4009,8 +4014,7 @@ const AppState = struct {
     }
 
     fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: RouteMapScreenMode) !void {
-        self.selected_level_record_override = null;
-        self.selected_level_record_source = null;
+        try self.setSelectedLevelRecordContext(null, null);
         self.frontend_route_mode = mode;
         self.route_map_screen_mode = screen_mode;
         self.frontend_route_index = self.initialFrontendRouteIndex(mode);
@@ -4667,8 +4671,7 @@ const AppState = struct {
                 try self.enterRouteMapMenu(.time_trial);
             },
             .high_scores_menu => {
-                self.selected_level_record_override = null;
-                self.selected_level_record_source = null;
+                try self.setSelectedLevelRecordContext(null, null);
                 try self.enterGamePhase(.high_scores_menu);
             },
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
@@ -4784,6 +4787,7 @@ const AppState = struct {
     }
 
     fn selectedReplayPlaybackActive(self: *const AppState) bool {
+        if (self.selected_replay_cache) |replay| return replay.samples.len != 0;
         const entry = self.selectedReplayEntry() orelse return false;
         return entry.replaySampleCount() != 0;
     }
@@ -4792,19 +4796,20 @@ const AppState = struct {
         return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
     }
 
-    fn selectedReplayDirectiveForEntry(entry: *const high_score.Entry, runtime_track_index: usize) gameplay.ReplayDirective {
-        if (entry.replaySampleCount() == 0) return .{};
-        const sample = entry.replaySampleAt(runtime_track_index) orelse return .{ .active = true };
+    fn selectedReplayDirectiveForDecodedReplay(replay: *const high_score.DecodedReplay, runtime_track_index: usize) gameplay.ReplayDirective {
+        if (replay.samples.len == 0) return .{};
+        const sample = replay.sampleAt(runtime_track_index) orelse return .{ .active = true };
         return .{
             .active = true,
             .lateral_world_x = replayMathType16To32(sample.lateral, 16.0),
-            .flag_bits = sample.flags,
+            .secondary_lane = sample.secondary_lane,
+            .raw_flag_bits = sample.flags,
         };
     }
 
     fn selectedReplayDirectiveForRunner(self: *const AppState, runner: *const gameplay.Runner) gameplay.ReplayDirective {
-        const entry = self.selectedReplayEntry() orelse return .{};
-        return selectedReplayDirectiveForEntry(entry, runner.runtime_track_index);
+        const replay = self.selected_replay_cache orelse return .{};
+        return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
     }
 
     fn resultReturnTargetForSelectedReplaySource(source: SelectedLevelRecordSource) ResultReturnTarget {
@@ -4834,18 +4839,55 @@ const AppState = struct {
                 try self.enterRouteMapMenu(.time_trial);
             },
             .postal => {
-                self.selected_level_record_override = null;
-                self.selected_level_record_source = null;
+                try self.setSelectedLevelRecordContext(null, null);
                 self.high_scores_menu_index = highScoreModeIndex(.postal);
                 try self.enterGamePhase(.high_scores_menu);
             },
             .challenge => {
-                self.selected_level_record_override = null;
-                self.selected_level_record_source = null;
+                try self.setSelectedLevelRecordContext(null, null);
                 self.high_scores_menu_index = highScoreModeIndex(.challenge);
                 try self.enterGamePhase(.high_scores_menu);
             },
         }
+    }
+
+    fn clearSelectedReplayCache(self: *AppState) void {
+        if (self.selected_replay_cache) |*replay| {
+            replay.deinit();
+            self.selected_replay_cache = null;
+        }
+    }
+
+    fn setSelectedLevelRecordContext(
+        self: *AppState,
+        selected_level_record_override: ?SelectedLevelRecordOverride,
+        selected_level_record_source: ?SelectedLevelRecordSource,
+    ) !void {
+        self.clearSelectedReplayCache();
+        self.selected_level_record_override = selected_level_record_override;
+        self.selected_level_record_source = selected_level_record_source;
+        self.selected_replay_fade_exit_pending = false;
+
+        const source = selected_level_record_source orelse return;
+        const entry = self.selectedReplayEntryForSource(source) orelse return;
+        if (entry.replaySampleCount() == 0) return;
+        self.selected_replay_cache = try entry.decodeReplay(self.allocator);
+    }
+
+    fn handleSelectedReplayFadeExit(self: *AppState) !bool {
+        if (!self.selected_replay_fade_exit_pending) return false;
+
+        switch (self.frontend_transition.state) {
+            .idle => self.frontend_transition.beginOverlayFadeOut(),
+            .black_idle => {
+                self.selected_replay_fade_exit_pending = false;
+                try self.exitSelectedReplayOnMarker();
+                self.frontend_transition.completeHandoff();
+            },
+            else => {},
+        }
+
+        return true;
     }
 
     fn highScoreReplayEntry(self: *const AppState, entry_index: usize) ?*const high_score.Entry {
@@ -10214,6 +10256,7 @@ test "current run high-score entry carries replay mode and build settings" {
     state.current_track_preview = null;
     state.current_runtime_build_seed = 321;
     state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
 
     const entry = state.currentRunHighScoreEntry(12_345);
     try std.testing.expectEqual(@as(u32, 12_345), entry.score);
@@ -10254,6 +10297,7 @@ test "mode-specific runtime build flags follow recovered subgame presets" {
     var state: AppState = undefined;
     state.current_track_preview = null;
     state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
 
     state.active_frontend_mode = .postal;
     try std.testing.expectEqual(@as(u32, track.postalChallengeRuntimeBuildFlags), state.currentRunRuntimeBuildFlags());
@@ -10303,7 +10347,7 @@ test "selected level record override rejects unresolved mode ids" {
     try std.testing.expect(SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
 }
 
-test "selected replay directive decodes compact lateral x and stays active past the tail" {
+test "selected replay directive decodes compact lateral x and the secondary lane" {
     var tables = high_score.Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
 
@@ -10317,15 +10361,19 @@ test "selected replay directive decodes compact lateral x and stays active past 
     tables.completion[0].raw_record = raw_record;
     tables.completion[0].has_replay = true;
 
-    const first = AppState.selectedReplayDirectiveForEntry(&tables.completion[0], 0);
+    var replay = try tables.completion[0].decodeReplay(std.testing.allocator);
+    defer replay.deinit();
+
+    const first = AppState.selectedReplayDirectiveForDecodedReplay(&replay, 0);
     try std.testing.expect(first.active);
     try std.testing.expectApproxEqAbs(@as(f32, 1.5), first.lateral_world_x.?, 0.0001);
-    try std.testing.expectEqual(@as(u8, 0x0c), first.flag_bits);
+    try std.testing.expectEqual(@as(?i32, 0), first.secondary_lane);
+    try std.testing.expectEqual(@as(u8, 0x0c), first.raw_flag_bits);
 
-    const tail = AppState.selectedReplayDirectiveForEntry(&tables.completion[0], 1);
+    const tail = AppState.selectedReplayDirectiveForDecodedReplay(&replay, 1);
     try std.testing.expect(tail.active);
     try std.testing.expect(tail.lateral_world_x == null);
-    try std.testing.expectEqual(@as(u8, 0), tail.flag_bits);
+    try std.testing.expectEqual(@as(u8, 0), tail.raw_flag_bits);
 }
 
 test "selected replay results skip persistence and score-table awards" {
@@ -10333,12 +10381,15 @@ test "selected replay results skip persistence and score-table awards" {
     state.high_score_tables = high_score.Tables.initDefault();
     defer state.high_score_tables.deinit(std.testing.allocator);
     state.selected_level_record_source = .{ .challenge = 2 };
+    state.selected_replay_cache = null;
 
     const raw_record = try std.testing.allocator.alloc(u8, 0x88 + 5);
     @memset(raw_record, 0);
     std.mem.writeInt(u32, raw_record[0x74..0x78], 1, .little);
     state.high_score_tables.challenge[2].raw_record = raw_record;
     state.high_score_tables.challenge[2].has_replay = true;
+    state.selected_replay_cache = try state.high_score_tables.challenge[2].decodeReplay(std.testing.allocator);
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
     var result = PendingRunResult{
         .level_name = "Replay",
@@ -10371,6 +10422,7 @@ test "selected level record override drives live run tuning lanes" {
     state.current_track_preview = null;
     state.current_level = null;
     state.active_frontend_mode = .challenge;
+    state.selected_replay_cache = null;
     state.selected_level_record_override = .{
         .mode = .challenge,
         .level_index = 0,

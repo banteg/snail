@@ -18,7 +18,8 @@ pub const RunnerInput = struct {
 pub const ReplayDirective = struct {
     active: bool = false,
     lateral_world_x: ?f32 = null,
-    flag_bits: u8 = 0,
+    secondary_lane: ?i32 = null,
+    raw_flag_bits: u8 = 0,
 };
 
 pub const AttachmentHint = enum {
@@ -153,6 +154,11 @@ pub const TrackParcelRuntime = struct {
     }
 };
 
+const TrackParcelHomeAnchor = struct {
+    active: bool = false,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+};
+
 const TurretState = struct {
     row: usize,
     lane: usize,
@@ -191,6 +197,9 @@ const completion_handoff_release_seconds: f32 = 5.0;
 const completion_handoff_release_force_seconds: f32 = 5.1;
 const replay_world_x_min: f32 = -4.0;
 const replay_world_x_max: f32 = 4.0;
+const row_event_display_stage_progress_step: f32 = 1.0 / 24.0;
+const row_event_display_hold_progress_step: f32 = 1.0 / 60.0;
+const row_event_display_final_delay_progress_step: f32 = 1.0 / 60.0;
 const row_event_widget_local_x: f32 = 7.30000019;
 const row_event_widget_local_y: f32 = 2.0;
 const row_event_widget_local_z: f32 = 6.0;
@@ -280,7 +289,7 @@ const RowEventDisplayState = enum(u32) {
 
 const RowEventDisplayController = struct {
     state: RowEventDisplayState = .inactive,
-    completion_gate: u8 = 0,
+    gate_18: u8 = 0,
     parcel_target_count: u32 = 0,
     bonus_enabled: bool = false,
     staged_parcel_count: u32 = 0,
@@ -904,7 +913,8 @@ pub const Runner = struct {
     current_runtime_tile_hint: ?u8 = null,
     current_path_name: ?[]const u8 = null,
     replay_world_x_override: ?f32 = null,
-    replay_flag_bits: u8 = 0,
+    replay_secondary_lane: ?i32 = null,
+    replay_raw_flag_bits: u8 = 0,
     replay_track_state_latch: bool = false,
     replay_fade_requested: bool = false,
     attachment_hint: AttachmentHint = .none,
@@ -931,6 +941,7 @@ pub const Runner = struct {
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
+    track_parcel_home_anchor: TrackParcelHomeAnchor = .{},
     path_center_lane: ?f32 = null,
     previous_lane_center: f32 = 0.5,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
@@ -1260,6 +1271,14 @@ pub const Runner = struct {
         return self.replay_track_state_latch;
     }
 
+    pub fn replayRawFlagBits(self: *const Runner) u8 {
+        return self.replay_raw_flag_bits;
+    }
+
+    pub fn replaySecondaryLane(self: *const Runner) ?i32 {
+        return self.replay_secondary_lane;
+    }
+
     pub fn replayFadeRequested(self: *const Runner) bool {
         return self.replay_fade_requested;
     }
@@ -1552,9 +1571,10 @@ pub const Runner = struct {
             self.resolved_lane_index = lane_index;
         }
 
-        self.replay_flag_bits = replay.flag_bits;
-        self.replay_track_state_latch = (replay.flag_bits & 0x04) != 0;
-        if ((replay.flag_bits & 0x08) != 0) {
+        self.replay_secondary_lane = replay.secondary_lane;
+        self.replay_raw_flag_bits = replay.raw_flag_bits;
+        self.replay_track_state_latch = (replay.raw_flag_bits & 0x04) != 0;
+        if ((replay.raw_flag_bits & 0x08) != 0) {
             self.replay_fade_requested = true;
         }
     }
@@ -1867,7 +1887,10 @@ pub const Runner = struct {
         self.row_event_display.state = .inactive;
         self.row_event_display.progress = 0.0;
         self.row_event_display.progress_step = 0.0;
-        self.row_event_display.completion_gate = 0;
+        self.row_event_display.gate_18 = 0;
+        self.row_event_display.display_token = 0;
+        self.row_event_display.bonus_blink_progress = 0.0;
+        self.track_parcel_home_anchor = .{};
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
@@ -1882,10 +1905,21 @@ pub const Runner = struct {
     fn registerParcelDelivery(self: *Runner) void {
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) return;
         self.row_event_display.delivered_parcel_count += 1;
+        self.row_event_display.display_token +%= 1;
         self.recordScore(&self.score.parcel_register, 100);
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) {
             self.maybeAwardRowEventCompletionBonus();
-            self.row_event_display.state = .final_delivery;
+            self.row_event_display.staged_parcel_count = self.row_event_display.delivered_parcel_count;
+            self.row_event_display.state = .final_delivery_delay;
+            self.row_event_display.progress = 0.0;
+            self.row_event_display.progress_step = row_event_display_final_delay_progress_step;
+            return;
+        }
+
+        if (self.row_event_display.delivered_parcel_count > self.row_event_display.staged_parcel_count) {
+            self.row_event_display.state = .staging;
+            self.row_event_display.progress = 0.0;
+            self.row_event_display.progress_step = row_event_display_stage_progress_step;
         }
     }
 
@@ -1910,6 +1944,10 @@ pub const Runner = struct {
             self.counters.parcels += 1;
             self.recordScore(&self.score.parcel_pickup, 100);
             self.recent_event = .{ .parcel = parcel.parcel_id };
+            self.track_parcel_home_anchor = .{
+                .active = true,
+                .world_position = player_position,
+            };
             parcel.state = 4;
             return;
         }
@@ -2721,6 +2759,13 @@ pub const Runner = struct {
         return preview.worldPositionForLane(self.lane_center, self.row_position, floor_height + 0.4);
     }
 
+    fn currentTrackParcelHomeAnchor(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        if (self.track_parcel_home_anchor.active) {
+            return self.track_parcel_home_anchor.world_position;
+        }
+        return self.trackParcelPlayerAnchor(preview);
+    }
+
     fn trackParcelDeliveryTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
         const widget_world = rl.Vector3{
             .x = self.row_event_display.widget_world_x,
@@ -2746,19 +2791,19 @@ pub const Runner = struct {
     fn beginTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
         const bob_offset = std.math.sin(parcel.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
         parcel.world_position.y += bob_offset;
-        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
         const delta = rl.Vector3{
-            .x = player_anchor.x - parcel.world_position.x,
-            .y = player_anchor.y - parcel.world_position.y,
-            .z = player_anchor.z - parcel.world_position.z,
+            .x = home_anchor.x - parcel.world_position.x,
+            .y = home_anchor.y - parcel.world_position.y,
+            .z = home_anchor.z - parcel.world_position.z,
         };
         parcel.progress = 0.0;
         parcel.progress_step = track_parcel_home_progress_step;
         parcel.target_distance = @sqrt((delta.x * delta.x) + (delta.y * delta.y) + (delta.z * delta.z));
         parcel.travel_dir = normalizeVector3(.{
-            .x = parcel.world_position.x - player_anchor.x,
-            .y = parcel.world_position.y - player_anchor.y,
-            .z = parcel.world_position.z - player_anchor.z,
+            .x = parcel.world_position.x - home_anchor.x,
+            .y = parcel.world_position.y - home_anchor.y,
+            .z = parcel.world_position.z - home_anchor.z,
         });
         parcel.state = 5;
     }
@@ -2769,13 +2814,13 @@ pub const Runner = struct {
     }
 
     fn stepTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
-        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
         const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
         const remaining_distance = (1.0 - progress) * parcel.target_distance;
         parcel.world_position = .{
-            .x = player_anchor.x + (remaining_distance * parcel.travel_dir.x),
-            .y = player_anchor.y + (remaining_distance * parcel.travel_dir.y),
-            .z = player_anchor.z + (remaining_distance * parcel.travel_dir.z),
+            .x = home_anchor.x + (remaining_distance * parcel.travel_dir.x),
+            .y = home_anchor.y + (remaining_distance * parcel.travel_dir.y),
+            .z = home_anchor.z + (remaining_distance * parcel.travel_dir.z),
         };
         parcel.presentation_position = parcel.world_position;
         const arc = std.math.sin(progress * std.math.pi) * track_parcel_home_arc_height;
@@ -2807,10 +2852,10 @@ pub const Runner = struct {
     }
 
     fn stepTrackParcelDelivery(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
-        const player_anchor = self.trackParcelPlayerAnchor(preview);
+        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
         const delivery_target = self.trackParcelDeliveryTarget(preview);
         const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
-        parcel.world_position = lerpVector3(player_anchor, delivery_target, progress);
+        parcel.world_position = lerpVector3(home_anchor, delivery_target, progress);
         parcel.presentation_position = parcel.world_position;
         parcel.presentation_scale = trackParcelDeliveryPresentationScale(progress);
         const arc = std.math.sin(progress * std.math.pi);
@@ -2843,25 +2888,45 @@ pub const Runner = struct {
         }
     }
 
+    fn stepRowEventProgress(self: *Runner) bool {
+        self.row_event_display.progress = std.math.clamp(
+            self.row_event_display.progress + self.row_event_display.progress_step,
+            0.0,
+            1.0,
+        );
+        return self.row_event_display.progress >= 1.0;
+    }
+
     fn updateRowEventDisplay(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
-            .inactive, .staging, .hold, .complete => {},
+            .inactive, .complete => {},
+            .staging => {
+                if (!self.stepRowEventProgress()) return;
+                self.row_event_display.progress = 0.0;
+                if (self.row_event_display.staged_parcel_count < self.row_event_display.delivered_parcel_count) {
+                    self.row_event_display.staged_parcel_count += 1;
+                }
+                if (self.row_event_display.staged_parcel_count < self.row_event_display.delivered_parcel_count) {
+                    return;
+                }
+                self.row_event_display.state = .hold;
+                self.row_event_display.progress_step = row_event_display_hold_progress_step;
+            },
+            .hold => {
+                if (!self.stepRowEventProgress()) return;
+                self.row_event_display.progress = 0.0;
+            },
             .final_delivery => {
-                self.row_event_display.completion_gate = 0;
+                self.row_event_display.gate_18 = 0;
                 self.row_event_display.state = .bonus_prompt;
                 self.stepRowEventBonusPrompt(preview);
             },
             .bonus_prompt => self.stepRowEventBonusPrompt(preview),
             .final_delivery_delay => {
-                self.row_event_display.progress = std.math.clamp(
-                    self.row_event_display.progress + self.row_event_display.progress_step,
-                    0.0,
-                    1.0,
-                );
-                if (self.row_event_display.progress >= 1.0) {
-                    self.row_event_display.state = .final_delivery;
-                }
+                if (!self.stepRowEventProgress()) return;
+                self.row_event_display.progress = 0.0;
+                self.row_event_display.state = .final_delivery;
             },
         }
     }
@@ -3112,10 +3177,7 @@ pub const Runner = struct {
 
     fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
         if (preview.total_rows == 0) return false;
-        // Windows arms completion from a continuous `player.z >= course_end_threshold`
-        // check in `update_subgoldy`, not from "end of the final row" progress.
-        const last_row = @as(f32, @floatFromInt(preview.total_rows - 1));
-        return self.row_position >= last_row;
+        return self.row_position >= preview.course_end_threshold;
     }
 
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3198,7 +3260,7 @@ pub const Runner = struct {
                 {
                     self.completion_handoff_voice_gate = true;
                 }
-                if (self.row_event_display.completion_gate != 0 and
+                if (self.row_event_display.gate_18 != 0 and
                     self.currentRowEventCompletionCellActive(preview))
                 {
                     self.completion_handoff_timer = @max(
@@ -3814,8 +3876,7 @@ pub const Runner = struct {
 
     fn rowPositionNearRouteEnd(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
         if (preview.total_rows == 0) return false;
-        const route_end_row = @as(f32, @floatFromInt(preview.total_rows - 1));
-        return self.row_position > route_end_row - jetpack_auto_shutoff_margin_rows;
+        return self.row_position > preview.course_end_threshold - jetpack_auto_shutoff_margin_rows;
     }
 };
 
@@ -4787,14 +4848,17 @@ test "parcel delivery advances on the staging frame" {
         .state = 6,
     };
 
-    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
+    };
     runner.updateTrackParcels(&fixture.preview);
 
     try std.testing.expectEqual(@as(u32, 7), runner.active_track_parcels[0].state);
     try std.testing.expectApproxEqAbs(track_parcel_delivery_progress_step, runner.active_track_parcels[0].progress, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.x, runner.active_track_parcels[0].world_position.x, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.y, runner.active_track_parcels[0].world_position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.z, runner.active_track_parcels[0].world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.active_track_parcels[0].world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.0), runner.active_track_parcels[0].world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), runner.active_track_parcels[0].world_position.z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.active_track_parcels[0].presentationScale(), 0.0001);
 }
 
@@ -4812,7 +4876,10 @@ test "parcel home flight lifts presentation along the live basis up" {
         .source_row = target.row,
         .progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
     };
-    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
+    };
     var parcel = TrackParcelRuntime{
         .state = 5,
         .progress = 0.25,
@@ -4825,12 +4892,12 @@ test "parcel home flight lifts presentation along the live basis up" {
 
     const arc = std.math.sin(@as(f32, 0.25) * std.math.pi) * track_parcel_home_arc_height;
     const basis_up = normalizeVector3(runner.worldUp(&fixture.preview));
-    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0, parcel.world_position.x, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.y, parcel.world_position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.z, parcel.world_position.z, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0 + (basis_up.x * arc), parcel.presentationPosition().x, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.y + (basis_up.y * arc), parcel.presentationPosition().y, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.z + (basis_up.z * arc), parcel.presentationPosition().z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 7.0), parcel.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), parcel.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.0), parcel.world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 7.0) + (basis_up.x * arc), parcel.presentationPosition().x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0) + (basis_up.y * arc), parcel.presentationPosition().y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.0) + (basis_up.z * arc), parcel.presentationPosition().z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.85), parcel.presentationScale(), 0.0001);
 }
 
@@ -4850,8 +4917,11 @@ test "parcel delivery keeps linear world position and curved presentation separa
         .delivery_offset = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
 
-    const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
-    const expected = lerpVector3(player_anchor, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
+    };
+    const expected = lerpVector3(runner.track_parcel_home_anchor.world_position, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
 
     runner.stepTrackParcelDelivery(&fixture.preview, &parcel);
 
@@ -4862,6 +4932,34 @@ test "parcel delivery keeps linear world position and curved presentation separa
     try std.testing.expectApproxEqAbs(expected.y + 2.0, parcel.presentationPosition().y, 0.0001);
     try std.testing.expectApproxEqAbs(expected.z + 3.0, parcel.presentationPosition().z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.7), parcel.presentationScale(), 0.0001);
+}
+
+test "parcel delivery reuses the cached home anchor after the runner moves" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = -2.0, .y = 1.5, .z = 8.0 },
+    };
+    runner.row_position = 20.0;
+    runner.lane_center = 6.5;
+    runner.row_event_display.widget_world_x = 9.0;
+    runner.row_event_display.widget_world_y = 3.0;
+    runner.row_event_display.widget_world_z = 14.0;
+
+    var parcel = TrackParcelRuntime{
+        .state = 7,
+        .progress = 0.0,
+        .progress_step = 0.0,
+    };
+
+    runner.stepTrackParcelDelivery(&fixture.preview, &parcel);
+
+    try std.testing.expectApproxEqAbs(@as(f32, -2.0), parcel.world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.5), parcel.world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 8.0), parcel.world_position.z, 0.0001);
 }
 
 test "parcel delivery seeds the recovered random arc coefficients" {
@@ -4895,11 +4993,11 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     try std.testing.expect(register_steps < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
-    try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
+    try std.testing.expectEqual(RowEventDisplayState.staging, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
 
-test "final parcel delivery enters the row event bonus prompt state" {
+test "final parcel delivery enters the delayed row event controller path" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
 
@@ -4911,7 +5009,23 @@ test "final parcel delivery enters the row event bonus prompt state" {
     try std.testing.expect(stepUntilParcelPickup(&runner, &fixture.preview, 32) < 32);
     try std.testing.expect(stepUntilParcelRegistered(&runner, &fixture.preview, 256) < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
-    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
+    try std.testing.expectEqual(RowEventDisplayState.final_delivery_delay, runner.row_event_display.state);
+}
+
+test "row event staging promotes delivered parcels into the hold state" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_event_display.state = .staging;
+    runner.row_event_display.staged_parcel_count = 1;
+    runner.row_event_display.delivered_parcel_count = 2;
+    runner.row_event_display.progress_step = 1.0;
+
+    runner.updateRowEventDisplay(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u32, 2), runner.row_event_display.staged_parcel_count);
+    try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
 }
 
 test "final parcel delivery can complete the row event on the same tick" {
@@ -4922,13 +5036,49 @@ test "final parcel delivery can complete the row event on the same tick" {
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
     setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .final_delivery;
-    runner.row_event_display.completion_gate = 1;
+    runner.row_event_display.gate_18 = 1;
     runner.row_event_display.bonus_blink_step = 1.0;
 
     runner.updateRowEventDisplay(&fixture.preview);
 
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
-    try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.completion_gate);
+    try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.gate_18);
+}
+
+test "final delivery delay promotes into the final delivery state" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_event_display.state = .final_delivery_delay;
+    runner.row_event_display.progress_step = 1.0;
+
+    runner.updateRowEventDisplay(&fixture.preview);
+
+    try std.testing.expectEqual(RowEventDisplayState.final_delivery, runner.row_event_display.state);
+}
+
+test "flush pending parcel deliveries resets row event transient state" {
+    var runner = Runner{};
+    runner.counters.parcels = 2;
+    runner.row_event_display.parcel_target_count = 2;
+    runner.row_event_display.delivered_parcel_count = 0;
+    runner.row_event_display.staged_parcel_count = 1;
+    runner.row_event_display.state = .hold;
+    runner.row_event_display.progress = 0.5;
+    runner.row_event_display.progress_step = 0.25;
+    runner.row_event_display.gate_18 = 1;
+    runner.row_event_display.display_token = 9;
+    runner.track_parcel_home_anchor.active = true;
+    runner.active_track_parcels[0].state = 5;
+
+    runner.flushPendingParcelDeliveries();
+
+    try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.gate_18);
+    try std.testing.expectEqual(@as(u32, 0), runner.row_event_display.display_token);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.row_event_display.progress, 0.0001);
+    try std.testing.expect(!runner.track_parcel_home_anchor.active);
 }
 
 test "runner applies the completion bonus once" {
@@ -5282,6 +5432,28 @@ test "completion handoff arms at the final row threshold" {
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
+test "completion handoff uses the preview course-end threshold" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    fixture.preview.course_end_threshold = 12.5;
+
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = 12.49;
+    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
+    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.refreshSample(&fixture.preview);
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+
+    runner.row_position = 12.5;
+    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
+    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.refreshSample(&fixture.preview);
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+}
+
 test "completion does not arm while attachment follow is still active at route end" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
@@ -5458,7 +5630,7 @@ test "completion gate fast-forwards the late handoff timer on the live completio
     runner.session_mode = .postal;
     runner.row_event_display.parcel_target_count = 1;
     runner.row_event_display.state = .bonus_prompt;
-    runner.row_event_display.completion_gate = 1;
+    runner.row_event_display.gate_18 = 1;
     runner.beginCompletionCutscene();
     runner.completion_handoff_timer = 1.0;
 
@@ -5897,9 +6069,10 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     try std.testing.expect(runner.jetpack.wobble_y > 0.0);
 
     runner.armJetpackGauge();
-    runner.runtime_track_index = fixture.preview.total_rows - 3;
-    runner.movement_progress = 0.0;
-    runner.syncRowPosition(&fixture.preview);
+    fixture.preview.course_end_threshold = 40.0;
+    runner.row_position = 35.1;
+    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
+    runner.movement_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
     try std.testing.expect(!runner.jetpack.active);
@@ -6020,7 +6193,8 @@ test "replay directive overrides world x and latches replay flags" {
         .{
             .active = true,
             .lateral_world_x = -3.25,
-            .flag_bits = 0x0c,
+            .secondary_lane = 321,
+            .raw_flag_bits = 0x0c,
         },
         1.0 / 60.0,
     );
@@ -6028,6 +6202,8 @@ test "replay directive overrides world x and latches replay flags" {
     const world = runner.worldPosition(&fixture.preview, 0.82);
     try std.testing.expectApproxEqAbs(@as(f32, -3.25), world.x, 0.0001);
     try std.testing.expectEqual(@as(usize, 0), runner.resolved_lane_index);
+    try std.testing.expectEqual(@as(?i32, 321), runner.replaySecondaryLane());
+    try std.testing.expectEqual(@as(u8, 0x0c), runner.replayRawFlagBits());
     try std.testing.expect(runner.replayTrackStateLatched());
     try std.testing.expect(runner.replayFadeRequested());
     try std.testing.expect(runner.consumeReplayFadeRequest());
