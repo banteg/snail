@@ -1,0 +1,17 @@
+Game.selected_level_record @ +0xff25d4
+type: void*
+
+code refs:
+- 0x438c6f | update_subgame | type=void* | mov     eax, dword [esi+0xff25d4]
+- 0x43b297 | update_subgoldy | type=void* | mov     ecx, dword [eax+0xff25d4]
+- 0x43b2df | update_subgoldy | type=None | mov     edx, dword [eax+0xff25d4]
+- 0x43b2df | update_subgoldy | type=void* | mov     edx, dword [eax+0xff25d4]
+- 0x43b30b | update_subgoldy | type=None | mov     edx, dword [eax+0xff25d4]
+- 0x43b30b | update_subgoldy | type=void* | mov     edx, dword [eax+0xff25d4]
+- 0x43d11e | update_subgoldy | type=None | mov     esi, dword [ecx+0xff25d4]
+- 0x43d11e | update_subgoldy | type=void* | mov     esi, dword [ecx+0xff25d4]
+- 0x43d16e | update_subgoldy | type=None | mov     ecx, dword [ecx+0xff25d4]
+- 0x43d16e | update_subgoldy | type=void* | mov     ecx, dword [ecx+0xff25d4]
+
+data refs:
+- none

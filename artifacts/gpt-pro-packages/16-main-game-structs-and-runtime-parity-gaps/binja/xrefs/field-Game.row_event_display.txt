@@ -1,0 +1,8 @@
+Game.row_event_display @ +0x12727d8
+type: struct RowEventDisplayController
+
+code refs:
+- 0x43c955 | update_subgoldy | type=None | lea     ecx, [eax+0x12727d8]
+
+data refs:
+- none

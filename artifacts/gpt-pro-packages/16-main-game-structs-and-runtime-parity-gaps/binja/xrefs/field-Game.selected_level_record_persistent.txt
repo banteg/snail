@@ -1,0 +1,11 @@
+Game.selected_level_record_persistent @ +0xff25d1
+type: uint8_t
+
+code refs:
+- 0x438bdf | update_subgame | type=None | mov     al, byte [esi+0xff25d1]
+- 0x438c66 | update_subgame | type=None | cmp     byte [esi+0xff25d1], 0x1
+- 0x439984 | update_subgame | type=None | mov     al, byte [esi+0xff25d1]
+- 0x43ca01 | update_subgoldy | type=None | mov     al, byte [ebp+0xff25d1]
+
+data refs:
+- none

@@ -1,0 +1,19 @@
+# `Player.post_follow_value_b` (`+0x430`) follow-up
+
+Typed Binary Ninja xrefs:
+
+- `0x43af78` | `initialize_subgoldy_fall_state` | `player->post_follow_value_b = player->follow_state.template_record->row_scalar_a`
+- `0x43af8c` | `initialize_subgoldy_fall_state` | `player->post_follow_value_b = 0f`
+
+No typed reader xrefs were recovered.
+
+Full HLIL reexport sanity check:
+
+- Raw `0x430...` searches mostly hit unrelated globals or follow-state storage at `data_4df904 + 0x430060`, `0x430100`, `0x430170`, and nearby addresses.
+- The two other `arg1[0x430]` hits at `0x459961` and `0x45dae0` are unrelated container/format helpers, not `Player` methods.
+- No additional `player + 0x430` read surfaced beyond the typed fall-state writes above.
+
+Conclusion:
+
+- The producer is confirmed.
+- The consumer remains unresolved.

@@ -1,0 +1,25 @@
+struct Game // size=0x1272828
+0x0000: uint8_t[0x38] _pad_00
+0x0038: float track_center_x
+0x003c: uint8_t[0x4] _pad_3c
+0x0040: uint32_t level_mode
+0x0044: uint32_t level_mode_arg
+0x0048: uint8_t[0x4] _pad_48
+0x004c: uint32_t runtime_flags
+0x0050: uint8_t[0xa804] _pad_50
+0xa854: uint8_t track_state_latch
+0xa855: uint8_t[0x1f] _pad_a855
+0xa874: uint32_t row_event_limit
+0x1b01e0: uint32_t parcel_target_count
+0x355e64: struct TrackPickupRuntime jetpack_pickup
+0x356000: struct TrackPickupRuntime[0x8] health_pickups
+0x3563a0: struct SlugHazardRuntime[0x8] slug_hazards
+0x359140: struct GarbageHazardRuntime* active_garbage_hazards
+0x359144: struct GarbageHazardRuntime[0x32] garbage_hazards
+0xff25d0: uint8_t selected_level_record_active
+0xff25d1: uint8_t selected_level_record_persistent
+0xff25d4: void* selected_level_record
+0xff25d8: uint32_t replay_track_index
+0xff25dc: uint32_t runtime_track_index
+0x125e480: struct TrackParcelRuntime[0x32] track_parcels
+0x12727d8: struct RowEventDisplayController row_event_display

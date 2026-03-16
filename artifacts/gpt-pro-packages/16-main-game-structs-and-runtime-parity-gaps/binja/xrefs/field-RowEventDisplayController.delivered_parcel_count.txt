@@ -1,0 +1,26 @@
+RowEventDisplayController.delivered_parcel_count @ +0x28
+type: int32_t
+
+code refs:
+- 0x40483e | flush_row_event_display | type=int32_t | mov     eax, dword [esi+0x28]
+- 0x40485e | flush_row_event_display | type=None | mov     edx, dword [esi+0x28]
+- 0x40485e | flush_row_event_display | type=int32_t | mov     edx, dword [esi+0x28]
+- 0x404867 | flush_row_event_display | type=None | mov     dword [esi+0x28], edx
+- 0x404867 | flush_row_event_display | type=int32_t | mov     dword [esi+0x28], edx
+- 0x40488c | flush_row_event_display | type=None | mov     edx, dword [esi+0x28]
+- 0x40488c | flush_row_event_display | type=int32_t | mov     edx, dword [esi+0x28]
+- 0x404893 | flush_row_event_display | type=None | mov     dword [esi+0x28], edx
+- 0x404893 | flush_row_event_display | type=int32_t | mov     dword [esi+0x28], edx
+- 0x404fc7 | update_row_event_display | type=int32_t | mov     ecx, dword [esi+0x28]
+- 0x404ff8 | update_row_event_display | type=None | mov     eax, dword [esi+0x28]
+- 0x404ff8 | update_row_event_display | type=int32_t | mov     eax, dword [esi+0x28]
+- 0x405043 | register_parcel_delivery | type=int32_t | mov     eax, dword [esi+0x28]
+- 0x405062 | register_parcel_delivery | type=None | mov     edx, dword [esi+0x28]
+- 0x405062 | register_parcel_delivery | type=int32_t | mov     edx, dword [esi+0x28]
+- 0x40506d | register_parcel_delivery | type=None | mov     dword [esi+0x28], edx
+- 0x40506d | register_parcel_delivery | type=int32_t | mov     dword [esi+0x28], edx
+- 0x405075 | register_parcel_delivery | type=None | mov     edx, dword [esi+0x28]
+- 0x405075 | register_parcel_delivery | type=int32_t | mov     edx, dword [esi+0x28]
+
+data refs:
+- none

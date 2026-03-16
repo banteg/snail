@@ -1,0 +1,280 @@
+00437eb0        char* var_4_1 = arg1
+00437eb6        int32_t ebx
+00437eb6        int32_t var_8 = ebx
+00437eb7        int32_t esi
+00437eb7        int32_t var_c = esi
+00437eba        int32_t edi
+00437eba        int32_t var_10 = edi
+00437ec1        unhide_star_field(data_4df904 + 0x4f33c)
+00437ece        if (*(arg1 + 0x40) != 7)
+00437ed7        unhide_gameplay_scores(arg1)
+00437ed0        hide_gameplay_scores(arg1)
+00437eef        int16_t x87control
+00437eef        int32_t eax_3 = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(0.000122070312f))
+00437ef9        if (eax_3 u<= 4)
+00437efb        char* var_1c_1
+00437efb        switch (eax_3)
+00437f02        case 0
+00437f02        void* var_14_1 = &data_4dfb08
+00437f07        int32_t var_18_1 = 0
+00437f08        var_1c_1 = "music/1.ogg"
+00437f0f        case 1
+00437f0f        void* var_14_2 = &data_4dfb08
+00437f14        int32_t var_18_2 = 0
+00437f15        var_1c_1 = "music/2.ogg"
+00437f29        case 2, 4
+00437f29        void* var_14_4 = &data_4dfb08
+00437f2e        int32_t var_18_4 = 0
+00437f2f        var_1c_1 = "music/3.ogg"
+00437f1c        case 3
+00437f1c        void* var_14_3 = &data_4dfb08
+00437f21        int32_t var_18_3 = 0
+00437f22        var_1c_1 = "music/4.ogg"
+00437f34        sub_432d50(var_1c_1)
+00437f3c        *(arg1 + 0x1270fcc) = 0x42480000
+00437f4c        *(arg1 + 0x1270fd0) = 0x42c80000
+00437f56        initialize_enemy_manager(&arg1[0x1270fd4])
+00437f61        initialize_damage_gauge(&arg1[0x3bbb28])
+00437f77        initialize_wall2_ambient_hazard_pool(&arg1[0x356b00])
+00437f82        initialize_salt_hazard_pool(&arg1[0x3578c0])
+00437f8c        reset_voice_manager(0x751498)
+00437fa0        int32_t ecx_9 = load_frontend_level_by_mode_and_index(&arg1[0xa874], *(arg1 + 0x40), arg2)
+00437fb7        if (arg1[0xff25d0] != 0 || arg1[0xff25d1] != 0)
+00438065        *(arg1 + 0x30) = *(*(arg1 + 0xff25d4) + 0x48)
+00438071        *(arg1 + 0x40) = *(*(arg1 + 0xff25d4) + 0x2c)
+0043807d        *(arg1 + 0x2c) = *(*(arg1 + 0xff25d4) + 0x50)
+00438089        *(arg1 + 0x28) = *(*(arg1 + 0xff25d4) + 0x4c)
+0043809b        *(arg1 + 0x34) = fconvert.s(float.t(*(*(arg1 + 0xff25d4) + 0x50)) * fconvert.t(0.00999999978f))
+00437fbd        int32_t eax_4 = *(arg1 + 0x40)
+00437fc3        if (eax_4 == 3)
+00437fcb        *(arg1 + 0x30) = data_4df95c
+00437fdf        if (eax_4 == 0 || eax_4 == 4 || eax_4 == 7)
+00438030        if (*(arg1 + 0x1b01d0) != 0xbf800000)
+00438057        *(arg1 + 0x30) = fconvert.s(fconvert.t(*(arg1 + 0x1b01d0)) * fconvert.t(0.00999999978f) * fconvert.t(0.900000036f) + fconvert.t(0.200000003f))
+0043803a        *(arg1 + 0x30) = fconvert.s(calc_slider_to_rate(0f))
+00437fe4        if (eax_4 == 1)
+00437fec        int32_t var_14_6 = ecx_9
+00437ffd        *(arg1 + 0x30) = fconvert.s(calc_slider_to_rate(fconvert.s(float.t(data_4df958) * fconvert.t(0.00999999978f))))
+0043809b        *(arg1 + 0x34) = fconvert.s(float.t(data_4df960) * fconvert.t(0.00999999978f))
+0043800e        if (eax_4 == 2)
+00438021        *(arg1 + 0x30) = fconvert.s(calc_slider_to_rate(data_4df95c))
+004380b0        if (arg1[0xff25d0] != 0 || arg1[0xff25d1] != 0)
+00438136        *(arg1 + 0x125ffd8) = *(*(arg1 + 0xff25d4) + 0x1fab0)
+00438148        *(arg1 + 0x125ffdc) = *(*(arg1 + 0xff25d4) + 0x1fab4)
+004380b2        int32_t eax_9 = *(arg1 + 0x40)
+004380cb        if (eax_9 == 2 || eax_9 == 3 || eax_9 == 0 || eax_9 == 4 || eax_9 == 7)
+00438110        *(arg1 + 0x125ffd8) = fconvert.s(fconvert.t(*(arg1 + 0x1b01d4)) * fconvert.t(0.00999999978f))
+00438122        *(arg1 + 0x125ffdc) = fconvert.s(fconvert.t(*(arg1 + 0x1b01d8)) * fconvert.t(0.00999999978f))
+004380d0        if (eax_9 == 1)
+004380e4        *(arg1 + 0x125ffd8) = fconvert.s(float.t(data_4df960) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
+004380fc        *(arg1 + 0x125ffdc) = fconvert.s(float.t(data_4df960) * fconvert.t(0.00999999978f) * fconvert.t(0.800000012f))
+00438154        sub_443160(&arg1[0x125e480])
+00438166        if (*(data_4df904 + 0x4f2e0) == 1)
+0043816e        hide_border_init(*(arg1 + 0x35bb88))
+00438179        hide_border_init(*(arg1 + 0x35bb8c))
+00438181        int16_t x87control_1 = rebuild_track_runtime_from_segments(arg1, arg2)
+0043818d        if (*(arg1 + 0x1b01e4) != 5)
+00438255        activate_landscape_entry(&arg1[0xff7c00], *(arg1 + 0x1b01dc))
+00438193        int32_t var_14_10 = 0
+004381a1        int32_t eax_11 = __ftol(x87control_1, sub_44dc90(4f))
+004381a9        int32_t eax_12
+004381a9        if (eax_11 u> 3)
+00438200        eax_12 = arg2
+004381ab        switch (eax_11)
+004381b2        case 0
+004381f9        eax_12 = load_landscape_script_by_name(data_4df904 + 0x106c218, "SpaceBluesWhorl.txt")
+004381ca        case 1
+004381ca        eax_12 = load_landscape_script_by_name(data_4df904 + 0x106c218, "SpaceGreenWarp.txt")
+004381e2        case 2
+004381e2        eax_12 = load_landscape_script_by_name(data_4df904 + 0x106c218, "SpacePurple.txt")
+004381e9        case 3
+004381f9        eax_12 = load_landscape_script_by_name(data_4df904 + 0x106c218, "SpaceRed.txt")
+0043820b        activate_landscape_entry(&arg1[0xff7c00], eax_12)
+00438210        int32_t var_14_13 = 0
+00438216        long double st0_5 = sub_44dc90(1f)
+0043821b        long double temp1_1 = fconvert.t(0.5f)
+0043821b        st0_5 - temp1_1
+00438229        if ((((st0_5 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(st0_5, temp1_1) ? 1 : 0) << 0xa | (st0_5 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
+00438240        *(data_4df904 + 0x4ec64) = 0
+00438231        *(data_4df904 + 0x4ec64) = 1
+00438273        if ((0x200 & *(arg1 + 0x359084)) == 0)
+00438284        *(arg1 + 0x359088) = &arg1[0x355b9c]
+0043828a        *(arg1 + 0x35908c) = *(arg1 + 0x355ba8)
+0043828d        *(arg1 + 0x355ba8) = &arg1[0x359080]
+00438290        void* ecx_31 = *(arg1 + 0x35908c)
+00438295        if (ecx_31 != 0)
+00438297        *(ecx_31 + 8) = &arg1[0x359080]
+0043829a        *(arg1 + 0x359084) |= 0x200
+0043827a        sub_431cc0("List ADDafter")
+0043829d        *(arg1 + 0x359098) = 0
+004382a3        *(arg1 + 0x359094) = 0
+004382a9        *(arg1 + 0x359090) = 0
+004382af        int32_t edx_9 = *(arg1 + 0x359084)
+004382b5        long double x87_r7_25 = float.t(*(arg1 + 0x50))
+004382be        int32_t ebp
+004382be        int32_t var_14_15 = ebp
+004382bf        *(arg1 + 0x3590d4) = &arg1[0x3bb764]
+004382c8        *(arg1 + 0x359098) = fconvert.s(x87_r7_25)
+004382d9        *(arg1 + 0x359084) = edx_9 & 0xffffffdf
+004382df        *(arg1 + 0x3590b4) = 0x3f7fbe77
+004382ef        if ((0x200 & *(arg1 + 0x3590e4)) == 0)
+00438300        *(arg1 + 0x3590e8) = &arg1[0x355b9c]
+00438306        *(arg1 + 0x3590ec) = *(arg1 + 0x355ba8)
+00438309        *(arg1 + 0x355ba8) = &arg1[0x3590e0]
+0043830c        void* ecx_34 = *(arg1 + 0x3590ec)
+00438311        if (ecx_34 != 0)
+00438313        *(ecx_34 + 8) = &arg1[0x3590e0]
+00438316        *(arg1 + 0x3590e4) |= 0x200
+004382f6        sub_431cc0("List ADDafter")
+00438319        *(arg1 + 0x3590f8) = 0
+0043831f        *(arg1 + 0x3590f4) = 0
+00438325        *(arg1 + 0x3590f0) = 0
+00438331        long double x87_r7_26 = float.t(*(arg1 + 0x58))
+0043833a        int32_t eax_19
+0043833a        eax_19.b = (*(arg1 + 0x3590e4)).b & 0xdf
+0043833c        *(arg1 + 0x359134) = &arg1[0x3bb764]
+00438342        *(arg1 + 0x3590e4) = eax_19
+00438348        *(arg1 + 0x3590f8) = fconvert.s(x87_r7_26)
+0043834e        *(arg1 + 0x359114) = 0x3f7fbe77
+00438354        arg1[0xa854] = 0
+0043835a        *(arg1 + 0xff25dc) = 0
+00438360        *(arg1 + 0x1272828) = 0
+00438366        *(arg1 + 0x3c) = 2
+00438378        *(data_4df904 + 0x56c) = 1
+00438389        int32_t eax_21
+00438389        int32_t edx_12
+00438389        eax_21, edx_12 = sub_44c400(data_4df904 + 0x290)
+00438391        *(arg1 + 0x3bbb70) = 1
+00438397        *(arg1 + 0x3be0d4) = 0
+0043839d        char* esi_2 = initialize_subgoldy(eax_21, edx_12, &arg1[0x3bb764], 1)
+004383b5        if ((0x200 & *(esi_2 + 0x3bf2cc)) == 0)
+004383cc        void** ecx_39 = data_4df904 + 0x5ac
+004383d2        void* edx_13 = *ecx_39
+004383d6        if (edx_13 != 0)
+004383e4        *(edx_13 + 8) = &esi_2[0x3bf2c8]
+004383e7        void* edx_15 = *ecx_39
+004383ec        *(*(edx_15 + 8) + 0xc) = edx_15
+004383f6        void* edx_17 = *(*ecx_39 + 8)
+004383f9        *ecx_39 = edx_17
+004383fb        *(edx_17 + 8) = 0
+004383d8        *ecx_39 = &esi_2[0x3bf2c8]
+004383da        *(esi_2 + 0x3bf2d0) = 0
+004383df        *(*ecx_39 + 0xc) = 0
+004383fe        *(esi_2 + 0x3bf2cc) |= 0x200
+004383bc        sub_431cc0("List ADD")
+0043840f        if ((0x200 & *(esi_2 + 0x3be738)) == 0)
+00438425        void** eax_25 = data_4df904 + 0x5ac
+0043842a        void* edx_18 = *eax_25
+0043842e        if (edx_18 != 0)
+0043843c        *(edx_18 + 8) = &esi_2[0x3be734]
+0043843f        void* edx_20 = *eax_25
+00438444        *(*(edx_20 + 8) + 0xc) = edx_20
+0043844e        void* edx_22 = *(*eax_25 + 8)
+00438451        *eax_25 = edx_22
+00438453        *(edx_22 + 8) = 0
+00438430        *eax_25 = &esi_2[0x3be734]
+00438432        *(esi_2 + 0x3be73c) = 0
+00438437        *(*eax_25 + 0xc) = 0
+00438456        *(esi_2 + 0x3be738) |= 0x200
+00438416        sub_431cc0("List ADD")
+00438467        if ((0x200 & *(esi_2 + 0x3beb14)) == 0)
+0043847d        void** eax_28 = data_4df904 + 0x5ac
+00438482        void* edx_23 = *eax_28
+00438486        if (edx_23 != 0)
+00438494        *(edx_23 + 8) = &esi_2[0x3beb10]
+00438497        void* edx_25 = *eax_28
+0043849c        *(*(edx_25 + 8) + 0xc) = edx_25
+004384a6        void* edx_27 = *(*eax_28 + 8)
+004384a9        *eax_28 = edx_27
+004384ab        *(edx_27 + 8) = 0
+00438488        *eax_28 = &esi_2[0x3beb10]
+0043848a        *(esi_2 + 0x3beb18) = 0
+0043848f        *(*eax_28 + 0xc) = 0
+004384ae        *(esi_2 + 0x3beb14) |= 0x200
+0043846e        sub_431cc0("List ADD")
+004384bf        if ((0x200 & *(esi_2 + 0x3beef0)) == 0)
+004384d5        void** eax_31 = data_4df904 + 0x5ac
+004384da        void* edx_28 = *eax_31
+004384de        if (edx_28 != 0)
+004384ec        *(edx_28 + 8) = &esi_2[0x3beeec]
+004384ef        void* edx_30 = *eax_31
+004384f4        *(*(edx_30 + 8) + 0xc) = edx_30
+004384fe        void* edx_32 = *(*eax_31 + 8)
+00438501        *eax_31 = edx_32
+00438503        *(edx_32 + 8) = 0
+004384e0        *eax_31 = &esi_2[0x3beeec]
+004384e2        *(esi_2 + 0x3beef4) = 0
+004384e7        *(*eax_31 + 0xc) = 0
+00438506        *(esi_2 + 0x3beef0) |= 0x200
+004384c6        sub_431cc0("List ADD")
+00438517        if ((0x200 & *(esi_2 + 0x3bf980)) == 0)
+0043852d        void** eax_34 = data_4df904 + 0x5ac
+00438532        void* edx_33 = *eax_34
+00438536        if (edx_33 != 0)
+00438544        *(edx_33 + 8) = &esi_2[0x3bf97c]
+00438547        void* edx_35 = *eax_34
+0043854c        *(*(edx_35 + 8) + 0xc) = edx_35
+00438556        void* edx_37 = *(*eax_34 + 8)
+00438559        *eax_34 = edx_37
+0043855b        *(edx_37 + 8) = 0
+00438538        *eax_34 = &esi_2[0x3bf97c]
+0043853a        *(esi_2 + 0x3bf984) = 0
+0043853f        *(*eax_34 + 0xc) = 0
+0043855e        *(esi_2 + 0x3bf980) |= 0x200
+0043851e        sub_431cc0("List ADD")
+00438567        int32_t ecx_44
+00438567        ecx_44.b = (*(esi_2 + 0x3bf980)).b | 0x80
+0043856a        *(esi_2 + 0x3bf980) = ecx_44
+0043857e        if ((0x200 & *(esi_2 + 0x3be0ec)) == 0)
+00438594        void** eax_37 = data_4df904 + 0x5ac
+00438599        void* edx_38 = *eax_37
+0043859d        if (edx_38 != 0)
+004385ab        *(edx_38 + 8) = &esi_2[0x3be0e8]
+004385ae        void* edx_40 = *eax_37
+004385b3        *(*(edx_40 + 8) + 0xc) = edx_40
+004385bd        void* edx_42 = *(*eax_37 + 8)
+004385c0        *eax_37 = edx_42
+004385c2        *(edx_42 + 8) = 0
+0043859f        *eax_37 = &esi_2[0x3be0e8]
+004385a1        *(esi_2 + 0x3be0f0) = 0
+004385a6        *(*eax_37 + 0xc) = 0
+004385c5        *(esi_2 + 0x3be0ec) |= 0x200
+00438585        sub_431cc0("List ADD")
+004385cb        if ((*(arg1 + 0x3bb768) & 0x200) == 0)
+004385e1        int32_t* eax_39 = data_4df904 + 0x5ac
+004385e6        void* ecx_46 = *eax_39
+004385ea        if (ecx_46 != 0)
+004385f8        *(ecx_46 + 8) = &arg1[0x3bb764]
+004385fb        void* ecx_48 = *eax_39
+00438600        *(*(ecx_48 + 8) + 0xc) = ecx_48
+00438605        void* ecx_50 = *(*eax_39 + 8)
+00438608        *eax_39 = ecx_50
+0043860a        *(ecx_50 + 8) = 0
+004385ec        *eax_39 = &arg1[0x3bb764]
+004385ee        *(arg1 + 0x3bb76c) = 0
+004385f3        *(*eax_39 + 0xc) = 0
+0043860d        *(arg1 + 0x3bb768) |= 0x200
+004385d2        sub_431cc0("List ADD")
+00438616        initialize_slug_voice_manager(&esi_2[0x35bb7c])
+0043862f        if ((0x200 & *(esi_2 + 0xff7bc8)) == 0)
+00438640        *(esi_2 + 0xff7bcc) = &esi_2[0x355bd4]
+00438646        *(esi_2 + 0xff7bd0) = *(esi_2 + 0x355be0)
+00438649        *(esi_2 + 0x355be0) = &esi_2[0xff7bc4]
+0043864c        void* ecx_53 = *(esi_2 + 0xff7bd0)
+00438651        if (ecx_53 != 0)
+00438653        *(ecx_53 + 8) = &esi_2[0xff7bc4]
+00438656        *(esi_2 + 0xff7bc8) |= 0x200
+00438636        sub_431cc0("List ADDafter")
+00438659        int32_t eax_41 = *(esi_2 + 0x40)
+0043865c        *(esi_2 + 0xff7bfc) = &arg1[0x3bb764]
+00438665        if (eax_41 == 0)
+00438673        int32_t var_18_6 = *(esi_2 + 0x1b01e0)
+00438680        sub_48b32c(*(esi_2 + 0x35bb94) + 0x2cc, "0/%i")
+0043868e        unhide_border_init(*(esi_2 + 0x35bb90))
+00438699        unhide_border_init(*(esi_2 + 0x35bb94))
+004386aa        sub_4323a0(0, 320f, 240f)
+004386b7        sub_4323a0(1, 320f, 240f)
+004386c1        *(esi_2 + 0x3bdea0) = 0x43a00000
+004386c7        *(esi_2 + 0x3bdea4) = 0x43a00000
+004386cd        *esi_2 = 1
+004386d9        return calc_subgame_rate(esi_2)

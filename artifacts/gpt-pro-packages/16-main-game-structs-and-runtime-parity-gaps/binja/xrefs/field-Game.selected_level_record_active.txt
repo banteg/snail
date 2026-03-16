@@ -1,0 +1,21 @@
+Game.selected_level_record_active @ +0xff25d0
+type: uint8_t
+
+code refs:
+- 0x438bf2 | update_subgame | type=None | mov     byte [esi+0xff25d0], 0x1
+- 0x438bf2 | update_subgame | type=uint8_t | mov     byte [esi+0xff25d0], 0x1
+- 0x438c1d | update_subgame | type=None | mov     byte [esi+0xff25d0], 0x0
+- 0x438c1d | update_subgame | type=uint8_t | mov     byte [esi+0xff25d0], 0x0
+- 0x438c75 | update_subgame | type=None | mov     byte [esi+0xff25d0], 0x1
+- 0x438c75 | update_subgame | type=uint8_t | mov     byte [esi+0xff25d0], 0x1
+- 0x438c8f | update_subgame | type=None | mov     byte [esi+0xff25d0], 0x0
+- 0x438c8f | update_subgame | type=uint8_t | mov     byte [esi+0xff25d0], 0x0
+- 0x438de7 | update_subgame | type=None | mov     al, byte [esi+0xff25d0]
+- 0x438ee3 | update_subgame | type=None | mov     al, byte [esi+0xff25d0]
+- 0x43b289 | update_subgoldy | type=None | mov     cl, byte [eax+0xff25d0]
+- 0x43cd16 | update_subgoldy | type=None | mov     dl, byte [ecx+0xff25d0]
+- 0x43cd8e | update_subgoldy | type=None | mov     al, byte [ecx+0xff25d0]
+- 0x43d10e | update_subgoldy | type=uint8_t | mov     dl, byte [ecx+0xff25d0]
+
+data refs:
+- none

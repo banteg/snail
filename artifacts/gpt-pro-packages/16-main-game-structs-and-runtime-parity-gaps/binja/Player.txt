@@ -1,0 +1,58 @@
+struct Player // size=0x4360
+0x0000: uint8_t[0x68] _pad_00
+0x0068: struct Vec3 position
+0x0074: uint8_t[0x24] _pad_74
+0x0098: struct TrackRowCell* cached_track_pair_cell_a
+0x009c: struct TrackRowCell* cached_track_pair_cell_b
+0x00a0: uint8_t[0x80] _pad_a0
+0x0120: uint32_t movement_state
+0x01d4: float hover_progress
+0x01d8: float hover_progress_target
+0x01dc: float some_progress
+0x01e0: float some_progress_target
+0x01e4: uint8_t maybe_jump
+0x01e8: uint32_t row_event_id
+0x01ec: uint32_t row_event_state
+0x01f0: float row_event_timer
+0x01f8: uint32_t row_event_data_a
+0x01fc: uint32_t row_event_data_b
+0x02e8: float timer_f0
+0x0308: uint32_t movement_flag_selector
+0x030c: uint8_t[0x2c] _pad_30c
+0x0338: uint32_t movement_flags
+0x033c: uint32_t previous_movement_flags
+0x0380: uint32_t player_slot
+0x0384: struct FollowState follow_state
+0x03c4: struct DamageGaugeController damage_gauge
+0x0408: struct Game* game
+0x040c: uint32_t movement_mode_selector
+0x0410: struct Vec3 velocity
+0x041c: uint8_t[0x1] _pad_41c
+0x041d: uint8_t attachment_exit_pending
+0x041e: uint8_t[0x6] _pad_41e
+0x0424: float attachment_exit_anchor_z
+0x0428: uint8_t[0x4] _pad_428
+0x042c: float post_follow_value_a
+0x0430: float post_follow_value_b
+0x0434: float attachment_exit_progress
+0x0438: float attachment_exit_progress_step
+0x043c: struct TrackRowCell* current_cell
+0x0440: uint8_t completion_handoff_active
+0x0444: float completion_handoff_timer
+0x0448: float completion_handoff_timer_step
+0x044c: uint8_t attachment_exit_gate_a
+0x044d: uint8_t attachment_exit_gate_b
+0x044e: uint8_t completion_handoff_voice_gate
+0x16cc: struct Vec3[0x13] snail_hotspots_local
+0x17b0: struct Vec3[0x13] snail_hotspots_world
+0x2730: float movement_progress
+0x2734: float movement_rate_scalar
+0x2738: float some_float
+0x273c: float track_z_offset
+0x2740: float track_z_anchor
+0x2744: float some_float
+0x2750: struct JetpackGaugeController jetpack_gauge
+0x29a8: void* cutscene_ptr
+0x4340: uint32_t visible_life_stock
+0x4344: float[0x6] wobble
+0x435c: float progress_timer

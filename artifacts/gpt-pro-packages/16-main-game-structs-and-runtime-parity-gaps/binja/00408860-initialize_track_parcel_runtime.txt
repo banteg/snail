@@ -1,0 +1,3 @@
+00408863        sub_42f5f0(runtime)
+00408868        runtime->vtable = &track_parcel_runtime_vtable
+00408871        return runtime

@@ -1,0 +1,2550 @@
+const std = @import("std");
+const rl = @import("raylib");
+const assets = @import("assets.zig");
+const attachment_builders = @import("attachment_builders.zig");
+const archive = @import("archive.zig");
+const level = @import("level.zig");
+const segment = @import("segment.zig");
+const x2 = @import("x2.zig");
+
+const LoadedModelAsset = struct {
+    path: []const u8,
+    loaded: x2.Uploaded,
+
+    fn deinit(self: *LoadedModelAsset, allocator: std.mem.Allocator) void {
+        self.loaded.deinit();
+        allocator.free(self.path);
+    }
+};
+
+const PlacedModel = struct {
+    asset_index: usize,
+    segment_index: usize,
+    row_index: usize,
+    offset: segment.Vec3,
+};
+
+pub const LaneBounds = struct {
+    min: usize,
+    max: usize,
+};
+
+pub const RowLocation = struct {
+    global_row: usize,
+    segment_index: usize,
+    row_index: usize,
+    row: segment.Row,
+};
+
+pub const GameplayCellKind = enum {
+    attachment_probe,
+    attachment_entry,
+    ring,
+    trampoline,
+    slug,
+    garbage,
+    salt,
+    health,
+    jetpack,
+
+    pub fn label(self: GameplayCellKind) []const u8 {
+        return switch (self) {
+            .attachment_probe => "attachment_probe",
+            .attachment_entry => "attachment_entry",
+            .ring => "ring",
+            .trampoline => "trampoline",
+            .slug => "slug",
+            .garbage => "garbage",
+            .salt => "salt",
+            .health => "health",
+            .jetpack => "jetpack",
+        };
+    }
+};
+
+pub fn confirmedRuntimeTileHint(cell: u8) ?u8 {
+    return switch (cell) {
+        '.' => 0x01,
+        '_' => 0x0f,
+        '|' => 0x0e,
+        '(' => 0x16,
+        '-' => 0x15,
+        'p' => 0x1d,
+        'P' => 0x1e,
+        '$' => 0x17,
+        '&' => 0x22,
+        'J' => 0x19,
+        'M' => 0x12,
+        'R' => 0x23,
+        's' => 0x21,
+        else => null,
+    };
+}
+
+pub fn isFloorCacheRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x0f, 0x10, 0x12, 0x13, 0x17, 0x18, 0x19, 0x1a => true,
+        else => false,
+    };
+}
+
+pub fn isRampRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d => true,
+        else => false,
+    };
+}
+
+pub fn isSlideRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x14, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+pub fn isOpenNeighborRuntimeTileFamily(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x00, 0x0e, 0x1c, 0x1d, 0x23 => true,
+        else => false,
+    };
+}
+
+pub fn sampleFloorHeightForRuntimeTile(tile_type: u8, world_z: f32, special_floor_height: ?f32) ?f32 {
+    const row_fraction = world_z - @floor(world_z);
+    return switch (tile_type) {
+        0x01, 0x0e, 0x0f => 0.0,
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x0b, 0x0c, 0x0d => row_fraction * 0.4,
+        0x08, 0x09, 0x0a => (row_fraction * 0.4) + 0.5,
+        0x16 => special_floor_height,
+        else => null,
+    };
+}
+
+pub fn specialFloorHeightForShippedRuntimeTile(tile_type: u8) ?f32 {
+    return switch (tile_type) {
+        // The track builder seeds trampoline-family tile 0x16 from the cell's +0x14 slot.
+        // In the shipped gameplay branch we have recovered so far, that slot is forced to -3.0.
+        0x16 => -3.0,
+        else => null,
+    };
+}
+
+// PORT(verified): `set_subgame_features` picks distinct runtime-flag presets by mode:
+// postal/challenge `0x00f5cfff`, time-trial `0x0075cfff`, tutorial `0x00e4cfff`.
+pub const postalChallengeRuntimeBuildFlags: u32 = 0x00f5cfff;
+pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
+pub const tutorialRuntimeBuildFlags: u32 = 0x00e4cfff;
+pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
+
+// PORT(fallback): these are candidate overlays for trace-confirmed ambient hazard families.
+// They are not the original gameplay-side spawn timing inside update_subgame.
+const runtime_spawn_hint_garbage_fallback: u8 = 0x01;
+const runtime_spawn_hint_salt_fallback: u8 = 0x02;
+
+pub const FallbackHazardCandidateCounts = struct {
+    garbage: usize = 0,
+    salt: usize = 0,
+};
+
+pub const GameplayCellSample = struct {
+    global_row: usize,
+    lane_index: usize,
+    cell: u8,
+    kind: GameplayCellKind,
+    annotation: ?segment.Annotation.Tag = null,
+    marked: bool = false,
+};
+
+pub const LoadOptions = struct {
+    load_models: bool = true,
+    runtime_build_flags: u32 = defaultRuntimeBuildFlags,
+    runtime_build_seed: u32 = 0,
+    runtime_active_row_start: usize = 0,
+    runtime_active_row_end: ?usize = null,
+    garbage_scalar_override: ?f32 = null,
+    salt_scalar_override: ?f32 = null,
+};
+
+pub const LoadedLevelPreview = struct {
+    allocator: std.mem.Allocator,
+    segments: []segment.Definition,
+    row_offsets: []usize,
+    attachment_scaffold: attachment_builders.Scaffold,
+    model_assets: []LoadedModelAsset,
+    placed_models: []PlacedModel,
+    runtime_build_flags: u32,
+    runtime_build_seed: u32,
+    runtime_build_final_random_state: u32,
+    garbage_scalar: f32,
+    salt_scalar: f32,
+    parcel_target_count: usize,
+    runtime_tiles: []u8,
+    runtime_flag_b01_grid: []bool,
+    runtime_flag_b40_grid: []bool,
+    runtime_flag_b80_grid: []bool,
+    runtime_edge_masks: []u8,
+    runtime_spawn_hints: []u8,
+    total_rows: usize,
+    max_width: usize,
+
+    pub fn load(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        level_definition: *const level.Definition,
+    ) !LoadedLevelPreview {
+        return loadWithOptions(allocator, catalog, level_definition, .{});
+    }
+
+    pub fn loadStandaloneSegment(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+    ) !LoadedLevelPreview {
+        return loadStandaloneSegmentWithOptions(allocator, catalog, entry, .{});
+    }
+
+    pub fn loadWithOptions(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        level_definition: *const level.Definition,
+        options: LoadOptions,
+    ) !LoadedLevelPreview {
+        const segment_count = level_definition.segments.len;
+        const segments = try allocator.alloc(segment.Definition, segment_count);
+        errdefer allocator.free(segments);
+
+        const row_offsets = try allocator.alloc(usize, segment_count);
+        errdefer allocator.free(row_offsets);
+
+        var model_assets_list: std.ArrayList(LoadedModelAsset) = .empty;
+        defer model_assets_list.deinit(allocator);
+        errdefer {
+            for (model_assets_list.items) |*asset| {
+                asset.deinit(allocator);
+            }
+        }
+        var model_asset_index_by_path = archive.CaseInsensitiveStringHashMap(usize).init(allocator);
+        defer model_asset_index_by_path.deinit();
+
+        var placed_models_list: std.ArrayList(PlacedModel) = .empty;
+        defer placed_models_list.deinit(allocator);
+
+        var loaded_count: usize = 0;
+        errdefer {
+            for (segments[0..loaded_count]) |*loaded_segment| {
+                loaded_segment.deinit();
+            }
+        }
+
+        var total_rows: usize = 0;
+        var max_width: usize = 0;
+        for (level_definition.segments, 0..) |segment_entry, index| {
+            row_offsets[index] = total_rows;
+
+            var path_buffer: [512]u8 = undefined;
+            const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{segment_entry.path});
+            const entry = catalog.dat.entryByPath(archive_path) orelse return error.SegmentEntryMissing;
+            segments[index] = try segment.loadFromArchive(allocator, catalog, entry);
+            loaded_count = index + 1;
+
+            total_rows += segments[index].height;
+            max_width = @max(max_width, segments[index].width);
+
+            for (segments[index].rows, 0..) |row, row_index| {
+                if (!options.load_models) continue;
+
+                const annotation = row.annotation orelse continue;
+                const model_annotation = switch (annotation) {
+                    .model => |model| model,
+                    else => continue,
+                };
+
+                const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
+                errdefer allocator.free(archive_model_path);
+
+                const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
+                    allocator.free(archive_model_path);
+                    break :blk existing_index;
+                } else blk: {
+                    const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
+                        allocator.free(archive_model_path);
+                        continue;
+                    };
+
+                    const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
+                    try model_assets_list.append(allocator, .{
+                        .path = archive_model_path,
+                        .loaded = loaded_model,
+                    });
+                    const new_index = model_assets_list.items.len - 1;
+                    try model_asset_index_by_path.put(archive_model_path, new_index);
+                    break :blk new_index;
+                };
+
+                try placed_models_list.append(allocator, .{
+                    .asset_index = asset_index,
+                    .segment_index = index,
+                    .row_index = row_index,
+                    .offset = model_annotation.offset,
+                });
+            }
+        }
+
+        const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_build_config: RuntimeBuildConfig = .{
+            .build_flags = runtime_build_flags,
+            .build_seed = options.runtime_build_seed,
+            .active_row_start = options.runtime_active_row_start,
+            .active_row_end = runtime_active_row_end,
+        };
+        const runtime_tiles = try buildRuntimeTileGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            runtime_build_config,
+        );
+        errdefer allocator.free(runtime_tiles);
+        const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b01_grid);
+        const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b80_grid);
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        defer allocator.free(mirror_state_build.states);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            mirror_state_build.states,
+        );
+        errdefer attachment_scaffold.deinit();
+        const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
+        errdefer allocator.free(runtime_edge_masks);
+        const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_spawn_hints);
+
+        return .{
+            .allocator = allocator,
+            .segments = segments,
+            .row_offsets = row_offsets,
+            .attachment_scaffold = attachment_scaffold,
+            .model_assets = try model_assets_list.toOwnedSlice(allocator),
+            .placed_models = try placed_models_list.toOwnedSlice(allocator),
+            .runtime_build_flags = runtime_build_flags,
+            .runtime_build_seed = options.runtime_build_seed,
+            .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
+            .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
+            .parcel_target_count = countActiveParcelAnnotations(segments),
+            .runtime_tiles = runtime_tiles,
+            .runtime_flag_b01_grid = runtime_flag_b01_grid,
+            .runtime_flag_b40_grid = runtime_flag_b40_grid,
+            .runtime_flag_b80_grid = runtime_flag_b80_grid,
+            .runtime_edge_masks = runtime_edge_masks,
+            .runtime_spawn_hints = runtime_spawn_hints,
+            .total_rows = total_rows,
+            .max_width = max_width,
+        };
+    }
+
+    pub fn loadStandaloneSegmentWithOptions(
+        allocator: std.mem.Allocator,
+        catalog: *const assets.Catalog,
+        entry: archive.Entry,
+        options: LoadOptions,
+    ) !LoadedLevelPreview {
+        const segments = try allocator.alloc(segment.Definition, 1);
+        errdefer allocator.free(segments);
+
+        const row_offsets = try allocator.alloc(usize, 1);
+        errdefer allocator.free(row_offsets);
+        row_offsets[0] = 0;
+
+        segments[0] = try segment.loadFromArchive(allocator, catalog, entry);
+        errdefer segments[0].deinit();
+
+        var model_assets_list: std.ArrayList(LoadedModelAsset) = .empty;
+        defer model_assets_list.deinit(allocator);
+        errdefer {
+            for (model_assets_list.items) |*asset| {
+                asset.deinit(allocator);
+            }
+        }
+        var model_asset_index_by_path = archive.CaseInsensitiveStringHashMap(usize).init(allocator);
+        defer model_asset_index_by_path.deinit();
+
+        var placed_models_list: std.ArrayList(PlacedModel) = .empty;
+        defer placed_models_list.deinit(allocator);
+
+        const total_rows = segments[0].height;
+        const max_width = segments[0].width;
+
+        for (segments[0].rows, 0..) |row, row_index| {
+            if (!options.load_models) continue;
+
+            const annotation = row.annotation orelse continue;
+            const model_annotation = switch (annotation) {
+                .model => |model| model,
+                else => continue,
+            };
+
+            const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
+            errdefer allocator.free(archive_model_path);
+
+            const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
+                allocator.free(archive_model_path);
+                break :blk existing_index;
+            } else blk: {
+                const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
+                    allocator.free(archive_model_path);
+                    continue;
+                };
+
+                const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
+                try model_assets_list.append(allocator, .{
+                    .path = archive_model_path,
+                    .loaded = loaded_model,
+                });
+                const new_index = model_assets_list.items.len - 1;
+                try model_asset_index_by_path.put(archive_model_path, new_index);
+                break :blk new_index;
+            };
+
+            try placed_models_list.append(allocator, .{
+                .asset_index = asset_index,
+                .segment_index = 0,
+                .row_index = row_index,
+                .offset = model_annotation.offset,
+            });
+        }
+
+        const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
+        const runtime_build_config: RuntimeBuildConfig = .{
+            .build_flags = runtime_build_flags,
+            .build_seed = options.runtime_build_seed,
+            .active_row_start = options.runtime_active_row_start,
+            .active_row_end = runtime_active_row_end,
+        };
+        const runtime_tiles = try buildRuntimeTileGrid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+            runtime_build_config,
+        );
+        errdefer allocator.free(runtime_tiles);
+        const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b40_grid);
+        const runtime_flag_b01_grid = try buildRuntimeFlagB01Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b01_grid);
+        const runtime_flag_b80_grid = try buildRuntimeFlagB80Grid(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_flag_b80_grid);
+        const mirror_state_build = try buildAttachmentSourceRowMirrorStates(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+            runtime_build_config,
+        );
+        defer allocator.free(mirror_state_build.states);
+        var attachment_scaffold = try attachment_builders.Scaffold.collect(
+            allocator,
+            segments,
+            row_offsets,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            mirror_state_build.states,
+        );
+        errdefer attachment_scaffold.deinit();
+        const runtime_edge_masks = try buildRuntimeEdgeMaskGrid(allocator, runtime_tiles, total_rows, max_width);
+        errdefer allocator.free(runtime_edge_masks);
+        const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_spawn_hints);
+
+        return .{
+            .allocator = allocator,
+            .segments = segments,
+            .row_offsets = row_offsets,
+            .attachment_scaffold = attachment_scaffold,
+            .model_assets = try model_assets_list.toOwnedSlice(allocator),
+            .placed_models = try placed_models_list.toOwnedSlice(allocator),
+            .runtime_build_flags = runtime_build_flags,
+            .runtime_build_seed = options.runtime_build_seed,
+            .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .garbage_scalar = options.garbage_scalar_override orelse 0.0,
+            .salt_scalar = options.salt_scalar_override orelse 0.0,
+            .parcel_target_count = countActiveParcelAnnotations(segments),
+            .runtime_tiles = runtime_tiles,
+            .runtime_flag_b01_grid = runtime_flag_b01_grid,
+            .runtime_flag_b40_grid = runtime_flag_b40_grid,
+            .runtime_flag_b80_grid = runtime_flag_b80_grid,
+            .runtime_edge_masks = runtime_edge_masks,
+            .runtime_spawn_hints = runtime_spawn_hints,
+            .total_rows = total_rows,
+            .max_width = max_width,
+        };
+    }
+
+    pub fn deinit(self: *LoadedLevelPreview) void {
+        for (self.model_assets) |*asset| {
+            asset.deinit(self.allocator);
+        }
+        self.attachment_scaffold.deinit();
+        self.allocator.free(self.placed_models);
+        self.allocator.free(self.model_assets);
+        self.allocator.free(self.runtime_spawn_hints);
+        self.allocator.free(self.runtime_edge_masks);
+        self.allocator.free(self.runtime_flag_b01_grid);
+        self.allocator.free(self.runtime_flag_b80_grid);
+        self.allocator.free(self.runtime_flag_b40_grid);
+        self.allocator.free(self.runtime_tiles);
+        for (self.segments) |*loaded_segment| {
+            loaded_segment.deinit();
+        }
+        self.allocator.free(self.row_offsets);
+        self.allocator.free(self.segments);
+    }
+
+    pub fn activeParcelCount(self: *const LoadedLevelPreview) usize {
+        return countActiveParcelAnnotations(self.segments);
+    }
+
+    pub fn trimParcelAnnotationsToTarget(
+        self: *LoadedLevelPreview,
+        random_state: *u32,
+        target_count: usize,
+    ) !usize {
+        var parcel_rows: std.ArrayList(ParcelRowLocation) = .empty;
+        defer parcel_rows.deinit(self.allocator);
+
+        for (self.segments, 0..) |loaded_segment, segment_index| {
+            for (loaded_segment.rows, 0..) |row, row_index| {
+                const annotation = row.annotation orelse continue;
+                if (annotation.tag() != .parcel) continue;
+                try parcel_rows.append(self.allocator, .{
+                    .segment_index = segment_index,
+                    .row_index = row_index,
+                });
+            }
+        }
+
+        const keep_count = @min(target_count, parcel_rows.items.len);
+        var remaining = parcel_rows.items.len;
+        while (remaining > keep_count) {
+            const remove_index = nextMathRandomScaledIndex(random_state, remaining);
+            const last_index = remaining - 1;
+            const remove_row = parcel_rows.items[remove_index];
+            @constCast(self.segments[remove_row.segment_index].rows)[remove_row.row_index].annotation = null;
+            parcel_rows.items[remove_index] = parcel_rows.items[last_index];
+            remaining = last_index;
+        }
+
+        self.parcel_target_count = keep_count;
+        return keep_count;
+    }
+
+    pub fn previewCamera(self: *const LoadedLevelPreview, time_seconds: f32, selected_segment_index: usize) rl.Camera3D {
+        const bounds = self.segmentPreviewBounds(selected_segment_index);
+        const target = bounds.center;
+        const distance = @max(@as(f32, @floatFromInt(self.total_rows)) * 0.45, @max(bounds.radius * 2.8, 18.0));
+        return .{
+            .position = .{
+                .x = target.x + std.math.cos(time_seconds * 0.18) * distance,
+                .y = target.y + distance * 0.6,
+                .z = target.z + std.math.sin(time_seconds * 0.18) * distance,
+            },
+            .target = target,
+            .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+            .fovy = 45.0,
+            .projection = .perspective,
+        };
+    }
+
+    pub fn draw(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
+        self.drawRawDebug(selected_segment_index);
+    }
+
+    pub fn drawRawDebug(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
+        const cell_size: f32 = 1.0;
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+
+        for (self.segments, 0..) |loaded_segment, segment_index| {
+            const is_selected = segment_index == selected_segment_index;
+            const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[segment_index])) * cell_size;
+
+            drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
+            drawSegmentCells(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentCenterline(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
+            drawSegmentAnnotations(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
+        }
+
+        self.drawPlacedModels(width_offset, cell_size);
+    }
+
+    pub fn drawDebugOverlay(self: *const LoadedLevelPreview, selected_segment_index: usize) void {
+        const cell_size: f32 = 1.0;
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+
+        for (self.segments, 0..) |loaded_segment, segment_index| {
+            const is_selected = segment_index == selected_segment_index;
+            const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[segment_index])) * cell_size;
+
+            drawSegmentBoundary(width_offset, segment_start_z, loaded_segment.height, is_selected);
+            drawSegmentCells(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentGameplayMarkers(self, segment_index, loaded_segment, width_offset, segment_start_z, is_selected, cell_size);
+            drawSegmentCenterline(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, if (is_selected) .orange else .sky_blue);
+            drawSegmentAnnotations(self, segment_index, loaded_segment, width_offset, segment_start_z, cell_size, is_selected);
+        }
+    }
+
+    pub fn activeSegment(self: *const LoadedLevelPreview, selected_segment_index: usize) ?*const segment.Definition {
+        if (selected_segment_index >= self.segments.len) return null;
+        return &self.segments[selected_segment_index];
+    }
+
+    pub fn locateRow(self: *const LoadedLevelPreview, global_row: usize) ?RowLocation {
+        if (global_row >= self.total_rows or self.segments.len == 0) return null;
+
+        var segment_index = self.segments.len - 1;
+        for (self.row_offsets, 0..) |row_offset, index| {
+            const next_offset = if (index + 1 < self.row_offsets.len) self.row_offsets[index + 1] else self.total_rows;
+            if (global_row >= row_offset and global_row < next_offset) {
+                segment_index = index;
+                break;
+            }
+        }
+
+        const row_index = global_row - self.row_offsets[segment_index];
+        const loaded_segment = self.segments[segment_index];
+        if (row_index >= loaded_segment.rows.len) return null;
+
+        return .{
+            .global_row = global_row,
+            .segment_index = segment_index,
+            .row_index = row_index,
+            .row = loaded_segment.rows[row_index],
+        };
+    }
+
+    pub fn laneBoundsForRow(self: *const LoadedLevelPreview, row_location: RowLocation) LaneBounds {
+        _ = self;
+        return guidanceBounds(row_location.row) orelse blk: {
+            if (row_location.row.cells.len == 0) {
+                break :blk .{ .min = 0, .max = 0 };
+            }
+            break :blk .{ .min = 0, .max = row_location.row.cells.len - 1 };
+        };
+    }
+
+    pub fn pathBoundsForRow(self: *const LoadedLevelPreview, row_location: RowLocation) ?LaneBounds {
+        _ = self;
+        return pathBounds(row_location.row.cells);
+    }
+
+    pub fn activePathAtRow(self: *const LoadedLevelPreview, global_row: usize) ?attachment_builders.AuthoredPathRow {
+        return self.attachment_scaffold.activePathAtRow(global_row);
+    }
+
+    pub fn activeBuiltAttachmentAtRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
+        return self.attachment_scaffold.activeBuiltAttachmentAtRow(global_row);
+    }
+
+    pub fn installedBuiltAttachmentsAtRow(self: *const LoadedLevelPreview, global_row: usize) attachment_builders.InstalledBuiltAttachmentSlots {
+        return self.attachment_scaffold.installedBuiltAttachmentsAtRow(global_row);
+    }
+
+    pub fn installedBuiltAttachmentAtRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
+        return self.attachment_scaffold.installedBuiltAttachmentAtRow(global_row);
+    }
+
+    pub fn builtAttachmentForSourceRow(self: *const LoadedLevelPreview, global_row: usize) ?*const attachment_builders.BuiltAttachment {
+        for (self.attachment_scaffold.built_attachments) |*built| {
+            if (built.row.global_row == global_row) return built;
+        }
+        return null;
+    }
+
+    pub fn activePathNameAtRow(self: *const LoadedLevelPreview, global_row: usize) ?[]const u8 {
+        const installed = self.installedBuiltAttachmentsAtRow(global_row);
+        if (installed.primary orelse installed.secondary) |built| {
+            return built.row.raw_name;
+        }
+        const row = self.activePathAtRow(global_row) orelse return null;
+        return row.raw_name;
+    }
+
+    pub fn attachmentPathCountForSegment(self: *const LoadedLevelPreview, segment_index: usize) usize {
+        return self.attachment_scaffold.pathCountForSegment(segment_index);
+    }
+
+    pub fn firstAttachmentPathForSegment(self: *const LoadedLevelPreview, segment_index: usize) ?attachment_builders.AuthoredPathRow {
+        return self.attachment_scaffold.firstPathForSegment(segment_index);
+    }
+
+    pub fn cellAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        const row_location = self.locateRow(global_row) orelse return null;
+        const row = row_location.row;
+        if (lane_index >= row.cells.len) return null;
+        return row.cells[lane_index];
+    }
+
+    pub fn gameplayCellSampleAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?GameplayCellSample {
+        const row_location = self.locateRow(global_row) orelse return null;
+        const row = row_location.row;
+        if (lane_index >= row.cells.len) return null;
+
+        const cell = row.cells[lane_index];
+        const kind = if (self.runtimeTileAt(global_row, lane_index)) |tile_type|
+            runtimeGameplayCellKindForTile(tile_type, self.runtime_build_flags) orelse gameplayCellKind(cell) orelse return null
+        else
+            gameplayCellKind(cell) orelse return null;
+        return .{
+            .global_row = global_row,
+            .lane_index = lane_index,
+            .cell = cell,
+            .kind = kind,
+            .annotation = if (row.annotation) |annotation| annotation.tag() else null,
+            .marked = row.marked,
+        };
+    }
+
+    pub fn laneIndexAtWorldX(self: *const LoadedLevelPreview, world_x: f32) usize {
+        if (self.max_width == 0) return 0;
+        const gameplay_width = @min(self.max_width, 8);
+        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        const raw_index: isize = @intFromFloat(@floor(world_x + width_offset));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(gameplay_width - 1))));
+    }
+
+    pub fn rowIndexAtWorldZ(self: *const LoadedLevelPreview, world_z: f32) usize {
+        if (self.total_rows == 0) return 0;
+        const raw_index: isize = @intFromFloat(@floor(world_z));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(self.total_rows - 1))));
+    }
+
+    pub fn gameplayCellSampleAtWorldPosition(self: *const LoadedLevelPreview, world_position: rl.Vector3) ?GameplayCellSample {
+        if (self.total_rows == 0 or self.max_width == 0) return null;
+        const global_row = self.rowIndexAtWorldZ(world_position.z);
+        const lane_index = self.laneIndexAtWorldX(world_position.x);
+        return self.gameplayCellSampleAt(global_row, lane_index);
+    }
+
+    pub fn runtimeTileAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_tiles[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b40_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB01At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b01_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeFlagB80At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_flag_b80_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_edge_masks[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeSpawnHintMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
+        return self.runtime_spawn_hints[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn hasGarbageSpawnHintAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        const mask = self.runtimeSpawnHintMaskAt(global_row, lane_index) orelse return false;
+        return (mask & runtime_spawn_hint_garbage_fallback) != 0;
+    }
+
+    pub fn hasSaltSpawnHintAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        const mask = self.runtimeSpawnHintMaskAt(global_row, lane_index) orelse return false;
+        return (mask & runtime_spawn_hint_salt_fallback) != 0;
+    }
+
+    pub fn fallbackHazardCandidateCounts(self: *const LoadedLevelPreview) FallbackHazardCandidateCounts {
+        var counts: FallbackHazardCandidateCounts = .{};
+        for (self.runtime_spawn_hints) |hint_mask| {
+            if ((hint_mask & runtime_spawn_hint_garbage_fallback) != 0) {
+                counts.garbage += 1;
+            }
+            if ((hint_mask & runtime_spawn_hint_salt_fallback) != 0) {
+                counts.salt += 1;
+            }
+        }
+        return counts;
+    }
+
+    pub fn worldPositionForLane(self: *const LoadedLevelPreview, lane_center: f32, row_position: f32, y: f32) rl.Vector3 {
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+        return .{
+            .x = (lane_center - width_offset) * 1.0,
+            .y = y,
+            .z = row_position + 0.5,
+        };
+    }
+
+    pub fn sampleFloorHeightAtGridPosition(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize, row_position: f32) ?f32 {
+        const tile_type = self.runtimeTileAt(global_row, lane_index) orelse return null;
+        return sampleFloorHeightForRuntimeTile(
+            tile_type,
+            row_position,
+            specialFloorHeightForShippedRuntimeTile(tile_type),
+        );
+    }
+
+    pub fn floorHeightAtCellCenter(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?f32 {
+        return self.sampleFloorHeightAtGridPosition(
+            global_row,
+            lane_index,
+            @as(f32, @floatFromInt(global_row)) + 0.5,
+        );
+    }
+
+    const PreviewBounds = struct {
+        center: rl.Vector3,
+        radius: f32,
+    };
+
+    fn segmentPreviewBounds(self: *const LoadedLevelPreview, selected_segment_index: usize) PreviewBounds {
+        const safe_index = @min(selected_segment_index, self.segments.len - 1);
+        const loaded_segment = self.segments[safe_index];
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+        const start_z = @as(f32, @floatFromInt(self.row_offsets[safe_index]));
+        const end_z = start_z + @as(f32, @floatFromInt(loaded_segment.height));
+
+        var min_x = -width_offset;
+        var max_x = width_offset;
+        var min_y: f32 = 0.0;
+        var max_y: f32 = 0.0;
+        var min_z = start_z;
+        var max_z = end_z;
+
+        for (self.attachment_scaffold.built_attachments) |built| {
+            if (built.row.segment_index != safe_index) continue;
+            const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+            const base_row = @as(f32, @floatFromInt(built.row.global_row));
+            for (built.template.samples) |sample| {
+                const lateral_span = half_width * sample.lateral_scale;
+                const center_x = sample.position.x + sample.center_x;
+                const world_z = base_row + sample.position.z;
+                min_x = @min(min_x, center_x - lateral_span);
+                max_x = @max(max_x, center_x + lateral_span);
+                min_y = @min(min_y, sample.position.y);
+                max_y = @max(max_y, sample.position.y);
+                min_z = @min(min_z, world_z);
+                max_z = @max(max_z, world_z);
+            }
+        }
+
+        const center = rl.Vector3{
+            .x = (min_x + max_x) * 0.5,
+            .y = (min_y + max_y) * 0.5,
+            .z = (min_z + max_z) * 0.5,
+        };
+        const dx = max_x - center.x;
+        const dy = max_y - center.y;
+        const dz = max_z - center.z;
+        return .{
+            .center = center,
+            .radius = @max(std.math.sqrt((dx * dx) + (dy * dy) + (dz * dz)), 1.0),
+        };
+    }
+
+    fn drawPlacedModels(self: *const LoadedLevelPreview, width_offset: f32, cell_size: f32) void {
+        for (self.placed_models) |instance| {
+            if (instance.asset_index >= self.model_assets.len) continue;
+            if (instance.segment_index >= self.segments.len) continue;
+
+            const loaded_segment = self.segments[instance.segment_index];
+            if (instance.row_index >= loaded_segment.rows.len) continue;
+
+            const row = loaded_segment.rows[instance.row_index];
+            const segment_start_z = @as(f32, @floatFromInt(self.row_offsets[instance.segment_index])) * cell_size;
+            const global_row = self.row_offsets[instance.segment_index] + instance.row_index;
+            const base = rowAnchorPosition(self, global_row, row, instance.row_index, width_offset, segment_start_z, cell_size, 0.02);
+            const position = applyAnnotationOffset(base, instance.offset);
+            const asset = &self.model_assets[instance.asset_index].loaded;
+
+            const transform = rl.Matrix.translate(
+                position.x - asset.bounds.center.x,
+                position.y - asset.bounds.min.y,
+                position.z - asset.bounds.center.z,
+            );
+            asset.drawEx(transform);
+        }
+    }
+
+    pub fn drawPlacedModelsOnly(self: *const LoadedLevelPreview) void {
+        self.drawPlacedModels(@as(f32, @floatFromInt(self.max_width)) * 0.5, 1.0);
+    }
+};
+
+fn resolveSegmentModelArchivePath(allocator: std.mem.Allocator, model_name: []const u8) ![]const u8 {
+    const stem = if (std.mem.lastIndexOfScalar(u8, model_name, '.')) |dot_index| model_name[0..dot_index] else model_name;
+    var upper = try allocator.alloc(u8, stem.len);
+    errdefer allocator.free(upper);
+    for (stem, 0..) |ch, index| {
+        upper[index] = std.ascii.toUpper(ch);
+    }
+
+    const archive_path = try std.fmt.allocPrint(allocator, "X/{s}.X2", .{upper});
+    allocator.free(upper);
+    return archive_path;
+}
+
+fn drawSegmentCells(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
+    loaded_segment: segment.Definition,
+    width_offset: f32,
+    segment_start_z: f32,
+    is_selected: bool,
+    cell_size: f32,
+) void {
+    for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
+        for (row.cells, 0..) |cell, col_index| {
+            const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+            const position = rl.Vector3{
+                .x = (@as(f32, @floatFromInt(col_index)) - width_offset + 0.5) * cell_size,
+                .y = if (cell == '@') 0.35 else floor_height - 0.05,
+                .z = segment_start_z + @as(f32, @floatFromInt(row_index)) * cell_size + 0.5,
+            };
+            const size = rl.Vector3{
+                .x = cell_size,
+                .y = if (cell == '@') 0.7 else 0.1,
+                .z = cell_size,
+            };
+
+            const color = tintForSelection(colorForCell(cell), is_selected);
+            rl.drawCubeV(position, size, color);
+            if (cell != '@') {
+                drawRuntimeCellExposedEdges(
+                    preview.runtimeEdgeMaskAt(global_row, col_index) orelse 0,
+                    position,
+                    size,
+                    tintForSelection(.ray_white, is_selected),
+                );
+            }
+            if (row.marked and cell != '@') {
+                rl.drawCubeWiresV(position, size, .gold);
+            }
+        }
+    }
+}
+
+fn drawSegmentCenterline(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
+    loaded_segment: segment.Definition,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    color: rl.Color,
+) void {
+    var previous: ?rl.Vector3 = null;
+
+    for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
+        const bounds = guidanceBounds(row) orelse {
+            previous = null;
+            continue;
+        };
+
+        const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+        const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+        const point = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.35);
+
+        rl.drawSphere(point, 0.08, color);
+        if (previous) |prev| {
+            rl.drawLine3D(prev, point, color);
+        }
+        previous = point;
+    }
+}
+
+fn drawSegmentAnnotations(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
+    loaded_segment: segment.Definition,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    is_selected: bool,
+) void {
+    for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
+        const annotation = row.annotation orelse continue;
+        switch (annotation) {
+            .path => drawPathMarkers(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .ring => drawRingMarkers(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .parcel => |parcel| drawParcelMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, parcel, is_selected),
+            .model => |model| drawModelMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, model, is_selected),
+            .jetpack_off => drawJetpackOffMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+            .no_fall => drawNoFallMarker(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, is_selected),
+        }
+    }
+}
+
+fn drawSegmentGameplayMarkers(
+    preview: *const LoadedLevelPreview,
+    segment_index: usize,
+    loaded_segment: segment.Definition,
+    width_offset: f32,
+    segment_start_z: f32,
+    is_selected: bool,
+    cell_size: f32,
+) void {
+    for (loaded_segment.rows, 0..) |row, row_index| {
+        const global_row = preview.row_offsets[segment_index] + row_index;
+        for (row.cells, 0..) |_, col_index| {
+            const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+            if (preview.gameplayCellSampleAt(global_row, col_index)) |sample| {
+                const kind = sample.kind;
+                if (kind != .ring and kind != .attachment_probe and kind != .attachment_entry) {
+                    const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + gameplayCellY(kind));
+                    const color = tintForSelection(gameplayCellColor(kind), is_selected);
+
+                    switch (kind) {
+                        .trampoline => rl.drawCubeV(position, .{ .x = 0.34, .y = 0.1, .z = 0.34 }, color),
+                        .slug => rl.drawCubeV(position, .{ .x = 0.26, .y = 0.48, .z = 0.26 }, color),
+                        .garbage => rl.drawSphere(position, 0.16, color),
+                        .salt => {
+                            rl.drawSphere(position, 0.14, color);
+                            rl.drawLine3D(
+                                .{ .x = position.x, .y = position.y - 0.1, .z = position.z },
+                                .{ .x = position.x, .y = position.y + 0.14, .z = position.z },
+                                color,
+                            );
+                        },
+                        .health => rl.drawCubeV(position, .{ .x = 0.22, .y = 0.22, .z = 0.22 }, color),
+                        .jetpack => rl.drawCubeV(position, .{ .x = 0.24, .y = 0.44, .z = 0.24 }, color),
+                        .ring, .attachment_probe, .attachment_entry => unreachable,
+                    }
+                }
+            }
+
+            const spawn_hint_mask = preview.runtimeSpawnHintMaskAt(global_row, col_index) orelse 0;
+            if ((spawn_hint_mask & runtime_spawn_hint_garbage_fallback) != 0) {
+                const garbage_position = cellWorldPosition(
+                    col_index,
+                    row_index,
+                    width_offset,
+                    segment_start_z,
+                    cell_size,
+                    floor_height + 0.24,
+                );
+                const shifted = rl.Vector3{
+                    .x = garbage_position.x - 0.12,
+                    .y = garbage_position.y,
+                    .z = garbage_position.z,
+                };
+                rl.drawCubeWiresV(shifted, .{ .x = 0.18, .y = 0.18, .z = 0.18 }, tintForSelection(.gray, is_selected));
+            }
+
+            if ((spawn_hint_mask & runtime_spawn_hint_salt_fallback) != 0) {
+                const salt_position = cellWorldPosition(
+                    col_index,
+                    row_index,
+                    width_offset,
+                    segment_start_z,
+                    cell_size,
+                    floor_height + 0.28,
+                );
+                const shifted = rl.Vector3{
+                    .x = salt_position.x + 0.12,
+                    .y = salt_position.y,
+                    .z = salt_position.z,
+                };
+                const color = tintForSelection(.sky_blue, is_selected);
+                rl.drawCubeWiresV(shifted, .{ .x = 0.16, .y = 0.16, .z = 0.16 }, color);
+                rl.drawLine3D(
+                    .{ .x = shifted.x, .y = shifted.y - 0.1, .z = shifted.z },
+                    .{ .x = shifted.x, .y = shifted.y + 0.12, .z = shifted.z },
+                    color,
+                );
+            }
+        }
+    }
+}
+
+fn drawSegmentBoundary(width_offset: f32, segment_start_z: f32, height: usize, is_selected: bool) void {
+    const left = rl.Vector3{ .x = -width_offset, .y = 0.02, .z = segment_start_z };
+    const right = rl.Vector3{ .x = width_offset, .y = 0.02, .z = segment_start_z };
+    rl.drawLine3D(left, right, if (is_selected) .orange else .dark_gray);
+
+    const end_z = segment_start_z + @as(f32, @floatFromInt(height));
+    rl.drawLine3D(
+        .{ .x = -width_offset, .y = 0.02, .z = end_z },
+        .{ .x = width_offset, .y = 0.02, .z = end_z },
+        if (is_selected) .orange else .dark_gray,
+    );
+}
+
+fn drawPathMarkers(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    is_selected: bool,
+) void {
+    var found = false;
+    var first: ?rl.Vector3 = null;
+    var last: ?rl.Vector3 = null;
+
+    for (row.cells, 0..) |cell, col_index| {
+        if (!isPathCell(cell)) continue;
+        found = true;
+
+        const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.62);
+        const color = tintForSelection(if (cell == 'P') .sky_blue else .blue, is_selected);
+        rl.drawSphere(position, if (cell == 'P') 0.17 else 0.13, color);
+        if (first == null) first = position;
+        last = position;
+    }
+
+    if (first) |start| {
+        if (last) |finish| {
+            if (start.x != finish.x or start.z != finish.z) {
+                rl.drawLine3D(start, finish, tintForSelection(.gold, is_selected));
+            }
+        }
+    }
+}
+
+fn drawRingMarkers(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    is_selected: bool,
+) void {
+    const annotation = row.annotation orelse return;
+    const ring = switch (annotation) {
+        .ring => |ring_kind| ring_kind,
+        else => return,
+    };
+    const color = tintForSelection(colorForAnnotation(annotation), is_selected);
+
+    for (row.cells, 0..) |cell, col_index| {
+        if (!isRingCell(cell)) continue;
+        const floor_height = preview.floorHeightAtCellCenter(global_row, col_index) orelse 0.0;
+        const position = cellWorldPosition(col_index, row_index, width_offset, segment_start_z, cell_size, floor_height + 0.85);
+        switch (ring) {
+            .none => rl.drawCubeWiresV(position, .{ .x = 0.28, .y = 0.28, .z = 0.28 }, color),
+            .normal => rl.drawSphere(position, 0.2, color),
+            .powerup => rl.drawCubeV(position, .{ .x = 0.28, .y = 0.28, .z = 0.28 }, color),
+            .explode => {
+                rl.drawSphere(position, 0.22, color);
+                rl.drawSphere(.{ .x = position.x, .y = position.y + 0.05, .z = position.z }, 0.08, .red);
+            },
+            .slow => rl.drawSphere(position, 0.18, color),
+        }
+    }
+}
+
+fn drawParcelMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    parcel: segment.ParcelAnnotation,
+    is_selected: bool,
+) void {
+    const base = rowAnchorPosition(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, 0.6);
+    const position = applyAnnotationOffset(base, parcel.offset);
+    const color = tintForSelection(if (parcel.id == 0) .gold else .green, is_selected);
+
+    rl.drawLine3D(base, position, tintForSelection(.dark_green, is_selected));
+    rl.drawCubeV(position, .{ .x = 0.32, .y = 0.32, .z = 0.32 }, color);
+}
+
+fn drawModelMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    model_annotation: segment.ModelAnnotation,
+    is_selected: bool,
+) void {
+    const base = rowAnchorPosition(preview, global_row, row, row_index, width_offset, segment_start_z, cell_size, 0.5);
+    const position = applyAnnotationOffset(base, model_annotation.offset);
+    const color = tintForSelection(.purple, is_selected);
+
+    rl.drawLine3D(base, position, tintForSelection(.light_gray, is_selected));
+    rl.drawCubeV(position, .{ .x = 0.36, .y = 0.72, .z = 0.36 }, color);
+    rl.drawCubeWiresV(position, .{ .x = 0.36, .y = 0.72, .z = 0.36 }, .ray_white);
+}
+
+fn drawJetpackOffMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    is_selected: bool,
+) void {
+    const bounds = guidanceBounds(row) orelse return;
+    drawRowStrip(preview, global_row, bounds, row_index, width_offset, segment_start_z, cell_size, 0.22, tintForSelection(.red, is_selected));
+}
+
+fn drawNoFallMarker(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    is_selected: bool,
+) void {
+    const bounds = guidanceBounds(row) orelse return;
+    const left_floor = preview.floorHeightAtCellCenter(global_row, bounds.min) orelse 0.0;
+    const right_floor = preview.floorHeightAtCellCenter(global_row, bounds.max) orelse 0.0;
+    const left = worldPositionForColumn(@as(f32, @floatFromInt(bounds.min)) + 0.5, row_index, width_offset, segment_start_z, cell_size, left_floor + 0.95);
+    const right = worldPositionForColumn(@as(f32, @floatFromInt(bounds.max)) + 0.5, row_index, width_offset, segment_start_z, cell_size, right_floor + 0.95);
+    const color = tintForSelection(.sky_blue, is_selected);
+    rl.drawLine3D(left, right, color);
+    rl.drawSphere(left, 0.08, color);
+    rl.drawSphere(right, 0.08, color);
+}
+
+fn drawRowStrip(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    bounds: LaneBounds,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    y: f32,
+    color: rl.Color,
+) void {
+    const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+    const width = @as(f32, @floatFromInt(bounds.max - bounds.min + 1)) * cell_size;
+    const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+    const position = worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + y);
+    rl.drawCubeV(position, .{ .x = width, .y = 0.08, .z = 0.2 }, color);
+}
+
+fn rowAnchorPosition(
+    preview: *const LoadedLevelPreview,
+    global_row: usize,
+    row: segment.Row,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    y: f32,
+) rl.Vector3 {
+    const bounds = guidanceBounds(row) orelse blk: {
+        const max_index = if (row.cells.len == 0) @as(usize, 0) else row.cells.len - 1;
+        break :blk LaneBounds{ .min = 0, .max = max_index };
+    };
+    const center_col = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
+    const floor_height = preview.floorHeightAtCellCenter(global_row, (bounds.min + bounds.max) / 2) orelse 0.0;
+    return worldPositionForColumn(center_col, row_index, width_offset, segment_start_z, cell_size, floor_height + y);
+}
+
+fn cellWorldPosition(
+    col_index: usize,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    y: f32,
+) rl.Vector3 {
+    return worldPositionForColumn(@as(f32, @floatFromInt(col_index)) + 0.5, row_index, width_offset, segment_start_z, cell_size, y);
+}
+
+fn worldPositionForColumn(
+    column: f32,
+    row_index: usize,
+    width_offset: f32,
+    segment_start_z: f32,
+    cell_size: f32,
+    y: f32,
+) rl.Vector3 {
+    return .{
+        .x = (column - width_offset) * cell_size,
+        .y = y,
+        .z = segment_start_z + @as(f32, @floatFromInt(row_index)) * cell_size + 0.5,
+    };
+}
+
+fn drawRuntimeCellExposedEdges(edge_mask: u8, position: rl.Vector3, size: rl.Vector3, color: rl.Color) void {
+    if (edge_mask == 0) return;
+
+    const half_x = size.x * 0.5;
+    const half_z = size.z * 0.5;
+    const top_y = position.y + (size.y * 0.5) + 0.01;
+
+    const front_left = rl.Vector3{ .x = position.x - half_x, .y = top_y, .z = position.z - half_z };
+    const front_right = rl.Vector3{ .x = position.x + half_x, .y = top_y, .z = position.z - half_z };
+    const back_left = rl.Vector3{ .x = position.x - half_x, .y = top_y, .z = position.z + half_z };
+    const back_right = rl.Vector3{ .x = position.x + half_x, .y = top_y, .z = position.z + half_z };
+
+    if ((edge_mask & 0x01) != 0) {
+        rl.drawLine3D(front_left, front_right, color);
+    }
+    if ((edge_mask & 0x02) != 0) {
+        rl.drawLine3D(back_left, back_right, color);
+    }
+    if ((edge_mask & 0x08) != 0) {
+        rl.drawLine3D(front_left, back_left, color);
+    }
+    if ((edge_mask & 0x04) != 0) {
+        rl.drawLine3D(front_right, back_right, color);
+    }
+}
+
+fn applyAnnotationOffset(base: rl.Vector3, offset: segment.Vec3) rl.Vector3 {
+    return .{
+        .x = base.x + offset.x,
+        .y = base.y + offset.y,
+        .z = base.z + offset.z,
+    };
+}
+
+fn guidanceBounds(row: segment.Row) ?LaneBounds {
+    return pathBounds(row.cells) orelse traversableBounds(row.cells);
+}
+
+const RuntimeTileTransition = struct {
+    current: u8,
+    previous_override: ?u8 = null,
+};
+
+const RuntimeBuildConfig = struct {
+    build_flags: u32,
+    build_seed: u32,
+    active_row_start: usize,
+    active_row_end: usize,
+};
+
+const MathRandom = struct {
+    state: u32,
+
+    fn init(seed: u32) MathRandom {
+        return .{ .state = seed };
+    }
+
+    fn nextInt15(self: *MathRandom) u32 {
+        self.state = (self.state *% 0x343fd) +% 0x269ec3;
+        return (self.state >> 16) & 0x7fff;
+    }
+};
+
+const RuntimeBuildState = struct {
+    build_flags: u32,
+    math_random: MathRandom,
+    mirror_state: bool = false,
+    mirror_counter: u32 = 0,
+
+    fn init(build_flags: u32, build_seed: u32) RuntimeBuildState {
+        return .{
+            .build_flags = build_flags,
+            .math_random = MathRandom.init(build_seed),
+        };
+    }
+
+    fn applyMirrorDecision(self: *RuntimeBuildState, decision: bool) bool {
+        const previous_state = self.mirror_state;
+        if (decision != previous_state) {
+            self.mirror_counter += 1;
+        } else {
+            self.mirror_counter = 0;
+        }
+        if (self.mirror_counter < 4) {
+            self.mirror_state = decision;
+            return decision;
+        }
+        self.mirror_counter = 0;
+        self.mirror_state = !decision;
+        return self.mirror_state;
+    }
+
+    fn switchTrackMirror(self: *RuntimeBuildState) bool {
+        const decision = self.math_random.nextInt15() >= 0x4000;
+        return self.applyMirrorDecision(decision);
+    }
+};
+
+fn beginRuntimeBuildSegment(build_state: *RuntimeBuildState, loaded_segment: segment.Definition) void {
+    if (loaded_segment.rows.len == 0) return;
+    // Windows advances the mirror selector when the builder rolls onto the next installed
+    // segment span. In the current sequential preview build, that boundary is the authored
+    // segment start.
+    _ = build_state.switchTrackMirror();
+}
+
+const AttachmentSourceRowMirrorStateBuild = struct {
+    states: []bool,
+    final_random_state: u32,
+};
+
+fn buildRuntimeTileGrid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+    config: RuntimeBuildConfig,
+) ![]u8 {
+    const runtime_tiles = try allocator.alloc(u8, total_rows * max_width);
+    @memset(runtime_tiles, 0);
+    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
+            for (row.cells, 0..) |cell, lane_index| {
+                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
+                    cell,
+                    build_state.build_flags,
+                    build_state.mirror_state,
+                    outside_active_rows,
+                );
+                if (normalized_cell == '@') {
+                    _ = build_state.switchTrackMirror();
+                }
+                const previous_tile = if (global_row > 0 and lane_index < max_width)
+                    runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)]
+                else
+                    null;
+                const transition = runtimeTileTransitionForNormalizedGlyph(normalized_cell, previous_tile);
+                const tile_type = if (transition) |value| value.current else 0;
+                runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)] = tile_type;
+
+                if (transition) |value| {
+                    if (value.previous_override) |previous_override| {
+                        if (global_row > 0) {
+                            runtime_tiles[runtimeTileIndex(max_width, global_row - 1, lane_index)] = previous_override;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return runtime_tiles;
+}
+
+fn buildAttachmentSourceRowMirrorStates(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    config: RuntimeBuildConfig,
+) !AttachmentSourceRowMirrorStateBuild {
+    const mirror_states = try allocator.alloc(bool, total_rows);
+    @memset(mirror_states, false);
+    var build_state = RuntimeBuildState.init(config.build_flags, config.build_seed);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        beginRuntimeBuildSegment(&build_state, loaded_segment);
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const global_row = row_base + row_index;
+            const outside_active_rows = global_row < config.active_row_start or global_row >= config.active_row_end;
+            var recorded = false;
+            for (row.cells, 0..) |cell, lane_index| {
+                const normalized_cell = normalizeSegmentGlyphForTrackFlags(
+                    cell,
+                    build_state.build_flags,
+                    build_state.mirror_state,
+                    outside_active_rows,
+                );
+                if (normalized_cell == '@') {
+                    _ = build_state.switchTrackMirror();
+                }
+                if (lane_index == 0) {
+                    mirror_states[global_row] = build_state.mirror_state;
+                    recorded = true;
+                }
+            }
+            if (!recorded) {
+                mirror_states[global_row] = build_state.mirror_state;
+            }
+        }
+    }
+
+    return .{
+        .states = mirror_states,
+        .final_random_state = build_state.math_random.state,
+    };
+}
+
+fn runtimeFlagB40BaseForTile(tile_type: u8) bool {
+    return tile_type != 0x00 and tile_type != 0x23;
+}
+
+fn isRuntimeFlagB40FloorCondenseTile(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x14, 0x15, 0x1b, 0x21, 0x22 => true,
+        else => false,
+    };
+}
+
+fn runtimeFlagB40RunLength(
+    runtime_tiles: []const u8,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) usize {
+    const start_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    var run_length: usize = 1;
+
+    if (start_tile == 0x0e) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (next_tile != 0x0e) break;
+        }
+        return run_length;
+    }
+
+    if (isRuntimeFlagB40FloorCondenseTile(start_tile)) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (!isRuntimeFlagB40FloorCondenseTile(next_tile)) break;
+        }
+        return run_length;
+    }
+
+    if (isRuntimeFlagB40SlideCondenseTile(start_tile)) {
+        while (lane_index + run_length < max_width) : (run_length += 1) {
+            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            if (!isRuntimeFlagB40SlideCondenseTile(next_tile)) break;
+        }
+        return run_length;
+    }
+
+    return run_length;
+}
+
+fn buildRuntimeFlagB40Grid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    for (0..total_rows) |global_row| {
+        var lane_index: usize = 0;
+        while (lane_index < max_width) {
+            const current_index = runtimeTileIndex(max_width, global_row, lane_index);
+            const tile_type = runtime_tiles[current_index];
+            flag_grid[current_index] = runtimeFlagB40BaseForTile(tile_type);
+            if (!flag_grid[current_index]) {
+                lane_index += 1;
+                continue;
+            }
+
+            // Windows seeds `flags_b & 0x40` broadly and then clears it on horizontal
+            // follower cells during `CondenseTrack`.
+            const run_length = runtimeFlagB40RunLength(runtime_tiles, max_width, global_row, lane_index);
+            if (run_length > 1) {
+                for (1..run_length) |offset| {
+                    flag_grid[current_index + offset] = false;
+                }
+            }
+            lane_index += run_length;
+        }
+    }
+
+    return flag_grid;
+}
+
+fn buildRuntimeFlagB80Grid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() != .jetpack_off) continue;
+
+            const global_row = row_base + row_index;
+            for (row.cells, 0..) |_, lane_index| {
+                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] = true;
+            }
+        }
+    }
+
+    return flag_grid;
+}
+
+fn buildRuntimeFlagB01Grid(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() != .no_fall) continue;
+
+            const global_row = row_base + row_index;
+            for (row.cells, 0..) |_, lane_index| {
+                flag_grid[runtimeTileIndex(max_width, global_row, lane_index)] = true;
+            }
+        }
+    }
+
+    return flag_grid;
+}
+
+const ParcelRowLocation = struct {
+    segment_index: usize,
+    row_index: usize,
+};
+
+fn countActiveParcelAnnotations(segments: []const segment.Definition) usize {
+    var count: usize = 0;
+    for (segments) |loaded_segment| {
+        for (loaded_segment.rows) |row| {
+            const annotation = row.annotation orelse continue;
+            if (annotation.tag() == .parcel) {
+                count += 1;
+            }
+        }
+    }
+    return count;
+}
+
+fn nextMathRandomScaledIndex(random_state: *u32, upper_bound: usize) usize {
+    if (upper_bound <= 1) return 0;
+    random_state.* = (random_state.* *% 0x343fd) +% 0x269ec3;
+    const random_value = (random_state.* >> 16) & 0x7fff;
+    const scaled = @as(f32, @floatFromInt(random_value)) *
+        @as(f32, @floatFromInt(upper_bound)) * 0.0000305175781;
+    return @min(@as(usize, @intFromFloat(scaled)), upper_bound - 1);
+}
+
+fn buildRuntimeEdgeMaskGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+) ![]u8 {
+    const edge_masks = try allocator.alloc(u8, total_rows * max_width);
+    @memset(edge_masks, 0);
+
+    for (0..total_rows) |global_row| {
+        for (0..max_width) |lane_index| {
+            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+            edge_masks[runtimeTileIndex(max_width, global_row, lane_index)] = runtimeOpenEdgeMask(
+                runtime_tiles,
+                total_rows,
+                max_width,
+                global_row,
+                lane_index,
+                tile_type,
+            );
+        }
+    }
+
+    return edge_masks;
+}
+
+fn buildRuntimeSpawnHintGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    build_flags: u32,
+) ![]u8 {
+    const spawn_hints = try allocator.alloc(u8, total_rows * max_width);
+    @memset(spawn_hints, 0);
+
+    for (0..total_rows) |global_row| {
+        for (0..max_width) |lane_index| {
+            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+            spawn_hints[runtimeTileIndex(max_width, global_row, lane_index)] = runtimeFallbackSpawnHintMask(tile_type, build_flags);
+        }
+    }
+
+    return spawn_hints;
+}
+
+fn runtimeTileIndex(max_width: usize, global_row: usize, lane_index: usize) usize {
+    return (global_row * max_width) + lane_index;
+}
+
+fn runtimeOpenEdgeMask(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+    tile_type: u8,
+) u8 {
+    if (tile_type == 0x00 or tile_type == 0x0e or tile_type == 0x1c or tile_type == 0x1d or tile_type == 0x1e or tile_type == 0x23) {
+        return 0;
+    }
+
+    var mask: u8 = 0;
+    if (lane_index == 0 or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row, lane_index - 1)) {
+        mask |= 0x08;
+    }
+    if (lane_index + 1 >= max_width or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row, lane_index + 1)) {
+        mask |= 0x04;
+    }
+    if (global_row == 0 or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row - 1, lane_index)) {
+        mask |= 0x01;
+    }
+    if (global_row + 1 >= total_rows or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row + 1, lane_index)) {
+        mask |= 0x02;
+    }
+    return mask;
+}
+
+fn isRuntimeEdgeNeighborOpen(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) bool {
+    if (global_row >= total_rows or lane_index >= max_width) return true;
+    const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    return isOpenNeighborRuntimeTileFamily(tile_type);
+}
+
+fn runtimeFallbackSpawnHintMask(tile_type: u8, build_flags: u32) u8 {
+    var mask: u8 = 0;
+    if ((build_flags & 0x2) != 0) {
+        switch (tile_type) {
+            0x01, 0x15 => mask |= runtime_spawn_hint_garbage_fallback,
+            else => {},
+        }
+    }
+    if ((build_flags & 0x10000) != 0) {
+        switch (tile_type) {
+            0x01, 0x0f => mask |= runtime_spawn_hint_salt_fallback,
+            else => {},
+        }
+    }
+    return mask;
+}
+
+fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: bool, outside_active_rows: bool) u8 {
+    return switch (cell) {
+        ' ' => if ((build_flags & 0x400) == 0)
+            ','
+        else if ((build_flags & 0x1) == 0)
+            '.'
+        else
+            cell,
+        '$' => if ((build_flags & 0x800) == 0)
+            if ((build_flags & 0x40) != 0) '_' else '.'
+        else
+            cell,
+        '-' => if ((build_flags & 0x40) == 0) '.' else cell,
+        '<', '>' => if ((build_flags & 0x200) == 0) '.' else cell,
+        '=' => if ((build_flags & 0x100) != 0)
+            cell
+        else if ((build_flags & 0x1) == 0)
+            '.'
+        else if ((build_flags & 0x400) != 0)
+            ' '
+        else
+            ',',
+        '[' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '<'
+        else if (mirror_state)
+            '['
+        else
+            cell,
+        ']' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '<'
+        else if (mirror_state)
+            '{'
+        else
+            cell,
+        '_' => if ((build_flags & 0x40) != 0 or outside_active_rows) cell else '.',
+        'o' => if ((build_flags & 0x4) == 0)
+            if ((build_flags & 0x40) != 0) '_' else '.'
+        else
+            cell,
+        '{' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '>'
+        else if (mirror_state)
+            '}'
+        else
+            cell,
+        '|' => if ((build_flags & 0x100) != 0)
+            cell
+        else if ((build_flags & 0x1) == 0)
+            ' '
+        else if ((build_flags & 0x400) != 0)
+            '='
+        else
+            ',',
+        '}' => if ((build_flags & 0x200) == 0)
+            '.'
+        else if ((build_flags & 0x20) == 0)
+            '>'
+        else if (mirror_state)
+            '['
+        else
+            cell,
+        else => cell,
+    };
+}
+
+fn runtimeTileTransitionForShippedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
+    return runtimeTileTransitionForNormalizedGlyph(cell, previous_tile);
+}
+
+fn runtimeTileTransitionForNormalizedGlyph(cell: u8, previous_tile: ?u8) ?RuntimeTileTransition {
+    return switch (cell) {
+        ' ', '@' => .{ .current = 0x00 },
+        ',' => .{ .current = 0x1c },
+        '#' => .{ .current = 0x20 },
+        '$' => .{ .current = 0x17 },
+        '&' => .{ .current = 0x22 },
+        '(' => .{ .current = 0x16 },
+        '-' => .{ .current = 0x15 },
+        '.' => .{ .current = 0x01 },
+        '0', '1', '2', '3' => .{ .current = 0x0f },
+        '<' => .{ .current = 0x06 },
+        '=' => .{ .current = 0x0e },
+        '>' => if (previous_tile == 0x03)
+            .{ .current = 0x09 }
+        else
+            .{ .current = 0x03, .previous_override = if (previous_tile != null) 0x0c else null },
+        'J' => .{ .current = 0x19 },
+        'M' => .{ .current = 0x12 },
+        'o' => .{ .current = 0x10 },
+        'P' => .{ .current = 0x1e },
+        'R' => .{ .current = 0x23 },
+        '[' => .{ .current = 0x05 },
+        '_' => .{ .current = 0x0f },
+        'p' => .{ .current = 0x1d },
+        's' => .{ .current = 0x21 },
+        '{' => if (previous_tile == 0x03)
+            .{ .current = 0x08 }
+        else
+            .{ .current = 0x02, .previous_override = if (previous_tile != null) 0x0b else null },
+        '|' => .{ .current = 0x0e },
+        '}' => if (previous_tile == 0x03)
+            .{ .current = 0x0a }
+        else
+            .{ .current = 0x04, .previous_override = if (previous_tile != null) 0x0d else null },
+        else => null,
+    };
+}
+
+fn traversableBounds(cells: []const u8) ?LaneBounds {
+    var min_index: ?usize = null;
+    var max_index: usize = 0;
+    for (cells, 0..) |cell, index| {
+        if (!isTraversable(cell)) continue;
+        if (min_index == null) min_index = index;
+        max_index = index;
+    }
+
+    if (min_index == null) return null;
+    return .{ .min = min_index.?, .max = max_index };
+}
+
+fn pathBounds(cells: []const u8) ?LaneBounds {
+    var min_index: ?usize = null;
+    var max_index: usize = 0;
+    for (cells, 0..) |cell, index| {
+        if (!isPathCell(cell)) continue;
+        if (min_index == null) min_index = index;
+        max_index = index;
+    }
+
+    if (min_index == null) return null;
+    return .{ .min = min_index.?, .max = max_index };
+}
+
+fn isTraversable(cell: u8) bool {
+    return cell != '@';
+}
+
+fn isPathCell(cell: u8) bool {
+    return cell == 'P' or cell == 'p';
+}
+
+fn isRingCell(cell: u8) bool {
+    return switch (cell) {
+        '>', '<', '{', '}', ';', 'R' => true,
+        else => false,
+    };
+}
+
+pub fn gameplayCellKind(cell: u8) ?GameplayCellKind {
+    return switch (cell) {
+        'p' => .attachment_probe,
+        'P' => .attachment_entry,
+        '>', '<', '{', '}', ';', 'R' => .ring,
+        '(' => .trampoline,
+        'M' => .slug,
+        's' => .garbage,
+        '&' => .salt,
+        '$' => .health,
+        'J' => .jetpack,
+        else => null,
+    };
+}
+
+pub fn runtimeGameplayCellKindForTile(tile_type: u8, build_flags: u32) ?GameplayCellKind {
+    return switch (tile_type) {
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x23 => .ring,
+        0x12 => if ((build_flags & 0x80) != 0) .slug else null,
+        0x16 => .trampoline,
+        0x17 => .health,
+        0x19 => .jetpack,
+        0x1d => .attachment_probe,
+        0x1e => .attachment_entry,
+        0x21 => .garbage,
+        0x22 => .salt,
+        else => null,
+    };
+}
+
+pub fn gameplayCellKindForRuntimeTile(tile_type: u8) ?GameplayCellKind {
+    return runtimeGameplayCellKindForTile(tile_type, defaultRuntimeBuildFlags);
+}
+
+fn gameplayCellColor(kind: GameplayCellKind) rl.Color {
+    return switch (kind) {
+        .attachment_probe => .blue,
+        .attachment_entry => .sky_blue,
+        .ring => .yellow,
+        .trampoline => .pink,
+        .slug => .red,
+        .garbage => .gray,
+        .salt => .sky_blue,
+        .health => .green,
+        .jetpack => .orange,
+    };
+}
+
+fn gameplayCellY(kind: GameplayCellKind) f32 {
+    return switch (kind) {
+        .attachment_probe, .attachment_entry, .ring => 0.62,
+        .trampoline => 0.18,
+        .slug => 0.62,
+        .garbage => 0.56,
+        .salt => 0.62,
+        .health => 0.7,
+        .jetpack => 0.82,
+    };
+}
+
+fn colorForAnnotation(annotation: segment.Annotation) rl.Color {
+    return switch (annotation) {
+        .path => .gold,
+        .ring => |ring| switch (ring) {
+            .none => .gray,
+            .normal => .yellow,
+            .powerup => .green,
+            .explode => .orange,
+            .slow => .purple,
+        },
+        .parcel => .green,
+        .model => .purple,
+        .jetpack_off => .red,
+        .no_fall => .sky_blue,
+    };
+}
+
+fn colorForCell(cell: u8) rl.Color {
+    return switch (cell) {
+        '@' => .dark_blue,
+        '_' => .gray,
+        '.' => .light_gray,
+        'P' => .sky_blue,
+        '#' => .orange,
+        's' => .white,
+        '>' => .gold,
+        '{', '}', ';' => .yellow,
+        '[', 'M', 'R', 'J' => .red,
+        '~' => .green,
+        '$', '&', '(', ')', '-', '<', '=', '0', '1', '2', '3', '|', 'p' => .purple,
+        ' ' => .dark_gray,
+        else => .dark_purple,
+    };
+}
+
+fn tintForSelection(base: rl.Color, is_selected: bool) rl.Color {
+    if (!is_selected) return base;
+    return .{
+        .r = @intCast(@min(@as(u16, base.r) + 30, 255)),
+        .g = @intCast(@min(@as(u16, base.g) + 20, 255)),
+        .b = @intCast(@min(@as(u16, base.b) + 10, 255)),
+        .a = base.a,
+    };
+}
+
+test "load tutorial level preview" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
+    defer preview.deinit();
+
+    try std.testing.expectEqual(@as(usize, level_definition.segments.len), preview.segments.len);
+    try std.testing.expectEqualStrings("Tutorial 0", preview.segments[0].name);
+    try std.testing.expect(preview.total_rows > 0);
+    const first_row = preview.locateRow(0).?;
+    try std.testing.expectEqual(@as(usize, 0), first_row.segment_index);
+    try std.testing.expectEqual(@as(usize, 0), first_row.row_index);
+    try std.testing.expect(preview.cellAt(0, 0) != null);
+}
+
+test "challenge preview counts live parcel rows instead of level metadata" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/CHALLENGE000.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    try std.testing.expectEqual(@as(?usize, 0), level_definition.parcels);
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    try std.testing.expect(preview.parcel_target_count > 0);
+    try std.testing.expectEqual(preview.parcel_target_count, preview.activeParcelCount());
+}
+
+test "challenge parcel trim reduces live parcel rows to the requested target" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/CHALLENGE000.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    const initial_count = preview.parcel_target_count;
+    try std.testing.expect(initial_count > 5);
+
+    var random_state = preview.runtime_build_final_random_state;
+    const kept_count = try preview.trimParcelAnnotationsToTarget(&random_state, 5);
+    try std.testing.expectEqual(@as(usize, 5), kept_count);
+    try std.testing.expectEqual(@as(usize, 5), preview.parcel_target_count);
+    try std.testing.expectEqual(@as(usize, 5), preview.activeParcelCount());
+}
+
+test "resolve segment x model path" {
+    const resolved = try resolveSegmentModelArchivePath(std.testing.allocator, "signBang.x");
+    defer std.testing.allocator.free(resolved);
+
+    try std.testing.expectEqualStrings("X/SIGNBANG.X2", resolved);
+}
+
+test "gameplay cell kinds match recovered runtime glyph semantics" {
+    try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKind('P').?);
+    try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKind('p').?);
+    try std.testing.expectEqual(GameplayCellKind.trampoline, gameplayCellKind('(').?);
+    try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKind('$').?);
+    try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKind('J').?);
+    try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKind('M').?);
+    try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKind('s').?);
+    try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKind('&').?);
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('0'));
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('='));
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), gameplayCellKind('['));
+}
+
+test "confirmed runtime tile hints match recovered gameplay tiles" {
+    try std.testing.expectEqual(@as(?u8, 0x01), confirmedRuntimeTileHint('.'));
+    try std.testing.expectEqual(@as(?u8, 0x0f), confirmedRuntimeTileHint('_'));
+    try std.testing.expectEqual(@as(?u8, 0x0e), confirmedRuntimeTileHint('|'));
+    try std.testing.expectEqual(@as(?u8, 0x16), confirmedRuntimeTileHint('('));
+    try std.testing.expectEqual(@as(?u8, 0x15), confirmedRuntimeTileHint('-'));
+    try std.testing.expectEqual(@as(?u8, 0x1e), confirmedRuntimeTileHint('P'));
+    try std.testing.expectEqual(@as(?u8, 0x1d), confirmedRuntimeTileHint('p'));
+    try std.testing.expectEqual(@as(?u8, 0x17), confirmedRuntimeTileHint('$'));
+    try std.testing.expectEqual(@as(?u8, 0x19), confirmedRuntimeTileHint('J'));
+    try std.testing.expectEqual(@as(?u8, 0x12), confirmedRuntimeTileHint('M'));
+    try std.testing.expectEqual(@as(?u8, 0x22), confirmedRuntimeTileHint('&'));
+    try std.testing.expectEqual(@as(?u8, 0x23), confirmedRuntimeTileHint('R'));
+    try std.testing.expectEqual(@as(?u8, 0x21), confirmedRuntimeTileHint('s'));
+    try std.testing.expectEqual(@as(?u8, null), confirmedRuntimeTileHint('#'));
+}
+
+test "runtime tile transitions match recovered shipped glyph mapping" {
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x03, .previous_override = 0x0c },
+        runtimeTileTransitionForShippedGlyph('>', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x09 },
+        runtimeTileTransitionForShippedGlyph('>', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x02, .previous_override = 0x0b },
+        runtimeTileTransitionForShippedGlyph('{', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x08 },
+        runtimeTileTransitionForShippedGlyph('{', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x04, .previous_override = 0x0d },
+        runtimeTileTransitionForShippedGlyph('}', 0x00).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x0a },
+        runtimeTileTransitionForShippedGlyph('}', 0x03).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x20 },
+        runtimeTileTransitionForShippedGlyph('#', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x16 },
+        runtimeTileTransitionForShippedGlyph('(', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x05 },
+        runtimeTileTransitionForShippedGlyph('[', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x1c },
+        runtimeTileTransitionForNormalizedGlyph(',', null).?,
+    );
+    try std.testing.expectEqualDeep(
+        RuntimeTileTransition{ .current = 0x10 },
+        runtimeTileTransitionForNormalizedGlyph('o', null).?,
+    );
+}
+
+test "runtime tile kinds map to recovered gameplay families" {
+    try std.testing.expectEqual(GameplayCellKind.attachment_probe, gameplayCellKindForRuntimeTile(0x1d).?);
+    try std.testing.expectEqual(GameplayCellKind.attachment_entry, gameplayCellKindForRuntimeTile(0x1e).?);
+    try std.testing.expectEqual(GameplayCellKind.trampoline, gameplayCellKindForRuntimeTile(0x16).?);
+    try std.testing.expectEqual(GameplayCellKind.health, gameplayCellKindForRuntimeTile(0x17).?);
+    try std.testing.expectEqual(GameplayCellKind.jetpack, gameplayCellKindForRuntimeTile(0x19).?);
+    try std.testing.expectEqual(GameplayCellKind.slug, gameplayCellKindForRuntimeTile(0x12).?);
+    try std.testing.expectEqual(GameplayCellKind.garbage, gameplayCellKindForRuntimeTile(0x21).?);
+    try std.testing.expectEqual(GameplayCellKind.salt, gameplayCellKindForRuntimeTile(0x22).?);
+    try std.testing.expectEqual(GameplayCellKind.ring, gameplayCellKindForRuntimeTile(0x23).?);
+}
+
+test "runtime gameplay tile mapping respects build-flag gates" {
+    try std.testing.expectEqual(@as(?GameplayCellKind, null), runtimeGameplayCellKindForTile(0x12, 0));
+    try std.testing.expectEqual(GameplayCellKind.slug, runtimeGameplayCellKindForTile(0x12, 0x80).?);
+    try std.testing.expectEqual(GameplayCellKind.health, runtimeGameplayCellKindForTile(0x17, 0).?);
+}
+
+test "runtime fallback spawn hint mask follows recovered tile families" {
+    try std.testing.expectEqual(
+        runtime_spawn_hint_garbage_fallback | runtime_spawn_hint_salt_fallback,
+        runtimeFallbackSpawnHintMask(0x01, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(
+        runtime_spawn_hint_garbage_fallback,
+        runtimeFallbackSpawnHintMask(0x15, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(
+        runtime_spawn_hint_salt_fallback,
+        runtimeFallbackSpawnHintMask(0x0f, defaultRuntimeBuildFlags),
+    );
+    try std.testing.expectEqual(@as(u8, 0), runtimeFallbackSpawnHintMask(0x22, defaultRuntimeBuildFlags));
+}
+
+test "normalize segment glyph for track flags matches recovered helper cases" {
+    try std.testing.expectEqual(@as(u8, ' '), normalizeSegmentGlyphForTrackFlags(' ', defaultRuntimeBuildFlags, false, false));
+    try std.testing.expectEqual(@as(u8, ','), normalizeSegmentGlyphForTrackFlags(' ', 0, false, false));
+    try std.testing.expectEqual(@as(u8, ' '), normalizeSegmentGlyphForTrackFlags('=', 0x401, false, false));
+    try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('$', 0x40, false, false));
+    try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('o', 0, false, false));
+    try std.testing.expectEqual(@as(u8, '{'), normalizeSegmentGlyphForTrackFlags(']', defaultRuntimeBuildFlags, true, false));
+    try std.testing.expectEqual(@as(u8, '_'), normalizeSegmentGlyphForTrackFlags('_', 0, false, true));
+    try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
+}
+
+test "runtime flag b40 clears followers across recovered floor-strip runs" {
+    const runtime_tiles = [_]u8{ 0x01, 0x15, 0x21, 0x22, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(!flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+    try std.testing.expect(!flags[4]);
+}
+
+test "runtime flag b40 keeps separate heads across floor and slide strip families" {
+    const runtime_tiles = [_]u8{ 0x01, 0x14, 0x15, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+}
+
+test "runtime flag b40 clears followers on recovered tile 0x0e strips" {
+    const runtime_tiles = [_]u8{ 0x0e, 0x0e, 0x0e, 0x23 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(!flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+}
+
+test "runtime flag b40 preserves non-condensed populated tiles" {
+    const runtime_tiles = [_]u8{ 0x0f, 0x1d, 0x1e, 0x00 };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(flags[1]);
+    try std.testing.expect(flags[2]);
+    try std.testing.expect(!flags[3]);
+}
+
+test "runtime flag b80 follows JetPack=Off annotations" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("SEGMENTS/JETPACKOFF.TXT") orelse return error.EntryNotFound;
+    var preview = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        entry,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    for (0..preview.max_width) |lane_index| {
+        try std.testing.expect(preview.runtimeFlagB80At(0, lane_index));
+        try std.testing.expect(!preview.runtimeFlagB80At(1, lane_index));
+    }
+}
+
+test "runtime flag b01 follows NoFall annotations" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("SEGMENTS/TRAMPOLINE.TXT") orelse return error.EntryNotFound;
+    var preview = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        entry,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    var saw_no_fall = false;
+    for (0..preview.total_rows) |global_row| {
+        const row_location = preview.locateRow(global_row) orelse continue;
+        const expects_flag = if (row_location.row.annotation) |annotation| annotation.tag() == .no_fall else false;
+        for (0..preview.max_width) |lane_index| {
+            try std.testing.expectEqual(expects_flag, preview.runtimeFlagB01At(global_row, lane_index));
+        }
+        saw_no_fall = saw_no_fall or expects_flag;
+    }
+    try std.testing.expect(saw_no_fall);
+}
+
+test "runtime build mirror latch matches recovered threshold logic" {
+    var state = RuntimeBuildState.init(defaultRuntimeBuildFlags, 0);
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(!state.applyMirrorDecision(false));
+    try std.testing.expect(state.applyMirrorDecision(true));
+    try std.testing.expect(state.applyMirrorDecision(false));
+    try std.testing.expect(!state.applyMirrorDecision(false));
+}
+
+test "level preview builds derived runtime tiles for shipped glyphs across the corpus" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    var saw_health = false;
+    var saw_jetpack = false;
+    var saw_slug = false;
+    var saw_trampoline = false;
+    var saw_garbage = false;
+    var saw_salt = false;
+
+    for (catalog.level_entries) |level_entry| {
+        var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+        defer level_definition.deinit();
+
+        var preview = try LoadedLevelPreview.loadWithOptions(std.testing.allocator, &catalog, &level_definition, .{ .load_models = false });
+        defer preview.deinit();
+
+        for (0..preview.total_rows) |row_index| {
+            const row_location = preview.locateRow(row_index) orelse continue;
+            for (row_location.row.cells, 0..) |cell, lane_index| {
+                const tile_type = preview.runtimeTileAt(row_index, lane_index) orelse continue;
+                switch (cell) {
+                    '$' => {
+                        saw_health = true;
+                        try std.testing.expectEqual(@as(u8, 0x17), tile_type);
+                    },
+                    'J' => {
+                        saw_jetpack = true;
+                        try std.testing.expectEqual(@as(u8, 0x19), tile_type);
+                    },
+                    'M' => {
+                        saw_slug = true;
+                        try std.testing.expectEqual(@as(u8, 0x12), tile_type);
+                    },
+                    '(' => {
+                        saw_trampoline = true;
+                        try std.testing.expectEqual(@as(u8, 0x16), tile_type);
+                        try std.testing.expectEqual(@as(?f32, -3.0), preview.floorHeightAtCellCenter(row_index, lane_index));
+                    },
+                    's' => {
+                        saw_garbage = true;
+                        try std.testing.expectEqual(@as(u8, 0x21), tile_type);
+                    },
+                    '&' => {
+                        saw_salt = true;
+                        try std.testing.expectEqual(@as(u8, 0x22), tile_type);
+                    },
+                    else => {},
+                }
+            }
+        }
+    }
+
+    try std.testing.expect(saw_health);
+    try std.testing.expect(saw_jetpack);
+    try std.testing.expect(saw_slug);
+    try std.testing.expect(saw_trampoline);
+    try std.testing.expect(saw_garbage);
+    try std.testing.expect(saw_salt);
+}
+
+test "level preview applies runtime hazard scalar overrides" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .garbage_scalar_override = 0.32,
+            .salt_scalar_override = 0.45,
+        },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.32), preview.garbage_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.45), preview.salt_scalar, 0.0001);
+}
+
+test "runtime tile family helpers match recovered cache predicates" {
+    try std.testing.expect(isFloorCacheRuntimeTileFamily(0x17));
+    try std.testing.expect(isFloorCacheRuntimeTileFamily(0x10));
+    try std.testing.expect(!isFloorCacheRuntimeTileFamily(0x22));
+
+    try std.testing.expect(isRampRuntimeTileFamily(0x02));
+    try std.testing.expect(isRampRuntimeTileFamily(0x0a));
+    try std.testing.expect(!isRampRuntimeTileFamily(0x17));
+
+    try std.testing.expect(isSlideRuntimeTileFamily(0x22));
+    try std.testing.expect(isSlideRuntimeTileFamily(0x01));
+    try std.testing.expect(!isSlideRuntimeTileFamily(0x10));
+
+    try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x1d));
+    try std.testing.expect(isOpenNeighborRuntimeTileFamily(0x23));
+    try std.testing.expect(!isOpenNeighborRuntimeTileFamily(0x1e));
+}
+
+test "runtime open edge mask follows open-neighbor family boundaries" {
+    const tiles = [_]u8{
+        0x00, 0x00, 0x00,
+        0x00, 0x01, 0x00,
+        0x00, 0x00, 0x00,
+    };
+    try std.testing.expectEqual(@as(u8, 0x0f), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x01));
+
+    const closed_neighbors = [_]u8{
+        0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01,
+    };
+    try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&closed_neighbors, 3, 3, 1, 1, 0x01));
+
+    try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x1e));
+}
+
+test "runtime floor sampler matches recovered tile formulas" {
+    try std.testing.expectEqual(@as(?f32, 0.0), sampleFloorHeightForRuntimeTile(0x01, 12.25, null));
+    try std.testing.expectApproxEqAbs(@as(f32, 0.1), sampleFloorHeightForRuntimeTile(0x02, 12.25, null).?, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), sampleFloorHeightForRuntimeTile(0x08, 12.25, null).?, 0.0001);
+    try std.testing.expectEqual(@as(?f32, 1.75), sampleFloorHeightForRuntimeTile(0x16, 12.25, 1.75));
+    try std.testing.expectEqual(@as(?f32, null), sampleFloorHeightForRuntimeTile(0x1e, 12.25, null));
+}
+
+test "special floor heights match recovered shipped builder defaults" {
+    try std.testing.expectEqual(@as(?f32, -3.0), specialFloorHeightForShippedRuntimeTile(0x16));
+    try std.testing.expectEqual(@as(?f32, null), specialFloorHeightForShippedRuntimeTile(0x1e));
+}
+
+test "world quantization matches recovered track grid sampling" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
+    defer preview.deinit();
+
+    try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-20.0));
+    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(20.0));
+    try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-3.99));
+    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(3.99));
+    try std.testing.expectEqual(@as(usize, 0), preview.rowIndexAtWorldZ(-5.0));
+    try std.testing.expectEqual(preview.total_rows - 1, preview.rowIndexAtWorldZ(10_000.0));
+}
