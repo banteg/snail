@@ -1088,7 +1088,7 @@ pub const Runner = struct {
             self.updateDamageWarning();
             self.stepTemporaryStates();
         } else if (!self.paused) {
-            self.updatePhaseController(delta_seconds);
+            self.updatePhaseController(preview, delta_seconds);
         }
         self.endAttachmentIfNeeded(preview);
         if (!self.paused and self.phase == .active) {
@@ -2778,7 +2778,11 @@ pub const Runner = struct {
             .z = player_anchor.z + (remaining_distance * parcel.travel_dir.z),
         };
         parcel.presentation_position = parcel.world_position;
-        parcel.presentation_position.y += std.math.sin(progress * std.math.pi) * track_parcel_home_arc_height;
+        const arc = std.math.sin(progress * std.math.pi) * track_parcel_home_arc_height;
+        const basis_up = normalizeVector3(self.worldUp(preview));
+        parcel.presentation_position.x += basis_up.x * arc;
+        parcel.presentation_position.y += basis_up.y * arc;
+        parcel.presentation_position.z += basis_up.z * arc;
         parcel.presentation_scale = trackParcelHomePresentationScale(progress);
         parcel.progress += parcel.progress_step;
         if (parcel.progress < 1.0) return;
@@ -2819,18 +2823,22 @@ pub const Runner = struct {
         parcel.state = 0;
     }
 
+    fn currentRowEventCompletionCellActive(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        const current_sample = self.currentRuntimeSample(preview) orelse return false;
+        return preview.runtimeFlagB40At(current_sample.global_row, current_sample.resolved_lane_index);
+    }
+
     // PORT(partial): Windows `update_row_event_display` owns the parcel-delivery widget
     // controller and the post-delivery completion state. The port now mirrors the proven
-    // `3 -> 4 -> 5` state path on the gameplay side and consumes the recovered
-    // `TrackRowCell.flags_b & 0x40` lane from the preview, but it still omits the
-    // unresolved widget owner, staged parcel visuals, and the separate `+0x18` gate byte.
+    // `3 -> 4 -> 5` state path on the gameplay side and uses the rebuilt current-cell
+    // completion bit instead of the older authored `'_'` proxy, but it still omits the
+    // unresolved widget owner and staged parcel visuals.
     fn stepRowEventBonusPrompt(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
         if (self.row_event_display.bonus_blink_progress > 1.0) {
             self.row_event_display.bonus_blink_progress = 0.0;
         }
-        const current_sample = self.currentRuntimeSample(preview) orelse return;
-        if (preview.runtimeFlagB40At(current_sample.global_row, current_sample.resolved_lane_index)) {
+        if (self.currentRowEventCompletionCellActive(preview)) {
             self.row_event_display.state = .complete;
         }
     }
@@ -3179,7 +3187,7 @@ pub const Runner = struct {
         };
     }
 
-    fn updatePhaseController(self: *Runner, delta_seconds: f32) void {
+    fn updatePhaseController(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
         switch (self.phase) {
             .active => {},
             .completion_handoff => {
@@ -3189,6 +3197,14 @@ pub const Runner = struct {
                     self.completion_handoff_timer >= completion_handoff_voice_delay_seconds)
                 {
                     self.completion_handoff_voice_gate = true;
+                }
+                if (self.row_event_display.completion_gate != 0 and
+                    self.currentRowEventCompletionCellActive(preview))
+                {
+                    self.completion_handoff_timer = @max(
+                        self.completion_handoff_timer,
+                        completion_handoff_release_force_seconds,
+                    );
                 }
                 if (self.row_event_display.state == .complete) {
                     self.completion_handoff_timer = @max(
@@ -4782,11 +4798,20 @@ test "parcel delivery advances on the staging frame" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.active_track_parcels[0].presentationScale(), 0.0001);
 }
 
-test "parcel home flight keeps linear world position and curved presentation separate" {
-    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+test "parcel home flight lifts presentation along the live basis up" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/LOOPBOW.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "LOOPBOW";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
+    };
     const player_anchor = runner.trackParcelPlayerAnchor(&fixture.preview);
     var parcel = TrackParcelRuntime{
         .state = 5,
@@ -4798,12 +4823,14 @@ test "parcel home flight keeps linear world position and curved presentation sep
 
     runner.stepTrackParcelHome(&fixture.preview, &parcel);
 
+    const arc = std.math.sin(@as(f32, 0.25) * std.math.pi) * track_parcel_home_arc_height;
+    const basis_up = normalizeVector3(runner.worldUp(&fixture.preview));
     try std.testing.expectApproxEqAbs(player_anchor.x + 3.0, parcel.world_position.x, 0.0001);
     try std.testing.expectApproxEqAbs(player_anchor.y, parcel.world_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(player_anchor.z, parcel.world_position.z, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0, parcel.presentationPosition().x, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.y + (std.math.sin(@as(f32, 0.25) * std.math.pi) * track_parcel_home_arc_height), parcel.presentationPosition().y, 0.0001);
-    try std.testing.expectApproxEqAbs(player_anchor.z, parcel.presentationPosition().z, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.x + 3.0 + (basis_up.x * arc), parcel.presentationPosition().x, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.y + (basis_up.y * arc), parcel.presentationPosition().y, 0.0001);
+    try std.testing.expectApproxEqAbs(player_anchor.z + (basis_up.z * arc), parcel.presentationPosition().z, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.85), parcel.presentationScale(), 0.0001);
 }
 
@@ -5171,7 +5198,7 @@ test "fall state keeps Z anchored and advances carried follow roll" {
     runner.post_follow_value_b = 0.5;
     const anchor_z = runner.attachment_exit_anchor_z;
 
-    runner.updatePhaseController(1.0 / 60.0);
+    runner.updatePhaseController(&fixture.preview, 1.0 / 60.0);
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
     try std.testing.expect(runner.post_follow_value_a > 0.25);
@@ -5198,7 +5225,7 @@ test "fall state arms gate b at the deep threshold" {
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
     runner.phase.fall.world_y = fall_world_y_threshold - 0.01;
 
-    runner.updatePhaseController(0.0);
+    runner.updatePhaseController(&fixture.preview, 0.0);
 
     try std.testing.expect(runner.attachment_exit_gate_b);
 }
@@ -5411,16 +5438,36 @@ test "postal completion handoff waits for the row event controller to complete" 
     runner.beginCompletionCutscene();
     runner.completion_handoff_timer = completion_handoff_release_seconds;
 
-    runner.updatePhaseController(0.0);
+    runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
     try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
     setRunnerLiveRowTarget(&runner, target);
     runner.updateRowEventDisplay(&fixture.preview);
-    runner.updatePhaseController(0.0);
+    runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+}
+
+test "completion gate fast-forwards the late handoff timer on the live completion cell" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.session_mode = .postal;
+    runner.row_event_display.parcel_target_count = 1;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.row_event_display.completion_gate = 1;
+    runner.beginCompletionCutscene();
+    runner.completion_handoff_timer = 1.0;
+
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
+    setRunnerLiveRowTarget(&runner, target);
+    runner.updatePhaseController(&fixture.preview, 0.0);
+
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expect(runner.completion_handoff_timer > completion_handoff_release_seconds);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {

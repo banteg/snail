@@ -74,11 +74,11 @@ pub const Entry = struct {
         if (record.len < required_len) return null;
 
         const lateral_offset = compact_record_header_size + (index * 2);
-        const forward_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
+        const ghost_delta_z_offset = compact_record_header_size + (sample_count * 2) + (index * 2);
         const flags_offset = compact_record_header_size + (sample_count * 4) + index;
         return .{
             .lateral = readI16(record, lateral_offset),
-            .forward = readI16(record, forward_offset),
+            .ghost_delta_z = readI16(record, ghost_delta_z_offset),
             .flags = record[flags_offset],
         };
     }
@@ -109,7 +109,7 @@ pub const Entry = struct {
 
 pub const ReplaySample = struct {
     lateral: i16,
-    forward: i16,
+    ghost_delta_z: i16,
     flags: u8,
 };
 
@@ -507,17 +507,17 @@ test "compact high-score record exposes replay payload lanes" {
     try std.testing.expectEqual(@as(usize, 3), entry.replaySampleCount());
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = -12,
-        .forward = 100,
+        .ghost_delta_z = 100,
         .flags = 0x01,
     }, entry.replaySampleAt(0).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 7,
-        .forward = 200,
+        .ghost_delta_z = 200,
         .flags = 0x04,
     }, entry.replaySampleAt(1).?);
     try std.testing.expectEqualDeep(ReplaySample{
         .lateral = 25,
-        .forward = 300,
+        .ghost_delta_z = 300,
         .flags = 0x0a,
     }, entry.replaySampleAt(2).?);
     try std.testing.expect(entry.replaySampleAt(3) == null);
