@@ -135,6 +135,10 @@ pub const postalChallengeRuntimeBuildFlags: u32 = 0x00f5cfff;
 pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
 pub const tutorialRuntimeBuildFlags: u32 = 0x00e4cfff;
 pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
+// PORT(verified): Windows runtime traces consistently report `track_row_start = 31`
+// on fresh gameplay starts, and `update_cameraman` uses the same game-side scalar for
+// its early intro-pitch / vertical-lift blend threshold.
+pub const defaultRuntimeActiveRowStart: usize = 31;
 
 // PORT(fallback): these are candidate overlays for trace-confirmed ambient hazard families.
 // They are not the original gameplay-side spawn timing inside update_subgame.
@@ -159,7 +163,7 @@ pub const LoadOptions = struct {
     load_models: bool = true,
     runtime_build_flags: u32 = defaultRuntimeBuildFlags,
     runtime_build_seed: u32 = 0,
-    runtime_active_row_start: usize = 0,
+    runtime_active_row_start: usize = defaultRuntimeActiveRowStart,
     runtime_active_row_end: ?usize = null,
     course_end_threshold_override: ?f32 = null,
     garbage_scalar_override: ?f32 = null,
@@ -176,6 +180,8 @@ pub const LoadedLevelPreview = struct {
     runtime_build_flags: u32,
     runtime_build_seed: u32,
     runtime_build_final_random_state: u32,
+    runtime_active_row_start: usize,
+    runtime_active_row_end: usize,
     course_end_threshold: f32,
     garbage_scalar: f32,
     salt_scalar: f32,
@@ -293,12 +299,13 @@ pub const LoadedLevelPreview = struct {
         }
 
         const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_start = options.runtime_active_row_start;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
         const course_end_threshold = options.course_end_threshold_override orelse fallbackCourseEndThreshold(total_rows);
         const runtime_build_config: RuntimeBuildConfig = .{
             .build_flags = runtime_build_flags,
             .build_seed = options.runtime_build_seed,
-            .active_row_start = options.runtime_active_row_start,
+            .active_row_start = runtime_active_row_start,
             .active_row_end = runtime_active_row_end,
         };
         const runtime_tiles = try buildRuntimeTileGrid(
@@ -372,6 +379,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .runtime_active_row_start = runtime_active_row_start,
+            .runtime_active_row_end = runtime_active_row_end,
             .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse level_definition.normalizedGarbageScalar() orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
@@ -459,12 +468,13 @@ pub const LoadedLevelPreview = struct {
         }
 
         const runtime_build_flags = options.runtime_build_flags;
+        const runtime_active_row_start = options.runtime_active_row_start;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
         const course_end_threshold = options.course_end_threshold_override orelse fallbackCourseEndThreshold(total_rows);
         const runtime_build_config: RuntimeBuildConfig = .{
             .build_flags = runtime_build_flags,
             .build_seed = options.runtime_build_seed,
-            .active_row_start = options.runtime_active_row_start,
+            .active_row_start = runtime_active_row_start,
             .active_row_end = runtime_active_row_end,
         };
         const runtime_tiles = try buildRuntimeTileGrid(
@@ -538,6 +548,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_build_flags = runtime_build_flags,
             .runtime_build_seed = options.runtime_build_seed,
             .runtime_build_final_random_state = mirror_state_build.final_random_state,
+            .runtime_active_row_start = runtime_active_row_start,
+            .runtime_active_row_end = runtime_active_row_end,
             .course_end_threshold = course_end_threshold,
             .garbage_scalar = options.garbage_scalar_override orelse 0.0,
             .salt_scalar = options.salt_scalar_override orelse 0.0,
@@ -2509,6 +2521,50 @@ test "level preview seeds course-end threshold from the fallback when unset" {
     defer preview.deinit();
 
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(preview.total_rows - 1)), preview.course_end_threshold, 0.0001);
+}
+
+test "level preview seeds runtime row window from the native fallback" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{ .load_models = false },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectEqual(defaultRuntimeActiveRowStart, preview.runtime_active_row_start);
+    try std.testing.expectEqual(preview.total_rows, preview.runtime_active_row_end);
+}
+
+test "level preview applies explicit runtime row window overrides" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/ARCADE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .runtime_active_row_start = 12,
+            .runtime_active_row_end = 345,
+        },
+    );
+    defer preview.deinit();
+
+    try std.testing.expectEqual(@as(usize, 12), preview.runtime_active_row_start);
+    try std.testing.expectEqual(@as(usize, 345), preview.runtime_active_row_end);
 }
 
 test "level preview applies explicit course-end threshold overrides" {

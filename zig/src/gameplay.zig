@@ -521,7 +521,7 @@ const cameraman_vertical_lift_late_weight: f32 = 0.35;
 const cameraman_deadzone_min_z_delta: f32 = 1.70000005;
 const cameraman_deadzone_max_z_delta: f32 = 3.0;
 const cameraman_fov_blend: f32 = 0.3;
-const cameraman_matrix_blend: f32 = 0.3;
+const cameraman_matrix_blend_scale: f32 = 0.3;
 const cameraman_lift_blend: f32 = 0.1;
 const cameraman_attachment_lift_scale: f32 = 0.35;
 const cameraman_launch_lift_scale: f32 = 0.24;
@@ -1390,9 +1390,13 @@ pub const Runner = struct {
     }
 
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
-        if (preview.total_rows == 0) return 1.0;
-        const total_rows = @as(f32, @floatFromInt(preview.total_rows));
-        return std.math.clamp(((self.camera_anchor.world.z / total_rows) * 1.4) - 0.4, 0.0, 1.0);
+        if (preview.total_rows == 0 or preview.runtime_active_row_start == 0) return 1.0;
+        const intro_transition_rows = @as(f32, @floatFromInt(preview.runtime_active_row_start));
+        return std.math.clamp(((self.camera_anchor.world.z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
+    }
+
+    fn cameramanMatrixBlendFactor(self: *const Runner) f32 {
+        return std.math.clamp(self.movement_rate_scalar * cameraman_matrix_blend_scale, 0.0, 1.0);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -2244,7 +2248,7 @@ pub const Runner = struct {
             return;
         }
 
-        const base_position = self.worldPosition(preview, 0.0);
+        const base_position = self.worldPosition(preview, attachment_entry_rider_height);
         const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
         const local_offset = rl.Vector3{
             .x = self.jetpack.wobble_x,
@@ -2639,7 +2643,7 @@ pub const Runner = struct {
         self.cameraman.out_matrix = linearInterpolateCameraMatrices(
             previous_desired_matrix,
             desired_matrix,
-            cameraman_matrix_blend,
+            self.cameramanMatrixBlendFactor(),
         );
         self.cameraman.current_desired_matrix = desired_matrix;
         self.cameraman.previous_desired_matrix = self.cameraman.current_desired_matrix;
@@ -5846,6 +5850,7 @@ test "attachment exit pending applies a world-Z camera roll" {
 
     runner.attachment_exit_pending = true;
     runner.attachment_exit_value_a = std.math.pi / 6.0;
+    runner.movement_rate_scalar = 1.0;
     runner.refreshCameraState(&fixture.preview);
     const rotated = cameraTransformFromMatrix(runner.cameramanMatrix());
 
@@ -6699,7 +6704,7 @@ test "camera anchor defaults to the player world position without jetpack offset
     runner.refreshCameraAnchor(&fixture.preview);
 
     try expectVector3ApproxEq(
-        runner.worldPosition(&fixture.preview, 0.0),
+        runner.worldPosition(&fixture.preview, attachment_entry_rider_height),
         runner.camera_anchor.world,
         0.0001,
     );
@@ -6714,7 +6719,7 @@ test "camera anchor uses the jetpack local offset lanes" {
     runner.jetpack.wobble_y = 0.5;
     runner.jetpack.wobble_alpha = -0.125;
 
-    const base_position = runner.worldPosition(&fixture.preview, 0.0);
+    const base_position = runner.worldPosition(&fixture.preview, attachment_entry_rider_height);
     const expected = rl.Vector3{
         .x = base_position.x + 0.25,
         .y = base_position.y + 0.5,
@@ -6724,6 +6729,28 @@ test "camera anchor uses the jetpack local offset lanes" {
     runner.refreshCameraAnchor(&fixture.preview);
 
     try expectVector3ApproxEq(expected, runner.camera_anchor.world, 0.0001);
+}
+
+test "cameraman progress blend uses the native runtime row-start threshold" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.camera_anchor.world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
+}
+
+test "cameraman matrix blend factor follows the live subgame rate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_rate_scalar = 0.2;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.06), runner.cameramanMatrixBlendFactor(), 0.0001);
+
+    runner.movement_rate_scalar = 8.0;
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
 }
 
 test "jetpack gauge ramps warning intensity during the startup tenth" {
