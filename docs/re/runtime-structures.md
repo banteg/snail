@@ -31,8 +31,10 @@ The current high-confidence `Player` fields are:
 - `+0x410`: `velocity`
 - `+0x41d`: `attachment_exit_pending`
 - `+0x424`: `attachment_exit_anchor_z`
-- `+0x42c`: `post_follow_value_a`
-- `+0x430`: `post_follow_value_b`
+- `+0x42c`: `attachment_exit_value_a`
+  - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
+- `+0x430`: `attachment_exit_value_b`
+  - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
 - `+0x43c`: `current_cell`
@@ -68,8 +70,8 @@ Current practical read for the hotspot bank:
   - slots `0..10` use the cached matrix at `player + 0x1684`
   - slots `11..18` use the cached matrix at `player + 0x1604`
 - the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`)
-- `update_cutscene` snapshots hotspot `18` in the repeated intro or death or completion camera states and uses the `12 -> 18` lerp as the state-`5` completion blend
-- no direct runtime consumer for hotspot `17` (`CameraSlugDeath`) was recovered in this pass
+- `update_cutscene` keeps reorienting the live intro camera around hotspot `18`, uses the `12 -> 18` lerp with the recovered sinusoidal x-offset in completion state `6`, and keeps the fixed completion/death look-at legs on hotspot `18`
+- hotspot `17` (`CameraSlugDeath`) is a real transformed hotspot, but no direct runtime consumer for it was recovered in this pass
 - the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still unresolved
 
 Important caveat:
@@ -195,8 +197,8 @@ Current practical read:
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - `initialize_subgoldy_fall_state` seeds the attachment-exit handoff:
-  - `post_follow_value_a` from `follow_state.orientation_b`
-  - `post_follow_value_b` from `follow_state.template_record->row_scalar_a` or zero
+  - `attachment_exit_value_a` from `follow_state.orientation_b`
+  - `attachment_exit_value_b` from `follow_state.template_record->row_scalar_a` or zero
   - `attachment_exit_pending = 1`
   - `attachment_exit_progress = 0`
   - `attachment_exit_gate_a = 0`

@@ -475,11 +475,10 @@ const math_random_center: f32 = 16384.0;
 const math_random_inv_center: f32 = 1.0 / math_random_center;
 const track_parcel_delivery_random_y_scale: f32 = 1.5 * math_random_inv_center;
 const track_parcel_home_arc_height: f32 = 0.5;
+const player_world_position_height: f32 = 0.4;
 const completion_cutscene_x_offset: f32 = 0.5;
 const death_cutscene_x_offset: f32 = 2.0;
 const death_cutscene_y_floor: f32 = 0.0;
-const cutscene_target_body_height: f32 = 0.18;
-const cutscene_anchor_b_height: f32 = 0.82;
 const base_fire_cooldown_ticks: u8 = 10;
 const projectile_speed_rows_per_second: f32 = 48.0;
 const turret_projectile_speed_rows_per_second: f32 = 20.0;
@@ -526,8 +525,6 @@ const cameraman_deadzone_max_z_delta: f32 = 3.0;
 const cameraman_fov_blend: f32 = 0.3;
 const cameraman_attachment_lift_blend: f32 = 0.18;
 const cameraman_launch_lift_blend: f32 = 0.18;
-const completion_cutscene_start_blend: f32 = 0.5;
-const death_cutscene_start_blend: f32 = 0.85;
 const native_hotspot_camera_skid_stop_index: u8 = 12;
 const native_hotspot_camera_slug_death_index: u8 = 17;
 const native_hotspot_camera_intro_talk_index: u8 = 18;
@@ -577,14 +574,14 @@ const AttachmentFollowState = struct {
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
     vertical_offset: f32 = 0.0,
-    exit_carryover_orientation: f32 = 0.0,
-    exit_carryover_scalar: f32 = 0.0,
+    exit_seed_a: f32 = 0.0,
+    exit_seed_b: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
-const AttachmentExitCarryover = struct {
-    value_a: f32 = 0.0,
-    value_b: f32 = 0.0,
+const AttachmentExitSeeds = struct {
+    seed_a: f32 = 0.0,
+    seed_b: f32 = 0.0,
 };
 
 const InstalledAttachmentEntry = struct {
@@ -973,10 +970,10 @@ pub const Runner = struct {
     launch: LaunchState = .{},
     attachment_exit_pending: bool = false,
     attachment_exit_anchor_z: f32 = 0.0,
-    post_follow_value_a: f32 = 0.0,
-    post_follow_value_b: f32 = 0.0,
-    attachment_exit_carryover_a: f32 = 0.0,
-    attachment_exit_carryover_b: f32 = 0.0,
+    attachment_exit_value_a: f32 = 0.0,
+    attachment_exit_value_b: f32 = 0.0,
+    attachment_exit_seed_a: f32 = 0.0,
+    attachment_exit_seed_b: f32 = 0.0,
     attachment_exit_progress: f32 = 0.0,
     attachment_exit_progress_step: f32 = 0.0,
     attachment_exit_gate_a: bool = false,
@@ -2216,8 +2213,8 @@ pub const Runner = struct {
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.attachment_pre_roll = 0.0;
         self.attachment_post_roll = 0.0;
-        self.attachment_follow.exit_carryover_orientation = 0.0;
-        self.attachment_follow.exit_carryover_scalar = 0.0;
+        self.attachment_follow.exit_seed_a = 0.0;
+        self.attachment_follow.exit_seed_b = 0.0;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             const surface_roll = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
@@ -2226,14 +2223,14 @@ pub const Runner = struct {
             self.heading_roll = normalizeRadians(self.heading_roll + delta_roll);
             self.attachment_pre_roll = surface_roll * attachment_pre_roll_scale;
             self.attachment_post_roll = surface_roll;
-            const carryover = self.attachmentExitCarryoverFromFollow(preview);
-            self.attachment_follow.exit_carryover_orientation = carryover.value_a;
-            // PORT(partial): Windows latches an attachment-row scalar for exit carryover. Use
-            // the live template pose delta here so the exit controller is driven by attachment
-            // geometry rather than the old cameraman roll approximation.
-            self.attachment_follow.exit_carryover_scalar = carryover.value_b;
-            self.attachment_exit_carryover_a = carryover.value_a;
-            self.attachment_exit_carryover_b = carryover.value_b;
+            const exit_seeds = self.attachmentExitSeedsFromFollow(preview);
+            self.attachment_follow.exit_seed_a = exit_seeds.seed_a;
+            // PORT(partial): Windows latches two exit-side seed lanes here, but their native
+            // meaning is still unresolved. Keep using the live template pose delta as a
+            // geometry-driven placeholder instead of the older cameraman-roll shortcut.
+            self.attachment_follow.exit_seed_b = exit_seeds.seed_b;
+            self.attachment_exit_seed_a = exit_seeds.seed_a;
+            self.attachment_exit_seed_b = exit_seeds.seed_b;
             return;
         }
 
@@ -2252,159 +2249,211 @@ pub const Runner = struct {
         return frame;
     }
 
+    fn playerWorldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        return self.worldPosition(preview, player_world_position_height);
+    }
+
+    fn snailHotspotPrimarySourceFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
+        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        frame.position = self.worldPosition(preview, attachment_entry_rider_height);
+        return frame;
+    }
+
+    fn snailHotspotSecondarySourceFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
+        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        frame.position = self.playerWorldPosition(preview);
+        return frame;
+    }
+
+    fn transformLocalPointByMatrix(matrix: rl.Matrix, local: rl.Vector3) rl.Vector3 {
+        return .{
+            .x = matrix.m12 + (matrix.m0 * local.x) + (matrix.m4 * local.y) + (matrix.m8 * local.z),
+            .y = matrix.m13 + (matrix.m1 * local.x) + (matrix.m5 * local.y) + (matrix.m9 * local.z),
+            .z = matrix.m14 + (matrix.m2 * local.x) + (matrix.m6 * local.y) + (matrix.m10 * local.z),
+        };
+    }
+
     fn refreshSnailHotspots(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) {
             self.snail_hotspots = .{};
             return;
         }
 
-        const frame = self.bodyFrame(preview);
-        self.snail_hotspots.camera_skid_stop = offsetPosition(
-            frame.position,
-            frame.right,
-            frame.up,
-            frame.forward,
-            hotspot_camera_skid_stop_local.x,
-            hotspot_camera_skid_stop_local.y,
-            hotspot_camera_skid_stop_local.z,
+        const primary_source_matrix = cameraMatrixFromTransform(self.snailHotspotPrimarySourceFrame(preview));
+        const secondary_source_matrix = cameraMatrixFromTransform(self.snailHotspotSecondarySourceFrame(preview));
+
+        const hotspotSourceMatrix = struct {
+            fn select(primary: rl.Matrix, secondary: rl.Matrix, hotspot_index: u8) rl.Matrix {
+                return switch (hotspot_index) {
+                    0...10 => secondary,
+                    else => primary,
+                };
+            }
+        }.select;
+
+        self.snail_hotspots.camera_skid_stop = transformLocalPointByMatrix(
+            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_skid_stop_index),
+            hotspot_camera_skid_stop_local,
         );
-        self.snail_hotspots.camera_slug_death = offsetPosition(
-            frame.position,
-            frame.right,
-            frame.up,
-            frame.forward,
-            hotspot_camera_slug_death_local.x,
-            hotspot_camera_slug_death_local.y,
-            hotspot_camera_slug_death_local.z,
+        self.snail_hotspots.camera_slug_death = transformLocalPointByMatrix(
+            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_slug_death_index),
+            hotspot_camera_slug_death_local,
         );
-        self.snail_hotspots.camera_intro_talk = offsetPosition(
-            frame.position,
-            frame.right,
-            frame.up,
-            frame.forward,
-            hotspot_camera_intro_talk_local.x,
-            hotspot_camera_intro_talk_local.y,
-            hotspot_camera_intro_talk_local.z,
+        self.snail_hotspots.camera_intro_talk = transformLocalPointByMatrix(
+            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_intro_talk_index),
+            hotspot_camera_intro_talk_local,
         );
     }
 
     fn cutsceneTargetPoint(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        return self.worldPosition(preview, cutscene_target_body_height);
+        return self.playerWorldPosition(preview);
     }
 
-    fn cutsceneMatrixAtPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, position: rl.Vector3) rl.Matrix {
+    fn cutsceneLookAtMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, position: rl.Vector3) rl.Matrix {
         return lookAtPoint(
-            cameraMatrixWithPosition(self.cameraman.out_matrix, position),
+            cameraMatrixWithPosition(cameraman_identity_matrix, position),
             self.cutsceneTargetPoint(preview),
-            self.bodyFrame(preview).up,
+            self.snailHotspotPrimarySourceFrame(preview).up,
         );
     }
 
-    fn introCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneMatrixAtPosition(preview, self.snail_hotspots.camera_intro_talk);
+    fn introCutsceneHoldMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
+        return self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk);
     }
 
-    fn completionCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, t: f32) rl.Matrix {
-        const start_position = lerpVector3(
+    fn introCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
+        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
+        return linearInterpolateCameraMatrices(
+            self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk),
+            self.cameraman.out_matrix,
+            alpha,
+        );
+    }
+
+    fn completionCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
+        var position = lerpVector3(
             self.snail_hotspots.camera_skid_stop,
             self.snail_hotspots.camera_intro_talk,
-            completion_cutscene_start_blend,
+            progress,
         );
-        return self.cutsceneMatrixAtPosition(
-            preview,
-            lerpVector3(start_position, self.snail_hotspots.camera_intro_talk, t),
+        position.x -= std.math.sin(progress * std.math.pi) * completion_cutscene_x_offset;
+        return position;
+    }
+
+    fn completionCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
+        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
+        return linearInterpolateCameraMatrices(
+            self.cameraman.out_matrix,
+            self.cutsceneLookAtMatrix(preview, self.completionCutsceneBlendPosition(progress)),
+            alpha,
         );
     }
 
-    fn deathCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, t: f32) rl.Matrix {
-        const start_position = lerpVector3(
-            self.snail_hotspots.camera_slug_death,
-            self.snail_hotspots.camera_intro_talk,
-            death_cutscene_start_blend,
+    fn completionCutsceneFixedMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
+        return self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk);
+    }
+
+    fn deathCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
+        var position = self.snail_hotspots.camera_intro_talk;
+        position.x += std.math.sin(progress * std.math.pi) * death_cutscene_x_offset;
+        position.y = @max(position.y, death_cutscene_y_floor);
+        return position;
+    }
+
+    fn deathCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
+        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
+        return linearInterpolateCameraMatrices(
+            self.cameraman.out_matrix,
+            self.cutsceneLookAtMatrix(preview, self.deathCutsceneBlendPosition(progress)),
+            alpha,
         );
-        return self.cutsceneMatrixAtPosition(
-            preview,
-            lerpVector3(start_position, self.snail_hotspots.camera_intro_talk, t),
-        );
+    }
+
+    fn deathCutsceneFixedMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
+        return self.cutsceneLookAtMatrix(preview, self.deathCutsceneBlendPosition(0.0));
     }
 
     fn updateCutsceneCamera(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or self.cutscene_camera.state == 0) return;
 
-        switch (self.cutscene_camera.state) {
-            1 => {
-                self.cutscene_camera.matrix = self.introCutsceneMatrix(preview);
-                self.cutscene_camera.snap_next = true;
-                self.cutscene_camera.ticks = 0;
-                self.cutscene_ticks = 0;
-                self.cutscene_camera.state = 2;
-            },
-            2 => {
-                self.cutscene_camera.matrix = self.introCutsceneMatrix(preview);
-                self.cutscene_camera.ticks +|= 1;
-                self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                if (self.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
-                    self.cutscene_camera.state = 8;
+        while (true) {
+            switch (self.cutscene_camera.state) {
+                1 => {
+                    self.cutscene_camera.snap_next = true;
                     self.cutscene_camera.ticks = 0;
-                }
-            },
-            8 => {
-                const progress = progressForTicks(self.cutscene_camera.ticks, intro_cutscene_blend_ticks);
-                const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                self.cutscene_camera.matrix = linearInterpolateCameraMatrices(
-                    self.introCutsceneMatrix(preview),
-                    self.cameraman.out_matrix,
-                    eased,
-                );
-                self.cutscene_camera.ticks +|= 1;
-                self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
-                    self.cutscene_camera.state = 9;
-                }
-            },
-            9 => {
-                self.cutscene_camera.matrix = self.cameraman.out_matrix;
-                self.clearCutscene();
-            },
-            5 => {
-                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, 0.0);
-                self.cutscene_camera.snap_next = true;
-                self.cutscene_camera.ticks = 0;
-                self.cutscene_camera.state = 6;
-            },
-            6 => {
-                const progress = progressForTicks(self.cutscene_camera.ticks, completion_cutscene_blend_ticks);
-                const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, eased);
-                self.cutscene_camera.ticks +|= 1;
-                if (self.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
-                    self.cutscene_camera.state = 7;
-                }
-            },
-            7 => {
-                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, 1.0);
-            },
-            10 => {
-                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, 0.0);
-                self.cutscene_camera.snap_next = true;
-                self.cutscene_camera.ticks = 0;
-                self.cutscene_camera.state = 11;
-            },
-            11 => {
-                const progress = progressForTicks(self.cutscene_camera.ticks, death_cutscene_blend_ticks);
-                const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, eased);
-                self.cutscene_camera.ticks +|= 1;
-                if (self.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
-                    self.cutscene_camera.state = 12;
-                }
-            },
-            12 => {
-                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, 1.0);
-            },
-            else => {
-                self.cutscene_camera.state = 0;
-            },
+                    self.cutscene_ticks = 0;
+                    self.cutscene_camera.state = 2;
+                    continue;
+                },
+                2 => {
+                    self.cutscene_camera.matrix = self.introCutsceneHoldMatrix(preview);
+                    self.cutscene_camera.ticks +|= 1;
+                    self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
+                    if (self.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
+                        self.cutscene_camera.state = 8;
+                        self.cutscene_camera.ticks = 0;
+                    }
+                    break;
+                },
+                8 => {
+                    const progress = progressForTicks(self.cutscene_camera.ticks, intro_cutscene_blend_ticks);
+                    self.cutscene_camera.matrix = self.introCutsceneBlendMatrix(preview, progress);
+                    self.cutscene_camera.ticks +|= 1;
+                    self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
+                    if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
+                        self.cutscene_camera.state = 9;
+                    }
+                    break;
+                },
+                9 => {
+                    self.cutscene_camera.matrix = self.cameraman.out_matrix;
+                    self.clearCutscene();
+                    break;
+                },
+                5 => {
+                    self.cutscene_camera.snap_next = true;
+                    self.cutscene_camera.ticks = 0;
+                    self.cutscene_camera.state = 6;
+                    continue;
+                },
+                6 => {
+                    const progress = progressForTicks(self.cutscene_camera.ticks, completion_cutscene_blend_ticks);
+                    self.cutscene_camera.matrix = self.completionCutsceneBlendMatrix(preview, progress);
+                    self.cutscene_camera.ticks +|= 1;
+                    if (self.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
+                        self.cutscene_camera.state = 7;
+                    }
+                    break;
+                },
+                7 => {
+                    self.cutscene_camera.matrix = self.completionCutsceneFixedMatrix(preview);
+                    break;
+                },
+                10 => {
+                    self.cutscene_camera.snap_next = true;
+                    self.cutscene_camera.ticks = 0;
+                    self.cutscene_camera.state = 11;
+                    continue;
+                },
+                11 => {
+                    const progress = progressForTicks(self.cutscene_camera.ticks, death_cutscene_blend_ticks);
+                    self.cutscene_camera.matrix = self.deathCutsceneBlendMatrix(preview, progress);
+                    self.cutscene_camera.ticks +|= 1;
+                    if (self.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
+                        self.cutscene_camera.state = 12;
+                    }
+                    break;
+                },
+                12 => {
+                    self.cutscene_camera.matrix = self.deathCutsceneFixedMatrix(preview);
+                    break;
+                },
+                else => {
+                    self.cutscene_camera.state = 0;
+                    break;
+                },
+            }
+            break;
         }
     }
 
@@ -2464,7 +2513,7 @@ pub const Runner = struct {
             desired_transform = rotateCameraTransformLocalZ(desired_transform, self.attachment_post_roll);
         }
         if (self.attachment_exit_pending) {
-            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.post_follow_value_a);
+            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.attachment_exit_value_a);
         }
         desired_transform = rotateCameraTransformLocalZ(desired_transform, self.heading_roll);
 
@@ -3467,7 +3516,7 @@ pub const Runner = struct {
         if (!self.attachment_exit_gate_a and self.attachment_exit_progress > attachment_exit_gate_a_progress_threshold) {
             self.attachment_exit_gate_a = true;
         }
-        self.post_follow_value_a = normalizeRadians(self.post_follow_value_a + (self.post_follow_value_b * progress_step));
+        self.attachment_exit_value_a = normalizeRadians(self.attachment_exit_value_a + (self.attachment_exit_value_b * progress_step));
         if (self.attachment_exit_progress >= 1.0) {
             self.attachment_exit_pending = false;
         }
@@ -3686,20 +3735,24 @@ pub const Runner = struct {
     }
 
     fn beginAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, sample: RowSample) void {
+        const source_row: f32 = @floatFromInt(sample.global_row);
+        const player_position = self.playerWorldPosition(preview);
         self.launch = .{};
         self.movement_mode = .attachment;
         self.attachment_path_name = sample.path_name;
         self.attachment_follow = .{
             .active = true,
             .source_row = sample.global_row,
-            .progress = self.row_position - @floor(self.row_position),
+            // PORT(verified): native generic entry seeds progress from the current player Z
+            // relative to the source-row anchor, not from a generic row-fraction shortcut.
+            .progress = std.math.clamp(self.row_position - source_row, 0.0, 1.0),
             .exit_overshoot = 0.0,
             .lateral_offset = if (sample.path_center_lane) |path_center_lane|
                 self.lane_center - path_center_lane
             else
                 0.0,
             .cached_output_lane_center = self.lane_center,
-            .vertical_offset = 0.0,
+            .vertical_offset = player_position.y - attachment_entry_rider_height,
         };
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
@@ -3898,11 +3951,11 @@ pub const Runner = struct {
         self.attachment_follow = .{};
     }
 
-    fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
+    fn attachmentExitSeedsFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitSeeds {
         const built = self.currentAttachmentBuilt(preview) orelse {
             return .{
-                .value_a = self.attachment_post_roll,
-                .value_b = 0.0,
+                .seed_a = self.attachment_post_roll,
+                .seed_b = 0.0,
             };
         };
 
@@ -3934,27 +3987,27 @@ pub const Runner = struct {
             attachmentVec3ToVector3(next_pose.basis_up),
         );
         return .{
-            .value_a = current_roll,
-            .value_b = normalizeRadians(next_roll - current_roll),
+            .seed_a = current_roll,
+            .seed_b = normalizeRadians(next_roll - current_roll),
         };
     }
 
-    fn currentAttachmentExitCarryover(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
+    fn currentAttachmentExitSeeds(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitSeeds {
         if (self.attachment_follow.active) {
-            if (self.attachment_follow.exit_carryover_orientation != 0.0 or
-                self.attachment_follow.exit_carryover_scalar != 0.0)
+            if (self.attachment_follow.exit_seed_a != 0.0 or
+                self.attachment_follow.exit_seed_b != 0.0)
             {
                 return .{
-                    .value_a = self.attachment_follow.exit_carryover_orientation,
-                    .value_b = self.attachment_follow.exit_carryover_scalar,
+                    .seed_a = self.attachment_follow.exit_seed_a,
+                    .seed_b = self.attachment_follow.exit_seed_b,
                 };
             }
-            return self.attachmentExitCarryoverFromFollow(preview);
+            return self.attachmentExitSeedsFromFollow(preview);
         }
 
         return .{
-            .value_a = self.attachment_exit_carryover_a,
-            .value_b = self.attachment_exit_carryover_b,
+            .seed_a = self.attachment_exit_seed_a,
+            .seed_b = self.attachment_exit_seed_b,
         };
     }
 
@@ -3968,33 +4021,33 @@ pub const Runner = struct {
     }
 
     fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
-        const carryover = if (self.movement_mode == .attachment and self.attachment_follow.active)
-            self.currentAttachmentExitCarryover(preview)
+        const exit_seeds = if (self.movement_mode == .attachment and self.attachment_follow.active)
+            self.currentAttachmentExitSeeds(preview)
         else
-            AttachmentExitCarryover{
-                .value_a = self.attachment_exit_carryover_a,
-                .value_b = self.attachment_exit_carryover_b,
+            AttachmentExitSeeds{
+                .seed_a = self.attachment_exit_seed_a,
+                .seed_b = self.attachment_exit_seed_b,
             };
         self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = carryover.value_a;
-        self.post_follow_value_b = carryover.value_b;
-        self.attachment_exit_carryover_a = carryover.value_a;
-        self.attachment_exit_carryover_b = carryover.value_b;
+        self.attachment_exit_value_a = exit_seeds.seed_a;
+        self.attachment_exit_value_b = exit_seeds.seed_b;
+        self.attachment_exit_seed_a = exit_seeds.seed_a;
+        self.attachment_exit_seed_b = exit_seeds.seed_b;
         self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
     }
 
     fn seedAttachmentExitStateFromCurrentExit(self: *Runner, anchor_z: f32) void {
-        const post_follow_value_a = self.post_follow_value_a;
-        const post_follow_value_b = self.post_follow_value_b;
+        const attachment_exit_value_a = self.attachment_exit_value_a;
+        const attachment_exit_value_b = self.attachment_exit_value_b;
         self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = post_follow_value_a;
-        self.post_follow_value_b = post_follow_value_b;
+        self.attachment_exit_value_a = attachment_exit_value_a;
+        self.attachment_exit_value_b = attachment_exit_value_b;
     }
 
     fn seedAttachmentExitStateZeroed(self: *Runner, anchor_z: f32) void {
         self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = 0.0;
-        self.post_follow_value_b = 0.0;
+        self.attachment_exit_value_a = 0.0;
+        self.attachment_exit_value_b = 0.0;
     }
 
     fn shouldRetireAttachmentDirectlyForCompletion(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -4374,6 +4427,29 @@ fn stepUntilParcelRegistered(runner: *Runner, preview: *const track.LoadedLevelP
         runner.step(preview, .{}, 1.0 / 60.0);
     }
     return steps;
+}
+
+fn expectVector3ApproxEq(expected: rl.Vector3, actual: rl.Vector3, tolerance: f32) !void {
+    try std.testing.expectApproxEqAbs(expected.x, actual.x, tolerance);
+    try std.testing.expectApproxEqAbs(expected.y, actual.y, tolerance);
+    try std.testing.expectApproxEqAbs(expected.z, actual.z, tolerance);
+}
+
+fn expectCameraMatrixApproxEq(expected: rl.Matrix, actual: rl.Matrix, tolerance: f32) !void {
+    const expected_transform = normalizeCameraTransform(cameraTransformFromMatrix(expected));
+    const actual_transform = normalizeCameraTransform(cameraTransformFromMatrix(actual));
+
+    try expectVector3ApproxEq(expected_transform.position, actual_transform.position, tolerance);
+    try expectVector3ApproxEq(expected_transform.right, actual_transform.right, tolerance);
+    try expectVector3ApproxEq(expected_transform.up, actual_transform.up, tolerance);
+    try expectVector3ApproxEq(expected_transform.forward, actual_transform.forward, tolerance);
+}
+
+fn vector3DistanceSquared(a: rl.Vector3, b: rl.Vector3) f32 {
+    const delta_x = a.x - b.x;
+    const delta_y = a.y - b.y;
+    const delta_z = a.z - b.z;
+    return (delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z);
 }
 
 fn laneOutsideAttachmentWidth(
@@ -5488,8 +5564,8 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     runner.attachment_path_name = "SUPERTRAMP";
     runner.attachment_follow = .{
         .active = true,
-        .exit_carryover_orientation = 0.6,
-        .exit_carryover_scalar = 0.4,
+        .exit_seed_a = 0.6,
+        .exit_seed_b = 0.4,
     };
     runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
 
@@ -5499,29 +5575,29 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expect(!runner.attachment_exit_gate_a);
     try std.testing.expect(!runner.attachment_exit_gate_b);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.post_follow_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.post_follow_value_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.attachment_exit_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.attachment_exit_value_b, 0.0001);
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
 }
 
-test "latched attachment carryover can reseed the exit handoff after follow clears" {
+test "latched attachment exit seeds can reseed the exit handoff after follow clears" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.attachment_exit_carryover_a = 0.6;
-    runner.attachment_exit_carryover_b = 0.4;
+    runner.attachment_exit_seed_a = 0.6;
+    runner.attachment_exit_seed_b = 0.4;
 
     runner.seedAttachmentExitStateFromCarryover(&fixture.preview, 12.0);
 
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.attachment_exit_anchor_z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.post_follow_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.post_follow_value_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.attachment_exit_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.attachment_exit_value_b, 0.0001);
 }
 
-test "fall entry preserves current post-follow carryover when exit handoff is already pending" {
+test "fall entry preserves current attachment exit values when exit handoff is already pending" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -5529,16 +5605,16 @@ test "fall entry preserves current post-follow carryover when exit handoff is al
     runner.attachment_exit_pending = true;
     runner.attachment_exit_progress = 0.5;
     runner.attachment_exit_gate_a = true;
-    runner.post_follow_value_a = 0.25;
-    runner.post_follow_value_b = 0.5;
+    runner.attachment_exit_value_a = 0.25;
+    runner.attachment_exit_value_b = 0.5;
 
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
 
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_exit_progress, 0.0001);
     try std.testing.expect(!runner.attachment_exit_gate_a);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.post_follow_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.post_follow_value_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment_exit_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment_exit_value_b, 0.0001);
 }
 
 test "on-track hazard death does not arm the attachment exit handoff" {
@@ -5587,14 +5663,14 @@ test "fall state keeps Z anchored and advances carried follow roll" {
 
     var runner = Runner.init(&fixture.preview);
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.post_follow_value_a = 0.25;
-    runner.post_follow_value_b = 0.5;
+    runner.attachment_exit_value_a = 0.25;
+    runner.attachment_exit_value_b = 0.5;
     const anchor_z = runner.attachment_exit_anchor_z;
 
     runner.updatePhaseController(&fixture.preview, 1.0 / 60.0);
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
-    try std.testing.expect(runner.post_follow_value_a > 0.25);
+    try std.testing.expect(runner.attachment_exit_value_a > 0.25);
 }
 
 test "attachment exit progress arms gate a after the recovered threshold" {
@@ -5632,7 +5708,7 @@ test "attachment exit pending applies a world-Z camera roll" {
     const baseline = cameraTransformFromMatrix(runner.cameramanMatrix());
 
     runner.attachment_exit_pending = true;
-    runner.post_follow_value_a = std.math.pi / 6.0;
+    runner.attachment_exit_value_a = std.math.pi / 6.0;
     runner.refreshCameraState(&fixture.preview);
     const rotated = cameraTransformFromMatrix(runner.cameramanMatrix());
 
@@ -5875,6 +5951,80 @@ test "completion voice gate trips at the native 2.5 second delay" {
     try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_voice_delay_seconds);
 }
 
+test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.setCutscene(cutscene_intro_id);
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u8, 2), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(
+        runner.introCutsceneHoldMatrix(&fixture.preview),
+        runner.cutsceneCameraMatrix(),
+        0.0001,
+    );
+
+    runner.cutscene_camera.state = 8;
+    runner.cutscene_camera.ticks = intro_cutscene_blend_ticks / 2;
+    runner.refreshCameraState(&fixture.preview);
+
+    const progress = progressForTicks(intro_cutscene_blend_ticks / 2, intro_cutscene_blend_ticks);
+    const actual = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
+    const expected = runner.introCutsceneBlendMatrix(&fixture.preview, progress);
+    const look_at = normalizeCameraTransform(cameraTransformFromMatrix(runner.introCutsceneHoldMatrix(&fixture.preview)));
+    const cameraman = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.out_matrix));
+
+    try std.testing.expectEqual(@as(u8, 8), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(expected, runner.cutsceneCameraMatrix(), 0.0001);
+    try std.testing.expect(
+        vector3DistanceSquared(actual.position, cameraman.position) <
+            vector3DistanceSquared(look_at.position, cameraman.position),
+    );
+}
+
+test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 18" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.setCutscene(cutscene_completion_id);
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+
+    runner.cutscene_camera.state = 6;
+    runner.cutscene_camera.ticks = completion_cutscene_blend_ticks / 2;
+    runner.refreshCameraState(&fixture.preview);
+
+    const progress = progressForTicks(completion_cutscene_blend_ticks / 2, completion_cutscene_blend_ticks);
+    const expected_blend = runner.completionCutsceneBlendMatrix(&fixture.preview, progress);
+    const actual_blend = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
+    const hotspot_lerp = lerpVector3(
+        runner.snail_hotspots.camera_skid_stop,
+        runner.snail_hotspots.camera_intro_talk,
+        progress,
+    );
+
+    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
+    try std.testing.expect(actual_blend.position.x < hotspot_lerp.x);
+
+    runner.cutscene_camera.state = 7;
+    runner.cutscene_camera.ticks = 0;
+    runner.refreshCameraState(&fixture.preview);
+
+    const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
+    try std.testing.expectEqual(@as(u8, 7), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(
+        runner.completionCutsceneFixedMatrix(&fixture.preview),
+        runner.cutsceneCameraMatrix(),
+        0.0001,
+    );
+    try expectVector3ApproxEq(runner.snail_hotspots.camera_intro_talk, fixed.position, 0.0001);
+}
+
 test "postal completion handoff waits for the row event controller to complete" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
@@ -5996,19 +6146,27 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment_follow.lateral_offset > 0.0);
 }
 
-test "standalone start segment attachment follow uses built template world height" {
+test "standalone start segment attachment follow seeds generic entry from player-relative row and height" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, target);
+    const sample = runner.sampleRow(&fixture.preview, target.row).?;
+    const expected_progress = std.math.clamp(
+        runner.row_position - @as(f32, @floatFromInt(sample.global_row)),
+        0.0,
+        1.0,
+    );
+    const expected_vertical_offset = runner.playerWorldPosition(&fixture.preview).y - attachment_entry_rider_height;
 
-    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    runner.beginAttachmentFollow(&fixture.preview, sample);
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.vertical_offset, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_progress, runner.attachment_follow.progress, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_vertical_offset, runner.attachment_follow.vertical_offset, 0.0001);
 
     const world_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
@@ -6019,6 +6177,48 @@ test "standalone start segment attachment follow uses built template world heigh
 
     try std.testing.expect(world_position.y > floor_height + 0.5);
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
+}
+
+test "death cutscene keeps converging on hotspot 18 instead of switching to hotspot 17" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
+    runner.phase.fall.world_y = -0.75;
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u8, 11), runner.cutscene_camera.state);
+
+    runner.cutscene_camera.state = 11;
+    runner.cutscene_camera.ticks = death_cutscene_blend_ticks / 2;
+    runner.refreshCameraState(&fixture.preview);
+
+    const progress = progressForTicks(death_cutscene_blend_ticks / 2, death_cutscene_blend_ticks);
+    const expected_blend = runner.deathCutsceneBlendMatrix(&fixture.preview, progress);
+    const actual_blend = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
+
+    try std.testing.expectEqual(@as(u8, 11), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
+    try std.testing.expect(actual_blend.position.x > runner.snail_hotspots.camera_intro_talk.x);
+    try std.testing.expect(actual_blend.position.y >= death_cutscene_y_floor);
+
+    runner.cutscene_camera.state = 12;
+    runner.cutscene_camera.ticks = 0;
+    runner.refreshCameraState(&fixture.preview);
+
+    const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
+    try std.testing.expectEqual(@as(u8, 12), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(
+        runner.deathCutsceneFixedMatrix(&fixture.preview),
+        runner.cutsceneCameraMatrix(),
+        0.0001,
+    );
+    try std.testing.expect(fixed.position.y >= death_cutscene_y_floor);
+    try std.testing.expect(
+        vector3DistanceSquared(fixed.position, runner.snail_hotspots.camera_intro_talk) <
+            vector3DistanceSquared(fixed.position, runner.snail_hotspots.camera_slug_death),
+    );
 }
 
 test "kind42 entry height preserves the recovered raw local offset" {

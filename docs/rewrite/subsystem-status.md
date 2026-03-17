@@ -174,18 +174,20 @@ Implemented now:
 
 - gameplay can follow built attachment templates instead of only row-midpoint hints
 - built templates drive live attachment progression, world pose, camera forward/up, and lane-center output
+- generic non-installed attachment begin now seeds progress from live player `z` relative to the source-row anchor and seeds local height from live player `y - 0.49`, instead of the older row-fraction and zero-height shortcut
 - natural-end exit now uses template progress and template end pose
 - elevated side exits preserve airborne height instead of snapping straight to the floor
 - `SUPERTRAMP` has a dedicated launch exit path
 - a geometric installed-entry attempt now runs before the old source-row fallback
 - source-row installed-entry fallback remains in place for stability where the geometric entry is not yet strong enough
+- the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
 - the full swept local-frame entry test
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
-- exact side-exit/natural-end return values and post-follow accumulator semantics
+- exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
 Best next work:
 
@@ -213,7 +215,7 @@ Implemented now:
 Still missing or approximate:
 
 - the remaining Windows `cameraman` lift/attachment semantics beyond the current roll-order port
-- the exact `build_snail_hotspots` source-matrix split beyond the current body-frame approximation for hotspots `12/17/18`
+- the exact gameplay roles of the two `build_snail_hotspots` source matrices beyond the currently consumed `12/17/18` camera slots
 - any still-missing `cRCutScene::AI()` branches outside the now-ported intro `1 -> 2 -> 8 -> 9`, completion `5 -> 6 -> 7`, and death `10 -> 11 -> 12` lanes
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
 - the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
@@ -222,7 +224,7 @@ Still missing or approximate:
 Best next work:
 
 - keep the attachment-driven camera path aligned with the same pose data gameplay uses
-- tighten the remaining cutscene-anchor and attachment-exit semantics now that the override camera lives on the runner instead of in app-side helpers
+- tighten the remaining unresolved hotspot/source-matrix roles and attachment-exit semantics now that the override camera lives on the runner instead of in app-side helpers
 
 ## Hazards, Pickups, Parcels, And Score Events
 
@@ -259,7 +261,7 @@ Implemented now:
 - route-end completion can now arm from a dedicated `course_end_threshold` field instead of only the older final-row heuristic; the current producer is still provisional, so the preview seeds that field from a last-row fallback until the native source is recovered
 - route-end completion can now arm while a collected parcel is still in flight, but the runner-local completion handoff no longer returns early; it waits for the row-event controller to settle before the app-level completion bridge fires
 - completion handoff no longer collapses straight into one delayed app return; the runner now emits an early completion-screen init handoff once cutscene state `6` is active, then keeps the recovered `2.5s` voice / `5s` finalize controller alive until the late frontend exit can fire
-- completion camera no longer uses the older handcrafted anchor formulas; the override lane now rebuilds world hotspots from the live body frame, snaps intro onto hotspot `18`, uses the recovered `12 -> 18` completion blend lane, and keeps spare-life death converging toward hotspot `18` instead of forcing hotspot `17`
+- completion camera no longer uses the older handcrafted anchor formulas; the override lane now rebuilds the camera-relevant hotspots through the recovered source-matrix split, snaps intro onto hotspot `18`, uses the recovered `12 -> 18` completion blend lane, and keeps spare-life death converging toward hotspot `18` instead of forcing hotspot `17`
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:
