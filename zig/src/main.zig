@@ -9836,15 +9836,7 @@ fn normalizeCameraWorldTransform(transform: CameraWorldTransform) CameraWorldTra
 }
 
 fn blendCameraWorldMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
-    const left = cameraWorldTransformFromMatrix(lhs);
-    const right = cameraWorldTransformFromMatrix(rhs);
-    const blended = normalizeCameraWorldTransform(.{
-        .position = lerpVector3(left.position, right.position, t),
-        .right = lerpVector3(left.right, right.right, t),
-        .up = lerpVector3(left.up, right.up, t),
-        .forward = lerpVector3(left.forward, right.forward, t),
-    });
-    return modelTransformFromBasis(blended.position, blended.right, blended.up, blended.forward);
+    return gameplay.linearInterpolateCameraMatrices(lhs, rhs, t);
 }
 
 fn fovDegreesForSubgameCameraSource(source: SubgameCameraSource, live_fov_degrees: f32) f32 {
