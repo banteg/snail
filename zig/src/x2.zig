@@ -343,6 +343,78 @@ pub fn sameTopology(a: *const Document, b: *const Document) bool {
     return true;
 }
 
+pub fn materialBounds(doc: *const Document, material_index: usize) ?Bounds {
+    if (material_index >= doc.materials.len) return null;
+
+    var found = false;
+    var min = rl.Vector3{ .x = 0.0, .y = 0.0, .z = 0.0 };
+    var max = min;
+
+    for (doc.polygons) |poly| {
+        if (poly.material_index != material_index) continue;
+        for (poly.indices) |vertex_index| {
+            const vertex = doc.vertices[vertex_index];
+            const world = rl.Vector3{ .x = vertex.x, .y = vertex.y, .z = vertex.z };
+            if (!found) {
+                min = world;
+                max = world;
+                found = true;
+                continue;
+            }
+            min.x = @min(min.x, world.x);
+            min.y = @min(min.y, world.y);
+            min.z = @min(min.z, world.z);
+            max.x = @max(max.x, world.x);
+            max.y = @max(max.y, world.y);
+            max.z = @max(max.z, world.z);
+        }
+    }
+
+    if (!found) return null;
+
+    const center = rl.Vector3{
+        .x = (min.x + max.x) * 0.5,
+        .y = (min.y + max.y) * 0.5,
+        .z = (min.z + max.z) * 0.5,
+    };
+
+    var radius: f32 = 0.5;
+    for (doc.polygons) |poly| {
+        if (poly.material_index != material_index) continue;
+        for (poly.indices) |vertex_index| {
+            const vertex = doc.vertices[vertex_index];
+            const dx = vertex.x - center.x;
+            const dy = vertex.y - center.y;
+            const dz = vertex.z - center.z;
+            radius = @max(radius, std.math.sqrt(dx * dx + dy * dy + dz * dz));
+        }
+    }
+
+    return .{
+        .min = min,
+        .max = max,
+        .center = center,
+        .radius = radius,
+    };
+}
+
+pub fn materialBoundsByTextureFilename(doc: *const Document, texture_filename: []const u8) ?Bounds {
+    for (doc.materials, 0..) |material, material_index| {
+        const candidate = material.texture_filename orelse continue;
+        if (!std.mem.eql(u8, candidate, texture_filename)) continue;
+        return materialBounds(doc, material_index);
+    }
+    return null;
+}
+
+pub fn materialBoundsByName(doc: *const Document, material_name: []const u8) ?Bounds {
+    for (doc.materials, 0..) |material, material_index| {
+        if (!std.mem.eql(u8, material.name, material_name)) continue;
+        return materialBounds(doc, material_index);
+    }
+    return null;
+}
+
 const TokenTag = enum {
     identifier,
     string,
@@ -1161,4 +1233,32 @@ test "only hotspot pseudo-textures are unresolved in shipped x2 corpus" {
     }
 
     try std.testing.expectEqual(@as(usize, 19), unresolved_count);
+}
+
+test "turbo hotspot camera centers match the shipped hotspot asset" {
+    const data = try std.fs.cwd().readFileAlloc(
+        std.testing.allocator,
+        "artifacts/extracted/SnailMail.dat/X/TURBOHOTSPOTS.X2",
+        1 << 20,
+    );
+    defer std.testing.allocator.free(data);
+
+    var doc = try parse(std.testing.allocator, data);
+    defer doc.deinit();
+
+    const skid_stop = materialBoundsByTextureFilename(&doc, "CameraSkidStop.tga").?;
+    const slug_death = materialBoundsByTextureFilename(&doc, "CameraSlugDeath.tga").?;
+    const intro_talk = materialBoundsByTextureFilename(&doc, "CameraIntroTalk.tga").?;
+
+    try std.testing.expectApproxEqAbs(@as(f32, -0.54505), skid_stop.center.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), skid_stop.center.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.8749), skid_stop.center.z, 0.0001);
+
+    try std.testing.expectApproxEqAbs(@as(f32, -0.0088), slug_death.center.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.7189), slug_death.center.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -5.4915), slug_death.center.z, 0.0001);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.862), intro_talk.center.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.13765), intro_talk.center.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.87215), intro_talk.center.z, 0.0001);
 }

@@ -213,7 +213,8 @@ Implemented now:
 Still missing or approximate:
 
 - the remaining Windows `cameraman` lift/attachment semantics beyond the current roll-order port
-- the exact cutscene shot anchors and any still-missing `cRCutScene::AI()` branches
+- the exact `build_snail_hotspots` source-matrix split beyond the current body-frame approximation for hotspots `12/17/18`
+- any still-missing `cRCutScene::AI()` branches outside the now-ported intro `1 -> 2 -> 8 -> 9`, completion `5 -> 6 -> 7`, and death `10 -> 11 -> 12` lanes
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
 - the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
@@ -257,7 +258,8 @@ Implemented now:
 - row-event bonus-prompt completion no longer keys off the authored `'_'` proxy; gameplay now consumes the recovered `TrackRowCell.flags_b & 0x40` lane rebuilt on the preview from the shipped cell-population and `CondenseTrack` follower-clear pass instead of the older "any populated tile" shortcut
 - route-end completion can now arm from a dedicated `course_end_threshold` field instead of only the older final-row heuristic; the current producer is still provisional, so the preview seeds that field from a last-row fallback until the native source is recovered
 - route-end completion can now arm while a collected parcel is still in flight, but the runner-local completion handoff no longer returns early; it waits for the row-event controller to settle before the app-level completion bridge fires
-- completion handoff no longer collapses straight into an app return; the runner now holds a recovered `2s` voice / `5s` release controller, snaps that timer forward from the separate `gate_18` byte when the live completion cell is armed, and only releases postal or time-trial completion once the row-event controller reaches its terminal state
+- completion handoff no longer collapses straight into one delayed app return; the runner now emits an early completion-screen init handoff once cutscene state `6` is active, then keeps the recovered `2.5s` voice / `5s` finalize controller alive until the late frontend exit can fire
+- completion camera no longer uses the older handcrafted anchor formulas; the override lane now rebuilds world hotspots from the live body frame, snaps intro onto hotspot `18`, uses the recovered `12 -> 18` completion blend lane, and keeps spare-life death converging toward hotspot `18` instead of forcing hotspot `17`
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
 Still missing or approximate:
@@ -286,7 +288,7 @@ Implemented now:
 - shipped `DamageGuage`, `DamageGuageFull`, `DamageGuageBright`, and `Warning` HUD art in live gameplay instead of the old generic gauge block
 - once-per-second postal warning sound playback while the warning actor is active
 - slug first-hit vs repeated-hit split
-- visible life seed `3`, bonus-life thresholds, and postal-only consumption rules
+- visible life seed `3`, bonus-life thresholds, and runner-owned Postal respawn consumption in the death/resurrect path
 - dedicated HUD damage gauge and postal life strip
 - jetpack countdown, warning band, `JetPack=Off` runtime warning snap from the recovered `flags_b & 0x80` lane, route-end shutoff, and gameplay HUD presentation
 
@@ -309,7 +311,8 @@ Implemented now:
 
 - distinct respawn vs final-loss handoffs
 - postal completion no longer blindly inserts an arcade high score on every route clear
-- lives are consumed at respawn rebuild commit time instead of during the earlier runner-local phase
+- successful completion is now split into an early in-level completion overlay init and a later finalize transition into the full completion screen
+- lives are now consumed inside the runner's respawn branch before the app rebuild, matching the recovered `update_subgoldy_resurrect` ownership better than the old app-side decrement
 - app-level reload is closer to the Windows rebuild split than the old hidden in-place runner reset
 - final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before returning to the shell
 
@@ -318,7 +321,7 @@ Still missing or approximate:
 - the real frontend bridge around Windows states `26/27/28/29/30`
 - the outer subgame controller that owns rebuild/teardown/return
 - exact final-loss and replay-sensitive return routing
-- completion overlay ownership that matches the Windows cutscene path instead of the current simplified screen routing
+- the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
 

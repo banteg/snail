@@ -208,8 +208,9 @@ Current practical read:
 - `update_subgoldy` also owns a separate completion handoff block:
   - once the player reaches the course-end threshold at `game + 0x58` and no attachment-exit handoff is pending, it arms `completion_handoff_active = 1`
   - it seeds `completion_handoff_timer = 0`, `completion_handoff_timer_step = 1/60`, and `completion_handoff_voice_gate = 0`
+  - cutscene state `6` initializes the completion screen almost immediately, on the first handoff tick after arming
   - while active, it clamps the forward presentation offsets (`track_z_offset` / `track_z_anchor`) to the fixed completion lane and advances the timer every tick
-  - after `2.0` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
+  - after `2.5` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
   - after `5.0` seconds, the same block begins the frontend fade, flushes `row_event_display` if needed, and routes through `complete_subgame`
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record

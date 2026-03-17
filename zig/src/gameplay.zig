@@ -87,7 +87,8 @@ pub const cutscene_death_id: u8 = 10;
 
 pub const RunnerHandoff = union(enum) {
     none,
-    completion,
+    completion_screen_init,
+    completion_finalize,
     respawn: DeathCause,
     final_loss: DeathCause,
 };
@@ -193,7 +194,7 @@ const RunnerPhase = union(enum) {
 };
 
 const completion_handoff_timer_step: f32 = 1.0 / 60.0;
-const completion_handoff_voice_delay_seconds: f32 = 2.0;
+const completion_handoff_voice_delay_seconds: f32 = 2.5;
 const completion_handoff_release_seconds: f32 = 5.0;
 const completion_handoff_release_force_seconds: f32 = 5.1;
 const replay_world_x_min: f32 = -4.0;
@@ -525,6 +526,14 @@ const cameraman_deadzone_max_z_delta: f32 = 3.0;
 const cameraman_fov_blend: f32 = 0.3;
 const cameraman_attachment_lift_blend: f32 = 0.18;
 const cameraman_launch_lift_blend: f32 = 0.18;
+const completion_cutscene_start_blend: f32 = 0.5;
+const death_cutscene_start_blend: f32 = 0.85;
+const native_hotspot_camera_skid_stop_index: u8 = 12;
+const native_hotspot_camera_slug_death_index: u8 = 17;
+const native_hotspot_camera_intro_talk_index: u8 = 18;
+const hotspot_camera_skid_stop_local = rl.Vector3{ .x = -0.54505, .y = 0.0, .z = 1.8749 };
+const hotspot_camera_slug_death_local = rl.Vector3{ .x = -0.0088, .y = 0.7189, .z = -5.4915 };
+const hotspot_camera_intro_talk_local = rl.Vector3{ .x = 0.862, .y = -0.13765, .z = 1.87215 };
 
 fn shotCooldownTicksForWeaponLevel(weapon_level: u8) u8 {
     return switch (weapon_level) {
@@ -568,8 +577,8 @@ const AttachmentFollowState = struct {
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
     vertical_offset: f32 = 0.0,
-    orientation_b: f32 = 0.0,
-    template_row_scalar_a: f32 = 0.0,
+    exit_carryover_orientation: f32 = 0.0,
+    exit_carryover_scalar: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
@@ -603,13 +612,17 @@ const CameraAnchorState = struct {
     world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
+const SnailHotspotState = struct {
+    camera_skid_stop: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    camera_slug_death: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    camera_intro_talk: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+};
+
 const CutsceneCameraController = struct {
     state: u8 = 0,
     matrix: rl.Matrix = cameraman_identity_matrix,
     snap_next: bool = false,
     ticks: u16 = 0,
-    anchor_a: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    anchor_b: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
 const CameramanState = struct {
@@ -818,6 +831,41 @@ fn pointCameraTransformAt(position: rl.Vector3, target: rl.Vector3, up_hint: rl.
     return transform;
 }
 
+fn cameraMatrixWithPosition(matrix: rl.Matrix, position: rl.Vector3) rl.Matrix {
+    var result = matrix;
+    result.m12 = position.x;
+    result.m13 = position.y;
+    result.m14 = position.z;
+    return result;
+}
+
+fn lookAtPoint(matrix: rl.Matrix, target: rl.Vector3, up_hint: rl.Vector3) rl.Matrix {
+    const position = rl.Vector3{
+        .x = matrix.m12,
+        .y = matrix.m13,
+        .z = matrix.m14,
+    };
+    return cameraMatrixFromTransform(pointCameraTransformAt(position, target, up_hint));
+}
+
+fn linearInterpolateCameraMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
+    var lhs_translation: rl.Vector3 = undefined;
+    var lhs_rotation: rl.Quaternion = undefined;
+    var lhs_scale: rl.Vector3 = undefined;
+    rl.math.matrixDecompose(lhs, &lhs_translation, &lhs_rotation, &lhs_scale);
+
+    var rhs_translation: rl.Vector3 = undefined;
+    var rhs_rotation: rl.Quaternion = undefined;
+    var rhs_scale: rl.Vector3 = undefined;
+    rl.math.matrixDecompose(rhs, &rhs_translation, &rhs_rotation, &rhs_scale);
+
+    var result = rl.math.quaternionToMatrix(rl.math.quaternionSlerp(lhs_rotation, rhs_rotation, t));
+    result.m12 = std.math.lerp(lhs_translation.x, rhs_translation.x, t);
+    result.m13 = std.math.lerp(lhs_translation.y, rhs_translation.y, t);
+    result.m14 = std.math.lerp(lhs_translation.z, rhs_translation.z, t);
+    return cameraMatrixFromTransform(normalizeCameraTransform(cameraTransformFromMatrix(result)));
+}
+
 fn normalizeRadians(radians: f32) f32 {
     var angle = radians;
     while (angle > std.math.pi) angle -= std.math.tau;
@@ -904,6 +952,7 @@ pub const Runner = struct {
     completion_handoff_timer: f32 = 0.0,
     completion_handoff_timer_step: f32 = completion_handoff_timer_step,
     completion_handoff_voice_gate: bool = false,
+    completion_screen_init_sent: bool = false,
     tick_count: u64 = 0,
     stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
@@ -938,6 +987,7 @@ pub const Runner = struct {
     attachment_post_roll: f32 = 0.0,
     heading_roll: f32 = 0.0,
     previous_heading_roll_sample: f32 = 0.0,
+    snail_hotspots: SnailHotspotState = .{},
     camera_anchor: CameraAnchorState = .{},
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
@@ -1058,7 +1108,7 @@ pub const Runner = struct {
 
         if (preview.total_rows == 0) {
             self.finished = true;
-            self.pending_handoff = .completion;
+            self.pending_handoff = .completion_finalize;
             return;
         }
 
@@ -1297,6 +1347,7 @@ pub const Runner = struct {
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.refreshCameraAnchor(preview);
+        self.refreshSnailHotspots(preview);
         self.refreshCameraRollState(preview);
         self.updateCameraman(preview);
         self.updateCutsceneCamera(preview);
@@ -2165,8 +2216,8 @@ pub const Runner = struct {
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.attachment_pre_roll = 0.0;
         self.attachment_post_roll = 0.0;
-        self.attachment_follow.orientation_b = 0.0;
-        self.attachment_follow.template_row_scalar_a = 0.0;
+        self.attachment_follow.exit_carryover_orientation = 0.0;
+        self.attachment_follow.exit_carryover_scalar = 0.0;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             const surface_roll = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
@@ -2175,12 +2226,12 @@ pub const Runner = struct {
             self.heading_roll = normalizeRadians(self.heading_roll + delta_roll);
             self.attachment_pre_roll = surface_roll * attachment_pre_roll_scale;
             self.attachment_post_roll = surface_roll;
-            const carryover = self.currentAttachmentExitCarryover();
-            self.attachment_follow.orientation_b = carryover.value_a;
-            // PORT(partial): the current preview still does not expose the Windows-installed
-            // template header `row_scalar_a`, so keep the nearest roll-derived approximation in
-            // the live follow state until that runtime field exists.
-            self.attachment_follow.template_row_scalar_a = carryover.value_b;
+            const carryover = self.attachmentExitCarryoverFromFollow(preview);
+            self.attachment_follow.exit_carryover_orientation = carryover.value_a;
+            // PORT(partial): Windows latches an attachment-row scalar for exit carryover. Use
+            // the live template pose delta here so the exit controller is driven by attachment
+            // geometry rather than the old cameraman roll approximation.
+            self.attachment_follow.exit_carryover_scalar = carryover.value_b;
             self.attachment_exit_carryover_a = carryover.value_a;
             self.attachment_exit_carryover_b = carryover.value_b;
             return;
@@ -2195,89 +2246,101 @@ pub const Runner = struct {
         self.previous_heading_roll_sample = 0.0;
     }
 
-    fn updateCutsceneAnchors(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        self.cutscene_camera.anchor_a = self.worldPosition(preview, cutscene_target_body_height);
-        self.cutscene_camera.anchor_b = offsetPosition(
-            self.camera_anchor.world,
+    fn bodyFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
+        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        frame.position = self.worldPosition(preview, 0.0);
+        return frame;
+    }
+
+    fn refreshSnailHotspots(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) {
+            self.snail_hotspots = .{};
+            return;
+        }
+
+        const frame = self.bodyFrame(preview);
+        self.snail_hotspots.camera_skid_stop = offsetPosition(
+            frame.position,
             frame.right,
             frame.up,
             frame.forward,
-            0.0,
-            cutscene_anchor_b_height - camera_anchor_local_y,
-            0.0,
+            hotspot_camera_skid_stop_local.x,
+            hotspot_camera_skid_stop_local.y,
+            hotspot_camera_skid_stop_local.z,
+        );
+        self.snail_hotspots.camera_slug_death = offsetPosition(
+            frame.position,
+            frame.right,
+            frame.up,
+            frame.forward,
+            hotspot_camera_slug_death_local.x,
+            hotspot_camera_slug_death_local.y,
+            hotspot_camera_slug_death_local.z,
+        );
+        self.snail_hotspots.camera_intro_talk = offsetPosition(
+            frame.position,
+            frame.right,
+            frame.up,
+            frame.forward,
+            hotspot_camera_intro_talk_local.x,
+            hotspot_camera_intro_talk_local.y,
+            hotspot_camera_intro_talk_local.z,
         );
     }
 
-    fn introCutsceneTransform(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        const position = offsetPosition(
-            self.cutscene_camera.anchor_a,
-            frame.right,
-            frame.up,
-            frame.forward,
-            0.0,
-            0.42,
-            -1.55,
-        );
-        const target = offsetPosition(
-            self.cutscene_camera.anchor_a,
-            frame.right,
-            frame.up,
-            frame.forward,
-            0.0,
-            0.18,
-            0.0,
-        );
-        return pointCameraTransformAt(position, target, frame.up);
+    fn cutsceneTargetPoint(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
+        return self.worldPosition(preview, cutscene_target_body_height);
     }
 
-    fn completionCutsceneTransform(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) CameraTransform {
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        const position_anchor = lerpVector3(self.cutscene_camera.anchor_a, self.cutscene_camera.anchor_b, 0.5);
-        const position = offsetPosition(
-            position_anchor,
-            frame.right,
-            frame.up,
-            frame.forward,
-            -std.math.sin(progress * std.math.pi) * completion_cutscene_x_offset,
-            1.2,
-            -1.8,
+    fn cutsceneMatrixAtPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, position: rl.Vector3) rl.Matrix {
+        return lookAtPoint(
+            cameraMatrixWithPosition(self.cameraman.out_matrix, position),
+            self.cutsceneTargetPoint(preview),
+            self.bodyFrame(preview).up,
         );
-        return pointCameraTransformAt(position, self.cutscene_camera.anchor_a, frame.up);
     }
 
-    fn deathCutsceneTransform(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) CameraTransform {
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        var position = offsetPosition(
-            self.cutscene_camera.anchor_b,
-            frame.right,
-            frame.up,
-            frame.forward,
-            std.math.sin(progress * std.math.pi) * death_cutscene_x_offset,
-            0.6,
-            -1.2,
+    fn introCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
+        return self.cutsceneMatrixAtPosition(preview, self.snail_hotspots.camera_intro_talk);
+    }
+
+    fn completionCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, t: f32) rl.Matrix {
+        const start_position = lerpVector3(
+            self.snail_hotspots.camera_skid_stop,
+            self.snail_hotspots.camera_intro_talk,
+            completion_cutscene_start_blend,
         );
-        position.y = @max(position.y, death_cutscene_y_floor);
-        return pointCameraTransformAt(position, self.cutscene_camera.anchor_a, frame.up);
+        return self.cutsceneMatrixAtPosition(
+            preview,
+            lerpVector3(start_position, self.snail_hotspots.camera_intro_talk, t),
+        );
+    }
+
+    fn deathCutsceneMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, t: f32) rl.Matrix {
+        const start_position = lerpVector3(
+            self.snail_hotspots.camera_slug_death,
+            self.snail_hotspots.camera_intro_talk,
+            death_cutscene_start_blend,
+        );
+        return self.cutsceneMatrixAtPosition(
+            preview,
+            lerpVector3(start_position, self.snail_hotspots.camera_intro_talk, t),
+        );
     }
 
     fn updateCutsceneCamera(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or self.cutscene_camera.state == 0) return;
-        self.updateCutsceneAnchors(preview);
-
-        const live_transform = cameraTransformFromMatrix(self.cameraman.out_matrix);
 
         switch (self.cutscene_camera.state) {
             1 => {
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(self.introCutsceneTransform(preview));
+                self.cutscene_camera.matrix = self.introCutsceneMatrix(preview);
                 self.cutscene_camera.snap_next = true;
                 self.cutscene_camera.ticks = 0;
                 self.cutscene_ticks = 0;
                 self.cutscene_camera.state = 2;
             },
             2 => {
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(self.introCutsceneTransform(preview));
+                self.cutscene_camera.matrix = self.introCutsceneMatrix(preview);
                 self.cutscene_camera.ticks +|= 1;
                 self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
                 if (self.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
@@ -2286,10 +2349,13 @@ pub const Runner = struct {
                 }
             },
             8 => {
-                const intro_transform = self.introCutsceneTransform(preview);
                 const progress = progressForTicks(self.cutscene_camera.ticks, intro_cutscene_blend_ticks);
                 const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(blendCameraTransforms(intro_transform, live_transform, eased));
+                self.cutscene_camera.matrix = linearInterpolateCameraMatrices(
+                    self.introCutsceneMatrix(preview),
+                    self.cameraman.out_matrix,
+                    eased,
+                );
                 self.cutscene_camera.ticks +|= 1;
                 self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
                 if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
@@ -2301,7 +2367,7 @@ pub const Runner = struct {
                 self.clearCutscene();
             },
             5 => {
-                self.cutscene_camera.matrix = self.cameraman.out_matrix;
+                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, 0.0);
                 self.cutscene_camera.snap_next = true;
                 self.cutscene_camera.ticks = 0;
                 self.cutscene_camera.state = 6;
@@ -2309,18 +2375,17 @@ pub const Runner = struct {
             6 => {
                 const progress = progressForTicks(self.cutscene_camera.ticks, completion_cutscene_blend_ticks);
                 const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                const cutscene_transform = self.completionCutsceneTransform(preview, progress);
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(blendCameraTransforms(live_transform, cutscene_transform, eased));
+                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, eased);
                 self.cutscene_camera.ticks +|= 1;
                 if (self.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
                     self.cutscene_camera.state = 7;
                 }
             },
             7 => {
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(self.completionCutsceneTransform(preview, 1.0));
+                self.cutscene_camera.matrix = self.completionCutsceneMatrix(preview, 1.0);
             },
             10 => {
-                self.cutscene_camera.matrix = self.cameraman.out_matrix;
+                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, 0.0);
                 self.cutscene_camera.snap_next = true;
                 self.cutscene_camera.ticks = 0;
                 self.cutscene_camera.state = 11;
@@ -2328,15 +2393,14 @@ pub const Runner = struct {
             11 => {
                 const progress = progressForTicks(self.cutscene_camera.ticks, death_cutscene_blend_ticks);
                 const eased = std.math.sin(progress * (std.math.pi / 2.0));
-                const cutscene_transform = self.deathCutsceneTransform(preview, progress);
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(blendCameraTransforms(live_transform, cutscene_transform, eased));
+                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, eased);
                 self.cutscene_camera.ticks +|= 1;
                 if (self.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
                     self.cutscene_camera.state = 12;
                 }
             },
             12 => {
-                self.cutscene_camera.matrix = cameraMatrixFromTransform(self.deathCutsceneTransform(preview, 1.0));
+                self.cutscene_camera.matrix = self.deathCutsceneMatrix(preview, 1.0);
             },
             else => {
                 self.cutscene_camera.state = 0;
@@ -3208,8 +3272,8 @@ pub const Runner = struct {
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
     // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
-    // score crosses another 50,000-point bucket, capped at 9. Postal life consumption is
-    // committed later by the outer app-side respawn reload path, not inside the runner.
+    // score crosses another 50,000-point bucket, capped at 9. Postal respawn consumption is
+    // now committed by the runner's death/resurrect handoff, not the app reload path.
     fn updateVisibleLifeStockFromScore(self: *Runner, previous_total: u32, current_total: u32) void {
         const previous_bucket = @divTrunc(previous_total, score_life_threshold);
         const current_bucket = @divTrunc(current_total, score_life_threshold);
@@ -3226,6 +3290,7 @@ pub const Runner = struct {
         self.completion_handoff_timer = 0.0;
         self.completion_handoff_timer_step = completion_handoff_timer_step;
         self.completion_handoff_voice_gate = false;
+        self.completion_screen_init_sent = false;
         self.setCutscene(cutscene_completion_id);
     }
 
@@ -3314,6 +3379,13 @@ pub const Runner = struct {
                 {
                     self.completion_handoff_voice_gate = true;
                 }
+                if (!self.completion_screen_init_sent and
+                    (self.cutscene_camera.state == 5 or self.cutscene_camera.state == 6) and
+                    self.completion_handoff_timer >= completion_handoff_timer_step)
+                {
+                    self.completion_screen_init_sent = true;
+                    self.pending_handoff = .completion_screen_init;
+                }
                 if (self.row_event_display.gate_18 != 0 and
                     self.currentRowEventCompletionCellActive(preview))
                 {
@@ -3338,7 +3410,8 @@ pub const Runner = struct {
                     );
                     return;
                 }
-                self.pending_handoff = .completion;
+                if (self.pending_handoff != .none) return;
+                self.pending_handoff = .completion_finalize;
             },
             .fall => |state| {
                 var next_state = state;
@@ -3364,6 +3437,9 @@ pub const Runner = struct {
                 if (self.deathUsesFinalLoss()) {
                     self.pending_handoff = .{ .final_loss = next_state.cause };
                     return;
+                }
+                if (self.session_mode == .postal and self.visible_life_stock > 0) {
+                    self.visible_life_stock -= 1;
                 }
                 self.pending_handoff = .{ .respawn = next_state.cause };
             },
@@ -3822,18 +3898,63 @@ pub const Runner = struct {
         self.attachment_follow = .{};
     }
 
-    fn currentAttachmentExitCarryover(self: *const Runner) AttachmentExitCarryover {
+    fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
+        const built = self.currentAttachmentBuilt(preview) orelse {
+            return .{
+                .value_a = self.attachment_post_roll,
+                .value_b = 0.0,
+            };
+        };
+
+        const current_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            self.attachment_follow.progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        const next_progress = @min(
+            self.attachment_follow.progress + 1.0,
+            @as(f32, @floatFromInt(built.template.sample_count)),
+        );
+        const next_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            next_progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+
+        const current_roll = rollRadiansFromForwardUp(
+            attachmentVec3ToVector3(current_pose.basis_forward),
+            attachmentVec3ToVector3(current_pose.basis_up),
+        );
+        const next_roll = rollRadiansFromForwardUp(
+            attachmentVec3ToVector3(next_pose.basis_forward),
+            attachmentVec3ToVector3(next_pose.basis_up),
+        );
         return .{
-            .value_a = if (self.attachment_follow.orientation_b != 0.0 or
-                self.attachment_follow.template_row_scalar_a != 0.0)
-                self.attachment_follow.orientation_b
-            else
-                self.attachment_post_roll,
-            .value_b = if (self.attachment_follow.orientation_b != 0.0 or
-                self.attachment_follow.template_row_scalar_a != 0.0)
-                self.attachment_follow.template_row_scalar_a
-            else
-                normalizeRadians(self.attachment_post_roll - self.attachment_pre_roll),
+            .value_a = current_roll,
+            .value_b = normalizeRadians(next_roll - current_roll),
+        };
+    }
+
+    fn currentAttachmentExitCarryover(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
+        if (self.attachment_follow.active) {
+            if (self.attachment_follow.exit_carryover_orientation != 0.0 or
+                self.attachment_follow.exit_carryover_scalar != 0.0)
+            {
+                return .{
+                    .value_a = self.attachment_follow.exit_carryover_orientation,
+                    .value_b = self.attachment_follow.exit_carryover_scalar,
+                };
+            }
+            return self.attachmentExitCarryoverFromFollow(preview);
+        }
+
+        return .{
+            .value_a = self.attachment_exit_carryover_a,
+            .value_b = self.attachment_exit_carryover_b,
         };
     }
 
@@ -3848,7 +3969,7 @@ pub const Runner = struct {
 
     fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
         const carryover = if (self.movement_mode == .attachment and self.attachment_follow.active)
-            self.currentAttachmentExitCarryover()
+            self.currentAttachmentExitCarryover(preview)
         else
             AttachmentExitCarryover{
                 .value_a = self.attachment_exit_carryover_a,
@@ -3980,6 +4101,14 @@ fn cutsceneDurationTicks(cutscene_id: u8) ?u16 {
 }
 
 fn vector3ToAttachmentVec3(vector: rl.Vector3) attachment_builders.Vec3 {
+    return .{
+        .x = vector.x,
+        .y = vector.y,
+        .z = vector.z,
+    };
+}
+
+fn attachmentVec3ToVector3(vector: attachment_builders.Vec3) rl.Vector3 {
     return .{
         .x = vector.x,
         .y = vector.y,
@@ -5233,7 +5362,7 @@ test "stopwatch advances minutes seconds and subsecond counters at 60fps" {
     try std.testing.expectEqual(@as(u32, 1500), stopwatch.elapsedMillis());
 }
 
-test "postal death hands off respawn after the death controller finishes without consuming lives yet" {
+test "postal death hands off respawn after the death controller finishes with runner-owned life consumption" {
     var fixture = try TestFixture.load("LEVELS/ARCADE001.TXT");
     defer fixture.deinit();
 
@@ -5253,7 +5382,7 @@ test "postal death hands off respawn after the death controller finishes without
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectEqual(DeathCause.hazard, handoff.respawn);
-    try std.testing.expectEqual(@as(u32, 3), runner.visible_life_stock);
+    try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
     try std.testing.expectApproxEqAbs(@as(f32, 25.0), runner.row_position, 0.0001);
 }
@@ -5357,9 +5486,11 @@ test "fall entry clears attachment-follow state and seeds attachment exit fields
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
     runner.attachment_path_name = "SUPERTRAMP";
-    runner.attachment_follow.active = true;
-    runner.attachment_pre_roll = 0.2;
-    runner.attachment_post_roll = 0.6;
+    runner.attachment_follow = .{
+        .active = true,
+        .exit_carryover_orientation = 0.6,
+        .exit_carryover_scalar = 0.4,
+    };
     runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -5697,18 +5828,51 @@ test "route-end natural attachment retirement bypasses the exit handoff" {
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
-test "tutorial completion handoff releases after the recovered timer" {
+test "tutorial completion screen init handoff fires before the late finalize handoff" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginCompletionCutscene();
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
+    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_seconds);
+    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+}
+
+test "tutorial completion finalize releases after the recovered timer" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     runner.beginCompletionCutscene();
 
-    const steps = stepUntilHandoff(&runner, &fixture.preview, 360);
+    const init_steps = stepUntilHandoff(&runner, &fixture.preview, 32);
+    try std.testing.expect(init_steps < 32);
+    try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
 
-    try std.testing.expect(steps < 360);
+    const finalize_steps = stepUntilHandoff(&runner, &fixture.preview, 360);
+
+    try std.testing.expect(finalize_steps < 360);
     try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_release_seconds);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
+}
+
+test "completion voice gate trips at the native 2.5 second delay" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginCompletionCutscene();
+
+    while (runner.completion_handoff_timer < completion_handoff_voice_delay_seconds and !runner.completion_handoff_voice_gate) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+        _ = runner.consumeHandoff();
+    }
+
+    try std.testing.expect(runner.completion_handoff_voice_gate);
+    try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_voice_delay_seconds);
 }
 
 test "postal completion handoff waits for the row event controller to complete" {
@@ -5723,7 +5887,7 @@ test "postal completion handoff waits for the row event controller to complete" 
     runner.completion_handoff_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
-    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
     try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
@@ -5731,7 +5895,7 @@ test "postal completion handoff waits for the row event controller to complete" 
     runner.updateRowEventDisplay(&fixture.preview);
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
-    try std.testing.expectEqual(RunnerHandoff.completion, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
 }
 
 test "completion gate fast-forwards the late handoff timer on the live completion cell" {
@@ -5750,7 +5914,7 @@ test "completion gate fast-forwards the late handoff timer on the live completio
     setRunnerLiveRowTarget(&runner, target);
     runner.updatePhaseController(&fixture.preview, 0.0);
 
-    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
     try std.testing.expect(runner.completion_handoff_timer > completion_handoff_release_seconds);
 }
 

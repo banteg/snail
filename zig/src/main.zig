@@ -1536,6 +1536,8 @@ const AppState = struct {
     post_level_high_score_name_buf: [high_score.name_capacity]u8 = [_]u8{0} ** high_score.name_capacity,
     high_score_tables: high_score.Tables,
     pending_run_result: ?PendingRunResult = null,
+    completion_overlay_active: bool = false,
+    preserve_completion_screen_reveal_on_enter: bool = false,
     game_status_message: ?[]const u8 = null,
     game_status_ticks: u32 = 0,
     gameplay_click_start_active: bool = false,
@@ -2569,7 +2571,7 @@ const AppState = struct {
         for (&self.post_level_high_score_button_states, 0..) |*state, index| {
             state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.frontendButtonHot(hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
         }
-        const completion_active = self.game_phase == .completion_screen and !self.frontend_transition.blocksInput();
+        const completion_active = self.completionScreenInteractive();
         self.completion_continue_button_state.stepFor(
             .menu_button,
             completion_active and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
@@ -2630,7 +2632,7 @@ const AppState = struct {
         }
         self.completion_continue_button_state.snapFor(
             .menu_button,
-            self.game_phase == .completion_screen and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
+            self.completionScreenInteractive() and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
         );
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
@@ -3049,6 +3051,10 @@ const AppState = struct {
     }
 
     fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
+        const effective_runner_input = if (self.completionScreenOverlayActive())
+            gameplay.RunnerInput{}
+        else
+            runner_input;
         self.game_phase_ticks += 1;
         if (self.current_game_background_runtime) |*runtime| {
             runtime.update();
@@ -3112,7 +3118,7 @@ const AppState = struct {
                     if (!self.startupGameplayBlockActive() and !self.tutorialPromptBlocksGameplay()) {
                         runner.stepWithReplay(
                             loaded_track_preview,
-                            runner_input,
+                            effective_runner_input,
                             self.selectedReplayDirectiveForRunner(runner),
                             @floatCast(self.simulation_clock.step_seconds),
                         );
@@ -3123,8 +3129,8 @@ const AppState = struct {
                             }
                             return;
                         }
-                        self.updateGameplayRunnerPresentation(previous_runner, runner.*, runner_input);
-                        self.playGameplayRunnerAudio(previous_runner, runner.*, runner_input);
+                        self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
+                        self.playGameplayRunnerAudio(previous_runner, runner.*, effective_runner_input);
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
@@ -3141,8 +3147,12 @@ const AppState = struct {
             if (self.level_runner) |*runner| {
                 switch (runner.consumeHandoff()) {
                     .none => {},
-                    .completion => {
-                        try self.beginCompletedRun();
+                    .completion_screen_init => {
+                        try self.beginCompletedRunOverlay();
+                        return;
+                    },
+                    .completion_finalize => {
+                        try self.finalizeCompletedRunScreen();
                         return;
                     },
                     .respawn => {
@@ -3419,7 +3429,7 @@ const AppState = struct {
     fn handleGameInput(self: *AppState) !void {
         if (rl.isKeyPressed(.escape)) {
             switch (self.game_phase) {
-                .level => try self.enterPauseMenu(),
+                .level => if (!self.completionScreenOverlayActive()) try self.enterPauseMenu(),
                 .boot => self.should_exit = true,
                 .main_menu => try self.beginExitPrompt(.main_menu),
                 .intro, .credits => self.frontend_transition.beginFadeOut(.main_menu),
@@ -3632,6 +3642,7 @@ const AppState = struct {
                     }
                     return;
                 }
+                if (self.completionScreenOverlayActive()) return;
                 const accepts_runner_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
                 const accepts_live_replay_controls = accepts_runner_input and !self.selectedReplayPlaybackActive();
                 self.mouse_level_lane_target = null;
@@ -4369,7 +4380,7 @@ const AppState = struct {
         try self.high_score_tables.saveToRuntimeRoot(self.allocator, self.runtime_root_path);
     }
 
-    fn beginCompletedRun(self: *AppState) !void {
+    fn beginCompletedRunOverlay(self: *AppState) !void {
         if (self.pending_run_result != null) return;
 
         const loaded_level = self.current_level orelse return;
@@ -4442,6 +4453,19 @@ const AppState = struct {
         self.applySelectedReplayResultOverrides(&result);
 
         self.pending_run_result = result;
+        self.completion_overlay_active = true;
+        self.preserve_completion_screen_reveal_on_enter = false;
+        self.resetCompletionScreenReveal();
+    }
+
+    fn finalizeCompletedRunScreen(self: *AppState) !void {
+        if (self.pending_run_result == null) {
+            try self.beginCompletedRunOverlay();
+        }
+        if (self.pending_run_result == null) return;
+
+        self.completion_overlay_active = false;
+        self.preserve_completion_screen_reveal_on_enter = true;
         try self.enterGamePhase(.completion_screen);
     }
 
@@ -4499,6 +4523,8 @@ const AppState = struct {
         self.applySelectedReplayResultOverrides(&result);
 
         self.pending_run_result = result;
+        self.completion_overlay_active = false;
+        self.preserve_completion_screen_reveal_on_enter = false;
         try self.enterGamePhase(.completion_screen);
     }
 
@@ -4507,13 +4533,7 @@ const AppState = struct {
         previous_runner.flushPendingParcelDeliveries();
         const preserved_session_mode = previous_runner.session_mode;
         const preserved_score = previous_runner.score;
-        // PORT(verified): `update_subgoldy_resurrect` decrements visible lives only on the
-        // committed postal respawn branch, after fade completion. Keep that decrement at the
-        // app-side rebuild handoff instead of consuming it inside the runner.
-        const preserved_visible_life_stock = switch (previous_runner.session_mode) {
-            .postal => previous_runner.visible_life_stock -| 1,
-            .challenge, .time_trial, .tutorial, .debug => previous_runner.visible_life_stock,
-        };
+        const preserved_visible_life_stock = previous_runner.visible_life_stock;
         const preserved_tick_count = previous_runner.tick_count;
         const preserved_stopwatch = previous_runner.stopwatch;
         const preserved_parcel_count = previous_runner.counters.parcels;
@@ -4521,6 +4541,8 @@ const AppState = struct {
         const preserved_collected_parcel_rows = previous_runner.collected_parcel_rows;
         const preserved_collected_parcel_row_count = previous_runner.collected_parcel_row_count;
 
+        self.completion_overlay_active = false;
+        self.preserve_completion_screen_reveal_on_enter = false;
         try self.reloadLevel();
         if (self.level_runner) |*runner| {
             runner.session_mode = preserved_session_mode;
@@ -4545,8 +4567,23 @@ const AppState = struct {
         self.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else completionRevealTarget(result);
     }
 
+    fn completionScreenActive(self: *const AppState) bool {
+        return self.pending_run_result != null and
+            (self.game_phase == .completion_screen or self.completionScreenOverlayActive());
+    }
+
+    fn completionScreenOverlayActive(self: *const AppState) bool {
+        return self.game_phase == .level and self.completion_overlay_active and self.pending_run_result != null;
+    }
+
+    fn completionScreenInteractive(self: *const AppState) bool {
+        return self.game_phase == .completion_screen and
+            self.pending_run_result != null and
+            !self.frontend_transition.blocksInput();
+    }
+
     fn stepCompletionScreenReveal(self: *AppState) void {
-        if (self.game_phase != .completion_screen) return;
+        if (!self.completionScreenActive()) return;
         const result = self.pending_run_result orelse return;
         const target = completionRevealTarget(result);
         if (self.completion_screen_reveal_progress >= target) return;
@@ -4652,11 +4689,15 @@ const AppState = struct {
 
     fn finishPendingRunReturn(self: *AppState) !void {
         const result = self.pending_run_result orelse {
+            self.completion_overlay_active = false;
+            self.preserve_completion_screen_reveal_on_enter = false;
             try self.enterGamePhase(.main_menu);
             return;
         };
         self.clearPostLevelHighScoreEntry();
         self.pending_run_result = null;
+        self.completion_overlay_active = false;
+        self.preserve_completion_screen_reveal_on_enter = false;
 
         switch (result.return_target) {
             .main_menu => try self.enterGamePhase(.main_menu),
@@ -5097,7 +5138,11 @@ const AppState = struct {
                 }
             },
             .completion_screen => {
-                self.resetCompletionScreenReveal();
+                if (self.preserve_completion_screen_reveal_on_enter) {
+                    self.preserve_completion_screen_reveal_on_enter = false;
+                } else {
+                    self.resetCompletionScreenReveal();
+                }
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
@@ -7754,6 +7799,10 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
         }
     }
+
+    if (state.completionScreenOverlayActive()) {
+        try drawCompletionScreenUi(state, layout);
+    }
 }
 
 fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0]const u8 {
@@ -10115,6 +10164,59 @@ test "completion reveal skips the bonus stage when no bonus line exists" {
     try std.testing.expect(!completionBonusVisibleAtProgress(result, 1.0));
     try std.testing.expect(!completionContinueVisibleAtProgress(result, 0.999));
     try std.testing.expect(completionContinueVisibleAtProgress(result, 1.0));
+}
+
+test "completion overlay helpers distinguish overlay from finalized screen" {
+    var state: AppState = undefined;
+    state.pending_run_result = .{
+        .outcome = .completed,
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 7,
+        .parcel_target = 7,
+        .score = 50_000,
+        .score_is_partial = true,
+        .return_target = .postal_route_map,
+    };
+    state.game_phase = .level;
+    state.completion_overlay_active = true;
+    state.frontend_transition = .{};
+
+    try std.testing.expect(state.completionScreenActive());
+    try std.testing.expect(state.completionScreenOverlayActive());
+    try std.testing.expect(!state.completionScreenInteractive());
+
+    state.game_phase = .completion_screen;
+    state.completion_overlay_active = false;
+
+    try std.testing.expect(state.completionScreenActive());
+    try std.testing.expect(!state.completionScreenOverlayActive());
+    try std.testing.expect(state.completionScreenInteractive());
+}
+
+test "completion reveal advances while the early overlay is active in level phase" {
+    var state: AppState = undefined;
+    state.pending_run_result = .{
+        .outcome = .completed,
+        .level_name = "To Infinity!",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 7,
+        .parcel_target = 7,
+        .score = 50_000,
+        .score_is_partial = false,
+        .score_totals = .{ .completion_bonus = 50_000 },
+        .return_target = .postal_route_map,
+    };
+    state.game_phase = .level;
+    state.completion_overlay_active = true;
+    state.frontend_transition = .{};
+    state.completion_screen_reveal_progress = 0.0;
+
+    state.stepCompletionScreenReveal();
+
+    try std.testing.expectApproxEqAbs(completion_reveal_step, state.completion_screen_reveal_progress, 0.0001);
 }
 
 test "postal completion copy matches the recovered widget strings" {
