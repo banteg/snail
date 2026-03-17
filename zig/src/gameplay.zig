@@ -121,6 +121,7 @@ pub const TrackParcelRuntime = struct {
     parcel_id: i32 = 0,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    flight_anchor: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
     bob_phase: f32 = 0.0,
     bob_phase_step: f32 = track_parcel_bob_phase_step,
@@ -1076,6 +1077,7 @@ pub const Runner = struct {
             self.advanceMovement(preview);
             if (replay.active) {
                 self.applyReplayDirective(preview, replay);
+                self.applyReplayMovementFlagProgress(preview);
             }
             self.tick_count += 1;
             self.stopwatch.advance(1.0);
@@ -1579,6 +1581,17 @@ pub const Runner = struct {
         }
     }
 
+    fn applyReplayMovementFlagProgress(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (!self.replay_track_state_latch) return;
+        if ((self.replay_raw_flag_bits & 0x01) != 0) {
+            self.advanceTrackMovementByRows(preview, 0.3);
+        }
+        if ((self.replay_raw_flag_bits & 0x02) != 0) {
+            self.movement_progress = std.math.clamp(self.movement_rate_scalar, 0.0, 0.999);
+            self.syncRowPosition(preview);
+        }
+    }
+
     fn currentReplayWorldX(self: *const Runner) ?f32 {
         if (self.phase != .active) return null;
         if (self.movement_mode != .track) return null;
@@ -1594,9 +1607,16 @@ pub const Runner = struct {
             return;
         }
 
+        self.advanceTrackMovementByRows(preview, self.movement_rate_scalar);
+    }
+
+    fn advanceTrackMovementByRows(self: *Runner, preview: *const track.LoadedLevelPreview, step_rows: f32) void {
+        if (preview.total_rows == 0 or self.finished) return;
+        if (self.movement_mode != .track) return;
+
         const last_row = preview.total_rows - 1;
         const max_progress: f32 = 0.999;
-        var remaining = self.movement_rate_scalar;
+        var remaining = step_rows;
 
         while (remaining > 0.0) {
             const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
@@ -1916,10 +1936,11 @@ pub const Runner = struct {
             return;
         }
 
-        if (self.row_event_display.delivered_parcel_count > self.row_event_display.staged_parcel_count) {
-            self.row_event_display.state = .staging;
+        self.armRowEventStagingIfNeeded();
+        if (self.row_event_display.state != .staging) {
+            self.row_event_display.state = .hold;
             self.row_event_display.progress = 0.0;
-            self.row_event_display.progress_step = row_event_display_stage_progress_step;
+            self.row_event_display.progress_step = row_event_display_hold_progress_step;
         }
     }
 
@@ -1951,6 +1972,43 @@ pub const Runner = struct {
             parcel.state = 4;
             return;
         }
+    }
+
+    fn hasPendingRowEventParcelStage(self: *const Runner) bool {
+        return self.counters.parcels > self.row_event_display.staged_parcel_count;
+    }
+
+    fn hasActiveRowEventDeliveryParcel(self: *const Runner) bool {
+        for (self.active_track_parcels) |parcel| {
+            if (parcel.state == 6 or parcel.state == 7) return true;
+        }
+        return false;
+    }
+
+    fn armRowEventStagingIfNeeded(self: *Runner) void {
+        if (!self.hasPendingRowEventParcelStage()) return;
+        if (self.hasActiveRowEventDeliveryParcel()) return;
+        switch (self.row_event_display.state) {
+            .inactive => {
+                self.row_event_display.state = .staging;
+                self.row_event_display.progress = 0.0;
+                self.row_event_display.progress_step = row_event_display_stage_progress_step;
+            },
+            .staging, .hold, .final_delivery, .bonus_prompt, .complete, .final_delivery_delay => {},
+        }
+    }
+
+    fn spawnRowEventDeliveryParcel(self: *Runner) bool {
+        const slot = self.allocateTrackParcelSlot() orelse return false;
+        const home_anchor = self.currentTrackParcelHomeAnchor();
+        slot.* = .{
+            .state = 6,
+            .row = std.math.maxInt(usize),
+            .world_position = home_anchor,
+            .presentation_position = home_anchor,
+            .flight_anchor = home_anchor,
+        };
+        return true;
     }
 
     fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2734,7 +2792,7 @@ pub const Runner = struct {
                     }
                 },
                 4 => {
-                    self.beginTrackParcelHome(preview, parcel);
+                    self.beginTrackParcelHome(parcel);
                     self.stepTrackParcelHome(preview, parcel);
                 },
                 5 => self.stepTrackParcelHome(preview, parcel),
@@ -2759,39 +2817,23 @@ pub const Runner = struct {
         return preview.worldPositionForLane(self.lane_center, self.row_position, floor_height + 0.4);
     }
 
-    fn currentTrackParcelHomeAnchor(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        if (self.track_parcel_home_anchor.active) {
-            return self.track_parcel_home_anchor.world_position;
-        }
-        return self.trackParcelPlayerAnchor(preview);
+    fn currentTrackParcelHomeAnchor(self: *const Runner) rl.Vector3 {
+        return self.track_parcel_home_anchor.world_position;
     }
 
-    fn trackParcelDeliveryTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        const widget_world = rl.Vector3{
+    fn trackParcelDeliveryTarget(self: *const Runner) rl.Vector3 {
+        return .{
             .x = self.row_event_display.widget_world_x,
             .y = self.row_event_display.widget_world_y,
             .z = self.row_event_display.widget_world_z,
         };
-        if ((widget_world.x * widget_world.x) + (widget_world.y * widget_world.y) + (widget_world.z * widget_world.z) > 0.000001) {
-            return widget_world;
-        }
-
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        return offsetPosition(
-            self.camera_anchor.world,
-            frame.right,
-            frame.up,
-            frame.forward,
-            0.0,
-            1.0,
-            0.6,
-        );
     }
 
-    fn beginTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
+    fn beginTrackParcelHome(self: *Runner, parcel: *TrackParcelRuntime) void {
         const bob_offset = std.math.sin(parcel.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
         parcel.world_position.y += bob_offset;
-        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
+        const home_anchor = self.currentTrackParcelHomeAnchor();
+        parcel.flight_anchor = home_anchor;
         const delta = rl.Vector3{
             .x = home_anchor.x - parcel.world_position.x,
             .y = home_anchor.y - parcel.world_position.y,
@@ -2814,7 +2856,7 @@ pub const Runner = struct {
     }
 
     fn stepTrackParcelHome(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
-        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
+        const home_anchor = parcel.flight_anchor;
         const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
         const remaining_distance = (1.0 - progress) * parcel.target_distance;
         parcel.world_position = .{
@@ -2831,10 +2873,15 @@ pub const Runner = struct {
         parcel.presentation_scale = trackParcelHomePresentationScale(progress);
         parcel.progress += parcel.progress_step;
         if (parcel.progress < 1.0) return;
-        parcel.state = 6;
+        parcel.state = 0;
+        self.armRowEventStagingIfNeeded();
     }
 
     fn beginTrackParcelDelivery(self: *Runner, parcel: *TrackParcelRuntime) void {
+        const home_anchor = self.currentTrackParcelHomeAnchor();
+        parcel.world_position = home_anchor;
+        parcel.presentation_position = home_anchor;
+        parcel.flight_anchor = home_anchor;
         parcel.progress = 0.0;
         parcel.progress_step = track_parcel_delivery_progress_step;
         const random_x = @as(f32, @floatFromInt(self.nextMathRandomInt15()));
@@ -2852,8 +2899,9 @@ pub const Runner = struct {
     }
 
     fn stepTrackParcelDelivery(self: *Runner, preview: *const track.LoadedLevelPreview, parcel: *TrackParcelRuntime) void {
-        const home_anchor = self.currentTrackParcelHomeAnchor(preview);
-        const delivery_target = self.trackParcelDeliveryTarget(preview);
+        _ = preview;
+        const home_anchor = parcel.flight_anchor;
+        const delivery_target = self.trackParcelDeliveryTarget();
         const progress = std.math.clamp(parcel.progress, 0.0, 1.0);
         parcel.world_position = lerpVector3(home_anchor, delivery_target, progress);
         parcel.presentation_position = parcel.world_position;
@@ -2903,19 +2951,25 @@ pub const Runner = struct {
             .inactive, .complete => {},
             .staging => {
                 if (!self.stepRowEventProgress()) return;
-                self.row_event_display.progress = 0.0;
-                if (self.row_event_display.staged_parcel_count < self.row_event_display.delivered_parcel_count) {
-                    self.row_event_display.staged_parcel_count += 1;
-                }
-                if (self.row_event_display.staged_parcel_count < self.row_event_display.delivered_parcel_count) {
+                if (self.row_event_display.staged_parcel_count >= self.counters.parcels) {
+                    self.row_event_display.progress = 0.0;
+                    self.row_event_display.state = .hold;
+                    self.row_event_display.progress_step = row_event_display_hold_progress_step;
                     return;
                 }
+                if (!self.spawnRowEventDeliveryParcel()) return;
+                self.row_event_display.progress = 0.0;
+                self.row_event_display.staged_parcel_count += 1;
                 self.row_event_display.state = .hold;
                 self.row_event_display.progress_step = row_event_display_hold_progress_step;
             },
             .hold => {
                 if (!self.stepRowEventProgress()) return;
                 self.row_event_display.progress = 0.0;
+                if (self.hasPendingRowEventParcelStage() and !self.hasActiveRowEventDeliveryParcel()) {
+                    self.row_event_display.state = .staging;
+                    self.row_event_display.progress_step = row_event_display_stage_progress_step;
+                }
             },
             .final_delivery => {
                 self.row_event_display.gate_18 = 0;
@@ -4824,6 +4878,10 @@ test "parcel home flight advances on the pickup frame" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
+    };
     runner.active_track_parcels[0] = .{
         .state = 4,
         .world_position = .{ .x = 5.0, .y = 2.0, .z = 9.0 },
@@ -4862,6 +4920,56 @@ test "parcel delivery advances on the staging frame" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.active_track_parcels[0].presentationScale(), 0.0001);
 }
 
+test "parcel home flight retires the home-leg slot and arms row event staging" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.counters.parcels = 1;
+    runner.row_event_display.parcel_target_count = 2;
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
+    };
+
+    var parcel = TrackParcelRuntime{
+        .state = 5,
+        .flight_anchor = runner.track_parcel_home_anchor.world_position,
+        .progress = 1.0,
+        .progress_step = 0.0,
+    };
+
+    runner.stepTrackParcelHome(&fixture.preview, &parcel);
+
+    try std.testing.expectEqual(@as(u32, 0), parcel.state);
+    try std.testing.expectEqual(RowEventDisplayState.staging, runner.row_event_display.state);
+}
+
+test "row event staging spawns a fresh delivery parcel slot" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.counters.parcels = 1;
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
+    };
+    runner.row_event_display.state = .staging;
+    runner.row_event_display.progress = 1.0;
+    runner.row_event_display.progress_step = 0.0;
+
+    runner.updateRowEventDisplay(&fixture.preview);
+
+    try std.testing.expectEqual(@as(u32, 1), runner.row_event_display.staged_parcel_count);
+    try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u32, 6), runner.active_track_parcels[0].state);
+    try std.testing.expectEqual(std.math.maxInt(usize), runner.active_track_parcels[0].row);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), runner.active_track_parcels[0].world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.active_track_parcels[0].world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.0), runner.active_track_parcels[0].world_position.z, 0.0001);
+}
+
 test "parcel home flight lifts presentation along the live basis up" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/LOOPBOW.TXT");
     defer fixture.deinit();
@@ -4882,6 +4990,7 @@ test "parcel home flight lifts presentation along the live basis up" {
     };
     var parcel = TrackParcelRuntime{
         .state = 5,
+        .flight_anchor = runner.track_parcel_home_anchor.world_position,
         .progress = 0.25,
         .progress_step = 0.0,
         .target_distance = 4.0,
@@ -4909,18 +5018,19 @@ test "parcel delivery keeps linear world position and curved presentation separa
     runner.row_event_display.widget_world_x = 9.0;
     runner.row_event_display.widget_world_y = 3.0;
     runner.row_event_display.widget_world_z = 14.0;
+    runner.track_parcel_home_anchor = .{
+        .active = true,
+        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
+    };
 
     var parcel = TrackParcelRuntime{
         .state = 7,
+        .flight_anchor = runner.track_parcel_home_anchor.world_position,
         .progress = 0.5,
         .progress_step = 0.0,
         .delivery_offset = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
 
-    runner.track_parcel_home_anchor = .{
-        .active = true,
-        .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
-    };
     const expected = lerpVector3(runner.track_parcel_home_anchor.world_position, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
 
     runner.stepTrackParcelDelivery(&fixture.preview, &parcel);
@@ -4951,6 +5061,7 @@ test "parcel delivery reuses the cached home anchor after the runner moves" {
 
     var parcel = TrackParcelRuntime{
         .state = 7,
+        .flight_anchor = runner.track_parcel_home_anchor.world_position,
         .progress = 0.0,
         .progress_step = 0.0,
     };
@@ -4993,7 +5104,7 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     try std.testing.expect(register_steps < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
     try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
-    try std.testing.expectEqual(RowEventDisplayState.staging, runner.row_event_display.state);
+    try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
 
@@ -5018,6 +5129,7 @@ test "row event staging promotes delivered parcels into the hold state" {
 
     var runner = Runner.init(&fixture.preview);
     runner.row_event_display.state = .staging;
+    runner.counters.parcels = 2;
     runner.row_event_display.staged_parcel_count = 1;
     runner.row_event_display.delivered_parcel_count = 2;
     runner.row_event_display.progress_step = 1.0;
@@ -6208,4 +6320,54 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expect(runner.replayFadeRequested());
     try std.testing.expect(runner.consumeReplayFadeRequest());
     try std.testing.expect(!runner.consumeReplayFadeRequest());
+}
+
+test "replay flag bit 0x1 advances movement through the replay latch" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.stepWithReplay(
+        &fixture.preview,
+        .{},
+        .{
+            .active = true,
+            .raw_flag_bits = 0x05,
+        },
+        1.0 / 60.0,
+    );
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.movement_progress,
+        runner.row_position,
+        0.0001,
+    );
+}
+
+test "replay flag bit 0x2 snaps movement progress to the movement rate scalar" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_progress = 0.6;
+    runner.row_position = 0.6;
+
+    runner.stepWithReplay(
+        &fixture.preview,
+        .{},
+        .{
+            .active = true,
+            .raw_flag_bits = 0x06,
+        },
+        1.0 / 60.0,
+    );
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.movement_progress,
+        runner.row_position,
+        0.0001,
+    );
 }

@@ -246,8 +246,8 @@ Implemented now:
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
-- parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot and advance through the recovered `state 4/5/6/7` handoff before `parcel_register` lands
-- parcel delivery state `7` now homes to the controller-owned `row_event_display.widget_world` anchor using the recovered local offset `(right=7.3, up=2.0, forward=6.0)`, and seeds the shipped per-flight arc coefficients from the carried gameplay LCG instead of the old fixed `{0, 1, 0}` offset
+- parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot for the recovered `state 4/5` home leg, and the row-event controller now stages a fresh `state 6/7` delivery parcel before `parcel_register` lands
+- parcel delivery state `7` now homes to the controller-owned `row_event_display.widget_world` anchor using the recovered local offset `(right=7.3, up=2.0, forward=6.0)` without the older camera fallback, and seeds the shipped per-flight arc coefficients from the carried gameplay LCG instead of the old fixed `{0, 1, 0}` offset
 - parcel runtime states `4/5/6/7` now reuse a cached game-owned home anchor instead of resampling the live player position during flight, which matches the current recovered native consumer shape more closely than the old player-anchor shortcut
 - parcel runtime states `4` and `6` now fall through into their flight updates on the same tick like `update_track_parcel`, parcel rendering now keeps the recovered sprite-only presentation position/scale separate from the base parcel world position during states `5` and `7`, and the home-flight arc now lifts along the live `basis_up` vector instead of hard-coding world `y`
 - collected parcel rows now stay consumed across respawn and stop rendering as live world pickups instead of reappearing until the row scrolls away
@@ -338,13 +338,14 @@ Implemented now:
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
+- replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
 - selected replay sessions no longer feed completion or failure back into live high-score persistence, and they now return to the launch surface instead of staying on the generic run-result path
 - replay flag bit `0x8` now routes selected playback through the shared fade overlay at the recorded tail instead of swapping phases immediately or letting the sim run past the saved sample stream
 
 Still missing or approximate:
 
 - the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
-- replay flag bits `0x1/0x2` are now preserved through replay playback, but they still do not drive a grounded audio/effect parity path
+- replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity
 
 Best next work:
