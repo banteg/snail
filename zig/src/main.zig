@@ -9891,7 +9891,7 @@ fn subgameCameraSelectionForRunner(runner: *gameplay.Runner) SubgameCameraSelect
 }
 
 fn updateSubgameCameraState(state: *SubgameCameraState, selection: SubgameCameraSelection) void {
-    if (state.snap_next or selection.snap_next or state.source != selection.source) {
+    if (state.snap_next or selection.snap_next) {
         state.shared_matrix = selection.matrix;
         state.fov_degrees = selection.fov_degrees;
         state.source = selection.source;
@@ -10829,7 +10829,7 @@ test "startup block after click-start dismissal resumes the live runner under in
     try std.testing.expect(state.level_runner.?.row_position > starting_row_position);
 }
 
-test "shared subgame camera snaps on source change and blends on later frames" {
+test "shared subgame camera honors snap flags and otherwise blends across source changes" {
     const basis_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
     const basis_up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
     const basis_forward = rl.Vector3{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -10862,11 +10862,11 @@ test "shared subgame camera snaps on source change and blends on later frames" {
         .source = .live,
         .matrix = live_matrix,
         .fov_degrees = 120.0,
-        .snap_next = true,
+        .snap_next = false,
     });
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), state.shared_matrix.m12, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 2.0), state.shared_matrix.m13, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 3.0), state.shared_matrix.m14, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera_blend_factor), state.shared_matrix.m12, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera_blend_factor), state.shared_matrix.m13, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera_blend_factor), state.shared_matrix.m14, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 120.0), state.fov_degrees, 0.001);
 
     updateSubgameCameraState(&state, .{
@@ -10875,9 +10875,33 @@ test "shared subgame camera snaps on source change and blends on later frames" {
         .fov_degrees = 130.0,
         .snap_next = false,
     });
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 1.0), @as(f32, 9.0), subgame_camera_blend_factor), state.shared_matrix.m12, 0.001);
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 2.0), @as(f32, 10.0), subgame_camera_blend_factor), state.shared_matrix.m13, 0.001);
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 3.0), @as(f32, 11.0), subgame_camera_blend_factor), state.shared_matrix.m14, 0.001);
+    try std.testing.expectApproxEqAbs(
+        std.math.lerp(
+            std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera_blend_factor),
+            @as(f32, 9.0),
+            subgame_camera_blend_factor,
+        ),
+        state.shared_matrix.m12,
+        0.001,
+    );
+    try std.testing.expectApproxEqAbs(
+        std.math.lerp(
+            std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera_blend_factor),
+            @as(f32, 10.0),
+            subgame_camera_blend_factor,
+        ),
+        state.shared_matrix.m13,
+        0.001,
+    );
+    try std.testing.expectApproxEqAbs(
+        std.math.lerp(
+            std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera_blend_factor),
+            @as(f32, 11.0),
+            subgame_camera_blend_factor,
+        ),
+        state.shared_matrix.m14,
+        0.001,
+    );
     try std.testing.expectApproxEqAbs(@as(f32, 130.0), state.fov_degrees, 0.001);
 }
 
