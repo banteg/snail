@@ -215,6 +215,26 @@
       "name": "game_startup_and_main_loop"
     },
     {
+      "address": "0x4074b0",
+      "name": "game_window_proc",
+      "description": "Primary Win32 window procedure for the game's main window. It handles activation and minimize transitions, ESC-to-quit, left and right mouse button latches, and mouse-wheel delta capture before delegating the rest to DefWindowProcA."
+    },
+    {
+      "address": "0x4077f0",
+      "name": "consume_mouse_wheel_delta",
+      "description": "Returns the latched mouse-wheel delta for the requested slot and clears it back to zero."
+    },
+    {
+      "address": "0x407810",
+      "name": "read_left_mouse_button_state",
+      "description": "Clears the companion left-button latch byte for the requested slot and returns the current left mouse button state byte."
+    },
+    {
+      "address": "0x407830",
+      "name": "read_right_mouse_button_state",
+      "description": "Clears the companion right-button latch byte for the requested slot and returns the current right mouse button state byte."
+    },
+    {
       "address": "0x407a10",
       "name": "initialize_audio_subsystem"
     },
