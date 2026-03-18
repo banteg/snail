@@ -2309,26 +2309,20 @@ pub const Runner = struct {
     }
 
     // PORT(partial): Windows drives the attachment-side camera lift/FOV envelopes from the
-    // current segment-local Z delta, not from the overall template fraction.
+    // current segment-local progress lane (`follow_state.progress / delta_length`), not from
+    // the overall template fraction.
     fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
         if (self.movement_mode != .attachment or !self.attachment_follow.active) return null;
 
         const built = self.currentAttachmentBuilt(preview) orelse return null;
         const runtime_kind = built.template.spec.runtime_kind orelse return null;
         const segment_base_progress = @floor(self.attachment_follow.progress);
+        const segment_local_progress = self.attachment_follow.progress - segment_base_progress;
         const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
-        const segment_start = attachment_builders.worldPositionForTemplate(
-            &built.template,
-            segment_base_progress,
-            self.attachment_follow.source_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
-        );
-        const player_z = self.playerWorldPosition(preview).z;
         const segment_progress = if (segment_delta_length <= 0.0001)
             0.0
         else
-            std.math.clamp((player_z - segment_start.z) / segment_delta_length, 0.0, 1.0);
+            std.math.clamp(segment_local_progress / segment_delta_length, 0.0, 1.0);
 
         return .{
             .runtime_kind = runtime_kind,
@@ -2383,9 +2377,6 @@ pub const Runner = struct {
             self.attachment_camera_orientation_b = self.attachment_follow.camera_orientation_b;
             const exit_seeds = self.attachmentExitSeedsFromFollow(preview);
             self.attachment_follow.exit_seed_a = exit_seeds.seed_a;
-            // PORT(partial): Windows latches two exit-side seed lanes here, but their native
-            // meaning is still unresolved. Keep using the live template pose delta as a
-            // geometry-driven placeholder instead of the older surface-roll shortcut.
             self.attachment_follow.exit_seed_b = exit_seeds.seed_b;
             self.attachment_exit_seed_a = exit_seeds.seed_a;
             self.attachment_exit_seed_b = exit_seeds.seed_b;
@@ -3885,15 +3876,27 @@ pub const Runner = struct {
         self: *Runner,
         built: *const attachment_builders.BuiltAttachment,
     ) void {
-        _ = built;
         // PORT(partial): native `update_track_attachment_follow_state` publishes live
         // cameraman rotations through `follow_state.orientation_a/orientation_b`. The
-        // March 8 START trace pins both lanes at zero throughout blocked startup, so
-        // keep the current port on neutral follow-camera orientations until the sampled
-        // template rotation scalars are recovered instead of inventing them from surface
-        // roll.
+        // trace/decompile now pins `orientation_b` to the template phase lane
+        // (`(sample_index + (local_progress / delta_length)) * row_scalar_a / sample_count`),
+        // while `orientation_a`
+        // still depends on per-sample scalar records we have not recovered cleanly.
         self.attachment_follow.camera_orientation_a = 0.0;
-        self.attachment_follow.camera_orientation_b = 0.0;
+        const sample_count: f32 = @floatFromInt(built.template.sample_count);
+        if (sample_count <= 0.0 or built.template.row_scalar_a == 0.0) {
+            self.attachment_follow.camera_orientation_b = 0.0;
+            return;
+        }
+        const segment_base_progress = @floor(self.attachment_follow.progress);
+        const segment_local_progress = self.attachment_follow.progress - segment_base_progress;
+        const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
+        const normalized_segment_progress = if (segment_delta_length <= 0.0001)
+            0.0
+        else
+            std.math.clamp(segment_local_progress / segment_delta_length, 0.0, 1.0);
+        self.attachment_follow.camera_orientation_b =
+            ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) / sample_count;
     }
 
     fn attachmentFollowOutputPosition(
@@ -4175,42 +4178,13 @@ pub const Runner = struct {
             };
         };
 
-        const current_pose = attachment_builders.worldPoseForTemplate(
-            &built.template,
-            self.attachment_follow.progress,
-            self.attachment_follow.source_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
-        );
-        const next_progress = @min(
-            self.attachment_follow.progress + 1.0,
-            @as(f32, @floatFromInt(built.template.sample_count)),
-        );
-        const next_pose = attachment_builders.worldPoseForTemplate(
-            &built.template,
-            next_progress,
-            self.attachment_follow.source_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
-        );
-
-        const current_roll = rollRadiansFromForwardUp(
-            attachmentVec3ToVector3(current_pose.basis_forward),
-            attachmentVec3ToVector3(current_pose.basis_up),
-        );
-        const next_roll = rollRadiansFromForwardUp(
-            attachmentVec3ToVector3(next_pose.basis_forward),
-            attachmentVec3ToVector3(next_pose.basis_up),
-        );
         return .{
-            .seed_a = current_roll,
-            // Native fall-state init copies `template_record->row_scalar_a` into the exit-rate
-            // lane. Use the recovered template scalar when present instead of deriving another
-            // geometry proxy from the sampled roll delta.
-            .seed_b = if (built.template.row_scalar_a != 0.0)
-                built.template.row_scalar_a
-            else
-                normalizeRadians(next_roll - current_roll),
+            // Native fall-state init copies `follow_state.orientation_b`, which is the
+            // attachment phase lane rather than a sampled roll proxy.
+            .seed_a = self.attachment_follow.camera_orientation_b,
+            // Native fall-state init copies `template_record->row_scalar_a` verbatim into
+            // the exit-rate lane, including zero.
+            .seed_b = built.template.row_scalar_a,
         };
     }
 
@@ -4786,7 +4760,58 @@ test "worm attachment exit seeds use the traced template row scalar" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
+    const segment_base_progress = @floor(runner.attachment_follow.progress);
+    const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
+    const normalized_segment_progress = (runner.attachment_follow.progress - segment_base_progress) / segment_delta_length;
+    const expected_phase =
+        ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) /
+        @as(f32, @floatFromInt(built.template.sample_count));
+    try std.testing.expectApproxEqAbs(expected_phase, exit_seeds.seed_a, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), exit_seeds.seed_b, 0.0001);
+}
+
+test "attachment camera segment progress follows template progress, not world z delta" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "START";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = 5.5,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
+    const attachment_camera = runner.currentAttachmentCameraProgress(&fixture.preview).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const expected_progress = 0.5 / attachment_builders.deltaLengthAtProgress(&built.template, 5.0);
+    try std.testing.expectEqual(@as(u8, 36), attachment_camera.runtime_kind);
+    try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.segment_progress, 0.0001);
+}
+
+test "zero-row-scalar attachments keep attachment exit spin zero" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/HALFPIPE.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "HALFPIPE";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = 5.5,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+    runner.refreshCameraRollState(&fixture.preview);
+
+    const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.camera_orientation_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), exit_seeds.seed_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), exit_seeds.seed_b, 0.0001);
 }
 
 test "runner advances deterministically over fixed time" {
