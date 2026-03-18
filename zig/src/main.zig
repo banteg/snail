@@ -8987,8 +8987,7 @@ fn drawGameplayRuntimeActors(
     runner: gameplay.Runner,
     camera: rl.Camera3D,
 ) void {
-    const gameplay_width = @min(loaded_track_preview.max_width, 8);
-    if (gameplay_width == 0 or loaded_track_preview.total_rows == 0) return;
+    if (loaded_track_preview.max_width == 0 or loaded_track_preview.total_rows == 0) return;
 
     const current_row = loaded_track_preview.rowIndexAtWorldZ(runner.row_position);
     const start_row = current_row -| 1;
@@ -8997,7 +8996,7 @@ fn drawGameplayRuntimeActors(
     for (start_row..end_row) |global_row| {
         if (!shouldRenderGameplayActorRow(runner, global_row)) continue;
         const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
-        for (0..@min(row_location.row.cells.len, gameplay_width)) |lane_index| {
+        for (0..row_location.row.cells.len) |lane_index| {
             const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
             switch (sample.kind) {
                 .slug => drawGameplaySlugActor(state, loaded_track_preview, camera, global_row, lane_index),

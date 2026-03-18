@@ -2731,7 +2731,7 @@ pub const Runner = struct {
 
         const start_row = self.current_global_row -| 6;
         const end_row = @min(preview.total_rows, self.current_global_row + 7);
-        const gameplay_width = @min(preview.max_width, 8);
+        const gameplay_width = preview.max_width;
         const start_lane = self.resolved_lane_index -| 2;
         const end_lane = @min(gameplay_width, self.resolved_lane_index + 3);
         for (start_row..end_row) |global_row| {
@@ -5073,6 +5073,37 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
     try std.testing.expect(runner.hasRuntimeHazard(slug.row, slug.lane, .salt));
+}
+
+test "explode rings still reach right-edge authored lanes" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TIGHT ROPES 2.TXT");
+    defer fixture.deinit();
+
+    var right_edge_slug: ?RowTarget = null;
+    for (0..fixture.preview.total_rows) |global_row| {
+        const row_location = fixture.preview.locateRow(global_row) orelse continue;
+        var lane_index = row_location.row.cells.len;
+        while (lane_index > 0) {
+            lane_index -= 1;
+            if (fixture.preview.gameplayCellSampleAt(global_row, lane_index)) |sample| {
+                if (sample.kind == .slug and lane_index == fixture.preview.max_width - 2) {
+                    right_edge_slug = .{ .row = global_row, .lane = lane_index };
+                    break;
+                }
+            }
+        }
+        if (right_edge_slug != null) break;
+    }
+    const slug = right_edge_slug orelse return error.TestUnexpectedResult;
+
+    try std.testing.expectEqual(@as(usize, 8), slug.lane);
+
+    var runner = Runner.init(&fixture.preview);
+    runner.current_global_row = slug.row;
+    runner.resolved_lane_index = slug.lane;
+    runner.triggerExplodeRing(&fixture.preview);
+
+    try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
 }
 
 test "turret contact enters the shared fall state with the hazard cutscene id" {
