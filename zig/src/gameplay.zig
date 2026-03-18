@@ -963,7 +963,7 @@ fn clampedPreviousDesiredCameraZ(anchor_z: f32, previous_z: f32) f32 {
 
 const AttachmentCameraProgress = struct {
     runtime_kind: u8,
-    segment_progress: f32,
+    template_progress: f32,
 };
 
 pub const Runner = struct {
@@ -2309,24 +2309,25 @@ pub const Runner = struct {
     }
 
     // PORT(partial): Windows drives the attachment-side camera lift/FOV envelopes from the
-    // current segment-local progress lane (`follow_state.progress / delta_length`), not from
-    // the overall template fraction.
+    // player's overall attachment progress, `((player.z - source_row_z) / sample_count_f32)`.
     fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
         if (self.movement_mode != .attachment or !self.attachment_follow.active) return null;
 
         const built = self.currentAttachmentBuilt(preview) orelse return null;
         const runtime_kind = built.template.spec.runtime_kind orelse return null;
-        const segment_base_progress = @floor(self.attachment_follow.progress);
-        const segment_local_progress = self.attachment_follow.progress - segment_base_progress;
-        const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
-        const segment_progress = if (segment_delta_length <= 0.0001)
+        const sample_count: f32 = @floatFromInt(built.template.sample_count);
+        const template_progress = if (sample_count <= 0.0001)
             0.0
         else
-            std.math.clamp(segment_local_progress / segment_delta_length, 0.0, 1.0);
+            std.math.clamp(
+                (self.playerWorldPosition(preview).z - @as(f32, @floatFromInt(self.attachment_follow.source_row))) / sample_count,
+                0.0,
+                1.0,
+            );
 
         return .{
             .runtime_kind = runtime_kind,
-            .segment_progress = segment_progress,
+            .template_progress = template_progress,
         };
     }
 
@@ -2351,7 +2352,7 @@ pub const Runner = struct {
         var target: f32 = 0.0;
         if (self.currentAttachmentCameraProgress(preview)) |attachment_camera| {
             if (attachmentCameraLiftRuntimeKindEnabled(attachment_camera.runtime_kind)) {
-                target += attachmentCameraEnvelope(attachment_camera.segment_progress) * cameraman_attachment_lift_scale;
+                target += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
             }
         }
         if (self.launch.active and self.launch.camera_progress > 0.0) {
@@ -2363,7 +2364,7 @@ pub const Runner = struct {
     fn cameramanDesiredFovDegrees(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         const attachment_camera = self.currentAttachmentCameraProgress(preview) orelse return 110.0;
         if (attachment_camera.runtime_kind != 24) return 110.0;
-        return 110.0 + (attachmentCameraEnvelope(attachment_camera.segment_progress) * cameraman_kind24_fov_bonus);
+        return 110.0 + (attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_kind24_fov_bonus);
     }
 
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -4770,7 +4771,7 @@ test "worm attachment exit seeds use the traced template row scalar" {
     try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), exit_seeds.seed_b, 0.0001);
 }
 
-test "attachment camera segment progress follows template progress, not world z delta" {
+test "attachment camera lift uses overall attachment progress" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -4787,9 +4788,11 @@ test "attachment camera segment progress follows template progress, not world z 
 
     const attachment_camera = runner.currentAttachmentCameraProgress(&fixture.preview).?;
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
-    const expected_progress = 0.5 / attachment_builders.deltaLengthAtProgress(&built.template, 5.0);
+    const expected_progress =
+        (runner.playerWorldPosition(&fixture.preview).z - @as(f32, @floatFromInt(target.row))) /
+        @as(f32, @floatFromInt(built.template.sample_count));
     try std.testing.expectEqual(@as(u8, 36), attachment_camera.runtime_kind);
-    try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.segment_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.template_progress, 0.0001);
 }
 
 test "zero-row-scalar attachments keep attachment exit spin zero" {
