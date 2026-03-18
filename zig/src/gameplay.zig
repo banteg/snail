@@ -475,7 +475,6 @@ const math_random_center: f32 = 16384.0;
 const math_random_inv_center: f32 = 1.0 / math_random_center;
 const track_parcel_delivery_random_y_scale: f32 = 1.5 * math_random_inv_center;
 const track_parcel_home_arc_height: f32 = 0.5;
-const player_world_position_height: f32 = 0.4;
 const completion_cutscene_x_offset: f32 = 0.5;
 const death_cutscene_x_offset: f32 = 2.0;
 const death_cutscene_y_floor: f32 = 0.0;
@@ -1223,14 +1222,19 @@ pub const Runner = struct {
         }
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
-                const position = attachment_builders.worldPositionForTemplate(
+                const position = self.attachmentFollowOutputPosition(built);
+                const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
                     self.attachment_follow.progress,
                     self.attachment_follow.source_row,
                     self.attachment_follow.lateral_offset,
-                    self.attachment_follow.vertical_offset + y,
+                    self.attachment_follow.vertical_offset,
                 );
-                return .{ .x = position.x, .y = position.y, .z = position.z };
+                return .{
+                    .x = position.x + (pose.basis_up.x * y),
+                    .y = position.y + (pose.basis_up.y * y),
+                    .z = position.z + (pose.basis_up.z * y),
+                };
             }
         }
         if (self.launch.active) {
@@ -2276,7 +2280,7 @@ pub const Runner = struct {
             return;
         }
 
-        const base_position = self.worldPosition(preview, attachment_entry_rider_height);
+        const base_position = self.playerWorldPosition(preview);
         const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
         const local_offset = rl.Vector3{
             .x = self.jetpack.wobble_x,
@@ -2394,7 +2398,12 @@ pub const Runner = struct {
     }
 
     fn playerWorldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        return self.worldPosition(preview, player_world_position_height);
+        if (self.phase == .fall) return self.worldPosition(preview, 0.0);
+        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            return self.worldPosition(preview, 0.0);
+        }
+        if (self.launch.active) return self.worldPosition(preview, 0.0);
+        return self.worldPosition(preview, attachment_entry_rider_height);
     }
 
     fn snailHotspotPrimarySourceFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
@@ -3843,13 +3852,7 @@ pub const Runner = struct {
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const built = self.currentAttachmentBuilt(preview) orelse return;
-        const position = attachment_builders.worldPositionForTemplate(
-            &built.template,
-            self.attachment_follow.progress,
-            self.attachment_follow.source_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
-        );
+        const position = self.attachmentFollowOutputPosition(built);
         self.attachment_follow.cached_output_position = position;
         self.row_position = position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
@@ -3857,6 +3860,27 @@ pub const Runner = struct {
         self.attachment_follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
         self.lane_center = self.attachment_follow.cached_output_lane_center;
         self.resolved_lane_index = preview.laneIndexAtWorldX(position.x);
+    }
+
+    fn attachmentFollowOutputPosition(
+        self: *const Runner,
+        built: *const attachment_builders.BuiltAttachment,
+    ) attachment_builders.Vec3 {
+        const position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            self.attachment_follow.progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        return switch (built.template.spec.family) {
+            .kind42 => position,
+            else => .{
+                .x = position.x,
+                .y = position.y + attachment_entry_rider_height,
+                .z = position.z,
+            },
+        };
     }
 
     fn advanceAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6362,12 +6386,18 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
 
     runner.refreshBlockedStartupState(&fixture.preview);
 
+    const expected_top_height = ((@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0) + attachment_entry_rider_height;
+
     try std.testing.expectEqual(@as(f32, 0.0), runner.movement_rate_scalar);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(starting_row)), runner.row_position, 0.001);
-    try std.testing.expect(runner.worldPosition(&fixture.preview, 0.0).y >= 7.9);
-    try std.testing.expect(runner.camera_anchor.world.y >= 8.3);
+    try std.testing.expectApproxEqAbs(expected_top_height, runner.worldPosition(&fixture.preview, 0.0).y, 0.001);
+    try expectVector3ApproxEq(
+        runner.playerWorldPosition(&fixture.preview),
+        runner.camera_anchor.world,
+        0.0001,
+    );
 }
 
 test "death cutscene keeps converging on hotspot 18 instead of switching to hotspot 17" {
@@ -6753,7 +6783,7 @@ test "camera anchor defaults to the player world position without jetpack offset
     runner.refreshCameraAnchor(&fixture.preview);
 
     try expectVector3ApproxEq(
-        runner.worldPosition(&fixture.preview, attachment_entry_rider_height),
+        runner.playerWorldPosition(&fixture.preview),
         runner.camera_anchor.world,
         0.0001,
     );
@@ -6768,7 +6798,7 @@ test "camera anchor uses the jetpack local offset lanes" {
     runner.jetpack.wobble_y = 0.5;
     runner.jetpack.wobble_alpha = -0.125;
 
-    const base_position = runner.worldPosition(&fixture.preview, attachment_entry_rider_height);
+    const base_position = runner.playerWorldPosition(&fixture.preview);
     const expected = rl.Vector3{
         .x = base_position.x + 0.25,
         .y = base_position.y + 0.5,

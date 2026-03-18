@@ -717,6 +717,8 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
 
 fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
     const curve_steps: usize = @intFromFloat(@floor(4.0 * std.math.pi));
+    const curve_radius = @as(f32, @floatFromInt(curve_steps)) / std.math.pi;
+    const top_flat_height = curve_radius * 2.0;
     const sample_count: usize = curve_steps + 15;
     const point_count: usize = sample_count + 1;
     const samples = try allocator.alloc(TemplateSample, point_count);
@@ -729,7 +731,7 @@ fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templat
     for (0..5) |index| {
         samples[index].position = .{
             .x = 0.0,
-            .y = 8.0,
+            .y = top_flat_height,
             .z = @floatFromInt(index),
         };
     }
@@ -740,7 +742,7 @@ fn buildStartTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Templat
         const index = 5 + step;
         samples[index].position = .{
             .x = 0.0,
-            .y = (std.math.cos(angle) + 1.0) * 4.0,
+            .y = (std.math.cos(angle) + 1.0) * curve_radius,
             .z = @floatFromInt(5 + step),
         };
     }
@@ -1731,10 +1733,11 @@ test "collect scaffold builds start template" {
 
     try std.testing.expectEqual(@as(usize, 1), scaffold.built_attachments.len);
     const built = scaffold.built_attachments[0];
+    const expected_top_height = (@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0;
     try std.testing.expectEqual(PublicPath.start, built.row.public_path.?);
     try std.testing.expectEqual(@as(u16, 27), built.template.sample_count);
     try std.testing.expectEqual(@as(usize, 28), built.template.pointCount());
-    try std.testing.expectApproxEqAbs(@as(f32, 8.0), built.template.samples[0].position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_top_height, built.template.samples[0].position.y, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), built.template.samples[17].position.y, 0.0001);
 }
 
@@ -1784,7 +1787,7 @@ test "start template interpolation follows recovered descent" {
     defer template.deinit(std.testing.allocator);
 
     const mid = samplePoseAtProgress(&template, 10.5);
-    try std.testing.expect(mid.position.y < 8.0);
+    try std.testing.expect(mid.position.y < template.samples[0].position.y);
     try std.testing.expect(mid.position.y > 0.0);
     try std.testing.expectApproxEqAbs(@as(f32, 10.5), mid.position.z, 0.0001);
 }
