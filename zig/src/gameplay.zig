@@ -629,7 +629,7 @@ const CameramanState = struct {
     out_matrix: rl.Matrix = cameraman_identity_matrix,
     current_desired_matrix: rl.Matrix = cameraman_identity_matrix,
     previous_desired_matrix: rl.Matrix = cameraman_identity_matrix,
-    snap_next: bool = true,
+    snap_next: bool = false,
     fov_degrees: f32 = 110.0,
     lift_target: f32 = 0.0,
     lift_current: f32 = 0.0,
@@ -2565,12 +2565,19 @@ pub const Runner = struct {
                     self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
                     if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
                         self.cutscene_camera.state = 9;
+                        self.cutscene_camera.ticks = 0;
                     }
                     break;
                 },
                 9 => {
-                    self.cutscene_camera.matrix = self.cameraman.out_matrix;
-                    self.clearCutscene();
+                    if (self.cutscene_camera.ticks == 0) {
+                        // Native state 9 keeps the override lane alive for one terminal tick,
+                        // but publishes the live cameraman matrix through it before clearing.
+                        self.cutscene_camera.matrix = self.cameraman.out_matrix;
+                        self.cutscene_camera.ticks = 1;
+                    } else {
+                        self.clearCutscene();
+                    }
                     break;
                 },
                 5 => {
@@ -2680,7 +2687,6 @@ pub const Runner = struct {
             self.cameraman.out_matrix = desired_matrix;
             self.cameraman.current_desired_matrix = desired_matrix;
             self.cameraman.previous_desired_matrix = desired_matrix;
-            self.cameraman.snap_next = true;
             return;
         }
 
@@ -6233,6 +6239,26 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     );
 }
 
+test "intro cutscene keeps the override lane for one terminal live-camera tick" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.setCutscene(cutscene_intro_id);
+    runner.cutscene_camera.state = 9;
+    runner.cutscene_camera.ticks = 0;
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expect(runner.cutsceneCameraActive());
+    try std.testing.expectEqual(@as(u8, 9), runner.cutscene_camera.state);
+    try expectCameraMatrixApproxEq(runner.cameramanMatrix(), runner.cutsceneCameraMatrix(), 0.0001);
+
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expect(!runner.cutsceneCameraActive());
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+}
+
 test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 18" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -6490,6 +6516,16 @@ test "blocked startup start attachment keeps the live cameraman basis unmirrored
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_camera_orientation_b, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.heading_roll, 0.0001);
     try std.testing.expect(cameraman.right.x > 0.0);
+}
+
+test "initial live cameraman update does not queue a stale shared-camera snap" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.refreshCameraState(&fixture.preview);
+
+    try std.testing.expect(!runner.takeCameramanSnap());
 }
 
 test "death cutscene keeps converging on hotspot 18 instead of switching to hotspot 17" {
