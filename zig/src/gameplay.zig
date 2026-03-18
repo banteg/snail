@@ -568,11 +568,22 @@ const RowSample = struct {
 const AttachmentFollowState = struct {
     active: bool = false,
     source_row: usize = 0,
+    // Native follow state keeps a segment index plus a raw local-distance progress inside
+    // that segment. Keep both, then derive a builder-facing template progress for the
+    // shared Zig attachment helpers.
+    sample_index: usize = 0,
+    local_progress: f32 = 0.0,
+    // Mirrors the native local-distance lane, including raw negative/overflow seeds on entry.
     progress: f32 = 0.0,
+    // Zig-side convenience cache in sample-index-plus-fraction space.
+    template_progress: f32 = 0.0,
     exit_overshoot: f32 = 0.0,
     lateral_offset: f32 = 0.0,
     cached_output_lane_center: f32 = 0.5,
     vertical_offset: f32 = 0.0,
+    // Native writes this from the source row-cell scalar during begin. The port still seeds
+    // it from the built template until that runtime row-cell scalar is surfaced in preview data.
+    camera_phase_scalar: f32 = 0.0,
     camera_orientation_a: f32 = 0.0,
     camera_orientation_b: f32 = 0.0,
     exit_seed_a: f32 = 0.0,
@@ -586,7 +597,8 @@ const AttachmentExitSeeds = struct {
 };
 
 const InstalledAttachmentEntry = struct {
-    progress: f32,
+    sample_index: usize,
+    local_progress: f32,
     lateral_offset: f32,
     vertical_offset: f32,
 };
@@ -1237,7 +1249,7 @@ pub const Runner = struct {
                 const position = self.attachmentFollowOutputPosition(built);
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.progress,
+                    self.attachment_follow.template_progress,
                     self.attachment_follow.source_row,
                     self.attachment_follow.lateral_offset,
                     self.attachment_follow.vertical_offset,
@@ -1286,7 +1298,7 @@ pub const Runner = struct {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.progress,
+                    self.attachment_follow.template_progress,
                     self.attachment_follow.source_row,
                     self.attachment_follow.lateral_offset,
                     self.attachment_follow.vertical_offset,
@@ -1321,7 +1333,7 @@ pub const Runner = struct {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.progress,
+                    self.attachment_follow.template_progress,
                     self.attachment_follow.source_row,
                     self.attachment_follow.lateral_offset,
                     self.attachment_follow.vertical_offset,
@@ -1422,7 +1434,7 @@ pub const Runner = struct {
         if (!self.paused) {
             self.tryPrimeCurrentRowAttachmentEntry(preview);
             if (self.movement_mode == .attachment and self.attachment_follow.active) {
-                self.updateAttachmentFollowPosition(preview);
+                self.stepAttachmentFollowAtRate(preview, 0.0);
             }
             self.refreshSample(preview);
         }
@@ -1629,7 +1641,7 @@ pub const Runner = struct {
                 const target_world_position = trackEntryWorldPosition(preview, self.row_position, target_lane_center);
                 const centered_pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.progress,
+                    self.attachment_follow.template_progress,
                     self.attachment_follow.source_row,
                     0.0,
                     self.attachment_follow.vertical_offset,
@@ -1637,7 +1649,7 @@ pub const Runner = struct {
                 const target_local = attachmentLocalPosition(centered_pose, target_world_position);
                 const target_lateral_offset = attachmentLateralOffsetFromLocalX(
                     &built.template,
-                    self.attachment_follow.progress,
+                    self.attachment_follow.template_progress,
                     target_local.x,
                 );
                 self.attachment_follow.lateral_offset += (target_lateral_offset - self.attachment_follow.lateral_offset) * alpha;
@@ -2004,7 +2016,7 @@ pub const Runner = struct {
                 self.finishAttachmentFollowWithExitHandoff(preview);
                 return;
             }
-            if (self.attachment_follow.progress >= @as(f32, @floatFromInt(built.template.sample_count))) {
+            if (self.attachment_follow.sample_index >= built.template.sample_count) {
                 self.commitAttachmentNaturalExit(preview, built);
                 if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
                     self.finishAttachmentFollowDirect();
@@ -3825,7 +3837,7 @@ pub const Runner = struct {
     fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
         if (self.attachment_follow.vertical_offset > 0.0) return false;
 
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.progress);
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.template_progress);
         const local_lateral = @abs(self.attachment_follow.lateral_offset * pose.lateral_scale);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
         return local_lateral > half_width + attachment_side_exit_margin;
@@ -3838,7 +3850,7 @@ pub const Runner = struct {
     ) void {
         const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            self.attachment_follow.progress,
+            self.attachment_follow.template_progress,
             self.attachment_follow.source_row,
             self.attachment_follow.lateral_offset,
             self.attachment_follow.vertical_offset,
@@ -3873,6 +3885,11 @@ pub const Runner = struct {
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const built = self.currentAttachmentBuilt(preview) orelse return;
+        if (self.attachment_follow.camera_phase_scalar == 0.0 and built.template.row_scalar_a != 0.0) {
+            self.attachment_follow.camera_phase_scalar = built.template.row_scalar_a;
+        }
+        self.syncAttachmentFollowNativeProgressFromTemplateProgress(built);
+        self.syncAttachmentFollowTemplateProgress(built);
         const position = self.attachmentFollowOutputPosition(built);
         self.updateAttachmentFollowCameraOrientations(built);
         self.attachment_follow.cached_output_position = position;
@@ -3882,6 +3899,106 @@ pub const Runner = struct {
         self.attachment_follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
         self.lane_center = self.attachment_follow.cached_output_lane_center;
         self.resolved_lane_index = preview.laneIndexAtWorldX(position.x);
+    }
+
+    fn syncAttachmentFollowNativeProgressFromTemplateProgress(
+        self: *Runner,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        if (self.attachment_follow.sample_index != 0 or self.attachment_follow.local_progress != 0.0) return;
+        if (self.attachment_follow.template_progress <= 0.0) return;
+
+        const sample_count = built.template.sample_count;
+        const sample_count_f: f32 = @floatFromInt(sample_count);
+        const clamped_progress = std.math.clamp(self.attachment_follow.template_progress, 0.0, sample_count_f);
+        if (clamped_progress >= sample_count_f) {
+            self.attachment_follow.sample_index = sample_count;
+            self.attachment_follow.local_progress = 0.0;
+            self.attachment_follow.progress = 0.0;
+            self.attachment_follow.template_progress = sample_count_f;
+            return;
+        }
+
+        const sample_index = @as(usize, @intFromFloat(@floor(clamped_progress)));
+        const sample_index_f: f32 = @floatFromInt(sample_index);
+        const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
+        self.attachment_follow.sample_index = sample_index;
+        self.attachment_follow.local_progress = (clamped_progress - sample_index_f) * delta_length;
+        self.attachment_follow.progress = self.attachment_follow.local_progress;
+    }
+
+    fn syncAttachmentFollowTemplateProgress(
+        self: *Runner,
+        built: *const attachment_builders.BuiltAttachment,
+    ) void {
+        const sample_count = built.template.sample_count;
+        const sample_count_f: f32 = @floatFromInt(sample_count);
+        if (self.attachment_follow.sample_index >= sample_count) {
+            self.attachment_follow.progress = self.attachment_follow.local_progress;
+            self.attachment_follow.template_progress = sample_count_f;
+            return;
+        }
+
+        const sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+        const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
+        const normalized_local_progress = if (delta_length <= 0.0001)
+            0.0
+        else
+            self.attachment_follow.local_progress / delta_length;
+        self.attachment_follow.progress = self.attachment_follow.local_progress;
+        self.attachment_follow.template_progress = sample_index_f + normalized_local_progress;
+    }
+
+    fn stepAttachmentFollowAtRate(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        path_factor: f32,
+    ) void {
+        // PORT(verified): native `update_track_attachment_follow_state` advances a raw
+        // local-distance lane inside the current sample, carries any remainder across sample
+        // boundaries, and still publishes the camera phase / heading-roll lanes on zero-rate
+        // updates.
+        const built = self.currentAttachmentBuilt(preview) orelse {
+            self.syncRowPosition(preview);
+            return;
+        };
+        self.syncAttachmentFollowNativeProgressFromTemplateProgress(built);
+
+        const sample_count = built.template.sample_count;
+        self.attachment_follow.exit_overshoot = 0.0;
+        if (sample_count > 0 and self.attachment_follow.sample_index < sample_count) {
+            const current_sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+            var remaining_local_progress =
+                @max(path_factor, 0.0) *
+                attachment_builders.deltaLengthAtProgress(&built.template, current_sample_index_f);
+
+            while (remaining_local_progress > 0.0 and self.attachment_follow.sample_index < sample_count) {
+                const sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+                const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
+                const segment_remaining = @max(0.0, delta_length - self.attachment_follow.local_progress);
+                if (remaining_local_progress <= segment_remaining) {
+                    self.attachment_follow.local_progress = std.math.clamp(
+                        self.attachment_follow.local_progress + remaining_local_progress,
+                        0.0,
+                        delta_length,
+                    );
+                    remaining_local_progress = 0.0;
+                    break;
+                }
+
+                remaining_local_progress -= segment_remaining;
+                self.attachment_follow.sample_index += 1;
+                self.attachment_follow.local_progress = 0.0;
+            }
+
+            if (self.attachment_follow.sample_index >= sample_count) {
+                self.attachment_follow.exit_overshoot = std.math.clamp(remaining_local_progress, 0.0, 0.999000013);
+            }
+        }
+
+        self.heading_roll += self.attachment_follow.camera_phase_scalar;
+        self.syncAttachmentFollowTemplateProgress(built);
+        self.updateAttachmentFollowPosition(preview);
     }
 
     fn updateAttachmentFollowCameraOrientations(
@@ -3903,7 +4020,7 @@ pub const Runner = struct {
             return;
         }
 
-        const clamped_progress = std.math.clamp(self.attachment_follow.progress, 0.0, sample_count);
+        const clamped_progress = std.math.clamp(self.attachment_follow.template_progress, 0.0, sample_count);
         const segment_base_index = @min(
             @as(usize, @intFromFloat(@floor(clamped_progress))),
             @as(usize, built.template.sample_count - 1),
@@ -3925,12 +4042,12 @@ pub const Runner = struct {
                 interpolateWrappedRadians(sample_orientation_a, next_sample_orientation_a, normalized_segment_progress);
         }
 
-        if (built.template.row_scalar_a == 0.0) {
+        if (self.attachment_follow.camera_phase_scalar == 0.0) {
             self.attachment_follow.camera_orientation_b = 0.0;
             return;
         }
         self.attachment_follow.camera_orientation_b =
-            ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) / sample_count;
+            ((segment_base_progress + normalized_segment_progress) * self.attachment_follow.camera_phase_scalar) / sample_count;
     }
 
     fn attachmentFollowOutputPosition(
@@ -3939,7 +4056,7 @@ pub const Runner = struct {
     ) attachment_builders.Vec3 {
         const position = attachment_builders.worldPositionForTemplate(
             &built.template,
-            self.attachment_follow.progress,
+            self.attachment_follow.template_progress,
             self.attachment_follow.source_row,
             self.attachment_follow.lateral_offset,
             self.attachment_follow.vertical_offset,
@@ -3955,16 +4072,7 @@ pub const Runner = struct {
     }
 
     fn advanceAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        const built = self.currentAttachmentBuilt(preview) orelse {
-            self.syncRowPosition(preview);
-            return;
-        };
-        const sample_count: f32 = @floatFromInt(built.template.sample_count);
-        const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, self.attachment_follow.progress);
-        const advanced_progress = self.attachment_follow.progress + (self.movement_rate_scalar * delta_length);
-        self.attachment_follow.exit_overshoot = @max(0.0, advanced_progress - sample_count);
-        self.attachment_follow.progress = std.math.clamp(advanced_progress, 0.0, sample_count);
-        self.updateAttachmentFollowPosition(preview);
+        self.stepAttachmentFollowAtRate(preview, self.movement_rate_scalar);
     }
 
     fn beginAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, sample: RowSample) void {
@@ -3996,16 +4104,24 @@ pub const Runner = struct {
         self.launch = .{};
         self.movement_mode = .attachment;
         self.attachment_path_name = sample.path_name;
+        const camera_phase_scalar = if (preview.builtAttachmentForSourceRow(sample.global_row)) |built|
+            built.template.row_scalar_a
+        else
+            0.0;
+        const local_progress = self.row_position - source_row;
         self.attachment_follow = .{
             .active = true,
             .source_row = sample.global_row,
-            // PORT(verified): native generic entry seeds progress from the current player Z
-            // relative to the source-row anchor, not from a generic row-fraction shortcut.
-            .progress = self.row_position - source_row,
+            .sample_index = 0,
+            // PORT(verified): native generic entry seeds the follow state's local progress
+            // from the current player Z relative to the source-row anchor.
+            .local_progress = local_progress,
+            .progress = local_progress,
             .exit_overshoot = 0.0,
             .lateral_offset = lateral_offset,
             .cached_output_lane_center = self.lane_center,
             .vertical_offset = vertical_offset,
+            .camera_phase_scalar = camera_phase_scalar,
         };
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
@@ -4020,11 +4136,14 @@ pub const Runner = struct {
         self.attachment_follow = .{
             .active = true,
             .source_row = built.row.global_row,
-            .progress = entry.progress,
+            .sample_index = entry.sample_index,
+            .local_progress = entry.local_progress,
+            .progress = 0.0,
             .exit_overshoot = 0.0,
             .lateral_offset = entry.lateral_offset,
             .cached_output_lane_center = self.lane_center,
             .vertical_offset = entry.vertical_offset,
+            .camera_phase_scalar = built.template.row_scalar_a,
         };
         self.updateAttachmentFollowPosition(preview);
         self.counters.attachments_begun += 1;
@@ -4076,31 +4195,33 @@ pub const Runner = struct {
         built: *const attachment_builders.BuiltAttachment,
         global_row: usize,
     ) ?InstalledAttachmentEntry {
-        const row_progress: f32 = @floatFromInt(global_row - built.row.global_row);
-        const row_fraction = std.math.clamp(
+        const sample_index = global_row - built.row.global_row;
+        const sample_index_f: f32 = @floatFromInt(sample_index);
+        const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
+        const local_progress = std.math.clamp(
             self.row_position - @as(f32, @floatFromInt(global_row)),
             0.0,
-            1.0,
+            delta_length,
         );
-        const progress = std.math.clamp(
-            row_progress + row_fraction,
-            0.0,
-            @as(f32, @floatFromInt(built.template.sample_count)),
-        );
+        const template_progress = if (delta_length <= 0.0001)
+            sample_index_f
+        else
+            sample_index_f + (local_progress / delta_length);
         const entry_world_position = trackEntryWorldPosition(preview, self.row_position, self.lane_center);
         const entry_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            progress,
+            template_progress,
             built.row.global_row,
             0.0,
             0.0,
         );
         const entry_local = attachmentLocalPosition(entry_pose, entry_world_position);
-        const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, entry_local.x);
+        const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, template_progress, entry_local.x);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
         if (@abs(lateral_offset) > half_width + attachment_side_exit_margin) return null;
         return .{
-            .progress = progress,
+            .sample_index = sample_index,
+            .local_progress = local_progress,
             .lateral_offset = lateral_offset,
             .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, entry_local.y),
         };
@@ -4165,14 +4286,11 @@ pub const Runner = struct {
                         0.0
                     else
                         std.math.clamp(start_local.z / sample_length, 0.0, 1.0);
-                    const progress = std.math.clamp(
-                        candidate_progress + sample_fraction,
-                        0.0,
-                        @as(f32, @floatFromInt(built.template.sample_count)),
-                    );
+                    const progress = candidate_progress + sample_fraction;
                     const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, start_local.x);
                     return .{
-                        .progress = progress,
+                        .sample_index = candidate_index,
+                        .local_progress = start_local.z,
                         .lateral_offset = lateral_offset,
                         .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, start_local.y),
                     };
@@ -4205,7 +4323,7 @@ pub const Runner = struct {
     }
 
     fn attachmentExitSeedsFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitSeeds {
-        const built = self.currentAttachmentBuilt(preview) orelse {
+        _ = self.currentAttachmentBuilt(preview) orelse {
             return .{
                 .seed_a = self.attachment_camera_orientation_b,
                 .seed_b = 0.0,
@@ -4216,9 +4334,9 @@ pub const Runner = struct {
             // Native fall-state init copies `follow_state.orientation_b`, which is the
             // attachment phase lane rather than a sampled roll proxy.
             .seed_a = self.attachment_follow.camera_orientation_b,
-            // Native fall-state init copies `template_record->row_scalar_a` verbatim into
-            // the exit-rate lane, including zero.
-            .seed_b = built.template.row_scalar_a,
+            // Native fall-state init copies the live follow record's install-time phase scalar
+            // into the exit-rate lane, including zero.
+            .seed_b = self.attachment_follow.camera_phase_scalar,
         };
     }
 
@@ -4794,9 +4912,9 @@ test "worm attachment exit seeds use the traced template row scalar" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
-    const segment_base_progress = @floor(runner.attachment_follow.progress);
+    const segment_base_progress = @floor(runner.attachment_follow.template_progress);
     const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
-    const normalized_segment_progress = (runner.attachment_follow.progress - segment_base_progress) / segment_delta_length;
+    const normalized_segment_progress = (runner.attachment_follow.template_progress - segment_base_progress) / segment_delta_length;
     const expected_phase =
         ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) /
         @as(f32, @floatFromInt(built.template.sample_count));
@@ -4815,14 +4933,14 @@ test "rolled attachments publish camera orientation a from sample roll" {
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = 8.5,
+        .template_progress = 8.5,
     };
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.refreshCameraRollState(&fixture.preview);
 
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     const clamped_progress = std.math.clamp(
-        runner.attachment_follow.progress,
+        runner.attachment_follow.template_progress,
         0.0,
         @as(f32, @floatFromInt(built.template.sample_count)),
     );
@@ -4847,6 +4965,55 @@ test "rolled attachments publish camera orientation a from sample roll" {
     try std.testing.expectApproxEqAbs(expected, runner.attachment_camera_orientation_a, 0.0001);
 }
 
+test "attachment follow advances template progress by path factor" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "WORM";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 5.0,
+        .camera_phase_scalar = built.template.row_scalar_a,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
+    const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, 5.0);
+    try std.testing.expect(@abs(delta_length - 1.0) > 0.0001);
+
+    runner.movement_rate_scalar = 0.25;
+    runner.advanceAttachmentFollow(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 5.25), runner.attachment_follow.template_progress, 0.0001);
+}
+
+test "attachment follow updates heading roll from the live phase scalar" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "WORM";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 5.0,
+        .camera_phase_scalar = built.template.row_scalar_a,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+
+    try std.testing.expectApproxEqAbs(built.template.row_scalar_a, runner.heading_roll, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment_follow.template_progress, 0.0001);
+}
+
 test "attachment camera lift uses overall attachment progress" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
@@ -4858,7 +5025,7 @@ test "attachment camera lift uses overall attachment progress" {
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = 5.5,
+        .template_progress = 5.5,
     };
     runner.updateAttachmentFollowPosition(&fixture.preview);
 
@@ -4882,7 +5049,7 @@ test "zero-row-scalar attachments keep attachment exit spin zero" {
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = 5.5,
+        .template_progress = 5.5,
     };
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.refreshCameraRollState(&fixture.preview);
@@ -5590,7 +5757,7 @@ test "parcel home flight lifts presentation along the live basis up" {
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
+        .template_progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
     };
     runner.track_parcel_home_anchor = .{
         .active = true,
@@ -6215,7 +6382,7 @@ test "completion does not arm while attachment follow is still active at route e
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = @as(f32, @floatFromInt(built.template.sample_count)) - 0.5,
+        .template_progress = @as(f32, @floatFromInt(built.template.sample_count)) - 0.5,
     };
     runner.row_position = @as(f32, @floatFromInt(fixture.preview.total_rows - 1)) + 0.01;
 
@@ -6315,7 +6482,8 @@ test "route-end natural attachment retirement bypasses the exit handoff" {
     runner.attachment_follow = .{
         .active = true,
         .source_row = target.row,
-        .progress = @floatFromInt(built.template.sample_count),
+        .sample_index = built.template.sample_count,
+        .template_progress = @floatFromInt(built.template.sample_count),
         .exit_overshoot = 0.999,
     };
 
@@ -6581,7 +6749,7 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
     const centered_pose = attachment_builders.worldPoseForTemplate(
         &built.template,
-        runner.attachment_follow.progress,
+        runner.attachment_follow.template_progress,
         built.row.global_row,
         0.0,
         runner.attachment_follow.vertical_offset,
@@ -6593,7 +6761,7 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     );
     const expected_lateral_offset = Runner.attachmentLateralOffsetFromLocalX(
         &built.template,
-        runner.attachment_follow.progress,
+        runner.attachment_follow.template_progress,
         Runner.attachmentLocalPosition(centered_pose, entry_world_position).x,
     );
     const centered_lane_center = Runner.laneCenterFromWorldX(&fixture.preview, centered_pose.position.x);
@@ -6816,7 +6984,7 @@ test "standalone start segment attachment exits from the template end pose" {
 
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     const exit_progress: f32 = @floatFromInt(built.template.sample_count);
-    while (runner.movement_mode == .attachment and runner.attachment_follow.progress < exit_progress) {
+    while (runner.movement_mode == .attachment and runner.attachment_follow.template_progress < exit_progress) {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
@@ -6838,7 +7006,10 @@ test "attachment natural exit carries overshoot past the template end" {
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const sample_count: f32 = @floatFromInt(built.template.sample_count);
-    runner.attachment_follow.progress = sample_count - 0.1;
+    runner.attachment_follow.sample_index = 0;
+    runner.attachment_follow.local_progress = 0.0;
+    runner.attachment_follow.progress = 0.0;
+    runner.attachment_follow.template_progress = sample_count - 0.1;
     runner.speed_rows_per_second = 48.0;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
@@ -6870,7 +7041,10 @@ test "supertramp natural exit enters a launch state above the floor" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     const sample_count: f32 = @floatFromInt(built.template.sample_count);
-    runner.attachment_follow.progress = sample_count - 0.1;
+    runner.attachment_follow.sample_index = 0;
+    runner.attachment_follow.local_progress = 0.0;
+    runner.attachment_follow.progress = 0.0;
+    runner.attachment_follow.template_progress = sample_count - 0.1;
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.speed_rows_per_second = 48.0;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
@@ -7010,14 +7184,14 @@ test "continuous target lane center steers attachment lateral offset" {
     );
     const centered_pose = attachment_builders.worldPoseForTemplate(
         &built.template,
-        runner.attachment_follow.progress,
+        runner.attachment_follow.template_progress,
         runner.attachment_follow.source_row,
         0.0,
         runner.attachment_follow.vertical_offset,
     );
     const target_lateral_offset = Runner.attachmentLateralOffsetFromLocalX(
         &built.template,
-        runner.attachment_follow.progress,
+        runner.attachment_follow.template_progress,
         Runner.attachmentLocalPosition(centered_pose, target_world_position).x,
     );
     runner.step(&fixture.preview, .{ .target_lane_center = raw_target_lane_center }, 1.0 / 60.0);
