@@ -877,10 +877,9 @@ pub const LoadedLevelPreview = struct {
 
     pub fn laneIndexAtWorldX(self: *const LoadedLevelPreview, world_x: f32) usize {
         if (self.max_width == 0) return 0;
-        const gameplay_width = @min(self.max_width, 8);
-        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
-        const raw_index: isize = @intFromFloat(@floor(world_x + width_offset));
-        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(gameplay_width - 1))));
+        const width_offset = @as(f32, @floatFromInt(self.max_width)) * 0.5;
+        const raw_index: isize = @intFromFloat(@floor((world_x + width_offset) - 0.5));
+        return @intCast(std.math.clamp(raw_index, 0, @as(isize, @intCast(self.max_width - 1))));
     }
 
     pub fn rowIndexAtWorldZ(self: *const LoadedLevelPreview, world_z: f32) usize {
@@ -2741,9 +2740,11 @@ test "world quantization matches recovered track grid sampling" {
     defer preview.deinit();
 
     try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-20.0));
-    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(20.0));
+    try std.testing.expectEqual(@as(usize, 9), preview.laneIndexAtWorldX(20.0));
     try std.testing.expectEqual(@as(usize, 0), preview.laneIndexAtWorldX(-3.99));
-    try std.testing.expectEqual(@as(usize, 7), preview.laneIndexAtWorldX(3.99));
+    try std.testing.expectEqual(@as(usize, 8), preview.laneIndexAtWorldX(3.99));
+    try std.testing.expectEqual(@as(usize, 1), preview.laneIndexAtWorldX(preview.worldPositionForLane(1.5, 0.0, 0.0).x));
+    try std.testing.expectEqual(@as(usize, 8), preview.laneIndexAtWorldX(preview.worldPositionForLane(8.5, 0.0, 0.0).x));
     try std.testing.expectEqual(@as(usize, 0), preview.rowIndexAtWorldZ(-5.0));
     try std.testing.expectEqual(preview.total_rows - 1, preview.rowIndexAtWorldZ(10_000.0));
 }

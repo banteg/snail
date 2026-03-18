@@ -2892,8 +2892,6 @@ pub const Runner = struct {
         if (preview.total_rows == 0) return;
         const start_row = currentRowIndex(preview, self.row_position);
         const end_row = @min(start_row + turret_projectile_spawn_rows_ahead, preview.total_rows);
-        const gameplay_width = @min(preview.max_width, 8);
-        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
         var next_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states;
         var next_state_count: usize = 0;
 
@@ -2913,9 +2911,14 @@ pub const Runner = struct {
                 while (state.seconds >= turret_fire_interval_seconds) {
                     state.seconds -= turret_fire_interval_seconds;
                     state.flash_ticks = turret_flash_duration_ticks;
+                    const world_x = preview.worldPositionForLane(
+                        @as(f32, @floatFromInt(lane_index)) + 0.5,
+                        @as(f32, @floatFromInt(global_row)),
+                        0.0,
+                    ).x;
                     self.spawnProjectile(
                         .enemy_laser,
-                        (@as(f32, @floatFromInt(lane_index)) + 0.5) - width_offset,
+                        world_x,
                         0.4,
                         @as(f32, @floatFromInt(global_row)),
                         0.0,
@@ -3695,8 +3698,7 @@ pub const Runner = struct {
     }
 
     fn laneCenterFromWorldX(preview: *const track.LoadedLevelPreview, world_x: f32) f32 {
-        const gameplay_width = @min(preview.max_width, 8);
-        const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+        const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
         return world_x + width_offset;
     }
 
@@ -4977,12 +4979,14 @@ test "projectile fire defeats slug after powerup" {
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
     runner.weapon_level = 1;
-    const gameplay_width = @min(fixture.preview.max_width, 8);
-    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
     const lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
     var projectile: Projectile = .{
         .active = true,
-        .world_x = lane_center - width_offset,
+        .world_x = fixture.preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(slug.row)),
+            0.0,
+        ).x,
         .world_y = 0.5,
         .world_z = @as(f32, @floatFromInt(slug.row)) + 0.25,
         .dir_x = 0.0,
@@ -5033,12 +5037,14 @@ test "projectiles stop on salt without consuming the hazard" {
     const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
     runner.addRuntimeHazard(salt.row, salt.lane, .salt);
 
-    const gameplay_width = @min(fixture.preview.max_width, 8);
-    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
     const lane_center = @as(f32, @floatFromInt(salt.lane)) + 0.5;
     var projectile: Projectile = .{
         .active = true,
-        .world_x = lane_center - width_offset,
+        .world_x = fixture.preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(salt.row)),
+            0.0,
+        ).x,
         .world_y = 0.5,
         .world_z = @as(f32, @floatFromInt(salt.row)) + 0.25,
         .dir_x = 0.0,
@@ -6518,6 +6524,29 @@ test "blocked startup start attachment keeps the live cameraman basis unmirrored
     try std.testing.expect(cameraman.right.x > 0.0);
 }
 
+test "tutorial intro startup exits the start attachment on the authored track center" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.setCutscene(cutscene_intro_id);
+    runner.refreshBlockedStartupState(&fixture.preview);
+
+    var tick: usize = 0;
+    while (tick < intro_cutscene_duration_ticks + 20) : (tick += 1) {
+        if (runner.introCutsceneBlocksGameplay()) {
+            runner.stepIntroStartupBlock(&fixture.preview, 1.0 / 60.0);
+        } else {
+            runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+        }
+    }
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expect(!runner.attachment_follow.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.001);
+}
+
 test "initial live cameraman update does not queue a stale shared-camera snap" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -7098,7 +7127,7 @@ test "replay directive overrides world x and latches replay flags" {
 
     const world = runner.worldPosition(&fixture.preview, 0.82);
     try std.testing.expectApproxEqAbs(@as(f32, -3.25), world.x, 0.0001);
-    try std.testing.expectEqual(@as(usize, 0), runner.resolved_lane_index);
+    try std.testing.expectEqual(@as(usize, 1), runner.resolved_lane_index);
     try std.testing.expectEqual(@as(?i32, 321), runner.replaySecondaryLane());
     try std.testing.expectEqual(@as(u8, 0x0c), runner.replayRawFlagBits());
     try std.testing.expect(runner.replayTrackStateLatched());

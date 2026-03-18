@@ -9962,8 +9962,7 @@ fn laneCenterTargetForMouseX(
     screen_width: f32,
     bounds: track.LaneBounds,
 ) f32 {
-    const gameplay_width = @min(loaded_track_preview.max_width, 8);
-    const width_offset = @as(f32, @floatFromInt(gameplay_width)) * 0.5;
+    const width_offset = @as(f32, @floatFromInt(loaded_track_preview.max_width)) * 0.5;
     const authored_mouse_x = if (screen_width <= 1.0)
         320.0
     else
@@ -10929,7 +10928,7 @@ test "mouse lane-center target mapping respects bounds" {
     defer loaded_track_preview.deinit();
 
     try std.testing.expectApproxEqAbs(@as(f32, 2.5), laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.0), laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
     try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
 }
 
@@ -10964,4 +10963,29 @@ test "tutorial startup mouse steering keeps left and right lane targets unmirror
     const right_target = laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds);
 
     try std.testing.expect(left_target < right_target);
+}
+
+test "tutorial mouse center maps to the authored track center after startup" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    const row_location = loaded_track_preview.locateRow(track.defaultRuntimeActiveRowStart) orelse return error.TestUnexpectedResult;
+    const bounds = loaded_track_preview.laneBoundsForRow(row_location);
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 5.0),
+        laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds),
+        0.01,
+    );
 }
