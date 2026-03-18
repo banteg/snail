@@ -170,9 +170,79 @@ pub const LoadOptions = struct {
     salt_scalar_override: ?f32 = null,
 };
 
+fn appendLoadedLevelSegment(
+    allocator: std.mem.Allocator,
+    catalog: *const assets.Catalog,
+    segments: []segment.Definition,
+    logical_segment_indices: []?usize,
+    row_offsets: []usize,
+    loaded_count: *usize,
+    total_rows: *usize,
+    max_width: *usize,
+    segment_path: []const u8,
+    logical_segment_index: ?usize,
+    load_models: bool,
+    model_assets_list: *std.ArrayList(LoadedModelAsset),
+    model_asset_index_by_path: *archive.CaseInsensitiveStringHashMap(usize),
+    placed_models_list: *std.ArrayList(PlacedModel),
+) !void {
+    const index = loaded_count.*;
+    row_offsets[index] = total_rows.*;
+    logical_segment_indices[index] = logical_segment_index;
+
+    var path_buffer: [512]u8 = undefined;
+    const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{segment_path});
+    const entry = catalog.dat.entryByPath(archive_path) orelse return error.SegmentEntryMissing;
+    segments[index] = try segment.loadFromArchive(allocator, catalog, entry);
+    loaded_count.* = index + 1;
+
+    total_rows.* += segments[index].height;
+    max_width.* = @max(max_width.*, segments[index].width);
+
+    for (segments[index].rows, 0..) |row, row_index| {
+        if (!load_models) continue;
+
+        const annotation = row.annotation orelse continue;
+        const model_annotation = switch (annotation) {
+            .model => |model| model,
+            else => continue,
+        };
+
+        const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
+        errdefer allocator.free(archive_model_path);
+
+        const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
+            allocator.free(archive_model_path);
+            break :blk existing_index;
+        } else blk: {
+            const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
+                allocator.free(archive_model_path);
+                continue;
+            };
+
+            const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
+            try model_assets_list.append(allocator, .{
+                .path = archive_model_path,
+                .loaded = loaded_model,
+            });
+            const new_index = model_assets_list.items.len - 1;
+            try model_asset_index_by_path.put(archive_model_path, new_index);
+            break :blk new_index;
+        };
+
+        try placed_models_list.append(allocator, .{
+            .asset_index = asset_index,
+            .segment_index = index,
+            .row_index = row_index,
+            .offset = model_annotation.offset,
+        });
+    }
+}
+
 pub const LoadedLevelPreview = struct {
     allocator: std.mem.Allocator,
     segments: []segment.Definition,
+    segment_logical_indices: []?usize,
     row_offsets: []usize,
     attachment_scaffold: attachment_builders.Scaffold,
     model_assets: []LoadedModelAsset,
@@ -217,9 +287,15 @@ pub const LoadedLevelPreview = struct {
         level_definition: *const level.Definition,
         options: LoadOptions,
     ) !LoadedLevelPreview {
-        const segment_count = level_definition.segments.len;
+        const segment_count =
+            level_definition.first_segments.len +
+            level_definition.segments.len +
+            level_definition.last_segments.len;
         const segments = try allocator.alloc(segment.Definition, segment_count);
         errdefer allocator.free(segments);
+
+        const segment_logical_indices = try allocator.alloc(?usize, segment_count);
+        errdefer allocator.free(segment_logical_indices);
 
         const row_offsets = try allocator.alloc(usize, segment_count);
         errdefer allocator.free(row_offsets);
@@ -246,56 +322,59 @@ pub const LoadedLevelPreview = struct {
 
         var total_rows: usize = 0;
         var max_width: usize = 0;
-        for (level_definition.segments, 0..) |segment_entry, index| {
-            row_offsets[index] = total_rows;
-
-            var path_buffer: [512]u8 = undefined;
-            const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{segment_entry.path});
-            const entry = catalog.dat.entryByPath(archive_path) orelse return error.SegmentEntryMissing;
-            segments[index] = try segment.loadFromArchive(allocator, catalog, entry);
-            loaded_count = index + 1;
-
-            total_rows += segments[index].height;
-            max_width = @max(max_width, segments[index].width);
-
-            for (segments[index].rows, 0..) |row, row_index| {
-                if (!options.load_models) continue;
-
-                const annotation = row.annotation orelse continue;
-                const model_annotation = switch (annotation) {
-                    .model => |model| model,
-                    else => continue,
-                };
-
-                const archive_model_path = try resolveSegmentModelArchivePath(allocator, model_annotation.name);
-                errdefer allocator.free(archive_model_path);
-
-                const asset_index = if (model_asset_index_by_path.get(archive_model_path)) |existing_index| blk: {
-                    allocator.free(archive_model_path);
-                    break :blk existing_index;
-                } else blk: {
-                    const model_entry = catalog.dat.entryByPath(archive_model_path) orelse {
-                        allocator.free(archive_model_path);
-                        continue;
-                    };
-
-                    const loaded_model = try x2.Uploaded.loadFromArchive(allocator, catalog, model_entry, true);
-                    try model_assets_list.append(allocator, .{
-                        .path = archive_model_path,
-                        .loaded = loaded_model,
-                    });
-                    const new_index = model_assets_list.items.len - 1;
-                    try model_asset_index_by_path.put(archive_model_path, new_index);
-                    break :blk new_index;
-                };
-
-                try placed_models_list.append(allocator, .{
-                    .asset_index = asset_index,
-                    .segment_index = index,
-                    .row_index = row_index,
-                    .offset = model_annotation.offset,
-                });
-            }
+        for (level_definition.first_segments) |segment_path| {
+            try appendLoadedLevelSegment(
+                allocator,
+                catalog,
+                segments,
+                segment_logical_indices,
+                row_offsets,
+                &loaded_count,
+                &total_rows,
+                &max_width,
+                segment_path,
+                null,
+                options.load_models,
+                &model_assets_list,
+                &model_asset_index_by_path,
+                &placed_models_list,
+            );
+        }
+        for (level_definition.segments, 0..) |segment_entry, logical_index| {
+            try appendLoadedLevelSegment(
+                allocator,
+                catalog,
+                segments,
+                segment_logical_indices,
+                row_offsets,
+                &loaded_count,
+                &total_rows,
+                &max_width,
+                segment_entry.path,
+                logical_index,
+                options.load_models,
+                &model_assets_list,
+                &model_asset_index_by_path,
+                &placed_models_list,
+            );
+        }
+        for (level_definition.last_segments) |segment_path| {
+            try appendLoadedLevelSegment(
+                allocator,
+                catalog,
+                segments,
+                segment_logical_indices,
+                row_offsets,
+                &loaded_count,
+                &total_rows,
+                &max_width,
+                segment_path,
+                null,
+                options.load_models,
+                &model_assets_list,
+                &model_asset_index_by_path,
+                &placed_models_list,
+            );
         }
 
         const runtime_build_flags = options.runtime_build_flags;
@@ -372,6 +451,7 @@ pub const LoadedLevelPreview = struct {
         return .{
             .allocator = allocator,
             .segments = segments,
+            .segment_logical_indices = segment_logical_indices,
             .row_offsets = row_offsets,
             .attachment_scaffold = attachment_scaffold,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
@@ -405,9 +485,13 @@ pub const LoadedLevelPreview = struct {
         const segments = try allocator.alloc(segment.Definition, 1);
         errdefer allocator.free(segments);
 
+        const segment_logical_indices = try allocator.alloc(?usize, 1);
+        errdefer allocator.free(segment_logical_indices);
+
         const row_offsets = try allocator.alloc(usize, 1);
         errdefer allocator.free(row_offsets);
         row_offsets[0] = 0;
+        segment_logical_indices[0] = 0;
 
         segments[0] = try segment.loadFromArchive(allocator, catalog, entry);
         errdefer segments[0].deinit();
@@ -541,6 +625,7 @@ pub const LoadedLevelPreview = struct {
         return .{
             .allocator = allocator,
             .segments = segments,
+            .segment_logical_indices = segment_logical_indices,
             .row_offsets = row_offsets,
             .attachment_scaffold = attachment_scaffold,
             .model_assets = try model_assets_list.toOwnedSlice(allocator),
@@ -581,6 +666,7 @@ pub const LoadedLevelPreview = struct {
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
         }
+        self.allocator.free(self.segment_logical_indices);
         self.allocator.free(self.row_offsets);
         self.allocator.free(self.segments);
     }
@@ -2133,8 +2219,13 @@ test "load tutorial level preview" {
     var preview = try LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
     defer preview.deinit();
 
-    try std.testing.expectEqual(@as(usize, level_definition.segments.len), preview.segments.len);
-    try std.testing.expectEqualStrings("Tutorial 0", preview.segments[0].name);
+    try std.testing.expectEqual(
+        @as(usize, level_definition.first_segments.len + level_definition.segments.len + level_definition.last_segments.len),
+        preview.segments.len,
+    );
+    try std.testing.expectEqualStrings("Start", preview.segments[0].name);
+    try std.testing.expectEqual(@as(?usize, null), preview.segment_logical_indices[0]);
+    try std.testing.expectEqual(@as(?usize, 0), preview.segment_logical_indices[level_definition.first_segments.len]);
     try std.testing.expect(preview.total_rows > 0);
     const first_row = preview.locateRow(0).?;
     try std.testing.expectEqual(@as(usize, 0), first_row.segment_index);

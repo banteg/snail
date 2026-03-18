@@ -1381,6 +1381,34 @@ pub const Runner = struct {
         return self.cutscene_id == cutscene_intro_id and self.cutsceneCameraActive();
     }
 
+    fn tryPrimeCurrentRowAttachmentEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) return;
+        if (self.phase != .active) return;
+        if (self.movement_mode != .track) return;
+        if (self.launch.active) return;
+
+        const current_row = currentRowIndex(preview, self.row_position);
+        const sample = self.sampleRow(preview, current_row) orelse return;
+        if (sample.gameplay_cell != .attachment_entry) return;
+
+        if (self.tryBeginInstalledAttachmentFollow(preview, current_row, sample)) return;
+        if (!preview.installedBuiltAttachmentsAtRow(current_row).any()) {
+            self.beginAttachmentFollow(preview, sample);
+        }
+    }
+
+    pub fn refreshBlockedStartupState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        self.movement_rate_scalar = 0.0;
+        if (!self.paused) {
+            self.tryPrimeCurrentRowAttachmentEntry(preview);
+            if (self.movement_mode == .attachment and self.attachment_follow.active) {
+                self.updateAttachmentFollowPosition(preview);
+            }
+            self.refreshSample(preview);
+        }
+        self.refreshCameraState(preview);
+    }
+
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.refreshCameraAnchor(preview);
         self.refreshSnailHotspots(preview);
@@ -4420,6 +4448,7 @@ fn findFirstRuntimeFlagB40Cell(preview: *const track.LoadedLevelPreview, expecte
 fn findFirstOffCenterAttachmentEntry(preview: *const track.LoadedLevelPreview) ?AttachmentEntryTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
+        if (preview.segment_logical_indices[row_location.segment_index] == null) continue;
         const path_bounds = preview.pathBoundsForRow(row_location) orelse continue;
         const path_center_lane = (@as(f32, @floatFromInt(path_bounds.min + path_bounds.max)) * 0.5) + 0.5;
 
@@ -6319,6 +6348,26 @@ test "standalone start segment attachment follow seeds generic entry from player
 
     try std.testing.expect(world_position.y > floor_height + 0.5);
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
+}
+
+test "blocked startup refresh primes the current-row start attachment at zero rate" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const starting_row = currentRowIndex(&fixture.preview, runner.row_position);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    try std.testing.expectEqual(target.row, starting_row);
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+
+    runner.refreshBlockedStartupState(&fixture.preview);
+
+    try std.testing.expectEqual(@as(f32, 0.0), runner.movement_rate_scalar);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(starting_row)), runner.row_position, 0.001);
+    try std.testing.expect(runner.worldPosition(&fixture.preview, 0.0).y >= 7.9);
+    try std.testing.expect(runner.camera_anchor.world.y >= 8.3);
 }
 
 test "death cutscene keeps converging on hotspot 18 instead of switching to hotspot 17" {

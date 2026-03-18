@@ -3134,7 +3134,11 @@ const AppState = struct {
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
-                        runner.refreshCameraState(loaded_track_preview);
+                        if (self.gameplay_click_start_active and !runner.introCutsceneBlocksGameplay()) {
+                            runner.refreshBlockedStartupState(loaded_track_preview);
+                        } else {
+                            runner.refreshCameraState(loaded_track_preview);
+                        }
                     }
                     self.updateSubgameCamera(runner);
                 }
@@ -5324,21 +5328,26 @@ const AppState = struct {
             self.clearLevelPromptQueue();
             return;
         };
-        if (row_location.segment_index >= loaded_level.segments.len) {
+        const logical_segment_index = loaded_track_preview.segment_logical_indices[row_location.segment_index] orelse {
+            self.active_level_segment_index = null;
+            self.clearLevelPromptQueue();
+            return;
+        };
+        if (logical_segment_index >= loaded_level.segments.len) {
             self.active_level_segment_index = null;
             self.clearLevelPromptQueue();
             return;
         }
 
-        self.level_segment_index = row_location.segment_index;
-        const segment_entry = &loaded_level.segments[row_location.segment_index];
+        self.level_segment_index = logical_segment_index;
+        const segment_entry = &loaded_level.segments[logical_segment_index];
         const previous_segment_index = self.active_level_segment_index;
-        const segment_changed = previous_segment_index == null or previous_segment_index.? != row_location.segment_index;
-        self.active_level_segment_index = row_location.segment_index;
+        const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
+        self.active_level_segment_index = logical_segment_index;
         const suppress_segment_events = self.gameplay_click_start_active;
         if (segment_changed) {
             if (previous_segment_index) |previous_index| {
-                if (row_location.segment_index < previous_index) {
+                if (logical_segment_index < previous_index) {
                     self.clearLevelPromptQueue();
                 }
             }
@@ -10704,7 +10713,7 @@ test "intro cutscene override seeds the shared camera and later clears back to l
     try std.testing.expectEqual(SubgameCameraSource.live, subgame_camera.source);
 }
 
-test "blocked click-start refresh path still seeds the shared gameplay camera" {
+test "blocked click-start refresh path primes the tutorial start attachment camera" {
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
@@ -10723,10 +10732,12 @@ test "blocked click-start refresh path still seeds the shared gameplay camera" {
     var runner = gameplay.Runner.init(&loaded_track_preview);
     var subgame_camera = SubgameCameraState{};
 
-    runner.refreshCameraState(&loaded_track_preview);
+    runner.refreshBlockedStartupState(&loaded_track_preview);
     updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
 
     const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
+    try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.worldPosition(&loaded_track_preview, 0.0).y >= 7.9);
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(subgame_camera.source == .live);
