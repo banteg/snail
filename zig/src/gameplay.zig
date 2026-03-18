@@ -3907,7 +3907,7 @@ pub const Runner = struct {
             .source_row = sample.global_row,
             // PORT(verified): native generic entry seeds progress from the current player Z
             // relative to the source-row anchor, not from a generic row-fraction shortcut.
-            .progress = std.math.clamp(self.row_position - source_row, 0.0, 1.0),
+            .progress = self.row_position - source_row,
             .exit_overshoot = 0.0,
             .lateral_offset = if (sample.path_center_lane) |path_center_lane|
                 self.lane_center - path_center_lane
@@ -6349,11 +6349,7 @@ test "standalone start segment attachment follow seeds generic entry from player
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, target);
     const sample = runner.sampleRow(&fixture.preview, target.row).?;
-    const expected_progress = std.math.clamp(
-        runner.row_position - @as(f32, @floatFromInt(sample.global_row)),
-        0.0,
-        1.0,
-    );
+    const expected_progress = runner.row_position - @as(f32, @floatFromInt(sample.global_row));
     const expected_vertical_offset = runner.playerWorldPosition(&fixture.preview).y - attachment_entry_rider_height;
 
     runner.beginAttachmentFollow(&fixture.preview, sample);
@@ -6372,6 +6368,20 @@ test "standalone start segment attachment follow seeds generic entry from player
 
     try std.testing.expect(world_position.y > floor_height + 0.5);
     try std.testing.expectApproxEqAbs(world_position.z, runner.row_position, 0.001);
+}
+
+test "generic attachment begin preserves the raw row-relative progress seed" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 1.25;
+    const sample = runner.sampleRow(&fixture.preview, target.row).?;
+
+    runner.beginAttachmentFollow(&fixture.preview, sample);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25), runner.attachment_follow.progress, 0.0001);
 }
 
 test "blocked startup refresh primes the current-row start attachment at zero rate" {

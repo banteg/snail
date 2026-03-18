@@ -3134,7 +3134,7 @@ const AppState = struct {
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
-                        if (self.gameplay_click_start_active and !runner.introCutsceneBlocksGameplay()) {
+                        if (self.gameplay_click_start_active) {
                             runner.refreshBlockedStartupState(loaded_track_preview);
                         } else {
                             runner.refreshCameraState(loaded_track_preview);
@@ -10742,6 +10742,35 @@ test "blocked click-start refresh path primes the tutorial start attachment came
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(subgame_camera.source == .live);
     try std.testing.expect(!subgame_camera.snap_next);
+}
+
+test "intro cutscene click-start path still primes the tutorial start attachment under override camera" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    var subgame_camera = SubgameCameraState{};
+    runner.setCutscene(gameplay.cutscene_intro_id);
+
+    runner.refreshBlockedStartupState(&loaded_track_preview);
+    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+
+    try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expectEqual(SubgameCameraSource.override, subgame_camera.source);
+    try std.testing.expect(runner.cutsceneCameraActive());
 }
 
 test "shared subgame camera snaps on source change and blends on later frames" {
