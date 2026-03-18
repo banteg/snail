@@ -249,6 +249,11 @@ fn mirrorVectorX(v: Vec3) Vec3 {
 
 fn mirrorTemplateXInPlace(template: *Template) void {
     template.mirror_or_variant = !template.mirror_or_variant;
+    // PORT(partial): Windows begin copies `row_scalar_a` from the source row-cell record,
+    // not the static template header. Live traces still show mirrored `WORM` rows flipping
+    // that scalar's sign, so keep the built-template fallback aligned with the mirrored
+    // source-row state until the runtime row-cell scalar is surfaced directly in preview data.
+    template.row_scalar_a = -template.row_scalar_a;
     for (template.samples) |*sample| {
         sample.position = mirrorVectorX(sample.position);
         sample.delta_dir_to_next = mirrorVectorX(sample.delta_dir_to_next);
@@ -1793,6 +1798,41 @@ test "collect scaffold mirrors installed template variant from source-row state"
     try std.testing.expect(built.template.mirror_or_variant);
     try std.testing.expectApproxEqAbs(-base_template.samples[0].position.x, built.template.samples[0].position.x, 0.0001);
     try std.testing.expectApproxEqAbs(-base_template.samples[0].basis_right.x, built.template.samples[0].basis_right.x, 0.0001);
+}
+
+test "collect scaffold mirrors row scalar a sign for mirrored worm source rows" {
+    const rows = [_]segment.Row{
+        .{ .cells = "PPPPPPPPPP", .annotation = .{ .path = "WORM" } },
+    };
+    var segments = [_]segment.Definition{.{
+        .arena = std.heap.ArenaAllocator.init(std.testing.allocator),
+        .source_path = "SEGMENTS/WORM.TXT",
+        .segment_id = 1,
+        .name = "WORM",
+        .width = 10,
+        .height = rows.len,
+        .rows = &rows,
+    }};
+    defer segments[0].deinit();
+    const row_offsets = [_]usize{0};
+    const runtime_tiles = [_]u8{
+        0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e, 0x1e,
+    };
+    const source_row_mirror_states = [_]bool{true};
+    var scaffold = try Scaffold.collect(
+        std.testing.allocator,
+        &segments,
+        &row_offsets,
+        &runtime_tiles,
+        rows.len,
+        10,
+        &source_row_mirror_states,
+    );
+    defer scaffold.deinit();
+
+    const built = scaffold.built_attachments[0];
+    try std.testing.expect(built.template.mirror_or_variant);
+    try std.testing.expectApproxEqAbs(@as(f32, -6.2831855), built.template.row_scalar_a, 0.0001);
 }
 
 test "start template interpolation follows recovered descent" {

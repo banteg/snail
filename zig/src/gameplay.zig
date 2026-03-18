@@ -4942,7 +4942,7 @@ test "worm attachment exit seeds use the traced template row scalar" {
         ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) /
         @as(f32, @floatFromInt(built.template.sample_count));
     try std.testing.expectApproxEqAbs(expected_phase, exit_seeds.seed_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), exit_seeds.seed_b, 0.0001);
+    try std.testing.expectApproxEqAbs(built.template.row_scalar_a, exit_seeds.seed_b, 0.0001);
 }
 
 test "rolled attachments publish camera orientation a from sample roll" {
