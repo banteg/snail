@@ -3834,6 +3834,7 @@ pub const Runner = struct {
     }
 
     fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
+        if (self.jetpack.active) return false;
         if (self.attachment_follow.vertical_offset > 0.0) return false;
 
         const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.template_progress);
@@ -3845,8 +3846,15 @@ pub const Runner = struct {
             self.attachment_follow.vertical_offset,
         );
         const world_delta_x = @abs(world_pose.position.x - pose.center_x);
-        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-        return world_delta_x > half_width + attachment_side_exit_margin;
+        return world_delta_x > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin;
+    }
+
+    fn attachmentTemplateHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
+        // PORT(verified): native entry and side-exit checks use template `+0x54`, which
+        // constructor traces show is the wide template span lane (`WORM`: 16), not the
+        // narrower Zig-side builder width (`WORM`: 4).
+        const span_cells = built.template.spec.subdivision_count orelse built.template.width_cells;
+        return @as(f32, @floatFromInt(span_cells)) * 0.5;
     }
 
     fn commitAttachmentSideExit(
@@ -4231,8 +4239,7 @@ pub const Runner = struct {
         );
         const entry_local = attachmentLocalPosition(entry_pose, entry_world_position);
         const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, template_progress, entry_local.x);
-        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-        if (@abs(lateral_offset) > half_width + attachment_side_exit_margin) return null;
+        if (@abs(entry_local.x) > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin) return null;
         return .{
             .sample_index = sample_index,
             .local_progress = local_progress,
@@ -4266,7 +4273,6 @@ pub const Runner = struct {
         );
         const start_world_position = trackEntryWorldPosition(preview, self.previous_row_position, self.previous_lane_center);
         const end_world_position = trackEntryWorldPosition(preview, self.row_position, current_lane_center);
-        const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
         const end_index = @min(
             @as(usize, @intFromFloat(@floor(end_progress))),
             @as(usize, built.template.sample_count - 1),
@@ -4289,7 +4295,7 @@ pub const Runner = struct {
             const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
             const sample_length = attachment_builders.deltaLengthAtProgress(&built.template, candidate_progress);
 
-            if (@abs(start_local.x) <= half_width + attachment_side_exit_margin and
+            if (@abs(start_local.x) <= attachmentTemplateHalfSpan(built) + attachment_side_exit_margin and
                 start_local.y >= attachment_entry_start_y_tolerance and
                 start_local.z >= 0.0 and
                 start_local.z <= sample_length)
@@ -4835,7 +4841,7 @@ fn laneOutsideAttachmentWidth(
         0.0,
         0.0,
     );
-    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const half_width = Runner.attachmentTemplateHalfSpan(built);
 
     for (0..preview.max_width) |lane| {
         const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
@@ -4844,12 +4850,8 @@ fn laneOutsideAttachmentWidth(
             @as(f32, @floatFromInt(global_row)),
             lane_center,
         );
-        const lateral_offset = Runner.attachmentLateralOffsetFromLocalX(
-            &built.template,
-            progress,
-            Runner.attachmentLocalPosition(centered_pose, entry_world_position).x,
-        );
-        if (@abs(lateral_offset) > half_width + attachment_side_exit_margin) return lane;
+        const local_x = Runner.attachmentLocalPosition(centered_pose, entry_world_position).x;
+        if (@abs(local_x) > half_width + attachment_side_exit_margin) return lane;
     }
     return null;
 }
@@ -4995,7 +4997,8 @@ test "rolled attachments use world x for side-exit threshold" {
         lateral_offset,
         0.0,
     );
-    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
+    const half_width = @as(f32, @floatFromInt(subdivision_count)) * 0.5;
     const local_delta = @abs(lateral_offset * pose.lateral_scale);
     const world_delta_x = @abs(world_pose.position.x - pose.center_x);
 
@@ -5010,6 +5013,48 @@ test "rolled attachments use world x for side-exit threshold" {
         .source_row = target.row,
         .template_progress = template_progress,
         .lateral_offset = lateral_offset,
+    };
+
+    try std.testing.expect(!runner.attachmentShouldSideExit(built));
+}
+
+test "attachment side exit uses subdivision count rather than template width" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const width_threshold = (@as(f32, @floatFromInt(built.template.width_cells)) * 0.5) + attachment_side_exit_margin;
+    const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
+    const subdivision_threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin;
+
+    var matching_lateral_offset: ?f32 = null;
+    var lateral_offset = width_threshold + 0.25;
+    while (lateral_offset < subdivision_threshold + 0.5) : (lateral_offset += 0.25) {
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, 12.0);
+        const world_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            12.0,
+            target.row,
+            lateral_offset,
+            0.0,
+        );
+        const world_delta_x = @abs(world_pose.position.x - pose.center_x);
+        if (world_delta_x > width_threshold and world_delta_x <= subdivision_threshold) {
+            matching_lateral_offset = lateral_offset;
+            break;
+        }
+    }
+    try std.testing.expect(matching_lateral_offset != null);
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "WORM";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 12.0,
+        .lateral_offset = matching_lateral_offset.?,
     };
 
     try std.testing.expect(!runner.attachmentShouldSideExit(built));
@@ -7083,6 +7128,36 @@ test "swept installed entry rejects source-row positions before the sample start
     try std.testing.expect(runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row) != null);
 }
 
+test "source-row installed entry uses the native template span" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const width_threshold = (@as(f32, @floatFromInt(built.template.width_cells)) * 0.5) + attachment_side_exit_margin;
+    const native_threshold = Runner.attachmentTemplateHalfSpan(built) + attachment_side_exit_margin;
+
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.1;
+    runner.lane_center = 7.5;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+    runner.resolved_lane_index = runner.lane_index;
+
+    const entry_world_position = Runner.trackEntryWorldPosition(&fixture.preview, runner.row_position, runner.lane_center);
+    const entry_pose = attachment_builders.worldPoseForTemplate(
+        &built.template,
+        runner.row_position - @as(f32, @floatFromInt(target.row)),
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const entry_local = Runner.attachmentLocalPosition(entry_pose, entry_world_position);
+    const entry = runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row);
+    try std.testing.expect(entry != null);
+    try std.testing.expect(@abs(entry_local.x) > width_threshold);
+    try std.testing.expect(@abs(entry_local.x) <= native_threshold);
+}
+
 test "standalone start segment attachment exits from the template end pose" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
@@ -7188,8 +7263,8 @@ test "attachment follow side threshold enters the shared fall state" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
-    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-    const threshold = half_width + attachment_side_exit_margin + 0.2;
+    const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
+    const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
     const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
     var side_exit_lateral = runner.attachment_follow.lateral_offset;
     while (true) {
@@ -7214,6 +7289,40 @@ test "attachment follow side threshold enters the shared fall state" {
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expect(!runner.attachment_follow.active);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
+}
+
+test "attachment side threshold is suppressed while jetpack is active" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+
+    const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
+    const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
+    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    while (true) {
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const world_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            runner.attachment_follow.template_progress,
+            target.row,
+            side_exit_lateral,
+            runner.attachment_follow.vertical_offset,
+        );
+        if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
+        side_exit_lateral += 0.25 * lateral_sign;
+    }
+    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.jetpack.active = true;
+
+    try std.testing.expect(!runner.attachmentShouldSideExit(built));
 }
 
 test "loop side threshold preserves airborne fall height" {
@@ -7255,8 +7364,8 @@ test "loop side threshold preserves airborne fall height" {
     };
     runner.updateAttachmentFollowPosition(&fixture.preview);
 
-    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-    const threshold = half_width + attachment_side_exit_margin + 0.2;
+    const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
+    const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
     const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
     var side_exit_lateral = runner.attachment_follow.lateral_offset;
     while (true) {
