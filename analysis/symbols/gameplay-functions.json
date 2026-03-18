@@ -944,6 +944,16 @@
       "description": "Seeds one global input-controller slot to an authored 640x480 pointer position, updates its normalized coordinates from the stored region bounds, and warps the backing OS cursor through click_mouse_screen."
     },
     {
+      "address": "0x432440",
+      "name": "read_pressed_text_input_key_code",
+      "description": "Maps newly pressed keyboard scancodes into the shared text-input byte codes used by frontend widgets, cheat entry, intro skip, and subgame ESC handling: ASCII for letters/digits/punctuation plus the small control-code set for edit and navigation keys."
+    },
+    {
+      "address": "0x4327e0",
+      "name": "read_repeating_text_input_key_code",
+      "description": "Maps held keyboard scancodes into the same text-input byte codes as read_pressed_text_input_key_code, but with the native repeat delay/rate state so border_input_text can autorepeat held edits and cursor moves."
+    },
+    {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
     },
@@ -1831,6 +1841,21 @@
     {
       "address": "0x44b7d0",
       "name": "initialize_keyboard_input"
+    },
+    {
+      "address": "0x44b870",
+      "name": "update_keyboard_input",
+      "description": "Polls the DirectInput keyboard device into the current and previous 0x100-byte key-state tables, retries reacquisition on transient failures, and publishes the derived digital input flags and directional axes into the shared input-controller lanes."
+    },
+    {
+      "address": "0x44bb10",
+      "name": "is_key_pressed_edge",
+      "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table and was up in the previous frame's table."
+    },
+    {
+      "address": "0x44bb40",
+      "name": "is_key_down",
+      "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table."
     },
     {
       "address": "0x44bc20",
