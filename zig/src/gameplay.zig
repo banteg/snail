@@ -2012,8 +2012,7 @@ pub const Runner = struct {
         if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
         if (self.currentAttachmentBuilt(preview)) |built| {
             if (self.attachmentShouldSideExit(built)) {
-                self.commitAttachmentSideExit(preview, built);
-                self.finishAttachmentFollowWithExitHandoff(preview);
+                self.beginFallState(preview, .fall, cutscene_none_id);
                 return;
             }
             if (self.attachment_follow.sample_index >= built.template.sample_count) {
@@ -4006,6 +4005,9 @@ pub const Runner = struct {
         self.heading_roll += self.attachment_follow.camera_phase_scalar;
         self.syncAttachmentFollowTemplateProgress(built);
         self.updateAttachmentFollowPosition(preview);
+        if (self.attachment_follow.vertical_offset < 0.0) {
+            self.attachment_follow.vertical_offset = 0.0;
+        }
     }
 
     fn updateAttachmentFollowCameraOrientations(
@@ -5060,6 +5062,37 @@ test "attachment follow updates heading roll from the live phase scalar" {
 
     try std.testing.expectApproxEqAbs(built.template.row_scalar_a, runner.heading_roll, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment_follow.template_progress, 0.0001);
+}
+
+test "attachment follow clamps negative vertical offset after live update" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "START";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 5.0,
+        .vertical_offset = -0.25,
+    };
+
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.vertical_offset, 0.0001);
+
+    runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
+    const expected_world = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        runner.attachment_follow.template_progress,
+        target.row,
+        runner.attachment_follow.lateral_offset,
+        0.0,
+    );
+    try std.testing.expectApproxEqAbs(expected_world.y + attachment_entry_rider_height, runner.attachment_follow.cached_output_position.y, 0.0001);
 }
 
 test "attachment follow clamps output x to gameplay bounds" {
@@ -7143,7 +7176,7 @@ test "supertramp natural exit enters a launch state above the floor" {
     try std.testing.expect(launch_forward.y > 0.1);
 }
 
-test "attachment follow side-exits when lateral drift exceeds template width" {
+test "attachment follow side threshold enters the shared fall state" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -7176,11 +7209,14 @@ test "attachment follow side-exits when lateral drift exceeds template width" {
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expect(!runner.attachment_follow.active);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
 }
 
-test "loop side-exit preserves airborne launch height" {
+test "loop side threshold preserves airborne fall height" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/LOOPBOW.TXT");
     defer fixture.deinit();
 
@@ -7240,15 +7276,18 @@ test "loop side-exit preserves airborne launch height" {
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(runner.launch.active);
+    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expect(!runner.launch.active);
 
-    const launched_position = runner.worldPosition(&fixture.preview, 0.0);
+    const fallen_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
         runner.current_global_row,
         runner.resolved_lane_index,
         runner.row_position,
     ) orelse 0.0;
-    try std.testing.expect(launched_position.y > floor_height + 0.5);
+    try std.testing.expect(fallen_position.y > floor_height + 0.5);
 }
 
 test "installed attachment entry respects template width" {
