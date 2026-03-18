@@ -216,6 +216,7 @@ pub const Template = struct {
     mirror_or_variant: bool = false,
     width_cells: u16 = 0,
     sample_count: u16 = 0,
+    row_scalar_a: f32 = 0.0,
     exit_tail_extra: f32 = 0.0,
     samples: []TemplateSample = &.{},
 
@@ -312,11 +313,13 @@ const WaveParams = struct {
     runtime_kind: ?u8 = null,
     width_cells: u16,
     sample_count: u16,
+    subdivision_count: ?u16 = null,
     lateral_amplitude: f32 = 0.0,
     lateral_cycles: f32 = 0.0,
     vertical_amplitude: f32 = 0.0,
     vertical_cycles: f32 = 0.0,
     roll_cycles: f32 = 0.0,
+    row_scalar_a: f32 = 0.0,
     start_z: f32 = 0.0,
     center_bias: f32 = 0.0,
 };
@@ -702,9 +705,19 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .screw => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 21, .width_cells = 3, .sample_count = 24, .roll_cycles = 1.0 }),
         .slalom => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 22, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 2.5, .lateral_cycles = 2.0 }),
         .slalombig => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 23, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 3.5, .lateral_cycles = 2.0 }),
-        .worm => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 24, .width_cells = 4, .sample_count = 28, .lateral_amplitude = 1.75, .lateral_cycles = 2.0, .vertical_amplitude = 1.75, .vertical_cycles = 2.0 }),
+        .worm => try buildWaveTemplate(allocator, spec, .{
+            .runtime_kind = 24,
+            .width_cells = 4,
+            .sample_count = 24,
+            .subdivision_count = 16,
+            .lateral_amplitude = 1.75,
+            .lateral_cycles = 2.0,
+            .vertical_amplitude = 1.75,
+            .vertical_cycles = 2.0,
+            .row_scalar_a = 6.2831855,
+        }),
         .sweep => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 28, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 3.0, .lateral_cycles = 0.5 }),
-        .snake => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 29, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
+        .snake => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 29, .width_cells = 4, .sample_count = 27, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
         .warp, .halfpipe => try buildKind42Template(allocator, spec),
         .slalomdouble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 32, .width_cells = 4, .sample_count = 70, .lateral_amplitude = 2.5, .lateral_cycles = 4.0 }),
         .wibble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 40, .width_cells = 8, .sample_count = 32, .lateral_amplitude = 1.5, .lateral_cycles = 3.0, .vertical_amplitude = 0.75, .vertical_cycles = 2.0 }),
@@ -1252,10 +1265,11 @@ fn buildWaveTemplate(
             .status = .partial,
             .runtime_kind = params.runtime_kind,
             .sample_count = params.sample_count,
-            .subdivision_count = params.width_cells,
+            .subdivision_count = params.subdivision_count orelse params.width_cells,
         },
         .width_cells = params.width_cells,
         .sample_count = params.sample_count,
+        .row_scalar_a = params.row_scalar_a,
         .exit_tail_extra = 1.0,
         .samples = samples,
     };
@@ -1561,7 +1575,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .screw => .{ .public_path = public_path, .family = .screw, .status = .partial, .runtime_kind = 21, .sample_count = 24, .subdivision_count = 3 },
         .slalom => .{ .public_path = public_path, .family = .slalom, .status = .partial, .runtime_kind = 22, .sample_count = 32, .subdivision_count = 4 },
         .slalombig => .{ .public_path = public_path, .family = .slalombig, .status = .partial, .runtime_kind = 23, .sample_count = 32, .subdivision_count = 4 },
-        .worm => .{ .public_path = public_path, .family = .worm, .status = .partial, .runtime_kind = 24, .sample_count = 28, .subdivision_count = 4 },
+        .worm => .{ .public_path = public_path, .family = .worm, .status = .partial, .runtime_kind = 24, .sample_count = 24, .subdivision_count = 16 },
         .loopout, .loopout3, .loopoutbig => blk: {
             const params = loopoutParams(public_path);
             break :blk .{
@@ -1574,7 +1588,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
             };
         },
         .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial, .runtime_kind = 28, .sample_count = 30, .subdivision_count = 4 },
-        .snake => .{ .public_path = public_path, .family = .snake, .status = .partial, .runtime_kind = 29, .sample_count = 30, .subdivision_count = 4 },
+        .snake => .{ .public_path = public_path, .family = .snake, .status = .partial, .runtime_kind = 29, .sample_count = 27, .subdivision_count = 4 },
         .warp, .halfpipe => .{ .public_path = public_path, .family = .kind42, .status = .partial, .runtime_kind = 42, .sample_count = 66, .subdivision_count = 8 },
         .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .runtime_kind = 31, .sample_count = 32, .subdivision_count = 2 },
         .slalomdouble => .{ .public_path = public_path, .family = .slalomdouble, .status = .partial, .runtime_kind = 32, .sample_count = 70, .subdivision_count = 4 },
@@ -1949,6 +1963,29 @@ test "build loopout family templates from recovered public slot params" {
         const mid = samplePoseAtProgress(&template, 10.0 + (case.radius * std.math.pi));
         try std.testing.expect(mid.position.y < -(case.radius * 1.5));
     }
+}
+
+test "worm template matches traced runtime metadata" {
+    const spec = specForPublicPath(.worm);
+    var template = (try buildTemplate(std.testing.allocator, spec)).?;
+    defer template.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(u8, 24), template.spec.runtime_kind.?);
+    try std.testing.expectEqual(@as(u16, 24), template.sample_count);
+    try std.testing.expectEqual(@as(u16, 4), template.width_cells);
+    try std.testing.expectEqual(@as(u16, 16), template.spec.subdivision_count.?);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), template.row_scalar_a, 0.0001);
+}
+
+test "snake template matches traced runtime metadata" {
+    const spec = specForPublicPath(.snake);
+    var template = (try buildTemplate(std.testing.allocator, spec)).?;
+    defer template.deinit(std.testing.allocator);
+
+    try std.testing.expectEqual(@as(u8, 29), template.spec.runtime_kind.?);
+    try std.testing.expectEqual(@as(u16, 27), template.sample_count);
+    try std.testing.expectEqual(@as(u16, 4), template.width_cells);
+    try std.testing.expectEqual(@as(u16, 4), template.spec.subdivision_count.?);
 }
 
 test "all recovered public paths build attachment templates" {

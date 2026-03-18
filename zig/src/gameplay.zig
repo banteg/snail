@@ -4204,7 +4204,13 @@ pub const Runner = struct {
         );
         return .{
             .seed_a = current_roll,
-            .seed_b = normalizeRadians(next_roll - current_roll),
+            // Native fall-state init copies `template_record->row_scalar_a` into the exit-rate
+            // lane. Use the recovered template scalar when present instead of deriving another
+            // geometry proxy from the sampled roll delta.
+            .seed_b = if (built.template.row_scalar_a != 0.0)
+                built.template.row_scalar_a
+            else
+                normalizeRadians(next_roll - current_roll),
         };
     }
 
@@ -4755,6 +4761,32 @@ test "template kind 24 alone boosts cameraman fov" {
 
     try std.testing.expectEqual(MovementMode.attachment, start_runner.movement_mode);
     try std.testing.expectApproxEqAbs(@as(f32, 110.0), start_runner.cameramanFovDegrees(), 0.001);
+}
+
+test "worm attachment exit seeds use the traced template row scalar" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const centered = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        0.0,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const center_lane = Runner.laneCenterFromWorldX(&fixture.preview, centered.x);
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+    runner.lane_center = center_lane;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, center_lane);
+    runner.resolved_lane_index = runner.lane_index;
+    runner.refreshSample(&fixture.preview);
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+
+    const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), exit_seeds.seed_b, 0.0001);
 }
 
 test "runner advances deterministically over fixed time" {
