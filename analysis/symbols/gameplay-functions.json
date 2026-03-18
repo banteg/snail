@@ -929,6 +929,21 @@
       "description": "Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading."
     },
     {
+      "address": "0x4320f0",
+      "name": "copy_active_input_controller_state",
+      "description": "Copies one of the two global input-controller slots into the caller-owned runtime buffer, including button flags, normalized pointer coordinates, and the per-slot authored cursor lanes used by gameplay input."
+    },
+    {
+      "address": "0x4321c0",
+      "name": "update_input_controller_pointer_region",
+      "description": "Refreshes one global input-controller slot from a screen-space pointer region: stores the active bounds, optionally warps the pixel cursor into that region, updates normalized authored 640x480 coordinates, and latches the per-slot button bits."
+    },
+    {
+      "address": "0x4323a0",
+      "name": "set_input_controller_pointer_authored_xy",
+      "description": "Seeds one global input-controller slot to an authored 640x480 pointer position, updates its normalized coordinates from the stored region bounds, and warps the backing OS cursor through click_mouse_screen."
+    },
+    {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
     },
@@ -1816,6 +1831,11 @@
     {
       "address": "0x44b7d0",
       "name": "initialize_keyboard_input"
+    },
+    {
+      "address": "0x44bc20",
+      "name": "resolve_uncaptured_cursor_sensitivity_scale",
+      "description": "Returns the cursor-delta sensitivity scale for uncaptured pointer mode: 1.0 while the cursor is captured, otherwise arg * 1.8 + 0.7."
     },
     {
       "address": "0x44bc50",
