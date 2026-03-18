@@ -929,6 +929,16 @@
       "description": "Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading."
     },
     {
+      "address": "0x431fd0",
+      "name": "set_input_controller_slot0_button_axes",
+      "description": "Stores the keyboard-derived button mask and X/Y axis floats into input-controller slot 0, overwriting its shared digital and analog lanes before later pointer data is merged in."
+    },
+    {
+      "address": "0x431ff0",
+      "name": "update_input_controller_slot_button_axes",
+      "description": "Updates one global input-controller slot from a button mask and two analog axes. Slot 0 merges button bits and only fills empty analog lanes, while nonzero slots overwrite their lane directly and derive the slot's centered authored-X value from the X axis with the native 0.15 deadzone."
+    },
+    {
       "address": "0x4320f0",
       "name": "copy_active_input_controller_state",
       "description": "Copies one of the two global input-controller slots into the caller-owned runtime buffer, including button flags, normalized pointer coordinates, and the per-slot authored cursor lanes used by gameplay input."
@@ -1839,6 +1849,11 @@
       "name": "enumerate_input_controllers"
     },
     {
+      "address": "0x44b570",
+      "name": "update_joystick_input",
+      "description": "Polls each enumerated DirectInput joystick device, reacquires on transient loss, normalizes its primary X/Y axes into the shared [-1000, 1000] range, packs the sampled buttons into the game's bitmask format, and publishes the result through the input-controller slot writer."
+    },
+    {
       "address": "0x44b7d0",
       "name": "initialize_keyboard_input"
     },
@@ -1856,6 +1871,16 @@
       "address": "0x44bb40",
       "name": "is_key_down",
       "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table."
+    },
+    {
+      "address": "0x44bbb0",
+      "name": "initialize_mouse_authored_scale_from_clip_rect",
+      "description": "Caches the current clipped screen rectangle and initializes the shared mouse screen-to-authored scaling for the default 640x480 authored coordinate space."
+    },
+    {
+      "address": "0x44bbd0",
+      "name": "update_mouse_authored_scale",
+      "description": "Computes the shared mouse screen-to-authored X/Y scale factors from the cached clip rectangle and the supplied authored width and height. convert_mouse_screen_xy consumes those scales."
     },
     {
       "address": "0x44bc20",
