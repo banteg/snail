@@ -259,6 +259,11 @@
       "name": "initialize_audio_subsystem"
     },
     {
+      "address": "0x407b50",
+      "name": "noop_runtime_ai",
+      "description": "Shared empty per-frame update stub reused by runtime object types that do not need standalone AI work. Cross-port Android symbol matches tie this address to multiple `::AI()` slots including camera, weapon, and ball-style objects."
+    },
+    {
       "address": "0x408060",
       "name": "initialize_runtime_pools_and_path_template_bank"
     },
@@ -974,6 +979,11 @@
       "description": "Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading."
     },
     {
+      "address": "0x431cc0",
+      "name": "report_errorf",
+      "description": "Formats and emits one fatal-style engine error message with a varargs payload. Runtime and content-loading paths use it for hard failures such as missing hotspot textures, parcel-pool exhaustion, and invalid track segment lengths."
+    },
+    {
       "address": "0x431fd0",
       "name": "set_input_controller_slot0_button_axes",
       "description": "Stores the keyboard-derived button mask and X/Y axis floats into input-controller slot 0, overwriting its shared digital and analog lanes before later pointer data is merged in."
@@ -1007,6 +1017,11 @@
       "address": "0x4327e0",
       "name": "read_repeating_text_input_key_code",
       "description": "Maps held keyboard scancodes into the same text-input byte codes as read_pressed_text_input_key_code, but with the native repeat delay/rate state so border_input_text can autorepeat held edits and cursor moves."
+    },
+    {
+      "address": "0x432d50",
+      "name": "cache_music_file",
+      "description": "Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
     },
     {
       "address": "0x433010",
@@ -1554,6 +1569,11 @@
       "name": "update_row_model"
     },
     {
+      "address": "0x443130",
+      "name": "update_track_parcels",
+      "description": "Walks the 50-slot `game->track_parcels` runtime array and dispatches `update_track_parcel` on each active parcel slot."
+    },
+    {
       "address": "0x443160",
       "name": "initialize_track_parcel_slots",
       "description": "Clears the live state on the 50-slot gameplay parcel array and reseeds each slot's `game` pointer before any authored parcel placements are spawned for the current level."
@@ -1688,6 +1708,11 @@
       "address": "0x446020",
       "name": "update_subgame_camera",
       "description": "Runs the active subgame camera update, choosing between the live cameraman follow pose, cached camera states, and direct identity handoffs before interpolating the view matrix back into the shared camera. Cross-port Android and iOS symbols match this helper to the outer `cRSubGame::CameraAI()` flow."
+    },
+    {
+      "address": "0x446130",
+      "name": "initialize_cutscene_ai",
+      "description": "Constructs the embedded player-side cutscene AI/controller at `player + 0x42dc`, seeding its shared pointers and clearing the live cutscene state before `initialize_subgoldy` selects the startup leg."
     },
     {
       "address": "0x446160",
@@ -2159,6 +2184,16 @@
       "address": "0x44da90",
       "name": "linear_interpolate_matrix",
       "description": "Interpolates one transform toward another by blending rotation in matrix space and linearly blending translation. Android symbols match this helper to `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)`."
+    },
+    {
+      "address": "0x44db60",
+      "name": "set_color_rgba",
+      "description": "Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer."
+    },
+    {
+      "address": "0x44dc90",
+      "name": "random_float_below",
+      "description": "Returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound."
     },
     {
       "address": "0x44dcb0",
