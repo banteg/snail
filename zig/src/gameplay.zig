@@ -3838,9 +3838,16 @@ pub const Runner = struct {
         if (self.attachment_follow.vertical_offset > 0.0) return false;
 
         const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.template_progress);
-        const local_lateral = @abs(self.attachment_follow.lateral_offset * pose.lateral_scale);
+        const world_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            self.attachment_follow.template_progress,
+            self.attachment_follow.source_row,
+            self.attachment_follow.lateral_offset,
+            self.attachment_follow.vertical_offset,
+        );
+        const world_delta_x = @abs(world_pose.position.x - pose.center_x);
         const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-        return local_lateral > half_width + attachment_side_exit_margin;
+        return world_delta_x > half_width + attachment_side_exit_margin;
     }
 
     fn commitAttachmentSideExit(
@@ -4054,20 +4061,25 @@ pub const Runner = struct {
         self: *const Runner,
         built: *const attachment_builders.BuiltAttachment,
     ) attachment_builders.Vec3 {
-        const position = attachment_builders.worldPositionForTemplate(
+        const raw_position = attachment_builders.worldPositionForTemplate(
             &built.template,
             self.attachment_follow.template_progress,
             self.attachment_follow.source_row,
             self.attachment_follow.lateral_offset,
             self.attachment_follow.vertical_offset,
         );
-        return switch (built.template.spec.family) {
-            .kind42 => position,
+        const position: attachment_builders.Vec3 = switch (built.template.spec.family) {
+            .kind42 => raw_position,
             else => .{
-                .x = position.x,
-                .y = position.y + attachment_entry_rider_height,
-                .z = position.z,
+                .x = raw_position.x,
+                .y = raw_position.y + attachment_entry_rider_height,
+                .z = raw_position.z,
             },
+        };
+        return .{
+            .x = std.math.clamp(position.x, -4.0, 4.0),
+            .y = position.y,
+            .z = position.z,
         };
     }
 
@@ -4965,6 +4977,42 @@ test "rolled attachments publish camera orientation a from sample roll" {
     try std.testing.expectApproxEqAbs(expected, runner.attachment_camera_orientation_a, 0.0001);
 }
 
+test "rolled attachments use world x for side-exit threshold" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/INVERT.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const template_progress = 17.0;
+    const lateral_offset = 8.0;
+    const pose = attachment_builders.samplePoseAtProgress(&built.template, template_progress);
+    const world_pose = attachment_builders.worldPoseForTemplate(
+        &built.template,
+        template_progress,
+        target.row,
+        lateral_offset,
+        0.0,
+    );
+    const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
+    const local_delta = @abs(lateral_offset * pose.lateral_scale);
+    const world_delta_x = @abs(world_pose.position.x - pose.center_x);
+
+    try std.testing.expect(local_delta > half_width + attachment_side_exit_margin);
+    try std.testing.expect(world_delta_x <= half_width + attachment_side_exit_margin);
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "INVERT";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = template_progress,
+        .lateral_offset = lateral_offset,
+    };
+
+    try std.testing.expect(!runner.attachmentShouldSideExit(built));
+}
+
 test "attachment follow advances template progress by path factor" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer fixture.deinit();
@@ -5012,6 +5060,37 @@ test "attachment follow updates heading roll from the live phase scalar" {
 
     try std.testing.expectApproxEqAbs(built.template.row_scalar_a, runner.heading_roll, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment_follow.template_progress, 0.0001);
+}
+
+test "attachment follow clamps output x to gameplay bounds" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const raw_position = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        5.0,
+        target.row,
+        100.0,
+        0.0,
+    );
+    const expected_clamped_x = std.math.clamp(raw_position.x, -4.0, 4.0);
+    try std.testing.expect(@abs(raw_position.x) > 4.0);
+
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "START";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 5.0,
+        .lateral_offset = 100.0,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(expected_clamped_x, runner.attachment_follow.cached_output_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_clamped_x, runner.worldPosition(&fixture.preview, 0.0).x, 0.0001);
 }
 
 test "attachment camera lift uses overall attachment progress" {
@@ -7077,12 +7156,24 @@ test "attachment follow side-exits when lateral drift exceeds template width" {
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-    const required_lateral = half_width + attachment_side_exit_margin + 0.2;
-    const lateral_sign: i8 = if (runner.attachment_follow.lateral_offset < 0.0) -1 else 1;
-    const additional_offset = @max(0.0, required_lateral - @abs(runner.attachment_follow.lateral_offset));
-    const delta_steps: i8 = @intFromFloat(@ceil(additional_offset));
-    const lane_delta: i8 = delta_steps * lateral_sign;
-    runner.step(&fixture.preview, .{ .lane_delta = lane_delta }, 1.0 / 60.0);
+    const threshold = half_width + attachment_side_exit_margin + 0.2;
+    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    while (true) {
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const world_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            runner.attachment_follow.template_progress,
+            target.row,
+            side_exit_lateral,
+            runner.attachment_follow.vertical_offset,
+        );
+        if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
+        side_exit_lateral += 0.25 * lateral_sign;
+    }
+    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+    runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
@@ -7096,31 +7187,57 @@ test "loop side-exit preserves airborne launch height" {
     var runner = Runner.init(&fixture.preview);
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
-    primeRunnerBeforeRow(&runner, &fixture.preview, target);
 
-    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-
-    var guard: usize = 0;
-    while (runner.movement_mode == .attachment and guard < 256) : (guard += 1) {
-        const world_position = runner.worldPosition(&fixture.preview, 0.0);
+    var airborne_progress: ?f32 = null;
+    var sample_progress: f32 = 0.0;
+    while (sample_progress < @as(f32, @floatFromInt(built.template.sample_count))) : (sample_progress += 0.25) {
+        const world_position = attachment_builders.worldPositionForTemplate(
+            &built.template,
+            sample_progress,
+            target.row,
+            0.0,
+            0.0,
+        );
         const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
-            runner.current_global_row,
-            runner.resolved_lane_index,
-            runner.row_position,
+            currentRowIndex(&fixture.preview, world_position.z),
+            fixture.preview.laneIndexAtWorldX(world_position.x),
+            world_position.z,
         ) orelse 0.0;
-        if (world_position.y > floor_height + 1.0) break;
-        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+        if (world_position.y > floor_height + 1.0) {
+            airborne_progress = sample_progress;
+            break;
+        }
     }
+    try std.testing.expect(airborne_progress != null);
 
-    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "LOOPBOW";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = airborne_progress.?,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
     const half_width = @as(f32, @floatFromInt(built.template.width_cells)) * 0.5;
-    const required_lateral = half_width + attachment_side_exit_margin + 0.2;
-    const lateral_sign: i8 = if (runner.attachment_follow.lateral_offset < 0.0) -1 else 1;
-    const additional_offset = @max(0.0, required_lateral - @abs(runner.attachment_follow.lateral_offset));
-    const delta_steps: i8 = @intFromFloat(@ceil(additional_offset));
-    const lane_delta: i8 = delta_steps * lateral_sign;
-    runner.step(&fixture.preview, .{ .lane_delta = lane_delta }, 1.0 / 60.0);
+    const threshold = half_width + attachment_side_exit_margin + 0.2;
+    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    while (true) {
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const world_pose = attachment_builders.worldPoseForTemplate(
+            &built.template,
+            runner.attachment_follow.template_progress,
+            target.row,
+            side_exit_lateral,
+            runner.attachment_follow.vertical_offset,
+        );
+        if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
+        side_exit_lateral += 0.25 * lateral_sign;
+    }
+    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+    runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expect(runner.launch.active);
