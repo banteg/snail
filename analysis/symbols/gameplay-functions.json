@@ -215,6 +215,21 @@
       "name": "game_startup_and_main_loop"
     },
     {
+      "address": "0x4072f0",
+      "name": "handle_game_window_activate",
+      "description": "Runtime reactivation helper for the main window. It clears the inactive flag, reapplies fullscreen mode when configured, refreshes the frame timestamp, shows and focuses the game window, and clears the mouse button latch bytes after WM_ACTIVATE enters the active state."
+    },
+    {
+      "address": "0x4073b0",
+      "name": "show_and_focus_game_window",
+      "description": "Startup-only helper that shows the game window, brings it to the foreground, sets focus and active window state, refreshes the frame timestamp, and clears the mouse button latch bytes before the main loop begins."
+    },
+    {
+      "address": "0x407440",
+      "name": "handle_game_window_deactivate",
+      "description": "Runtime deactivation helper for the main window. When the game is active in fullscreen mode, it marks the window inactive, minimizes it, and clears the pending quit flag before returning."
+    },
+    {
       "address": "0x4074b0",
       "name": "game_window_proc",
       "description": "Primary Win32 window procedure for the game's main window. It handles activation and minimize transitions, ESC-to-quit, left and right mouse button latches, and mouse-wheel delta capture before delegating the rest to DefWindowProcA."
@@ -233,6 +248,11 @@
       "address": "0x407830",
       "name": "read_right_mouse_button_state",
       "description": "Clears the companion right-button latch byte for the requested slot and returns the current right mouse button state byte."
+    },
+    {
+      "address": "0x407860",
+      "name": "restore_desktop_display_mode",
+      "description": "Restores the desktop display mode with ChangeDisplaySettingsA(nullptr, 0) and makes the OS cursor visible again. The startup loop and deactivate path use it when leaving fullscreen presentation."
     },
     {
       "address": "0x407a10",
@@ -417,6 +437,11 @@
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
+    },
+    {
+      "address": "0x414260",
+      "name": "set_fullscreen_mode",
+      "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
     },
     {
       "address": "0x414670",
