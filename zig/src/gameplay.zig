@@ -3899,9 +3899,6 @@ pub const Runner = struct {
 
     fn updateAttachmentFollowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const built = self.currentAttachmentBuilt(preview) orelse return;
-        if (self.attachment_follow.camera_phase_scalar == 0.0 and built.template.row_scalar_a != 0.0) {
-            self.attachment_follow.camera_phase_scalar = built.template.row_scalar_a;
-        }
         self.syncAttachmentFollowNativeProgressFromTemplateProgress(built);
         self.syncAttachmentFollowTemplateProgress(built);
         const position = self.attachmentFollowOutputPosition(built);
@@ -4097,6 +4094,16 @@ pub const Runner = struct {
         self.stepAttachmentFollowAtRate(preview, self.movement_rate_scalar);
     }
 
+    fn finalizeAttachmentBegin(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        // PORT(verified): both the direct begin path and the swept installed-entry path
+        // immediately run one follow update in the same tick after seeding the live state.
+        if (self.currentAttachmentBuilt(preview) != null) {
+            self.stepAttachmentFollowAtRate(preview, self.movement_rate_scalar);
+        } else {
+            self.updateAttachmentFollowPosition(preview);
+        }
+    }
+
     fn beginAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, sample: RowSample) void {
         const source_row: f32 = @floatFromInt(sample.global_row);
         const player_position = self.playerWorldPosition(preview);
@@ -4145,7 +4152,7 @@ pub const Runner = struct {
             .vertical_offset = vertical_offset,
             .camera_phase_scalar = camera_phase_scalar,
         };
-        self.updateAttachmentFollowPosition(preview);
+        self.finalizeAttachmentBegin(preview);
         self.counters.attachments_begun += 1;
         self.recent_event = .attachment_begin;
     }
@@ -4160,14 +4167,14 @@ pub const Runner = struct {
             .source_row = built.row.global_row,
             .sample_index = entry.sample_index,
             .local_progress = entry.local_progress,
-            .progress = 0.0,
+            .progress = entry.local_progress,
             .exit_overshoot = 0.0,
             .lateral_offset = entry.lateral_offset,
             .cached_output_lane_center = self.lane_center,
             .vertical_offset = entry.vertical_offset,
             .camera_phase_scalar = built.template.row_scalar_a,
         };
-        self.updateAttachmentFollowPosition(preview);
+        self.finalizeAttachmentBegin(preview);
         self.counters.attachments_begun += 1;
         self.recent_event = .attachment_begin;
     }
@@ -5086,6 +5093,27 @@ test "attachment follow advances template progress by path factor" {
     try std.testing.expectApproxEqAbs(@as(f32, 5.25), runner.attachment_follow.template_progress, 0.0001);
 }
 
+test "installed attachment begin preserves raw local progress and advances once immediately" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    var runner = Runner.init(&fixture.preview);
+    primeRunnerBeforeRow(&runner, &fixture.preview, target);
+    runner.movement_rate_scalar = 0.25;
+
+    const entry = runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row).?;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), entry.local_progress, 0.0001);
+
+    runner.beginInstalledAttachmentFollow(&fixture.preview, built, entry);
+
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expectEqual(@as(usize, 0), runner.attachment_follow.sample_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment_follow.template_progress, 0.0001);
+}
+
 test "attachment follow updates heading roll from the live phase scalar" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer fixture.deinit();
@@ -5107,6 +5135,27 @@ test "attachment follow updates heading roll from the live phase scalar" {
 
     try std.testing.expectApproxEqAbs(built.template.row_scalar_a, runner.heading_roll, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment_follow.template_progress, 0.0001);
+}
+
+test "attachment follow keeps zero phase scalar on position refresh" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "WORM";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .template_progress = 5.0,
+        .camera_phase_scalar = 0.0,
+    };
+
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.camera_phase_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.camera_orientation_b, 0.0001);
 }
 
 test "attachment follow clamps negative vertical offset after live update" {
@@ -6888,6 +6937,8 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     defer fixture.deinit();
 
     const target = findFirstOffCenterAttachmentEntry(&fixture.preview).?;
+    const entry_lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
+    const entry_lateral_sign: f32 = if (entry_lane_center < target.path_center_lane) -1.0 else 1.0;
 
     var runner = Runner.init(&fixture.preview);
     primeRunnerBeforeRow(
@@ -6916,16 +6967,13 @@ test "attachment follow preserves lateral offset instead of snapping to the path
         runner.row_position,
         @as(f32, @floatFromInt(target.lane)) + 0.5,
     );
-    const expected_lateral_offset = Runner.attachmentLateralOffsetFromLocalX(
-        &built.template,
-        runner.attachment_follow.template_progress,
-        Runner.attachmentLocalPosition(centered_pose, entry_world_position).x,
-    );
     const centered_lane_center = Runner.laneCenterFromWorldX(&fixture.preview, centered_pose.position.x);
-    try std.testing.expectApproxEqAbs(expected_lateral_offset, runner.attachment_follow.lateral_offset, 0.001);
     try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
     try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
+    try std.testing.expect(@abs(runner.attachment_follow.lateral_offset) > 0.1);
+    try std.testing.expect(runner.attachment_follow.lateral_offset * entry_lateral_sign > 0.0);
     try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment_follow.lateral_offset > 0.0);
+    try std.testing.expect(@abs(Runner.attachmentLocalPosition(centered_pose, entry_world_position).x) > 0.1);
 }
 
 test "standalone start segment attachment follow seeds generic entry from player-relative row and height" {
