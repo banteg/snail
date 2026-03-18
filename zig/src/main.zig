@@ -3115,7 +3115,8 @@ const AppState = struct {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
-                    if (!self.startupGameplayBlockActive() and !self.tutorialPromptBlocksGameplay()) {
+                    const startup_block_active = self.startupGameplayBlockActive();
+                    if (!startup_block_active and !self.tutorialPromptBlocksGameplay()) {
                         runner.stepWithReplay(
                             loaded_track_preview,
                             effective_runner_input,
@@ -3134,11 +3135,7 @@ const AppState = struct {
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
-                        if (self.gameplay_click_start_active) {
-                            runner.refreshBlockedStartupState(loaded_track_preview);
-                        } else {
-                            runner.refreshCameraState(loaded_track_preview);
-                        }
+                        self.refreshRunnerForStartupBlock(runner, loaded_track_preview);
                     }
                     self.updateSubgameCamera(runner);
                 }
@@ -4208,6 +4205,14 @@ const AppState = struct {
         if (self.gameplay_click_start_active) return true;
         const runner = self.level_runner orelse return false;
         return runner.introCutsceneBlocksGameplay();
+    }
+
+    fn refreshRunnerForStartupBlock(self: *const AppState, runner: *gameplay.Runner, loaded_track_preview: *const track.LoadedLevelPreview) void {
+        if (self.startupGameplayBlockActive()) {
+            runner.refreshBlockedStartupState(loaded_track_preview);
+            return;
+        }
+        runner.refreshCameraState(loaded_track_preview);
     }
 
     fn resetSubgameCamera(self: *AppState) void {
@@ -10771,6 +10776,36 @@ test "intro cutscene click-start path still primes the tutorial start attachment
     try std.testing.expect(runner.attachment_follow.active);
     try std.testing.expectEqual(SubgameCameraSource.override, subgame_camera.source);
     try std.testing.expect(runner.cutsceneCameraActive());
+}
+
+test "startup block after click-start dismissal still refreshes the blocked runner state" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var state: AppState = undefined;
+    state.gameplay_click_start_active = false;
+    state.level_runner = gameplay.Runner.init(&loaded_track_preview);
+    state.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
+
+    try std.testing.expect(state.startupGameplayBlockActive());
+
+    state.refreshRunnerForStartupBlock(&state.level_runner.?, &loaded_track_preview);
+
+    try std.testing.expectEqual(gameplay.MovementMode.attachment, state.level_runner.?.movement_mode);
+    try std.testing.expect(state.level_runner.?.attachment_follow.active);
+    try std.testing.expect(state.level_runner.?.cutsceneCameraActive());
 }
 
 test "shared subgame camera snaps on source change and blends on later frames" {
