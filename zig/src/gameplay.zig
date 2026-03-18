@@ -918,6 +918,17 @@ fn rollRadiansFromForwardUp(forward: rl.Vector3, up: rl.Vector3) f32 {
     );
 }
 
+fn interpolateWrappedRadians(lhs: f32, rhs: f32, amount: f32) f32 {
+    return normalizeRadians(lhs + (normalizeRadians(rhs - lhs) * amount));
+}
+
+fn attachmentSampleOrientationA(sample: *const attachment_builders.TemplateSample) f32 {
+    return rollRadiansFromForwardUp(
+        attachmentVec3ToVector3(sample.basis_forward),
+        attachmentVec3ToVector3(sample.basis_up),
+    );
+}
+
 fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, translation_z: f32, intro_pitch_radians: f32, speed_pitch_radians: f32) CameraTransform {
     var transform: CameraTransform = .{
         .position = .{
@@ -3878,24 +3889,46 @@ pub const Runner = struct {
         built: *const attachment_builders.BuiltAttachment,
     ) void {
         // PORT(partial): native `update_track_attachment_follow_state` publishes live
-        // cameraman rotations through `follow_state.orientation_a/orientation_b`. The
-        // trace/decompile now pins `orientation_b` to the template phase lane
-        // (`(sample_index + (local_progress / delta_length)) * row_scalar_a / sample_count`),
-        // while `orientation_a`
-        // still depends on per-sample scalar records we have not recovered cleanly.
-        self.attachment_follow.camera_orientation_a = 0.0;
+        // cameraman rotations through `follow_state.orientation_a/orientation_b`.
+        // `orientation_a` is a wrapped interpolation of a per-sample local-roll scalar,
+        // while `orientation_b` is the template phase lane
+        // (`(sample_index + (local_progress / delta_length)) * row_scalar_a / sample_count`).
+        // The Zig scaffold still does not store the raw Windows per-sample scalar, so derive
+        // the same local-roll lane from the built sample basis before applying the native
+        // wrapped interpolation.
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
-        if (sample_count <= 0.0 or built.template.row_scalar_a == 0.0) {
+        if (sample_count <= 0.0 or built.template.samples.len == 0) {
+            self.attachment_follow.camera_orientation_a = 0.0;
             self.attachment_follow.camera_orientation_b = 0.0;
             return;
         }
-        const segment_base_progress = @floor(self.attachment_follow.progress);
-        const segment_local_progress = self.attachment_follow.progress - segment_base_progress;
+
+        const clamped_progress = std.math.clamp(self.attachment_follow.progress, 0.0, sample_count);
+        const segment_base_index = @min(
+            @as(usize, @intFromFloat(@floor(clamped_progress))),
+            @as(usize, built.template.sample_count - 1),
+        );
+        const segment_base_progress: f32 = @floatFromInt(segment_base_index);
+        const segment_local_progress = clamped_progress - segment_base_progress;
         const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
         const normalized_segment_progress = if (segment_delta_length <= 0.0001)
             0.0
         else
             std.math.clamp(segment_local_progress / segment_delta_length, 0.0, 1.0);
+
+        const sample_orientation_a = attachmentSampleOrientationA(&built.template.samples[segment_base_index]);
+        if (segment_base_index + 1 >= built.template.samples.len or segment_base_index + 1 >= built.template.sample_count) {
+            self.attachment_follow.camera_orientation_a = sample_orientation_a;
+        } else {
+            const next_sample_orientation_a = attachmentSampleOrientationA(&built.template.samples[segment_base_index + 1]);
+            self.attachment_follow.camera_orientation_a =
+                interpolateWrappedRadians(sample_orientation_a, next_sample_orientation_a, normalized_segment_progress);
+        }
+
+        if (built.template.row_scalar_a == 0.0) {
+            self.attachment_follow.camera_orientation_b = 0.0;
+            return;
+        }
         self.attachment_follow.camera_orientation_b =
             ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) / sample_count;
     }
@@ -4769,6 +4802,49 @@ test "worm attachment exit seeds use the traced template row scalar" {
         @as(f32, @floatFromInt(built.template.sample_count));
     try std.testing.expectApproxEqAbs(expected_phase, exit_seeds.seed_a, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), exit_seeds.seed_b, 0.0001);
+}
+
+test "rolled attachments publish camera orientation a from sample roll" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/INVERT.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    var runner = Runner.init(&fixture.preview);
+    runner.movement_mode = .attachment;
+    runner.attachment_path_name = "INVERT";
+    runner.attachment_follow = .{
+        .active = true,
+        .source_row = target.row,
+        .progress = 8.5,
+    };
+    runner.updateAttachmentFollowPosition(&fixture.preview);
+    runner.refreshCameraRollState(&fixture.preview);
+
+    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
+    const clamped_progress = std.math.clamp(
+        runner.attachment_follow.progress,
+        0.0,
+        @as(f32, @floatFromInt(built.template.sample_count)),
+    );
+    const segment_base_index = @min(
+        @as(usize, @intFromFloat(@floor(clamped_progress))),
+        @as(usize, built.template.sample_count - 1),
+    );
+    const segment_base_progress: f32 = @floatFromInt(segment_base_index);
+    const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
+    const normalized_segment_progress = if (segment_delta_length <= 0.0001)
+        0.0
+    else
+        std.math.clamp((clamped_progress - segment_base_progress) / segment_delta_length, 0.0, 1.0);
+    const expected = interpolateWrappedRadians(
+        attachmentSampleOrientationA(&built.template.samples[segment_base_index]),
+        attachmentSampleOrientationA(&built.template.samples[segment_base_index + 1]),
+        normalized_segment_progress,
+    );
+
+    try std.testing.expect(@abs(expected) > 0.0001);
+    try std.testing.expectApproxEqAbs(expected, runner.attachment_follow.camera_orientation_a, 0.0001);
+    try std.testing.expectApproxEqAbs(expected, runner.attachment_camera_orientation_a, 0.0001);
 }
 
 test "attachment camera lift uses overall attachment progress" {
