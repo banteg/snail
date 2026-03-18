@@ -1402,6 +1402,10 @@ pub const Runner = struct {
         }
     }
 
+    // PORT(verified): before the tutorial click-start dismissal, native keeps Goldy
+    // pinned on the START attachment crest and only refreshes the live camera from that
+    // zero-progress state. Once click-start is dismissed, Windows returns to the normal
+    // runner step even while the intro cutscene still owns the shared camera.
     pub fn refreshBlockedStartupState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.movement_rate_scalar = 0.0;
         if (!self.paused) {
@@ -1412,6 +1416,10 @@ pub const Runner = struct {
             self.refreshSample(preview);
         }
         self.refreshCameraState(preview);
+    }
+
+    pub fn stepIntroStartupBlock(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
+        self.step(preview, .{}, delta_seconds);
     }
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {

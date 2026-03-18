@@ -3135,7 +3135,11 @@ const AppState = struct {
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
-                        self.refreshRunnerForStartupBlock(runner, loaded_track_preview);
+                        self.refreshRunnerForStartupBlock(
+                            runner,
+                            loaded_track_preview,
+                            @floatCast(self.simulation_clock.step_seconds),
+                        );
                     }
                     self.updateSubgameCamera(runner);
                 }
@@ -4207,9 +4211,18 @@ const AppState = struct {
         return runner.introCutsceneBlocksGameplay();
     }
 
-    fn refreshRunnerForStartupBlock(self: *const AppState, runner: *gameplay.Runner, loaded_track_preview: *const track.LoadedLevelPreview) void {
-        if (self.startupGameplayBlockActive()) {
+    fn refreshRunnerForStartupBlock(
+        self: *const AppState,
+        runner: *gameplay.Runner,
+        loaded_track_preview: *const track.LoadedLevelPreview,
+        delta_seconds: f32,
+    ) void {
+        if (self.gameplay_click_start_active) {
             runner.refreshBlockedStartupState(loaded_track_preview);
+            return;
+        }
+        if (runner.introCutsceneBlocksGameplay()) {
+            runner.stepIntroStartupBlock(loaded_track_preview, delta_seconds);
             return;
         }
         runner.refreshCameraState(loaded_track_preview);
@@ -5349,7 +5362,7 @@ const AppState = struct {
         const previous_segment_index = self.active_level_segment_index;
         const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
         self.active_level_segment_index = logical_segment_index;
-        const suppress_segment_events = self.gameplay_click_start_active;
+        const suppress_segment_events = self.startupGameplayBlockActive();
         if (segment_changed) {
             if (previous_segment_index) |previous_index| {
                 if (logical_segment_index < previous_index) {
@@ -10778,7 +10791,7 @@ test "intro cutscene click-start path still primes the tutorial start attachment
     try std.testing.expect(runner.cutsceneCameraActive());
 }
 
-test "startup block after click-start dismissal still refreshes the blocked runner state" {
+test "startup block after click-start dismissal resumes the live runner under intro camera" {
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
@@ -10798,14 +10811,22 @@ test "startup block after click-start dismissal still refreshes the blocked runn
     state.gameplay_click_start_active = false;
     state.level_runner = gameplay.Runner.init(&loaded_track_preview);
     state.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
+    state.level_runner.?.refreshBlockedStartupState(&loaded_track_preview);
+    const starting_row_position = state.level_runner.?.row_position;
 
     try std.testing.expect(state.startupGameplayBlockActive());
 
-    state.refreshRunnerForStartupBlock(&state.level_runner.?, &loaded_track_preview);
+    state.refreshRunnerForStartupBlock(
+        &state.level_runner.?,
+        &loaded_track_preview,
+        @floatCast(simulation_step_seconds),
+    );
 
     try std.testing.expectEqual(gameplay.MovementMode.attachment, state.level_runner.?.movement_mode);
     try std.testing.expect(state.level_runner.?.attachment_follow.active);
     try std.testing.expect(state.level_runner.?.cutsceneCameraActive());
+    try std.testing.expect(state.level_runner.?.movement_rate_scalar > 0.0);
+    try std.testing.expect(state.level_runner.?.row_position > starting_row_position);
 }
 
 test "shared subgame camera snaps on source change and blends on later frames" {
