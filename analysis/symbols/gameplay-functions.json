@@ -1879,6 +1879,21 @@
       "name": "initialize_mouse_input"
     },
     {
+      "address": "0x44c3b0",
+      "name": "is_mouse_captured",
+      "description": "Returns the capture-active byte at the head of the shared mouse-pointer state block stored at Game + 0x290."
+    },
+    {
+      "address": "0x44c3c0",
+      "name": "capture_mouse_cursor",
+      "description": "Enters captured-mouse mode for the shared Game + 0x290 pointer state: snapshots the current authored cursor coordinates, warps controller 0 there through click_mouse_screen, and marks the capture byte active."
+    },
+    {
+      "address": "0x44c400",
+      "name": "release_mouse_cursor",
+      "description": "Leaves captured-mouse mode for the shared Game + 0x290 pointer state by restoring the saved authored cursor coordinates into the live lanes and clearing the capture byte."
+    },
+    {
       "address": "0x44c420",
       "name": "load_object_definition"
     },
