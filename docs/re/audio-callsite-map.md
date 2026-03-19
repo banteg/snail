@@ -99,7 +99,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
 | `voice 10` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452ef` | parcel pickup voice before the parcel begins its home-flight states | parcel pickup runtime | ported; the app now routes this through the native `Package` voice set and manager gate |
-| `voice 5` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4457d4` | weapon-upgrade voice when the local weapon tier actually increases | ring / powerup upgrade handling | missing or compressed; current port uses a generic SFX instead |
+| `voice 5` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4457d4` | weapon-upgrade voice when the local weapon tier actually increases | ring / powerup upgrade handling | partial; the app now routes true weapon-tier gains through the native `Powerup` set, but the paired `sfx 1..7` family is still compressed |
 | `voice 2` `mode 1` | [`update_slug_hazard_ai`](../../artifacts/ida/functions/0043f930-update_slug_hazard_ai.c) at `0x43fbd5` | slug engagement voice when the player enters the local alert window | ambient slug voice cooldowns in `main.zig` | partial; current port has nearby slug barks, but the native owner and gate are different enough to matter |
 
 ### Death and cutscene voices

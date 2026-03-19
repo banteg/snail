@@ -230,6 +230,19 @@ const gameplay_native_voice_package_paths = [_][]const u8{
     "VOICE/SPECIALDELIVERY.OGG",
     "VOICE/SPEEDYDELIVERY.OGG",
 };
+const gameplay_native_voice_powerup_paths = [_][]const u8{
+    "VOICE/FULLYLOADED.OGG",
+    "VOICE/HELLINASHELL.OGG",
+    "VOICE/IMONFIRE.OGG",
+    "VOICE/IMONFIREBABY.OGG",
+    "VOICE/IMPACKIN.OGG",
+    "VOICE/MYNEWMAILINGTECHNIQUE.OGG",
+    "VOICE/MYSHELLISTRICKEDOUT.OGG",
+    "VOICE/SMOKIN.OGG",
+    "VOICE/SOMEBODYSTOPME.OGG",
+    "VOICE/TRAILBLAZER.OGG",
+    "VOICE/THATWASAWESOME.OGG",
+};
 const gameplay_native_voice_start_paths = [_][]const u8{
     "VOICE/ALLOWSIXTOEIGHTMINUTES.OGG",
     "VOICE/BRINGITON.OGG",
@@ -807,6 +820,7 @@ fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
         .fall => gameplay_native_voice_fall_paths[0..],
         .package => gameplay_native_voice_package_paths[0..],
         .postal => gameplay_native_voice_postal_paths[0..],
+        .powerup => gameplay_native_voice_powerup_paths[0..],
         .start => gameplay_native_voice_start_paths[0..],
         .supertramp => gameplay_native_voice_supertramp_paths[0..],
         .ouch => gameplay_native_voice_ouch_paths[0..],
@@ -1083,6 +1097,7 @@ const NativeGameplaySoundCues = struct {
 const NativeGameplayVoiceCues = struct {
     start: bool = false,
     package_pickup: bool = false,
+    weapon_upgrade: bool = false,
     damage_entry: bool = false,
     damage_escalation: bool = false,
 };
@@ -1159,6 +1174,7 @@ fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) 
         .start = previous.tick_count < native_gameplay_start_voice_tick and
             current.tick_count >= native_gameplay_start_voice_tick,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
+        .weapon_upgrade = current.weapon_level > previous.weapon_level,
         .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
         .damage_escalation = previous.damage_warning_state != .draining and
             current.damage_warning_state == .draining,
@@ -1180,6 +1196,11 @@ test "native gameplay voice cues fire on the recovered startup timer" {
     current = previous;
     current.counters.parcels = 1;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current).package_pickup);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.weapon_level = previous.weapon_level + 1;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current).weapon_upgrade);
 
     previous = gameplay.Runner{};
     current = previous;
@@ -3648,6 +3669,9 @@ const AppState = struct {
         }
         if (native_voice_cues.package_pickup) {
             self.tryPlayNativeGameplayVoiceSet(.package, .wait_for_frequency) catch {};
+        }
+        if (native_voice_cues.weapon_upgrade) {
+            self.tryPlayNativeGameplayVoiceSet(.powerup, .wait_for_frequency) catch {};
         }
         if (native_voice_cues.damage_entry) {
             const played_damage = self.tryPlayNativeGameplayVoiceSetPlayed(.damage, .wait_for_frequency) catch false;
