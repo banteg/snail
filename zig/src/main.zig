@@ -7197,7 +7197,7 @@ fn backgroundLightStreaksVisible(state: *const AppState) bool {
 }
 
 fn backgroundLightStreakCamera(state: *const AppState) background.LightStreakCamera {
-    if (state.game_phase == .level or phaseUsesGameplayBackdrop(state)) {
+    if (backgroundLightStreaksVisible(state) and state.subgame_camera.source != .identity) {
         const transform = normalizeCameraWorldTransform(cameraWorldTransformFromMatrix(state.subgame_camera.shared_matrix));
         return .{
             .position = transform.position,
@@ -11983,6 +11983,31 @@ test "startup block after click-start dismissal resumes the live runner under in
     try std.testing.expect(state.level_runner.?.cutsceneCameraActive());
     try std.testing.expect(state.level_runner.?.movement_rate_scalar > 0.0);
     try std.testing.expect(state.level_runner.?.row_position > starting_row_position);
+}
+
+test "intro light streak camera uses the shared subgame camera" {
+    const basis_right = rl.Vector3{ .x = 0.0, .y = 0.0, .z = -1.0 };
+    const basis_up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+    const basis_forward = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    const matrix = modelTransformFromBasis(.{ .x = 3.0, .y = 4.0, .z = 5.0 }, basis_right, basis_up, basis_forward);
+
+    var state: AppState = undefined;
+    state.game_phase = .intro;
+    state.subgame_camera = .{
+        .source = .override,
+        .shared_matrix = matrix,
+        .fov_degrees = 123.0,
+        .snap_next = false,
+    };
+
+    const camera = backgroundLightStreakCamera(&state);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), camera.position.x, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), camera.position.y, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), camera.position.z, 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 123.0), camera.fov_degrees, 0.001);
+    try std.testing.expectApproxEqAbs(basis_forward.x, camera.forward.x, 0.001);
+    try std.testing.expectApproxEqAbs(basis_forward.y, camera.forward.y, 0.001);
+    try std.testing.expectApproxEqAbs(basis_forward.z, camera.forward.z, 0.001);
 }
 
 test "shared subgame camera honors snap flags and otherwise blends across source changes" {
