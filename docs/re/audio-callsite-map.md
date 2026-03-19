@@ -22,11 +22,11 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `sfx 49` | [`update_row_event_display`](../../artifacts/ida/functions/00404cf0-update_row_event_display.c) at `0x404e6f` | row-event state-`3` final-bonus payout cue | `RowEventDisplayController` | bonus timing is ported, native SFX ownership is still missing |
+| `sfx 49` | [`update_row_event_display`](../../artifacts/ida/functions/00404cf0-update_row_event_display.c) at `0x404e6f` | row-event state-`3` final-bonus payout cue | `RowEventDisplayController` | partial; the audible edge is ported from `completion_bonus`, but the row-event owner is still approximate |
 | `sfx 8` | [`update_row_event_display`](../../artifacts/ida/functions/00404cf0-update_row_event_display.c) at `0x404ed2` | row-event accept or continue cue | `RowEventDisplayController` UI staging | current controller exists, native UI cue still absent |
-| `sfx 45` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x405070` | per-delivery mailbox payout cue | parcel home-flight and delivery runtime | missing; current parcel delivery is still visually right but audibly under-modeled |
-| `sfx 49` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x4050a4` | final-delivery bonus cue | parcel target completion logic | missing; native “all parcels delivered” audio still exposes row-event ownership |
-| `sfx 27` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452fb` | parcel pickup cue before the parcel enters its flight states | live parcel runtime pickup branch | missing; parcel pickup still lacks its native audio pair |
+| `sfx 45` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x405070` | per-delivery mailbox payout cue | parcel home-flight and delivery runtime | ported; the app now keys this from registered-delivery count growth |
+| `sfx 49` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x4050a4` | final-delivery bonus cue | parcel target completion logic | partial; the audible bonus edge is ported, but the native row-event owner is still not literal |
+| `sfx 27` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452fb` | parcel pickup cue before the parcel enters its flight states | live parcel runtime pickup branch | ported; the app now keys this from parcel-count growth |
 
 ### Movement-state and runner surface audio
 
@@ -98,7 +98,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 10` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452ef` | parcel pickup voice before the parcel begins its home-flight states | parcel pickup runtime | missing; current parcel pickup path is still too quiet and too direct |
+| `voice 10` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452ef` | parcel pickup voice before the parcel begins its home-flight states | parcel pickup runtime | ported; the app now routes this through the native `Package` voice set and manager gate |
 | `voice 5` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4457d4` | weapon-upgrade voice when the local weapon tier actually increases | ring / powerup upgrade handling | missing or compressed; current port uses a generic SFX instead |
 | `voice 2` `mode 1` | [`update_slug_hazard_ai`](../../artifacts/ida/functions/0043f930-update_slug_hazard_ai.c) at `0x43fbd5` | slug engagement voice when the player enters the local alert window | ambient slug voice cooldowns in `main.zig` | partial; current port has nearby slug barks, but the native owner and gate are different enough to matter |
 
@@ -123,7 +123,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 2. Reconstruct parcel and row-event audio as one system instead of separate pickup/UI guesses.
    Audio evidence: `sfx 27`, `sfx 45`, `sfx 49`, `voice 10`, `voice 13`.
    Native implication: parcel pickup, mailbox delivery, final bonus payout, and tutorial or row-event speech are all facets of one runtime-owned controller family.
-   Current Zig suspicion: the port now has parcel runtime and row-event state, but still routes a lot of speech through authored segment playback and leaves parcel pickup or delivery audio silent.
+   Current Zig suspicion: pickup and delivery cues are now mostly covered, but row-event speech still routes through authored segment playback instead of the native runtime row-message controller.
    Next trace boundary: `handle_subgoldy_collisions`, `register_parcel_delivery`, `update_row_event_display`, `flush_row_event_display`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) row-event and parcel runtime, plus [`zig/src/main.zig`](../../zig/src/main.zig) prompt/audio routing.
 
