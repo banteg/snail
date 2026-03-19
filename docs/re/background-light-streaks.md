@@ -41,7 +41,15 @@ The per-entry size is `0x2c` bytes, and `initialize_star_field` allocates one sp
 
 - `allocate_sprite(&data_790f30, 2, 0x20, 0xffffffff, 0xffffffff)`
 
-The exact sprite-source object at `data_790f30` is still unnamed, but the implementation is clearly sprite-based, not backdrop-grid-based.
+`data_790f30` is the shared sprite manager, and `initialize_game_assets_and_world` registers sprite id `0x20` through:
+
+- `register_sprite_texture("Sprites/StarTail.tga", 0x20, 0x400)`
+
+So the star-field pass uses the real `SPRITES/STARTAIL.TGA` particle texture. The extracted asset in this repo is:
+
+- [`artifacts/extracted/SnailMail.dat/SPRITES/STARTAIL.TGA`](../../artifacts/extracted/SnailMail.dat/SPRITES/STARTAIL.TGA)
+
+It is a tiny `16 x 16` mostly-alpha texture with a narrow bright vertical streak, which fits the native particle interpretation much better than the current Zig line-trail fallback.
 
 ### Visual Setup
 
@@ -118,10 +126,10 @@ Current ported pieces:
 
 What is still approximate:
 
-- the original sprite source object at `data_790f30` is still unnamed, so the Zig port currently renders the streaks as additive screen-space line trails instead of the original sprite owner
+- the sprite asset is now mapped, but the Zig port still renders the streaks as additive screen-space line trails instead of textured `STARTAIL` billboards driven by the native sprite fields
 - exact hide or unhide coverage for every frontend shell state is still inferred from the recovered callsites, not traced exhaustively in one runtime pass
 
 So the remaining gap is no longer "missing light streaks"; it is narrower:
 
-- exact sprite-asset parity for the star-field pass
+- exact sprite-field and billboard parity for the star-field pass
 - any remaining phase-visibility edge cases beyond the recovered intro/gameplay ownership
