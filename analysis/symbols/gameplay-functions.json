@@ -444,6 +444,21 @@
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
     },
     {
+      "address": "0x4126c0",
+      "name": "submit_sprite_draw_batches",
+      "description": "Walks the active sprite-texture batches for one scene, binds each texture ref, and submits the prepared sprite primitive streams into the renderer."
+    },
+    {
+      "address": "0x413670",
+      "name": "configure_sprite_render_state",
+      "description": "Chooses the sprite render-state preset from the sprite draw-mode lane at `+0x28` before one sprite quad is submitted."
+    },
+    {
+      "address": "0x4137f0",
+      "name": "draw_sprite_quad",
+      "description": "Builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. The star-field pass at `initialize_star_field` and `update_star_positions` reaches this helper through the shared sprite renderer."
+    },
+    {
       "address": "0x414260",
       "name": "set_fullscreen_mode",
       "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
@@ -2191,6 +2206,11 @@
       "description": "Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer."
     },
     {
+      "address": "0x44dbf0",
+      "name": "pack_color_rgba_u8",
+      "description": "Converts one four-float RGBA tuple in `[0,1]` into packed 8-bit color channels for the sprite draw path."
+    },
+    {
       "address": "0x44dc90",
       "name": "random_float_below",
       "description": "Returns a uniform random float in `[0, upper_bound)` by scaling the engine RNG output with the supplied upper bound."
@@ -2231,6 +2251,16 @@
     {
       "address": "0x44e3d0",
       "name": "kill_game_sprites"
+    },
+    {
+      "address": "0x44e410",
+      "name": "update_sprite_facing_angle",
+      "description": "Refreshes the sprite angle lane at `+0x7c` from motion delta in camera space, with the optional smoothing timer carried in `+0x8c/+0x90`."
+    },
+    {
+      "address": "0x44e540",
+      "name": "set_sprite_manager_paused",
+      "description": "Writes the shared sprite-manager pause byte consumed by `update_sprite`, freezing or unfreezing sprite updates globally."
     },
     {
       "address": "0x44e550",
