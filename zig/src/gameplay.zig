@@ -3804,8 +3804,12 @@ pub const Runner = struct {
 
     fn completionHandoffRequiresRowEventResolution(self: *const Runner) bool {
         return switch (self.session_mode) {
-            .postal, .time_trial => self.row_event_display.parcel_target_count != 0,
-            .challenge, .tutorial, .debug => false,
+            // PORT(verified): native `update_subgoldy` only keeps the late completion
+            // handoff pinned behind the row-event controller when `game + 64 <= 1`
+            // (postal and challenge). Time trial and tutorial skip that wait even if the
+            // row-event controller still has pending work.
+            .postal, .challenge => self.row_event_display.parcel_target_count != 0,
+            .time_trial, .tutorial, .debug => false,
         };
     }
 
@@ -7300,6 +7304,45 @@ test "postal completion handoff waits for the row event controller to complete" 
     runner.updateRowEventDisplay(&fixture.preview, false);
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
+    try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
+}
+
+test "challenge completion handoff waits for the row event controller to complete" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.session_mode = .challenge;
+    runner.row_event_display.parcel_target_count = 1;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.beginCompletionCutscene();
+    runner.completion_screen_init_sent = true;
+    runner.cutscene_camera.state = 7;
+    runner.completion_handoff_timer = completion_handoff_release_seconds;
+
+    runner.updatePhaseController(&fixture.preview, 0.0);
+    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
+
+    runner.row_event_display.state = .complete;
+    runner.updatePhaseController(&fixture.preview, 0.0);
+    try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
+}
+
+test "time-trial completion handoff does not wait for the row event controller" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.session_mode = .time_trial;
+    runner.row_event_display.parcel_target_count = 1;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.beginCompletionCutscene();
+    runner.completion_screen_init_sent = true;
+    runner.cutscene_camera.state = 7;
+    runner.completion_handoff_timer = completion_handoff_release_seconds;
+
+    runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
 }
 

@@ -5363,11 +5363,7 @@ const AppState = struct {
     }
 
     fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
-        return switch (mode orelse .tutorial) {
-            .postal, .challenge => track.postalChallengeRuntimeBuildFlags,
-            .time_trial => track.timeTrialRuntimeBuildFlags,
-            .tutorial => track.tutorialRuntimeBuildFlags,
-        };
+        return frontendModeDispatch(mode).runtime_build_flags;
     }
 
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
@@ -8747,20 +8743,47 @@ fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) 
         .postal_route_map;
 }
 
-fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
+const FrontendModeDispatch = struct {
+    session_mode: gameplay.SessionMode,
+    runtime_build_flags: u32,
+    completion_bonus_enabled: bool,
+};
+
+fn frontendModeDispatch(mode: ?FrontendLevelMode) FrontendModeDispatch {
+    // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
+    // mode differences through a small mode-to-config lane in `set_subgame_features` and
+    // `build_subgame_level`. Keep the shared runner wiring centralized here instead of
+    // scattering per-mode switches across unrelated helpers.
     return switch (mode orelse .postal) {
-        .postal => .postal,
-        .time_trial => .time_trial,
-        .challenge => .challenge,
-        .tutorial => .tutorial,
+        .postal => .{
+            .session_mode = .postal,
+            .runtime_build_flags = track.postalChallengeRuntimeBuildFlags,
+            .completion_bonus_enabled = true,
+        },
+        .challenge => .{
+            .session_mode = .challenge,
+            .runtime_build_flags = track.postalChallengeRuntimeBuildFlags,
+            .completion_bonus_enabled = false,
+        },
+        .time_trial => .{
+            .session_mode = .time_trial,
+            .runtime_build_flags = track.timeTrialRuntimeBuildFlags,
+            .completion_bonus_enabled = false,
+        },
+        .tutorial => .{
+            .session_mode = .tutorial,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+            .completion_bonus_enabled = false,
+        },
     };
 }
 
+fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
+    return frontendModeDispatch(mode).session_mode;
+}
+
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
-    return switch (mode orelse .postal) {
-        .postal => true,
-        .challenge, .time_trial, .tutorial => false,
-    };
+    return frontendModeDispatch(mode).completion_bonus_enabled;
 }
 
 fn routeMapHasReplayEntry(
@@ -11148,6 +11171,18 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(!completionBonusAppliesForMode(.time_trial));
     try std.testing.expect(!completionBonusAppliesForMode(.tutorial));
     try std.testing.expect(completionBonusAppliesForMode(null));
+}
+
+test "frontend mode dispatch matches the recovered shared subgame routing" {
+    try std.testing.expectEqual(gameplay.SessionMode.postal, frontendModeDispatch(.postal).session_mode);
+    try std.testing.expectEqual(gameplay.SessionMode.challenge, frontendModeDispatch(.challenge).session_mode);
+    try std.testing.expectEqual(gameplay.SessionMode.time_trial, frontendModeDispatch(.time_trial).session_mode);
+    try std.testing.expectEqual(gameplay.SessionMode.tutorial, frontendModeDispatch(.tutorial).session_mode);
+
+    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, frontendModeDispatch(.postal).runtime_build_flags);
+    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, frontendModeDispatch(.challenge).runtime_build_flags);
+    try std.testing.expectEqual(track.timeTrialRuntimeBuildFlags, frontendModeDispatch(.time_trial).runtime_build_flags);
+    try std.testing.expectEqual(track.tutorialRuntimeBuildFlags, frontendModeDispatch(.tutorial).runtime_build_flags);
 }
 
 test "route map replay gate follows time-trial completion replays" {
