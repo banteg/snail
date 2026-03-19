@@ -159,6 +159,16 @@ const gameplay_boing_sound_path = "SFX2/BOING.OGG";
 const gameplay_place_package_sound_path = "SFX2/PLACEPACKAGE.OGG";
 const gameplay_package_count_sound_path = "SFX2/PACKAGECOUNT.OGG";
 const gameplay_perfect_sound_path = "SFX2/PERFECT.OGG";
+const gameplay_powerup_pickup_sound_paths = [_][]const u8{
+    "SFX2/PW1.OGG",
+    "SFX2/PW2.OGG",
+    "SFX2/PW3.OGG",
+    "SFX2/PW4.OGG",
+    "SFX2/PW5.OGG",
+    "SFX2/PW6.OGG",
+    "SFX2/PW7.OGG",
+};
+const native_jetpack_visual_shutoff_threshold: f32 = 0.94;
 const gameplay_asteroid_impact_sound_paths = [_][]const u8{
     "SFX2/ASTEROIDIMPACT1.OGG",
     "SFX2/ASTEROIDIMPACT2.OGG",
@@ -190,6 +200,11 @@ const gameplay_native_voice_damage_paths = [_][]const u8{
 const gameplay_native_voice_dying_paths = [_][]const u8{
     "VOICE/ABANDONSHELL.OGG",
     "VOICE/IMFALLINGANDICANTGETUP.OGG",
+    "VOICE/INEEDANEWJOB.OGG",
+    "VOICE/NOTCOOL.OGG",
+    "VOICE/THISISNOTMYDAY.OGG",
+};
+const gameplay_native_voice_slugged_paths = [_][]const u8{
     "VOICE/INEEDANEWJOB.OGG",
     "VOICE/NOTCOOL.OGG",
     "VOICE/THISISNOTMYDAY.OGG",
@@ -524,6 +539,7 @@ const GameplaySoundFx = struct {
     place_package: ?assets.LoadedSound = null,
     package_count: ?assets.LoadedSound = null,
     perfect: ?assets.LoadedSound = null,
+    powerup_pickup: [gameplay_powerup_pickup_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_powerup_pickup_sound_paths.len,
     asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
     wall_hit: ?assets.LoadedSound = null,
     postal_warning: ?assets.LoadedSound = null,
@@ -821,6 +837,7 @@ fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
         .package => gameplay_native_voice_package_paths[0..],
         .postal => gameplay_native_voice_postal_paths[0..],
         .powerup => gameplay_native_voice_powerup_paths[0..],
+        .slugged => gameplay_native_voice_slugged_paths[0..],
         .start => gameplay_native_voice_start_paths[0..],
         .supertramp => gameplay_native_voice_supertramp_paths[0..],
         .ouch => gameplay_native_voice_ouch_paths[0..],
@@ -1061,6 +1078,9 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     sound_fx.place_package = try catalog.loadSoundByPath(allocator, gameplay_place_package_sound_path);
     sound_fx.package_count = try catalog.loadSoundByPath(allocator, gameplay_package_count_sound_path);
     sound_fx.perfect = try catalog.loadSoundByPath(allocator, gameplay_perfect_sound_path);
+    for (gameplay_powerup_pickup_sound_paths, 0..) |path, index| {
+        sound_fx.powerup_pickup[index] = try catalog.loadSoundByPath(allocator, path);
+    }
     for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
         sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
     }
@@ -1094,6 +1114,11 @@ const NativeGameplaySoundCues = struct {
     parcel_bonus: bool = false,
 };
 
+const NativeJetpackSoundCues = struct {
+    activate: bool = false,
+    deactivate: bool = false,
+};
+
 const NativeGameplayVoiceCues = struct {
     start: bool = false,
     package_pickup: bool = false,
@@ -1118,7 +1143,29 @@ fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) 
             current.current_runtime_tile_hint == native_runtime_tile_wall,
         .parcel_pickup = current.counters.parcels > previous.counters.parcels,
         .parcel_delivery = current.registeredParcelCount() > previous.registeredParcelCount(),
-        .parcel_bonus = current.score.completion_bonus > previous.score.completion_bonus,
+        .parcel_bonus = current.row_event_display.bonus_enabled and
+            current.row_event_display.parcel_target_count != 0 and
+            previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
+            current.registeredParcelCount() == current.row_event_display.parcel_target_count,
+    };
+}
+
+fn nativePowerupPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (current.counters.ring_powerup <= previous.counters.ring_powerup) return null;
+    return @min(
+        gameplay_powerup_pickup_sound_paths.len - 1,
+        @as(usize, current.counters.ring_powerup - 1),
+    );
+}
+
+fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeJetpackSoundCues {
+    return .{
+        .activate = !previous.jetpack.active and current.jetpack.active,
+        .deactivate = (previous.jetpack.active and current.jetpack.active and
+            previous.jetpack.progress <= native_jetpack_visual_shutoff_threshold and
+            current.jetpack.progress > native_jetpack_visual_shutoff_threshold) or
+            (previous.jetpack.active and !current.jetpack.active and
+                previous.jetpack.progress <= native_jetpack_visual_shutoff_threshold),
     };
 }
 
@@ -1165,8 +1212,61 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{};
     current = previous;
-    current.score.completion_bonus = 50_000;
+    current.row_event_display.parcel_target_count = 1;
+    current.row_event_display.bonus_enabled = true;
+    current.row_event_display.delivered_parcel_count = 1;
     try std.testing.expect(nativeGameplaySoundCues(previous, current).parcel_bonus);
+
+    current.row_event_display.bonus_enabled = false;
+    try std.testing.expect(!nativeGameplaySoundCues(previous, current).parcel_bonus);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    try std.testing.expectEqual(@as(?usize, null), nativePowerupPickupSoundIndex(previous, current));
+
+    current.counters.ring_powerup = 1;
+    try std.testing.expectEqual(@as(?usize, 0), nativePowerupPickupSoundIndex(previous, current));
+
+    previous = current;
+    current.counters.ring_powerup = 9;
+    try std.testing.expectEqual(
+        @as(?usize, gameplay_powerup_pickup_sound_paths.len - 1),
+        nativePowerupPickupSoundIndex(previous, current),
+    );
+
+    previous = gameplay.Runner{};
+    current = previous;
+    try std.testing.expectEqual(NativeJetpackSoundCues{}, nativeJetpackSoundCues(previous, current));
+
+    current.jetpack.active = true;
+    try std.testing.expect(nativeJetpackSoundCues(previous, current).activate);
+    try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
+
+    previous = gameplay.Runner{ .jetpack = .{
+        .active = true,
+        .progress = native_jetpack_visual_shutoff_threshold,
+    } };
+    current = previous;
+    current.jetpack.progress = native_jetpack_visual_shutoff_threshold + 0.01;
+    try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
+
+    previous = gameplay.Runner{ .jetpack = .{
+        .active = true,
+        .progress = 0.25,
+    } };
+    current = previous;
+    current.jetpack.active = false;
+    current.jetpack.progress = 0.0;
+    try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
+
+    previous = gameplay.Runner{ .jetpack = .{
+        .active = true,
+        .progress = native_jetpack_visual_shutoff_threshold + 0.01,
+    } };
+    current = previous;
+    current.jetpack.active = false;
+    current.jetpack.progress = 0.0;
+    try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
 }
 
 fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplayVoiceCues {
@@ -1247,6 +1347,48 @@ test "native supertramp exit voice keys from the launch handoff" {
             .vertical_velocity = 1.0,
         },
     }, 31));
+}
+
+const NativeDeathCutsceneVoiceCues = struct {
+    entry: bool = false,
+    fallback: bool = false,
+};
+
+fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeDeathCutsceneVoiceCues {
+    const death_cutscene_active = current.cutscene_id == gameplay.cutscene_death_id and current.deathCause() == .hazard;
+    if (!death_cutscene_active) return .{};
+
+    return .{
+        .entry = previous.cutscene_camera.state != 11 and current.cutscene_camera.state == 11,
+        .fallback = previous.cutscene_camera.state != 12 and
+            current.cutscene_camera.state == 12 and
+            !current.attachment_exit_gate_b,
+    };
+}
+
+test "native death cutscene voice cues key from states 11 and 12" {
+    var previous = gameplay.Runner{};
+    var current = previous;
+    current.cutscene_id = gameplay.cutscene_death_id;
+    current.phase = .{ .fall = .{
+        .cause = .hazard,
+        .world_x = 0.0,
+        .world_y = 0.0,
+        .world_z = 0.0,
+        .vertical_velocity = 0.0,
+        .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+        .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    } };
+    current.cutscene_camera.state = 11;
+    try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).entry);
+    try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
+
+    previous = current;
+    current.cutscene_camera.state = 12;
+    try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).fallback);
+
+    current.attachment_exit_gate_b = true;
+    try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
 }
 
 const PendingRunPersistence = enum {
@@ -3641,6 +3783,7 @@ const AppState = struct {
     ) void {
         if (!self.audio_ready) return;
         const native_sound_cues = nativeGameplaySoundCues(previous, current);
+        const native_jetpack_sound_cues = nativeJetpackSoundCues(previous, current);
         const native_voice_cues = nativeGameplayVoiceCues(previous, current);
 
         if (native_sound_cues.completion_arm_cheers) {
@@ -3664,6 +3807,15 @@ const AppState = struct {
         if (native_sound_cues.parcel_bonus) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.perfect);
         }
+        if (native_jetpack_sound_cues.activate) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
+        }
+        if (native_jetpack_sound_cues.deactivate) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
+        }
+        if (nativePowerupPickupSoundIndex(previous, current)) |sound_index| {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.powerup_pickup[sound_index]);
+        }
         if (native_voice_cues.start) {
             self.tryPlayNativeGameplayVoiceSet(.start, .interrupt_current) catch {};
         }
@@ -3681,6 +3833,13 @@ const AppState = struct {
         }
         if (native_voice_cues.damage_escalation) {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
+        }
+        const death_cutscene_voice_cues = nativeDeathCutsceneVoiceCues(previous, current);
+        if (death_cutscene_voice_cues.entry) {
+            self.tryPlayNativeGameplayVoiceSet(.fall, .interrupt_current) catch {};
+        }
+        if (death_cutscene_voice_cues.fallback) {
+            self.tryPlayNativeGameplayVoiceSet(.slugged, .interrupt_current) catch {};
         }
 
         const previous_attachment_runtime_kind = previous.currentAttachmentRuntimeKind(preview);
@@ -3741,9 +3900,6 @@ const AppState = struct {
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.heart);
-        }
-        if (current.counters.jetpack_pickups > previous.counters.jetpack_pickups) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
         }
         if (current.slow_ticks > previous.slow_ticks) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
