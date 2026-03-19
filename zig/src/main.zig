@@ -219,6 +219,11 @@ const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
     "VOICE/ZIPPIDYDOODAH.OGG",
     "VOICE/WHOHOHOHOAH.OGG",
 };
+const gameplay_native_voice_supertramp_paths = [_][]const u8{
+    "VOICE/WHOAHDUDE.OGG",
+    "VOICE/WOOHOO.OGG",
+    "VOICE/WHOHOHOHOAH.OGG",
+};
 const gameplay_native_voice_package_paths = [_][]const u8{
     "VOICE/POSTAGEDUE.OGG",
     "VOICE/SOMEBODYCALLFORADELIVERY.OGG",
@@ -803,6 +808,7 @@ fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
         .package => gameplay_native_voice_package_paths[0..],
         .postal => gameplay_native_voice_postal_paths[0..],
         .start => gameplay_native_voice_start_paths[0..],
+        .supertramp => gameplay_native_voice_supertramp_paths[0..],
         .ouch => gameplay_native_voice_ouch_paths[0..],
         .victory => gameplay_native_voice_victory_paths[0..],
         .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
@@ -1187,6 +1193,39 @@ test "native gameplay voice cues fire on the recovered startup timer" {
 
     previous = current;
     try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
+}
+
+fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_runtime_kind: ?u8) bool {
+    if (previous_attachment_runtime_kind != 31) return false;
+    if (current.movement_mode == .attachment or current.attachment_follow.active) return false;
+    return current.launch.active and current.launch.vertical_velocity > 0.0;
+}
+
+test "native supertramp exit voice keys from the launch handoff" {
+    const launched = gameplay.Runner{
+        .movement_mode = .track,
+        .launch = .{
+            .active = true,
+            .vertical_velocity = 1.0,
+        },
+    };
+    try std.testing.expect(nativeGameplaySupertrampExitVoice(launched, 31));
+    try std.testing.expect(!nativeGameplaySupertrampExitVoice(launched, 24));
+    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
+        .movement_mode = .track,
+        .launch = .{
+            .active = true,
+            .vertical_velocity = 0.0,
+        },
+    }, 31));
+    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
+        .movement_mode = .attachment,
+        .attachment_follow = .{ .active = true },
+        .launch = .{
+            .active = true,
+            .vertical_velocity = 1.0,
+        },
+    }, 31));
 }
 
 const PendingRunPersistence = enum {
@@ -3620,6 +3659,7 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
         }
 
+        const previous_attachment_runtime_kind = previous.currentAttachmentRuntimeKind(preview);
         if (!previous.attachment_follow.active and current.attachment_follow.active and
             current.movement_mode == .attachment)
         {
@@ -3628,6 +3668,9 @@ const AppState = struct {
                     self.tryPlayNativeGameplayVoiceSet(.worm_tunnel, .wait_for_idle) catch {};
                 }
             }
+        }
+        if (nativeGameplaySupertrampExitVoice(current, previous_attachment_runtime_kind)) {
+            self.tryPlayNativeGameplayVoiceSet(.supertramp, .wait_for_idle) catch {};
         }
         if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {
             self.tryPlayNativeGameplayVoiceSet(.victory, .interrupt_current) catch {};

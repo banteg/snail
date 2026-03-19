@@ -74,17 +74,17 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
 | `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | `syncActiveLevelSegment()`, prompt queue, and native-style `Tutorial` voice payload playback for `VOICE/TUT*.OGG` | partial; tutorial payload routing is closer now, but the broader runtime row-event speech owner is still not ported literally |
-| `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | missing; exact handoff voice ownership is absent |
+| `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | ported; the app now keys `Victory` from the recovered `2.0s` handoff timer instead of the older `2.5s` approximation |
 
 ### Attachment-follow and post-follow voices
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 12` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b8b7` | WORM entry voice when attachment follow begins on kind `24` | attachment begin in `gameplay.zig` | missing; useful proof that attachment entry still owns gameplay feedback beyond geometry |
+| `voice 12` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b8b7` | WORM entry voice when attachment follow begins on kind `24` | attachment begin in `gameplay.zig` | ported; the app now routes the recovered kind-`24` entry edge through the native `WormTunnel` set |
 | `voice 4` `mode 1` | [`update_track_attachment_follow_state`](../../artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c) at `0x420d30` | milestone voice at `2 * sample_count` | attachment follow update in `gameplay.zig` | missing; suggests the follow state still has unrecovered milestone semantics |
-| `voice 15` `mode 0` | [`update_track_attachment_follow_state`](../../artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c) at `0x421046` | kind-`31` tail-launch completion voice | attachment follow completion / launch | missing; points to a special-case exit system the port only approximates |
-| `voice 3` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cebd` | attachment-exit gate A once `progress > 0.7` | attachment exit gates in `gameplay.zig` | missing; gate math exists, native feedback ownership does not |
-| `voice 1` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf19` | attachment-exit gate B once `world_y < -7.0` | attachment exit gates in `gameplay.zig` | missing; same controller gap |
+| `voice 15` `mode 0` | [`update_track_attachment_follow_state`](../../artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c) at `0x421046` | kind-`31` tail-launch completion voice | attachment follow completion / launch | partial; the app now keys `Supertramp` from the positive-velocity launch handoff, but the broader follow milestone controller is still incomplete |
+| `voice 3` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cebd` | attachment-exit gate A once `progress > 0.7` | attachment exit gates in `gameplay.zig` | ported; the app now routes this gate through the native `Fall` set |
+| `voice 1` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf19` | attachment-exit gate B once `world_y < -7.0` | attachment exit gates in `gameplay.zig` | ported; the app now routes this gate through the native `Dying` set |
 
 ### Damage and warning controller
 
@@ -106,7 +106,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 7` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf69` | startup bark from the timer seeded in `initialize_subgoldy` | runner startup handoff in `gameplay.zig` and `main.zig` | mostly resolved; the port can now fire the native `Start` set on the recovered timer edge |
+| `voice 7` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf69` | startup bark from the timer seeded in `initialize_subgoldy` | runner startup handoff in `gameplay.zig` and `main.zig` | ported; the app now fires the native `Start` set on the recovered timer edge |
 | `voice 6` `mode 1` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cff3` | low-speed commentary from a dedicated slowdown timer | runner slowdown controller in `gameplay.zig` | unresolved; the timer semantics still are not modeled literally |
 | `voice 3` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x44697c` | death cutscene entry voice | cutscene handoff and death camera | missing; death cutscene audio is still under-modeled |
 | `voice 11` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x446b25` | death cutscene fallback voice if `initialize_subgoldy_death` did not already consume the gate | cutscene handoff and death camera | missing; another sign that native death ownership is broader than the current port model |

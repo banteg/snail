@@ -194,7 +194,7 @@ const RunnerPhase = union(enum) {
 };
 
 const completion_handoff_timer_step: f32 = 1.0 / 60.0;
-const completion_handoff_voice_delay_seconds: f32 = 2.5;
+const completion_handoff_voice_delay_seconds: f32 = 2.0;
 const completion_handoff_release_seconds: f32 = 5.0;
 const completion_handoff_release_force_seconds: f32 = 5.1;
 const replay_world_x_min: f32 = -4.0;
@@ -6742,7 +6742,7 @@ test "tutorial completion finalize releases after the recovered timer" {
     try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
 }
 
-test "completion voice gate trips at the native 2.5 second delay" {
+test "completion voice gate trips at the native 2.0 second delay" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
