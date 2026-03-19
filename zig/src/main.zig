@@ -201,6 +201,8 @@ const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
     "VOICE/ZIPPIDYDOODAH.OGG",
     "VOICE/WHOHOHOHOAH.OGG",
 };
+const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
+const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
 const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
 const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
 const native_gameplay_voice_set_cooldown_step: f32 = 1.0 / 240.0;
@@ -448,6 +450,8 @@ const GameplaySoundFx = struct {
     turbo_fire: [gameplay_turbo_fire_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_turbo_fire_sound_paths.len,
     laser: [gameplay_laser_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_laser_sound_paths.len,
     rocket: [gameplay_rocket_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_rocket_sound_paths.len,
+    cheers: ?assets.LoadedSound = null,
+    extra_life: ?assets.LoadedSound = null,
     weapon_change: ?assets.LoadedSound = null,
     heart: ?assets.LoadedSound = null,
     jetpack: ?assets.LoadedSound = null,
@@ -910,6 +914,8 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     for (gameplay_rocket_sound_paths, 0..) |path, index| {
         sound_fx.rocket[index] = try catalog.loadSoundByPath(allocator, path);
     }
+    sound_fx.cheers = try catalog.loadSoundByPath(allocator, gameplay_cheers_sound_path);
+    sound_fx.extra_life = try catalog.loadSoundByPath(allocator, gameplay_extra_life_sound_path);
     sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_weapon_change_sound_path);
     sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
     sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
@@ -939,6 +945,47 @@ const RunOutcome = enum {
     completed,
     failed,
 };
+
+const NativeGameplaySoundCues = struct {
+    completion_arm_cheers: bool = false,
+    extra_life: bool = false,
+};
+
+fn runnerInCompletionHandoff(runner: gameplay.Runner) bool {
+    return switch (runner.phase) {
+        .completion_handoff => true,
+        else => false,
+    };
+}
+
+fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplaySoundCues {
+    return .{
+        .completion_arm_cheers = !runnerInCompletionHandoff(previous) and runnerInCompletionHandoff(current),
+        .extra_life = current.score.total > previous.score.total and current.visible_life_stock > previous.visible_life_stock,
+    };
+}
+
+test "native gameplay sound cues fire for completion-arm and score-bucket life gain" {
+    var previous = gameplay.Runner{};
+    var current = previous;
+
+    try std.testing.expectEqual(NativeGameplaySoundCues{}, nativeGameplaySoundCues(previous, current));
+
+    current.phase = .completion_handoff;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).completion_arm_cheers);
+
+    previous = current;
+    try std.testing.expect(!nativeGameplaySoundCues(previous, current).completion_arm_cheers);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.score.total = 50_000;
+    current.visible_life_stock = previous.visible_life_stock + 1;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).extra_life);
+
+    current.score.total = previous.score.total;
+    try std.testing.expect(!nativeGameplaySoundCues(previous, current).extra_life);
+}
 
 const PendingRunPersistence = enum {
     none,
@@ -3331,6 +3378,14 @@ const AppState = struct {
         runner_input: gameplay.RunnerInput,
     ) void {
         if (!self.audio_ready) return;
+        const native_sound_cues = nativeGameplaySoundCues(previous, current);
+
+        if (native_sound_cues.completion_arm_cheers) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.cheers);
+        }
+        if (native_sound_cues.extra_life) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.extra_life);
+        }
 
         if (!previous.attachment_follow.active and current.attachment_follow.active and
             current.movement_mode == .attachment)
