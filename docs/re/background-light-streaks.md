@@ -49,7 +49,7 @@ So the star-field pass uses the real `SPRITES/STARTAIL.TGA` particle texture. Th
 
 - [`artifacts/extracted/SnailMail.dat/SPRITES/STARTAIL.TGA`](../../artifacts/extracted/SnailMail.dat/SPRITES/STARTAIL.TGA)
 
-It is a tiny `16 x 16` mostly-alpha texture with a narrow bright vertical streak, which fits the native particle interpretation much better than the current Zig line-trail fallback.
+It is a tiny `16 x 16` mostly-alpha texture with a narrow bright vertical streak, which fits the native particle interpretation much better than the old Zig line-trail fallback.
 
 ### Visual Setup
 
@@ -126,10 +126,10 @@ Current ported pieces:
 
 What is still approximate:
 
-- the sprite asset is now mapped, but the Zig port still renders the streaks as additive screen-space line trails instead of textured `STARTAIL` billboards driven by the native sprite fields
+- the port now uses textured `STARTAIL` quads with the recovered alpha lane, standard sprite alpha blend, and the native stretched-corner shape, but the exact renderer-side transform slot behind `draw_sprite_quad` is still inferred as a camera-plane billboard rather than traced end-to-end through the D3D wrapper
 - exact hide or unhide coverage for every frontend shell state is still inferred from the recovered callsites, not traced exhaustively in one runtime pass
 
 So the remaining gap is no longer "missing light streaks"; it is narrower:
 
-- exact sprite-field and billboard parity for the star-field pass
+- exact transform-slot parity for the star-field sprite pass
 - any remaining phase-visibility edge cases beyond the recovered intro/gameplay ownership
