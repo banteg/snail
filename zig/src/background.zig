@@ -25,6 +25,7 @@ const light_streak_max_progress: f32 = 35.0;
 const light_streak_progress_bias: f32 = 2.0;
 const light_streak_reset_distance: f32 = 10.0;
 const light_streak_length_scale: f32 = 0.0114285713;
+const light_streak_sprite_half_size: f32 = 0.8;
 const light_streak_projection_near: f32 = 0.1;
 const light_streak_projection_distance: f32 = 50.0;
 const light_streak_base_color = rl.Color{ .r = 204, .g = 204, .b = 255, .a = 102 };
@@ -36,6 +37,7 @@ const default_light_streak_camera = LightStreakCamera{
     .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
     .fov_degrees = 110.0,
 };
+pub const light_streak_sprite_path = "SPRITES/STARTAIL.TGA";
 
 pub const Rgb = struct {
     r: u8,
@@ -299,7 +301,7 @@ const LightStreakState = enum {
 };
 
 const LightStreakEntry = struct {
-    origin_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    sprite_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     direction: rl.Vector3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
     speed: f32 = 0.0,
     progress: f32 = 0.0,
@@ -361,40 +363,42 @@ pub const LightStreakController = struct {
         }
     }
 
-    pub fn draw(self: *const LightStreakController, bounds: rl.Rectangle, camera: LightStreakCamera, stretched: bool) void {
+    pub fn draw(self: *const LightStreakController, bounds: rl.Rectangle, camera: LightStreakCamera, texture: ?rl.Texture2D) void {
         if (self.state == .dormant) return;
-        const viewport = if (stretched)
-            bounds
-        else
-            rectFromLayout(authoredViewportLayout(bounds));
-        self.drawInViewport(viewport, camera);
+        const layout = authoredViewportLayout(bounds);
+        self.drawInViewport(layout, camera, texture);
     }
 
-    fn drawInViewport(self: *const LightStreakController, viewport: rl.Rectangle, camera: LightStreakCamera) void {
+    fn drawInViewport(self: *const LightStreakController, layout: Layout, camera: LightStreakCamera, texture: ?rl.Texture2D) void {
+        const viewport = rectFromLayout(layout);
         if (viewport.width <= 0.0 or viewport.height <= 0.0) return;
 
         rl.beginBlendMode(.additive);
         defer rl.endBlendMode();
 
         for (self.entries) |entry| {
-            const visibility = lightStreakVisibilityLength(entry, self.fade);
-            if (visibility <= 0.0) continue;
+            const alpha_scale = std.math.clamp(lightStreakAlphaScale(entry, self.fade), 0.0, 1.0);
+            if (alpha_scale <= 0.0) continue;
 
-            const head_world = lightStreakHeadWorldPosition(entry);
-            const head_screen = projectWorldPointToViewport(viewport, camera, head_world) orelse continue;
+            const sprite_screen = projectWorldPointToViewport(viewport, camera, entry.sprite_position) orelse continue;
             const screen_direction = projectDirectionToScreen(camera, entry.direction) orelse continue;
-            const length_pixels = visibility * viewport.height;
-            if (length_pixels <= 0.5) continue;
-
-            const tail_screen = rl.Vector2{
-                .x = head_screen.x - screen_direction.x * length_pixels,
-                .y = head_screen.y - screen_direction.y * length_pixels,
-            };
-            const alpha_scale = std.math.clamp(self.fade * std.math.clamp(visibility * 6.0, 0.0, 1.0), 0.0, 1.0);
-            const thickness = std.math.clamp(lightStreakSpriteSize(entry) * (viewport.height / original_screen_height) * 0.35, 1.0, 8.0);
             var color = light_streak_base_color;
             color.a = @intFromFloat(@as(f32, @floatFromInt(light_streak_base_color.a)) * alpha_scale);
-            rl.drawLineEx(tail_screen, head_screen, thickness, color);
+            if (color.a == 0) continue;
+
+            const half_width = light_streak_sprite_half_size * layout.scale;
+            const half_height = half_width * lightStreakSpriteStretch(entry);
+            if (half_width <= 0.0 or half_height <= 0.0) continue;
+
+            if (texture) |sprite_texture| {
+                drawLightStreakSprite(sprite_texture, sprite_screen, screen_direction, half_width, half_height, color);
+            } else {
+                const tail_screen = rl.Vector2{
+                    .x = sprite_screen.x - screen_direction.x * half_height * 2.0,
+                    .y = sprite_screen.y - screen_direction.y * half_height * 2.0,
+                };
+                rl.drawLineEx(tail_screen, sprite_screen, half_width * 2.0, color);
+            }
         }
     }
 
@@ -423,7 +427,10 @@ pub const LightStreakController = struct {
         ));
 
         entry.* = .{
-            .origin_position = cameraOrigin(camera),
+            .sprite_position = addVector3(
+                cameraOrigin(camera),
+                scaleVector3(plane_direction, light_streak_reset_distance),
+            ),
             .direction = scaleVector3(plane_direction, speed),
             .speed = speed,
             .progress = progress,
@@ -890,24 +897,44 @@ fn projectDirectionToScreen(camera: LightStreakCamera, direction: rl.Vector3) ?r
     };
 }
 
-fn entryDirectionUnit(entry: LightStreakEntry) rl.Vector3 {
-    if (entry.speed <= 0.000001) return .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    return scaleVector3(entry.direction, 1.0 / entry.speed);
-}
-
-fn lightStreakHeadWorldPosition(entry: LightStreakEntry) rl.Vector3 {
-    return addVector3(
-        entry.origin_position,
-        scaleVector3(entryDirectionUnit(entry), entry.progress),
-    );
-}
-
-fn lightStreakVisibilityLength(entry: LightStreakEntry, fade: f32) f32 {
+fn lightStreakAlphaScale(entry: LightStreakEntry, fade: f32) f32 {
     return @max(0.0, (entry.progress - light_streak_progress_bias) * entry.size * light_streak_length_scale * fade);
 }
 
-fn lightStreakSpriteSize(entry: LightStreakEntry) f32 {
+fn lightStreakSpriteStretch(entry: LightStreakEntry) f32 {
     return (entry.speed + 1.0) * 4.0;
+}
+
+fn drawLightStreakSprite(
+    texture: rl.Texture2D,
+    center: rl.Vector2,
+    screen_direction: rl.Vector2,
+    half_width: f32,
+    half_height: f32,
+    tint: rl.Color,
+) void {
+    const rotation_degrees = @as(f32, @floatCast(std.math.atan2(screen_direction.y, screen_direction.x) * 180.0 / std.math.pi)) + 90.0;
+    rl.drawTexturePro(
+        texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @floatFromInt(texture.width),
+            .height = @floatFromInt(texture.height),
+        },
+        .{
+            .x = center.x,
+            .y = center.y,
+            .width = half_width * 2.0,
+            .height = half_height * 2.0,
+        },
+        .{
+            .x = half_width,
+            .y = half_height,
+        },
+        rotation_degrees,
+        tint,
+    );
 }
 
 test "parse background script fields" {
@@ -1035,7 +1062,7 @@ test "light streak controller fades in from dormant and seeds camera-plane entri
         try std.testing.expect(entry.speed >= 0.30000001);
         try std.testing.expect(entry.speed < 0.90000004);
         try std.testing.expectApproxEqAbs(@as(f32, 0.0), dotVector3(entry.direction, camera.forward), 0.0001);
-        try std.testing.expectApproxEqAbs(cameraOrigin(camera).z, entry.origin_position.z, 0.0001);
+        try std.testing.expectApproxEqAbs(@as(f32, light_streak_reset_distance), vectorLength(subVector3(entry.sprite_position, cameraOrigin(camera))), 0.0001);
     }
 }
 
@@ -1059,4 +1086,15 @@ test "light streak controller reaches visible and fades back to dormant" {
     }
     try std.testing.expectEqual(LightStreakState.dormant, controller.state);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), controller.fade, 0.0001);
+}
+
+test "light streak alpha lane and sprite stretch match native formulas" {
+    const entry = LightStreakEntry{
+        .speed = 0.5,
+        .progress = 10.0,
+        .size = 0.4,
+    };
+
+    try std.testing.expectApproxEqAbs(@as(f32, 0.03657143), lightStreakAlphaScale(entry, 1.0), 0.00001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.0), lightStreakSpriteStretch(entry), 0.0001);
 }

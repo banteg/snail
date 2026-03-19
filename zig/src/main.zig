@@ -135,6 +135,7 @@ const gameplay_explode_big_sprite_path = "SPRITES/PARTICLEEXPLODE-BIG.TGA";
 const gameplay_explode_small_sprite_path = "SPRITES/PARTICLEEXPLODE-SMALL.TGA";
 const gameplay_slug_goo_sprite_path = "SPRITES/SLUGGOO.TGA";
 const gameplay_smoke_sprite_path = "SPRITES/SMOKE.TGA";
+const background_light_streak_sprite_path = background.light_streak_sprite_path;
 const gameplay_turbo_fire_sound_paths = [_][]const u8{
     "SFX2/TURBOFIRE1.OGG",
     "SFX2/TURBOFIRE2.OGG",
@@ -2526,6 +2527,7 @@ const AppState = struct {
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
     current_game_background_runtime: ?background.Runtime = null,
+    current_background_light_streak_texture: ?assets.LoadedTexture = null,
     background_light_streaks: background.LightStreakController = background.LightStreakController.init(),
     current_loading_screen: ?loading_screen.Loaded = null,
     current_text_script: ?intro.Loaded = null,
@@ -2568,6 +2570,8 @@ const AppState = struct {
         errdefer slider_art.unload();
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
         errdefer route_map_art.unload();
+        var background_light_streak_texture = try catalog.loadTextureByPath(allocator, background_light_streak_sprite_path);
+        errdefer background_light_streak_texture.unload();
         var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
         errdefer if (galaxy_names) |*names| names.deinit();
 
@@ -2612,6 +2616,7 @@ const AppState = struct {
             .current_gameplay_sound_fx = gameplay_sound_fx,
             .slider_art = slider_art,
             .route_map_art = route_map_art,
+            .current_background_light_streak_texture = background_light_streak_texture,
             .galaxy_names = galaxy_names,
         };
         errdefer state.deinit();
@@ -2641,6 +2646,10 @@ const AppState = struct {
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
         self.clearSelectedReplayCache();
+        if (self.current_background_light_streak_texture) |*texture| {
+            texture.unload();
+            self.current_background_light_streak_texture = null;
+        }
         if (self.pending_screenshot) |*request| {
             request.deinit(self.allocator);
             self.pending_screenshot = null;
@@ -7226,7 +7235,11 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
             } else {
                 _ = loaded_background.draw(bounds);
             }
-            state.background_light_streaks.draw(bounds, backgroundLightStreakCamera(state), false);
+            state.background_light_streaks.draw(
+                bounds,
+                backgroundLightStreakCamera(state),
+                if (state.current_background_light_streak_texture) |loaded| loaded.texture else null,
+            );
         } else {
             rl.drawRectangleRec(bounds, .black);
         }
@@ -7243,7 +7256,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         state.background_light_streaks.draw(
             bounds,
             backgroundLightStreakCamera(state),
-            state.game_phase == .intro,
+            if (state.current_background_light_streak_texture) |loaded| loaded.texture else null,
         );
     } else {
         rl.drawRectangleRec(bounds, .black);
