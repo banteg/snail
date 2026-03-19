@@ -10,6 +10,7 @@ This section is for deeper reverse-engineering work: hardcoded runtime behavior,
 - [Attachment follow state](attachment-follow.md): how authored `Path=` rows install live follow-state transitions
 - [Background light streaks](background-light-streaks.md): the separate star-field sprite pass layered on top of the Distort backdrop warp
 - [Runtime structures](runtime-structures.md): current high-confidence `Player`, `Game`, and attachment-template layouts
+- [Audio callsite map](audio-callsite-map.md): whole-game `play_sound_effect` / `play_voice_manager` inventory grouped by owning gameplay system
 - [Symbol workflow](symbols.md): how the curated Binary Ninja function manifest is maintained
 - [Reflexive wrapper](reflexive-wrapper.md): bootstrap and wrapper-obfuscation notes
 - [Frida runtime trace](frida-runtime-trace.md): the Windows tracing harness and capture strategy

@@ -1,0 +1,163 @@
+# Audio callsite map
+
+This page turns the native audio xref inventory into a gameplay-system map. The raw address-complete source material lives in [../../analysis/runtime/native-audio-callsites.md](../../analysis/runtime/native-audio-callsites.md).
+
+The point of this map is not “audio parity” in isolation. These callsites show where the Windows build still owns gameplay systems that the Zig port has either approximated, collapsed together, or routed through different subsystems.
+
+## `play_sound_effect`
+
+### Frontend and UI
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 9` | [`update_frontend_widget_interaction`](../../artifacts/ida/functions/00402820-update_frontend_widget_interaction.c) at `0x402c25` | widget hover or focus-entry cue | frontend widget hover handling | low priority; keep for completeness |
+| `sfx 8` | [`update_frontend_widget_interaction`](../../artifacts/ida/functions/00402820-update_frontend_widget_interaction.c) at `0x402c90` | widget activate or confirm cue, branch A | frontend widget activation | low priority; keep for completeness |
+| `sfx 8` | [`update_frontend_widget_interaction`](../../artifacts/ida/functions/00402820-update_frontend_widget_interaction.c) at `0x402cf2` | widget activate or confirm cue, branch B | frontend widget activation | low priority; keep for completeness |
+| `sfx 8` | [`update_galaxy`](../../artifacts/ida/functions/004092f0-update_galaxy.c) at `0x409ae4` | galaxy route confirmation | galaxy route UI | low priority; not a gameplay-system gap |
+| `sfx 8` | [`update_options`](../../artifacts/ida/functions/0041af60-update_options.c) at `0x41b05c` | options sound-volume change cue | options UI | low priority; not a gameplay-system gap |
+| `sfx 8` | [`update_thanks_for_playing_screen`](../../artifacts/ida/functions/004340f0-update_thanks_for_playing_screen.c) at `0x434129` | thanks-screen continue cue | thanks-screen continue flow | low priority; not a gameplay-system gap |
+| `sfx 8` | [`update_click_start`](../../artifacts/ida/functions/00442290-update_click_start.c) at `0x4423ed` | tutorial click-start handoff cue after pointer recenter | tutorial click-start flow in `main.zig` | the click-start flow is ported, but this exact native cue and its ownership are still secondary |
+
+### Row events and parcels
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 49` | [`update_row_event_display`](../../artifacts/ida/functions/00404cf0-update_row_event_display.c) at `0x404e6f` | row-event state-`3` final-bonus payout cue | `RowEventDisplayController` | bonus timing is ported, native SFX ownership is still missing |
+| `sfx 8` | [`update_row_event_display`](../../artifacts/ida/functions/00404cf0-update_row_event_display.c) at `0x404ed2` | row-event accept or continue cue | `RowEventDisplayController` UI staging | current controller exists, native UI cue still absent |
+| `sfx 45` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x405070` | per-delivery mailbox payout cue | parcel home-flight and delivery runtime | missing; current parcel delivery is still visually right but audibly under-modeled |
+| `sfx 49` | [`register_parcel_delivery`](../../artifacts/ida/functions/00405040-register_parcel_delivery.c) at `0x4050a4` | final-delivery bonus cue | parcel target completion logic | missing; native “all parcels delivered” audio still exposes row-event ownership |
+| `sfx 27` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452fb` | parcel pickup cue before the parcel enters its flight states | live parcel runtime pickup branch | missing; parcel pickup still lacks its native audio pair |
+
+### Movement-state and runner surface audio
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 17..24` | [`play_movement_state_sound`](../../artifacts/ida/functions/0043afd0-play_movement_state_sound.c) at `0x43b114` | dedicated movement-state family chosen from `movement_flags`, with distance attenuation during attachment exit | no faithful equivalent; current port mostly plays fire, pickup, and impact cues from `playGameplayRunnerAudio()` | strong gap: native has a separate movement audio controller the port still does not model |
+| `sfx 41` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c3f8` | tile-type `22` route interaction cue | runner tile handling in `gameplay.zig` | unresolved; this tile-family cue is still not mapped |
+| `sfx 47` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c4c1` | tile-type `14` special warning or fall cue | runner tile handling in `gameplay.zig` | unresolved; current port has no explicit owner for this native sound |
+
+### Score, completion arm, and milestone cues
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 44` | [`add_subgoldy_score`](../../artifacts/ida/functions/004402c0-add_subgoldy_score.c) at `0x440374` | extra-life cue when score crosses a `50_000` bucket | score and postal-life logic in `gameplay.zig` | missing; score/life parity is closer than audio parity here |
+| `sfx 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c79d` | first completion-handoff arm cue before the later voice and `complete_subgame` path | completion-screen init and finalize split | missing; this is one of the cleanest signs that `update_subgoldy` still owns more than the port admits |
+| `sfx 46` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x446c0a` | completion cutscene state `6` initializes the completion screen and plays its own cue | early completion-screen handoff | missing; the handoff timing is ported, but not the cutscene-owned sound |
+
+### Collisions, pickups, and powerups
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 39/40` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x44500a` | garbage collision impact family after score add and `+0.04` damage | garbage-hit handling and asteroid-impact pair in `playGameplayRunnerAudio()` | partial; audible result is close, native owner and exact family still deserve documentation |
+| `sfx 14` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x44542f` | health pickup cue | health pickup branch and `heart` sound | mostly aligned |
+| `sfx 43` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4456f2` | ring types `3/7` negative-velocity cue | current slow-ring or equivalent powerup audio | partial; ring-family semantics are still compressed |
+| `sfx 1..7` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x445763` | tiered weapon-upgrade pickup family after ring types `4/5` | generic `weapon_change` cue | strong gap: current port collapses a native tiered pickup family into one SFX |
+| `sfx 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x44578d` | ring type `1` pickup cue | current powerup audio | partial; exact ring family mapping still needs recovery |
+| `sfx 42` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x44580d` | explode-ring pickup, immediately before `initialize_nuke` | explode-ring handling in gameplay and app audio | close in spirit, but still not tied back to the native owner cleanly |
+
+### Jetpack, weapon, and warning presentation controllers
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `sfx 26` | [`set_snail_jetpack`](../../artifacts/ida/functions/00445860-set_snail_jetpack.c) at `0x4458b4` | jetpack visual-state shutdown cue | jetpack pickup and timer UI | missing; current port mostly models the jetpack as a timer and pickup, not a stateful presentation controller |
+| `sfx 16` | [`set_snail_jetpack`](../../artifacts/ida/functions/00445860-set_snail_jetpack.c) at `0x4458ec` | jetpack visual-state activation cue | jetpack pickup and timer UI | missing or approximate |
+| `sfx 25` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) at `0x445b62` | shared weapon visual-state change cue, branch A | `weapon_change` cue in `playGameplayRunnerAudio()` | broadly ported, but still flatter than native |
+| `sfx 25` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) at `0x445b9f` | shared weapon visual-state change cue, branch B | `weapon_change` cue in `playGameplayRunnerAudio()` | broadly ported, but still flatter than native |
+| `sfx 25` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) at `0x445bca` | shared weapon visual-state change cue, branch C | `weapon_change` cue in `playGameplayRunnerAudio()` | broadly ported, but still flatter than native |
+| `sfx 25` | [`set_snail_weapon`](../../artifacts/ida/functions/00445920-set_snail_weapon.c) at `0x445be2` | shared weapon visual-state change cue, branch D | `weapon_change` cue in `playGameplayRunnerAudio()` | broadly ported, but still flatter than native |
+| `sfx 50` | [`update_warning`](../../artifacts/ida/functions/00446f80-update_warning.c) at `0x447000` | warning overlay loop cue as the warning controller cycles `state 2 -> 1` | once-per-second warning loop in `playGameplayRunnerAudio()` | partial; current port reproduces the broad behavior, but not the original owner/controller object |
+
+## `play_voice_manager`
+
+### Row events, tutorial speech, and completion handoff
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | `syncActiveLevelSegment()`, prompt queue, authored `Sample=` playback | strong gap: the port still treats most row speech as segment metadata, not as a runtime row-event subsystem |
+| `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | missing; exact handoff voice ownership is absent |
+
+### Attachment-follow and post-follow voices
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `voice 12` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b8b7` | WORM entry voice when attachment follow begins on kind `24` | attachment begin in `gameplay.zig` | missing; useful proof that attachment entry still owns gameplay feedback beyond geometry |
+| `voice 4` `mode 1` | [`update_track_attachment_follow_state`](../../artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c) at `0x420d30` | milestone voice at `2 * sample_count` | attachment follow update in `gameplay.zig` | missing; suggests the follow state still has unrecovered milestone semantics |
+| `voice 15` `mode 0` | [`update_track_attachment_follow_state`](../../artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c) at `0x421046` | kind-`31` tail-launch completion voice | attachment follow completion / launch | missing; points to a special-case exit system the port only approximates |
+| `voice 3` `mode 0` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cebd` | attachment-exit gate A once `progress > 0.7` | attachment exit gates in `gameplay.zig` | missing; gate math exists, native feedback ownership does not |
+| `voice 1` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf19` | attachment-exit gate B once `world_y < -7.0` | attachment exit gates in `gameplay.zig` | missing; same controller gap |
+
+### Damage and warning controller
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `voice 14` `mode 0` | [`update_damage_gauge`](../../artifacts/ida/functions/00440fd0-update_damage_gauge.c) at `0x44115e` | damage-warning escalation voice after the fill state commits | `damage_gauge` plus warning loop | missing; the current port only ports the loop SFX and basic visual state |
+| `voice 0` `mode 1` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x44148e` | first positive-damage entry voice | damage collision handling | missing; damage entry voice ownership is absent |
+| `voice 9` `mode 0` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x4414a2` | fallback voice if `voice 0` is blocked by the manager | damage collision handling | missing; cooldown or fallback semantics are not ported |
+
+### Collision, pickups, and hazards
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `voice 10` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4452ef` | parcel pickup voice before the parcel begins its home-flight states | parcel pickup runtime | missing; current parcel pickup path is still too quiet and too direct |
+| `voice 5` `mode 1` | [`handle_subgoldy_collisions`](../../artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c) at `0x4457d4` | weapon-upgrade voice when the local weapon tier actually increases | ring / powerup upgrade handling | missing or compressed; current port uses a generic SFX instead |
+| `voice 2` `mode 1` | [`update_slug_hazard_ai`](../../artifacts/ida/functions/0043f930-update_slug_hazard_ai.c) at `0x43fbd5` | slug engagement voice when the player enters the local alert window | ambient slug voice cooldowns in `main.zig` | partial; current port has nearby slug barks, but the native owner and gate are different enough to matter |
+
+### Death and cutscene voices
+
+| Audio | Native caller | Current interpretation | Current port equivalent | Gap |
+| --- | --- | --- | --- | --- |
+| `voice 7` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf69` | one-shot late fall or death-timer voice | respawn / death handling in `gameplay.zig` | unresolved; this still exposes a controller the port has not recovered cleanly |
+| `voice 6` `mode 1` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cff3` | second late fall or death-timer voice | respawn / death handling in `gameplay.zig` | unresolved; same controller gap |
+| `voice 3` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x44697c` | death cutscene entry voice | cutscene handoff and death camera | missing; death cutscene audio is still under-modeled |
+| `voice 11` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x446b25` | death cutscene fallback voice if `initialize_subgoldy_death` did not already consume the gate | cutscene handoff and death camera | missing; another sign that native death ownership is broader than the current port model |
+
+## System recovery targets
+
+1. Recover the rest of `update_subgoldy` audio ownership.
+   Audio evidence: `sfx 0`, `sfx 41`, `sfx 47`, `voice 1`, `voice 3`, `voice 6`, `voice 7`, `voice 8`, `voice 12`, `voice 13`.
+   Native implication: one runner-owned function still controls tile-family feedback, row-event speech, WORM entry, attachment-exit one-shots, completion-handoff voice timing, and at least two late fall or death timers.
+   Current Zig suspicion: these responsibilities are still split between `gameplay.Runner.step`, `main.zig` startup or prompt helpers, and ad hoc audio checks.
+   Next trace boundary: `update_subgoldy`, plus nearby `enqueue_tip_message`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, and `flush_row_event_display`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) and [`zig/src/main.zig`](../../zig/src/main.zig).
+
+2. Reconstruct parcel and row-event audio as one system instead of separate pickup/UI guesses.
+   Audio evidence: `sfx 27`, `sfx 45`, `sfx 49`, `voice 10`, `voice 13`.
+   Native implication: parcel pickup, mailbox delivery, final bonus payout, and tutorial or row-event speech are all facets of one runtime-owned controller family.
+   Current Zig suspicion: the port now has parcel runtime and row-event state, but still routes a lot of speech through authored segment playback and leaves parcel pickup or delivery audio silent.
+   Next trace boundary: `handle_subgoldy_collisions`, `register_parcel_delivery`, `update_row_event_display`, `flush_row_event_display`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) row-event and parcel runtime, plus [`zig/src/main.zig`](../../zig/src/main.zig) prompt/audio routing.
+
+3. Recover the native damage-warning owner instead of only mirroring its visible fill and warning loop.
+   Audio evidence: `sfx 50`, `voice 0`, `voice 9`, `voice 14`.
+   Native implication: the damage gauge has its own voice escalation and fallback logic, while the warning overlay is a separate actor with its own loop cadence.
+   Current Zig suspicion: the port is directionally right on fill and warning display, but it still collapses several native owner lanes into one simplified gameplay warning path.
+   Next trace boundary: `apply_damage_gauge_delta`, `update_damage_gauge`, `start_warning`, `update_warning`, `stop_warning_sample`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) damage and warning controllers, plus [`zig/src/main.zig`](../../zig/src/main.zig) audio routing.
+
+4. Treat attachment-follow milestone audio as evidence that the live follow state still has missing semantics.
+   Audio evidence: `voice 4`, `voice 12`, `voice 15`, `voice 1`, `voice 3`.
+   Native implication: attachment begin, milestone crossing, kind-`31` launch completion, and exit-fall thresholds all belong to one richer follow-state controller.
+   Current Zig suspicion: the port has improved follow geometry and exit handling, but still lacks the native milestone and kind-specific completion semantics.
+   Next trace boundary: `begin_track_attachment_follow_state` and `update_track_attachment_follow_state`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) attachment begin, follow update, and exit handling.
+
+5. Recover the movement-state sound controller instead of treating gameplay audio as mostly event-based.
+   Audio evidence: `sfx 17..24`.
+   Native implication: there is a dedicated movement controller that samples `movement_flags`, picks families, and even switches to an attenuated path during attachment exit.
+   Current Zig suspicion: the port still lacks this whole layer, which means some gameplay-state ownership is probably still misunderstood even when visuals look right.
+   Next trace boundary: `play_movement_state_sound` and the `movement_flags` producers in `update_subgoldy`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) movement-state and surface-state lanes, plus [`zig/src/main.zig`](../../zig/src/main.zig) gameplay SFX dispatch.
+
+6. Split collision and powerup feedback back into their native families.
+   Audio evidence: `sfx 39/40`, `sfx 42`, `sfx 43`, `sfx 1..7`, `sfx 14`, `sfx 16`, `sfx 26`, `voice 5`, `voice 10`.
+   Native implication: garbage, health, explode rings, negative-velocity rings, weapon-upgrade rings, parcel pickup, and jetpack state changes are all distinct systems with different owners.
+   Current Zig suspicion: the port still compresses several of these families into generic pickup or weapon-change cues.
+   Next trace boundary: `handle_subgoldy_collisions`, `set_snail_jetpack`, `set_snail_weapon`.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) collision runtime and pickup state, plus [`zig/src/main.zig`](../../zig/src/main.zig) gameplay effect mapping.
+
+7. Recover cutscene audio ownership as part of the cutscene state machine, not as loose frontend polish.
+   Audio evidence: `sfx 46`, `voice 3`, `voice 11`.
+   Native implication: completion-screen init and death voices are both owned by explicit cutscene states.
+   Current Zig suspicion: cutscene timing and cameras are closer now, but audio still lags behind the recovered state machine.
+   Next trace boundary: `initialize_cutscene`, `update_cutscene`, and the death or completion entry helpers it calls.
+   Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) cutscene controller and [`zig/src/main.zig`](../../zig/src/main.zig) completion/death handoff.
