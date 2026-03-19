@@ -73,7 +73,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | `syncActiveLevelSegment()`, prompt queue, authored `Sample=` playback | strong gap: the port still treats most row speech as segment metadata, not as a runtime row-event subsystem |
+| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | `syncActiveLevelSegment()`, prompt queue, and native-style `Tutorial` voice payload playback for `VOICE/TUT*.OGG` | partial; tutorial payload routing is closer now, but the broader runtime row-event speech owner is still not ported literally |
 | `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | missing; exact handoff voice ownership is absent |
 
 ### Attachment-follow and post-follow voices
@@ -123,7 +123,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 2. Reconstruct parcel and row-event audio as one system instead of separate pickup/UI guesses.
    Audio evidence: `sfx 27`, `sfx 45`, `sfx 49`, `voice 10`, `voice 13`.
    Native implication: parcel pickup, mailbox delivery, final bonus payout, and tutorial or row-event speech are all facets of one runtime-owned controller family.
-   Current Zig suspicion: pickup and delivery cues are now mostly covered, but row-event speech still routes through authored segment playback instead of the native runtime row-message controller.
+   Current Zig suspicion: pickup and delivery cues are now mostly covered, and tutorial `TUT*` samples now use the native `Tutorial` set semantics, but the broader row-event speech still does not go through the original runtime row-message controller.
    Next trace boundary: `handle_subgoldy_collisions`, `register_parcel_delivery`, `update_row_event_display`, `flush_row_event_display`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) row-event and parcel runtime, plus [`zig/src/main.zig`](../../zig/src/main.zig) prompt/audio routing.
 

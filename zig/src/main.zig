@@ -763,6 +763,36 @@ const NativeGameplayVoiceManager = struct {
         }
         return sample_index;
     }
+
+    fn requestPayloadPlay(
+        self: *NativeGameplayVoiceManager,
+        set_id: NativeGameplayVoiceSet,
+        mode: NativeGameplayVoiceMode,
+        voice_busy: bool,
+        sample_count: usize,
+        payload_index: usize,
+    ) ?usize {
+        if (sample_count == 0 or payload_index >= sample_count) return null;
+        switch (mode) {
+            .wait_for_idle => {
+                if (voice_busy) return null;
+            },
+            .wait_for_frequency => {
+                if (voice_busy) return null;
+                if (self.global_progress < self.global_frequency_seconds) return null;
+            },
+            .interrupt_current => {},
+        }
+
+        const set_state = &self.sets[@intFromEnum(set_id)];
+        if (set_state.cooldown_progress != 0.0) return null;
+
+        set_state.cooldown_progress = set_state.cooldown_step;
+        if (mode != .wait_for_idle) {
+            self.global_progress = 0.0;
+        }
+        return payload_index;
+    }
 };
 
 fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
@@ -799,6 +829,38 @@ test "native gameplay voice manager enforces native mode gates" {
     manager.clear();
     try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.fall, .wait_for_idle, true, 2));
     try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.fall, .interrupt_current, true, 2));
+}
+
+test "native gameplay voice manager payload play preserves set rotation" {
+    var manager: NativeGameplayVoiceManager = .{};
+    manager.global_progress = native_gameplay_voice_manager_frequency_seconds;
+
+    try std.testing.expectEqual(@as(?usize, 2), manager.requestPayloadPlay(.tutorial, .interrupt_current, false, 18, 2));
+    try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.tutorial, .interrupt_current, false, 18));
+
+    var tick_index: usize = 0;
+    while (tick_index < 240) : (tick_index += 1) {
+        manager.tick();
+    }
+
+    try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.tutorial, .interrupt_current, false, 18));
+}
+
+fn nativeTutorialVoicePayloadIndex(sample_path: []const u8) ?usize {
+    if (!std.ascii.startsWithIgnoreCase(sample_path, "VOICE/TUT")) return null;
+    if (!std.ascii.endsWithIgnoreCase(sample_path, ".OGG")) return null;
+    if (sample_path.len <= "VOICE/TUT.OGG".len) return null;
+
+    const digits = sample_path["VOICE/TUT".len .. sample_path.len - ".OGG".len];
+    const payload_number = std.fmt.parseUnsigned(usize, digits, 10) catch return null;
+    if (payload_number == 0) return null;
+    return payload_number - 1;
+}
+
+test "tutorial voice payload indices parse from shipped sample paths" {
+    try std.testing.expectEqual(@as(?usize, 0), nativeTutorialVoicePayloadIndex("VOICE/TUT1.OGG"));
+    try std.testing.expectEqual(@as(?usize, 17), nativeTutorialVoicePayloadIndex("Voice/tut18.ogg"));
+    try std.testing.expectEqual(@as(?usize, null), nativeTutorialVoicePayloadIndex("VOICE/OW1.OGG"));
 }
 
 const max_announced_slug_voice_cells: usize = 64;
@@ -5660,6 +5722,22 @@ const AppState = struct {
         return true;
     }
 
+    fn tryPlayNativeGameplayVoicePayload(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode, payload_index: usize) !bool {
+        if (!self.audio_ready) return false;
+        const paths = nativeGameplayVoicePaths(set_id);
+        if (paths.len == 0) return false;
+
+        const sample_index = self.native_gameplay_voice_manager.requestPayloadPlay(
+            set_id,
+            mode,
+            self.gameplayVoiceBusy(),
+            paths.len,
+            payload_index,
+        ) orelse return false;
+        try self.playVoiceByPath(paths[sample_index]);
+        return true;
+    }
+
     fn gameplayVoiceBusy(self: *const AppState) bool {
         if (self.current_voice_sound) |sound| {
             return rl.isSoundPlaying(sound.sound);
@@ -5797,7 +5875,11 @@ const AppState = struct {
         if (!suppress_segment_events and (segment_changed or replay_sample_on_match)) {
             if (segment_entry.sample) |sample_path| {
                 if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
-                    try self.playVoiceByPath(sample_path);
+                    if (nativeTutorialVoicePayloadIndex(sample_path)) |payload_index| {
+                        _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
+                    } else {
+                        try self.playVoiceByPath(sample_path);
+                    }
                 } else {
                     try self.playSoundByPath(sample_path);
                 }
