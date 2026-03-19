@@ -1,6 +1,6 @@
 # Background Light Streaks
 
-This note captures the missing "light streak" layer in the Windows renderer.
+This note captures the Windows "light streak" layer in the renderer and the current Zig port status.
 
 The key result is:
 
@@ -102,18 +102,26 @@ Practical interpretation:
 - they are explicitly suppressed on the major menu and shell screens
 - the pass survives as a separate controller even when hidden, because hide or unhide only clear or set sprite bit `0x40`
 
-## Porting Conclusion
+## Port Status
 
-The current Zig port already covers the Distort-driven backdrop warp, but it does **not** yet implement this separate star-field overlay.
+The Zig port now implements a native-shaped light-streak controller in:
 
-So the missing "light streaks" are best described as:
+- [`background.zig`](../../zig/src/background.zig)
+- [`main.zig`](../../zig/src/main.zig)
 
-- a missing `cRStarManager` / star-field sprite pass
-- not a missing parameter in `background.zig`'s Distort implementation
+Current ported pieces:
 
-The next implementation target should therefore be:
+1. a persistent `36`-entry controller separate from the Distort backdrop runtime
+2. the recovered four-state fade machine from `update_star_field`
+3. camera-relative streak seeding and wrap/reset behavior from `initialize_star_field` and `update_star_positions`
+4. intro and gameplay visibility toggles that are independent from backdrop loading
 
-1. add a persistent star-field controller to the shared app or background runtime
-2. allocate `36` streak sprites on world init
-3. update them camera-relatively with the same fade machine and per-streak speed or length scaling
-4. hook hide or unhide to intro and gameplay transitions separately from backdrop loading
+What is still approximate:
+
+- the original sprite source object at `data_790f30` is still unnamed, so the Zig port currently renders the streaks as additive screen-space line trails instead of the original sprite owner
+- exact hide or unhide coverage for every frontend shell state is still inferred from the recovered callsites, not traced exhaustively in one runtime pass
+
+So the remaining gap is no longer "missing light streaks"; it is narrower:
+
+- exact sprite-asset parity for the star-field pass
+- any remaining phase-visibility edge cases beyond the recovered intro/gameplay ownership

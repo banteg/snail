@@ -2526,6 +2526,7 @@ const AppState = struct {
     current_standalone_segment_scene: ?track_render.Scene = null,
     current_game_background: ?background.Loaded = null,
     current_game_background_runtime: ?background.Runtime = null,
+    background_light_streaks: background.LightStreakController = background.LightStreakController.init(),
     current_loading_screen: ?loading_screen.Loaded = null,
     current_text_script: ?intro.Loaded = null,
     galaxy_names: ?galaxy.Definition = null,
@@ -3952,6 +3953,10 @@ const AppState = struct {
         if (self.current_game_background_runtime) |*runtime| {
             runtime.update();
         }
+        self.background_light_streaks.update(
+            backgroundLightStreakCamera(self),
+            backgroundLightStreaksVisible(self),
+        );
         if (self.game_status_ticks > 0) {
             self.game_status_ticks -= 1;
             if (self.game_status_ticks == 0) {
@@ -7166,6 +7171,36 @@ fn phaseUsesGameplayBackdrop(state: *const AppState) bool {
     };
 }
 
+const default_light_streak_camera = background.LightStreakCamera{
+    .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+    .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    .fov_degrees = 110.0,
+};
+
+fn backgroundLightStreaksVisible(state: *const AppState) bool {
+    if (phaseUsesGameplayBackdrop(state)) return true;
+    return switch (state.game_phase) {
+        .intro, .level => true,
+        else => false,
+    };
+}
+
+fn backgroundLightStreakCamera(state: *const AppState) background.LightStreakCamera {
+    if (state.game_phase == .level or phaseUsesGameplayBackdrop(state)) {
+        const transform = normalizeCameraWorldTransform(cameraWorldTransformFromMatrix(state.subgame_camera.shared_matrix));
+        return .{
+            .position = transform.position,
+            .right = transform.right,
+            .up = transform.up,
+            .forward = transform.forward,
+            .fov_degrees = state.subgame_camera.fov_degrees,
+        };
+    }
+    return default_light_streak_camera;
+}
+
 fn frontendPhaseUsesCanvas(state: *const AppState) bool {
     if (phaseUsesGameplayBackdrop(state)) return false;
     return switch (state.game_phase) {
@@ -7191,6 +7226,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
             } else {
                 _ = loaded_background.draw(bounds);
             }
+            state.background_light_streaks.draw(bounds, backgroundLightStreakCamera(state), false);
         } else {
             rl.drawRectangleRec(bounds, .black);
         }
@@ -7204,6 +7240,11 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         } else {
             _ = loaded_background.draw(bounds);
         }
+        state.background_light_streaks.draw(
+            bounds,
+            backgroundLightStreakCamera(state),
+            state.game_phase == .intro,
+        );
     } else {
         rl.drawRectangleRec(bounds, .black);
     }

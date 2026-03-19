@@ -19,6 +19,23 @@ const frontend_random_center: f32 = 16384.0;
 const frontend_random_unit_scale: f32 = 1.0 / frontend_random_center;
 const warp_min_cycle_seconds: f32 = 3.0;
 const warp_max_cycle_seconds: f32 = 5.0;
+const light_streak_count = 36;
+const light_streak_fade_step: f32 = 1.0 / 12.0;
+const light_streak_max_progress: f32 = 35.0;
+const light_streak_progress_bias: f32 = 2.0;
+const light_streak_reset_distance: f32 = 10.0;
+const light_streak_length_scale: f32 = 0.0114285713;
+const light_streak_projection_near: f32 = 0.1;
+const light_streak_projection_distance: f32 = 50.0;
+const light_streak_base_color = rl.Color{ .r = 204, .g = 204, .b = 255, .a = 102 };
+const light_streak_random_seed: u64 = 0x534d5f5354415253;
+const default_light_streak_camera = LightStreakCamera{
+    .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+    .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+    .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    .fov_degrees = 110.0,
+};
 
 pub const Rgb = struct {
     r: u8,
@@ -263,6 +280,172 @@ pub const Runtime = struct {
 
         rl.drawRectangleRec(bounds, loaded.fogColor());
         drawWarpedTexture(loaded.primary_texture.texture, authoredViewportLayout(bounds), &self.warp_vertices, self.flipped_uvs);
+    }
+};
+
+pub const LightStreakCamera = struct {
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    fov_degrees: f32,
+};
+
+const LightStreakState = enum {
+    dormant,
+    visible,
+    fade_in,
+    fade_out,
+};
+
+const LightStreakEntry = struct {
+    origin_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    direction: rl.Vector3 = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
+    speed: f32 = 0.0,
+    progress: f32 = 0.0,
+    size: f32 = 0.4,
+};
+
+pub const LightStreakController = struct {
+    entries: [light_streak_count]LightStreakEntry = [_]LightStreakEntry{.{}} ** light_streak_count,
+    state: LightStreakState = .dormant,
+    fade: f32 = 0.0,
+    fade_step: f32 = light_streak_fade_step,
+    random_state: u64 = light_streak_random_seed,
+
+    pub fn init() LightStreakController {
+        return .{};
+    }
+
+    pub fn update(self: *LightStreakController, camera: LightStreakCamera, visible_requested: bool) void {
+        switch (self.state) {
+            .dormant => {
+                if (!visible_requested) return;
+                self.initialize(camera);
+                self.state = .fade_in;
+                self.fade = 0.0;
+                self.fade_step = light_streak_fade_step;
+                self.updatePositions(camera, 0.0);
+            },
+            .visible => {
+                self.updatePositions(camera, 1.0);
+                if (!visible_requested) {
+                    self.fade = 1.0;
+                    self.fade_step = light_streak_fade_step;
+                    self.state = .fade_out;
+                }
+            },
+            .fade_in => {
+                self.updatePositions(camera, self.fade);
+                if (!visible_requested) {
+                    self.state = .fade_out;
+                }
+                self.fade += self.fade_step;
+                if (self.fade >= 1.0) {
+                    self.fade = 1.0;
+                    self.state = .visible;
+                }
+            },
+            .fade_out => {
+                self.updatePositions(camera, self.fade);
+                if (visible_requested) {
+                    self.state = .fade_in;
+                    return;
+                }
+                self.fade -= self.fade_step;
+                if (self.fade < 0.0) {
+                    self.fade = 0.0;
+                    self.state = .dormant;
+                }
+            },
+        }
+    }
+
+    pub fn draw(self: *const LightStreakController, bounds: rl.Rectangle, camera: LightStreakCamera, stretched: bool) void {
+        if (self.state == .dormant) return;
+        const viewport = if (stretched)
+            bounds
+        else
+            rectFromLayout(authoredViewportLayout(bounds));
+        self.drawInViewport(viewport, camera);
+    }
+
+    fn drawInViewport(self: *const LightStreakController, viewport: rl.Rectangle, camera: LightStreakCamera) void {
+        if (viewport.width <= 0.0 or viewport.height <= 0.0) return;
+
+        rl.beginBlendMode(.additive);
+        defer rl.endBlendMode();
+
+        for (self.entries) |entry| {
+            const visibility = lightStreakVisibilityLength(entry, self.fade);
+            if (visibility <= 0.0) continue;
+
+            const head_world = lightStreakHeadWorldPosition(entry);
+            const head_screen = projectWorldPointToViewport(viewport, camera, head_world) orelse continue;
+            const screen_direction = projectDirectionToScreen(camera, entry.direction) orelse continue;
+            const length_pixels = visibility * viewport.height;
+            if (length_pixels <= 0.5) continue;
+
+            const tail_screen = rl.Vector2{
+                .x = head_screen.x - screen_direction.x * length_pixels,
+                .y = head_screen.y - screen_direction.y * length_pixels,
+            };
+            const alpha_scale = std.math.clamp(self.fade * std.math.clamp(visibility * 6.0, 0.0, 1.0), 0.0, 1.0);
+            const thickness = std.math.clamp(lightStreakSpriteSize(entry) * (viewport.height / original_screen_height) * 0.35, 1.0, 8.0);
+            var color = light_streak_base_color;
+            color.a = @intFromFloat(@as(f32, @floatFromInt(light_streak_base_color.a)) * alpha_scale);
+            rl.drawLineEx(tail_screen, head_screen, thickness, color);
+        }
+    }
+
+    fn initialize(self: *LightStreakController, camera: LightStreakCamera) void {
+        for (&self.entries, 0..) |*entry, index| {
+            self.seedEntry(entry, camera, index == 0);
+        }
+    }
+
+    fn seedEntry(self: *LightStreakController, entry: *LightStreakEntry, camera: LightStreakCamera, first: bool) void {
+        const size = if (first)
+            0.40000001
+        else
+            ((@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * 0.0000061035157) + 0.40000001;
+        const initial_progress = @as(f32, @floatFromInt(self.nextRandom15())) * 0.0010681152;
+        self.resetEntry(entry, camera, size, initial_progress);
+    }
+
+    fn resetEntry(self: *LightStreakController, entry: *LightStreakEntry, camera: LightStreakCamera, size: f32, progress: f32) void {
+        const local_x = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * 0.000061035156;
+        const local_y = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * 0.000061035156;
+        const speed = @as(f32, @floatFromInt(self.nextRandom15())) * 0.000018310548 + 0.30000001;
+        const plane_direction = normalizeVector3(addVector3(
+            scaleVector3(camera.right, local_x),
+            scaleVector3(camera.up, local_y),
+        ));
+
+        entry.* = .{
+            .origin_position = cameraOrigin(camera),
+            .direction = scaleVector3(plane_direction, speed),
+            .speed = speed,
+            .progress = progress,
+            .size = size,
+        };
+    }
+
+    fn updatePositions(self: *LightStreakController, camera: LightStreakCamera, fade: f32) void {
+        _ = fade;
+        for (&self.entries) |*entry| {
+            entry.progress += entry.speed;
+            if (entry.progress > light_streak_max_progress) {
+                const size = entry.size;
+                const reset_progress = entry.speed * light_streak_reset_distance;
+                self.resetEntry(entry, camera, size, reset_progress);
+            }
+        }
+    }
+
+    fn nextRandom15(self: *LightStreakController) u32 {
+        self.random_state = (self.random_state *% 1103515245) +% 12345;
+        return @intCast((self.random_state >> 16) & 0x7fff);
     }
 };
 
@@ -623,6 +806,110 @@ fn parseRgbComponent(value: []const u8) !u8 {
     return @intCast(parsed);
 }
 
+fn rectFromLayout(layout: Layout) rl.Rectangle {
+    return .{
+        .x = layout.x,
+        .y = layout.y,
+        .width = layout.width,
+        .height = layout.height,
+    };
+}
+
+fn addVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.x + rhs.x,
+        .y = lhs.y + rhs.y,
+        .z = lhs.z + rhs.z,
+    };
+}
+
+fn subVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.x - rhs.x,
+        .y = lhs.y - rhs.y,
+        .z = lhs.z - rhs.z,
+    };
+}
+
+fn scaleVector3(value: rl.Vector3, scalar: f32) rl.Vector3 {
+    return .{
+        .x = value.x * scalar,
+        .y = value.y * scalar,
+        .z = value.z * scalar,
+    };
+}
+
+fn dotVector3(lhs: rl.Vector3, rhs: rl.Vector3) f32 {
+    return (lhs.x * rhs.x) + (lhs.y * rhs.y) + (lhs.z * rhs.z);
+}
+
+fn vectorLengthSquared(value: rl.Vector3) f32 {
+    return dotVector3(value, value);
+}
+
+fn vectorLength(value: rl.Vector3) f32 {
+    return @sqrt(vectorLengthSquared(value));
+}
+
+fn normalizeVector3(value: rl.Vector3) rl.Vector3 {
+    const length = vectorLength(value);
+    if (length <= 0.000001) {
+        return .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    }
+    return scaleVector3(value, 1.0 / length);
+}
+
+fn cameraOrigin(camera: LightStreakCamera) rl.Vector3 {
+    return addVector3(camera.position, scaleVector3(camera.forward, light_streak_projection_distance));
+}
+
+fn projectWorldPointToViewport(viewport: rl.Rectangle, camera: LightStreakCamera, point: rl.Vector3) ?rl.Vector2 {
+    const relative = subVector3(point, camera.position);
+    const view_x = dotVector3(relative, camera.right);
+    const view_y = dotVector3(relative, camera.up);
+    const view_z = dotVector3(relative, camera.forward);
+    if (view_z <= light_streak_projection_near) return null;
+
+    const focal = (original_screen_height * 0.5) / @tan((camera.fov_degrees * std.math.pi / 180.0) * 0.5);
+    const screen_x = (original_screen_width * 0.5) + ((view_x / view_z) * focal);
+    const screen_y = (original_screen_height * 0.5) - ((view_y / view_z) * focal);
+    return .{
+        .x = viewport.x + (screen_x / original_screen_width) * viewport.width,
+        .y = viewport.y + (screen_y / original_screen_height) * viewport.height,
+    };
+}
+
+fn projectDirectionToScreen(camera: LightStreakCamera, direction: rl.Vector3) ?rl.Vector2 {
+    const camera_x = dotVector3(direction, camera.right);
+    const camera_y = dotVector3(direction, camera.up);
+    const length = @sqrt((camera_x * camera_x) + (camera_y * camera_y));
+    if (length <= 0.000001) return null;
+    return .{
+        .x = camera_x / length,
+        .y = -camera_y / length,
+    };
+}
+
+fn entryDirectionUnit(entry: LightStreakEntry) rl.Vector3 {
+    if (entry.speed <= 0.000001) return .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+    return scaleVector3(entry.direction, 1.0 / entry.speed);
+}
+
+fn lightStreakHeadWorldPosition(entry: LightStreakEntry) rl.Vector3 {
+    return addVector3(
+        entry.origin_position,
+        scaleVector3(entryDirectionUnit(entry), entry.progress),
+    );
+}
+
+fn lightStreakVisibilityLength(entry: LightStreakEntry, fade: f32) f32 {
+    return @max(0.0, (entry.progress - light_streak_progress_bias) * entry.size * light_streak_length_scale * fade);
+}
+
+fn lightStreakSpriteSize(entry: LightStreakEntry) f32 {
+    return (entry.speed + 1.0) * 4.0;
+}
+
 test "parse background script fields" {
     const text =
         \\/* Background script */
@@ -733,4 +1020,43 @@ test "warped backdrop flips horizontal crop only" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.8) - normal.left, flipped.right, 0.0001);
     try std.testing.expectApproxEqAbs(normal.top, flipped.top, 0.0001);
     try std.testing.expectApproxEqAbs(normal.bottom, flipped.bottom, 0.0001);
+}
+
+test "light streak controller fades in from dormant and seeds camera-plane entries" {
+    var controller = LightStreakController.init();
+    const camera = default_light_streak_camera;
+
+    controller.update(camera, true);
+
+    try std.testing.expectEqual(LightStreakState.fade_in, controller.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), controller.fade, 0.0001);
+
+    for (controller.entries) |entry| {
+        try std.testing.expect(entry.speed >= 0.30000001);
+        try std.testing.expect(entry.speed < 0.90000004);
+        try std.testing.expectApproxEqAbs(@as(f32, 0.0), dotVector3(entry.direction, camera.forward), 0.0001);
+        try std.testing.expectApproxEqAbs(cameraOrigin(camera).z, entry.origin_position.z, 0.0001);
+    }
+}
+
+test "light streak controller reaches visible and fades back to dormant" {
+    var controller = LightStreakController.init();
+    const camera = default_light_streak_camera;
+
+    controller.update(camera, true);
+    for (0..13) |_| {
+        controller.update(camera, true);
+    }
+    try std.testing.expectEqual(LightStreakState.visible, controller.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), controller.fade, 0.0001);
+
+    controller.update(camera, false);
+    try std.testing.expectEqual(LightStreakState.fade_out, controller.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), controller.fade, 0.0001);
+
+    for (0..13) |_| {
+        controller.update(camera, false);
+    }
+    try std.testing.expectEqual(LightStreakState.dormant, controller.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), controller.fade, 0.0001);
 }
