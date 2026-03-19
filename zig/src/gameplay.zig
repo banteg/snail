@@ -539,6 +539,21 @@ fn shotCooldownTicksForWeaponLevel(weapon_level: u8) u8 {
     };
 }
 
+fn movementFlagsForSelector(selector: u8) u32 {
+    return switch (selector) {
+        0 => 1,
+        1 => 2,
+        2 => 4,
+        3 => 8,
+        4 => 16,
+        5 => 32,
+        6 => 64,
+        7 => 192,
+        8 => 144,
+        else => 129,
+    };
+}
+
 fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
     return switch (kind) {
         .turbo => projectile_speed_rows_per_second,
@@ -1065,6 +1080,8 @@ pub const Runner = struct {
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
     weapon_level: u8 = 0,
+    movement_flag_selector: u8 = 0,
+    movement_flags: u32 = 1,
     slow_ticks: u16 = 0,
     invincible_ticks: u16 = 0,
     shot_cooldown_ticks: u8 = 0,
@@ -2724,11 +2741,21 @@ pub const Runner = struct {
     }
 
     fn recordPowerupRing(self: *Runner) void {
+        self.advanceMovementFlagSelector();
         if (self.weapon_level < max_weapon_level) {
             self.weapon_level += 1;
             return;
         }
         self.invincible_ticks = invincible_duration_ticks;
+    }
+
+    fn advanceMovementFlagSelector(self: *Runner) void {
+        if (self.movement_flag_selector < 8) {
+            self.movement_flag_selector += 1;
+        } else if (self.movement_flag_selector == 8) {
+            self.movement_flag_selector = 7;
+        }
+        self.movement_flags = movementFlagsForSelector(self.movement_flag_selector);
     }
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -5466,15 +5493,37 @@ test "powerup rings upgrade weapon level then grant invincible state" {
 
     runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 1), runner.weapon_level);
+    try std.testing.expectEqual(@as(u8, 1), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
     try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
 
     runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
+    try std.testing.expectEqual(@as(u8, 2), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 4), runner.movement_flags);
     try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
 
     runner.recordRing(&fixture.preview, .powerup);
     try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
+    try std.testing.expectEqual(@as(u8, 3), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 8), runner.movement_flags);
     try std.testing.expectEqual(invincible_duration_ticks, runner.invincible_ticks);
+}
+
+test "powerup ladder bounces between native top selector states" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner{};
+    for (0..8) |_| {
+        runner.recordRing(&fixture.preview, .powerup);
+    }
+    try std.testing.expectEqual(@as(u8, 8), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 144), runner.movement_flags);
+
+    runner.recordRing(&fixture.preview, .powerup);
+    try std.testing.expectEqual(@as(u8, 7), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 192), runner.movement_flags);
 }
 
 test "slow rings reduce effective speed while active" {

@@ -1288,6 +1288,12 @@ const NativeGameplayVoiceCues = struct {
     damage_escalation: bool = false,
 };
 
+const NativeMovementStateSoundFamily = enum {
+    turbo,
+    laser,
+    rocket,
+};
+
 fn runnerInCompletionHandoff(runner: gameplay.Runner) bool {
     return switch (runner.phase) {
         .completion_handoff => true,
@@ -1318,6 +1324,36 @@ fn nativePowerupPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Ru
         gameplay_powerup_pickup_sound_paths.len - 1,
         @as(usize, current.counters.ring_powerup - 1),
     );
+}
+
+fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
+    return current.weapon_level != previous.weapon_level or
+        current.counters.ring_powerup > previous.counters.ring_powerup;
+}
+
+fn nativeMovementStateSoundFamily(current: gameplay.Runner) NativeMovementStateSoundFamily {
+    if ((current.movement_flags & 0x7) != 0) return .turbo;
+    if ((current.movement_flags & 0x18) != 0) return .laser;
+    if ((current.movement_flags & 0x60) != 0) return .rocket;
+    return switch (current.weapon_level) {
+        0 => .turbo,
+        1 => .laser,
+        else => .rocket,
+    };
+}
+
+fn nativeMovementStateAttachmentExitGain(camera_position: rl.Vector3, player_position: rl.Vector3, attachment_exit_pending: bool) ?f32 {
+    if (!attachment_exit_pending) return null;
+    const delta = rl.Vector3{
+        .x = camera_position.x - player_position.x,
+        .y = camera_position.y - player_position.y,
+        .z = camera_position.z - player_position.z,
+    };
+    return std.math.clamp(1.0 - (vectorLength(delta) * (1.0 / 60.0)), 0.0, 1.0);
+}
+
+fn nativeMovementStateVariantIndexForSample(sample: u32, comptime count: usize) usize {
+    return @min(count - 1, @as(usize, @intCast((@as(u64, sample) * count) / 0x8000)));
 }
 
 fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeJetpackSoundCues {
@@ -1414,6 +1450,55 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
         @as(?usize, gameplay_powerup_pickup_sound_paths.len - 1),
         nativePowerupPickupSoundIndex(previous, current),
     );
+
+    try std.testing.expectEqual(
+        @as(?f32, null),
+        nativeMovementStateAttachmentExitGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 0.0, .y = 0.0, .z = 30.0 },
+            false,
+        ),
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.5),
+        nativeMovementStateAttachmentExitGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 0.0, .y = 0.0, .z = 30.0 },
+            true,
+        ).?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.0),
+        nativeMovementStateAttachmentExitGain(
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 0.0, .y = 0.0, .z = 120.0 },
+            true,
+        ).?,
+        0.0001,
+    );
+    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(0, 2));
+    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(16383, 2));
+    try std.testing.expectEqual(@as(usize, 1), nativeMovementStateVariantIndexForSample(16384, 2));
+    try std.testing.expectEqual(@as(usize, 2), nativeMovementStateVariantIndexForSample(32767, 3));
+    try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.weapon_level = 1;
+    try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
+
+    previous = gameplay.Runner{};
+    current = previous;
+    try std.testing.expect(!nativeWeaponPresentationChanged(previous, current));
+    try std.testing.expectEqual(NativeMovementStateSoundFamily.turbo, nativeMovementStateSoundFamily(current));
+
+    current.weapon_level = 2;
+    current.movement_flags = 144;
+    try std.testing.expectEqual(NativeMovementStateSoundFamily.laser, nativeMovementStateSoundFamily(current));
+
+    current.movement_flags = 192;
+    try std.testing.expectEqual(NativeMovementStateSoundFamily.rocket, nativeMovementStateSoundFamily(current));
 
     previous = gameplay.Runner{};
     current = previous;
@@ -4097,26 +4182,34 @@ const AppState = struct {
         }
 
         if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-            const fired_sound = switch (current.weapon_level) {
-                0 => self.pickGameplaySoundVariant(
+            const fired_sound = switch (nativeMovementStateSoundFamily(current)) {
+                .turbo => self.pickNativeMovementStateSoundVariant(
                     gameplay_turbo_fire_sound_paths.len,
                     self.current_gameplay_sound_fx.turbo_fire,
                 ),
-                1 => self.pickGameplaySoundVariant(
+                .laser => self.pickNativeMovementStateSoundVariant(
                     gameplay_laser_sound_paths.len,
                     self.current_gameplay_sound_fx.laser,
                 ),
-                else => self.pickGameplaySoundVariant(
+                .rocket => self.pickNativeMovementStateSoundVariant(
                     gameplay_rocket_sound_paths.len,
                     self.current_gameplay_sound_fx.rocket,
                 ),
             };
-            self.playGameplayEffect(fired_sound);
+            if (nativeMovementStateAttachmentExitGain(
+                cameraWorldTransformFromMatrix(self.subgame_camera.shared_matrix).position,
+                current.worldPosition(preview, 0.0),
+                current.attachment_exit_pending,
+            )) |gain| {
+                self.playGameplayEffectScaled(fired_sound, gain);
+            } else {
+                self.playGameplayEffect(fired_sound);
+            }
         }
         if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.enemy_fire);
         }
-        if (current.weapon_level != previous.weapon_level) {
+        if (nativeWeaponPresentationChanged(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
@@ -6248,14 +6341,42 @@ const AppState = struct {
         rl.playSound(loaded.sound);
     }
 
+    fn gameplaySoundBaseVolume(self: *const AppState) f32 {
+        return if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
+    }
+
+    fn playGameplayEffectScaled(self: *AppState, sound: ?assets.LoadedSound, gain: f32) void {
+        if (!self.audio_ready) return;
+        const loaded = sound orelse return;
+        const base_volume = self.gameplaySoundBaseVolume();
+        const scaled_volume = std.math.clamp(base_volume * gain, 0.0, 1.0);
+        rl.setSoundVolume(loaded.sound, scaled_volume);
+        rl.playSound(loaded.sound);
+        rl.setSoundVolume(loaded.sound, base_volume);
+    }
+
     fn nextGameplaySoundVariantIndex(self: *AppState, comptime count: usize) usize {
         const index = @as(usize, @intCast(self.gameplay_audio_variant_counter % count));
         self.gameplay_audio_variant_counter +%= 1;
         return index;
     }
 
+    fn nextNativeMovementStateVariantIndex(self: *AppState, comptime count: usize) usize {
+        return nativeMovementStateVariantIndexForSample(self.nextMathRandomInt15(), count);
+    }
+
     fn pickGameplaySoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
         var start = self.nextGameplaySoundVariantIndex(count);
+        var remaining = count;
+        while (remaining > 0) : (remaining -= 1) {
+            if (variants[start]) |loaded| return loaded;
+            start = (start + 1) % count;
+        }
+        return null;
+    }
+
+    fn pickNativeMovementStateSoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
+        var start = self.nextNativeMovementStateVariantIndex(count);
         var remaining = count;
         while (remaining > 0) : (remaining -= 1) {
             if (variants[start]) |loaded| return loaded;
