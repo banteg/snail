@@ -175,8 +175,37 @@ const gameplay_slug_death_voice_paths = [_][]const u8{
     "VOICE/SLUG-DEATH1.OGG",
     "VOICE/SLUG-DEATH2.OGG",
 };
+const gameplay_native_voice_dying_paths = [_][]const u8{
+    "VOICE/ABANDONSHELL.OGG",
+    "VOICE/IMFALLINGANDICANTGETUP.OGG",
+    "VOICE/INEEDANEWJOB.OGG",
+    "VOICE/NOTCOOL.OGG",
+    "VOICE/THISISNOTMYDAY.OGG",
+};
+const gameplay_native_voice_fall_paths = [_][]const u8{
+    "VOICE/FALL1.OGG",
+    "VOICE/FALL2.OGG",
+    "VOICE/FALL3.OGG",
+};
+const gameplay_native_voice_victory_paths = [_][]const u8{
+    "VOICE/HOWSTHATFOREXPRESSSERVICE.OGG",
+    "VOICE/IDESERVEAPROMOTION.OGG",
+    "VOICE/IDESERVEARAISE.OGG",
+    "VOICE/IGOTAHOTFOOT.OGG",
+    "VOICE/IMTHESNAIL.OGG",
+    "VOICE/ONTIMEANDFEELINGFINE.OGG",
+    "VOICE/SOMEBODYPINCHME.OGG",
+};
+const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
+    "VOICE/WHOAHDUDE.OGG",
+    "VOICE/ZIPPIDYDOODAH.OGG",
+    "VOICE/WHOHOHOHOAH.OGG",
+};
 const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
 const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
+const native_gameplay_voice_set_cooldown_step: f32 = 1.0 / 240.0;
+const native_gameplay_voice_manager_global_step: f32 = 1.0 / 60.0;
+const native_gameplay_voice_manager_frequency_seconds: f32 = 20.0;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -596,6 +625,125 @@ const GameplayVoiceManager = struct {
         self.* = .{};
     }
 };
+
+const NativeGameplayVoiceSet = enum(u8) {
+    damage = 0,
+    dying = 1,
+    enemies = 2,
+    fall = 3,
+    misc = 4,
+    powerup = 5,
+    slow = 6,
+    start = 7,
+    victory = 8,
+    ouch = 9,
+    package = 10,
+    slugged = 11,
+    worm_tunnel = 12,
+    tutorial = 13,
+    postal = 14,
+    supertramp = 15,
+};
+
+const NativeGameplayVoiceMode = enum(u2) {
+    wait_for_idle = 0,
+    wait_for_frequency = 1,
+    interrupt_current = 2,
+};
+
+const NativeGameplayVoiceSetState = struct {
+    next_index: usize = 0,
+    cooldown_progress: f32 = 0.0,
+    cooldown_step: f32 = native_gameplay_voice_set_cooldown_step,
+
+    fn tick(self: *NativeGameplayVoiceSetState) void {
+        if (self.cooldown_progress <= 0.0) return;
+        self.cooldown_progress += self.cooldown_step;
+        if (self.cooldown_progress > 1.0) {
+            self.cooldown_progress = 0.0;
+        }
+    }
+};
+
+const NativeGameplayVoiceManager = struct {
+    global_progress: f32 = 0.0,
+    global_step: f32 = native_gameplay_voice_manager_global_step,
+    global_frequency_seconds: f32 = native_gameplay_voice_manager_frequency_seconds,
+    sets: [16]NativeGameplayVoiceSetState = [_]NativeGameplayVoiceSetState{.{}} ** 16,
+
+    fn tick(self: *NativeGameplayVoiceManager) void {
+        for (&self.sets) |*set_state| {
+            set_state.tick();
+        }
+        self.global_progress += self.global_step;
+    }
+
+    fn clear(self: *NativeGameplayVoiceManager) void {
+        self.* = .{};
+    }
+
+    fn requestPlay(
+        self: *NativeGameplayVoiceManager,
+        set_id: NativeGameplayVoiceSet,
+        mode: NativeGameplayVoiceMode,
+        voice_busy: bool,
+        sample_count: usize,
+    ) ?usize {
+        if (sample_count == 0) return null;
+        switch (mode) {
+            .wait_for_idle => {
+                if (voice_busy) return null;
+            },
+            .wait_for_frequency => {
+                if (voice_busy) return null;
+                if (self.global_progress < self.global_frequency_seconds) return null;
+            },
+            .interrupt_current => {},
+        }
+
+        const set_state = &self.sets[@intFromEnum(set_id)];
+        if (set_state.cooldown_progress != 0.0) return null;
+
+        const sample_index = set_state.next_index % sample_count;
+        set_state.next_index = (sample_index + 1) % sample_count;
+        set_state.cooldown_progress = set_state.cooldown_step;
+        if (mode != .wait_for_idle) {
+            self.global_progress = 0.0;
+        }
+        return sample_index;
+    }
+};
+
+fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
+    return switch (set_id) {
+        .dying => gameplay_native_voice_dying_paths[0..],
+        .fall => gameplay_native_voice_fall_paths[0..],
+        .victory => gameplay_native_voice_victory_paths[0..],
+        .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
+        else => &.{},
+    };
+}
+
+test "native gameplay voice manager enforces native mode gates" {
+    var manager: NativeGameplayVoiceManager = .{};
+
+    try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
+    try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.victory, .wait_for_idle, false, 3));
+    try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.victory, .wait_for_idle, false, 3));
+
+    var tick_index: usize = 0;
+    while (tick_index < 240) : (tick_index += 1) {
+        manager.tick();
+    }
+    try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
+
+    manager.global_progress = native_gameplay_voice_manager_frequency_seconds;
+    try std.testing.expectEqual(@as(?usize, 1), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
+
+    manager.clear();
+    try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.fall, .wait_for_idle, true, 2));
+    try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.fall, .interrupt_current, true, 2));
+}
 
 const max_announced_slug_voice_cells: usize = 64;
 
@@ -1545,6 +1693,7 @@ const AppState = struct {
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
     gameplay_voice_manager: GameplayVoiceManager = .{},
+    native_gameplay_voice_manager: NativeGameplayVoiceManager = .{},
     announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
     announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
@@ -3066,6 +3215,7 @@ const AppState = struct {
             }
         }
         self.gameplay_voice_manager.tick();
+        self.native_gameplay_voice_manager.tick();
         if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
             if (self.level_runner) |runner| {
                 if (!runner.paused and !self.startupGameplayBlockActive()) {
@@ -3131,7 +3281,7 @@ const AppState = struct {
                             return;
                         }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
-                        self.playGameplayRunnerAudio(previous_runner, runner.*, effective_runner_input);
+                        self.playGameplayRunnerAudio(previous_runner, runner.*, loaded_track_preview, effective_runner_input);
                         self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
                         self.spawnGameplayRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
@@ -3173,8 +3323,33 @@ const AppState = struct {
         }
     }
 
-    fn playGameplayRunnerAudio(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
+    fn playGameplayRunnerAudio(
+        self: *AppState,
+        previous: gameplay.Runner,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+        runner_input: gameplay.RunnerInput,
+    ) void {
         if (!self.audio_ready) return;
+
+        if (!previous.attachment_follow.active and current.attachment_follow.active and
+            current.movement_mode == .attachment)
+        {
+            if (current.currentAttachmentRuntimeKind(preview)) |runtime_kind| {
+                if (runtime_kind == 24) {
+                    self.tryPlayNativeGameplayVoiceSet(.worm_tunnel, .wait_for_idle) catch {};
+                }
+            }
+        }
+        if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {
+            self.tryPlayNativeGameplayVoiceSet(.victory, .interrupt_current) catch {};
+        }
+        if (!previous.attachment_exit_gate_a and current.attachment_exit_gate_a) {
+            self.tryPlayNativeGameplayVoiceSet(.fall, .wait_for_idle) catch {};
+        }
+        if (!previous.attachment_exit_gate_b and current.attachment_exit_gate_b) {
+            self.tryPlayNativeGameplayVoiceSet(.dying, .interrupt_current) catch {};
+        }
 
         if (current.damage_warning_state != .idle) {
             self.gameplay_warning_sound_seconds += @floatCast(self.simulation_clock.step_seconds);
@@ -5240,6 +5415,20 @@ const AppState = struct {
         rl.playSound(self.current_voice_sound.?.sound);
     }
 
+    fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode) !void {
+        if (!self.audio_ready) return;
+        const paths = nativeGameplayVoicePaths(set_id);
+        if (paths.len == 0) return;
+
+        const sample_index = self.native_gameplay_voice_manager.requestPlay(
+            set_id,
+            mode,
+            self.gameplayVoiceBusy(),
+            paths.len,
+        ) orelse return;
+        try self.playVoiceByPath(paths[sample_index]);
+    }
+
     fn gameplayVoiceBusy(self: *const AppState) bool {
         if (self.current_voice_sound) |sound| {
             return rl.isSoundPlaying(sound.sound);
@@ -5835,6 +6024,7 @@ const AppState = struct {
         self.active_gameplay_effect_count = 0;
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
+        self.native_gameplay_voice_manager.clear();
         self.announced_slug_voice_cell_count = 0;
         self.level_runner = null;
         self.gameplay_click_start_active = false;

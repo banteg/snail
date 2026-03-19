@@ -3711,6 +3711,11 @@ pub const Runner = struct {
         return preview.builtAttachmentForSourceRow(self.attachment_follow.source_row);
     }
 
+    pub fn currentAttachmentRuntimeKind(self: *const Runner, preview: *const track.LoadedLevelPreview) ?u8 {
+        const built = self.currentAttachmentBuilt(preview) orelse return null;
+        return built.template.spec.runtime_kind;
+    }
+
     fn laneCenterFromWorldX(preview: *const track.LoadedLevelPreview, world_x: f32) f32 {
         const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
         return world_x + width_offset;
