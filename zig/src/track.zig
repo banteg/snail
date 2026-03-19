@@ -135,6 +135,14 @@ pub const postalChallengeRuntimeBuildFlags: u32 = 0x00f5cfff;
 pub const timeTrialRuntimeBuildFlags: u32 = 0x0075cfff;
 pub const tutorialRuntimeBuildFlags: u32 = 0x00e4cfff;
 pub const defaultRuntimeBuildFlags: u32 = postalChallengeRuntimeBuildFlags;
+pub const runtime_row_flag_no_fall: u32 = 0x0000_0100;
+pub const runtime_row_flag_ring_none: u32 = 0x0000_0200;
+pub const runtime_row_flag_ring_normal: u32 = 0x0000_0400;
+pub const runtime_row_flag_ring_explode: u32 = 0x0000_0800;
+pub const runtime_row_flag_ring_slow: u32 = 0x0000_1000;
+pub const runtime_row_flag_ring_powerup: u32 = 0x0000_2000;
+pub const runtime_row_flag_jetpack_off: u32 = 0x0000_8000;
+const ramp_special_ring_forward_row_offset: usize = 6;
 // PORT(verified): Windows runtime traces consistently report `track_row_start = 31`
 // on fresh gameplay starts, and `update_cameraman` uses the same game-side scalar for
 // its early intro-pitch / vertical-lift blend threshold.
@@ -257,6 +265,8 @@ pub const LoadedLevelPreview = struct {
     salt_scalar: f32,
     parcel_target_count: usize,
     runtime_tiles: []u8,
+    runtime_row_flags: []u32,
+    runtime_ring_effect_kinds: []u8,
     runtime_flag_b01_grid: []bool,
     runtime_flag_b40_grid: []bool,
     runtime_flag_b80_grid: []bool,
@@ -396,6 +406,22 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const runtime_row_flags = try buildRuntimeRowFlags(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+        );
+        errdefer allocator.free(runtime_row_flags);
+        const runtime_ring_effect_kinds = try buildRuntimeRingEffectGrid(
+            allocator,
+            runtime_tiles,
+            runtime_row_flags,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_ring_effect_kinds);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
@@ -466,6 +492,8 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse level_definition.normalizedSaltScalar() orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_row_flags = runtime_row_flags,
+            .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -570,6 +598,22 @@ pub const LoadedLevelPreview = struct {
             runtime_build_config,
         );
         errdefer allocator.free(runtime_tiles);
+        const runtime_row_flags = try buildRuntimeRowFlags(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+        );
+        errdefer allocator.free(runtime_row_flags);
+        const runtime_ring_effect_kinds = try buildRuntimeRingEffectGrid(
+            allocator,
+            runtime_tiles,
+            runtime_row_flags,
+            total_rows,
+            max_width,
+            runtime_build_flags,
+        );
+        errdefer allocator.free(runtime_ring_effect_kinds);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
@@ -640,6 +684,8 @@ pub const LoadedLevelPreview = struct {
             .salt_scalar = options.salt_scalar_override orelse 0.0,
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
+            .runtime_row_flags = runtime_row_flags,
+            .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -658,6 +704,8 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.placed_models);
         self.allocator.free(self.model_assets);
         self.allocator.free(self.runtime_spawn_hints);
+        self.allocator.free(self.runtime_ring_effect_kinds);
+        self.allocator.free(self.runtime_row_flags);
         self.allocator.free(self.runtime_edge_masks);
         self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
@@ -898,6 +946,16 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeTileAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
         return self.runtime_tiles[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeRowFlagsAt(self: *const LoadedLevelPreview, global_row: usize) u32 {
+        if (global_row >= self.total_rows) return 0;
+        return self.runtime_row_flags[global_row];
+    }
+
+    pub fn nativeRingEffectKindAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) u8 {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return 0;
+        return self.runtime_ring_effect_kinds[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1761,6 +1819,120 @@ fn buildRuntimeFlagB40Grid(
     return flag_grid;
 }
 
+fn runtimeRowFlagsForRow(row: segment.Row) u32 {
+    var flags: u32 = 0;
+    if (row.marked) {
+        flags |= 0x04;
+    }
+
+    if (row.annotation) |annotation| {
+        switch (annotation) {
+            .path => flags |= 0x08,
+            .ring => |ring_kind| {
+                flags |= switch (ring_kind) {
+                    .none => runtime_row_flag_ring_none,
+                    .normal => runtime_row_flag_ring_normal,
+                    .powerup => runtime_row_flag_ring_powerup,
+                    .explode => runtime_row_flag_ring_explode,
+                    .slow => runtime_row_flag_ring_slow,
+                };
+            },
+            .parcel => flags |= 0x01,
+            .model => flags |= 0x02,
+            .jetpack_off => flags |= runtime_row_flag_jetpack_off,
+            .no_fall => flags |= runtime_row_flag_no_fall,
+        }
+    }
+
+    return flags;
+}
+
+fn buildRuntimeRowFlags(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+) ![]u32 {
+    const row_flags = try allocator.alloc(u32, total_rows);
+    @memset(row_flags, 0);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            row_flags[row_base + row_index] = runtimeRowFlagsForRow(row);
+        }
+    }
+
+    return row_flags;
+}
+
+fn setRuntimeRingEffectKind(
+    ring_effect_kinds: []u8,
+    max_width: usize,
+    total_rows: usize,
+    global_row: usize,
+    lane_index: usize,
+    kind: u8,
+) void {
+    if (global_row >= total_rows or lane_index >= max_width or kind == 0) return;
+    ring_effect_kinds[runtimeTileIndex(max_width, global_row, lane_index)] = kind;
+}
+
+fn buildRuntimeRingEffectGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    runtime_row_flags: []const u32,
+    total_rows: usize,
+    max_width: usize,
+    build_flags: u32,
+) ![]u8 {
+    const ring_effect_kinds = try allocator.alloc(u8, total_rows * max_width);
+    @memset(ring_effect_kinds, 0);
+    const tutorial_default_rings = build_flags == tutorialRuntimeBuildFlags;
+
+    for (0..total_rows) |global_row| {
+        const row_flags = runtime_row_flags[global_row];
+        for (0..max_width) |lane_index| {
+            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+            switch (tile_type) {
+                0x23 => {
+                    if ((row_flags & runtime_row_flag_ring_normal) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 5);
+                    } else if ((row_flags & runtime_row_flag_ring_powerup) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 8);
+                    } else if ((row_flags & runtime_row_flag_ring_explode) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 6);
+                    } else if ((row_flags & runtime_row_flag_ring_slow) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 7);
+                    }
+                },
+                0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
+                    const target_row = global_row + ramp_special_ring_forward_row_offset;
+                    if ((row_flags & runtime_row_flag_ring_powerup) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, target_row, lane_index, 8);
+                    } else if ((row_flags & runtime_row_flag_ring_explode) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, target_row, lane_index, 6);
+                    } else if ((row_flags & runtime_row_flag_ring_slow) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, target_row, lane_index, 7);
+                    } else if (tutorial_default_rings and (row_flags & runtime_row_flag_ring_none) == 0 and (tile_type == 0x02 or tile_type == 0x03 or tile_type == 0x04)) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 4);
+                    }
+                },
+                0x08, 0x09, 0x0a => {
+                    if ((row_flags & runtime_row_flag_ring_explode) != 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 2);
+                    } else if (tutorial_default_rings and (row_flags & runtime_row_flag_ring_none) == 0) {
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 2);
+                    }
+                },
+                else => {},
+            }
+        }
+    }
+
+    return ring_effect_kinds;
+}
+
 fn buildRuntimeFlagB80Grid(
     allocator: std.mem.Allocator,
     segments: []const segment.Definition,
@@ -2497,6 +2669,119 @@ test "runtime flag b01 follows NoFall annotations" {
         saw_no_fall = saw_no_fall or expects_flag;
     }
     try std.testing.expect(saw_no_fall);
+}
+
+test "runtime row flags preserve recovered shipped ring bits" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial4_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 4.TXT") orelse return error.EntryNotFound;
+    var tutorial4 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial4_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial4.deinit();
+
+    try std.testing.expectEqual(runtime_row_flag_ring_powerup, tutorial4.runtimeRowFlagsAt(7) & runtime_row_flag_ring_powerup);
+    try std.testing.expectEqual(@as(u32, 0), tutorial4.runtimeRowFlagsAt(13) & (runtime_row_flag_ring_powerup | runtime_row_flag_ring_explode | runtime_row_flag_ring_slow | runtime_row_flag_ring_normal | runtime_row_flag_ring_none));
+
+    const tutorial7_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 7.TXT") orelse return error.EntryNotFound;
+    var tutorial7 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial7_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial7.deinit();
+
+    try std.testing.expectEqual(runtime_row_flag_ring_none, tutorial7.runtimeRowFlagsAt(21) & runtime_row_flag_ring_none);
+    try std.testing.expectEqual(runtime_row_flag_ring_slow, tutorial7.runtimeRowFlagsAt(27) & runtime_row_flag_ring_slow);
+}
+
+test "runtime ring effect grid matches recovered tutorial offset and explicit-row cases" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial4_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 4.TXT") orelse return error.EntryNotFound;
+    var tutorial4 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial4_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial4.deinit();
+
+    try std.testing.expectEqual(@as(u8, 0), tutorial4.nativeRingEffectKindAt(7, 1));
+    try std.testing.expectEqual(@as(u8, 8), tutorial4.nativeRingEffectKindAt(13, 1));
+
+    const tutorial7_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 7.TXT") orelse return error.EntryNotFound;
+    var tutorial7 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial7_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial7.deinit();
+
+    try std.testing.expectEqual(@as(u8, 0), tutorial7.nativeRingEffectKindAt(21, 1));
+    try std.testing.expectEqual(@as(u8, 7), tutorial7.nativeRingEffectKindAt(27, 4));
+
+    const tutorial6_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 6.TXT") orelse return error.EntryNotFound;
+    var tutorial6 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial6_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial6.deinit();
+
+    try std.testing.expectEqual(@as(u8, 8), tutorial6.nativeRingEffectKindAt(51, 1));
+
+    const tutorial11_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 11.TXT") orelse return error.EntryNotFound;
+    var tutorial11 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial11_entry,
+        .{ .load_models = false },
+    );
+    defer tutorial11.deinit();
+
+    try std.testing.expectEqual(@as(u8, 6), tutorial11.nativeRingEffectKindAt(27, 4));
+}
+
+test "tutorial runtime ring effect grid publishes default ramp families without annotations" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial11_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 11.TXT") orelse return error.EntryNotFound;
+    var tutorial11 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial11_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = tutorialRuntimeBuildFlags,
+        },
+    );
+    defer tutorial11.deinit();
+
+    try std.testing.expectEqual(@as(u8, 2), tutorial11.nativeRingEffectKindAt(22, 1));
+
+    const tutorial7_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 7.TXT") orelse return error.EntryNotFound;
+    var tutorial7 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial7_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = tutorialRuntimeBuildFlags,
+        },
+    );
+    defer tutorial7.deinit();
+
+    try std.testing.expectEqual(@as(u8, 0), tutorial7.nativeRingEffectKindAt(21, 1));
 }
 
 test "runtime build mirror latch matches recovered threshold logic" {

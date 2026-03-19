@@ -576,6 +576,37 @@ const RowSample = struct {
     path_name: ?[]const u8,
 };
 
+fn nativeRingEventLabel(effect_kind: u8) ?segment.RingKind {
+    return switch (effect_kind) {
+        1 => .normal,
+        2, 6 => .explode,
+        4, 5, 8 => .powerup,
+        7 => .slow,
+        else => null,
+    };
+}
+
+fn nativeRingEventScores(effect_kind: u8) bool {
+    return switch (effect_kind) {
+        1, 2, 4, 5, 6 => true,
+        7, 8 => false,
+        else => false,
+    };
+}
+
+fn nativeRingAnnotationHandledByRuntime(tile_type: ?u8, row_flags: u32) bool {
+    const resolved_tile = tile_type orelse return false;
+    if ((row_flags & track.runtime_row_flag_ring_none) != 0 and track.runtimeGameplayCellKindForTile(resolved_tile, track.defaultRuntimeBuildFlags) == .ring) {
+        return true;
+    }
+    return switch (resolved_tile) {
+        0x23 => (row_flags & (track.runtime_row_flag_ring_normal | track.runtime_row_flag_ring_powerup | track.runtime_row_flag_ring_explode | track.runtime_row_flag_ring_slow)) != 0,
+        0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => (row_flags & (track.runtime_row_flag_ring_powerup | track.runtime_row_flag_ring_explode | track.runtime_row_flag_ring_slow)) != 0,
+        0x08, 0x09, 0x0a => (row_flags & track.runtime_row_flag_ring_explode) != 0,
+        else => false,
+    };
+}
+
 // PORT(partial): Windows attachment-follow is driven by installed runtime attachment
 // records plus sampled template geometry. The current port now uses built templates,
 // a preview-side installed-row map, and a first geometric entry test, but this state
@@ -1925,9 +1956,15 @@ pub const Runner = struct {
     fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const sample = self.sampleRow(preview, global_row) orelse return;
         var began_installed_attachment = false;
+        const native_ring_effect_kind = preview.nativeRingEffectKindAt(global_row, sample.resolved_lane_index);
+        const runtime_row_flags = preview.runtimeRowFlagsAt(global_row);
 
         if (self.movement_mode != .attachment) {
             began_installed_attachment = self.tryBeginInstalledAttachmentFollow(preview, global_row, sample);
+        }
+
+        if (native_ring_effect_kind != 0) {
+            self.recordNativeRingEffect(preview, native_ring_effect_kind);
         }
 
         if (sample.annotation) |annotation| {
@@ -1939,7 +1976,7 @@ pub const Runner = struct {
                 },
                 .ring => |ring_kind| {
                     if (sample.gameplay_cell) |kind| {
-                        if (kind == .ring) {
+                        if (kind == .ring and native_ring_effect_kind == 0 and !nativeRingAnnotationHandledByRuntime(sample.runtime_tile_hint, runtime_row_flags)) {
                             self.recordRing(preview, ring_kind);
                         }
                     }
@@ -2053,6 +2090,18 @@ pub const Runner = struct {
     }
 
     fn recordRing(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind) void {
+        self.applyRingEffect(preview, ring_kind, switch (ring_kind) {
+            .none, .slow => false,
+            .normal, .powerup, .explode => true,
+        });
+    }
+
+    fn recordNativeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, effect_kind: u8) void {
+        const ring_kind = nativeRingEventLabel(effect_kind) orelse return;
+        self.applyRingEffect(preview, ring_kind, nativeRingEventScores(effect_kind));
+    }
+
+    fn applyRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind, award_score: bool) void {
         switch (ring_kind) {
             .none => {},
             .normal => self.counters.ring_normal += 1,
@@ -2069,7 +2118,7 @@ pub const Runner = struct {
                 self.slow_ticks = slow_ring_duration_ticks;
             },
         }
-        if (ring_kind == .normal or ring_kind == .powerup or ring_kind == .explode) {
+        if (award_score) {
             self.recordScore(&self.score.ring_collect, 100);
         }
         if (ring_kind != .none) {
@@ -5541,6 +5590,78 @@ test "slow rings reduce effective speed while active" {
 
     runner.stepTemporaryStates();
     try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.slow_ticks);
+}
+
+test "tutorial powerup ramps consume the recovered forward runtime ring event" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+
+    runner.processRow(&fixture.preview, 7);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.ring_powerup);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+
+    runner.processRow(&fixture.preview, 13);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
+    try std.testing.expectEqual(@as(u8, 1), runner.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
+    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+    try std.testing.expectEqualStrings("ring_powerup", runner.recentEventLabel());
+}
+
+test "explicit tutorial ring rows still consume their native same-row effects" {
+    var powerup_fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer powerup_fixture.deinit();
+
+    var powerup_runner = Runner.init(&powerup_fixture.preview);
+    powerup_runner.lane_index = 1;
+    powerup_runner.lane_center = 1.5;
+    powerup_runner.processRow(&powerup_fixture.preview, 51);
+    try std.testing.expectEqual(@as(u32, 1), powerup_runner.counters.ring_powerup);
+    try std.testing.expectEqual(@as(u32, 0), powerup_runner.score.total);
+
+    var slow_fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 7.TXT");
+    defer slow_fixture.deinit();
+
+    var slow_runner = Runner.init(&slow_fixture.preview);
+    slow_runner.lane_index = 4;
+    slow_runner.lane_center = 4.5;
+    slow_runner.processRow(&slow_fixture.preview, 27);
+    try std.testing.expectEqual(@as(u32, 1), slow_runner.counters.ring_slow);
+    try std.testing.expectEqual(slow_ring_duration_ticks, slow_runner.slow_ticks);
+    try std.testing.expectEqual(@as(u32, 0), slow_runner.score.total);
+}
+
+test "tutorial default ramp rings consume the native runtime event lane" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial11_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 11.TXT") orelse return error.EntryNotFound;
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial11_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.current_global_row = 22;
+    runner.resolved_lane_index = 1;
+    runner.processRow(&preview, 22);
+
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_explode);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 100), runner.score.ring_collect);
+    try std.testing.expectEqualStrings("ring_explode", runner.recentEventLabel());
 }
 
 test "projectile fire defeats slug after powerup" {
