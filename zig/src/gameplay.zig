@@ -1197,7 +1197,7 @@ pub const Runner = struct {
         }
         if (!self.paused) {
             self.updateTrackParcels(preview);
-            self.updateRowEventDisplay(preview);
+            self.updateRowEventDisplay(preview, input.fire);
         }
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
@@ -3225,6 +3225,11 @@ pub const Runner = struct {
         }
     }
 
+    fn armRowEventPromptGate(self: *Runner, accept_pressed: bool) void {
+        if (!accept_pressed) return;
+        self.row_event_display.gate_18 = 1;
+    }
+
     fn stepRowEventProgress(self: *Runner) bool {
         self.row_event_display.progress = std.math.clamp(
             self.row_event_display.progress + self.row_event_display.progress_step,
@@ -3234,7 +3239,7 @@ pub const Runner = struct {
         return self.row_event_display.progress >= 1.0;
     }
 
-    fn updateRowEventDisplay(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    fn updateRowEventDisplay(self: *Runner, preview: *const track.LoadedLevelPreview, accept_pressed: bool) void {
         self.updateRowEventWidgetWorld();
         switch (self.row_event_display.state) {
             .inactive, .complete => {},
@@ -3263,9 +3268,13 @@ pub const Runner = struct {
             .final_delivery => {
                 self.row_event_display.gate_18 = 0;
                 self.row_event_display.state = .bonus_prompt;
+                self.armRowEventPromptGate(accept_pressed);
                 self.stepRowEventBonusPrompt(preview);
             },
-            .bonus_prompt => self.stepRowEventBonusPrompt(preview),
+            .bonus_prompt => {
+                self.armRowEventPromptGate(accept_pressed);
+                self.stepRowEventBonusPrompt(preview);
+            },
             .final_delivery_delay => {
                 if (!self.stepRowEventProgress()) return;
                 self.row_event_display.progress = 0.0;
@@ -5852,7 +5861,7 @@ test "row event display updates the parcel widget world from the cameraman matri
         row_event_widget_local_z,
     );
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectApproxEqAbs(expected.x, runner.row_event_display.widget_world_x, 0.0001);
     try std.testing.expectApproxEqAbs(expected.y, runner.row_event_display.widget_world_y, 0.0001);
@@ -5945,7 +5954,7 @@ test "row event staging spawns a fresh delivery parcel slot" {
     runner.row_event_display.progress = 1.0;
     runner.row_event_display.progress_step = 0.0;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(@as(u32, 1), runner.row_event_display.staged_parcel_count);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
@@ -6120,7 +6129,7 @@ test "row event staging promotes delivered parcels into the hold state" {
     runner.row_event_display.delivered_parcel_count = 2;
     runner.row_event_display.progress_step = 1.0;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, true);
 
     try std.testing.expectEqual(@as(u32, 2), runner.row_event_display.staged_parcel_count);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
@@ -6137,10 +6146,25 @@ test "final parcel delivery can complete the row event on the same tick" {
     runner.row_event_display.gate_18 = 1;
     runner.row_event_display.bonus_blink_step = 1.0;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.gate_18);
+}
+
+test "final parcel delivery arms the row event confirm gate on the same tick" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, false).?;
+    setRunnerLiveRowTarget(&runner, target);
+    runner.row_event_display.state = .final_delivery;
+
+    runner.updateRowEventDisplay(&fixture.preview, true);
+
+    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 1), runner.row_event_display.gate_18);
 }
 
 test "final delivery delay promotes into the final delivery state" {
@@ -6151,7 +6175,7 @@ test "final delivery delay promotes into the final delivery state" {
     runner.row_event_display.state = .final_delivery_delay;
     runner.row_event_display.progress_step = 1.0;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(RowEventDisplayState.final_delivery, runner.row_event_display.state);
 }
@@ -6657,9 +6681,24 @@ test "row event bonus prompt promotes to complete when live runtime flag b40 is 
     setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .bonus_prompt;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
+}
+
+test "row event bonus prompt arms the confirm gate from gameplay input" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstRuntimeFlagB40Cell(&fixture.preview, false).?;
+    setRunnerLiveRowTarget(&runner, target);
+    runner.row_event_display.state = .bonus_prompt;
+
+    runner.updateRowEventDisplay(&fixture.preview, true);
+
+    try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
+    try std.testing.expectEqual(@as(u8, 1), runner.row_event_display.gate_18);
 }
 
 test "row event bonus prompt waits while runtime flag b40 is clear" {
@@ -6674,7 +6713,7 @@ test "row event bonus prompt waits while runtime flag b40 is clear" {
     setRunnerLiveRowTarget(&runner, target);
     runner.row_event_display.state = .bonus_prompt;
 
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
 }
@@ -6869,7 +6908,7 @@ test "postal completion handoff waits for the row event controller to complete" 
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
     setRunnerLiveRowTarget(&runner, target);
-    runner.updateRowEventDisplay(&fixture.preview);
+    runner.updateRowEventDisplay(&fixture.preview, false);
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RowEventDisplayState.complete, runner.row_event_display.state);
     try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());

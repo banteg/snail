@@ -151,11 +151,14 @@ const gameplay_rocket_sound_paths = [_][]const u8{
 };
 const gameplay_heart_sound_path = "SFX2/HEART.OGG";
 const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
+const gameplay_jetpack_shutoff_sound_path = "SFX2/SERVO2.OGG";
 const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
 const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
 const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
 const gameplay_enemy_fire_sound_path = "SFX2/ENEMYFIRE.OGG";
 const gameplay_boing_sound_path = "SFX2/BOING.OGG";
+const gameplay_completion_init_sound_path = "SFX2/SKIDSTOP.OGG";
+const gameplay_row_event_confirm_sound_path = "SFX2/SELECT.OGG";
 const gameplay_place_package_sound_path = "SFX2/PLACEPACKAGE.OGG";
 const gameplay_package_count_sound_path = "SFX2/PACKAGECOUNT.OGG";
 const gameplay_perfect_sound_path = "SFX2/PERFECT.OGG";
@@ -209,10 +212,33 @@ const gameplay_native_voice_slugged_paths = [_][]const u8{
     "VOICE/NOTCOOL.OGG",
     "VOICE/THISISNOTMYDAY.OGG",
 };
+const gameplay_native_voice_enemies_paths = [_][]const u8{
+    "VOICE/ALWAYSTIPYOURMAILCARRIER.OGG",
+    "VOICE/ALWAYSTIPYOURPOSTALWORKER.OGG",
+    "VOICE/BACKOFF.OGG",
+    "VOICE/BACKOFFSLUGS.OGG",
+    "VOICE/COMINGTHROUGH.OGG",
+    "VOICE/MAKEWAY.OGG",
+};
 const gameplay_native_voice_fall_paths = [_][]const u8{
     "VOICE/FALL1.OGG",
     "VOICE/FALL2.OGG",
     "VOICE/FALL3.OGG",
+};
+const gameplay_native_voice_misc_paths = [_][]const u8{
+    "VOICE/CHECKMEOUT.OGG",
+    "VOICE/DONTHATEME.OGG",
+    "VOICE/FOOTACHE.OGG",
+    "VOICE/GOTMAIL.OGG",
+    "VOICE/ISURECOULDUSE.OGG",
+    "VOICE/ITSNOTJUSTASHELL.OGG",
+    "VOICE/MYNAMEISTURBO.OGG",
+    "VOICE/PARTFOOTPARTTUMMY.OGG",
+    "VOICE/SNAILSINSPACE.OGG",
+    "VOICE/THATWASCOOL.OGG",
+    "VOICE/HELLINASHELL.OGG",
+    "VOICE/TRAILBLAZER.OGG",
+    "VOICE/ESCARGOT.OGG",
 };
 const gameplay_native_voice_victory_paths = [_][]const u8{
     "VOICE/HOWSTHATFOREXPRESSSERVICE.OGG",
@@ -258,6 +284,15 @@ const gameplay_native_voice_powerup_paths = [_][]const u8{
     "VOICE/TRAILBLAZER.OGG",
     "VOICE/THATWASAWESOME.OGG",
 };
+const gameplay_native_voice_slow_paths = [_][]const u8{
+    "VOICE/AMIEVENMOVING.OGG",
+    "VOICE/ANYSLOWER.OGG",
+    "VOICE/COMEON.OGG",
+    "VOICE/FASTERISBETTER.OGG",
+    "VOICE/ICANDOBETTER.OGG",
+    "VOICE/FASTERWOULDBEBETTER.OGG",
+    "VOICE/ISLEEPFASTERTHANTHIS.OGG",
+};
 const gameplay_native_voice_start_paths = [_][]const u8{
     "VOICE/ALLOWSIXTOEIGHTMINUTES.OGG",
     "VOICE/BRINGITON.OGG",
@@ -270,6 +305,26 @@ const gameplay_native_voice_start_paths = [_][]const u8{
     "VOICE/SNAILMAILALWAYSONTIME.OGG",
     "VOICE/SNAILMAILINTHIRTYMINUTES.OGG",
 };
+const gameplay_native_voice_tutorial_paths = [_][]const u8{
+    "VOICE/TUT1.OGG",
+    "VOICE/TUT2.OGG",
+    "VOICE/TUT3.OGG",
+    "VOICE/TUT4.OGG",
+    "VOICE/TUT5.OGG",
+    "VOICE/TUT6.OGG",
+    "VOICE/TUT7.OGG",
+    "VOICE/TUT8.OGG",
+    "VOICE/TUT9.OGG",
+    "VOICE/TUT10.OGG",
+    "VOICE/TUT11.OGG",
+    "VOICE/TUT12.OGG",
+    "VOICE/TUT13.OGG",
+    "VOICE/TUT14.OGG",
+    "VOICE/TUT15.OGG",
+    "VOICE/TUT16.OGG",
+    "VOICE/TUT17.OGG",
+    "VOICE/TUT18.OGG",
+};
 const gameplay_native_voice_postal_paths = [_][]const u8{
     "VOICE/IMGOINGPOSTAL.OGG",
     "VOICE/IMGOINGPOSTAL2.OGG",
@@ -277,11 +332,12 @@ const gameplay_native_voice_postal_paths = [_][]const u8{
 };
 const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
 const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
-const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
+const gameplay_weapon_change_sound_path = "SFX2/SERVO1.OGG";
 const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
 const native_gameplay_voice_set_cooldown_step: f32 = 1.0 / 240.0;
 const native_gameplay_voice_manager_global_step: f32 = 1.0 / 60.0;
 const native_gameplay_voice_manager_frequency_seconds: f32 = 20.0;
+const native_gameplay_slow_voice_timer_step: f32 = 1.0 / 60.0;
 const native_gameplay_start_voice_tick: u64 = 18;
 const native_runtime_tile_wall: u8 = 0x0e;
 const default_level_path = app.default_level_path;
@@ -531,11 +587,14 @@ const GameplaySoundFx = struct {
     weapon_change: ?assets.LoadedSound = null,
     heart: ?assets.LoadedSound = null,
     jetpack: ?assets.LoadedSound = null,
+    jetpack_shutoff: ?assets.LoadedSound = null,
     slow_ring: ?assets.LoadedSound = null,
     invincible: ?assets.LoadedSound = null,
     explode_ring: ?assets.LoadedSound = null,
     enemy_fire: ?assets.LoadedSound = null,
     boing: ?assets.LoadedSound = null,
+    completion_init: ?assets.LoadedSound = null,
+    row_event_confirm: ?assets.LoadedSound = null,
     place_package: ?assets.LoadedSound = null,
     package_count: ?assets.LoadedSound = null,
     perfect: ?assets.LoadedSound = null,
@@ -803,10 +862,8 @@ const NativeGameplayVoiceManager = struct {
         set_id: NativeGameplayVoiceSet,
         mode: NativeGameplayVoiceMode,
         voice_busy: bool,
-        sample_count: usize,
         payload_index: usize,
     ) ?usize {
-        if (sample_count == 0 or payload_index >= sample_count) return null;
         switch (mode) {
             .wait_for_idle => {
                 if (voice_busy) return null;
@@ -829,21 +886,125 @@ const NativeGameplayVoiceManager = struct {
     }
 };
 
+const native_global_audio_bank_paths = [_][]const u8{
+    "SFX2/CHEERS.OGG",
+    "SFX2/PW1.OGG",
+    "SFX2/PW2.OGG",
+    "SFX2/PW3.OGG",
+    "SFX2/PW4.OGG",
+    "SFX2/PW5.OGG",
+    "SFX2/PW6.OGG",
+    "SFX2/PW7.OGG",
+    frontend_select_sound_path,
+    frontend_highlight_sound_path,
+    "VOICE/OW1.OGG",
+    "VOICE/OW2.OGG",
+    "VOICE/OW3.OGG",
+    "VOICE/OW4.OGG",
+    "SFX2/HEART.OGG",
+    "SFX2/ENEMYFIRE.OGG",
+    "SFX2/JETPACK.OGG",
+    "SFX2/TURBOFIRE1.OGG",
+    "SFX2/TURBOFIRE2.OGG",
+    "SFX2/LASER1.OGG",
+    "SFX2/LASER2.OGG",
+    "SFX2/LASER3.OGG",
+    "SFX2/ROCKET1.OGG",
+    "SFX2/ROCKET2.OGG",
+    "SFX2/ROCKET3.OGG",
+    "SFX2/SERVO1.OGG",
+    "SFX2/SERVO2.OGG",
+    "SFX2/PLACEPACKAGE.OGG",
+    "VOICE/SLUG-DEATH1.OGG",
+    "VOICE/SLUG-DEATH2.OGG",
+    "VOICE/SLUG-DESTROY.OGG",
+    "VOICE/SLUG-GOTHIM.OGG",
+    "VOICE/SLUG-HESTOOFAST.OGG",
+    "VOICE/SLUG-SNAILALERT.OGG",
+    "VOICE/SLUG-VICTORY.OGG",
+    "VOICE/SLUG-VICTORY2.OGG",
+    "VOICE/SLUG-HIT1.OGG",
+    "VOICE/SLUG-HIT2.OGG",
+    "VOICE/SLUG-HIT3.OGG",
+    "SFX2/ASTEROIDIMPACT1.OGG",
+    "SFX2/ASTEROIDIMPACT2.OGG",
+    "SFX2/BOING.OGG",
+    "SFX2/EXPLODERING.OGG",
+    "SFX2/SLOWRING.OGG",
+    "SFX2/EXTRALIFE.OGG",
+    "SFX2/PACKAGECOUNT.OGG",
+    "SFX2/SKIDSTOP.OGG",
+    "SFX2/WALLHIT.OGG",
+    "SFX2/INVINCIBLE.OGG",
+    "SFX2/PERFECT.OGG",
+    "SFX2/POSTALLOOP.OGG",
+};
+
+const native_global_voice_set_paths = .{
+    gameplay_native_voice_damage_paths[0..],
+    gameplay_native_voice_dying_paths[0..],
+    gameplay_native_voice_enemies_paths[0..],
+    gameplay_native_voice_fall_paths[0..],
+    gameplay_native_voice_misc_paths[0..],
+    gameplay_native_voice_powerup_paths[0..],
+    gameplay_native_voice_slow_paths[0..],
+    gameplay_native_voice_start_paths[0..],
+    gameplay_native_voice_victory_paths[0..],
+    gameplay_native_voice_ouch_paths[0..],
+    gameplay_native_voice_package_paths[0..],
+    gameplay_native_voice_slugged_paths[0..],
+    gameplay_native_voice_worm_tunnel_paths[0..],
+    gameplay_native_voice_tutorial_paths[0..],
+    gameplay_native_voice_postal_paths[0..],
+    gameplay_native_voice_supertramp_paths[0..],
+};
+
+fn nativeGlobalAudioSamplePath(sample_index: usize) ?[]const u8 {
+    if (sample_index < native_global_audio_bank_paths.len) {
+        return native_global_audio_bank_paths[sample_index];
+    }
+
+    var remaining = sample_index - native_global_audio_bank_paths.len;
+    inline for (native_global_voice_set_paths) |paths| {
+        if (remaining < paths.len) return paths[remaining];
+        remaining -= paths.len;
+    }
+    return null;
+}
+
+fn nativeGlobalAudioSampleIndexForPath(sample_path: []const u8) ?usize {
+    for (native_global_audio_bank_paths, 0..) |path, index| {
+        if (std.ascii.eqlIgnoreCase(path, sample_path)) return index;
+    }
+
+    var base_index = native_global_audio_bank_paths.len;
+    inline for (native_global_voice_set_paths) |paths| {
+        for (paths, 0..) |path, index| {
+            if (std.ascii.eqlIgnoreCase(path, sample_path)) return base_index + index;
+        }
+        base_index += paths.len;
+    }
+    return null;
+}
+
 fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
     return switch (set_id) {
         .damage => gameplay_native_voice_damage_paths[0..],
         .dying => gameplay_native_voice_dying_paths[0..],
+        .enemies => gameplay_native_voice_enemies_paths[0..],
         .fall => gameplay_native_voice_fall_paths[0..],
+        .misc => gameplay_native_voice_misc_paths[0..],
         .package => gameplay_native_voice_package_paths[0..],
         .postal => gameplay_native_voice_postal_paths[0..],
         .powerup => gameplay_native_voice_powerup_paths[0..],
+        .slow => gameplay_native_voice_slow_paths[0..],
         .slugged => gameplay_native_voice_slugged_paths[0..],
         .start => gameplay_native_voice_start_paths[0..],
         .supertramp => gameplay_native_voice_supertramp_paths[0..],
+        .tutorial => gameplay_native_voice_tutorial_paths[0..],
         .ouch => gameplay_native_voice_ouch_paths[0..],
         .victory => gameplay_native_voice_victory_paths[0..],
         .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
-        else => &.{},
     };
 }
 
@@ -872,7 +1033,7 @@ test "native gameplay voice manager payload play preserves set rotation" {
     var manager: NativeGameplayVoiceManager = .{};
     manager.global_progress = native_gameplay_voice_manager_frequency_seconds;
 
-    try std.testing.expectEqual(@as(?usize, 2), manager.requestPayloadPlay(.tutorial, .interrupt_current, false, 18, 2));
+    try std.testing.expectEqual(@as(?usize, 133), manager.requestPayloadPlay(.tutorial, .interrupt_current, false, 133));
     try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.tutorial, .interrupt_current, false, 18));
 
     var tick_index: usize = 0;
@@ -883,21 +1044,17 @@ test "native gameplay voice manager payload play preserves set rotation" {
     try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.tutorial, .interrupt_current, false, 18));
 }
 
-fn nativeTutorialVoicePayloadIndex(sample_path: []const u8) ?usize {
-    if (!std.ascii.startsWithIgnoreCase(sample_path, "VOICE/TUT")) return null;
-    if (!std.ascii.endsWithIgnoreCase(sample_path, ".OGG")) return null;
-    if (sample_path.len <= "VOICE/TUT.OGG".len) return null;
-
-    const digits = sample_path["VOICE/TUT".len .. sample_path.len - ".OGG".len];
-    const payload_number = std.fmt.parseUnsigned(usize, digits, 10) catch return null;
-    if (payload_number == 0) return null;
-    return payload_number - 1;
-}
-
-test "tutorial voice payload indices parse from shipped sample paths" {
-    try std.testing.expectEqual(@as(?usize, 0), nativeTutorialVoicePayloadIndex("VOICE/TUT1.OGG"));
-    try std.testing.expectEqual(@as(?usize, 17), nativeTutorialVoicePayloadIndex("Voice/tut18.ogg"));
-    try std.testing.expectEqual(@as(?usize, null), nativeTutorialVoicePayloadIndex("VOICE/OW1.OGG"));
+test "native global audio sample ids resolve from shipped paths" {
+    try std.testing.expectEqual(@as(?usize, 16), nativeGlobalAudioSampleIndexForPath("SFX2/JETPACK.OGG"));
+    try std.testing.expectEqual(@as(?usize, 25), nativeGlobalAudioSampleIndexForPath("sfx2/servo1.ogg"));
+    try std.testing.expectEqual(@as(?usize, 26), nativeGlobalAudioSampleIndexForPath("SFX2/SERVO2.OGG"));
+    try std.testing.expectEqual(@as(?usize, 46), nativeGlobalAudioSampleIndexForPath("SFX2/SKIDSTOP.OGG"));
+    try std.testing.expectEqual(@as(?usize, 133), nativeGlobalAudioSampleIndexForPath("VOICE/TUT1.OGG"));
+    try std.testing.expectEqual(@as(?usize, 150), nativeGlobalAudioSampleIndexForPath("Voice/tut18.ogg"));
+    try std.testing.expectEqualStrings("VOICE/TUT1.OGG", nativeGlobalAudioSamplePath(133).?);
+    try std.testing.expectEqualStrings("SFX2/SERVO2.OGG", nativeGlobalAudioSamplePath(26).?);
+    try std.testing.expectEqual(@as(?[]const u8, null), nativeGlobalAudioSamplePath(999));
+    try std.testing.expectEqual(@as(?usize, null), nativeGlobalAudioSampleIndexForPath("VOICE/DOES-NOT-EXIST.OGG"));
 }
 
 const max_announced_slug_voice_cells: usize = 64;
@@ -1070,11 +1227,14 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_weapon_change_sound_path);
     sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
     sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
+    sound_fx.jetpack_shutoff = try catalog.loadSoundByPath(allocator, gameplay_jetpack_shutoff_sound_path);
     sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
     sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
     sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
     sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_enemy_fire_sound_path);
     sound_fx.boing = try catalog.loadSoundByPath(allocator, gameplay_boing_sound_path);
+    sound_fx.completion_init = try catalog.loadSoundByPath(allocator, gameplay_completion_init_sound_path);
+    sound_fx.row_event_confirm = try catalog.loadSoundByPath(allocator, gameplay_row_event_confirm_sound_path);
     sound_fx.place_package = try catalog.loadSoundByPath(allocator, gameplay_place_package_sound_path);
     sound_fx.package_count = try catalog.loadSoundByPath(allocator, gameplay_package_count_sound_path);
     sound_fx.perfect = try catalog.loadSoundByPath(allocator, gameplay_perfect_sound_path);
@@ -1112,6 +1272,7 @@ const NativeGameplaySoundCues = struct {
     parcel_pickup: bool = false,
     parcel_delivery: bool = false,
     parcel_bonus: bool = false,
+    row_event_confirm: bool = false,
 };
 
 const NativeJetpackSoundCues = struct {
@@ -1147,6 +1308,7 @@ fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) 
             current.row_event_display.parcel_target_count != 0 and
             previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
             current.registeredParcelCount() == current.row_event_display.parcel_target_count,
+        .row_event_confirm = previous.row_event_display.gate_18 == 0 and current.row_event_display.gate_18 != 0,
     };
 }
 
@@ -1167,6 +1329,20 @@ fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) N
             (previous.jetpack.active and !current.jetpack.active and
                 previous.jetpack.progress <= native_jetpack_visual_shutoff_threshold),
     };
+}
+
+fn nativeGameplaySlowVoiceBandActive(previous: gameplay.Runner, current: gameplay.Runner) bool {
+    if (current.phase != .active) return false;
+    if (current.movement_mode != .track) return false;
+    if (current.attachment_exit_pending) return false;
+
+    const configured_step = current.movement_rate_scalar;
+    if (configured_step <= 0.0001) return false;
+
+    const actual_forward_step = @max(0.0, current.row_position - previous.row_position);
+    const lower_bound = configured_step * 0.17;
+    const upper_bound = lower_bound + ((configured_step * 0.5) - lower_bound) * 0.1;
+    return actual_forward_step > lower_bound and actual_forward_step < upper_bound;
 }
 
 test "native gameplay sound cues fire for completion-arm and score-bucket life gain" {
@@ -1222,6 +1398,11 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{};
     current = previous;
+    current.row_event_display.gate_18 = 1;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).row_event_confirm);
+
+    previous = gameplay.Runner{};
+    current = previous;
     try std.testing.expectEqual(@as(?usize, null), nativePowerupPickupSoundIndex(previous, current));
 
     current.counters.ring_powerup = 1;
@@ -1267,6 +1448,32 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     current.jetpack.active = false;
     current.jetpack.progress = 0.0;
     try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
+}
+
+test "native slowdown voice band follows the recovered narrow forward-speed window" {
+    var previous = gameplay.Runner{};
+    var current = previous;
+    previous.row_position = 10.0;
+    current.row_position = 10.038;
+    current.movement_rate_scalar = 0.2;
+
+    try std.testing.expect(nativeGameplaySlowVoiceBandActive(previous, current));
+
+    current.row_position = 10.03;
+    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
+
+    current.row_position = 10.05;
+    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
+
+    current.row_position = 10.038;
+    current.attachment_exit_pending = true;
+    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
+
+    current = previous;
+    current.row_position = 10.038;
+    current.movement_rate_scalar = 0.2;
+    current.movement_mode = .attachment;
+    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
 }
 
 fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplayVoiceCues {
@@ -2143,6 +2350,7 @@ const AppState = struct {
     seed_level_intro_cutscene: bool = false,
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
+    native_gameplay_slow_voice_progress: f32 = 0.0,
     gameplay_voice_manager: GameplayVoiceManager = .{},
     native_gameplay_voice_manager: NativeGameplayVoiceManager = .{},
     announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
@@ -3754,6 +3962,7 @@ const AppState = struct {
                 switch (runner.consumeHandoff()) {
                     .none => {},
                     .completion_screen_init => {
+                        self.playGameplayEffect(self.current_gameplay_sound_fx.completion_init);
                         try self.beginCompletedRunOverlay();
                         return;
                     },
@@ -3807,11 +4016,14 @@ const AppState = struct {
         if (native_sound_cues.parcel_bonus) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.perfect);
         }
+        if (native_sound_cues.row_event_confirm) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.row_event_confirm);
+        }
         if (native_jetpack_sound_cues.activate) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
         }
         if (native_jetpack_sound_cues.deactivate) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
+            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack_shutoff);
         }
         if (nativePowerupPickupSoundIndex(previous, current)) |sound_index| {
             self.playGameplayEffect(self.current_gameplay_sound_fx.powerup_pickup[sound_index]);
@@ -3833,6 +4045,15 @@ const AppState = struct {
         }
         if (native_voice_cues.damage_escalation) {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
+        }
+        if (nativeGameplaySlowVoiceBandActive(previous, current)) {
+            self.native_gameplay_slow_voice_progress += native_gameplay_slow_voice_timer_step;
+            if (self.native_gameplay_slow_voice_progress > 1.0) {
+                self.native_gameplay_slow_voice_progress = 0.0;
+                self.tryPlayNativeGameplayVoiceSet(.slow, .wait_for_frequency) catch {};
+            }
+        } else {
+            self.native_gameplay_slow_voice_progress = 0.0;
         }
         const death_cutscene_voice_cues = nativeDeathCutsceneVoiceCues(previous, current);
         if (death_cutscene_voice_cues.entry) {
@@ -5947,17 +6168,15 @@ const AppState = struct {
 
     fn tryPlayNativeGameplayVoicePayload(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode, payload_index: usize) !bool {
         if (!self.audio_ready) return false;
-        const paths = nativeGameplayVoicePaths(set_id);
-        if (paths.len == 0) return false;
 
         const sample_index = self.native_gameplay_voice_manager.requestPayloadPlay(
             set_id,
             mode,
             self.gameplayVoiceBusy(),
-            paths.len,
             payload_index,
         ) orelse return false;
-        try self.playVoiceByPath(paths[sample_index]);
+        const sample_path = nativeGlobalAudioSamplePath(sample_index) orelse return false;
+        try self.playVoiceByPath(sample_path);
         return true;
     }
 
@@ -6098,7 +6317,7 @@ const AppState = struct {
         if (!suppress_segment_events and (segment_changed or replay_sample_on_match)) {
             if (segment_entry.sample) |sample_path| {
                 if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
-                    if (nativeTutorialVoicePayloadIndex(sample_path)) |payload_index| {
+                    if (nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
                         _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
                     } else {
                         try self.playVoiceByPath(sample_path);
@@ -6561,6 +6780,7 @@ const AppState = struct {
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
         self.native_gameplay_voice_manager.clear();
+        self.native_gameplay_slow_voice_progress = 0.0;
         self.announced_slug_voice_cell_count = 0;
         self.level_runner = null;
         self.gameplay_click_start_active = false;

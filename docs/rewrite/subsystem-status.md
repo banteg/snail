@@ -270,7 +270,7 @@ Still missing or approximate:
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
-- the unresolved `gate_18` writer path that Windows uses to snap the late completion handoff forward before the row-event controller reaches its terminal state
+- the exact input-controller bit source behind `gate_18`; the port now arms the row-event confirm gate from gameplay confirm input and preserves the late completion fast-forward lane, but the original controller-owner split is still not named literally
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details
 - missing score events tied to replay, jetpack, slug kills, and other unresolved gameplay branches
 
