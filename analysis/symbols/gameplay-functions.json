@@ -2290,6 +2290,11 @@
     {
       "address": "0x44e810",
       "name": "get_or_create_texture_ref"
+    },
+    {
+      "address": "0x44fd90",
+      "name": "initialize_translation_matrix",
+      "description": "Builds a 4x4 identity matrix with the supplied xyz translation in slots `+0x30/+0x34/+0x38`. `draw_sprite_quad` uses this helper to place one sprite quad in world space before submission."
     }
   ]
 }
