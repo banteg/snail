@@ -155,6 +155,7 @@ const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
 const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
 const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
 const gameplay_enemy_fire_sound_path = "SFX2/ENEMYFIRE.OGG";
+const gameplay_boing_sound_path = "SFX2/BOING.OGG";
 const gameplay_asteroid_impact_sound_paths = [_][]const u8{
     "SFX2/ASTEROIDIMPACT1.OGG",
     "SFX2/ASTEROIDIMPACT2.OGG",
@@ -201,6 +202,18 @@ const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
     "VOICE/ZIPPIDYDOODAH.OGG",
     "VOICE/WHOHOHOHOAH.OGG",
 };
+const gameplay_native_voice_start_paths = [_][]const u8{
+    "VOICE/ALLOWSIXTOEIGHTMINUTES.OGG",
+    "VOICE/BRINGITON.OGG",
+    "VOICE/IFEELTHENEEDFORSPEED.OGG",
+    "VOICE/JUSTRYANDSTOPME.OGG",
+    "VOICE/THISISAJOB.OGG",
+    "VOICE/TURBOSTHENAME.OGG",
+    "VOICE/WATCHOUT.OGG",
+    "VOICE/ZOOMZOOM.OGG",
+    "VOICE/SNAILMAILALWAYSONTIME.OGG",
+    "VOICE/SNAILMAILINTHIRTYMINUTES.OGG",
+};
 const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
 const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
 const gameplay_weapon_change_sound_path = "SFX2/SELECT.OGG";
@@ -208,6 +221,8 @@ const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
 const native_gameplay_voice_set_cooldown_step: f32 = 1.0 / 240.0;
 const native_gameplay_voice_manager_global_step: f32 = 1.0 / 60.0;
 const native_gameplay_voice_manager_frequency_seconds: f32 = 20.0;
+const native_gameplay_start_voice_tick: u64 = 18;
+const native_runtime_tile_wall: u8 = 0x0e;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -459,6 +474,7 @@ const GameplaySoundFx = struct {
     invincible: ?assets.LoadedSound = null,
     explode_ring: ?assets.LoadedSound = null,
     enemy_fire: ?assets.LoadedSound = null,
+    boing: ?assets.LoadedSound = null,
     asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
     wall_hit: ?assets.LoadedSound = null,
     postal_warning: ?assets.LoadedSound = null,
@@ -722,6 +738,7 @@ fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
     return switch (set_id) {
         .dying => gameplay_native_voice_dying_paths[0..],
         .fall => gameplay_native_voice_fall_paths[0..],
+        .start => gameplay_native_voice_start_paths[0..],
         .victory => gameplay_native_voice_victory_paths[0..],
         .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
         else => &.{},
@@ -923,6 +940,7 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
     sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
     sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_enemy_fire_sound_path);
+    sound_fx.boing = try catalog.loadSoundByPath(allocator, gameplay_boing_sound_path);
     for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
         sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
     }
@@ -949,6 +967,12 @@ const RunOutcome = enum {
 const NativeGameplaySoundCues = struct {
     completion_arm_cheers: bool = false,
     extra_life: bool = false,
+    trampoline_bounce: bool = false,
+    wall_barrier_hit: bool = false,
+};
+
+const NativeGameplayVoiceCues = struct {
+    start: bool = false,
 };
 
 fn runnerInCompletionHandoff(runner: gameplay.Runner) bool {
@@ -962,6 +986,9 @@ fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) 
     return .{
         .completion_arm_cheers = !runnerInCompletionHandoff(previous) and runnerInCompletionHandoff(current),
         .extra_life = current.score.total > previous.score.total and current.visible_life_stock > previous.visible_life_stock,
+        .trampoline_bounce = current.counters.trampoline_rows > previous.counters.trampoline_rows,
+        .wall_barrier_hit = previous.current_runtime_tile_hint != native_runtime_tile_wall and
+            current.current_runtime_tile_hint == native_runtime_tile_wall,
     };
 }
 
@@ -985,6 +1012,38 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     current.score.total = previous.score.total;
     try std.testing.expect(!nativeGameplaySoundCues(previous, current).extra_life);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.counters.trampoline_rows = 1;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).trampoline_bounce);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.current_runtime_tile_hint = native_runtime_tile_wall;
+    try std.testing.expect(nativeGameplaySoundCues(previous, current).wall_barrier_hit);
+}
+
+fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplayVoiceCues {
+    return .{
+        .start = previous.tick_count < native_gameplay_start_voice_tick and
+            current.tick_count >= native_gameplay_start_voice_tick,
+    };
+}
+
+test "native gameplay voice cues fire on the recovered startup timer" {
+    var previous = gameplay.Runner{};
+    var current = previous;
+
+    current.tick_count = native_gameplay_start_voice_tick - 1;
+    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
+
+    previous = current;
+    current.tick_count = native_gameplay_start_voice_tick;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current).start);
+
+    previous = current;
+    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
 }
 
 const PendingRunPersistence = enum {
@@ -3379,12 +3438,22 @@ const AppState = struct {
     ) void {
         if (!self.audio_ready) return;
         const native_sound_cues = nativeGameplaySoundCues(previous, current);
+        const native_voice_cues = nativeGameplayVoiceCues(previous, current);
 
         if (native_sound_cues.completion_arm_cheers) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.cheers);
         }
         if (native_sound_cues.extra_life) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.extra_life);
+        }
+        if (native_sound_cues.trampoline_bounce) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.boing);
+        }
+        if (native_sound_cues.wall_barrier_hit) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.wall_hit);
+        }
+        if (native_voice_cues.start) {
+            self.tryPlayNativeGameplayVoiceSet(.start, .interrupt_current) catch {};
         }
 
         if (!previous.attachment_follow.active and current.attachment_follow.active and

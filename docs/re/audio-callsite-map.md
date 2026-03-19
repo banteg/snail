@@ -33,8 +33,8 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
 | `sfx 17..24` | [`play_movement_state_sound`](../../artifacts/ida/functions/0043afd0-play_movement_state_sound.c) at `0x43b114` | dedicated movement-state family chosen from `movement_flags`, with distance attenuation during attachment exit | no faithful equivalent; current port mostly plays fire, pickup, and impact cues from `playGameplayRunnerAudio()` | strong gap: native has a separate movement audio controller the port still does not model |
-| `sfx 41` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c3f8` | tile-type `22` route interaction cue | runner tile handling in `gameplay.zig` | unresolved; this tile-family cue is still not mapped |
-| `sfx 47` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c4c1` | tile-type `14` special warning or fall cue | runner tile handling in `gameplay.zig` | unresolved; current port has no explicit owner for this native sound |
+| `sfx 41` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c3f8` | trampoline landing cue on runtime tile `22` | runner trampoline handling in `gameplay.zig` | partial; the port can now play `BOING`, but it still lacks the native bounce controller |
+| `sfx 47` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c4c1` | first-entry cue for runtime tile `14` (`'|'`) before the native hold-and-drop timer runs | runner wall or barrier contact in `gameplay.zig` | partial; the port now plays the one-shot entry cue, but still lacks the native hold-and-drop controller |
 
 ### Score, completion arm, and milestone cues
 
@@ -106,8 +106,8 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 7` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf69` | one-shot late fall or death-timer voice | respawn / death handling in `gameplay.zig` | unresolved; this still exposes a controller the port has not recovered cleanly |
-| `voice 6` `mode 1` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cff3` | second late fall or death-timer voice | respawn / death handling in `gameplay.zig` | unresolved; same controller gap |
+| `voice 7` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cf69` | startup bark from the timer seeded in `initialize_subgoldy` | runner startup handoff in `gameplay.zig` and `main.zig` | mostly resolved; the port can now fire the native `Start` set on the recovered timer edge |
+| `voice 6` `mode 1` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43cff3` | low-speed commentary from a dedicated slowdown timer | runner slowdown controller in `gameplay.zig` | unresolved; the timer semantics still are not modeled literally |
 | `voice 3` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x44697c` | death cutscene entry voice | cutscene handoff and death camera | missing; death cutscene audio is still under-modeled |
 | `voice 11` `mode 2` | [`update_cutscene`](../../artifacts/ida/functions/004466d0-update_cutscene.c) at `0x446b25` | death cutscene fallback voice if `initialize_subgoldy_death` did not already consume the gate | cutscene handoff and death camera | missing; another sign that native death ownership is broader than the current port model |
 
@@ -115,7 +115,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 1. Recover the rest of `update_subgoldy` audio ownership.
    Audio evidence: `sfx 0`, `sfx 41`, `sfx 47`, `voice 1`, `voice 3`, `voice 6`, `voice 7`, `voice 8`, `voice 12`, `voice 13`.
-   Native implication: one runner-owned function still controls tile-family feedback, row-event speech, WORM entry, attachment-exit one-shots, completion-handoff voice timing, and at least two late fall or death timers.
+   Native implication: one runner-owned function still controls trampoline and barrier tile feedback, row-event speech, WORM entry, startup bark timing, attachment-exit one-shots, completion-handoff voice timing, and a separate slowdown commentary timer.
    Current Zig suspicion: these responsibilities are still split between `gameplay.Runner.step`, `main.zig` startup or prompt helpers, and ad hoc audio checks.
    Next trace boundary: `update_subgoldy`, plus nearby `enqueue_tip_message`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, and `flush_row_event_display`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) and [`zig/src/main.zig`](../../zig/src/main.zig).
