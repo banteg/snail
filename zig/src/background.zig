@@ -382,8 +382,7 @@ pub const LightStreakController = struct {
 
             const sprite_screen = projectWorldPointToViewport(viewport, camera, entry.sprite_position) orelse continue;
             const screen_direction = projectDirectionToScreen(camera, entry.direction) orelse continue;
-            var color = light_streak_base_color;
-            color.a = @intFromFloat(@as(f32, @floatFromInt(light_streak_base_color.a)) * alpha_scale);
+            const color = lightStreakTint(alpha_scale);
             if (color.a == 0) continue;
 
             const authored_half_size = light_streak_sprite_half_size * layout.scale;
@@ -903,6 +902,12 @@ fn lightStreakSpriteStretch(entry: LightStreakEntry) f32 {
     return (entry.speed + 1.0) * 4.0;
 }
 
+fn lightStreakTint(alpha_scale: f32) rl.Color {
+    var color = light_streak_base_color;
+    color.a = @intFromFloat(std.math.clamp(alpha_scale, 0.0, 1.0) * 255.0);
+    return color;
+}
+
 fn drawLightStreakSprite(
     texture: rl.Texture2D,
     center: rl.Vector2,
@@ -1112,6 +1117,15 @@ test "light streak alpha lane and sprite stretch match native formulas" {
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.03657143), lightStreakAlphaScale(entry, 1.0), 0.00001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.0), lightStreakSpriteStretch(entry), 0.0001);
+}
+
+test "light streak tint uses runtime alpha lane rather than setup alpha" {
+    const tint = lightStreakTint(0.5);
+
+    try std.testing.expectEqual(light_streak_base_color.r, tint.r);
+    try std.testing.expectEqual(light_streak_base_color.g, tint.g);
+    try std.testing.expectEqual(light_streak_base_color.b, tint.b);
+    try std.testing.expectEqual(@as(u8, 127), tint.a);
 }
 
 test "light streak update advances sprite position by velocity" {
