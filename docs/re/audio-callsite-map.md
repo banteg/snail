@@ -90,9 +90,9 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 14` `mode 0` | [`update_damage_gauge`](../../artifacts/ida/functions/00440fd0-update_damage_gauge.c) at `0x44115e` | damage-warning escalation voice after the fill state commits | `damage_gauge` plus warning loop | missing; the current port only ports the loop SFX and basic visual state |
-| `voice 0` `mode 1` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x44148e` | first positive-damage entry voice | damage collision handling | missing; damage entry voice ownership is absent |
-| `voice 9` `mode 0` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x4414a2` | fallback voice if `voice 0` is blocked by the manager | damage collision handling | missing; cooldown or fallback semantics are not ported |
+| `voice 14` `mode 0` | [`update_damage_gauge`](../../artifacts/ida/functions/00440fd0-update_damage_gauge.c) at `0x44115e` | damage-warning escalation voice after the fill state commits | `damage_gauge` plus warning loop | ported; the app now keys this from the runner's warning-state escalation edge |
+| `voice 0` `mode 1` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x44148e` | first positive-damage entry voice | damage collision handling | ported; the app now tries the native `Damage` set on the first positive entry from zero |
+| `voice 9` `mode 0` | [`apply_damage_gauge_delta`](../../artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c) at `0x4414a2` | fallback voice if `voice 0` is blocked by the manager | damage collision handling | ported; the app now falls back to the native `Ouch` set when the first request is rejected |
 
 ### Collision, pickups, and hazards
 
@@ -130,7 +130,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 3. Recover the native damage-warning owner instead of only mirroring its visible fill and warning loop.
    Audio evidence: `sfx 50`, `voice 0`, `voice 9`, `voice 14`.
    Native implication: the damage gauge has its own voice escalation and fallback logic, while the warning overlay is a separate actor with its own loop cadence.
-   Current Zig suspicion: the port is directionally right on fill and warning display, but it still collapses several native owner lanes into one simplified gameplay warning path.
+   Current Zig suspicion: the entry, fallback, and escalation voices are now covered, but the warning overlay actor and its loop cadence are still collapsed into one simplified gameplay warning path.
    Next trace boundary: `apply_damage_gauge_delta`, `update_damage_gauge`, `start_warning`, `update_warning`, `stop_warning_sample`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) damage and warning controllers, plus [`zig/src/main.zig`](../../zig/src/main.zig) audio routing.
 

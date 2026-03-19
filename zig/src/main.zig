@@ -179,6 +179,14 @@ const gameplay_slug_death_voice_paths = [_][]const u8{
     "VOICE/SLUG-DEATH1.OGG",
     "VOICE/SLUG-DEATH2.OGG",
 };
+const gameplay_native_voice_damage_paths = [_][]const u8{
+    "VOICE/HEYIJUSTWAXED.OGG",
+    "VOICE/IMGONNANEEDANEWSHELL.OGG",
+    "VOICE/ITBURNS.OGG",
+    "VOICE/MYEYES.OGG",
+    "VOICE/THATSGONNALEAVEAMARK.OGG",
+    "VOICE/UHOH.OGG",
+};
 const gameplay_native_voice_dying_paths = [_][]const u8{
     "VOICE/ABANDONSHELL.OGG",
     "VOICE/IMFALLINGANDICANTGETUP.OGG",
@@ -199,6 +207,12 @@ const gameplay_native_voice_victory_paths = [_][]const u8{
     "VOICE/IMTHESNAIL.OGG",
     "VOICE/ONTIMEANDFEELINGFINE.OGG",
     "VOICE/SOMEBODYPINCHME.OGG",
+};
+const gameplay_native_voice_ouch_paths = [_][]const u8{
+    "VOICE/OW1.OGG",
+    "VOICE/OW2.OGG",
+    "VOICE/OW3.OGG",
+    "VOICE/OW4.OGG",
 };
 const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
     "VOICE/WHOAHDUDE.OGG",
@@ -222,6 +236,11 @@ const gameplay_native_voice_start_paths = [_][]const u8{
     "VOICE/ZOOMZOOM.OGG",
     "VOICE/SNAILMAILALWAYSONTIME.OGG",
     "VOICE/SNAILMAILINTHIRTYMINUTES.OGG",
+};
+const gameplay_native_voice_postal_paths = [_][]const u8{
+    "VOICE/IMGOINGPOSTAL.OGG",
+    "VOICE/IMGOINGPOSTAL2.OGG",
+    "VOICE/IMGOINGPOSTAL3.OGG",
 };
 const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
 const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
@@ -748,10 +767,13 @@ const NativeGameplayVoiceManager = struct {
 
 fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
     return switch (set_id) {
+        .damage => gameplay_native_voice_damage_paths[0..],
         .dying => gameplay_native_voice_dying_paths[0..],
         .fall => gameplay_native_voice_fall_paths[0..],
         .package => gameplay_native_voice_package_paths[0..],
+        .postal => gameplay_native_voice_postal_paths[0..],
         .start => gameplay_native_voice_start_paths[0..],
+        .ouch => gameplay_native_voice_ouch_paths[0..],
         .victory => gameplay_native_voice_victory_paths[0..],
         .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
         else => &.{},
@@ -993,6 +1015,8 @@ const NativeGameplaySoundCues = struct {
 const NativeGameplayVoiceCues = struct {
     start: bool = false,
     package_pickup: bool = false,
+    damage_entry: bool = false,
+    damage_escalation: bool = false,
 };
 
 fn runnerInCompletionHandoff(runner: gameplay.Runner) bool {
@@ -1067,6 +1091,9 @@ fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) 
         .start = previous.tick_count < native_gameplay_start_voice_tick and
             current.tick_count >= native_gameplay_start_voice_tick,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
+        .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
+        .damage_escalation = previous.damage_warning_state != .draining and
+            current.damage_warning_state == .draining,
     };
 }
 
@@ -1085,6 +1112,16 @@ test "native gameplay voice cues fire on the recovered startup timer" {
     current = previous;
     current.counters.parcels = 1;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current).package_pickup);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.damage_gauge = 0.04;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current).damage_entry);
+
+    previous = gameplay.Runner{ .damage_warning_state = .filling };
+    current = previous;
+    current.damage_warning_state = .draining;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current).damage_escalation);
 
     previous = current;
     try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
@@ -3511,6 +3548,15 @@ const AppState = struct {
         if (native_voice_cues.package_pickup) {
             self.tryPlayNativeGameplayVoiceSet(.package, .wait_for_frequency) catch {};
         }
+        if (native_voice_cues.damage_entry) {
+            const played_damage = self.tryPlayNativeGameplayVoiceSetPlayed(.damage, .wait_for_frequency) catch false;
+            if (!played_damage) {
+                self.tryPlayNativeGameplayVoiceSet(.ouch, .wait_for_idle) catch {};
+            }
+        }
+        if (native_voice_cues.damage_escalation) {
+            self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
+        }
 
         if (!previous.attachment_follow.active and current.attachment_follow.active and
             current.movement_mode == .attachment)
@@ -5596,17 +5642,22 @@ const AppState = struct {
     }
 
     fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode) !void {
-        if (!self.audio_ready) return;
+        _ = try self.tryPlayNativeGameplayVoiceSetPlayed(set_id, mode);
+    }
+
+    fn tryPlayNativeGameplayVoiceSetPlayed(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode) !bool {
+        if (!self.audio_ready) return false;
         const paths = nativeGameplayVoicePaths(set_id);
-        if (paths.len == 0) return;
+        if (paths.len == 0) return false;
 
         const sample_index = self.native_gameplay_voice_manager.requestPlay(
             set_id,
             mode,
             self.gameplayVoiceBusy(),
             paths.len,
-        ) orelse return;
+        ) orelse return false;
         try self.playVoiceByPath(paths[sample_index]);
+        return true;
     }
 
     fn gameplayVoiceBusy(self: *const AppState) bool {
