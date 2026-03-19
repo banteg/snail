@@ -386,18 +386,18 @@ pub const LightStreakController = struct {
             color.a = @intFromFloat(@as(f32, @floatFromInt(light_streak_base_color.a)) * alpha_scale);
             if (color.a == 0) continue;
 
-            const half_width = light_streak_sprite_half_size * layout.scale;
-            const half_height = half_width * lightStreakSpriteStretch(entry);
-            if (half_width <= 0.0 or half_height <= 0.0) continue;
+            const authored_half_size = light_streak_sprite_half_size * layout.scale;
+            const stretch = lightStreakSpriteStretch(entry);
+            if (authored_half_size <= 0.0 or stretch <= 0.0) continue;
 
             if (texture) |sprite_texture| {
-                drawLightStreakSprite(sprite_texture, sprite_screen, screen_direction, half_width, half_height, color);
+                drawLightStreakSprite(sprite_texture, sprite_screen, screen_direction, authored_half_size, stretch, color);
             } else {
                 const tail_screen = rl.Vector2{
-                    .x = sprite_screen.x - screen_direction.x * half_height * 2.0,
-                    .y = sprite_screen.y - screen_direction.y * half_height * 2.0,
+                    .x = sprite_screen.x + screen_direction.x * authored_half_size * stretch * 2.0,
+                    .y = sprite_screen.y + screen_direction.y * authored_half_size * stretch * 2.0,
                 };
-                rl.drawLineEx(tail_screen, sprite_screen, half_width * 2.0, color);
+                rl.drawLineEx(sprite_screen, tail_screen, authored_half_size * 2.0, color);
             }
         }
     }
@@ -427,10 +427,7 @@ pub const LightStreakController = struct {
         ));
 
         entry.* = .{
-            .sprite_position = addVector3(
-                cameraOrigin(camera),
-                scaleVector3(plane_direction, light_streak_reset_distance),
-            ),
+            .sprite_position = addVector3(cameraOrigin(camera), scaleVector3(plane_direction, progress)),
             .direction = scaleVector3(plane_direction, speed),
             .speed = speed,
             .progress = progress,
@@ -441,6 +438,7 @@ pub const LightStreakController = struct {
     fn updatePositions(self: *LightStreakController, camera: LightStreakCamera, fade: f32) void {
         _ = fade;
         for (&self.entries) |*entry| {
+            entry.sprite_position = addVector3(entry.sprite_position, entry.direction);
             entry.progress += entry.speed;
             if (entry.progress > light_streak_max_progress) {
                 const size = entry.size;
@@ -909,32 +907,47 @@ fn drawLightStreakSprite(
     texture: rl.Texture2D,
     center: rl.Vector2,
     screen_direction: rl.Vector2,
-    half_width: f32,
-    half_height: f32,
+    authored_half_size: f32,
+    stretch: f32,
     tint: rl.Color,
 ) void {
-    const rotation_degrees = @as(f32, @floatCast(std.math.atan2(screen_direction.y, screen_direction.x) * 180.0 / std.math.pi)) + 90.0;
-    rl.drawTexturePro(
-        texture,
-        .{
-            .x = 0.0,
-            .y = 0.0,
-            .width = @floatFromInt(texture.width),
-            .height = @floatFromInt(texture.height),
-        },
-        .{
-            .x = center.x,
-            .y = center.y,
-            .width = half_width * 2.0,
-            .height = half_height * 2.0,
-        },
-        .{
-            .x = half_width,
-            .y = half_height,
-        },
-        rotation_degrees,
-        tint,
-    );
+    const base = authored_half_size * 1.41400003;
+    const perpendicular = rl.Vector2{
+        .x = screen_direction.y,
+        .y = -screen_direction.x,
+    };
+    const v0 = rl.Vector2{
+        .x = center.x + perpendicular.x * base,
+        .y = center.y + perpendicular.y * base,
+    };
+    const v1 = rl.Vector2{
+        .x = center.x - screen_direction.x * base,
+        .y = center.y - screen_direction.y * base,
+    };
+    const v2 = rl.Vector2{
+        .x = center.x - perpendicular.x * base,
+        .y = center.y - perpendicular.y * base,
+    };
+    const v3 = rl.Vector2{
+        .x = center.x + screen_direction.x * base * stretch,
+        .y = center.y + screen_direction.y * base * stretch,
+    };
+
+    rlgl.rlSetTexture(texture.id);
+    defer rlgl.rlSetTexture(0);
+
+    rlgl.rlBegin(rlgl.rl_quads);
+    defer rlgl.rlEnd();
+    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+
+    rlgl.rlTexCoord2f(0.0, 0.0);
+    rlgl.rlVertex2f(v0.x, v0.y);
+    rlgl.rlTexCoord2f(1.0, 0.0);
+    rlgl.rlVertex2f(v1.x, v1.y);
+    rlgl.rlTexCoord2f(1.0, 1.0);
+    rlgl.rlVertex2f(v2.x, v2.y);
+    rlgl.rlTexCoord2f(0.0, 1.0);
+    rlgl.rlVertex2f(v3.x, v3.y);
 }
 
 test "parse background script fields" {
@@ -1062,7 +1075,9 @@ test "light streak controller fades in from dormant and seeds camera-plane entri
         try std.testing.expect(entry.speed >= 0.30000001);
         try std.testing.expect(entry.speed < 0.90000004);
         try std.testing.expectApproxEqAbs(@as(f32, 0.0), dotVector3(entry.direction, camera.forward), 0.0001);
-        try std.testing.expectApproxEqAbs(@as(f32, light_streak_reset_distance), vectorLength(subVector3(entry.sprite_position, cameraOrigin(camera))), 0.0001);
+        try std.testing.expect(entry.progress >= 0.0);
+        try std.testing.expect(entry.progress < light_streak_max_progress);
+        try std.testing.expectApproxEqAbs(entry.progress, vectorLength(subVector3(entry.sprite_position, cameraOrigin(camera))), 0.0002);
     }
 }
 
@@ -1097,4 +1112,19 @@ test "light streak alpha lane and sprite stretch match native formulas" {
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.03657143), lightStreakAlphaScale(entry, 1.0), 0.00001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.0), lightStreakSpriteStretch(entry), 0.0001);
+}
+
+test "light streak update advances sprite position by velocity" {
+    var controller = LightStreakController.init();
+    const camera = default_light_streak_camera;
+    controller.update(camera, true);
+
+    const before = controller.entries[0].sprite_position;
+    const velocity = controller.entries[0].direction;
+    controller.update(camera, true);
+    const after = controller.entries[0].sprite_position;
+
+    try std.testing.expectApproxEqAbs(before.x + velocity.x, after.x, 0.0001);
+    try std.testing.expectApproxEqAbs(before.y + velocity.y, after.y, 0.0001);
+    try std.testing.expectApproxEqAbs(before.z + velocity.z, after.z, 0.0001);
 }
