@@ -142,7 +142,9 @@ pub const runtime_row_flag_ring_explode: u32 = 0x0000_0800;
 pub const runtime_row_flag_ring_slow: u32 = 0x0000_1000;
 pub const runtime_row_flag_ring_powerup: u32 = 0x0000_2000;
 pub const runtime_row_flag_jetpack_off: u32 = 0x0000_8000;
-const ramp_special_ring_forward_row_offset: usize = 6;
+pub const ramp_special_ring_forward_row_offset: usize = 6;
+pub const ramp_default_ring_forward_row_offset: usize = 6;
+pub const ramp_explode_ring_forward_row_offset: usize = 17;
 // PORT(verified): Windows runtime traces consistently report `track_row_start = 31`
 // on fresh gameplay starts, and `update_cameraman` uses the same game-side scalar for
 // its early intro-pitch / vertical-lift blend threshold.
@@ -1915,14 +1917,14 @@ fn buildRuntimeRingEffectGrid(
                     } else if ((row_flags & runtime_row_flag_ring_slow) != 0) {
                         setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, target_row, lane_index, 7);
                     } else if (tutorial_default_rings and (row_flags & runtime_row_flag_ring_none) == 0 and (tile_type == 0x02 or tile_type == 0x03 or tile_type == 0x04)) {
-                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 4);
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row + ramp_default_ring_forward_row_offset, lane_index, 4);
                     }
                 },
                 0x08, 0x09, 0x0a => {
                     if ((row_flags & runtime_row_flag_ring_explode) != 0) {
-                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 2);
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row + ramp_explode_ring_forward_row_offset, lane_index, 2);
                     } else if (tutorial_default_rings and (row_flags & runtime_row_flag_ring_none) == 0) {
-                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row, lane_index, 2);
+                        setRuntimeRingEffectKind(ring_effect_kinds, max_width, total_rows, global_row + ramp_explode_ring_forward_row_offset, lane_index, 2);
                     }
                 },
                 else => {},
@@ -2767,7 +2769,8 @@ test "tutorial runtime ring effect grid publishes default ramp families without 
     );
     defer tutorial11.deinit();
 
-    try std.testing.expectEqual(@as(u8, 2), tutorial11.nativeRingEffectKindAt(22, 1));
+    try std.testing.expectEqual(@as(u8, 0), tutorial11.nativeRingEffectKindAt(22, 1));
+    try std.testing.expectEqual(@as(u8, 2), tutorial11.nativeRingEffectKindAt(39, 1));
 
     const tutorial7_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 7.TXT") orelse return error.EntryNotFound;
     var tutorial7 = try LoadedLevelPreview.loadStandaloneSegmentWithOptions(
