@@ -269,6 +269,8 @@ pub const LoadedLevelPreview = struct {
     runtime_tiles: []u8,
     runtime_row_flags: []u32,
     runtime_ring_effect_kinds: []u8,
+    runtime_warn_surface_grid: []bool,
+    runtime_surface_swap_grid: []bool,
     runtime_flag_b01_grid: []bool,
     runtime_flag_b40_grid: []bool,
     runtime_flag_b80_grid: []bool,
@@ -424,6 +426,21 @@ pub const LoadedLevelPreview = struct {
             runtime_build_flags,
         );
         errdefer allocator.free(runtime_ring_effect_kinds);
+        const runtime_warn_surface_grid = try buildRuntimeWarnSurfaceGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_warn_surface_grid);
+        const runtime_surface_swap_grid = try buildRuntimeSurfaceSwapGrid(
+            allocator,
+            runtime_tiles,
+            runtime_warn_surface_grid,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_surface_swap_grid);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
@@ -496,6 +513,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
+            .runtime_warn_surface_grid = runtime_warn_surface_grid,
+            .runtime_surface_swap_grid = runtime_surface_swap_grid,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -616,6 +635,21 @@ pub const LoadedLevelPreview = struct {
             runtime_build_flags,
         );
         errdefer allocator.free(runtime_ring_effect_kinds);
+        const runtime_warn_surface_grid = try buildRuntimeWarnSurfaceGrid(
+            allocator,
+            runtime_tiles,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_warn_surface_grid);
+        const runtime_surface_swap_grid = try buildRuntimeSurfaceSwapGrid(
+            allocator,
+            runtime_tiles,
+            runtime_warn_surface_grid,
+            total_rows,
+            max_width,
+        );
+        errdefer allocator.free(runtime_surface_swap_grid);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
@@ -688,6 +722,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
+            .runtime_warn_surface_grid = runtime_warn_surface_grid,
+            .runtime_surface_swap_grid = runtime_surface_swap_grid,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -709,6 +745,8 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.runtime_ring_effect_kinds);
         self.allocator.free(self.runtime_row_flags);
         self.allocator.free(self.runtime_edge_masks);
+        self.allocator.free(self.runtime_surface_swap_grid);
+        self.allocator.free(self.runtime_warn_surface_grid);
         self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
         self.allocator.free(self.runtime_flag_b40_grid);
@@ -958,6 +996,16 @@ pub const LoadedLevelPreview = struct {
     pub fn nativeRingEffectKindAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) u8 {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return 0;
         return self.runtime_ring_effect_kinds[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeWarnSurfaceAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_warn_surface_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+    }
+
+    pub fn runtimeSurfaceSwapAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+        return self.runtime_surface_swap_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1935,6 +1983,118 @@ fn buildRuntimeRingEffectGrid(
     return ring_effect_kinds;
 }
 
+fn runtimeWarnSurfaceEligibleTile(tile_type: u8) bool {
+    return isFloorCacheRuntimeTileFamily(tile_type) or isSlideRuntimeTileFamily(tile_type);
+}
+
+fn buildRuntimeWarnSurfaceGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const flag_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(flag_grid, false);
+
+    if (total_rows <= 1 or max_width == 0) return flag_grid;
+
+    // PORT(partial): `promote_track_tiles_to_fringe_variants` swaps selected floor/slide
+    // meshes into a warn-surface family when the runtime cell directly below is open.
+    // The native pass keys from BOD-object tables; the port mirrors the recovered cell
+    // ownership shape directly from runtime tile families.
+    for (0..total_rows - 1) |global_row| {
+        for (0..max_width) |lane_index| {
+            const current_index = runtimeTileIndex(max_width, global_row, lane_index);
+            const below_index = runtimeTileIndex(max_width, global_row + 1, lane_index);
+            const current_tile = runtime_tiles[current_index];
+            const below_tile = runtime_tiles[below_index];
+            flag_grid[current_index] =
+                runtimeWarnSurfaceEligibleTile(current_tile) and
+                isOpenNeighborRuntimeTileFamily(below_tile);
+        }
+    }
+
+    return flag_grid;
+}
+
+fn maybeMarkRuntimeSurfaceSwap(
+    swap_grid: []bool,
+    runtime_tiles: []const u8,
+    warn_surface_grid: []const bool,
+    max_width: usize,
+    current_row: usize,
+    lane_index: usize,
+    neighbor_row: usize,
+    special_floor_tile: ?u8,
+) void {
+    const current_index = runtimeTileIndex(max_width, current_row, lane_index);
+    const neighbor_index = runtimeTileIndex(max_width, neighbor_row, lane_index);
+    if (warn_surface_grid[current_index] or warn_surface_grid[neighbor_index]) return;
+
+    const current_tile = runtime_tiles[current_index];
+    const neighbor_tile = runtime_tiles[neighbor_index];
+
+    if (isSlideRuntimeTileFamily(current_tile) and
+        (isFloorCacheRuntimeTileFamily(neighbor_tile) or
+            (special_floor_tile != null and neighbor_tile == special_floor_tile.?)))
+    {
+        swap_grid[current_index] = true;
+        return;
+    }
+
+    if (isFloorCacheRuntimeTileFamily(current_tile) and isSlideRuntimeTileFamily(neighbor_tile)) {
+        swap_grid[current_index] = true;
+    }
+}
+
+fn buildRuntimeSurfaceSwapGrid(
+    allocator: std.mem.Allocator,
+    runtime_tiles: []const u8,
+    warn_surface_grid: []const bool,
+    total_rows: usize,
+    max_width: usize,
+) ![]bool {
+    const swap_grid = try allocator.alloc(bool, total_rows * max_width);
+    @memset(swap_grid, false);
+
+    if (max_width <= 3 or total_rows == 0) return swap_grid;
+
+    // PORT(partial): `harmonize_center_lane_floor_slide_variants` only touches two
+    // center-seam lanes. Native keys the swap from promoted warn-surface bits plus a
+    // small pair of special neighbor tile ids; the port mirrors that recovered layout.
+    if (max_width > 3 and total_rows > 1) {
+        for (0..total_rows - 1) |global_row| {
+            maybeMarkRuntimeSurfaceSwap(
+                swap_grid,
+                runtime_tiles,
+                warn_surface_grid,
+                max_width,
+                global_row,
+                3,
+                global_row + 1,
+                0x1e,
+            );
+        }
+    }
+
+    if (max_width > 5 and total_rows > 1) {
+        for (1..total_rows) |global_row| {
+            maybeMarkRuntimeSurfaceSwap(
+                swap_grid,
+                runtime_tiles,
+                warn_surface_grid,
+                max_width,
+                global_row,
+                5,
+                global_row - 1,
+                0x20,
+            );
+        }
+    }
+
+    return swap_grid;
+}
+
 fn buildRuntimeFlagB80Grid(
     allocator: std.mem.Allocator,
     segments: []const segment.Definition,
@@ -2627,6 +2787,52 @@ test "runtime flag b40 preserves non-condensed populated tiles" {
     try std.testing.expect(flags[1]);
     try std.testing.expect(flags[2]);
     try std.testing.expect(!flags[3]);
+}
+
+test "runtime warn surface grid promotes open-below floor and slide cells" {
+    const runtime_tiles = [_]u8{
+        0x0f, 0x01, 0x02, 0x00,
+        0x00, 0x0e, 0x0f, 0x00,
+    };
+    const flags = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 4);
+    defer std.testing.allocator.free(flags);
+
+    try std.testing.expect(flags[0]);
+    try std.testing.expect(flags[1]);
+    try std.testing.expect(!flags[2]);
+    try std.testing.expect(!flags[3]);
+    try std.testing.expect(!flags[4]);
+    try std.testing.expect(!flags[5]);
+}
+
+test "runtime surface swap grid follows recovered center seam rules" {
+    const runtime_tiles = [_]u8{
+        0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f, 0x0f, 0x0f,
+        0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f,
+    };
+    const warn_surface = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
+    defer std.testing.allocator.free(warn_surface);
+    const swaps = try buildRuntimeSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
+    defer std.testing.allocator.free(swaps);
+
+    try std.testing.expect(swaps[runtimeTileIndex(8, 0, 3)]);
+    try std.testing.expect(swaps[runtimeTileIndex(8, 1, 5)]);
+    try std.testing.expect(!swaps[runtimeTileIndex(8, 0, 2)]);
+    try std.testing.expect(!swaps[runtimeTileIndex(8, 1, 4)]);
+}
+
+test "runtime surface swap grid preserves warn-promoted center seam cells" {
+    const runtime_tiles = [_]u8{
+        0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f,
+        0x0f, 0x0f, 0x0f, 0x00, 0x0f, 0x01, 0x0f, 0x0f,
+    };
+    const warn_surface = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
+    defer std.testing.allocator.free(warn_surface);
+    const swaps = try buildRuntimeSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
+    defer std.testing.allocator.free(swaps);
+
+    try std.testing.expect(warn_surface[runtimeTileIndex(8, 0, 3)]);
+    try std.testing.expect(!swaps[runtimeTileIndex(8, 0, 3)]);
 }
 
 test "runtime flag b80 follows JetPack=Off annotations" {

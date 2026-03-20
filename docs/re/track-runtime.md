@@ -71,6 +71,11 @@ Current high-confidence render-normalization read:
   - each emitted fringe object takes its RGBA skirt colour from `get_track_skirt_color`
 - `build_track_render_caches` consumes the resulting ownership/flag state into the Floor/Slide/Warn/Ramp/Fringe caches
 
+Current Zig port status for this slice:
+
+- the renderer now mirrors the recovered open-below warn-surface lane and the center-seam floor/slide family swap lane
+- the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants`, plus `mark_track_warning_zones`, directional fringe objects, and the last ownership details in `merge_track_tile_runs`
+
 Related shared color helper:
 
 - `get_track_skirt_color` packages the current track skirt RGB scalars plus a fixed alpha into one RGBA tuple

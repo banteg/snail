@@ -159,7 +159,8 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
         var lane_index = lane_bounds.min;
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
-            const family = surfaceFamilyForTile(tile_type) orelse continue;
+            const family = surfaceFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
+            if (!preview.runtimeFlagB40At(global_row, lane_index)) continue;
             const run_length = mergedSurfaceRunLength(preview, global_row, lane_index, max_lane_index, family);
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
@@ -390,6 +391,25 @@ fn surfaceFamilyForTile(tile_type: u8) ?SurfaceFamily {
     };
 }
 
+fn surfaceFamilyForRuntimeCell(
+    preview: *const track.LoadedLevelPreview,
+    global_row: usize,
+    lane_index: usize,
+) ?SurfaceFamily {
+    const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
+    if (preview.runtimeWarnSurfaceAt(global_row, lane_index)) return .warn;
+
+    var family = surfaceFamilyForTile(tile_type) orelse return null;
+    if (preview.runtimeSurfaceSwapAt(global_row, lane_index)) {
+        family = switch (family) {
+            .floor => .slide,
+            .slide => .floor,
+            .warn, .ramp => family,
+        };
+    }
+    return family;
+}
+
 fn surfaceHeightAtTileFraction(tile_type: u8, row_origin: f32, row_fraction: f32) f32 {
     return track.sampleFloorHeightForRuntimeTile(
         tile_type,
@@ -423,23 +443,11 @@ fn mergedSurfaceRunLength(
     var run_length: usize = 1;
     var scan_lane = lane_index + 1;
     while (scan_lane <= max_lane_index) : (scan_lane += 1) {
-        const next_tile_type = preview.runtimeTileAt(global_row, scan_lane) orelse break;
-        const extend = switch (family) {
-            .floor => track.isFloorCacheRuntimeTileFamily(next_tile_type),
-            .slide => isSlideRunMergeTile(next_tile_type),
-            .warn, .ramp => false,
-        };
-        if (!extend) break;
+        const next_family = surfaceFamilyForRuntimeCell(preview, global_row, scan_lane) orelse break;
+        if (next_family != family) break;
         run_length += 1;
     }
     return run_length;
-}
-
-fn isSlideRunMergeTile(tile_type: u8) bool {
-    return switch (tile_type) {
-        0x01, 0x15, 0x1b, 0x21, 0x22 => true,
-        else => false,
-    };
 }
 
 fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
@@ -536,14 +544,4 @@ test "render lane bounds keep the traversable strip instead of path-only lanes" 
     const bounds = renderLaneBounds("@__P__p_@").?;
     try std.testing.expectEqual(@as(usize, 1), bounds.min);
     try std.testing.expectEqual(@as(usize, 7), bounds.max);
-}
-
-test "slide run merge matches recovered runtime tile subset" {
-    try std.testing.expect(isSlideRunMergeTile(0x01));
-    try std.testing.expect(isSlideRunMergeTile(0x15));
-    try std.testing.expect(isSlideRunMergeTile(0x1b));
-    try std.testing.expect(isSlideRunMergeTile(0x21));
-    try std.testing.expect(isSlideRunMergeTile(0x22));
-    try std.testing.expect(!isSlideRunMergeTile(0x14));
-    try std.testing.expect(!isSlideRunMergeTile(0x20));
 }
