@@ -2,7 +2,7 @@
 
 This section captures the intended direction for the playable rewrite of Snail Mail.
 
-The short verified/partial/fallback/scaffold ledger lives in [port-status.md](port-status.md). The detailed per-subsystem tracker lives in [subsystem-status.md](subsystem-status.md).
+The short verified/partial/fallback/scaffold ledger lives in [port-status.md](port-status.md). The detailed per-subsystem tracker lives in [subsystem-status.md](subsystem-status.md). The current action-oriented remaining-work list lives in [remaining-work-checklist.md](remaining-work-checklist.md).
 
 ## Stack Split
 
