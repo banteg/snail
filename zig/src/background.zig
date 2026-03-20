@@ -26,7 +26,7 @@ const light_streak_progress_bias: f32 = 2.0;
 const light_streak_reset_distance: f32 = 10.0;
 const light_streak_length_scale: f32 = 0.0114285713;
 const light_streak_sprite_half_size: f32 = 0.8;
-const light_streak_projection_near: f32 = 0.1;
+const light_streak_projection_near: f32 = 0.3;
 const light_streak_projection_distance: f32 = 50.0;
 const light_streak_base_color = rl.Color{ .r = 204, .g = 204, .b = 255, .a = 102 };
 const light_streak_random_seed: u64 = 0x534d5f5354415253;
@@ -35,7 +35,7 @@ const default_light_streak_camera = LightStreakCamera{
     .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
     .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
     .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-    .fov_degrees = 110.0,
+    .fov_degrees = 38.0,
 };
 pub const light_streak_sprite_path = "SPRITES/STARTAIL.TGA";
 
@@ -293,6 +293,31 @@ pub const LightStreakCamera = struct {
     fov_degrees: f32,
 };
 
+pub const LightStreakDrawMode = enum {
+    automatic,
+    textured,
+    lines,
+};
+
+pub const LightStreakDrawOptions = struct {
+    mode: LightStreakDrawMode = .automatic,
+    alpha_multiplier: f32 = 1.0,
+    size_multiplier: f32 = 1.0,
+    stretch_multiplier: f32 = 1.0,
+    draw_debug_centers: bool = false,
+    draw_debug_quads: bool = false,
+};
+
+pub const LightStreakDrawStats = struct {
+    total_entries: usize = 0,
+    alpha_visible_entries: usize = 0,
+    center_projected_entries: usize = 0,
+    drawn_entries: usize = 0,
+    average_alpha: f32 = 0.0,
+    max_alpha: f32 = 0.0,
+    average_stretch: f32 = 0.0,
+};
+
 const LightStreakState = enum {
     dormant,
     visible,
@@ -306,6 +331,11 @@ const LightStreakEntry = struct {
     speed: f32 = 0.0,
     progress: f32 = 0.0,
     size: f32 = 0.4,
+};
+
+const LightStreakScenePacket = struct {
+    current: rl.Vector3,
+    motion_delta: rl.Vector3,
 };
 
 pub const LightStreakController = struct {
@@ -364,47 +394,116 @@ pub const LightStreakController = struct {
     }
 
     pub fn draw(self: *const LightStreakController, bounds: rl.Rectangle, camera: LightStreakCamera, texture: ?rl.Texture2D) void {
-        if (self.state == .dormant) return;
-        const layout = authoredViewportLayout(bounds);
-        self.drawInViewport(layout, camera, texture);
+        _ = self.drawWithOptions(bounds, camera, texture, .{});
     }
 
-    fn drawInViewport(self: *const LightStreakController, layout: Layout, camera: LightStreakCamera, texture: ?rl.Texture2D) void {
+    pub fn drawWithOptions(
+        self: *const LightStreakController,
+        bounds: rl.Rectangle,
+        camera: LightStreakCamera,
+        texture: ?rl.Texture2D,
+        options: LightStreakDrawOptions,
+    ) LightStreakDrawStats {
+        if (self.state == .dormant) return .{};
+        const layout = authoredViewportLayout(bounds);
+        return self.drawInViewport(layout, camera, texture, options);
+    }
+
+    pub fn debugFade(self: *const LightStreakController) f32 {
+        return self.fade;
+    }
+
+    pub fn debugStateLabel(self: *const LightStreakController) []const u8 {
+        return switch (self.state) {
+            .dormant => "dormant",
+            .fade_in => "fade_in",
+            .visible => "visible",
+            .fade_out => "fade_out",
+        };
+    }
+
+    fn drawInViewport(
+        self: *const LightStreakController,
+        layout: Layout,
+        camera: LightStreakCamera,
+        texture: ?rl.Texture2D,
+        options: LightStreakDrawOptions,
+    ) LightStreakDrawStats {
+        var alpha_sum: f32 = 0.0;
+        var stretch_sum: f32 = 0.0;
+        var stats: LightStreakDrawStats = .{};
         const viewport = rectFromLayout(layout);
-        if (viewport.width <= 0.0 or viewport.height <= 0.0) return;
+        if (viewport.width <= 0.0 or viewport.height <= 0.0) return stats;
+
+        rl.beginBlendMode(.alpha);
+        defer rl.endBlendMode();
 
         for (self.entries) |entry| {
-            const alpha_scale = std.math.clamp(lightStreakAlphaScale(entry, self.fade), 0.0, 1.0);
-            if (alpha_scale <= 0.0) continue;
+            stats.total_entries += 1;
+            const scene_packet = lightStreakScenePacket(camera, entry.sprite_position, entry.direction);
 
-            const sprite_screen = projectWorldPointToViewport(viewport, camera, entry.sprite_position) orelse continue;
+            const alpha_scale = std.math.clamp(
+                lightStreakAlphaScale(entry, self.fade) * @max(options.alpha_multiplier, 0.0),
+                0.0,
+                1.0,
+            );
+            if (alpha_scale <= 0.0) continue;
+            stats.alpha_visible_entries += 1;
+            alpha_sum += alpha_scale;
+            stats.max_alpha = @max(stats.max_alpha, alpha_scale);
+
+            const sprite_screen = projectScenePointToViewport(viewport, camera, scene_packet.current) orelse continue;
+            stats.center_projected_entries += 1;
+            if (options.draw_debug_centers) {
+                drawLightStreakDebugMarker(sprite_screen);
+            }
             const color = lightStreakTint(alpha_scale);
             if (color.a == 0) continue;
 
-            const authored_half_size = light_streak_sprite_half_size;
-            const stretch = lightStreakSpriteStretch(entry);
+            const authored_half_size = light_streak_sprite_half_size * @max(options.size_multiplier, 0.0);
+            const stretch = lightStreakSpriteStretch(entry) * @max(options.stretch_multiplier, 0.0);
             if (authored_half_size <= 0.0 or stretch <= 0.0) continue;
+            stretch_sum += stretch;
 
-            if (texture) |sprite_texture| {
-                drawLightStreakSprite(
-                    sprite_texture,
+            const draw_mode = switch (options.mode) {
+                .automatic => if (texture != null) LightStreakDrawMode.textured else .lines,
+                else => options.mode,
+            };
+
+            const drew = switch (draw_mode) {
+                .textured => if (texture) |sprite_texture|
+                    drawLightStreakSprite(
+                        sprite_texture,
+                        viewport,
+                        camera,
+                        scene_packet,
+                        authored_half_size,
+                        stretch,
+                        color,
+                        options.draw_debug_quads,
+                    )
+                else
+                    false,
+                .lines => drawLightStreakLine(
                     viewport,
                     camera,
-                    entry.sprite_position,
-                    entry.direction,
+                    scene_packet,
                     authored_half_size,
                     stretch,
                     color,
-                );
-            } else {
-                const screen_direction = lightStreakScreenDirection(camera, entry.direction) orelse continue;
-                const tail_screen = rl.Vector2{
-                    .x = sprite_screen.x + screen_direction.x * authored_half_size * stretch * 2.0,
-                    .y = sprite_screen.y + screen_direction.y * authored_half_size * stretch * 2.0,
-                };
-                rl.drawLineEx(sprite_screen, tail_screen, authored_half_size * 2.0, color);
+                ),
+                .automatic => unreachable,
+            };
+            if (drew) {
+                stats.drawn_entries += 1;
             }
         }
+
+        if (stats.alpha_visible_entries > 0) {
+            stats.average_alpha = alpha_sum / @as(f32, @floatFromInt(stats.alpha_visible_entries));
+            stats.average_stretch = stretch_sum / @as(f32, @floatFromInt(stats.alpha_visible_entries));
+        }
+        return stats;
     }
 
     fn initialize(self: *LightStreakController, camera: LightStreakCamera) void {
@@ -423,12 +522,12 @@ pub const LightStreakController = struct {
     }
 
     fn resetEntry(self: *LightStreakController, entry: *LightStreakEntry, camera: LightStreakCamera, size: f32, progress: f32) void {
-        const local_x = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * 0.000061035156;
-        const local_y = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * 0.000061035156;
+        const random_x = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * frontend_random_unit_scale;
+        const random_y = (@as(f32, @floatFromInt(self.nextRandom15())) - frontend_random_center) * frontend_random_unit_scale;
         const speed = @as(f32, @floatFromInt(self.nextRandom15())) * 0.000018310548 + 0.30000001;
         const plane_direction = normalizeVector3(addVector3(
-            scaleVector3(camera.right, local_x),
-            scaleVector3(camera.up, local_y),
+            scaleVector3(camera.right, random_x),
+            scaleVector3(camera.up, random_y),
         ));
 
         entry.* = .{
@@ -458,6 +557,124 @@ pub const LightStreakController = struct {
         return @intCast((self.random_state >> 16) & 0x7fff);
     }
 };
+
+fn drawLightStreakLine(
+    viewport: rl.Rectangle,
+    camera: LightStreakCamera,
+    scene_packet: LightStreakScenePacket,
+    authored_half_size: f32,
+    stretch: f32,
+    tint: rl.Color,
+) bool {
+    const current_screen = projectScenePointToViewport(viewport, camera, scene_packet.current) orelse return false;
+    const local_points = lightStreakQuadLocalPoints(scene_packet.motion_delta, authored_half_size, stretch);
+    const tail_scene = addVector3(scene_packet.current, .{
+        .x = local_points[3].x,
+        .y = local_points[3].y,
+        .z = 0.0,
+    });
+    const tail_screen = projectScenePointToViewport(viewport, camera, tail_scene) orelse return false;
+    rl.drawLineEx(current_screen, tail_screen, authored_half_size * 2.0, tint);
+    return true;
+}
+
+fn projectLightStreakSpriteQuad(
+    viewport: rl.Rectangle,
+    camera: LightStreakCamera,
+    scene_packet: LightStreakScenePacket,
+    authored_half_size: f32,
+    stretch: f32,
+) ?[4]rl.Vector2 {
+    const local_points = lightStreakQuadLocalPoints(scene_packet.motion_delta, authored_half_size, stretch);
+    const v0_scene = addVector3(scene_packet.current, .{ .x = local_points[0].x, .y = local_points[0].y, .z = 0.0 });
+    const v1_scene = addVector3(scene_packet.current, .{ .x = local_points[1].x, .y = local_points[1].y, .z = 0.0 });
+    const v2_scene = addVector3(scene_packet.current, .{ .x = local_points[2].x, .y = local_points[2].y, .z = 0.0 });
+    const v3_scene = addVector3(scene_packet.current, .{ .x = local_points[3].x, .y = local_points[3].y, .z = 0.0 });
+    return .{
+        projectScenePointToViewport(viewport, camera, v0_scene) orelse return null,
+        projectScenePointToViewport(viewport, camera, v1_scene) orelse return null,
+        projectScenePointToViewport(viewport, camera, v2_scene) orelse return null,
+        projectScenePointToViewport(viewport, camera, v3_scene) orelse return null,
+    };
+}
+
+fn drawLightStreakSprite(
+    texture: rl.Texture2D,
+    viewport: rl.Rectangle,
+    camera: LightStreakCamera,
+    scene_packet: LightStreakScenePacket,
+    authored_half_size: f32,
+    stretch: f32,
+    tint: rl.Color,
+    draw_debug_quad: bool,
+) bool {
+    const quad = projectLightStreakSpriteQuad(
+        viewport,
+        camera,
+        scene_packet,
+        authored_half_size,
+        stretch,
+    ) orelse return false;
+
+    const v0 = quad[0];
+    const v1 = quad[1];
+    const v2 = quad[2];
+    const v3 = quad[3];
+
+    rlgl.rlDrawRenderBatchActive();
+    rlgl.rlSetTexture(texture.id);
+    defer {
+        rlgl.rlSetTexture(0);
+        rlgl.rlDrawRenderBatchActive();
+    }
+
+    rlgl.rlBegin(rlgl.rl_quads);
+    defer rlgl.rlEnd();
+
+    // Native `draw_sprite_quad` builds the four corners in scene space and hands
+    // them to D3D with the native winding. In the raylib 2D path that same visual
+    // quad needs the reversed point order to survive the active front-face state,
+    // while still preserving the original per-corner UVs.
+    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
+    inline for (&[_]struct { uv: rl.Vector2, point: rl.Vector2 }{
+        .{ .uv = .{ .x = 0.0, .y = 1.0 }, .point = v3 },
+        .{ .uv = .{ .x = 1.0, .y = 1.0 }, .point = v2 },
+        .{ .uv = .{ .x = 1.0, .y = 0.0 }, .point = v1 },
+        .{ .uv = .{ .x = 0.0, .y = 0.0 }, .point = v0 },
+    }) |vertex| {
+        rlgl.rlTexCoord2f(vertex.uv.x, vertex.uv.y);
+        rlgl.rlVertex3f(vertex.point.x, vertex.point.y, 0.0);
+    }
+    if (draw_debug_quad) {
+        drawLightStreakDebugQuad(v0, v1, v2, v3);
+    }
+    return true;
+}
+
+fn drawLightStreakDebugMarker(center: rl.Vector2) void {
+    const marker_color = rl.Color{ .r = 255, .g = 160, .b = 32, .a = 220 };
+    rl.drawCircleV(center, 2.5, marker_color);
+    rl.drawLineEx(
+        .{ .x = center.x - 5.0, .y = center.y },
+        .{ .x = center.x + 5.0, .y = center.y },
+        1.0,
+        marker_color,
+    );
+    rl.drawLineEx(
+        .{ .x = center.x, .y = center.y - 5.0 },
+        .{ .x = center.x, .y = center.y + 5.0 },
+        1.0,
+        marker_color,
+    );
+}
+
+fn drawLightStreakDebugQuad(v0: rl.Vector2, v1: rl.Vector2, v2: rl.Vector2, v3: rl.Vector2) void {
+    const outline_color = rl.Color{ .r = 64, .g = 220, .b = 255, .a = 220 };
+    rl.drawLineEx(v0, v1, 1.0, outline_color);
+    rl.drawLineEx(v1, v2, 1.0, outline_color);
+    rl.drawLineEx(v2, v3, 1.0, outline_color);
+    rl.drawLineEx(v3, v0, 1.0, outline_color);
+}
 
 const LoadedTextures = struct {
     primary_texture: assets.LoadedTexture,
@@ -873,30 +1090,40 @@ fn cameraOrigin(camera: LightStreakCamera) rl.Vector3 {
     return addVector3(camera.position, scaleVector3(camera.forward, light_streak_projection_distance));
 }
 
-fn projectWorldPointToViewport(viewport: rl.Rectangle, camera: LightStreakCamera, point: rl.Vector3) ?rl.Vector2 {
+fn worldPointToLightStreakScene(camera: LightStreakCamera, point: rl.Vector3) rl.Vector3 {
     const relative = subVector3(point, camera.position);
-    const view_x = dotVector3(relative, camera.right);
-    const view_y = dotVector3(relative, camera.up);
-    const view_z = dotVector3(relative, camera.forward);
-    if (view_z <= light_streak_projection_near) return null;
-
-    const focal = (original_screen_height * 0.5) / @tan((camera.fov_degrees * std.math.pi / 180.0) * 0.5);
-    const screen_x = (original_screen_width * 0.5) + ((view_x / view_z) * focal);
-    const screen_y = (original_screen_height * 0.5) - ((view_y / view_z) * focal);
     return .{
-        .x = viewport.x + (screen_x / original_screen_width) * viewport.width,
-        .y = viewport.y + (screen_y / original_screen_height) * viewport.height,
+        .x = -dotVector3(relative, camera.right),
+        .y = dotVector3(relative, camera.up),
+        .z = -dotVector3(relative, camera.forward),
     };
 }
 
-fn lightStreakScreenDirection(camera: LightStreakCamera, direction: rl.Vector3) ?rl.Vector2 {
-    const camera_x = dotVector3(direction, camera.right);
-    const camera_y = dotVector3(direction, camera.up);
-    const length = @sqrt((camera_x * camera_x) + (camera_y * camera_y));
-    if (length <= 0.000001) return null;
+fn rotateWorldVectorToLightStreakCamera(camera: LightStreakCamera, vector: rl.Vector3) rl.Vector3 {
     return .{
-        .x = camera_x / length,
-        .y = -camera_y / length,
+        .x = dotVector3(vector, camera.right),
+        .y = dotVector3(vector, camera.up),
+        .z = dotVector3(vector, camera.forward),
+    };
+}
+
+fn lightStreakScenePacket(camera: LightStreakCamera, current_world: rl.Vector3, velocity_world: rl.Vector3) LightStreakScenePacket {
+    return .{
+        .current = worldPointToLightStreakScene(camera, current_world),
+        .motion_delta = rotateWorldVectorToLightStreakCamera(camera, velocity_world),
+    };
+}
+
+fn projectScenePointToViewport(viewport: rl.Rectangle, camera: LightStreakCamera, point: rl.Vector3) ?rl.Vector2 {
+    const depth = -point.z;
+    if (depth <= light_streak_projection_near) return null;
+
+    const focal = (original_screen_height * 0.5) / @tan((camera.fov_degrees * std.math.pi / 180.0) * 0.5);
+    const screen_x = (original_screen_width * 0.5) + ((point.x / depth) * focal);
+    const screen_y = (original_screen_height * 0.5) - ((point.y / depth) * focal);
+    return .{
+        .x = viewport.x + (screen_x / original_screen_width) * viewport.width,
+        .y = viewport.y + (screen_y / original_screen_height) * viewport.height,
     };
 }
 
@@ -914,52 +1141,17 @@ fn lightStreakTint(alpha_scale: f32) rl.Color {
     return color;
 }
 
-fn drawLightStreakSprite(
-    texture: rl.Texture2D,
-    viewport: rl.Rectangle,
-    camera: LightStreakCamera,
-    center_world: rl.Vector3,
-    direction_world: rl.Vector3,
-    authored_half_size: f32,
-    stretch: f32,
-    tint: rl.Color,
-) void {
-    const local_points = lightStreakQuadLocalPoints(camera, direction_world, authored_half_size, stretch);
-    const v0_world = lightStreakCameraPlanePoint(camera, center_world, local_points[0]);
-    const v1_world = lightStreakCameraPlanePoint(camera, center_world, local_points[1]);
-    const v2_world = lightStreakCameraPlanePoint(camera, center_world, local_points[2]);
-    const v3_world = lightStreakCameraPlanePoint(camera, center_world, local_points[3]);
-    const v0 = projectWorldPointToViewport(viewport, camera, v0_world) orelse return;
-    const v1 = projectWorldPointToViewport(viewport, camera, v1_world) orelse return;
-    const v2 = projectWorldPointToViewport(viewport, camera, v2_world) orelse return;
-    const v3 = projectWorldPointToViewport(viewport, camera, v3_world) orelse return;
-
-    rlgl.rlSetTexture(texture.id);
-    defer rlgl.rlSetTexture(0);
-
-    rlgl.rlBegin(rlgl.rl_quads);
-    defer rlgl.rlEnd();
-    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
-
-    rlgl.rlTexCoord2f(0.0, 0.0);
-    rlgl.rlVertex2f(v0.x, v0.y);
-    rlgl.rlTexCoord2f(1.0, 0.0);
-    rlgl.rlVertex2f(v1.x, v1.y);
-    rlgl.rlTexCoord2f(1.0, 1.0);
-    rlgl.rlVertex2f(v2.x, v2.y);
-    rlgl.rlTexCoord2f(0.0, 1.0);
-    rlgl.rlVertex2f(v3.x, v3.y);
-}
-
 fn lightStreakQuadLocalPoints(
-    camera: LightStreakCamera,
-    direction_world: rl.Vector3,
+    motion_delta_scene: rl.Vector3,
     size: f32,
     stretch: f32,
 ) [4]rl.Vector2 {
-    const camera_x = dotVector3(direction_world, camera.right);
-    const camera_y = dotVector3(direction_world, camera.up);
-    const length = @sqrt((camera_x * camera_x) + (camera_y * camera_y));
+    // `render_game_frame` transforms sprite current and previous positions into
+    // scene space, negates scene x/z, then `update_sprite_facing_angle` derives
+    // the draw angle from that scene-space motion delta.
+    const scene_x = motion_delta_scene.x;
+    const scene_y = motion_delta_scene.y;
+    const length = @sqrt((scene_x * scene_x) + (scene_y * scene_y));
     if (length <= 0.000001) {
         return .{
             .{ .x = -size, .y = size },
@@ -969,7 +1161,7 @@ fn lightStreakQuadLocalPoints(
         };
     }
 
-    const direction_angle = std.math.atan2(camera_x, camera_y) + (std.math.pi * 0.5);
+    const direction_angle = std.math.atan2(scene_x, scene_y) + (std.math.pi * 0.5);
     const base = size * 1.41400003;
     const cos_term = @cos(direction_angle) * base;
     const sin_term = @sin(direction_angle) * base;
@@ -979,16 +1171,6 @@ fn lightStreakQuadLocalPoints(
         .{ .x = sin_term, .y = -cos_term },
         .{ .x = -(cos_term * stretch), .y = -(sin_term * stretch) },
     };
-}
-
-fn lightStreakCameraPlanePoint(camera: LightStreakCamera, center_world: rl.Vector3, local: rl.Vector2) rl.Vector3 {
-    return addVector3(
-        center_world,
-        addVector3(
-            scaleVector3(camera.right, local.x),
-            scaleVector3(camera.up, local.y),
-        ),
-    );
 }
 
 test "parse background script fields" {
@@ -1151,7 +1333,7 @@ test "light streak alpha lane and sprite stretch match native formulas" {
         .size = 0.4,
     };
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.03657143), lightStreakAlphaScale(entry, 1.0), 0.00001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.036571428), lightStreakAlphaScale(entry, 1.0), 0.00001);
     try std.testing.expectApproxEqAbs(@as(f32, 6.0), lightStreakSpriteStretch(entry), 0.0001);
 }
 
@@ -1165,9 +1347,7 @@ test "light streak tint uses runtime alpha lane rather than setup alpha" {
 }
 
 test "light streak quad local points match native stretched-corner shape" {
-    const camera = default_light_streak_camera;
     const quad = lightStreakQuadLocalPoints(
-        camera,
         .{ .x = 0.0, .y = 1.0, .z = 0.0 },
         0.8,
         6.0,
@@ -1181,6 +1361,20 @@ test "light streak quad local points match native stretched-corner shape" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), quad[2].y, 0.0002);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), quad[3].x, 0.0002);
     try std.testing.expectApproxEqAbs(@as(f32, -6.7872), quad[3].y, 0.0003);
+}
+
+test "light streak scene packet follows native negated x and z scene space" {
+    const camera = default_light_streak_camera;
+    const current_world = rl.Vector3{ .x = 2.0, .y = 3.0, .z = 54.0 };
+    const velocity_world = rl.Vector3{ .x = 0.5, .y = -0.25, .z = 0.0 };
+    const packet = lightStreakScenePacket(camera, current_world, velocity_world);
+
+    try std.testing.expectApproxEqAbs(@as(f32, -2.0), packet.current.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), packet.current.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -54.0), packet.current.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), packet.motion_delta.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.25), packet.motion_delta.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), packet.motion_delta.z, 0.0001);
 }
 
 test "light streak update advances sprite position by velocity" {

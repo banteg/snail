@@ -2327,11 +2327,67 @@ const Mode = enum {
     objects,
     levels,
     segments,
+    streaks,
 };
 
 const DebugSegmentRenderMode = enum {
     game,
     raw,
+};
+
+const DebugLightStreakView = struct {
+    controller: background.LightStreakController = background.LightStreakController.init(),
+    visible_requested: bool = true,
+    paused: bool = false,
+    show_textured: bool = true,
+    show_lines: bool = true,
+    alpha_multiplier: f32 = 1.0,
+    size_multiplier: f32 = 1.0,
+    stretch_multiplier: f32 = 1.0,
+    camera_yaw_degrees: f32 = 0.0,
+    camera_pitch_degrees: f32 = 0.0,
+    camera_fov_degrees: f32 = 110.0,
+
+    fn step(self: *@This()) void {
+        if (self.paused) return;
+        self.controller.update(self.camera(), self.visible_requested);
+    }
+
+    fn stepOnce(self: *@This()) void {
+        self.controller.update(self.camera(), self.visible_requested);
+    }
+
+    fn reset(self: *@This()) void {
+        self.controller = background.LightStreakController.init();
+    }
+
+    fn camera(self: *const @This()) background.LightStreakCamera {
+        const yaw = std.math.degreesToRadians(self.camera_yaw_degrees);
+        const pitch = std.math.degreesToRadians(self.camera_pitch_degrees);
+        const forward = normalizeVector3(.{
+            .x = @sin(yaw) * @cos(pitch),
+            .y = @sin(pitch),
+            .z = @cos(yaw) * @cos(pitch),
+        });
+        var up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
+        if (@abs(dotVector3(forward, up)) > 0.95) {
+            up = .{ .x = 0.0, .y = 0.0, .z = 1.0 };
+        }
+        var right = crossVector3(up, forward);
+        if (vectorLength(right) <= 0.0001) {
+            right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        } else {
+            right = normalizeVector3(right);
+        }
+        const corrected_up = normalizeVector3(crossVector3(forward, right));
+        return .{
+            .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .right = right,
+            .up = corrected_up,
+            .forward = forward,
+            .fov_degrees = self.camera_fov_degrees,
+        };
+    }
 };
 
 const identity_subgame_camera_matrix = rl.Matrix{
@@ -2465,6 +2521,7 @@ const AppState = struct {
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     route_map_route_highlight_target: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
     mode: Mode = .textures,
+    debug_light_streak_view: DebugLightStreakView = .{},
     model_flip_v: bool = true,
     object_flip_v: bool = true,
     texture_index: usize,
@@ -2571,6 +2628,7 @@ const AppState = struct {
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
         errdefer route_map_art.unload();
         var background_light_streak_texture = try catalog.loadTextureByPath(allocator, background_light_streak_sprite_path);
+        rl.setTextureFilter(background_light_streak_texture.texture, .point);
         errdefer background_light_streak_texture.unload();
         var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
         errdefer if (galaxy_names) |*names| names.deinit();
@@ -3142,6 +3200,9 @@ const AppState = struct {
         switch (self.command) {
             .game => try self.simulateGameTick(runner_input),
             .debug, .smoke => {
+                if (self.mode == .streaks) {
+                    self.debug_light_streak_view.step();
+                }
                 if (self.current_animation) |*animation| {
                     try animation.step(self.simulation_clock.step_seconds);
                 }
@@ -3185,6 +3246,9 @@ const AppState = struct {
         }
         if (rl.isKeyPressed(.six)) {
             try self.setMode(.segments);
+        }
+        if (rl.isKeyPressed(.seven)) {
+            try self.setMode(.streaks);
         }
 
         if (self.mode == .levels) {
@@ -3252,6 +3316,8 @@ const AppState = struct {
                 self.segment_track_set_index = (self.segment_track_set_index + 1) % 4;
                 try self.reloadStandaloneSegmentScene();
             }
+        } else if (self.mode == .streaks) {
+            self.handleDebugLightStreakInput();
         } else {
             if (rl.isKeyPressed(.left)) {
                 try self.stepSelection(-1);
@@ -6770,6 +6836,64 @@ const AppState = struct {
                 self.segment_index = wrappedIndex(self.catalog.segment_entries.len, self.segment_index, delta);
                 try self.reloadStandaloneSegment();
             },
+            .streaks => {},
+        }
+    }
+
+    fn handleDebugLightStreakInput(self: *AppState) void {
+        if (rl.isKeyPressed(.space)) {
+            self.debug_light_streak_view.paused = !self.debug_light_streak_view.paused;
+        }
+        if (rl.isKeyPressed(.n)) {
+            self.debug_light_streak_view.stepOnce();
+        }
+        if (rl.isKeyPressed(.r)) {
+            self.debug_light_streak_view.reset();
+        }
+        if (rl.isKeyPressed(.h)) {
+            self.debug_light_streak_view.visible_requested = !self.debug_light_streak_view.visible_requested;
+        }
+        if (rl.isKeyPressed(.t)) {
+            self.debug_light_streak_view.show_textured = !self.debug_light_streak_view.show_textured;
+        }
+        if (rl.isKeyPressed(.l)) {
+            self.debug_light_streak_view.show_lines = !self.debug_light_streak_view.show_lines;
+        }
+        if (rl.isKeyPressed(.q)) {
+            self.debug_light_streak_view.alpha_multiplier = std.math.clamp(self.debug_light_streak_view.alpha_multiplier - 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.e)) {
+            self.debug_light_streak_view.alpha_multiplier = std.math.clamp(self.debug_light_streak_view.alpha_multiplier + 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.z)) {
+            self.debug_light_streak_view.size_multiplier = std.math.clamp(self.debug_light_streak_view.size_multiplier - 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.x)) {
+            self.debug_light_streak_view.size_multiplier = std.math.clamp(self.debug_light_streak_view.size_multiplier + 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.c)) {
+            self.debug_light_streak_view.stretch_multiplier = std.math.clamp(self.debug_light_streak_view.stretch_multiplier - 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.v)) {
+            self.debug_light_streak_view.stretch_multiplier = std.math.clamp(self.debug_light_streak_view.stretch_multiplier + 0.25, 0.0, 16.0);
+        }
+        if (rl.isKeyPressed(.a)) {
+            self.debug_light_streak_view.camera_yaw_degrees -= 5.0;
+        }
+        if (rl.isKeyPressed(.d)) {
+            self.debug_light_streak_view.camera_yaw_degrees += 5.0;
+        }
+        if (rl.isKeyPressed(.w)) {
+            self.debug_light_streak_view.camera_pitch_degrees = std.math.clamp(self.debug_light_streak_view.camera_pitch_degrees + 5.0, -85.0, 85.0);
+        }
+        if (rl.isKeyPressed(.s)) {
+            self.debug_light_streak_view.camera_pitch_degrees = std.math.clamp(self.debug_light_streak_view.camera_pitch_degrees - 5.0, -85.0, 85.0);
+        }
+        if (rl.isKeyPressed(.f)) {
+            self.debug_light_streak_view.camera_fov_degrees = std.math.clamp(self.debug_light_streak_view.camera_fov_degrees - 5.0, 30.0, 160.0);
+        }
+        if (rl.isKeyPressed(.g)) {
+            self.debug_light_streak_view.camera_fov_degrees = std.math.clamp(self.debug_light_streak_view.camera_fov_degrees + 5.0, 30.0, 160.0);
         }
     }
 
@@ -7185,13 +7309,13 @@ const default_light_streak_camera = background.LightStreakCamera{
     .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
     .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
     .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-    .fov_degrees = 110.0,
+    .fov_degrees = 38.0,
 };
 
 fn backgroundLightStreaksVisible(state: *const AppState) bool {
     if (phaseUsesGameplayBackdrop(state)) return true;
     return switch (state.game_phase) {
-        .intro, .level => true,
+        .intro, .credits, .level => true,
         else => false,
     };
 }
@@ -7204,7 +7328,7 @@ fn backgroundLightStreakCamera(state: *const AppState) background.LightStreakCam
             .right = transform.right,
             .up = transform.up,
             .forward = transform.forward,
-            .fov_degrees = state.subgame_camera.fov_degrees,
+            .fov_degrees = default_light_streak_camera.fov_degrees,
         };
     }
     return default_light_streak_camera;
@@ -9806,8 +9930,14 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     }
 
     drawAppText(state, "snail debug browser", 24, 18, 24, .ray_white);
-    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments", 24, 48, 16, .light_gray);
-    drawAppText(state, "tab mode  arrows browse  levels: up/down segment  gameplay: a/d lane w/s speed space pause r reset  segments: v render o overlay g grid a attachments t track", 24, 70, 16, .light_gray);
+    drawAppText(state, "1 textures  2 audio  3 x2  4 objects  5 levels  6 segments  7 streaks", 24, 48, 16, .light_gray);
+    const controls_text: []const u8 = switch (state.mode) {
+        .levels => "tab mode  arrows browse  levels: left/right level up/down segment  gameplay: a/d lane w/s speed space pause r reset",
+        .segments => "tab mode  arrows browse  segments: v render o overlay g grid a attachments t track",
+        .streaks => "streaks: space pause  n step  r reset  h fade  t texture  l lines  q/e alpha  z/x size  c/v stretch  a/d yaw  w/s pitch  f/g fov",
+        else => "tab mode  arrows browse",
+    };
+    drawAppText(state, controls_text, 24, 70, 16, .light_gray);
 
     var source_buffer: [256]u8 = undefined;
     const source_text = try std.fmt.bufPrintZ(
@@ -9823,6 +9953,7 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
     drawModeBadge(state, .objects, state.mode, "Objects", 360, 114);
     drawModeBadge(state, .levels, state.mode, "Levels", 472, 114);
     drawModeBadge(state, .segments, state.mode, "Segments", 584, 114);
+    drawModeBadge(state, .streaks, state.mode, "Streaks", 696, 114);
 
     switch (state.mode) {
         .textures => drawTexturePanel(state),
@@ -9831,6 +9962,7 @@ fn drawDebugUi(state: *const AppState, archive_path: []const u8) !void {
         .objects => try drawObjectPanel(state),
         .levels => try debug_levels.drawLevelPanel(state),
         .segments => try debug_levels.drawSegmentPanel(state),
+        .streaks => try drawLightStreakDebugPanel(state),
     }
 }
 
@@ -9905,6 +10037,163 @@ fn drawAudioPanel(state: *const AppState) !void {
     drawAppText(state, "Space loads the current OGG as a sound effect and plays it once.", 56, 384, 22, .light_gray);
     drawAppText(state, "Enter loads the same OGG as a music stream and keeps updating it each frame.", 56, 420, 22, .light_gray);
     drawAppText(state, "This lets us exercise both playback paths before game logic exists.", 56, 456, 22, .light_gray);
+}
+
+fn drawLightStreakDebugPanel(state: *const AppState) !void {
+    const debug = &state.debug_light_streak_view;
+    const camera = debug.camera();
+    const textured_bounds = rl.Rectangle{ .x = 32.0, .y = 170.0, .width = 520.0, .height = 390.0 };
+    const line_bounds = rl.Rectangle{ .x = 728.0, .y = 170.0, .width = 520.0, .height = 390.0 };
+
+    drawLightStreakDebugViewportFrame(state, textured_bounds, "STARTAIL textured", debug.show_textured);
+    drawLightStreakDebugViewportFrame(state, line_bounds, "Line fallback", debug.show_lines);
+
+    const draw_options = background.LightStreakDrawOptions{
+        .alpha_multiplier = debug.alpha_multiplier,
+        .size_multiplier = debug.size_multiplier,
+        .stretch_multiplier = debug.stretch_multiplier,
+    };
+
+    const textured_stats = if (debug.show_textured)
+        debug.controller.drawWithOptions(
+            textured_bounds,
+            camera,
+            if (state.current_background_light_streak_texture) |loaded| loaded.texture else null,
+            .{
+                .mode = .textured,
+                .alpha_multiplier = draw_options.alpha_multiplier,
+                .size_multiplier = draw_options.size_multiplier,
+                .stretch_multiplier = draw_options.stretch_multiplier,
+                .draw_debug_centers = true,
+                .draw_debug_quads = true,
+            },
+        )
+    else
+        background.LightStreakDrawStats{};
+    const line_stats = if (debug.show_lines)
+        debug.controller.drawWithOptions(
+            line_bounds,
+            camera,
+            null,
+            .{
+                .mode = .lines,
+                .alpha_multiplier = draw_options.alpha_multiplier,
+                .size_multiplier = draw_options.size_multiplier,
+                .stretch_multiplier = draw_options.stretch_multiplier,
+                .draw_debug_centers = true,
+            },
+        )
+    else
+        background.LightStreakDrawStats{};
+
+    try drawLightStreakDebugStats(state, textured_bounds, textured_stats, 574);
+    try drawLightStreakDebugStats(state, line_bounds, line_stats, 574);
+
+    const texture_preview_bounds = rl.Rectangle{ .x = 32.0, .y = 622.0, .width = 80.0, .height = 80.0 };
+    rl.drawRectangleRec(texture_preview_bounds, .black);
+    rl.drawRectangleLinesEx(texture_preview_bounds, 1.0, .dark_gray);
+    if (state.current_background_light_streak_texture) |loaded| {
+        const preview_size = 64.0;
+        const preview_x = texture_preview_bounds.x + (texture_preview_bounds.width - preview_size) * 0.5;
+        const preview_y = texture_preview_bounds.y + (texture_preview_bounds.height - preview_size) * 0.5;
+        rl.drawTexturePro(
+            loaded.texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @floatFromInt(loaded.texture.width),
+                .height = @floatFromInt(loaded.texture.height),
+            },
+            .{
+                .x = preview_x,
+                .y = preview_y,
+                .width = preview_size,
+                .height = preview_size,
+            },
+            .{ .x = 0.0, .y = 0.0 },
+            0.0,
+            .white,
+        );
+
+        var sprite_buffer: [128]u8 = undefined;
+        const sprite_text = try std.fmt.bufPrintZ(
+            &sprite_buffer,
+            "STARTAIL {d}x{d}",
+            .{ loaded.texture.width, loaded.texture.height },
+        );
+        drawAppText(state, sprite_text, 32, 706, 16, .light_gray);
+    }
+
+    drawAppText(state, "Both panes use the same controller state and camera; only the draw path changes.", 136, 628, 18, .ray_white);
+
+    var controller_buffer: [256]u8 = undefined;
+    const controller_text = try std.fmt.bufPrintZ(
+        &controller_buffer,
+        "Controller {s}  fade {d:.2}  visible {s}  paused {s}",
+        .{
+            debug.controller.debugStateLabel(),
+            debug.controller.debugFade(),
+            if (debug.visible_requested) "on" else "off",
+            if (debug.paused) "yes" else "no",
+        },
+    );
+    drawAppText(state, controller_text, 136, 652, 16, .light_gray);
+
+    var camera_buffer: [256]u8 = undefined;
+    const camera_text = try std.fmt.bufPrintZ(
+        &camera_buffer,
+        "Camera yaw {d:.1}  pitch {d:.1}  fov {d:.1}",
+        .{ debug.camera_yaw_degrees, debug.camera_pitch_degrees, debug.camera_fov_degrees },
+    );
+    drawAppText(state, camera_text, 136, 674, 16, .light_gray);
+
+    var scale_buffer: [256]u8 = undefined;
+    const scale_text = try std.fmt.bufPrintZ(
+        &scale_buffer,
+        "Multipliers alpha {d:.2}  size {d:.2}  stretch {d:.2}",
+        .{ debug.alpha_multiplier, debug.size_multiplier, debug.stretch_multiplier },
+    );
+    drawAppText(state, scale_text, 136, 696, 16, .light_gray);
+
+    drawAppText(state, "Use this to answer two questions: are stars being generated/projected at all, and does STARTAIL differ from the line fallback?", 136, 718, 14, .gold);
+}
+
+fn drawLightStreakDebugViewportFrame(
+    state: *const AppState,
+    bounds: rl.Rectangle,
+    label: []const u8,
+    enabled: bool,
+) void {
+    rl.drawRectangleRec(bounds, .black);
+    rl.drawRectangleLinesEx(bounds, 2.0, if (enabled) .dark_gray else .gray);
+    const center_x = bounds.x + bounds.width * 0.5;
+    const center_y = bounds.y + bounds.height * 0.5;
+    rl.drawLineV(.{ .x = center_x - 12.0, .y = center_y }, .{ .x = center_x + 12.0, .y = center_y }, .dark_gray);
+    rl.drawLineV(.{ .x = center_x, .y = center_y - 12.0 }, .{ .x = center_x, .y = center_y + 12.0 }, .dark_gray);
+    drawAppText(state, label, @intFromFloat(bounds.x + 14.0), @intFromFloat(bounds.y + 12.0), 20, if (enabled) .ray_white else .gray);
+}
+
+fn drawLightStreakDebugStats(
+    state: *const AppState,
+    bounds: rl.Rectangle,
+    stats: background.LightStreakDrawStats,
+    base_y: i32,
+) !void {
+    var summary_buffer: [192]u8 = undefined;
+    const summary_text = try std.fmt.bufPrintZ(
+        &summary_buffer,
+        "entries {d}  alpha>0 {d}  projected {d}  drawn {d}",
+        .{ stats.total_entries, stats.alpha_visible_entries, stats.center_projected_entries, stats.drawn_entries },
+    );
+    drawAppText(state, summary_text, @intFromFloat(bounds.x), base_y, 16, .light_gray);
+
+    var detail_buffer: [192]u8 = undefined;
+    const detail_text = try std.fmt.bufPrintZ(
+        &detail_buffer,
+        "avg alpha {d:.3}  max alpha {d:.3}  avg stretch {d:.2}",
+        .{ stats.average_alpha, stats.max_alpha, stats.average_stretch },
+    );
+    drawAppText(state, detail_text, @intFromFloat(bounds.x), base_y + 22, 16, .light_gray);
 }
 
 fn drawModelPanel(state: *const AppState) !void {
@@ -11168,7 +11457,8 @@ fn nextMode(mode: Mode) Mode {
         .models => .objects,
         .objects => .levels,
         .levels => .segments,
-        .segments => .textures,
+        .segments => .streaks,
+        .streaks => .textures,
     };
 }
 
@@ -11217,6 +11507,11 @@ fn screenHeight() i32 {
 test "wrapped index handles negative deltas" {
     try std.testing.expectEqual(@as(usize, 4), wrappedIndex(5, 0, -1));
     try std.testing.expectEqual(@as(usize, 0), wrappedIndex(5, 0, 5));
+}
+
+test "next mode cycles through streak debug browser" {
+    try std.testing.expectEqual(Mode.streaks, nextMode(.segments));
+    try std.testing.expectEqual(Mode.textures, nextMode(.streaks));
 }
 
 test "completion bonus only applies to postal mode" {
@@ -11985,29 +12280,28 @@ test "startup block after click-start dismissal resumes the live runner under in
     try std.testing.expect(state.level_runner.?.row_position > starting_row_position);
 }
 
-test "intro light streak camera uses the shared subgame camera" {
-    const basis_right = rl.Vector3{ .x = 0.0, .y = 0.0, .z = -1.0 };
-    const basis_up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    const basis_forward = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    const matrix = modelTransformFromBasis(.{ .x = 3.0, .y = 4.0, .z = 5.0 }, basis_right, basis_up, basis_forward);
-
+test "intro light streak camera falls back to the default star-field camera" {
     var state: AppState = undefined;
     state.game_phase = .intro;
-    state.subgame_camera = .{
-        .source = .override,
-        .shared_matrix = matrix,
-        .fov_degrees = 123.0,
-        .snap_next = false,
-    };
+    state.subgame_camera = .{};
 
     const camera = backgroundLightStreakCamera(&state);
-    try std.testing.expectApproxEqAbs(@as(f32, 3.0), camera.position.x, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.0), camera.position.y, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), camera.position.z, 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 123.0), camera.fov_degrees, 0.001);
-    try std.testing.expectApproxEqAbs(basis_forward.x, camera.forward.x, 0.001);
-    try std.testing.expectApproxEqAbs(basis_forward.y, camera.forward.y, 0.001);
-    try std.testing.expectApproxEqAbs(basis_forward.z, camera.forward.z, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.x, camera.position.x, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.y, camera.position.y, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.z, camera.position.z, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.fov_degrees, camera.fov_degrees, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.x, camera.forward.x, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.y, camera.forward.y, 0.001);
+    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.z, camera.forward.z, 0.001);
+}
+
+test "credits phase keeps the native star-field visibility" {
+    var state: AppState = undefined;
+    state.game_phase = .credits;
+    state.options_return_phase = .main_menu;
+    state.exit_prompt_return_phase = .main_menu;
+
+    try std.testing.expect(backgroundLightStreaksVisible(&state));
 }
 
 test "shared subgame camera honors snap flags and otherwise blends across source changes" {
