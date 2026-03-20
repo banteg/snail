@@ -17,7 +17,7 @@ Static RE is now good enough that the highest-value unknowns are no longer broad
 
 The remaining Windows-side value is in:
 
-- finding exact writers for a few unresolved camera or cutscene fields
+- confirming the remaining source-matrix and hotspot-bank ownership behind the cutscene camera fields
 - proving the real handoff timing for completion, death, respawn, and final loss
 - replacing the last Zig-side fallback values with directly observed runtime fields
 - capturing the real cutscene camera construction path instead of inferring it from offsets and state labels
@@ -35,21 +35,27 @@ Run the session in this order unless blocked:
 
 That order is intentional:
 
-- the anchor writers unblock the real intro/completion/death shot geometry
+- the hotspot-bank source matrices unblock the last remaining intro/completion/death shot geometry questions
 - the failure and completion handoffs unblock the last major app-side timing fallbacks
 - the attachment-exit consumers settle the remaining camera layering ambiguity
 
-## 1. Cutscene Anchor Writers
+## 1. Cutscene Hotspot Source Matrices
 
 ### Why this matters
 
-The player cutscene anchors at `player + 6208` and `player + 6280` are still read by `update_cutscene`, but their writers are unresolved. Until those writers are found, intro/completion/death shot geometry remains provisional.
+The old `player + 6208` / `+6280` mystery is no longer a pair of isolated writer-less cutscene fields. Later RE and the March 15 CDB session now explain those reads as `snail_hotspots_world[12]` and `snail_hotspots_world[18]`, maintained by `update_snail_skin`.
+
+What is still unresolved is upstream of that:
+
+- why hotspot slots `0..10` use one cached source matrix while `11..18` use another
+- which exact live player or animation/controller lanes publish those source matrices
+- whether completion and death reuse hotspot `18` for an authored reason or because another camera-target source is still missing
 
 ### What to do
 
-- Put write watchpoints on:
-  - `player + 6208`
-  - `player + 6280`
+- Put write watchpoints on the two cached source matrices that feed the hotspot world bank:
+  - `player + 0x1604`
+  - `player + 0x1684`
 - Trigger:
   - fresh start intro
   - normal course completion
@@ -64,17 +70,17 @@ The player cutscene anchors at `player + 6208` and `player + 6280` are still rea
 
 ### Questions to answer
 
-- Which function writes each anchor?
-- Are the two anchors camera targets, camera positions, or intermediate owner state?
-- Are the completion and death anchors written by the same code as intro?
-- Do those anchors come from player pose, track rows, authored camera markers, or a separate controller?
+- Which function writes each source matrix?
+- Do intro, completion, and death all reuse the same matrix writers?
+- Are the two matrices driven by player pose, snail-skin animation, cameraman state, or a separate controller?
+- Does hotspot `18` stay active in completion/death because of authored hotspot choice or because another target lane is still unresolved?
 
 ### Done when
 
-- the writer functions are named or at least uniquely identified
-- one capture shows the exact values written for intro
-- one capture shows the exact values written for completion
-- one capture shows the exact values written for death
+- the source-matrix writer functions are named or at least uniquely identified
+- one capture shows the matrix inputs for intro
+- one capture shows the matrix inputs for completion
+- one capture shows the matrix inputs for death
 
 ## 2. Failure Handoff And Death Path
 
@@ -309,13 +315,13 @@ For each successful session, hand back:
 
 Good examples:
 
-- "writer for `player + 6208` found"
+- "writer for hotspot source matrix `player + 0x1604` found"
 - "respawn vs final-loss selector captured"
 - "first `initialize_completion_screen` call frame captured"
 - "all reads of `player + 0x430` accounted for"
 
 ## If There Is Only Time For One Thing
 
-Do the cutscene-anchor writer watchpoint pass first.
+Do the hotspot-source-matrix watchpoint pass first.
 
 That one result would remove the biggest remaining geometry guess from intro, completion, and death all at once, and it would make every later camera comparison more concrete.

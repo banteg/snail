@@ -115,8 +115,8 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 
-- [ ] Find the writer(s) for the cutscene-anchor lanes read by `update_cutscene`
-- [ ] Capture intro, completion, and death anchor values from Windows
+- [ ] Find the writer(s) for the hotspot source matrices consumed by `update_snail_skin` and `update_cutscene`
+- [ ] Capture intro, completion, and death hotspot-source values from Windows
 - [ ] Confirm the exact failure selector and visible-life decrement commit point
 - [ ] Confirm the exact completion-screen init, voice gate, and late finalize timings
 - [ ] Replace any remaining handoff timers or anchor producers that still use Zig-side fallback values
@@ -171,7 +171,7 @@ If there is time for only one focused RE session, use this order:
 
 1. `update_subgame` / outer bridge state machine
 2. `initialize_subgame` / `build_subgame_level` rebuild ownership
-3. `update_cutscene` anchor writers and matrix path
+3. `update_snail_skin` / `update_cutscene` hotspot-source matrix path
 4. `initialize_subgoldy_death` / `update_subgoldy_resurrect`
 5. `begin_track_attachment_follow_state` / `update_track_attachment_follow_state`
 6. `update_row_event_display` / `flush_row_event_display`
