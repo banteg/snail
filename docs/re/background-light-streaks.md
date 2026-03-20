@@ -106,7 +106,7 @@ The star-field layer is toggled independently from the backdrop scripts:
 
 Practical interpretation:
 
-- the streaks are intended to be visible during intro and live gameplay
+- the streaks are intended to be visible during intro, credits, and live gameplay
 - they are explicitly suppressed on the major menu and shell screens
 - the pass survives as a separate controller even when hidden, because hide or unhide only clear or set sprite bit `0x40`
 

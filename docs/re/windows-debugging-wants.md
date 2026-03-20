@@ -222,6 +222,9 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - `initialize_subgame`
   - `build_subgame_level`
   - `update_subgame`
+- Also watch the front-end bridge controller's active-state and preserved-owner slots while those breaks fire:
+  - `update_frontend_state_machine` reads active state from `[controller + 0x94]`
+  - `update_frontend_state_machine` reads the `26/27/28` bridge jump target from `[controller + 0x98]`
 - Watch the three flag bytes or dwords above during:
   - fresh level start
   - respawn rebuild
@@ -234,6 +237,7 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which one survives respawn rebuilds?
 - Which one distinguishes frontend shell from active gameplay rebuild?
 - Are any of them replay or route-mode flags rather than pure lifecycle state?
+- Which function writes the preserved-owner bridge slot consumed by `26/27/28`?
 
 ### Done when
 

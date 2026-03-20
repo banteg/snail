@@ -260,7 +260,7 @@ Implemented now:
 - row-event bonus-prompt completion no longer keys off the authored `'_'` proxy; gameplay now consumes the recovered `TrackRowCell.flags_b & 0x40` lane rebuilt on the preview from the shipped cell-population and `CondenseTrack` follower-clear pass instead of the older "any populated tile" shortcut
 - route-end completion can now arm from a dedicated `course_end_threshold` field instead of only the older final-row heuristic; the current producer is still provisional, so the preview seeds that field from a last-row fallback until the native source is recovered
 - route-end completion can now arm while a collected parcel is still in flight, but the runner-local completion handoff no longer returns early; it waits for the row-event controller to settle before the app-level completion bridge fires
-- completion handoff no longer collapses straight into one delayed app return; the runner now emits an early completion-screen init handoff once cutscene state `6` is active, then keeps the recovered `2.5s` voice / `5s` finalize controller alive until the late frontend exit can fire
+- completion handoff no longer collapses straight into one delayed app return; the runner now emits an early completion-screen init handoff once cutscene state `6` is active, then keeps the recovered `2.0s` voice / `5s` finalize controller alive until the late frontend exit can fire
 - completion camera no longer uses the older handcrafted anchor formulas; the override lane now rebuilds the camera-relevant hotspots through the recovered source-matrix split, snaps intro onto hotspot `18`, uses the recovered `12 -> 18` completion blend lane, and keeps spare-life death converging toward hotspot `18` instead of forcing hotspot `17`
 - partial `ScoreAdd`-based totals instead of the older penalty-only fallback score
 
@@ -322,12 +322,13 @@ Implemented now:
   - `27`: destroy subgame, reinitialize subgame, then jump to the preserved frontend owner
   - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
   - `29/30`: Thanks For Playing owner init and update
+- BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`), so the remaining gap is the writer for that preserved-owner field, not whether the field exists
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 
 Still missing or approximate:
 
 - the full outer subgame controller that owns rebuild/teardown/return
-- the preserved frontend-owner field behind the `26/27/28` bridge jump
+- the writer and exact semantics of the preserved frontend-owner field behind the `26/27/28` bridge jump
 - exact challenge, time-trial, and replay-sensitive return routing
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 

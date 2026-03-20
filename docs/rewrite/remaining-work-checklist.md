@@ -43,6 +43,7 @@ What is now solid:
 - `27` destroys, reinitializes subgame, then jumps to the preserved frontend owner
 - `28` does the same as `27`, but clears `replay_active` first
 - `29/30` are the Thanks For Playing owner
+- BN disassembly confirms the bridge destination is a dedicated front-end controller slot, not just the same active-state lane
 - tutorial completion and ordinary postal final loss both use the `26 -> 2` return-to-New-Game lane
 
 Practical impact:
@@ -94,10 +95,11 @@ Replay is still scaffolded. The repo can preserve and launch selected records, b
 
 ### 8. Repo-doc inconsistencies
 
-There are at least two live documentation mismatches worth cleaning up while working:
+The recent star-field visibility and completion-handoff timing mismatches are now cleaned up.
 
-- the star-field notes still summarize visibility too narrowly and understate the credits path
-- completion-handoff voice timing is inconsistent across the current docs (`2.0s` vs `2.5s`)
+Keep this as an active maintenance item anyway:
+
+- after each parity pass, re-audit the status docs for stale claims that the code or later traces have already invalidated
 
 ## Ordered Checklist
 
@@ -107,6 +109,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 - [x] Name or uniquely identify the real outer subgame/frontend bridge around states `26/27/28/29/30`
 - [ ] Recover which fields mean fresh start, rebuild, continuation, replay-sensitive launch, and post-run return
+  - current narrowing: the `26/27/28` jump target is a dedicated front-end controller slot (`update_frontend_state_machine` reads it from `[controller + 0x98]`)
 - [ ] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
 - [ ] Make completion, respawn, final loss, and replay exits all route through that same explicit bridge
 
