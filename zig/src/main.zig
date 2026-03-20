@@ -1253,6 +1253,7 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
 
 const ResultReturnTarget = enum {
     main_menu,
+    new_game_menu,
     postal_route_map,
     time_trial_route_map,
     high_scores_menu,
@@ -5799,6 +5800,7 @@ const AppState = struct {
 
         switch (result.return_target) {
             .main_menu => try self.enterGamePhase(.main_menu),
+            .new_game_menu => try self.returnToNewGameMenu(.route_map_menu),
             // PORT(verified): Windows re-enters the postal Star Map through the special
             // `initialize_galaxy` mode `1` after a completed route. That path keeps the
             // current route card open and relabels the bottom control to `Exit`.
@@ -8905,12 +8907,24 @@ fn completionBonusLine(buffer: []u8, result: PendingRunResult) !?[]const u8 {
 }
 
 fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
-    if (outcome == .failed) return .main_menu;
+    if (outcome == .failed) {
+        return switch (mode orelse .postal) {
+            // PORT(verified): ordinary postal final-loss uses the outer bridge's
+            // `26 -> 2` return when replay-backed routing and the post-level high-score
+            // owner do not override it.
+            .postal => .new_game_menu,
+            .challenge => .main_menu,
+            .time_trial => .main_menu,
+            .tutorial => .main_menu,
+        };
+    }
     return switch (mode orelse .postal) {
         .postal => .postal_route_map,
         .time_trial => .time_trial_route_map,
         .challenge => .replay_current_level,
-        .tutorial => .main_menu,
+        // PORT(verified): tutorial completion forces the outer bridge's `26 -> 2` path in
+        // `update_subgoldy`, so the native return target is the New Game owner.
+        .tutorial => .new_game_menu,
     };
 }
 
@@ -11569,13 +11583,15 @@ test "route map body text stays empty without route script copy" {
     try std.testing.expectEqualStrings("My first route!", routeMapBodyText("My first route!"));
 }
 
-test "failed runs return to the main menu while completions keep mode-specific exits" {
+test "run return targets follow the recovered native bridge where confirmed" {
     try std.testing.expectEqual(ResultReturnTarget.postal_route_map, resultReturnTargetForOutcome(.completed, .postal));
     try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.completed, .time_trial));
     try std.testing.expectEqual(ResultReturnTarget.replay_current_level, resultReturnTargetForOutcome(.completed, .challenge));
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .postal));
+    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.completed, .tutorial));
+    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .postal));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .challenge));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
 }
 
 test "selected replay return targets follow the launch surface" {

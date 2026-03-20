@@ -37,10 +37,18 @@ These are the main blind spots the repo should treat as active risks.
 
 The port still lacks the real Windows ownership around states `26/27/28/29/30`.
 
+What is now solid:
+
+- `26` destroys the active subgame and jumps to the preserved frontend owner without reinitializing subgame
+- `27` destroys, reinitializes subgame, then jumps to the preserved frontend owner
+- `28` does the same as `27`, but clears `replay_active` first
+- `29/30` are the Thanks For Playing owner
+- tutorial completion and ordinary postal final loss both use the `26 -> 2` return-to-New-Game lane
+
 Practical impact:
 
 - respawn vs final loss vs successful completion still cross the app/runtime boundary too loosely
-- replay-sensitive return routing is still not literal
+- challenge, time-trial, and replay-sensitive return routing are still not literal
 - the current completion/death work is better than before, but it still lives on top of a provisional outer bridge
 
 ### 2. Attachment follow semantics
@@ -97,7 +105,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 1. Recover the outer bridge
 
-- [ ] Name or uniquely identify the real outer subgame/frontend bridge around states `26/27/28/29/30`
+- [x] Name or uniquely identify the real outer subgame/frontend bridge around states `26/27/28/29/30`
 - [ ] Recover which fields mean fresh start, rebuild, continuation, replay-sensitive launch, and post-run return
 - [ ] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
 - [ ] Make completion, respawn, final loss, and replay exits all route through that same explicit bridge

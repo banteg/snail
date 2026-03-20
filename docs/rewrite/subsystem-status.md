@@ -317,12 +317,18 @@ Implemented now:
 - lives are now consumed inside the runner's respawn branch before the app rebuild, matching the recovered `update_subgoldy_resurrect` ownership better than the old app-side decrement
 - app-level reload is closer to the Windows rebuild split than the old hidden in-place runner reset
 - final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before returning to the shell
+- the outer bridge opcodes are now narrowed more concretely:
+  - `26`: destroy subgame, then jump to the preserved frontend owner without reinitializing subgame
+  - `27`: destroy subgame, reinitialize subgame, then jump to the preserved frontend owner
+  - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
+  - `29/30`: Thanks For Playing owner init and update
+- the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 
 Still missing or approximate:
 
-- the real frontend bridge around Windows states `26/27/28/29/30`
-- the outer subgame controller that owns rebuild/teardown/return
-- exact final-loss and replay-sensitive return routing
+- the full outer subgame controller that owns rebuild/teardown/return
+- the preserved frontend-owner field behind the `26/27/28` bridge jump
+- exact challenge, time-trial, and replay-sensitive return routing
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
