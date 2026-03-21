@@ -1018,6 +1018,11 @@
       "description": "Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment."
     },
     {
+      "address": "0x42f650",
+      "name": "initialize_renderable_bod",
+      "description": "Builds the shared renderable bod shell on top of the base bod header, seeding its object-oriented vtable, default render flags, and identity local transform."
+    },
+    {
       "address": "0x42f680",
       "name": "apply_bod_position"
     },
