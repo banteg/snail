@@ -77,12 +77,14 @@ Current Zig port status for this slice:
 - the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, but warn-promoted and corner-marked heads no longer collapse into a single quad
 - the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
 - the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
+- the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
 - the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
 - the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants`, the final render/cache consumer for `mark_track_warning_zones`, directional fringe objects, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
 
 Related shared color helper:
 
 - `get_track_skirt_color` packages the current track skirt RGB scalars plus a fixed alpha into one RGBA tuple
+- the currently recovered initializer path (`build_track_colours` -> `sub_44dc50` -> `sub_44db90(..., 1.0)`) leaves those skirt RGB scalars at white unless another later owner mutates them
 - the same helper is used while populating runtime track rows and while emitting fringe objects
 
 ## Level Runtime Field Mapping

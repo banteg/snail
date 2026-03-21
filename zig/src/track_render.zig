@@ -15,6 +15,7 @@ const fringe_texture_path = "OBJECTS/UNIVERSE/FRINGE.TGA";
 const skirt_depth: f32 = 0.65;
 const back_plane_margin: f32 = 4.0;
 const back_plane_y: f32 = -0.66;
+const track_skirt_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 102 };
 
 pub const Scene = struct {
     allocator: std.mem.Allocator,
@@ -143,6 +144,7 @@ fn drawBackPlane(scene: *const Scene, preview: *const track.LoadedLevelPreview) 
         .{ .x = right, .y = back_plane_y, .z = back },
         .{ .x = right, .y = back_plane_y, .z = front },
         .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
+        .white,
     );
 }
 
@@ -177,6 +179,7 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
                 .{ .x = right, .y = back_height, .z = back },
                 .{ .x = right, .y = front_height, .z = front },
                 topSurfaceUv(family, left, right, front, back),
+                .white,
             );
 
             for (lane_index..lane_index + run_length) |edge_lane_index| {
@@ -221,6 +224,7 @@ fn drawFringeSides(
             .{ .x = left, .y = back_height, .z = back },
             .{ .x = left, .y = front_height, .z = front },
             .{ .left = 0.0, .right = 1.0, .top = 1.0, .bottom = 0.0 },
+            track_skirt_tint,
         );
     }
     if ((edge_mask & 0x04) != 0) {
@@ -231,6 +235,7 @@ fn drawFringeSides(
             .{ .x = right, .y = bottom_back, .z = back },
             .{ .x = right, .y = bottom_front, .z = front },
             .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
+            track_skirt_tint,
         );
     }
     if ((edge_mask & 0x01) != 0) {
@@ -241,6 +246,7 @@ fn drawFringeSides(
             .{ .x = right, .y = front_height, .z = front },
             .{ .x = left, .y = front_height, .z = front },
             .{ .left = 0.0, .right = 1.0, .top = 1.0, .bottom = 0.0 },
+            track_skirt_tint,
         );
     }
     if ((edge_mask & 0x02) != 0) {
@@ -251,6 +257,7 @@ fn drawFringeSides(
             .{ .x = right, .y = bottom_back, .z = back },
             .{ .x = left, .y = bottom_back, .z = back },
             .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
+            track_skirt_tint,
         );
     }
 }
@@ -523,6 +530,13 @@ test "fringe edge mask follows the native solid-neighbor helper" {
     try std.testing.expectEqual(@as(u8, 0x00), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 1, false));
 }
 
+test "track skirt tint follows the recovered shared skirt alpha" {
+    try std.testing.expectEqual(@as(u8, 255), track_skirt_tint.r);
+    try std.testing.expectEqual(@as(u8, 255), track_skirt_tint.g);
+    try std.testing.expectEqual(@as(u8, 255), track_skirt_tint.b);
+    try std.testing.expectEqual(@as(u8, 102), track_skirt_tint.a);
+}
+
 fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
     if (family == .ramp) {
         return .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 };
@@ -543,13 +557,14 @@ fn drawTexturedQuad(
     bottom_right: rl.Vector3,
     top_right: rl.Vector3,
     uv: QuadUv,
+    tint: rl.Color,
 ) void {
     rlgl.rlSetTexture(texture.id);
     defer rlgl.rlSetTexture(0);
 
     rlgl.rlBegin(rlgl.rl_quads);
     defer rlgl.rlEnd();
-    rlgl.rlColor4ub(255, 255, 255, 255);
+    rlgl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
 
     rlgl.rlTexCoord2f(uv.left, uv.top);
     rlgl.rlVertex3f(top_left.x, top_left.y, top_left.z);
@@ -573,8 +588,8 @@ fn drawDoubleSidedTexturedQuad(
     top_right: rl.Vector3,
     uv: QuadUv,
 ) void {
-    drawTexturedQuad(front_texture, top_left, bottom_left, bottom_right, top_right, uv);
-    drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv);
+    drawTexturedQuad(front_texture, top_left, bottom_left, bottom_right, top_right, uv, .white);
+    drawTexturedQuad(back_texture, top_right, bottom_right, bottom_left, top_left, uv, .white);
 }
 
 test "resolve track set index rejects unresolved windows values" {

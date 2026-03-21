@@ -106,6 +106,7 @@ Implemented now:
 - simple fringe skirts and back plane
   - the fringe pass now also mirrors two native suppressors from `build_track_fringe_objects`: no fringe on marked rows and no fringe on explicit runtime warn tile `0x20`
   - the simple fringe pass now uses the native solid-neighbor rule from `is_neighbor_cell_solid`, including the special non-solid treatment for runtime tile `0x16`
+  - the simple fringe pass now also uses the recovered shared skirt tint shape: white RGB with the native fixed `0.4` alpha from `get_track_skirt_color`
 
 Still missing or approximate:
 
