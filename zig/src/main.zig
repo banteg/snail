@@ -695,47 +695,68 @@ const GameplayInvincibleModelSet = struct {
 };
 
 const GameplayWeaponVisualState = struct {
+    left_draw_ticks: u8 = 0,
+    left_hide_ticks: u8 = 0,
+    right_draw_ticks: u8 = 0,
+    right_hide_ticks: u8 = 0,
     top_draw_ticks: u8 = 0,
     top_hide_ticks: u8 = 0,
-    side_draw_ticks: u8 = 0,
-    side_hide_ticks: u8 = 0,
     rocket_draw_ticks: u8 = 0,
     rocket_hide_ticks: u8 = 0,
     top_fire_ticks: u8 = 0,
 
     fn tick(self: *GameplayWeaponVisualState) void {
+        if (self.left_draw_ticks > 0) self.left_draw_ticks -= 1;
+        if (self.left_hide_ticks > 0) self.left_hide_ticks -= 1;
+        if (self.right_draw_ticks > 0) self.right_draw_ticks -= 1;
+        if (self.right_hide_ticks > 0) self.right_hide_ticks -= 1;
         if (self.top_draw_ticks > 0) self.top_draw_ticks -= 1;
         if (self.top_hide_ticks > 0) self.top_hide_ticks -= 1;
-        if (self.side_draw_ticks > 0) self.side_draw_ticks -= 1;
-        if (self.side_hide_ticks > 0) self.side_hide_ticks -= 1;
         if (self.rocket_draw_ticks > 0) self.rocket_draw_ticks -= 1;
         if (self.rocket_hide_ticks > 0) self.rocket_hide_ticks -= 1;
         if (self.top_fire_ticks > 0) self.top_fire_ticks -= 1;
     }
 
-    fn noteWeaponLevelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
+    fn noteWeaponChannelChange(self: *GameplayWeaponVisualState, previous_flags: u32, current_flags: u32) void {
+        const previous = gameplay.nativeWeaponChannelStates(previous_flags);
+        const current = gameplay.nativeWeaponChannelStates(current_flags);
+        self.noteSideChannelChange(previous.left, current.left, true);
+        self.noteSideChannelChange(previous.right, current.right, false);
+        self.noteCenterChannelChange(previous.center, current.center);
+    }
+
+    fn noteSideChannelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8, left_channel: bool) void {
+        if (previous == current) return;
+        const draw_ticks: *u8 = if (left_channel) &self.left_draw_ticks else &self.right_draw_ticks;
+        const hide_ticks: *u8 = if (left_channel) &self.left_hide_ticks else &self.right_hide_ticks;
+        if (previous != 0) hide_ticks.* = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len));
+        if (current != 0) draw_ticks.* = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len));
+    }
+
+    fn noteCenterChannelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
         if (previous == current) return;
         switch (previous) {
-            0 => self.top_hide_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
-            1 => self.side_hide_ticks = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
-            else => self.rocket_hide_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            1 => self.top_hide_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
+            3 => self.rocket_hide_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            else => {},
         }
         switch (current) {
-            0 => self.top_draw_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
-            1 => self.side_draw_ticks = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
-            else => self.rocket_draw_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            1 => self.top_draw_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
+            3 => self.rocket_draw_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            else => {},
         }
     }
 
-    fn noteFire(self: *GameplayWeaponVisualState, weapon_level: u8) void {
-        switch (weapon_level) {
-            0 => self.top_fire_ticks = 3,
-            1 => {
-                if (self.side_draw_ticks == 0) self.side_draw_ticks = 1;
-            },
-            else => {
+    fn noteFire(self: *GameplayWeaponVisualState, movement_flags: u32) void {
+        const channel_states = gameplay.nativeWeaponChannelStates(movement_flags);
+        if (channel_states.left != 0 and self.left_draw_ticks == 0) self.left_draw_ticks = 1;
+        if (channel_states.right != 0 and self.right_draw_ticks == 0) self.right_draw_ticks = 1;
+        switch (channel_states.center) {
+            1 => self.top_fire_ticks = 3,
+            3 => {
                 if (self.rocket_draw_ticks == 0) self.rocket_draw_ticks = 1;
             },
+            else => {},
         }
     }
 };
@@ -1329,19 +1350,14 @@ fn nativePowerupPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Ru
 }
 
 fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return current.weapon_level != previous.weapon_level or
-        current.counters.ring_powerup > previous.counters.ring_powerup;
+    return current.movement_flags != previous.movement_flags;
 }
 
 fn nativeMovementStateSoundFamily(current: gameplay.Runner) NativeMovementStateSoundFamily {
     if ((current.movement_flags & 0x7) != 0) return .turbo;
     if ((current.movement_flags & 0x18) != 0) return .laser;
     if ((current.movement_flags & 0x60) != 0) return .rocket;
-    return switch (current.weapon_level) {
-        0 => .turbo,
-        1 => .laser,
-        else => .rocket,
-    };
+    return .turbo;
 }
 
 fn nativeMovementStateAttachmentExitGain(camera_position: rl.Vector3, player_position: rl.Vector3, attachment_exit_pending: bool) ?f32 {
@@ -1483,11 +1499,22 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(16383, 2));
     try std.testing.expectEqual(@as(usize, 1), nativeMovementStateVariantIndexForSample(16384, 2));
     try std.testing.expectEqual(@as(usize, 2), nativeMovementStateVariantIndexForSample(32767, 3));
+    previous = gameplay.Runner{};
+    current = previous;
+    current.movement_flags = 8;
+    try std.testing.expectEqualDeep(
+        gameplay.WeaponChannelStates{ .right = 2 },
+        gameplay.nativeWeaponChannelStates(current.movement_flags),
+    );
     try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
 
     previous = gameplay.Runner{};
     current = previous;
-    current.weapon_level = 1;
+    current.movement_flags = 2;
+    try std.testing.expectEqualDeep(
+        gameplay.WeaponChannelStates{ .left = 1, .right = 1 },
+        gameplay.nativeWeaponChannelStates(current.movement_flags),
+    );
     try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
 
     previous = gameplay.Runner{};
@@ -4348,9 +4375,9 @@ const AppState = struct {
 
     fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
         self.gameplay_weapon_visual_state.tick();
-        self.gameplay_weapon_visual_state.noteWeaponLevelChange(previous.weapon_level, current.weapon_level);
+        self.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.movement_flags, current.movement_flags);
         if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-            self.gameplay_weapon_visual_state.noteFire(current.weapon_level);
+            self.gameplay_weapon_visual_state.noteFire(current.movement_flags);
         }
     }
 
@@ -11030,7 +11057,9 @@ fn drawGameplayTurboAttachments(
     forward: rl.Vector3,
     runner: gameplay.Runner,
 ) void {
-    const top_active = runner.weapon_level == 0 or
+    const channel_states = gameplay.nativeWeaponChannelStates(runner.movement_flags);
+
+    const top_active = channel_states.center == 1 or
         state.gameplay_weapon_visual_state.top_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.top_hide_ticks > 0;
     if (top_active) {
@@ -11051,14 +11080,14 @@ fn drawGameplayTurboAttachments(
         }
     }
 
-    const side_active = runner.weapon_level == 1 or
-        state.gameplay_weapon_visual_state.side_draw_ticks > 0 or
-        state.gameplay_weapon_visual_state.side_hide_ticks > 0;
-    if (side_active) {
+    const left_active = channel_states.left != 0 or
+        state.gameplay_weapon_visual_state.left_draw_ticks > 0 or
+        state.gameplay_weapon_visual_state.left_hide_ticks > 0;
+    if (left_active) {
         if (state.current_gameplay_laser_left_models.currentModel(
-            state.gameplay_weapon_visual_state.side_draw_ticks,
+            state.gameplay_weapon_visual_state.left_draw_ticks,
             0,
-            state.gameplay_weapon_visual_state.side_hide_ticks,
+            state.gameplay_weapon_visual_state.left_hide_ticks,
         )) |model| {
             drawGameplayUploadedModel(
                 model.*,
@@ -11070,10 +11099,16 @@ fn drawGameplayTurboAttachments(
                 null,
             );
         }
+    }
+
+    const right_active = channel_states.right != 0 or
+        state.gameplay_weapon_visual_state.right_draw_ticks > 0 or
+        state.gameplay_weapon_visual_state.right_hide_ticks > 0;
+    if (right_active) {
         if (state.current_gameplay_laser_right_models.currentModel(
-            state.gameplay_weapon_visual_state.side_draw_ticks,
+            state.gameplay_weapon_visual_state.right_draw_ticks,
             0,
-            state.gameplay_weapon_visual_state.side_hide_ticks,
+            state.gameplay_weapon_visual_state.right_hide_ticks,
         )) |model| {
             drawGameplayUploadedModel(
                 model.*,
@@ -11087,7 +11122,7 @@ fn drawGameplayTurboAttachments(
         }
     }
 
-    const rocket_active = runner.weapon_level >= 2 or
+    const rocket_active = channel_states.center == 3 or
         state.gameplay_weapon_visual_state.rocket_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.rocket_hide_ticks > 0;
     if (rocket_active) {

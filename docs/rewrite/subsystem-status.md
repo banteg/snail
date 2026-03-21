@@ -246,9 +246,9 @@ Implemented now:
 - row-event and prompt metadata surface into the default level path
 - live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, parcels, and `=` turret rows instead of leaving them as logic-only counters or debug markers
 - salt now uses the shipped `X/SALT.X2` model path through a slot-owned runtime transform, while garbage keeps the recovered sprite-based asset split but now renders from its live runtime slot instead of a static row billboard
-- Turbo now carries visible gameplay weapon tiers and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
+- Turbo now carries visible gameplay weapon channels and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
 - gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, explosive rings, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
-- weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) instead of one fixed shot sound per weapon tier
+- weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) and a recovered `movement_flags`-driven channel layout instead of one fixed shot sound or fire pattern per coarse weapon tier
 - weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port

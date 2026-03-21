@@ -559,14 +559,6 @@ const hotspot_camera_skid_stop_local = rl.Vector3{ .x = -0.54505, .y = 0.0, .z =
 const hotspot_camera_slug_death_local = rl.Vector3{ .x = -0.0088, .y = 0.7189, .z = -5.4915 };
 const hotspot_camera_intro_talk_local = rl.Vector3{ .x = 0.862, .y = -0.13765, .z = 1.87215 };
 
-fn shotCooldownTicksForWeaponLevel(weapon_level: u8) u8 {
-    return switch (weapon_level) {
-        0 => 4,
-        1 => 7,
-        else => 4,
-    };
-}
-
 fn movementFlagsForSelector(selector: u8) u32 {
     return switch (selector) {
         0 => 1,
@@ -580,6 +572,30 @@ fn movementFlagsForSelector(selector: u8) u32 {
         8 => 144,
         else => 129,
     };
+}
+
+pub const WeaponChannelStates = struct {
+    left: u8 = 0,
+    right: u8 = 0,
+    center: u8 = 0,
+};
+
+pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
+    return switch (movement_flags) {
+        1, 129 => .{ .center = 1 },
+        2 => .{ .left = 1, .right = 1 },
+        4 => .{ .left = 1, .right = 1, .center = 1 },
+        8 => .{ .right = 2 },
+        16, 144 => .{ .left = 2, .right = 2 },
+        32, 64, 192 => .{ .center = 3 },
+        else => .{ .center = 1 },
+    };
+}
+
+fn shotCooldownTicksForMovementFlags(movement_flags: u32) u8 {
+    const channel_states = nativeWeaponChannelStates(movement_flags);
+    if (channel_states.left == 2 or channel_states.right == 2) return 7;
+    return 4;
 }
 
 fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
@@ -2908,7 +2924,7 @@ pub const Runner = struct {
     fn handleFireInput(self: *Runner, preview: *const track.LoadedLevelPreview, fire: bool) void {
         if (!fire or self.shot_cooldown_ticks != 0) return;
         self.spawnProjectiles(preview);
-        self.shot_cooldown_ticks = shotCooldownTicksForWeaponLevel(self.weapon_level);
+        self.shot_cooldown_ticks = shotCooldownTicksForMovementFlags(self.movement_flags);
     }
 
     fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2922,42 +2938,39 @@ pub const Runner = struct {
         } else {
             right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
         }
-        switch (self.weapon_level) {
-            0 => {
-                self.spawnProjectile(.turbo, origin.x, origin.y, origin.z, forward.x, forward.y, forward.z);
-            },
-            1 => {
-                self.spawnProjectile(
-                    .laser,
-                    origin.x - (right.x * 0.35),
-                    origin.y - (right.y * 0.35),
-                    origin.z - (right.z * 0.35),
-                    forward.x,
-                    forward.y,
-                    forward.z,
-                );
-                self.spawnProjectile(
-                    .laser,
-                    origin.x + (right.x * 0.35),
-                    origin.y + (right.y * 0.35),
-                    origin.z + (right.z * 0.35),
-                    forward.x,
-                    forward.y,
-                    forward.z,
-                );
-            },
-            else => {
-                self.spawnProjectile(
-                    .rocket,
-                    origin.x + (up.x * 0.16) + (forward.x * 0.12),
-                    origin.y + (up.y * 0.16) + (forward.y * 0.12),
-                    origin.z + (up.z * 0.16) + (forward.z * 0.12),
-                    forward.x,
-                    forward.y,
-                    forward.z,
-                );
-            },
-        }
+        const channel_states = nativeWeaponChannelStates(self.movement_flags);
+        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.left, -0.24, 0.11, 0.08);
+        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.right, 0.24, 0.11, 0.08);
+        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.center, 0.0, 0.23, 0.12);
+    }
+
+    fn spawnWeaponChannelProjectile(
+        self: *Runner,
+        origin: rl.Vector3,
+        right: rl.Vector3,
+        up: rl.Vector3,
+        forward: rl.Vector3,
+        channel_state: u8,
+        local_x: f32,
+        local_y: f32,
+        local_z: f32,
+    ) void {
+        const kind: Projectile.Kind = switch (channel_state) {
+            1 => .turbo,
+            2 => .laser,
+            3 => .rocket,
+            else => return,
+        };
+        const spawn_position = offsetPosition(origin, right, up, forward, local_x, local_y, local_z);
+        self.spawnProjectile(
+            kind,
+            spawn_position.x,
+            spawn_position.y,
+            spawn_position.z,
+            forward.x,
+            forward.y,
+            forward.z,
+        );
     }
 
     fn spawnProjectile(self: *Runner, kind: Projectile.Kind, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
@@ -6081,7 +6094,7 @@ test "projectile fire defeats slug after powerup" {
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
 }
 
-test "weapon tiers spawn expected projectile families" {
+test "movement flags spawn the recovered projectile channel layouts" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
     defer fixture.deinit();
 
@@ -6089,14 +6102,38 @@ test "weapon tiers spawn expected projectile families" {
     runner.configureSessionMode(.tutorial);
     runner.reset(&fixture.preview);
 
-    runner.weapon_level = 0;
+    runner.movement_flags = 1;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
 
     runner.active_projectile_count = 0;
     for (&runner.active_projectiles) |*projectile| projectile.active = false;
-    runner.weapon_level = 1;
+    runner.movement_flags = 2;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[1].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.movement_flags = 4;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 3), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[1].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[2].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.movement_flags = 8;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.movement_flags = 16;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
@@ -6104,7 +6141,15 @@ test "weapon tiers spawn expected projectile families" {
 
     runner.active_projectile_count = 0;
     for (&runner.active_projectiles) |*projectile| projectile.active = false;
-    runner.weapon_level = 2;
+    runner.movement_flags = 144;
+    runner.spawnProjectiles(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[1].kind);
+
+    runner.active_projectile_count = 0;
+    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.movement_flags = 32;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.rocket, runner.active_projectiles[0].kind);
