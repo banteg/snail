@@ -5019,16 +5019,48 @@ const AppState = struct {
         try self.enterGamePhase(.level);
     }
 
+    fn abandonRunReturnTarget(self: *const AppState) ResultReturnTarget {
+        if (self.selectedReplayPlaybackActive()) {
+            const source = self.selected_level_record_source orelse return .main_menu;
+            return resultReturnTargetForSelectedReplaySource(source);
+        }
+
+        if (self.active_frontend_mode) |mode| {
+            return switch (mode) {
+                .postal => .postal_route_map,
+                .time_trial => .time_trial_route_map,
+                .challenge, .tutorial => .main_menu,
+            };
+        }
+
+        return .main_menu;
+    }
+
     fn abandonActiveRun(self: *AppState) !void {
         self.pending_run_result = null;
         self.clearPostLevelHighScoreEntry();
 
-        if (self.active_frontend_mode) |mode| {
-            switch (mode) {
-                .postal => return self.enterRouteMapMenu(.postal),
-                .time_trial => return self.enterRouteMapMenu(.time_trial),
-                .challenge, .tutorial => {},
-            }
+        switch (self.abandonRunReturnTarget()) {
+            .postal_route_map => return self.enterRouteMapMenu(.postal),
+            .time_trial_route_map => {
+                if (self.selectedReplayPlaybackActive()) {
+                    self.start_route_index_override = self.active_frontend_level_index;
+                }
+                return self.enterRouteMapMenu(.time_trial);
+            },
+            .high_scores_menu => {
+                if (self.selected_level_record_source) |source| {
+                    switch (source) {
+                        .postal => self.high_scores_menu_index = highScoreModeIndex(.postal),
+                        .challenge => self.high_scores_menu_index = highScoreModeIndex(.challenge),
+                        .completion => {},
+                    }
+                }
+                try self.setSelectedLevelRecordContext(null, null);
+                return self.enterGamePhase(.high_scores_menu);
+            },
+            .main_menu => {},
+            .new_game_menu, .replay_current_level, .thanks_screen => {},
         }
 
         self.active_frontend_mode = null;
@@ -11607,6 +11639,43 @@ test "selected replay return targets follow the launch surface" {
         ResultReturnTarget.high_scores_menu,
         AppState.resultReturnTargetForSelectedReplaySource(.{ .challenge = 5 }),
     );
+}
+
+test "abandon run return target follows replay-backed launch surfaces" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
+
+    state.selected_level_record_source = .{ .challenge = 2 };
+    state.active_frontend_mode = .challenge;
+    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, state.abandonRunReturnTarget());
+
+    state.selected_level_record_source = .{ .completion = 7 };
+    state.active_frontend_mode = .time_trial;
+    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, state.abandonRunReturnTarget());
+}
+
+test "abandon run return target falls back to the active frontend mode" {
+    var state: AppState = undefined;
+    state.selected_replay_cache = null;
+    state.selected_level_record_source = null;
+
+    state.active_frontend_mode = .postal;
+    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, state.abandonRunReturnTarget());
+
+    state.active_frontend_mode = .time_trial;
+    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, state.abandonRunReturnTarget());
+
+    state.active_frontend_mode = .challenge;
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, state.abandonRunReturnTarget());
+
+    state.active_frontend_mode = null;
+    try std.testing.expectEqual(ResultReturnTarget.main_menu, state.abandonRunReturnTarget());
 }
 
 test "final postal completion returns through the thanks screen" {

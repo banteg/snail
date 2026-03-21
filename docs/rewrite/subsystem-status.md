@@ -331,6 +331,7 @@ Implemented now:
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`), so the remaining gap is the writer for that preserved-owner field, not whether the field exists
 - a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store, so the preserved-owner writer is probably hidden behind a helper or constructor outside the obvious state-machine range
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
+- replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
 
 Still missing or approximate:
 
