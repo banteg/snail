@@ -125,7 +125,7 @@ The Zig eye tracks 20% more laterally than the original, making the camera swing
 
 ## Significant: Physics Model Differences
 
-### 10. Garbage impact uses simplified physics
+### 10. Garbage impact still uses the wrong motion owner
 
 **Windows** (`handle_subgoldy_collisions` garbage):
 ```
@@ -134,14 +134,16 @@ velocity.z -= (dz_normalized) * velocity.z * 0.10
 ```
 Uses the actual collision direction vector and current velocity for directional knockback.
 
-**Zig** (`gameplay.zig:1160, 1179`):
+**Zig** (`gameplay.zig`):
 ```zig
-speed_rows_per_second *= 0.9        // flat 10% reduction
-lane_center += push_direction * 0.35 // flat lateral push
+speed_rows_per_second -= dz_normalized * speed_rows_per_second * 0.10
+lane_center += (-dx_normalized) * speed_rows_per_second * 0.18
 ```
-Uses a flat scalar speed reduction and fixed lane push regardless of collision angle or current speed.
+The port now uses the recovered direction-vector formulas, but it still applies them to the high-level
+`speed_rows_per_second` and `lane_center` scaffold instead of the native velocity lanes at
+`player + 0x410` / `player + 0x414`.
 
-**Impact**: In the binary, a head-on garbage hit at high speed has a much larger lateral effect than a glancing hit at low speed. The Zig always applies the same push.
+**Impact**: collision feel is much closer now, but it still is not a literal port of the native motion controller.
 
 ### 11. Speed model fundamentally different
 
@@ -189,6 +191,6 @@ The Zig code should target the Windows table. Currently, the health scoring (250
 | 7 | No speed-dependent camera | Medium | Port vertical/pitch adjustments from cameraman |
 | 8 | No Z deadzone following | Medium | Add deadzone spring |
 | 9 | Lateral eye scale 0.4 vs 0.333 | Low | Change divisor from 2.5 to 3.0 |
-| 10 | Simplified garbage impact | Medium | Port velocity-vector physics |
+| 10 | Garbage still uses the wrong motion owner | Medium | Port the native player velocity lanes |
 | 11 | Speed model not mapped | High (structural) | Map binary speed scalar to Zig rows/second |
 | 12 | Android score table leaking in | Low | Reference Windows table only |

@@ -245,7 +245,7 @@ Implemented now:
 - authored and ambient garbage/salt seeding into an 8-row live strip
 - row-event and prompt metadata surface into the default level path
 - live gameplay now renders visible tutorial/runtime actors for slug, garbage, salt, health, jetpack, rings/powerups, parcels, and `=` turret rows instead of leaving them as logic-only counters or debug markers
-- salt now uses the shipped `X/SALT.X2` model path, while slug and garbage still use sprite-based presentation that matches the recovered asset split better than the earlier generic placeholders
+- salt now uses the shipped `X/SALT.X2` model path through a slot-owned runtime transform, while garbage keeps the recovered sprite-based asset split but now renders from its live runtime slot instead of a static row billboard
 - Turbo now carries visible gameplay weapon tiers and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
 - gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, explosive rings, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
 - weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) instead of one fixed shot sound per weapon tier
@@ -253,7 +253,7 @@ Implemented now:
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles with per-row fire state and short `BLASTERTOP-FIRE` flashes instead of invisible debug-only tiles or one shared timer
-- garbage collisions now apply the missing tutorial “Asteroids slow me down” behavior by shaving forward speed and kicking Turbo sideways instead of only incrementing damage/score
+- garbage collisions now apply the recovered direction-vector slowdown and sideways kick instead of only incrementing damage/score, and the garbage slot now survives into a visible burst state after contact
 - garbage and salt aftermath now spawn from the hazard positions instead of the player position, so tutorial combat feedback is no longer centered on Turbo when those hazards are hit
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build

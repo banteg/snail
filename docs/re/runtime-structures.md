@@ -102,8 +102,8 @@ Current practical read:
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
 - the currently recovered deltas line up with collision branches:
-  - salt or hazard contact `+0.15`
   - ambient hazard path `+0.02`
+  - salt contact `+0.02`
   - garbage `+0.04`
   - slug `+1.0`
   - health pickup `-0.5`

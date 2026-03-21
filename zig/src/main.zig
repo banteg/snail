@@ -10497,14 +10497,13 @@ fn drawGameplayRuntimeActors(
     }
 
     for (runner.activeRuntimeHazards()) |hazard| {
+        if (!shouldRenderGameplayHazard(runner, hazard)) continue;
         switch (hazard.kind) {
             .garbage => {
-                if (!shouldRenderGameplayActorRow(runner, hazard.row)) continue;
                 drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard);
             },
             .salt => {
-                if (!shouldRenderGameplaySaltRow(runner, hazard.row)) continue;
-                drawGameplaySaltActor(state, loaded_track_preview, camera, runner, hazard);
+                drawGameplaySaltActor(state, camera, hazard);
             },
         }
     }
@@ -10520,18 +10519,16 @@ fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool
     return @as(f32, @floatFromInt(global_row)) + 0.25 >= runner.row_position;
 }
 
-fn shouldRenderGameplaySaltRow(runner: gameplay.Runner, global_row: usize) bool {
-    return @as(f32, @floatFromInt(global_row)) + 48.0 >= runner.row_position;
-}
-
-fn gameplaySaltPresentationScale(runner: gameplay.Runner, global_row: usize) f32 {
-    const delta = @as(f32, @floatFromInt(global_row)) - runner.row_position;
-    return std.math.clamp(1.0 + delta / -48.0, 0.0, 1.0);
-}
-
-fn gameplaySaltPresentationAlpha(runner: gameplay.Runner, global_row: usize) u8 {
-    const scale = gameplaySaltPresentationScale(runner, global_row);
-    return @intFromFloat(std.math.clamp(scale * 0.9, 0.0, 0.9) * 255.0);
+fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay.RuntimeHazard) bool {
+    const trailing_rows: f32 = switch (hazard.kind) {
+        .garbage => switch (hazard.state) {
+            .active => @as(f32, 0.25),
+            else => @as(f32, 8.0),
+        },
+        .salt => @as(f32, 48.0),
+    };
+    return hazard.world_position.z + trailing_rows >= runner.row_position and
+        hazard.world_position.z <= runner.row_position + 72.0;
 }
 
 fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
@@ -10574,57 +10571,43 @@ fn drawGameplayGarbageActor(
     camera: rl.Camera3D,
     hazard: gameplay.RuntimeHazard,
 ) void {
+    _ = preview;
+    if (hazard.state == .inactive) return;
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_garbage_sprite_paths.len));
     const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
-    const bob_phase = hazard.presentation_phase + @as(f32, @floatCast(state.render_time_seconds * 2.5));
-    const position = gameplayLaneWorldPosition(
-        preview,
-        hazard.row,
-        hazard.lane,
-        hazard.presentation_scale + (std.math.sin(bob_phase) * 0.05),
-    );
     drawGameplayBillboardTextureRectRolled(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
-        position,
+        hazard.world_position,
         hazard.presentation_scale,
         hazard.presentation_scale,
         camera,
         hazard.presentation_phase + (@as(f32, @floatCast(state.render_time_seconds)) * 1.75),
-        .{ .r = 255, .g = 255, .b = 255, .a = 232 },
+        .{ .r = 255, .g = 255, .b = 255, .a = if (hazard.state == .active) 232 else 255 },
     );
 }
 
 fn drawGameplaySaltActor(
     state: *const AppState,
-    preview: *const track.LoadedLevelPreview,
     camera: rl.Camera3D,
-    runner: gameplay.Runner,
     hazard: gameplay.RuntimeHazard,
 ) void {
-    const presentation_scale = gameplaySaltPresentationScale(runner, hazard.row);
-    if (presentation_scale <= 0.01) return;
-    const presentation_alpha = gameplaySaltPresentationAlpha(runner, hazard.row);
+    if (hazard.state != .active) return;
+    const presentation_alpha: u8 = 232;
     if (state.current_gameplay_salt_model) |*model| {
-        const floor_height = preview.floorHeightAtCellCenter(hazard.row, hazard.lane) orelse 0.0;
-        const position = preview.worldPositionForLane(
-            @as(f32, @floatFromInt(hazard.lane)) + 0.5,
-            @as(f32, @floatFromInt(hazard.row)),
-            floor_height + 0.18,
-        );
-        const yaw = hazard.presentation_phase + @as(f32, @floatCast(state.render_time_seconds * 0.75));
+        const yaw = hazard.yaw_radians;
         const yaw_sin = std.math.sin(yaw);
         const yaw_cos = std.math.cos(yaw);
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
         const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
         const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
-        const world_transform = modelTransformFromBasis(position, right, up, forward);
+        const world_transform = modelTransformFromBasis(hazard.world_position, right, up, forward);
         const local_offset = rl.Matrix.translate(
             -model.bounds.center.x,
             -model.bounds.center.y,
             -model.bounds.center.z,
         );
-        const scale_value = 0.46 * presentation_scale;
+        const scale_value = 0.46;
         const scale = rl.Matrix.scale(scale_value, scale_value, scale_value);
         model.drawTintedEx(
             world_transform.multiply(local_offset).multiply(scale),
@@ -10634,7 +10617,6 @@ fn drawGameplaySaltActor(
     }
 
     const slot = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
-    const position = gameplayLaneWorldPosition(preview, hazard.row, hazard.lane, 0.44);
     drawGameplayBillboardTextureRect(
         state.ui_font.texture,
         .{
@@ -10643,7 +10625,7 @@ fn drawGameplaySaltActor(
             .width = slot.source_width,
             .height = slot.source_height,
         },
-        position,
+        hazard.world_position,
         0.58,
         0.72,
         camera,

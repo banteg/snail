@@ -108,12 +108,26 @@ pub const RuntimeHazardKind = enum {
     salt,
 };
 
+pub const RuntimeHazardState = enum(u8) {
+    inactive = 0,
+    active = 1,
+    burst_setup = 2,
+    burst = 3,
+};
+
 pub const RuntimeHazard = struct {
     row: usize,
     lane: usize,
     kind: RuntimeHazardKind,
+    state: RuntimeHazardState = .active,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
     presentation_phase: f32 = 0.0,
+    yaw_radians: f32 = 0.0,
+    arming_progress: f32 = 1.0,
+    arming_step: f32 = 0.0,
+    burst_side: i8 = 0,
 };
 
 pub const RuntimeRingEffect = struct {
@@ -420,13 +434,15 @@ pub const JetpackGauge = struct {
 // the separate Wall2 ambient pool because the preview does not expose those flags yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
-const salt_damage_delta: f32 = 0.15;
+const salt_damage_delta: f32 = 0.02;
 const slug_damage_delta: f32 = 1.0;
-const garbage_speed_scale: f32 = 0.9;
-const garbage_lateral_push: f32 = 0.35;
 const garbage_collision_distance_threshold: f32 = 0.98;
 const salt_collision_distance_threshold: f32 = 0.49;
 const runtime_hazard_collision_z_tolerance: f32 = 1.0;
+const garbage_burst_side_bias_scale: f32 = 0.2;
+const garbage_burst_gravity_scale: f32 = -0.01;
+const garbage_burst_teardown_y: f32 = -10.0;
+const garbage_burst_trailing_rows: f32 = 2.0;
 const damage_warning_fill_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
 const jetpack_gauge_tick_step: f32 = 0.0016666667;
@@ -1155,7 +1171,7 @@ pub const Runner = struct {
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
-    active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{undefined} ** max_active_runtime_hazards,
+    active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{.{ .row = 0, .lane = 0, .kind = .garbage }} ** max_active_runtime_hazards,
     active_runtime_hazard_count: usize = 0,
     last_runtime_hazard_scan_end: usize = 0,
     active_runtime_ring_effects: [max_active_runtime_ring_effects]RuntimeRingEffect = [_]RuntimeRingEffect{.{ .row = 0, .lane = 0, .kind = 0 }} ** max_active_runtime_ring_effects,
@@ -1288,6 +1304,7 @@ pub const Runner = struct {
             self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
+            self.updateRuntimeHazards(preview);
             self.refreshLiveRuntimeRingEffects(preview);
             self.processRuntimeHazardCollisions(preview);
             self.processVisitedRows(preview);
@@ -2294,12 +2311,12 @@ pub const Runner = struct {
         const player_position = self.worldPosition(preview, 0.4);
         var index: usize = 0;
         while (index < self.active_runtime_hazard_count) {
-            const hazard = self.active_runtime_hazards[index];
-            const y_offset: f32 = switch (hazard.kind) {
-                .garbage => 0.28,
-                .salt => 0.18,
-            };
-            const hazard_position = runtimeCellWorldPosition(preview, hazard.row, hazard.lane, y_offset);
+            const hazard = &self.active_runtime_hazards[index];
+            if (hazard.state != .active) {
+                index += 1;
+                continue;
+            }
+            const hazard_position = hazard.world_position;
             const delta_x = player_position.x - hazard_position.x;
             const delta_y = player_position.y - hazard_position.y;
             const delta_z = player_position.z - hazard_position.z;
@@ -2316,7 +2333,6 @@ pub const Runner = struct {
                 index += 1;
                 continue;
             }
-            _ = self.consumeRuntimeHazard(hazard.row, hazard.lane, hazard.kind);
             switch (hazard.kind) {
                 .garbage => {
                     self.counters.garbage_hits += 1;
@@ -2325,8 +2341,10 @@ pub const Runner = struct {
                     self.applyGarbageImpact(preview, hazard_position);
                     self.applyDamageGaugeDelta(garbage_damage_delta);
                     self.recent_event = .garbage_hit;
+                    self.beginGarbageBurst(hazard, player_position);
                 },
                 .salt => {
+                    _ = self.consumeRuntimeHazard(hazard.row, hazard.lane, hazard.kind);
                     self.counters.salt_hits += 1;
                     self.last_salt_hit_position = hazard_position;
                     self.applyDamageGaugeDelta(salt_damage_delta);
@@ -2337,29 +2355,30 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(partial): Windows garbage collisions do more than apply the +0.04 damage
-    // delta. They also knock Goldy sideways and shave current forward speed. The exact
-    // velocity fields are still not fully modeled, so the runner applies a conservative
-    // equivalent: a one-shot 10% forward-speed loss plus a lateral push away from the
-    // impacted lane, with the same effect applied to attachment lateral offset when
-    // attached instead of snapping back to lane steps.
+    // PORT(partial): Windows garbage collisions feed the normalized 3D contact vector
+    // into Goldy's lateral and forward motion lanes. The port now uses the recovered
+    // `x * speed * 0.18` and `z * speed * 0.10` formulas, but still applies them to the
+    // current high-level lane-center / rows-per-second scaffolding instead of the native
+    // velocity fields.
     fn applyGarbageImpact(self: *Runner, preview: *const track.LoadedLevelPreview, impact_position: rl.Vector3) void {
         const player_position = self.worldPosition(preview, 0.4);
         const delta_x = player_position.x - impact_position.x;
+        const delta_y = player_position.y - impact_position.y;
         const delta_z = player_position.z - impact_position.z;
-        const planar_distance = @max(@sqrt((delta_x * delta_x) + (delta_z * delta_z)), 0.0001);
-        const delta_x_normalized = delta_x / planar_distance;
-        const delta_z_normalized = delta_z / planar_distance;
+        const distance = @max(@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)), 0.0001);
+        const delta_x_normalized = delta_x / distance;
+        const delta_z_normalized = delta_z / distance;
         const speed_before = self.speed_rows_per_second;
 
         self.speed_rows_per_second = std.math.clamp(
-            speed_before - (@abs(delta_z_normalized) * speed_before * 0.10),
+            speed_before - (delta_z_normalized * speed_before * 0.10),
             2.0,
             48.0,
         );
 
-        const lateral_push = (-delta_x_normalized) * garbage_lateral_push *
-            std.math.clamp(speed_before / 12.0, 0.5, 2.0);
+        if (self.invincible_ticks > 0) return;
+
+        const lateral_push = (-delta_x_normalized) * speed_before * 0.18;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             self.attachment_follow.lateral_offset += lateral_push;
@@ -2374,6 +2393,13 @@ pub const Runner = struct {
             max_lane_center,
         );
         self.lane_index = laneIndexForLaneCenter(preview, self.lane_center);
+    }
+
+    fn beginGarbageBurst(self: *Runner, hazard: *RuntimeHazard, player_position: rl.Vector3) void {
+        _ = self;
+        if (hazard.kind != .garbage or hazard.state != .active) return;
+        hazard.state = .burst_setup;
+        hazard.burst_side = if (hazard.world_position.x >= player_position.x) 1 else -1;
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
@@ -3437,6 +3463,62 @@ pub const Runner = struct {
         self.last_runtime_hazard_scan_end = window_end;
     }
 
+    fn updateRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        var write_index: usize = 0;
+        for (0..self.active_runtime_hazard_count) |read_index| {
+            var hazard = self.active_runtime_hazards[read_index];
+            if (!self.stepRuntimeHazard(preview, &hazard)) continue;
+            self.active_runtime_hazards[write_index] = hazard;
+            write_index += 1;
+        }
+        self.active_runtime_hazard_count = write_index;
+    }
+
+    fn stepRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
+        return switch (hazard.kind) {
+            .garbage => self.updateGarbageHazard(preview, hazard),
+            .salt => self.updateSaltHazard(hazard),
+        };
+    }
+
+    fn updateGarbageHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
+        _ = preview;
+        switch (hazard.state) {
+            .inactive => return false,
+            .active => return true,
+            .burst_setup => {
+                const speed = @max(self.speed_rows_per_second, 0.0001);
+                hazard.state = .burst;
+                hazard.velocity = .{
+                    .x = ((self.nextMathRandomFloat01() * 0.2) - 0.1) * speed,
+                    .y = (0.1 + (self.nextMathRandomFloat01() * 0.2)) * speed,
+                    .z = self.nextMathRandomFloat01() * 0.3 * speed,
+                };
+                if (hazard.burst_side > 0) {
+                    hazard.velocity.x = @abs(hazard.velocity.x);
+                } else if (hazard.burst_side < 0) {
+                    hazard.velocity.x = -@abs(hazard.velocity.x);
+                }
+                hazard.velocity.x += @as(f32, @floatFromInt(hazard.burst_side)) * speed * garbage_burst_side_bias_scale;
+            },
+            .burst => {},
+        }
+
+        const speed = @max(self.speed_rows_per_second, 0.0001);
+        hazard.world_position.x += hazard.velocity.x;
+        hazard.world_position.y += hazard.velocity.y;
+        hazard.world_position.z += hazard.velocity.z;
+        hazard.velocity.y += (speed * speed) * garbage_burst_gravity_scale;
+        if (hazard.world_position.y < garbage_burst_teardown_y) return false;
+        if (hazard.world_position.z < self.row_position - garbage_burst_trailing_rows) return false;
+        return true;
+    }
+
+    fn updateSaltHazard(self: *Runner, hazard: *RuntimeHazard) bool {
+        _ = self;
+        return hazard.state == .active;
+    }
+
     fn refreshLiveRuntimeRingEffects(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) return;
 
@@ -3457,9 +3539,19 @@ pub const Runner = struct {
 
     fn pruneRuntimeHazards(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
+        const min_z = @as(f32, @floatFromInt(window_start)) - 8.0;
+        const max_z = @as(f32, @floatFromInt(window_end)) + 8.0;
         for (0..self.active_runtime_hazard_count) |read_index| {
             const hazard = self.active_runtime_hazards[read_index];
-            if (hazard.row < window_start or hazard.row >= window_end) continue;
+            switch (hazard.state) {
+                .active => {
+                    if (hazard.row < window_start or hazard.row >= window_end) continue;
+                },
+                .inactive => continue,
+                .burst_setup, .burst => {
+                    if (hazard.world_position.z < min_z or hazard.world_position.z > max_z) continue;
+                },
+            }
             self.active_runtime_hazards[write_index] = hazard;
             write_index += 1;
         }
@@ -3483,8 +3575,8 @@ pub const Runner = struct {
         for (row_location.row.cells, 0..) |_, lane| {
             if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
                 switch (sample.kind) {
-                    .garbage => self.addRuntimeHazard(global_row, lane, .garbage),
-                    .salt => self.addRuntimeHazard(global_row, lane, .salt),
+                    .garbage => self.addRuntimeHazard(preview, global_row, lane, .garbage),
+                    .salt => self.addRuntimeHazard(preview, global_row, lane, .salt),
                     else => {},
                 }
             }
@@ -3493,10 +3585,10 @@ pub const Runner = struct {
                 preview.garbageFallbackNeighborsAllowedAt(global_row, lane) and
                 shouldSpawnAmbientHazard(global_row, lane, preview.garbage_scalar, .garbage))
             {
-                self.addRuntimeHazard(global_row, lane, .garbage);
+                self.addRuntimeHazard(preview, global_row, lane, .garbage);
             }
             if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {
-                self.addRuntimeHazard(global_row, lane, .salt);
+                self.addRuntimeHazard(preview, global_row, lane, .salt);
             }
         }
     }
@@ -3555,7 +3647,7 @@ pub const Runner = struct {
         }
     }
 
-    fn addRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) void {
+    fn addRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind) void {
         for (0..self.active_runtime_hazard_count) |index| {
             const hazard = self.active_runtime_hazards[index];
             if (hazard.row == row and hazard.lane == lane and hazard.kind == kind) return;
@@ -3566,8 +3658,15 @@ pub const Runner = struct {
             .row = row,
             .lane = lane,
             .kind = kind,
+            .state = .active,
+            .world_position = initialRuntimeHazardWorldPosition(preview, row, lane, kind),
+            .velocity = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
             .presentation_scale = runtimeHazardPresentationScale(row, lane, kind),
             .presentation_phase = runtimeHazardPresentationPhase(row, lane, kind),
+            .yaw_radians = runtimeHazardYawRadians(row, lane, kind),
+            .arming_progress = 1.0,
+            .arming_step = 0.0,
+            .burst_side = 0,
         };
         self.active_runtime_hazard_count += 1;
     }
@@ -3602,6 +3701,17 @@ pub const Runner = struct {
         const seed = runtimeHazardSeed(row, lane, kind);
         const normalized = @as(f32, @floatFromInt(@as(u16, @truncate(seed)))) / 65535.0;
         return normalized * std.math.tau;
+    }
+
+    fn runtimeHazardYawRadians(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
+        return runtimeHazardPresentationPhase(row, lane, kind) - std.math.pi;
+    }
+
+    fn initialRuntimeHazardWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind) rl.Vector3 {
+        return switch (kind) {
+            .garbage => runtimeCellWorldPosition(preview, row, lane, runtimeHazardPresentationScale(row, lane, kind)),
+            .salt => runtimeCellWorldPosition(preview, row, lane, 0.18),
+        };
     }
 
     fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
@@ -5683,11 +5793,12 @@ test "runtime garbage hazards collide by distance before exact row crossing" {
     runner.movement_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    runner.addRuntimeHazard(garbage.row, garbage.lane, .garbage);
+    runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
 
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
     runner.processRuntimeHazardCollisions(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(RuntimeHazardState.burst_setup, runner.activeRuntimeHazards()[0].state);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.garbage_hits);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
 }
@@ -5705,11 +5816,62 @@ test "oblique garbage collisions push the runner sideways" {
     runner.movement_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
-    runner.addRuntimeHazard(garbage.row, garbage.lane, .garbage);
+    runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
 
     const lane_before = runner.lane_center;
     runner.processRuntimeHazardCollisions(&fixture.preview);
     try std.testing.expect(runner.lane_center != lane_before);
+}
+
+test "garbage impact follows the recovered direction-vector formulas" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.reset(&fixture.preview);
+    runner.speed_rows_per_second = 12.0;
+    runner.lane_center = 4.5;
+    runner.lane_index = fixture.preview.laneIndexAtWorldX(runner.lane_center);
+    runner.refreshSample(&fixture.preview);
+
+    const player_position = runner.worldPosition(&fixture.preview, 0.4);
+    const impact_position = rl.Vector3{
+        .x = player_position.x - 0.2,
+        .y = player_position.y,
+        .z = player_position.z - 0.8,
+    };
+    const distance = @sqrt(0.68);
+    const expected_speed = 12.0 - (((player_position.z - impact_position.z) / distance) * 12.0 * 0.10);
+    const expected_lane_center = runner.lane_center - (((player_position.x - impact_position.x) / distance) * 12.0 * 0.18);
+
+    runner.applyGarbageImpact(&fixture.preview, impact_position);
+
+    try std.testing.expectApproxEqAbs(expected_speed, runner.speed_rows_per_second, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_lane_center, runner.lane_center, 0.0001);
+}
+
+test "garbage burst hazards keep live world motion after contact" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
+    runner.reset(&fixture.preview);
+    runner.lane_index = garbage.lane;
+    runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.5;
+    runner.runtime_track_index = garbage.row - 1;
+    runner.movement_progress = 0.6;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
+
+    runner.processRuntimeHazardCollisions(&fixture.preview);
+    const before = runner.activeRuntimeHazards()[0].world_position;
+    runner.updateRuntimeHazards(&fixture.preview);
+    const after = runner.activeRuntimeHazards()[0].world_position;
+
+    try std.testing.expectEqual(RuntimeHazardState.burst, runner.activeRuntimeHazards()[0].state);
+    try std.testing.expect(after.x != before.x or after.y != before.y or after.z != before.z);
 }
 
 test "slug hit latches the shared fall path" {
@@ -5954,7 +6116,7 @@ test "projectiles stop on salt without consuming the hazard" {
 
     var runner = Runner.init(&fixture.preview);
     const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
-    runner.addRuntimeHazard(salt.row, salt.lane, .salt);
+    runner.addRuntimeHazard(&fixture.preview, salt.row, salt.lane, .salt);
 
     const lane_center = @as(f32, @floatFromInt(salt.lane)) + 0.5;
     var projectile: Projectile = .{
@@ -5984,8 +6146,8 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     runner.current_global_row = slug.row;
     runner.resolved_lane_index = slug.lane;
-    runner.addRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage);
-    runner.addRuntimeHazard(slug.row, slug.lane, .salt);
+    runner.addRuntimeHazard(&fixture.preview, slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage);
+    runner.addRuntimeHazard(&fixture.preview, slug.row, slug.lane, .salt);
 
     runner.triggerExplodeRing(&fixture.preview);
 
@@ -6106,8 +6268,11 @@ test "enemy laser projectile hits player and enters the shared fall state" {
 
 test "runtime hazards preserve recovered presentation scalars" {
     var runner = Runner{};
-    runner.addRuntimeHazard(32, 4, .garbage);
-    runner.addRuntimeHazard(48, 1, .salt);
+    var preview = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer preview.deinit();
+
+    runner.addRuntimeHazard(&preview.preview, 32, 4, .garbage);
+    runner.addRuntimeHazard(&preview.preview, 48, 1, .salt);
 
     try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeHazards().len);
     const garbage = runner.activeRuntimeHazards()[0];
@@ -6116,6 +6281,8 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expect(garbage.presentation_scale >= 0.6);
     try std.testing.expect(garbage.presentation_scale <= 0.84);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), salt.presentation_scale, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt.world_position.y, 0.5);
+    try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
 }
 
 test "invincible slug contact defeats slug instead of entering death" {
