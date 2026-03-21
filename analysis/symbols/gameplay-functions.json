@@ -1686,6 +1686,16 @@
       "description": "Allocates one live gameplay parcel slot from `game->track_parcels`, seeds its world position, sprite, and parcel-owner pointer, and returns the activated runtime slot."
     },
     {
+      "address": "0x443870",
+      "name": "initialize_parcel_set_bucket_pool",
+      "description": "Initializes the 0x800-entry positive-count parcel-set bucket pool at `data_6487e8`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` fills it from authored parcel requests."
+    },
+    {
+      "address": "0x4438b0",
+      "name": "initialize_zero_parcel_bucket_pool",
+      "description": "Initializes the 0x800-entry zero-parcel fallback bucket pool at `data_53d190`, clearing each 0x20c-byte entry with the shared gameplay slot initializer before `place_parcels_on_track` uses it for `0`-parcel filler rows."
+    },
+    {
       "address": "0x4438e0",
       "name": "place_parcels_on_track",
       "description": "Places parcels for the current course and projects flagged parcel offsets onto generated track rows. Cross-port Android and iOS symbols match this helper to `cRSubGame::PlaceParcels()`."
@@ -1890,6 +1900,11 @@
       "description": "Advances the 25-sprite collision ring effect by orbiting its sprite slots around the owner at radius `7.0` while the owning timer remains active. Cross-port Android symbols match this helper to `cRNuke::AI()`."
     },
     {
+      "address": "0x447290",
+      "name": "recycle_bod_to_free_list",
+      "description": "Unlinks one active BOD from its current list membership and moves it back onto the shared free-list head, erroring if the source node is not currently marked as live-list owned."
+    },
+    {
       "address": "0x447300",
       "name": "copy_segment_definition_to_level_slot"
     },
@@ -1910,6 +1925,11 @@
     {
       "address": "0x448960",
       "name": "format_time_trial_string"
+    },
+    {
+      "address": "0x4489e0",
+      "name": "kill_tip_widgets",
+      "description": "Kills the live border widgets owned by one gameplay tip slot, including the main tip body and any optional OK or Disable buttons, then clears the tip's active flag."
     },
     {
       "address": "0x448a40",
@@ -1990,6 +2010,31 @@
       "address": "0x449460",
       "name": "initialize_bass_audio_backend",
       "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
+    },
+    {
+      "address": "0x4496d0",
+      "name": "uninitialize_bass_audio_backend",
+      "description": "Stops the global BASS backend, frees the loaded `Bass.dll` state, unloads the temporary DLL, and deletes the extracted `tBass.dll` copy."
+    },
+    {
+      "address": "0x449720",
+      "name": "ensure_music_stream_from_path",
+      "description": "Ensures the requested music path is the active BASS stream, skipping a restart when the cached path already matches and otherwise stopping any previous stream before opening and playing the new path."
+    },
+    {
+      "address": "0x4497e0",
+      "name": "prepare_music_stream_reload_if_path_changed",
+      "description": "Checks whether the requested music path differs from the cached active path and, when it does, stops the current music stream so `cache_music_file` can reload it from archive bytes."
+    },
+    {
+      "address": "0x449820",
+      "name": "play_music_stream_from_bytes",
+      "description": "Stops any previous active music stream, opens a new BASS stream from already-read music bytes, and starts playback while caching the source path."
+    },
+    {
+      "address": "0x4498d0",
+      "name": "stop_music_stream",
+      "description": "Stops the active BASS music stream, removes any registered sync callback, frees the stream handle, and clears the active-stream flag."
     },
     {
       "address": "0x449920",
