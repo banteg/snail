@@ -1690,6 +1690,21 @@
       "name": "update_squidge"
     },
     {
+      "address": "0x444ac0",
+      "name": "initialize_invincible_shell",
+      "description": "Resets the runner-owned invincible-shell controller at `player + 0x4218` and restores the normal snail-skin state before gameplay starts."
+    },
+    {
+      "address": "0x444ae0",
+      "name": "start_invincible_shell",
+      "description": "Arms the runner-owned invincible-shell controller when the native invincible bit becomes active, seeds its fade timers, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`."
+    },
+    {
+      "address": "0x444b50",
+      "name": "update_invincible_shell",
+      "description": "Advances the runner-owned invincible-shell controller: fades the shell in while the invincible movement-flag bit stays active, keeps the shell spinning on the shared snail matrix, and fades back to the base skin once invincibility clears."
+    },
+    {
       "address": "0x444cf0",
       "name": "handle_subgoldy_collisions",
       "description": "Processes Goldy's live collision sweep against rings, parcels, health pickups, garbage, salt, slugs, and related runtime object pools, updating score and the contact-damage gauge side effects as each hit resolves. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Collision()`."
