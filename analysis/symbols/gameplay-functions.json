@@ -1536,6 +1536,11 @@
       "name": "emit_ring_star_shower"
     },
     {
+      "address": "0x43e780",
+      "name": "update_ring_or_special_effect_particle",
+      "description": "Advances one child sprite in the bullet-owned ring or special-effect halo, updating its circular phase around the parent projectile and refreshing the live effect position before optional star-shower emission."
+    },
+    {
       "address": "0x43e830",
       "name": "update_subgoldy_bullet"
     },
@@ -1936,6 +1941,11 @@
     {
       "address": "0x445f60",
       "name": "initialize_snail_skin"
+    },
+    {
+      "address": "0x445f80",
+      "name": "update_snail_skin_transition",
+      "description": "Applies the currently selected snail-skin object to the shared player render owner and, when a timed skin change is armed, advances the transition progress until the swap completes."
     },
     {
       "address": "0x445fd0",
