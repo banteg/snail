@@ -75,6 +75,8 @@ Current Zig port status for this slice:
 
 - the renderer now mirrors the recovered open-below warn-surface lane and the center-seam floor/slide family swap lane
 - the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, but warn-promoted and corner-marked heads no longer collapse into a single quad
+- the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
+- the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
 - the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
 - the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants`, the final render/cache consumer for `mark_track_warning_zones`, directional fringe objects, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
 

@@ -99,10 +99,12 @@ Implemented now:
 - fixed 8-lane-style strip rendering instead of path-only top-surface trimming
 - run-aware top-surface ownership for the recovered floor and slide families
   - the merge lane now follows the native family split more closely: real floor-family runs condense, while warn-promoted and corner-marked heads stay separate
+- the runtime edge-mask lane now carries the native corner bit on `5/6/9/10` masks, so later passes can distinguish corner heads from plain open edges
 - native-shaped warn-surface promotion for open-below floor and slide cells
 - native-shaped center-seam floor/slide family swaps on the recovered seam lanes
 - recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
 - simple fringe skirts and back plane
+  - the fringe pass now also mirrors two native suppressors from `build_track_fringe_objects`: no fringe on marked rows and no fringe on explicit runtime warn tile `0x20`
 
 Still missing or approximate:
 

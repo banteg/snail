@@ -183,7 +183,7 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
                 const edge_left = @as(f32, @floatFromInt(edge_lane_index)) - width_offset;
                 const edge_right = edge_left + 1.0;
                 const edge_mask = preview.runtimeEdgeMaskAt(global_row, edge_lane_index) orelse 0;
-                if (edge_mask != 0) {
+                if (edge_mask != 0 and fringeObjectsEnabledForRuntimeCell(row_location.row.marked, preview.runtimeTileAt(global_row, edge_lane_index) orelse 0)) {
                     drawFringeSides(scene, edge_left, edge_right, front, back, front_height, back_height, edge_mask);
                 }
             }
@@ -246,6 +246,11 @@ fn drawFringeSides(
             .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 },
         );
     }
+}
+
+fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
+    if (row_marked) return false;
+    return tile_type != 0x20;
 }
 
 fn drawSegmentSelectionOutline(preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
@@ -449,6 +454,12 @@ fn mergedSurfaceRunLength(
         run_length += 1;
     }
     return run_length;
+}
+
+test "fringe objects follow the recovered row and tile suppression rules" {
+    try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(true, 0x01));
+    try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x20));
+    try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
 }
 
 fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {

@@ -1821,7 +1821,7 @@ fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
 }
 
 fn runtimeEdgeMaskGetsCornerVariantBit(edge_mask: u8) bool {
-    return switch (edge_mask) {
+    return switch (edge_mask & 0x0f) {
         0x05, 0x06, 0x09, 0x0a => true,
         else => false,
     };
@@ -2351,6 +2351,9 @@ fn runtimeOpenEdgeMask(
     }
     if (global_row + 1 >= total_rows or isRuntimeEdgeNeighborOpen(runtime_tiles, total_rows, max_width, global_row + 1, lane_index)) {
         mask |= 0x02;
+    }
+    if (runtimeEdgeMaskGetsCornerVariantBit(mask)) {
+        mask |= 0x80;
     }
     return mask;
 }
@@ -3353,6 +3356,15 @@ test "runtime open edge mask follows open-neighbor family boundaries" {
     try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x1e));
 }
 
+test "runtime open edge mask carries the native corner bit on corner masks" {
+    const tiles = [_]u8{
+        0x01, 0x00, 0x01,
+        0x00, 0x01, 0x01,
+        0x01, 0x01, 0x01,
+    };
+    try std.testing.expectEqual(@as(u8, 0x89), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x01));
+}
+
 test "runtime flag b40 grid condenses recovered floor-family runs" {
     const tiles = [_]u8{ 0x0f, 0x10, 0x13 };
     const warn_surface = [_]bool{ false, false, false };
@@ -3376,17 +3388,21 @@ test "runtime flag b40 grid keeps warn-promoted slide cells as separate heads" {
 
 test "runtime flag b40 grid keeps corner-marked slide cells as separate heads" {
     const tiles = [_]u8{
-        0x01, 0x01,
-        0x01, 0x01,
+        0x01, 0x00, 0x01, 0x01,
+        0x00, 0x01, 0x01, 0x01,
+        0x01, 0x01, 0x01, 0x01,
     };
-    const warn_surface = [_]bool{ false, false, false, false };
-    const flag_grid = try buildRuntimeFlagB40Grid(std.testing.allocator, &tiles, &warn_surface, 2, 2);
+    const warn_surface = [_]bool{
+        false, false, false, false,
+        false, false, false, false,
+        false, false, false, false,
+    };
+    const flag_grid = try buildRuntimeFlagB40Grid(std.testing.allocator, &tiles, &warn_surface, 3, 4);
     defer std.testing.allocator.free(flag_grid);
 
-    try std.testing.expect(flag_grid[0]);
-    try std.testing.expect(flag_grid[1]);
-    try std.testing.expect(flag_grid[2]);
-    try std.testing.expect(flag_grid[3]);
+    try std.testing.expect(flag_grid[5]);
+    try std.testing.expect(flag_grid[6]);
+    try std.testing.expect(!flag_grid[7]);
 }
 
 test "runtime floor sampler matches recovered tile formulas" {
