@@ -753,6 +753,11 @@
       "description": "Sorts one built object's 0x30-byte face records by the texture-group key at `face + 0xc` so `calc_object_texture_groups` can collapse contiguous runs."
     },
     {
+      "address": "0x41a360",
+      "name": "sample_smtrack_heightmap",
+      "description": "Samples one source texture into the active SMTrack float-height grid by averaging the source RGB channels, applying the optional cubic curve, and scaling the result into the destination height lane."
+    },
+    {
       "address": "0x41aa50",
       "name": "apply_distort_to_object"
     },
@@ -1039,6 +1044,11 @@
     {
       "address": "0x4303f0",
       "name": "calc_object_texture_groups"
+    },
+    {
+      "address": "0x430470",
+      "name": "advance_frame_sequence",
+      "description": "Advances one frame-sequence block by its fractional step, handling wrap, restart, reverse, and ping-pong flags before publishing the current frame payload pointer."
     },
     {
       "address": "0x430570",
@@ -1657,6 +1667,11 @@
     {
       "address": "0x441dd0",
       "name": "firework_shoot"
+    },
+    {
+      "address": "0x441f60",
+      "name": "update_smtracks",
+      "description": "Advances the `cRSMTracks` manager's active frame sequence, copies the live replacement scalar into the selected SMTrack texture slot, and resamples the active source texture into the runtime height grid."
     },
     {
       "address": "0x441fa0",
