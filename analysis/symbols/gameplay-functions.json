@@ -2072,6 +2072,11 @@
       "description": "Iterates the live font text queue, retires dead entries, and draws the ones matching the supplied render mask."
     },
     {
+      "address": "0x44a790",
+      "name": "queue_font_text_instance",
+      "description": "Copies one text run into the shared font print string buffer and appends the matching queued font-text instance record with its font, position, alignment, colors, and render flags."
+    },
+    {
       "address": "0x44a8b0",
       "name": "queue_axis_aligned_textured_quad",
       "description": "Appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags."
@@ -2085,6 +2090,11 @@
       "address": "0x44aac0",
       "name": "queue_textured_quad_corners",
       "description": "Appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. The backdrop and galaxy-line renderers use this helper."
+    },
+    {
+      "address": "0x44abe0",
+      "name": "layout_and_queue_wrapped_font_text",
+      "description": "Splits one text string into wrapped line runs, queues each run through `queue_font_text_instance`, and returns the aligned authored-space origin and measured bounds for the wrapped block."
     },
     {
       "address": "0x44ae10",
