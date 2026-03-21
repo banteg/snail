@@ -250,9 +250,24 @@
       "description": "Clears the companion right-button latch byte for the requested slot and returns the current right mouse button state byte."
     },
     {
+      "address": "0x407850",
+      "name": "snapshot_current_display_mode",
+      "description": "Reads the current desktop display mode into the shared `DEVMODEA` buffer at `data_4df868` before fullscreen or pointer-scaling setup."
+    },
+    {
       "address": "0x407860",
       "name": "restore_desktop_display_mode",
       "description": "Restores the desktop display mode with ChangeDisplaySettingsA(nullptr, 0) and makes the OS cursor visible again. The startup loop and deactivate path use it when leaving fullscreen presentation."
+    },
+    {
+      "address": "0x407880",
+      "name": "probe_display_mode_count",
+      "description": "Walks `EnumDisplaySettingsA` until it fails and returns the terminal result, which the startup path uses while gathering desktop display capabilities."
+    },
+    {
+      "address": "0x4078b0",
+      "name": "read_current_display_resolution",
+      "description": "Reads the current desktop width and height into the supplied outputs, falling back to `640x480` if `EnumDisplaySettingsA` fails."
     },
     {
       "address": "0x407a10",
@@ -262,6 +277,11 @@
       "address": "0x407b50",
       "name": "noop_runtime_ai",
       "description": "Shared empty per-frame update stub reused by runtime object types that do not need standalone AI work. Cross-port Android symbol matches tie this address to multiple `::AI()` slots including camera, weapon, and ball-style objects."
+    },
+    {
+      "address": "0x407b60",
+      "name": "construct_game_runtime",
+      "description": "Allocates the `cRGame` root object, seeds its embedded managers and callback tables, initializes the runtime pools, and publishes the live global game pointer at `data_4df904`."
     },
     {
       "address": "0x408060",
@@ -286,6 +306,11 @@
       "address": "0x408650",
       "name": "initialize_fringe_object",
       "description": "Constructs one 0x38-byte fringe render object by clearing the shared object base and installing the fringe-object vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 7000-entry fringe-manager pool later consumed by `allocate_fringe_object`."
+    },
+    {
+      "address": "0x408820",
+      "name": "initialize_active_landscape_entry",
+      "description": "Constructs one active landscape-entry runtime record by clearing its shared body-list links and installing the landscape-entry update selector. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 10-slot pool later driven by `activate_landscape_entry`."
     },
     {
       "address": "0x408860",
@@ -635,6 +660,16 @@
       "address": "0x418870",
       "name": "activate_landscape_entry",
       "description": "Binds one cached landscape entry into the shared backdrop manager, applies its texture or model handles, chooses the random variant flag, and copies its fog color into the global render state."
+    },
+    {
+      "address": "0x418a30",
+      "name": "clear_active_landscape_entries",
+      "description": "Clears the active 10-slot landscape-entry runtime pool by unlinking every live entry from the shared body list and zeroing its startup-delay lane. `destroy_subgame` uses it when the current landscape set is torn down."
+    },
+    {
+      "address": "0x418ac0",
+      "name": "update_active_landscape_entry",
+      "description": "Advances one active landscape-entry runtime by counting down its activation delay, shifting its lateral offset, and toggling its shared visibility bit as it moves into or out of the backdrop camera band."
     },
     {
       "address": "0x418b50",
