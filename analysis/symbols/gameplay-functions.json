@@ -469,6 +469,11 @@
       "description": "Builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. The star-field pass at `initialize_star_field` and `update_star_positions` reaches this helper through the shared sprite renderer."
     },
     {
+      "address": "0x413d50",
+      "name": "build_object_texture_group_buffers",
+      "description": "Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering."
+    },
+    {
       "address": "0x414260",
       "name": "set_fullscreen_mode",
       "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
