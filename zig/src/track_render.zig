@@ -443,6 +443,7 @@ fn mergedSurfaceRunLength(
     var run_length: usize = 1;
     var scan_lane = lane_index + 1;
     while (scan_lane <= max_lane_index) : (scan_lane += 1) {
+        if (preview.runtimeFlagB40At(global_row, scan_lane)) break;
         const next_family = surfaceFamilyForRuntimeCell(preview, global_row, scan_lane) orelse break;
         if (next_family != family) break;
         run_length += 1;

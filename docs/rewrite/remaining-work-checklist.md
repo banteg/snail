@@ -85,7 +85,7 @@ This is still the biggest "quiet" rendering blind spot:
 
 - warning-zone marking
 - directional fringe ownership
-- fringe promotion and run merge behavior
+- the remaining fringe-promotion BOD matching and marked-row run-merge semantics
 
 Skipping these keeps presentation noisier than the runtime logic deserves and makes later visual audits harder.
 
@@ -110,6 +110,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [x] Name or uniquely identify the real outer subgame/frontend bridge around states `26/27/28/29/30`
 - [ ] Recover which fields mean fresh start, rebuild, continuation, replay-sensitive launch, and post-run return
   - current narrowing: the `26/27/28` jump target is a dedicated front-end controller slot (`update_frontend_state_machine` reads it from `[controller + 0x98]`)
+  - current static dead end: a shallow BN sweep of the front-end cluster only exposed that read, not a writer, so the writer likely lives behind a helper or constructor outside the obvious state-machine functions
 - [ ] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
 - [ ] Make completion, respawn, final loss, and replay exits all route through that same explicit bridge
 

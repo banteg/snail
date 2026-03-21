@@ -98,6 +98,7 @@ Implemented now:
 - ramp UVs kept off the flat world-UV rule
 - fixed 8-lane-style strip rendering instead of path-only top-surface trimming
 - run-aware top-surface ownership for the recovered floor and slide families
+  - the merge lane now follows the native family split more closely: real floor-family runs condense, while warn-promoted and corner-marked heads stay separate
 - native-shaped warn-surface promotion for open-below floor and slide cells
 - native-shaped center-seam floor/slide family swaps on the recovered seam lanes
 - recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
@@ -107,7 +108,8 @@ Still missing or approximate:
 
 - `select_track_tile_edge_variants`
 - exact BOD-table matching inside `promote_track_tiles_to_fringe_variants`
-- `merge_track_tile_runs` beyond the currently ported conservative ownership slice
+- `merge_track_tile_runs` beyond the currently ported ownership slice
+  - marked-row suppression and the remaining low-bit flag semantics are still unresolved
 - the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint
 - real directional fringe objects and cache families
   - the underlying Windows pool is clearer now: `initialize_fringe_manager` + `allocate_fringe_object`
@@ -325,6 +327,7 @@ Implemented now:
   - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
   - `29/30`: Thanks For Playing owner init and update
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`), so the remaining gap is the writer for that preserved-owner field, not whether the field exists
+- a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store, so the preserved-owner writer is probably hidden behind a helper or constructor outside the obvious state-machine range
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 
 Still missing or approximate:

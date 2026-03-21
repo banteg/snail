@@ -452,6 +452,7 @@ pub const LoadedLevelPreview = struct {
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
+            runtime_warn_surface_grid,
             total_rows,
             max_width,
         );
@@ -669,6 +670,7 @@ pub const LoadedLevelPreview = struct {
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
+            runtime_warn_surface_grid,
             total_rows,
             max_width,
         );
@@ -1811,26 +1813,42 @@ fn runtimeFlagB40BaseForTile(tile_type: u8) bool {
 }
 
 fn isRuntimeFlagB40FloorCondenseTile(tile_type: u8) bool {
-    return switch (tile_type) {
-        0x01, 0x15, 0x1b, 0x21, 0x22 => true,
+    return isFloorCacheRuntimeTileFamily(tile_type);
+}
+
+fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
+    return isSlideRuntimeTileFamily(tile_type);
+}
+
+fn runtimeEdgeMaskGetsCornerVariantBit(edge_mask: u8) bool {
+    return switch (edge_mask) {
+        0x05, 0x06, 0x09, 0x0a => true,
         else => false,
     };
 }
 
-fn isRuntimeFlagB40SlideCondenseTile(tile_type: u8) bool {
-    return switch (tile_type) {
-        0x01, 0x14, 0x15, 0x1b, 0x21, 0x22 => true,
-        else => false,
-    };
+fn runtimeTileGetsCornerVariantBit(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) bool {
+    const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    const edge_mask = runtimeOpenEdgeMask(runtime_tiles, total_rows, max_width, global_row, lane_index, tile_type);
+    return runtimeEdgeMaskGetsCornerVariantBit(edge_mask);
 }
 
 fn runtimeFlagB40RunLength(
     runtime_tiles: []const u8,
+    warn_surface_grid: []const bool,
+    total_rows: usize,
     max_width: usize,
     global_row: usize,
     lane_index: usize,
 ) usize {
-    const start_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
+    const start_index = runtimeTileIndex(max_width, global_row, lane_index);
+    const start_tile = runtime_tiles[start_index];
     var run_length: usize = 1;
 
     if (start_tile == 0x0e) {
@@ -1842,17 +1860,29 @@ fn runtimeFlagB40RunLength(
     }
 
     if (isRuntimeFlagB40FloorCondenseTile(start_tile)) {
+        if (warn_surface_grid[start_index] or runtimeTileGetsCornerVariantBit(runtime_tiles, total_rows, max_width, global_row, lane_index)) {
+            return 1;
+        }
         while (lane_index + run_length < max_width) : (run_length += 1) {
-            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            const next_index = runtimeTileIndex(max_width, global_row, lane_index + run_length);
+            const next_tile = runtime_tiles[next_index];
             if (!isRuntimeFlagB40FloorCondenseTile(next_tile)) break;
+            if (warn_surface_grid[next_index]) break;
+            if (runtimeTileGetsCornerVariantBit(runtime_tiles, total_rows, max_width, global_row, lane_index + run_length)) break;
         }
         return run_length;
     }
 
     if (isRuntimeFlagB40SlideCondenseTile(start_tile)) {
+        if (warn_surface_grid[start_index] or runtimeTileGetsCornerVariantBit(runtime_tiles, total_rows, max_width, global_row, lane_index)) {
+            return 1;
+        }
         while (lane_index + run_length < max_width) : (run_length += 1) {
-            const next_tile = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index + run_length)];
+            const next_index = runtimeTileIndex(max_width, global_row, lane_index + run_length);
+            const next_tile = runtime_tiles[next_index];
             if (!isRuntimeFlagB40SlideCondenseTile(next_tile)) break;
+            if (warn_surface_grid[next_index]) break;
+            if (runtimeTileGetsCornerVariantBit(runtime_tiles, total_rows, max_width, global_row, lane_index + run_length)) break;
         }
         return run_length;
     }
@@ -1863,6 +1893,7 @@ fn runtimeFlagB40RunLength(
 fn buildRuntimeFlagB40Grid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
+    warn_surface_grid: []const bool,
     total_rows: usize,
     max_width: usize,
 ) ![]bool {
@@ -1882,7 +1913,14 @@ fn buildRuntimeFlagB40Grid(
 
             // Windows seeds `flags_b & 0x40` broadly and then clears it on horizontal
             // follower cells during `CondenseTrack`.
-            const run_length = runtimeFlagB40RunLength(runtime_tiles, max_width, global_row, lane_index);
+            const run_length = runtimeFlagB40RunLength(
+                runtime_tiles,
+                warn_surface_grid,
+                total_rows,
+                max_width,
+                global_row,
+                lane_index,
+            );
             if (run_length > 1) {
                 for (1..run_length) |offset| {
                     flag_grid[current_index + offset] = false;
@@ -2809,9 +2847,10 @@ test "normalize segment glyph for track flags matches recovered helper cases" {
     try std.testing.expectEqual(@as(u8, '.'), normalizeSegmentGlyphForTrackFlags('_', 0, false, false));
 }
 
-test "runtime flag b40 clears followers across recovered floor-strip runs" {
+test "runtime flag b40 clears followers across recovered slide-strip runs" {
     const runtime_tiles = [_]u8{ 0x01, 0x15, 0x21, 0x22, 0x00 };
-    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    const warn_surface = [_]bool{ false, false, false, false, false };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, &warn_surface, 1, runtime_tiles.len);
     defer std.testing.allocator.free(flags);
 
     try std.testing.expect(flags[0]);
@@ -2822,8 +2861,9 @@ test "runtime flag b40 clears followers across recovered floor-strip runs" {
 }
 
 test "runtime flag b40 keeps separate heads across floor and slide strip families" {
-    const runtime_tiles = [_]u8{ 0x01, 0x14, 0x15, 0x00 };
-    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    const runtime_tiles = [_]u8{ 0x0f, 0x14, 0x15, 0x00 };
+    const warn_surface = [_]bool{ false, false, false, false };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, &warn_surface, 1, runtime_tiles.len);
     defer std.testing.allocator.free(flags);
 
     try std.testing.expect(flags[0]);
@@ -2834,7 +2874,8 @@ test "runtime flag b40 keeps separate heads across floor and slide strip familie
 
 test "runtime flag b40 clears followers on recovered tile 0x0e strips" {
     const runtime_tiles = [_]u8{ 0x0e, 0x0e, 0x0e, 0x23 };
-    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    const warn_surface = [_]bool{ false, false, false, false };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, &warn_surface, 1, runtime_tiles.len);
     defer std.testing.allocator.free(flags);
 
     try std.testing.expect(flags[0]);
@@ -2845,7 +2886,8 @@ test "runtime flag b40 clears followers on recovered tile 0x0e strips" {
 
 test "runtime flag b40 preserves non-condensed populated tiles" {
     const runtime_tiles = [_]u8{ 0x0f, 0x1d, 0x1e, 0x00 };
-    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, 1, runtime_tiles.len);
+    const warn_surface = [_]bool{ false, false, false, false };
+    const flags = try buildRuntimeFlagB40Grid(std.testing.allocator, &runtime_tiles, &warn_surface, 1, runtime_tiles.len);
     defer std.testing.allocator.free(flags);
 
     try std.testing.expect(flags[0]);
@@ -3309,6 +3351,42 @@ test "runtime open edge mask follows open-neighbor family boundaries" {
     try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&closed_neighbors, 3, 3, 1, 1, 0x01));
 
     try std.testing.expectEqual(@as(u8, 0x00), runtimeOpenEdgeMask(&tiles, 3, 3, 1, 1, 0x1e));
+}
+
+test "runtime flag b40 grid condenses recovered floor-family runs" {
+    const tiles = [_]u8{ 0x0f, 0x10, 0x13 };
+    const warn_surface = [_]bool{ false, false, false };
+    const flag_grid = try buildRuntimeFlagB40Grid(std.testing.allocator, &tiles, &warn_surface, 1, 3);
+    defer std.testing.allocator.free(flag_grid);
+
+    try std.testing.expect(flag_grid[0]);
+    try std.testing.expect(!flag_grid[1]);
+    try std.testing.expect(!flag_grid[2]);
+}
+
+test "runtime flag b40 grid keeps warn-promoted slide cells as separate heads" {
+    const tiles = [_]u8{ 0x01, 0x15 };
+    const warn_surface = [_]bool{ true, true };
+    const flag_grid = try buildRuntimeFlagB40Grid(std.testing.allocator, &tiles, &warn_surface, 1, 2);
+    defer std.testing.allocator.free(flag_grid);
+
+    try std.testing.expect(flag_grid[0]);
+    try std.testing.expect(flag_grid[1]);
+}
+
+test "runtime flag b40 grid keeps corner-marked slide cells as separate heads" {
+    const tiles = [_]u8{
+        0x01, 0x01,
+        0x01, 0x01,
+    };
+    const warn_surface = [_]bool{ false, false, false, false };
+    const flag_grid = try buildRuntimeFlagB40Grid(std.testing.allocator, &tiles, &warn_surface, 2, 2);
+    defer std.testing.allocator.free(flag_grid);
+
+    try std.testing.expect(flag_grid[0]);
+    try std.testing.expect(flag_grid[1]);
+    try std.testing.expect(flag_grid[2]);
+    try std.testing.expect(flag_grid[3]);
 }
 
 test "runtime floor sampler matches recovered tile formulas" {

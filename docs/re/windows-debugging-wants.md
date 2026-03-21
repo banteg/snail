@@ -231,6 +231,7 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Also watch the front-end bridge controller's active-state and preserved-owner slots while those breaks fire:
   - `update_frontend_state_machine` reads active state from `[controller + 0x94]`
   - `update_frontend_state_machine` reads the `26/27/28` bridge jump target from `[controller + 0x98]`
+  - a static BN sweep did not find a shallow store to `[controller + 0x98]`, so the likely writer is outside the obvious front-end state-machine cluster
 - Watch the three flag bytes or dwords above during:
   - fresh level start
   - respawn rebuild
