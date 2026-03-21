@@ -146,7 +146,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 6. Recover track render-normalization
 
-- [ ] Port `mark_track_warning_zones`
+- [ ] Recover the final render/cache consumer for the ported `mark_track_warning_zones` footprint
 - [ ] Port the remaining edge and exact BOD-table fringe-promotion passes
 - [ ] Port directional fringe ownership and cache-family routing
 - [ ] Re-audit gameplay and segment-view rendering only after these normalization passes are in

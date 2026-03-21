@@ -100,6 +100,7 @@ Implemented now:
 - run-aware top-surface ownership for the recovered floor and slide families
 - native-shaped warn-surface promotion for open-below floor and slide cells
 - native-shaped center-seam floor/slide family swaps on the recovered seam lanes
+- recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
 - simple fringe skirts and back plane
 
 Still missing or approximate:
@@ -107,7 +108,7 @@ Still missing or approximate:
 - `select_track_tile_edge_variants`
 - exact BOD-table matching inside `promote_track_tiles_to_fringe_variants`
 - `merge_track_tile_runs` beyond the currently ported conservative ownership slice
-- `mark_track_warning_zones`
+- the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint
 - real directional fringe objects and cache families
   - the underlying Windows pool is clearer now: `initialize_fringe_manager` + `allocate_fringe_object`
 - exact warn-family routing
