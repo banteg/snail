@@ -1494,6 +1494,11 @@
       "description": "Adds one scored gameplay event onto Goldy's per-event buckets and total score, and awards a bonus life whenever the total crosses a 50,000-point threshold while the visible life stock is still below nine. Windows evidence matches the `cRSubGoldy::ScoreAdd(int,int)` shape directly."
     },
     {
+      "address": "0x4403a0",
+      "name": "clear_subgoldy_score_buckets",
+      "description": "Clears the six per-type score buckets that `add_subgoldy_score` and `display_score_stats` read on the live subgame runner owner, without touching the separate total-score or life lanes."
+    },
+    {
       "address": "0x4403c0",
       "name": "display_score_stats"
     },
@@ -1911,6 +1916,11 @@
     {
       "address": "0x447480",
       "name": "load_level_definition_file"
+    },
+    {
+      "address": "0x448060",
+      "name": "load_builtin_segment_definitions",
+      "description": "Copies the shipped built-in segment definitions from the static table at `0x4a63d0` into the runtime segment catalog, including names like `Start`, `Finish`, and `Filler` plus their eight authored row strings and metadata lanes."
     },
     {
       "address": "0x448160",
