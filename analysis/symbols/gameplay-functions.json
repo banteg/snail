@@ -683,6 +683,11 @@
       "name": "clean_duplicate_vertices"
     },
     {
+      "address": "0x419fd0",
+      "name": "sort_object_faces_by_texture_group",
+      "description": "Sorts one built object's 0x30-byte face records by the texture-group key at `face + 0xc` so `calc_object_texture_groups` can collapse contiguous runs."
+    },
+    {
       "address": "0x41aa50",
       "name": "apply_distort_to_object"
     },
