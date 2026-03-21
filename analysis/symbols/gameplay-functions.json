@@ -469,15 +469,27 @@
     },
     {
       "address": "0x414820",
-      "name": "update_golb_ai"
+      "name": "update_golb_ai",
+      "description": "Advances one live Golb shot actor, including straight-flight or path-follow motion, collision transitions, burst or smoke aftermath, and the final cleanup path once it passes the player or leaves the valid band."
     },
     {
       "address": "0x415280",
-      "name": "create_golb"
+      "name": "create_golb",
+      "description": "Initializes one Golb shot actor from the player's current movement_flags family and emitter slot, choosing the matching spawn anchor, velocity lane, render owner, and any path-follow state before the actor enters `update_golb_ai`."
+    },
+    {
+      "address": "0x415bb0",
+      "name": "spawn_golb_trail_sprite",
+      "description": "Allocates one short-lived trail sprite for the straight-flight Golb family at the supplied world position. `update_golb_ai` emits it in a short three-point chain behind the projectile each tick."
     },
     {
       "address": "0x415c60",
       "name": "spawn_golb_smoke"
+    },
+    {
+      "address": "0x415d80",
+      "name": "spawn_golb_impact_sprite",
+      "description": "Allocates the short-lived impact sprite used when a Golb shot is killed or reaches a terminal collision point, seeded from the supplied world position."
     },
     {
       "address": "0x415e20",
@@ -1039,6 +1051,16 @@
       "description": "Ensures one `music/*.ogg` payload is resident in the shared music-file cache, loading it from the archive or filesystem on first use and reusing the cached bytes afterward."
     },
     {
+      "address": "0x432df0",
+      "name": "play_sound_effect_backend",
+      "description": "Shared SFX backend wrapper that plays one effect id with an explicit gain scale plus optional extra playback parameters before forwarding into the lower sound-bank calls."
+    },
+    {
+      "address": "0x432e80",
+      "name": "play_voice_backend",
+      "description": "Shared voice backend wrapper that plays one voice sample id with an explicit gain scale plus the same optional extra playback parameters used by the SFX backend."
+    },
+    {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
     },
@@ -1213,6 +1235,11 @@
       "name": "is_floor_cache_tile_family"
     },
     {
+      "address": "0x439bc0",
+      "name": "destroy_wall2_ambient_hazard",
+      "description": "Unlinks one live `Wall2` ambient-hazard actor and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool."
+    },
+    {
       "address": "0x439d50",
       "name": "maybe_spawn_wall2_ambient_hazard",
       "description": "Runs the current best static `Wall2` ambient-hazard spawn gate from one runtime row cell: checks the row or tile conditions, rolls the random gate, derives a spawn point and velocity, and routes the request into the 20-slot pool at `game + 0x356b00`."
@@ -1229,7 +1256,7 @@
     {
       "address": "0x43a300",
       "name": "update_movement_flag_emitters",
-      "description": "Iterates the 12 effect slots at player+0x450 and feeds the slot updater with one of three emitter classes derived from movement_flags."
+      "description": "Iterates the 12 Golb emitter slots at player+0x450 and seeds one, two, or three live shot actors based on the current movement_flags family."
     },
     {
       "address": "0x43a370",
@@ -1512,7 +1539,7 @@
     {
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
-      "description": "Finds a free projectile slot, seeds its launch state from Goldy's current weapon mode, and dispatches the matching player shot sound."
+      "description": "Finds a free slot in the shared 20-shot pool, routes the request through `spawn_wall2_ambient_hazard`, and plays the positional player-fire cue from the supplied world position."
     },
     {
       "address": "0x441b70",
@@ -2206,9 +2233,34 @@
       "description": "Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer."
     },
     {
+      "address": "0x44db80",
+      "name": "set_color_alpha",
+      "description": "Stores one float alpha value into the destination color slot's alpha lane and returns that same alpha value."
+    },
+    {
+      "address": "0x44db90",
+      "name": "set_color_grayscale",
+      "description": "Stores one uniform grayscale RGB value into the destination color slot, forces alpha to `1.0`, and returns the grayscale input."
+    },
+    {
       "address": "0x44dbf0",
       "name": "pack_color_rgba_u8",
       "description": "Converts one four-float RGBA tuple in `[0,1]` into packed 8-bit color channels for the sprite draw path."
+    },
+    {
+      "address": "0x44dc50",
+      "name": "set_color_white",
+      "description": "Thin wrapper around `set_color_grayscale` that initializes one destination color slot to opaque white."
+    },
+    {
+      "address": "0x44dc60",
+      "name": "set_color_black",
+      "description": "Thin wrapper around `set_color_grayscale` that initializes one destination color slot to opaque black."
+    },
+    {
+      "address": "0x44dc70",
+      "name": "random_signed_float_below",
+      "description": "Returns a centered random float in `[-scale, scale)` by shifting the engine RNG around zero before scaling by the supplied magnitude."
     },
     {
       "address": "0x44dc90",
@@ -2220,9 +2272,19 @@
       "name": "initialize_sound_bank"
     },
     {
+      "address": "0x44dce0",
+      "name": "play_sound_effect_at_position",
+      "description": "Plays one effect id through the shared audio backend with distance attenuation and left-right pan derived from the supplied world position."
+    },
+    {
       "address": "0x44dde0",
       "name": "play_sound_effect",
       "description": "Thin gameplay sound wrapper that forwards one effect id into the shared audio backend with the default volume, pitch, and pan parameters."
+    },
+    {
+      "address": "0x44de00",
+      "name": "play_sound_effect_scaled",
+      "description": "Thin gameplay sound wrapper that forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes."
     },
     {
       "address": "0x44de90",
