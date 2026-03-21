@@ -758,6 +758,26 @@
       "description": "Sorts one built object's 0x30-byte face records by the texture-group key at `face + 0xc` so `calc_object_texture_groups` can collapse contiguous runs."
     },
     {
+      "address": "0x41a0b0",
+      "name": "initialize_textured_backdrop_quad",
+      "description": "Builds one shared 4-vertex textured backdrop quad with full-range UVs for the `Objects/Univers*` lane."
+    },
+    {
+      "address": "0x41a170",
+      "name": "raise_backdrop_quad_edge_pair",
+      "description": "Raises one of the two adjacent backdrop-quad edge pairs by 0.5 units using the small orientation tables consumed by the `Objects/Univers` variants."
+    },
+    {
+      "address": "0x41a1c0",
+      "name": "initialize_backdrop_slice_quad",
+      "description": "Builds one shared 4-vertex textured backdrop quad using a horizontal 1/8 UV slice selected by the panel index for the `Objects/World00*` lane."
+    },
+    {
+      "address": "0x41a290",
+      "name": "initialize_backdrop_corner_quad",
+      "description": "Builds one sliced backdrop quad and offsets the selected edge pair by 0.3 units using the four-entry corner selector table."
+    },
+    {
       "address": "0x41a360",
       "name": "sample_smtrack_heightmap",
       "description": "Samples one source texture into the active SMTrack float-height grid by averaging the source RGB channels, applying the optional cubic curve, and scaling the result into the destination height lane."
