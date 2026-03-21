@@ -1982,6 +1982,16 @@
       "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
     },
     {
+      "address": "0x449b50",
+      "name": "set_global_sample_volume_config",
+      "description": "Scales one normalized [0,1] sample-volume scalar onto BASS config option `4` (`BASS_CONFIG_GVOL_SAMPLE`) before the backend stores it as the live global SFX sample volume."
+    },
+    {
+      "address": "0x449b70",
+      "name": "set_global_stream_volume_config",
+      "description": "Scales one normalized [0,1] stream-volume scalar onto BASS config option `5` (`BASS_CONFIG_GVOL_STREAM`) before the backend stores it as the live music or stream volume."
+    },
+    {
       "address": "0x449d20",
       "name": "font_slot_index_for_char",
       "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; shipped tutorial strings reuse bytes like `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;` as icon tokens."
