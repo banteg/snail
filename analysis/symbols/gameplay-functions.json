@@ -1997,6 +1997,11 @@
       "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
     },
     {
+      "address": "0x449a80",
+      "name": "play_registered_sound_sample_backend",
+      "description": "Forwards one registered runtime sample index plus normalized playback scalars into the raw `BASS_SamplePlayEx` lane that the SFX and voice wrappers share."
+    },
+    {
       "address": "0x449ae0",
       "name": "play_registered_sound_sample_scaled_panned",
       "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and explicit pan override."
@@ -2025,6 +2030,21 @@
       "address": "0x449bc0",
       "name": "pause_audio_backend_if_running",
       "description": "Pauses the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently running, then marks it paused."
+    },
+    {
+      "address": "0x449be0",
+      "name": "set_audio_normalization_scales",
+      "description": "Stores the normalized music, SFX, and voice gain scales parsed from `VOICE/_VOICE.TXT` into the shared backend lanes that the music, sound, and voice wrappers multiply into live playback volume."
+    },
+    {
+      "address": "0x449c70",
+      "name": "initialize_font_wave_state",
+      "description": "Seeds the shared sine-wave text animation phases and per-tick phase increments that `draw_font_text_instance` consumes for wobble text."
+    },
+    {
+      "address": "0x449ca0",
+      "name": "update_font_wave_state",
+      "description": "Advances the shared sine-wave text animation phases, wraps them into `[0, 2pi)`, and resets the transient font-wave bookkeeping lanes each frame."
     },
     {
       "address": "0x449d20",
