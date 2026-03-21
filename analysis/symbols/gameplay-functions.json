@@ -278,6 +278,16 @@
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
     },
     {
+      "address": "0x408630",
+      "name": "initialize_salt_hazard_runtime",
+      "description": "Constructs one salt-hazard runtime slot by running the shared body constructor and installing the salt-hazard vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 40-slot array later reset by `initialize_salt_hazard_pool`."
+    },
+    {
+      "address": "0x408650",
+      "name": "initialize_fringe_object",
+      "description": "Constructs one 0x38-byte fringe render object by clearing the shared object base and installing the fringe-object vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 7000-entry fringe-manager pool later consumed by `allocate_fringe_object`."
+    },
+    {
       "address": "0x408860",
       "name": "initialize_track_parcel_runtime",
       "description": "Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`."
@@ -1240,6 +1250,11 @@
       "name": "is_floor_cache_tile_family"
     },
     {
+      "address": "0x439b00",
+      "name": "refresh_fringe_object_draw_list",
+      "description": "Copies the current track skirt tint into one fringe object and, once its world-z falls behind the live fringe threshold, unlinks the object from the active list and requeues it onto the shared draw-list bucket."
+    },
+    {
       "address": "0x439bc0",
       "name": "destroy_wall2_ambient_hazard",
       "description": "Unlinks one live `Wall2` ambient-hazard actor and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool."
@@ -1554,6 +1569,11 @@
       "address": "0x441b90",
       "name": "advance_timer_counters",
       "description": "Accumulates one generic timer record from a 60 Hz-scaled delta, rolls the frame counter at 60, and refreshes the derived hundredths and thousandths fields from the fractional remainder."
+    },
+    {
+      "address": "0x441c10",
+      "name": "update_fringe_object",
+      "description": "Advances one live fringe object's fade state from the shared track z thresholds, updates its alpha tint, and retires the object from the active list once it crosses the far cutoff."
     },
     {
       "address": "0x441d40",
