@@ -105,6 +105,7 @@ Implemented now:
 - recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
 - simple fringe skirts and back plane
   - the fringe pass now also mirrors two native suppressors from `build_track_fringe_objects`: no fringe on marked rows and no fringe on explicit runtime warn tile `0x20`
+  - the simple fringe pass now uses the native solid-neighbor rule from `is_neighbor_cell_solid`, including the special non-solid treatment for runtime tile `0x16`
 
 Still missing or approximate:
 

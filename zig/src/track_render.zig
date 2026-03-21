@@ -182,9 +182,16 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
             for (lane_index..lane_index + run_length) |edge_lane_index| {
                 const edge_left = @as(f32, @floatFromInt(edge_lane_index)) - width_offset;
                 const edge_right = edge_left + 1.0;
-                const edge_mask = preview.runtimeEdgeMaskAt(global_row, edge_lane_index) orelse 0;
-                if (edge_mask != 0 and fringeObjectsEnabledForRuntimeCell(row_location.row.marked, preview.runtimeTileAt(global_row, edge_lane_index) orelse 0)) {
-                    drawFringeSides(scene, edge_left, edge_right, front, back, front_height, back_height, edge_mask);
+                const fringe_edge_mask = fringeEdgeMaskForRuntimeTiles(
+                    preview.runtime_tiles,
+                    preview.total_rows,
+                    preview.max_width,
+                    global_row,
+                    edge_lane_index,
+                    row_location.row.marked,
+                );
+                if (fringe_edge_mask != 0) {
+                    drawFringeSides(scene, edge_left, edge_right, front, back, front_height, back_height, fringe_edge_mask);
                 }
             }
 
@@ -251,6 +258,50 @@ fn drawFringeSides(
 fn fringeObjectsEnabledForRuntimeCell(row_marked: bool, tile_type: u8) bool {
     if (row_marked) return false;
     return tile_type != 0x20;
+}
+
+fn runtimeTileIsFringeSolid(tile_type: u8) bool {
+    return !track.isOpenNeighborRuntimeTileFamily(tile_type) and tile_type != 0x16;
+}
+
+fn fringeNeighborIsSolid(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+) bool {
+    if (global_row >= total_rows or lane_index >= max_width) return false;
+    return runtimeTileIsFringeSolid(runtime_tiles[(global_row * max_width) + lane_index]);
+}
+
+fn fringeEdgeMaskForRuntimeTiles(
+    runtime_tiles: []const u8,
+    total_rows: usize,
+    max_width: usize,
+    global_row: usize,
+    lane_index: usize,
+    row_marked: bool,
+) u8 {
+    if (global_row >= total_rows or max_width == 0 or lane_index >= max_width) return 0;
+    const tile_type = runtime_tiles[(global_row * max_width) + lane_index];
+    if (!fringeObjectsEnabledForRuntimeCell(row_marked, tile_type)) return 0;
+    if (!runtimeTileIsFringeSolid(tile_type)) return 0;
+
+    var mask: u8 = 0;
+    if (lane_index == 0 or !fringeNeighborIsSolid(runtime_tiles, total_rows, max_width, global_row, lane_index - 1)) {
+        mask |= 0x08;
+    }
+    if (lane_index + 1 >= max_width or !fringeNeighborIsSolid(runtime_tiles, total_rows, max_width, global_row, lane_index + 1)) {
+        mask |= 0x04;
+    }
+    if (global_row == 0 or !fringeNeighborIsSolid(runtime_tiles, total_rows, max_width, global_row - 1, lane_index)) {
+        mask |= 0x01;
+    }
+    if (global_row + 1 >= total_rows or !fringeNeighborIsSolid(runtime_tiles, total_rows, max_width, global_row + 1, lane_index)) {
+        mask |= 0x02;
+    }
+    return mask;
 }
 
 fn drawSegmentSelectionOutline(preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
@@ -460,6 +511,16 @@ test "fringe objects follow the recovered row and tile suppression rules" {
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(true, 0x01));
     try std.testing.expect(!fringeObjectsEnabledForRuntimeCell(false, 0x20));
     try std.testing.expect(fringeObjectsEnabledForRuntimeCell(false, 0x01));
+}
+
+test "fringe edge mask follows the native solid-neighbor helper" {
+    const tiles = [_]u8{
+        0x01, 0x16,
+        0x00, 0x01,
+    };
+    try std.testing.expect(!runtimeTileIsFringeSolid(0x16));
+    try std.testing.expectEqual(@as(u8, 0x0f), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 0, false));
+    try std.testing.expectEqual(@as(u8, 0x00), fringeEdgeMaskForRuntimeTiles(&tiles, 2, 2, 0, 1, false));
 }
 
 fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
