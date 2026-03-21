@@ -74,12 +74,14 @@ Current high-confidence render-normalization read:
 Current Zig port status for this slice:
 
 - the renderer now mirrors the recovered open-below warn-surface lane and the center-seam floor/slide family swap lane
+- static asset-init recovery now also confirms the promoted floor and promoted slide replacement tables both route into the shared `TRACKWARN` asset family; the remaining gap is exact BOD-table eligibility and object matching, not texture-family choice
 - the horizontal ownership lane now also follows the recovered floor-vs-slide split more closely: floor-family strips condense, but warn-promoted and corner-marked heads no longer collapse into a single quad
 - the runtime edge-mask lane now also carries the native corner bit on `5/6/9/10` masks
 - the simple fringe renderer now honors two recovered `build_track_fringe_objects` suppressors: marked rows and explicit runtime warn tile `0x20`
 - the simple fringe renderer now also uses the recovered shared skirt tint shape from `get_track_skirt_color`: white RGB with fixed `0.4` alpha
 - the runtime preview and debug path now also mirror the recovered `mark_track_warning_zones` footprint grid
-- the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants`, the final render/cache consumer for `mark_track_warning_zones`, directional fringe objects, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
+- the warning-footprint lane now also feeds one recovered gameplay consumer: it suppresses generic ambient garbage/salt fallback spawns on `0x01/0x15/0x0f` cells, matching the native `update_subgame` gate
+- the remaining static gap is exact BOD-table matching for `promote_track_tiles_to_fringe_variants`, the final render/cache consumer for `mark_track_warning_zones` beyond that fallback-hazard suppressor, directional fringe objects, and the last marked-row / low-bit ownership details in `merge_track_tile_runs`
 
 Related shared color helper:
 

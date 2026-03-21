@@ -228,10 +228,24 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - `initialize_subgame`
   - `build_subgame_level`
   - `update_subgame`
+- Also break on the front-end owners that already proved they write active-state and launch-routing globals, even though they still do not expose the preserved-owner writer directly:
+  - `update_new_game_menu`
+  - `update_main_menu`
+  - `update_high_score_screen`
+  - `exit_high_score_screen`
 - Also watch the front-end bridge controller's active-state and preserved-owner slots while those breaks fire:
   - `update_frontend_state_machine` reads active state from `[controller + 0x94]`
   - `update_frontend_state_machine` reads the `26/27/28` bridge jump target from `[controller + 0x98]`
-  - a static BN sweep did not find a shallow store to `[controller + 0x98]`, so the likely writer is outside the obvious front-end state-machine cluster
+  - a static BN sweep did not find a shallow store to `[controller + 0x98]`
+  - the earlier `0x40775c` candidate was a data false positive, not a real store
+  - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write the active state or adjacent launch/owner globals, but none of them surfaced a direct `[controller + 0x98]` store either
+  - the likely writer is therefore behind a helper or constructor outside the obvious front-end state-machine cluster
+- While those breaks fire, also watch the adjacent global routing scratch lanes that were narrowed statically:
+  - `data_4df904 + 110` active front-end state
+  - `data_4df904 + 119190` mode / owner bank selector
+  - `data_4df904 + 4299515` selected replay / record pointer
+  - `data_4df904 + 4299516` replay launch surface selector
+  - `data_4df904 + 17198056` and `+17198057` replay-backed launch bits
 - Watch the three flag bytes or dwords above during:
   - fresh level start
   - respawn rebuild
@@ -245,6 +259,8 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which one distinguishes frontend shell from active gameplay rebuild?
 - Are any of them replay or route-mode flags rather than pure lifecycle state?
 - Which function writes the preserved-owner bridge slot consumed by `26/27/28`?
+- Which helper first seeds `[controller + 0x98]` before `update_frontend_state_machine` reaches state `26/27/28`?
+- Do the replay launch scratch globals above collapse into that same preserved-owner write, or are they parallel owner-selection lanes?
 
 ### Done when
 

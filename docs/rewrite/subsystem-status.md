@@ -101,8 +101,10 @@ Implemented now:
   - the merge lane now follows the native family split more closely: real floor-family runs condense, while warn-promoted and corner-marked heads stay separate
 - the runtime edge-mask lane now carries the native corner bit on `5/6/9/10` masks, so later passes can distinguish corner heads from plain open edges
 - native-shaped warn-surface promotion for open-below floor and slide cells
+  - static asset-init recovery now confirms both recovered replacement tables route into the shared `TRACKWARN` asset family, so the remaining gap is exact BOD-object matching rather than a missing texture-family split
 - native-shaped center-seam floor/slide family swaps on the recovered seam lanes
 - recovered `mark_track_warning_zones` footprint grid in the runtime preview and debug path
+  - that warning-footprint lane now also drives one recovered gameplay consumer: it suppresses generic ambient garbage/salt fallback spawns in `update_subgame`
 - simple fringe skirts and back plane
   - the fringe pass now also mirrors two native suppressors from `build_track_fringe_objects`: no fringe on marked rows and no fringe on explicit runtime warn tile `0x20`
   - the simple fringe pass now uses the native solid-neighbor rule from `is_neighbor_cell_solid`, including the special non-solid treatment for runtime tile `0x16`
@@ -114,10 +116,9 @@ Still missing or approximate:
 - exact BOD-table matching inside `promote_track_tiles_to_fringe_variants`
 - `merge_track_tile_runs` beyond the currently ported ownership slice
   - marked-row suppression and the remaining low-bit flag semantics are still unresolved
-- the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint
+- the final warn-cache consumer for the recovered `mark_track_warning_zones` footprint beyond the now-ported fallback-hazard suppressor
 - real directional fringe objects and cache families
   - the underlying Windows pool is clearer now: `initialize_fringe_manager` + `allocate_fringe_object`
-- exact warn-family routing
 
 Best next work:
 
@@ -331,7 +332,9 @@ Implemented now:
   - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
   - `29/30`: Thanks For Playing owner init and update
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`), so the remaining gap is the writer for that preserved-owner field, not whether the field exists
-- a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store, so the preserved-owner writer is probably hidden behind a helper or constructor outside the obvious state-machine range
+- a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store; the earlier `0x40775c` lead was a data false positive
+- static front-end owners now narrow the shape of the missing bridge write further: `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write active-state or replay-launch scratch globals, but none of them surfaced a direct preserved-owner store either
+- the preserved-owner writer is therefore probably hidden behind a helper or constructor outside the obvious state-machine range
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
 

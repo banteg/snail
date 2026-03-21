@@ -496,6 +496,7 @@ pub const LoadedLevelPreview = struct {
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
             allocator,
             runtime_tiles,
+            runtime_warning_zone_grid,
             total_rows,
             max_width,
             runtime_build_flags,
@@ -714,6 +715,7 @@ pub const LoadedLevelPreview = struct {
         const runtime_spawn_hints = try buildRuntimeSpawnHintGrid(
             allocator,
             runtime_tiles,
+            runtime_warning_zone_grid,
             total_rows,
             max_width,
             runtime_build_flags,
@@ -2103,8 +2105,9 @@ fn buildRuntimeWarnSurfaceGrid(
 
     // PORT(partial): `promote_track_tiles_to_fringe_variants` swaps selected floor/slide
     // meshes into a warn-surface family when the runtime cell directly below is open.
-    // The native pass keys from BOD-object tables; the port mirrors the recovered cell
-    // ownership shape directly from runtime tile families.
+    // Static asset-init recovery now confirms both replacement tables route into the shared
+    // TRACKWARN asset family; the remaining gap is exact BOD-object eligibility, not whether
+    // promoted floor vs slide cells use different texture families.
     for (0..total_rows - 1) |global_row| {
         for (0..max_width) |lane_index| {
             const current_index = runtimeTileIndex(max_width, global_row, lane_index);
@@ -2306,6 +2309,7 @@ fn buildRuntimeEdgeMaskGrid(
 fn buildRuntimeSpawnHintGrid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
+    runtime_warning_zone_grid: []const bool,
     total_rows: usize,
     max_width: usize,
     build_flags: u32,
@@ -2315,8 +2319,18 @@ fn buildRuntimeSpawnHintGrid(
 
     for (0..total_rows) |global_row| {
         for (0..max_width) |lane_index| {
-            const tile_type = runtime_tiles[runtimeTileIndex(max_width, global_row, lane_index)];
-            spawn_hints[runtimeTileIndex(max_width, global_row, lane_index)] = runtimeFallbackSpawnHintMask(tile_type, build_flags);
+            const index = runtimeTileIndex(max_width, global_row, lane_index);
+            const tile_type = runtime_tiles[index];
+            var mask = runtimeFallbackSpawnHintMask(tile_type, build_flags);
+            if (runtime_warning_zone_grid[index]) {
+                // PORT(verified): `mark_track_warning_zones` feeds live fallback-hazard
+                // suppression in `update_subgame`. Generic garbage/salt spawns on
+                // `0x01/0x15/0x0f` cells are blocked when the runtime cell carries the
+                // warning footprint bits, while explicit authored hazard tiles still use
+                // their own direct spawn lanes.
+                mask = 0;
+            }
+            spawn_hints[index] = mask;
         }
     }
 
@@ -2837,6 +2851,30 @@ test "runtime fallback spawn hint mask follows recovered tile families" {
         runtimeFallbackSpawnHintMask(0x0f, defaultRuntimeBuildFlags),
     );
     try std.testing.expectEqual(@as(u8, 0), runtimeFallbackSpawnHintMask(0x22, defaultRuntimeBuildFlags));
+}
+
+test "runtime spawn hint grid suppresses fallback hazards inside warning zones" {
+    const runtime_tiles = [_]u8{
+        0x01, 0x15, 0x0f, 0x22,
+    };
+    const runtime_warning_zone_grid = [_]bool{
+        true, false, true, false,
+    };
+
+    const hints = try buildRuntimeSpawnHintGrid(
+        std.testing.allocator,
+        &runtime_tiles,
+        &runtime_warning_zone_grid,
+        1,
+        runtime_tiles.len,
+        defaultRuntimeBuildFlags,
+    );
+    defer std.testing.allocator.free(hints);
+
+    try std.testing.expectEqual(@as(u8, 0), hints[0]);
+    try std.testing.expectEqual(@as(u8, runtime_spawn_hint_garbage_fallback), hints[1]);
+    try std.testing.expectEqual(@as(u8, 0), hints[2]);
+    try std.testing.expectEqual(@as(u8, 0), hints[3]);
 }
 
 test "normalize segment glyph for track flags matches recovered helper cases" {

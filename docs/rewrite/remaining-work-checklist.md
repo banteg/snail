@@ -110,7 +110,9 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [x] Name or uniquely identify the real outer subgame/frontend bridge around states `26/27/28/29/30`
 - [ ] Recover which fields mean fresh start, rebuild, continuation, replay-sensitive launch, and post-run return
   - current narrowing: the `26/27/28` jump target is a dedicated front-end controller slot (`update_frontend_state_machine` reads it from `[controller + 0x98]`)
-  - current static dead end: a shallow BN sweep of the front-end cluster only exposed that read, not a writer, so the writer likely lives behind a helper or constructor outside the obvious state-machine functions
+  - current static dead end: a shallow BN sweep of the front-end cluster only exposed that read, not a writer, and the earlier `0x40775c` hit was just data
+  - stronger narrowing: `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write active-state or replay-launch scratch globals, but none of them surfaced the preserved-owner writer either
+  - likely next step: trace `[controller + 0x98]`, `data_4df904 + 110`, `+119190`, `+4299515`, `+4299516`, and `+17198056/+17198057` together in one Windows session
 - [ ] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
 - [ ] Make completion, respawn, final loss, and replay exits all route through that same explicit bridge
 
@@ -147,7 +149,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 6. Recover track render-normalization
 
-- [ ] Recover the final render/cache consumer for the ported `mark_track_warning_zones` footprint
+- [ ] Recover the final render/cache consumer for the ported `mark_track_warning_zones` footprint beyond the now-ported fallback garbage/salt suppressor
 - [ ] Port the remaining edge and exact BOD-table fringe-promotion passes
 - [ ] Port directional fringe ownership and cache-family routing
 - [ ] Re-audit gameplay and segment-view rendering only after these normalization passes are in
