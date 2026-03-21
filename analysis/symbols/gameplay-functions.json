@@ -318,6 +318,21 @@
       "description": "Constructs one gameplay parcel runtime slot by clearing the shared body object and installing the parcel-slot vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot array at `game->track_parcels`."
     },
     {
+      "address": "0x4088a0",
+      "name": "abort_startup_with_3d_error",
+      "description": "Shows the native 3D-accelerator startup error dialog, terminates the shell process, and returns through the shared `cRBod` constructor on the static sentinel object."
+    },
+    {
+      "address": "0x4088c0",
+      "name": "initialize_bod",
+      "description": "Constructs one `cRBod` record by clearing its shared list links, installing the body update selector, and incrementing the global Bod-count ledger used by `construct_game_runtime`."
+    },
+    {
+      "address": "0x4088e0",
+      "name": "load_galaxy_layout",
+      "description": "Loads `Galaxy/_Galaxy.txt`, rescales the authored galaxy-point tables, and populates the runtime galaxy route records with star counts, authored positions, and placeholder level labels."
+    },
+    {
       "address": "0x408c10",
       "name": "destroy_galaxy",
       "description": "Tears down the active Star Map galaxy-screen widgets before replay launch, route handoff, or return to the owning front-end state. Cross-port Android symbols match this helper to `cRGalaxy::UnInit()`."
