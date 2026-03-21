@@ -783,6 +783,11 @@
       "description": "Samples one source texture into the active SMTrack float-height grid by averaging the source RGB channels, applying the optional cubic curve, and scaling the result into the destination height lane."
     },
     {
+      "address": "0x41a4d0",
+      "name": "initialize_backdrop_tile_quad",
+      "description": "Builds one oriented textured backdrop tile quad by choosing one of the eight UV-orientation cases and offsetting the local tile with the supplied row and column selectors."
+    },
+    {
       "address": "0x41aa50",
       "name": "apply_distort_to_object"
     },
