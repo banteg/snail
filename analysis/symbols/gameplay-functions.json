@@ -1013,6 +1013,11 @@
       "name": "set_bod_object"
     },
     {
+      "address": "0x42f5f0",
+      "name": "initialize_bod_base",
+      "description": "Initializes the shared bod header and default state: noop runtime AI callback, default flags, white color block, cleared linkage fields, and the global bod counter increment."
+    },
+    {
       "address": "0x42f680",
       "name": "apply_bod_position"
     },
