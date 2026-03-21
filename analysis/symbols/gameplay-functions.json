@@ -1972,6 +1972,21 @@
       "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
     },
     {
+      "address": "0x449920",
+      "name": "load_registered_sound_sample_from_path",
+      "description": "Loads one sample directly from a filesystem path into the shared runtime sound-bank slot table via `BASS_SampleLoad(mem=0, ...)`, storing the resulting sample handle at the requested registered-sample index."
+    },
+    {
+      "address": "0x449960",
+      "name": "load_registered_sound_sample_from_bytes",
+      "description": "Loads one sample from already-read archive bytes into the shared runtime sound-bank slot table via `BASS_SampleLoad(mem=1, ...)`, storing the resulting sample handle at the requested registered-sample index."
+    },
+    {
+      "address": "0x4499a0",
+      "name": "play_registered_sound_sample_scaled",
+      "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and the default extra playback parameters."
+    },
+    {
       "address": "0x449a20",
       "name": "stop_registered_sound_sample",
       "description": "Stops playback for one registered runtime sample index by resolving it through the shared sound-bank table before forwarding into the lower audio backend."
@@ -1982,6 +1997,11 @@
       "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
     },
     {
+      "address": "0x449ae0",
+      "name": "play_registered_sound_sample_scaled_panned",
+      "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and explicit pan override."
+    },
+    {
       "address": "0x449b50",
       "name": "set_global_sample_volume_config",
       "description": "Scales one normalized [0,1] sample-volume scalar onto BASS config option `4` (`BASS_CONFIG_GVOL_SAMPLE`) before the backend stores it as the live global SFX sample volume."
@@ -1990,6 +2010,21 @@
       "address": "0x449b70",
       "name": "set_global_stream_volume_config",
       "description": "Scales one normalized [0,1] stream-volume scalar onto BASS config option `5` (`BASS_CONFIG_GVOL_STREAM`) before the backend stores it as the live music or stream volume."
+    },
+    {
+      "address": "0x449b90",
+      "name": "stop_audio_backend",
+      "description": "Forwards directly into the global BASS stop export to halt active backend playback during shutdown or full audio resets."
+    },
+    {
+      "address": "0x449ba0",
+      "name": "resume_audio_backend_if_paused",
+      "description": "Restarts the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently paused, then clears that paused flag."
+    },
+    {
+      "address": "0x449bc0",
+      "name": "pause_audio_backend_if_running",
+      "description": "Pauses the global BASS backend only when the audio state flag at `backend + 0x18` says the backend is currently running, then marks it paused."
     },
     {
       "address": "0x449d20",
