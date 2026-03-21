@@ -1001,6 +1001,11 @@
       "name": "load_config_file"
     },
     {
+      "address": "0x42f490",
+      "name": "load_file_bytes_from_path",
+      "description": "Loads one filesystem path into caller-supplied or freshly allocated bytes, optionally returning the byte count through the extra output lanes."
+    },
+    {
       "address": "0x42f540",
       "name": "save_config_file"
     },
