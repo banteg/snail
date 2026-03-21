@@ -459,6 +459,11 @@
       "description": "Walks the active sprite-texture batches for one scene, binds each texture ref, and submits the prepared sprite primitive streams into the renderer."
     },
     {
+      "address": "0x413030",
+      "name": "draw_textured_quad_immediate",
+      "description": "Builds one immediate 2D textured quad in the transient UI vertex buffer, supporting explicit corner coordinates, axis-aligned size, or centered rotation before submitting the quad as a six-index primitive."
+    },
+    {
       "address": "0x413670",
       "name": "configure_sprite_render_state",
       "description": "Chooses the sprite render-state preset from the sprite draw-mode lane at `+0x28` before one sprite quad is submitted."
@@ -467,6 +472,11 @@
       "address": "0x4137f0",
       "name": "draw_sprite_quad",
       "description": "Builds and submits one textured sprite quad from the sprite color, scale, angle, and stretch lanes. The star-field pass at `initialize_star_field` and `update_star_positions` reaches this helper through the shared sprite renderer."
+    },
+    {
+      "address": "0x413bb0",
+      "name": "get_or_append_object_texture_group_vertex",
+      "description": "Returns the existing grouped-render vertex matching one object vertex index plus UVs, or appends a new grouped vertex into the temporary texture-group build buffer when no match exists."
     },
     {
       "address": "0x413d50",
@@ -2075,6 +2085,11 @@
       "address": "0x44a360",
       "name": "draw_font_text_instance",
       "description": "Draws one queued font text instance by mapping each byte through the atlas slot table and submitting textured glyph quads."
+    },
+    {
+      "address": "0x44a6d0",
+      "name": "draw_queued_font_quad_instance",
+      "description": "Draws one queued explicit font-quad record by forwarding its stored coordinates, UVs, size mode, angle, and color into the shared immediate textured-quad helper."
     },
     {
       "address": "0x44a730",
