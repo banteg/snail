@@ -298,6 +298,11 @@
       "description": "Constructs both 0x18-byte record halves for one paired path-template object and installs the shared vtable."
     },
     {
+      "address": "0x4085e0",
+      "name": "initialize_active_bod",
+      "description": "Initializes one shared active-bod runtime header by clearing its list links and installing the common subtype callback table at `data_497338`."
+    },
+    {
       "address": "0x408630",
       "name": "initialize_salt_hazard_runtime",
       "description": "Constructs one salt-hazard runtime slot by running the shared body constructor and installing the salt-hazard vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 40-slot array later reset by `initialize_salt_hazard_pool`."
@@ -1160,9 +1165,24 @@
       "name": "xor_decode_buffer_with_index"
     },
     {
+      "address": "0x433060",
+      "name": "initialize_track_render_cache_manager",
+      "description": "Initializes the fixed 143x5 track-render cache bod grid plus its shared GDX cache vertex/index buffers and per-cache texture-group scratch arrays."
+    },
+    {
       "address": "0x433220",
       "name": "build_track_render_caches",
       "description": "Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization."
+    },
+    {
+      "address": "0x433e80",
+      "name": "update_active_bod",
+      "description": "Implements the default active-bod subtype callback by recycling a live bod to the free list once its world-z plus the native 24-unit buffer falls behind the current subgame cutoff."
+    },
+    {
+      "address": "0x433f20",
+      "name": "remove_track_render_cache_bods",
+      "description": "Unlinks the fixed 143x5 track-render cache bod grid from the shared active-bod list during subgame teardown."
     },
     {
       "address": "0x433fc0",
