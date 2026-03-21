@@ -2177,6 +2177,11 @@
       "description": "Plays one registered runtime sample through the BASS sample backend with the supplied normalized gain scale and the default extra playback parameters."
     },
     {
+      "address": "0x449a10",
+      "name": "stop_sound_sample_handle",
+      "description": "Forwards one raw runtime sample handle directly into `BASS_SampleStop`, underneath the registered-sample and warning-owned stop wrappers."
+    },
+    {
       "address": "0x449a20",
       "name": "stop_registered_sound_sample",
       "description": "Stops playback for one registered runtime sample index by resolving it through the shared sound-bank table before forwarding into the lower audio backend."
@@ -2185,6 +2190,11 @@
       "address": "0x449a40",
       "name": "is_registered_sound_sample_playing",
       "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
+    },
+    {
+      "address": "0x449a60",
+      "name": "play_registered_sound_sample_default",
+      "description": "Plays one registered runtime sample index through the default `BASS_SamplePlayEx` wrapper with the hard-coded playback parameters used by the warning-owned sample path."
     },
     {
       "address": "0x449a80",
