@@ -275,7 +275,8 @@ Implemented now:
 
 Still missing or approximate:
 
-- the original suppressor bits and neighbor/mode gates for ambient spawns
+- the original mode gates for ambient spawns and any remaining non-horizontal suppressor details
+- the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards

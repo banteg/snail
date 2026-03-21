@@ -141,7 +141,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 5. Tighten gameplay runtime ownership
 
-- [ ] Port ambient hazard suppressor bits and neighbor/mode gates
+- [ ] Port the remaining ambient hazard mode gates and any non-horizontal suppressor details
 - [ ] Recover the `Wall2` ambient hazard pool semantics
 - [ ] Recover the exact `gate_18` input/controller source
 - [ ] Recover parcel-flight and row-event widget timing details that still rely on app-side or inferred helpers

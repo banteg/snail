@@ -3489,7 +3489,10 @@ pub const Runner = struct {
                 }
             }
 
-            if (preview.hasGarbageSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.garbage_scalar, .garbage)) {
+            if (preview.hasGarbageSpawnHintAt(global_row, lane) and
+                preview.garbageFallbackNeighborsAllowedAt(global_row, lane) and
+                shouldSpawnAmbientHazard(global_row, lane, preview.garbage_scalar, .garbage))
+            {
                 self.addRuntimeHazard(global_row, lane, .garbage);
             }
             if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {

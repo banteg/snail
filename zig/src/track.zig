@@ -1070,6 +1070,20 @@ pub const LoadedLevelPreview = struct {
         return (mask & runtime_spawn_hint_salt_fallback) != 0;
     }
 
+    pub fn garbageFallbackNeighborsAllowedAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
+
+        if (lane_index > 0) {
+            const left_tile = self.runtimeTileAt(global_row, lane_index - 1) orelse return false;
+            if (!runtimeGarbageFallbackNeighborAllowed(left_tile)) return false;
+        }
+        if (lane_index + 1 < self.max_width) {
+            const right_tile = self.runtimeTileAt(global_row, lane_index + 1) orelse return false;
+            if (!runtimeGarbageFallbackNeighborAllowed(right_tile)) return false;
+        }
+        return true;
+    }
+
     pub fn fallbackHazardCandidateCounts(self: *const LoadedLevelPreview) FallbackHazardCandidateCounts {
         var counts: FallbackHazardCandidateCounts = .{};
         for (self.runtime_spawn_hints) |hint_mask| {
@@ -2401,6 +2415,13 @@ fn runtimeFallbackSpawnHintMask(tile_type: u8, build_flags: u32) u8 {
     return mask;
 }
 
+fn runtimeGarbageFallbackNeighborAllowed(tile_type: u8) bool {
+    return switch (tile_type) {
+        0x01, 0x14, 0x15, 0x20 => true,
+        else => false,
+    };
+}
+
 fn normalizeSegmentGlyphForTrackFlags(cell: u8, build_flags: u32, mirror_state: bool, outside_active_rows: bool) u8 {
     return switch (cell) {
         ' ' => if ((build_flags & 0x400) == 0)
@@ -2875,6 +2896,25 @@ test "runtime spawn hint grid suppresses fallback hazards inside warning zones" 
     try std.testing.expectEqual(@as(u8, runtime_spawn_hint_garbage_fallback), hints[1]);
     try std.testing.expectEqual(@as(u8, 0), hints[2]);
     try std.testing.expectEqual(@as(u8, 0), hints[3]);
+}
+
+test "garbage fallback neighbor gate follows recovered horizontal tile set" {
+    var preview: LoadedLevelPreview = undefined;
+    preview.total_rows = 1;
+    preview.max_width = 4;
+    var allowed_tiles = [_]u8{ 0x01, 0x15, 0x20, 0x14 };
+    preview.runtime_tiles = &allowed_tiles;
+
+    try std.testing.expect(preview.garbageFallbackNeighborsAllowedAt(0, 1));
+    try std.testing.expect(preview.garbageFallbackNeighborsAllowedAt(0, 2));
+
+    var blocked_left_tiles = [_]u8{ 0x01, 0x0f, 0x20, 0x14 };
+    preview.runtime_tiles = &blocked_left_tiles;
+    try std.testing.expect(!preview.garbageFallbackNeighborsAllowedAt(0, 2));
+
+    var blocked_right_tiles = [_]u8{ 0x01, 0x15, 0x23, 0x14 };
+    preview.runtime_tiles = &blocked_right_tiles;
+    try std.testing.expect(!preview.garbageFallbackNeighborsAllowedAt(0, 1));
 }
 
 test "normalize segment glyph for track flags matches recovered helper cases" {
