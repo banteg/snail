@@ -1061,6 +1061,11 @@
       "description": "Shared voice backend wrapper that plays one voice sample id with an explicit gain scale plus the same optional extra playback parameters used by the SFX backend."
     },
     {
+      "address": "0x432f10",
+      "name": "register_sound_sample",
+      "description": "Registers one voice or sound-bank sample path into the shared 256-entry runtime sound table, loading bytes from the archive on first use and returning the assigned sample index."
+    },
+    {
       "address": "0x433010",
       "name": "xor_decode_buffer_with_index"
     },
@@ -1947,6 +1952,16 @@
       "description": "Extracts Bass.dll from game data into tBass.dll, loads the BASS 2.0 exports dynamically, and initializes the audio backend."
     },
     {
+      "address": "0x449a20",
+      "name": "stop_registered_sound_sample",
+      "description": "Stops playback for one registered runtime sample index by resolving it through the shared sound-bank table before forwarding into the lower audio backend."
+    },
+    {
+      "address": "0x449a40",
+      "name": "is_registered_sound_sample_playing",
+      "description": "Returns whether one registered runtime sample index is currently playing by querying the shared sound-bank table entry in the lower audio backend."
+    },
+    {
       "address": "0x449d20",
       "name": "font_slot_index_for_char",
       "description": "Maps front-end text bytes onto FONT-MENU-HOVER atlas slot indices; shipped tutorial strings reuse bytes like `{`, `}`, `[`, `]`, `~`, `_`, `^`, and `;` as icon tokens."
@@ -2284,7 +2299,8 @@
     },
     {
       "address": "0x44dcb0",
-      "name": "initialize_sound_bank"
+      "name": "initialize_sound_bank",
+      "description": "Registers one null-terminated table of shipped SFX paths into the shared runtime sound table by repeatedly calling `register_sound_sample` with each path and its normalization class."
     },
     {
       "address": "0x44dce0",
