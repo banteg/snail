@@ -2072,6 +2072,26 @@
       "description": "Iterates the live font text queue, retires dead entries, and draws the ones matching the supplied render mask."
     },
     {
+      "address": "0x44a8b0",
+      "name": "queue_axis_aligned_textured_quad",
+      "description": "Appends one axis-aligned textured quad with default `[0,1]` UVs into the shared 2D render queue, using the supplied texture, authored rectangle, tint, and render flags."
+    },
+    {
+      "address": "0x44a9b0",
+      "name": "queue_axis_aligned_textured_quad_uv",
+      "description": "Appends one axis-aligned textured quad with explicit UV bounds into the shared 2D render queue. Front-end widgets, progress bars, and the damage gauge all use this helper."
+    },
+    {
+      "address": "0x44aac0",
+      "name": "queue_textured_quad_corners",
+      "description": "Appends one arbitrary four-corner textured quad with explicit per-corner positions and UV bounds into the shared 2D render queue. The backdrop and galaxy-line renderers use this helper."
+    },
+    {
+      "address": "0x44ae10",
+      "name": "initialize_font3d_objects",
+      "description": "Builds the per-font `Objects/Font3D` bod instances, applies the atlas UV layout for each glyph slot, and scales each object to the registered font metrics."
+    },
+    {
       "address": "0x44b3c0",
       "name": "enumerate_input_controllers"
     },
