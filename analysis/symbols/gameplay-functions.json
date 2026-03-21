@@ -379,6 +379,11 @@
       "name": "initialize_overlay"
     },
     {
+      "address": "0x40a290",
+      "name": "noop_runtime_callback",
+      "description": "Shared no-op callback used as the first slot in the root frontend/runtime update table at `data_4972d8`."
+    },
+    {
       "address": "0x40a2a0",
       "name": "run_frame_update"
     },
