@@ -64,7 +64,7 @@ Built-template follow is now strong enough to be useful, but the remaining gaps 
 
 ### 3. Movement-state ownership
 
-Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The port now mirrors the recovered selector-owned fire cadence, runtime fire feature flag, replay raw-bit gate, and attachment-exit suppression, but the exact native live input-controller gate is still not ported literally.
+Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The port now mirrors the recovered selector-owned fire cadence, explicit live press-vs-held lanes, runtime fire feature flag, replay raw-bit gate, attachment-exit suppression, and the recovered turbo-spread plus laser/rocket shot-family ratios, but the deeper emitter owner and literal input-device source are still not ported.
 
 ### 4. Row-event/tip ownership
 

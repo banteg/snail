@@ -546,6 +546,7 @@ const turret_projectile_hit_x_tolerance: f32 = 0.6;
 const turret_flash_duration_ticks: u8 = 6;
 const max_active_turret_states: usize = 64;
 const slow_ring_duration_ticks: u16 = 240;
+const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
 const slug_projectile_kill_score: u32 = 100;
@@ -642,8 +643,8 @@ const MovementFireInputState = enum {
 fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
     return switch (kind) {
         .turbo => projectile_speed_rows_per_second,
-        .laser => projectile_speed_rows_per_second * 1.15,
-        .rocket => projectile_speed_rows_per_second * 0.8,
+        .laser => projectile_speed_rows_per_second * 2.0,
+        .rocket => projectile_speed_rows_per_second * 0.48,
         .enemy_laser => turret_projectile_speed_rows_per_second,
     };
 }
@@ -3147,10 +3148,45 @@ pub const Runner = struct {
         } else {
             right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
         }
-        const channel_states = nativeWeaponChannelStates(self.movement_flags);
-        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.left, -0.24, 0.11, 0.08);
-        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.right, 0.24, 0.11, 0.08);
-        self.spawnWeaponChannelProjectile(origin, right, up, forward, channel_states.center, 0.0, 0.23, 0.12);
+        switch (self.movement_flags) {
+            1, 129 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.0, 0.23, 0.12, 0.0),
+            2 => {
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, -0.24, 0.11, 0.08, 0.0);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.24, 0.11, 0.08, 0.0);
+            },
+            4 => {
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, -0.24, 0.11, 0.08, -turbo_projectile_spread_lateral);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.24, 0.11, 0.08, turbo_projectile_spread_lateral);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.0, 0.23, 0.12, 0.0);
+            },
+            8 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .laser, 0.24, 0.11, 0.08, 0.0),
+            16, 144 => {
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .laser, -0.24, 0.11, 0.08, 0.0);
+                self.spawnWeaponChannelProjectile(origin, right, up, forward, .laser, 0.24, 0.11, 0.08, 0.0);
+            },
+            32, 64, 192 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .rocket, 0.0, 0.23, 0.12, 0.0),
+            else => {
+                const channel_states = nativeWeaponChannelStates(self.movement_flags);
+                if (channelKindForState(channel_states.left)) |kind| {
+                    self.spawnWeaponChannelProjectile(origin, right, up, forward, kind, -0.24, 0.11, 0.08, 0.0);
+                }
+                if (channelKindForState(channel_states.right)) |kind| {
+                    self.spawnWeaponChannelProjectile(origin, right, up, forward, kind, 0.24, 0.11, 0.08, 0.0);
+                }
+                if (channelKindForState(channel_states.center)) |kind| {
+                    self.spawnWeaponChannelProjectile(origin, right, up, forward, kind, 0.0, 0.23, 0.12, 0.0);
+                }
+            },
+        }
+    }
+
+    fn channelKindForState(channel_state: u8) ?Projectile.Kind {
+        return switch (channel_state) {
+            1 => .turbo,
+            2 => .laser,
+            3 => .rocket,
+            else => null,
+        };
     }
 
     fn spawnWeaponChannelProjectile(
@@ -3159,26 +3195,26 @@ pub const Runner = struct {
         right: rl.Vector3,
         up: rl.Vector3,
         forward: rl.Vector3,
-        channel_state: u8,
+        kind: Projectile.Kind,
         local_x: f32,
         local_y: f32,
         local_z: f32,
+        direction_lateral: f32,
     ) void {
-        const kind: Projectile.Kind = switch (channel_state) {
-            1 => .turbo,
-            2 => .laser,
-            3 => .rocket,
-            else => return,
-        };
         const spawn_position = offsetPosition(origin, right, up, forward, local_x, local_y, local_z);
+        const direction = rl.Vector3{
+            .x = forward.x + (right.x * direction_lateral),
+            .y = forward.y + (right.y * direction_lateral),
+            .z = forward.z + (right.z * direction_lateral),
+        };
         self.spawnProjectile(
             kind,
             spawn_position.x,
             spawn_position.y,
             spawn_position.z,
-            forward.x,
-            forward.y,
-            forward.z,
+            direction.x,
+            direction.y,
+            direction.z,
         );
     }
 
@@ -6332,6 +6368,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[1].kind);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[2].kind);
+    try std.testing.expect(@abs(runner.active_projectiles[0].dir_x - runner.active_projectiles[1].dir_x) > 0.05);
 
     runner.active_projectile_count = 0;
     for (&runner.active_projectiles) |*projectile| projectile.active = false;
@@ -6339,6 +6376,11 @@ test "movement flags spawn the recovered projectile channel layouts" {
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
+    try std.testing.expectApproxEqAbs(
+        projectile_speed_rows_per_second * 2.0,
+        runner.active_projectiles[0].speed_rows_per_second,
+        0.0001,
+    );
 
     runner.active_projectile_count = 0;
     for (&runner.active_projectiles) |*projectile| projectile.active = false;
@@ -6362,6 +6404,11 @@ test "movement flags spawn the recovered projectile channel layouts" {
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.rocket, runner.active_projectiles[0].kind);
+    try std.testing.expectApproxEqAbs(
+        projectile_speed_rows_per_second * 0.48,
+        runner.active_projectiles[0].speed_rows_per_second,
+        0.0001,
+    );
 }
 
 test "movement fire cadence follows the native selector-owned cooldown lane" {
