@@ -1242,6 +1242,11 @@
       "name": "load_file_bytes"
     },
     {
+      "address": "0x431540",
+      "name": "delete_file_path_with_directory_walk",
+      "description": "Deletes one filesystem path after walking each parent directory component through the shared current-directory helper, mirroring the save-path builder beside it; used by the temporary BASS DLL teardown path."
+    },
+    {
       "address": "0x431650",
       "name": "write_file_bytes"
     },
@@ -2648,6 +2653,11 @@
     {
       "address": "0x44c420",
       "name": "load_object_definition"
+    },
+    {
+      "address": "0x44c880",
+      "name": "initialize_global_identity_matrix",
+      "description": "Startup wrapper that seeds the shared matrix at `data_77ff40` by calling `initialize_uniform_scale_matrix(..., 1.0)`. It is only referenced from the CRT constructor table."
     },
     {
       "address": "0x44c890",
