@@ -4983,8 +4983,11 @@ const AppState = struct {
                 if (accepts_live_replay_controls and (rl.isKeyPressed(.down) or rl.isKeyPressed(.s))) {
                     self.pending_level_input.speed_delta_rows_per_second -= 2.0;
                 }
+                if (accepts_live_replay_controls and rl.isMouseButtonPressed(.left)) {
+                    self.pending_level_input.fire_pressed = true;
+                }
                 if (accepts_live_replay_controls and rl.isMouseButtonDown(.left)) {
-                    self.pending_level_input.fire = true;
+                    self.pending_level_input.fire_down = true;
                 }
                 if (accepts_runner_input and rl.isKeyPressed(.space)) {
                     try self.enterPauseMenu();

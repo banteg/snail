@@ -135,7 +135,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
-- [ ] Recover the remaining live input-controller bit path behind `play_movement_state_sound`
+- [ ] Recover the deeper movement-state emitter owner and literal input-device source behind `play_movement_state_sound`
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), especially health, parcel, jetpack, garbage-impact, and the deeper weapon/jetpack presentation owners

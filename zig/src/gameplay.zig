@@ -10,7 +10,8 @@ pub const RunnerInput = struct {
     lane_delta: i8 = 0,
     target_lane_center: ?f32 = null,
     speed_delta_rows_per_second: f32 = 0.0,
-    fire: bool = false,
+    fire_pressed: bool = false,
+    fire_down: bool = false,
     toggle_pause: bool = false,
     reset: bool = false,
 };
@@ -1225,7 +1226,6 @@ pub const Runner = struct {
     invincible_ticks: u16 = 0,
     movement_fire_cooldown: f32 = 0.0,
     movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
-    fire_held_previous: bool = false,
     shot_cooldown_ticks: u8 = 0,
     damage_gauge: f32 = 0.0,
     damage_gauge_runtime: DamageGaugeRuntime = .{},
@@ -1347,7 +1347,7 @@ pub const Runner = struct {
 
         if (!self.paused and self.acceptsGameplayInput()) {
             self.stepMovementFireCooldown();
-            self.handleFireInput(preview, self.movementFireInputState(input.fire, replay));
+            self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             if (replay.active) {
@@ -1363,7 +1363,7 @@ pub const Runner = struct {
         }
         if (!self.paused) {
             self.updateTrackParcels(preview);
-            self.updateRowEventDisplay(preview, input.fire);
+            self.updateRowEventDisplay(preview, input.fire_pressed);
         }
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
@@ -3109,14 +3109,16 @@ pub const Runner = struct {
         }
     }
 
-    fn movementFireInputState(self: *const Runner, fire: bool, replay: ReplayDirective) MovementFireInputState {
+    fn movementFireInputState(self: *const Runner, input: RunnerInput, replay: ReplayDirective) MovementFireInputState {
+        _ = self;
         if (replay.active) {
             if ((replay.raw_flag_bits & 0x01) != 0) return .fresh;
             if ((replay.raw_flag_bits & 0x02) != 0) return .repeat;
             return .none;
         }
-        if (!fire) return .none;
-        return if (self.fire_held_previous) .repeat else .fresh;
+        if (input.fire_pressed) return .fresh;
+        if (input.fire_down) return .repeat;
+        return .none;
     }
 
     fn handleFireInput(
@@ -3124,8 +3126,6 @@ pub const Runner = struct {
         preview: *const track.LoadedLevelPreview,
         fire_input_state: MovementFireInputState,
     ) void {
-        defer self.fire_held_previous = fire_input_state != .none;
-
         if ((preview.runtime_build_flags & track.runtime_build_flag_movement_fire) == 0) return;
         if (fire_input_state == .none or self.attachment_exit_pending or self.movement_fire_cooldown > 0.0) return;
         self.spawnProjectiles(preview);
@@ -6385,6 +6385,20 @@ test "movement fire cadence follows the native selector-owned cooldown lane" {
     runner.handleFireInput(&fixture.preview, .repeat);
     try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+}
+
+test "live fire input keeps native press and held lanes separate" {
+    var runner = Runner{};
+
+    try std.testing.expectEqual(MovementFireInputState.none, runner.movementFireInputState(.{}, .{}));
+    try std.testing.expectEqual(
+        MovementFireInputState.fresh,
+        runner.movementFireInputState(.{ .fire_pressed = true, .fire_down = true }, .{}),
+    );
+    try std.testing.expectEqual(
+        MovementFireInputState.repeat,
+        runner.movementFireInputState(.{ .fire_down = true }, .{}),
+    );
 }
 
 test "movement fire is suppressed while attachment exit is pending" {

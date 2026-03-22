@@ -251,7 +251,7 @@ Implemented now:
 - Turbo now carries visible gameplay weapon channels and an invincible shell using the shipped `BLASTERTOP`, `LASERLEFT`, `LASERRIGHT`, `ROCKETLAUNCHER`, `ROCKET`, and `INVINCIBLE` model families
 - gameplay now plays dedicated tutorial/combat SFX for weapon fire, pickups, invincible/slow powerups, explosive rings, and basic impact feedback instead of leaving those moments silent apart from segment voice samples
 - weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`) and a recovered `movement_flags`-driven channel layout instead of one fixed shot sound or fire pattern per coarse weapon tier
-- weapon fire cadence now follows the native selector-owned cooldown lane, including the slower fresh-press delay, faster held-repeat cadence, the runtime fire feature flag, replay raw-bit gating, and attachment-exit suppression instead of the old coarse `4/7` tick gate
+- weapon fire cadence now follows the native selector-owned cooldown lane, including explicit live press-vs-held input lanes, the slower fresh-press delay, faster held-repeat cadence, the runtime fire feature flag, replay raw-bit gating, and attachment-exit suppression instead of the old coarse `4/7` tick gate
 - ring and collision pickup audio now uses the recovered native ring-kind ladder for `1`, `2/6`, `3/7`, and `4/5/8`, so `PW1`, `PW1..PW7`, `SLOWRING`, `EXPLODERING`, and the `Powerup` voice no longer all key from generic pickup progression
 - weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
