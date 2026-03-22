@@ -3695,12 +3695,12 @@ const AppState = struct {
             .pause_menu => switch (code) {
                 11 => .{ .pause_menu = .end_game },
                 111 => .{ .pause_menu = .options },
-                5 => .{ .pause_menu = .@"resume" },
+                5, 6 => .{ .pause_menu = .@"resume" },
                 else => null,
             },
             .high_scores_menu => if (self.postLevelHighScoreContext() != null) switch (code) {
                 11 => .{ .post_level_high_scores = .cancel },
-                5 => .{ .post_level_high_scores = .submit },
+                5, 6 => .{ .post_level_high_scores = .submit },
                 else => null,
             } else null,
             else => null,
@@ -12131,6 +12131,10 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
         FrontendQueuedAction{ .pause_menu = .@"resume" },
         state.frontendShortcutActivationForCode(5).?,
     );
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .pause_menu = .@"resume" },
+        state.frontendShortcutActivationForCode(6).?,
+    );
 
     state.game_phase = .high_scores_menu;
     state.pending_run_result = .{
@@ -12152,6 +12156,10 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
     try std.testing.expectEqualDeep(
         FrontendQueuedAction{ .post_level_high_scores = .submit },
         state.frontendShortcutActivationForCode(5).?,
+    );
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .post_level_high_scores = .submit },
+        state.frontendShortcutActivationForCode(6).?,
     );
     try std.testing.expectEqual(@as(?FrontendQueuedAction, null), state.frontendShortcutActivationForCode(111));
 }
