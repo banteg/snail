@@ -138,7 +138,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Recover the deeper movement-state emitter owner and literal input-device source behind `play_movement_state_sound`
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
-- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`) and runtime pickup collision slots, especially parcel, garbage-impact, health particles, jetpack ramp-bias/spawn presentation, and the deeper weapon/jetpack presentation owners
+- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`) and runtime pickup collision slots, especially parcel, garbage-impact, the exact health-particle bod owner, jetpack ramp-bias/spawn presentation, and the deeper weapon/jetpack presentation owners
 - [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner
 
 ### Phase 5. Tighten gameplay runtime ownership

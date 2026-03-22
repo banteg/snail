@@ -4663,6 +4663,9 @@ const AppState = struct {
                 .{ .r = 255, .g = 228, .b = 168, .a = 244 },
             );
         }
+        if (current.counters.health_pickups > previous.counters.health_pickups) {
+            self.spawnGameplayHealthPickupEffects(current, preview);
+        }
         if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
             const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
             self.spawnGameplayEffect(
@@ -4744,6 +4747,56 @@ const AppState = struct {
                     .white,
                 );
             }
+        }
+    }
+
+    // PORT(partial): native `health_collect_particles` emits 8 smoke sprites from the
+    // picked-up runtime slot with a fixed circular spread plus the runner's current motion.
+    // The port now mirrors the recovered smoke-sprite ownership and 8-particle burst shape
+    // through the existing gameplay-effect system, while still approximating the original
+    // velocity source because the native player motion lanes are not ported literally yet.
+    fn spawnGameplayHealthPickupEffects(
+        self: *AppState,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+    ) void {
+        const pickup_origin = current.last_health_pickup_position orelse current.worldPosition(preview, 0.34);
+        const forward = normalizeVector3(current.worldForward(preview));
+        var up = normalizeVector3(current.worldUp(preview));
+        var right = crossVector3(forward, up);
+        if (vectorLength(right) <= 0.0001) {
+            right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+            up = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
+        } else {
+            right = normalizeVector3(right);
+            up = normalizeVector3(crossVector3(right, forward));
+        }
+
+        const forward_velocity = scaleVector3(forward, current.speed_rows_per_second * 0.02);
+        var particle_index: usize = 0;
+        while (particle_index < 8) : (particle_index += 1) {
+            const angle =
+                (@as(f32, @floatFromInt(particle_index)) / 8.0) * std.math.tau;
+            const radial_velocity = addVector3(
+                scaleVector3(right, std.math.sin(angle) * 0.015),
+                scaleVector3(up, std.math.cos(angle) * 0.015),
+            );
+            self.spawnGameplayEffectWithVelocity(
+                .smoke,
+                pickup_origin,
+                addVector3(
+                    radial_velocity,
+                    .{
+                        .x = forward_velocity.x,
+                        .y = forward_velocity.y + 0.01,
+                        .z = forward_velocity.z + (current.speed_rows_per_second * 0.008),
+                    },
+                ),
+                0.32,
+                0.32,
+                16,
+                .{ .r = 255, .g = 191, .b = 191, .a = 224 },
+            );
         }
     }
 
@@ -11581,6 +11634,22 @@ fn offsetPosition(
 
 fn vectorLength(v: rl.Vector3) f32 {
     return std.math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
+}
+
+fn addVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = a.x + b.x,
+        .y = a.y + b.y,
+        .z = a.z + b.z,
+    };
+}
+
+fn scaleVector3(v: rl.Vector3, scalar: f32) rl.Vector3 {
+    return .{
+        .x = v.x * scalar,
+        .y = v.y * scalar,
+        .z = v.z * scalar,
+    };
 }
 
 fn normalizeVector3(v: rl.Vector3) rl.Vector3 {

@@ -1236,6 +1236,7 @@ pub const Runner = struct {
     recent_score_award: u32 = 0,
     recent_score_award_ticks: u8 = 0,
     row_event_display: RowEventDisplayController = .{},
+    last_health_pickup_position: ?rl.Vector3 = null,
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
@@ -2514,6 +2515,7 @@ pub const Runner = struct {
             switch (pickup.kind) {
                 .health => {
                     self.counters.health_pickups += 1;
+                    self.last_health_pickup_position = pickup.world_position;
                     self.applyDamageGaugeDelta(health_recover_delta);
                     self.recent_event = .health_pickup;
                 },
