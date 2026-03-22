@@ -1207,6 +1207,8 @@ pub const Runner = struct {
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
     row_message_logical_segment_index: ?usize = null,
     row_message_token: u32 = 0,
+    last_native_ring_effect_kind: ?u8 = null,
+    native_ring_effect_token: u32 = 0,
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
@@ -2252,6 +2254,8 @@ pub const Runner = struct {
 
     fn recordNativeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, effect_kind: u8) void {
         const ring_kind = nativeRingEventLabel(effect_kind) orelse return;
+        self.last_native_ring_effect_kind = effect_kind;
+        self.native_ring_effect_token +%= 1;
         self.applyRingEffect(preview, ring_kind, nativeRingEventScores(effect_kind));
     }
 

@@ -138,7 +138,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Recover the remaining live input-controller bit path behind `play_movement_state_sound`
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
-- [ ] Recover collision/powerup family ownership so rings, upgrades, explode, health, parcel, and jetpack state changes stop sharing flattened app-side cue logic
+- [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), especially health, parcel, jetpack, garbage-impact, and the deeper weapon/jetpack presentation owners
 - [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner
 
 ### Phase 5. Tighten gameplay runtime ownership

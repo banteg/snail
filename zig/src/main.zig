@@ -1376,12 +1376,42 @@ fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) 
     };
 }
 
-fn nativePowerupPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+fn nativeRingEffectKindTriggered(previous: gameplay.Runner, current: gameplay.Runner) ?u8 {
+    if (current.native_ring_effect_token == previous.native_ring_effect_token) return null;
+    return current.last_native_ring_effect_kind;
+}
+
+fn nativeRingPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
+    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
+        return switch (effect_kind) {
+            1 => 0,
+            4, 5, 8 => @min(
+                gameplay_powerup_pickup_sound_paths.len - 1,
+                @as(usize, @intCast(@max(current.movement_flag_selector, 1) - 1)),
+            ),
+            else => null,
+        };
+    }
+
     if (current.counters.ring_powerup <= previous.counters.ring_powerup) return null;
     return @min(
         gameplay_powerup_pickup_sound_paths.len - 1,
         @as(usize, current.counters.ring_powerup - 1),
     );
+}
+
+fn nativeSlowRingSoundTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
+    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
+        return effect_kind == 3 or effect_kind == 7;
+    }
+    return current.slow_ticks > previous.slow_ticks;
+}
+
+fn nativeExplodeRingSoundTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
+    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
+        return effect_kind == 2 or effect_kind == 6;
+    }
+    return current.counters.ring_explode > previous.counters.ring_explode;
 }
 
 fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
@@ -1492,17 +1522,39 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{};
     current = previous;
-    try std.testing.expectEqual(@as(?usize, null), nativePowerupPickupSoundIndex(previous, current));
+    try std.testing.expectEqual(@as(?usize, null), nativeRingPickupSoundIndex(previous, current));
 
-    current.counters.ring_powerup = 1;
-    try std.testing.expectEqual(@as(?usize, 0), nativePowerupPickupSoundIndex(previous, current));
+    current.last_native_ring_effect_kind = 1;
+    current.native_ring_effect_token = 1;
+    try std.testing.expectEqual(@as(?usize, 0), nativeRingPickupSoundIndex(previous, current));
+    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
+    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
 
     previous = current;
-    current.counters.ring_powerup = 9;
+    current.last_native_ring_effect_kind = 8;
+    current.native_ring_effect_token +%= 1;
+    current.movement_flag_selector = 8;
     try std.testing.expectEqual(
         @as(?usize, gameplay_powerup_pickup_sound_paths.len - 1),
-        nativePowerupPickupSoundIndex(previous, current),
+        nativeRingPickupSoundIndex(previous, current),
     );
+    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
+    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.last_native_ring_effect_kind = 3;
+    current.native_ring_effect_token = 1;
+    try std.testing.expectEqual(@as(?usize, null), nativeRingPickupSoundIndex(previous, current));
+    try std.testing.expect(nativeSlowRingSoundTriggered(previous, current));
+    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.last_native_ring_effect_kind = 2;
+    current.native_ring_effect_token = 1;
+    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
+    try std.testing.expect(nativeExplodeRingSoundTriggered(previous, current));
 
     try std.testing.expectEqual(
         @as(?f32, null),
@@ -1625,12 +1677,29 @@ test "native slowdown voice band follows the recovered narrow forward-speed wind
     try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
 }
 
-fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplayVoiceCues {
+fn nativeGameplayWeaponUpgradeVoiceCue(
+    previous: gameplay.Runner,
+    current: gameplay.Runner,
+    runtime_build_flags: u32,
+) bool {
+    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
+        return (effect_kind == 4 or effect_kind == 5) and
+            (runtime_build_flags & 0x10) != 0 and
+            current.session_mode != .time_trial;
+    }
+    return current.weapon_level > previous.weapon_level;
+}
+
+fn nativeGameplayVoiceCues(
+    previous: gameplay.Runner,
+    current: gameplay.Runner,
+    runtime_build_flags: u32,
+) NativeGameplayVoiceCues {
     return .{
         .start = previous.tick_count < native_gameplay_start_voice_tick and
             current.tick_count >= native_gameplay_start_voice_tick,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
-        .weapon_upgrade = current.weapon_level > previous.weapon_level,
+        .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
         .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
         .damage_escalation = previous.damage_warning_state != .draining and
             current.damage_warning_state == .draining,
@@ -1644,36 +1713,45 @@ fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: gamepl
 test "native gameplay voice cues fire on the recovered startup timer" {
     var previous = gameplay.Runner{};
     var current = previous;
+    const runtime_build_flags = track.postalChallengeRuntimeBuildFlags;
 
     current.tick_count = native_gameplay_start_voice_tick - 1;
-    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
+    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
 
     previous = current;
     current.tick_count = native_gameplay_start_voice_tick;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current).start);
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).start);
 
     previous = gameplay.Runner{};
     current = previous;
     current.counters.parcels = 1;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current).package_pickup);
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).package_pickup);
 
     previous = gameplay.Runner{};
     current = previous;
-    current.weapon_level = previous.weapon_level + 1;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current).weapon_upgrade);
+    current.last_native_ring_effect_kind = 4;
+    current.native_ring_effect_token = 1;
+    current.session_mode = .postal;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).weapon_upgrade);
+
+    current = previous;
+    current.last_native_ring_effect_kind = 8;
+    current.native_ring_effect_token = 1;
+    current.session_mode = .postal;
+    try std.testing.expect(!nativeGameplayVoiceCues(previous, current, runtime_build_flags).weapon_upgrade);
 
     previous = gameplay.Runner{};
     current = previous;
     current.damage_gauge = 0.04;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current).damage_entry);
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_entry);
 
     previous = gameplay.Runner{ .damage_warning_state = .filling };
     current = previous;
     current.damage_warning_state = .draining;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current).damage_escalation);
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_escalation);
 
     previous = current;
-    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
+    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
 }
 
 test "native gameplay warning loop keys from the warning actor cadence" {
@@ -4322,7 +4400,7 @@ const AppState = struct {
         if (!self.audio_ready) return;
         const native_sound_cues = nativeGameplaySoundCues(previous, current);
         const native_jetpack_sound_cues = nativeJetpackSoundCues(previous, current);
-        const native_voice_cues = nativeGameplayVoiceCues(previous, current);
+        const native_voice_cues = nativeGameplayVoiceCues(previous, current, preview.runtime_build_flags);
 
         if (native_sound_cues.completion_arm_cheers) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.cheers);
@@ -4354,7 +4432,7 @@ const AppState = struct {
         if (native_jetpack_sound_cues.deactivate) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack_shutoff);
         }
-        if (nativePowerupPickupSoundIndex(previous, current)) |sound_index| {
+        if (nativeRingPickupSoundIndex(previous, current)) |sound_index| {
             self.playGameplayEffect(self.current_gameplay_sound_fx.powerup_pickup[sound_index]);
         }
         if (native_voice_cues.start) {
@@ -4453,13 +4531,13 @@ const AppState = struct {
         if (current.counters.health_pickups > previous.counters.health_pickups) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.heart);
         }
-        if (current.slow_ticks > previous.slow_ticks) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
-        }
         if (current.invincible_ticks > previous.invincible_ticks) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.invincible);
         }
-        if (current.counters.ring_explode > previous.counters.ring_explode) {
+        if (nativeSlowRingSoundTriggered(previous, current)) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
+        }
+        if (nativeExplodeRingSoundTriggered(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.explode_ring);
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
