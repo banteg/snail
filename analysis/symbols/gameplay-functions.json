@@ -2541,9 +2541,24 @@
       "name": "enumerate_input_controllers"
     },
     {
+      "address": "0x44b490",
+      "name": "append_enumerated_input_controller_callback",
+      "description": "DirectInput device-enumeration callback that creates one joystick device from the reported instance, appends it to the global controller list, and stops enumeration once four devices are present."
+    },
+    {
+      "address": "0x44b4e0",
+      "name": "configure_input_controller_axis_range_callback",
+      "description": "DirectInput object-enumeration callback that applies the native `[-1000, 1000]` range property to each axis object on one enumerated input controller."
+    },
+    {
       "address": "0x44b570",
       "name": "update_joystick_input",
       "description": "Polls each enumerated DirectInput joystick device, reacquires on transient loss, normalizes its primary X/Y axes into the shared [-1000, 1000] range, packs the sampled buttons into the game's bitmask format, and publishes the result through the input-controller slot writer."
+    },
+    {
+      "address": "0x44b770",
+      "name": "release_input_controllers",
+      "description": "Releases every enumerated DirectInput controller device plus the shared DirectInput interface and clears the global controller list."
     },
     {
       "address": "0x44b7d0",
@@ -2563,6 +2578,11 @@
       "address": "0x44bb40",
       "name": "is_key_down",
       "description": "Returns true when the supplied keyboard scancode is down in the current DirectInput key-state table."
+    },
+    {
+      "address": "0x44bb60",
+      "name": "release_mouse_input",
+      "description": "Releases the DirectInput mouse device and its shared DirectInput interface, clearing the global mouse-input handles."
     },
     {
       "address": "0x44bbb0",
