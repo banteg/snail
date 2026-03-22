@@ -4317,7 +4317,7 @@ const AppState = struct {
         previous: gameplay.Runner,
         current: gameplay.Runner,
         preview: *const track.LoadedLevelPreview,
-        runner_input: gameplay.RunnerInput,
+        _: gameplay.RunnerInput,
     ) void {
         if (!self.audio_ready) return;
         const native_sound_cues = nativeGameplaySoundCues(previous, current);
@@ -4419,7 +4419,7 @@ const AppState = struct {
             self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
         }
 
-        if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
+        if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             const fired_sound = switch (nativeMovementStateSoundFamily(current)) {
                 .turbo => self.pickNativeMovementStateSoundVariant(
                     gameplay_turbo_fire_sound_paths.len,
@@ -4503,10 +4503,10 @@ const AppState = struct {
         return count;
     }
 
-    fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, runner_input: gameplay.RunnerInput) void {
+    fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, _: gameplay.RunnerInput) void {
         self.gameplay_weapon_visual_state.tick();
         self.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.movement_flags, current.movement_flags);
-        if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
+        if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             self.gameplay_weapon_visual_state.noteFire(current.movement_flags);
         }
     }

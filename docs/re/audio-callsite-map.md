@@ -32,7 +32,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `sfx 17..24` | [`play_movement_state_sound`](../../artifacts/ida/functions/0043afd0-play_movement_state_sound.c) at `0x43b114` | dedicated movement-state family chosen from `movement_flags`, with distance attenuation during attachment exit | player-fire families now use native random family selection, the recovered selector-to-family ladder, selector-owned fire cooldown steps, the slower first-press vs held-repeat cadence, and native attachment-exit suppression/gain | partial; the remaining gap is the exact feature/input gate around the controller, not the family choice, cadence, or exit attenuation |
+| `sfx 17..24` | [`play_movement_state_sound`](../../artifacts/ida/functions/0043afd0-play_movement_state_sound.c) at `0x43b114` | dedicated movement-state family chosen from `movement_flags`, with distance attenuation during attachment exit | player-fire families now use native random family selection, the recovered selector-to-family ladder, selector-owned fire cooldown steps, the slower first-press vs held-repeat cadence, the runtime fire feature flag, replay raw-bit fire gating, and native attachment-exit suppression/gain | partial; the remaining gap is the exact live input-controller bit path and emitter owner, not the family choice, replay gate, cadence, or exit attenuation |
 | `sfx 41` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c3f8` | trampoline landing cue on runtime tile `22` | runner trampoline handling in `gameplay.zig` | partial; the port can now play `BOING`, but it still lacks the native bounce controller |
 | `sfx 47` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c4c1` | first-entry cue for runtime tile `14` (`'|'`) before the native hold-and-drop timer runs | runner wall or barrier contact in `gameplay.zig` | partial; the port now plays the one-shot entry cue, but still lacks the native hold-and-drop controller |
 
@@ -144,7 +144,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 5. Recover the movement-state sound controller instead of treating gameplay audio as mostly event-based.
    Audio evidence: `sfx 17..24`.
    Native implication: there is a dedicated movement controller that samples `movement_flags`, picks families, and even switches to an attenuated path during attachment exit.
-   Current Zig suspicion: the port now has the recovered family ladder, selector-owned cooldown steps, first-press vs held-repeat cadence, and attachment-exit suppression/gain, but it still does not mirror the native feature/input gate literally.
+   Current Zig suspicion: the port now has the recovered family ladder, selector-owned cooldown steps, first-press vs held-repeat cadence, replay raw-bit gating, the runtime fire feature flag, and attachment-exit suppression/gain, but it still does not mirror the native live input-controller bit path or emitter owner literally.
    Next trace boundary: `play_movement_state_sound`, `update_player_movement_flags`, and the fire-gate block in `update_subgoldy`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) movement-state and surface-state lanes, plus [`zig/src/main.zig`](../../zig/src/main.zig) gameplay SFX dispatch.
 

@@ -142,6 +142,7 @@ pub const runtime_row_flag_ring_explode: u32 = 0x0000_0800;
 pub const runtime_row_flag_ring_slow: u32 = 0x0000_1000;
 pub const runtime_row_flag_ring_powerup: u32 = 0x0000_2000;
 pub const runtime_row_flag_jetpack_off: u32 = 0x0000_8000;
+pub const runtime_build_flag_movement_fire: u32 = 0x0040_0000;
 pub const ramp_special_ring_forward_row_offset: usize = 6;
 pub const ramp_default_ring_forward_row_offset: usize = 6;
 pub const ramp_explode_ring_forward_row_offset: usize = 17;

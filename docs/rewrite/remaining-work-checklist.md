@@ -64,7 +64,7 @@ Built-template follow is now strong enough to be useful, but the remaining gaps 
 
 ### 3. Movement-state ownership
 
-Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The port now mirrors the recovered selector-owned fire cadence and attachment-exit suppression, but the exact native feature/input gate is still not ported literally.
+Audio RE now makes this much sharper than before: Windows still has a dedicated movement-state sound/controller layer. The port now mirrors the recovered selector-owned fire cadence, runtime fire feature flag, replay raw-bit gate, and attachment-exit suppression, but the exact native live input-controller gate is still not ported literally.
 
 ### 4. Row-event/tip ownership
 
@@ -135,7 +135,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
-- [ ] Recover the remaining feature/input gate behind `play_movement_state_sound`
+- [ ] Recover the remaining live input-controller bit path behind `play_movement_state_sound`
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Recover collision/powerup family ownership so rings, upgrades, explode, health, parcel, and jetpack state changes stop sharing flattened app-side cue logic
