@@ -73,7 +73,7 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 
 | Audio | Native caller | Current interpretation | Current port equivalent | Gap |
 | --- | --- | --- | --- | --- |
-| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | `syncActiveLevelSegment()`, prompt queue, and native-style payload playback for authored `Sample:` rows | partial; payload routing now uses recovered global audio-bank ids, but the broader runtime row-event speech owner is still not ported literally |
+| `voice 13` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43b84d` | row-event or tutorial voice payload dispatch from the live runtime row | runner-owned logical row-message token, prompt queue, and native-style payload playback for authored `Sample:` rows | partial; row-message dispatch now keys from the runner instead of frontend segment-sync, but the original payload tables and tip actor/controller are still not ported literally |
 | `voice 8` `mode 2` | [`update_subgoldy`](../../artifacts/ida/functions/0043b120-update_subgoldy.c) at `0x43c874` | delayed completion-handoff voice after roughly `2.0s` | split completion handoff in `gameplay.zig` | ported; the app now keys `Victory` from the recovered `2.0s` handoff timer instead of the older `2.5s` approximation |
 
 ### Attachment-follow and post-follow voices
@@ -116,14 +116,14 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 1. Recover the rest of `update_subgoldy` audio ownership.
    Audio evidence: `sfx 0`, `sfx 41`, `sfx 47`, `voice 1`, `voice 3`, `voice 6`, `voice 7`, `voice 8`, `voice 12`, `voice 13`.
    Native implication: one runner-owned function still controls trampoline and barrier tile feedback, row-event speech, WORM entry, startup bark timing, attachment-exit one-shots, completion-handoff voice timing, and a separate slowdown commentary timer.
-   Current Zig suspicion: several of these cues are now ported, including startup bark timing, completion arm, attachment-exit voices, and the narrow-band slowdown timer, but the ownership is still split between `gameplay.Runner.step`, `main.zig` prompt helpers, and app-side audio checks.
+   Current Zig suspicion: several of these cues are now ported, including startup bark timing, completion arm, attachment-exit voices, the narrow-band slowdown timer, and runner-owned row-message dispatch, but the original payload-table/tip-controller path is still not literal.
    Next trace boundary: `update_subgoldy`, plus nearby `enqueue_tip_message`, `initialize_subgoldy_death`, `update_subgoldy_resurrect`, and `flush_row_event_display`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) and [`zig/src/main.zig`](../../zig/src/main.zig).
 
 2. Reconstruct parcel and row-event audio as one system instead of separate pickup/UI guesses.
    Audio evidence: `sfx 27`, `sfx 45`, `sfx 49`, `voice 10`, `voice 13`.
    Native implication: parcel pickup, mailbox delivery, final bonus payout, and tutorial or row-event speech are all facets of one runtime-owned controller family.
-   Current Zig suspicion: pickup and delivery cues are now mostly covered, and tutorial `TUT*` samples now use the native `Tutorial` set semantics, but the broader row-event speech still does not go through the original runtime row-message controller.
+   Current Zig suspicion: pickup and delivery cues are now mostly covered, and tutorial `TUT*` samples now key from a runner-owned row-message token with the native `Tutorial` set semantics, but the broader payload-table and tip-controller ownership still is not literal.
    Next trace boundary: `handle_subgoldy_collisions`, `register_parcel_delivery`, `update_row_event_display`, `flush_row_event_display`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) row-event and parcel runtime, plus [`zig/src/main.zig`](../../zig/src/main.zig) prompt/audio routing.
 

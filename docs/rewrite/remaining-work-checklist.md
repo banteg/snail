@@ -68,7 +68,7 @@ Audio RE now makes this much sharper than before: Windows still has a dedicated 
 
 ### 4. Row-event/tip ownership
 
-The port has row-event UI, parcel runtime, and tutorial voice routing, but the native row-message owner still is not ported literally.
+The port now has a runner-owned logical row-message token and runner-driven tutorial voice/prompt dispatch, but the native row-message payload tables and tip actor still are not ported literally.
 
 Practical risk:
 
@@ -136,7 +136,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
 - [ ] Recover the remaining feature/input gate behind `play_movement_state_sound`
-- [ ] Recover the real row-event speech owner behind `voice 13`
+- [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Recover collision/powerup family ownership so rings, upgrades, explode, health, parcel, and jetpack state changes stop sharing flattened app-side cue logic
 - [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner

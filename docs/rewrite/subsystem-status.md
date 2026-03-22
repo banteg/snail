@@ -217,6 +217,7 @@ Implemented now:
 - active tutorial prompts now also switch Turbo into the shipped `turbo-talk` animation family instead of leaving gameplay guidance as UI/voice-only
 - the normal gameplay path no longer renders the old debug HUD shell; it now keeps only gameplay-facing HUD elements like title, score/time, parcel progress, lives, damage, and jetpack state
 - authored tutorial/message prompts now use the single-owner gameplay tip path instead of the older debug footer/banner scaffolding or the earlier custom `Turbo` dialogue card, and the common tutorial row-event guidance now behaves like interactive `cRTip`-style prompts with an `OK` button instead of passive banners
+- logical tutorial/message row entry now comes from a runner-owned row-message token instead of frontend segment-sync, so prompt/audio dispatch follows live gameplay row ownership more closely than the older app-side helper path
 - tutorial mode now also draws the real `Objects/Barrier` side-rail object from the archive instead of only relying on generic edge/fringe visuals
 - tutorial `VOICE/TUT*.OGG` samples now play on a dedicated voice channel, separate from gameplay effect sounds and the debug audio-preview path
 - tutorial tips no longer tick down while hidden under pause/overlay; they resume when gameplay is visible again instead of expiring under menus
@@ -228,7 +229,7 @@ Still missing or approximate:
 - the exact gameplay roles of the two `build_snail_hotspots` source matrices beyond the currently consumed `12/17/18` camera slots
 - any still-missing `cRCutScene::AI()` branches outside the now-ported intro `1 -> 2 -> 8 -> 9`, completion `5 -> 6 -> 7`, and death `10 -> 11 -> 12` lanes
 - the exact gameplay model anchor/orientation and the rest of Turbo's state-specific animation switching beyond the current gameplay/talk split
-- the original row-event/tip actor/controller that owns tutorial dialogue timing and presentation
+- the original row-event/tip actor/controller and payload-table path that own tutorial dialogue timing and presentation beyond the now-runner-owned row-message entry
 - the exact owner/update semantics for `cRBarrier`; the current tutorial barrier pass now uses the real barrier mesh, fixed `y = 0.4`, and an owner-like forward anchor from live gameplay `z`, but it still does not port the original owner object or render mode `7`
 
 Best next work:

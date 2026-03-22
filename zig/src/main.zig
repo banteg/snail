@@ -4247,6 +4247,7 @@ const AppState = struct {
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
+                    const previous_active_level_segment_index = self.active_level_segment_index;
                     const startup_block_active = self.startupGameplayBlockActive();
                     if (!startup_block_active and !self.tutorialPromptBlocksGameplay()) {
                         runner.stepWithReplay(
@@ -4274,13 +4275,18 @@ const AppState = struct {
                         );
                     }
                     self.updateSubgameCamera(runner);
+                    try self.syncActiveLevelSegment();
+                    try self.dispatchCurrentRunnerRowMessage(
+                        previous_active_level_segment_index,
+                        previous_runner.currentRowMessageToken(),
+                        false,
+                    );
                 }
             }
             self.updateGameplayEffects();
             if (self.current_gameplay_turbo_animation) |*animation| {
                 try animation.step(self.simulation_clock.step_seconds);
             }
-            try self.syncActiveLevelSegment(false);
             if (self.level_runner) |*runner| {
                 switch (runner.consumeHandoff()) {
                     .none => {},
@@ -5616,7 +5622,57 @@ const AppState = struct {
             }
         }
         rl.setMousePosition(@divTrunc(rl.getScreenWidth(), 2), @divTrunc(rl.getScreenHeight(), 2));
-        try self.syncActiveLevelSegment(true);
+        const previous_active_level_segment_index = self.active_level_segment_index;
+        try self.syncActiveLevelSegment();
+        try self.dispatchCurrentRunnerRowMessage(previous_active_level_segment_index, null, true);
+    }
+
+    fn currentRunnerRowMessageSegmentIndex(self: *const AppState) ?usize {
+        const loaded_level = self.current_level orelse return null;
+        const runner = self.level_runner orelse return null;
+        const logical_segment_index = runner.currentRowMessageLogicalSegmentIndex() orelse return null;
+        if (logical_segment_index >= loaded_level.segments.len) return null;
+        return logical_segment_index;
+    }
+
+    fn playLevelSegmentSample(self: *AppState, segment_entry: *const level.SegmentEntry) !void {
+        const sample_path = segment_entry.sample orelse return;
+        if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
+            if (nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
+                _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
+            } else {
+                try self.playVoiceByPath(sample_path);
+            }
+        } else {
+            try self.playSoundByPath(sample_path);
+        }
+    }
+
+    fn dispatchCurrentRunnerRowMessage(
+        self: *AppState,
+        previous_segment_index: ?usize,
+        previous_token: ?u32,
+        replay_sample_on_match: bool,
+    ) !void {
+        const logical_segment_index = self.currentRunnerRowMessageSegmentIndex() orelse return;
+        if (self.startupGameplayBlockActive()) return;
+
+        const loaded_level = self.current_level orelse return;
+        const runner = self.level_runner orelse return;
+        const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
+        const token_changed = if (previous_token) |token|
+            runner.currentRowMessageToken() != token
+        else
+            false;
+        if (!segment_changed and !token_changed and !replay_sample_on_match) return;
+
+        const segment_entry = &loaded_level.segments[logical_segment_index];
+        if (segment_changed or token_changed) {
+            self.queueLevelSegmentPrompt(segment_entry);
+        }
+        if (segment_changed or token_changed or replay_sample_on_match) {
+            try self.playLevelSegmentSample(segment_entry);
+        }
     }
 
     fn enterSelectedFrontendRoute(self: *AppState) !void {
@@ -5932,7 +5988,7 @@ const AppState = struct {
             runner.collected_parcel_row_count = preserved_collected_parcel_row_count;
         }
         self.clearLevelPromptQueue();
-        try self.syncActiveLevelSegment(false);
+        try self.syncActiveLevelSegment();
     }
 
     fn resetCompletionScreenReveal(self: *AppState) void {
@@ -6518,7 +6574,9 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadCurrentLevelBackground();
-                try self.syncActiveLevelSegment(true);
+                const previous_active_level_segment_index = self.active_level_segment_index;
+                try self.syncActiveLevelSegment();
+                try self.dispatchCurrentRunnerRowMessage(previous_active_level_segment_index, null, true);
             },
         }
     }
@@ -6715,66 +6773,26 @@ const AppState = struct {
         return null;
     }
 
-    fn syncActiveLevelSegment(self: *AppState, replay_sample_on_match: bool) !void {
-        const loaded_level = self.current_level orelse {
+    fn syncActiveLevelSegment(self: *AppState) !void {
+        _ = self.current_level orelse {
             self.active_level_segment_index = null;
             self.clearLevelPromptQueue();
             return;
         };
-        const loaded_track_preview = self.current_track_preview orelse {
+        const logical_segment_index = self.currentRunnerRowMessageSegmentIndex() orelse {
             self.active_level_segment_index = null;
             self.clearLevelPromptQueue();
             return;
         };
-        const runner = self.level_runner orelse {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        };
-
-        const row_location = loaded_track_preview.locateRow(runner.current_global_row) orelse {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        };
-        const logical_segment_index = loaded_track_preview.segment_logical_indices[row_location.segment_index] orelse {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        };
-        if (logical_segment_index >= loaded_level.segments.len) {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        }
 
         self.level_segment_index = logical_segment_index;
-        const segment_entry = &loaded_level.segments[logical_segment_index];
         const previous_segment_index = self.active_level_segment_index;
         const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
         self.active_level_segment_index = logical_segment_index;
-        const suppress_segment_events = self.startupGameplayBlockActive();
         if (segment_changed) {
             if (previous_segment_index) |previous_index| {
                 if (logical_segment_index < previous_index) {
                     self.clearLevelPromptQueue();
-                }
-            }
-            if (!suppress_segment_events) {
-                self.queueLevelSegmentPrompt(segment_entry);
-            }
-        }
-
-        if (!suppress_segment_events and (segment_changed or replay_sample_on_match)) {
-            if (segment_entry.sample) |sample_path| {
-                if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
-                    if (nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
-                        _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
-                    } else {
-                        try self.playVoiceByPath(sample_path);
-                    }
-                } else {
-                    try self.playSoundByPath(sample_path);
                 }
             }
         }
@@ -7354,7 +7372,7 @@ const AppState = struct {
         }
         self.level_segment_index = 0;
         try self.reloadLevelSegment();
-        try self.syncActiveLevelSegment(false);
+        try self.syncActiveLevelSegment();
     }
 
     fn nextMathRandomInt15(self: *AppState) u32 {
@@ -12055,6 +12073,58 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
         state.frontendShortcutActivationForCode(5).?,
     );
     try std.testing.expectEqual(@as(?FrontendQueuedAction, null), state.frontendShortcutActivationForCode(111));
+}
+
+test "level segment prompt dispatch keys from the runner row message owner" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    var target_logical_segment_index: ?usize = null;
+    for (0..loaded_track_preview.total_rows) |global_row| {
+        const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
+        const logical_segment_index = loaded_track_preview.segment_logical_indices[row_location.segment_index] orelse continue;
+        if (loaded_level.segments[logical_segment_index].message == null) continue;
+        target_logical_segment_index = logical_segment_index;
+        break;
+    }
+
+    const logical_segment_index = target_logical_segment_index orelse return error.TestExpectedSegmentMessage;
+    const expected_message = loaded_level.segments[logical_segment_index].message.?;
+    var tick: usize = 0;
+    while (tick < 4096 and runner.currentRowMessageLogicalSegmentIndex() != logical_segment_index) : (tick += 1) {
+        runner.step(&loaded_track_preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(logical_segment_index, runner.currentRowMessageLogicalSegmentIndex().?);
+
+    var state: AppState = undefined;
+    state.current_level = loaded_level;
+    defer if (state.current_level) |*owned_level| owned_level.deinit();
+    state.level_runner = runner;
+    state.active_frontend_mode = .tutorial;
+    state.active_level_segment_index = null;
+    state.level_prompt_queue = .{};
+    state.gameplay_click_start_active = false;
+    state.audio_ready = false;
+
+    try state.syncActiveLevelSegment();
+    try std.testing.expectEqual(@as(?level_prompt.Entry, null), state.level_prompt_queue.active());
+
+    try state.dispatchCurrentRunnerRowMessage(null, null, true);
+    try std.testing.expectEqual(@as(?usize, logical_segment_index), state.active_level_segment_index);
+    try std.testing.expectEqualStrings(expected_message, state.level_prompt_queue.active().?.message);
 }
 
 test "completion reveal stages the bonus line before continue" {

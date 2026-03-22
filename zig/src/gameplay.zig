@@ -1199,6 +1199,8 @@ pub const Runner = struct {
     path_center_lane: ?f32 = null,
     previous_lane_center: f32 = 0.5,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
+    row_message_logical_segment_index: ?usize = null,
+    row_message_token: u32 = 0,
     recent_event: RecentEvent = .none,
     counters: EncounterCounters = .{},
     score: ScoreTotals = .{},
@@ -1288,6 +1290,7 @@ pub const Runner = struct {
         self.previous_row_position = self.row_position;
         self.previous_lane_center = self.lane_center;
         self.last_processed_row = self.current_global_row;
+        self.syncCurrentRowMessageSegment(preview, false);
         self.refreshCameraState(preview);
     }
 
@@ -1389,6 +1392,7 @@ pub const Runner = struct {
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
         }
+        self.syncCurrentRowMessageSegment(preview, true);
         self.refreshCameraState(preview);
     }
 
@@ -1723,6 +1727,14 @@ pub const Runner = struct {
         return self.row_event_display.delivered_parcel_count;
     }
 
+    pub fn currentRowMessageLogicalSegmentIndex(self: *const Runner) ?usize {
+        return self.row_message_logical_segment_index;
+    }
+
+    pub fn currentRowMessageToken(self: *const Runner) u32 {
+        return self.row_message_token;
+    }
+
     pub fn setCutscene(self: *Runner, cutscene_id: u8) void {
         self.cutscene_id = cutscene_id;
         self.cutscene_ticks = 0;
@@ -1748,6 +1760,26 @@ pub const Runner = struct {
             4, 7, 10, 13 => -1.0,
             else => 0.0,
         };
+    }
+
+    fn syncCurrentRowMessageSegment(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        emit_token: bool,
+    ) void {
+        const row_location = preview.locateRow(self.current_global_row) orelse {
+            self.row_message_logical_segment_index = null;
+            return;
+        };
+        const logical_segment_index = preview.segment_logical_indices[row_location.segment_index] orelse {
+            self.row_message_logical_segment_index = null;
+            return;
+        };
+        if (self.row_message_logical_segment_index == logical_segment_index) return;
+        self.row_message_logical_segment_index = logical_segment_index;
+        if (emit_token) {
+            self.row_message_token +%= 1;
+        }
     }
 
     fn maybeArmLaneLean(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -8674,6 +8706,35 @@ test "score awards update transient tutorial hud state" {
 
     runner.stepTemporaryStates();
     try std.testing.expectEqual(@as(u8, 44), runner.recent_score_award_ticks);
+}
+
+test "row message token increments when the runner enters a new logical segment" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const initial_token = runner.currentRowMessageToken();
+    const initial_logical_segment_index = runner.currentRowMessageLogicalSegmentIndex();
+
+    var expected_logical_segment_index: ?usize = null;
+    for (0..fixture.preview.total_rows) |global_row| {
+        const row_location = fixture.preview.locateRow(global_row) orelse continue;
+        const logical_segment_index = fixture.preview.segment_logical_indices[row_location.segment_index] orelse continue;
+        if (initial_logical_segment_index) |initial_index| {
+            if (logical_segment_index == initial_index) continue;
+        }
+        expected_logical_segment_index = logical_segment_index;
+        break;
+    }
+
+    const next_logical_segment_index = expected_logical_segment_index orelse return error.TestExpectedLogicalSegment;
+    var tick: usize = 0;
+    while (tick < 4096 and runner.currentRowMessageToken() == initial_token) : (tick += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    }
+
+    try std.testing.expectEqual(initial_token +% 1, runner.currentRowMessageToken());
+    try std.testing.expectEqual(next_logical_segment_index, runner.currentRowMessageLogicalSegmentIndex().?);
 }
 
 test "replay directive overrides world x and latches replay flags" {
