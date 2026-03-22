@@ -70,13 +70,13 @@ Fourth cross-reference pass covering: remaining cRSubGame spawn/level methods, c
 
 ## Path Builder Naming Corrections
 
-The Android symbols reveal **three existing Windows function names are wrong**:
+The earlier Android sweep notes were stale. The live Windows manifest is already correct for these three path builders:
 
 | Current Windows Name | Correct Android Name | Evidence |
 |---|---|---|
-| `initialize_shimmy_path_template_pair` (0x420170) | `BuildWorm` | sample_count=24, width=96.0, 16-subdivision body |
-| `initialize_slalom_path_template_pair` (0x4221f0) | `BuildSlalomBig` | Sin×4.444 amplitude, sample_count=arg2+8 |
-| `initialize_slalomdouble_path_template_pair` (0x41f760) | `BuildSlalom` | Sin×5.0 amplitude, 4+4 bookend |
+| `initialize_worm_path_template_pair` (0x420170) | `BuildWorm` | sample_count=24, width=96.0, 16-subdivision body |
+| `initialize_slalombig_path_template_pair` (0x4221f0) | `BuildSlalomBig` | Sin×4.44444466 amplitude, sample_count=`arg2+8` |
+| `initialize_slalom_path_template_pair` (0x41f760) | `BuildSlalom` | Sin×5.0 amplitude, 4+4 bookend |
 
 ---
 

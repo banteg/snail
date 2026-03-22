@@ -2753,6 +2753,16 @@
       "description": "Thin gameplay sound wrapper that forwards one effect id and explicit gain into the shared audio backend, leaving pitch and pan on their default lanes."
     },
     {
+      "address": "0x44de20",
+      "name": "play_warning_sample_backend",
+      "description": "Warning-system wrapper that plays one sample id through the shared registered-sample backend and returns the live sample handle."
+    },
+    {
+      "address": "0x44de30",
+      "name": "stop_warning_sample_handle",
+      "description": "Warning-system wrapper that stops one live warning-sample handle through the shared registered-sample backend."
+    },
+    {
       "address": "0x44de90",
       "name": "initialize_sprite"
     },

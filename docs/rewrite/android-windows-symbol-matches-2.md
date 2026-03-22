@@ -163,9 +163,9 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 |---|---|---|---|---|
 | `BuildSBend` | 0x42df00 | `sub_42df00` | `initialize_sbend_path_template_pair` | NEW — Cos height profile, 0x3efae148 rail offset |
 | `BuildScrew` | 0x41eda0 | `sub_41eda0` | `initialize_screw_path_template_pair` | NEW — type 0x19, Cos/Sin spiral body |
-| `BuildSlalom` | 0x4221f0 | `sub_4221f0` | `initialize_slalom_path_template_pair` | NEW — Sin×5.0 displacement, RotLocalZ twist |
-| `BuildSlalomDouble` | 0x41f760 | `sub_41f760` | `initialize_slalomdouble_path_template_pair` | NEW — 4+4 bookend, same Sin pattern |
-| `BuildShimmy` | 0x420170 | `sub_420170` | `initialize_shimmy_path_template_pair` | NEW — 24 fixed nodes, scale 4.0 |
+| `BuildSlalom` | 0x41f760 | `initialize_slalom_path_template_pair` | — | EXISTS — Sin×5.0 displacement, RotLocalZ twist |
+| `BuildSlalomBig` | 0x4221f0 | `initialize_slalombig_path_template_pair` | — | EXISTS — Sin×4.44444466 displacement, sample_count=`arg2+8` |
+| `BuildWorm` | 0x420170 | `initialize_worm_path_template_pair` | — | EXISTS — 24 fixed nodes, width=96.0, 16-subdivision body |
 | `BuildHalfPipe` | 0x41d030 | `sub_41d030` | `initialize_halfpipe_path_template_pair` | NEW — 7+body+7 nodes, Cos radius |
 | `BuildHalfPole` | 0x41da30 | `sub_41da30` | `initialize_halfpole_path_template_pair` | NEW — negated HalfPipe variant |
 | `BuildDip` | 0x425050 | `sub_425050` | `initialize_dip_path_template_pair` | NEW — 70 nodes, (1-Cos) height |
