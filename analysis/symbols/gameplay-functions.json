@@ -288,6 +288,11 @@
       "name": "initialize_runtime_pools_and_path_template_bank"
     },
     {
+      "address": "0x4084b0",
+      "name": "initialize_track_speedup_runtime",
+      "description": "Constructs the shared speed-up runtime record by running the shared renderable-body constructor and installing the speed-up vtable. Even though `spawn_track_speedup` is an empty stub in this build, the same `0x355db0` runtime lane is still consumed by `update_jetpack_gauge`, `handle_subgoldy_collisions`, and `remove_subgame_bods`, and its `0xb4` footprint matches the native `cRSubSpeedUp` size ledger."
+    },
+    {
       "address": "0x4084d0",
       "name": "initialize_track_jetpack_pickup_runtime",
       "description": "Constructs the single jetpack-pickup runtime record by seeding its shared bod header plus two embedded renderable bodies. `spawn_track_jetpack_pickup` uses the resulting `game->jetpack_pickup` lane at `0x355e64`, whose `0x19c` footprint matches the native `cRJetPack` size ledger."
