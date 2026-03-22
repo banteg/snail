@@ -2581,8 +2581,8 @@
     },
     {
       "address": "0x44bb60",
-      "name": "release_mouse_input",
-      "description": "Releases the DirectInput mouse device and its shared DirectInput interface, clearing the global mouse-input handles."
+      "name": "release_keyboard_input",
+      "description": "Releases the DirectInput keyboard device and its shared DirectInput interface, clearing the global keyboard-input handles."
     },
     {
       "address": "0x44bbb0",
@@ -2610,6 +2610,11 @@
     {
       "address": "0x44c100",
       "name": "convert_mouse_screen_xy"
+    },
+    {
+      "address": "0x44c2c0",
+      "name": "release_mouse_input",
+      "description": "Releases the DirectInput mouse device and its shared DirectInput interface, clearing the global mouse-input handles."
     },
     {
       "address": "0x44c310",
