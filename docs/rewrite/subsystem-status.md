@@ -262,6 +262,7 @@ Implemented now:
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
+- health and jetpack pickup no longer consume authored rows directly; the runner now keeps live runtime pickup slots, renders those slots instead of static row billboards, and resolves collection from the recovered `handle_subgoldy_collisions` distance gates before exact row crossing
 - parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot for the recovered `state 4/5` home leg, and the row-event controller now stages a fresh `state 6/7` delivery parcel before `parcel_register` lands
 - parcel delivery state `7` now homes to the controller-owned `row_event_display.widget_world` anchor using the recovered local offset `(right=7.3, up=2.0, forward=6.0)` without the older camera fallback, and seeds the shipped per-flight arc coefficients from the carried gameplay LCG instead of the old fixed `{0, 1, 0}` offset
 - parcel runtime states `4/5/6/7` now reuse a cached game-owned home anchor instead of resampling the live player position during flight, which matches the current recovered native consumer shape more closely than the old player-anchor shortcut
@@ -283,6 +284,7 @@ Still missing or approximate:
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
+- the unresolved health-collect particle bods and the jetpack pickup's ramp-side lateral spawn bias from `spawn_track_jetpack_pickup`
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
 - the exact input-controller bit source behind `gate_18`; the port now arms the row-event confirm gate from gameplay confirm input and preserves the late completion fast-forward lane, but the original controller-owner split is still not named literally
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details

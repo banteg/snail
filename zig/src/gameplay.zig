@@ -131,6 +131,18 @@ pub const RuntimeHazard = struct {
     burst_side: i8 = 0,
 };
 
+pub const RuntimePickupKind = enum {
+    health,
+    jetpack,
+};
+
+pub const RuntimePickup = struct {
+    row: usize,
+    lane: usize,
+    kind: RuntimePickupKind,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+};
+
 pub const RuntimeRingEffect = struct {
     row: usize,
     lane: usize,
@@ -464,6 +476,9 @@ const salt_damage_delta: f32 = 0.02;
 const slug_damage_delta: f32 = 1.0;
 const garbage_collision_distance_threshold: f32 = 0.98;
 const salt_collision_distance_threshold: f32 = 0.49;
+const runtime_health_collision_distance_threshold: f32 = 0.98;
+const runtime_jetpack_collision_distance_threshold: f32 = 3.0;
+const runtime_health_collision_y_tolerance: f32 = 0.4;
 const runtime_hazard_collision_z_tolerance: f32 = 1.0;
 const garbage_burst_side_bias_scale: f32 = 0.2;
 const garbage_burst_gravity_scale: f32 = -0.01;
@@ -482,12 +497,16 @@ const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
 const runtime_track_parcel_spawn_ahead_rows: usize = 46;
 const runtime_track_parcel_expiry_margin_rows: f32 = 10.0;
 const jetpack_warning_phase_scale: f32 = 16.666668;
+const runtime_pickup_live_window_rows: usize = 72;
 const runtime_hazard_live_window_rows: usize = 8;
 const runtime_ring_live_window_rows: usize = 47;
 const runtime_ring_spacing_rows: f32 = 10.0;
 const runtime_ring_default_gate_threshold: f32 = 0.7;
 const runtime_ring_kind4_to3_threshold: f32 = 0.93;
 const runtime_ring_time_trial_kind3_threshold: f32 = 0.5;
+const max_active_health_pickups: usize = 8;
+const max_active_jetpack_pickups: usize = 1;
+const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
 const max_active_track_parcels: usize = 50;
 const max_active_runtime_hazards: usize = 128;
 const max_active_runtime_ring_effects: usize = 128;
@@ -1236,6 +1255,9 @@ pub const Runner = struct {
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
+    active_runtime_pickups: [max_active_runtime_pickups]RuntimePickup = [_]RuntimePickup{.{ .row = 0, .lane = 0, .kind = .health }} ** max_active_runtime_pickups,
+    active_runtime_pickup_count: usize = 0,
+    last_runtime_pickup_scan_end: usize = 0,
     active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{.{ .row = 0, .lane = 0, .kind = .garbage }} ** max_active_runtime_hazards,
     active_runtime_hazard_count: usize = 0,
     last_runtime_hazard_scan_end: usize = 0,
@@ -1375,11 +1397,13 @@ pub const Runner = struct {
         }
         if (!self.paused and self.phase == .active) {
             self.processTrackParcelCollisions(preview);
+            self.refreshLiveRuntimePickups(preview);
             self.updateTurretFire(preview, delta_seconds);
             self.updateProjectiles(preview, delta_seconds);
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
             self.refreshLiveRuntimeRingEffects(preview);
+            self.processRuntimePickupCollisions(preview);
             self.processRuntimeHazardCollisions(preview);
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
@@ -1654,6 +1678,10 @@ pub const Runner = struct {
 
     pub fn activeRuntimeHazards(self: *const Runner) []const RuntimeHazard {
         return self.active_runtime_hazards[0..self.active_runtime_hazard_count];
+    }
+
+    pub fn activeRuntimePickups(self: *const Runner) []const RuntimePickup {
+        return self.active_runtime_pickups[0..self.active_runtime_pickup_count];
     }
 
     pub fn activeRuntimeRingEffects(self: *const Runner) []const RuntimeRingEffect {
@@ -2191,16 +2219,8 @@ pub const Runner = struct {
                 self.counters.trampoline_rows += 1;
                 self.recent_event = .trampoline;
             },
-            .health => {
-                self.counters.health_pickups += 1;
-                self.applyDamageGaugeDelta(health_recover_delta);
-                self.recent_event = .health_pickup;
-            },
-            .jetpack => {
-                self.counters.jetpack_pickups += 1;
-                self.armJetpackGauge();
-                self.recent_event = .jetpack_pickup;
-            },
+            .health => {},
+            .jetpack => {},
             .garbage => {},
             .salt => {},
             .slug => {
@@ -2457,6 +2477,53 @@ pub const Runner = struct {
                 },
             }
             return;
+        }
+    }
+
+    // PORT(partial): Windows resolves health and jetpack against their live runtime pickup
+    // slots in `handle_subgoldy_collisions`, not by consuming authored rows on crossing.
+    // The runner now mirrors the recovered distance and height gates from those runtime
+    // slots, but still omits the health particle bods and the jetpack pickup's unresolved
+    // ramp-side lateral spawn bias because those presentation owners are not recovered yet.
+    fn processRuntimePickupCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const player_position = self.playerWorldPosition(preview);
+        if (player_position.y < attachment_entry_rider_height) return;
+
+        var index: usize = 0;
+        while (index < self.active_runtime_pickup_count) {
+            const pickup = self.active_runtime_pickups[index];
+            const delta_x = pickup.world_position.x - player_position.x;
+            const delta_y = pickup.world_position.y - player_position.y;
+            const delta_z = pickup.world_position.z - player_position.z;
+            if (delta_z >= runtime_hazard_collision_z_tolerance) {
+                index += 1;
+                continue;
+            }
+
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            const collided = switch (pickup.kind) {
+                .health => @abs(delta_y) < runtime_health_collision_y_tolerance and
+                    distance < runtime_health_collision_distance_threshold,
+                .jetpack => distance < runtime_jetpack_collision_distance_threshold,
+            };
+            if (!collided) {
+                index += 1;
+                continue;
+            }
+
+            switch (pickup.kind) {
+                .health => {
+                    self.counters.health_pickups += 1;
+                    self.applyDamageGaugeDelta(health_recover_delta);
+                    self.recent_event = .health_pickup;
+                },
+                .jetpack => {
+                    self.counters.jetpack_pickups += 1;
+                    self.armJetpackGauge();
+                    self.recent_event = .jetpack_pickup;
+                },
+            }
+            self.removeRuntimePickupAt(index);
         }
     }
 
@@ -3728,6 +3795,24 @@ pub const Runner = struct {
         self.last_runtime_hazard_scan_end = window_end;
     }
 
+    fn refreshLiveRuntimePickups(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0) return;
+
+        const window_start = currentRowIndex(preview, self.row_position);
+        const window_end = @min(window_start + runtime_pickup_live_window_rows, preview.total_rows);
+
+        self.pruneRuntimePickups(window_start, window_end);
+
+        var scan_start = @max(window_start, self.last_runtime_pickup_scan_end);
+        if (scan_start > window_end) scan_start = window_end;
+
+        var global_row = scan_start;
+        while (global_row < window_end) : (global_row += 1) {
+            self.scanRuntimePickupRow(preview, global_row);
+        }
+        self.last_runtime_pickup_scan_end = window_end;
+    }
+
     fn updateRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         var write_index: usize = 0;
         for (0..self.active_runtime_hazard_count) |read_index| {
@@ -3823,6 +3908,17 @@ pub const Runner = struct {
         self.active_runtime_hazard_count = write_index;
     }
 
+    fn pruneRuntimePickups(self: *Runner, window_start: usize, window_end: usize) void {
+        var write_index: usize = 0;
+        for (0..self.active_runtime_pickup_count) |read_index| {
+            const pickup = self.active_runtime_pickups[read_index];
+            if (pickup.row < window_start or pickup.row >= window_end) continue;
+            self.active_runtime_pickups[write_index] = pickup;
+            write_index += 1;
+        }
+        self.active_runtime_pickup_count = write_index;
+    }
+
     fn pruneRuntimeRingEffects(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
         for (0..self.active_runtime_ring_effect_count) |read_index| {
@@ -3854,6 +3950,20 @@ pub const Runner = struct {
             }
             if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {
                 self.addRuntimeHazard(preview, global_row, lane, .salt);
+            }
+        }
+    }
+
+    fn scanRuntimePickupRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
+        const row_location = preview.locateRow(global_row) orelse return;
+
+        for (row_location.row.cells, 0..) |_, lane| {
+            if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
+                switch (sample.kind) {
+                    .health => self.addRuntimePickup(preview, global_row, lane, .health),
+                    .jetpack => self.addRuntimePickup(preview, global_row, lane, .jetpack),
+                    else => {},
+                }
             }
         }
     }
@@ -3936,6 +4046,23 @@ pub const Runner = struct {
         self.active_runtime_hazard_count += 1;
     }
 
+    fn addRuntimePickup(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimePickupKind) void {
+        for (0..self.active_runtime_pickup_count) |index| {
+            const pickup = self.active_runtime_pickups[index];
+            if (pickup.row == row and pickup.lane == lane and pickup.kind == kind) return;
+        }
+        if (self.active_runtime_pickup_count >= self.active_runtime_pickups.len) return;
+        if (self.activeRuntimePickupCountForKind(kind) >= runtimePickupCapacity(kind)) return;
+
+        self.active_runtime_pickups[self.active_runtime_pickup_count] = .{
+            .row = row,
+            .lane = lane,
+            .kind = kind,
+            .world_position = initialRuntimePickupWorldPosition(preview, row, lane, kind),
+        };
+        self.active_runtime_pickup_count += 1;
+    }
+
     fn addRuntimeRingEffect(self: *Runner, row: usize, lane: usize, kind: u8) void {
         if (kind == 0) return;
         for (0..self.active_runtime_ring_effect_count) |index| {
@@ -3979,6 +4106,13 @@ pub const Runner = struct {
         };
     }
 
+    fn initialRuntimePickupWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimePickupKind) rl.Vector3 {
+        return switch (kind) {
+            .health => runtimeCellWorldPosition(preview, row, lane, 0.6),
+            .jetpack => runtimeCellWorldPosition(preview, row, lane, 1.5),
+        };
+    }
+
     fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
         var seed: u64 = 0x517cc1b727220a95;
         seed ^= @as(u64, @intCast(row + 1)) *% 0x9e3779b97f4a7c15;
@@ -3995,6 +4129,14 @@ pub const Runner = struct {
         return false;
     }
 
+    fn activeRuntimePickupCountForKind(self: *const Runner, kind: RuntimePickupKind) usize {
+        var count: usize = 0;
+        for (0..self.active_runtime_pickup_count) |index| {
+            if (self.active_runtime_pickups[index].kind == kind) count += 1;
+        }
+        return count;
+    }
+
     fn hasRuntimeRingEffect(self: *const Runner, row: usize, lane: usize) bool {
         for (0..self.active_runtime_ring_effect_count) |index| {
             const effect = self.active_runtime_ring_effects[index];
@@ -4008,14 +4150,26 @@ pub const Runner = struct {
             const hazard = self.active_runtime_hazards[index];
             if (hazard.row != row or hazard.lane != lane or hazard.kind != kind) continue;
 
-            var shift_index = index;
-            while (shift_index + 1 < self.active_runtime_hazard_count) : (shift_index += 1) {
-                self.active_runtime_hazards[shift_index] = self.active_runtime_hazards[shift_index + 1];
-            }
-            self.active_runtime_hazard_count -= 1;
+            self.removeRuntimeHazardAt(index);
             return true;
         }
         return false;
+    }
+
+    fn removeRuntimeHazardAt(self: *Runner, index: usize) void {
+        var shift_index = index;
+        while (shift_index + 1 < self.active_runtime_hazard_count) : (shift_index += 1) {
+            self.active_runtime_hazards[shift_index] = self.active_runtime_hazards[shift_index + 1];
+        }
+        self.active_runtime_hazard_count -= 1;
+    }
+
+    fn removeRuntimePickupAt(self: *Runner, index: usize) void {
+        var shift_index = index;
+        while (shift_index + 1 < self.active_runtime_pickup_count) : (shift_index += 1) {
+            self.active_runtime_pickups[shift_index] = self.active_runtime_pickups[shift_index + 1];
+        }
+        self.active_runtime_pickup_count -= 1;
     }
 
     fn consumeRuntimeRingEffect(self: *Runner, row: usize, lane: usize) ?u8 {
@@ -4037,6 +4191,13 @@ pub const Runner = struct {
         if ((runtime_build_flags & 0x08) == 0) return false;
         if (runtime_build_flags == track.tutorialRuntimeBuildFlags) return true;
         return self.nextMathRandomFloat01() > runtime_ring_default_gate_threshold;
+    }
+
+    fn runtimePickupCapacity(kind: RuntimePickupKind) usize {
+        return switch (kind) {
+            .health => max_active_health_pickups,
+            .jetpack => max_active_jetpack_pickups,
+        };
     }
 
     fn spawnedRuntimeRingKind(self: *Runner, requested_kind: u8) u8 {
@@ -6043,6 +6204,52 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expect(runner.speed_rows_per_second < speed_before_garbage);
     try std.testing.expect(runner.last_garbage_hit_position != null);
     try std.testing.expectEqualStrings("garbage_hit", runner.recentEventLabel());
+}
+
+test "runtime health pickup collides by distance before exact row crossing" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const health = findFirstGameplayCell(&fixture.preview, .health).?;
+    runner.reset(&fixture.preview);
+    runner.lane_index = health.lane;
+    runner.lane_center = @as(f32, @floatFromInt(health.lane)) + 0.5;
+    runner.runtime_track_index = health.row - 1;
+    runner.movement_progress = 0.6;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.addRuntimePickup(&fixture.preview, health.row, health.lane, .health);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimePickups().len);
+    runner.processRuntimePickupCollisions(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimePickups().len);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
+    try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
+}
+
+test "runtime jetpack pickup collides by distance before exact row crossing" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const jetpack = findFirstGameplayCell(&fixture.preview, .jetpack).?;
+    runner.reset(&fixture.preview);
+    runner.lane_index = jetpack.lane;
+    runner.lane_center = @as(f32, @floatFromInt(jetpack.lane)) + 0.5;
+    runner.runtime_track_index = jetpack.row - 1;
+    runner.movement_progress = 0.6;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.addRuntimePickup(&fixture.preview, jetpack.row, jetpack.lane, .jetpack);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimePickups().len);
+    runner.processRuntimePickupCollisions(&fixture.preview);
+    try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimePickups().len);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.jetpack_pickups);
+    try std.testing.expect(runner.jetpack.active);
+    try std.testing.expectEqualStrings("jetpack_pickup", runner.recentEventLabel());
 }
 
 test "runtime garbage hazards collide by distance before exact row crossing" {

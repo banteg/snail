@@ -10799,10 +10799,8 @@ fn drawGameplayRuntimeActors(
             const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
             switch (sample.kind) {
                 .slug => drawGameplaySlugActor(state, loaded_track_preview, camera, global_row, lane_index),
-                .health => drawGameplayHealthActor(state, loaded_track_preview, camera, global_row, lane_index),
-                .jetpack => drawGameplayJetpackActor(state, loaded_track_preview, camera, global_row, lane_index),
                 .ring => drawGameplayRingActor(state, loaded_track_preview, camera, row_location, lane_index),
-                .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
+                .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
             if (row_location.row.cells[lane_index] == '=') {
                 drawGameplayTurretActor(state, loaded_track_preview, runner, global_row, lane_index);
@@ -10828,6 +10826,14 @@ fn drawGameplayRuntimeActors(
         }
     }
 
+    for (runner.activeRuntimePickups()) |pickup| {
+        if (!shouldRenderGameplayPickup(runner, pickup)) continue;
+        switch (pickup.kind) {
+            .health => drawGameplayHealthPickupActor(state, camera, pickup),
+            .jetpack => drawGameplayJetpackPickupActor(state, camera, pickup),
+        }
+    }
+
     for (runner.activeProjectiles()) |projectile| {
         drawGameplayProjectileActor(state, projectile);
     }
@@ -10849,6 +10855,11 @@ fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay.RuntimeH
     };
     return hazard.world_position.z + trailing_rows >= runner.row_position and
         hazard.world_position.z <= runner.row_position + 72.0;
+}
+
+fn shouldRenderGameplayPickup(runner: gameplay.Runner, pickup: gameplay.RuntimePickup) bool {
+    return pickup.world_position.z + 0.25 >= runner.row_position and
+        pickup.world_position.z <= runner.row_position + 72.0;
 }
 
 fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
@@ -10984,17 +10995,23 @@ fn drawGameplayTurretActor(
     );
 }
 
-fn drawGameplayHealthActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+fn drawGameplayHealthPickupActor(
+    state: *const AppState,
+    camera: rl.Camera3D,
+    pickup: gameplay.RuntimePickup,
+) void {
     const loaded_texture = state.current_gameplay_sprites.health orelse return;
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.34);
-    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.52, 0.52, camera, .white);
+    drawGameplayBillboardTexture(loaded_texture.texture, pickup.world_position, 0.52, 0.52, camera, .white);
 }
 
-fn drawGameplayJetpackActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+fn drawGameplayJetpackPickupActor(
+    state: *const AppState,
+    camera: rl.Camera3D,
+    pickup: gameplay.RuntimePickup,
+) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_jetpack_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
-    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, 0.48);
-    drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.88, camera, .white);
+    drawGameplayBillboardTexture(loaded_texture.texture, pickup.world_position, 0.64, 0.88, camera, .white);
 }
 
 fn drawGameplayRingActor(

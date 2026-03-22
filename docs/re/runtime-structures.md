@@ -317,6 +317,9 @@ Current practical read:
 - `spawn_track_health_pickup` populates `health_pickups[i]`
 - `spawn_track_jetpack_pickup` populates the single `jetpack_pickup` slot
 - both helpers lift the spawn point above the authored floor height, attach a sprite using `player->player_slot`, and store the source runtime cell
+- `handle_subgoldy_collisions` reads the same runtime slots back with pickup-specific gates:
+  - health: `player_world_y >= 0.49`, `delta_z < 1.0`, `abs(delta_y) < 0.4`, normalized distance `< 0.98`
+  - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
 - Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
 
 ## Garbage Hazard Runtime
