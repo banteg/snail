@@ -622,10 +622,14 @@ pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
     };
 }
 
-fn shotCooldownTicksForMovementFlags(movement_flags: u32) u8 {
-    const channel_states = nativeWeaponChannelStates(movement_flags);
-    if (channel_states.left == 2 or channel_states.right == 2) return 7;
-    return 4;
+fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
+    return switch (movement_flag_selector) {
+        0, 1, 2 => 0.0740740746,
+        3, 4, 8 => 0.111111104,
+        5 => 0.0666666701,
+        6, 7 => 0.13333334,
+        else => 0.0666666701,
+    };
 }
 
 fn projectileSpeedForKind(kind: Projectile.Kind) f32 {
@@ -1209,6 +1213,9 @@ pub const Runner = struct {
     movement_flags: u32 = 1,
     slow_ticks: u16 = 0,
     invincible_ticks: u16 = 0,
+    movement_fire_cooldown: f32 = 0.0,
+    movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
+    fire_held_previous: bool = false,
     shot_cooldown_ticks: u8 = 0,
     damage_gauge: f32 = 0.0,
     damage_gauge_runtime: DamageGaugeRuntime = .{},
@@ -1328,6 +1335,7 @@ pub const Runner = struct {
         }
 
         if (!self.paused and self.acceptsGameplayInput()) {
+            self.stepMovementFireCooldown();
             self.handleFireInput(preview, input.fire);
             self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
@@ -3020,6 +3028,7 @@ pub const Runner = struct {
             self.movement_flag_selector = 7;
         }
         self.movement_flags = movementFlagsForSelector(self.movement_flag_selector);
+        self.movement_fire_cooldown_step = movementFireCooldownStepForSelector(self.movement_flag_selector);
     }
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3050,10 +3059,25 @@ pub const Runner = struct {
         }
     }
 
+    fn stepMovementFireCooldown(self: *Runner) void {
+        if (self.movement_fire_cooldown <= 0.0) return;
+        self.movement_fire_cooldown += self.movement_fire_cooldown_step;
+        if (self.movement_fire_cooldown > 1.0) {
+            self.movement_fire_cooldown = 0.0;
+        }
+    }
+
     fn handleFireInput(self: *Runner, preview: *const track.LoadedLevelPreview, fire: bool) void {
-        if (!fire or self.shot_cooldown_ticks != 0) return;
+        const fresh_press = fire and !self.fire_held_previous;
+        defer self.fire_held_previous = fire;
+
+        if (!fire or self.attachment_exit_pending or self.movement_fire_cooldown > 0.0) return;
         self.spawnProjectiles(preview);
-        self.shot_cooldown_ticks = shotCooldownTicksForMovementFlags(self.movement_flags);
+        self.shot_cooldown_ticks = 2;
+        self.movement_fire_cooldown = if (fresh_press)
+            @min(1.0, self.movement_fire_cooldown_step + 0.30000001)
+        else
+            self.movement_fire_cooldown_step;
     }
 
     fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6282,6 +6306,43 @@ test "movement flags spawn the recovered projectile channel layouts" {
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectEqual(Projectile.Kind.rocket, runner.active_projectiles[0].kind);
+}
+
+test "movement fire cadence follows the native selector-owned cooldown lane" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.reset(&fixture.preview);
+
+    runner.handleFireInput(&fixture.preview, true);
+    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(u8, 2), runner.shot_cooldown_ticks);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_fire_cooldown, 0.0001);
+
+    while (runner.movement_fire_cooldown > 0.0) {
+        runner.stepMovementFireCooldown();
+    }
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
+
+    runner.handleFireInput(&fixture.preview, true);
+    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+}
+
+test "movement fire is suppressed while attachment exit is pending" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.reset(&fixture.preview);
+    runner.attachment_exit_pending = true;
+
+    runner.handleFireInput(&fixture.preview, true);
+    try std.testing.expectEqual(@as(usize, 0), runner.active_projectile_count);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
 }
 
 test "projectiles stop on salt without consuming the hazard" {
