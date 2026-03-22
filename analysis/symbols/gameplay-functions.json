@@ -1211,6 +1211,11 @@
       "name": "initialize_game_data_archive"
     },
     {
+      "address": "0x430ef0",
+      "name": "uninitialize_game_data_archive",
+      "description": "Frees the tracked archive payload buffer, closes the loaded SnailMail.dat stream when present, and clears the global archive-index pointer."
+    },
+    {
       "address": "0x430f30",
       "name": "set_current_directory_with_drive_fallback",
       "description": "Wraps `SetCurrentDirectoryA`, retrying drive-qualified paths through the Win32 current-drive environment-variable fallback before emitting a plain debug message on failure."
@@ -2602,6 +2607,11 @@
     {
       "address": "0x44bc50",
       "name": "update_mouse"
+    },
+    {
+      "address": "0x44c050",
+      "name": "set_hide_system_cursor_flag",
+      "description": "Sets the shared latch that tells `update_mouse` whether to hide the OS cursor after the current pointer-region update."
     },
     {
       "address": "0x44c060",
