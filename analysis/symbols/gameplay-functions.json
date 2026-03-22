@@ -44,6 +44,11 @@
       "description": "Recomputes one front-end widget's authored-space position, measured text bounds, and any attached slider-child offsets before the current frame draw."
     },
     {
+      "address": "0x402790",
+      "name": "set_frontend_widget_shortcut_key",
+      "description": "Stores one keyboard shortcut code on a front-end widget and enables the matching flag so `update_frontend_widget_interaction` dispatches the widget when `read_pressed_text_input_key_code()` returns that code."
+    },
+    {
       "address": "0x4027b0",
       "name": "stack_widget_below",
       "description": "Chains one shell-font front-end widget below another by copying the previous widget x anchor and adding the current gap plus the previous measured height."
@@ -597,6 +602,11 @@
       "address": "0x4119d0",
       "name": "initialize_game_window_and_input",
       "description": "Registers the SnailMail window class, applies the recovered 4:3 resolution presets, falls back to a 640x480 windowed client, and initializes keyboard, controller, and mouse input."
+    },
+    {
+      "address": "0x411d80",
+      "name": "uninitialize_input_devices",
+      "description": "Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles."
     },
     {
       "address": "0x4126c0",
