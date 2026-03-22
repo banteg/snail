@@ -1215,6 +1215,11 @@
       "name": "archive_or_file_exists"
     },
     {
+      "address": "0x431030",
+      "name": "load_file_bytes_fixed_size_from_archive_or_fs",
+      "description": "Loads exactly the caller-supplied byte count from a named archive entry or filesystem path, reusing the caller buffer when provided and otherwise allocating a tracked buffer before applying the archive XOR decode."
+    },
+    {
       "address": "0x431250",
       "name": "find_archive_entry"
     },
@@ -1231,14 +1236,119 @@
       "name": "write_file_bytes"
     },
     {
+      "address": "0x431740",
+      "name": "enumerate_matching_archive_or_fs_entries",
+      "description": "Enumerates archive-backed or filesystem-backed filenames under the requested prefix, filters them against the caller wildcard pattern, copies each match into the fixed output table, and returns the match count through the out parameter."
+    },
+    {
+      "address": "0x431980",
+      "name": "xor_archive_bytes_in_place",
+      "description": "Applies the archive byte XOR mask in place over the requested byte span; the same transform is used to decode archive reads and to encode rebuilt archive payloads."
+    },
+    {
       "address": "0x4319c0",
       "name": "load_archive_index",
       "description": "Decodes and parses the SnailMail.dat archive index into lookup records for archive-backed file loading."
     },
     {
+      "address": "0x431a80",
+      "name": "is_archive_index_loaded",
+      "description": "Returns whether the global archive-index table has been initialized, so content loaders can decide between archive-backed reads and direct filesystem fallback."
+    },
+    {
+      "address": "0x431a90",
+      "name": "get_archive_data_base",
+      "description": "Returns the base pointer of the loaded SnailMail.dat payload buffer used by archive-backed mesh, voice, and object-definition readers."
+    },
+    {
+      "address": "0x431aa0",
+      "name": "get_archive_data_end",
+      "description": "Returns the end pointer of the fixed-size loaded archive payload window; current Windows callers use it as the upper bound when walking archive-backed texture-group buffers."
+    },
+    {
+      "address": "0x431ab0",
+      "name": "get_tracked_allocation_size",
+      "description": "Looks up one tracked allocation inside the global allocation stack and returns the guarded byte size recorded for that pointer."
+    },
+    {
+      "address": "0x431af0",
+      "name": "push_tracked_allocation",
+      "description": "Appends one `(size, pointer)` record to the global tracked-allocation stack used by the guarded resource allocator."
+    },
+    {
+      "address": "0x431b30",
+      "name": "pop_tracked_allocation",
+      "description": "Removes one pointer from the global tracked-allocation stack, preferring the top-of-stack fast path and falling back to a linear search when the free order differs."
+    },
+    {
+      "address": "0x431b60",
+      "name": "allocate_tracked_memory",
+      "description": "Allocates a zeroed guarded heap block, records it in the global tracked-allocation stack, writes the front and back `DE AD BA BE` sentinels, and returns the caller-visible payload pointer."
+    },
+    {
+      "address": "0x431bf0",
+      "name": "free_tracked_memory",
+      "description": "Validates a guarded tracked allocation, removes its size from the global memory tally, frees the backing block, and drops the pointer from the tracked-allocation stack."
+    },
+    {
+      "address": "0x431c70",
+      "name": "free_tracked_allocations_to_mark",
+      "description": "Frees tracked allocations back down to the current saved stack mark, as used by the main loop to unwind one temporary allocation scope."
+    },
+    {
+      "address": "0x431cb0",
+      "name": "set_tracked_allocation_mark",
+      "description": "Saves the current tracked-allocation stack depth as the active unwind mark for a later `free_tracked_allocations_to_mark` call."
+    },
+    {
       "address": "0x431cc0",
       "name": "report_errorf",
       "description": "Formats and emits one fatal-style engine error message with a varargs payload. Runtime and content-loading paths use it for hard failures such as missing hotspot textures, parcel-pool exhaustion, and invalid track segment lengths."
+    },
+    {
+      "address": "0x431d10",
+      "name": "report_warningf",
+      "description": "Formats one warning message with the native `* WARNING *` prefix and emits it through the shared debug-output path."
+    },
+    {
+      "address": "0x431d60",
+      "name": "report_messagef",
+      "description": "Formats and emits one plain debug message without the warning prefix; archive/file loading paths use it for missing-file notices."
+    },
+    {
+      "address": "0x431da0",
+      "name": "copy_c_string",
+      "description": "Copies one NUL-terminated C string into the destination buffer and returns the advanced source pointer."
+    },
+    {
+      "address": "0x431dc0",
+      "name": "strings_equal_case_insensitive",
+      "description": "Compares two NUL-terminated strings case-insensitively and returns true only when both terminate together after matching."
+    },
+    {
+      "address": "0x431e30",
+      "name": "skip_to_next_line",
+      "description": "Advances the caller-owned text cursor to the next line break and then steps once more so the cursor starts on the following line."
+    },
+    {
+      "address": "0x431e50",
+      "name": "append_c_string",
+      "description": "Advances to the destination string's trailing NUL and appends the source string in place."
+    },
+    {
+      "address": "0x431e80",
+      "name": "parse_next_space_delimited_token",
+      "description": "Skips leading spaces, copies the next space-delimited token from the caller-owned text cursor into the destination buffer, and advances the cursor."
+    },
+    {
+      "address": "0x431ec0",
+      "name": "parse_next_int32",
+      "description": "Parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits."
+    },
+    {
+      "address": "0x431f20",
+      "name": "parse_next_float32",
+      "description": "Parses the next signed decimal float from the caller-owned text cursor, consuming digits and one decimal point before returning the float32 value."
     },
     {
       "address": "0x431fd0",
