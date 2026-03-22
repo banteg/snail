@@ -7,6 +7,11 @@
   "source_database": "artifacts/binary_ninja/SnailMail.RWG.bndb",
   "functions": [
     {
+      "address": "0x401000",
+      "name": "initialize_array_with_constructor",
+      "description": "Walks `count` entries from `base` using the supplied byte stride and calls the provided constructor/helper on each slot; shared by game-runtime, enemy-manager, and parcel-bucket pool setup."
+    },
+    {
       "address": "0x401030",
       "name": "border_add_text_number"
     },
@@ -171,6 +176,41 @@
       "name": "file_exists"
     },
     {
+      "address": "0x405170",
+      "name": "get_stream_length_preserve_position",
+      "description": "Seeks one open file stream to the end, reads its byte length, and restores the original stream position before returning."
+    },
+    {
+      "address": "0x4051b0",
+      "name": "load_file_bytes_allocating",
+      "description": "Loads one filesystem file into a freshly allocated byte buffer and optionally returns the byte length through the out parameter."
+    },
+    {
+      "address": "0x4051d0",
+      "name": "load_file_bytes_into_optional_buffer",
+      "description": "Loads one filesystem file into the caller-supplied buffer when present, otherwise allocates a new buffer, and optionally returns the byte length through the out parameter."
+    },
+    {
+      "address": "0x405270",
+      "name": "scramble_archive_bytes_in_place",
+      "description": "Applies the archive rebuild byte-scramble in place by XORing each byte with its index-derived polynomial mask."
+    },
+    {
+      "address": "0x4052a0",
+      "name": "save_file_bytes_with_optional_archive_scramble",
+      "description": "Writes one byte buffer to the filesystem and optionally applies the archive rebuild scramble before the write."
+    },
+    {
+      "address": "0x405340",
+      "name": "delete_file_path",
+      "description": "Deletes one filesystem path; used by the archive rebuild pass to remove the old archive and temporary extracted PNG."
+    },
+    {
+      "address": "0x405350",
+      "name": "toggle_archive_high_bit_in_place",
+      "description": "Toggles bit 7 on each byte in place; used to decode the legacy `.dam` archive payload before rebuild."
+    },
+    {
       "address": "0x405370",
       "name": "rebuild_game_archive_if_needed"
     },
@@ -181,6 +221,11 @@
     {
       "address": "0x405c90",
       "name": "initialize_directx_loader"
+    },
+    {
+      "address": "0x405cc0",
+      "name": "load_or_reuse_cached_x_mesh",
+      "description": "Searches the shared runtime X-mesh bank by name and returns the existing index on a hit; on a miss it appends a new entry, allocates its backing object from the global object list, loads the mesh, and returns the new index."
     },
     {
       "address": "0x405d60",
