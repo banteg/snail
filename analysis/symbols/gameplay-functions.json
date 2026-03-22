@@ -112,6 +112,11 @@
       "name": "update_tooltip"
     },
     {
+      "address": "0x403f60",
+      "name": "queue_frontend_widget_flag_after_delay",
+      "description": "Arms the shared border-manager delay lane for one front-end widget: stores the destination widget pointer and flag mask, starts the fixed `0.1` step timer, and optionally begins the global front-end fade when the widget requests it."
+    },
+    {
       "address": "0x403fc0",
       "name": "update_border_manager"
     },
