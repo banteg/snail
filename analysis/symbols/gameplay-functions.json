@@ -1211,6 +1211,11 @@
       "name": "initialize_game_data_archive"
     },
     {
+      "address": "0x430f30",
+      "name": "set_current_directory_with_drive_fallback",
+      "description": "Wraps `SetCurrentDirectoryA`, retrying drive-qualified paths through the Win32 current-drive environment-variable fallback before emitting a plain debug message on failure."
+    },
+    {
       "address": "0x430fd0",
       "name": "archive_or_file_exists"
     },
