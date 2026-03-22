@@ -1348,6 +1348,13 @@ pub const Runner = struct {
 
         if (!self.paused and self.acceptsGameplayInput()) {
             self.stepMovementFireCooldown();
+            // PORT(verified): native `update_subgoldy` reseeds the movement-fire cooldown
+            // lane from `movement_fire_cooldown_step` for the first 10 gameplay ticks
+            // before the fire gate runs, which suppresses all movement-state shots during
+            // that startup window.
+            if (self.tick_count < 10) {
+                self.movement_fire_cooldown = self.movement_fire_cooldown_step;
+            }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
@@ -6484,6 +6491,7 @@ test "replay fire bits drive the native movement fire gate" {
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.tutorial);
     runner.reset(&fixture.preview);
+    runner.tick_count = 10;
 
     runner.stepWithReplay(
         &fixture.preview,
@@ -6511,6 +6519,43 @@ test "replay fire bits drive the native movement fire gate" {
         1.0 / 60.0,
     );
     try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+}
+
+test "movement fire stays suppressed for the first ten gameplay ticks" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 4.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.configureSessionMode(.tutorial);
+    runner.reset(&fixture.preview);
+
+    var tick: usize = 0;
+    while (tick < 10) : (tick += 1) {
+        runner.step(
+            &fixture.preview,
+            .{
+                .fire_pressed = tick == 0,
+                .fire_down = true,
+            },
+            1.0 / 60.0,
+        );
+        try std.testing.expectEqual(@as(usize, 0), runner.active_projectile_count);
+        try std.testing.expectApproxEqAbs(runner.movement_fire_cooldown_step, runner.movement_fire_cooldown, 0.0001);
+    }
+
+    var held_ticks: usize = 0;
+    while (runner.active_projectile_count == 0 and held_ticks < 32) : (held_ticks += 1) {
+        runner.step(
+            &fixture.preview,
+            .{
+                .fire_down = true,
+            },
+            1.0 / 60.0,
+        );
+    }
+    try std.testing.expect(held_ticks > 0);
+    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
 }
 
