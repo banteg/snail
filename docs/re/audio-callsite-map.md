@@ -130,8 +130,8 @@ The point of this map is not “audio parity” in isolation. These callsites sh
 3. Recover the native damage-warning owner instead of only mirroring its visible fill and warning loop.
    Audio evidence: `sfx 50`, `voice 0`, `voice 9`, `voice 14`.
    Native implication: the damage gauge has its own voice escalation and fallback logic, while the warning overlay is a separate actor with its own loop cadence.
-   Current Zig suspicion: the entry, fallback, and escalation voices are now covered, but the warning overlay actor and its loop cadence are still collapsed into one simplified gameplay warning path.
-   Next trace boundary: `apply_damage_gauge_delta`, `update_damage_gauge`, `start_warning`, `update_warning`, `stop_warning_sample`.
+   Current Zig suspicion: the runner now owns the warning actor cadence, display-fill smoothing, and `sfx 50` loop edge, but the remaining global-flag exits and `stop_warning_sample` handle behavior are still unresolved.
+   Next trace boundary: `apply_damage_gauge_delta`, `update_damage_gauge`, `stop_warning_sample`.
    Likely Zig subsystem: [`zig/src/gameplay.zig`](../../zig/src/gameplay.zig) damage and warning controllers, plus [`zig/src/main.zig`](../../zig/src/main.zig) audio routing.
 
 4. Treat attachment-follow milestone audio as evidence that the live follow state still has missing semantics.

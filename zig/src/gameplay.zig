@@ -392,6 +392,31 @@ pub const DamageWarningState = enum {
     }
 };
 
+pub const DamageWarningActorState = enum(u8) {
+    hidden = 0,
+    solid = 1,
+    fade_cycle = 2,
+};
+
+pub const DamageGaugeRuntime = struct {
+    display_fill: f32 = 0.0,
+    pulse_progress: f32 = 0.0,
+    pulse_step: f32 = damage_gauge_pulse_step,
+    hit_flash_progress: f32 = 0.0,
+    hit_flash_step: f32 = damage_gauge_hit_flash_step,
+    warning_transition_progress: f32 = 0.0,
+    warning_transition_step: f32 = damage_warning_transition_step,
+    skin_hold_ticks: u8 = 0,
+};
+
+pub const DamageWarningActor = struct {
+    state: DamageWarningActorState = .hidden,
+    progress: f32 = 0.0,
+    step: f32 = damage_warning_actor_step,
+    alpha: f32 = 0.0,
+    sample_generation: u8 = 0,
+};
+
 pub const JetpackWarningBand = enum {
     idle,
     steady,
@@ -443,8 +468,13 @@ const garbage_burst_side_bias_scale: f32 = 0.2;
 const garbage_burst_gravity_scale: f32 = -0.01;
 const garbage_burst_teardown_y: f32 = -10.0;
 const garbage_burst_trailing_rows: f32 = 2.0;
-const damage_warning_fill_step: f32 = 0.16666667;
+const damage_warning_transition_step: f32 = 0.16666667;
 const damage_warning_drain_delta: f32 = -0.0016666667;
+const damage_warning_actor_step: f32 = 0.083333336;
+const damage_warning_actor_solid_alpha: f32 = 0.99900001;
+const damage_gauge_display_lerp: f32 = 0.2;
+const damage_gauge_pulse_step: f32 = 0.020833334;
+const damage_gauge_hit_flash_step: f32 = 0.033333335;
 const jetpack_gauge_tick_step: f32 = 0.0016666667;
 const jetpack_warning_threshold: f32 = 0.94;
 const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
@@ -1181,9 +1211,10 @@ pub const Runner = struct {
     invincible_ticks: u16 = 0,
     shot_cooldown_ticks: u8 = 0,
     damage_gauge: f32 = 0.0,
+    damage_gauge_runtime: DamageGaugeRuntime = .{},
     slug_hit_active: bool = false,
     damage_warning_state: DamageWarningState = .idle,
-    damage_warning_fill: f32 = 0.0,
+    damage_warning_actor: DamageWarningActor = .{},
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
@@ -2419,10 +2450,16 @@ pub const Runner = struct {
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
+        const damage_entry = self.damage_gauge <= 0.0 and delta > 0.0;
         self.damage_gauge = std.math.clamp(self.damage_gauge + delta, 0.0, 1.0);
+        if (damage_entry) {
+            self.damage_gauge_runtime.hit_flash_progress = self.damage_gauge_runtime.hit_flash_step;
+        }
         if (self.damage_gauge <= 0.0) {
             self.damage_warning_state = .idle;
-            self.damage_warning_fill = 0.0;
+            self.damage_gauge_runtime.warning_transition_progress = 0.0;
+            self.damage_gauge_runtime.skin_hold_ticks = 0;
+            self.stopDamageWarningActor();
         }
     }
 
@@ -2434,27 +2471,118 @@ pub const Runner = struct {
         self.recordScore(&self.score.completion_bonus, postal_completion_bonus_score);
     }
 
-    // PORT(partial): recovered from Android `cRDamageGuage::AI()`. Filling the gauge enters a
-    // warning/fill phase, then a slow auto-drain phase, instead of killing the player directly.
-    // This still omits the original game-flag gates, warning actor, and the separate fall-side path.
-    fn updateDamageWarning(self: *Runner) void {
+    fn startDamageWarningActor(self: *Runner) void {
+        self.damage_warning_actor.state = .fade_cycle;
+        self.damage_warning_actor.progress = 1.0;
+        self.damage_warning_actor.alpha = 0.0;
+    }
+
+    fn stopDamageWarningActor(self: *Runner) void {
+        self.damage_warning_actor = .{};
+    }
+
+    fn updateDamageWarningActor(self: *Runner) void {
+        switch (self.damage_warning_actor.state) {
+            .hidden => {},
+            .solid => {
+                self.damage_warning_actor.alpha = damage_warning_actor_solid_alpha;
+                const next_progress = self.damage_warning_actor.progress + self.damage_warning_actor.step;
+                self.damage_warning_actor.progress = next_progress;
+                if (next_progress > 1.0) {
+                    self.damage_warning_actor.progress = 0.0;
+                    self.damage_warning_actor.state = .fade_cycle;
+                }
+            },
+            .fade_cycle => {
+                if (self.damage_warning_actor.progress >= 0.5) {
+                    self.damage_warning_actor.alpha = 0.0;
+                } else {
+                    self.damage_warning_actor.alpha = 1.0 - (self.damage_warning_actor.progress * 2.0);
+                }
+                const next_progress = self.damage_warning_actor.progress + self.damage_warning_actor.step;
+                self.damage_warning_actor.progress = next_progress;
+                if (next_progress > 1.0) {
+                    self.damage_warning_actor.progress = 0.0;
+                    self.damage_warning_actor.state = .solid;
+                    self.damage_warning_actor.sample_generation +%= 1;
+                }
+            },
+        }
+    }
+
+    // PORT(partial): recovered from `update_damage_gauge` and `update_warning`. The runner now
+    // owns the native warning actor cadence plus the separate display-fill and pulse lanes, but
+    // the remaining global-flag exits still need Windows captures before they can be ported.
+    fn updateDamageGaugeController(self: *Runner) void {
+        self.damage_gauge_runtime.display_fill +=
+            (self.damage_gauge - self.damage_gauge_runtime.display_fill) * damage_gauge_display_lerp;
+        if (self.damage_gauge_runtime.hit_flash_progress > 0.0) {
+            self.damage_gauge_runtime.hit_flash_progress += self.damage_gauge_runtime.hit_flash_step;
+            if (self.damage_gauge_runtime.hit_flash_progress > 1.0) {
+                self.damage_gauge_runtime.hit_flash_progress = 0.0;
+            }
+        }
+
         switch (self.damage_warning_state) {
             .idle => {
                 if (self.damage_gauge >= 1.0) {
                     self.damage_warning_state = .filling;
-                    self.damage_warning_fill = 0.0;
+                    self.damage_gauge_runtime.warning_transition_progress = 0.0;
+                    self.damage_gauge_runtime.warning_transition_step = damage_warning_transition_step;
+                    self.startDamageWarningActor();
                 }
             },
             .filling => {
-                self.damage_warning_fill = std.math.clamp(self.damage_warning_fill + damage_warning_fill_step, 0.0, 1.0);
-                if (self.damage_warning_fill >= 0.999) {
+                self.damage_gauge_runtime.warning_transition_progress +=
+                    self.damage_gauge_runtime.warning_transition_step;
+                if (self.damage_gauge_runtime.warning_transition_progress >= 1.0) {
                     self.damage_warning_state = .draining;
                 }
             },
             .draining => {
                 self.applyDamageGaugeDelta(damage_warning_drain_delta);
+                self.damage_gauge_runtime.skin_hold_ticks = 5;
             },
         }
+
+        if (self.damage_warning_state == .idle and self.damage_gauge <= 0.0) {
+            self.stopDamageWarningActor();
+        }
+
+        self.damage_gauge_runtime.pulse_progress += self.damage_gauge_runtime.pulse_step;
+        if (self.damage_gauge_runtime.pulse_progress > 1.0) {
+            self.damage_gauge_runtime.pulse_progress -= 1.0;
+        }
+    }
+
+    fn updateDamageWarning(self: *Runner) void {
+        self.updateDamageGaugeController();
+        self.updateDamageWarningActor();
+    }
+
+    pub fn damageGaugeWarningOverlayAlpha(self: *const Runner) f32 {
+        const fill_ratio = std.math.clamp(self.damage_gauge_runtime.display_fill, 0.0, 1.0);
+        if (fill_ratio <= 0.89999998 and self.damage_warning_state == .idle) return 0.0;
+
+        var overlay_envelope: f32 = 1.0;
+        if (fill_ratio <= 0.89999998) {
+            if (fill_ratio >= 0.1) return 0.0;
+            overlay_envelope = fill_ratio * 10.0;
+        } else if (self.damage_warning_state == .idle) {
+            overlay_envelope = (fill_ratio - 0.89999998) * 10.0;
+        }
+
+        const phase = self.damage_gauge_runtime.pulse_progress * std.math.tau;
+        return overlay_envelope -
+            (((@sin(phase) + 1.0) * 0.5) * overlay_envelope * 0.5);
+    }
+
+    pub fn damageWarningActorAlpha(self: *const Runner) f32 {
+        return std.math.clamp(self.damage_warning_actor.alpha, 0.0, 1.0);
+    }
+
+    pub fn damageGaugeDisplayFill(self: *const Runner) f32 {
+        return std.math.clamp(self.damage_gauge_runtime.display_fill, 0.0, 1.0);
     }
 
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
@@ -2873,6 +3001,7 @@ pub const Runner = struct {
         if (self.invincible_ticks > 0) self.invincible_ticks -= 1;
         if (self.shot_cooldown_ticks > 0) self.shot_cooldown_ticks -= 1;
         if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
+        if (self.damage_gauge_runtime.skin_hold_ticks > 0) self.damage_gauge_runtime.skin_hold_ticks -= 1;
     }
 
     fn recordPowerupRing(self: *Runner) void {
@@ -6345,19 +6474,52 @@ test "invincible slug contact defeats slug instead of entering death" {
     try std.testing.expectEqual(@as(u32, slug_projectile_kill_score), runner.score.total);
 }
 
+test "warning actor follows the native solid and fade cadence" {
+    var runner = Runner{};
+    runner.startDamageWarningActor();
+
+    try std.testing.expectEqual(DamageWarningActorState.fade_cycle, runner.damage_warning_actor.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_warning_actor.progress, 0.0001);
+
+    const first_generation = runner.damage_warning_actor.sample_generation;
+    runner.updateDamageWarningActor();
+    try std.testing.expectEqual(DamageWarningActorState.solid, runner.damage_warning_actor.state);
+    try std.testing.expectEqual(first_generation +% 1, runner.damage_warning_actor.sample_generation);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_warning_actor.progress, 0.0001);
+
+    runner.updateDamageWarningActor();
+    try std.testing.expectApproxEqAbs(damage_warning_actor_solid_alpha, runner.damage_warning_actor.alpha, 0.0001);
+}
+
+test "damage gauge warning overlay follows display fill and pulse lanes" {
+    var runner = Runner{};
+    runner.damage_gauge_runtime.display_fill = 0.5;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damageGaugeWarningOverlayAlpha(), 0.0001);
+
+    runner.damage_gauge_runtime.display_fill = 0.95;
+    runner.damage_gauge_runtime.pulse_progress = 0.0;
+    try std.testing.expect(runner.damageGaugeWarningOverlayAlpha() > 0.0);
+
+    runner.damage_warning_state = .draining;
+    runner.damage_gauge_runtime.display_fill = 0.05;
+    try std.testing.expect(runner.damageGaugeWarningOverlayAlpha() > 0.0);
+}
+
 test "full damage enters warning fill and auto-drain" {
     var runner = Runner{};
     runner.damage_gauge = 1.0;
 
     runner.updateDamageWarning();
     try std.testing.expectEqual(DamageWarningState.filling, runner.damage_warning_state);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_warning_fill, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge_runtime.warning_transition_progress, 0.0001);
+    try std.testing.expectEqual(DamageWarningActorState.solid, runner.damage_warning_actor.state);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.damageGaugeDisplayFill(), 0.0001);
 
     for (0..6) |_| {
         runner.updateDamageWarning();
     }
     try std.testing.expectEqual(DamageWarningState.draining, runner.damage_warning_state);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_warning_fill, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage_gauge_runtime.warning_transition_progress, 0.0001);
 
     const gauge_before_drain = runner.damage_gauge;
     runner.updateDamageWarning();

@@ -137,8 +137,9 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 - [ ] Recover the real movement-state owner behind `play_movement_state_sound`
 - [ ] Recover the real row-event speech owner behind `voice 13`
-- [ ] Recover the real warning actor/controller behind `update_warning`
+- [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Recover collision/powerup family ownership so rings, upgrades, explode, health, parcel, and jetpack state changes stop sharing flattened app-side cue logic
+- [ ] Recover the remaining global-flag exits and `stop_warning_sample` handle semantics in the damage-warning owner
 
 ### Phase 5. Tighten gameplay runtime ownership
 

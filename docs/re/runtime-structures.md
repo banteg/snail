@@ -89,18 +89,22 @@ The inline controller at `player + 0x3c4` is now typed as `DamageGaugeController
 High-confidence current fields:
 
 - `+0x00`: `state`
-- `+0x10`: `transition_progress`
-- `+0x14`: `transition_step`
-- `+0x18`: `transition_counter`
+- `+0x04`: `pulse_progress`
+- `+0x08`: `pulse_step`
+- `+0x0c`: unknown byte gate
+- `+0x10`: `warning_transition_progress`
+- `+0x14`: `warning_transition_step`
+- `+0x18`: `skin_hold_ticks`
 - `+0x1c`: `fill`
 - `+0x20`: `display_fill`
-- `+0x24`: `hold_progress`
-- `+0x28`: `hold_step`
+- `+0x24`: `hit_flash_progress`
+- `+0x28`: `hit_flash_step`
 
 Current practical read:
 
 - `handle_subgoldy_collisions` feeds this controller through `apply_damage_gauge_delta(&player->damage_gauge, delta, force)`
 - `update_subgoldy` ticks it every frame through `update_damage_gauge(&player->damage_gauge)`
+- the controller owns a separate warning actor through `start_warning` / `update_warning` / `stop_warning`
 - the currently recovered deltas line up with collision branches:
   - ambient hazard path `+0.02`
   - salt contact `+0.02`

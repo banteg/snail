@@ -297,9 +297,9 @@ Status: `partial`
 Implemented now:
 
 - separate damage and jetpack controllers on the Zig side, matching the current Windows split
-- damage-gauge fill, warning, and drain behavior on the right general path
+- native-shaped damage-gauge display fill, pulse, warning-transition, and drain behavior
+- runner-owned warning actor cadence and `sfx 50` loop ownership instead of the old app-side `1.0s` timer
 - shipped `DamageGuage`, `DamageGuageFull`, `DamageGuageBright`, and `Warning` HUD art in live gameplay instead of the old generic gauge block
-- once-per-second postal warning sound playback while the warning actor is active
 - slug first-hit vs repeated-hit split
 - visible life seed `3`, bonus-life thresholds, and runner-owned Postal respawn consumption in the death/resurrect path
 - dedicated HUD damage gauge and postal life strip
@@ -307,7 +307,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- exact warning owner/controller object behavior beyond the current art/audio presentation
+- the remaining global-flag exits and `stop_warning_sample` handle semantics from `update_damage_gauge`
 - remaining hazard deltas and presentation details
 - full death/fall timing around these controllers
 

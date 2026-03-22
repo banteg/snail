@@ -1637,6 +1637,10 @@ fn nativeGameplayVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) 
     };
 }
 
+fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
+    return previous.damage_warning_actor.sample_generation != current.damage_warning_actor.sample_generation;
+}
+
 test "native gameplay voice cues fire on the recovered startup timer" {
     var previous = gameplay.Runner{};
     var current = previous;
@@ -1670,6 +1674,15 @@ test "native gameplay voice cues fire on the recovered startup timer" {
 
     previous = current;
     try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current));
+}
+
+test "native gameplay warning loop keys from the warning actor cadence" {
+    const previous = gameplay.Runner{};
+    var current = previous;
+    try std.testing.expect(!nativeGameplayWarningLoopTriggered(previous, current));
+
+    current.damage_warning_actor.sample_generation = 1;
+    try std.testing.expect(nativeGameplayWarningLoopTriggered(previous, current));
 }
 
 fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_runtime_kind: ?u8) bool {
@@ -2560,7 +2573,6 @@ const AppState = struct {
     simulation_clock: sim.FixedStepClock = sim.FixedStepClock.init(simulation_step_seconds),
     render_time_seconds: f64 = 0.0,
     gameplay_audio_variant_counter: u32 = 0,
-    gameplay_warning_sound_seconds: f32 = 0.0,
     game_phase: GamePhase = .boot,
     game_phase_ticks: u64 = 0,
     frontend_transition: FrontendTransition = .{},
@@ -4397,14 +4409,8 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.dying, .interrupt_current) catch {};
         }
 
-        if (current.damage_warning_state != .idle) {
-            self.gameplay_warning_sound_seconds += @floatCast(self.simulation_clock.step_seconds);
-            if (self.gameplay_warning_sound_seconds >= 1.0) {
-                self.gameplay_warning_sound_seconds -= 1.0;
-                self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
-            }
-        } else {
-            self.gameplay_warning_sound_seconds = 0.0;
+        if (nativeGameplayWarningLoopTriggered(previous, current)) {
+            self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
         }
 
         if (runner_input.fire and previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
@@ -9795,14 +9801,13 @@ fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner:
 
 fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
     const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
-    const fill_ratio = std.math.clamp(runner.damage_gauge, 0.0, 1.0);
-    const pulse = if (runner.damage_warning_state == .idle)
-        @as(f32, 0.0)
-    else
-        (@sin(@as(f32, @floatCast(state.render_time_seconds * 8.0))) + 1.0) * 0.5;
+    const fill_ratio = runner.damageGaugeDisplayFill();
+    const pulse = (@sin(runner.damage_gauge_runtime.pulse_progress * std.math.tau) + 1.0) * 0.5;
+    const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
+    const warning_actor_alpha = runner.damageWarningActorAlpha();
     const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
-    const warning_alpha: u8 = @intFromFloat(168.0 + 87.0 * pulse);
-    const bright_alpha: u8 = @intFromFloat(144.0 + 96.0 * pulse);
+    const warning_alpha: u8 = @intFromFloat(std.math.clamp(warning_actor_alpha, 0.0, 1.0) * 255.0);
+    const bright_alpha: u8 = @intFromFloat(std.math.clamp(bright_overlay_alpha, 0.0, 1.0) * 255.0);
 
     if (show_label) {
         drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
@@ -9829,7 +9834,7 @@ fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: 
             );
         }
     }
-    if (runner.damage_warning_state != .idle) {
+    if (bright_alpha > 0) {
         if (state.current_gameplay_sprites.damage_gauge_bright) |loaded_texture| {
             drawTextureLocalRect(
                 layout,
@@ -9841,6 +9846,8 @@ fn drawDamageGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: 
                 .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha },
             );
         }
+    }
+    if (warning_alpha > 0) {
         if (state.current_gameplay_sprites.warning) |loaded_texture| {
             drawTextureLocalRect(
                 layout,
