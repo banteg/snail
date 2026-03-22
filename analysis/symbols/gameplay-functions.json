@@ -172,6 +172,11 @@
       "description": "Records one delivered parcel on the gameplay row-event display controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives."
     },
     {
+      "address": "0x4050c0",
+      "name": "classify_archive_entry_extension",
+      "description": "Copies one archive entry's filename suffix into the caller buffer and returns the rebuild classifier id: `1` for `TGA`, `2` for `WAV`, `3` for `MP3`, otherwise `0`."
+    },
+    {
       "address": "0x405140",
       "name": "file_exists"
     },
