@@ -10852,7 +10852,11 @@ fn drawGameplayRuntimeActors(
             const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
             switch (sample.kind) {
                 .slug => drawGameplaySlugActor(state, loaded_track_preview, camera, global_row, lane_index),
-                .ring => drawGameplayRingActor(state, loaded_track_preview, camera, row_location, lane_index),
+                .ring => {
+                    if (shouldRenderStaticGameplayRing(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
+                        drawGameplayStaticRingActor(state, loaded_track_preview, camera, row_location, lane_index);
+                    }
+                },
                 .health, .jetpack, .attachment_probe, .attachment_entry, .trampoline, .garbage, .salt => {},
             }
             if (row_location.row.cells[lane_index] == '=') {
@@ -10887,6 +10891,11 @@ fn drawGameplayRuntimeActors(
         }
     }
 
+    for (runner.activeRuntimeRingEffects()) |effect| {
+        if (!shouldRenderGameplayRingEffect(runner, effect)) continue;
+        drawGameplayRuntimeRingEffectActor(state, camera, effect);
+    }
+
     for (runner.activeProjectiles()) |projectile| {
         drawGameplayProjectileActor(state, projectile);
     }
@@ -10913,6 +10922,19 @@ fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay.RuntimeH
 fn shouldRenderGameplayPickup(runner: gameplay.Runner, pickup: gameplay.RuntimePickup) bool {
     return pickup.world_position.z + 0.25 >= runner.row_position and
         pickup.world_position.z <= runner.row_position + 72.0;
+}
+
+fn shouldRenderGameplayRingEffect(runner: gameplay.Runner, effect: gameplay.RuntimeRingEffect) bool {
+    return effect.world_position.z + 0.25 >= runner.row_position and
+        effect.world_position.z <= runner.row_position + 72.0;
+}
+
+fn shouldRenderStaticGameplayRing(
+    preview: *const track.LoadedLevelPreview,
+    row_location: track.RowLocation,
+    runtime_tile_hint: ?u8,
+) bool {
+    return !gameplay.runtimeHandledRingAnnotation(runtime_tile_hint, preview.runtimeRowFlagsAt(row_location.global_row));
 }
 
 fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
@@ -11067,7 +11089,7 @@ fn drawGameplayJetpackPickupActor(
     drawGameplayBillboardTexture(loaded_texture.texture, pickup.world_position, 0.64, 0.88, camera, .white);
 }
 
-fn drawGameplayRingActor(
+fn drawGameplayStaticRingActor(
     state: *const AppState,
     preview: *const track.LoadedLevelPreview,
     camera: rl.Camera3D,
@@ -11082,6 +11104,30 @@ fn drawGameplayRingActor(
     else
         segment.RingKind.normal;
     const position = gameplayLaneWorldPosition(preview, row_location.global_row, lane_index, 0.72);
+    switch (ring_kind) {
+        .none => {},
+        .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46, 0.46, camera, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
+        },
+        .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.64, camera, .white);
+        },
+        .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72, 0.72, camera, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
+        },
+        .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5, 0.5, camera, .white);
+        },
+    }
+}
+
+fn drawGameplayRuntimeRingEffectActor(
+    state: *const AppState,
+    camera: rl.Camera3D,
+    effect: gameplay.RuntimeRingEffect,
+) void {
+    const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
+    const position = effect.world_position;
     switch (ring_kind) {
         .none => {},
         .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {

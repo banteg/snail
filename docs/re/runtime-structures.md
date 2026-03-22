@@ -322,6 +322,36 @@ Current practical read:
   - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
 - Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
 
+## Track Ring / Special-Effect Runtime
+
+The authored ring and special-effect pickups line up on a dedicated `2`-slot runtime bank rooted at `game + 0x35b78c`.
+
+High-confidence current fields:
+
+- `+0x10`: `world_position`
+- `+0x38`: `state`
+- `+0x3c`: `owner`
+- `+0x40`: `kind`
+- `+0x44`: `movement_flag_selector_snapshot`
+- `+0x19c`: `phase`
+- `+0x1a0`: `phase_step`
+
+Current practical read:
+
+- `initialize_runtime_pools_and_path_template_bank` seeds both slots through `initialize_track_ring_or_special_effect_runtime`
+- `update_subgame` dispatches authored `0x23` ring rows plus the ramp families `0x02..0x0a` into `spawn_track_ring_or_special_effect`
+- `spawn_track_ring_or_special_effect` seeds the slot kind, owner selector snapshot, world position, and the child particle family (`ParticleRing`, `ParticleExplode`, `ParticleSlow`)
+- `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
+  - `delta_z < 1.0`
+  - normalized distance `< 0.98`
+- the collision switch owns the ring-kind ladder:
+  - `1` -> score + `PW1`
+  - `2/6` -> score + `EXPLODERING` + `initialize_nuke`
+  - `3/7` -> negative motion-lane impulse + `SLOWRING`
+  - `4/5` -> optional voice + weapon-selector increment + `PW1..PW7`
+  - `8` -> weapon-selector increment + `PW1..PW7`
+- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, but the exact original ring bod anchor/layout fields behind `spawn_track_ring_or_special_effect` are still only approximated from the runtime target row/lane
+
 ## Garbage Hazard Runtime
 
 The Windows garbage hazard pool is now typed as `GarbageHazardRuntime`, and the earlier parcel labels on `0x408550`, `0x43f130`, and `0x43f200` were a bad read of this same family.

@@ -147,6 +147,7 @@ pub const RuntimeRingEffect = struct {
     row: usize,
     lane: usize,
     kind: u8,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
 pub const TrackParcelRuntime = struct {
@@ -691,6 +692,10 @@ fn nativeRingEventLabel(effect_kind: u8) ?segment.RingKind {
     };
 }
 
+pub fn nativeRuntimeRingKindLabel(effect_kind: u8) ?segment.RingKind {
+    return nativeRingEventLabel(effect_kind);
+}
+
 fn nativeRingEventScores(effect_kind: u8) bool {
     return switch (effect_kind) {
         1, 2, 4, 5, 6 => true,
@@ -710,6 +715,10 @@ fn nativeRingAnnotationHandledByRuntime(tile_type: ?u8, row_flags: u32) bool {
         0x08, 0x09, 0x0a => (row_flags & track.runtime_row_flag_ring_explode) != 0,
         else => false,
     };
+}
+
+pub fn runtimeHandledRingAnnotation(tile_type: ?u8, row_flags: u32) bool {
+    return nativeRingAnnotationHandledByRuntime(tile_type, row_flags);
 }
 
 fn requestedExplicitRuntimeRingKind(row_flags: u32) ?u8 {
@@ -1406,6 +1415,7 @@ pub const Runner = struct {
             self.refreshLiveRuntimeRingEffects(preview);
             self.processRuntimePickupCollisions(preview);
             self.processRuntimeHazardCollisions(preview);
+            self.processRuntimeRingEffectCollisions(preview);
             self.processVisitedRows(preview);
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
@@ -2156,10 +2166,6 @@ pub const Runner = struct {
             began_installed_attachment = self.tryBeginInstalledAttachmentFollow(preview, global_row, sample);
         }
 
-        if (self.consumeRuntimeRingEffect(global_row, sample.resolved_lane_index)) |native_ring_effect_kind| {
-            self.recordNativeRingEffect(preview, native_ring_effect_kind);
-        }
-
         if (sample.annotation) |annotation| {
             switch (annotation) {
                 .path => |path_name| {
@@ -2526,6 +2532,42 @@ pub const Runner = struct {
                 },
             }
             self.removeRuntimePickupAt(index);
+        }
+    }
+
+    // PORT(partial): native ring and special-effect pickups resolve from the live 2-slot
+    // runtime pool inside `handle_subgoldy_collisions`, not from row traversal. The runner
+    // now mirrors that ownership and the recovered `delta_z < 1.0 && distance < 0.98`
+    // collision gate, but it still seeds the slot anchor from the recovered runtime target
+    // row/lane instead of the original ring bod fields because the source row-point layout
+    // behind `spawn_track_ring_or_special_effect` is not fully recovered yet.
+    fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        const player_position = self.playerWorldPosition(preview);
+        var index: usize = 0;
+        while (index < self.active_runtime_ring_effect_count) {
+            const effect = self.active_runtime_ring_effects[index];
+            const delta_x = effect.world_position.x - player_position.x;
+            const delta_y = effect.world_position.y - player_position.y;
+            const delta_z = effect.world_position.z - player_position.z;
+            if (delta_z >= runtime_hazard_collision_z_tolerance) {
+                index += 1;
+                continue;
+            }
+
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            if (distance >= runtime_health_collision_distance_threshold) {
+                index += 1;
+                continue;
+            }
+
+            if (self.currentRuntimeSample(preview)) |sample| {
+                self.current_global_row = sample.global_row;
+                self.resolved_lane_index = sample.resolved_lane_index;
+            }
+
+            self.removeRuntimeRingEffectAt(index);
+            self.recordNativeRingEffect(preview, effect.kind);
+            return;
         }
     }
 
@@ -3982,7 +4024,7 @@ pub const Runner = struct {
                     const requested_kind = requestedExplicitRuntimeRingKind(row_flags) orelse continue;
                     const target_row = global_row;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(target_row, lane_index, self.spawnedRuntimeRingKind(requested_kind));
+                    self.addRuntimeRingEffect(preview, target_row, lane_index, self.spawnedRuntimeRingKind(requested_kind));
                     self.last_ring_spawn_z = @floatFromInt(global_row);
                 },
                 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
@@ -3993,7 +4035,7 @@ pub const Runner = struct {
                     if (requestedRampSpecialRuntimeRingKind(row_flags)) |requested_kind| {
                         const target_row = global_row + track.ramp_special_ring_forward_row_offset;
                         if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                        self.addRuntimeRingEffect(target_row, lane_index, requested_kind);
+                        self.addRuntimeRingEffect(preview, target_row, lane_index, requested_kind);
                         self.last_ring_spawn_z = @floatFromInt(target_row);
                         continue;
                     }
@@ -4003,7 +4045,7 @@ pub const Runner = struct {
 
                     const target_row = global_row + track.ramp_default_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(target_row, lane_index, self.spawnedRuntimeRingKind(4));
+                    self.addRuntimeRingEffect(preview, target_row, lane_index, self.spawnedRuntimeRingKind(4));
                     self.last_ring_spawn_z = source_z;
                 },
                 0x08, 0x09, 0x0a => {
@@ -4016,7 +4058,7 @@ pub const Runner = struct {
 
                     const target_row = global_row + track.ramp_explode_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(target_row, lane_index, 2);
+                    self.addRuntimeRingEffect(preview, target_row, lane_index, 2);
                     self.last_ring_spawn_z = source_z;
                 },
                 else => {},
@@ -4065,7 +4107,7 @@ pub const Runner = struct {
         self.active_runtime_pickup_count += 1;
     }
 
-    fn addRuntimeRingEffect(self: *Runner, row: usize, lane: usize, kind: u8) void {
+    fn addRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) void {
         if (kind == 0) return;
         for (0..self.active_runtime_ring_effect_count) |index| {
             const effect = self.active_runtime_ring_effects[index];
@@ -4077,6 +4119,7 @@ pub const Runner = struct {
             .row = row,
             .lane = lane,
             .kind = kind,
+            .world_position = initialRuntimeRingEffectWorldPosition(preview, row, lane, kind),
         };
         self.active_runtime_ring_effect_count += 1;
     }
@@ -4112,6 +4155,20 @@ pub const Runner = struct {
         return switch (kind) {
             .health => runtimeCellWorldPosition(preview, row, lane, 0.6),
             .jetpack => runtimeCellWorldPosition(preview, row, lane, 1.5),
+        };
+    }
+
+    fn initialRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
+        return runtimeCellWorldPosition(preview, row, lane, runtimeRingEffectYOffset(kind));
+    }
+
+    fn runtimeRingEffectYOffset(kind: u8) f32 {
+        return switch (nativeRingEventLabel(kind) orelse .normal) {
+            .normal => 0.72,
+            .powerup => 0.64,
+            .explode => 0.72,
+            .slow => 0.5,
+            .none => 0.72,
         };
     }
 
@@ -4174,19 +4231,12 @@ pub const Runner = struct {
         self.active_runtime_pickup_count -= 1;
     }
 
-    fn consumeRuntimeRingEffect(self: *Runner, row: usize, lane: usize) ?u8 {
-        for (0..self.active_runtime_ring_effect_count) |index| {
-            const effect = self.active_runtime_ring_effects[index];
-            if (effect.row != row or effect.lane != lane) continue;
-
-            var shift_index = index;
-            while (shift_index + 1 < self.active_runtime_ring_effect_count) : (shift_index += 1) {
-                self.active_runtime_ring_effects[shift_index] = self.active_runtime_ring_effects[shift_index + 1];
-            }
-            self.active_runtime_ring_effect_count -= 1;
-            return effect.kind;
+    fn removeRuntimeRingEffectAt(self: *Runner, index: usize) void {
+        var shift_index = index;
+        while (shift_index + 1 < self.active_runtime_ring_effect_count) : (shift_index += 1) {
+            self.active_runtime_ring_effects[shift_index] = self.active_runtime_ring_effects[shift_index + 1];
         }
-        return null;
+        self.active_runtime_ring_effect_count -= 1;
     }
 
     fn runtimeRingDefaultPassesGate(self: *Runner, runtime_build_flags: u32) bool {
@@ -6445,11 +6495,12 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     runner.row_position = 7.0;
     runner.refreshLiveRuntimeRingEffects(&fixture.preview);
 
-    runner.processRow(&fixture.preview, 7);
+    runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 0), runner.counters.ring_powerup);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
 
-    runner.processRow(&fixture.preview, 13);
+    runner.row_position = 13.0;
+    runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
     try std.testing.expectEqual(@as(u8, 1), runner.movement_flag_selector);
     try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
@@ -6466,7 +6517,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     powerup_runner.lane_center = 1.5;
     powerup_runner.row_position = 51.0;
     powerup_runner.refreshLiveRuntimeRingEffects(&powerup_fixture.preview);
-    powerup_runner.processRow(&powerup_fixture.preview, 51);
+    powerup_runner.processRuntimeRingEffectCollisions(&powerup_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), powerup_runner.counters.ring_powerup);
     try std.testing.expectEqual(@as(u32, 0), powerup_runner.score.total);
 
@@ -6478,7 +6529,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     slow_runner.lane_center = 4.5;
     slow_runner.row_position = 27.0;
     slow_runner.refreshLiveRuntimeRingEffects(&slow_fixture.preview);
-    slow_runner.processRow(&slow_fixture.preview, 27);
+    slow_runner.processRuntimeRingEffectCollisions(&slow_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), slow_runner.counters.ring_slow);
     try std.testing.expectEqual(slow_ring_duration_ticks, slow_runner.slow_ticks);
     try std.testing.expectEqual(@as(u32, 0), slow_runner.score.total);
@@ -6514,9 +6565,8 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     }
     try std.testing.expect(found_target_effect);
 
-    runner.current_global_row = 39;
-    runner.resolved_lane_index = 1;
-    runner.processRow(&preview, 39);
+    runner.row_position = 39.0;
+    runner.processRuntimeRingEffectCollisions(&preview);
 
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_explode);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
