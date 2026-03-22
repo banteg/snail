@@ -288,9 +288,34 @@
       "name": "initialize_runtime_pools_and_path_template_bank"
     },
     {
+      "address": "0x4084d0",
+      "name": "initialize_track_jetpack_pickup_runtime",
+      "description": "Constructs the single jetpack-pickup runtime record by seeding its shared bod header plus two embedded renderable bodies. `spawn_track_jetpack_pickup` uses the resulting `game->jetpack_pickup` lane at `0x355e64`, whose `0x19c` footprint matches the native `cRJetPack` size ledger."
+    },
+    {
+      "address": "0x408510",
+      "name": "initialize_track_health_pickup_runtime",
+      "description": "Constructs one health-pickup runtime slot by seeding the shared bod header and installing the pickup vtable. `spawn_track_health_pickup` allocates from the 8-slot pool at `0x356000`, whose total `0x3a0` footprint matches the native `cRSubHealth` size ledger."
+    },
+    {
+      "address": "0x408530",
+      "name": "initialize_slug_hazard_runtime",
+      "description": "Constructs one slug-hazard runtime slot by running the shared renderable-body constructor and installing the slug vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 8-slot slug bank whose total footprint matches the native `cRSlug` size ledger."
+    },
+    {
       "address": "0x408550",
       "name": "initialize_garbage_hazard",
       "description": "Constructs one garbage-hazard runtime object by running the shared body constructor and installing the cRSubGarbage vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 50-slot garbage pool that later feeds `spawn_track_garbage_hazard`."
+    },
+    {
+      "address": "0x408570",
+      "name": "initialize_track_ring_or_special_effect_runtime",
+      "description": "Constructs one authored-ring runtime slot by seeding the shared bod header and installing the ring-or-special-effect vtable. `spawn_track_ring_or_special_effect` allocates from the 2-slot pool at `0x35b78c` before initializing the child particle sprites."
+    },
+    {
+      "address": "0x408590",
+      "name": "initialize_track_row_runtime",
+      "description": "Constructs one runtime track-row record by seeding its shared bod header, installing the row vtable on the embedded renderable body, and clearing the per-row auxiliary bod. `initialize_runtime_pools_and_path_template_bank` uses it for the `0x5ccac8 + row * 0xf4` bank documented as the native runtime row grid."
     },
     {
       "address": "0x4085c0",
@@ -303,6 +328,11 @@
       "description": "Initializes one shared active-bod runtime header by clearing its list links and installing the common subtype callback table at `data_497338`."
     },
     {
+      "address": "0x408610",
+      "name": "initialize_sub_lazer_runtime",
+      "description": "Constructs one laser-projectile runtime slot by running the shared renderable-body constructor and installing the laser vtable. The 20-slot pool built by `initialize_runtime_pools_and_path_template_bank` totals `0xdc0`, matching the native `cRSubLazerManager` size ledger."
+    },
+    {
       "address": "0x408630",
       "name": "initialize_salt_hazard_runtime",
       "description": "Constructs one salt-hazard runtime slot by running the shared body constructor and installing the salt-hazard vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 40-slot array later reset by `initialize_salt_hazard_pool`."
@@ -311,6 +341,11 @@
       "address": "0x408650",
       "name": "initialize_fringe_object",
       "description": "Constructs one 0x38-byte fringe render object by clearing the shared object base and installing the fringe-object vtable. `initialize_runtime_pools_and_path_template_bank` uses it to seed the 7000-entry fringe-manager pool later consumed by `allocate_fringe_object`."
+    },
+    {
+      "address": "0x4086d0",
+      "name": "initialize_enemy_manager_runtime",
+      "description": "Constructs the embedded enemy-manager runtime object by seeding its visible bods and child renderable entries before the later gameplay reset in `initialize_enemy_manager`. Its `0x1804` footprint matches the native `cREnemyManager` size ledger from `construct_game_runtime`."
     },
     {
       "address": "0x408820",
