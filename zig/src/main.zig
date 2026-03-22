@@ -11076,7 +11076,7 @@ fn drawGameplayHealthPickupActor(
     pickup: gameplay.RuntimePickup,
 ) void {
     const loaded_texture = state.current_gameplay_sprites.health orelse return;
-    drawGameplayBillboardTexture(loaded_texture.texture, pickup.world_position, 0.52, 0.52, camera, .white);
+    drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, .white);
 }
 
 fn drawGameplayJetpackPickupActor(
@@ -11086,7 +11086,7 @@ fn drawGameplayJetpackPickupActor(
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_jetpack_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
-    drawGameplayBillboardTexture(loaded_texture.texture, pickup.world_position, 0.64, 0.88, camera, .white);
+    drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, .white);
 }
 
 fn drawGameplayStaticRingActor(

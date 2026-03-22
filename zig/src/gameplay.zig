@@ -141,6 +141,9 @@ pub const RuntimePickup = struct {
     lane: usize,
     kind: RuntimePickupKind,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_phase: f32 = 0.0,
+    presentation_phase_step: f32 = 0.0,
 };
 
 pub const RuntimeRingEffect = struct {
@@ -481,6 +484,8 @@ const runtime_health_collision_distance_threshold: f32 = 0.98;
 const runtime_jetpack_collision_distance_threshold: f32 = 3.0;
 const runtime_health_collision_y_tolerance: f32 = 0.4;
 const runtime_hazard_collision_z_tolerance: f32 = 1.0;
+const runtime_pickup_phase_step: f32 = 0.016666668;
+const runtime_health_pickup_bob_height: f32 = 0.3;
 const garbage_burst_side_bias_scale: f32 = 0.2;
 const garbage_burst_gravity_scale: f32 = -0.01;
 const garbage_burst_teardown_y: f32 = -10.0;
@@ -1413,6 +1418,7 @@ pub const Runner = struct {
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
             self.refreshLiveRuntimeRingEffects(preview);
+            self.updateRuntimePickups();
             self.processRuntimePickupCollisions(preview);
             self.processRuntimeHazardCollisions(preview);
             self.processRuntimeRingEffectCollisions(preview);
@@ -2490,8 +2496,9 @@ pub const Runner = struct {
     // PORT(partial): Windows resolves health and jetpack against their live runtime pickup
     // slots in `handle_subgoldy_collisions`, not by consuming authored rows on crossing.
     // The runner now mirrors the recovered distance and height gates from those runtime
-    // slots, but still omits the health particle bods and the jetpack pickup's unresolved
-    // ramp-side lateral spawn bias because those presentation owners are not recovered yet.
+    // slots, the health pickup bob lane, and the jetpack pickup's ramp-side spawn bias,
+    // but it still omits the dedicated health particle bod owner and the broader hover
+    // presentation/runtime around `cRSubHover`.
     fn processRuntimePickupCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         if (player_position.y < attachment_entry_rider_height) return;
@@ -4097,12 +4104,16 @@ pub const Runner = struct {
         }
         if (self.active_runtime_pickup_count >= self.active_runtime_pickups.len) return;
         if (self.activeRuntimePickupCountForKind(kind) >= runtimePickupCapacity(kind)) return;
+        const world_position = initialRuntimePickupWorldPosition(preview, row, lane, kind);
 
         self.active_runtime_pickups[self.active_runtime_pickup_count] = .{
             .row = row,
             .lane = lane,
             .kind = kind,
-            .world_position = initialRuntimePickupWorldPosition(preview, row, lane, kind),
+            .world_position = world_position,
+            .presentation_position = world_position,
+            .presentation_phase = initialRuntimePickupPresentationPhase(row, kind),
+            .presentation_phase_step = initialRuntimePickupPresentationPhaseStep(kind),
         };
         self.active_runtime_pickup_count += 1;
     }
@@ -4154,8 +4165,78 @@ pub const Runner = struct {
     fn initialRuntimePickupWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimePickupKind) rl.Vector3 {
         return switch (kind) {
             .health => runtimeCellWorldPosition(preview, row, lane, 0.6),
-            .jetpack => runtimeCellWorldPosition(preview, row, lane, 1.5),
+            .jetpack => runtimeJetpackPickupWorldPosition(preview, row, lane),
         };
+    }
+
+    fn runtimeJetpackPickupWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize) rl.Vector3 {
+        var position = runtimeCellWorldPosition(preview, row, lane, 1.5);
+        position.x += runtimeJetpackPickupLateralBias(preview, row, lane);
+        return position;
+    }
+
+    fn runtimeJetpackPickupLateralBias(preview: *const track.LoadedLevelPreview, row: usize, lane: usize) f32 {
+        const edge_mask = preview.runtimeEdgeMaskAt(row, lane) orelse 0;
+        return runtimeJetpackPickupLateralBiasFromContext(
+            edge_mask & 0x07,
+            runtimeTileOrZero(preview, row, lane, -2),
+            runtimeTileOrZero(preview, row, lane, -1),
+            runtimeTileOrZero(preview, row, lane, 1),
+            runtimeTileOrZero(preview, row, lane, 2),
+        );
+    }
+
+    fn runtimeJetpackPickupLateralBiasFromContext(
+        edge_mask_low_bits: u8,
+        lane_minus_2_tile: u8,
+        lane_minus_1_tile: u8,
+        lane_plus_1_tile: u8,
+        lane_plus_2_tile: u8,
+    ) f32 {
+        if (edge_mask_low_bits == 3 and lane_minus_1_tile == 0x0e and lane_plus_2_tile == 0x0e) {
+            return 0.5;
+        }
+        if (edge_mask_low_bits == 4 and lane_minus_2_tile == 0x0e and lane_plus_1_tile == 0x0e) {
+            return -0.5;
+        }
+        return 0.0;
+    }
+
+    fn runtimeTileOrZero(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, lane_offset: i32) u8 {
+        const source_lane = @as(i32, @intCast(lane));
+        const target_lane = source_lane + lane_offset;
+        if (target_lane < 0) return 0;
+        const lane_index: usize = @intCast(target_lane);
+        return preview.runtimeTileAt(row, lane_index) orelse 0;
+    }
+
+    fn initialRuntimePickupPresentationPhase(row: usize, kind: RuntimePickupKind) f32 {
+        return switch (kind) {
+            .health => if ((row & 1) == 0) 0.5 else 0.0,
+            .jetpack => 0.0,
+        };
+    }
+
+    fn initialRuntimePickupPresentationPhaseStep(kind: RuntimePickupKind) f32 {
+        return switch (kind) {
+            .health => runtime_pickup_phase_step,
+            .jetpack => 0.0,
+        };
+    }
+
+    fn updateRuntimePickups(self: *Runner) void {
+        for (0..self.active_runtime_pickup_count) |index| {
+            var pickup = &self.active_runtime_pickups[index];
+            pickup.presentation_position = pickup.world_position;
+            switch (pickup.kind) {
+                .health => {
+                    pickup.presentation_phase = @mod(pickup.presentation_phase + pickup.presentation_phase_step, 1.0);
+                    pickup.presentation_position.y = pickup.world_position.y +
+                        (@sin(pickup.presentation_phase * std.math.tau) + 1.0) * runtime_health_pickup_bob_height;
+                },
+                .jetpack => {},
+            }
+        }
     }
 
     fn initialRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
@@ -6279,6 +6360,46 @@ test "runtime health pickup collides by distance before exact row crossing" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.health_pickups);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage_gauge, 0.0001);
     try std.testing.expectEqualStrings("health_pickup", runner.recentEventLabel());
+}
+
+test "runtime health pickup keeps native bob phase and presentation lift" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const health = findFirstGameplayCell(&fixture.preview, .health).?;
+    runner.addRuntimePickup(&fixture.preview, health.row, health.lane, .health);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimePickups().len);
+    const base_position = runner.activeRuntimePickups()[0].world_position;
+    const initial_phase: f32 = if ((health.row & 1) == 0) 0.5 else 0.0;
+    runner.updateRuntimePickups();
+
+    const pickup = runner.activeRuntimePickups()[0];
+    const expected_phase = @mod(initial_phase + runtime_pickup_phase_step, 1.0);
+    const expected_y = base_position.y + (@sin(expected_phase * std.math.tau) + 1.0) * runtime_health_pickup_bob_height;
+    try std.testing.expectApproxEqAbs(expected_phase, pickup.presentation_phase, 0.0001);
+    try std.testing.expectApproxEqAbs(base_position.x, pickup.presentation_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_y, pickup.presentation_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(base_position.z, pickup.presentation_position.z, 0.0001);
+}
+
+test "runtime jetpack pickup lateral bias follows native edge and neighbor checks" {
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.5),
+        Runner.runtimeJetpackPickupLateralBiasFromContext(3, 0, 0x0e, 0, 0x0e),
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, -0.5),
+        Runner.runtimeJetpackPickupLateralBiasFromContext(4, 0x0e, 0, 0x0e, 0),
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        @as(f32, 0.0),
+        Runner.runtimeJetpackPickupLateralBiasFromContext(3, 0, 0, 0, 0x0e),
+        0.0001,
+    );
 }
 
 test "runtime jetpack pickup collides by distance before exact row crossing" {

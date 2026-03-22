@@ -263,6 +263,8 @@ Implemented now:
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
 - parcel pickup no longer consumes authored row annotations directly; the runner now matches `handle_subgoldy_collisions` by collecting only from the live 50-slot parcel runtime with the recovered `delta_z < 1.0` and normalized-distance `< 1.24` checks
 - health and jetpack pickup no longer consume authored rows directly; the runner now keeps live runtime pickup slots, renders those slots instead of static row billboards, and resolves collection from the recovered `handle_subgoldy_collisions` distance gates before exact row crossing
+- health pickup presentation now follows the recovered runtime slot phase lane instead of staying static: the live sprite bobs with the native `phase += 1/60` and `base_y + (sin(phase * tau) + 1.0) * 0.3` update, while collision still reads the slot's base world position
+- jetpack pickup spawn now uses the recovered ramp-side lateral bias from `spawn_track_jetpack_pickup` instead of always centering on the source cell
 - ring and special-effect pickups no longer resolve from `processRow()` row traversal; the runner now keeps live runtime ring slots, renders those slots instead of static runtime-handled ring billboards, and resolves collection from the recovered `handle_subgoldy_collisions` `delta_z < 1.0` and normalized-distance `< 0.98` gate before exact row crossing
 - health pickup no longer lands silently; the app now uses the shared smoke-sprite effect lane to reproduce the native `health_collect_particles` burst shape instead of leaving that aftermath empty
 - parcel pickup no longer collapses directly into parcel delivery score/count; collected parcels now stay inside the live runtime slot for the recovered `state 4/5` home leg, and the row-event controller now stages a fresh `state 6/7` delivery parcel before `parcel_register` lands
@@ -286,7 +288,7 @@ Still missing or approximate:
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
-- the remaining health-collect sprite-bod ownership and the jetpack pickup's ramp-side lateral spawn bias from `spawn_track_jetpack_pickup`
+- the remaining health-collect sprite-bod ownership and the surrounding `cRSubHover` / jetpack presentation behavior beyond the now-ported ramp-bias spawn lane
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards
 - the exact input-controller bit source behind `gate_18`; the port now arms the row-event confirm gate from gameplay confirm input and preserves the late completion fast-forward lane, but the original controller-owner split is still not named literally
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details

@@ -317,6 +317,10 @@ Current practical read:
 - `spawn_track_health_pickup` populates `health_pickups[i]`
 - `spawn_track_jetpack_pickup` populates the single `jetpack_pickup` slot
 - both helpers lift the spawn point above the authored floor height, attach a sprite using `player->player_slot`, and store the source runtime cell
+- health seeds a parity-based `phase_offset` (`0.0` on odd `z`, `0.5` on even `z`) plus a `1/60` phase step, and `update_track_health_pickup` applies the native sprite-only bob `base_y + (sin(phase * tau) + 1.0) * 0.3`
+- jetpack seeds the same source-cell/parity lane but also applies the native ramp-side lateral bias at spawn time:
+  - `+0.5` when `edge_mask & 7 == 3` and neighbor tiles `(lane - 1, lane + 2)` are both `0x0e`
+  - `-0.5` when `edge_mask & 7 == 4` and neighbor tiles `(lane - 2, lane + 1)` are both `0x0e`
 - `handle_subgoldy_collisions` reads the same runtime slots back with pickup-specific gates:
   - health: `player_world_y >= 0.49`, `delta_z < 1.0`, `abs(delta_y) < 0.4`, normalized distance `< 0.98`
   - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
