@@ -1282,6 +1282,41 @@ const ResultReturnTarget = enum {
     thanks_screen,
 };
 
+const OuterBridgeOpcode = enum(u8) {
+    destroy_return = 26,
+    rebuild_return = 27,
+    rebuild_clear_replay_return = 28,
+    init_thanks_screen = 29,
+    update_thanks_screen = 30,
+};
+
+const RouteMapBridgeTarget = struct {
+    mode: FrontendLevelMode,
+    screen_mode: RouteMapScreenMode,
+    start_route_override: ?usize = null,
+};
+
+const ReplayLevelBridgeTarget = struct {
+    mode: FrontendLevelMode,
+    level_index: usize,
+    selected_level_record_override: ?SelectedLevelRecordOverride = null,
+    selected_level_record_source: ?SelectedLevelRecordSource = null,
+};
+
+const FrontendBridgeTarget = union(enum) {
+    main_menu,
+    new_game_menu: NewGameMenuItem,
+    route_map: RouteMapBridgeTarget,
+    high_scores_menu: high_score.Mode,
+    replay_current_level: ReplayLevelBridgeTarget,
+    thanks_screen,
+};
+
+const OuterBridgeRequest = struct {
+    opcode: OuterBridgeOpcode,
+    target: FrontendBridgeTarget,
+};
+
 const RunOutcome = enum {
     completed,
     failed,
@@ -2248,6 +2283,49 @@ fn defaultRouteMapScreenMode(mode: FrontendLevelMode) RouteMapScreenMode {
     };
 }
 
+fn newGameMenuItemForBridgeMode(mode: ?FrontendLevelMode) NewGameMenuItem {
+    return switch (mode orelse .postal) {
+        .tutorial => .tutorial,
+        .postal => .postal_mode,
+        .time_trial => .time_trial,
+        .challenge => .challenge_mode,
+    };
+}
+
+fn bridgeTargetForReplaySource(source: SelectedLevelRecordSource, active_level_index: usize) FrontendBridgeTarget {
+    return switch (source) {
+        .completion => .{ .route_map = .{
+            .mode = .time_trial,
+            .screen_mode = defaultRouteMapScreenMode(.time_trial),
+            .start_route_override = active_level_index,
+        } },
+        .postal => .{ .high_scores_menu = .postal },
+        .challenge => .{ .high_scores_menu = .challenge },
+    };
+}
+
+fn preservedFrontendOwnerForLevelLaunch(
+    mode: FrontendLevelMode,
+    level_index: usize,
+    selected_level_record_source: ?SelectedLevelRecordSource,
+) FrontendBridgeTarget {
+    if (selected_level_record_source) |source| {
+        return bridgeTargetForReplaySource(source, level_index);
+    }
+
+    return switch (mode) {
+        .postal => .{ .route_map = .{
+            .mode = .postal,
+            .screen_mode = defaultRouteMapScreenMode(.postal),
+        } },
+        .time_trial => .{ .route_map = .{
+            .mode = .time_trial,
+            .screen_mode = defaultRouteMapScreenMode(.time_trial),
+        } },
+        .challenge, .tutorial => .{ .new_game_menu = newGameMenuItemForBridgeMode(mode) },
+    };
+}
+
 fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
     return switch (index) {
         0 => .high_scores_back,
@@ -2538,6 +2616,7 @@ const AppState = struct {
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
+    preserved_frontend_owner: FrontendBridgeTarget = .main_menu,
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
@@ -3507,6 +3586,45 @@ const AppState = struct {
             rl.stopSound(sound.sound);
             rl.playSound(sound.sound);
         }
+    }
+
+    fn readPressedFrontendWidgetShortcutCode(_: *const AppState) ?u8 {
+        // PORT(partial): this currently implements only the native text-input codes that
+        // recovered widget shortcuts actually use in the shipped front-end: Escape (`11`),
+        // Enter (`5` / `6`), and lowercase `o` (`111`).
+        if (rl.isKeyPressed(.escape)) return 11;
+        if (rl.isKeyPressed(.enter)) {
+            return if (rl.isKeyDown(.left_control) or rl.isKeyDown(.right_control)) 6 else 5;
+        }
+        if (rl.isKeyPressed(.o)) return 111;
+        return null;
+    }
+
+    fn frontendShortcutActivationForCode(self: *const AppState, code: u8) ?FrontendQueuedAction {
+        return switch (self.game_phase) {
+            .pause_menu => switch (code) {
+                11 => .{ .pause_menu = .end_game },
+                111 => .{ .pause_menu = .options },
+                5 => .{ .pause_menu = .@"resume" },
+                else => null,
+            },
+            .high_scores_menu => if (self.postLevelHighScoreContext() != null) switch (code) {
+                11 => .{ .post_level_high_scores = .cancel },
+                5 => .{ .post_level_high_scores = .submit },
+                else => null,
+            } else null,
+            else => null,
+        };
+    }
+
+    fn handleFrontendWidgetShortcutInput(self: *AppState) !bool {
+        if (self.frontend_transition.blocksInput()) return false;
+        if (self.pending_frontend_activation != null) return false;
+        const code = self.readPressedFrontendWidgetShortcutCode() orelse return false;
+        const action = self.frontendShortcutActivationForCode(code) orelse return false;
+        self.noteFrontendKeyboardNavigation();
+        self.queueFrontendActivation(action);
+        return true;
     }
 
     fn updateFrontendWidgetAnimations(self: *AppState) void {
@@ -4540,6 +4658,8 @@ const AppState = struct {
     }
 
     fn handleGameInput(self: *AppState) !void {
+        if (try self.handleFrontendWidgetShortcutInput()) return;
+
         if (rl.isKeyPressed(.escape)) {
             switch (self.game_phase) {
                 .level => if (!self.completionScreenOverlayActive()) try self.enterPauseMenu(),
@@ -5046,58 +5166,149 @@ const AppState = struct {
         try self.enterGamePhase(.level);
     }
 
-    fn abandonRunReturnTarget(self: *const AppState) ResultReturnTarget {
+    fn outerBridgeRequestForAbandonActiveRun(self: *const AppState) OuterBridgeRequest {
         if (self.selectedReplayPlaybackActive()) {
-            const source = self.selected_level_record_source orelse return .main_menu;
-            return resultReturnTargetForSelectedReplaySource(source);
-        }
-
-        if (self.active_frontend_mode) |mode| {
-            return switch (mode) {
-                .postal => .postal_route_map,
-                .time_trial => .time_trial_route_map,
-                .challenge, .tutorial => .main_menu,
+            const source = self.selected_level_record_source orelse return .{
+                .opcode = .destroy_return,
+                .target = .main_menu,
+            };
+            return .{
+                .opcode = .rebuild_clear_replay_return,
+                .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
             };
         }
 
-        return .main_menu;
+        return .{
+            .opcode = .destroy_return,
+            .target = self.preserved_frontend_owner,
+        };
+    }
+
+    fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
+        return switch (result.return_target) {
+            .main_menu => .{
+                .opcode = .destroy_return,
+                .target = .main_menu,
+            },
+            .new_game_menu => .{
+                .opcode = .destroy_return,
+                .target = .{ .new_game_menu = newGameMenuItemForBridgeMode(result.mode) },
+            },
+            .postal_route_map => .{
+                .opcode = .destroy_return,
+                .target = .{ .route_map = .{
+                    .mode = .postal,
+                    .screen_mode = .post_completion_exit,
+                } },
+            },
+            .time_trial_route_map => .{
+                .opcode = if (self.selectedReplayPlaybackActive())
+                    .rebuild_clear_replay_return
+                else
+                    .destroy_return,
+                .target = .{ .route_map = .{
+                    .mode = .time_trial,
+                    .screen_mode = defaultRouteMapScreenMode(.time_trial),
+                    .start_route_override = if (self.selectedReplayPlaybackActive())
+                        self.active_frontend_level_index
+                    else
+                        null,
+                } },
+            },
+            .high_scores_menu => .{
+                .opcode = if (self.selectedReplayPlaybackActive())
+                    .rebuild_clear_replay_return
+                else
+                    .destroy_return,
+                .target = .{ .high_scores_menu = if (self.selected_level_record_source) |source|
+                    switch (source) {
+                        .postal => .postal,
+                        .challenge => .challenge,
+                        .completion => result.high_score_mode orelse .postal,
+                    }
+                else
+                    result.high_score_mode orelse .postal },
+            },
+            .replay_current_level => blk: {
+                if (self.selected_level_record_override) |record| {
+                    break :blk .{
+                        .opcode = .rebuild_return,
+                        .target = .{ .replay_current_level = .{
+                            .mode = record.mode,
+                            .level_index = record.level_index,
+                            .selected_level_record_override = record,
+                            .selected_level_record_source = self.selected_level_record_source,
+                        } },
+                    };
+                }
+                if (result.mode) |mode| {
+                    break :blk .{
+                        .opcode = .rebuild_return,
+                        .target = .{ .replay_current_level = .{
+                            .mode = mode,
+                            .level_index = self.active_frontend_level_index,
+                        } },
+                    };
+                }
+                break :blk .{
+                    .opcode = .destroy_return,
+                    .target = .main_menu,
+                };
+            },
+            .thanks_screen => .{
+                .opcode = .init_thanks_screen,
+                .target = .thanks_screen,
+            },
+        };
+    }
+
+    fn applyOuterBridgeTeardown(self: *AppState, opcode: OuterBridgeOpcode) !void {
+        self.active_frontend_mode = null;
+        self.active_frontend_level_index = 0;
+        if (opcode == .rebuild_clear_replay_return) {
+            try self.setSelectedLevelRecordContext(null, null);
+        }
+    }
+
+    fn dispatchOuterBridgeRequest(self: *AppState, request: OuterBridgeRequest) !void {
+        try self.applyOuterBridgeTeardown(request.opcode);
+
+        switch (request.target) {
+            .main_menu => try self.enterGamePhase(.main_menu),
+            .new_game_menu => |item| {
+                self.new_game_menu_index = newGameMenuIndexForItem(item);
+                try self.enterGamePhase(.new_game_menu);
+            },
+            .route_map => |target| {
+                self.start_route_index_override = target.start_route_override;
+                try self.enterRouteMapMenuWithScreenMode(target.mode, target.screen_mode);
+            },
+            .high_scores_menu => |mode| {
+                self.high_scores_menu_index = highScoreModeIndex(mode);
+                try self.enterGamePhase(.high_scores_menu);
+            },
+            .replay_current_level => |target| {
+                try self.beginFrontendLevelPath(
+                    target.mode,
+                    target.level_index,
+                    target.selected_level_record_override,
+                    target.selected_level_record_source,
+                );
+            },
+            .thanks_screen => try self.enterGamePhase(.thanks_screen),
+        }
     }
 
     fn abandonActiveRun(self: *AppState) !void {
         self.pending_run_result = null;
         self.clearPostLevelHighScoreEntry();
-
-        switch (self.abandonRunReturnTarget()) {
-            .postal_route_map => return self.enterRouteMapMenu(.postal),
-            .time_trial_route_map => {
-                if (self.selectedReplayPlaybackActive()) {
-                    self.start_route_index_override = self.active_frontend_level_index;
-                }
-                return self.enterRouteMapMenu(.time_trial);
-            },
-            .high_scores_menu => {
-                if (self.selected_level_record_source) |source| {
-                    switch (source) {
-                        .postal => self.high_scores_menu_index = highScoreModeIndex(.postal),
-                        .challenge => self.high_scores_menu_index = highScoreModeIndex(.challenge),
-                        .completion => {},
-                    }
-                }
-                try self.setSelectedLevelRecordContext(null, null);
-                return self.enterGamePhase(.high_scores_menu);
-            },
-            .main_menu => {},
-            .new_game_menu, .replay_current_level, .thanks_screen => {},
-        }
-
-        self.active_frontend_mode = null;
-        self.active_frontend_level_index = 0;
-        try self.enterGamePhase(.main_menu);
+        try self.dispatchOuterBridgeRequest(self.outerBridgeRequestForAbandonActiveRun());
     }
 
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
+        self.preserved_frontend_owner = .main_menu;
         try self.setSelectedLevelRecordContext(null, null);
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
@@ -5129,6 +5340,7 @@ const AppState = struct {
         try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_source);
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
+        self.preserved_frontend_owner = preservedFrontendOwnerForLevelLaunch(mode, level_index, selected_level_record_source);
         self.seed_level_intro_cutscene = true;
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
@@ -5856,32 +6068,7 @@ const AppState = struct {
         self.pending_run_result = null;
         self.completion_overlay_active = false;
         self.preserve_completion_screen_reveal_on_enter = false;
-
-        switch (result.return_target) {
-            .main_menu => try self.enterGamePhase(.main_menu),
-            .new_game_menu => try self.returnToNewGameMenu(.route_map_menu),
-            // PORT(verified): Windows re-enters the postal Star Map through the special
-            // `initialize_galaxy` mode `1` after a completed route. That path keeps the
-            // current route card open and relabels the bottom control to `Exit`.
-            .postal_route_map => try self.enterRouteMapMenuWithScreenMode(.postal, .post_completion_exit),
-            .time_trial_route_map => {
-                if (self.selectedReplayPlaybackActive()) {
-                    self.start_route_index_override = self.active_frontend_level_index;
-                }
-                try self.enterRouteMapMenu(.time_trial);
-            },
-            .high_scores_menu => {
-                try self.setSelectedLevelRecordContext(null, null);
-                try self.enterGamePhase(.high_scores_menu);
-            },
-            .thanks_screen => try self.enterGamePhase(.thanks_screen),
-            .replay_current_level => if (self.selected_level_record_override) |record|
-                try self.beginFrontendLevelPath(record.mode, record.level_index, record, self.selected_level_record_source)
-            else if (result.mode) |mode|
-                try self.enterFrontendLevelPath(mode, self.active_frontend_level_index)
-            else
-                try self.enterGamePhase(.main_menu),
-        }
+        try self.dispatchOuterBridgeRequest(self.outerBridgeRequestForPendingRunResult(result));
     }
 
     fn postLevelHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
@@ -11658,7 +11845,44 @@ test "selected replay return targets follow the launch surface" {
     );
 }
 
-test "abandon run return target follows replay-backed launch surfaces" {
+test "preserved frontend owner follows the native launch surface" {
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .route_map = .{
+            .mode = .postal,
+            .screen_mode = .normal,
+        } },
+        preservedFrontendOwnerForLevelLaunch(.postal, 1, null),
+    );
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .route_map = .{
+            .mode = .time_trial,
+            .screen_mode = .replay,
+        } },
+        preservedFrontendOwnerForLevelLaunch(.time_trial, 3, null),
+    );
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .new_game_menu = .challenge_mode },
+        preservedFrontendOwnerForLevelLaunch(.challenge, 0, null),
+    );
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .new_game_menu = .tutorial },
+        preservedFrontendOwnerForLevelLaunch(.tutorial, 0, null),
+    );
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .high_scores_menu = .postal },
+        preservedFrontendOwnerForLevelLaunch(.postal, 2, .{ .postal = 2 }),
+    );
+    try std.testing.expectEqualDeep(
+        FrontendBridgeTarget{ .route_map = .{
+            .mode = .time_trial,
+            .screen_mode = .replay,
+            .start_route_override = 7,
+        } },
+        preservedFrontendOwnerForLevelLaunch(.time_trial, 7, .{ .completion = 3 }),
+    );
+}
+
+test "abandon run bridge request follows replay-backed launch surfaces" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -11669,36 +11893,161 @@ test "abandon run return target follows replay-backed launch surfaces" {
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
     state.selected_level_record_source = .{ .challenge = 2 };
-    state.active_frontend_mode = .challenge;
-    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, state.abandonRunReturnTarget());
+    state.active_frontend_level_index = 2;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_clear_replay_return,
+            .target = .{ .high_scores_menu = .challenge },
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
 
     state.selected_level_record_source = .{ .completion = 7 };
-    state.active_frontend_mode = .time_trial;
-    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, state.abandonRunReturnTarget());
+    state.active_frontend_level_index = 7;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_clear_replay_return,
+            .target = .{ .route_map = .{
+                .mode = .time_trial,
+                .screen_mode = .replay,
+                .start_route_override = 7,
+            } },
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
 }
 
-test "abandon run return target falls back to the active frontend mode" {
+test "abandon run bridge request falls back to the preserved frontend owner" {
     var state: AppState = undefined;
     state.selected_replay_cache = null;
     state.selected_level_record_source = null;
+    state.preserved_frontend_owner = .{ .route_map = .{
+        .mode = .postal,
+        .screen_mode = .normal,
+    } };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .route_map = .{
+                .mode = .postal,
+                .screen_mode = .normal,
+            } },
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
 
-    state.active_frontend_mode = .postal;
-    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, state.abandonRunReturnTarget());
+    state.preserved_frontend_owner = .{ .new_game_menu = .challenge_mode };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .challenge_mode },
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
 
-    state.active_frontend_mode = .time_trial;
-    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, state.abandonRunReturnTarget());
-
-    state.active_frontend_mode = .challenge;
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, state.abandonRunReturnTarget());
-
-    state.active_frontend_mode = null;
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, state.abandonRunReturnTarget());
+    state.preserved_frontend_owner = .main_menu;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .main_menu,
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
 }
 
 test "final postal completion returns through the thanks screen" {
     try std.testing.expectEqual(ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
     try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
     try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x33, 0x33));
+}
+
+test "pending run result maps to explicit outer bridge opcodes" {
+    var state: AppState = undefined;
+    state.selected_level_record_source = null;
+    state.selected_replay_cache = null;
+    state.active_frontend_level_index = 4;
+    state.selected_level_record_override = null;
+
+    var result = PendingRunResult{
+        .level_name = "x",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 0,
+        .score_is_partial = false,
+        .return_target = .new_game_menu,
+    };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .postal_mode },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    result.return_target = .thanks_screen;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .init_thanks_screen,
+            .target = .thanks_screen,
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    result.return_target = .replay_current_level;
+    result.mode = .challenge;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_return,
+            .target = .{ .replay_current_level = .{
+                .mode = .challenge,
+                .level_index = 4,
+            } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
+test "frontend widget shortcut codes follow the recovered pause and post-score widgets" {
+    var state: AppState = undefined;
+    state.game_phase = .pause_menu;
+    state.pending_run_result = null;
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .pause_menu = .end_game },
+        state.frontendShortcutActivationForCode(11).?,
+    );
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .pause_menu = .options },
+        state.frontendShortcutActivationForCode(111).?,
+    );
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .pause_menu = .@"resume" },
+        state.frontendShortcutActivationForCode(5).?,
+    );
+
+    state.game_phase = .high_scores_menu;
+    state.pending_run_result = .{
+        .level_name = "x",
+        .mode = .postal,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 0,
+        .score_is_partial = false,
+        .high_score_mode = .postal,
+        .high_score_rank = 0,
+        .return_target = .postal_route_map,
+    };
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .post_level_high_scores = .cancel },
+        state.frontendShortcutActivationForCode(11).?,
+    );
+    try std.testing.expectEqualDeep(
+        FrontendQueuedAction{ .post_level_high_scores = .submit },
+        state.frontendShortcutActivationForCode(5).?,
+    );
+    try std.testing.expectEqual(@as(?FrontendQueuedAction, null), state.frontendShortcutActivationForCode(111));
 }
 
 test "completion reveal stages the bonus line before continue" {

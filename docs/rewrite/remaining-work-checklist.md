@@ -50,7 +50,7 @@ Practical impact:
 
 - respawn vs final loss vs successful completion still cross the app/runtime boundary too loosely
 - challenge, time-trial, and replay-sensitive return routing are still not literal
-- the current completion/death work is better than before, but it still lives on top of a provisional outer bridge
+- the current completion/death work now runs through one explicit app-side bridge request lane, but the preserved-owner writer and full Windows outer controller are still missing
 
 ### 2. Attachment follow semantics
 
@@ -113,8 +113,9 @@ Work this top-down unless a new runtime capture invalidates the order.
   - current static dead end: a shallow BN sweep of the front-end cluster only exposed that read, not a writer, and the earlier `0x40775c` hit was just data
   - stronger narrowing: `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write active-state or replay-launch scratch globals, but none of them surfaced the preserved-owner writer either
   - likely next step: trace `[controller + 0x98]`, `data_4df904 + 110`, `+119190`, `+4299515`, `+4299516`, and `+17198056/+17198057` together in one Windows session
-- [ ] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
-- [ ] Make completion, respawn, final loss, and replay exits all route through that same explicit bridge
+- [x] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
+  - current port shape: result exits and abandon exits now route through one `OuterBridgeRequest` lane with native opcode names plus a preserved launch-surface owner captured on level entry
+- [ ] Finish moving respawn and any remaining post-overlay/thanks-for-playing updates onto that same explicit bridge
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 
@@ -167,6 +168,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [ ] Recover non-billboarded actor ownership where the original runtime uses real object/model controllers
 - [ ] Tighten combat VFX ownership after the underlying controller is recovered
 - [ ] Tighten remaining frontend widget polish only when ownership is already understood
+  - current narrowing: native widget shortcut keys are now ported for pause-menu and post-level high-score flows; the remaining gap is shared widget-controller polish, not basic keyboard activation ownership
 
 ## Decompile Targets By Priority
 

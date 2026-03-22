@@ -22,11 +22,12 @@ Implemented now:
 - main menu, new-game menu, help, options, route map, high-score screen, pause overlay, and a shared exit prompt
 - direct menu transitions for the paths the Windows code handles directly, instead of forcing everything through the black overlay
 - route-map post-completion mode with the special `Exit` label and locked-open selected route behavior
+- recovered widget shortcut dispatch for the screens that actually seed shortcut keys in Windows: pause-menu `Esc`/`O`/`Enter` and post-level high-score `Esc`/`Enter`
 
 Still missing or approximate:
 
 - owner-specific exit-prompt layouts beyond the currently recovered menu and route-map cases
-- remaining pause-menu ownership details
+- remaining pause-menu owner/controller details beyond the recovered shortcut keys
 - some widget effects and shared widget-controller behavior
 - remaining front-end return-state subtleties around replay and post-run owners
 
@@ -338,12 +339,13 @@ Implemented now:
 - the preserved-owner writer is therefore probably hidden behind a helper or constructor outside the obvious state-machine range
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
+- the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) and a preserved front-end owner target on level launch, so completion, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 
 Still missing or approximate:
 
-- the full outer subgame controller that owns rebuild/teardown/return
+- the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the preserved frontend-owner field behind the `26/27/28` bridge jump
-- exact challenge, time-trial, and replay-sensitive return routing
+- exact challenge, time-trial, and replay-sensitive return routing beyond the currently recovered launch-surface and post-completion cases
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
