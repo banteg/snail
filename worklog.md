@@ -1896,3 +1896,52 @@
 
 ### Next target
 - Recover which remaining non-jetpack `update_subgoldy` clear site actually wins after swept re-entry, especially whether the common lane is one of the grounded snaps or the unresolved `0x43bcb3` motion-state branch.
+
+## 2026-03-24 01:18 - Iteration: route thanks-screen exit into credits
+
+### Target
+- Final postal completion handoff from the Thanks For Playing owner into the next frontend owner
+
+### Why this target
+- The outer subgame/frontend bridge is still the top architecture risk, and BN plus IDA already pinned one concrete wrong Zig lane tightly enough to replace it safely: the Thanks-screen exit still faded straight to the main menu instead of following the native owner handoff.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_frontend_state_machine` shows state `0x1d` initializing the Thanks owner, advancing to state `0x1e`, and state `0x0e` initializing the credits intro screen.
+  - BN and the checked-in IDA export for `update_thanks_for_playing_screen` (`0x4340f0`) show the continue branch only firing once `this + 8 >= 2`, playing `sfx 8`, and starting the frontend fade while no other fade is active.
+  - BN and IDA `uninit_thanks_screen` (`0x4340c0`) then kill the border and write app state `0x0e`, so the Thanks owner hands off into credits rather than back to the main menu.
+- Likely:
+  - The current Zig credits phase is the closest native match for that `0x0e` handoff because the port already maps it to `initialize_intro_screen(..., "Intro/Credits.txt")`-shaped assets and music.
+- Unknown:
+  - The broader preserved-owner writer behind bridge states `26/27/28` is still unresolved.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Thanks-screen continue now plays the native confirm cue, only arms while the frontend fade is idle, and fades into the credits phase instead of the main menu.
+- Added a focused unit test locking the native `thanks -> credits` handoff.
+- Reduced one explicit outer-bridge mismatch in the status docs: `29/30` no longer stop at a vague "return to shell" description.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- Re-read BN decompile for `update_frontend_state_machine`, `update_thanks_for_playing_screen`, `initialize_thanks_for_playing_screen`, and `uninit_thanks_screen`, with the checked-in IDA exports as a second opinion.
+- This gives high confidence that the port now follows the native Thanks-owner exit target and still builds/tests cleanly.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `2b50547 bridge: route thanks screen exit into credits`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The preserved-owner writer behind bridge states `26/27/28` is still unresolved.
+- The port still models the bridge as an explicit dispatcher instead of the literal Windows outer controller object.
+- Remaining replay-sensitive and post-overlay owner details still need tighter bridge reconstruction.
+
+### Next target
+- Recover the writer for the preserved-owner bridge slot consumed by states `26/27/28`, so the remaining outer-bridge returns stop relying on inferred owner capture.
