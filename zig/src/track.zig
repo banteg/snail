@@ -177,6 +177,7 @@ pub const LoadOptions = struct {
     runtime_active_row_start: usize = defaultRuntimeActiveRowStart,
     runtime_active_row_end: ?usize = null,
     course_end_threshold_override: ?f32 = null,
+    random_length_scalar_override: ?f32 = null,
     garbage_scalar_override: ?f32 = null,
     salt_scalar_override: ?f32 = null,
 };
@@ -397,7 +398,7 @@ pub const LoadedLevelPreview = struct {
         const runtime_active_row_start = options.runtime_active_row_start;
         const runtime_active_row_end = options.runtime_active_row_end orelse total_rows;
         const course_end_threshold = options.course_end_threshold_override orelse
-            nativeCourseEndThresholdForLevel(level_definition, row_offsets, total_rows);
+            nativeCourseEndThresholdForLevel(level_definition, row_offsets, total_rows, options.random_length_scalar_override);
         const runtime_build_config: RuntimeBuildConfig = .{
             .build_flags = runtime_build_flags,
             .build_seed = options.runtime_build_seed,
@@ -1213,14 +1214,29 @@ fn nativeCourseEndThresholdForLevel(
     level_definition: *const level.Definition,
     row_offsets: []const usize,
     total_rows: usize,
+    random_length_scalar_override: ?f32,
 ) f32 {
     // PORT(verified): non-random `populate_runtime_track_cells_from_segments` seeds
     // `game + 0x58` from the start of the final `Last:` block (`total_rows - last_block_len`),
-    // not from the last populated row. Random builders still stay on the old fallback until the
-    // preview owns the native `Length`-driven runtime row count instead of one authored pass.
+    // not from the last populated row. The mode-1 random branch keeps `game + 0x54` on the
+    // authored `Length:` lane, scales it by `floor((scalar * 0.65 + 0.35) * Length)`, then
+    // subtracts the final `Last:` block row count into `game + 0x58`.
     if (!level_definition.random and level_definition.last_segments.len != 0 and level_definition.last_segments.len <= row_offsets.len) {
         const last_block_start = row_offsets.len - level_definition.last_segments.len;
         return @floatFromInt(row_offsets[last_block_start]);
+    }
+
+    if (level_definition.random) {
+        if (random_length_scalar_override) |random_length_scalar| {
+            if (level_definition.last_segments.len != 0 and level_definition.last_segments.len <= row_offsets.len) {
+                const last_block_start = row_offsets.len - level_definition.last_segments.len;
+                const last_block_row_count = total_rows - row_offsets[last_block_start];
+                const scaled_total_rows = @as(isize, @intFromFloat(@floor(
+                    @as(f32, @floatFromInt(level_definition.length)) * ((random_length_scalar * 0.65) + 0.35),
+                )));
+                return @floatFromInt(scaled_total_rows - @as(isize, @intCast(last_block_row_count)));
+            }
+        }
     }
 
     return fallbackCourseEndThreshold(total_rows);
@@ -3373,7 +3389,7 @@ test "level preview seeds runtime row window from the native fallback" {
     try std.testing.expectEqual(preview.total_rows, preview.runtime_active_row_end);
 }
 
-test "random level preview keeps course-end threshold on the current fallback" {
+test "random level preview keeps course-end threshold fallback without a native scalar override" {
     var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
     defer catalog.deinit();
 
@@ -3392,6 +3408,37 @@ test "random level preview keeps course-end threshold on the current fallback" {
     defer preview.deinit();
 
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(preview.total_rows - 1)), preview.course_end_threshold, 0.0001);
+}
+
+test "random level preview seeds course-end threshold from the native Length scalar when provided" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath("LEVELS/CHALLENGE000.TXT") orelse return error.EntryNotFound;
+    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer level_definition.deinit();
+
+    try std.testing.expect(level_definition.random);
+
+    const random_length_scalar: f32 = 0.4;
+    var preview = try LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &level_definition,
+        .{
+            .load_models = false,
+            .random_length_scalar_override = random_length_scalar,
+        },
+    );
+    defer preview.deinit();
+
+    const last_block_start_index = preview.segments.len - level_definition.last_segments.len;
+    const last_block_row_count = preview.total_rows - preview.row_offsets[last_block_start_index];
+    const expected_total_rows = @as(isize, @intFromFloat(@floor(
+        @as(f32, @floatFromInt(level_definition.length)) * ((random_length_scalar * 0.65) + 0.35),
+    )));
+    const expected_threshold = @as(f32, @floatFromInt(expected_total_rows - @as(isize, @intCast(last_block_row_count))));
+    try std.testing.expectApproxEqAbs(expected_threshold, preview.course_end_threshold, 0.0001);
 }
 
 test "level preview applies explicit runtime row window overrides" {

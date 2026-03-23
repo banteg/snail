@@ -1545,3 +1545,54 @@
 
 ### Next target
 - Recover the random `Length` row-count producer in `populate_runtime_track_cells_from_segments` well enough to remove the remaining `course_end_threshold` fallback on challenge-style builds.
+
+## 2026-03-24 00:19 - Iteration: seed random challenge course-end threshold from Length
+
+### Target
+- Random challenge-style `course_end_threshold` parity in `populate_runtime_track_cells_from_segments` / `LoadedLevelPreview`
+
+### Why this target
+- Cutscene and handoff runtime fields are still a top priority, and the previous run left one explicit completion fallback behind even though BN plus IDA now pin the random mode-1 threshold producer tightly enough to replace it without guessing the whole random strip builder.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja decompile and raw disassembly of `populate_runtime_track_cells_from_segments` (`0x435eb0`) show `game + 0x54` seeding from `game + 0x1b0138` (`Length:`), then for mode `1` applying `floor((game + 0x34) * 0.65 + 0.35) * Length` before writing `game + 0x58 = game + 0x54 - game + 0x1abf1c`.
+  - `load_level_definition_file` (`0x447480`) stores the middle-segment count at `game + 0xa874`, the authored `Length:` dword at `game + 0x1b0138`, and the `Random:yes` byte at `game + 0x1b013c`.
+  - `copy_segment_definition_to_level_slot` (`0x447300`) and the same builder path show `game + 0x1abf1c` is the final `Last:` block row count consumed by that subtraction.
+  - `build_subgame_level` (`0x437eb0`) restores `game + 0x34` from selected-record compact field `+0x50`, which matches the recovered `challenge_difficulty_value` lane in the compact score record layout.
+- Likely:
+  - Ordinary non-replay challenge launches feed the same `game + 0x34` lane from the live challenge-difficulty slider, so the current Zig `currentRunChallengeDifficultyScalar()` is the right producer for the recovered threshold math.
+- Unknown:
+  - The preview still does not build the native generated random middle strip, so total row ownership and the exact random segment sequence remain unresolved.
+
+### Zig changes
+- `zig/src/track.zig`
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `analysis/symbols/gameplay-functions.json`
+- Replaced the random challenge-style completion threshold fallback with the recovered `Length` / scalar producer while leaving the broader random strip builder unchanged.
+- Added focused coverage for the new random-threshold path and kept the fallback test for callers that do not supply the native scalar.
+- Corrected the recovered game-side level block notes: `game + 0xa874` is the loaded middle-segment count, not the old row-event placeholder label.
+
+### Verification
+- `zig fmt zig/src/main.zig zig/src/track.zig`
+- `zig build test`
+- `zig build`
+- `uv run snail symbols`
+- This confirms the threshold patch compiles, the new and existing track tests pass, the runtime still builds, and the symbol manifest stays consistent after the description update.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `port: seed random challenge course-end threshold from Length`
+- Push: pending push after commit
+
+### Remaining gaps
+- Random challenge-style previews still concatenate every candidate middle segment instead of the native generated strip.
+- The non-replay writer for `game + 0x34` is still inferred from the selected-record restore path rather than recovered directly from the ordinary challenge launcher.
+
+### Next target
+- Recover the native random middle-strip generator well enough to replace the remaining challenge preview ownership with the real generated row sequence instead of the current all-segments scaffold.

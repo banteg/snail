@@ -1561,7 +1561,7 @@
     {
       "address": "0x435eb0",
       "name": "populate_runtime_track_cells_from_segments",
-      "description": "Copies authored segment rows into the generated runtime grid, including Random and Length handling, and seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs."
+      "description": "Copies authored segment rows into the generated runtime grid, seeds Goldy's visible life stock to 3 before `initialize_subgoldy` runs, and seeds the course row bounds: non-random levels use the final `Last:` block boundary while the mode-1 random branch keeps the authored `Length:` lane scaled by the challenge scalar before subtracting the final `Last:` block rows."
     },
     {
       "address": "0x437270",

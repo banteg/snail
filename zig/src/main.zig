@@ -8580,6 +8580,10 @@ const AppState = struct {
                 .{
                     .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
                     .runtime_build_seed = runtime_build_seed,
+                    .random_length_scalar_override = switch (self.active_frontend_mode orelse .tutorial) {
+                        .challenge => self.currentRunChallengeDifficultyScalar(),
+                        .postal, .time_trial, .tutorial => null,
+                    },
                     .garbage_scalar_override = self.currentRunGarbageScalar(),
                     .salt_scalar_override = self.currentRunSaltScalar(),
                 },

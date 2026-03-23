@@ -180,7 +180,9 @@ The current high-confidence `Game` fields are:
 - `+0x44`: `level_mode_arg`
 - `+0x4c`: `runtime_flags`
 - `+0xa854`: `track_state_latch`
-- `+0xa874`: `row_event_limit`
+- `+0xa874`: `level_segment_count`
+- `+0x1b0138`: `level_length`
+- `+0x1b013c`: `level_random`
 - `+0x1b01e0`: `parcel_target_count`
 - `+0x355e64`: `jetpack_pickup`
   - one-slot `TrackPickupRuntime`
@@ -205,6 +207,11 @@ The current high-confidence `Game` fields are:
 Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
+- the embedded level-definition slice is firmer now:
+  - `load_level_definition_file` stores the middle-segment count at `game + 0xa874`, the authored `Length:` dword at `game + 0x1b0138`, and the `Random:yes` byte at `game + 0x1b013c`
+  - `copy_segment_definition_to_level_slot` seeds each `0x4220` middle-segment slot from `game + 0xa878`, with the first slot's row count at `game + 0xa87c`
+  - `populate_runtime_track_cells_from_segments` consumes those lanes so non-random courses sum first + middle + last block rows, while the mode-1 random branch keeps the `Length:` lane and subtracts the final `Last:` block row count into `game + 0x58`
+  - current best read: the scalar at `game + 0x34` is the normalized challenge-difficulty lane, because `build_subgame_level` restores it from selected-record compact field `+0x50`, which matches the recovered `challenge_difficulty_value` offset in the compact high-score record
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - the same course-build path also seeds the row bounds consumed by `update_subgoldy`:
   - `game + 0x50` = first-block row count
