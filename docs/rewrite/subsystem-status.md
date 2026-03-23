@@ -258,7 +258,7 @@ Implemented now:
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
 - `=` rows now act as visible lethal turret obstacles with per-row fire state and short `BLASTERTOP-FIRE` flashes instead of invisible debug-only tiles or one shared timer
-- garbage collisions now apply the recovered direction-vector slowdown and sideways kick instead of only incrementing damage/score, and the garbage slot now survives into a visible burst state after contact
+- garbage collisions now apply the recovered hazard-to-player direction vector, the native invincible motion guard, and a decaying track-mode `velocity.x` shove instead of only incrementing damage/score, and the garbage slot now survives into a visible burst state after contact
 - garbage and salt aftermath now spawn from the hazard positions instead of the player position, so tutorial combat feedback is no longer centered on Turbo when those hazards are hit
 - postal bonus now lands on the final parcel event instead of being delayed to a generic end-of-run fallback
 - challenge runtime parcel targeting now comes from the live preview path instead of the dead `Parcels:` metadata lane, and challenge loads prune the active parcel annotations down to the recovered speed/difficulty target using the shared gameplay RNG lane seeded after track build
@@ -288,7 +288,7 @@ Still missing or approximate:
 - the original mode gates for ambient spawns and any remaining non-horizontal suppressor details
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
-- the broader native forward-speed controller behind `Player.velocity.z` once negative-velocity rings or garbage hits hand control back
+- the broader native forward-speed controller behind `Player.velocity.z` once negative-velocity rings or garbage hits hand control back, plus the still-unported attachment-follow consumers of that same velocity block
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - the remaining dedicated health-collect sprite-bod ownership and the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards, including the exact pre-hit ring bod anchor/layout and child orbit packet

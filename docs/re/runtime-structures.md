@@ -261,6 +261,8 @@ Current practical read:
   - `spawn_track_health_pickup` and `handle_subgoldy_collisions` use the `health_pickups` array
   - `spawn_track_jetpack_pickup` uses the separate `jetpack_pickup` slot
   - `spawn_track_garbage_hazard` pushes slots into the `active_garbage_hazards` list over the `garbage_hazards` pool
+    - when `movement_flags & 0x80` is clear, the garbage-hit branch subtracts `normalized_contact.x * velocity.z * 0.18` from `player->velocity.x` and `normalized_contact.z * velocity.z * 0.10` from `player->velocity.z`
+    - the grounded track leg in `update_subgoldy` then applies `position += velocity` and damps `velocity.x` by `1 - track_center_x * 0.1` each tick
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`

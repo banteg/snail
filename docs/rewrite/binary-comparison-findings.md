@@ -118,25 +118,26 @@ if (player_z - camera_z < 1.7): camera_z = player_z - 1.7
 
 ## Significant: Physics Model Differences
 
-### 10. Garbage impact still uses the wrong motion owner
+### 10. Garbage impact still uses a partial forward-motion owner
 
 **Windows** (`handle_subgoldy_collisions` garbage):
 ```
 velocity.x -= (dx_normalized) * velocity.z * 0.18
 velocity.z -= (dz_normalized) * velocity.z * 0.10
 ```
-Uses the actual collision direction vector and current velocity for directional knockback.
+with both writes skipped entirely while invincible, followed by grounded-track `velocity.x *= 1 - track_center_x * 0.1` damping in `update_subgoldy`.
 
 **Zig** (`gameplay.zig`):
 ```zig
 speed_rows_per_second -= dz_normalized * speed_rows_per_second * 0.10
-lane_center += (-dx_normalized) * speed_rows_per_second * 0.18
+native_velocity_x_per_tick -= dx_normalized * (speed_rows_per_second / 60.0) * 0.18
 ```
-The port now uses the recovered direction-vector formulas, but it still applies them to the high-level
-`speed_rows_per_second` and `lane_center` scaffold instead of the native velocity lanes at
-`player + 0x410` / `player + 0x414`.
+The port now matches the native direction-vector sign, the invincible motion guard, and the decaying
+track-mode lateral `velocity.x` lane. The remaining gap is the forward owner: `velocity.z` still hands
+back into the high-level `speed_rows_per_second` scaffold instead of the full native velocity block at
+`player + 0x410` / `player + 0x418`.
 
-**Impact**: collision feel is much closer now, but it still is not a literal port of the native motion controller.
+**Impact**: lateral garbage kick is now much closer to native, but the broader forward-speed recovery after the hit is still not literal.
 
 ### 11. Speed model fundamentally different
 
