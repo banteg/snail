@@ -221,3 +221,55 @@
 
 ### Next target
 - Recover the writer and real meaning of `selected_level_record_persistent`, then port the remaining completion-side `0x1b` branch without guessing.
+
+## 2026-03-23 19:25 - Iteration: split transient selected-record result returns
+
+### Target
+- Outer-bridge result routing for transient selected-level-record runs
+
+### Why this target
+- The outer bridge is still the highest-value ownership gap, and the current Zig code was still conflating "replay samples exist" with the native `selected_level_record_persistent` lane.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_subgoldy` shows the selected-level-record completion split saving the current owner, then using `state 0x1a` only when `game + 0xff25d1` is set and `state 0x1b` otherwise.
+  - BN `update_subgoldy_resurrect` shows the same post-loss split after `complete_subgame(game, 1)`, with the extra postal-only `data_4df904 + 0x30d` gate on the non-persistent side.
+  - BN `update_galaxy` and `update_challenge_setup_screen` both write `selected_level_record_active = 1` and the selected-record pointer, but do not show a matching `selected_level_record_persistent` write.
+  - BN `initialize_subgame`, `update_subgame`, and `destroy_subgame`, with IDA corroboration from `build_subgame_level`, treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown.
+- Likely:
+  - The current frontend-selected replay launches in Zig correspond to the native transient selected-record lane until the persistent-writer path is recovered.
+- Unknown:
+  - The writer for `selected_level_record_persistent`.
+  - The special completion override that forces saved owner `2` when `level_mode == 7`.
+  - The exact postal final-loss meaning of `data_4df904 + 0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- Added an explicit `selected_level_record_persistent` flag instead of reusing replay-payload presence as the bridge opcode proxy.
+- Routed transient challenge/time-trial selected-record result exits through opcode `27` (`rebuild_return`) while reserving opcode `26` (`destroy_return`) for the separate persistent lane.
+- Added focused tests for transient vs persistent selected-record post-run opcode selection.
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Recorded that current frontend launchers only arm the active selected-record lane and that the persistent-lane writer remains unresolved.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge helper compiles, the new transient/persistent result-routing coverage passes, and the wider runtime still builds after the bridge split.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `5cb533c bridge: split transient selected-record result returns`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The persistent selected-record writer is still not recovered.
+- Postal non-persistent final loss still has the unresolved `data_4df904 + 0x30d` gate.
+- Replay-backed abandon/overlay exits still need their own direct native corroboration instead of inheriting result-path reasoning.
+
+### Next target
+- Recover the actual writer and semantics of `selected_level_record_persistent`, then finish the remaining postal/override bridge branches without guessing.
