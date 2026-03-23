@@ -5682,13 +5682,14 @@ const AppState = struct {
                 .opcode = .destroy_return,
                 .target = .main_menu,
             };
-            // PORT(partial): BN `update_pause_menu` only confirms the persistent selected-record
-            // lane here: it selects completion state `3` when `app + 0x1066be9` is set, and
-            // `update_completion_screen` state `3` destroys subgame then restores the saved
-            // owner at `app + 0x1066bf0` without using bridge state `0x1c`. The transient
-            // selected-record abandon lane still needs its own direct trace.
+            // PORT(verified): when `app + 0x1066be9` is clear, BN `update_pause_menu` falls
+            // through to completion state `2`. BN plus IDA then show `update_completion_screen`
+            // state `2` destroying subgame, and on the time-trial replay path (`level_mode == 4`)
+            // reinitializing subgame without using bridge state `0x1c`. `initialize_subgame`
+            // then rebuilds the route-map owner from the preserved nonzero continuation selector,
+            // so transient route-map replay abandon matches opcode `27`, not respawn-only `28`.
             return .{
-                .opcode = .rebuild_clear_replay_return,
+                .opcode = .rebuild_return,
                 .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
             };
         }
@@ -12827,7 +12828,7 @@ test "persistent selected replay abandon uses destroy-return bridge semantics" {
     );
 }
 
-test "transient selected replay abandon keeps the unresolved rebuild-clear fallback" {
+test "transient selected replay abandon uses rebuild-return bridge semantics" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -12842,7 +12843,7 @@ test "transient selected replay abandon keeps the unresolved rebuild-clear fallb
     state.active_frontend_level_index = 7;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
-            .opcode = .rebuild_clear_replay_return,
+            .opcode = .rebuild_return,
             .target = .{ .route_map = .{
                 .mode = .time_trial,
                 .screen_mode = .replay,

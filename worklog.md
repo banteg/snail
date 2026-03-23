@@ -704,3 +704,53 @@
 
 ### Next target
 - Trace the transient selected-record pause-abandon lane strongly enough to decide whether route-map best-trial replay uses the state-`2` completion branch verbatim or another bridge helper beyond the current fallback.
+
+## 2026-03-23 20:57 - Iteration: align transient replay pause-abandon opcode
+
+### Target
+- Route-map best-trial replay pause `End Game` routing in `update_pause_menu` / `update_completion_screen`
+
+### Why this target
+- The outer bridge is still the top ownership risk, and the current Zig bridge still used the respawn-only clear-replay rebuild opcode for transient selected replay abandon even though BN plus IDA were finally strong enough to pin the native pause-abandon lane directly.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_pause_menu` (`0x4407a0`) picks completion state `2` whenever `app + 0x1066be9` (`selected_level_record_persistent`) is clear and the run is not tutorial mode.
+  - BN plus IDA `update_completion_screen` (`0x4067e0`) state `2` calls `complete_subgame(game, 1)`, then destroys completion/pause/subgame and, for `level_mode == 4` or `1`, reinitializes subgame directly instead of using frontend state `0x1c`.
+  - BN `complete_subgame` (`0x438700`) only seeds the app `+0x30d` high-score continuation flag when `selected_level_record_active == 0`, so transient selected-record replay abandons skip that side path.
+  - BN `initialize_subgame` (`0x4374b0`) uses the preserved nonzero continuation selector plus `level_mode == 4` to rebuild the galaxy owner through `initialize_galaxy` / `reset_subgame`.
+- Likely:
+  - Route-map best-trial replay pause abandon is the native transient rebuild lane corresponding to opcode `27`, not the respawn-only clear-replay lane `28`.
+- Unknown:
+  - The transient replay-backed overlay lane for route-map best-trial launches.
+  - The exact non-selected-record postal final-loss use of app byte `+0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- Switched transient selected replay pause abandon from `rebuild_clear_replay_return` to `rebuild_return`.
+- Replaced the old fallback comment with the confirmed BN/IDA reconstruction and updated the focused regression test to pin opcode `27`.
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Recorded the confirmed state-`2` transient replay abandon path and narrowed the remaining bridge gap down to the overlay lane rather than abandon plus overlay together.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the bridge model compiles, the updated abandon-routing test passes, the wider runtime still builds, and the mixed Zig/docs patch is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: align transient replay pause-abandon opcode`
+- Push: pending push after commit
+
+### Remaining gaps
+- The transient replay-backed overlay lane for route-map best-trial launches is still unresolved.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Trace the transient route-map replay overlay exit strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or still uses a different bridge/helper path.
