@@ -1211,3 +1211,49 @@
 
 ### Next target
 - Trace the writer for `data_4df904 + 0x4f2dc + 0x14` together with the replay scratch and preserved-owner bridge fields so the missing New Game attract trigger can be connected to the native outer-controller handoff.
+
+## 2026-03-23 22:55 - Iteration: restore new game tutorial gate
+
+### Target
+- Config-backed New Game tutorial gate parity
+
+### Why this target
+- The outer bridge replay-attract lane is still blocked on the unresolved timer-step writer, but the same RE pass exposed one smaller front-end mismatch with complete enough evidence to land safely: the Zig menu still showed `Postal Mode`, `Time Trial`, and `Challenge Mode` immediately instead of respecting the native tutorial gate.
+
+### Original behavior evidence
+- Confirmed:
+  - `initialize_new_game_menu` (`0x417bc0`) hides the `Postal Mode`, `Time Trial`, and `Challenge Mode` widgets while `data_4df9d8 == 0`.
+  - `update_new_game_menu` (`0x417eb0`) sets `data_4df9d8 = 1` on the `Tutorial` branch before leaving the menu.
+  - `initialize_default_runtime_config` seeds the same byte through the default config blob tail, so the default value is `0`.
+- Likely:
+  - `data_4df9d8` is a persisted New Game tutorial-progress gate rather than a purely transient menu scratch byte, because it lives inside the config-backed defaults block and the New Game constructor consumes it directly.
+- Unknown:
+  - The exact native save cadence for that byte beyond the app's broader config save path.
+
+### Zig changes
+- `zig/src/config.zig`
+- `zig/src/main.zig`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- Exposed the recovered `SnailMail.cfg +0xc0` tutorial-gate byte through the config blob.
+- Hid the three gated New Game rows in the existing authored layout, skipped them during keyboard or mouse selection while the gate is clear, and flipped the gate when the Tutorial path launches.
+- Reduced one front-end scaffold: the port no longer shows the later New Game modes before the recovered tutorial latch is set.
+
+### Verification
+- `zig fmt zig/src/config.zig zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the recovered config field compiles cleanly, the focused New Game visibility/selection tests pass, and the full runtime still builds after the front-end gate change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `429b596` `frontend: restore new game tutorial gate`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14` is still unresolved, so the live random replay launcher remains intentionally unported.
+- The saved-owner writer behind the native `26/27/28` bridge jump is still unresolved.
+
+### Next target
+- Recover the writer for `data_4df904 + 0x4f2dc + 0x14` and the role of the `+0x8/+0xc` timer lane strongly enough to port the New Game random replay attract launcher without guessing.
