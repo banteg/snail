@@ -48,7 +48,7 @@ What is now solid:
 
 Practical impact:
 
-- respawn vs final loss vs successful completion still cross the app/runtime boundary too loosely
+- final loss vs successful completion and the remaining post-run owners still cross the app/runtime boundary too loosely; respawn now routes through the explicit opcode-`28` rebuild lane
 - challenge, time-trial, and replay-sensitive return routing are still not literal
 - the current completion/death work now runs through one explicit app-side bridge request lane, but the preserved-owner writer and full Windows outer controller are still missing
 
@@ -115,7 +115,8 @@ Work this top-down unless a new runtime capture invalidates the order.
   - likely next step: trace `[controller + 0x98]`, `data_4df904 + 110`, `+119190`, `+4299515`, `+4299516`, and `+17198056/+17198057` together in one Windows session
 - [x] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
   - current port shape: result exits and abandon exits now route through one `OuterBridgeRequest` lane with native opcode names plus a preserved launch-surface owner captured on level entry
-- [ ] Finish moving respawn and any remaining post-overlay/thanks-for-playing updates onto that same explicit bridge
+- [ ] Finish moving any remaining post-overlay/final-loss/thanks-for-playing updates onto that same explicit bridge
+  - current narrowing: respawn now follows the confirmed `update_subgoldy_resurrect -> save current owner -> state 0x1c` bridge lane instead of an app-local reload helper
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 

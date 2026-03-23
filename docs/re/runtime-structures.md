@@ -224,6 +224,9 @@ Current practical read:
   - while active, it clamps the forward presentation offsets (`track_z_offset` / `track_z_anchor`) to the fixed completion lane and advances the timer every tick
   - after `2.0` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
   - after `5.0` seconds, the same block begins the frontend fade, flushes `row_event_display` if needed, and routes through `complete_subgame`
+- `update_subgoldy_resurrect` now has one stronger bridge-side read:
+  - the respawn branch copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c`
+  - respawn therefore uses the same outer `26/27/28` rebuild slot as the other handoffs instead of a special gameplay-only reload lane
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`

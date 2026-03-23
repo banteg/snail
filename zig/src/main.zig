@@ -1419,18 +1419,25 @@ const ReplayLevelBridgeTarget = struct {
     selected_level_record_source: ?SelectedLevelRecordSource = null,
 };
 
-const FrontendBridgeTarget = union(enum) {
+const OuterBridgeTarget = union(enum) {
     main_menu,
     new_game_menu: NewGameMenuItem,
     route_map: RouteMapBridgeTarget,
     high_scores_menu: high_score.Mode,
     replay_current_level: ReplayLevelBridgeTarget,
     thanks_screen,
+    resume_active_run,
 };
 
 const OuterBridgeRequest = struct {
     opcode: OuterBridgeOpcode,
-    target: FrontendBridgeTarget,
+    target: OuterBridgeTarget,
+};
+
+const RespawnBridgeState = struct {
+    frontend_mode: ?FrontendLevelMode,
+    frontend_level_index: usize,
+    runner: gameplay.Runner,
 };
 
 const RunOutcome = enum {
@@ -2593,7 +2600,7 @@ fn newGameMenuItemForBridgeMode(mode: ?FrontendLevelMode) NewGameMenuItem {
     };
 }
 
-fn bridgeTargetForReplaySource(source: SelectedLevelRecordSource, active_level_index: usize) FrontendBridgeTarget {
+fn bridgeTargetForReplaySource(source: SelectedLevelRecordSource, active_level_index: usize) OuterBridgeTarget {
     return switch (source) {
         .completion => .{ .route_map = .{
             .mode = .time_trial,
@@ -2609,7 +2616,7 @@ fn preservedFrontendOwnerForLevelLaunch(
     mode: FrontendLevelMode,
     level_index: usize,
     selected_level_record_source: ?SelectedLevelRecordSource,
-) FrontendBridgeTarget {
+) OuterBridgeTarget {
     if (selected_level_record_source) |source| {
         return bridgeTargetForReplaySource(source, level_index);
     }
@@ -2916,7 +2923,8 @@ const AppState = struct {
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
-    preserved_frontend_owner: FrontendBridgeTarget = .main_menu,
+    preserved_frontend_owner: OuterBridgeTarget = .main_menu,
+    pending_respawn_bridge_state: ?RespawnBridgeState = null,
     high_score_screen_owner: HighScoreScreenOwner = .{ .main_menu_browse = .postal },
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
@@ -5646,6 +5654,20 @@ const AppState = struct {
         };
     }
 
+    fn outerBridgeRequestForRespawnActiveRun(self: *AppState) ?OuterBridgeRequest {
+        var previous_runner = self.level_runner orelse return null;
+        previous_runner.flushPendingParcelDeliveries();
+        self.pending_respawn_bridge_state = .{
+            .frontend_mode = self.active_frontend_mode,
+            .frontend_level_index = self.active_frontend_level_index,
+            .runner = previous_runner,
+        };
+        return .{
+            .opcode = .rebuild_clear_replay_return,
+            .target = .resume_active_run,
+        };
+    }
+
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
         return switch (result.return_target) {
             .main_menu => .{
@@ -5732,6 +5754,23 @@ const AppState = struct {
         }
     }
 
+    fn resumeActiveRunAfterRespawnBridge(self: *AppState) !void {
+        const bridge_state = self.pending_respawn_bridge_state orelse return;
+        self.pending_respawn_bridge_state = null;
+
+        self.active_frontend_mode = bridge_state.frontend_mode;
+        self.active_frontend_level_index = bridge_state.frontend_level_index;
+        try self.reloadLevel();
+        if (self.current_track_preview) |*loaded_track_preview| {
+            if (self.level_runner) |*runner| {
+                runner.* = bridge_state.runner;
+                runner.applyRespawn(loaded_track_preview);
+            }
+        }
+        self.clearLevelPromptQueue();
+        try self.syncActiveLevelSegment();
+    }
+
     fn dispatchOuterBridgeRequest(self: *AppState, request: OuterBridgeRequest) !void {
         try self.applyOuterBridgeTeardown(request.opcode);
 
@@ -5755,6 +5794,7 @@ const AppState = struct {
                 );
             },
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
+            .resume_active_run => try self.resumeActiveRunAfterRespawnBridge(),
         }
     }
 
@@ -6411,34 +6451,10 @@ const AppState = struct {
     }
 
     fn beginRespawnRun(self: *AppState) !void {
-        var previous_runner = self.level_runner orelse return;
-        previous_runner.flushPendingParcelDeliveries();
-        const preserved_session_mode = previous_runner.session_mode;
-        const preserved_score = previous_runner.score;
-        const preserved_visible_life_stock = previous_runner.visible_life_stock;
-        const preserved_tick_count = previous_runner.tick_count;
-        const preserved_stopwatch = previous_runner.stopwatch;
-        const preserved_parcel_count = previous_runner.counters.parcels;
-        const preserved_row_event_display = previous_runner.row_event_display;
-        const preserved_collected_parcel_rows = previous_runner.collected_parcel_rows;
-        const preserved_collected_parcel_row_count = previous_runner.collected_parcel_row_count;
-
         self.completion_overlay_active = false;
         self.preserve_completion_screen_reveal_on_enter = false;
-        try self.reloadLevel();
-        if (self.level_runner) |*runner| {
-            runner.session_mode = preserved_session_mode;
-            runner.score = preserved_score;
-            runner.visible_life_stock = preserved_visible_life_stock;
-            runner.tick_count = preserved_tick_count;
-            runner.stopwatch = preserved_stopwatch;
-            runner.counters.parcels = preserved_parcel_count;
-            runner.row_event_display = preserved_row_event_display;
-            runner.collected_parcel_rows = preserved_collected_parcel_rows;
-            runner.collected_parcel_row_count = preserved_collected_parcel_row_count;
-        }
-        self.clearLevelPromptQueue();
-        try self.syncActiveLevelSegment();
+        const request = self.outerBridgeRequestForRespawnActiveRun() orelse return;
+        try self.dispatchOuterBridgeRequest(request);
     }
 
     fn resetCompletionScreenReveal(self: *AppState) void {
@@ -12552,33 +12568,33 @@ test "selected replay return targets follow the launch surface" {
 
 test "preserved frontend owner follows the native launch surface" {
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .route_map = .{
+        OuterBridgeTarget{ .route_map = .{
             .mode = .postal,
             .screen_mode = .normal,
         } },
         preservedFrontendOwnerForLevelLaunch(.postal, 1, null),
     );
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .route_map = .{
+        OuterBridgeTarget{ .route_map = .{
             .mode = .time_trial,
             .screen_mode = .replay,
         } },
         preservedFrontendOwnerForLevelLaunch(.time_trial, 3, null),
     );
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .new_game_menu = .challenge_mode },
+        OuterBridgeTarget{ .new_game_menu = .challenge_mode },
         preservedFrontendOwnerForLevelLaunch(.challenge, 0, null),
     );
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .new_game_menu = .tutorial },
+        OuterBridgeTarget{ .new_game_menu = .tutorial },
         preservedFrontendOwnerForLevelLaunch(.tutorial, 0, null),
     );
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .high_scores_menu = .postal },
+        OuterBridgeTarget{ .high_scores_menu = .postal },
         preservedFrontendOwnerForLevelLaunch(.postal, 2, .{ .postal = 2 }),
     );
     try std.testing.expectEqualDeep(
-        FrontendBridgeTarget{ .route_map = .{
+        OuterBridgeTarget{ .route_map = .{
             .mode = .time_trial,
             .screen_mode = .replay,
             .start_route_override = 7,
@@ -12658,6 +12674,42 @@ test "abandon run bridge request falls back to the preserved frontend owner" {
         },
         state.outerBridgeRequestForAbandonActiveRun(),
     );
+}
+
+test "respawn bridge request preserves the active run for opcode 28 rebuilds" {
+    var state: AppState = undefined;
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 7;
+    state.level_runner = gameplay.Runner{};
+    state.level_runner.?.session_mode = .postal;
+    state.level_runner.?.score.total = 12_345;
+    state.level_runner.?.visible_life_stock = 2;
+    state.level_runner.?.tick_count = 90;
+    state.level_runner.?.stopwatch.advance(90.0);
+    state.level_runner.?.counters.parcels = 3;
+    state.level_runner.?.row_event_display.parcel_target_count = 7;
+    state.level_runner.?.row_event_display.staged_parcel_count = 3;
+    state.level_runner.?.row_event_display.delivered_parcel_count = 3;
+    state.level_runner.?.collected_parcel_rows[0] = 42;
+    state.level_runner.?.collected_parcel_row_count = 1;
+
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_clear_replay_return,
+            .target = .resume_active_run,
+        },
+        state.outerBridgeRequestForRespawnActiveRun().?,
+    );
+
+    const bridge_state = state.pending_respawn_bridge_state orelse return error.TestExpectedRespawnBridgeState;
+    try std.testing.expectEqual(@as(?FrontendLevelMode, .postal), bridge_state.frontend_mode);
+    try std.testing.expectEqual(@as(usize, 7), bridge_state.frontend_level_index);
+    try std.testing.expectEqual(gameplay.SessionMode.postal, bridge_state.runner.session_mode);
+    try std.testing.expectEqual(@as(u32, 12_345), bridge_state.runner.score.total);
+    try std.testing.expectEqual(@as(u32, 2), bridge_state.runner.visible_life_stock);
+    try std.testing.expectEqual(@as(u32, 3), bridge_state.runner.counters.parcels);
+    try std.testing.expectEqual(@as(usize, 1), bridge_state.runner.collected_parcel_row_count);
+    try std.testing.expectEqual(@as(usize, 42), bridge_state.runner.collected_parcel_rows[0]);
 }
 
 test "final postal completion returns through the thanks screen" {

@@ -337,7 +337,7 @@ Implemented now:
 - postal completion no longer blindly inserts an arcade high score on every route clear
 - successful completion is now split into an early in-level completion overlay init and a later finalize transition into the full completion screen
 - lives are now consumed inside the runner's respawn branch before the app rebuild, matching the recovered `update_subgoldy_resurrect` ownership better than the old app-side decrement
-- app-level reload is closer to the Windows rebuild split than the old hidden in-place runner reset
+- respawn now runs through the shared outer-bridge request lane with native opcode `28` semantics: `update_subgoldy_resurrect` copies the current outer owner into the return slot, clears replay state, rebuilds subgame, then resumes that saved owner
 - final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before returning to the shell
 - the outer bridge opcodes are now narrowed more concretely:
   - `26`: destroy subgame, then jump to the preserved frontend owner without reinitializing subgame
@@ -350,12 +350,12 @@ Implemented now:
 - the preserved-owner writer is therefore probably hidden behind a helper or constructor outside the obvious state-machine range
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
-- the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) and a preserved front-end owner target on level launch, so completion, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
+- the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 
 Still missing or approximate:
 
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
-- the writer and exact semantics of the preserved frontend-owner field behind the `26/27/28` bridge jump
+- the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact challenge, time-trial, and replay-sensitive return routing beyond the currently recovered launch-surface and post-completion cases
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
