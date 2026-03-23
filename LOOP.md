@@ -24,7 +24,7 @@ Before choosing work:
 - check `git status --short`
 - inspect only the active packet or dossier plus the smallest supporting notes or source files it cites
 
-Do not default-load the full worklog, broad symbol manifests, or top-level status ledgers unless the active dossier explicitly needs them.
+Do not default-load archive notebooks, broad symbol manifests, or top-level status ledgers unless the active dossier explicitly needs them.
 
 ## Working Prompt
 

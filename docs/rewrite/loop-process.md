@@ -45,7 +45,7 @@ This is the operating policy for the automated decompile-guided port loop.
   - active gate
   - active dossier or packet
   - only the smallest supporting notes or source files the dossier cites
-- Do not reread the full worklog, giant symbol manifests, or broad status ledgers by default.
+- Do not reread archive notebooks, giant symbol manifests, or broad status ledgers by default.
 - Treat the dossier as the current unit of work:
   - one owner, controller, or state machine
   - one explicit safe-to-code boundary
