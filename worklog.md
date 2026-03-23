@@ -369,3 +369,53 @@
 
 ### Next target
 - Recover the owner and writer chain behind app byte `+0x30d`, then port the remaining postal final-loss bridge split without guessing.
+
+## 2026-03-23 19:53 - Iteration: restore garbage lateral velocity lane
+
+### Target
+- Track-mode garbage collision motion ownership in `handle_subgoldy_collisions` / `update_subgoldy`
+
+### Why this target
+- Gameplay runtime ownership is still one of the biggest parity gaps, and Binary Ninja plus IDA now pin one narrow garbage-hit slice strongly enough to replace a wrong scaffold: the port still jumped `lane_center` directly and even moved while invincible instead of using the native `velocity.x` lane.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja decompile of `handle_subgoldy_collisions` (`0x444cf0`) computes the garbage contact vector as hazard position minus player position, then only when `movement_flags & 0x80` is clear writes `player->velocity.x -= contact.x * player->velocity.z * 0.18` and `player->velocity.z -= contact.z * player->velocity.z * 0.10`.
+  - Binary Ninja and the checked-in IDA export both show `update_subgoldy` (`0x43b120`) adding `velocity.x/y/z` into player position on the grounded track path, then damping `velocity.x` by `1 - track_center_x * 0.1`.
+  - The same runtime still clamps gameplay world `x` to `[-4.0, 4.0]`, which matches the port’s existing track-width world-x bounds.
+- Likely:
+  - Attachment-follow consumes the same velocity block through `update_track_attachment_follow_state(..., this + 1040)`, but the exact attachment-side use of garbage-hit `velocity.x` is still not isolated tightly enough to replace the current fallback there.
+- Unknown:
+  - The broader grounded forward `velocity.z` controller once garbage hits or native negative rings hand control back.
+  - The exact attachment-follow consumer semantics for garbage-seeded `velocity.x`.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- Replaced the instant track-mode garbage `lane_center` shove with a decaying per-tick `native_velocity_x_per_tick` lane shaped after native `player->velocity.x`.
+- Corrected the garbage contact-vector sign to use hazard-to-player direction, and applied the native invincible guard so garbage hits no longer change motion while invincible.
+- Kept the attachment-follow fallback explicit, but corrected its shove sign as well instead of leaving the old inverted direction in place.
+- Added focused regression coverage for delayed lateral shove, the per-tick `0.6` decay, the corrected forward-sign formula, and the invincible motion guard.
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/binary-comparison-findings.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- Narrowed the docs so they now describe garbage collisions as a native-shaped lateral `velocity.x` owner in track mode while leaving the forward `velocity.z` recovery explicitly unresolved.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- This confirms the new garbage-motion tests compile and pass, the existing gameplay suite stays green, and the live runtime still builds after the ownership change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `ba4c0d5` `gameplay: restore garbage lateral velocity x lane`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Garbage forward recovery still returns through `speed_rows_per_second` instead of the full native `velocity.z` owner.
+- Attachment-follow still does not consume the recovered garbage-hit velocity block literally.
+
+### Next target
+- Recover the grounded forward `velocity.z` controller in `update_subgoldy` strongly enough to stop handing garbage hits and native negative rings back to the scaffolded `speed_rows_per_second` lane.
