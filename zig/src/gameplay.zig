@@ -4865,6 +4865,14 @@ pub const Runner = struct {
 
     fn stepAttachmentExitState(self: *Runner) void {
         if (!self.attachment_exit_pending) return;
+        if (self.phase == .active and self.jetpack.active) {
+            // PORT(verified): BN `update_subgoldy` checks `player + 0x275c`
+            // (`jetpack_gauge.state`) at `0x43ce23` and routes that active-jetpack slice
+            // through the `0x43ce34/0x43ce75` late clear before the
+            // `attachment_exit_progress` / gate-A block at `0x43ce8a`.
+            self.attachment_exit_pending = false;
+            return;
+        }
         const progress_step = self.attachment_exit_progress_step;
         self.attachment_exit_progress = std.math.clamp(
             self.attachment_exit_progress + progress_step,
@@ -8400,6 +8408,22 @@ test "attachment exit progress arms gate a after the recovered threshold" {
     try std.testing.expect(runner.attachment_exit_gate_a);
 }
 
+test "active jetpack retires attachment exit before the late progress gates" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.attachment_exit_pending = true;
+    runner.attachment_exit_progress = 0.5;
+    runner.armJetpackGauge();
+
+    runner.stepAttachmentExitState();
+
+    try std.testing.expect(!runner.attachment_exit_pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment_exit_progress, 0.0001);
+    try std.testing.expect(!runner.attachment_exit_gate_a);
+}
+
 test "fall state arms gate b at the deep threshold" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -8533,6 +8557,26 @@ test "route-end completion waits for attachment exit handoff to clear" {
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
+}
+
+test "route-end completion does not wait on attachment exit during active jetpack" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.runtime_track_index = fixture.preview.total_rows - 1;
+    runner.movement_progress = 0.01;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+    runner.attachment_exit_pending = true;
+    runner.armJetpackGauge();
+
+    runner.stepAttachmentExitState();
+    runner.maybeBeginCompletionCutscene(&fixture.preview);
+
+    try std.testing.expect(!runner.attachment_exit_pending);
+    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
 }
 
 test "route-end completion can start while parcel delivery registration is still pending" {

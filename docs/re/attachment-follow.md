@@ -63,7 +63,8 @@ Current best static read of those five clear sites:
 - `0x43bf6f` follows the ordinary snap-to-ride-height branch (`position.y = 0.49`, `velocity.y = 0`) and is likely one grounded-track retirement lane
 - `0x43c3ea` follows the tile-`22` trampoline settle branch and the `sfx 41` landing cue, so it is a confirmed trampoline-side retirement lane
 - `0x43c06d` is another floor-snap clear in a separate runtime-flag-gated branch
-- `0x43bcb3` and `0x43ce75` are later motion-state clears inside `update_subgoldy`, but their exact gameplay-owner labels are still unresolved
+- `0x43ce75` is not a generic timeout clear: BN plus the checked-in IDA export show it is only reached from the `player + 0x275c == 1` (`jetpack_gauge.state`) late branch at `0x43ce23`, before the `attachment_exit_progress` / gate-A block begins
+- `0x43bcb3` is still a later motion-state clear inside `update_subgoldy`, but its exact gameplay-owner label is still unresolved
 
 What remains unknown:
 
