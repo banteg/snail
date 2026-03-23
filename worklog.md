@@ -1792,3 +1792,55 @@
 
 ### Next target
 - Classify which `update_subgoldy` clear site actually retires `attachment_exit_pending` after swept re-entry, ideally with a focused Windows capture that watches the five clear sites alongside successful `0x40`/`0x80` probes.
+
+## 2026-03-24 01:04 - Iteration: retire jetpack-owned attachment exit clear
+
+### Target
+- Active-jetpack `attachment_exit_pending` retirement in `update_subgoldy` / Zig attachment-exit controller
+
+### Why this target
+- Attachment follow is still a top gameplay parity risk, and the current Zig code still used a broad `progress >= 1.0` retirement story even though BN plus IDA now pin one concrete late-clear owner tightly enough to replace part of that scaffold safely.
+
+### Original behavior evidence
+- Confirmed:
+  - BN disassembly and decompile of `update_subgoldy` show the late clear at `0x43ce75` is reached only from `0x43ce23` when `player + 0x275c == 1`, which matches the current `jetpack_gauge.state` lane.
+  - That `0x43ce23 -> 0x43ce75` branch executes before the `attachment_exit_progress` update at `0x43ce8a` and the gate-A block at `0x43ce9c`, so the active-jetpack slice does not wait for the later progress gates.
+  - IDA’s checked-in `update_subgoldy` export agrees that the same late clear is guarded by `player_1->jetpack_gauge.state == 1`.
+- Likely:
+  - The current Zig `jetpack.active` bool is a close enough stand-in for the native `jetpack_gauge.state == 1` slice to retire `attachment_exit_pending` in active gameplay without waiting on the generic timeout.
+- Unknown:
+  - Which of the remaining non-jetpack clear sites is the common post-swept-re-entry retirement path.
+  - The exact gameplay-owner label behind the separate `0x43bcb3` motion-state clear.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Retired `attachment_exit_pending` immediately on the evidence-backed active-jetpack lane instead of letting that slice fall through the generic progress-expiry scaffold.
+- Added focused tests for jetpack-owned exit retirement and the same-tick route-end completion consequence.
+- Reduced one attachment-follow scaffold and narrowed the remaining retirement-path docs so `0x43ce75` is no longer treated as a generic/common candidate.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- Re-read BN disassembly/decompile plus the checked-in IDA export for `update_subgoldy`, focusing on `0x43ce23`, `0x43ce75`, and the surrounding late gate block.
+- This gives high confidence that the new Zig branch matches one confirmed native owner lane and that the wider runtime still builds and tests cleanly after the change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `287744c attachment: retire active-jetpack exit clear`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The common post-swept-re-entry retirement path among the remaining non-jetpack clears is still unresolved.
+- The `0x43bcb3` later motion-state clear still needs a tighter gameplay-owner label.
+- Live overlap where both `0x40` and `0x80` probes are geometrically valid still needs direct confirmation.
+
+### Next target
+- Recover which of the remaining non-jetpack `update_subgoldy` clear sites actually retires `attachment_exit_pending` after swept re-entry, ideally with a focused Windows capture over the surviving clear sites plus successful `0x40`/`0x80` probes.
