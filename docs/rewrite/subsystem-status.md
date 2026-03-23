@@ -191,19 +191,20 @@ Implemented now:
 - elevated side exits preserve airborne height instead of snapping straight to the floor
 - `SUPERTRAMP` has a dedicated launch exit path
 - normal gameplay entry now mirrors the native split between current-cell begin and swept re-entry: current row tiles `29/30` go through the direct begin helper when `attachment_exit_pending` is clear
+- swept installed re-entry now also stays on that same native owner boundary: the Zig runner only probes the live current row while `attachment_exit_pending` is armed instead of letting the later visited-row pass opportunistically arm it
 - the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
-- the exact owner gate that decides when `update_subgoldy` uses direct current-row begin versus the swept re-entry probe
+- the exact early-clear / overlap semantics around `attachment_exit_pending` once swept re-entry succeeds
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
 Best next work:
 
-- keep tightening the swept re-entry owner until it is gated by the native `attachment_exit_pending` lane instead of the current broader gameplay trigger
+- recover the remaining installed-bank and post-success `attachment_exit_pending` semantics around swept re-entry
 - then port the missing family-specific exit behavior, especially for the nonlinear branch
 
 ## Gameplay Camera

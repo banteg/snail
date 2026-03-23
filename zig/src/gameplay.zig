@@ -1665,10 +1665,17 @@ pub const Runner = struct {
         if (self.phase != .active) return;
         if (self.movement_mode != .track) return;
         if (self.launch.active) return;
-        if (self.attachment_exit_pending) return;
 
         const current_row = currentRowIndex(preview, self.row_position);
         const sample = self.sampleRow(preview, current_row) orelse return;
+        if (self.attachment_exit_pending) {
+            // PORT(verified): native `update_subgoldy` only reaches
+            // `try_enter_track_attachment_from_swept_motion` from the live current cell
+            // while `attachment_exit_pending` is still armed; it does not reuse the later
+            // visited-row event pass as a broader installed-entry trigger.
+            _ = self.tryBeginInstalledAttachmentFollow(preview, current_row, sample);
+            return;
+        }
         const gameplay_cell = sample.gameplay_cell orelse return;
         if (gameplay_cell != .attachment_entry and gameplay_cell != .attachment_probe) return;
 
@@ -2256,12 +2263,7 @@ pub const Runner = struct {
 
     fn processRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
         const sample = self.sampleRow(preview, global_row) orelse return;
-        var began_installed_attachment = false;
         const runtime_row_flags = preview.runtimeRowFlagsAt(global_row);
-
-        if (self.movement_mode != .attachment) {
-            began_installed_attachment = self.tryBeginInstalledAttachmentFollow(preview, global_row, sample);
-        }
 
         if (sample.annotation) |annotation| {
             switch (annotation) {
@@ -2312,7 +2314,6 @@ pub const Runner = struct {
             },
             .attachment_entry => {
                 if (self.movement_mode != .attachment and
-                    !began_installed_attachment and
                     !preview.installedBuiltAttachmentsAtRow(global_row).any())
                 {
                     self.beginAttachmentFollow(preview, sample);
@@ -9141,6 +9142,67 @@ test "current-row installed entry can begin from a later installed row span" {
     const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, later_row).?;
     try std.testing.expectEqual(@as(usize, 1), entry.sample_index);
     try std.testing.expect(entry.local_progress > 0.0);
+}
+
+test "swept installed re-entry stays on the current-row prime path while exit pending is armed" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+
+    const SweepSetup = struct {
+        row: usize,
+        previous_row_position: f32,
+        row_position: f32,
+        lane_center: f32,
+    };
+    var sweep_setup: ?SweepSetup = null;
+    var candidate_row = built.row.global_row;
+    while (candidate_row < built.row.global_row + built.template.sample_count and sweep_setup == null) : (candidate_row += 1) {
+        if (fixture.preview.installedBuiltAttachmentAtRow(candidate_row) != built) continue;
+        const candidate_sample = runner.sampleRow(&fixture.preview, candidate_row).?;
+        const row_base: f32 = @floatFromInt(candidate_row);
+        var lane: usize = 0;
+        while (lane < fixture.preview.max_width and sweep_setup == null) : (lane += 1) {
+            const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
+            var start_step: i32 = -4;
+            while (start_step <= 10 and sweep_setup == null) : (start_step += 1) {
+                var end_step = start_step + 1;
+                while (end_step <= 12 and sweep_setup == null) : (end_step += 1) {
+                    runner.lane_center = lane_center;
+                    runner.previous_lane_center = lane_center;
+                    runner.previous_row_position = row_base + (@as(f32, @floatFromInt(start_step)) * 0.05);
+                    runner.row_position = row_base + (@as(f32, @floatFromInt(end_step)) * 0.05);
+                    if (runner.geometricInstalledAttachmentEntry(&fixture.preview, built, candidate_sample) != null) {
+                        sweep_setup = .{
+                            .row = candidate_row,
+                            .previous_row_position = runner.previous_row_position,
+                            .row_position = runner.row_position,
+                            .lane_center = lane_center,
+                        };
+                    }
+                }
+            }
+        }
+    }
+    const setup = sweep_setup orelse return error.TestUnexpectedResult;
+    runner.lane_center = setup.lane_center;
+    runner.previous_lane_center = setup.lane_center;
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
+    runner.resolved_lane_index = runner.lane_index;
+    runner.previous_row_position = setup.previous_row_position;
+    runner.row_position = setup.row_position;
+
+    runner.processRow(&fixture.preview, setup.row);
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+
+    runner.attachment_exit_pending = true;
+    runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
+    try std.testing.expectEqual(RecentEvent.attachment_begin, runner.recent_event);
 }
 
 test "standalone start segment attachment exits from the template end pose" {

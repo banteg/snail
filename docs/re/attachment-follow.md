@@ -32,6 +32,7 @@ Recovered `update_subgoldy` entry split:
 
 - when `player + 0x41d == 0`, the current-cell branch checks runtime tile `29` or `30` and calls `begin_track_attachment_follow_state` directly from that live row cell
 - when `player + 0x41d != 0`, the same function instead probes installed entry through `try_enter_track_attachment_from_swept_motion`
+- that swept probe is driven from the live current cell's installed-owner flags, not from a broader visited-row event pass
 - the swept helper is therefore a separate re-entry path, not the generic current-row begin path
 
 Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_motion`:
@@ -347,7 +348,7 @@ The current Zig port now goes materially farther than the old â€œrow hint onlyâ€
 - the `Segments` view renders those built families directly, including the current nonlinear kind-`42` branch
 - gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
 - the current nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
-- entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, gameplay attempts a built-geometry installed-row entry first, and only falls back to the old source-row path where the new entry test is still too weak
+- entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, current-row gameplay begin now stays on the direct `29/30` cell path, and swept installed re-entry only probes the live current row while `attachment_exit_pending` is set
 
 That is still not the full Windows model.
 
