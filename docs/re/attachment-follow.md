@@ -34,6 +34,7 @@ Recovered `update_subgoldy` entry split:
 - when `player + 0x41d != 0`, the same function instead probes installed entry through `try_enter_track_attachment_from_swept_motion`
 - that swept probe is driven from the live current cell's installed-owner flags, not from a broader visited-row event pass
 - `flags_b & 0x40` is probed first, and `flags_b & 0x80` is only probed if `player + 0x41d` is still nonzero after the first callsite
+- raw disassembly plus the checked-in IDA export do not show a direct helper-side clear of `player + 0x41d` before that second gate check, so immediate success on the `0x40` callsite does not retire the gate up front
 - the swept helper is therefore a separate re-entry path, not the generic current-row begin path
 
 Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_motion`:
@@ -358,12 +359,13 @@ The current Zig port now goes materially farther than the old â€œrow hint onlyâ€
 - gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
 - the current nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
 - entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, current-row gameplay begin now stays on the direct `29/30` cell path, and swept installed re-entry only probes the live current row while `attachment_exit_pending` is set, using the live `0x40` slot first and `0x80` second instead of any installed span
+- immediate swept-entry success no longer looks like an early-clear lane: the native caller re-tests `attachment_exit_pending` right after the first helper call, and the helper itself does not show a direct clear, so overlapping rows still leave the `0x80` probe reachable in the same tick
 
 That is still not the full Windows model.
 
 Current Zig gaps that remain clearly open:
 
 - the real installed runtime bank and owner-record chain
-- the exact post-success clear/overlap semantics around the live `0x40` / `0x80` swept-entry probes
+- the later controller that finally retires `attachment_exit_pending` after swept re-entry, plus live confirmation of what happens when two geometrically valid overlapping probes both succeed
 - the exact family-specific semantics inside the nonlinear kind-`42` family
 - the exact installed-bank split between public names like `HALFPIPE` and `WARP`

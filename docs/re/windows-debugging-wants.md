@@ -200,13 +200,13 @@ What is still missing is the exact consumer set for `post_follow_value_b` and th
 
 - Is `post_follow_value_b` ever read directly after the handoff write?
 - Are `+0x44c` and `+0x44d` purely visual or do they gate gameplay state transitions?
-- Does `attachment_exit_pending` clear only when progress reaches `1`, or can another controller clear it early?
+- After swept re-entry succeeds, which later controller finally retires `attachment_exit_pending`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
 - Does `post_follow_value_a` get integrated in player space, world space, or mixed space before the camera call?
 
 ### Done when
 
 - every read of `player + 0x430` in the captured window is accounted for
-- the clear site for `attachment_exit_pending` is identified
+- the later retirement path for `attachment_exit_pending` after swept re-entry is identified
 - one note explains what each of the two gate bytes seems to control
 
 ## 5. Outer Subgame Startup And Fresh-Start Flags

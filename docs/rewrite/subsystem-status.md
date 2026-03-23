@@ -193,20 +193,21 @@ Implemented now:
 - normal gameplay entry now mirrors the native split between current-cell begin and swept re-entry: current row tiles `29/30` go through the direct begin helper when `attachment_exit_pending` is clear
 - swept installed re-entry now also stays on that same native owner boundary: the Zig runner only probes the live current row while `attachment_exit_pending` is armed instead of letting the later visited-row pass opportunistically arm it
 - those swept probes now also use the live current-row owner bits in native order: `flags_b & 0x40` first, then `flags_b & 0x80` only if the first probe leaves `attachment_exit_pending` armed
+- raw BN plus the checked-in IDA export now narrow one more gate detail: the primary swept helper path does not show a direct early clear of `attachment_exit_pending`, and the caller re-tests the same byte immediately before the `0x80` probe, so overlapping rows still leave that secondary callsite reachable in the same tick
 - the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
-- the exact early-clear / overlap semantics around `attachment_exit_pending` once swept re-entry succeeds
+- the later controller that finally retires `attachment_exit_pending` after swept re-entry, plus live confirmation of what happens when two geometrically valid overlapping probes both succeed
 - the follow-milestone lane behind the static `voice 4` callsite; raw BN plus IDA now show a contradictory `sample_index + 1 == template->sample_count << 1` gate versus the same helper's `sample_index == template->sample_count` termination, so this should not be guessed into the port yet
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
 Best next work:
 
-- recover the remaining installed-bank and post-success `attachment_exit_pending` semantics around swept re-entry
+- recover the later controller that finally retires `attachment_exit_pending` after swept re-entry, then live-check whether two valid overlapping probes can overwrite each other in one tick
 - then port the missing family-specific exit behavior, especially for the nonlinear branch
 
 ## Gameplay Camera

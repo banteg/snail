@@ -151,12 +151,13 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 - [ ] Recover the full installed-bank ownership and row-slot pairing rules
 - [x] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
-  - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, and the current row now gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`)
+  - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, the current row gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`), and raw BN plus IDA now show the first swept helper does not directly retire `attachment_exit_pending` before that `0x80` gate check
 - [ ] Recover the real consumers and semantics of `attachment_exit_value_a` / `attachment_exit_value_b`
 - [ ] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
   - current narrowing: raw BN plus IDA now agree the `voice 4` call at `0x420d30` sits behind `sample_index + 1 == template->sample_count << 1`, while `begin_track_attachment_follow_state` seeds `sample_index = 0` and the same helper retires follow at `sample_index == template->sample_count`
   - consequence: do not port that cue until live tracing or stronger type recovery explains the counter mismatch
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
+  - next narrowing: identify the later controller that finally retires `attachment_exit_pending` after swept re-entry, then confirm with a live overlap whether two geometrically valid probes can overwrite each other in one tick
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 

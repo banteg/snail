@@ -1679,7 +1679,10 @@ pub const Runner = struct {
             // while `attachment_exit_pending` is still armed; it does not reuse the later
             // visited-row event pass as a broader installed-entry trigger. BN/IDA also show
             // those swept probes are keyed from the live row's `flags_b & 0x40` slot first,
-            // then `flags_b & 0x80` only if the first call leaves the gate armed.
+            // then `flags_b & 0x80` only if the first call leaves the gate armed. Raw
+            // disassembly does not show a direct helper-side clear before that second
+            // gate check, so keep `attachment_exit_pending` live across a successful
+            // primary re-entry attempt.
             if (preview.runtimeFlagB40At(current_row, sample.resolved_lane_index)) {
                 _ = self.tryBeginInstalledAttachmentFollowForSlot(preview, current_row, sample, .primary);
             }
@@ -9205,7 +9208,7 @@ test "current-row installed entry can begin from a later installed row span" {
     try std.testing.expect(entry.local_progress > 0.0);
 }
 
-test "swept installed re-entry stays on the current-row prime path while exit pending is armed" {
+test "swept installed re-entry stays on the current-row prime path and leaves exit pending armed" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -9231,6 +9234,7 @@ test "swept installed re-entry stays on the current-row prime path while exit pe
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
     try std.testing.expectEqual(RecentEvent.attachment_begin, runner.recent_event);
+    try std.testing.expect(runner.attachment_exit_pending);
 }
 
 test "swept installed re-entry ignores rows without live attachment-owner flags" {
