@@ -1438,6 +1438,20 @@ const RunOutcome = enum {
     failed,
 };
 
+fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) ResultReturnTarget {
+    return switch (owner) {
+        .postal_route_map => .postal_route_map,
+        .postal_final => .thanks_screen,
+        .postal_failure => .new_game_menu,
+        .challenge_completion => .replay_current_level,
+        .challenge_failure => .main_menu,
+        .time_trial_completion => .time_trial_route_map,
+        .time_trial_failure => .main_menu,
+        .tutorial_completion => .new_game_menu,
+        .tutorial_failure => .main_menu,
+    };
+}
+
 const NativeGameplaySoundCues = struct {
     completion_arm_cheers: bool = false,
     extra_life: bool = false,
@@ -2115,6 +2129,7 @@ const PendingRunResult = struct {
     high_score_rank: ?usize = null,
     time_trial_record_improved: bool = false,
     unlocked_next_route: bool = false,
+    completion_owner: CompletionFlowOwner = .tutorial_completion,
     persistence: PendingRunPersistence = .none,
     return_target: ResultReturnTarget,
 };
@@ -2122,6 +2137,23 @@ const PendingRunResult = struct {
 const PendingHighScoreEntry = struct {
     mode: high_score.Mode,
     rank: usize,
+};
+
+const CompletionFlowOwner = enum {
+    postal_route_map,
+    postal_final,
+    postal_failure,
+    challenge_completion,
+    challenge_failure,
+    time_trial_completion,
+    time_trial_failure,
+    tutorial_completion,
+    tutorial_failure,
+};
+
+const HighScoreScreenOwner = union(enum) {
+    main_menu_browse: high_score.Mode,
+    post_level_entry: PendingHighScoreEntry,
 };
 
 const SelectedLevelRecordSource = union(enum) {
@@ -2885,6 +2917,7 @@ const AppState = struct {
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
     preserved_frontend_owner: FrontendBridgeTarget = .main_menu,
+    high_score_screen_owner: HighScoreScreenOwner = .{ .main_menu_browse = .postal },
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
@@ -4337,7 +4370,7 @@ const AppState = struct {
     }
 
     fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
-        const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        const selected_mode = self.activeHighScoreScreenMode();
         if (!highScoreRowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
         const entries = self.high_score_tables.visibleEntries(selected_mode);
         return entry_index < entries.len and entries[entry_index].has_replay;
@@ -4370,7 +4403,7 @@ const AppState = struct {
                 return;
             }
         } else {
-            const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+            const selected_mode = self.activeHighScoreScreenMode();
             const entries = self.high_score_tables.visibleEntries(selected_mode);
             if (highScoreRowsShowReplay(selected_mode, false)) {
                 for (entries, 0..) |entry, entry_index| {
@@ -4396,7 +4429,7 @@ const AppState = struct {
                 return;
             }
 
-            const toggle_rect = highScoreFooterTextRect(self, highScoreTableToggleLabel(high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)]), high_score_toggle_x);
+            const toggle_rect = highScoreFooterTextRect(self, highScoreTableToggleLabel(self.activeHighScoreScreenMode()), high_score_toggle_x);
             if (frontend_widget.hitRect(toggle_rect, self.high_score_button_states[1]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForHighScores(1));
                 self.high_scores_action_index = 1;
@@ -5057,10 +5090,10 @@ const AppState = struct {
                 .high_scores_menu => if (self.postLevelHighScoreContext() != null)
                     try self.cancelPostLevelHighScoreEntry()
                 else
-                    try self.enterGamePhase(.main_menu),
+                    try self.performHighScoreMenuAction(.back),
                 .options_menu => try self.leaveOptionsMenu(),
                 .pause_menu => try self.resumeFromPauseMenu(),
-                .route_map_menu => try self.enterGamePhase(.main_menu),
+                .route_map_menu => try self.performRouteMenuAction(.back),
                 .exit_prompt => try self.enterGamePhase(self.exit_prompt_return_phase),
                 .completion_screen => if (self.completionContinueVisible()) try self.continueCompletionScreen(),
                 .thanks_screen => self.beginThanksScreenExit(),
@@ -5330,11 +5363,11 @@ const AppState = struct {
             .intro,
             .main_menu,
             .new_game_menu,
-            .high_scores_menu,
             .help,
             .credits,
             .thanks_screen,
             => try self.enterGamePhase(phase),
+            .high_scores_menu => try self.enterHighScoreBrowseScreen(.postal),
             .options_menu => {
                 if (self.start_pause_context) {
                     try self.loadGameLevel(default_level_path);
@@ -5369,15 +5402,16 @@ const AppState = struct {
                     .elapsed_millis = 62_340,
                     .parcel_count = 1,
                     .parcel_target = 1,
-                    .score = 50_300,
+                    .score = 50_210,
                     .score_is_partial = true,
                     .score_totals = .{
                         .parcel_pickup = 100,
-                        .parcel_register = 100,
+                        .parcel_register = 10,
                         .completion_bonus = 50_000,
-                        .total = 50_300,
+                        .total = 50_210,
                     },
                     .visible_life_stock = 3,
+                    .completion_owner = .postal_route_map,
                     .return_target = .postal_route_map,
                 };
                 try self.enterGamePhase(.completion_screen);
@@ -5390,7 +5424,7 @@ const AppState = struct {
             .new_game => try self.enterGamePhase(.new_game_menu),
             .high_scores => {
                 self.high_scores_action_index = 1;
-                try self.enterGamePhase(.high_scores_menu);
+                try self.enterHighScoreBrowseScreen(.postal);
             },
             .options => {
                 self.options_return_phase = .main_menu;
@@ -5404,6 +5438,31 @@ const AppState = struct {
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
         self.playFrontendSelectSound();
         try self.performMainMenuItem(item);
+    }
+
+    fn activeHighScoreScreenMode(self: *const AppState) high_score.Mode {
+        return switch (self.high_score_screen_owner) {
+            .main_menu_browse => |mode| mode,
+            .post_level_entry => |context| context.mode,
+        };
+    }
+
+    fn setHighScoreBrowseOwner(self: *AppState, mode: high_score.Mode) void {
+        self.high_scores_menu_index = highScoreModeIndex(mode);
+        self.high_score_screen_owner = .{ .main_menu_browse = mode };
+        self.clearPostLevelHighScoreEntry();
+    }
+
+    fn enterHighScoreBrowseScreen(self: *AppState, mode: high_score.Mode) !void {
+        self.setHighScoreBrowseOwner(mode);
+        try self.enterGamePhase(.high_scores_menu);
+    }
+
+    fn enterPostLevelHighScoreScreen(self: *AppState, context: PendingHighScoreEntry) !void {
+        self.high_score_screen_owner = .{ .post_level_entry = context };
+        self.high_scores_menu_index = highScoreModeIndex(context.mode);
+        self.preparePostLevelHighScoreEntry(context);
+        try self.enterGamePhase(.high_scores_menu);
     }
 
     fn performNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
@@ -5527,14 +5586,27 @@ const AppState = struct {
 
     fn performHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
         switch (action) {
-            .back => try self.enterGamePhase(.main_menu),
-            .switch_table => self.high_scores_menu_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1),
+            .back => switch (self.high_score_screen_owner) {
+                .main_menu_browse => try self.enterGamePhase(.main_menu),
+                .post_level_entry => try self.cancelPostLevelHighScoreEntry(),
+            },
+            .switch_table => switch (self.high_score_screen_owner) {
+                .main_menu_browse => {
+                    const next_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
+                    self.setHighScoreBrowseOwner(high_score_screen_modes[next_index]);
+                },
+                .post_level_entry => {},
+            },
         }
     }
 
     fn performHighScoreReplay(self: *AppState, entry_index: usize) !void {
+        switch (self.high_score_screen_owner) {
+            .main_menu_browse => {},
+            .post_level_entry => return,
+        }
         if (!self.highScoreReplayAvailable(entry_index)) return;
-        const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        const selected_mode = self.activeHighScoreScreenMode();
         const source: SelectedLevelRecordSource = switch (selected_mode) {
             .postal => .{ .postal = entry_index },
             .challenge => .{ .challenge = entry_index },
@@ -5673,10 +5745,7 @@ const AppState = struct {
                 self.start_route_index_override = target.start_route_override;
                 try self.enterRouteMapMenuWithScreenMode(target.mode, target.screen_mode);
             },
-            .high_scores_menu => |mode| {
-                self.high_scores_menu_index = highScoreModeIndex(mode);
-                try self.enterGamePhase(.high_scores_menu);
-            },
+            .high_scores_menu => |mode| try self.enterHighScoreBrowseScreen(mode),
             .replay_current_level => |target| {
                 try self.beginFrontendLevelPath(
                     target.mode,
@@ -6217,8 +6286,9 @@ const AppState = struct {
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
+            .completion_owner = completionFlowOwnerForOutcome(.completed, active_mode),
             .persistence = .completed,
-            .return_target = resultReturnTargetForOutcome(.completed, active_mode),
+            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.completed, active_mode)),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -6226,10 +6296,11 @@ const AppState = struct {
                 result.score = runner.score.total;
                 result.score_is_partial = true;
                 const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
-                result.return_target = postalCompletionReturnTarget(
+                result.completion_owner = postalCompletionOwner(
                     self.active_frontend_level_index,
                     highest_available,
                 );
+                result.return_target = resultReturnTargetForCompletionOwner(result.completion_owner);
                 // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
                 // not the arcade-high-score commit path. Only the last postal route upgrades
                 // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
@@ -6303,8 +6374,9 @@ const AppState = struct {
             .score_totals = runner.score,
             .visible_life_stock = runner.visible_life_stock,
             .damage_gauge = runner.damage_gauge,
+            .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
             .persistence = .failed,
-            .return_target = resultReturnTargetForOutcome(.failed, active_mode),
+            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -6425,28 +6497,31 @@ const AppState = struct {
         var updated = result;
         switch (result.persistence) {
             .none => return,
-            .completed => switch (result.mode orelse .tutorial) {
-                .postal => {
-                    if (postalCompletionCommitsHighScore(
-                        self.active_frontend_level_index,
-                        self.highestAvailableFrontendRouteIndex(.postal),
-                    )) {
-                        const entry = self.currentRunHighScoreEntry(result.score);
-                        const insert = self.high_score_tables.addArcade(self.allocator, entry);
-                        updated.high_score_mode = .postal;
-                        updated.high_score_rank = insert.rank;
-                        try self.saveHighScoreTables();
-                    }
+            .completed => switch (result.completion_owner) {
+                .postal_route_map => {
                     updated.unlocked_next_route = try self.commitPostalRouteProgress();
                 },
-                .challenge => {
+                .postal_final => {
+                    const entry = self.currentRunHighScoreEntry(result.score);
+                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
+                    updated.high_score_mode = .postal;
+                    updated.high_score_rank = insert.rank;
+                    updated.unlocked_next_route = try self.commitPostalRouteProgress();
+                    try self.saveHighScoreTables();
+                },
+                .postal_failure,
+                .challenge_failure,
+                .time_trial_failure,
+                .tutorial_failure,
+                => unreachable,
+                .challenge_completion => {
                     const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                     updated.high_score_mode = .challenge;
                     updated.high_score_rank = insert.rank;
                     try self.saveHighScoreTables();
                 },
-                .time_trial => {
+                .time_trial_completion => {
                     const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addTimeTrial(
                         self.allocator,
@@ -6457,24 +6532,30 @@ const AppState = struct {
                     updated.time_trial_record_improved = insert.improved;
                     try self.saveHighScoreTables();
                 },
-                .tutorial => {},
+                .tutorial_completion => {},
             },
-            .failed => switch (result.mode orelse .tutorial) {
-                .postal => {
+            .failed => switch (result.completion_owner) {
+                .postal_failure => {
                     const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addArcade(self.allocator, entry);
                     updated.high_score_mode = .postal;
                     updated.high_score_rank = insert.rank;
                     try self.saveHighScoreTables();
                 },
-                .challenge => {
+                .challenge_failure => {
                     const entry = self.currentRunHighScoreEntry(result.score);
                     const insert = self.high_score_tables.addSurvival(self.allocator, entry);
                     updated.high_score_mode = .challenge;
                     updated.high_score_rank = insert.rank;
                     try self.saveHighScoreTables();
                 },
-                .time_trial, .tutorial => {},
+                .postal_route_map,
+                .postal_final,
+                .challenge_completion,
+                .time_trial_completion,
+                .tutorial_completion,
+                => unreachable,
+                .time_trial_failure, .tutorial_failure => {},
             },
         }
         updated.persistence = .none;
@@ -6483,10 +6564,8 @@ const AppState = struct {
 
     fn continueCompletionScreen(self: *AppState) !void {
         try self.commitPendingRunResultIfNeeded();
-        if (self.postLevelHighScoreContext()) |context| {
-            self.preparePostLevelHighScoreEntry();
-            self.high_scores_menu_index = highScoreModeIndex(context.mode);
-            try self.enterGamePhase(.high_scores_menu);
+        if (self.pendingRunHighScoreContext()) |context| {
+            try self.enterPostLevelHighScoreScreen(context);
             return;
         }
         try self.finishPendingRunReturn();
@@ -6501,6 +6580,7 @@ const AppState = struct {
         const result = self.pending_run_result orelse {
             self.completion_overlay_active = false;
             self.preserve_completion_screen_reveal_on_enter = false;
+            self.setHighScoreBrowseOwner(.postal);
             try self.enterGamePhase(.main_menu);
             return;
         };
@@ -6511,7 +6591,7 @@ const AppState = struct {
         try self.dispatchOuterBridgeRequest(self.outerBridgeRequestForPendingRunResult(result));
     }
 
-    fn postLevelHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
+    fn pendingRunHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
         const result = self.pending_run_result orelse return null;
         const mode = result.high_score_mode orelse return null;
         const rank = result.high_score_rank orelse return null;
@@ -6521,11 +6601,17 @@ const AppState = struct {
         };
     }
 
-    fn preparePostLevelHighScoreEntry(self: *AppState) void {
+    fn postLevelHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
+        return switch (self.high_score_screen_owner) {
+            .post_level_entry => |context| context,
+            .main_menu_browse => null,
+        };
+    }
+
+    fn preparePostLevelHighScoreEntry(self: *AppState, context: PendingHighScoreEntry) void {
         self.clearPostLevelHighScoreEntry();
         self.post_level_high_score_action_index = 1;
 
-        const context = self.postLevelHighScoreContext() orelse return;
         const entry = self.highScoreEntry(context.mode, context.rank) orelse return;
         const existing_name = entry.name();
         const clipped = existing_name[0..@min(existing_name.len, self.post_level_high_score_name_buf.len)];
@@ -6667,13 +6753,11 @@ const AppState = struct {
             },
             .postal => {
                 try self.setSelectedLevelRecordContext(null, null);
-                self.high_scores_menu_index = highScoreModeIndex(.postal);
-                try self.enterGamePhase(.high_scores_menu);
+                try self.enterHighScoreBrowseScreen(.postal);
             },
             .challenge => {
                 try self.setSelectedLevelRecordContext(null, null);
-                self.high_scores_menu_index = highScoreModeIndex(.challenge);
-                try self.enterGamePhase(.high_scores_menu);
+                try self.enterHighScoreBrowseScreen(.challenge);
             },
         }
     }
@@ -6718,7 +6802,7 @@ const AppState = struct {
     }
 
     fn highScoreReplayEntry(self: *const AppState, entry_index: usize) ?*const high_score.Entry {
-        const selected_mode = high_score_screen_modes[@min(self.high_scores_menu_index, high_score_screen_modes.len - 1)];
+        const selected_mode = self.activeHighScoreScreenMode();
         return self.highScoreEntry(selected_mode, entry_index);
     }
 
@@ -8572,10 +8656,7 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const pending_entry = state.postLevelHighScoreContext();
-    const selected_mode = if (pending_entry) |context|
-        context.mode
-    else
-        high_score_screen_modes[@min(state.high_scores_menu_index, high_score_screen_modes.len - 1)];
+    const selected_mode = state.activeHighScoreScreenMode();
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
@@ -9554,31 +9635,37 @@ fn completionBonusLine(buffer: []u8, result: PendingRunResult) !?[]const u8 {
     return try std.fmt.bufPrint(buffer, "{d} Bonus Points!", .{result.score_totals.completion_bonus});
 }
 
-fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
+fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
     if (outcome == .failed) {
         return switch (mode orelse .postal) {
-            // PORT(verified): ordinary postal final-loss uses the outer bridge's
-            // `26 -> 2` return when replay-backed routing and the post-level high-score
-            // owner do not override it.
-            .postal => .new_game_menu,
-            .challenge => .main_menu,
-            .time_trial => .main_menu,
-            .tutorial => .main_menu,
+            .postal => .postal_failure,
+            .challenge => .challenge_failure,
+            .time_trial => .time_trial_failure,
+            .tutorial => .tutorial_failure,
         };
     }
     return switch (mode orelse .postal) {
         .postal => .postal_route_map,
-        .time_trial => .time_trial_route_map,
-        .challenge => .replay_current_level,
-        // PORT(verified): tutorial completion forces the outer bridge's `26 -> 2` path in
-        // `update_subgoldy`, so the native return target is the New Game owner.
-        .tutorial => .new_game_menu,
+        .challenge => .challenge_completion,
+        .time_trial => .time_trial_completion,
+        .tutorial => .tutorial_completion,
     };
 }
 
+fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
+    // PORT(verified): the ordinary postal completion path still returns through the
+    // post-completion Star Map owner. Only the final shipped route upgrades to the
+    // thanks-screen path.
+    return resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
+}
+
 fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) ResultReturnTarget {
+    return resultReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
+}
+
+fn postalCompletionOwner(current_index: usize, highest_available: usize) CompletionFlowOwner {
     return if (AppState.postalCompletionCommitsHighScore(current_index, highest_available))
-        .thanks_screen
+        .postal_final
     else
         .postal_route_map;
 }
@@ -9654,7 +9741,7 @@ fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
 
 // PORT(partial): this now follows the recovered Windows `cRSubGoldy::ScoreAdd` constants for the
 // score events the current runner actually models:
-// ring collect (+100 for the scoring ring families), parcel pickup/register (+100 each), and the
+// ring collect (+100 for the scoring ring families), parcel pickup (+100), parcel register (+10), and the
 // postal-only completion bonus (+50,000). Health pickup no longer scores in the Windows-targeted path.
 // Slug kills (+500), garbage-side score events (+10),
 // jetpack/speed-up scoring, and the rest of the original `cRSubGoldy::AI()` path remain unported.
@@ -9723,36 +9810,10 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
         if (state.isTutorialGameplay()) {
             try drawTutorialGameplayUi(state, layout, loaded_level, runner);
         } else {
-            const hud_panel = layout.mapRect(16.0, 14.0, 360.0, 58.0);
-            rl.drawRectangleRounded(hud_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-
-            const title_point = layout.mapPoint(28.0, 24.0);
-            const meta_point = layout.mapPoint(28.0, 50.0);
-            const parcel_target = state.currentParcelTarget();
-            const parcel_count = runner.counters.parcels;
-            const score_total = runner.score.total;
-            const elapsed_millis = runner.stopwatch.elapsedMillis();
-            const title_text = gameplayHudTitle(loaded_level, runner);
-            const package_icon = game_font.IconGlyph.package.byte();
-            const title_font_size = layout.fontSize(28);
-            const body_font_size = layout.fontSize(18);
-
-            drawAppText(state, title_text, @intFromFloat(title_point.x), @intFromFloat(title_point.y), title_font_size, .gold);
-
-            var elapsed_buffer: [32]u8 = undefined;
-            const elapsed_text = try formatElapsedMillis(&elapsed_buffer, elapsed_millis);
-            var meta_buffer: [256]u8 = undefined;
-            const meta_text = if (parcel_target > 0)
-                try std.fmt.bufPrintZ(
-                    &meta_buffer,
-                    "{c} {d}/{d}   Score {d}   Time {s}",
-                    .{ package_icon, parcel_count, parcel_target, score_total, elapsed_text },
-                )
-            else
-                try std.fmt.bufPrintZ(&meta_buffer, "Score {d}   Time {s}", .{ score_total, elapsed_text });
-            drawAppText(state, meta_text, @intFromFloat(meta_point.x), @intFromFloat(meta_point.y), body_font_size, .ray_white);
-
+            try drawStandardGameplayHud(state, layout, runner);
+            drawGameplayProgressBar(state, layout, runner);
             drawGameplayStatusWidgets(state, layout, runner);
+            try drawGameplayRowEventWidget(state, layout, runner);
             try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
         }
     }
@@ -9906,11 +9967,11 @@ fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue:
 
 fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
     try drawTutorialGameplayHud(state, layout, loaded_level, runner);
-    drawTutorialProgressBar(state, layout, runner);
+    drawGameplayProgressBar(state, layout, runner);
     drawTutorialLives(state, layout, runner.visible_life_stock);
     drawDamageGaugeWidget(state, layout, runner, false);
     if (runner.jetpack.active) {
-        drawJetpackGaugeWidget(state, layout, runner);
+        drawJetpackGaugeWidget(state, layout, runner, false);
     }
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
@@ -9956,6 +10017,34 @@ fn drawTutorialGameplayHud(state: *const AppState, layout: VirtualLayout, loaded
     var score_buffer: [32]u8 = undefined;
     const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
     drawRightAlignedGameplayHudTextShadowed(state, layout, 628.0, 10.0, score_text, 22, .white);
+}
+
+fn drawStandardGameplayHud(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) !void {
+    const parcel_target = state.currentParcelTarget();
+    const parcel_count = runner.counters.parcels;
+
+    if (parcel_target > 0) {
+        var parcel_buffer: [32]u8 = undefined;
+        const parcel_text = try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target });
+        drawGameplayIconCounter(
+            state,
+            layout,
+            .package,
+            parcel_text,
+            12.0,
+            10.0,
+            22,
+            .white,
+        );
+    }
+
+    var score_buffer: [32]u8 = undefined;
+    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
+    drawCenteredGameplayHudTextShadowed(state, layout, 320.0, 10.0, score_text, 22, .white);
+
+    var elapsed_buffer: [32]u8 = undefined;
+    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, runner.stopwatch.elapsedMillis());
+    drawRightAlignedGameplayHudTextShadowed(state, layout, 628.0, 10.0, elapsed_text, 22, .white);
 }
 
 fn drawCenteredGameplayHudText(
@@ -10054,7 +10143,7 @@ fn deterministicGameplayAmbientSlugRoll(row: usize, lane: usize) f32 {
     return @floatCast(normalized);
 }
 
-fn drawTutorialProgressBar(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+fn drawGameplayProgressBar(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
     const preview = state.current_track_preview orelse return;
     const total_rows = @max(preview.total_rows, 1);
     const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
@@ -10144,14 +10233,96 @@ fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {
 }
 
 fn drawGameplayStatusWidgets(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
-    drawJetpackGaugeWidget(state, layout, runner);
-    drawDamageGaugeWidget(state, layout, runner, true);
+    drawJetpackGaugeWidget(state, layout, runner, false);
+    drawDamageGaugeWidget(state, layout, runner, false);
     if (runner.session_mode == .postal) {
-        drawVisibleLifeStrip(state, layout, runner.visible_life_stock);
+        drawTutorialLives(state, layout, runner.visible_life_stock);
     }
 }
 
-fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) void {
+const row_event_widget_frame_width: f32 = 88.0;
+const row_event_widget_frame_height: f32 = 30.0;
+const row_event_widget_frame_offset_x: f32 = -18.0;
+const row_event_widget_frame_offset_y: f32 = -15.0;
+const row_event_widget_icon_x: f32 = -12.0;
+const row_event_widget_icon_y: f32 = -10.0;
+const row_event_widget_icon_size: f32 = 20.0;
+const row_event_widget_text_x: f32 = 14.0;
+const row_event_widget_text_y: f32 = -9.0;
+const row_event_widget_bonus_y: f32 = 18.0;
+
+fn drawGameplayRowEventWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) !void {
+    if (!runner.rowEventCounterVisible()) return;
+    const loaded_track_preview = state.current_track_preview orelse return;
+    const camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
+    const widget_world = runner.rowEventWidgetWorldPosition();
+    const screen_point = rl.getWorldToScreenEx(widget_world, camera, screenWidth(), screenHeight());
+    if (!std.math.isFinite(screen_point.x) or !std.math.isFinite(screen_point.y)) return;
+    if (!layout.containsScreenPoint(screen_point.x, screen_point.y)) return;
+
+    const local_point = layout.unmapPoint(screen_point.x, screen_point.y);
+    var frame_state = frontend_widget.TextButtonState{};
+    frame_state.snapFor(.menu_button, false);
+    const colors = frontend_widget.colorsForState(frame_state, false);
+    frontend_widget.drawNineSliceFrame(
+        layout,
+        state.frontend_widget_art.border.?.texture,
+        .{
+            .left = local_point.x + row_event_widget_frame_offset_x,
+            .top = local_point.y + row_event_widget_frame_offset_y,
+            .width = row_event_widget_frame_width,
+            .height = row_event_widget_frame_height,
+        },
+        frontend_widget.type20_border_edge,
+        frontend_widget.type20_border_edge / 128.0,
+        .{ .r = colors.fill.r, .g = colors.fill.g, .b = colors.fill.b, .a = 176 },
+    );
+
+    if (state.frontend_widget_art.parcel_icon) |loaded_texture| {
+        drawTextureLocalRect(
+            layout,
+            loaded_texture,
+            local_point.x + row_event_widget_icon_x,
+            local_point.y + row_event_widget_icon_y,
+            row_event_widget_icon_size,
+            row_event_widget_icon_size,
+            .white,
+        );
+    }
+
+    var counter_buffer: [32]u8 = undefined;
+    const counter_text = try std.fmt.bufPrint(
+        &counter_buffer,
+        "{d}/{d}",
+        .{ runner.registeredParcelCount(), runner.rowEventParcelTargetCount() },
+    );
+    drawGameplayHudTextShadowed(
+        state,
+        layout,
+        local_point.x + row_event_widget_text_x,
+        local_point.y + row_event_widget_text_y,
+        counter_text,
+        16,
+        .white,
+    );
+
+    if (runner.rowEventBonusVisible()) {
+        var bonus_buffer: [32]u8 = undefined;
+        const bonus_text = try std.fmt.bufPrint(&bonus_buffer, "+{d}", .{runner.rowEventBonusScore()});
+        const alpha: u8 = @intFromFloat(std.math.clamp(runner.rowEventBonusBlinkAlpha(), 0.0, 1.0) * 255.0);
+        drawCenteredGameplayHudTextShadowed(
+            state,
+            layout,
+            local_point.x + 26.0,
+            local_point.y + row_event_widget_bonus_y,
+            bonus_text,
+            16,
+            .{ .r = 255, .g = 224, .b = 112, .a = alpha },
+        );
+    }
+}
+
+fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
     if (!runner.jetpack.active) return;
 
     const panel = layout.mapRect(548.0, 108.0, 28.0, 224.0);
@@ -10165,7 +10336,9 @@ fn drawJetpackGaugeWidget(state: *const AppState, layout: VirtualLayout, runner:
     const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
     const fill_color = jetpackGaugeColor(runner.jetpack.warning_band, pulse);
 
-    drawAppText(state, "Jet", @intFromFloat(panel.x + layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    if (show_label) {
+        drawAppText(state, "Jet", @intFromFloat(panel.x + layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    }
     rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
 
     const inner = rl.Rectangle{
@@ -12356,6 +12529,12 @@ test "run return targets follow the recovered native bridge where confirmed" {
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
 }
 
+test "completion flow owners map postal loops to the recovered return targets" {
+    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, resultReturnTargetForCompletionOwner(.postal_route_map));
+    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, resultReturnTargetForCompletionOwner(.postal_final));
+    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForCompletionOwner(.postal_failure));
+}
+
 test "selected replay return targets follow the launch surface" {
     try std.testing.expectEqual(
         ResultReturnTarget.time_trial_route_map,
@@ -12569,6 +12748,10 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
         .high_score_rank = 0,
         .return_target = .postal_route_map,
     };
+    state.high_score_screen_owner = .{ .post_level_entry = .{
+        .mode = .postal,
+        .rank = 0,
+    } };
     try std.testing.expectEqualDeep(
         FrontendQueuedAction{ .post_level_high_scores = .cancel },
         state.frontendShortcutActivationForCode(11).?,
@@ -12805,6 +12988,180 @@ test "postal high-score commit gates on the final shipped route" {
     try std.testing.expect(!AppState.postalCompletionCommitsHighScore(0x31, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x32, 0x32));
     try std.testing.expect(AppState.postalCompletionCommitsHighScore(0x33, 0x33));
+}
+
+test "ordinary postal completion commits unlock progress without staging arcade score entry" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.catalog = catalog;
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.runtime_config.setRouteUnlockLimit(1);
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 1;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
+    state.high_score_screen_owner = .{ .main_menu_browse = .postal };
+    state.pending_run_result = .{
+        .level_name = "Route 1",
+        .mode = .postal,
+        .elapsed_millis = 10_000,
+        .parcel_count = 1,
+        .parcel_target = 1,
+        .score = 12_345,
+        .score_is_partial = true,
+        .completion_owner = .postal_route_map,
+        .persistence = .completed,
+        .return_target = .postal_route_map,
+    };
+
+    try state.commitPendingRunResultIfNeeded();
+
+    const updated = state.pending_run_result.?;
+    try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
+    try std.testing.expectEqual(@as(?high_score.Mode, null), updated.high_score_mode);
+    try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
+    try std.testing.expect(updated.unlocked_next_route);
+    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, updated.return_target);
+    try std.testing.expectEqual(@as(u32, 2), state.runtime_config.routeUnlockLimit());
+}
+
+test "final postal completion stages postal score entry before thanks return" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.catalog = catalog;
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.runtime_config.setRouteUnlockLimit(0x32);
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 0x32;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
+    state.high_score_screen_owner = .{ .main_menu_browse = .postal };
+    state.pending_run_result = .{
+        .level_name = "Final Route",
+        .mode = .postal,
+        .elapsed_millis = 20_000,
+        .parcel_count = 9,
+        .parcel_target = 9,
+        .score = 65_000,
+        .score_is_partial = true,
+        .completion_owner = .postal_final,
+        .persistence = .completed,
+        .return_target = .thanks_screen,
+    };
+
+    try state.commitPendingRunResultIfNeeded();
+
+    const updated = state.pending_run_result.?;
+    try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
+    try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
+    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, updated.return_target);
+    try std.testing.expect(!updated.unlocked_next_route);
+    const context = state.pendingRunHighScoreContext() orelse return error.TestExpectedPendingHighScoreEntry;
+    try std.testing.expectEqual(high_score.Mode.postal, context.mode);
+    try std.testing.expectEqual(@as(usize, 0), context.rank);
+}
+
+test "postal failure only stages post-level score entry when the score qualifies" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 7;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_replay_cache = null;
+    state.high_score_screen_owner = .{ .main_menu_browse = .postal };
+
+    for (state.high_score_tables.postal[0..high_score.visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(1_000 - index * 10)) };
+    }
+
+    state.pending_run_result = .{
+        .outcome = .failed,
+        .level_name = "Route 7",
+        .mode = .postal,
+        .elapsed_millis = 30_000,
+        .parcel_count = 2,
+        .parcel_target = 9,
+        .score = 900,
+        .score_is_partial = true,
+        .completion_owner = .postal_failure,
+        .persistence = .failed,
+        .return_target = .new_game_menu,
+    };
+
+    try state.commitPendingRunResultIfNeeded();
+
+    const updated = state.pending_run_result.?;
+    try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
+    try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
+    try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
+    try std.testing.expectEqual(@as(?PendingHighScoreEntry, null), state.pendingRunHighScoreContext());
+    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, updated.return_target);
+}
+
+test "high-score browse owner drives table toggles while post-level entry stays fixed" {
+    var state: AppState = undefined;
+    state.high_scores_menu_index = highScoreModeIndex(.postal);
+    state.high_score_screen_owner = .{ .main_menu_browse = .postal };
+
+    try state.performHighScoreMenuAction(.switch_table);
+    try std.testing.expectEqual(high_score.Mode.challenge, state.activeHighScoreScreenMode());
+
+    state.high_score_screen_owner = .{ .post_level_entry = .{
+        .mode = .postal,
+        .rank = 3,
+    } };
+    try state.performHighScoreMenuAction(.switch_table);
+    try std.testing.expectEqual(high_score.Mode.postal, state.activeHighScoreScreenMode());
 }
 
 test "thanks screen message sequence matches the recovered owner timing" {

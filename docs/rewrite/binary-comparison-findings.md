@@ -1,7 +1,7 @@
 # Binary Comparison Findings
 
 Systematic comparison of the Zig port against the Windows binary (primary target) with Android/iOS cross-reference.
-Analysis date: 2026-03-13.
+Analysis date: 2026-03-23.
 
 ---
 
@@ -20,19 +20,13 @@ self.recordScore(&self.score.health_collect, 250);
 
 **Impact**: Every health pickup inflates score by 250 points vs the Windows original.
 
-### 2. Parcels award 200 points — should be ~110+
-
-**Zig** (`gameplay.zig:989-992`):
-```zig
-self.recordScore(&self.score.parcel_pickup, 100);
-// collapsed from flight delivery:
-self.recordScore(&self.score.parcel_register, 100);
-```
-Awards 200 points instantly on the same row event.
+### 2. Historical parcel double-score (resolved)
 
 **Windows** (`handle_subgoldy_collisions` at `0x4452e0`): `add_subgoldy_score(player, 3, 0)` — type 3 = 100 points. Then the parcel enters a **flight object** (`sub_414820`) that tracks it to a delivery point, calling `add_subgoldy_score(0, 0)` (10 points) on arrival. Additional row-event scores may follow via `flush_row_event_display`.
 
-**Impact**: Parcel scoring is both too high (200 vs 100 at pickup) and wrongly timed (instant vs delayed delivery).
+**Zig** (`gameplay.zig:596`, `gameplay.zig:2418`): parcel pickup still awards 100 immediately, but the register lane is now the recovered `+10` delayed delivery score via `parcel_delivery_register_score`.
+
+**Remaining gap**: the port still uses the row-event delivery controller instead of the native standalone parcel-flight owner, so the broad score shape is now right while the exact visual/runtime owner is still approximate.
 
 ### 3. Slow/velocity rings (types 3, 7) incorrectly scored
 
@@ -90,21 +84,21 @@ All non-none rings get 100 points, including `.slow` and `.explode` kinds.
 
 ---
 
-## Significant: Camera Constants Wrong
+## Historical: Camera Findings (Resolved)
 
-### 6. FOV 68° vs dynamic 110°–160°
-
-**Zig** (`main.zig:9102`): Fixed FOV of `68.0`.
+### 6. Dynamic FOV now matches the recovered 110°–160° lane
 
 **Windows** (`initialize_cameraman` at `0x4461ba`): initializes FOV to `110.0` (hex `0x42dc0000`). During gameplay (`update_cameraman` at `0x446671`), FOV ranges from 110 to 160 based on attachment state, lerped at 0.3 per tick.
 
-### 7. No speed-dependent camera behavior
+**Zig** (`gameplay.zig:2901`, `main.zig:12268`): the live gameplay camera now publishes the runner-owned dynamic FOV instead of the old fixed frontend value.
+
+### 7. Speed-driven cameraman lift and pitch are now ported
 
 **Windows** (`update_cameraman`): applies a complex vertical offset based on player speed (blending between `speed * 0.35` and `speed * 1.15` based on row progress), speed-dependent pitch (`(-2.0 - (speed - 0.49) * 5.0) * 0.01745` radians, clamped to ±1.2215 rad), and separate attachment-driven camera tilt from fields at `+0x354` and `+0x358`.
 
-**Zig**: Uses fixed vertical offset (`player_floor + 1.8` for eye, `+0.4` for target), no pitch adjustment, no speed-dependent behavior.
+**Zig** (`gameplay.zig:1164`, `gameplay.zig:1172`, `gameplay.zig:3159`): the cameraman now uses the recovered speed-driven vertical lift and pitch formulas, and multiplies the attachment or launch lift envelope by the same live speed owner like the Windows branch.
 
-### 8. No Z deadzone camera following
+### 8. Z deadzone follow is now ported
 
 **Windows**: maintains a deadzone where the camera follows in Z only when the player-to-camera distance exits the range [1.7, 3.0]:
 ```
@@ -112,14 +106,13 @@ if (player_z - camera_z > 3.0): camera_z = player_z - 3.0
 if (player_z - camera_z < 1.7): camera_z = player_z - 1.7
 ```
 
-**Zig**: Uses fixed offset `player_z - 1.85`.
+**Zig** (`gameplay.zig:1180`, `gameplay.zig:3222`): the live cameraman now clamps the previous desired matrix Z against the recovered `[1.7, 3.0]` player delta before interpolation, matching the Windows controller shape.
 
-### 9. Lateral tracking scale mismatch
+### 9. Lateral eye terms now match the recovered matrix writes
 
-**Windows**: `camera_eye_x += player_x * 0.333`
-**Zig**: `chase_eye_x = player_x / 2.5` (= `player_x * 0.4`)
+**Windows** (`update_cameraman`): seeds the desired matrix with `player_x * 0.4` and then adds a second `player_x * 0.33333334` write before the matrix blend.
 
-The Zig eye tracks 20% more laterally than the original, making the camera swing wider on turns.
+**Zig** (`gameplay.zig:3184`, `gameplay.zig:3190`): the live cameraman now mirrors those recovered lateral matrix writes instead of the earlier single-term chase-eye approximation.
 
 ---
 
@@ -183,14 +176,14 @@ The Zig code should target the Windows table. Currently, the health scoring (250
 | # | Finding | Severity | Fix Effort |
 |---|---------|----------|------------|
 | 1 | Health pickup scores 250 instead of 0 | High | Trivial — remove `recordScore` call |
-| 2 | Parcel double-scores 200 instead of 100 | High | Remove second `recordScore`, note flight timing |
+| 2 | Historical parcel double-score | Resolved | The score split is now 100 pickup + 10 register; remaining gap is the exact flight owner |
 | 3 | Slow/velocity rings score 100 instead of 0 | Medium | Exclude `.slow` (and possibly `.explode`) from scoring |
 | 4 | Grid-cell vs 3D distance collision | High (structural) | Requires new collision system |
 | 5 | Damage gauge missing gates/faster drain | Medium | Add flag checks and secondary drain rate |
-| 6 | FOV 68° vs 110°–160° | High (visual) | Change FOV constant and add dynamic range |
-| 7 | No speed-dependent camera | Medium | Port vertical/pitch adjustments from cameraman |
-| 8 | No Z deadzone following | Medium | Add deadzone spring |
-| 9 | Lateral eye scale 0.4 vs 0.333 | Low | Change divisor from 2.5 to 3.0 |
+| 6 | Historical fixed-FOV camera | Resolved | Live gameplay now uses the recovered runner-owned dynamic FOV |
+| 7 | Historical missing speed-dependent camera | Resolved | Speed-driven lift and pitch are now ported |
+| 8 | Historical missing Z deadzone follow | Resolved | Deadzone clamp now mirrors the recovered cameraman lane |
+| 9 | Historical lateral eye mismatch | Resolved | The cameraman now matches the recovered two-write X translation |
 | 10 | Garbage still uses the wrong motion owner | Medium | Port the native player velocity lanes |
 | 11 | Speed model not mapped | High (structural) | Map binary speed scalar to Zig rows/second |
 | 12 | Android score table leaking in | Low | Reference Windows table only |

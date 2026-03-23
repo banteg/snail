@@ -593,6 +593,7 @@ const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
 const slug_projectile_kill_score: u32 = 100;
+const parcel_delivery_register_score: u32 = 10;
 const cameraman_base_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
 const cameraman_base_up = rl.Vector3{ .x = 0.0, .y = 0.946145, .z = 0.323752 };
 const cameraman_base_forward = rl.Vector3{ .x = 0.0, .y = -0.323752, .z = 0.946145 };
@@ -1160,17 +1161,17 @@ fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, transla
     return transform;
 }
 
-fn cameramanVerticalLift(anchor_y: f32, progress_blend: f32) f32 {
+fn cameramanVerticalLift(speed_rows_per_second: f32, progress_blend: f32) f32 {
     return std.math.lerp(
-        anchor_y * cameraman_vertical_lift_early_weight,
-        anchor_y * cameraman_vertical_lift_late_weight,
+        speed_rows_per_second * cameraman_vertical_lift_early_weight,
+        speed_rows_per_second * cameraman_vertical_lift_late_weight,
         progress_blend,
     );
 }
 
-fn cameramanPitchRadiansFromAnchorY(anchor_y: f32) f32 {
+fn cameramanPitchRadiansFromSpeed(speed_rows_per_second: f32) f32 {
     return std.math.clamp(
-        (-2.0 - ((anchor_y - 0.49) * 5.0)) * 0.0174499992,
+        (-2.0 - ((speed_rows_per_second - 0.49) * 5.0)) * 0.0174499992,
         -1.22149992,
         1.22149992,
     );
@@ -1693,7 +1694,8 @@ pub const Runner = struct {
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         if (preview.total_rows == 0 or preview.runtime_active_row_start == 0) return 1.0;
         const intro_transition_rows = @as(f32, @floatFromInt(preview.runtime_active_row_start));
-        return std.math.clamp(((self.camera_anchor.world.z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
+        const player_z = self.playerWorldPosition(preview).z;
+        return std.math.clamp(((player_z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
     }
 
     fn cameramanMatrixBlendFactor(self: *const Runner) f32 {
@@ -1805,6 +1807,40 @@ pub const Runner = struct {
 
     pub fn registeredParcelCount(self: *const Runner) u32 {
         return self.row_event_display.delivered_parcel_count;
+    }
+
+    pub fn rowEventCounterVisible(self: *const Runner) bool {
+        return self.row_event_display.parcel_target_count != 0 and self.session_mode != .tutorial;
+    }
+
+    pub fn rowEventParcelTargetCount(self: *const Runner) u32 {
+        return self.row_event_display.parcel_target_count;
+    }
+
+    pub fn rowEventWidgetWorldPosition(self: *const Runner) rl.Vector3 {
+        return .{
+            .x = self.row_event_display.widget_world_x,
+            .y = self.row_event_display.widget_world_y,
+            .z = self.row_event_display.widget_world_z,
+        };
+    }
+
+    pub fn rowEventBonusVisible(self: *const Runner) bool {
+        if (!self.row_event_display.bonus_enabled) return false;
+        return switch (self.row_event_display.state) {
+            .final_delivery, .bonus_prompt, .complete => true,
+            else => false,
+        };
+    }
+
+    pub fn rowEventBonusBlinkAlpha(self: *const Runner) f32 {
+        if (!self.rowEventBonusVisible()) return 0.0;
+        const pulse = (@sin(self.row_event_display.bonus_blink_progress * std.math.tau) + 1.0) * 0.5;
+        return 0.35 + (pulse * 0.65);
+    }
+
+    pub fn rowEventBonusScore(self: *const Runner) u32 {
+        return self.row_event_display.bonus_score;
     }
 
     pub fn currentRowMessageLogicalSegmentIndex(self: *const Runner) ?usize {
@@ -2379,7 +2415,7 @@ pub const Runner = struct {
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) return;
         self.row_event_display.delivered_parcel_count += 1;
         self.row_event_display.display_token +%= 1;
-        self.recordScore(&self.score.parcel_register, 100);
+        self.recordScore(&self.score.parcel_register, parcel_delivery_register_score);
         if (self.row_event_display.delivered_parcel_count == self.row_event_display.parcel_target_count) {
             self.maybeAwardRowEventCompletionBonus();
             self.row_event_display.staged_parcel_count = self.row_event_display.delivered_parcel_count;
@@ -2848,7 +2884,7 @@ pub const Runner = struct {
     }
 
     // PORT(partial): the native cameraman keeps one lift target/current pair and smooths the
-    // combined attachment and launch envelopes before multiplying by anchor Y.
+    // combined attachment and launch envelopes before multiplying by the live speed owner.
     fn cameramanLiftTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         var target: f32 = 0.0;
         if (self.currentAttachmentCameraProgress(preview)) |attachment_camera| {
@@ -3130,11 +3166,11 @@ pub const Runner = struct {
         self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * cameraman_fov_blend;
 
         const anchor_x = self.camera_anchor.world.x;
-        const anchor_y = self.camera_anchor.world.y;
         const anchor_z = self.camera_anchor.world.z;
+        const effective_speed_rows_per_second = self.effectiveSpeedRowsPerSecond();
         const progress_blend = self.cameramanProgressBlend(preview);
-        const vertical_lift = cameramanVerticalLift(anchor_y, progress_blend);
-        const anchor_pitch_radians = cameramanPitchRadiansFromAnchorY(anchor_y);
+        const vertical_lift = cameramanVerticalLift(effective_speed_rows_per_second, progress_blend);
+        const speed_pitch_radians = cameramanPitchRadiansFromSpeed(effective_speed_rows_per_second);
         const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
         const lateral_roll_radians = anchor_x * (-8.0 * 0.0174499992 * 0.170000002);
         const lane_lean_roll_radians =
@@ -3150,10 +3186,10 @@ pub const Runner = struct {
             cameraman_base_translation_y,
             cameraman_base_translation_z,
             intro_pitch_radians,
-            anchor_pitch_radians,
+            speed_pitch_radians,
         );
         desired_transform.position.x += anchor_x * 0.33333334;
-        desired_transform.position.y += vertical_lift + (self.cameraman.lift_current * anchor_y);
+        desired_transform.position.y += vertical_lift + (self.cameraman.lift_current * effective_speed_rows_per_second);
         desired_transform.position.z += anchor_z + 0.4;
 
         desired_transform = rotateCameraTransformWorldZ(desired_transform, lane_lean_roll_radians + lateral_roll_radians);
@@ -5909,10 +5945,15 @@ fn laneOutsideAttachmentWidth(
     return null;
 }
 
-test "cameraman vertical lift weights anchor height early and late" {
+test "cameraman vertical lift weights speed early and late" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.15), cameramanVerticalLift(1.0, 0.0), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.35), cameramanVerticalLift(1.0, 1.0), 0.0001);
     try std.testing.expect(cameramanVerticalLift(1.0, 0.0) > cameramanVerticalLift(1.0, 1.0));
+}
+
+test "cameraman speed pitch matches the recovered register formula" {
+    try std.testing.expectApproxEqAbs(@as(f32, -0.0348999984), cameramanPitchRadiansFromSpeed(0.49), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.22149992), cameramanPitchRadiansFromSpeed(48.0), 0.0001);
 }
 
 test "cameraman deadzone clamps previous desired z around the anchor" {
@@ -7356,8 +7397,8 @@ test "runner accumulates ring and parcel score totals from shipped levels" {
     try std.testing.expectEqual(@as(u32, 0), runner.score.completion_bonus);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     runner.flushPendingParcelDeliveries();
-    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
-    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
+    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_register);
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
 }
@@ -7670,7 +7711,7 @@ test "runner registers parcel delivery after the parcel flight finishes" {
     const register_steps = stepUntilParcelRegistered(&runner, &fixture.preview, 256);
     try std.testing.expect(register_steps < 256);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
-    try std.testing.expectEqual(@as(u32, 100), runner.score.parcel_register);
+    try std.testing.expectEqual(parcel_delivery_register_score, runner.score.parcel_register);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 }
@@ -7705,6 +7746,32 @@ test "row event staging promotes delivered parcels into the hold state" {
 
     try std.testing.expectEqual(@as(u32, 2), runner.row_event_display.staged_parcel_count);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
+}
+
+test "row event widget helpers expose the recovered counter and bonus lanes" {
+    var runner = Runner{};
+    runner.session_mode = .postal;
+    runner.row_event_display.parcel_target_count = 7;
+    runner.row_event_display.delivered_parcel_count = 3;
+    runner.row_event_display.widget_world_x = 9.0;
+    runner.row_event_display.widget_world_y = 2.5;
+    runner.row_event_display.widget_world_z = 14.0;
+    runner.row_event_display.bonus_enabled = true;
+    runner.row_event_display.state = .bonus_prompt;
+    runner.row_event_display.bonus_blink_progress = 0.25;
+    runner.row_event_display.bonus_score = postal_completion_bonus_score;
+
+    try std.testing.expect(runner.rowEventCounterVisible());
+    try std.testing.expectEqual(@as(u32, 7), runner.rowEventParcelTargetCount());
+    try std.testing.expectEqual(@as(u32, 3), runner.registeredParcelCount());
+    try std.testing.expect(runner.rowEventBonusVisible());
+    try std.testing.expect(runner.rowEventBonusBlinkAlpha() > 0.0);
+
+    const widget_world = runner.rowEventWidgetWorldPosition();
+    try std.testing.expectApproxEqAbs(@as(f32, 9.0), widget_world.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), widget_world.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 14.0), widget_world.z, 0.0001);
+    try std.testing.expectEqual(@as(u32, postal_completion_bonus_score), runner.rowEventBonusScore());
 }
 
 test "final parcel delivery can complete the row event on the same tick" {
@@ -7906,13 +7973,13 @@ test "applyRespawn preserves delivered parcel progress and consumed parcel rows"
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
     try std.testing.expectEqual(@as(u32, 1), runner.registeredParcelCount());
     try std.testing.expectEqual(@as(u32, 50_000), runner.score.completion_bonus);
-    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
     try std.testing.expectEqual(RowEventDisplayState.inactive, runner.row_event_display.state);
     try std.testing.expect(runner.liveTrackParcelAt(parcel.row) == null);
 
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.parcels);
-    try std.testing.expectEqual(@as(u32, 50_200), runner.score.total);
+    try std.testing.expectEqual(@as(u32, 50_110), runner.score.total);
 }
 
 test "challenge death hands off final loss" {
@@ -9291,12 +9358,15 @@ test "camera anchor uses the jetpack local offset lanes" {
     try expectVector3ApproxEq(expected, runner.camera_anchor.world, 0.0001);
 }
 
-test "cameraman progress blend uses the native runtime row-start threshold" {
+test "cameraman progress blend uses player z rather than the camera anchor" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     runner.camera_anchor.world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
+    try std.testing.expect(runner.cameramanProgressBlend(&fixture.preview) < 1.0);
+
+    runner.row_position = @as(f32, @floatFromInt(fixture.preview.runtime_active_row_start)) + 32.0;
 
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
 }
@@ -9311,6 +9381,33 @@ test "cameraman matrix blend factor follows the live subgame rate" {
 
     runner.movement_rate_scalar = 8.0;
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
+}
+
+test "cameraman height and pitch follow the effective speed register" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var slow_runner = Runner.init(&fixture.preview);
+    slow_runner.speed_rows_per_second = 12.0;
+    slow_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    const slow_transform = cameraTransformFromMatrix(slow_runner.cameramanMatrix());
+
+    var fast_runner = Runner.init(&fixture.preview);
+    fast_runner.speed_rows_per_second = 48.0;
+    fast_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    const fast_transform = cameraTransformFromMatrix(fast_runner.cameramanMatrix());
+
+    try std.testing.expect(fast_transform.position.y > slow_transform.position.y);
+    try std.testing.expect(fast_transform.forward.y < slow_transform.forward.y);
+
+    var slowed_runner = Runner.init(&fixture.preview);
+    slowed_runner.speed_rows_per_second = 18.0;
+    slowed_runner.slow_ticks = 2;
+    slowed_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    const slowed_transform = cameraTransformFromMatrix(slowed_runner.cameramanMatrix());
+
+    try std.testing.expect(slowed_transform.position.y < slow_transform.position.y);
+    try std.testing.expect(slowed_transform.forward.y > slow_transform.forward.y);
 }
 
 test "jetpack gauge ramps warning intensity during the startup tenth" {
