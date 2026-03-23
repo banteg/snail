@@ -211,8 +211,8 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `bridge: stop replay completion from using opcode 28`
-- Push: pending push after commit
+  - `55d40ae bridge: stop replay completion from using opcode 28`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The non-persistent completion-side `0x1b` bridge lane is still not mapped onto Zig state.
