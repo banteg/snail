@@ -1110,3 +1110,54 @@
 
 ### Next target
 - Trace `[controller + 0x98]` / `data_4df904 + 110` together with `+119190` and `+4299516` to recover the native saved-owner writer behind the outer bridge.
+
+## 2026-03-23 22:36 - Iteration: document new game replay attract lane
+
+### Target
+- New Game menu random replay attract launch lane
+
+### Why this target
+- The outer bridge is still the top parity risk, and BN plus IDA already pinned a narrow replay-launch slice with remaining scaffolding in docs and tests but without enough evidence to justify a live Zig launcher implementation.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_new_game_menu` rotates a menu-local cursor through `0..4`, wraps `5 -> 0`, and only probes replay banks on cursor values `0`, `1`, and `3`.
+  - Those probe lanes map to the postal, challenge, and completion / Time Trial banks, write `app + 0x74658 = 0/1/4`, and on success seed `app + 0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0` before jumping to frontend state `10`.
+  - The menu replay branch uses the same persistent selected-record scratch lane as high-score replay rows, but seeds `app + 0x1066bf0 = 2` for the later return owner.
+  - The launcher is gated by menu-local float fields at `data_4df904 + 0x4f2dc + 0x10/+0x14`, clears the accumulator back to `0.0` before the bank probe loop, and gives up after `1000` attempts.
+  - On that give-up path, `update_new_game_menu` writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns without launching.
+- Likely:
+  - The current Zig bridge should preserve those recovered menu-owned return targets by replay bank even before the live attract timer / trigger is implemented.
+- Unknown:
+  - The writer that seeds the menu-local step at `data_4df904 + 0x4f2dc + 0x14`.
+  - The rest of that New Game attract controller's lifetime outside the now-confirmed probe / launch branch.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `docs/re/windows-debugging-wants.md`
+- Added regression coverage that pins persistent New Game replay return ownership for postal, challenge, and completion-backed replay banks.
+- Documented the recovered menu replay attract bank rotation, `1000`-attempt probe cap, persistent replay scratch writes, and the remaining timer-step gap.
+- Reduced one replay-side scaffold: the docs/checklist no longer treat the missing piece as a generic unexplained launcher when the bank split and return-state writes are already confirmed.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the added bridge regression compiles, the full Zig suite still passes, and the narrowed replay-attract docs landed without whitespace or patch-shape issues.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `96ce4ee` `re: document new game replay attract lane`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The saved-owner writer behind the native `26/27/28` bridge jump is still unresolved.
+- The New Game replay attract timer / trigger producer at `data_4df904 + 0x4f2dc + 0x14` is still not recovered, so the live launcher remains intentionally unimplemented.
+
+### Next target
+- Trace the writer for the New Game attract timer-step field together with `[controller + 0x98]`, `data_4df904 + 110`, and the app replay-launch scratch to connect the menu trigger to the native outer-bridge owner handoff.
