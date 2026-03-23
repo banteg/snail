@@ -771,12 +771,12 @@
     {
       "address": "0x417bc0",
       "name": "initialize_new_game_menu",
-      "description": "Builds the New Game submenu, including Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back, after reloading the shared menu backdrop and shell-font scene."
+      "description": "Builds the New Game submenu, including Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back, after reloading the shared menu backdrop and shell-font scene. The menu-local replay-attract controller at `data_4df904 + 0x4f2dc` survives this init; direct button handlers later use frontend state `10`, with Postal Mode also seeding the ordinary rebuild selector `+0x12e55e0 = 2`."
     },
     {
       "address": "0x417eb0",
       "name": "update_new_game_menu",
-      "description": "Runs the New Game menu controller, dispatching Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine, and also advances the menu-owned random replay-attract lane that cycles replay banks `0/1/3` and seeds the persistent selected-record scratch before state `10`."
+      "description": "Runs the New Game menu controller, dispatching Tutorial, Postal Mode, Time Trial, Challenge Mode, Help, and Back through the shared front-end state machine. It also advances the menu-owned random replay-attract lane: rotates cursor `0..4`, probes replay banks `0/1/3` only, gives up after `1000` attempts, seeds app replay scratch `+0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0` plus return state `2`, sets the menu hide latch, and resets the secondary timer lane to `1/3600` after either launch or miss."
     },
     {
       "address": "0x4182e0",

@@ -256,6 +256,16 @@ Current practical read:
     - `level_mode == 1` rebuilds the challenge-setup owner through `initialize_challenge_setup_screen`
     - `level_mode == 4` rebuilds the Time Trial galaxy owner through `initialize_galaxy`
     - the current port now rebuilds that `level_mode == 1` lane into a literal challenge-setup controller instead of collapsing it onto `New Game -> Challenge Mode`
+  - current best read for `game + 0x1270fc8` / app dword `+0x12e55e0` is now narrower than "not replay-only":
+    - selector `1` is the postal post-completion rebuild lane
+      - ordinary non-final completion writes `game + 0x1270fc8 = 1`
+      - `initialize_subgame` then treats postal mode specially under selector `1`: increments the visible route progression lane, saves `SnailMail.cfg`, opens the postal galaxy owner, and resets subgame
+      - this matches the current Zig `RouteMapScreenMode.post_completion_exit` lane rather than a generic route-map reopen
+    - selector `2` is the ordinary rebuild/start lane used by other front-end owners
+      - `update_subgoldy_resurrect` writes `game + 0x1270fc8 = 2` before ordinary final-loss teardown
+      - `update_new_game_menu` direct `Postal Mode` also writes app `+0x12e55e0 = 2` before frontend state `10`
+      - `exit_high_score_screen` and transient pause-abandon flow also write `2` on their rebuild path
+      - `initialize_subgame` then uses selector `2` plus `level_mode` to rebuild the normal postal galaxy (`0`), challenge setup (`1`), or Time Trial galaxy (`4`) without the selector-`1` postal-completion side effects
 - the app byte at `+0x30d` is now narrowed:
   - `add_arcade_high_score` and `add_survival_high_score` both set it to `1` while arming active state `20`
   - `destroy_high_score_screen` clears it back to `0`
@@ -279,6 +289,10 @@ Current practical read:
   - `initialize_game_assets_and_world` clears app bytes `+0x1066be8` / `+0x1066be9` back to `0` during startup, so persistent replay-backed launches are not inheriting stale selected-record flags from an earlier app lifetime
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - the menu replay branch is more specific than a generic replay picker:
+    - the direct menu buttons stay on the ordinary owner path:
+      - `Postal Mode` destroys the menu, sets frontend state `10`, writes `app + 0x74658 = 0`, writes app `+0x12e55e0 = 2`, and does not touch the selected-record scratch
+      - `Challenge Mode` and `Time Trial` also jump to frontend state `10` with `app + 0x74658 = 1/4` respectively, but likewise do not touch the selected-record scratch
+      - `Tutorial` jumps to frontend state `10`, writes `app + 0x74658 = 7`, and initializes the tutorial helper directly
     - `update_new_game_menu` rotates a menu-local dword cursor at `data_4df904 + 0x4f2dc` through `0..4` and wraps `5 -> 0`
     - only cursor values `0`, `1`, and `3` probe replay-bearing banks, so the loop skips the tutorial / back lanes instead of treating every menu item as a replay source
     - those three probe lanes map to postal (`app + 0x6ffae8`, `app + 0x74658 = 0`), challenge (`app + 0x85c128`, `app + 0x74658 = 1`), and completion / Time Trial (`app + 0x9b8768`, `app + 0x74658 = 4`)
@@ -290,6 +304,9 @@ Current practical read:
       - `+0x8` / `+0xc`: secondary timer lane reset to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path
       - `+0x10` / `+0x14`: replay-attract accumulator / step
     - when all `1000` attempts miss, the branch does not launch; it writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns
+    - the remaining unknown is not the launch scratch itself but the timer producer:
+      - static BN plus IDA still do not show who seeds the menu-local replay-attract step at `+0x14`
+      - the exact role of the `+0x8/+0xc` secondary timer lane in later re-arming or delaying that step is also still open
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`, so the same app-side replay scratch also suppresses the normal click-start gate on persistent replay launches
   - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
@@ -312,7 +329,9 @@ Current practical read:
   - high-score replay rows and the menu random replay path write the persistent lane through the aliasing app-side replay scratch at `app + 0x1066be9 == game + 0xff25d1`
   - whole-image static disassembly still shows no direct nonzero store to `game + 0xff25d1`; the only literal store to that byte is the teardown clear in `destroy_subgame` at `0x438b13` because the nonzero writer arrives through the overlapping app-base address instead
   - `build_subgame_level` only tests `selected_level_record_active || selected_level_record_persistent` before copying selected-record mode, level, replay-speed, and scalar fields, so the remaining bridge-side question is no longer "where is the persistent writer?" but which launch families should be treated as transient versus persistent
-  - app dword `+0x12e55e0` is still not a clean replay-only source candidate: `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all also write `2` there in ordinary front-end flow, while state `0x1c` only clears it during the rebuild-clear-replay bridge
+  - app dword `+0x12e55e0` is therefore not a persistent-bit source:
+    - current best read is the same rebuild selector seen at `game + 0x1270fc8`, with selector `1` owning the postal post-completion reopen and selector `2` owning the ordinary rebuild/start lane
+    - state `0x1c` only clears that selector during the rebuild-clear-replay bridge
 - `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`
