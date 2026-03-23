@@ -324,6 +324,11 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same runtime slots back with pickup-specific gates:
   - health: `player_world_y >= 0.49`, `delta_z < 1.0`, `abs(delta_y) < 0.4`, normalized distance `< 0.98`
   - jetpack: `player_world_y >= 0.49`, `delta_z < 1.0`, normalized distance `< 3.0`
+- health collection also triggers `health_collect_particles`, which allocates `8` `SMOKE.TGA` sprites (`sprite id 128`) with:
+  - radial world-axis velocity `sin/cos(i * pi / 4) * 0.015`
+  - forward carry `player_motion_z * 0.4`
+  - full motion carry `player_motion_xyz * 3.0`
+  - sprite size `0.1 x 0.5`, tint `(1.0, 0.75, 0.75, 1.0)`, and a small downward acceleration `-0.0002`
 - Android `cRSubGame::AddHealth` and `cRSubGame::AddJetPack` confirm the same field meanings even though later ports rearrange surrounding storage
 
 ## Track Ring / Special-Effect Runtime
@@ -348,6 +353,8 @@ Current practical read:
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
+- on hit, the slot does not die immediately: `handle_subgoldy_collisions` flips it into the shared post-hit lane, and the slot's `update_subgoldy_bullet` vtable advances the recovered `2 -> 3` follow/collapse animation before teardown
+- the same vtable also owns the missed-pickup `4 -> 5` expand-and-teardown lane keyed from `movement_flag_selector_snapshot`
 - the collision switch owns the ring-kind ladder:
   - `1` -> score + `PW1`
   - `2/6` -> score + `EXPLODERING` + `initialize_nuke`

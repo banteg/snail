@@ -150,7 +150,21 @@ pub const RuntimeRingEffect = struct {
     row: usize,
     lane: usize,
     kind: u8,
+    state: RuntimeRingEffectState = .active,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    presentation_scale: f32 = 1.0,
+    movement_flag_selector_snapshot: u8 = 0,
+    effect_progress: f32 = 0.0,
+    effect_progress_step: f32 = 0.0,
+};
+
+pub const RuntimeRingEffectState = enum(u8) {
+    active,
+    collect_setup,
+    collect_follow,
+    miss_setup,
+    miss_expand,
 };
 
 pub const TrackParcelRuntime = struct {
@@ -510,6 +524,10 @@ const runtime_ring_spacing_rows: f32 = 10.0;
 const runtime_ring_default_gate_threshold: f32 = 0.7;
 const runtime_ring_kind4_to3_threshold: f32 = 0.93;
 const runtime_ring_time_trial_kind3_threshold: f32 = 0.5;
+const runtime_ring_effect_progress_scale: f32 = 0.069444448;
+const runtime_ring_effect_collect_lerp: f32 = 0.94;
+const runtime_ring_effect_collect_z_offset: f32 = 0.2;
+const runtime_ring_effect_miss_expand_scale: f32 = 1.1;
 const max_active_health_pickups: usize = 8;
 const max_active_jetpack_pickups: usize = 1;
 const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
@@ -1418,6 +1436,7 @@ pub const Runner = struct {
             self.refreshLiveRuntimeHazards(preview);
             self.updateRuntimeHazards(preview);
             self.refreshLiveRuntimeRingEffects(preview);
+            self.updateRuntimeRingEffects(preview);
             self.updateRuntimePickups();
             self.processRuntimePickupCollisions(preview);
             self.processRuntimeHazardCollisions(preview);
@@ -2544,15 +2563,19 @@ pub const Runner = struct {
 
     // PORT(partial): native ring and special-effect pickups resolve from the live 2-slot
     // runtime pool inside `handle_subgoldy_collisions`, not from row traversal. The runner
-    // now mirrors that ownership and the recovered `delta_z < 1.0 && distance < 0.98`
-    // collision gate, but it still seeds the slot anchor from the recovered runtime target
-    // row/lane instead of the original ring bod fields because the source row-point layout
-    // behind `spawn_track_ring_or_special_effect` is not fully recovered yet.
+    // now mirrors that ownership, the recovered `delta_z < 1.0 && distance < 0.98`
+    // collision gate, and the post-hit `state 2 -> 3` follow animation instead of removing
+    // the slot immediately. The remaining gap is the exact active-state anchor/layout from
+    // `spawn_track_ring_or_special_effect`, which still needs a better collision-frame read.
     fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         var index: usize = 0;
         while (index < self.active_runtime_ring_effect_count) {
             const effect = self.active_runtime_ring_effects[index];
+            if (effect.state != .active) {
+                index += 1;
+                continue;
+            }
             const delta_x = effect.world_position.x - player_position.x;
             const delta_y = effect.world_position.y - player_position.y;
             const delta_z = effect.world_position.z - player_position.z;
@@ -2572,8 +2595,8 @@ pub const Runner = struct {
                 self.resolved_lane_index = sample.resolved_lane_index;
             }
 
-            self.removeRuntimeRingEffectAt(index);
             self.recordNativeRingEffect(preview, effect.kind);
+            self.active_runtime_ring_effects[index].state = .collect_setup;
             return;
         }
     }
@@ -3972,9 +3995,18 @@ pub const Runner = struct {
 
     fn pruneRuntimeRingEffects(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
+        const min_z = @as(f32, @floatFromInt(window_start)) - 8.0;
+        const max_z = @as(f32, @floatFromInt(window_end)) + 8.0;
         for (0..self.active_runtime_ring_effect_count) |read_index| {
             const effect = self.active_runtime_ring_effects[read_index];
-            if (effect.row < window_start or effect.row >= window_end) continue;
+            switch (effect.state) {
+                .active => {
+                    if (effect.row < window_start or effect.row >= window_end) continue;
+                },
+                .collect_setup, .collect_follow, .miss_setup, .miss_expand => {
+                    if (effect.presentation_position.z < min_z or effect.presentation_position.z > max_z) continue;
+                },
+            }
             self.active_runtime_ring_effects[write_index] = effect;
             write_index += 1;
         }
@@ -4131,6 +4163,9 @@ pub const Runner = struct {
             .lane = lane,
             .kind = kind,
             .world_position = initialRuntimeRingEffectWorldPosition(preview, row, lane, kind),
+            .presentation_position = initialRuntimeRingEffectWorldPosition(preview, row, lane, kind),
+            .presentation_scale = 1.0,
+            .movement_flag_selector_snapshot = self.movement_flag_selector,
         };
         self.active_runtime_ring_effect_count += 1;
     }
@@ -4236,6 +4271,64 @@ pub const Runner = struct {
                 },
                 .jetpack => {},
             }
+        }
+    }
+
+    fn updateRuntimeRingEffects(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        var index: usize = 0;
+        while (index < self.active_runtime_ring_effect_count) {
+            if (!self.updateRuntimeRingEffect(preview, &self.active_runtime_ring_effects[index])) {
+                self.removeRuntimeRingEffectAt(index);
+                continue;
+            }
+            index += 1;
+        }
+    }
+
+    fn updateRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, effect: *RuntimeRingEffect) bool {
+        switch (effect.state) {
+            .active => {
+                effect.presentation_position = effect.world_position;
+                effect.presentation_scale = 1.0;
+
+                const player_position = self.playerWorldPosition(preview);
+                if (effect.world_position.z >= player_position.z) {
+                    if (self.movement_flag_selector < effect.movement_flag_selector_snapshot) {
+                        effect.state = .miss_setup;
+                    }
+                    return true;
+                }
+                return false;
+            },
+            .collect_setup => {
+                effect.state = .collect_follow;
+                effect.effect_progress = 0.0;
+                effect.effect_progress_step = self.speed_rows_per_second * runtime_ring_effect_progress_scale;
+                return true;
+            },
+            .collect_follow => {
+                effect.effect_progress += effect.effect_progress_step;
+                if (effect.effect_progress > 1.0) return false;
+
+                const player_position = self.playerWorldPosition(preview);
+                effect.presentation_position.x = ((player_position.x - effect.presentation_position.x) * runtime_ring_effect_collect_lerp) + effect.presentation_position.x;
+                effect.presentation_position.y = ((player_position.y - effect.presentation_position.y) * runtime_ring_effect_collect_lerp) + effect.presentation_position.y;
+                effect.presentation_position.z = (((player_position.z + runtime_ring_effect_collect_z_offset) - effect.presentation_position.z) * runtime_ring_effect_collect_lerp) + effect.presentation_position.z;
+                effect.presentation_scale *= runtime_ring_effect_collect_lerp;
+                return true;
+            },
+            .miss_setup => {
+                effect.state = .miss_expand;
+                effect.effect_progress = 0.0;
+                effect.effect_progress_step = self.speed_rows_per_second * runtime_ring_effect_progress_scale;
+                return true;
+            },
+            .miss_expand => {
+                effect.effect_progress += effect.effect_progress_step;
+                if (effect.effect_progress > 1.0) return false;
+                effect.presentation_scale *= runtime_ring_effect_miss_expand_scale;
+                return true;
+            },
         }
     }
 
@@ -6627,6 +6720,8 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
     try std.testing.expectEqualStrings("ring_powerup", runner.recentEventLabel());
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
+    try std.testing.expectEqual(RuntimeRingEffectState.collect_setup, runner.activeRuntimeRingEffects()[0].state);
 }
 
 test "explicit tutorial ring rows still consume their native same-row effects" {
@@ -6695,6 +6790,57 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     try std.testing.expectEqual(slug_projectile_kill_score, runner.score.garbage_collision);
     try std.testing.expectEqual(@as(usize, 1), runner.defeated_slug_cell_count);
     try std.testing.expectEqualStrings("ring_explode", runner.recentEventLabel());
+    var found_collect_setup = false;
+    for (runner.activeRuntimeRingEffects()) |effect| {
+        if (effect.state == .collect_setup) {
+            found_collect_setup = true;
+            break;
+        }
+    }
+    try std.testing.expect(found_collect_setup);
+}
+
+test "runtime ring effect collision arms the native collect follow state" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 51.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    runner.processRuntimeRingEffectCollisions(&fixture.preview);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
+    try std.testing.expectEqual(RuntimeRingEffectState.collect_setup, runner.activeRuntimeRingEffects()[0].state);
+
+    const pre_follow_position = runner.activeRuntimeRingEffects()[0].presentation_position;
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectEqual(RuntimeRingEffectState.collect_follow, runner.activeRuntimeRingEffects()[0].state);
+
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    const post_follow = runner.activeRuntimeRingEffects()[0];
+    try std.testing.expect(post_follow.presentation_scale < 1.0);
+    try std.testing.expect(post_follow.presentation_position.z > pre_follow_position.z);
+}
+
+test "runtime ring effect collect follow cleans itself up after native progress window" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 51.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    runner.processRuntimeRingEffectCollisions(&fixture.preview);
+
+    var guard: usize = 0;
+    while (runner.activeRuntimeRingEffects().len != 0 and guard < 64) : (guard += 1) {
+        runner.updateRuntimeRingEffects(&fixture.preview);
+    }
+
+    try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimeRingEffects().len);
 }
 
 test "projectile fire defeats slug after powerup" {

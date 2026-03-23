@@ -76,6 +76,24 @@ const gameplay_blaster_top_draw_model_paths = [_][]const u8{
     "X/BLASTERTOP-DRAW-005.X2",
 };
 const gameplay_blaster_top_fire_model_path = "X/BLASTERTOP-FIRE-000.X2";
+const gameplay_blaster_left_model_path = "X/BLASTERLEFT-BASE-000.X2";
+const gameplay_blaster_left_draw_model_paths = [_][]const u8{
+    "X/BLASTERLEFT-DRAW-000.X2",
+    "X/BLASTERLEFT-DRAW-001.X2",
+    "X/BLASTERLEFT-DRAW-002.X2",
+    "X/BLASTERLEFT-DRAW-003.X2",
+    "X/BLASTERLEFT-DRAW-004.X2",
+    "X/BLASTERLEFT-DRAW-005.X2",
+};
+const gameplay_blaster_right_model_path = "X/BLASTERRIGHT-BASE-000.X2";
+const gameplay_blaster_right_draw_model_paths = [_][]const u8{
+    "X/BLASTERRIGHT-DRAW-000.X2",
+    "X/BLASTERRIGHT-DRAW-001.X2",
+    "X/BLASTERRIGHT-DRAW-002.X2",
+    "X/BLASTERRIGHT-DRAW-003.X2",
+    "X/BLASTERRIGHT-DRAW-004.X2",
+    "X/BLASTERRIGHT-DRAW-005.X2",
+};
 const gameplay_laser_left_model_path = "X/LASERLEFT-BASE-000.X2";
 const gameplay_laser_left_draw_model_paths = [_][]const u8{
     "X/LASERLEFT-DRAW-000.X2",
@@ -697,8 +715,12 @@ const GameplayInvincibleModelSet = struct {
 const GameplayWeaponVisualState = struct {
     left_draw_ticks: u8 = 0,
     left_hide_ticks: u8 = 0,
+    left_draw_state: u8 = 0,
+    left_hide_state: u8 = 0,
     right_draw_ticks: u8 = 0,
     right_hide_ticks: u8 = 0,
+    right_draw_state: u8 = 0,
+    right_hide_state: u8 = 0,
     top_draw_ticks: u8 = 0,
     top_hide_ticks: u8 = 0,
     rocket_draw_ticks: u8 = 0,
@@ -729,8 +751,16 @@ const GameplayWeaponVisualState = struct {
         if (previous == current) return;
         const draw_ticks: *u8 = if (left_channel) &self.left_draw_ticks else &self.right_draw_ticks;
         const hide_ticks: *u8 = if (left_channel) &self.left_hide_ticks else &self.right_hide_ticks;
-        if (previous != 0) hide_ticks.* = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len));
-        if (current != 0) draw_ticks.* = @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len));
+        const draw_state: *u8 = if (left_channel) &self.left_draw_state else &self.right_draw_state;
+        const hide_state: *u8 = if (left_channel) &self.left_hide_state else &self.right_hide_state;
+        if (previous != 0) {
+            hide_ticks.* = sideWeaponDrawTickCount(previous);
+            hide_state.* = previous;
+        }
+        if (current != 0) {
+            draw_ticks.* = sideWeaponDrawTickCount(current);
+            draw_state.* = current;
+        }
     }
 
     fn noteCenterChannelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
@@ -759,7 +789,29 @@ const GameplayWeaponVisualState = struct {
             else => {},
         }
     }
+
+    fn sidePresentationState(self: *const GameplayWeaponVisualState, current_state: u8, left_channel: bool) u8 {
+        if (current_state != 0) return current_state;
+        const draw_ticks = if (left_channel) self.left_draw_ticks else self.right_draw_ticks;
+        const hide_ticks = if (left_channel) self.left_hide_ticks else self.right_hide_ticks;
+        const draw_state = if (left_channel) self.left_draw_state else self.right_draw_state;
+        const hide_state = if (left_channel) self.left_hide_state else self.right_hide_state;
+        if (draw_ticks > 0 and draw_state != 0) return draw_state;
+        if (hide_ticks > 0 and hide_state != 0) return hide_state;
+        return 0;
+    }
 };
+
+fn sideWeaponDrawTickCount(state_value: u8) u8 {
+    return switch (state_value) {
+        1 => @intCast(@max(gameplay_blaster_left_draw_model_paths.len, gameplay_blaster_right_draw_model_paths.len)),
+        2 => @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
+        else => @intCast(@max(
+            @max(gameplay_blaster_left_draw_model_paths.len, gameplay_blaster_right_draw_model_paths.len),
+            @max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len),
+        )),
+    };
+}
 
 const GameplayEffectKind = enum {
     explode_big,
@@ -1086,6 +1138,7 @@ const GameplayEffect = struct {
     kind: GameplayEffectKind = .explode_small,
     position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    acceleration: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     width: f32 = 0.8,
     height: f32 = 0.8,
     tint: rl.Color = .white,
@@ -1675,6 +1728,34 @@ test "native slowdown voice band follows the recovered narrow forward-speed wind
     current.movement_rate_scalar = 0.2;
     current.movement_mode = .attachment;
     try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
+}
+
+test "weapon visual state keeps native side blaster and laser families distinct" {
+    var visuals = GameplayWeaponVisualState{};
+
+    visuals.noteWeaponChannelChange(0, 2);
+    try std.testing.expectEqual(@as(u8, 1), visuals.left_draw_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.right_draw_state);
+    try std.testing.expectEqual(sideWeaponDrawTickCount(1), visuals.left_draw_ticks);
+    try std.testing.expectEqual(sideWeaponDrawTickCount(1), visuals.right_draw_ticks);
+    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(1, true));
+    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(1, false));
+
+    visuals = .{};
+    visuals.noteWeaponChannelChange(0, 16);
+    try std.testing.expectEqual(@as(u8, 2), visuals.left_draw_state);
+    try std.testing.expectEqual(@as(u8, 2), visuals.right_draw_state);
+    try std.testing.expectEqual(sideWeaponDrawTickCount(2), visuals.left_draw_ticks);
+    try std.testing.expectEqual(sideWeaponDrawTickCount(2), visuals.right_draw_ticks);
+    try std.testing.expectEqual(@as(u8, 2), visuals.sidePresentationState(2, true));
+    try std.testing.expectEqual(@as(u8, 2), visuals.sidePresentationState(2, false));
+
+    visuals = .{};
+    visuals.noteWeaponChannelChange(2, 0);
+    try std.testing.expectEqual(@as(u8, 1), visuals.left_hide_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.right_hide_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, true));
+    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, false));
 }
 
 fn nativeGameplayWeaponUpgradeVoiceCue(
@@ -2767,6 +2848,8 @@ const AppState = struct {
     current_gameplay_salt_model: ?x2.Uploaded = null,
     current_gameplay_turret_model: ?x2.Uploaded = null,
     current_gameplay_blaster_top_models: GameplayWeaponModelSet = .{},
+    current_gameplay_blaster_left_models: GameplayWeaponModelSet = .{},
+    current_gameplay_blaster_right_models: GameplayWeaponModelSet = .{},
     current_gameplay_laser_left_models: GameplayWeaponModelSet = .{},
     current_gameplay_laser_right_models: GameplayWeaponModelSet = .{},
     current_gameplay_rocket_launcher_models: GameplayWeaponModelSet = .{},
@@ -3150,6 +3233,8 @@ const AppState = struct {
             self.current_gameplay_turret_model = null;
         }
         self.current_gameplay_blaster_top_models.unload();
+        self.current_gameplay_blaster_left_models.unload();
+        self.current_gameplay_blaster_right_models.unload();
         self.current_gameplay_laser_left_models.unload();
         self.current_gameplay_laser_right_models.unload();
         self.current_gameplay_rocket_launcher_models.unload();
@@ -3317,6 +3402,18 @@ const AppState = struct {
             gameplay_blaster_top_model_path,
             &gameplay_blaster_top_draw_model_paths,
             gameplay_blaster_top_fire_model_path,
+        );
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_blaster_left_models,
+            gameplay_blaster_left_model_path,
+            &gameplay_blaster_left_draw_model_paths,
+            null,
+        );
+        try self.loadGameplayWeaponModelSet(
+            &self.current_gameplay_blaster_right_models,
+            gameplay_blaster_right_model_path,
+            &gameplay_blaster_right_draw_model_paths,
+            null,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_laser_left_models,
@@ -4599,6 +4696,11 @@ const AppState = struct {
                 .y = effect.position.y + effect.velocity.y,
                 .z = effect.position.z + effect.velocity.z,
             };
+            effect.velocity = .{
+                .x = effect.velocity.x + effect.acceleration.x,
+                .y = effect.velocity.y + effect.acceleration.y,
+                .z = effect.velocity.z + effect.acceleration.z,
+            };
             effect.ticks_remaining -= 1;
             if (effect.ticks_remaining == 0) continue;
             self.active_gameplay_effects[write_index] = effect;
@@ -4619,7 +4721,16 @@ const AppState = struct {
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
-        self.spawnGameplayEffectWithVelocity(kind, position, .{ .x = 0.0, .y = 0.0, .z = 0.0 }, width, height, ticks_remaining, tint);
+        self.spawnGameplayEffectWithPhysics(
+            kind,
+            position,
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            width,
+            height,
+            ticks_remaining,
+            tint,
+        );
     }
 
     fn spawnGameplayEffectWithVelocity(
@@ -4632,12 +4743,36 @@ const AppState = struct {
         ticks_remaining: u16,
         tint: rl.Color,
     ) void {
+        self.spawnGameplayEffectWithPhysics(
+            kind,
+            position,
+            velocity,
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            width,
+            height,
+            ticks_remaining,
+            tint,
+        );
+    }
+
+    fn spawnGameplayEffectWithPhysics(
+        self: *AppState,
+        kind: GameplayEffectKind,
+        position: rl.Vector3,
+        velocity: rl.Vector3,
+        acceleration: rl.Vector3,
+        width: f32,
+        height: f32,
+        ticks_remaining: u16,
+        tint: rl.Color,
+    ) void {
         if (self.active_gameplay_effect_count >= max_active_gameplay_effects) return;
         self.active_gameplay_effects[self.active_gameplay_effect_count] = .{
             .active = true,
             .kind = kind,
             .position = position,
             .velocity = velocity,
+            .acceleration = acceleration,
             .width = width,
             .height = height,
             .tint = tint,
@@ -4664,7 +4799,7 @@ const AppState = struct {
             );
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
-            self.spawnGameplayHealthPickupEffects(current, preview);
+            self.spawnGameplayHealthPickupEffects(previous, current, preview);
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
             const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
@@ -4750,52 +4885,45 @@ const AppState = struct {
         }
     }
 
-    // PORT(partial): native `health_collect_particles` emits 8 smoke sprites from the
-    // picked-up runtime slot with a fixed circular spread plus the runner's current motion.
-    // The port now mirrors the recovered smoke-sprite ownership and 8-particle burst shape
-    // through the existing gameplay-effect system, while still approximating the original
-    // velocity source because the native player motion lanes are not ported literally yet.
+    // PORT(partial): native `health_collect_particles` emits 8 `SMOKE.TGA` sprites from the
+    // picked-up runtime slot using world-axis radial velocity, the player's live motion
+    // packet, and a small downward acceleration. The port now matches that packet shape
+    // through the gameplay-effect system, while still approximating the native motion lanes
+    // from consecutive runner world transforms instead of the original inline fields.
     fn spawnGameplayHealthPickupEffects(
         self: *AppState,
+        previous: gameplay.Runner,
         current: gameplay.Runner,
         preview: *const track.LoadedLevelPreview,
     ) void {
         const pickup_origin = current.last_health_pickup_position orelse current.worldPosition(preview, 0.34);
-        const forward = normalizeVector3(current.worldForward(preview));
-        var up = normalizeVector3(current.worldUp(preview));
-        var right = crossVector3(forward, up);
-        if (vectorLength(right) <= 0.0001) {
-            right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-            up = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-        } else {
-            right = normalizeVector3(right);
-            up = normalizeVector3(crossVector3(right, forward));
-        }
-
-        const forward_velocity = scaleVector3(forward, current.speed_rows_per_second * 0.02);
+        const previous_position = previous.worldPosition(preview, 0.0);
+        const current_position = current.worldPosition(preview, 0.0);
+        const player_motion = rl.Vector3{
+            .x = current_position.x - previous_position.x,
+            .y = current_position.y - previous_position.y,
+            .z = current_position.z - previous_position.z,
+        };
         var particle_index: usize = 0;
         while (particle_index < 8) : (particle_index += 1) {
-            const angle =
-                (@as(f32, @floatFromInt(particle_index)) / 8.0) * std.math.tau;
-            const radial_velocity = addVector3(
-                scaleVector3(right, std.math.sin(angle) * 0.015),
-                scaleVector3(up, std.math.cos(angle) * 0.015),
-            );
-            self.spawnGameplayEffectWithVelocity(
+            const angle = @as(f32, @floatFromInt(particle_index)) * 0.78539819;
+            self.spawnGameplayEffectWithPhysics(
                 .smoke,
                 pickup_origin,
-                addVector3(
-                    radial_velocity,
-                    .{
-                        .x = forward_velocity.x,
-                        .y = forward_velocity.y + 0.01,
-                        .z = forward_velocity.z + (current.speed_rows_per_second * 0.008),
-                    },
-                ),
-                0.32,
-                0.32,
+                .{
+                    .x = (std.math.sin(angle) * 0.015) + (player_motion.x * 3.0),
+                    .y = (std.math.cos(angle) * 0.015) + (player_motion.y * 3.0),
+                    .z = (player_motion.z * 0.4) + (player_motion.z * 3.0),
+                },
+                .{
+                    .x = 0.0,
+                    .y = -0.0002,
+                    .z = 0.0,
+                },
+                0.1,
+                0.5,
                 16,
-                .{ .r = 255, .g = 191, .b = 191, .a = 224 },
+                .{ .r = 255, .g = 191, .b = 191, .a = 255 },
             );
         }
     }
@@ -11127,20 +11255,21 @@ fn drawGameplayRuntimeRingEffectActor(
     effect: gameplay.RuntimeRingEffect,
 ) void {
     const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
-    const position = effect.world_position;
+    const position = effect.presentation_position;
+    const scale = effect.presentation_scale;
     switch (ring_kind) {
         .none => {},
         .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46, 0.46, camera, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46 * scale, 0.46 * scale, camera, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
         },
         .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.64, camera, .white);
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, .white);
         },
         .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72, 0.72, camera, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72 * scale, 0.72 * scale, camera, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
         },
         .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5, 0.5, camera, .white);
+            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, .white);
         },
     }
 }
@@ -11493,11 +11622,21 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.left_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.left_hide_ticks > 0;
     if (left_active) {
-        if (state.current_gameplay_laser_left_models.currentModel(
-            state.gameplay_weapon_visual_state.left_draw_ticks,
-            0,
-            state.gameplay_weapon_visual_state.left_hide_ticks,
-        )) |model| {
+        const left_presentation_state = state.gameplay_weapon_visual_state.sidePresentationState(channel_states.left, true);
+        const left_model = switch (left_presentation_state) {
+            1 => state.current_gameplay_blaster_left_models.currentModel(
+                state.gameplay_weapon_visual_state.left_draw_ticks,
+                0,
+                state.gameplay_weapon_visual_state.left_hide_ticks,
+            ),
+            2 => state.current_gameplay_laser_left_models.currentModel(
+                state.gameplay_weapon_visual_state.left_draw_ticks,
+                0,
+                state.gameplay_weapon_visual_state.left_hide_ticks,
+            ),
+            else => null,
+        };
+        if (left_model) |model| {
             drawGameplayUploadedModel(
                 model.*,
                 offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
@@ -11514,11 +11653,21 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.right_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.right_hide_ticks > 0;
     if (right_active) {
-        if (state.current_gameplay_laser_right_models.currentModel(
-            state.gameplay_weapon_visual_state.right_draw_ticks,
-            0,
-            state.gameplay_weapon_visual_state.right_hide_ticks,
-        )) |model| {
+        const right_presentation_state = state.gameplay_weapon_visual_state.sidePresentationState(channel_states.right, false);
+        const right_model = switch (right_presentation_state) {
+            1 => state.current_gameplay_blaster_right_models.currentModel(
+                state.gameplay_weapon_visual_state.right_draw_ticks,
+                0,
+                state.gameplay_weapon_visual_state.right_hide_ticks,
+            ),
+            2 => state.current_gameplay_laser_right_models.currentModel(
+                state.gameplay_weapon_visual_state.right_draw_ticks,
+                0,
+                state.gameplay_weapon_visual_state.right_hide_ticks,
+            ),
+            else => null,
+        };
+        if (right_model) |model| {
             drawGameplayUploadedModel(
                 model.*,
                 offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
@@ -12735,6 +12884,70 @@ test "selected replay results skip persistence and score-table awards" {
     try std.testing.expect(!result.time_trial_record_improved);
     try std.testing.expect(!result.unlocked_next_route);
     try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
+}
+
+test "health pickup burst uses the recovered smoke packet and downward drift" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var previous = gameplay.Runner.init(&loaded_track_preview);
+    var current = previous;
+    current.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
+    current.last_health_pickup_position = .{ .x = 1.25, .y = 2.5, .z = 3.75 };
+
+    var state: AppState = undefined;
+    state.active_gameplay_effects = [_]GameplayEffect{.{}} ** max_active_gameplay_effects;
+    state.active_gameplay_effect_count = 0;
+
+    state.spawnGameplayHealthPickupEffects(previous, current, &loaded_track_preview);
+
+    try std.testing.expectEqual(@as(usize, 8), state.active_gameplay_effect_count);
+    const effect = state.active_gameplay_effects[0];
+    const previous_position = previous.worldPosition(&loaded_track_preview, 0.0);
+    const current_position = current.worldPosition(&loaded_track_preview, 0.0);
+    const player_motion = rl.Vector3{
+        .x = current_position.x - previous_position.x,
+        .y = current_position.y - previous_position.y,
+        .z = current_position.z - previous_position.z,
+    };
+
+    try std.testing.expectEqual(GameplayEffectKind.smoke, effect.kind);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25), effect.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), effect.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.75), effect.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.1), effect.width, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), effect.height, 0.0001);
+    try std.testing.expectEqual(@as(u8, 255), effect.tint.r);
+    try std.testing.expectEqual(@as(u8, 191), effect.tint.g);
+    try std.testing.expectEqual(@as(u8, 191), effect.tint.b);
+    try std.testing.expectEqual(@as(u8, 255), effect.tint.a);
+    try std.testing.expectApproxEqAbs(player_motion.x * 3.0, effect.velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(0.015 + (player_motion.y * 3.0), effect.velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs((player_motion.z * 0.4) + (player_motion.z * 3.0), effect.velocity.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), effect.acceleration.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.0002), effect.acceleration.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), effect.acceleration.z, 0.0001);
+
+    state.updateGameplayEffects();
+    const updated = state.active_gameplay_effects[0];
+    try std.testing.expectApproxEqAbs(effect.position.x + effect.velocity.x, updated.position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(effect.position.y + effect.velocity.y, updated.position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(effect.position.z + effect.velocity.z, updated.position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(effect.velocity.x, updated.velocity.x, 0.0001);
+    try std.testing.expectApproxEqAbs(effect.velocity.y - 0.0002, updated.velocity.y, 0.0001);
+    try std.testing.expectApproxEqAbs(effect.velocity.z, updated.velocity.z, 0.0001);
 }
 
 test "selected level record override drives live run tuning lanes" {
