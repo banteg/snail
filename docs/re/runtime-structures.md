@@ -206,6 +206,11 @@ Current practical read:
 
 - `build_subgame_level` embeds the live `SubGoldy` actor at `game + 0x3bb7a4`, and `initialize_subgoldy` writes the back-pointer from `player + 0x408` into that owning gameplay object
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
+- the same course-build path also seeds the row bounds consumed by `update_subgoldy`:
+  - `game + 0x50` = first-block row count
+  - `game + 0x54` = generated runtime row count
+  - `game + 0x58` = `game + 0x54 - final Last-block row count`
+  - current best read: on non-random shipped levels, completion arms at the start of the final `Last:` block rather than on the last populated row
 - `initialize_subgoldy_fall_state` seeds the attachment-exit handoff:
   - `attachment_exit_value_a` from `follow_state.orientation_b`
   - `attachment_exit_value_b` from `follow_state.template_record->row_scalar_a` or zero
