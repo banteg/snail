@@ -1057,3 +1057,56 @@
 
 ### Next target
 - Recover the saved-owner writer / preserved-owner slot that feeds the native `26/27/28` bridge jump outside the already-confirmed respawn self-return path.
+
+## 2026-03-23 22:24 - Iteration: split replay launch return owner
+
+### Target
+- Outer-bridge replay launch context for persistent saved-replay starts
+
+### Why this target
+- The outer bridge is still the top project risk, and the current Zig replay bridge was still deriving persistent replay return ownership from `SelectedLevelRecordSource` even though BN plus IDA already showed a separate saved return-state lane on the native high-score and menu replay launchers.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_high_score_screen` replay-row clicks seed `app + 0x1066bec`, `+0x1066be8 = 1`, `+0x1066be9 = 1`, `+0x1066bf0 = 0x12`, and `+119190` before jumping to frontend state `10`.
+  - The New Game menu's random replay branch seeds the same replay-launch scratch, but uses `app + 0x1066bf0 = 2` instead of `0x12`.
+  - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so that app scratch aliases `game + 0xff25d0/+0xff25d1/+0xff25d4/+0xff25d8` directly.
+  - `update_pause_menu` and `update_completion_screen` both consume `app + 0x1066be9` / `+0x1066bf0`; completion state `3` destroys subgame and restores the dword saved at `+0x1066bf0`.
+  - The high-score and menu replay launchers therefore do not derive their later return owner from the selected replay source alone.
+- Likely:
+  - The Zig bridge should carry replay launch `source`, persistent lane, and saved return owner as separate fields instead of reconstructing them from the selected-record source enum.
+- Unknown:
+  - The saved-owner writer behind the native `26/27/28` bridge jump outside the replay-launch scratch path.
+  - The full New Game random replay UI/path and any remaining `+119190` owner-bank semantics beyond the now-recovered launch writes.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `worklog.md`
+- Replaced the source-derived replay bridge payload with an explicit `SelectedLevelRecordLaunch { source, persistent, return_target }`.
+- Stored `selected_level_record_return_target` separately in `AppState`, and preserved that launch context across replay abandon, replay-tail restart, and replay-backed result rebuilds.
+- Added regression coverage for persistent replay launches whose return owner differs from the replay source, and fixed older `undefined`-state tests to initialize the new launch-context reads explicitly.
+- Reduced one bridge-side scaffold: persistent replay return ownership is no longer inferred from `SelectedLevelRecordSource` alone.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `git diff --check`
+- `zig build test`
+- `zig build`
+- This confirms the launch-context split compiles, the replay bridge regressions pass, and the wider runtime still builds cleanly.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `11b4e23` `bridge: split replay launch return owner from source`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The saved-owner writer behind the native `26/27/28` bridge jump is still unresolved.
+- The New Game random replay UI/path is still not exposed in Zig even though its persistent launch scratch shape is now modeled.
+
+### Next target
+- Trace `[controller + 0x98]` / `data_4df904 + 110` together with `+119190` and `+4299516` to recover the native saved-owner writer behind the outer bridge.
