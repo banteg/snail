@@ -260,10 +260,11 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - `data_4df904 + 17198056` and `+17198057` replay-backed launch bits
 - For the New Game replay attract lane specifically, also watch the menu-local controller at `data_4df904 + 0x4f2dc` (`0x52ebe0` in the current image):
   - `+0x0` rotating bank cursor (`0..4`, wrap at `5`)
-  - `+0x8` / `+0xc` miss cooldown fields written on the `1000`-attempt give-up path
+  - `+0x4` likely replay-attract hide latch; input clears it after unhiding all six New Game widgets, while a successful replay launch sets it to `1` immediately before `destroy_main_menu`
+  - `+0x8` / `+0xc` secondary timer lane reset to `0` / `1/3600` on both successful replay launch and the `1000`-attempt give-up path
   - `+0x10` float accumulator and `+0x14` float step
   - current static read: only cursor values `0/1/3` should arm replay-bank probes there
-  - the remaining runtime question is who seeds the `+0x14` step before `update_new_game_menu` crosses the `> 1.0` launch threshold
+  - the remaining runtime questions are who seeds the `+0x14` step before `update_new_game_menu` crosses the `> 1.0` launch threshold, and whether the `+0x8` / `+0xc` timer lane later feeds that step or only gates post-launch/menu-reentry timing
 - Watch the three flag bytes or dwords above during:
   - fresh level start
   - respawn rebuild

@@ -264,6 +264,7 @@ Current practical read:
     - `app + 0x1066be9` = `game + 0xff25d1` (`selected_level_record_persistent`)
     - `app + 0x1066bec` = `game + 0xff25d4` (`selected_level_record`)
     - `app + 0x1066bf0` = `game + 0xff25d8` (`selected_level_record_return_state`) during that prelaunch window
+  - `initialize_game_assets_and_world` clears app bytes `+0x1066be8` / `+0x1066be9` back to `0` during startup, so persistent replay-backed launches are not inheriting stale selected-record flags from an earlier app lifetime
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - the menu replay branch is more specific than a generic replay picker:
     - `update_new_game_menu` rotates a menu-local dword cursor at `data_4df904 + 0x4f2dc` through `0..4` and wraps `5 -> 0`
@@ -271,9 +272,14 @@ Current practical read:
     - those three probe lanes map to postal (`app + 0x6ffae8`, `app + 0x74658 = 0`), challenge (`app + 0x85c128`, `app + 0x74658 = 1`), and completion / Time Trial (`app + 0x9b8768`, `app + 0x74658 = 4`)
     - each bank search reuses the same `0x1fac0` record stride and RNG-derived record index, and the branch gives up after `1000` attempts
     - the launcher is gated by menu-local float fields at `+0x10` / `+0x14`: `update_new_game_menu` accumulates the step into the accumulator, enters the replay search only once that accumulator exceeds `1.0`, and clears the accumulator back to `0.0` before the bank probe loop
+    - the same menu-local object now has a firmer partial layout:
+      - `+0x0`: rotating replay-bank cursor
+      - `+0x4`: likely replay-attract hide latch; any input clears it after unhiding all six menu widgets, while a successful replay launch sets it to `1` immediately before `destroy_main_menu`
+      - `+0x8` / `+0xc`: secondary timer lane reset to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path
+      - `+0x10` / `+0x14`: replay-attract accumulator / step
     - when all `1000` attempts miss, the branch does not launch; it writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
-  - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
+  - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`, so the same app-side replay scratch also suppresses the normal click-start gate on persistent replay launches
   - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
   - `update_completion_screen` state `3` destroys subgame and restores the state saved at `app + 0x1066bf0`, so the persistent replay-backed abandon or overlay lane uses the same saved-owner destroy-return path as persistent result exits rather than frontend state `0x1c`
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`
@@ -315,8 +321,8 @@ Current practical read:
   - current best read: it is the saved replay-return state seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - the remaining New Game replay-attract gap is now narrower too:
-  - the persistent replay scratch, bank rotation, and saved return-state writes are confirmed statically
-  - the unresolved piece is the writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14` and therefore controls when the attract branch crosses its `> 1.0` launch threshold
+  - the persistent replay scratch, bank rotation, saved return-state writes, startup clear, and click-start suppressor are confirmed statically
+  - the unresolved pieces are the writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14` and the exact role of the secondary timer lane at `+0x8` / `+0xc`
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
 ## Row Event Display Controller

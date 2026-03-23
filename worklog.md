@@ -1161,3 +1161,52 @@
 
 ### Next target
 - Trace the writer for the New Game attract timer-step field together with `[controller + 0x98]`, `data_4df904 + 110`, and the app replay-launch scratch to connect the menu trigger to the native outer-bridge owner handoff.
+
+## 2026-03-23 22:44 - Iteration: narrow replay attract controller layout
+
+### Target
+- New Game replay-attract controller layout and startup replay-scratch ownership
+
+### Why this target
+- The outer bridge is still the top risk, but the missing `+0x14` timer-step writer was too narrow to guess live; BN plus IDA already pinned enough surrounding structure to land a durable docs chunk that sharpens the next Windows trace.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_new_game_menu` (`0x417eb0`) accumulates menu-local float `+0x14` into `+0x10`, enters the replay-bank probe once that accumulator exceeds `1.0`, and resets `+0x10` back to `0.0` before the bank-search loop.
+  - BN plus IDA show the same menu object rotating cursor `+0x0` through `0..4`, probing replay banks only on values `0/1/3`, setting the persistent replay scratch at `app + 0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0`, and resetting menu locals `+0x8 = 0` plus `+0xc = 0x3991a2b4` on both successful launch and the `1000`-attempt give-up path.
+  - BN `initialize_click_start` (`0x442170`) hides the `Click to Start` prompt whenever `app + 0x1066be8 != 0`.
+  - IDA `initialize_game_assets_and_world` (`0x40acf0`) clears app bytes `+17198056/+17198057` during startup, so the replay-launch bits do not persist across a fresh app init.
+- Likely:
+  - Menu byte `+0x4` is a replay-attract hide latch: input clears it only after unhiding all six New Game widgets, and a successful replay launch sets it to `1` immediately before `destroy_main_menu`.
+- Unknown:
+  - The writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14`.
+  - The exact role of the secondary timer lane at `data_4df904 + 0x4f2dc + 0x8/+0xc`.
+
+### Zig changes
+- `docs/re/runtime-structures.md`
+- `docs/re/windows-debugging-wants.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `analysis/symbols/gameplay-functions.json`
+- Documented the New Game replay-attract controller's firmer partial field layout, the startup clear of the persistent replay-launch bits, and the click-start suppressor that already consumes that scratch.
+- Tightened the symbol manifest descriptions for `initialize_game_assets_and_world`, `update_new_game_menu`, and `initialize_click_start`.
+- Reduced one bridge-side blind spot without inventing a live launcher.
+
+### Verification
+- `uv run snail symbols`
+- `git diff --check`
+- This confirms the symbol manifest still validates and the docs/manifests patch is whitespace-clean. No Zig build or test was run because no runtime code changed.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `re: narrow replay attract controller layout`
+- Push: pending push after commit
+
+### Remaining gaps
+- The New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14` is still unresolved.
+- The secondary timer lane at `+0x8/+0xc` still lacks a confirmed runtime role.
+- The saved-owner writer behind the native `26/27/28` bridge jump is still unresolved.
+
+### Next target
+- Trace the writer for `data_4df904 + 0x4f2dc + 0x14` together with the replay scratch and preserved-owner bridge fields so the missing New Game attract trigger can be connected to the native outer-controller handoff.
