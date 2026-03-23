@@ -5932,7 +5932,6 @@ const AppState = struct {
     fn standalonePostLevelHighScoreEntry(
         self: *AppState,
         result: PendingRunResult,
-        return_request: OuterBridgeRequest,
     ) !?StandalonePostLevelHighScoreEntry {
         switch (result.completion_owner) {
             .postal_failure, .challenge_failure => {},
@@ -5947,7 +5946,11 @@ const AppState = struct {
                 .mode = mode,
                 .rank = rank,
             },
-            .return_request = return_request,
+            // PORT(verified): `add_arcade_high_score` / `add_survival_high_score` switch into the
+            // shared post-level high-score owner (`state 0x14`), and `update_high_score_screen ->
+            // exit_high_score_screen` then restores owner by the run mode lane (`state 2` for
+            // postal, `state 10` for challenge), not by the preserved gameplay launch surface.
+            .return_request = self.outerBridgeRequestForPendingRunResult(committed),
         };
     }
 
@@ -5957,7 +5960,7 @@ const AppState = struct {
         const return_request = self.outerBridgeRequestForAbandonActiveRun();
         if (!self.selectedReplayPlaybackActive()) {
             if (self.currentFailedRunResult()) |result| {
-                if (try self.standalonePostLevelHighScoreEntry(result, return_request)) |entry| {
+                if (try self.standalonePostLevelHighScoreEntry(result)) |entry| {
                     try self.enterPostLevelHighScoreScreenWithReturn(entry.context, entry.return_request);
                     return;
                 }
@@ -13716,7 +13719,6 @@ test "postal abandon can stage standalone post-level score entry" {
         entry.* = .{ .score = @as(u32, @intCast(100 - index)) };
     }
 
-    const return_request = state.outerBridgeRequestForAbandonActiveRun();
     const staged = (try state.standalonePostLevelHighScoreEntry(.{
         .outcome = .failed,
         .level_name = "Route 7",
@@ -13729,11 +13731,14 @@ test "postal abandon can stage standalone post-level score entry" {
         .completion_owner = .postal_failure,
         .persistence = .failed,
         .return_target = .new_game_menu,
-    }, return_request)) orelse return error.TestExpectedPendingHighScoreEntry;
+    })) orelse return error.TestExpectedPendingHighScoreEntry;
 
     try std.testing.expectEqual(high_score.Mode.postal, staged.context.mode);
     try std.testing.expectEqual(@as(usize, 0), staged.context.rank);
-    try std.testing.expectEqualDeep(return_request, staged.return_request);
+    try std.testing.expectEqualDeep(OuterBridgeRequest{
+        .opcode = .destroy_return,
+        .target = .{ .new_game_menu = .postal_mode },
+    }, staged.return_request);
     try std.testing.expectEqual(@as(u32, 900), state.high_score_tables.postal[0].score);
 }
 
@@ -13782,7 +13787,60 @@ test "standalone postal abandon skips score entry when the score does not qualif
         .completion_owner = .postal_failure,
         .persistence = .failed,
         .return_target = .new_game_menu,
-    }, state.outerBridgeRequestForAbandonActiveRun()));
+    }));
+}
+
+test "challenge abandon keeps post-level score entry on the challenge return lane" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.active_frontend_mode = .challenge;
+    state.active_frontend_level_index = 0;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_level_record_source = null;
+    state.selected_replay_cache = null;
+    state.preserved_frontend_owner = .{ .new_game_menu = .challenge_mode };
+
+    for (state.high_score_tables.challenge[0..high_score.visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(100 - index)) };
+    }
+
+    const staged = (try state.standalonePostLevelHighScoreEntry(.{
+        .outcome = .failed,
+        .level_name = "Challenge",
+        .mode = .challenge,
+        .elapsed_millis = 30_000,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 900,
+        .score_is_partial = true,
+        .completion_owner = .challenge_failure,
+        .persistence = .failed,
+        .return_target = .new_game_menu,
+    })) orelse return error.TestExpectedPendingHighScoreEntry;
+
+    try std.testing.expectEqual(high_score.Mode.challenge, staged.context.mode);
+    try std.testing.expectEqual(@as(usize, 0), staged.context.rank);
+    try std.testing.expectEqualDeep(OuterBridgeRequest{
+        .opcode = .destroy_return,
+        .target = .{ .new_game_menu = .challenge_mode },
+    }, staged.return_request);
+    try std.testing.expectEqual(@as(u32, 900), state.high_score_tables.challenge[0].score);
 }
 
 test "high-score browse owner drives table toggles while post-level entry stays fixed" {

@@ -247,6 +247,9 @@ Current practical read:
   - `add_arcade_high_score` and `add_survival_high_score` both set it to `1` while arming active state `20`
   - `destroy_high_score_screen` clears it back to `0`
   - `update_completion_screen` also branches on it before tearing down the completion screen
+  - `update_high_score_screen` uses the same high-score-entry lane on post-level commit, then exits through `exit_high_score_screen`, which branches on the surviving run mode at `app + 0x74658`:
+    - `0` (`postal`) -> frontend state `2`
+    - `1` (`challenge`) -> frontend state `10`
   - current best read: it is a high-score-entry / high-score-screen continuation flag, not a generic gameplay mode byte
   - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
