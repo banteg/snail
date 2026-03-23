@@ -68,6 +68,33 @@ Capture notes:
 - watch `player + 0x41d`, `+0x42c`, `+0x430`, `+0x434`, `+0x44c`, `+0x44d`
 - keep ARCADE007 as the first repro lane unless a better shipped path family appears
 
+Current 2026-03-24 result:
+- fresh artifact: `artifacts/snailmail-windbg.log`
+- fresh focused pack: `artifacts/cdb-attachment-reentry-pack-live-09510d9c-2026-03-24.txt`
+- `ARCADE007` remains the right first repro; repeated `HalfPipe` exits still hit `end_track_attachment_follow_state`
+- repeated `attachment_end_enter` hits all used the live player `0x09510d9c` and reported `seg = 0x1b`
+- `post_follow_value_a` (`player + 0x42c`) is now runtime-confirmed as a real camera input in the captured window
+  - the live access watch fired at `0x4465c1`
+  - that address sits inside `update_cameraman`
+  - the read happens while `attachment_exit_pending` is still set
+- `post_follow_value_b` (`player + 0x430`) still has no confirmed downstream consumer in the captured window
+  - the observed `post_b_access` hits were the helper-side writes in `end_track_attachment_follow_state`
+  - no later direct read was captured during this pass
+- the only late `attachment_exit_pending` clear captured again was `0x43ce75`
+  - that matches the already narrowed jetpack-only branch
+  - it still does not identify the generic post-swept-re-entry retirement lane
+- `exit_gate_b_set` still fired at `attachment_exit_progress = 0x3f2aaaab` with negative `world_y`, which keeps the older gate-B fall threshold interpretation intact
+- the narrowed re-entry pack attached cleanly and stayed live, but this pass still did not hit:
+  - `0x43bdf0` / `0x43bec5` swept re-entry probes
+  - `0x43c355` pending branch
+  - `0x43bf6f`, `0x43c06d`, or `0x43c3ea` non-jetpack clear sites
+  - `0x43c3f8` re-entry voice lane
+
+Net status for section 3:
+- one open question is materially narrowed: `post_follow_value_a` is confirmed live camera carryover, while `post_follow_value_b` remains unconsumed in the observed window
+- section 3 is still incomplete because the real post-swept-re-entry retirement path and the overlapping `0x40` / `0x80` probe behavior were not hit in this session
+- if this section is revisited, keep the current focused pack and bias the repro toward skimming back onto the path or adjacent floor immediately after a `HalfPipe` exit
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.
@@ -88,6 +115,10 @@ This batch is complete only when all of these are true:
 - there is at least one fresh Windows artifact or note for each section above
 - the next replacement target is decision-complete enough to choose between outer bridge and attachment-exit carryover
 - no Zig proxy patch was made during the batch
+
+Current batch status:
+- section 3 now has fresh partial Windows evidence, but not its full done criteria
+- sections 1, 2, and 4 still need fresh Windows captures before the replacement decision is ready
 
 ## Expected Next Replacement Boundary
 
