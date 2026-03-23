@@ -273,3 +273,53 @@
 
 ### Next target
 - Recover the actual writer and semantics of `selected_level_record_persistent`, then finish the remaining postal/override bridge branches without guessing.
+
+## 2026-03-23 19:33 - Iteration: restore postal selected replay completion opcode
+
+### Target
+- Outer-bridge opcode parity for postal selected-record completion returns
+
+### Why this target
+- The outer bridge is still the top ownership risk, and the current Zig bridge was still flattening one confirmed native split: postal selected-replay completions were using destroy-return semantics even though `update_subgoldy` already shows the non-persistent completion lane rebuilding through `0x1b`.
+
+### Original behavior evidence
+- Confirmed:
+  - BN disassembly of `update_subgoldy` (`0x43b120`) writes `app + 0x1b8 = 0x1b` on the non-persistent selected-record completion branch after saving the current outer owner, with only the separate tutorial `level_mode == 7` override forcing `0x1a`.
+  - BN disassembly of `update_subgoldy_resurrect` (`0x441fd0`) keeps postal final loss separate: non-persistent postal loss only uses `0x1b` when app byte `+0x30d` is non-zero, otherwise it forces `app + 0x1b8 = 0x1a` and `app + 0x1bc = 2`.
+  - IDA exports for `add_arcade_high_score`, `add_survival_high_score`, `destroy_high_score_screen`, and `update_completion_screen` show app byte `+0x30d` is a high-score-entry / high-score-screen continuation flag, not a generic gameplay mode byte.
+- Likely:
+  - Postal selected-record completion should already be treated like the other confirmed non-persistent selected-record completion paths, while postal selected-record final loss still depends on the unresolved live meaning of the `+0x30d` flag during gameplay.
+- Unknown:
+  - The writer for `selected_level_record_persistent`.
+  - The full end-to-end owner semantics of app byte `+0x30d` during postal gameplay final loss.
+  - Whether any additional launch path besides the currently mapped score-entry flow can arm `+0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Split postal selected-record completion from postal selected-record failure at the bridge opcode chooser, so confirmed postal selected-replay completions now use rebuild-return semantics while postal failures stay conservative.
+- Added focused regression coverage for transient postal selected-replay completion vs failure opcode selection.
+- Reduced one outer-bridge over-flattening: the port no longer routes confirmed postal selected-replay completions through destroy-return.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge opcode split compiles, the new postal replay regression coverage passes, and the wider runtime still builds after the bridge change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `2c0bedc` `bridge: restore postal selected replay completion opcode`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Postal selected-record final loss still depends on the unresolved runtime meaning of app byte `+0x30d`.
+- The writer and exact semantics of `selected_level_record_persistent` are still unresolved.
+- The tutorial `level_mode == 7` completion override is documented, but the wider preserved-owner writer is still missing.
+
+### Next target
+- Recover the runtime owner and writer chain for app byte `+0x30d`, then port the remaining postal selected-record final-loss bridge split without guessing.
