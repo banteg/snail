@@ -1,0 +1,69 @@
+# Decompile/Port Loop Process
+
+This is the operating policy for the automated decompile-guided port loop.
+
+## Phases
+
+- `re`
+  - recover native behavior only
+  - update one focused RE packet or note
+  - do not patch Zig when the question is still runtime-blocked
+- `replace`
+  - replace one scaffolded subsystem slice with recovered behavior
+  - delete or bypass existing scaffold instead of layering new guards on it
+- `verify`
+  - validate the replacement against runtime evidence first and local tests second
+
+## Classifications
+
+- `static-closable`
+  - code is allowed only when writer, consumer, guard, and lifetime are already known from BN, IDA, or existing captures
+- `runtime-blocked`
+  - no Zig edits
+  - produce or update one focused Windows capture packet only
+- `scaffold-removal`
+  - remove or isolate fake behavior
+  - do not replace one proxy with another unless directly evidenced
+
+## Loop Discipline
+
+- The active gate lives in `analysis/runtime/codex-loop-gate.json`.
+- The runner state lives in `artifacts/codex-loop/state.json`.
+- The loop stops when:
+  - the current target is `runtime-blocked`
+  - the same unresolved blocker appears again without fresh BN, IDA, or Frida evidence
+  - required evidence artifacts are missing or stale
+
+## Logging And Docs
+
+- Use compact batch logging instead of a mandatory per-iteration template.
+- Update the top-level status ledgers only when shipped behavior changes or the subsystem model materially changes.
+- Keep transient narrowing inside one focused RE note or packet.
+
+## Test Triage
+
+- `parity`
+  - confirmed native behavior
+  - durable
+- `safety`
+  - crash or integrity guards
+  - durable
+- `scaffold`
+  - temporary tests that are expected to change or disappear during replacement
+
+Do not add new durable tests for unconfirmed Zig-local proxy behavior.
+
+## Extraction Policy
+
+Extract code from `zig/src/main.zig` only along recovered subsystem boundaries:
+- outer bridge and state machine
+- frontend owners and screens
+- HUD, pause, and high-score flows
+
+Avoid pure architecture cleanups that are not attached to an evidence-backed replacement.
+
+## Current Freeze
+
+- Freeze further attachment-exit micro-narrowing Zig changes until fresh Windows evidence lands.
+- Freeze further outer-bridge micro-narrowing Zig changes until fresh Windows evidence lands.
+- The active batch packet is `analysis/runtime/windows-re-batch-2026-03-24.md`.
