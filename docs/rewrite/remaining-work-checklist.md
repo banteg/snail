@@ -153,6 +153,8 @@ Work this top-down unless a new runtime capture invalidates the order.
   - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, and the current row now gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`)
 - [ ] Recover the real consumers and semantics of `attachment_exit_value_a` / `attachment_exit_value_b`
 - [ ] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
+  - current narrowing: raw BN plus IDA now agree the `voice 4` call at `0x420d30` sits behind `sample_index + 1 == template->sample_count << 1`, while `begin_track_attachment_follow_state` seeds `sample_index = 0` and the same helper retires follow at `sample_index == template->sample_count`
+  - consequence: do not port that cue until live tracing or stronger type recovery explains the counter mismatch
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio

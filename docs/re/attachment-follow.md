@@ -150,6 +150,14 @@ Additional static detail from `update_track_attachment_follow_state`:
 - special-case movement branches still exist for attachment kinds `0x1f` and `0x2a`
 - the mid/end row-cell writes in the special branch pull their payloads from the installed runtime record reached through the live source row, not from template `+0xa0/+0xa4` directly
 
+Newer raw BN plus IDA reconciliation narrows one tempting audio port too:
+
+- `begin_track_attachment_follow_state` seeds `follow_state->sample_index = 0`
+- the raw `update_track_attachment_follow_state` overflow block increments that same dword by `1`, then compares it against `template + 0x44 << 1` before the `voice 4` call at `0x420d30`
+- later in the same helper, the live follow still terminates once `follow_state->sample_index == template + 0x44`
+- under the current typed read of `follow_state + 0xc` as the live sample index and `template + 0x44` as the template sample count, that `voice 4` branch is contradictory and looks unreachable
+- practical consequence: do not add a Zig `voice 4` milestone hook yet; either the relevant counter typing is still wrong or the callsite is stale/dead, so this needs live tracing or stronger type recovery before it becomes a real port target
+
 The newer Windows-only package also tightened two family reads:
 
 - kind `31` is the dedicated `SUPERTRAMP` launch-exit family

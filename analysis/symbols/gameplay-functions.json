@@ -970,7 +970,7 @@
     {
       "address": "0x420cb0",
       "name": "update_track_attachment_follow_state",
-      "description": "Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`."
+      "description": "Advances one live attachment-follow session along the current template, updates segment, progress, and local height, writes the interpolated output transform back into the follow struct, and returns a small mode code consumed by `update_subgoldy`. Windows `cdb` confirmed `ARCADE007` produces mid-follow samples with local height `-0.49f`, and the case-1 or case-3 return path feeds one direct fall-state handoff inside `update_subgoldy`. Raw BN plus IDA also show the nearby `voice 4` call guarded by `sample_index + 1 == template->sample_count << 1`, which conflicts with the same helper's `sample_index == template->sample_count` termination under the current typed counters, so that milestone lane remains unresolved rather than ported."
     },
     {
       "address": "0x421770",

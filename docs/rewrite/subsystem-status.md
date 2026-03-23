@@ -200,6 +200,7 @@ Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
 - the exact early-clear / overlap semantics around `attachment_exit_pending` once swept re-entry succeeds
+- the follow-milestone lane behind the static `voice 4` callsite; raw BN plus IDA now show a contradictory `sample_index + 1 == template->sample_count << 1` gate versus the same helper's `sample_index == template->sample_count` termination, so this should not be guessed into the port yet
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
