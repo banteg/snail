@@ -235,9 +235,10 @@ Current practical read:
     - `attachment_exit_progress` does not have its own separate progress-expiry clear
   - current BN xrefs show `attachment_exit_progress` is only written by `initialize_subgoldy_fall_state` and the single `update_subgoldy` store at `0x43ce96`
   - the later retirement of `attachment_exit_pending` is instead limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
-    - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are now statically identifiable
+    - the special `0x43bcb3` late clear is now statically tied to the non-follow floor-cache/slide motion block: the branch first checks runtime tiles `0x0f`, `0x10`, `0x12`, and `0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
+    - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are also statically identifiable
     - the `0x43ce75` late clear is now narrowed too: it sits behind `jetpack_gauge.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
-    - the common post-swept-re-entry retirement path among the remaining later clears still needs runtime confirmation
+    - the common post-swept-re-entry retirement path among those late clears still needs runtime confirmation
   - Zig now follows that narrowing more honestly:
     - the old `attachment_exit_progress >= 1.0` timeout clear is gone
     - active-phase retirement only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy until the missing carryover owner is recovered

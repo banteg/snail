@@ -183,6 +183,8 @@ Static narrowing before the next Windows session:
 - `attachment_exit_pending` is no longer an unbounded "search anywhere" target
   - BN field xrefs now show only one setter outside the main loop: `initialize_subgoldy_fall_state`
   - later retirement is limited to five `update_subgoldy` clear sites: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
+  - `0x43bcb3` is now statically tied to the non-follow floor-cache/slide motion branch: it first checks runtime tiles `0x0f/0x10/0x12/0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
+  - `0x43ce75` is now statically tied to `jetpack_gauge.state == 1`, so it is not the generic/common late retirement lane
 - `attachment_exit_progress` also no longer supports the old progress-expiry guess
   - BN field xrefs show it is only written by `initialize_subgoldy_fall_state` and the one progress-update store at `0x43ce96`
   - practical consequence: the missing retirement path is one of those later `update_subgoldy` branches, not a helper-side or standalone timer helper
@@ -194,6 +196,7 @@ Static narrowing before the next Windows session:
   - `update_subgoldy`
   - `update_cameraman`
 - Watch:
+  - `player + 0x41d`
   - `player + 0x42c`
   - `player + 0x430`
   - `player + 0x434`
@@ -209,7 +212,7 @@ Static narrowing before the next Windows session:
 
 - Is `post_follow_value_b` ever read directly after the handoff write?
 - Are `+0x44c` and `+0x44d` purely visual or do they gate gameplay state transitions?
-- After swept re-entry succeeds, which later `update_subgoldy` clear site actually retires `attachment_exit_pending`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
+- After swept re-entry succeeds, does retirement route through the special `0x43bcb3` floor-cache/slide branch or through the grounded/floor-snap clears at `0x43bf6f` / `0x43c06d`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
 - Does `post_follow_value_a` get integrated in player space, world space, or mixed space before the camera call?
 
 ### Done when

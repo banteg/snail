@@ -60,11 +60,11 @@ Static narrowing for the later retirement of `attachment_exit_pending`:
 
 Current best static read of those five clear sites:
 
+- `0x43bcb3` is no longer an unlabeled late clear: BN disassembly plus the checked-in IDA export place it inside the non-follow track-motion branch that first checks the current runtime cell for `0x0f`, `0x10`, `0x12`, or `0x13`, and otherwise only reaches the same block from `damage_gauge.state == 2` on a slide-family cell
 - `0x43bf6f` follows the ordinary snap-to-ride-height branch (`position.y = 0.49`, `velocity.y = 0`) and is likely one grounded-track retirement lane
 - `0x43c3ea` follows the tile-`22` trampoline settle branch and the `sfx 41` landing cue, so it is a confirmed trampoline-side retirement lane
 - `0x43c06d` is another floor-snap clear in a separate runtime-flag-gated branch
 - `0x43ce75` is not a generic timeout clear: BN plus the checked-in IDA export show it is only reached from the `player + 0x275c == 1` (`jetpack_gauge.state`) late branch at `0x43ce23`, before the `attachment_exit_progress` / gate-A block begins
-- `0x43bcb3` is still a later motion-state clear inside `update_subgoldy`, but its exact gameplay-owner label is still unresolved
 
 Current Zig consequence after this pass:
 
@@ -75,7 +75,7 @@ Current Zig consequence after this pass:
 
 What remains unknown:
 
-- which of those later `update_subgoldy` clears is the common post-swept-re-entry retirement path
+- which of those later `update_subgoldy` clears is the common post-swept-re-entry retirement path, now that `0x43bcb3` is at least tied to a specific floor-cache/slide motion block and `0x43ce75` is tied to jetpack
 - whether the common re-entry retirement happens only after returning to track movement or can also fire while a re-entered follow state is already active
 - whether a geometrically valid `0x40`/`0x80` overlap can still reach two successful probes before one of those later clears wins
 
