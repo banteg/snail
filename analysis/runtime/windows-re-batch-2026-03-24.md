@@ -6,6 +6,7 @@ Rule for this batch:
 - no Zig edits
 - no top-level status-ledger churn
 - update this packet or one focused runtime note only
+- if you update a focused runtime note, reflect the outcome back into this packet before rerunning the loop
 
 ## Goal
 
@@ -79,3 +80,11 @@ This batch is complete only when all of these are true:
 - there is at least one fresh Windows artifact or note for each section above
 - the next replacement target is decision-complete enough to choose between outer bridge and attachment-exit carryover
 - no Zig proxy patch was made during the batch
+
+## Expected Next Replacement Boundary
+
+If the bridge wins the next replacement target:
+- extract the outer bridge and saved-owner state machine out of `zig/src/main.zig`
+
+If attachment-exit carryover wins the next replacement target:
+- extract the attachment-exit carryover owner and follow-exit controller out of `zig/src/gameplay.zig`

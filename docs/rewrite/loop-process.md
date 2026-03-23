@@ -29,10 +29,12 @@ This is the operating policy for the automated decompile-guided port loop.
 
 - The active gate lives in `analysis/runtime/codex-loop-gate.json`.
 - The runner state lives in `artifacts/codex-loop/state.json`.
+- The visible human handoff lives in `artifacts/codex-loop/next-action.md`.
 - The loop stops when:
   - the current target is `runtime-blocked`
   - the same unresolved blocker appears again without fresh BN, IDA, or Frida evidence
   - required evidence artifacts are missing or stale
+- Only the gate's `freshness_artifacts` can unblock a repeated blocker. Context docs may stay required without counting as fresh evidence by themselves.
 
 ## Logging And Docs
 
@@ -61,6 +63,20 @@ Extract code from `zig/src/main.zig` only along recovered subsystem boundaries:
 - HUD, pause, and high-score flows
 
 Avoid pure architecture cleanups that are not attached to an evidence-backed replacement.
+
+Current structural forcing function:
+- if the next replacement target is the outer bridge, extract that owner/state-machine logic from `zig/src/main.zig` as part of the replacement
+- if the next replacement target is attachment-exit carryover, extract that controller boundary from `zig/src/gameplay.zig` as part of the replacement
+
+## Metrics
+
+Track these as health checks for the loop:
+- fresh runtime captures or debugger-backed notes landed
+- blind spots closed
+- scaffold-test count
+- scaffold markers in `zig/src`
+
+Do not use commit count as the primary success metric.
 
 ## Current Freeze
 

@@ -26,6 +26,7 @@ Before choosing work:
 ## Phase Rules
 
 The active gate sets one phase and one classification. Treat them as authoritative.
+If any later instruction conflicts with the gate, the gate wins.
 
 ### `re`
 
@@ -84,6 +85,12 @@ Do not claim parity confidence that you did not earn.
 - keep transient narrowing in one focused RE note or packet
 - update top-level status ledgers only when shipped behavior changes or the subsystem model materially changes
 - keep notes specific and evidence-backed
+
+## Structural Boundary Rule
+
+When a replacement target is decision-complete:
+- bridge replacements must extract the owner/state-machine boundary from `zig/src/main.zig`
+- attachment-exit carryover replacements must extract the controller boundary from `zig/src/gameplay.zig`
 
 ## Hard Rules
 

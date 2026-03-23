@@ -9,6 +9,9 @@
     "docs/re/frida-runtime-trace.md",
     "analysis/runtime/windows-re-batch-2026-03-24.md"
   ],
+  "freshness_artifacts": [
+    "analysis/runtime/windows-re-batch-2026-03-24.md"
+  ],
   "packet_path": "analysis/runtime/windows-re-batch-2026-03-24.md",
   "notes": "Freeze further attachment-exit micro-narrowing and bridge micro-narrowing code changes until a fresh Windows batch lands."
 }

@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import UTC, datetime
+import hashlib
 import json
 from pathlib import Path
 import shlex
@@ -14,6 +15,7 @@ from typing import Sequence
 DEFAULT_PROMPT_PATH = Path("LOOP.md")
 DEFAULT_GATE_PATH = Path("analysis/runtime/codex-loop-gate.json")
 DEFAULT_STATE_PATH = Path("artifacts/codex-loop/state.json")
+DEFAULT_NEXT_ACTION_PATH = Path("artifacts/codex-loop/next-action.md")
 DEFAULT_CODEX_ARGS = (
     "--dangerously-bypass-approvals-and-sandbox",
     "-m",
@@ -35,6 +37,7 @@ class LoopGate:
     focus: str
     blocker: str
     required_artifacts: tuple[str, ...]
+    freshness_artifacts: tuple[str, ...]
     packet_path: str | None = None
     notes: str | None = None
 
@@ -45,7 +48,7 @@ class LoopState:
     classification: str
     focus: str
     blocker: str
-    artifact_mtimes: dict[str, int | None]
+    artifact_signatures: dict[str, str | None]
     status: str
 
 
@@ -53,7 +56,7 @@ class LoopState:
 class LoopDecision:
     should_run: bool
     reason: str | None
-    artifact_mtimes: dict[str, int | None]
+    artifact_signatures: dict[str, str | None]
 
 
 def split_script_and_codex_args(argv: Sequence[str]) -> tuple[list[str], list[str]]:
@@ -132,12 +135,34 @@ def load_gate(path: Path) -> LoopGate:
     if notes is not None and not isinstance(notes, str):
         raise ValueError(f"{path}: expected 'notes' to be a string when present")
 
+    required_artifacts = _require_string_list(data, "required_artifacts", path=path)
+    freshness_artifacts = data.get("freshness_artifacts")
+    if freshness_artifacts is None:
+        parsed_freshness = required_artifacts
+    else:
+        if not isinstance(freshness_artifacts, list) or not freshness_artifacts:
+            raise ValueError(f"{path}: expected 'freshness_artifacts' to be a non-empty list")
+        parsed_freshness_list: list[str] = []
+        required_set = set(required_artifacts)
+        for item in freshness_artifacts:
+            if not isinstance(item, str) or not item.strip():
+                raise ValueError(
+                    f"{path}: expected only non-empty strings in 'freshness_artifacts'"
+                )
+            if item not in required_set:
+                raise ValueError(
+                    f"{path}: freshness artifact {item!r} must also appear in 'required_artifacts'"
+                )
+            parsed_freshness_list.append(item)
+        parsed_freshness = tuple(parsed_freshness_list)
+
     return LoopGate(
         phase=phase,
         classification=classification,
         focus=_require_string(data, "focus", path=path),
         blocker=_require_string(data, "blocker", path=path),
-        required_artifacts=_require_string_list(data, "required_artifacts", path=path),
+        required_artifacts=required_artifacts,
+        freshness_artifacts=parsed_freshness,
         packet_path=packet_path,
         notes=notes,
     )
@@ -151,24 +176,26 @@ def load_state(path: Path) -> LoopState | None:
     if not isinstance(data, dict):
         raise ValueError(f"{path}: expected a JSON object")
 
-    artifact_mtimes = data.get("artifact_mtimes")
-    if not isinstance(artifact_mtimes, dict):
-        raise ValueError(f"{path}: expected 'artifact_mtimes' to be a JSON object")
+    artifact_signatures = data.get("artifact_signatures", data.get("artifact_mtimes"))
+    if not isinstance(artifact_signatures, dict):
+        raise ValueError(
+            f"{path}: expected 'artifact_signatures' (or legacy 'artifact_mtimes') to be a JSON object"
+        )
 
-    parsed_mtimes: dict[str, int | None] = {}
-    for key, value in artifact_mtimes.items():
+    parsed_signatures: dict[str, str | None] = {}
+    for key, value in artifact_signatures.items():
         if not isinstance(key, str):
-            raise ValueError(f"{path}: expected string keys in 'artifact_mtimes'")
-        if value is not None and not isinstance(value, int):
-            raise ValueError(f"{path}: expected int or null values in 'artifact_mtimes'")
-        parsed_mtimes[key] = value
+            raise ValueError(f"{path}: expected string keys in artifact signature data")
+        if value is not None and not isinstance(value, (int, str)):
+            raise ValueError(f"{path}: expected string, int, or null values in artifact signature data")
+        parsed_signatures[key] = None if value is None else str(value)
 
     return LoopState(
         phase=_require_string(data, "phase", path=path),
         classification=_require_string(data, "classification", path=path),
         focus=_require_string(data, "focus", path=path),
         blocker=_require_string(data, "blocker", path=path),
-        artifact_mtimes=parsed_mtimes,
+        artifact_signatures=parsed_signatures,
         status=_require_string(data, "status", path=path),
     )
 
@@ -182,37 +209,45 @@ def resolve_cli_path(repo_root: Path, raw_path: Path) -> Path:
     return raw_path if raw_path.is_absolute() else (repo_root / raw_path).resolve()
 
 
-def snapshot_artifacts(repo_root: Path, required_artifacts: Sequence[str]) -> dict[str, int | None]:
-    artifact_mtimes: dict[str, int | None] = {}
+def hash_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def snapshot_artifacts(repo_root: Path, required_artifacts: Sequence[str]) -> dict[str, str | None]:
+    artifact_signatures: dict[str, str | None] = {}
     for artifact in required_artifacts:
         resolved = resolve_repo_path(repo_root, artifact)
-        artifact_mtimes[artifact] = resolved.stat().st_mtime_ns if resolved.exists() else None
-    return artifact_mtimes
+        artifact_signatures[artifact] = hash_file(resolved) if resolved.exists() else None
+    return artifact_signatures
 
 
 def artifacts_are_fresh(
-    current: dict[str, int | None], previous: dict[str, int | None] | None
+    current: dict[str, str | None], previous: dict[str, str | None] | None, freshness_artifacts: Sequence[str]
 ) -> bool:
-    if any(mtime is None for mtime in current.values()):
+    if any(current.get(path) is None for path in freshness_artifacts):
         return False
     if previous is None:
         return True
-    return any(previous.get(path) != mtime for path, mtime in current.items())
+    return any(previous.get(path) != current.get(path) for path in freshness_artifacts)
 
 
 def evaluate_gate(gate: LoopGate, previous_state: LoopState | None, repo_root: Path) -> LoopDecision:
-    artifact_mtimes = snapshot_artifacts(repo_root, gate.required_artifacts)
-    missing = [path for path, mtime in artifact_mtimes.items() if mtime is None]
+    artifact_signatures = snapshot_artifacts(repo_root, gate.required_artifacts)
+    missing = [path for path, signature in artifact_signatures.items() if signature is None]
     if missing:
         missing_list = ", ".join(missing)
         return LoopDecision(
             should_run=False,
             reason=f"missing required evidence artifacts: {missing_list}",
-            artifact_mtimes=artifact_mtimes,
+            artifact_signatures=artifact_signatures,
         )
 
-    previous_artifacts = previous_state.artifact_mtimes if previous_state is not None else None
-    fresh_artifacts = artifacts_are_fresh(artifact_mtimes, previous_artifacts)
+    previous_artifacts = previous_state.artifact_signatures if previous_state is not None else None
+    fresh_artifacts = artifacts_are_fresh(
+        artifact_signatures,
+        previous_artifacts,
+        gate.freshness_artifacts,
+    )
     same_blocker = (
         previous_state is not None
         and previous_state.phase == gate.phase
@@ -225,7 +260,7 @@ def evaluate_gate(gate: LoopGate, previous_state: LoopState | None, repo_root: P
         return LoopDecision(
             should_run=False,
             reason=f"gate is runtime-blocked: {gate.blocker}.{packet_hint}",
-            artifact_mtimes=artifact_mtimes,
+            artifact_signatures=artifact_signatures,
         )
 
     if previous_state is not None and not fresh_artifacts:
@@ -233,22 +268,22 @@ def evaluate_gate(gate: LoopGate, previous_state: LoopState | None, repo_root: P
             return LoopDecision(
                 should_run=False,
                 reason="same unresolved blocker as the previous run and no fresh BN/IDA/Frida artifact was detected",
-                artifact_mtimes=artifact_mtimes,
+                artifact_signatures=artifact_signatures,
             )
         return LoopDecision(
             should_run=False,
             reason="no fresh BN/IDA/Frida artifact was detected for the current question",
-            artifact_mtimes=artifact_mtimes,
+            artifact_signatures=artifact_signatures,
         )
 
-    return LoopDecision(should_run=True, reason=None, artifact_mtimes=artifact_mtimes)
+    return LoopDecision(should_run=True, reason=None, artifact_signatures=artifact_signatures)
 
 
 def write_state(
     *,
     path: Path,
     gate: LoopGate,
-    artifact_mtimes: dict[str, int | None],
+    artifact_signatures: dict[str, str | None],
     status: str,
     prompt_path: Path,
     gate_path: Path,
@@ -261,7 +296,7 @@ def write_state(
         "classification": gate.classification,
         "focus": gate.focus,
         "blocker": gate.blocker,
-        "artifact_mtimes": artifact_mtimes,
+        "artifact_signatures": artifact_signatures,
         "status": status,
         "prompt_path": str(prompt_path),
         "gate_path": str(gate_path),
@@ -270,8 +305,42 @@ def write_state(
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def write_next_action(
+    *,
+    path: Path,
+    gate: LoopGate,
+    gate_path: Path,
+    prompt_path: Path,
+    reason: str,
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    packet_line = f"- packet: `{gate.packet_path}`\n" if gate.packet_path is not None else ""
+    notes_line = f"- notes: {gate.notes}\n" if gate.notes is not None else ""
+    evidence_lines = "\n".join(f"- `{artifact}`" for artifact in gate.required_artifacts)
+    freshness_lines = "\n".join(f"- `{artifact}`" for artifact in gate.freshness_artifacts)
+    text = (
+        "# Codex Loop Next Action\n\n"
+        f"- updated: {datetime.now(UTC).isoformat()}\n"
+        f"- prompt: `{prompt_path}`\n"
+        f"- gate: `{gate_path}`\n"
+        f"- phase: `{gate.phase}`\n"
+        f"- classification: `{gate.classification}`\n"
+        f"- focus: {gate.focus}\n"
+        f"- blocker: {gate.blocker}\n"
+        f"{packet_line}"
+        f"{notes_line}"
+        f"- stop reason: {reason}\n\n"
+        "Required artifacts:\n"
+        f"{evidence_lines}\n\n"
+        "Freshness artifacts that must materially change before rerun:\n"
+        f"{freshness_lines}\n"
+    )
+    path.write_text(text, encoding="utf-8")
+
+
 def build_prompt_input(prompt_text: str, gate: LoopGate) -> str:
     artifact_lines = "\n".join(f"- `{artifact}`" for artifact in gate.required_artifacts)
+    freshness_lines = "\n".join(f"- `{artifact}`" for artifact in gate.freshness_artifacts)
     packet_line = f"- packet: `{gate.packet_path}`\n" if gate.packet_path is not None else ""
     notes_line = f"- notes: {gate.notes}\n" if gate.notes is not None else ""
     header = (
@@ -284,7 +353,10 @@ def build_prompt_input(prompt_text: str, gate: LoopGate) -> str:
         f"{notes_line}"
         "Required evidence artifacts:\n"
         f"{artifact_lines}\n\n"
-        "Treat this gate as authoritative. `runtime-blocked` means no Zig edits and no broad ledger churn; "
+        "Freshness artifacts:\n"
+        f"{freshness_lines}\n\n"
+        "Treat this gate as authoritative. If it conflicts with anything below, the gate wins. "
+        "`runtime-blocked` means no Zig edits and no broad ledger churn; "
         "prepare or update only the focused RE packet. `static-closable` means code is allowed only when "
         "writer, consumer, guard, and lifetime are already known. `scaffold-removal` means delete or isolate "
         "fake behavior without introducing a new proxy.\n\n"
@@ -306,6 +378,7 @@ def run_iterations(
     prompt_path: Path,
     gate_path: Path,
     state_path: Path,
+    next_action_path: Path,
     codex_args: Sequence[str],
     cd_path: Path | None,
     continue_on_error: bool,
@@ -333,13 +406,21 @@ def run_iterations(
             print(f"Blocked: {decision.reason}", file=sys.stderr, flush=True)
             if gate.packet_path is not None:
                 print(f"Packet: {gate.packet_path}", file=sys.stderr, flush=True)
+            print(f"Next action: {next_action_path}", file=sys.stderr, flush=True)
+            write_next_action(
+                path=next_action_path,
+                gate=gate,
+                gate_path=gate_path,
+                prompt_path=prompt_path,
+                reason=decision.reason or "blocked",
+            )
             if dry_run:
                 return 0
             if not dry_run:
                 write_state(
                     path=state_path,
                     gate=gate,
-                    artifact_mtimes=decision.artifact_mtimes,
+                    artifact_signatures=decision.artifact_signatures,
                     status="blocked",
                     prompt_path=prompt_path,
                     gate_path=gate_path,
@@ -358,10 +439,17 @@ def run_iterations(
             check=False,
         )
         current_artifacts = snapshot_artifacts(repo_root, gate.required_artifacts)
+        write_next_action(
+            path=next_action_path,
+            gate=gate,
+            gate_path=gate_path,
+            prompt_path=prompt_path,
+            reason="loop executed; update the gate before the next batch if the blocker changed",
+        )
         write_state(
             path=state_path,
             gate=gate,
-            artifact_mtimes=current_artifacts,
+            artifact_signatures=current_artifacts,
             status="failed" if completed.returncode != 0 else "executed",
             prompt_path=prompt_path,
             gate_path=gate_path,
@@ -422,6 +510,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="JSON state file used to detect repeated blockers and stale evidence.",
     )
     parser.add_argument(
+        "--next-action-file",
+        type=Path,
+        default=DEFAULT_NEXT_ACTION_PATH,
+        help="Markdown handoff file written when the loop is blocked or completes a batch.",
+    )
+    parser.add_argument(
         "--cd",
         type=Path,
         default=Path.cwd(),
@@ -461,6 +555,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(f"gate file does not exist: {gate_path}")
 
     state_path = resolve_cli_path(cd_path, args.state_file)
+    next_action_path = resolve_cli_path(cd_path, args.next_action_file)
     codex_args = normalize_codex_args(codex_args)
 
     return run_iterations(
@@ -468,6 +563,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         prompt_path=prompt_path,
         gate_path=gate_path,
         state_path=state_path,
+        next_action_path=next_action_path,
         codex_args=codex_args,
         cd_path=cd_path,
         continue_on_error=args.continue_on_error,
