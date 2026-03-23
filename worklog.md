@@ -605,3 +605,53 @@
 
 ### Next target
 - Trace the first live transition of `game + 0xff25d1` in Windows around `initialize_subgame`, `build_subgame_level`, and `initialize_click_start`, while watching the app replay scratch fields and the outer bridge slots together.
+
+## 2026-03-23 20:44 - Iteration: arm persistent replay launch alias
+
+### Target
+- Persistent vs transient selected-record launch ownership in the outer bridge
+
+### Why this target
+- The outer bridge is still the top risk, and the repo now had enough BN/IDA evidence to replace one concrete wrong abstraction: postal/challenge replay launches from the high-score screen were still treated as transient even though the native launch lane already exposes the persistent bit directly.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`.
+  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch write `app + 0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0` before frontend state `10`.
+  - Those app offsets alias `game + 0xff25d0/+0xff25d1/+0xff25d4/+0xff25d8` exactly, so the replay-row launch path writes the persistent selected-record lane directly instead of through a later copy helper.
+  - `update_galaxy` and `update_challenge_setup_screen` still only arm the transient `selected_level_record_active` lane.
+- Likely:
+  - Postal/challenge high-score replay launches are the native persistent selected-record family, while route-map best-trial launches stay transient.
+- Unknown:
+  - The exact replay-backed abandon/overlay routing split now that the persistent launch provenance is resolved.
+  - The exact non-selected-record postal final-loss use of app byte `+0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- High-score replay launches now arm `selected_level_record_persistent` in Zig, while route-map best-trial launches stay transient.
+- Result-bridge tests now cover the persistent postal replay lane as well as the source-to-persistence split.
+- Removed one bridge-side scaffold: the port no longer hardwires every selected replay launch to the transient lane.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the replay-launch split compiles, the bridge tests pass, and the wider runtime still builds after the ownership correction.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `466dade` `bridge: arm persistent selected replay launches`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Replay-backed abandon and overlay exits still need their own direct native corroboration now that persistent launch provenance is resolved.
+- The exact non-selected-record postal final-loss `+0x30d` branch is still unresolved.
+
+### Next target
+- Trace replay-backed pause-abandon and overlay exits strongly enough to split the persistent high-score replay lane from the transient route-map best-trial lane without inference.
