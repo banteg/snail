@@ -199,7 +199,7 @@ The current high-confidence `Game` fields are:
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`
-- `+0xff25d8`: `replay_track_index`
+- `+0xff25d8`: `selected_level_record_return_state`
 - `+0xff25dc`: `runtime_track_index`
 
 Current practical read:
@@ -263,7 +263,7 @@ Current practical read:
     - `app + 0x1066be8` = `game + 0xff25d0` (`selected_level_record_active`)
     - `app + 0x1066be9` = `game + 0xff25d1` (`selected_level_record_persistent`)
     - `app + 0x1066bec` = `game + 0xff25d4` (`selected_level_record`)
-    - `app + 0x1066bf0` = `game + 0xff25d8` during that prelaunch window
+    - `app + 0x1066bf0` = `game + 0xff25d8` (`selected_level_record_return_state`) during that prelaunch window
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
@@ -303,8 +303,10 @@ Current practical read:
   - `spawn_slug_hazard` and `handle_subgoldy_collisions` use the `slug_hazards` array
 - the embedded `track_parcels` slots are the same runtime family allocated by the Windows `cRSubGame::AddParcel` path and remain separate only from the garbage runtime seeded at `game + 0x359144`
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
-- the same cursor also drives the replay-track reads in that function
-- the scalar at `+0xff25d8` remains separate from `selected_level_record` and should not be merged with the live cursor without more evidence
+- the same cursor also drives the replay-sample reads in that function
+- the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
+  - current best read: it is the saved replay-return state seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
+  - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
 ## Row Event Display Controller

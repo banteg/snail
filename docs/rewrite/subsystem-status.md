@@ -357,6 +357,7 @@ Implemented now:
   - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same app fields later, which means the native saved-replay launch path already has an app-owned control lane
   - whole-image disassembly still shows no direct nonzero store to `game + 0xff25d1`; the only direct store is the teardown clear in `destroy_subgame`, because the nonzero launch-side writer reaches the same byte through the overlapping app-base address
   - app dword `+0x12e55e0` is now ruled out as a clean replay-only source candidate because `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
+- the current Zig bridge now mirrors more of that launch lane explicitly: replay rebuild targets carry `source`, `persistent`, and saved return-owner state together, so persistent replay returns no longer have to be inferred from `SelectedLevelRecordSource` alone
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - persistent replay-backed pause abort now follows the same launch-surface destroy-return lane as persistent result-screen exits instead of reusing the respawn-only clear-replay rebuild opcode
 - transient route-map best-trial pause abandon now also follows the native rebuild lane instead of the respawn-only clear-replay opcode: BN `update_pause_menu` falls through to completion state `2` when the persistent byte is clear, BN plus IDA `update_completion_screen` then destroy subgame and reinitialize it directly for `level_mode == 4`, and `initialize_subgame` rebuilds the galaxy owner from the preserved continuation selector
@@ -393,17 +394,18 @@ Implemented now:
 
 - enough score/config structure to preserve replay-bearing records
 - route-map and high-score UI have the right broad replay concepts in place
-- selected replay actions now launch the recovered transient selected-level-record path instead of dead-end stubs
+- selected replay actions now launch the recovered selected-record families instead of one source-derived return path: route-map best-trial stays transient, while persistent replay launches carry their own saved return owner
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
 - selected replay sessions no longer feed completion or failure back into live high-score persistence; result exits still route through the recovered launch-surface bridge split instead of mutating score state in place
+- replay bridge payloads now preserve explicit launch context (`source`, persistent lane, return owner) across destroy/rebuild returns instead of reconstructing that state from the source enum alone
 - replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
 
 Still missing or approximate:
 
-- the native app-side replay-launch scratch used by high-score replay rows and the random menu replay path is still not ported; the current Zig replay launchers only cover the transient selected-record lane
+- the New Game random replay UI/path is still not exposed in Zig even though the underlying persistent replay-launch scratch shape and saved return-owner lane are now modeled
 - the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity

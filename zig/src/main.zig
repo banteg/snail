@@ -1417,7 +1417,7 @@ const ReplayLevelBridgeTarget = struct {
     mode: FrontendLevelMode,
     level_index: usize,
     selected_level_record_override: ?SelectedLevelRecordOverride = null,
-    selected_level_record_source: ?SelectedLevelRecordSource = null,
+    selected_level_record_launch: ?SelectedLevelRecordLaunch = null,
 };
 
 const OuterBridgeTarget = union(enum) {
@@ -2177,6 +2177,20 @@ const SelectedLevelRecordSource = union(enum) {
     completion: usize,
 };
 
+const SelectedLevelRecordLaunch = struct {
+    source: SelectedLevelRecordSource,
+    persistent: bool,
+    return_target: ResultReturnTarget,
+
+    fn defaultForSource(source: SelectedLevelRecordSource) SelectedLevelRecordLaunch {
+        return .{
+            .source = source,
+            .persistent = defaultSelectedLevelRecordLaunchPersistent(source),
+            .return_target = defaultSelectedLevelRecordLaunchReturnTarget(source),
+        };
+    }
+};
+
 const SelectedLevelRecordOverride = struct {
     mode: FrontendLevelMode,
     level_index: usize,
@@ -2699,20 +2713,7 @@ fn newGameMenuItemForBridgeMode(mode: ?FrontendLevelMode) NewGameMenuItem {
     };
 }
 
-fn bridgeTargetForReplaySource(source: SelectedLevelRecordSource, active_level_index: usize) OuterBridgeTarget {
-    return switch (source) {
-        .completion => .{ .route_map = .{
-            .mode = .time_trial,
-            .screen_mode = defaultRouteMapScreenMode(.time_trial),
-            .start_route_override = active_level_index,
-        } },
-        .postal => .{ .high_scores_menu = .postal },
-        .challenge => .{ .high_scores_menu = .challenge },
-        .challenge_setup => .challenge_setup_menu,
-    };
-}
-
-fn selectedLevelRecordSourceUsesPersistentLane(source: SelectedLevelRecordSource) bool {
+fn defaultSelectedLevelRecordLaunchPersistent(source: SelectedLevelRecordSource) bool {
     // PORT(verified): `update_frontend_state_machine` initializes subgame at
     // `data_4df904 + 0x74618`, so the app replay-launch scratch that
     // `update_high_score_screen` / `update_new_game_menu` seed at
@@ -2725,13 +2726,52 @@ fn selectedLevelRecordSourceUsesPersistentLane(source: SelectedLevelRecordSource
     };
 }
 
+fn defaultSelectedLevelRecordLaunchReturnTarget(source: SelectedLevelRecordSource) ResultReturnTarget {
+    return switch (source) {
+        .completion => .time_trial_route_map,
+        .postal, .challenge => .high_scores_menu,
+        .challenge_setup => .challenge_setup_menu,
+    };
+}
+
+fn bridgeTargetForSelectedReplayLaunch(
+    mode: FrontendLevelMode,
+    source: SelectedLevelRecordSource,
+    return_target: ResultReturnTarget,
+    active_level_index: usize,
+) OuterBridgeTarget {
+    return switch (return_target) {
+        .main_menu => .main_menu,
+        .new_game_menu => .{ .new_game_menu = newGameMenuItemForBridgeMode(mode) },
+        .challenge_setup_menu => .challenge_setup_menu,
+        .postal_route_map => .{ .route_map = .{
+            .mode = .postal,
+            .screen_mode = .post_completion_exit,
+        } },
+        .time_trial_route_map => .{ .route_map = .{
+            .mode = .time_trial,
+            .screen_mode = defaultRouteMapScreenMode(.time_trial),
+            .start_route_override = active_level_index,
+        } },
+        .high_scores_menu => .{ .high_scores_menu = switch (source) {
+            .challenge => .challenge,
+            else => .postal,
+        } },
+        .replay_current_level => .{ .replay_current_level = .{
+            .mode = mode,
+            .level_index = active_level_index,
+        } },
+        .thanks_screen => .thanks_screen,
+    };
+}
+
 fn preservedFrontendOwnerForLevelLaunch(
     mode: FrontendLevelMode,
     level_index: usize,
-    selected_level_record_source: ?SelectedLevelRecordSource,
+    selected_level_record_launch: ?SelectedLevelRecordLaunch,
 ) OuterBridgeTarget {
-    if (selected_level_record_source) |source| {
-        return bridgeTargetForReplaySource(source, level_index);
+    if (selected_level_record_launch) |launch| {
+        return bridgeTargetForSelectedReplayLaunch(mode, launch.source, launch.return_target, level_index);
     }
 
     return switch (mode) {
@@ -3051,6 +3091,7 @@ const AppState = struct {
     selected_level_record_override: ?SelectedLevelRecordOverride = null,
     selected_level_record_source: ?SelectedLevelRecordSource = null,
     selected_level_record_persistent: bool = false,
+    selected_level_record_return_target: ?ResultReturnTarget = null,
     selected_replay_cache: ?high_score.DecodedReplay = null,
     selected_replay_fade_exit_pending: bool = false,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
@@ -5818,7 +5859,7 @@ const AppState = struct {
             .play => try self.enterFrontendLevelPath(.challenge, 0),
             .watch_replay => {
                 if (!self.challengeSetupReplayAvailable()) return;
-                try self.enterSelectedLevelRecordSource(.{ .challenge_setup = 0 });
+                try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 }));
             },
             .back => try self.returnToNewGameMenu(.challenge_setup_menu),
         }
@@ -5900,7 +5941,7 @@ const AppState = struct {
             .watch_best_trial => {
                 const route_index = self.currentRouteMapOpenIndex() orelse return;
                 const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return;
-                try self.enterSelectedLevelRecordSource(.{ .completion = completion_index });
+                try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(.{ .completion = completion_index }));
             },
             .back => if (self.route_map_screen_mode == .post_completion_exit)
                 try self.beginRouteMapExitPrompt()
@@ -5954,7 +5995,7 @@ const AppState = struct {
             .postal => .{ .postal = entry_index },
             .challenge => .{ .challenge = entry_index },
         };
-        try self.enterSelectedLevelRecordSource(source);
+        try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(source));
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
@@ -5973,18 +6014,18 @@ const AppState = struct {
 
     fn outerBridgeRequestForAbandonActiveRun(self: *const AppState) OuterBridgeRequest {
         if (self.selected_level_record_persistent) {
-            const source = self.selected_level_record_source orelse return .{
+            const target = self.selectedReplayLaunchBridgeTarget() orelse return .{
                 .opcode = .destroy_return,
                 .target = self.preserved_frontend_owner,
             };
             return .{
                 .opcode = .destroy_return,
-                .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
+                .target = target,
             };
         }
 
         if (self.selectedReplayPlaybackActive()) {
-            const source = self.selected_level_record_source orelse return .{
+            const target = self.selectedReplayLaunchBridgeTarget() orelse return .{
                 .opcode = .destroy_return,
                 .target = .main_menu,
             };
@@ -5996,7 +6037,7 @@ const AppState = struct {
             // so transient route-map replay abandon matches opcode `27`, not respawn-only `28`.
             return .{
                 .opcode = .rebuild_return,
-                .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
+                .target = target,
             };
         }
 
@@ -6109,7 +6150,14 @@ const AppState = struct {
                             .mode = record.mode,
                             .level_index = record.level_index,
                             .selected_level_record_override = record,
-                            .selected_level_record_source = self.selected_level_record_source,
+                            .selected_level_record_launch = if (self.selected_level_record_source) |source|
+                                .{
+                                    .source = source,
+                                    .persistent = self.selected_level_record_persistent,
+                                    .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+                                }
+                            else
+                                null,
                         } },
                     };
                 }
@@ -6191,7 +6239,7 @@ const AppState = struct {
                     target.mode,
                     target.level_index,
                     target.selected_level_record_override,
-                    target.selected_level_record_source,
+                    target.selected_level_record_launch,
                 );
             },
             .thanks_screen => try self.enterGamePhase(.thanks_screen),
@@ -6305,13 +6353,21 @@ const AppState = struct {
     }
 
     fn enterSelectedLevelRecordPath(self: *AppState, record: SelectedLevelRecordOverride) !void {
-        try self.beginFrontendLevelPath(record.mode, record.level_index, record, self.selected_level_record_source);
+        const selected_level_record_launch = if (self.selected_level_record_source) |source|
+            SelectedLevelRecordLaunch{
+                .source = source,
+                .persistent = self.selected_level_record_persistent,
+                .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+            }
+        else
+            null;
+        try self.beginFrontendLevelPath(record.mode, record.level_index, record, selected_level_record_launch);
     }
 
-    fn enterSelectedLevelRecordSource(self: *AppState, source: SelectedLevelRecordSource) !void {
-        const entry = self.selectedReplayEntryForSource(source) orelse return;
+    fn enterSelectedLevelRecordSource(self: *AppState, launch: SelectedLevelRecordLaunch) !void {
+        const entry = self.selectedReplayEntryForSource(launch.source) orelse return;
         const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
-        try self.beginFrontendLevelPath(record.mode, record.level_index, record, source);
+        try self.beginFrontendLevelPath(record.mode, record.level_index, record, launch);
     }
 
     fn beginFrontendLevelPath(
@@ -6319,14 +6375,14 @@ const AppState = struct {
         mode: FrontendLevelMode,
         level_index: usize,
         selected_level_record_override: ?SelectedLevelRecordOverride,
-        selected_level_record_source: ?SelectedLevelRecordSource,
+        selected_level_record_launch: ?SelectedLevelRecordLaunch,
     ) !void {
         var path_buffer: [64]u8 = undefined;
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
-        try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_source);
+        try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_launch);
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
-        self.preserved_frontend_owner = preservedFrontendOwnerForLevelLaunch(mode, level_index, selected_level_record_source);
+        self.preserved_frontend_owner = preservedFrontendOwnerForLevelLaunch(mode, level_index, selected_level_record_launch);
         self.seed_level_intro_cutscene = true;
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
@@ -7298,12 +7354,28 @@ const AppState = struct {
         return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
     }
 
-    fn resultReturnTargetForSelectedReplaySource(source: SelectedLevelRecordSource) ResultReturnTarget {
+    fn selectedReplayLaunchReturnTarget(self: *const AppState) ?ResultReturnTarget {
+        if (self.selected_level_record_return_target) |target| return target;
+        const source = self.selected_level_record_source orelse return null;
+        return defaultSelectedLevelRecordLaunchReturnTarget(source);
+    }
+
+    fn selectedReplayLaunchMode(self: *const AppState) ?FrontendLevelMode {
+        if (self.selected_level_record_override) |record| return record.mode;
+        if (self.active_frontend_mode) |mode| return mode;
+        const source = self.selected_level_record_source orelse return null;
         return switch (source) {
-            .completion => .time_trial_route_map,
-            .postal, .challenge => .high_scores_menu,
-            .challenge_setup => .challenge_setup_menu,
+            .postal => .postal,
+            .challenge, .challenge_setup => .challenge,
+            .completion => .time_trial,
         };
+    }
+
+    fn selectedReplayLaunchBridgeTarget(self: *const AppState) ?OuterBridgeTarget {
+        const source = self.selected_level_record_source orelse return null;
+        const return_target = self.selectedReplayLaunchReturnTarget() orelse return null;
+        const mode = self.selectedReplayLaunchMode() orelse return null;
+        return bridgeTargetForSelectedReplayLaunch(mode, source, return_target, self.active_frontend_level_index);
     }
 
     fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
@@ -7313,8 +7385,8 @@ const AppState = struct {
         result.high_score_rank = null;
         result.time_trial_record_improved = false;
         result.unlocked_next_route = false;
-        if (self.selected_level_record_source) |source| {
-            result.return_target = resultReturnTargetForSelectedReplaySource(source);
+        if (self.selectedReplayLaunchReturnTarget()) |return_target| {
+            result.return_target = return_target;
         }
     }
 
@@ -7336,7 +7408,11 @@ const AppState = struct {
                 .mode = record.mode,
                 .level_index = record.level_index,
                 .selected_level_record_override = record,
-                .selected_level_record_source = source,
+                .selected_level_record_launch = .{
+                    .source = source,
+                    .persistent = self.selected_level_record_persistent,
+                    .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+                },
             } },
         };
     }
@@ -7351,18 +7427,19 @@ const AppState = struct {
     fn setSelectedLevelRecordContext(
         self: *AppState,
         selected_level_record_override: ?SelectedLevelRecordOverride,
-        selected_level_record_source: ?SelectedLevelRecordSource,
+        selected_level_record_launch: ?SelectedLevelRecordLaunch,
     ) !void {
         self.clearSelectedReplayCache();
         self.selected_level_record_override = selected_level_record_override;
-        self.selected_level_record_source = selected_level_record_source;
-        self.selected_level_record_persistent = if (selected_level_record_source) |source|
-            selectedLevelRecordSourceUsesPersistentLane(source)
+        self.selected_level_record_source = if (selected_level_record_launch) |launch| launch.source else null;
+        self.selected_level_record_persistent = if (selected_level_record_launch) |launch|
+            launch.persistent
         else
             false;
+        self.selected_level_record_return_target = if (selected_level_record_launch) |launch| launch.return_target else null;
         self.selected_replay_fade_exit_pending = false;
 
-        const source = selected_level_record_source orelse return;
+        const source = self.selected_level_record_source orelse return;
         const entry = self.selectedReplayEntryForSource(source) orelse return;
         if (entry.replaySampleCount() == 0) return;
         self.selected_replay_cache = try entry.decodeReplay(self.allocator);
@@ -13352,28 +13429,28 @@ test "completion flow owners map postal loops to the recovered return targets" {
     try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_failure));
 }
 
-test "selected replay return targets follow the launch surface" {
-    try std.testing.expectEqual(
-        ResultReturnTarget.time_trial_route_map,
-        AppState.resultReturnTargetForSelectedReplaySource(.{ .completion = 7 }),
-    );
-    try std.testing.expectEqual(
-        ResultReturnTarget.high_scores_menu,
-        AppState.resultReturnTargetForSelectedReplaySource(.{ .postal = 2 }),
-    );
-    try std.testing.expectEqual(
-        ResultReturnTarget.high_scores_menu,
-        AppState.resultReturnTargetForSelectedReplaySource(.{ .challenge = 5 }),
-    );
-    try std.testing.expectEqual(
-        ResultReturnTarget.challenge_setup_menu,
-        AppState.resultReturnTargetForSelectedReplaySource(.{ .challenge_setup = 0 }),
-    );
+test "selected replay launch defaults follow the native launch surface" {
+    const completion = SelectedLevelRecordLaunch.defaultForSource(.{ .completion = 7 });
+    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, completion.return_target);
+    try std.testing.expect(!completion.persistent);
+
+    const postal = SelectedLevelRecordLaunch.defaultForSource(.{ .postal = 2 });
+    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, postal.return_target);
+    try std.testing.expect(postal.persistent);
+
+    const challenge = SelectedLevelRecordLaunch.defaultForSource(.{ .challenge = 5 });
+    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, challenge.return_target);
+    try std.testing.expect(challenge.persistent);
+
+    const challenge_setup = SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 });
+    try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, challenge_setup.return_target);
+    try std.testing.expect(!challenge_setup.persistent);
 }
 
 test "selected replay marker restarts the current replay through destroy-return" {
     var state: AppState = undefined;
     state.selected_level_record_source = .{ .completion = 7 };
+    state.selected_level_record_return_target = .time_trial_route_map;
     state.selected_level_record_override = .{
         .mode = .time_trial,
         .level_index = 7,
@@ -13394,7 +13471,11 @@ test "selected replay marker restarts the current replay through destroy-return"
                 .mode = .time_trial,
                 .level_index = 7,
                 .selected_level_record_override = state.selected_level_record_override,
-                .selected_level_record_source = .{ .completion = 7 },
+                .selected_level_record_launch = .{
+                    .source = .{ .completion = 7 },
+                    .persistent = false,
+                    .return_target = .time_trial_route_map,
+                },
             } },
         },
         state.outerBridgeRequestForSelectedReplayMarker().?,
@@ -13426,7 +13507,7 @@ test "preserved frontend owner follows the native launch surface" {
     );
     try std.testing.expectEqualDeep(
         OuterBridgeTarget{ .high_scores_menu = .postal },
-        preservedFrontendOwnerForLevelLaunch(.postal, 2, .{ .postal = 2 }),
+        preservedFrontendOwnerForLevelLaunch(.postal, 2, SelectedLevelRecordLaunch.defaultForSource(.{ .postal = 2 })),
     );
     try std.testing.expectEqualDeep(
         OuterBridgeTarget{ .route_map = .{
@@ -13434,7 +13515,15 @@ test "preserved frontend owner follows the native launch surface" {
             .screen_mode = .replay,
             .start_route_override = 7,
         } },
-        preservedFrontendOwnerForLevelLaunch(.time_trial, 7, .{ .completion = 3 }),
+        preservedFrontendOwnerForLevelLaunch(.time_trial, 7, SelectedLevelRecordLaunch.defaultForSource(.{ .completion = 3 })),
+    );
+    try std.testing.expectEqualDeep(
+        OuterBridgeTarget{ .new_game_menu = .postal_mode },
+        preservedFrontendOwnerForLevelLaunch(.postal, 2, .{
+            .source = .{ .postal = 2 },
+            .persistent = true,
+            .return_target = .new_game_menu,
+        }),
     );
 }
 
@@ -13448,8 +13537,11 @@ test "persistent selected replay abandon uses destroy-return bridge semantics" {
     };
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
+    state.selected_level_record_override = null;
+    state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .challenge = 2 };
     state.selected_level_record_persistent = true;
+    state.selected_level_record_return_target = .high_scores_menu;
     state.active_frontend_level_index = 2;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
@@ -13470,8 +13562,11 @@ test "transient selected replay abandon uses rebuild-return bridge semantics" {
     };
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
+    state.selected_level_record_override = null;
+    state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .completion = 7 };
     state.selected_level_record_persistent = false;
+    state.selected_level_record_return_target = .time_trial_route_map;
     state.active_frontend_level_index = 7;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
@@ -13519,6 +13614,32 @@ test "abandon run bridge request falls back to the preserved frontend owner" {
         OuterBridgeRequest{
             .opcode = .destroy_return,
             .target = .main_menu,
+        },
+        state.outerBridgeRequestForAbandonActiveRun(),
+    );
+}
+
+test "persistent replay launch return owner can differ from the replay source" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
+
+    state.selected_level_record_override = null;
+    state.selected_level_record_source = .{ .postal = 2 };
+    state.selected_level_record_persistent = true;
+    state.selected_level_record_return_target = .new_game_menu;
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 2;
+
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .postal_mode },
         },
         state.outerBridgeRequestForAbandonActiveRun(),
     );
@@ -13842,21 +13963,26 @@ test "selected replay context keeps the native persistent launch split" {
     state.high_score_tables = high_score.Tables.initDefault();
     state.selected_replay_cache = null;
 
-    try state.setSelectedLevelRecordContext(null, .{ .postal = 0 });
+    try state.setSelectedLevelRecordContext(null, SelectedLevelRecordLaunch.defaultForSource(.{ .postal = 0 }));
     try std.testing.expect(state.selected_level_record_persistent);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, .high_scores_menu), state.selected_level_record_return_target);
 
-    try state.setSelectedLevelRecordContext(null, .{ .challenge = 0 });
+    try state.setSelectedLevelRecordContext(null, SelectedLevelRecordLaunch.defaultForSource(.{ .challenge = 0 }));
     try std.testing.expect(state.selected_level_record_persistent);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, .high_scores_menu), state.selected_level_record_return_target);
 
-    try state.setSelectedLevelRecordContext(null, .{ .completion = 0 });
+    try state.setSelectedLevelRecordContext(null, SelectedLevelRecordLaunch.defaultForSource(.{ .completion = 0 }));
     try std.testing.expect(!state.selected_level_record_persistent);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, .time_trial_route_map), state.selected_level_record_return_target);
 
-    try state.setSelectedLevelRecordContext(null, .{ .challenge_setup = 0 });
+    try state.setSelectedLevelRecordContext(null, SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 }));
     try std.testing.expect(!state.selected_level_record_persistent);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, .challenge_setup_menu), state.selected_level_record_return_target);
 
     try state.setSelectedLevelRecordContext(null, null);
     try std.testing.expect(state.selected_level_record_source == null);
     try std.testing.expect(!state.selected_level_record_persistent);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, null), state.selected_level_record_return_target);
 }
 
 test "destroy-return replay-backed bridge clears selected replay context" {
@@ -13881,6 +14007,7 @@ test "destroy-return replay-backed bridge clears selected replay context" {
     try std.testing.expectEqual(@as(usize, 0), state.active_frontend_level_index);
     try std.testing.expect(state.selected_level_record_source == null);
     try std.testing.expect(state.selected_level_record_override == null);
+    try std.testing.expectEqual(@as(?ResultReturnTarget, null), state.selected_level_record_return_target);
     try std.testing.expect(state.selected_replay_cache == null);
 }
 
@@ -14783,7 +14910,11 @@ test "selected replay results skip persistence and score-table awards" {
     var state: AppState = undefined;
     state.high_score_tables = high_score.Tables.initDefault();
     defer state.high_score_tables.deinit(std.testing.allocator);
+    state.selected_level_record_override = null;
+    state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .challenge = 2 };
+    state.selected_level_record_persistent = false;
+    state.selected_level_record_return_target = null;
     state.selected_replay_cache = null;
 
     const raw_record = try std.testing.allocator.alloc(u8, 0x88 + 5);
@@ -14821,8 +14952,11 @@ test "selected replay results skip persistence and score-table awards" {
 
 test "transient postal replay failure stays off the post-level high-score lane" {
     var state: AppState = undefined;
+    state.selected_level_record_override = null;
+    state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .postal = 2 };
     state.selected_level_record_persistent = false;
+    state.selected_level_record_return_target = null;
 
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
