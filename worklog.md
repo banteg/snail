@@ -1354,3 +1354,52 @@
 
 ### Next target
 - Recover the remaining post-success `attachment_exit_pending` / overlapping-owner behavior strongly enough to remove more of the attachment re-entry scaffold without guessing.
+
+## 2026-03-23 23:33 - Iteration: gate swept re-entry on live row flags
+
+### Target
+- Current-row swept attachment re-entry slot gating in `update_subgoldy`
+
+### Why this target
+- Attachment follow is still one of the highest-value gameplay parity risks, and the current Zig sweep path still treated any installed span on the live row as a valid re-entry candidate even though BN plus IDA now pin the native owner boundary to the live `flags_b` slot bits.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_subgoldy` probes `try_enter_track_attachment_from_swept_motion` only from the live current row while `player + 0x41d` (`attachment_exit_pending`) is nonzero.
+  - The first swept callsite is gated by the current row's `flags_b & 0x40` bit, and the second callsite is gated by `flags_b & 0x80`.
+  - BN callsite context shows the second probe only runs if `player + 0x41d` is still nonzero after the first call returns.
+  - IDA corroborates the same `0x40` then `0x80` slot split around the two `try_enter_track_attachment_from_swept_motion` callsites.
+- Likely:
+  - The old Zig installed-span iteration could arm sweep re-entry from rows that still carried an installed owner in preview data but no longer exposed the live native slot bit on the current cell.
+- Unknown:
+  - The exact post-success clear/overlap semantics around `attachment_exit_pending` once the first swept probe succeeds.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Current-row swept re-entry now keys off the live row's recovered owner bits instead of any installed span: `0x40` probes the primary slot first, and `0x80` only gets a second probe if `attachment_exit_pending` survives the first call.
+- Added focused regression coverage for the new owner boundary: no live `0x40/0x80` bit means no sweep probe, and a synthetic secondary-slot row only begins through the `0x80` lane.
+- Reduced one attachment-entry scaffold: the port no longer treats installed row-span presence alone as sufficient to attempt swept re-entry.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the gameplay patch formats cleanly, the full Zig suite still passes with the new slot-gating regressions, the runtime still builds, and the mixed Zig/docs patch is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `2f19b3a` `port: gate swept attachment re-entry on live row flags`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The exact post-success clear/overlap semantics around `attachment_exit_pending` are still unresolved.
+- The full installed-bank ownership and row-slot pairing rules are still not ported.
+
+### Next target
+- Recover whether a successful `flags_b & 0x40` swept re-entry clears `attachment_exit_pending` soon enough to suppress the `0x80` probe on overlapping rows, or whether the second slot can still overwrite the first in the same tick.
