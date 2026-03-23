@@ -1201,8 +1201,8 @@
 - Branch: `master`
 - Commit(s):
   - `5c5a669` `re: narrow replay attract controller layout`
-  - pending commit: `docs: update worklog`
-- Push: pending push after worklog commit
+  - `b469688` `docs: update worklog`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14` is still unresolved.
