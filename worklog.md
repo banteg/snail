@@ -1305,3 +1305,52 @@
 
 ### Next target
 - Tighten the swept re-entry owner until it is gated by the native `attachment_exit_pending` branch instead of the current broader gameplay trigger.
+
+## 2026-03-23 23:22 - Iteration: gate swept re-entry on live exit pending
+
+### Target
+- Swept attachment re-entry ownership inside `update_subgoldy`
+
+### Why this target
+- Attachment follow is still one of the highest-value gameplay parity risks, and the Zig runner was still letting the later visited-row pass opportunistically arm swept installed entry even though BN and IDA now pin that helper behind the live `attachment_exit_pending` branch.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_subgoldy` only reaches `try_enter_track_attachment_from_swept_motion` after testing `player + 0x41d` (`attachment_exit_pending`) nonzero.
+  - The two native callsites are both keyed from the live current cell row flags (`0x40` then `0x80`) before `follow_state.active` is checked.
+  - IDA agrees that the direct `29/30` current-cell begin path runs only while `attachment_exit_pending` is clear, and the swept helper is the separate re-entry lane.
+- Likely:
+  - The Zig visited-row scan was over-broad because Windows probes re-entry from the current cell after movement, not from older rows consumed by the row-event pass.
+- Unknown:
+  - Whether a successful swept re-entry clears `attachment_exit_pending` immediately or only through a later controller.
+  - The remaining overlap semantics when both installed-owner bits are present on the same live row.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Moved swept installed re-entry out of `processRow` and onto the current-row attachment prime path, so it now only probes the live current row while `attachment_exit_pending` is armed.
+- Kept the direct `29/30` current-row begin path intact for the non-exit-pending lane.
+- Added regression coverage that proves visited-row processing no longer arms swept re-entry, while the current-row prime path still does once `attachment_exit_pending` is set.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `git diff --check`
+- `zig build test`
+- `zig build`
+- This confirms the gameplay patch formats cleanly, the full test suite still passes with the new current-row re-entry test, and the runtime still builds after the owner change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `f06e4d9` `port: gate swept attachment re-entry on exit pending`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The exact post-success clear/overlap semantics around `attachment_exit_pending` are still unresolved.
+- The full installed-bank ownership and row-slot pairing rules are still not ported.
+
+### Next target
+- Recover the remaining post-success `attachment_exit_pending` / overlapping-owner behavior strongly enough to remove more of the attachment re-entry scaffold without guessing.
