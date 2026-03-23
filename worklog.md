@@ -1596,3 +1596,49 @@
 
 ### Next target
 - Recover the native random middle-strip generator well enough to replace the remaining challenge preview ownership with the real generated row sequence instead of the current all-segments scaffold.
+
+## 2026-03-24 00:27 - Iteration: narrow new game replay attract selector lanes
+
+### Target
+- New Game replay-attract bridge lane and the raw rebuild selector behind `game + 0x1270fc8` / app `+0x12e55e0`
+
+### Why this target
+- The outer bridge is still the top architectural risk, and BN plus IDA now pinned one missing launch-side slice tightly enough to reduce ambiguity without guessing runtime code: the New Game replay-attract path and selector-`1` vs selector-`2` rebuild split.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_new_game_menu` (`0x417eb0`) direct `Postal Mode` destroys the menu, writes frontend state `10`, writes `app + 0x74658 = 0`, and writes app `+0x12e55e0 = 2` without seeding the selected-record scratch.
+  - The same helper's replay-attract lane rotates a menu-local cursor through `0..4`, probes only banks `0/1/3`, gives up after `1000` attempts, seeds `app + 0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0`, and resets menu locals `+0x8/+0xc` to `0` and `1/3600`.
+  - `initialize_subgame` (`0x4374b0`) treats selector `1` as the postal post-completion reopen path and selector `2` as the ordinary rebuild/start lane by `level_mode`.
+- Likely:
+  - The menu-local byte at `data_4df904 + 0x4f2dc + 0x4` is the replay-attract hide latch, because successful replay launch sets it to `1` and later input clears it before unhiding all six menu widgets.
+- Unknown:
+  - The writer for the menu-local replay-attract step at `+0x14`.
+  - The exact later role of the `+0x8/+0xc` secondary timer lane.
+
+### Zig changes
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `analysis/symbols/gameplay-functions.json`
+- Tightened the raw bridge-memory docs so selector `1` vs `2` is no longer just "not replay-only": selector `1` now explicitly maps to the postal post-completion reopen, and selector `2` to the ordinary rebuild/start lane.
+- Recorded the exact New Game replay-attract bank scan, direct-button split, persistent scratch writes, and the still-unresolved timer-step producer.
+- Reduced one doc-side scaffold: the repo no longer treats app dword `+0x12e55e0` as only a rejected replay clue; it now has a narrower evidence-backed bridge meaning.
+
+### Verification
+- `uv run snail symbols`
+- Re-read BN decompile and raw disassembly for `update_new_game_menu`, `initialize_new_game_menu`, and `initialize_subgame`, with the repo's IDA export as a second opinion.
+- This validates the symbol manifest after the description updates and keeps the new selector/attract notes tied to matching BN+IDA control flow instead of inference.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `c295ddb` `re: narrow new game replay attract selector lanes`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The New Game random replay attract launcher is still not exposed in Zig because the timer-step writer at `data_4df904 + 0x4f2dc + 0x14` is still unresolved.
+- The saved-owner writer behind the native `26/27/28` bridge jump remains unresolved outside the already-confirmed handoff lanes.
+
+### Next target
+- Recover the writer for the New Game replay-attract timer step at `data_4df904 + 0x4f2dc + 0x14`, and confirm whether the `+0x8/+0xc` timer lane later feeds that step or only gates menu re-entry after an attract launch.
