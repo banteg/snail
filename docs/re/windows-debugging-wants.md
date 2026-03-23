@@ -245,10 +245,10 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Also watch the front-end bridge controller's active-state and preserved-owner slots while those breaks fire:
   - `update_frontend_state_machine` reads active state from `[controller + 0x94]`
   - `update_frontend_state_machine` reads the `26/27/28` bridge jump target from `[controller + 0x98]`
-  - a static BN sweep did not find a shallow store to `[controller + 0x98]`
   - the earlier `0x40775c` candidate was a data false positive, not a real store
-  - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write the active state or adjacent launch/owner globals, but none of them surfaced a direct `[controller + 0x98]` store either
-  - the likely writer is therefore behind a helper or constructor outside the obvious front-end state-machine cluster
+  - a front-end-cluster BN sweep still does not show a shallow store to `[controller + 0x98]`, but a later whole-image sweep does close one startup-side writer: `update_subgame` state `2` copies the current owner into `app + 0x1bc` before setting state `26` or `27` based on `selected_level_record_persistent`
+  - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` still write the active state or adjacent launch/owner globals without surfacing another direct `[controller + 0x98]` store
+  - the remaining missing writers are therefore more likely to be helper-driven or confined to non-startup owners outside the obvious front-end state-machine cluster
 - static replay-launch narrowing is now stronger too:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `data_4df904 + 4299515`, `+4299516`, `+17198056`, `+17198057`, and `+119190` before they jump to state `10`
   - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same fields later, so this is a real app-side replay-launch lane, not dead scratch
@@ -286,8 +286,8 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which one survives respawn rebuilds?
 - Which one distinguishes frontend shell from active gameplay rebuild?
 - Are any of them replay or route-mode flags rather than pure lifecycle state?
-- Which function writes the preserved-owner bridge slot consumed by `26/27/28`?
-- Which helper first seeds `[controller + 0x98]` before `update_frontend_state_machine` reaches state `26/27/28`?
+- Which helpers besides the now-confirmed `update_subgame` startup handoff write the preserved-owner bridge slot consumed by `26/27/28`?
+- Which helper first seeds `[controller + 0x98]` before non-startup `26/27/28` uses?
 - Do the replay launch scratch globals above collapse into that same preserved-owner write, or are they parallel owner-selection lanes?
 - Which function first turns the app-side replay scratch above into `game + 0xff25d1`?
 

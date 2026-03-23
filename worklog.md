@@ -1945,3 +1945,52 @@
 
 ### Next target
 - Recover the writer for the preserved-owner bridge slot consumed by states `26/27/28`, so the remaining outer-bridge returns stop relying on inferred owner capture.
+
+## 2026-03-24 01:27 - Iteration: pin selected-replay startup bridge writer
+
+### Target
+- Selected-record startup saved-owner write in `update_subgame`
+
+### Why this target
+- The outer bridge is still the top architecture risk, and the repo memory still claimed the `26/27/28` saved-owner writer was broadly unresolved even though whole-image BN evidence was now strong enough to narrow that claim.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_frontend_state_machine` reads the bridge jump target from `[controller + 0x98]` after states `0x1a/0x1b/0x1c`.
+  - Whole-image BN instruction search found a direct startup-side store in `update_subgame` (`0x439994` / `0x4399b2`), with the checked-in IDA export corroborating the same block.
+  - In `update_subgame` state `2`, when `selected_level_record_active != 0` and either the click-start owner raises flag `0x4000` while `game + 0xc == 0` or the New Game replay-attract hide latch at `data_4df904 + 0x4f2e0` is armed, Windows copies `app + 0x1b8` into `app + 0x1bc`.
+  - The same block then writes `app + 0x1b8 = 0x1a` when `selected_level_record_persistent != 0`, otherwise `app + 0x1b8 = 0x1b`.
+- Likely:
+  - The earlier "saved-owner writer unresolved" note was too broad; the remaining gap is the full set of non-startup helper producers, not whether the field ever has a direct writer.
+- Unknown:
+  - Which non-startup helpers besides the already confirmed gameplay-side branches seed distinct saved owners before `26/27/28`.
+  - Who writes the New Game replay-attract timer step at `data_4df904 + 0x4f2dc + 0x14`.
+
+### Zig changes
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `docs/re/windows-debugging-wants.md`
+- Recorded the confirmed `update_subgame` startup-side `save current owner -> 0x1a/0x1b` bridge write.
+- Narrowed the remaining bridge unknowns so the repo no longer claims the saved-owner writer is globally unresolved.
+- Reduced stale RE scaffolding in the bridge tracker and debugger-wants docs.
+
+### Verification
+- Re-read BN decompile/disassembly for `update_frontend_state_machine`, `update_subgame`, `initialize_click_start`, and the `0x439994` / `0x4399b2` block.
+- Re-read the checked-in IDA export for `update_subgame` as a second opinion on the same startup branch.
+- Ran `git diff --check`.
+- This gives high confidence that the updated docs match direct static evidence and stay internally consistent.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `re: document selected-replay startup bridge writer`
+- Push: pending push after commit
+
+### Remaining gaps
+- The literal Windows outer-controller object is still not modeled in Zig.
+- The full set of non-startup saved-owner producers before `26/27/28` is still incomplete.
+- The New Game replay-attract timer and suppressor writers remain unresolved.
+
+### Next target
+- Recover either the non-startup helper that still seeds saved owners before `26/27/28`, or the New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14`.
