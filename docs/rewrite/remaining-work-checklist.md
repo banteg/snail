@@ -42,7 +42,7 @@ What is now solid:
 - `26` destroys the active subgame and jumps to the preserved frontend owner without reinitializing subgame
 - `27` destroys, reinitializes subgame, then jumps to the preserved frontend owner
 - `28` does the same as `27`, but clears `replay_active` first
-- `29/30` are the Thanks For Playing owner
+- `29/30` are the Thanks For Playing owner, and `uninit_thanks_screen` hands that owner off to state `0x0e` (credits init)
 - BN disassembly confirms the bridge destination is a dedicated front-end controller slot, not just the same active-state lane
 - tutorial completion and ordinary postal final loss both use the `26 -> 2` return-to-New-Game lane
 

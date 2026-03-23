@@ -348,12 +348,12 @@ Implemented now:
 - successful completion is now split into an early in-level completion overlay init and a later finalize transition into the full completion screen
 - lives are now consumed inside the runner's respawn branch before the app rebuild, matching the recovered `update_subgoldy_resurrect` ownership better than the old app-side decrement
 - respawn now runs through the shared outer-bridge request lane with native opcode `28` semantics: `update_subgoldy_resurrect` copies the current outer owner into the return slot, clears replay state, rebuilds subgame, then resumes that saved owner
-- final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before returning to the shell
+- final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before handing off into the credits crawl
 - the outer bridge opcodes are now narrowed more concretely:
   - `26`: destroy subgame, then jump to the preserved frontend owner without reinitializing subgame
   - `27`: destroy subgame, reinitialize subgame, then jump to the preserved frontend owner
   - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
-  - `29/30`: Thanks For Playing owner init and update
+  - `29/30`: Thanks For Playing owner init and update; `uninit_thanks_screen` then writes state `0x0e`, the credits-screen init lane
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`), so the remaining gap is the writer for that preserved-owner field, not whether the field exists
 - a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store; the earlier `0x40775c` lead was a data false positive
 - static front-end owners now narrow the shape of the missing bridge write further: `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write active-state or replay-launch scratch globals, but none of them surfaced a direct preserved-owner store either

@@ -7108,7 +7108,12 @@ const AppState = struct {
 
     fn beginThanksScreenExit(self: *AppState) void {
         if (!self.thanks_screen_controller.allowsContinue()) return;
-        self.frontend_transition.beginFadeOut(.main_menu);
+        if (self.frontend_transition.state != .idle) return;
+        // PORT(verified): `update_thanks_for_playing_screen` plays `sfx 8`, starts the
+        // front-end fade, and `uninit_thanks_screen` then writes state `0xe`, which the
+        // frontend state machine immediately routes into `initialize_intro_screen(...Credits)`.
+        self.playFrontendSelectSound();
+        self.frontend_transition.beginFadeOut(.credits);
     }
 
     fn completionBonusVisible(self: *const AppState, result: PendingRunResult) bool {
@@ -14929,6 +14934,22 @@ test "thanks screen message sequence matches the recovered owner timing" {
     try std.testing.expectEqual(ThanksScreenStage.continue_hold, controller.stage);
     try std.testing.expectEqualStrings("Click to Continue", controller.currentText().?);
     try std.testing.expectEqual(@as(f32, 0.0), controller.progress_step);
+}
+
+test "thanks screen exit follows the native credits handoff" {
+    var state: AppState = undefined;
+    state.audio_ready = false;
+    state.frontend_transition = .{};
+    state.thanks_screen_controller = .{};
+
+    state.beginThanksScreenExit();
+    try std.testing.expectEqual(frontend.FrontendTransitionState.idle, state.frontend_transition.state);
+    try std.testing.expectEqual(@as(?GamePhase, null), state.frontend_transition.pending_phase);
+
+    state.thanks_screen_controller.stage = .challenge_visible;
+    state.beginThanksScreenExit();
+    try std.testing.expectEqual(frontend.FrontendTransitionState.fading_out, state.frontend_transition.state);
+    try std.testing.expectEqual(@as(?GamePhase, .credits), state.frontend_transition.pending_phase);
 }
 
 test "preview descending high-score rank matches visible insertion rules" {
