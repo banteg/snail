@@ -196,6 +196,7 @@ Implemented now:
 - raw BN plus the checked-in IDA export now narrow one more gate detail: the primary swept helper path does not show a direct early clear of `attachment_exit_pending`, and the caller re-tests the same byte immediately before the `0x80` probe, so overlapping rows still leave that secondary callsite reachable in the same tick
 - the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
+- the port also no longer clears `attachment_exit_pending` from a fake `progress >= 1.0` timeout; active-phase retirement now only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy, which is closer to the recovered `0x43bf6f` / `0x43c06d` / `0x43c3ea` lanes than the old synthetic expiry
 
 Still missing or approximate:
 

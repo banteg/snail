@@ -238,6 +238,9 @@ Current practical read:
     - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are now statically identifiable
     - the `0x43ce75` late clear is now narrowed too: it sits behind `jetpack_gauge.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
     - the common post-swept-re-entry retirement path among the remaining later clears still needs runtime confirmation
+  - Zig now follows that narrowing more honestly:
+    - the old `attachment_exit_progress >= 1.0` timeout clear is gone
+    - active-phase retirement only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy until the missing carryover owner is recovered
 - `update_subgoldy` also owns a separate completion handoff block:
   - once the player reaches the course-end threshold at `game + 0x58` and no attachment-exit handoff is pending, it arms `completion_handoff_active = 1`
   - it seeds `completion_handoff_timer = 0`, `completion_handoff_timer_step = 1/60`, and `completion_handoff_voice_gate = 0`

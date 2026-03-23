@@ -1469,7 +1469,7 @@ pub const Runner = struct {
         }
         self.endAttachmentIfNeeded(preview);
         if (!self.paused and self.phase == .active) {
-            self.stepAttachmentExitState();
+            self.stepAttachmentExitState(preview);
         }
         if (!self.paused and self.phase == .active) {
             self.maybeBeginCompletionCutscene(preview);
@@ -4825,7 +4825,7 @@ pub const Runner = struct {
                 next_state.world_z = self.attachment_exit_anchor_z;
                 self.phase = .{ .fall = next_state };
                 const cutscene_finished = self.advanceCutsceneTicks();
-                self.stepAttachmentExitState();
+                self.stepAttachmentExitState(preview);
                 switch (next_state.cause) {
                     .fall => {
                         next_state.world_y += next_state.vertical_velocity * delta_seconds;
@@ -4863,13 +4863,40 @@ pub const Runner = struct {
         return self.cutscene_ticks >= duration_ticks;
     }
 
-    fn stepAttachmentExitState(self: *Runner) void {
+    fn activeTrackAttachmentExitRetires(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+        if (self.phase != .active) return false;
+        if (self.movement_mode == .attachment or self.launch.active) return false;
+
+        const sample = self.currentRuntimeSample(preview) orelse return false;
+        const tile_type: u8 = sample.runtime_tile_hint orelse return false;
+        const floor_y = preview.sampleFloorHeightAtGridPosition(
+            sample.global_row,
+            sample.resolved_lane_index,
+            self.row_position,
+        ) orelse return false;
+        _ = floor_y;
+
+        if (tile_type == 0x16) return true;
+        return !track.isOpenNeighborRuntimeTileFamily(tile_type);
+    }
+
+    fn stepAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.attachment_exit_pending) return;
         if (self.phase == .active and self.jetpack.active) {
             // PORT(verified): BN `update_subgoldy` checks `player + 0x275c`
             // (`jetpack_gauge.state`) at `0x43ce23` and routes that active-jetpack slice
             // through the `0x43ce34/0x43ce75` late clear before the
             // `attachment_exit_progress` / gate-A block at `0x43ce8a`.
+            self.attachment_exit_pending = false;
+            return;
+        }
+        if (self.activeTrackAttachmentExitRetires(preview)) {
+            // PORT(partial): raw BN plus the checked-in IDA export now rule out the old
+            // `attachment_exit_progress >= 1.0` timeout story. The current port still lacks
+            // the full native airborne carryover after non-fall attachment exits, so retire
+            // the gate on the active-phase lanes we can actually represent today: the
+            // confirmed grounded snap clears (`0x43bf6f`, `0x43c06d`) and the confirmed
+            // trampoline landing clear (`0x43c3ea`).
             self.attachment_exit_pending = false;
             return;
         }
@@ -4883,9 +4910,6 @@ pub const Runner = struct {
             self.attachment_exit_gate_a = true;
         }
         self.attachment_exit_value_a = normalizeRadians(self.attachment_exit_value_a + (self.attachment_exit_value_b * progress_step));
-        if (self.attachment_exit_progress >= 1.0) {
-            self.attachment_exit_pending = false;
-        }
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -8403,7 +8427,7 @@ test "attachment exit progress arms gate a after the recovered threshold" {
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
     runner.attachment_exit_progress = attachment_exit_gate_a_progress_threshold;
 
-    runner.stepAttachmentExitState();
+    runner.stepAttachmentExitState(&fixture.preview);
 
     try std.testing.expect(runner.attachment_exit_gate_a);
 }
@@ -8417,11 +8441,65 @@ test "active jetpack retires attachment exit before the late progress gates" {
     runner.attachment_exit_progress = 0.5;
     runner.armJetpackGauge();
 
-    runner.stepAttachmentExitState();
+    runner.stepAttachmentExitState(&fixture.preview);
 
     try std.testing.expect(!runner.attachment_exit_pending);
     try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment_exit_progress, 0.0001);
     try std.testing.expect(!runner.attachment_exit_gate_a);
+}
+
+test "grounded active track lane retires attachment exit without a timeout clear" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const grounded = blk: {
+        for (0..fixture.preview.total_rows) |row| {
+            const row_location = fixture.preview.locateRow(row) orelse continue;
+            for (row_location.row.cells, 0..) |_, lane| {
+                const tile_type = fixture.preview.runtimeTileAt(row, lane) orelse continue;
+                if (tile_type == 0x16 or track.isOpenNeighborRuntimeTileFamily(tile_type)) continue;
+                if (fixture.preview.sampleFloorHeightAtGridPosition(
+                    row,
+                    lane,
+                    @as(f32, @floatFromInt(row)) + 0.5,
+                ) == null) continue;
+                break :blk RowTarget{ .row = row, .lane = lane };
+            }
+        }
+        @panic("expected grounded runtime lane");
+    };
+    runner.row_position = @as(f32, @floatFromInt(grounded.row)) + 0.5;
+    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
+    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.lane_index = grounded.lane;
+    runner.lane_center = @as(f32, @floatFromInt(grounded.lane)) + 0.5;
+    runner.resolved_lane_index = grounded.lane;
+    runner.refreshSample(&fixture.preview);
+    runner.attachment_exit_pending = true;
+    runner.attachment_exit_progress = 0.0;
+    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
+
+    runner.stepAttachmentExitState(&fixture.preview);
+
+    try std.testing.expect(!runner.attachment_exit_pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_exit_progress, 0.0001);
+    try std.testing.expect(!runner.attachment_exit_gate_a);
+}
+
+test "fall-phase attachment exit progress no longer clears pending at one second" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
+    runner.attachment_exit_progress = 0.99;
+    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
+
+    runner.stepAttachmentExitState(&fixture.preview);
+
+    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.attachment_exit_progress, 0.0001);
 }
 
 test "fall state arms gate b at the deep threshold" {
@@ -8551,8 +8629,7 @@ test "route-end completion waits for attachment exit handoff to clear" {
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
 
-    runner.attachment_exit_progress = 0.99;
-    runner.stepAttachmentExitState();
+    runner.stepAttachmentExitState(&fixture.preview);
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
@@ -8571,7 +8648,7 @@ test "route-end completion does not wait on attachment exit during active jetpac
     runner.attachment_exit_pending = true;
     runner.armJetpackGauge();
 
-    runner.stepAttachmentExitState();
+    runner.stepAttachmentExitState(&fixture.preview);
     runner.maybeBeginCompletionCutscene(&fixture.preview);
 
     try std.testing.expect(!runner.attachment_exit_pending);

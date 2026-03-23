@@ -1844,3 +1844,55 @@
 
 ### Next target
 - Recover which of the remaining non-jetpack `update_subgoldy` clear sites actually retires `attachment_exit_pending` after swept re-entry, ideally with a focused Windows capture over the surviving clear sites plus successful `0x40`/`0x80` probes.
+
+## 2026-03-24 01:14 - Iteration: drop synthetic attachment exit timeout clear
+
+### Target
+- Active-phase `attachment_exit_pending` retirement in the Zig attachment-exit controller
+
+### Why this target
+- Attachment follow is still a top gameplay parity risk, and the repo docs already ruled out the current Zig `progress >= 1.0` clear as a native explanation. BN plus IDA now pin enough real clear sites to replace that timeout with a narrower evidence-backed proxy.
+
+### Original behavior evidence
+- Confirmed:
+  - BN field xrefs still show `attachment_exit_progress` is only written by `initialize_subgoldy_fall_state` and the single `update_subgoldy` store at `0x43ce96`.
+  - BN plus the checked-in IDA export show `attachment_exit_pending` only clears at `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`.
+  - `0x43bf6f` is an ordinary grounded snap-to-ride-height clear, `0x43c06d` is another floor-snap clear in a separate gated branch, `0x43c3ea` is the trampoline landing clear, and `0x43ce75` is the already-ported active-jetpack clear.
+  - No current static evidence supports a raw `attachment_exit_progress >= 1.0` timeout clear in Windows.
+- Likely:
+  - Because the Zig port still lacks the full native airborne carryover after non-fall attachment exits, an active-phase grounded/trampoline settle proxy is closer to the recovered Windows clear sites than the old synthetic timeout expiry.
+- Unknown:
+  - Which remaining clear site is the common post-swept-re-entry retirement lane.
+  - The gameplay-owner meaning of the separate `0x43bcb3` motion-state clear.
+  - The full native airborne carryover between `end_track_attachment_follow_state` and those later active-phase settle clears.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Removed the Zig-only `attachment_exit_progress >= 1.0` retirement path.
+- Kept the confirmed active-jetpack clear and added an active-phase grounded/trampoline settle proxy for the native `0x43bf6f` / `0x43c06d` / `0x43c3ea` lanes.
+- Added focused tests proving fall-phase progress no longer clears the gate by itself and that settled active track rows can still retire the gate so completion is not blocked indefinitely.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- Re-read BN disassembly/xrefs plus the checked-in IDA export for the five `update_subgoldy` clear sites and the `player + 0x41c` / `player + 0x41d` neighborhood.
+- This gives high confidence that the port no longer claims a fake native timeout clear and still compiles/tests after the narrower retirement behavior change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `attachment: drop synthetic exit timeout clear`
+- Push: pending push after commit
+
+### Remaining gaps
+- The common post-swept-re-entry retirement path among the remaining non-jetpack clear sites is still unresolved.
+- The active-phase grounded/trampoline retire is still a conservative proxy because the full native airborne carryover is not ported yet.
+- The `0x43bcb3` later motion-state clear still needs a tighter gameplay-owner label.
+
+### Next target
+- Recover which remaining non-jetpack `update_subgoldy` clear site actually wins after swept re-entry, especially whether the common lane is one of the grounded snaps or the unresolved `0x43bcb3` motion-state branch.

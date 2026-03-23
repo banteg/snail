@@ -66,6 +66,13 @@ Current best static read of those five clear sites:
 - `0x43ce75` is not a generic timeout clear: BN plus the checked-in IDA export show it is only reached from the `player + 0x275c == 1` (`jetpack_gauge.state`) late branch at `0x43ce23`, before the `attachment_exit_progress` / gate-A block begins
 - `0x43bcb3` is still a later motion-state clear inside `update_subgoldy`, but its exact gameplay-owner label is still unresolved
 
+Current Zig consequence after this pass:
+
+- the port no longer clears `attachment_exit_pending` when `attachment_exit_progress >= 1.0`
+- active jetpack still uses the confirmed `0x43ce75` late clear
+- active-phase non-fall exits now retire only on the native-shaped settle lanes the current port can actually represent: grounded snap and trampoline landing
+- the full airborne carryover and the unresolved `0x43bcb3` owner are still missing, so the common post-swept-re-entry retirement path remains open instead of being hidden behind a fake timeout
+
 What remains unknown:
 
 - which of those later `update_subgoldy` clears is the common post-swept-re-entry retirement path
