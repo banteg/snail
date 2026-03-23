@@ -1642,3 +1642,51 @@
 
 ### Next target
 - Recover the writer for the New Game replay-attract timer step at `data_4df904 + 0x4f2dc + 0x14`, and confirm whether the `+0x8/+0xc` timer lane later feeds that step or only gates menu re-entry after an attract launch.
+
+## 2026-03-24 00:39 - Iteration: clarify replay attract startup suppressor
+
+### Target
+- New Game replay-attract hide-latch and click-start startup suppressor
+
+### Why this target
+- The outer bridge is still the highest-value gap, and this was the narrowest replay-launch lane where BN plus IDA already pinned real consumers but the repo still described part of the behavior as open.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_new_game_menu` (`0x417eb0`) resets menu locals `+0x8/+0xc` to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path.
+  - `initialize_subgoldy` (`0x43a9c0`) unconditionally calls `initialize_click_start` (`0x442170`).
+  - `initialize_click_start` hides the `Click to Start` widget immediately when `app + 0x1066be8 != 0`.
+  - `update_subgame` (`0x438b90`) later reads `data_4df904 + 0x4f2e4`, compares it against `1.0`, and clears `data_4df904 + 0x4f2e0` once that threshold is exceeded.
+- Likely:
+  - The menu-local `+0x8/+0xc` pair is a secondary replay-attract startup suppressor lane rather than a generic menu re-entry timer.
+- Unknown:
+  - The writer for the menu-local replay-attract step at `data_4df904 + 0x4f2dc + 0x14`.
+  - The updater or reseed path for the secondary suppressor lane at `data_4df904 + 0x4f2dc + 0x8/+0xc`.
+
+### Zig changes
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `analysis/symbols/gameplay-functions.json`
+- Tightened the replay-launch docs so the New Game menu `+0x8/+0xc` lane is no longer treated as wholly unknown: it is now recorded as a confirmed startup suppressor consumed by `update_subgame`.
+- Recorded that `initialize_subgoldy` always constructs the click-start owner and that persistent replay launches suppress that prompt directly through `initialize_click_start`.
+- Added symbol descriptions so `initialize_subgoldy` and `update_click_start` preserve the newly recovered startup-owner behavior.
+
+### Verification
+- `uv run snail symbols`
+- `git diff --check`
+- Re-read BN decompile plus raw disassembly for `update_new_game_menu`, `initialize_click_start`, `initialize_subgoldy`, and `update_subgame`, with the repo's IDA export as a second opinion where the startup suppressor path was ambiguous.
+- This validates the symbol manifest after the description updates and keeps the new startup-suppressor notes tied to confirmed consumers rather than guesswork.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `9e05c0b` `re: document replay attract startup suppressor`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The New Game random replay attract launcher is still not exposed in Zig because the writer for the menu-local replay-attract step at `+0x14` is still unresolved.
+- The secondary suppressor lane at `+0x8/+0xc` now has a confirmed consumer, but its updater or reseed path is still unknown.
+
+### Next target
+- Recover the writer for `data_4df904 + 0x4f2dc + 0x14`, then trace whether the `+0x8/+0xc` suppressor lane advances alongside it or is maintained by a separate owner.
