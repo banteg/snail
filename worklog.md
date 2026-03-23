@@ -2084,8 +2084,8 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `attachment: drop synthetic source-row begin fallback`
-- Push: pending push after commit
+  - `a516a7f` `attachment: drop synthetic source-row begin fallback`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The later `attachment_exit_pending` retirement after swept re-entry is still unresolved, especially the common winner among `0x43bcb3`, `0x43bf6f`, and `0x43c06d`.
