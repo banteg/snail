@@ -236,8 +236,13 @@ Current practical read:
   - when `selected_level_record_persistent != 0`, that final-loss leg copies the current outer owner into `app + 0x1bc` and sets `app + 0x1b8 = 0x1a`
   - when `selected_level_record_persistent == 0`, the same leg still copies the current owner into `app + 0x1bc`, then:
     - sets `app + 0x1b8 = 0x1b` for non-postal modes
-    - sets `app + 0x1b8 = 0x1b` for postal mode when the unknown app byte at `+0x30d` is non-zero
+    - sets `app + 0x1b8 = 0x1b` for postal mode when app byte `+0x30d` is non-zero
     - otherwise forces `app + 0x1b8 = 0x1a` and overwrites `app + 0x1bc = 2`
+- the app byte at `+0x30d` is now narrowed:
+  - `add_arcade_high_score` and `add_survival_high_score` both set it to `1` while arming active state `20`
+  - `destroy_high_score_screen` clears it back to `0`
+  - `update_completion_screen` also branches on it before tearing down the completion screen
+  - current best read: it is a high-score-entry / high-score-screen continuation flag, not a generic gameplay mode byte
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record

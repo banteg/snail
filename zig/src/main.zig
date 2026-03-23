@@ -5670,7 +5670,7 @@ const AppState = struct {
     }
 
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
-        const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode();
+        const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode(result.outcome);
         const selected_level_record_return = self.selected_level_record_source != null;
         return switch (result.return_target) {
             .main_menu => .{
@@ -6734,19 +6734,22 @@ const AppState = struct {
         return entry.replaySampleCount() != 0;
     }
 
-    fn postRunSelectedLevelRecordOpcode(self: *const AppState) OuterBridgeOpcode {
+    fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) OuterBridgeOpcode {
         const source = self.selected_level_record_source orelse return .destroy_return;
         if (self.selected_level_record_persistent) return .destroy_return;
 
         return switch (source) {
             // PORT(verified): `update_galaxy` / `update_challenge_setup_screen` seed the active
             // selected-level-record lane without touching the separate persistent bit, and the
-            // corresponding `update_subgoldy` / `update_subgoldy_resurrect` post-run path uses
-            // state `0x1b` for those transient returns. Postal still has the unresolved
-            // `data_4df904 + 0x30d` gate, so keep its path conservative until that owner is
-            // recovered directly.
+            // corresponding `update_subgoldy` post-run completion path uses state `0x1b` for
+            // those transient returns. `update_subgoldy_resurrect` still has the unresolved
+            // postal final-loss split on `data_4df904 + 0x30d`, so only promote the confirmed
+            // postal completion side to rebuild-return for now.
             .completion, .challenge => .rebuild_return,
-            .postal => .destroy_return,
+            .postal => switch (outcome) {
+                .completed => .rebuild_return,
+                .failed => .destroy_return,
+            },
         };
     }
 
@@ -12843,6 +12846,17 @@ test "transient selected replay failures use rebuild-return bridge semantics" {
         },
         state.outerBridgeRequestForPendingRunResult(result),
     );
+
+    state.selected_level_record_source = .{ .postal = 2 };
+    result.mode = .postal;
+    result.return_target = .high_scores_menu;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .high_scores_menu = .postal },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
 }
 
 test "transient selected replay completions use rebuild-return bridge semantics" {
@@ -12889,6 +12903,17 @@ test "transient selected replay completions use rebuild-return bridge semantics"
                 .screen_mode = defaultRouteMapScreenMode(.time_trial),
                 .start_route_override = 7,
             } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    state.selected_level_record_source = .{ .postal = 2 };
+    result.mode = .postal;
+    result.return_target = .high_scores_menu;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_return,
+            .target = .{ .high_scores_menu = .postal },
         },
         state.outerBridgeRequestForPendingRunResult(result),
     );

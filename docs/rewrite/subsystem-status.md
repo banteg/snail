@@ -353,15 +353,15 @@ Implemented now:
   - `initialize_subgame`, `update_subgame`, `build_subgame_level`, and `destroy_subgame` all treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
-- replay-backed result exits no longer use opcode `28`; the current frontend-selected replay path now maps through the non-persistent `0x1b` rebuild-return lane instead of pretending those returns are respawn-style rebuilds or overclaiming the separate persistent `0x1a` lane
+- replay-backed result exits no longer use opcode `28`; the current frontend-selected replay path now maps challenge, time-trial, and postal completion returns through the confirmed non-persistent `0x1b` rebuild-return lane instead of pretending those returns are respawn-style rebuilds or overclaiming the separate persistent `0x1a` lane
 - the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 
 Still missing or approximate:
 
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
-- exact challenge, time-trial, and replay-sensitive return routing beyond the currently recovered transient `0x1b` selected-record lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
-- the non-persistent selected-level-record post-run branch that uses state `0x1b`, the special `level_mode == 7` completion override to saved owner `2`, and the meaning of the remaining app-side gate at `data_4df904 + 0x30d`
+- exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
+- the special `level_mode == 7` completion override to saved owner `2`, plus the exact postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
