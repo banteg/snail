@@ -150,7 +150,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 
 - [ ] Recover the full installed-bank ownership and row-slot pairing rules
 - [x] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
-  - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows
+  - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, and the current row now gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`)
 - [ ] Recover the real consumers and semantics of `attachment_exit_value_a` / `attachment_exit_value_b`
 - [ ] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story

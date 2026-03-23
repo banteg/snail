@@ -192,6 +192,7 @@ Implemented now:
 - `SUPERTRAMP` has a dedicated launch exit path
 - normal gameplay entry now mirrors the native split between current-cell begin and swept re-entry: current row tiles `29/30` go through the direct begin helper when `attachment_exit_pending` is clear
 - swept installed re-entry now also stays on that same native owner boundary: the Zig runner only probes the live current row while `attachment_exit_pending` is armed instead of letting the later visited-row pass opportunistically arm it
+- those swept probes now also use the live current-row owner bits in native order: `flags_b & 0x40` first, then `flags_b & 0x80` only if the first probe leaves `attachment_exit_pending` armed
 - the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 

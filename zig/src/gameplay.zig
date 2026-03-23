@@ -815,6 +815,11 @@ const InstalledAttachmentEntry = struct {
     vertical_offset: f32,
 };
 
+const InstalledAttachmentSlot = enum {
+    primary,
+    secondary,
+};
+
 const LaunchState = struct {
     active: bool = false,
     world_x: f32 = 0.0,
@@ -1672,8 +1677,15 @@ pub const Runner = struct {
             // PORT(verified): native `update_subgoldy` only reaches
             // `try_enter_track_attachment_from_swept_motion` from the live current cell
             // while `attachment_exit_pending` is still armed; it does not reuse the later
-            // visited-row event pass as a broader installed-entry trigger.
-            _ = self.tryBeginInstalledAttachmentFollow(preview, current_row, sample);
+            // visited-row event pass as a broader installed-entry trigger. BN/IDA also show
+            // those swept probes are keyed from the live row's `flags_b & 0x40` slot first,
+            // then `flags_b & 0x80` only if the first call leaves the gate armed.
+            if (preview.runtimeFlagB40At(current_row, sample.resolved_lane_index)) {
+                _ = self.tryBeginInstalledAttachmentFollowForSlot(preview, current_row, sample, .primary);
+            }
+            if (self.attachment_exit_pending and preview.runtimeFlagB80At(current_row, sample.resolved_lane_index)) {
+                _ = self.tryBeginInstalledAttachmentFollowForSlot(preview, current_row, sample, .secondary);
+            }
             return;
         }
         const gameplay_cell = sample.gameplay_cell orelse return;
@@ -5371,23 +5383,29 @@ pub const Runner = struct {
         self.recent_event = .attachment_begin;
     }
 
-    fn tryBeginInstalledAttachmentFollow(
+    fn installedBuiltAttachmentForSlot(
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        slot: InstalledAttachmentSlot,
+    ) ?*const attachment_builders.BuiltAttachment {
+        const installed = preview.installedBuiltAttachmentsAtRow(global_row);
+        return switch (slot) {
+            .primary => installed.primary,
+            .secondary => installed.secondary,
+        };
+    }
+
+    fn tryBeginInstalledAttachmentFollowForSlot(
         self: *Runner,
         preview: *const track.LoadedLevelPreview,
         global_row: usize,
         sample: RowSample,
+        slot: InstalledAttachmentSlot,
     ) bool {
-        const installed = preview.installedBuiltAttachmentsAtRow(global_row);
-        const candidates = [_]?*const attachment_builders.BuiltAttachment{
-            installed.primary,
-            installed.secondary,
-        };
-        for (candidates) |maybe_built| {
-            const built = maybe_built orelse continue;
-            if (self.geometricInstalledAttachmentEntry(preview, built, sample)) |entry| {
-                self.beginInstalledAttachmentFollow(preview, built, entry);
-                return true;
-            }
+        const built = installedBuiltAttachmentForSlot(preview, global_row, slot) orelse return false;
+        if (self.geometricInstalledAttachmentEntry(preview, built, sample)) |entry| {
+            self.beginInstalledAttachmentFollow(preview, built, entry);
+            return true;
         }
         return false;
     }
@@ -5843,6 +5861,13 @@ const AttachmentEntryTarget = struct {
     path_center_lane: f32,
 };
 
+const SweptInstalledEntrySetup = struct {
+    row: usize,
+    previous_row_position: f32,
+    row_position: f32,
+    lane_center: f32,
+};
+
 fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.GameplayCellKind) ?RowTarget {
     for (0..preview.total_rows) |global_row| {
         const row_location = preview.locateRow(global_row) orelse continue;
@@ -5894,6 +5919,42 @@ fn findFirstOffCenterAttachmentEntry(preview: *const track.LoadedLevelPreview) ?
         }
     }
     return null;
+}
+
+fn findSweptInstalledEntrySetup(
+    runner: *Runner,
+    preview: *const track.LoadedLevelPreview,
+    built: *const attachment_builders.BuiltAttachment,
+) !SweptInstalledEntrySetup {
+    var candidate_row = built.row.global_row;
+    while (candidate_row < built.row.global_row + built.template.sample_count) : (candidate_row += 1) {
+        if (preview.installedBuiltAttachmentAtRow(candidate_row) != built) continue;
+        const candidate_sample = runner.sampleRow(preview, candidate_row) orelse continue;
+        const row_base: f32 = @floatFromInt(candidate_row);
+        var lane: usize = 0;
+        while (lane < preview.max_width) : (lane += 1) {
+            const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
+            var start_step: i32 = -4;
+            while (start_step <= 10) : (start_step += 1) {
+                var end_step = start_step + 1;
+                while (end_step <= 12) : (end_step += 1) {
+                    runner.lane_center = lane_center;
+                    runner.previous_lane_center = lane_center;
+                    runner.previous_row_position = row_base + (@as(f32, @floatFromInt(start_step)) * 0.05);
+                    runner.row_position = row_base + (@as(f32, @floatFromInt(end_step)) * 0.05);
+                    if (runner.geometricInstalledAttachmentEntry(preview, built, candidate_sample) != null) {
+                        return .{
+                            .row = candidate_row,
+                            .previous_row_position = runner.previous_row_position,
+                            .row_position = runner.row_position,
+                            .lane_center = lane_center,
+                        };
+                    }
+                }
+            }
+        }
+    }
+    return error.TestUnexpectedResult;
 }
 
 fn findFirstAnnotationTag(preview: *const track.LoadedLevelPreview, tag: segment.Annotation.Tag) ?RowTarget {
@@ -9151,47 +9212,14 @@ test "swept installed re-entry stays on the current-row prime path while exit pe
     var runner = Runner.init(&fixture.preview);
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
-
-    const SweepSetup = struct {
-        row: usize,
-        previous_row_position: f32,
-        row_position: f32,
-        lane_center: f32,
-    };
-    var sweep_setup: ?SweepSetup = null;
-    var candidate_row = built.row.global_row;
-    while (candidate_row < built.row.global_row + built.template.sample_count and sweep_setup == null) : (candidate_row += 1) {
-        if (fixture.preview.installedBuiltAttachmentAtRow(candidate_row) != built) continue;
-        const candidate_sample = runner.sampleRow(&fixture.preview, candidate_row).?;
-        const row_base: f32 = @floatFromInt(candidate_row);
-        var lane: usize = 0;
-        while (lane < fixture.preview.max_width and sweep_setup == null) : (lane += 1) {
-            const lane_center = @as(f32, @floatFromInt(lane)) + 0.5;
-            var start_step: i32 = -4;
-            while (start_step <= 10 and sweep_setup == null) : (start_step += 1) {
-                var end_step = start_step + 1;
-                while (end_step <= 12 and sweep_setup == null) : (end_step += 1) {
-                    runner.lane_center = lane_center;
-                    runner.previous_lane_center = lane_center;
-                    runner.previous_row_position = row_base + (@as(f32, @floatFromInt(start_step)) * 0.05);
-                    runner.row_position = row_base + (@as(f32, @floatFromInt(end_step)) * 0.05);
-                    if (runner.geometricInstalledAttachmentEntry(&fixture.preview, built, candidate_sample) != null) {
-                        sweep_setup = .{
-                            .row = candidate_row,
-                            .previous_row_position = runner.previous_row_position,
-                            .row_position = runner.row_position,
-                            .lane_center = lane_center,
-                        };
-                    }
-                }
-            }
-        }
-    }
-    const setup = sweep_setup orelse return error.TestUnexpectedResult;
+    const setup = try findSweptInstalledEntrySetup(&runner, &fixture.preview, built);
     runner.lane_center = setup.lane_center;
     runner.previous_lane_center = setup.lane_center;
     runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
     runner.resolved_lane_index = runner.lane_index;
+    const grid_index = (setup.row * fixture.preview.max_width) + runner.lane_index;
+    fixture.preview.runtime_flag_b40_grid[grid_index] = true;
+    fixture.preview.runtime_flag_b80_grid[grid_index] = false;
     runner.previous_row_position = setup.previous_row_position;
     runner.row_position = setup.row_position;
 
@@ -9203,6 +9231,78 @@ test "swept installed re-entry stays on the current-row prime path while exit pe
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
     try std.testing.expectEqual(RecentEvent.attachment_begin, runner.recent_event);
+}
+
+test "swept installed re-entry ignores rows without live attachment-owner flags" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const setup = try findSweptInstalledEntrySetup(&runner, &fixture.preview, built);
+    const lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
+    const grid_index = (setup.row * fixture.preview.max_width) + lane_index;
+    fixture.preview.runtime_flag_b40_grid[grid_index] = false;
+    fixture.preview.runtime_flag_b80_grid[grid_index] = false;
+
+    runner.lane_center = setup.lane_center;
+    runner.previous_lane_center = setup.lane_center;
+    runner.lane_index = lane_index;
+    runner.resolved_lane_index = lane_index;
+    runner.previous_row_position = setup.previous_row_position;
+    runner.row_position = setup.row_position;
+    runner.attachment_exit_pending = true;
+
+    runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+}
+
+test "swept installed re-entry uses the live secondary owner slot only through B80" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var probe_runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    const setup = try findSweptInstalledEntrySetup(&probe_runner, &fixture.preview, built);
+    const lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
+    const grid_index = (setup.row * fixture.preview.max_width) + lane_index;
+    const original_slots = fixture.preview.attachment_scaffold.installed_attachment_rows[setup.row];
+    const primary_index = original_slots.primary orelse return error.TestUnexpectedResult;
+    fixture.preview.attachment_scaffold.installed_attachment_rows[setup.row] = .{
+        .primary = null,
+        .secondary = primary_index,
+    };
+
+    var b40_runner = Runner.init(&fixture.preview);
+    b40_runner.lane_center = setup.lane_center;
+    b40_runner.previous_lane_center = setup.lane_center;
+    b40_runner.lane_index = lane_index;
+    b40_runner.resolved_lane_index = lane_index;
+    b40_runner.previous_row_position = setup.previous_row_position;
+    b40_runner.row_position = setup.row_position;
+    b40_runner.attachment_exit_pending = true;
+    fixture.preview.runtime_flag_b40_grid[grid_index] = true;
+    fixture.preview.runtime_flag_b80_grid[grid_index] = false;
+    b40_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+    try std.testing.expectEqual(MovementMode.track, b40_runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), b40_runner.counters.attachments_begun);
+
+    var b80_runner = Runner.init(&fixture.preview);
+    b80_runner.lane_center = setup.lane_center;
+    b80_runner.previous_lane_center = setup.lane_center;
+    b80_runner.lane_index = lane_index;
+    b80_runner.resolved_lane_index = lane_index;
+    b80_runner.previous_row_position = setup.previous_row_position;
+    b80_runner.row_position = setup.row_position;
+    b80_runner.attachment_exit_pending = true;
+    fixture.preview.runtime_flag_b40_grid[grid_index] = false;
+    fixture.preview.runtime_flag_b80_grid[grid_index] = true;
+    b80_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+    try std.testing.expectEqual(MovementMode.attachment, b80_runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 1), b80_runner.counters.attachments_begun);
 }
 
 test "standalone start segment attachment exits from the template end pose" {
