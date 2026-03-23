@@ -170,3 +170,54 @@
 
 ### Next target
 - Recover the success-side selected-level-record bridge lane that chooses `0x1b`, and identify the postal gate at `data_4df904 + 0x30d` well enough to replace more of the generic post-run return mapping.
+
+## 2026-03-23 19:15 - Iteration: stop replay completion from using opcode 28
+
+### Target
+- Replay-backed completion return ownership in `update_subgoldy` / outer bridge dispatch
+
+### Why this target
+- The outer bridge is still the top ownership risk, and Binary Ninja now pins one concrete wrong Zig path tightly enough to replace it: successful replay-backed result exits still used opcode `28` even though the native completion handoff does not.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy` (`0x43b120`) begins the final completion handoff after the `5.0s` fade gate, flushes `row_event_display` if needed, and then calls `complete_subgame`.
+  - Binary Ninja shows the selected-level-record persistent completion branch copying the current outer owner into `app + 0x1bc` and setting `app + 0x1b8 = 0x1a`, not `0x1c`.
+  - Binary Ninja and IDA both show `update_frontend_state_machine` state `0x1a` as `destroy_subgame -> jump to saved owner`, while `0x1c` is the separate rebuild-plus-clear-replay bridge.
+- Likely:
+  - The current Zig selected replay playback state is closer to the native selected-level-record persistent lane than to the non-persistent completion branch that uses `0x1b`, so replay-backed completion exits should use destroy-return semantics.
+- Unknown:
+  - The writer and exact semantics of `selected_level_record_persistent`.
+  - The non-persistent completion branch that uses `0x1b`.
+  - The special completion override that forces saved owner `2` when `level_mode == 7`.
+  - The final-loss postal-mode gate at `data_4df904 + 0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Replay-backed successful result exits now use destroy-return bridge semantics instead of opcode `28`.
+- Added focused tests for replay-backed completion exits to the time-trial route map and challenge high-score return paths.
+- Reduced one explicit outer-bridge scaffold: replay completion no longer reuses the respawn-only clear-replay rebuild lane.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge mapper compiles, the new replay-backed completion regression coverage passes, and the wider runtime still builds after the bridge change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: stop replay completion from using opcode 28`
+- Push: pending push after commit
+
+### Remaining gaps
+- The non-persistent completion-side `0x1b` bridge lane is still not mapped onto Zig state.
+- The `level_mode == 7` completion override and the final-loss postal gate at `data_4df904 + 0x30d` still need tighter owner recovery.
+- Replay-backed abandon/overlay exits still need their own direct native corroboration instead of inference from the result paths.
+
+### Next target
+- Recover the writer and real meaning of `selected_level_record_persistent`, then port the remaining completion-side `0x1b` branch without guessing.

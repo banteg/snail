@@ -224,6 +224,11 @@ Current practical read:
   - while active, it clamps the forward presentation offsets (`track_z_offset` / `track_z_anchor`) to the fixed completion lane and advances the timer every tick
   - after `2.0` seconds, `completion_handoff_voice_gate` gates a one-shot voice event `8`
   - after `5.0` seconds, the same block begins the frontend fade, flushes `row_event_display` if needed, and routes through `complete_subgame`
+  - when `level_mode == 0` and `level_mode_arg == *(data_4df904 + 0x12d4644) - 1`, that completion block calls `complete_subgame(game, 1)`, writes `app + 0x1bc = 0x1d`, and sets `app + 0x1b8 = 0x1a`
+  - the other completion exits write `game + 0x1270fc8 = 1`, then:
+    - force `app + 0x1b8 = 0x1a` and `app + 0x1bc = 2` when `level_mode == 7`
+    - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1a` when `selected_level_record_persistent != 0`
+    - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1b`
 - `update_subgoldy_resurrect` now has one stronger bridge-side read:
   - the respawn branch copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c`
   - respawn therefore uses the same outer `26/27/28` rebuild slot as the other handoffs instead of a special gameplay-only reload lane

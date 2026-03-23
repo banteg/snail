@@ -5669,7 +5669,7 @@ const AppState = struct {
     }
 
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
-        const replay_failed_return = self.selectedReplayPlaybackActive() and result.outcome == .failed;
+        const replay_backed_return = self.selectedReplayPlaybackActive();
         return switch (result.return_target) {
             .main_menu => .{
                 .opcode = .destroy_return,
@@ -5687,28 +5687,21 @@ const AppState = struct {
                 } },
             },
             .time_trial_route_map => .{
-                .opcode = if (replay_failed_return)
-                    .destroy_return
-                else if (self.selectedReplayPlaybackActive())
-                    .rebuild_clear_replay_return
-                else
-                    .destroy_return,
+                // PORT(verified): `update_subgoldy` completion uses state `0x1a`, not `0x1c`,
+                // when the selected-level-record persistent lane is active, so replay-backed
+                // result exits must not route through the clear-replay rebuild opcode here.
+                .opcode = .destroy_return,
                 .target = .{ .route_map = .{
                     .mode = .time_trial,
                     .screen_mode = defaultRouteMapScreenMode(.time_trial),
-                    .start_route_override = if (self.selectedReplayPlaybackActive())
+                    .start_route_override = if (replay_backed_return)
                         self.active_frontend_level_index
                     else
                         null,
                 } },
             },
             .high_scores_menu => .{
-                .opcode = if (replay_failed_return)
-                    .destroy_return
-                else if (self.selectedReplayPlaybackActive())
-                    .rebuild_clear_replay_return
-                else
-                    .destroy_return,
+                .opcode = .destroy_return,
                 .target = .{ .high_scores_menu = if (self.selected_level_record_source) |source|
                     switch (source) {
                         .postal => .postal,
@@ -12797,6 +12790,54 @@ test "failed replay-backed results use destroy-return bridge semantics" {
 
     var result = PendingRunResult{
         .outcome = .failed,
+        .level_name = "Replay",
+        .mode = .challenge,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 42_000,
+        .score_is_partial = true,
+        .return_target = .high_scores_menu,
+    };
+
+    state.selected_level_record_source = .{ .challenge = 2 };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .high_scores_menu = .challenge },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    state.selected_level_record_source = .{ .completion = 7 };
+    result.return_target = .time_trial_route_map;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .route_map = .{
+                .mode = .time_trial,
+                .screen_mode = defaultRouteMapScreenMode(.time_trial),
+                .start_route_override = 7,
+            } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
+test "completed replay-backed results use destroy-return bridge semantics" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
+    state.selected_level_record_override = null;
+    state.active_frontend_level_index = 7;
+
+    var result = PendingRunResult{
+        .outcome = .completed,
         .level_name = "Replay",
         .mode = .challenge,
         .elapsed_millis = 0,
