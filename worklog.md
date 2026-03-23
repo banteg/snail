@@ -1403,3 +1403,50 @@
 
 ### Next target
 - Recover whether a successful `flags_b & 0x40` swept re-entry clears `attachment_exit_pending` soon enough to suppress the `0x80` probe on overlapping rows, or whether the second slot can still overwrite the first in the same tick.
+
+## 2026-03-23 23:44 - Iteration: narrow attachment voice-4 milestone gate
+
+### Target
+- `voice 4` milestone semantics in `update_track_attachment_follow_state`
+
+### Why this target
+- Attachment follow is still one of the highest-priority parity risks, and the docs were still treating the missing `voice 4` cue as a straightforward unported milestone even though BN evidence was finally strong enough to test whether that branch was actually safe to port.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja raw disassembly of `update_track_attachment_follow_state` (`0x420cb0`) increments `follow_state->sample_index`, compares the new value against `template->sample_count << 1`, and only then reaches the `voice 4` call at `0x420d30`.
+  - The same helper later exits follow when `follow_state->sample_index == template->sample_count`.
+  - `begin_track_attachment_follow_state` (`0x420c40`) seeds `follow_state->sample_index = 0`.
+  - IDA matches the same control flow and the same contradictory `2 * sample_count` gate before the `voice 4` call.
+- Likely:
+  - Under the current typed read of `follow_state + 0xc` as the live sample index and `template + 0x44` as the template sample count, the `voice 4` branch is unreachable.
+- Unknown:
+  - Whether the current counter typing is still wrong, or whether the `voice 4` callsite is stale/dead code that never fires in the shipped runtime.
+
+### Zig changes
+- `docs/re/attachment-follow.md`
+- `docs/re/audio-callsite-map.md`
+- `analysis/runtime/native-audio-callsites.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `docs/rewrite/subsystem-status.md`
+- `analysis/symbols/gameplay-functions.json`
+- No Zig runtime changes; documented that the `voice 4` lane should not be ported until live tracing or stronger type recovery resolves the counter mismatch.
+
+### Verification
+- Inspected Binary Ninja decompile, raw disassembly, field xrefs, and `play_voice_manager` callsites for `update_track_attachment_follow_state`.
+- Cross-checked the same helper in IDA (`artifacts/ida/functions/00420cb0-update_track_attachment_follow_state.c`).
+- Ran `uv run snail symbols`.
+- This confirms the symbol-manifest edits remain valid and that the new docs reflect a direct BN/IDA contradiction instead of a guessed port gap.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `9c4272f` `re: narrow contradictory attachment voice-4 gate`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The live meaning of the `voice 4` lane is still unresolved because the current typed follow/template counters make the static gate contradictory.
+- Template fields around `+0x44` and `+0x9c` may still need stronger typing before the follow milestone and special-branch semantics can be ported safely.
+
+### Next target
+- Trace or re-type the follow/template counters around `update_track_attachment_follow_state`, especially `follow_state + 0xc` and template `+0x44/+0x9c`, before attempting any `voice 4` milestone port.
