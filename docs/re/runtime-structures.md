@@ -227,6 +227,7 @@ Current practical read:
   - when `level_mode == 0` and `level_mode_arg == *(data_4df904 + 0x12d4644) - 1`, that completion block calls `complete_subgame(game, 1)`, writes `app + 0x1bc = 0x1d`, and sets `app + 0x1b8 = 0x1a`
   - the other completion exits write `game + 0x1270fc8 = 1`, then:
     - force `app + 0x1b8 = 0x1a` and `app + 0x1bc = 2` when `level_mode == 7`
+      - `initialize_subgame` and `update_subgame` both treat `level_mode == 7` as tutorial mode, so this is the tutorial-completion `26 -> 2` return-to-New-Game override rather than a separate unknown owner
     - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1a` when `selected_level_record_persistent != 0`
     - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1b`
 - `update_subgoldy_resurrect` now has one stronger bridge-side read:

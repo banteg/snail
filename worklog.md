@@ -323,3 +323,49 @@
 
 ### Next target
 - Recover the runtime owner and writer chain for app byte `+0x30d`, then port the remaining postal selected-record final-loss bridge split without guessing.
+
+## 2026-03-23 19:40 - Iteration: confirm tutorial completion bridge override
+
+### Target
+- Outer-bridge tutorial completion override at native `level_mode == 7`
+
+### Why this target
+- The outer bridge is still the top project risk, and the checklist still treated the native `level_mode == 7 -> 0x1a / saved owner 2` completion branch as unresolved even though current BN and IDA evidence is now strong enough to show it is just the tutorial-completion lane the port already uses.
+
+### Original behavior evidence
+- Confirmed:
+  - BN decompile of `update_subgoldy` (`0x43b120`) forces `app + 0x1b8 = 0x1a` and `app + 0x1bc = 2` on the special completion branch when `game->level_mode == 7`.
+  - BN plus IDA decompile of `initialize_subgame` (`0x4374b0`) and `update_subgame` (`0x438b90`) both treat `level_mode == 7` as tutorial mode: tutorial init path, tutorial update, hidden HUD widgets, and `build_subgame_level(..., 0)` on rebuild state `7`.
+  - The Zig bridge already routes tutorial completion through `destroy_return` to `New Game -> Tutorial`, which is the same native `26 -> 2` owner lane.
+- Likely:
+  - The stale checklist item existed because the branch was first recovered before `level_mode == 7` itself had been pinned to tutorial mode.
+- Unknown:
+  - The writer for `selected_level_record_persistent`.
+  - The exact postal final-loss use of app byte `+0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Added a focused regression test that pins tutorial completion to `destroy_return` back into the `New Game -> Tutorial` owner.
+- Removed the stale bridge gap from the runtime/status/checklist docs and replaced it with the confirmed tutorial-mode reading of native `level_mode == 7`.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- This confirms the new bridge assertion compiles and the current port still passes the full Zig test suite after the docs/test cleanup.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: confirm tutorial completion return lane`
+- Push: pending push after commit
+
+### Remaining gaps
+- The writer and exact semantics of `selected_level_record_persistent` are still unresolved.
+- The exact postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Recover the owner and writer chain behind app byte `+0x30d`, then port the remaining postal final-loss bridge split without guessing.

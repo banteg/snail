@@ -12799,6 +12799,34 @@ test "pending run result maps to explicit outer bridge opcodes" {
     );
 }
 
+test "tutorial completion uses destroy-return to New Game" {
+    var state: AppState = undefined;
+    state.selected_level_record_source = null;
+    state.selected_replay_cache = null;
+    state.selected_level_record_override = null;
+    state.selected_level_record_persistent = false;
+
+    const result = PendingRunResult{
+        .outcome = .completed,
+        .level_name = "Tutorial",
+        .mode = .tutorial,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 0,
+        .score_is_partial = false,
+        .return_target = .new_game_menu,
+    };
+
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .tutorial },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
 test "transient selected replay failures use rebuild-return bridge semantics" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
