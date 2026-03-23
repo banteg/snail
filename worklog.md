@@ -1690,3 +1690,53 @@
 
 ### Next target
 - Recover the writer for `data_4df904 + 0x4f2dc + 0x14`, then trace whether the `+0x8/+0xc` suppressor lane advances alongside it or is maintained by a separate owner.
+
+## 2026-03-24 00:48 - Iteration: narrow swept re-entry gate persistence
+
+### Target
+- Immediate `attachment_exit_pending` behavior around primary/secondary swept attachment re-entry in `update_subgoldy`
+
+### Why this target
+- The replay-attract timer-step writer is still blocked on missing provenance, and attachment follow remained the next highest-value narrow lane with enough Binary Ninja and IDA evidence to close one real uncertainty without guessing runtime behavior.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_subgoldy` (`0x43b120`) probes `try_enter_track_attachment_from_swept_motion` from `flags_b & 0x40` first, then re-tests `player + 0x41d` before the `flags_b & 0x80` callsite.
+  - Raw disassembly of `try_enter_track_attachment_from_swept_motion` (`0x42c770`) plus the checked-in IDA export do not show a direct helper-side clear of `player + 0x41d` before control returns to that second gate check.
+  - BN field xrefs on `Player.attachment_exit_pending` (`+0x41d`) only show direct writes in `initialize_subgoldy_fall_state` and `update_subgoldy`, not in the swept-entry helper itself.
+- Likely:
+  - Overlapping rows still leave the `0x80` probe reachable in the same tick after a successful `0x40` re-entry attempt.
+- Unknown:
+  - Which later controller finally retires `attachment_exit_pending` after swept re-entry.
+  - Whether two geometrically valid overlapping probes can overwrite each other in one tick under shipped content.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/re/windows-debugging-wants.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Added a focused regression that pins the confirmed immediate behavior: successful swept re-entry leaves `attachment_exit_pending` armed.
+- Tightened the current-row swept-entry source comment so the code records why the gate stays live across the primary probe.
+- Removed the stale docs/checklist claim that the immediate post-success clear itself is still the open question; the remaining gap is now the later retirement path plus live overlap outcome.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `git diff --check`
+- This confirms the new regression compiles and passes, the existing Zig suite stays green, and the mixed Zig/docs patch is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `800e202` `re: narrow swept attachment gate persistence`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The later controller that finally retires `attachment_exit_pending` after swept re-entry is still unresolved.
+- Live overlap where both `0x40` and `0x80` probes are geometrically valid still needs direct confirmation.
+- The full installed-bank ownership and row-slot pairing rules are still not ported.
+
+### Next target
+- Recover the later `attachment_exit_pending` retirement path after swept re-entry, then confirm with a live overlap whether two valid probes can overwrite each other in one tick.
