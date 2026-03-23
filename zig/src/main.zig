@@ -1451,9 +1451,9 @@ fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) ResultReturn
         .postal_final => .thanks_screen,
         .postal_failure => .new_game_menu,
         .challenge_completion => .replay_current_level,
-        .challenge_failure => .main_menu,
+        .challenge_failure => .new_game_menu,
         .time_trial_completion => .time_trial_route_map,
-        .time_trial_failure => .main_menu,
+        .time_trial_failure => .time_trial_route_map,
         .tutorial_completion => .new_game_menu,
         .tutorial_failure => .main_menu,
     };
@@ -12743,8 +12743,8 @@ test "run return targets follow the recovered native bridge where confirmed" {
     try std.testing.expectEqual(ResultReturnTarget.replay_current_level, resultReturnTargetForOutcome(.completed, .challenge));
     try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.completed, .tutorial));
     try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .postal));
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .challenge));
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .time_trial));
+    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .challenge));
+    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.failed, .time_trial));
     try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
 }
 
@@ -12976,6 +12976,28 @@ test "pending run result maps to explicit outer bridge opcodes" {
             .target = .{ .replay_current_level = .{
                 .mode = .challenge,
                 .level_index = 4,
+            } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    result.return_target = .new_game_menu;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .challenge_mode },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    result.return_target = .time_trial_route_map;
+    result.mode = .time_trial;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .route_map = .{
+                .mode = .time_trial,
+                .screen_mode = defaultRouteMapScreenMode(.time_trial),
             } },
         },
         state.outerBridgeRequestForPendingRunResult(result),

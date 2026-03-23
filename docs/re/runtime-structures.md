@@ -239,6 +239,10 @@ Current practical read:
     - sets `app + 0x1b8 = 0x1b` for non-postal modes
     - sets `app + 0x1b8 = 0x1b` for postal mode when app byte `+0x30d` is non-zero
     - otherwise forces `app + 0x1b8 = 0x1a` and overwrites `app + 0x1bc = 2`
+  - `update_frontend_state_machine` state `0x1b` then destroys and reinitializes subgame, and `initialize_subgame` consumes that nonzero continuation selector by mode:
+    - `level_mode == 1` rebuilds the challenge-setup owner through `initialize_challenge_setup_screen`
+    - `level_mode == 4` rebuilds the Time Trial galaxy owner through `initialize_galaxy`
+    - the current port still collapses the challenge-setup owner onto the `New Game -> Challenge Mode` menu item rather than a literal setup-screen controller
 - the app byte at `+0x30d` is now narrowed:
   - `add_arcade_high_score` and `add_survival_high_score` both set it to `1` while arming active state `20`
   - `destroy_high_score_screen` clears it back to `0`

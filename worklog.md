@@ -695,8 +695,8 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `bridge: align persistent replay pause-abandon bridge`
-- Push: pending push after commit
+  - `2eec4a3` `bridge: align persistent replay pause-abandon bridge`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The transient replay-backed pause-abandon and overlay lane for route-map best-trial launches is still unresolved.
@@ -745,12 +745,64 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `bridge: align transient replay pause-abandon opcode`
+  - `a0c988c` `bridge: align transient replay pause-abandon opcode`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The transient replay-backed overlay lane for route-map best-trial launches is still unresolved.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Trace the transient route-map replay overlay exit strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or still uses a different bridge/helper path.
+
+## 2026-03-23 21:06 - Iteration: restore non-postal failed return owners
+
+### Target
+- Ordinary non-selected challenge/time-trial failed-result return ownership
+
+### Why this target
+- The outer bridge is still the top ownership risk, and Binary Ninja evidence was finally strong enough to replace one concrete wrong fallback: non-postal failures still returned to the main menu in Zig even though the native rebuild lane points back into mode-owned front-end controllers.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy_resurrect` (`0x441fd0`) copies the current owner into `app + 0x1bc` and sets `app + 0x1b8 = 0x1b` for non-postal, non-persistent final loss.
+  - `update_frontend_state_machine` (`0x4107d0`) state `0x1b` destroys subgame, initializes subgame, then jumps to the saved owner.
+  - `initialize_subgame` (`0x4374b0`) consumes the nonzero continuation selector by mode: `level_mode == 1` calls `initialize_challenge_setup_screen`, while `level_mode == 4` calls `initialize_galaxy`.
+  - `exit_high_score_screen` (`0x417b50`) also restores owner `2` for postal entries and owner `0x0a` for challenge entries, which matches the challenge-side setup rebuild rather than a main-menu exit.
+- Likely:
+  - The current Zig `New Game -> Challenge Mode` owner is the closest existing abstraction for the native challenge-setup screen until that controller is ported literally.
+- Unknown:
+  - The exact non-selected-record postal final-loss split on app byte `+0x30d`.
+  - The transient replay-backed overlay lane for route-map best-trial launches.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `worklog.md`
+- Challenge failure no longer falls back to the main menu; it now returns through the existing `challenge_mode` menu owner.
+- Time-trial failure no longer falls back to the main menu; it now returns to the replay Star Map owner.
+- Reduced one bridge-side fallback: non-postal failed-result owners now follow the recovered mode-owned return surfaces instead of one generic menu exit.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the bridge mapping compiles, the updated return-target tests pass, the runtime still builds, and the mixed Zig/docs patch is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: restore non-postal failed return owners`
 - Push: pending push after commit
 
 ### Remaining gaps
 - The transient replay-backed overlay lane for route-map best-trial launches is still unresolved.
 - The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+- The port still collapses the native challenge-setup owner onto the `New Game -> Challenge Mode` menu item.
 
 ### Next target
 - Trace the transient route-map replay overlay exit strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or still uses a different bridge/helper path.
