@@ -238,6 +238,7 @@ Current practical read:
   - when `selected_level_record_persistent == 0`, the same leg still copies the current owner into `app + 0x1bc`, then:
     - sets `app + 0x1b8 = 0x1b` for non-postal modes
     - sets `app + 0x1b8 = 0x1b` for postal mode when app byte `+0x30d` is non-zero
+      - on qualifying postal/challenge failures, `complete_subgame -> add_arcade_high_score` / `add_survival_high_score` has already armed `app + 0x1b8 = 0x14`, so this branch preserves the post-level high-score owner itself in `app + 0x1bc` before the `0x1b` rebuild-return handoff
     - otherwise forces `app + 0x1b8 = 0x1a` and overwrites `app + 0x1bc = 2`
   - `update_frontend_state_machine` state `0x1b` then destroys and reinitializes subgame, and `initialize_subgame` consumes that nonzero continuation selector by mode:
     - `level_mode == 1` rebuilds the challenge-setup owner through `initialize_challenge_setup_screen`
@@ -251,6 +252,7 @@ Current practical read:
     - `0` (`postal`) -> frontend state `2`
     - `1` (`challenge`) -> frontend state `10`
   - current best read: it is a high-score-entry / high-score-screen continuation flag, not a generic gameplay mode byte
+  - on ordinary postal/challenge failures, it is also the bridge-side split that decides whether `update_subgoldy_resurrect` preserves saved owner `0x14` (post-level high-score entry) for the later `0x1b` rebuild-return lane or forces the direct `0x1a -> owner 2` New Game override instead
   - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`

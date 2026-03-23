@@ -855,3 +855,54 @@
 
 ### Next target
 - Recover the remaining non-selected-record postal final-loss split on `data_4df904 + 0x30d`, so the last ordinary post-run postal bridge lane stops depending on the current heuristic.
+
+## 2026-03-23 21:24 - Iteration: capture failed score-entry return owner
+
+### Target
+- Ordinary postal/challenge failed-result high-score entry ownership in `update_subgoldy_resurrect` / `complete_subgame`
+
+### Why this target
+- The outer bridge is still the top ownership risk, and BN plus IDA were finally strong enough to replace one remaining app-side shortcut: failed postal/challenge score entry still stayed attached to the live completion-screen result object in Zig even though the Win32 branch preserves owner `0x14` before the `0x1b` rebuild-return lane.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `add_arcade_high_score` (`0x4176a0`) and `add_survival_high_score` (`0x417780`) both arm active owner `0x14` and set app byte `+0x30d = 1`.
+  - BN `update_subgoldy_resurrect` (`0x441fd0`) copies the current owner into `app + 0x1bc` before setting `app + 0x1b8 = 0x1b`; on ordinary qualifying postal/challenge failure, that preserved owner is therefore the already-armed `0x14` post-level high-score screen.
+  - BN `complete_subgame` (`0x438700`) only seeds that `+0x30d` / high-score-owner side path when `selected_level_record_active == 0`.
+  - IDA agrees on the same ordering in `update_subgoldy_resurrect`, including the postal `+0x30d` split and the preserved-owner write before state `27`.
+- Likely:
+  - The current Zig `Challenge Mode` menu owner remains the closest stand-in for the native challenge-setup owner that receives the post-entry return after state `10`.
+- Unknown:
+  - The transient replay-backed overlay route for route-map best-trial launches.
+  - The literal Windows outer-controller rebuild still remains unported; the Zig bridge still maps onto existing front-end owners directly.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Failed postal/challenge score entry now captures its post-entry return request immediately once the high-score owner takes over, instead of keeping `pending_run_result` live through name entry.
+- Added focused regression coverage for postal/challenge failed-result handoff objects so the recovered return owners stay pinned.
+- Reduced one bridge-side shortcut: the `+0x30d` failure branch is now modeled as a saved-owner handoff into the shared post-level high-score owner rather than as a completion-screen-local continuation.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `git diff --check`
+- `zig build test`
+- `zig build`
+- This confirms the bridge patch formats cleanly, passes the focused/new regression coverage plus the full test suite, and still builds the runtime.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: capture failed score-entry return owner`
+- Push: pending push after commit
+
+### Remaining gaps
+- The transient replay-backed overlay route for route-map best-trial launches still lacks a direct native confirmation.
+- The port still does not drive these bridge lanes through the literal Windows outer-controller rebuild state machine.
+- Challenge-side returns still use the port's `Challenge Mode` owner stand-in instead of a literal challenge-setup controller.
+
+### Next target
+- Trace the transient replay-backed overlay route for route-map best-trial launches strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or uses a different bridge/helper path.

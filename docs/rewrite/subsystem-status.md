@@ -368,6 +368,7 @@ Implemented now:
 - `initialize_subgame` plus `update_subgame` now also pin `level_mode == 7` as tutorial mode, so the special `0x1a -> owner 2` completion override is no longer a separate bridge unknown; it is the same tutorial-completion lane the port already uses
 - ordinary pause-menu abandon now also stages the shared postal/challenge high-score entry path when the current partial score places, which matches the confirmed `update_completion_screen` case-`2` `complete_subgame(..., 1)` side effect better than the older direct-return shortcut
 - BN plus IDA now also pin the post-entry return owner for that ordinary abandon lane: `add_arcade_high_score` / `add_survival_high_score` arm state `20`, `update_high_score_screen` later exits through `exit_high_score_screen`, and that helper returns by surviving run mode (`state 2` for postal, `state 10` for challenge) instead of by the preserved gameplay launch surface; the current Zig port now mirrors that with the existing `New Game -> Postal Mode` / `Challenge Mode` stand-ins
+- ordinary postal/challenge failed-result score entry now also captures that later return owner up front once the post-level high-score screen takes over, which matches the recovered `complete_subgame -> add_*_high_score -> saved owner 0x14 -> state 0x1b` bridge shape better than keeping the completion-screen result object live through name entry
 
 Still missing or approximate:
 
@@ -375,7 +376,6 @@ Still missing or approximate:
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
 - the transient replay-backed overlay path still needs its own direct static or live confirmation now that the pause-abandon lane is pinned
-- the exact non-selected-record postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
