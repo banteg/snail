@@ -288,7 +288,7 @@ Still missing or approximate:
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
-- the remaining dedicated health-collect sprite-bod ownership and the surrounding `cRSubHover` / jetpack presentation behavior beyond the now-ported ramp-bias spawn lane
+- the remaining dedicated health-collect sprite-bod ownership and the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards, including the exact pre-hit ring bod anchor/layout and child orbit packet
 - the exact input-controller bit source behind `gate_18`; the port now arms the row-event confirm gate from gameplay confirm input and preserves the late completion fast-forward lane, but the original controller-owner split is still not named literally
 - exact parcel flight/runtime-object behavior, especially row-event widget ownership before the recovered target offset is computed and the remaining timing details

@@ -115,6 +115,11 @@ const gameplay_rocket_launcher_draw_model_paths = [_][]const u8{
     "X/ROCKETLAUNCHER-DRAW-002.X2",
 };
 const gameplay_rocket_model_path = "X/ROCKET-BASE-000.X2";
+const gameplay_jetpack_thrust_model_paths = [_][]const u8{
+    "X/JETPACKTHRUST-BASE-000.X2",
+    "X/JETPACKTHRUST-BASE-001.X2",
+    "X/JETPACKTHRUST-BASE-002.X2",
+};
 const gameplay_invincible_model_paths = [_][]const u8{
     "X/INVINCIBLE-BASE-000.X2",
     "X/INVINCIBLE-BASE-001.X2",
@@ -712,6 +717,60 @@ const GameplayInvincibleModelSet = struct {
     }
 };
 
+const GameplayJetpackModelSet = struct {
+    frames: [gameplay_jetpack_thrust_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_jetpack_thrust_model_paths.len,
+
+    fn unload(self: *GameplayJetpackModelSet) void {
+        for (&self.frames) |*model| {
+            if (model.*) |*loaded| {
+                loaded.deinit();
+                model.* = null;
+            }
+        }
+    }
+
+    fn currentModel(
+        self: *const GameplayJetpackModelSet,
+        draw_ticks: u8,
+        active: bool,
+        hide_ticks: u8,
+        render_time_seconds: f64,
+    ) ?*const x2.Uploaded {
+        const frame_count = comptime gameplay_jetpack_thrust_model_paths.len;
+        if (draw_ticks > 0) {
+            const capped_ticks = @min(draw_ticks, frame_count);
+            const frame_index = frame_count - capped_ticks;
+            if (self.frames[frame_index]) |*model| return model;
+        }
+        if (active) {
+            const frame_index: usize = @intFromFloat(@mod(@floor(render_time_seconds * 10.0), @as(f64, @floatFromInt(frame_count))));
+            if (self.frames[frame_index]) |*model| return model;
+        }
+        if (hide_ticks > 0) {
+            const capped_ticks = @min(hide_ticks, frame_count);
+            const frame_index = capped_ticks - 1;
+            if (self.frames[frame_index]) |*model| return model;
+        }
+        return null;
+    }
+};
+
+const GameplayJetpackVisualState = struct {
+    draw_ticks: u8 = 0,
+    hide_ticks: u8 = 0,
+
+    fn tick(self: *GameplayJetpackVisualState) void {
+        if (self.draw_ticks > 0) self.draw_ticks -= 1;
+        if (self.hide_ticks > 0) self.hide_ticks -= 1;
+    }
+
+    fn noteActiveChange(self: *GameplayJetpackVisualState, previous_active: bool, current_active: bool) void {
+        if (previous_active == current_active) return;
+        if (previous_active) self.hide_ticks = gameplay_jetpack_thrust_model_paths.len;
+        if (current_active) self.draw_ticks = gameplay_jetpack_thrust_model_paths.len;
+    }
+};
+
 const GameplayWeaponVisualState = struct {
     left_draw_ticks: u8 = 0,
     left_hide_ticks: u8 = 0,
@@ -811,6 +870,10 @@ fn sideWeaponDrawTickCount(state_value: u8) u8 {
             @max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len),
         )),
     };
+}
+
+fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
+    return runner.jetpack.active and runner.jetpack.progress <= native_jetpack_visual_shutoff_threshold;
 }
 
 const GameplayEffectKind = enum {
@@ -1756,6 +1819,40 @@ test "weapon visual state keeps native side blaster and laser families distinct"
     try std.testing.expectEqual(@as(u8, 1), visuals.right_hide_state);
     try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, true));
     try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, false));
+}
+
+test "native jetpack visual presentation follows the recovered 0.94 shutoff edge" {
+    var runner = gameplay.Runner{};
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+
+    runner.jetpack.active = true;
+    runner.jetpack.progress = 0.25;
+    try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
+
+    runner.jetpack.progress = native_jetpack_visual_shutoff_threshold;
+    try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
+
+    runner.jetpack.progress = native_jetpack_visual_shutoff_threshold + 0.01;
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+
+    runner.jetpack.active = false;
+    runner.jetpack.progress = 0.0;
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+}
+
+test "jetpack visual state keeps native draw and hide legs around the shutoff edge" {
+    var visuals = GameplayJetpackVisualState{};
+
+    visuals.noteActiveChange(false, true);
+    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len), visuals.draw_ticks);
+    try std.testing.expectEqual(@as(u8, 0), visuals.hide_ticks);
+    visuals.tick();
+    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len - 1), visuals.draw_ticks);
+
+    visuals.noteActiveChange(true, false);
+    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len), visuals.hide_ticks);
+    visuals.tick();
+    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len - 1), visuals.hide_ticks);
 }
 
 fn nativeGameplayWeaponUpgradeVoiceCue(
@@ -2853,8 +2950,10 @@ const AppState = struct {
     current_gameplay_laser_left_models: GameplayWeaponModelSet = .{},
     current_gameplay_laser_right_models: GameplayWeaponModelSet = .{},
     current_gameplay_rocket_launcher_models: GameplayWeaponModelSet = .{},
+    current_gameplay_jetpack_thrust_models: GameplayJetpackModelSet = .{},
     current_gameplay_rocket_model: ?x2.Uploaded = null,
     current_gameplay_invincible_models: GameplayInvincibleModelSet = .{},
+    gameplay_jetpack_visual_state: GameplayJetpackVisualState = .{},
     gameplay_weapon_visual_state: GameplayWeaponVisualState = .{},
     current_gameplay_sprites: GameplaySpriteArt = .{},
     current_gameplay_sound_fx: GameplaySoundFx = .{},
@@ -3238,11 +3337,13 @@ const AppState = struct {
         self.current_gameplay_laser_left_models.unload();
         self.current_gameplay_laser_right_models.unload();
         self.current_gameplay_rocket_launcher_models.unload();
+        self.current_gameplay_jetpack_thrust_models.unload();
         if (self.current_gameplay_rocket_model) |*model| {
             model.deinit();
             self.current_gameplay_rocket_model = null;
         }
         self.current_gameplay_invincible_models.unload();
+        self.gameplay_jetpack_visual_state = .{};
         self.gameplay_weapon_visual_state = .{};
     }
 
@@ -3433,6 +3534,16 @@ const AppState = struct {
             &gameplay_rocket_launcher_draw_model_paths,
             null,
         );
+        for (gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
+            if (self.catalog.findModelIndex(path)) |entry_index| {
+                self.current_gameplay_jetpack_thrust_models.frames[index] = try x2.Uploaded.loadFromArchive(
+                    self.allocator,
+                    &self.catalog,
+                    self.catalog.model_entries[entry_index],
+                    true,
+                );
+            }
+        }
         if (self.catalog.findModelIndex(gameplay_rocket_model_path)) |entry_index| {
             self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
@@ -4679,7 +4790,12 @@ const AppState = struct {
     }
 
     fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, _: gameplay.RunnerInput) void {
+        self.gameplay_jetpack_visual_state.tick();
         self.gameplay_weapon_visual_state.tick();
+        self.gameplay_jetpack_visual_state.noteActiveChange(
+            nativeJetpackVisualPresentationActive(previous),
+            nativeJetpackVisualPresentationActive(current),
+        );
         self.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.movement_flags, current.movement_flags);
         if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             self.gameplay_weapon_visual_state.noteFire(current.movement_flags);
@@ -11692,6 +11808,29 @@ fn drawGameplayTurboAttachments(
             drawGameplayUploadedModel(
                 model.*,
                 offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
+                right,
+                up,
+                forward,
+                .{ .x = 0.24, .y = 0.24, .z = 0.24 },
+                null,
+            );
+        }
+    }
+
+    const jetpack_visual_active = nativeJetpackVisualPresentationActive(runner);
+    const jetpack_visible = jetpack_visual_active or
+        state.gameplay_jetpack_visual_state.draw_ticks > 0 or
+        state.gameplay_jetpack_visual_state.hide_ticks > 0;
+    if (jetpack_visible) {
+        if (state.current_gameplay_jetpack_thrust_models.currentModel(
+            state.gameplay_jetpack_visual_state.draw_ticks,
+            jetpack_visual_active,
+            state.gameplay_jetpack_visual_state.hide_ticks,
+            state.render_time_seconds,
+        )) |model| {
+            drawGameplayUploadedModel(
+                model.*,
+                offsetPosition(position, right, up, forward, 0.0, 0.10, -0.18),
                 right,
                 up,
                 forward,

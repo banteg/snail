@@ -133,7 +133,7 @@ Current practical read:
 
 - `initialize_jetpack_gauge` zeros the controller, sets the cycle phase to `1/600`, and seeds the runtime and warning-anchor pointers
 - `arm_jetpack_gauge` transitions `state` from idle to active and clears the wobble outputs
-- `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, and forces shutoff when the current runtime cell carries flag `0x80`
+- `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
 - `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
 
 ## Movement Visual State Controller
@@ -164,6 +164,12 @@ Practical interpretation:
 - this is not the same system as the 12 movement-flag emitter slots updated at `player + 0x450`
 - the `+0x2984` block is a second layer that looks more like a queued visual-state or presentation controller
 - the same queue or start pattern also appears in the global jetpack-related controller rooted at `data_4df904 + 0x432700`, via helper `0x445860`
+- that separate jetpack-side controller keeps its selected state at `player + 0x12e4`
+  - `0` = no thrust presentation
+  - `4` = active thrust presentation
+  - activation uses `set_weapon_animation(..., 1, ..., 4)` followed by a queued `0`
+  - deactivation at the `0.94` warning edge uses `set_weapon_animation(..., 1, 1, 8)` followed by a queued `-1`
+- the recovered asset family for that controller is `JETPACKTHRUST`; the still-missing piece is the separate `cRSubHover::Jets` nozzle-particle owner
 
 ## Game
 

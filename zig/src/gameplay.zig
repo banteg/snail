@@ -4453,8 +4453,9 @@ pub const Runner = struct {
     // timer/warning/shutoff controller from the contact-damage gauge. The runner mirrors
     // the 1/600 countdown, the 0.94 near-empty band, the runtime-cell `flags_b & 0x80`
     // warning snap seeded from `JetPack=Off`, the recovered warning-intensity fields, and
-    // the local camera-anchor offsets at `+0x14/+0x18/+0x1c`, but it still omits lift/fall
-    // suppression and the separate weapon-animation side effects behind `set_snail_jetpack`.
+    // the local camera-anchor offsets at `+0x14/+0x18/+0x1c`. The app now mirrors the
+    // `set_snail_jetpack` thrust presentation cutoff at `0.94`, but it still omits
+    // lift/fall suppression and the separate `cRSubHover::Jets` nozzle-particle owner.
     fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.jetpack.active) return;
 
