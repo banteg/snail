@@ -360,6 +360,7 @@ Implemented now:
 - transient postal selected-record final loss now also follows the native `0x1a -> owner 2` New Game override: `complete_subgame` never arms app byte `+0x30d` while `selected_level_record_active` is set, so the postal replay-loss leg does not return through the postal high-score screen
 - the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 - `initialize_subgame` plus `update_subgame` now also pin `level_mode == 7` as tutorial mode, so the special `0x1a -> owner 2` completion override is no longer a separate bridge unknown; it is the same tutorial-completion lane the port already uses
+- ordinary pause-menu abandon now also stages the shared postal/challenge high-score entry path when the current partial score places, which matches the confirmed `update_completion_screen` case-`2` `complete_subgame(..., 1)` side effect better than the older direct-return shortcut
 
 Still missing or approximate:
 
@@ -368,6 +369,7 @@ Still missing or approximate:
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
 - the exact handoff from the app-side replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) into the subgame-local persistent lane at `game + 0xff25d1`
 - the exact non-selected-record postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
+- the exact post-entry return owner for ordinary pause-menu abandon still rides the Zig preserved-owner abstraction rather than a fully traced `update_completion_screen` / `exit_high_score_screen` owner lane
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:

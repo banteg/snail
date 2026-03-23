@@ -2146,6 +2146,11 @@ const PendingHighScoreEntry = struct {
     rank: usize,
 };
 
+const StandalonePostLevelHighScoreEntry = struct {
+    context: PendingHighScoreEntry,
+    return_request: OuterBridgeRequest,
+};
+
 const CompletionFlowOwner = enum {
     postal_route_map,
     postal_final,
@@ -2926,6 +2931,7 @@ const AppState = struct {
     preserved_frontend_owner: OuterBridgeTarget = .main_menu,
     pending_respawn_bridge_state: ?RespawnBridgeState = null,
     high_score_screen_owner: HighScoreScreenOwner = .{ .main_menu_browse = .postal },
+    post_level_high_score_return_request: ?OuterBridgeRequest = null,
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
@@ -5468,9 +5474,18 @@ const AppState = struct {
     }
 
     fn enterPostLevelHighScoreScreen(self: *AppState, context: PendingHighScoreEntry) !void {
+        try self.enterPostLevelHighScoreScreenWithReturn(context, null);
+    }
+
+    fn enterPostLevelHighScoreScreenWithReturn(
+        self: *AppState,
+        context: PendingHighScoreEntry,
+        return_request: ?OuterBridgeRequest,
+    ) !void {
         self.high_score_screen_owner = .{ .post_level_entry = context };
         self.high_scores_menu_index = highScoreModeIndex(context.mode);
         self.preparePostLevelHighScoreEntry(context);
+        self.post_level_high_score_return_request = return_request;
         try self.enterGamePhase(.high_scores_menu);
     }
 
@@ -5832,10 +5847,93 @@ const AppState = struct {
         }
     }
 
+    fn currentFailedRunResult(self: *AppState) ?PendingRunResult {
+        const loaded_level = self.current_level orelse return null;
+        const active_mode = self.active_frontend_mode;
+        const parcel_target = self.currentParcelTarget();
+        if (self.level_runner) |*runner| {
+            runner.flushPendingParcelDeliveries();
+        }
+        const runner = self.level_runner orelse return null;
+        const elapsed_millis = completionElapsedMillis(runner);
+        var result = PendingRunResult{
+            .outcome = .failed,
+            .level_name = loaded_level.name,
+            .mode = active_mode,
+            .elapsed_millis = elapsed_millis,
+            .parcel_count = runner.counters.parcels,
+            .parcel_target = parcel_target,
+            .score = 0,
+            .score_is_partial = true,
+            .score_totals = runner.score,
+            .visible_life_stock = runner.visible_life_stock,
+            .damage_gauge = runner.damage_gauge,
+            .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
+            .persistence = .failed,
+            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
+        };
+
+        switch (active_mode orelse .tutorial) {
+            .postal => {
+                result.score = runner.score.total;
+                result.high_score_mode = .postal;
+                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
+            },
+            .challenge => {
+                result.score = runner.score.total;
+                result.high_score_mode = .challenge;
+                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
+            },
+            .time_trial => {
+                // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
+                // failed runs into scratch memory. It does not replace the persistent ScoreC
+                // route record unless the run completed successfully.
+                result.score = elapsed_millis;
+            },
+            .tutorial => {
+                result.score = runner.score.total;
+                result.persistence = .none;
+            },
+        }
+
+        return result;
+    }
+
+    fn standalonePostLevelHighScoreEntry(
+        self: *AppState,
+        result: PendingRunResult,
+        return_request: OuterBridgeRequest,
+    ) !?StandalonePostLevelHighScoreEntry {
+        switch (result.completion_owner) {
+            .postal_failure, .challenge_failure => {},
+            else => return null,
+        }
+
+        const committed = try self.commitRunResultIfNeeded(result);
+        const mode = committed.high_score_mode orelse return null;
+        const rank = committed.high_score_rank orelse return null;
+        return .{
+            .context = .{
+                .mode = mode,
+                .rank = rank,
+            },
+            .return_request = return_request,
+        };
+    }
+
     fn abandonActiveRun(self: *AppState) !void {
         self.pending_run_result = null;
         self.clearPostLevelHighScoreEntry();
-        try self.dispatchOuterBridgeRequest(self.outerBridgeRequestForAbandonActiveRun());
+        const return_request = self.outerBridgeRequestForAbandonActiveRun();
+        if (!self.selectedReplayPlaybackActive()) {
+            if (self.currentFailedRunResult()) |result| {
+                if (try self.standalonePostLevelHighScoreEntry(result, return_request)) |entry| {
+                    try self.enterPostLevelHighScoreScreenWithReturn(entry.context, entry.return_request);
+                    return;
+                }
+            }
+        }
+        try self.dispatchOuterBridgeRequest(return_request);
     }
 
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
@@ -6540,13 +6638,11 @@ const AppState = struct {
         return completionContinueVisibleAtProgress(result, self.completion_screen_reveal_progress);
     }
 
-    fn commitPendingRunResultIfNeeded(self: *AppState) !void {
-        const result = self.pending_run_result orelse return;
-        if (result.persistence == .none) return;
-
+    fn commitRunResultIfNeeded(self: *AppState, result: PendingRunResult) !PendingRunResult {
+        if (result.persistence == .none) return result;
         var updated = result;
         switch (result.persistence) {
-            .none => return,
+            .none => return result,
             .completed => switch (result.completion_owner) {
                 .postal_route_map => {
                     updated.unlocked_next_route = try self.commitPostalRouteProgress();
@@ -6609,7 +6705,27 @@ const AppState = struct {
             },
         }
         updated.persistence = .none;
-        self.pending_run_result = updated;
+        return updated;
+    }
+
+    fn commitPendingRunResultIfNeeded(self: *AppState) !void {
+        const result = self.pending_run_result orelse return;
+        if (result.persistence == .none) return;
+        self.pending_run_result = try self.commitRunResultIfNeeded(result);
+    }
+
+    fn finishPostLevelHighScoreReturn(self: *AppState) !void {
+        const return_request = self.post_level_high_score_return_request;
+        if (return_request) |request| {
+            self.clearPostLevelHighScoreEntry();
+            self.pending_run_result = null;
+            self.completion_overlay_active = false;
+            self.preserve_completion_screen_reveal_on_enter = false;
+            try self.dispatchOuterBridgeRequest(request);
+            return;
+        }
+
+        try self.finishPendingRunReturn();
     }
 
     fn continueCompletionScreen(self: *AppState) !void {
@@ -6622,8 +6738,7 @@ const AppState = struct {
     }
 
     fn cancelPostLevelHighScoreEntry(self: *AppState) !void {
-        self.clearPostLevelHighScoreEntry();
-        try self.finishPendingRunReturn();
+        try self.finishPostLevelHighScoreReturn();
     }
 
     fn finishPendingRunReturn(self: *AppState) !void {
@@ -6670,6 +6785,7 @@ const AppState = struct {
     }
 
     fn clearPostLevelHighScoreEntry(self: *AppState) void {
+        self.post_level_high_score_return_request = null;
         @memset(&self.post_level_high_score_name_buf, 0);
         self.post_level_high_score_name_len = 0;
         self.post_level_high_score_action_index = 1;
@@ -6698,22 +6814,22 @@ const AppState = struct {
     }
 
     fn submitPostLevelHighScore(self: *AppState) !void {
-        if (self.pending_run_result == null) {
-            try self.enterGamePhase(.main_menu);
-            return;
-        }
         const context = self.postLevelHighScoreContext() orelse {
-            try self.finishPendingRunReturn();
+            if (self.pending_run_result == null and self.post_level_high_score_return_request == null) {
+                try self.enterGamePhase(.main_menu);
+                return;
+            }
+            try self.finishPostLevelHighScoreReturn();
             return;
         };
         const entry = self.highScoreEntryMut(context.mode, context.rank) orelse {
-            try self.finishPendingRunReturn();
+            try self.finishPostLevelHighScoreReturn();
             return;
         };
 
         entry.setName(std.mem.trimRight(u8, self.postLevelHighScoreDraft(), " "));
         try self.saveHighScoreTables();
-        try self.finishPendingRunReturn();
+        try self.finishPostLevelHighScoreReturn();
     }
 
     fn highScoreEntry(self: *const AppState, mode: high_score.Mode, index: usize) ?*const high_score.Entry {
@@ -13467,6 +13583,108 @@ test "postal failure only stages post-level score entry when the score qualifies
     try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
     try std.testing.expectEqual(@as(?PendingHighScoreEntry, null), state.pendingRunHighScoreContext());
     try std.testing.expectEqual(ResultReturnTarget.new_game_menu, updated.return_target);
+}
+
+test "postal abandon can stage standalone post-level score entry" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 7;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_level_record_source = null;
+    state.selected_replay_cache = null;
+    state.preserved_frontend_owner = .{ .route_map = .{
+        .mode = .postal,
+        .screen_mode = .normal,
+    } };
+
+    for (state.high_score_tables.postal[0..high_score.visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(100 - index)) };
+    }
+
+    const return_request = state.outerBridgeRequestForAbandonActiveRun();
+    const staged = (try state.standalonePostLevelHighScoreEntry(.{
+        .outcome = .failed,
+        .level_name = "Route 7",
+        .mode = .postal,
+        .elapsed_millis = 30_000,
+        .parcel_count = 2,
+        .parcel_target = 9,
+        .score = 900,
+        .score_is_partial = true,
+        .completion_owner = .postal_failure,
+        .persistence = .failed,
+        .return_target = .new_game_menu,
+    }, return_request)) orelse return error.TestExpectedPendingHighScoreEntry;
+
+    try std.testing.expectEqual(high_score.Mode.postal, staged.context.mode);
+    try std.testing.expectEqual(@as(usize, 0), staged.context.rank);
+    try std.testing.expectEqualDeep(return_request, staged.return_request);
+    try std.testing.expectEqual(@as(u32, 900), state.high_score_tables.postal[0].score);
+}
+
+test "standalone postal abandon skips score entry when the score does not qualify" {
+    var temp_dir = std.testing.tmpDir(.{});
+    defer temp_dir.cleanup();
+
+    var previous_dir = try std.fs.cwd().openDir(".", .{});
+    defer previous_dir.close();
+
+    try temp_dir.dir.setAsCwd();
+    defer previous_dir.setAsCwd() catch unreachable;
+
+    var state: AppState = undefined;
+    state.allocator = std.testing.allocator;
+    state.runtime_root_path = "runtime";
+    state.high_score_tables = high_score.Tables.initDefault();
+    defer state.high_score_tables.deinit(std.testing.allocator);
+    state.runtime_config = config.Blob.initDefault();
+    state.active_frontend_mode = .postal;
+    state.active_frontend_level_index = 7;
+    state.current_track_preview = null;
+    state.current_level = null;
+    state.current_runtime_build_seed = 0;
+    state.selected_level_record_override = null;
+    state.selected_level_record_source = null;
+    state.selected_replay_cache = null;
+    state.preserved_frontend_owner = .{ .route_map = .{
+        .mode = .postal,
+        .screen_mode = .normal,
+    } };
+
+    for (state.high_score_tables.postal[0..high_score.visible_entry_count], 0..) |*entry, index| {
+        entry.* = .{ .score = @as(u32, @intCast(1_000 - index * 10)) };
+    }
+
+    try std.testing.expectEqual(@as(?StandalonePostLevelHighScoreEntry, null), try state.standalonePostLevelHighScoreEntry(.{
+        .outcome = .failed,
+        .level_name = "Route 7",
+        .mode = .postal,
+        .elapsed_millis = 30_000,
+        .parcel_count = 2,
+        .parcel_target = 9,
+        .score = 900,
+        .score_is_partial = true,
+        .completion_owner = .postal_failure,
+        .persistence = .failed,
+        .return_target = .new_game_menu,
+    }, state.outerBridgeRequestForAbandonActiveRun()));
 }
 
 test "high-score browse owner drives table toggles while post-level entry stays fixed" {
