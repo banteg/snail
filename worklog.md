@@ -120,3 +120,53 @@
 
 ### Next target
 - Reconstruct the final-loss leg in `update_subgoldy_resurrect`, especially when it overwrites the saved return slot with `2` versus preserving the current owner before states `0x1a/0x1b`.
+
+## 2026-03-23 19:07 - Iteration: align replay-backed final-loss bridge lane
+
+### Target
+- Replay-backed final-loss return ownership in `update_subgoldy_resurrect`
+
+### Why this target
+- The outer bridge is still the top architectural risk, and new Binary Ninja evidence was finally strong enough to replace one concrete wrong abstraction: replay-backed failed returns still used opcode `28` even though the native final-loss lane does not.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy_resurrect` (`0x441fd0`) final loss writes `game + 0x1270fc8 = 2`, calls `complete_subgame(game, 1)`, then branches on `game + 0xff25d1`.
+  - When `selected_level_record_persistent != 0`, that branch copies `app + 0x1b8` into `app + 0x1bc` and sets `app + 0x1b8 = 0x1a`.
+  - The replay-clearing rebuild opcode `0x1c` appears only on the respawn leg in this helper, not on the selected-level-record final-loss leg.
+- Likely:
+  - The selected-level-record final-loss branch is the native source for replay-backed failed result returns, so using opcode `26` is closer than the old respawn-style opcode `28`.
+- Unknown:
+  - The successful selected-level-record return lane that uses state `0x1b`.
+  - The meaning of the postal-mode gate at `data_4df904 + 0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- Replay-backed failed result returns now use destroy-return semantics instead of opcode `28`.
+- Destroy-return handoff now also clears the selected replay context when returning replay-backed failures to the launch surface, so the app does not keep stale replay state after the native `0x1a`-shaped branch.
+- Added focused tests for failed replay-backed bridge selection and teardown.
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Recorded the confirmed `selected_level_record_persistent -> 0x1a` final-loss branch and narrowed the remaining `0x1b` / `+0x30d` gap explicitly.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge change compiles, the new result-routing tests pass, and the runtime still builds after the teardown change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: align replay-backed failed return opcode`
+- Push: pending push after commit
+
+### Remaining gaps
+- Successful selected-level-record returns still are not mapped to the native `0x1b` lane.
+- The postal-only `data_4df904 + 0x30d` gate remains unnamed and unported.
+- The wider Windows continue/overlay owner around states `0x1a/0x1b/0x1c` is still only partially literal.
+
+### Next target
+- Recover the success-side selected-level-record bridge lane that chooses `0x1b`, and identify the postal gate at `data_4df904 + 0x30d` well enough to replace more of the generic post-run return mapping.

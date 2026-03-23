@@ -227,6 +227,12 @@ Current practical read:
 - `update_subgoldy_resurrect` now has one stronger bridge-side read:
   - the respawn branch copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c`
   - respawn therefore uses the same outer `26/27/28` rebuild slot as the other handoffs instead of a special gameplay-only reload lane
+  - the final-loss branch first writes `game + 0x1270fc8 = 2`, then calls `complete_subgame(game, 1)`
+  - when `selected_level_record_persistent != 0`, that final-loss leg copies the current outer owner into `app + 0x1bc` and sets `app + 0x1b8 = 0x1a`
+  - when `selected_level_record_persistent == 0`, the same leg still copies the current owner into `app + 0x1bc`, then:
+    - sets `app + 0x1b8 = 0x1b` for non-postal modes
+    - sets `app + 0x1b8 = 0x1b` for postal mode when the unknown app byte at `+0x30d` is non-zero
+    - otherwise forces `app + 0x1b8 = 0x1a` and overwrites `app + 0x1bc = 2`
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`

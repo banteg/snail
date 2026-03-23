@@ -5669,6 +5669,7 @@ const AppState = struct {
     }
 
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
+        const replay_failed_return = self.selectedReplayPlaybackActive() and result.outcome == .failed;
         return switch (result.return_target) {
             .main_menu => .{
                 .opcode = .destroy_return,
@@ -5686,7 +5687,9 @@ const AppState = struct {
                 } },
             },
             .time_trial_route_map => .{
-                .opcode = if (self.selectedReplayPlaybackActive())
+                .opcode = if (replay_failed_return)
+                    .destroy_return
+                else if (self.selectedReplayPlaybackActive())
                     .rebuild_clear_replay_return
                 else
                     .destroy_return,
@@ -5700,7 +5703,9 @@ const AppState = struct {
                 } },
             },
             .high_scores_menu => .{
-                .opcode = if (self.selectedReplayPlaybackActive())
+                .opcode = if (replay_failed_return)
+                    .destroy_return
+                else if (self.selectedReplayPlaybackActive())
                     .rebuild_clear_replay_return
                 else
                     .destroy_return,
@@ -5746,10 +5751,22 @@ const AppState = struct {
         };
     }
 
-    fn applyOuterBridgeTeardown(self: *AppState, opcode: OuterBridgeOpcode) !void {
+    fn outerBridgeRequestClearsSelectedReplayContext(
+        self: *const AppState,
+        request: OuterBridgeRequest,
+    ) bool {
+        if (request.opcode == .rebuild_clear_replay_return) return true;
+        if (self.selected_level_record_source == null) return false;
+        return switch (request.target) {
+            .route_map, .high_scores_menu => true,
+            else => false,
+        };
+    }
+
+    fn applyOuterBridgeTeardown(self: *AppState, request: OuterBridgeRequest) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
-        if (opcode == .rebuild_clear_replay_return) {
+        if (self.outerBridgeRequestClearsSelectedReplayContext(request)) {
             try self.setSelectedLevelRecordContext(null, null);
         }
     }
@@ -5772,7 +5789,7 @@ const AppState = struct {
     }
 
     fn dispatchOuterBridgeRequest(self: *AppState, request: OuterBridgeRequest) !void {
-        try self.applyOuterBridgeTeardown(request.opcode);
+        try self.applyOuterBridgeTeardown(request);
 
         switch (request.target) {
             .main_menu => try self.enterGamePhase(.main_menu),
@@ -12764,6 +12781,79 @@ test "pending run result maps to explicit outer bridge opcodes" {
         },
         state.outerBridgeRequestForPendingRunResult(result),
     );
+}
+
+test "failed replay-backed results use destroy-return bridge semantics" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
+    state.selected_level_record_override = null;
+    state.active_frontend_level_index = 7;
+
+    var result = PendingRunResult{
+        .outcome = .failed,
+        .level_name = "Replay",
+        .mode = .challenge,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 42_000,
+        .score_is_partial = true,
+        .return_target = .high_scores_menu,
+    };
+
+    state.selected_level_record_source = .{ .challenge = 2 };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .high_scores_menu = .challenge },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    state.selected_level_record_source = .{ .completion = 7 };
+    result.return_target = .time_trial_route_map;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .route_map = .{
+                .mode = .time_trial,
+                .screen_mode = defaultRouteMapScreenMode(.time_trial),
+                .start_route_override = 7,
+            } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
+test "destroy-return replay-backed bridge clears selected replay context" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    state.selected_level_record_source = .{ .challenge = 2 };
+    state.selected_level_record_override = null;
+    state.active_frontend_mode = .challenge;
+    state.active_frontend_level_index = 2;
+
+    try state.applyOuterBridgeTeardown(.{
+        .opcode = .destroy_return,
+        .target = .{ .high_scores_menu = .challenge },
+    });
+
+    try std.testing.expectEqual(@as(?FrontendLevelMode, null), state.active_frontend_mode);
+    try std.testing.expectEqual(@as(usize, 0), state.active_frontend_level_index);
+    try std.testing.expect(state.selected_level_record_source == null);
+    try std.testing.expect(state.selected_level_record_override == null);
+    try std.testing.expect(state.selected_replay_cache == null);
 }
 
 test "frontend widget shortcut codes follow the recovered pause and post-score widgets" {

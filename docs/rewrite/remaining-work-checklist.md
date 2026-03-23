@@ -117,6 +117,8 @@ Work this top-down unless a new runtime capture invalidates the order.
   - current port shape: result exits and abandon exits now route through one `OuterBridgeRequest` lane with native opcode names plus a preserved launch-surface owner captured on level entry
 - [ ] Finish moving any remaining post-overlay/final-loss/thanks-for-playing updates onto that same explicit bridge
   - current narrowing: respawn now follows the confirmed `update_subgoldy_resurrect -> save current owner -> state 0x1c` bridge lane instead of an app-local reload helper
+  - newer narrowing: selected-level-record final loss is no longer lumped into opcode `28`; BN disassembly now shows `complete_subgame(game, 1)` followed by `save current owner -> state 0x1a`
+  - remaining gap: the success-side `0x1b` return and the postal-mode `data_4df904 + 0x30d` gate are still unresolved
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 
