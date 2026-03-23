@@ -243,7 +243,7 @@ Current practical read:
   - `update_frontend_state_machine` state `0x1b` then destroys and reinitializes subgame, and `initialize_subgame` consumes that nonzero continuation selector by mode:
     - `level_mode == 1` rebuilds the challenge-setup owner through `initialize_challenge_setup_screen`
     - `level_mode == 4` rebuilds the Time Trial galaxy owner through `initialize_galaxy`
-    - the current port still collapses the challenge-setup owner onto the `New Game -> Challenge Mode` menu item rather than a literal setup-screen controller
+    - the current port now rebuilds that `level_mode == 1` lane into a literal challenge-setup controller instead of collapsing it onto `New Game -> Challenge Mode`
 - the app byte at `+0x30d` is now narrowed:
   - `add_arcade_high_score` and `add_survival_high_score` both set it to `1` while arming active state `20`
   - `destroy_high_score_screen` clears it back to `0`
@@ -256,6 +256,7 @@ Current practical read:
   - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
+  - the port now mirrors that split directly: challenge-setup `Watch Replay` launches stay on a transient selected-record source and rebuild back into the same challenge-setup owner on return
 - a second replay-launch lane now has stronger static shape on the app side:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later replay-return state (`0x12` from high-score rows, `2` from the menu replay path)
   - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so those app offsets alias the subgame-local selected-record fields exactly:

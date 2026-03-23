@@ -19,7 +19,7 @@ Status: `partial`
 Implemented now:
 
 - archive-backed loading screen, intro crawl, credits crawl, menu backdrops, and front-end music
-- main menu, new-game menu, help, options, route map, high-score screen, pause overlay, and a shared exit prompt
+- main menu, new-game menu, challenge setup, help, options, route map, high-score screen, pause overlay, and a shared exit prompt
 - direct menu transitions for the paths the Windows code handles directly, instead of forcing everything through the black overlay
 - route-map post-completion mode with the special `Exit` label and locked-open selected route behavior
 - recovered widget shortcut dispatch for the screens that actually seed shortcut keys in Windows: pause-menu `Esc`/`O`/`Enter` and post-level high-score `Esc`/`Enter`
@@ -365,11 +365,11 @@ Implemented now:
 - transient postal selected-record final loss now also follows the native `0x1a -> owner 2` New Game override: `complete_subgame` never arms app byte `+0x30d` while `selected_level_record_active` is set, so the postal replay-loss leg does not return through the postal high-score screen
 - ordinary non-selected postal final loss is now also pinned: BN plus IDA show `update_subgoldy_resurrect` only keeps postal mode on `0x1b` while app byte `+0x30d` is still armed by the post-level high-score continuation lane, and otherwise overwrites the saved owner with `2` before forcing `0x1a`
 - ordinary non-selected challenge and Time Trial failed-result exits no longer fall back to the main menu in the port: `update_subgoldy_resurrect` uses state `0x1b` for those non-postal failures, `update_frontend_state_machine` rebuilds subgame on that lane, and `initialize_subgame` then routes `level_mode == 1` back into `initialize_challenge_setup_screen` and `level_mode == 4` back into `initialize_galaxy`
-- the current Zig bridge maps those recovered owners to its existing front-end abstractions: `New Game -> Challenge Mode` for the still-missing challenge-setup screen, and the replay Star Map for Time Trial
+- the current Zig bridge now exposes the recovered challenge-side owner as a literal challenge-setup controller, while Time Trial still maps the same rebuild lane onto the replay Star Map abstraction
 - the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 - `initialize_subgame` plus `update_subgame` now also pin `level_mode == 7` as tutorial mode, so the special `0x1a -> owner 2` completion override is no longer a separate bridge unknown; it is the same tutorial-completion lane the port already uses
 - ordinary pause-menu abandon now also stages the shared postal/challenge high-score entry path when the current partial score places, which matches the confirmed `update_completion_screen` case-`2` `complete_subgame(..., 1)` side effect better than the older direct-return shortcut
-- BN plus IDA now also pin the post-entry return owner for that ordinary abandon lane: `add_arcade_high_score` / `add_survival_high_score` arm state `20`, `update_high_score_screen` later exits through `exit_high_score_screen`, and that helper returns by surviving run mode (`state 2` for postal, `state 10` for challenge) instead of by the preserved gameplay launch surface; the current Zig port now mirrors that with the existing `New Game -> Postal Mode` / `Challenge Mode` stand-ins
+- BN plus IDA now also pin the post-entry return owner for that ordinary abandon lane: `add_arcade_high_score` / `add_survival_high_score` arm state `20`, `update_high_score_screen` later exits through `exit_high_score_screen`, and that helper returns by surviving run mode (`state 2` for postal, `state 10` for challenge) instead of by the preserved gameplay launch surface; the current Zig port now mirrors that with `New Game -> Postal Mode` plus the literal challenge-setup owner
 - ordinary postal/challenge failed-result score entry now also captures that later return owner up front once the post-level high-score screen takes over, which matches the recovered `complete_subgame -> add_*_high_score -> saved owner 0x14 -> state 0x1b` bridge shape better than keeping the completion-screen result object live through name entry
 
 Still missing or approximate:

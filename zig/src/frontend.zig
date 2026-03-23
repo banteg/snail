@@ -35,6 +35,7 @@ pub const GamePhase = enum {
     intro,
     main_menu,
     new_game_menu,
+    challenge_setup_menu,
     options_menu,
     pause_menu,
     route_map_menu,
