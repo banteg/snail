@@ -239,8 +239,12 @@ Current practical read:
     - sets `app + 0x1b8 = 0x1b` for postal mode when the unknown app byte at `+0x30d` is non-zero
     - otherwise forces `app + 0x1b8 = 0x1a` and overwrites `app + 0x1bc = 2`
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
+  - the current static launchers do not show a matching write to `selected_level_record_persistent`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
-- `update_subgame` clears `selected_level_record_persistent` on front-end entry and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
+- `initialize_subgame` also reads `selected_level_record_persistent` to restore the saved replay-speed scalar before the first mode controller reset
+- `destroy_subgame` clears `selected_level_record_persistent` and writes `app + 0x1bc = 0x12` on that teardown path
+- `update_subgame` clears `selected_level_record_active` when the persistent lane is absent on state `0`, and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
+- the writer for `selected_level_record_persistent` is still unresolved; current static evidence only confirms that it is a separate lifecycle lane, not that frontend selected-record launches set it directly
 - `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`

@@ -348,17 +348,19 @@ Implemented now:
 - a shallow BN sweep across the front-end cluster only found that `+0x98` read, not a direct store; the earlier `0x40775c` lead was a data false positive
 - static front-end owners now narrow the shape of the missing bridge write further: `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write active-state or replay-launch scratch globals, but none of them surfaced a direct preserved-owner store either
 - the preserved-owner writer is therefore probably hidden behind a helper or constructor outside the obvious state-machine range
+- BN plus IDA now also sharpen the selected-record bridge inputs:
+  - `update_galaxy` and `update_challenge_setup_screen` seed `selected_level_record_active = 1` and the selected-record pointer, but do not show a matching write to `selected_level_record_persistent`
+  - `initialize_subgame`, `update_subgame`, `build_subgame_level`, and `destroy_subgame` all treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
-- replay-backed failed result returns no longer use opcode `28`; the recovered `update_subgoldy_resurrect` final-loss branch uses state `0x1a` when the selected-level-record lane is active, so the port now mirrors that destroy-return bridge choice instead of pretending those failures are respawn-style rebuilds
-- replay-backed successful result returns no longer use opcode `28` either; the recovered `update_subgoldy` completion exit uses state `0x1a` when `selected_level_record_persistent` is set, so the port now treats replay-backed completion exits as destroy-return handoffs instead of clear-replay rebuilds
+- replay-backed result exits no longer use opcode `28`; the current frontend-selected replay path now maps through the non-persistent `0x1b` rebuild-return lane instead of pretending those returns are respawn-style rebuilds or overclaiming the separate persistent `0x1a` lane
 - the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
 
 Still missing or approximate:
 
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
-- exact challenge, time-trial, and replay-sensitive return routing beyond the currently recovered selected-level-record `0x1a` lanes in `update_subgoldy` and `update_subgoldy_resurrect`
+- exact challenge, time-trial, and replay-sensitive return routing beyond the currently recovered transient `0x1b` selected-record lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
 - the non-persistent selected-level-record post-run branch that uses state `0x1b`, the special `level_mode == 7` completion override to saved owner `2`, and the meaning of the remaining app-side gate at `data_4df904 + 0x30d`
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 

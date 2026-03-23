@@ -2932,6 +2932,7 @@ const AppState = struct {
     current_runtime_build_seed_mode: ?FrontendLevelMode = null,
     selected_level_record_override: ?SelectedLevelRecordOverride = null,
     selected_level_record_source: ?SelectedLevelRecordSource = null,
+    selected_level_record_persistent: bool = false,
     selected_replay_cache: ?high_score.DecodedReplay = null,
     selected_replay_fade_exit_pending: bool = false,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
@@ -5669,7 +5670,8 @@ const AppState = struct {
     }
 
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
-        const replay_backed_return = self.selectedReplayPlaybackActive();
+        const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode();
+        const selected_level_record_return = self.selected_level_record_source != null;
         return switch (result.return_target) {
             .main_menu => .{
                 .opcode = .destroy_return,
@@ -5687,21 +5689,22 @@ const AppState = struct {
                 } },
             },
             .time_trial_route_map => .{
-                // PORT(verified): `update_subgoldy` completion uses state `0x1a`, not `0x1c`,
-                // when the selected-level-record persistent lane is active, so replay-backed
-                // result exits must not route through the clear-replay rebuild opcode here.
-                .opcode = .destroy_return,
+                // PORT(verified): `update_galaxy` only seeds `selected_level_record_active`,
+                // while `update_subgoldy` uses state `0x1b` unless the separate persistent lane
+                // is armed. The current Zig selected-level launch path is therefore transient
+                // until the native persistent writer is recovered.
+                .opcode = selected_level_record_result_opcode,
                 .target = .{ .route_map = .{
                     .mode = .time_trial,
                     .screen_mode = defaultRouteMapScreenMode(.time_trial),
-                    .start_route_override = if (replay_backed_return)
+                    .start_route_override = if (selected_level_record_return)
                         self.active_frontend_level_index
                     else
                         null,
                 } },
             },
             .high_scores_menu => .{
-                .opcode = .destroy_return,
+                .opcode = selected_level_record_result_opcode,
                 .target = .{ .high_scores_menu = if (self.selected_level_record_source) |source|
                     switch (source) {
                         .postal => .postal,
@@ -6731,6 +6734,22 @@ const AppState = struct {
         return entry.replaySampleCount() != 0;
     }
 
+    fn postRunSelectedLevelRecordOpcode(self: *const AppState) OuterBridgeOpcode {
+        const source = self.selected_level_record_source orelse return .destroy_return;
+        if (self.selected_level_record_persistent) return .destroy_return;
+
+        return switch (source) {
+            // PORT(verified): `update_galaxy` / `update_challenge_setup_screen` seed the active
+            // selected-level-record lane without touching the separate persistent bit, and the
+            // corresponding `update_subgoldy` / `update_subgoldy_resurrect` post-run path uses
+            // state `0x1b` for those transient returns. Postal still has the unresolved
+            // `data_4df904 + 0x30d` gate, so keep its path conservative until that owner is
+            // recovered directly.
+            .completion, .challenge => .rebuild_return,
+            .postal => .destroy_return,
+        };
+    }
+
     fn replayMathType16To32(value: i16, scale: f32) f32 {
         return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
     }
@@ -6803,6 +6822,7 @@ const AppState = struct {
         self.clearSelectedReplayCache();
         self.selected_level_record_override = selected_level_record_override;
         self.selected_level_record_source = selected_level_record_source;
+        self.selected_level_record_persistent = false;
         self.selected_replay_fade_exit_pending = false;
 
         const source = selected_level_record_source orelse return;
@@ -12776,7 +12796,7 @@ test "pending run result maps to explicit outer bridge opcodes" {
     );
 }
 
-test "failed replay-backed results use destroy-return bridge semantics" {
+test "transient selected replay failures use rebuild-return bridge semantics" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -12786,6 +12806,7 @@ test "failed replay-backed results use destroy-return bridge semantics" {
     };
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
     state.selected_level_record_override = null;
+    state.selected_level_record_persistent = false;
     state.active_frontend_level_index = 7;
 
     var result = PendingRunResult{
@@ -12803,7 +12824,7 @@ test "failed replay-backed results use destroy-return bridge semantics" {
     state.selected_level_record_source = .{ .challenge = 2 };
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
-            .opcode = .destroy_return,
+            .opcode = .rebuild_return,
             .target = .{ .high_scores_menu = .challenge },
         },
         state.outerBridgeRequestForPendingRunResult(result),
@@ -12813,7 +12834,7 @@ test "failed replay-backed results use destroy-return bridge semantics" {
     result.return_target = .time_trial_route_map;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
-            .opcode = .destroy_return,
+            .opcode = .rebuild_return,
             .target = .{ .route_map = .{
                 .mode = .time_trial,
                 .screen_mode = defaultRouteMapScreenMode(.time_trial),
@@ -12824,7 +12845,7 @@ test "failed replay-backed results use destroy-return bridge semantics" {
     );
 }
 
-test "completed replay-backed results use destroy-return bridge semantics" {
+test "transient selected replay completions use rebuild-return bridge semantics" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -12834,6 +12855,7 @@ test "completed replay-backed results use destroy-return bridge semantics" {
     };
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
     state.selected_level_record_override = null;
+    state.selected_level_record_persistent = false;
     state.active_frontend_level_index = 7;
 
     var result = PendingRunResult{
@@ -12849,6 +12871,48 @@ test "completed replay-backed results use destroy-return bridge semantics" {
     };
 
     state.selected_level_record_source = .{ .challenge = 2 };
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_return,
+            .target = .{ .high_scores_menu = .challenge },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+
+    state.selected_level_record_source = .{ .completion = 7 };
+    result.return_target = .time_trial_route_map;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .rebuild_return,
+            .target = .{ .route_map = .{
+                .mode = .time_trial,
+                .screen_mode = defaultRouteMapScreenMode(.time_trial),
+                .start_route_override = 7,
+            } },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
+test "persistent selected replay results use destroy-return bridge semantics" {
+    var state: AppState = undefined;
+    state.selected_level_record_override = null;
+    state.selected_level_record_persistent = true;
+    state.active_frontend_level_index = 7;
+    state.selected_level_record_source = .{ .challenge = 2 };
+
+    var result = PendingRunResult{
+        .outcome = .completed,
+        .level_name = "Replay",
+        .mode = .challenge,
+        .elapsed_millis = 0,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 42_000,
+        .score_is_partial = true,
+        .return_target = .high_scores_menu,
+    };
+
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
             .opcode = .destroy_return,
