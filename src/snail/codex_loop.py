@@ -12,7 +12,7 @@ import sys
 import time
 from typing import Sequence
 
-DEFAULT_PROMPT_PATH = Path("LOOP.md")
+DEFAULT_POLICY_PATH = Path("LOOP.md")
 DEFAULT_GATE_PATH = Path("analysis/runtime/codex-loop-gate.json")
 DEFAULT_STATE_PATH = Path("artifacts/codex-loop/state.json")
 DEFAULT_NEXT_ACTION_PATH = Path("artifacts/codex-loop/next-action.md")
@@ -209,6 +209,16 @@ def resolve_cli_path(repo_root: Path, raw_path: Path) -> Path:
     return raw_path if raw_path.is_absolute() else (repo_root / raw_path).resolve()
 
 
+def resolve_task_path(repo_root: Path, override_path: Path | None, gate: LoopGate) -> Path:
+    if override_path is not None:
+        return resolve_cli_path(repo_root, override_path)
+    if gate.packet_path is not None:
+        return resolve_repo_path(repo_root, gate.packet_path).resolve()
+    raise FileNotFoundError(
+        "no task dossier is configured; pass --prompt-file or set 'packet_path' in the active gate"
+    )
+
+
 def hash_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -285,7 +295,8 @@ def write_state(
     gate: LoopGate,
     artifact_signatures: dict[str, str | None],
     status: str,
-    prompt_path: Path,
+    policy_path: Path,
+    task_path: Path,
     gate_path: Path,
     stop_reason: str | None = None,
 ) -> None:
@@ -298,7 +309,8 @@ def write_state(
         "blocker": gate.blocker,
         "artifact_signatures": artifact_signatures,
         "status": status,
-        "prompt_path": str(prompt_path),
+        "policy_path": str(policy_path),
+        "task_path": str(task_path),
         "gate_path": str(gate_path),
         "stop_reason": stop_reason,
     }
@@ -310,7 +322,8 @@ def write_next_action(
     path: Path,
     gate: LoopGate,
     gate_path: Path,
-    prompt_path: Path,
+    policy_path: Path,
+    task_path: Path,
     reason: str,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -321,7 +334,8 @@ def write_next_action(
     text = (
         "# Codex Loop Next Action\n\n"
         f"- updated: {datetime.now(UTC).isoformat()}\n"
-        f"- prompt: `{prompt_path}`\n"
+        f"- policy: `{policy_path}`\n"
+        f"- task dossier: `{task_path}`\n"
         f"- gate: `{gate_path}`\n"
         f"- phase: `{gate.phase}`\n"
         f"- classification: `{gate.classification}`\n"
@@ -338,7 +352,7 @@ def write_next_action(
     path.write_text(text, encoding="utf-8")
 
 
-def build_prompt_input(prompt_text: str, gate: LoopGate) -> str:
+def build_prompt_input(policy_text: str, task_text: str, gate: LoopGate, task_path: Path) -> str:
     artifact_lines = "\n".join(f"- `{artifact}`" for artifact in gate.required_artifacts)
     freshness_lines = "\n".join(f"- `{artifact}`" for artifact in gate.freshness_artifacts)
     packet_line = f"- packet: `{gate.packet_path}`\n" if gate.packet_path is not None else ""
@@ -361,7 +375,13 @@ def build_prompt_input(prompt_text: str, gate: LoopGate) -> str:
         "writer, consumer, guard, and lifetime are already known. `scaffold-removal` means delete or isolate "
         "fake behavior without introducing a new proxy.\n\n"
     )
-    return header + prompt_text
+    task_header = (
+        "## Active Task Dossier\n"
+        f"- path: `{task_path}`\n"
+        "- This dossier or packet is the working prompt for this run. Stay inside its target boundary.\n\n"
+    )
+    policy_header = "## Loop Policy\n\n"
+    return header + task_header + task_text + "\n\n" + policy_header + policy_text
 
 
 def build_codex_command(*, codex_args: Sequence[str], cd_path: Path | None) -> list[str]:
@@ -375,7 +395,8 @@ def build_codex_command(*, codex_args: Sequence[str], cd_path: Path | None) -> l
 def run_iterations(
     *,
     iterations: int,
-    prompt_path: Path,
+    policy_path: Path,
+    prompt_override_path: Path | None,
     gate_path: Path,
     state_path: Path,
     next_action_path: Path,
@@ -393,9 +414,15 @@ def run_iterations(
         gate = load_gate(gate_path)
         previous_state = load_state(state_path)
         decision = evaluate_gate(gate, previous_state, repo_root)
-        prompt_text = prompt_path.read_text(encoding="utf-8")
+        task_display_path = (
+            resolve_repo_path(repo_root, gate.packet_path) if gate.packet_path is not None else None
+        )
         print(f"==> Iteration {iteration}/{iterations}", flush=True)
-        print(f"    Prompt: {prompt_path}", flush=True)
+        print(f"    Policy: {policy_path}", flush=True)
+        if prompt_override_path is not None:
+            print(f"    Task: {prompt_override_path}", flush=True)
+        elif task_display_path is not None:
+            print(f"    Task: {task_display_path}", flush=True)
         print(f"    Gate: {gate_path}", flush=True)
         print(f"    Phase: {gate.phase}", flush=True)
         print(f"    Classification: {gate.classification}", flush=True)
@@ -407,34 +434,40 @@ def run_iterations(
             if gate.packet_path is not None:
                 print(f"Packet: {gate.packet_path}", file=sys.stderr, flush=True)
             print(f"Next action: {next_action_path}", file=sys.stderr, flush=True)
+            task_path = resolve_task_path(repo_root, prompt_override_path, gate)
             write_next_action(
                 path=next_action_path,
                 gate=gate,
                 gate_path=gate_path,
-                prompt_path=prompt_path,
+                policy_path=policy_path,
+                task_path=task_path,
                 reason=decision.reason or "blocked",
             )
             if dry_run:
                 return 0
-            if not dry_run:
-                write_state(
-                    path=state_path,
-                    gate=gate,
-                    artifact_signatures=decision.artifact_signatures,
-                    status="blocked",
-                    prompt_path=prompt_path,
-                    gate_path=gate_path,
-                    stop_reason=decision.reason,
-                )
-                return LOOP_BLOCKED_EXIT_CODE
-            continue
+            write_state(
+                path=state_path,
+                gate=gate,
+                artifact_signatures=decision.artifact_signatures,
+                status="blocked",
+                policy_path=policy_path,
+                task_path=task_path,
+                gate_path=gate_path,
+                stop_reason=decision.reason,
+            )
+            return LOOP_BLOCKED_EXIT_CODE
 
         if dry_run:
             continue
 
+        task_path = resolve_task_path(repo_root, prompt_override_path, gate)
+        if not task_path.is_file():
+            raise FileNotFoundError(task_path)
+        policy_text = policy_path.read_text(encoding="utf-8")
+        task_text = task_path.read_text(encoding="utf-8")
         completed = subprocess.run(
             command,
-            input=build_prompt_input(prompt_text, gate),
+            input=build_prompt_input(policy_text, task_text, gate, task_path),
             text=True,
             check=False,
         )
@@ -443,7 +476,8 @@ def run_iterations(
             path=next_action_path,
             gate=gate,
             gate_path=gate_path,
-            prompt_path=prompt_path,
+            policy_path=policy_path,
+            task_path=task_path,
             reason="loop executed; update the gate before the next batch if the blocker changed",
         )
         write_state(
@@ -451,7 +485,8 @@ def run_iterations(
             gate=gate,
             artifact_signatures=current_artifacts,
             status="failed" if completed.returncode != 0 else "executed",
-            prompt_path=prompt_path,
+            policy_path=policy_path,
+            task_path=task_path,
             gate_path=gate_path,
             stop_reason=None if completed.returncode == 0 else f"codex exited {completed.returncode}",
         )
@@ -482,7 +517,7 @@ def run_iterations(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Run `codex exec` against a prompt file for N iterations.",
+        description="Run `codex exec` against the active gate dossier for N iterations.",
         epilog=(
             "Default exec args are yolo mode plus `-m gpt-5.4` and "
             "`-c 'model_reasoning_effort=\"xhigh\"'`. "
@@ -492,10 +527,15 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("iterations", type=positive_int, help="How many times to run `codex exec`.")
     parser.add_argument(
+        "--policy-file",
+        type=Path,
+        default=DEFAULT_POLICY_PATH,
+        help="Policy file appended after the active task dossier (default: LOOP.md).",
+    )
+    parser.add_argument(
         "--prompt-file",
         type=Path,
-        default=DEFAULT_PROMPT_PATH,
-        help="Prompt file to feed to Codex on each iteration (default: LOOP.md).",
+        help="Optional task dossier override. Defaults to the active gate packet.",
     )
     parser.add_argument(
         "--gate-file",
@@ -546,9 +586,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(script_args)
 
     cd_path = args.cd.resolve() if args.cd is not None else Path.cwd()
-    prompt_path = resolve_cli_path(cd_path, args.prompt_file)
-    if not prompt_path.is_file():
-        parser.error(f"prompt file does not exist: {prompt_path}")
+    policy_path = resolve_cli_path(cd_path, args.policy_file)
+    if not policy_path.is_file():
+        parser.error(f"policy file does not exist: {policy_path}")
+
+    prompt_override_path = None
+    if args.prompt_file is not None:
+        prompt_override_path = resolve_cli_path(cd_path, args.prompt_file)
+        if not prompt_override_path.is_file():
+            parser.error(f"task dossier does not exist: {prompt_override_path}")
 
     gate_path = resolve_cli_path(cd_path, args.gate_file)
     if not gate_path.is_file():
@@ -560,7 +606,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     return run_iterations(
         iterations=args.iterations,
-        prompt_path=prompt_path,
+        policy_path=policy_path,
+        prompt_override_path=prompt_override_path,
         gate_path=gate_path,
         state_path=state_path,
         next_action_path=next_action_path,

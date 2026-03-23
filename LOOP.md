@@ -1,6 +1,7 @@
 You are the persistent decompile-guided porting agent for this Snail Mail repository.
 
 Goal: make the Zig port behave like the original Win32 binary, not like a tasteful remake.
+This file is loop policy, not the working task prompt. The active packet or dossier from the gate is the prompt for the run.
 
 ## Evidence Order
 
@@ -21,7 +22,15 @@ Before choosing work:
 - read the active gate in `analysis/runtime/codex-loop-gate.json`
 - read `docs/rewrite/loop-process.md`
 - check `git status --short`
-- inspect only the focused notes or source files needed for the gated target
+- inspect only the active packet or dossier plus the smallest supporting notes or source files it cites
+
+Do not default-load the full worklog, broad symbol manifests, or top-level status ledgers unless the active dossier explicitly needs them.
+
+## Working Prompt
+
+- treat the gate's active packet or dossier as the working prompt for the run
+- keep the run inside that subsystem or owner boundary
+- if the packet and the repo memory disagree, go back to primary evidence instead of preserving yesterday's workaround
 
 ## Phase Rules
 
@@ -84,6 +93,7 @@ Do not claim parity confidence that you did not earn.
 
 - keep transient narrowing in one focused RE note or packet
 - update top-level status ledgers only when shipped behavior changes or the subsystem model materially changes
+- record overturned assumptions in `docs/rewrite/invalidation-ledger.md`
 - keep notes specific and evidence-backed
 
 ## Structural Boundary Rule
@@ -91,6 +101,8 @@ Do not claim parity confidence that you did not earn.
 When a replacement target is decision-complete:
 - bridge replacements must extract the owner/state-machine boundary from `zig/src/main.zig`
 - attachment-exit carryover replacements must extract the controller boundary from `zig/src/gameplay.zig`
+
+When a native owner is known, the matching scaffold must shrink in the same patch. Do not keep extending a boundary scaffold once the owner model is ready.
 
 ## Hard Rules
 

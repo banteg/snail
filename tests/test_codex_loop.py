@@ -7,6 +7,7 @@ from snail.codex_loop import (
     DEFAULT_CODEX_ARGS,
     DEFAULT_GATE_PATH,
     DEFAULT_NEXT_ACTION_PATH,
+    DEFAULT_POLICY_PATH,
     DEFAULT_STATE_PATH,
     build_codex_command,
     build_prompt_input,
@@ -15,8 +16,10 @@ from snail.codex_loop import (
     load_gate,
     load_state,
     normalize_codex_args,
+    resolve_task_path,
     snapshot_artifacts,
     split_script_and_codex_args,
+    write_next_action,
     write_state,
 )
 
@@ -60,6 +63,8 @@ def test_build_parser_accepts_script_flags_without_remainder_capture() -> None:
 
     assert args.iterations == 3
     assert args.dry_run is True
+    assert args.policy_file == DEFAULT_POLICY_PATH
+    assert args.prompt_file is None
     assert args.gate_file == DEFAULT_GATE_PATH
     assert args.state_file == DEFAULT_STATE_PATH
     assert args.next_action_file == DEFAULT_NEXT_ACTION_PATH
@@ -126,7 +131,8 @@ def test_evaluate_gate_blocks_same_blocker_without_fresh_artifacts(tmp_path: Pat
         gate=gate,
         artifact_signatures=snapshot_artifacts(tmp_path, gate.required_artifacts),
         status="executed",
-        prompt_path=tmp_path / "LOOP.md",
+        policy_path=tmp_path / "LOOP.md",
+        task_path=tmp_path / "packet.md",
         gate_path=gate_path,
     )
     previous_state = load_state(state_path)
@@ -154,7 +160,8 @@ def test_evaluate_gate_allows_same_blocker_after_fresh_artifact(tmp_path: Path) 
         gate=gate,
         artifact_signatures=snapshot_artifacts(tmp_path, gate.required_artifacts),
         status="executed",
-        prompt_path=tmp_path / "LOOP.md",
+        policy_path=tmp_path / "LOOP.md",
+        task_path=tmp_path / "packet.md",
         gate_path=gate_path,
     )
     artifact.write_text("fresh\n", encoding="utf-8")
@@ -186,7 +193,8 @@ def test_only_freshness_artifacts_can_unblock_repeated_blocker(tmp_path: Path) -
         gate=gate,
         artifact_signatures=snapshot_artifacts(tmp_path, gate.required_artifacts),
         status="executed",
-        prompt_path=tmp_path / "LOOP.md",
+        policy_path=tmp_path / "LOOP.md",
+        task_path=tmp_path / "packet.md",
         gate_path=gate_path,
     )
     context.write_text("context changed\n", encoding="utf-8")
@@ -213,12 +221,65 @@ def test_build_prompt_input_includes_gate_header(tmp_path: Path) -> None:
         )
     )
 
-    prompt = build_prompt_input("body", gate)
+    task_path = tmp_path / "packet.md"
+    prompt = build_prompt_input("policy", "body", gate, task_path)
 
     assert "## Active Loop Gate" in prompt
+    assert "## Active Task Dossier" in prompt
+    assert f"path: `{task_path}`" in prompt
+    assert "## Loop Policy" in prompt
     assert "classification: `scaffold-removal`" in prompt
     assert "If it conflicts with anything below, the gate wins." in prompt
-    assert prompt.endswith("body")
+    assert prompt.endswith("policy")
+
+
+def test_resolve_task_path_defaults_to_gate_packet(tmp_path: Path) -> None:
+    packet = tmp_path / "packet.md"
+    packet.write_text("packet\n", encoding="utf-8")
+    gate = load_gate(
+        _write_gate(
+            tmp_path,
+            phase="re",
+            classification="runtime-blocked",
+            required_artifacts=[packet.name],
+            packet_path=packet.name,
+        )
+    )
+
+    resolved = resolve_task_path(tmp_path, override_path=None, gate=gate)
+
+    assert resolved == packet.resolve()
+
+
+def test_write_next_action_mentions_policy_and_task_paths(tmp_path: Path) -> None:
+    packet = tmp_path / "packet.md"
+    packet.write_text("packet\n", encoding="utf-8")
+    gate = load_gate(
+        _write_gate(
+            tmp_path,
+            phase="re",
+            classification="runtime-blocked",
+            required_artifacts=[packet.name],
+            packet_path=packet.name,
+        )
+    )
+    next_action = tmp_path / "next-action.md"
+    policy_path = tmp_path / "LOOP.md"
+    policy_path.write_text("policy\n", encoding="utf-8")
+
+    write_next_action(
+        path=next_action,
+        gate=gate,
+        gate_path=tmp_path / "gate.json",
+        policy_path=policy_path,
+        task_path=packet,
+        reason="blocked",
+    )
+
+    text = next_action.read_text(encoding="utf-8")
+    assert f"- policy: `{policy_path}`" in text
+    assert f"- task dossier: `{packet}`" in text
+    assert "- stop reason: blocked" in text
 
 
 def _write_gate(
@@ -228,6 +289,7 @@ def _write_gate(
     classification: str,
     required_artifacts: list[str],
     freshness_artifacts: list[str] | None = None,
+    packet_path: str | None = None,
 ) -> Path:
     gate_path = root / "gate.json"
     payload = {
@@ -239,6 +301,8 @@ def _write_gate(
     }
     if freshness_artifacts is not None:
         payload["freshness_artifacts"] = freshness_artifacts
+    if packet_path is not None:
+        payload["packet_path"] = packet_path
     gate_path.write_text(
         json.dumps(payload),
         encoding="utf-8",

@@ -1,12 +1,20 @@
 # Windows RE Batch 2026-03-24
 
 This is the current runtime-blocked packet for the automated port loop.
+It is also the active working dossier for the current loop target.
 
 Rule for this batch:
 - no Zig edits
 - no top-level status-ledger churn
 - update this packet or one focused runtime note only
 - if you update a focused runtime note, reflect the outcome back into this packet before rerunning the loop
+
+Boundary for this dossier:
+- owner boundary: outer bridge and attachment-exit handoff controllers
+- safe-to-code boundary: none until the batch is complete
+- scaffold kill-list to prepare for the next replacement decision:
+  - `OuterBridgeRequest` as the conceptual center of bridge routing in `zig/src/main.zig`
+  - grounded or trampoline attachment-exit settle proxy paths in `zig/src/gameplay.zig`
 
 ## Goal
 
