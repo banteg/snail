@@ -249,6 +249,12 @@ Current practical read:
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
 - a second replay-launch lane now has stronger static shape on the app side:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later replay-return state (`0x12` from high-score rows, `2` from the menu replay path)
+  - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so those app offsets alias the subgame-local selected-record fields exactly:
+    - `app + 0x1066be8` = `game + 0xff25d0` (`selected_level_record_active`)
+    - `app + 0x1066be9` = `game + 0xff25d1` (`selected_level_record_persistent`)
+    - `app + 0x1066bec` = `game + 0xff25d4` (`selected_level_record`)
+    - `app + 0x1066bf0` = `game + 0xff25d8` during that prelaunch window
+  - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
   - `update_pause_menu` checks `app + 0x1066be9` to choose the replay-owned exit-prompt lane
@@ -258,13 +264,12 @@ Current practical read:
 - `initialize_subgame` also reads `selected_level_record_persistent` to restore the saved replay-speed scalar before the first mode controller reset
 - `destroy_subgame` clears `selected_level_record_persistent` and writes `app + 0x1bc = 0x12` on that teardown path
 - `update_subgame` clears `selected_level_record_active` when the persistent lane is absent on state `0`, and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
-- the writer for `selected_level_record_persistent` is still unresolved; current static evidence now narrows the upstream source more sharply:
+- the selected-record launch split is now tighter:
   - `update_galaxy` and `update_challenge_setup_screen` only expose the transient game-side `selected_level_record_active` lane
-  - replay-row and random replay launches already have a separate app-side replay scratch lane
-  - whole-image static disassembly now shows no direct nonzero store to `game + 0xff25d1`; the only direct store to that byte is the teardown clear in `destroy_subgame` at `0x438b13`
-  - the remaining static hits on `game + 0xff25d1` are all reads or compares in `initialize_subgame`, `build_subgame_level`, `update_subgame`, `update_subgoldy`, `update_subgoldy_resurrect`, and `initialize_click_start`
-  - `build_subgame_level` only tests `selected_level_record_active || selected_level_record_persistent` before copying selected-record mode, level, replay-speed, and scalar fields, so the still-missing step is the exact copy or constructor path that makes the persistent lane observable before that build/init sequence
-  - app dword `+0x12e55e0` is no longer a good candidate for that source: `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all also write `2` there in ordinary front-end flow, while state `0x1c` only clears it during the rebuild-clear-replay bridge
+  - high-score replay rows and the menu random replay path write the persistent lane through the aliasing app-side replay scratch at `app + 0x1066be9 == game + 0xff25d1`
+  - whole-image static disassembly still shows no direct nonzero store to `game + 0xff25d1`; the only literal store to that byte is the teardown clear in `destroy_subgame` at `0x438b13` because the nonzero writer arrives through the overlapping app-base address instead
+  - `build_subgame_level` only tests `selected_level_record_active || selected_level_record_persistent` before copying selected-record mode, level, replay-speed, and scalar fields, so the remaining bridge-side question is no longer "where is the persistent writer?" but which launch families should be treated as transient versus persistent
+  - app dword `+0x12e55e0` is still not a clean replay-only source candidate: `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all also write `2` there in ordinary front-end flow, while state `0x1c` only clears it during the rebuild-clear-replay bridge
 - `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`

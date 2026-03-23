@@ -2617,6 +2617,19 @@ fn bridgeTargetForReplaySource(source: SelectedLevelRecordSource, active_level_i
     };
 }
 
+fn selectedLevelRecordSourceUsesPersistentLane(source: SelectedLevelRecordSource) bool {
+    // PORT(verified): `update_frontend_state_machine` initializes subgame at
+    // `data_4df904 + 0x74618`, so the app replay-launch scratch that
+    // `update_high_score_screen` / `update_new_game_menu` seed at
+    // `+0x1066be8/+0x1066be9/+0x1066bec` aliases
+    // `game + 0xff25d0/+0xff25d1/+0xff25d4` exactly. Route-map best-trial launchers
+    // still seed only the transient game-side active lane.
+    return switch (source) {
+        .postal, .challenge => true,
+        .completion => false,
+    };
+}
+
 fn preservedFrontendOwnerForLevelLaunch(
     mode: FrontendLevelMode,
     level_index: usize,
@@ -6962,7 +6975,10 @@ const AppState = struct {
         self.clearSelectedReplayCache();
         self.selected_level_record_override = selected_level_record_override;
         self.selected_level_record_source = selected_level_record_source;
-        self.selected_level_record_persistent = false;
+        self.selected_level_record_persistent = if (selected_level_record_source) |source|
+            selectedLevelRecordSourceUsesPersistentLane(source)
+        else
+            false;
         self.selected_replay_fade_exit_pending = false;
 
         const source = selected_level_record_source orelse return;
@@ -13124,6 +13140,36 @@ test "persistent selected replay results use destroy-return bridge semantics" {
         },
         state.outerBridgeRequestForPendingRunResult(result),
     );
+
+    state.selected_level_record_source = .{ .postal = 2 };
+    result.mode = .postal;
+    result.return_target = .high_scores_menu;
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .high_scores_menu = .postal },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
+}
+
+test "selected replay context keeps the native persistent launch split" {
+    var state: AppState = undefined;
+    state.high_score_tables = high_score.Tables.initDefault();
+    state.selected_replay_cache = null;
+
+    try state.setSelectedLevelRecordContext(null, .{ .postal = 0 });
+    try std.testing.expect(state.selected_level_record_persistent);
+
+    try state.setSelectedLevelRecordContext(null, .{ .challenge = 0 });
+    try std.testing.expect(state.selected_level_record_persistent);
+
+    try state.setSelectedLevelRecordContext(null, .{ .completion = 0 });
+    try std.testing.expect(!state.selected_level_record_persistent);
+
+    try state.setSelectedLevelRecordContext(null, null);
+    try std.testing.expect(state.selected_level_record_source == null);
+    try std.testing.expect(!state.selected_level_record_persistent);
 }
 
 test "destroy-return replay-backed bridge clears selected replay context" {
