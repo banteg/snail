@@ -562,3 +562,46 @@
 
 ### Next target
 - Trace the ordinary pause-menu abandon post-entry owner through `exit_high_score_screen` / `update_completion_screen` strongly enough to replace the preserved-owner fallback on that lane.
+
+## 2026-03-23 20:34 - Iteration: narrow persistent replay bridge source
+
+### Target
+- Static provenance of `game + 0xff25d1` (`selected_level_record_persistent`) in the replay-sensitive outer bridge
+
+### Why this target
+- The outer bridge is still the top ownership risk, and the saved-replay lane was still framed too broadly as "find the writer" even though BN, IDA, and a whole-image disassembly sweep were already strong enough to narrow the real gap further.
+
+### Original behavior evidence
+- Confirmed:
+  - Whole-image static disassembly shows no direct nonzero store to `game + 0xff25d1`; the only direct store to that byte is the teardown clear in `destroy_subgame` at `0x438b13`.
+  - `initialize_subgame`, `build_subgame_level`, `update_subgame`, `update_subgoldy`, `update_subgoldy_resurrect`, and `initialize_click_start` only read or compare `game + 0xff25d1`.
+  - `build_subgame_level` gates its replay-backed mode, level, replay-speed, and scalar copies on `selected_level_record_active || selected_level_record_persistent`, so the missing step is upstream of that build/init sequence.
+  - App dword `+0x12e55e0` is not a clean replay-only source candidate: `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there, while `update_frontend_state_machine` state `0x1c` clears it.
+- Likely:
+  - The persistent replay lane reaches subgame through a helper, constructor-side copy, or object-lifetime path that static offset sweeps do not expose as a direct `+0xff25d1 = 1` store.
+- Unknown:
+  - The exact function or lifetime transition that first makes the app replay scratch observable as `game + 0xff25d1`.
+
+### Zig changes
+- No Zig runtime code changed.
+- Updated `docs/re/runtime-structures.md`, `docs/re/windows-debugging-wants.md`, `docs/rewrite/subsystem-status.md`, and `docs/rewrite/remaining-work-checklist.md`.
+- Reduced one RE-side blind spot: the remaining replay-persistent bridge gap is now documented as constructor/copy provenance, not another shallow direct-writer search.
+
+### Verification
+- Ran `git diff --check`.
+- Reviewed `bn decompile` / `bn disasm` for `initialize_subgame`, `build_subgame_level`, `update_subgame`, `destroy_subgame`, `update_pause_menu`, `update_high_score_screen`, and `update_new_game_menu`.
+- Cross-checked the same question with the checked-in IDA exports plus a whole-image `objdump -Mintel -d ... | rg "ff25d1|12e55e0"` sweep.
+- This gives high confidence in the negative result: the remaining gap is provenance, not a missed obvious setter.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `cd9b7f2 re: narrow persistent replay bridge source`
+- Push: pushed to remote branch after the accompanying worklog update commit
+
+### Remaining gaps
+- The constructor/copy path that makes app replay scratch visible as `game + 0xff25d1`.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d`.
+
+### Next target
+- Trace the first live transition of `game + 0xff25d1` in Windows around `initialize_subgame`, `build_subgame_level`, and `initialize_click_start`, while watching the app replay scratch fields and the outer bridge slots together.
