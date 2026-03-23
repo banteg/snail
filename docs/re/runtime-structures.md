@@ -271,6 +271,11 @@ Current practical read:
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`
   - `update_subgame` seeds `game + 0x1270fc8 = 2` on the route-map best-trial launch path, and `initialize_subgame` later uses that nonzero continuation selector plus `level_mode == 4` to rebuild the galaxy owner through `initialize_galaxy` / `reset_subgame`
   - transient route-map replay pause abandon therefore uses the non-clear rebuild lane (`0x1b` / opcode `27`-shaped semantics), not the respawn-only clear-replay lane (`0x1c` / opcode `28`)
+  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `runtime_track_index < record->sample_count`, and `movement_state != 2`:
+    - sample word `+0x70 + runtime_track_index * 6` becomes live replay `x`
+    - sample byte `+0x74 + runtime_track_index * 6` bit `0x4` feeds `track_state_latch`
+    - that same sample byte bit `0x8` writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and calls `begin_frontend_fade_in(app + 0x24)`
+  - selected replay marker bit `0x8` therefore loops back through frontend state `10 -> initialize_subgame -> update_subgame`, not directly to the route-map or high-score launch surface
   - `update_frontend_state_machine` state `0x1c` also clears app dword `+0x12e55e0` before the rebuild handoff
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `initialize_subgame` also reads `selected_level_record_persistent` to restore the saved replay-speed scalar before the first mode controller reset

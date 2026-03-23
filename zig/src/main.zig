@@ -6991,22 +6991,27 @@ const AppState = struct {
         }
     }
 
-    fn exitSelectedReplayOnMarker(self: *AppState) !void {
-        const source = self.selected_level_record_source orelse return;
-        switch (source) {
-            .completion => {
-                self.start_route_index_override = self.active_frontend_level_index;
-                try self.enterRouteMapMenu(.time_trial);
-            },
-            .postal => {
-                try self.setSelectedLevelRecordContext(null, null);
-                try self.enterHighScoreBrowseScreen(.postal);
-            },
-            .challenge => {
-                try self.setSelectedLevelRecordContext(null, null);
-                try self.enterHighScoreBrowseScreen(.challenge);
-            },
-        }
+    fn outerBridgeRequestForSelectedReplayMarker(self: *const AppState) ?OuterBridgeRequest {
+        const source = self.selected_level_record_source orelse return null;
+        const record = self.selected_level_record_override orelse blk: {
+            const entry = self.selectedReplayEntryForSource(source) orelse return null;
+            break :blk SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return null;
+        };
+        // PORT(verified): `update_subgoldy` consumes selected-record replay flag bit `0x8`
+        // directly. When it hits, Windows writes `app + 0x1b8 = 0x1a`,
+        // `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and starts the
+        // front-end fade. State `10` is the front-end subgame-init owner, so
+        // this marker loops back into the current replay rather than returning
+        // to the launch surface.
+        return .{
+            .opcode = .destroy_return,
+            .target = .{ .replay_current_level = .{
+                .mode = record.mode,
+                .level_index = record.level_index,
+                .selected_level_record_override = record,
+                .selected_level_record_source = source,
+            } },
+        };
     }
 
     fn clearSelectedReplayCache(self: *AppState) void {
@@ -7043,7 +7048,8 @@ const AppState = struct {
             .idle => self.frontend_transition.beginOverlayFadeOut(),
             .black_idle => {
                 self.selected_replay_fade_exit_pending = false;
-                try self.exitSelectedReplayOnMarker();
+                const request = self.outerBridgeRequestForSelectedReplayMarker() orelse return false;
+                try self.dispatchOuterBridgeRequest(request);
                 self.frontend_transition.completeHandoff();
             },
             else => {},
@@ -12798,6 +12804,36 @@ test "selected replay return targets follow the launch surface" {
     try std.testing.expectEqual(
         ResultReturnTarget.high_scores_menu,
         AppState.resultReturnTargetForSelectedReplaySource(.{ .challenge = 5 }),
+    );
+}
+
+test "selected replay marker restarts the current replay through destroy-return" {
+    var state: AppState = undefined;
+    state.selected_level_record_source = .{ .completion = 7 };
+    state.selected_level_record_override = .{
+        .mode = .time_trial,
+        .level_index = 7,
+        .runtime_build_flags = track.timeTrialRuntimeBuildFlags,
+        .replay_speed_scalar = 0.74,
+        .challenge_speed_value = 0,
+        .challenge_difficulty_value = 0,
+        .challenge_difficulty_scalar = 0.0,
+        .runtime_build_seed = 12_345,
+        .garbage_scalar = 0.25,
+        .salt_scalar = 0.1,
+    };
+
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .replay_current_level = .{
+                .mode = .time_trial,
+                .level_index = 7,
+                .selected_level_record_override = state.selected_level_record_override,
+                .selected_level_record_source = .{ .completion = 7 },
+            } },
+        },
+        state.outerBridgeRequestForSelectedReplayMarker().?,
     );
 }
 

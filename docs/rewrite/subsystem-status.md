@@ -361,6 +361,7 @@ Implemented now:
 - persistent replay-backed pause abort now follows the same launch-surface destroy-return lane as persistent result-screen exits instead of reusing the respawn-only clear-replay rebuild opcode
 - transient route-map best-trial pause abandon now also follows the native rebuild lane instead of the respawn-only clear-replay opcode: BN `update_pause_menu` falls through to completion state `2` when the persistent byte is clear, BN plus IDA `update_completion_screen` then destroy subgame and reinitialize it directly for `level_mode == 4`, and `initialize_subgame` rebuilds the galaxy owner from the preserved continuation selector
 - replay-backed result exits no longer use opcode `28`; the current port now keeps the recovered split: high-score replay rows launch the persistent `0x1a` destroy-return lane, while route-map best-trial launches stay on the transient `0x1b` rebuild-return lane
+- selected replay marker bit `0x8` no longer shortcuts straight back to the launch UI in the port: BN plus IDA now show `update_subgoldy` consuming that sample bit directly, writing `state 0x1a`, saving owner `10`, setting app byte `+0x30c = 1`, and starting the front-end fade, so the current port now restarts the active selected replay through the explicit destroy-return lane instead
 - transient postal selected-record final loss now also follows the native `0x1a -> owner 2` New Game override: `complete_subgame` never arms app byte `+0x30d` while `selected_level_record_active` is set, so the postal replay-loss leg does not return through the postal high-score screen
 - ordinary non-selected challenge and Time Trial failed-result exits no longer fall back to the main menu in the port: `update_subgoldy_resurrect` uses state `0x1b` for those non-postal failures, `update_frontend_state_machine` rebuilds subgame on that lane, and `initialize_subgame` then routes `level_mode == 1` back into `initialize_challenge_setup_screen` and `level_mode == 4` back into `initialize_galaxy`
 - the current Zig bridge maps those recovered owners to its existing front-end abstractions: `New Game -> Challenge Mode` for the still-missing challenge-setup screen, and the replay Star Map for Time Trial
@@ -375,7 +376,6 @@ Still missing or approximate:
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
-- the transient replay-backed overlay path still needs its own direct static or live confirmation now that the pause-abandon lane is pinned
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
 Best next work:
@@ -397,8 +397,8 @@ Implemented now:
 - selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
 - replay flag bits `0x1/0x2` now drive the grounded replay-latch movement-progress substitutions instead of being preserved as dead metadata during selected playback
-- selected replay sessions no longer feed completion or failure back into live high-score persistence, and they now return to the launch surface instead of staying on the generic run-result path
-- replay flag bit `0x8` now routes selected playback through the shared fade overlay at the recorded tail instead of swapping phases immediately or letting the sim run past the saved sample stream
+- selected replay sessions no longer feed completion or failure back into live high-score persistence; result exits still route through the recovered launch-surface bridge split instead of mutating score state in place
+- replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
 
 Still missing or approximate:
 
