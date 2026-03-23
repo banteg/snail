@@ -301,14 +301,14 @@ Current practical read:
     - the same menu-local object now has a firmer partial layout:
       - `+0x0`: rotating replay-bank cursor
       - `+0x4`: likely replay-attract hide latch; any input clears it after unhiding all six menu widgets, while a successful replay launch sets it to `1` immediately before `destroy_main_menu`
-      - `+0x8` / `+0xc`: secondary timer lane reset to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path
+      - `+0x8` / `+0xc`: secondary replay-attract suppressor accumulator / step, reset to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path
       - `+0x10` / `+0x14`: replay-attract accumulator / step
     - when all `1000` attempts miss, the branch does not launch; it writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns
-    - the remaining unknown is not the launch scratch itself but the timer producer:
+    - the remaining unknown is not the launch scratch itself but the timer producers:
       - static BN plus IDA still do not show who seeds the menu-local replay-attract step at `+0x14`
-      - the exact role of the `+0x8/+0xc` secondary timer lane in later re-arming or delaying that step is also still open
+      - `update_subgame` later consumes `data_4df904 + 0x4f2e4` (`menu-local +0x8`) and clears the likely hide latch at `data_4df904 + 0x4f2e0` once that accumulator exceeds `1.0`, so the open question on `+0x8/+0xc` is now who advances or reseeds that suppressor lane rather than whether it participates in startup suppression
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
-  - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`, so the same app-side replay scratch also suppresses the normal click-start gate on persistent replay launches
+  - `initialize_subgoldy` unconditionally calls `initialize_click_start`, and `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`, so the same app-side replay scratch also suppresses the normal click-start gate on persistent replay launches
   - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
   - `update_completion_screen` state `3` destroys subgame and restores the state saved at `app + 0x1066bf0`, so the persistent replay-backed abandon or overlay lane uses the same saved-owner destroy-return path as persistent result exits rather than frontend state `0x1c`
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`

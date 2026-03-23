@@ -1688,7 +1688,7 @@
     {
       "address": "0x43a9c0",
       "name": "initialize_subgoldy",
-      "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the jetpack gauge and cameraman, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
+      "description": "Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the jetpack gauge, cameraman, and click-start prompt, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`."
     },
     {
       "address": "0x43af10",
@@ -1996,7 +1996,8 @@
     },
     {
       "address": "0x442290",
-      "name": "update_click_start"
+      "name": "update_click_start",
+      "description": "Advances the subgame `Click to Start` startup owner and its selected-replay handoff: state `2` branches between replay-driven startup and player confirm, recenters the authored mouse-pointer widgets, plays SFX `8` on the start transition, and then advances the prompt teardown lane."
     },
     {
       "address": "0x442500",
