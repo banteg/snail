@@ -149,7 +149,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 3. Finish attachment follow as a native runtime
 
 - [ ] Recover the full installed-bank ownership and row-slot pairing rules
-- [ ] Finish the swept local-frame entry test strongly enough to remove the remaining source-row fallback
+- [ ] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
 - [ ] Recover the real consumers and semantics of `attachment_exit_value_a` / `attachment_exit_value_b`
 - [ ] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story

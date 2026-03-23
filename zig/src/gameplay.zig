@@ -1435,6 +1435,7 @@ pub const Runner = struct {
         }
 
         if (!self.paused and self.phase == .active) {
+            self.tryPrimeCurrentRowAttachmentEntry(preview);
             self.refreshLiveTrackParcels(preview);
         }
         if (!self.paused) {
@@ -1664,13 +1665,15 @@ pub const Runner = struct {
         if (self.phase != .active) return;
         if (self.movement_mode != .track) return;
         if (self.launch.active) return;
+        if (self.attachment_exit_pending) return;
 
         const current_row = currentRowIndex(preview, self.row_position);
         const sample = self.sampleRow(preview, current_row) orelse return;
-        if (sample.gameplay_cell != .attachment_entry) return;
+        const gameplay_cell = sample.gameplay_cell orelse return;
+        if (gameplay_cell != .attachment_entry and gameplay_cell != .attachment_probe) return;
 
-        if (self.tryBeginInstalledAttachmentFollow(preview, current_row, sample)) return;
-        if (!preview.installedBuiltAttachmentsAtRow(current_row).any()) {
+        if (self.tryBeginCurrentRowInstalledAttachmentFollow(preview, current_row)) return;
+        if (gameplay_cell == .attachment_entry and !preview.installedBuiltAttachmentsAtRow(current_row).any()) {
             self.beginAttachmentFollow(preview, sample);
         }
     }
@@ -5380,7 +5383,7 @@ pub const Runner = struct {
         };
         for (candidates) |maybe_built| {
             const built = maybe_built orelse continue;
-            if (self.installedAttachmentEntry(preview, built, global_row, sample)) |entry| {
+            if (self.geometricInstalledAttachmentEntry(preview, built, sample)) |entry| {
                 self.beginInstalledAttachmentFollow(preview, built, entry);
                 return true;
             }
@@ -5388,30 +5391,36 @@ pub const Runner = struct {
         return false;
     }
 
-    fn installedAttachmentEntry(
-        self: *const Runner,
+    fn tryBeginCurrentRowInstalledAttachmentFollow(
+        self: *Runner,
         preview: *const track.LoadedLevelPreview,
-        built: *const attachment_builders.BuiltAttachment,
         global_row: usize,
-        sample: RowSample,
-    ) ?InstalledAttachmentEntry {
-        if (self.geometricInstalledAttachmentEntry(preview, built, sample)) |entry| {
-            return entry;
+    ) bool {
+        const installed = preview.installedBuiltAttachmentsAtRow(global_row);
+        const candidates = [_]?*const attachment_builders.BuiltAttachment{
+            installed.primary,
+            installed.secondary,
+        };
+        for (candidates) |maybe_built| {
+            const built = maybe_built orelse continue;
+            if (self.currentRowInstalledAttachmentEntry(preview, built, global_row)) |entry| {
+                self.beginInstalledAttachmentFollow(preview, built, entry);
+                return true;
+            }
         }
-
-        if (global_row == built.row.global_row) {
-            return self.sourceRowInstalledAttachmentEntry(preview, built, global_row);
-        }
-
-        return null;
+        return false;
     }
 
-    fn sourceRowInstalledAttachmentEntry(
+    fn currentRowInstalledAttachmentEntry(
         self: *const Runner,
         preview: *const track.LoadedLevelPreview,
         built: *const attachment_builders.BuiltAttachment,
         global_row: usize,
     ) ?InstalledAttachmentEntry {
+        // PORT(verified): `update_subgoldy` calls `begin_track_attachment_follow_state`
+        // directly from the current runtime attachment cell when `attachment_exit_pending`
+        // is clear. That begin path seeds progress from the current row cell, not only from
+        // the attachment source row, so use the current installed row span here.
         const sample_index = global_row - built.row.global_row;
         const sample_index_f: f32 = @floatFromInt(sample_index);
         const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
@@ -5963,6 +5972,19 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     runner.last_processed_row = target.row - 1;
 }
 
+fn primeRunnerAfterFirstInstalledAttachment(runner: *Runner, preview: *const track.LoadedLevelPreview) void {
+    const target = findFirstGameplayCell(preview, .attachment_entry).?;
+    const built = preview.installedBuiltAttachmentAtRow(target.row).?;
+    const start_row = target.row + built.template.sample_count + 2;
+
+    runner.reset(preview);
+    runner.runtime_track_index = start_row;
+    runner.movement_progress = 0.0;
+    runner.syncRowPosition(preview);
+    runner.refreshSample(preview);
+    runner.last_processed_row = start_row;
+}
+
 fn setRunnerLiveRowTarget(runner: *Runner, target: RowTarget) void {
     runner.lane_index = target.lane;
     runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
@@ -6289,7 +6311,7 @@ test "installed attachment begin preserves raw local progress and advances once 
     primeRunnerBeforeRow(&runner, &fixture.preview, target);
     runner.movement_rate_scalar = 0.25;
 
-    const entry = runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row).?;
+    const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, target.row).?;
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), entry.local_progress, 0.0001);
 
     runner.beginInstalledAttachmentFollow(&fixture.preview, built, entry);
@@ -6453,52 +6475,42 @@ test "zero-row-scalar attachments keep attachment exit spin zero" {
 }
 
 test "runner advances deterministically over fixed time" {
-    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
-    defer catalog.deinit();
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
 
-    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
-    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
-    defer level_definition.deinit();
-
-    var preview = try track.LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
-    defer preview.deinit();
-
-    var runner = Runner.init(&preview);
+    var runner = Runner.init(&fixture.preview);
+    primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
+    const start_row = runner.runtime_track_index;
     for (0..120) |_| {
-        runner.step(&preview, .{}, 1.0 / 60.0);
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectApproxEqAbs(@as(f32, 28.0), runner.row_position, 0.001);
-    try std.testing.expectEqual(@as(usize, 28), runner.runtime_track_index);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 24.0, runner.row_position, 0.001);
+    try std.testing.expectEqual(start_row + 24, runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
 }
 
 test "runner keeps discrete track cursor and fractional movement progress" {
-    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
-    defer catalog.deinit();
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
 
-    const level_entry = catalog.level_entries[catalog.findLevelIndex("LEVELS/TUTORIAL.TXT").?];
-    var level_definition = try level.loadFromArchive(std.testing.allocator, &catalog, level_entry);
-    defer level_definition.deinit();
-
-    var preview = try track.LoadedLevelPreview.load(std.testing.allocator, &catalog, &level_definition);
-    defer preview.deinit();
-
-    var runner = Runner.init(&preview);
-    runner.step(&preview, .{}, 1.0 / 60.0);
-    try std.testing.expectEqual(@as(usize, 4), runner.runtime_track_index);
+    var runner = Runner.init(&fixture.preview);
+    primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
+    const start_row = runner.runtime_track_index;
+    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    try std.testing.expectEqual(start_row, runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.2), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 0.2, runner.row_position, 0.0001);
 
     for (0..4) |_| {
-        runner.step(&preview, .{}, 1.0 / 60.0);
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
-    try std.testing.expectEqual(@as(usize, 5), runner.runtime_track_index);
+    try std.testing.expectEqual(start_row + 1, runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.row_position, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row + 1)), runner.row_position, 0.0001);
 }
 
 test "runner discovers attachment hint rows in shipped corpus" {
@@ -9039,7 +9051,7 @@ test "ordinary entry height still subtracts the rider baseline" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.start, attachment_entry_rider_height), 0.0001);
 }
 
-test "swept installed entry rejects source-row positions before the sample start" {
+test "swept installed entry rejects pre-sample positions while current-row begin remains available" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -9064,10 +9076,14 @@ test "swept installed entry rejects source-row positions before the sample start
 
     const sample = runner.sampleRow(&fixture.preview, target.row).?;
     try std.testing.expect(runner.geometricInstalledAttachmentEntry(&fixture.preview, built, sample) == null);
-    try std.testing.expect(runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row) != null);
+    try std.testing.expect(runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, target.row) != null);
+
+    runner.last_processed_row = target.row;
+    runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+    try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 }
 
-test "source-row installed entry uses the native template span" {
+test "current-row installed entry uses the native template span" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer fixture.deinit();
 
@@ -9091,10 +9107,40 @@ test "source-row installed entry uses the native template span" {
         0.0,
     );
     const entry_local = Runner.attachmentLocalPosition(entry_pose, entry_world_position);
-    const entry = runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row);
+    const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, target.row);
     try std.testing.expect(entry != null);
     try std.testing.expect(@abs(entry_local.x) > width_threshold);
     try std.testing.expect(@abs(entry_local.x) <= native_threshold);
+}
+
+test "current-row installed entry can begin from a later installed row span" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+    try std.testing.expect(built.template.sample_count > 1);
+
+    const later_row = target.row + 1;
+    try std.testing.expectEqual(built, fixture.preview.installedBuiltAttachmentAtRow(later_row).?);
+
+    const later_progress: f32 = @floatFromInt(later_row - built.row.global_row);
+    const later_world_position = attachment_builders.worldPositionForTemplate(
+        &built.template,
+        later_progress,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    runner.row_position = @as(f32, @floatFromInt(later_row)) + 0.2;
+    runner.lane_center = Runner.laneCenterFromWorldX(&fixture.preview, later_world_position.x);
+    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, runner.lane_center);
+    runner.resolved_lane_index = runner.lane_index;
+
+    const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, later_row).?;
+    try std.testing.expectEqual(@as(usize, 1), entry.sample_index);
+    try std.testing.expect(entry.local_progress > 0.0);
 }
 
 test "standalone start segment attachment exits from the template end pose" {
@@ -9429,7 +9475,7 @@ test "installed attachment sweep rejects upside-down samples" {
     );
 }
 
-test "installed attachment entry respects template width" {
+test "current-row installed entry respects template width" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -9441,7 +9487,7 @@ test "installed attachment entry respects template width" {
     runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.2;
 
     try std.testing.expect(
-        runner.sourceRowInstalledAttachmentEntry(&fixture.preview, built, target.row) == null,
+        runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, target.row) == null,
     );
 }
 
@@ -9450,6 +9496,7 @@ test "continuous target lane center preserves fractional track steering" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
     runner.step(&fixture.preview, .{ .target_lane_center = 4.5 }, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -9836,6 +9883,7 @@ test "replay flag bit 0x1 advances movement through the replay latch" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
     runner.stepWithReplay(
         &fixture.preview,
         .{},
@@ -9855,12 +9903,13 @@ test "replay flag bit 0x1 advances movement through the replay latch" {
 }
 
 test "replay flag bit 0x2 snaps movement progress to the movement rate scalar" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
+    primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
     runner.movement_progress = 0.6;
-    runner.row_position = 0.6;
+    runner.syncRowPosition(&fixture.preview);
 
     runner.stepWithReplay(
         &fixture.preview,

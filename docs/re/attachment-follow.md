@@ -28,6 +28,12 @@ The strong static chain from this bundle is:
 
 Later, `update_subgoldy` can enter `try_enter_track_attachment_from_swept_motion`, but the entry test is against installed sampled geometry, not against row glyph metadata alone.
 
+Recovered `update_subgoldy` entry split:
+
+- when `player + 0x41d == 0`, the current-cell branch checks runtime tile `29` or `30` and calls `begin_track_attachment_follow_state` directly from that live row cell
+- when `player + 0x41d != 0`, the same function instead probes installed entry through `try_enter_track_attachment_from_swept_motion`
+- the swept helper is therefore a separate re-entry path, not the generic current-row begin path
+
 Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_motion`:
 
 - scans the installed sample array from tail to head instead of limiting the test to a source-row progress window

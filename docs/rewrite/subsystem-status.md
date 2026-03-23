@@ -190,20 +190,20 @@ Implemented now:
 - natural-end exit now uses template progress and template end pose
 - elevated side exits preserve airborne height instead of snapping straight to the floor
 - `SUPERTRAMP` has a dedicated launch exit path
-- the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples before the old source-row fallback
-- source-row installed-entry fallback remains in place for stability where the geometric entry is not yet strong enough
+- normal gameplay entry now mirrors the native split between current-cell begin and swept re-entry: current row tiles `29/30` go through the direct begin helper when `attachment_exit_pending` is clear
+- the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
-- the full swept local-frame entry test
+- the exact owner gate that decides when `update_subgoldy` uses direct current-row begin versus the swept re-entry probe
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
 Best next work:
 
-- keep tightening entry against built geometry until the old source-row fallback can be removed safely
+- keep tightening the swept re-entry owner until it is gated by the native `attachment_exit_pending` lane instead of the current broader gameplay trigger
 - then port the missing family-specific exit behavior, especially for the nonlinear branch
 
 ## Gameplay Camera
