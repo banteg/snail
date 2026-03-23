@@ -1782,8 +1782,8 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `re: narrow attachment exit retirement clears`
-- Push: pending push after commit
+  - `edc7ca4` `re: narrow attachment exit retirement clears`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The common post-swept-re-entry retirement path among the five `update_subgoldy` clear sites is still unresolved.
