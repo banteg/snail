@@ -358,7 +358,7 @@ Implemented now:
   - whole-image disassembly still shows no direct nonzero store to `game + 0xff25d1`; the only direct store is the teardown clear in `destroy_subgame`, because the nonzero launch-side writer reaches the same byte through the overlapping app-base address
   - app dword `+0x12e55e0` is now ruled out as a clean replay-only source candidate because `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
-- replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
+- persistent replay-backed pause abort now follows the same launch-surface destroy-return lane as persistent result-screen exits instead of reusing the respawn-only clear-replay rebuild opcode
 - replay-backed result exits no longer use opcode `28`; the current port now keeps the recovered split: high-score replay rows launch the persistent `0x1a` destroy-return lane, while route-map best-trial launches stay on the transient `0x1b` rebuild-return lane
 - transient postal selected-record final loss now also follows the native `0x1a -> owner 2` New Game override: `complete_subgame` never arms app byte `+0x30d` while `selected_level_record_active` is set, so the postal replay-loss leg does not return through the postal high-score screen
 - the port now keeps an explicit outer-bridge request lane with native opcode names (`26/27/28/29`) plus a respawn-only active-run rebuild target, so completion, respawn, final-loss, replay-backed abandon, and replay-backed result exits all dispatch through one shared boundary instead of separate helper branches
@@ -370,7 +370,7 @@ Still missing or approximate:
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
-- the replay-backed abandon / overlay paths still need their own direct static or live confirmation now that the persistent selected-record launch provenance is resolved
+- the transient replay-backed abandon / overlay paths still need their own direct static or live confirmation now that the persistent selected-record launch provenance is resolved
 - the exact non-selected-record postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
 - the exact post-entry return owner for ordinary pause-menu abandon still rides the Zig preserved-owner abstraction rather than a fully traced `update_completion_screen` / `exit_high_score_screen` owner lane
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge

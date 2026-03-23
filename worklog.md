@@ -655,3 +655,52 @@
 
 ### Next target
 - Trace replay-backed pause-abandon and overlay exits strongly enough to split the persistent high-score replay lane from the transient route-map best-trial lane without inference.
+
+## 2026-03-23 20:50 - Iteration: align persistent replay pause-abandon bridge
+
+### Target
+- Persistent selected-record pause `End Game` routing in `update_pause_menu` / `update_completion_screen`
+
+### Why this target
+- The outer bridge is still the top ownership risk, and BN plus IDA were finally strong enough to replace one concrete wrong abstraction: high-score replay pause abandon still reused the respawn-only clear-replay rebuild lane.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_pause_menu` (`0x4407a0`) copies the current outer owner into the completion-screen saved-owner slot, then picks completion state `3` when `app + 0x1066be9` (`selected_level_record_persistent`) is `1`.
+  - The same branch picks completion state `7` for tutorial mode and `2` otherwise; it does not branch on replay sample presence.
+  - `update_completion_screen` (`0x4067e0`) state `3` destroys subgame and restores the owner saved at `app + 0x1066bf0`; it does not use frontend state `0x1c`.
+  - `update_frontend_state_machine` still reserves state `0x1c` for `destroy_subgame -> clear replay_active -> initialize_subgame -> jump to saved owner`, so the persistent pause-abandon lane is a `0x1a`-shaped destroy-return, not opcode `28`.
+- Likely:
+  - High-score replay launches use the same saved-owner destroy-return path for pause abandon and result exits because both lanes consume the persistent selected-record byte and the shared `+0x1066bf0` return slot.
+- Unknown:
+  - The transient route-map best-trial pause-abandon path when replay playback is active but `selected_level_record_persistent == 0`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Switched persistent selected-record abandon from `rebuild_clear_replay_return` to `destroy_return` keyed from `selected_level_record_persistent` instead of replay-sample presence.
+- Added focused coverage for the confirmed persistent destroy-return lane and left the transient replay-abandon fallback explicitly documented as unresolved.
+- Reduced one bridge-side scaffold: high-score replay pause abandon no longer reuses the respawn-only opcode-`28` lane.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the bridge change compiles, the abandon-routing tests pass, and the wider runtime still builds after the bridge correction.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: align persistent replay pause-abandon bridge`
+- Push: pending push after commit
+
+### Remaining gaps
+- The transient replay-backed pause-abandon and overlay lane for route-map best-trial launches is still unresolved.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Trace the transient selected-record pause-abandon lane strongly enough to decide whether route-map best-trial replay uses the state-`2` completion branch verbatim or another bridge helper beyond the current fallback.

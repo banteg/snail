@@ -5666,11 +5666,27 @@ const AppState = struct {
     }
 
     fn outerBridgeRequestForAbandonActiveRun(self: *const AppState) OuterBridgeRequest {
+        if (self.selected_level_record_persistent) {
+            const source = self.selected_level_record_source orelse return .{
+                .opcode = .destroy_return,
+                .target = self.preserved_frontend_owner,
+            };
+            return .{
+                .opcode = .destroy_return,
+                .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
+            };
+        }
+
         if (self.selectedReplayPlaybackActive()) {
             const source = self.selected_level_record_source orelse return .{
                 .opcode = .destroy_return,
                 .target = .main_menu,
             };
+            // PORT(partial): BN `update_pause_menu` only confirms the persistent selected-record
+            // lane here: it selects completion state `3` when `app + 0x1066be9` is set, and
+            // `update_completion_screen` state `3` destroys subgame then restores the saved
+            // owner at `app + 0x1066bf0` without using bridge state `0x1c`. The transient
+            // selected-record abandon lane still needs its own direct trace.
             return .{
                 .opcode = .rebuild_clear_replay_return,
                 .target = bridgeTargetForReplaySource(source, self.active_frontend_level_index),
@@ -12789,7 +12805,7 @@ test "preserved frontend owner follows the native launch surface" {
     );
 }
 
-test "abandon run bridge request follows replay-backed launch surfaces" {
+test "persistent selected replay abandon uses destroy-return bridge semantics" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -12800,16 +12816,29 @@ test "abandon run bridge request follows replay-backed launch surfaces" {
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
     state.selected_level_record_source = .{ .challenge = 2 };
+    state.selected_level_record_persistent = true;
     state.active_frontend_level_index = 2;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
-            .opcode = .rebuild_clear_replay_return,
+            .opcode = .destroy_return,
             .target = .{ .high_scores_menu = .challenge },
         },
         state.outerBridgeRequestForAbandonActiveRun(),
     );
+}
+
+test "transient selected replay abandon keeps the unresolved rebuild-clear fallback" {
+    var state: AppState = undefined;
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
     state.selected_level_record_source = .{ .completion = 7 };
+    state.selected_level_record_persistent = false;
     state.active_frontend_level_index = 7;
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{

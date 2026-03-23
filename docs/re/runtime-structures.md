@@ -257,8 +257,8 @@ Current practical read:
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
-  - `update_pause_menu` checks `app + 0x1066be9` to choose the replay-owned exit-prompt lane
-  - `update_completion_screen` state `3` returns to the state saved at `app + 0x1066bf0`
+  - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
+  - `update_completion_screen` state `3` destroys subgame and restores the state saved at `app + 0x1066bf0`, so the persistent replay-backed abandon or overlay lane uses the same saved-owner destroy-return path as persistent result exits rather than frontend state `0x1c`
   - `update_frontend_state_machine` state `0x1c` also clears app dword `+0x12e55e0` before the rebuild handoff
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `initialize_subgame` also reads `selected_level_record_persistent` to restore the saved replay-speed scalar before the first mode controller reset
