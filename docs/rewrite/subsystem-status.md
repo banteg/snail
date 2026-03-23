@@ -20,6 +20,7 @@ Implemented now:
 
 - archive-backed loading screen, intro crawl, credits crawl, menu backdrops, and front-end music
 - main menu, new-game menu, challenge setup, help, options, route map, high-score screen, pause overlay, and a shared exit prompt
+- the recovered New Game tutorial gate: default `SnailMail.cfg` keeps `Postal Mode`, `Time Trial`, and `Challenge Mode` hidden, and the `Tutorial` launch path flips the same config byte so later New Game visits expose the full menu without collapsing the native layout gaps
 - direct menu transitions for the paths the Windows code handles directly, instead of forcing everything through the black overlay
 - route-map post-completion mode with the special `Exit` label and locked-open selected route behavior
 - recovered widget shortcut dispatch for the screens that actually seed shortcut keys in Windows: pause-menu `Esc`/`O`/`Enter` and post-level high-score `Esc`/`Enter`
@@ -44,6 +45,7 @@ Implemented now:
 
 - explicit runtime root at `artifacts/runtime`
 - load and save `SnailMail.cfg`
+- preserve and expose the recovered `SnailMail.cfg +0xc0` New Game tutorial gate instead of leaving it buried inside the raw blob tail
 - load and save compact `ScoreA.dat`, `ScoreB.dat`, and `ScoreC.dat`
 - preserve the recovered compact-record replay-mode (`0x30`), runtime-build-flags (`0x38`), challenge-speed raw/scalar (`0x4c/0x48`), challenge-difficulty raw/scalar (`0x50/0x54`), runtime-build-seed (`0x70`), and ambient hazard scalar (`0x78/0x7c`) lanes, and write the current gameplay values into new score records
 - source the current challenge replay speed and difficulty from the recovered gameplay-tuning bytes in `SnailMail.cfg` instead of fixed placeholder defaults

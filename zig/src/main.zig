@@ -4139,7 +4139,12 @@ const AppState = struct {
 
         const new_game_active = self.game_phase == .new_game_menu and !self.frontend_transition.blocksInput();
         for (&self.new_game_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, new_game_active and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
+            state.stepFor(
+                .menu_button,
+                new_game_active and
+                    self.newGameMenuIndexVisible(index) and
+                    self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index),
+            );
         }
 
         const challenge_setup_active = self.game_phase == .challenge_setup_menu and !self.frontend_transition.blocksInput();
@@ -4238,7 +4243,12 @@ const AppState = struct {
             state.snapFor(.menu_button, self.game_phase == .main_menu and self.frontendButtonHot(hoverTargetForMainMenu(index), self.menu_index == index));
         }
         for (&self.new_game_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .new_game_menu and self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index));
+            state.snapFor(
+                .menu_button,
+                self.game_phase == .new_game_menu and
+                    self.newGameMenuIndexVisible(index) and
+                    self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index),
+            );
         }
         const selected_challenge_item = self.currentChallengeSetupSelectedItem();
         for (&self.challenge_setup_button_states, 0..) |*state, index| {
@@ -4343,6 +4353,7 @@ const AppState = struct {
         var hovered_index: ?usize = null;
 
         for (new_game_menu_items[0..4], 0..) |item, index| {
+            if (!self.newGameMenuItemVisible(item)) continue;
             const text_rect = newGameMenuTextRect(&self.ui_font, item);
             if (frontend_widget.hitRect(text_rect, self.new_game_button_states[index]).contains(local_mouse)) {
                 hovered_index = index;
@@ -5431,17 +5442,21 @@ const AppState = struct {
                 }
             },
             .new_game_menu => {
+                self.normalizeNewGameMenuSelection();
                 try self.updateNewGameMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
-                    self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, -1);
+                    self.stepNewGameMenuSelection(-1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
-                    self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, 1);
+                    self.stepNewGameMenuSelection(1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[self.new_game_menu_index] });
+                    const item = new_game_menu_items[self.new_game_menu_index];
+                    if (self.newGameMenuItemVisible(item)) {
+                        self.queueFrontendActivation(.{ .new_game_menu = item });
+                    }
                 }
             },
             .challenge_setup_menu => {
@@ -5685,6 +5700,9 @@ const AppState = struct {
         self.hovered_frontend_target = null;
         self.keyboard_frontend_focus_visible = false;
         self.pending_frontend_activation = null;
+        if (phase == .new_game_menu) {
+            self.normalizeNewGameMenuSelection();
+        }
         try self.syncGamePhaseResources();
         self.snapFrontendWidgetStates();
     }
@@ -5811,7 +5829,10 @@ const AppState = struct {
 
     fn performNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
         switch (item) {
-            .tutorial => try self.enterFrontendLevelMode(.tutorial),
+            .tutorial => {
+                self.runtime_config.setNewGameExtraModesVisible(true);
+                try self.enterFrontendLevelMode(.tutorial);
+            },
             .postal_mode => try self.enterFrontendLevelMode(.postal),
             .time_trial => try self.enterFrontendLevelMode(.time_trial),
             .challenge_mode => try self.enterChallengeSetupMenu(),
@@ -5823,6 +5844,32 @@ const AppState = struct {
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
         self.playFrontendSelectSound();
         try self.performNewGameMenuItem(item);
+    }
+
+    fn newGameMenuItemVisible(self: *const AppState, item: NewGameMenuItem) bool {
+        return switch (item) {
+            .postal_mode, .time_trial, .challenge_mode => self.runtime_config.newGameExtraModesVisible(),
+            .tutorial, .help, .back => true,
+        };
+    }
+
+    fn newGameMenuIndexVisible(self: *const AppState, index: usize) bool {
+        if (index >= new_game_menu_items.len) return false;
+        return self.newGameMenuItemVisible(new_game_menu_items[index]);
+    }
+
+    fn normalizeNewGameMenuSelection(self: *AppState) void {
+        if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
+        self.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
+    }
+
+    fn stepNewGameMenuSelection(self: *AppState, delta: isize) void {
+        var remaining = new_game_menu_items.len;
+        while (remaining > 0) : (remaining -= 1) {
+            self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, delta);
+            if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
+        }
+        self.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
     }
 
     fn challengeSetupReplayAvailable(self: *const AppState) bool {
@@ -9286,6 +9333,7 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     for (new_game_menu_items[0..4], 0..) |item, index| {
+        if (!state.newGameMenuItemVisible(item)) continue;
         const text_rect = newGameMenuTextRect(&state.ui_font, item);
         frontend_widget.drawType20Button(
             layout,
@@ -14289,6 +14337,42 @@ test "new game menu mapping matches frontend route modes" {
     try std.testing.expectEqual(@as(usize, 1), newGameMenuIndexForItem(.postal_mode));
     try std.testing.expectEqual(@as(usize, 2), newGameMenuIndexForItem(.time_trial));
     try std.testing.expectEqual(@as(usize, 4), newGameMenuIndexForItem(.help));
+}
+
+test "new game tutorial gate hides the later mode rows until tutorial launch" {
+    var state: AppState = undefined;
+    state.runtime_config = config.Blob.initDefault();
+
+    try std.testing.expect(state.newGameMenuItemVisible(.tutorial));
+    try std.testing.expect(!state.newGameMenuItemVisible(.postal_mode));
+    try std.testing.expect(!state.newGameMenuItemVisible(.time_trial));
+    try std.testing.expect(!state.newGameMenuItemVisible(.challenge_mode));
+    try std.testing.expect(state.newGameMenuItemVisible(.help));
+    try std.testing.expect(state.newGameMenuItemVisible(.back));
+
+    state.runtime_config.setNewGameExtraModesVisible(true);
+    try std.testing.expect(state.newGameMenuItemVisible(.postal_mode));
+    try std.testing.expect(state.newGameMenuItemVisible(.time_trial));
+    try std.testing.expect(state.newGameMenuItemVisible(.challenge_mode));
+}
+
+test "new game selection skips hidden rows while the tutorial gate is closed" {
+    var state: AppState = undefined;
+    state.runtime_config = config.Blob.initDefault();
+    state.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
+
+    state.stepNewGameMenuSelection(1);
+    try std.testing.expectEqual(newGameMenuIndexForItem(.help), state.new_game_menu_index);
+
+    state.stepNewGameMenuSelection(1);
+    try std.testing.expectEqual(newGameMenuIndexForItem(.back), state.new_game_menu_index);
+
+    state.stepNewGameMenuSelection(1);
+    try std.testing.expectEqual(newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
+
+    state.new_game_menu_index = newGameMenuIndexForItem(.challenge_mode);
+    state.normalizeNewGameMenuSelection();
+    try std.testing.expectEqual(newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
 }
 
 test "postal unlock limit stops at the highest available route" {

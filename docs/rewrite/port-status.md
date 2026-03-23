@@ -32,7 +32,7 @@ Current high-signal entries:
 - top-level menu labels plus recovered `New Game` submenu: `partial`
   - evidence: Binary Ninja decompile of `initialize_main_menu`, `destroy_main_menu`, and `initialize_new_game_menu`, plus cross-port Android and iOS symbols for `cRMainMenu::{Init, UnInit}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
-  - note: the current port now positions those labels directly on the `Menubg` board area instead of reusing the older debug-style left-list/detail-panel shell
+  - note: the current port now positions those labels directly on the `Menubg` board area instead of reusing the older debug-style left-list/detail-panel shell. It also mirrors the recovered config-backed tutorial gate from `initialize_new_game_menu`: default `SnailMail.cfg` keeps `Postal Mode`, `Time Trial`, and `Challenge Mode` hidden until the `Tutorial` branch flips the byte at `+0xc0`.
   - replace when: deeper front-end progression and the remaining menu widget behavior are ported
 - shared exit prompt: `partial`
   - evidence: Binary Ninja decompile of `initialize_exit_prompt`, plus cross-port Android and iOS symbols for `cRExit::{Init, AI}`

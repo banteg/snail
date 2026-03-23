@@ -16,6 +16,7 @@ const route_unlock_limit_offset = 0xa0;
 const route_selection_index_offset = 0xa4;
 const runtime_flag_offset = 0xa8;
 const camera_tuning_offset = 0xac;
+const new_game_extra_modes_visible_offset = camera_tuning_offset + 0x14;
 
 const default_gameplay_tuning = [_]u8{
     0x01, 0x00, 0x00, 0x00,
@@ -42,9 +43,10 @@ pub const LoadResult = struct {
 };
 
 // PORT(partial): this preserves the full 0xc4-byte SnailMail.cfg blob while only exposing the
-// sound volume, music volume, and fullscreen fields we have recovered with confidence so far.
-// Evidence: initialize_default_runtime_config, initialize_options,
-// update_options, and apply_audio_config_volumes.
+// recovered sound/music/fullscreen fields plus the New Game tutorial gate byte at `+0xc0`.
+// Evidence: `initialize_default_runtime_config`, `initialize_new_game_menu`,
+// `update_new_game_menu`, `initialize_options`, `update_options`, and
+// `apply_audio_config_volumes`.
 pub const Blob = struct {
     bytes: [byte_len]u8,
 
@@ -151,6 +153,14 @@ pub const Blob = struct {
     pub fn setChallengeReplayDifficultyValue(self: *Blob, value: u32) void {
         writeU32(self.bytes[challenge_replay_difficulty_value_offset .. challenge_replay_difficulty_value_offset + 4], value);
     }
+
+    pub fn newGameExtraModesVisible(self: *const Blob) bool {
+        return self.bytes[new_game_extra_modes_visible_offset] != 0;
+    }
+
+    pub fn setNewGameExtraModesVisible(self: *Blob, visible: bool) void {
+        self.bytes[new_game_extra_modes_visible_offset] = @intFromBool(visible);
+    }
 };
 
 fn clampUnit(value: f32) f32 {
@@ -187,6 +197,7 @@ test "default config blob matches recovered startup defaults" {
     try std.testing.expectEqual(@as(u32, 1), blob.routeUnlockLimit());
     try std.testing.expectEqual(@as(u32, 1), blob.routeSelectionIndex());
     try std.testing.expectEqual(@as(u32, 0), readU32(blob.bytes[runtime_flag_offset .. runtime_flag_offset + 4]));
+    try std.testing.expect(!blob.newGameExtraModesVisible());
     try std.testing.expectEqualSlices(u8, &default_camera_tuning, blob.bytes[camera_tuning_offset .. camera_tuning_offset + default_camera_tuning.len]);
 }
 
@@ -223,6 +234,20 @@ test "config blob load overlays saved bytes onto recovered defaults" {
     try std.testing.expectEqual(@as(u32, 60), loaded.blob.challengeReplayDifficultyValue());
     try std.testing.expectEqual(@as(u32, 7), loaded.blob.routeUnlockLimit());
     try std.testing.expectEqualSlices(u8, &default_camera_tuning, loaded.blob.bytes[camera_tuning_offset .. camera_tuning_offset + default_camera_tuning.len]);
+}
+
+test "config blob exposes the recovered new game tutorial gate byte" {
+    var blob = Blob.initDefault();
+
+    try std.testing.expect(!blob.newGameExtraModesVisible());
+
+    blob.setNewGameExtraModesVisible(true);
+    try std.testing.expect(blob.newGameExtraModesVisible());
+    try std.testing.expectEqual(@as(u8, 1), blob.bytes[new_game_extra_modes_visible_offset]);
+
+    blob.setNewGameExtraModesVisible(false);
+    try std.testing.expect(!blob.newGameExtraModesVisible());
+    try std.testing.expectEqual(@as(u8, 0), blob.bytes[new_game_extra_modes_visible_offset]);
 }
 
 test "config blob save writes the exact raw bytes" {
