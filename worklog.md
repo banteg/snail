@@ -796,8 +796,8 @@
 ### Git
 - Branch: `master`
 - Commit(s):
-  - pending commit: `bridge: restore non-postal failed return owners`
-- Push: pending push after commit
+  - `868318a` `bridge: restore non-postal failed return owners`
+- Push: pushed to remote branch
 
 ### Remaining gaps
 - The transient replay-backed overlay lane for route-map best-trial launches is still unresolved.
@@ -806,3 +806,52 @@
 
 ### Next target
 - Trace the transient route-map replay overlay exit strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or still uses a different bridge/helper path.
+
+## 2026-03-23 21:14 - Iteration: match post-entry abandon return owner
+
+### Target
+- Ordinary pause-menu abandon post-level high-score return ownership
+
+### Why this target
+- The outer bridge is still the top ownership risk, and the Zig port still sent standalone postal/challenge abandon score entry back through the preserved gameplay launch owner even though the native high-score-entry lane was finally tight enough to replace that shortcut.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja decompile of `add_arcade_high_score` (`0x4176a0`) and `add_survival_high_score` (`0x417780`) shows both helpers arming active state `0x14` and setting app byte `+0x30d = 1`.
+  - Binary Ninja decompile of `update_high_score_screen` (`0x417260`) shows the post-entry commit path ending in `exit_high_score_screen()`, not in a preserved gameplay-owner restore helper.
+  - Binary Ninja decompile plus the checked-in IDA export for `exit_high_score_screen` (`0x417b50`) show that post-entry exit returns by the surviving run mode lane: postal (`level_mode == 0`) to frontend state `2`, challenge (`level_mode == 1`) to frontend state `10`.
+- Likely:
+  - The current Zig `Challenge Mode` menu owner remains the closest stand-in for native frontend state `10` until the literal challenge-setup controller is ported.
+- Unknown:
+  - The exact non-selected-record postal final-loss use of `data_4df904 + 0x30d`.
+  - The transient replay-backed overlay route for route-map best-trial launches.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Standalone post-level high-score entry no longer reuses the generic abandon return request; it now derives its return owner from the same failure/result bridge lane the native post-entry high-score exit uses.
+- Added regression coverage for postal and challenge abandon score entry so postal returns to the New Game owner and challenge stays on the challenge-owner stand-in after name entry.
+- Reduced one explicit outer-bridge shortcut: ordinary abandon score entry no longer rides `preserved_frontend_owner`.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the updated bridge mapper compiles, the new abandon score-entry tests pass, and the runtime still builds after the owner change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `b16cd62` `bridge: match post-entry abandon return owner`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The exact non-selected-record postal final-loss use of `data_4df904 + 0x30d` is still unresolved.
+- The transient replay-backed overlay route for route-map best-trial launches still lacks a direct native confirmation.
+- Challenge post-entry return still uses the port's `Challenge Mode` menu stand-in rather than a literal challenge-setup controller.
+
+### Next target
+- Recover the remaining non-selected-record postal final-loss split on `data_4df904 + 0x30d`, so the last ordinary post-run postal bridge lane stops depending on the current heuristic.
