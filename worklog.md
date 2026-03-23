@@ -1450,3 +1450,50 @@
 
 ### Next target
 - Trace or re-type the follow/template counters around `update_track_attachment_follow_state`, especially `follow_state + 0xc` and template `+0x44/+0x9c`, before attempting any `voice 4` milestone port.
+
+## 2026-03-23 23:52 - Iteration: store native replay return owner lane
+
+### Target
+- Persistent selected-replay return-owner storage in the outer bridge context
+
+### Why this target
+- The outer bridge is still the top ownership risk, and BN plus IDA now pin one concrete remaining abstraction error tightly enough to remove it: the port still stored persistent replay returns as a high-level target even though Windows carries a raw saved owner state at `+0xff25d8` / `+0x1066bf0`.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_high_score_screen` (`0x417260`) seeds `app + 0x1066be8/+0x1066be9/+0x1066bec/+0x1066bf0` before state `10`, with `+0x1066bf0 = 18` on replay-row launches.
+  - `update_new_game_menu` (`0x417eb0`) seeds the same persistent replay scratch on the random replay-attract branch, with `app + 0x1066bf0 = 2`.
+  - `update_pause_menu` (`0x4407a0`) branches on `app + 0x1066be9` and sends persistent replay abandon through completion state `3`.
+  - `update_completion_screen` (`0x4067e0`) state `3` destroys subgame and restores `app + 0x1066bf0` directly into the active frontend owner.
+- Likely:
+  - The current port only needs two literal persistent replay return-owner values for now: `18` (`High Scores`) and `2` (`New Game`).
+- Unknown:
+  - The full lifetime of `game + 0xff25d8` after subgame init is still not traced end-to-end.
+  - The New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14` is still unresolved.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- Added a native-shaped `SelectedReplayReturnState` lane for persistent replay launch context and now derive a higher-level bridge target from that raw owner only when the app needs to rebuild a frontend shell.
+- Kept the older high-level target only as a fallback for transient or non-native replay launch cases instead of using it as the primary stored lane for persistent replay ownership.
+- Tightened replay-bridge tests so persistent high-score/New Game returns assert against the raw stored owner state instead of relying on an inferred target.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge refactor compiles, the replay-bridge regression tests still pass, and the runtime build remains healthy after the ownership change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: store native persistent replay return owner`
+- Push: pending push after commit
+
+### Remaining gaps
+- The port still does not implement the New Game replay-attract timer/controller itself.
+- Persistent replay launch storage is now more literal, but the saved-owner writer behind the general `26/27/28` bridge slot is still unresolved outside the replay-specific lanes.
+
+### Next target
+- Recover the New Game replay-attract timer-step writer and its `+0x8/+0xc/+0x10/+0x14` controller semantics well enough to port that persistent launcher without guessing.

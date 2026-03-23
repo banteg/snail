@@ -319,6 +319,7 @@ Current practical read:
 - the same cursor also drives the replay-sample reads in that function
 - the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
   - current best read: it is the saved replay-return state seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
+  - the Zig bridge now mirrors that lane more literally too: persistent selected-replay context stores the raw saved owner-state separately and only derives a higher-level target from it when it needs to rebuild an owner shell
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - the remaining New Game replay-attract gap is now narrower too:
   - the persistent replay scratch, bank rotation, saved return-state writes, startup clear, and click-start suppressor are confirmed statically
