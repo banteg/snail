@@ -157,7 +157,10 @@ Work this top-down unless a new runtime capture invalidates the order.
   - current narrowing: raw BN plus IDA now agree the `voice 4` call at `0x420d30` sits behind `sample_index + 1 == template->sample_count << 1`, while `begin_track_attachment_follow_state` seeds `sample_index = 0` and the same helper retires follow at `sample_index == template->sample_count`
   - consequence: do not port that cue until live tracing or stronger type recovery explains the counter mismatch
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
-  - next narrowing: identify the later controller that finally retires `attachment_exit_pending` after swept re-entry, then confirm with a live overlap whether two geometrically valid probes can overwrite each other in one tick
+  - newer static narrowing: `attachment_exit_pending` is no longer a generic open search
+  - BN field xrefs now show it is only written by `initialize_subgoldy_fall_state` plus five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`)
+  - the paired `attachment_exit_progress` lane is only written by the fall-state initializer and the single update store at `0x43ce96`, so there is no separate helper-side or plain progress-expiry clear in current static RE
+  - next narrowing: identify which of those later `update_subgoldy` clear sites is the common post-swept-re-entry retirement path, then confirm with a live overlap whether two geometrically valid probes can overwrite each other in one tick
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 

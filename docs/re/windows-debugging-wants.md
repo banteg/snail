@@ -178,6 +178,15 @@ The broad shape is now known:
 
 What is still missing is the exact consumer set for `post_follow_value_b` and the precise semantics of the two gate bytes.
 
+Static narrowing before the next Windows session:
+
+- `attachment_exit_pending` is no longer an unbounded "search anywhere" target
+  - BN field xrefs now show only one setter outside the main loop: `initialize_subgoldy_fall_state`
+  - later retirement is limited to five `update_subgoldy` clear sites: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
+- `attachment_exit_progress` also no longer supports the old progress-expiry guess
+  - BN field xrefs show it is only written by `initialize_subgoldy_fall_state` and the one progress-update store at `0x43ce96`
+  - practical consequence: the missing retirement path is one of those later `update_subgoldy` branches, not a helper-side or standalone timer helper
+
 ### What to do
 
 - Break on:
@@ -200,7 +209,7 @@ What is still missing is the exact consumer set for `post_follow_value_b` and th
 
 - Is `post_follow_value_b` ever read directly after the handoff write?
 - Are `+0x44c` and `+0x44d` purely visual or do they gate gameplay state transitions?
-- After swept re-entry succeeds, which later controller finally retires `attachment_exit_pending`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
+- After swept re-entry succeeds, which later `update_subgoldy` clear site actually retires `attachment_exit_pending`, and can a geometrically valid overlap still drive both `0x40` and `0x80` probes in one tick?
 - Does `post_follow_value_a` get integrated in player space, world space, or mixed space before the camera call?
 
 ### Done when

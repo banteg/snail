@@ -200,7 +200,9 @@ Implemented now:
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
-- the later controller that finally retires `attachment_exit_pending` after swept re-entry, plus live confirmation of what happens when two geometrically valid overlapping probes both succeed
+- the later controller that finally retires `attachment_exit_pending` after swept re-entry
+  - newer static narrowing: field xrefs now limit that retirement to five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`), and `attachment_exit_progress` itself only has the one progress-update store at `0x43ce96`
+  - remaining gap: which of those clear sites is the common post-swept-re-entry lane, and whether overlapping `0x40`/`0x80` probes can both succeed before one wins
 - the follow-milestone lane behind the static `voice 4` callsite; raw BN plus IDA now show a contradictory `sample_index + 1 == template->sample_count << 1` gate versus the same helper's `sample_index == template->sample_count` termination, so this should not be guessed into the port yet
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes

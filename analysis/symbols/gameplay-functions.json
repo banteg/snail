@@ -1080,7 +1080,7 @@
     {
       "address": "0x42c770",
       "name": "try_enter_track_attachment_from_swept_motion",
-      "description": "Scans the authored runtime attachment samples against the player's swept motion box, seeds the shared scratch follow-state block when a candidate hit survives the local bounds tests, and immediately runs one follow update to validate the candidate. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches the live follow-state path driven by this entry family."
+      "description": "Scans the authored runtime attachment samples against the player's swept motion box, seeds the shared scratch follow-state block when a candidate hit survives the local bounds tests, and immediately runs one follow update to validate the candidate. Windows `cdb` confirmed shipped `ARCADE007` HalfPipe play reaches the live follow-state path driven by this entry family. Raw BN plus the checked-in IDA export now also show the helper itself does not directly clear `player + 0x41d` before control returns to the caller's secondary-slot gate."
     },
     {
       "address": "0x42ca90",
@@ -1708,7 +1708,7 @@
     {
       "address": "0x43b120",
       "name": "update_subgoldy",
-      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `initialize_subgoldy_fall_state`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those fall-helper lanes are real, but at least one clean level-complete path bypasses all four of them. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
+      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `initialize_subgoldy_fall_state`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those fall-helper lanes are real, but at least one clean level-complete path bypasses all four of them. Newer field-xref narrowing also shows later retirement of `attachment_exit_pending` happens only through five clear sites inside this function, not through the swept-entry helper or a standalone progress-expiry store. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
       "address": "0x43d230",

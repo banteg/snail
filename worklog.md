@@ -1740,3 +1740,55 @@
 
 ### Next target
 - Recover the later `attachment_exit_pending` retirement path after swept re-entry, then confirm with a live overlap whether two valid probes can overwrite each other in one tick.
+
+## 2026-03-24 00:56 - Iteration: narrow attachment exit retirement clears
+
+### Target
+- Later `attachment_exit_pending` retirement after swept re-entry in `update_subgoldy`
+
+### Why this target
+- Attachment follow is still one of the highest-value gameplay parity risks, and the immediate same-tick sweep behavior is already narrowed. The remaining question is now the later retirement path, and BN plus the checked-in IDA export were strong enough to eliminate two wrong static stories without guessing runtime behavior.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja field xrefs show `player + 0x41d` (`attachment_exit_pending`) is only written by `initialize_subgoldy_fall_state` and five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`.
+  - Binary Ninja field xrefs show `player + 0x434` (`attachment_exit_progress`) is only written by `initialize_subgoldy_fall_state` and the single `update_subgoldy` store at `0x43ce96`.
+  - Raw BN plus the checked-in IDA export still show `try_enter_track_attachment_from_swept_motion` does not directly clear `attachment_exit_pending` before the caller re-tests the same byte for the secondary `0x80` probe.
+  - The `0x43c3ea` clear follows the tile-`22` trampoline settle branch and the `sfx 41` landing cue, while `0x43bf6f` follows the ordinary snap-to-ride-height branch.
+- Likely:
+  - `0x43c06d` is a separate floor-snap retirement branch.
+  - `0x43bcb3` and `0x43ce75` are later motion-state clears inside `update_subgoldy`, but their exact gameplay-owner labels are still unresolved.
+- Unknown:
+  - Which of those five clear sites is the common post-swept-re-entry retirement path.
+  - Whether a geometrically valid `0x40`/`0x80` overlap can still reach two successful probes before one of those later clears wins.
+  - Whether the common re-entry retirement can fire while a re-entered follow state is already active or only after returning to track movement.
+
+### Zig changes
+- `docs/re/attachment-follow.md`
+- `docs/re/runtime-structures.md`
+- `docs/re/windows-debugging-wants.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `analysis/symbols/gameplay-functions.json`
+- No Zig runtime behavior changed.
+- Reduced one attachment-follow blind spot: the repo no longer treats helper-side clear or raw progress-expiry clear as viable static explanations for later `attachment_exit_pending` retirement.
+
+### Verification
+- `uv run snail symbols`
+- `git diff --check`
+- Reviewed BN field xrefs, `bn callsites`, raw disassembly, and the checked-in IDA export for `update_subgoldy` and `try_enter_track_attachment_from_swept_motion`.
+- This gives high confidence in the negative result: the missing retirement path is one of the later `update_subgoldy` clear sites, not another hidden helper-side or timer-only clear.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `re: narrow attachment exit retirement clears`
+- Push: pending push after commit
+
+### Remaining gaps
+- The common post-swept-re-entry retirement path among the five `update_subgoldy` clear sites is still unresolved.
+- The current Zig timer-based `attachment_exit_pending` clear remains scaffolded because the matching native clear-site context is not yet mapped tightly enough to replace it safely.
+- Live overlap where both `0x40` and `0x80` probes are geometrically valid still needs direct confirmation.
+
+### Next target
+- Classify which `update_subgoldy` clear site actually retires `attachment_exit_pending` after swept re-entry, ideally with a focused Windows capture that watches the five clear sites alongside successful `0x40`/`0x80` probes.

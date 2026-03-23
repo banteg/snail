@@ -229,6 +229,13 @@ Current practical read:
   - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
   - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
   - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
+  - newer field-xref narrowing rules out two earlier static guesses:
+    - `try_enter_track_attachment_from_swept_motion` does not directly clear `attachment_exit_pending`
+    - `attachment_exit_progress` does not have its own separate progress-expiry clear
+  - current BN xrefs show `attachment_exit_progress` is only written by `initialize_subgoldy_fall_state` and the single `update_subgoldy` store at `0x43ce96`
+  - the later retirement of `attachment_exit_pending` is instead limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
+    - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are now statically identifiable
+    - the common post-swept-re-entry retirement path among those later clears still needs runtime confirmation
 - `update_subgoldy` also owns a separate completion handoff block:
   - once the player reaches the course-end threshold at `game + 0x58` and no attachment-exit handoff is pending, it arms `completion_handoff_active = 1`
   - it seeds `completion_handoff_timer = 0`, `completion_handoff_timer_step = 1/60`, and `completion_handoff_voice_gate = 0`
