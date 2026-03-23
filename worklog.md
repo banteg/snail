@@ -1497,3 +1497,51 @@
 
 ### Next target
 - Recover the New Game replay-attract timer-step writer and its `+0x8/+0xc/+0x10/+0x14` controller semantics well enough to port that persistent launcher without guessing.
+
+## 2026-03-24 00:06 - Iteration: seed non-random course-end threshold from last block
+
+### Target
+- Completion-handoff course-end threshold ownership in `populate_runtime_track_cells_from_segments` / `LoadedLevelPreview`
+
+### Why this target
+- Cutscene and handoff runtime fields are still a top priority, and the preview still seeded `course_end_threshold` from a last-row fallback even though Binary Ninja now pins the native non-random producer tightly enough to replace that guess.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja and IDA both show non-random `populate_runtime_track_cells_from_segments` seeding `game + 0x54` from the generated runtime row count, then writing `game + 0x58 = game + 0x54 - game + 0x1abf1c`.
+  - In the non-random branch, `game + 0x54` is built from the first-block length, the final `Last:` block length, and the summed middle-segment lengths before `update_subgoldy` ever reads `game + 0x58`.
+  - The March 15 `cdb` capture hit the first completion-handoff arm with `game + 0x58 = 753`, which matches the start of `ARCADE000`'s final `Last:` block rather than the last populated row.
+- Likely:
+  - On non-random shipped levels, the completion handoff arms at the start of the final `Last:` block, not at `total_rows - 1`.
+  - Random challenge-style builders still need the native `Length`-driven generated row count before the same producer can be ported safely in Zig.
+- Unknown:
+  - The exact random-builder row-count producer in the current Zig preview, including the challenge-only length scaling lane.
+
+### Zig changes
+- `zig/src/track.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Replaced the non-random `course_end_threshold` fallback with the recovered start-of-final-`Last:`-block producer.
+- Kept random level previews on the old fallback and documented that remaining gap explicitly instead of guessing a `Length`-driven row count.
+- Added focused tests for the non-random producer and for the retained random fallback.
+
+### Verification
+- `zig fmt zig/src/track.zig`
+- `zig build test`
+- `zig build`
+- This confirms the new threshold producer compiles, the full test suite still passes, and the runtime build remains healthy after the handoff-threshold change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `64d003a` `port: seed non-random course-end threshold from last block`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Random challenge-style builders still keep the old fallback because the preview does not yet synthesize the native `Length`-driven generated row count.
+- The broader random/runtime track builder ownership, including challenge-only scaling, is still only partial in Zig.
+
+### Next target
+- Recover the random `Length` row-count producer in `populate_runtime_track_cells_from_segments` well enough to remove the remaining `course_end_threshold` fallback on challenge-style builds.
