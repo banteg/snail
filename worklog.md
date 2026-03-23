@@ -1257,3 +1257,51 @@
 
 ### Next target
 - Recover the writer for `data_4df904 + 0x4f2dc + 0x14` and the role of the `+0x8/+0xc` timer lane strongly enough to port the New Game random replay attract launcher without guessing.
+
+## 2026-03-23 23:11 - Iteration: split current-row attachment begin from swept re-entry
+
+### Target
+- Attachment-follow entry ownership inside `update_subgoldy`
+
+### Why this target
+- The attachment-follow phase still carried one of the highest-value remaining scaffolds: the swept installed-entry path was reusing an invented current-row fallback even though Binary Ninja and IDA now make the native direct-begin versus swept-reentry split clear enough to land.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy` calls `begin_track_attachment_follow_state` directly from the live current cell when `player + 0x41d == 0` and the runtime tile is `29` or `30`.
+  - The same function only reaches `try_enter_track_attachment_from_swept_motion` when `player + 0x41d != 0`.
+  - The swept helper still probes installed owner slots in Windows order rather than acting as the generic current-row begin path.
+- Likely:
+  - Zig's current trigger for the swept re-entry helper is still broader than the native owner gate behind `player + 0x41d`.
+- Unknown:
+  - The exact runtime owner/state rule that sets and clears the native `attachment_exit_pending` gate around the swept re-entry branch.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/rewrite/index.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Split current-row installed entry from the swept installed-entry helper, removed the synthetic current-row fallback from the sweep path, and added tests that cover direct current-row begin and later-row installed spans.
+- Updated the rewrite notes/checklist to describe the recovered `update_subgoldy` branch split and narrowed the remaining gap to the exact native owner gate.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the gameplay patch still formats, builds, and passes the current test suite, and that the final diff is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `b38944a` `port: split current-row attachment begin from sweep re-entry`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Zig still uses a broader gameplay trigger than the native `attachment_exit_pending` branch when deciding whether to probe swept installed entry.
+- The full installed-bank owner pairing and the native post-exit seed/value semantics are still unresolved.
+
+### Next target
+- Tighten the swept re-entry owner until it is gated by the native `attachment_exit_pending` branch instead of the current broader gameplay trigger.
