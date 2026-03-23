@@ -265,6 +265,13 @@ Current practical read:
     - `app + 0x1066bec` = `game + 0xff25d4` (`selected_level_record`)
     - `app + 0x1066bf0` = `game + 0xff25d8` (`selected_level_record_return_state`) during that prelaunch window
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
+  - the menu replay branch is more specific than a generic replay picker:
+    - `update_new_game_menu` rotates a menu-local dword cursor at `data_4df904 + 0x4f2dc` through `0..4` and wraps `5 -> 0`
+    - only cursor values `0`, `1`, and `3` probe replay-bearing banks, so the loop skips the tutorial / back lanes instead of treating every menu item as a replay source
+    - those three probe lanes map to postal (`app + 0x6ffae8`, `app + 0x74658 = 0`), challenge (`app + 0x85c128`, `app + 0x74658 = 1`), and completion / Time Trial (`app + 0x9b8768`, `app + 0x74658 = 4`)
+    - each bank search reuses the same `0x1fac0` record stride and RNG-derived record index, and the branch gives up after `1000` attempts
+    - the launcher is gated by menu-local float fields at `+0x10` / `+0x14`: `update_new_game_menu` accumulates the step into the accumulator, enters the replay search only once that accumulator exceeds `1.0`, and clears the accumulator back to `0.0` before the bank probe loop
+    - when all `1000` attempts miss, the branch does not launch; it writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
   - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
@@ -307,6 +314,9 @@ Current practical read:
 - the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
   - current best read: it is the saved replay-return state seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
+- the remaining New Game replay-attract gap is now narrower too:
+  - the persistent replay scratch, bank rotation, and saved return-state writes are confirmed statically
+  - the unresolved piece is the writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14` and therefore controls when the attract branch crosses its `> 1.0` launch threshold
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
 ## Row Event Display Controller

@@ -357,6 +357,7 @@ Implemented now:
   - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same app fields later, which means the native saved-replay launch path already has an app-owned control lane
   - whole-image disassembly still shows no direct nonzero store to `game + 0xff25d1`; the only direct store is the teardown clear in `destroy_subgame`, because the nonzero launch-side writer reaches the same byte through the overlapping app-base address
   - app dword `+0x12e55e0` is now ruled out as a clean replay-only source candidate because `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
+- BN plus IDA now also narrow the New Game replay attract lane further: `update_new_game_menu` rotates a menu-local cursor through `0..4`, but only cursor values `0/1/3` probe replay banks and seed the persistent scratch, mapping those lanes to postal / challenge / completion with `app + 0x74658 = 0/1/4` before state `10`; the bank search caps at `1000` attempts and is gated by menu-local float accumulator / step fields at `data_4df904 + 0x4f2dc + 0x10/+0x14`, so the remaining launcher gap is the writer for that step field rather than the replay scratch or return-state lane
 - the current Zig bridge now mirrors more of that launch lane explicitly: replay rebuild targets carry `source`, `persistent`, and saved return-owner state together, so persistent replay returns no longer have to be inferred from `SelectedLevelRecordSource` alone
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - persistent replay-backed pause abort now follows the same launch-surface destroy-return lane as persistent result-screen exits instead of reusing the respawn-only clear-replay rebuild opcode
@@ -402,10 +403,11 @@ Implemented now:
 - selected replay sessions no longer feed completion or failure back into live high-score persistence; result exits still route through the recovered launch-surface bridge split instead of mutating score state in place
 - replay bridge payloads now preserve explicit launch context (`source`, persistent lane, return owner) across destroy/rebuild returns instead of reconstructing that state from the source enum alone
 - replay flag bit `0x8` now routes selected playback through the native destroy-return replay restart lane (`state 0x1a -> saved owner 10`) instead of swapping phases immediately, running past the sample stream, or jumping straight back to the launch surface
+- the recovered New Game replay attract bank split is now pinned in the port's bridge expectations too: postal, challenge, and completion-backed launches all map their persistent return owner back onto the matching `New Game` lane instead of reusing a source-derived high-score or route-map fallback
 
 Still missing or approximate:
 
-- the New Game random replay UI/path is still not exposed in Zig even though the underlying persistent replay-launch scratch shape and saved return-owner lane are now modeled
+- the New Game random replay attract launcher is still not exposed in Zig even though BN plus IDA now pin its `0/1/3` bank rotation, persistent scratch writes, and `return_state = 2`; the remaining native gap is the timer / trigger producer at the New Game menu object
 - the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity

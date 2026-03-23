@@ -13510,6 +13510,30 @@ test "preserved frontend owner follows the native launch surface" {
         preservedFrontendOwnerForLevelLaunch(.postal, 2, SelectedLevelRecordLaunch.defaultForSource(.{ .postal = 2 })),
     );
     try std.testing.expectEqualDeep(
+        OuterBridgeTarget{ .new_game_menu = .postal_mode },
+        preservedFrontendOwnerForLevelLaunch(.postal, 2, .{
+            .source = .{ .postal = 2 },
+            .persistent = true,
+            .return_target = .new_game_menu,
+        }),
+    );
+    try std.testing.expectEqualDeep(
+        OuterBridgeTarget{ .new_game_menu = .challenge_mode },
+        preservedFrontendOwnerForLevelLaunch(.challenge, 5, .{
+            .source = .{ .challenge = 5 },
+            .persistent = true,
+            .return_target = .new_game_menu,
+        }),
+    );
+    try std.testing.expectEqualDeep(
+        OuterBridgeTarget{ .new_game_menu = .time_trial },
+        preservedFrontendOwnerForLevelLaunch(.time_trial, 7, .{
+            .source = .{ .completion = 7 },
+            .persistent = true,
+            .return_target = .new_game_menu,
+        }),
+    );
+    try std.testing.expectEqualDeep(
         OuterBridgeTarget{ .route_map = .{
             .mode = .time_trial,
             .screen_mode = .replay,
