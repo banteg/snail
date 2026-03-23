@@ -513,3 +513,52 @@
 
 ### Next target
 - Catch the first runtime write that turns the app replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) into the subgame-local persistent replay lane at `game + 0xff25d1`.
+
+## 2026-03-23 20:27 - Iteration: stage pause-abandon score entry
+
+### Target
+- Pause-menu abandon score-entry continuation in the outer bridge / post-run frontend flow
+
+### Why this target
+- The outer bridge is still the top project risk, and the Zig pause-menu `End Game` path still dropped ordinary postal/challenge partial scores even though BN plus IDA now pin the native exit-prompt side effect tightly enough to improve one concrete lane without guessing.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_pause_menu` routes ordinary gameplay abandon through exit-prompt owner `2`, replay-backed abandon through owner `3`, and tutorial abandon through owner `7`.
+  - `update_completion_screen` case `2` calls `complete_subgame(game, 1)` before returning from the pause-menu exit prompt, then branches on app byte `+0x30d` to decide whether the shared high-score entry screen stays active.
+  - `add_arcade_high_score` and `add_survival_high_score` both set app state `0x14` plus app byte `+0x30d = 1`, which is the shared high-score-entry continuation flag cleared later by `destroy_high_score_screen`.
+  - `update_completion_screen` case `3` skips `complete_subgame` and returns replay-backed abandon through the app replay-return state at `+0x1066bf0`, so the score-entry side effect belongs to the ordinary non-replay lane, not the replay lane.
+- Likely:
+  - The ordinary pause-menu abandon high-score continuation should use the same shared inline name-entry screen as other postal/challenge score-entry paths, even though the exact post-entry owner after `exit_high_score_screen` is still only partially traced in Zig.
+- Unknown:
+  - The exact post-entry return owner for ordinary postal abandon after the high-score screen exits.
+  - The remaining non-selected-record postal uses of app byte `+0x30d` outside this pause-menu lane.
+
+### Zig changes
+- `zig/src/main.zig`
+- Added a direct standalone high-score-entry staging helper for pause-menu abandon, so non-replay postal/challenge abandons can enter the shared post-level name-entry screen when the partial score places.
+- Added a separate return-request lane for standalone post-level high-score entry so submit/cancel can return through the current preserved-owner bridge path without faking a completion-screen result.
+- Kept replay-backed abandon on the existing replay-return path and left the exact post-entry owner for ordinary abandon explicitly documented as still approximate.
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- Recorded that ordinary pause-menu abandon now stages the native high-score-entry side effect and narrowed the remaining owner gap to the post-entry return lane.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- The new standalone abandon score-entry tests pass, the existing result-flow tests still pass, and the wider runtime still builds after the pause-menu abandon change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `461969f bridge: stage pause-abandon score entry`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The exact post-entry return owner for ordinary pause-menu abandon still rides the Zig preserved-owner abstraction.
+- Replay-persistent launch ownership (`game + 0xff25d1`) is still unresolved.
+- The remaining non-selected-record postal `+0x30d` branches still need tighter tracing.
+
+### Next target
+- Trace the ordinary pause-menu abandon post-entry owner through `exit_high_score_screen` / `update_completion_screen` strongly enough to replace the preserved-owner fallback on that lane.
