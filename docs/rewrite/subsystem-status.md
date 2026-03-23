@@ -253,6 +253,7 @@ Implemented now:
 - weapon fire now uses the recovered multi-sound families (`TurboFire1/2`, `Laser1/2/3`, `Rocket1/2/3`), the recovered `movement_flags`-driven channel layout, and the native 3-shot turbo spread plus laser/rocket speed ratios instead of one fixed shot sound or fire pattern per coarse weapon tier
 - weapon fire cadence now follows the native selector-owned cooldown lane, including the startup cooldown reseed window, explicit live press-vs-held input lanes, the slower fresh-press delay, faster held-repeat cadence, the runtime fire feature flag, replay raw-bit gating, and attachment-exit suppression instead of the old coarse `4/7` tick gate
 - ring and collision pickup audio now uses the recovered native ring-kind ladder for `1`, `2/6`, `3/7`, and `4/5/8`, so `PW1`, `PW1..PW7`, `SLOWRING`, `EXPLODERING`, and the `Powerup` voice no longer all key from generic pickup progression
+- native runtime ring kinds `3/7` no longer reuse the long authored slow-timer status; collision now seeds the recovered backward `velocity.z = -0.1` shove and short zero-crossing recovery from `update_subgoldy` before handing motion back to the current forward-speed scaffold
 - weapon upgrades now play the recovered shared select/change cue instead of changing tiers silently
 - explosive rings now clear nearby garbage and defeat nearby slugs instead of staying score-only scaffolding
 - projectile fire now stops on salt without consuming it, so the tutorial “avoid salt” rule is no longer contradicted by the current port
@@ -287,6 +288,7 @@ Still missing or approximate:
 - the original mode gates for ambient spawns and any remaining non-horizontal suppressor details
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
 - the `Wall2` `+0.02` ambient pool
+- the broader native forward-speed controller behind `Player.velocity.z` once negative-velocity rings or garbage hits hand control back
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - the remaining dedicated health-collect sprite-bod ownership and the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel
 - original combat VFX ownership/presentation beyond the current placeholder explosion/goo billboards, including the exact pre-hit ring bod anchor/layout and child orbit packet

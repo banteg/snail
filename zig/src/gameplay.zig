@@ -588,6 +588,13 @@ const turret_projectile_hit_z_tolerance: f32 = 0.5;
 const turret_projectile_hit_x_tolerance: f32 = 0.6;
 const turret_flash_duration_ticks: u8 = 6;
 const max_active_turret_states: usize = 64;
+const native_ticks_per_second: f32 = 60.0;
+// Windows quantizes runtime gameplay world X with `floor(x + 4.0)` and clamps the player
+// between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
+const native_track_center_x: f32 = 4.0;
+const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
+const native_negative_ring_velocity_recovery_z_per_tick: f32 =
+    native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
 const slow_ring_duration_ticks: u16 = 240;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
@@ -1204,6 +1211,7 @@ pub const Runner = struct {
     row_position: f32 = 0.0,
     previous_row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
+    native_velocity_z_override_per_tick: ?f32 = null,
     paused: bool = false,
     finished: bool = false,
     phase: RunnerPhase = .active,
@@ -1412,6 +1420,7 @@ pub const Runner = struct {
                 self.movement_fire_cooldown = self.movement_fire_cooldown_step;
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
+            self.updateNativeVelocityZOverride(delta_seconds);
             self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             if (replay.active) {
@@ -2101,28 +2110,49 @@ pub const Runner = struct {
         const max_progress: f32 = 0.999;
         var remaining = step_rows;
 
-        while (remaining > 0.0) {
-            const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
-            const available_progress = progress_limit - self.movement_progress;
-            if (available_progress <= 0.0) {
-                break;
-            }
+        if (remaining >= 0.0) {
+            while (remaining > 0.0) {
+                const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
+                const available_progress = progress_limit - self.movement_progress;
+                if (available_progress <= 0.0) {
+                    break;
+                }
 
-            if (remaining < available_progress) {
-                self.movement_progress += remaining;
-                remaining = 0.0;
-                break;
-            }
+                if (remaining < available_progress) {
+                    self.movement_progress += remaining;
+                    remaining = 0.0;
+                    break;
+                }
 
-            remaining -= available_progress;
-            if (self.runtime_track_index >= last_row) {
-                self.movement_progress = max_progress;
-                remaining = 0.0;
-                break;
-            }
+                remaining -= available_progress;
+                if (self.runtime_track_index >= last_row) {
+                    self.movement_progress = max_progress;
+                    remaining = 0.0;
+                    break;
+                }
 
-            self.runtime_track_index += 1;
-            self.movement_progress = 0.0;
+                self.runtime_track_index += 1;
+                self.movement_progress = 0.0;
+            }
+        } else {
+            while (remaining < 0.0) {
+                const available_progress = self.movement_progress;
+                if (-remaining <= available_progress) {
+                    self.movement_progress += remaining;
+                    remaining = 0.0;
+                    break;
+                }
+
+                remaining += available_progress;
+                if (self.runtime_track_index == 0) {
+                    self.movement_progress = 0.0;
+                    remaining = 0.0;
+                    break;
+                }
+
+                self.runtime_track_index -= 1;
+                self.movement_progress = 1.0;
+            }
         }
 
         self.syncRowPosition(preview);
@@ -2352,7 +2382,22 @@ pub const Runner = struct {
         const ring_kind = nativeRingEventLabel(effect_kind) orelse return;
         self.last_native_ring_effect_kind = effect_kind;
         self.native_ring_effect_token +%= 1;
+        if (effect_kind == 3 or effect_kind == 7) {
+            self.applyNativeNegativeVelocityRing();
+            return;
+        }
         self.applyRingEffect(preview, ring_kind, nativeRingEventScores(effect_kind));
+    }
+
+    // PORT(verified): `handle_subgoldy_collisions` writes `-0.1` directly into
+    // `player->velocity.z` for native ring kinds `3/7`, and `update_subgoldy` then recovers
+    // that negative lane by `track_center_x^2 * 0.004 * 0.25` each tick until it crosses 0.
+    // The broader positive-speed controller is still scaffolding here, so once the recovered
+    // shove reaches zero the port hands motion back to `speed_rows_per_second`.
+    fn applyNativeNegativeVelocityRing(self: *Runner) void {
+        self.counters.ring_slow += 1;
+        self.native_velocity_z_override_per_tick = native_negative_ring_velocity_z_per_tick;
+        self.recent_event = .{ .ring = .slow };
     }
 
     fn applyRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, ring_kind: segment.RingKind, award_score: bool) void {
@@ -2821,8 +2866,27 @@ pub const Runner = struct {
     }
 
     fn effectiveSpeedRowsPerSecond(self: *const Runner) f32 {
+        if (self.native_velocity_z_override_per_tick) |velocity_z| {
+            return velocity_z * native_ticks_per_second;
+        }
         if (self.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
         return self.speed_rows_per_second;
+    }
+
+    fn updateNativeVelocityZOverride(self: *Runner, delta_seconds: f32) void {
+        const velocity_z = self.native_velocity_z_override_per_tick orelse return;
+        if (velocity_z >= 0.0) {
+            self.native_velocity_z_override_per_tick = null;
+            return;
+        }
+
+        const tick_scale = delta_seconds * native_ticks_per_second;
+        const next_velocity_z = velocity_z + (native_negative_ring_velocity_recovery_z_per_tick * tick_scale);
+        if (next_velocity_z >= 0.0) {
+            self.native_velocity_z_override_per_tick = null;
+            return;
+        }
+        self.native_velocity_z_override_per_tick = next_velocity_z;
     }
 
     fn refreshCameraAnchor(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6740,7 +6804,7 @@ test "slow rings reduce effective speed while active" {
     try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.slow_ticks);
 }
 
-test "native ring kind 3 uses the recovered slow branch" {
+test "native ring kind 3 seeds the recovered negative-velocity shove" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -6749,9 +6813,38 @@ test "native ring kind 3 uses the recovered slow branch" {
 
     runner.recordNativeRingEffect(&fixture.preview, 3);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_slow);
-    try std.testing.expectEqual(slow_ring_duration_ticks, runner.slow_ticks);
+    try std.testing.expectEqual(@as(u16, 0), runner.slow_ticks);
+    try std.testing.expectApproxEqAbs(
+        native_negative_ring_velocity_z_per_tick * native_ticks_per_second,
+        runner.effectiveSpeedRowsPerSecond(),
+        0.0001,
+    );
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
     try std.testing.expectEqualStrings("ring_slow", runner.recentEventLabel());
+}
+
+test "native negative-velocity ring recovery moves backward before handing back to base speed" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.speed_rows_per_second = 12.0;
+    runner.runtime_track_index = 20;
+    runner.movement_progress = 0.0;
+    runner.syncRowPosition(&fixture.preview);
+    runner.refreshSample(&fixture.preview);
+
+    const row_before = runner.row_position;
+    runner.recordNativeRingEffect(&fixture.preview, 3);
+    runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
+    try std.testing.expect(runner.row_position < row_before);
+    try std.testing.expectApproxEqAbs(@as(f32, 19.916), runner.row_position, 0.0001);
+
+    for (0..6) |_| {
+        runner.step(&fixture.preview, .{}, 1.0 / native_ticks_per_second);
+    }
+    try std.testing.expectEqual(@as(?f32, null), runner.native_velocity_z_override_per_tick);
+    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
 }
 
 test "tutorial powerup ramps consume the recovered forward runtime ring event" {
@@ -6802,7 +6895,12 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     slow_runner.refreshLiveRuntimeRingEffects(&slow_fixture.preview);
     slow_runner.processRuntimeRingEffectCollisions(&slow_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), slow_runner.counters.ring_slow);
-    try std.testing.expectEqual(slow_ring_duration_ticks, slow_runner.slow_ticks);
+    try std.testing.expectEqual(@as(u16, 0), slow_runner.slow_ticks);
+    try std.testing.expectApproxEqAbs(
+        native_negative_ring_velocity_z_per_tick * native_ticks_per_second,
+        slow_runner.effectiveSpeedRowsPerSecond(),
+        0.0001,
+    );
     try std.testing.expectEqual(@as(u32, 0), slow_runner.score.total);
 }
 
