@@ -956,3 +956,52 @@
 
 ### Next target
 - Recover the ordinary non-selected postal final-loss `+0x30d` split strongly enough to replace the last remaining postal bridge heuristic.
+
+## 2026-03-23 21:43 - Iteration: close postal final-loss bridge split
+
+### Target
+- Ordinary postal final-loss `+0x30d` bridge split in `update_subgoldy_resurrect` / `complete_subgame`
+
+### Why this target
+- The bridge checklist still treated this as the last open postal heuristic even though the native branch was now tight enough to confirm or reject directly from BN and IDA.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `update_subgoldy_resurrect` (`0x441fd0`) copies the current outer owner into `app + 0x1bc`, then on non-persistent final loss forces `state 0x1a -> owner 2` only when `level_mode == 0` and app byte `+0x30d == 0`; otherwise postal with `+0x30d != 0` and all non-postal modes use `state 0x1b`.
+  - IDA shows the same ordering and branch shape, including the postal-mode test and the `0x1a -> owner 2` overwrite.
+  - BN `complete_subgame` (`0x438700`) only reaches `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, and those helpers arm owner `0x14` plus app byte `+0x30d = 1`.
+  - BN `destroy_high_score_screen` (`0x417220`) clears app byte `+0x30d`, and `exit_high_score_screen` (`0x417b50`) returns by surviving mode (`state 2` for postal, `state 10` for challenge).
+- Likely:
+  - App byte `+0x30d` is specifically the post-level high-score continuation latch, not a generic gameplay-mode flag.
+- Unknown:
+  - The literal challenge-setup owner is still missing in Zig even though the branch that returns to it is now confirmed.
+  - The wider Windows outer-controller rebuild state machine still remains abstracted behind the Zig bridge request lane.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Replaced the stale source comment that still called the postal replay-loss split unresolved.
+- Added a focused regression proving transient postal replay failures clear score-entry staging and still return through the native `0x1a -> owner 2` destroy-return lane.
+- Removed the stale checklist claim that the ordinary postal final-loss `+0x30d` split was still only partially recovered.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `git diff --check`
+- `zig build test`
+- `zig build`
+- This confirms the new regression, the source/docs tightening, and the wider runtime all still pass cleanly.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `e4b24cb` `bridge: close postal final-loss split`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Challenge-side rebuild returns still land on the Zig `Challenge Mode` stand-in instead of a literal `initialize_challenge_setup_screen` owner.
+- The literal Windows outer-controller rebuild and saved-owner writer are still abstracted behind the current bridge request lane.
+
+### Next target
+- Port the native challenge-setup owner strongly enough that challenge rebuild returns stop using the `Challenge Mode` stand-in.
