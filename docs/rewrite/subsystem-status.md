@@ -191,6 +191,7 @@ Implemented now:
 - elevated side exits preserve airborne height instead of snapping straight to the floor
 - `SUPERTRAMP` has a dedicated launch exit path
 - normal gameplay entry now mirrors the native split between current-cell begin and swept re-entry: current row tiles `29/30` go through the direct begin helper when `attachment_exit_pending` is clear
+- current-row and visited-row attachment-entry handling no longer fall back to a synthetic generic source-row begin when the installed-owner map is empty; rows without installed owners now stay inert instead of fabricating follow state
 - swept installed re-entry now also stays on that same native owner boundary: the Zig runner only probes the live current row while `attachment_exit_pending` is armed instead of letting the later visited-row pass opportunistically arm it
 - those swept probes now also use the live current-row owner bits in native order: `flags_b & 0x40` first, then `flags_b & 0x80` only if the first probe leaves `attachment_exit_pending` armed
 - raw BN plus the checked-in IDA export now narrow one more gate detail: the primary swept helper path does not show a direct early clear of `attachment_exit_pending`, and the caller re-tests the same byte immediately before the `0x80` probe, so overlapping rows still leave that secondary callsite reachable in the same tick
@@ -454,7 +455,7 @@ Best next work:
 
 If work resumes from this page alone, the best current order is:
 
-1. Finish attachment entry/exit against built geometry and reduce the remaining source-row fallback.
+1. Finish attachment exit retirement and the remaining family-specific entry/exit behavior against built geometry.
 2. Port more of the outer subgame/frontend bridge (`26/27/28/29`, completion vs final-loss vs respawn ownership).
 3. Recover the remaining track render-normalization passes (`mark_track_warning_zones`, fringe solidity, directional fringe ownership).
 4. Revisit nonlinear kind-`42` family semantics once there is enough evidence to separate `HALFPIPE`, `WARP`, and any sibling families more cleanly.

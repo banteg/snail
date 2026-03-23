@@ -2046,3 +2046,50 @@
 
 ### Next target
 - Live-probe `update_subgoldy` after swept re-entry, watching `player + 0x41d`, to determine whether the common late retirement runs through `0x43bcb3` or the grounded/floor-snap clears at `0x43bf6f` / `0x43c06d`.
+
+## 2026-03-24 01:47 - Iteration: drop synthetic source-row attachment begin fallback
+
+### Target
+- Current-row and visited-row attachment-entry fallback ownership in `update_subgoldy`
+
+### Why this target
+- Attachment follow is still a top parity risk, and the Zig runtime still had two explicit source-row convenience fallbacks even though the recovered Windows current-row begin path already depends on the live installed-owner chain.
+
+### Original behavior evidence
+- Confirmed:
+  - BN plus the checked-in IDA export show `update_subgoldy` only reaches the direct begin helper from the live current row when `player + 0x41d == 0`, keyed from runtime tiles `29/30`.
+  - That same current-row lane walks through the installed owner record on the live row cell rather than falling back to a raw row-tag-driven generic begin when no installed owner exists.
+  - The Zig port still had two explicit non-native fallbacks that called `beginAttachmentFollow` on `.attachment_entry` rows with no installed owner: `tryPrimeCurrentRowAttachmentEntry` and `processRow`.
+- Likely:
+  - Rows that still advertise `.attachment_entry` without an installed owner are builder/runtime mismatches and should stay inert until that upstream mismatch is recovered, not fabricate a native direct-begin path.
+- Unknown:
+  - Whether any separate Windows helper outside the recovered current-row `29/30` chain can begin attachment follow from a non-installed row.
+
+### Zig changes
+- `zig/src/gameplay.zig`
+- `docs/re/attachment-follow.md`
+- `docs/rewrite/subsystem-status.md`
+- Removed the synthetic generic `beginAttachmentFollow` fallback from both the current-row prime path and visited-row processing when the installed-owner map is empty.
+- Added focused regression tests proving orphaned current-row and visited attachment-entry rows now stay in track mode instead of fabricating follow state.
+- Updated the attachment-follow status docs so they no longer describe a remaining source-row begin fallback as if it were intentional parity.
+
+### Verification
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- Re-read the BN/IDA `update_subgoldy` current-row begin split while removing the fallback sites.
+- This gives high confidence that the synthetic begin path is gone, the orphaned-row regressions are pinned, and the wider runtime still builds and tests cleanly.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `attachment: drop synthetic source-row begin fallback`
+- Push: pending push after commit
+
+### Remaining gaps
+- The later `attachment_exit_pending` retirement after swept re-entry is still unresolved, especially the common winner among `0x43bcb3`, `0x43bf6f`, and `0x43c06d`.
+- The full installed runtime bank semantics and the family-specific nonlinear kind-`42` entry/exit behavior are still missing.
+
+### Next target
+- Recover which late `update_subgoldy` clear actually retires `attachment_exit_pending` after swept re-entry in the common case.

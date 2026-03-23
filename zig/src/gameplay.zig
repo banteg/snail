@@ -1695,9 +1695,6 @@ pub const Runner = struct {
         if (gameplay_cell != .attachment_entry and gameplay_cell != .attachment_probe) return;
 
         if (self.tryBeginCurrentRowInstalledAttachmentFollow(preview, current_row)) return;
-        if (gameplay_cell == .attachment_entry and !preview.installedBuiltAttachmentsAtRow(current_row).any()) {
-            self.beginAttachmentFollow(preview, sample);
-        }
     }
 
     // PORT(verified): before the tutorial click-start dismissal, native keeps Goldy
@@ -2327,13 +2324,7 @@ pub const Runner = struct {
                     self.recent_event = .attachment_probe;
                 }
             },
-            .attachment_entry => {
-                if (self.movement_mode != .attachment and
-                    !preview.installedBuiltAttachmentsAtRow(global_row).any())
-                {
-                    self.beginAttachmentFollow(preview, sample);
-                }
-            },
+            .attachment_entry => {},
             .ring => {},
             .trampoline => {
                 self.counters.trampoline_rows += 1;
@@ -9327,6 +9318,52 @@ test "current-row installed entry can begin from a later installed row span" {
     const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, later_row).?;
     try std.testing.expectEqual(@as(usize, 1), entry.sample_index);
     try std.testing.expect(entry.local_progress > 0.0);
+}
+
+test "current-row prime path does not fabricate begin without an installed owner" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    fixture.preview.attachment_scaffold.installed_attachment_rows[target.row] = .{
+        .primary = null,
+        .secondary = null,
+    };
+
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.01;
+    runner.lane_index = target.lane;
+    runner.resolved_lane_index = target.lane;
+    runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
+    runner.previous_lane_center = runner.lane_center;
+
+    runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+}
+
+test "visited attachment-entry rows do not fabricate begin without an installed owner" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    fixture.preview.attachment_scaffold.installed_attachment_rows[target.row] = .{
+        .primary = null,
+        .secondary = null,
+    };
+
+    runner.row_position = @as(f32, @floatFromInt(target.row)) + 0.01;
+    runner.lane_index = target.lane;
+    runner.resolved_lane_index = target.lane;
+    runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
+
+    runner.processRow(&fixture.preview, target.row);
+
+    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
+    try std.testing.expectEqual(@as(u32, 0), runner.counters.attachments_begun);
+    try std.testing.expectEqual(RecentEvent.none, runner.recent_event);
 }
 
 test "swept installed re-entry stays on the current-row prime path and leaves exit pending armed" {

@@ -72,6 +72,7 @@ Current Zig consequence after this pass:
 - active jetpack still uses the confirmed `0x43ce75` late clear
 - active-phase non-fall exits now retire only on the native-shaped settle lanes the current port can actually represent: grounded snap and trampoline landing
 - the full airborne carryover and the unresolved `0x43bcb3` owner are still missing, so the common post-swept-re-entry retirement path remains open instead of being hidden behind a fake timeout
+- current-row attachment begin also no longer fabricates a generic source-row follow when the live row lacks an installed owner record; the port now leaves those orphaned rows inert instead of claiming a native direct-begin fallback that the Windows helper chain does not show
 
 What remains unknown:
 
@@ -391,6 +392,7 @@ The current Zig port now goes materially farther than the old â€œrow hint onlyâ€
 - gameplay now consumes built templates for live attachment progression, world pose, camera forward/up, natural-end exit pose, a first width-based side-exit rule, and the dedicated `SUPERTRAMP` launch exit
 - the current nonlinear kind-`42` path in both gameplay and the segment viewer now uses a decompile-backed local transform model derived from `compute_kind42_attachment_transform`, instead of the older circle-height approximation
 - entry no longer keys only off raw authored row tags; the preview now derives a first installed attachment-row map from the runtime attachment tiles, current-row gameplay begin now stays on the direct `29/30` cell path, and swept installed re-entry only probes the live current row while `attachment_exit_pending` is set, using the live `0x40` slot first and `0x80` second instead of any installed span
+- current-row and visited-row attachment-entry handling no longer fall back to a synthetic generic begin when the installed-owner map is empty; if the live row has no installed owner, the port now leaves it untouched instead of inventing a source-row path
 - immediate swept-entry success no longer looks like an early-clear lane: the native caller re-tests `attachment_exit_pending` right after the first helper call, and the helper itself does not show a direct clear, so overlapping rows still leave the `0x80` probe reachable in the same tick
 
 That is still not the full Windows model.
