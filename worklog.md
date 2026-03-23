@@ -1005,3 +1005,54 @@
 
 ### Next target
 - Port the native challenge-setup owner strongly enough that challenge rebuild returns stop using the `Challenge Mode` stand-in.
+
+## 2026-03-23 22:05 - Iteration: restore challenge setup owner
+
+### Target
+- Literal challenge-setup owner and return lane for ordinary challenge rebuilds plus transient setup replay launches
+
+### Why this target
+- The outer bridge is still the top project risk, and BN plus IDA were already strong enough to replace the last challenge-side stand-in without guessing.
+
+### Original behavior evidence
+- Confirmed:
+  - BN `initialize_challenge_setup_screen` (`0x415f50`) builds the mode-`1` owner with `Select Difficulty`, `Select Speed`, `Play`, optional `Watch Replay`, and `Back`.
+  - BN plus IDA show the setup sliders seeding from `unk_4DF960` / `unk_4DF958` as raw `0..100` values converted to widget floats by `* 0.01`.
+  - BN plus IDA `update_challenge_setup_screen` (`0x416370`) returns `3` on `Back`, returns `1` on `Play`, and on `Watch Replay` sets `selected_level_record_active = 1` plus the selected-record pointer without setting the persistent replay lane.
+  - BN `initialize_subgame` (`0x4374b0`) and IDA `update_subgame` (`0x438b90`) rebuild `level_mode == 1` through `initialize_challenge_setup_screen` on the nonzero continuation selector.
+- Likely:
+  - The app-side saved-owner writer that feeds that rebuild lane still sits outside the current named Zig bridge surface.
+- Unknown:
+  - The exact writer for the preserved front-end owner / saved outer-controller slot outside the already-confirmed respawn and result branches.
+  - Any remaining low-level challenge-setup widget/controller details beyond the now-recovered owner, return targets, and replay split.
+
+### Zig changes
+- `zig/src/frontend.zig`
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Added a literal `challenge_setup_menu` front-end phase, restored its recovered slider/button layout, and made `New Game -> Challenge Mode` enter that owner instead of launching challenge gameplay directly.
+- Ordinary challenge result, abandon, and post-level high-score-entry returns now rebuild to the challenge-setup owner, and transient setup `Watch Replay` launches now return through the non-persistent setup lane instead of the high-score browser.
+- Removed the remaining challenge-side stand-in from the rewrite docs/checklist and recorded the transient challenge-setup replay split explicitly.
+
+### Verification
+- `zig fmt zig/src/main.zig zig/src/frontend.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the recovered owner compiles, the updated bridge regressions pass, and the full runtime still builds cleanly.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `cbce312` `bridge: restore challenge setup owner`
+- Push: pending push after worklog commit
+
+### Remaining gaps
+- The saved-owner writer behind the native `26/27/28` bridge jump is still unresolved.
+- The outer bridge is still modeled as an explicit request dispatcher instead of the literal rebuilt controller object.
+
+### Next target
+- Recover the saved-owner writer / preserved-owner slot that feeds the native `26/27/28` bridge jump outside the already-confirmed respawn self-return path.
