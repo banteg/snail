@@ -122,10 +122,13 @@ Work this top-down unless a new runtime capture invalidates the order.
   - newer narrowing: selected-level-record completion is also no longer lumped into opcode `28`; `update_subgoldy` now shows the persistent branch using `state 0x1a`, while the non-persistent branch still uses `state 0x1b`
   - stronger launch-side narrowing: BN plus IDA now show `update_galaxy` and `update_challenge_setup_screen` only arming `selected_level_record_active`, while `initialize_subgame` / `update_subgame` / `destroy_subgame` treat `selected_level_record_persistent` as a separate lifecycle lane
   - stronger replay-side narrowing: high-score replay rows and the menu replay attract path already use a separate app-side replay-launch scratch lane before state `10`; the still-missing step is the exact copy into `game + 0xff25d1`
+  - newer static negative result: whole-image disassembly now shows no direct nonzero store to `game + 0xff25d1`; the only direct store is the teardown clear in `destroy_subgame`
+  - newer constructor-side narrowing: `build_subgame_level` only tests `selected_level_record_active || selected_level_record_persistent` before copying replay-backed mode, level, and scalar fields, so the remaining gap is the constructor/copy provenance of that persistent bit rather than another shallow writer sweep
   - newer mode narrowing: `initialize_subgame` and `update_subgame` both treat `level_mode == 7` as tutorial mode, so the special `0x1a -> owner 2` completion override is the already-ported tutorial-completion lane rather than a separate missing route
   - newer app-side narrowing: `add_arcade_high_score` / `add_survival_high_score` set app byte `+0x30d = 1`, `destroy_high_score_screen` clears it, and `update_completion_screen` also branches on it; this looks like a high-score-entry / high-score-screen continuation flag rather than a generic gameplay mode byte
+  - newer false-lead rejection: app dword `+0x12e55e0` is not a clean replay-only source candidate for `selected_level_record_persistent`; ordinary `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` flows all also write `2` there
   - current Zig consequence: frontend-selected replay completions now use the confirmed non-persistent `0x1b` rebuild-return path across challenge, time-trial, and postal, while transient postal replay final loss now also follows the native `0x1a -> owner 2` New Game override because `complete_subgame` never seeds app byte `+0x30d` while `selected_level_record_active` is set
-  - remaining gap: the persistent-lane writer or copy site from app replay scratch into `game + 0xff25d1`, and the exact non-selected-record postal final-loss use of `data_4df904 + 0x30d`
+  - remaining gap: the constructor/copy site that makes app replay scratch visible as `game + 0xff25d1`, and the exact non-selected-record postal final-loss use of `data_4df904 + 0x30d`
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 

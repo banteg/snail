@@ -243,6 +243,15 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - static replay-launch narrowing is now stronger too:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `data_4df904 + 4299515`, `+4299516`, `+17198056`, `+17198057`, and `+119190` before they jump to state `10`
   - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same fields later, so this is a real app-side replay-launch lane, not dead scratch
+- whole-image static disassembly now narrows the persistent selected-record question further:
+  - there is no direct static nonzero store to `game + 0xff25d1`
+  - the only direct store to that byte is the teardown clear in `destroy_subgame` at `0x438b13`
+  - the remaining hits are reads or compares in `initialize_subgame`, `build_subgame_level`, `update_subgame`, `update_subgoldy`, `update_subgoldy_resurrect`, and `initialize_click_start`
+  - treat the missing step as constructor/copy provenance, not another shallow writer sweep
+- one likely false lead is now weaker:
+  - `data_4df904 + 0x12e55e0` is not replay-specific enough to treat as the persistent-bit source
+  - `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
+  - state `0x1c` only clears it during the rebuild-clear-replay bridge
 - While those breaks fire, also watch the adjacent global routing scratch lanes that were narrowed statically:
   - `data_4df904 + 110` active front-end state
   - `data_4df904 + 119190` mode / owner bank selector

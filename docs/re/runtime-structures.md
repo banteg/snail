@@ -261,7 +261,10 @@ Current practical read:
 - the writer for `selected_level_record_persistent` is still unresolved; current static evidence now narrows the upstream source more sharply:
   - `update_galaxy` and `update_challenge_setup_screen` only expose the transient game-side `selected_level_record_active` lane
   - replay-row and random replay launches already have a separate app-side replay scratch lane
-  - the still-missing step is the exact copy or constructor path that turns that app-side replay scratch into `game + 0xff25d1`
+  - whole-image static disassembly now shows no direct nonzero store to `game + 0xff25d1`; the only direct store to that byte is the teardown clear in `destroy_subgame` at `0x438b13`
+  - the remaining static hits on `game + 0xff25d1` are all reads or compares in `initialize_subgame`, `build_subgame_level`, `update_subgame`, `update_subgoldy`, `update_subgoldy_resurrect`, and `initialize_click_start`
+  - `build_subgame_level` only tests `selected_level_record_active || selected_level_record_persistent` before copying selected-record mode, level, replay-speed, and scalar fields, so the still-missing step is the exact copy or constructor path that makes the persistent lane observable before that build/init sequence
+  - app dword `+0x12e55e0` is no longer a good candidate for that source: `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all also write `2` there in ordinary front-end flow, while state `0x1c` only clears it during the rebuild-clear-replay bridge
 - `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`

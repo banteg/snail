@@ -353,7 +353,10 @@ Implemented now:
   - `initialize_subgame`, `update_subgame`, `build_subgame_level`, and `destroy_subgame` all treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown
 - BN plus IDA also now expose a separate app-side replay-launch scratch lane that is not the same as the transient selected-record path:
   - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec`, `+0x1066be8`, `+0x1066be9`, `+0x1066bf0`, and `+119190` before jumping to frontend state `10`
-  - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same app fields later, which means the native saved-replay launch path already has an app-owned control lane even though the exact copy into `game + 0xff25d1` is still missing
+  - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same app fields later, which means the native saved-replay launch path already has an app-owned control lane
+  - the static gap is narrower than before: whole-image disassembly now shows no direct nonzero store to `game + 0xff25d1`; the only direct store is the teardown clear in `destroy_subgame`, while `initialize_subgame`, `build_subgame_level`, and `update_subgame` only read or mirror the bit
+  - `build_subgame_level` also confirms the shape of the missing step: it tests `selected_level_record_active || selected_level_record_persistent` before copying the replay-backed mode, level, and scalar fields, so the unresolved work is the constructor/copy provenance of that persistent lane, not another shallow setter hunt
+  - app dword `+0x12e55e0` is now ruled out as a clean replay-only source candidate because `update_new_game_menu`, `exit_high_score_screen`, and `update_pause_menu` all write `2` there in ordinary front-end or overlay flow
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
 - replay-backed result exits no longer use opcode `28`; the current frontend-selected replay path now maps challenge, time-trial, and postal completion returns through the confirmed non-persistent `0x1b` rebuild-return lane instead of pretending those returns are respawn-style rebuilds or overclaiming the separate persistent `0x1a` lane
@@ -367,7 +370,7 @@ Still missing or approximate:
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
-- the exact handoff from the app-side replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) into the subgame-local persistent lane at `game + 0xff25d1`
+- the exact constructor or copy path that makes the app-side replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) observable as the subgame-local persistent lane at `game + 0xff25d1`; no direct static nonzero store to that byte is currently known
 - the exact non-selected-record postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
 - the exact post-entry return owner for ordinary pause-menu abandon still rides the Zig preserved-owner abstraction rather than a fully traced `update_completion_screen` / `exit_high_score_screen` owner lane
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
