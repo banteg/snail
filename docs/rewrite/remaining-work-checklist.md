@@ -122,8 +122,8 @@ Work this top-down unless a new runtime capture invalidates the order.
   - stronger launch-side narrowing: BN plus IDA now show `update_galaxy` and `update_challenge_setup_screen` only arming `selected_level_record_active`, while `initialize_subgame` / `update_subgame` / `destroy_subgame` treat `selected_level_record_persistent` as a separate lifecycle lane
   - newer mode narrowing: `initialize_subgame` and `update_subgame` both treat `level_mode == 7` as tutorial mode, so the special `0x1a -> owner 2` completion override is the already-ported tutorial-completion lane rather than a separate missing route
   - newer app-side narrowing: `add_arcade_high_score` / `add_survival_high_score` set app byte `+0x30d = 1`, `destroy_high_score_screen` clears it, and `update_completion_screen` also branches on it; this looks like a high-score-entry / high-score-screen continuation flag rather than a generic gameplay mode byte
-  - current Zig consequence: frontend-selected replay completions now use the confirmed non-persistent `0x1b` rebuild-return path across challenge, time-trial, and postal, while the persistent-lane writer itself is still unresolved
-  - remaining gap: the persistent-lane writer and the exact postal final-loss use of `data_4df904 + 0x30d`
+  - current Zig consequence: frontend-selected replay completions now use the confirmed non-persistent `0x1b` rebuild-return path across challenge, time-trial, and postal, while transient postal replay final loss now also follows the native `0x1a -> owner 2` New Game override because `complete_subgame` never seeds app byte `+0x30d` while `selected_level_record_active` is set
+  - remaining gap: the persistent-lane writer and the exact non-selected-record postal final-loss use of `data_4df904 + 0x30d`
 
 ### Phase 2. Finish cutscene and handoff runtime fields
 

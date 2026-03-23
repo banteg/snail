@@ -419,3 +419,52 @@
 
 ### Next target
 - Recover the grounded forward `velocity.z` controller in `update_subgoldy` strongly enough to stop handing garbage hits and native negative rings back to the scaffolded `speed_rows_per_second` lane.
+
+## 2026-03-23 20:03 - Iteration: route postal replay loss to New Game
+
+### Target
+- Outer-bridge target for transient postal selected-record final loss
+
+### Why this target
+- The outer bridge is still the highest-value ownership gap, and BN plus IDA now pin one concrete replay-sensitive asymmetry strongly enough to land end-to-end: postal replay failure was still returning to the postal high-score browser instead of taking the native `0x1a -> owner 2` New Game lane.
+
+### Original behavior evidence
+- Confirmed:
+  - Binary Ninja decompile of `update_subgoldy_resurrect` (`0x441fd0`) shows transient selected-record final loss taking `state 0x1b` only for non-postal modes or when app byte `+0x30d` is non-zero; otherwise postal final loss forces `state 0x1a` and overwrites the saved owner with `2`.
+  - Binary Ninja decompile of `complete_subgame` (`0x438700`) shows `add_arcade_high_score` / `add_survival_high_score` only run when `selected_level_record_active == 0`.
+  - The checked-in IDA exports for `add_arcade_high_score`, `add_survival_high_score`, and `destroy_high_score_screen` show app byte `+0x30d` is the high-score-screen continuation flag.
+  - Because transient selected-record runs keep `selected_level_record_active == 1`, postal replay-backed final loss cannot seed app byte `+0x30d`, so that branch keeps the native `0x1a -> owner 2` New Game return.
+- Likely:
+  - Owner `2` remains the already-ported New Game return lane used by tutorial completion and ordinary postal final loss.
+- Unknown:
+  - The writer for `selected_level_record_persistent`.
+  - The exact non-selected-record postal final-loss use of app byte `+0x30d`.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Added a selected-record return-target override so transient postal replay failures now route to `New Game -> Postal` instead of the postal high-score browser.
+- Updated the bridge regression test to pin the native per-source failure split.
+- Narrowed the outer-bridge docs so they now treat the remaining `+0x30d` uncertainty as a non-selected-record postal gap rather than a replay-backed one.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- This confirms the bridge mapper compiles, the updated replay-failure regression passes, and the runtime still builds after the outer-bridge change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `bridge: route postal replay loss to New Game`
+- Push: pending push after commit
+
+### Remaining gaps
+- The writer and exact semantics of `selected_level_record_persistent` are still unresolved.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Recover the writer for `selected_level_record_persistent`, or tighten the remaining non-selected-record postal `+0x30d` bridge split if that path becomes easier to isolate first.

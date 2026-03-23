@@ -244,6 +244,7 @@ Current practical read:
   - `destroy_high_score_screen` clears it back to `0`
   - `update_completion_screen` also branches on it before tearing down the completion screen
   - current best read: it is a high-score-entry / high-score-screen continuation flag, not a generic gameplay mode byte
+  - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record

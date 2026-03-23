@@ -5669,10 +5669,31 @@ const AppState = struct {
         };
     }
 
+    fn postRunSelectedLevelRecordReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?ResultReturnTarget {
+        const source = self.selected_level_record_source orelse return null;
+        if (self.selected_level_record_persistent) return null;
+
+        return switch (source) {
+            .postal => switch (result.outcome) {
+                // PORT(verified): `update_subgoldy_resurrect` only takes the postal
+                // `0x1b` branch when app byte `+0x30d` is set, and `complete_subgame`
+                // only seeds that high-score continuation flag when
+                // `selected_level_record_active == 0`. Transient selected-record
+                // postal failures therefore keep the native `0x1a -> owner 2`
+                // New Game return instead of jumping back to the postal high-score
+                // browser.
+                .failed => .new_game_menu,
+                .completed => null,
+            },
+            .challenge, .completion => null,
+        };
+    }
+
     fn outerBridgeRequestForPendingRunResult(self: *const AppState, result: PendingRunResult) OuterBridgeRequest {
         const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode(result.outcome);
         const selected_level_record_return = self.selected_level_record_source != null;
-        return switch (result.return_target) {
+        const return_target = self.postRunSelectedLevelRecordReturnTargetOverride(result) orelse result.return_target;
+        return switch (return_target) {
             .main_menu => .{
                 .opcode = .destroy_return,
                 .target = .main_menu,
@@ -12827,7 +12848,7 @@ test "tutorial completion uses destroy-return to New Game" {
     );
 }
 
-test "transient selected replay failures use rebuild-return bridge semantics" {
+test "transient selected replay failures follow the native per-source bridge split" {
     var state: AppState = undefined;
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -12881,7 +12902,7 @@ test "transient selected replay failures use rebuild-return bridge semantics" {
     try std.testing.expectEqualDeep(
         OuterBridgeRequest{
             .opcode = .destroy_return,
-            .target = .{ .high_scores_menu = .postal },
+            .target = .{ .new_game_menu = .postal_mode },
         },
         state.outerBridgeRequestForPendingRunResult(result),
     );
