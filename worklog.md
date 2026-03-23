@@ -468,3 +468,48 @@
 
 ### Next target
 - Recover the writer for `selected_level_record_persistent`, or tighten the remaining non-selected-record postal `+0x30d` bridge split if that path becomes easier to isolate first.
+
+## 2026-03-23 20:14 - Iteration: document app-side replay launch scratch
+
+### Target
+- Outer-bridge replay-launch scratch ownership behind saved-replay starts
+
+### Why this target
+- The outer bridge is still the top project risk, and the current docs still treated the persistent replay lane mostly as an unresolved `game + 0xff25d1` mystery even though BN plus the checked-in IDA exports now pin a narrower upstream app-side replay-launch lane strongly enough to record without guessing.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_high_score_screen` replay-row clicks seed app replay-launch scratch before jumping to frontend state `10`: a selected record pointer at `app + 0x1066bec`, replay-launch bytes at `+0x1066be8/+0x1066be9`, a replay return state at `+0x1066bf0 = 0x12`, and the mode/owner bank at `app + 119190`.
+  - The New Game menu's random replay branch seeds the same app replay-launch bytes plus the selected record pointer and mode/owner bank, but uses replay return state `2` instead of `0x12`.
+  - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all read those same app replay-launch fields later, so they are live runtime inputs rather than dead scratch.
+  - `update_frontend_state_machine` state `0x1c` clears app dword `+0x12e55e0` on the clear-replay rebuild lane.
+- Likely:
+  - The app replay-launch scratch is the upstream source that eventually feeds the subgame-local persistent replay lane used by `update_subgoldy` / `update_subgoldy_resurrect`.
+- Unknown:
+  - The exact copy or constructor path that turns the app replay-launch scratch into `game + 0xff25d1`.
+  - Whether the same app lane also writes the preserved-owner bridge slot at `[controller + 0x98]` or only runs in parallel with it.
+
+### Zig changes
+- No Zig runtime code changed.
+- Updated `docs/re/runtime-structures.md`, `docs/re/windows-debugging-wants.md`, `docs/rewrite/port-status.md`, `docs/rewrite/subsystem-status.md`, and `docs/rewrite/remaining-work-checklist.md`.
+- Reduced one doc-side scaffold: the repo now distinguishes the transient game-side selected-record lane from the separate app-side replay-launch scratch used by high-score replay rows and the menu replay path.
+
+### Verification
+- Reviewed the relevant BN decompiles for `update_frontend_state_machine`, `update_high_score_screen`, `update_pause_menu`, `initialize_click_start`, `update_galaxy`, `update_challenge_setup_screen`, `initialize_subgame`, `build_subgame_level`, `update_subgame`, and `destroy_subgame`.
+- Cross-checked the checked-in IDA exports for the same functions plus `initialize_completion_screen`, `update_completion_screen`, `update_new_game_menu`, `launch_frontend_level_mode`, and `exit_high_score_screen`.
+- Ran `git diff --check`.
+- No build or test run was needed because this chunk only changes RE/docs, not Zig behavior.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - pending commit: `re: document app-side replay launch scratch`
+- Push: pending push after commit
+
+### Remaining gaps
+- The exact copy site from app replay-launch scratch into `game + 0xff25d1` is still unresolved.
+- The preserved-owner writer behind `[controller + 0x98]` is still unresolved.
+- The exact non-selected-record postal final-loss use of app byte `+0x30d` is still unresolved.
+
+### Next target
+- Catch the first runtime write that turns the app replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) into the subgame-local persistent replay lane at `game + 0xff25d1`.

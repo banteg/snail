@@ -240,6 +240,9 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - the earlier `0x40775c` candidate was a data false positive, not a real store
   - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` all write the active state or adjacent launch/owner globals, but none of them surfaced a direct `[controller + 0x98]` store either
   - the likely writer is therefore behind a helper or constructor outside the obvious front-end state-machine cluster
+- static replay-launch narrowing is now stronger too:
+  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `data_4df904 + 4299515`, `+4299516`, `+17198056`, `+17198057`, and `+119190` before they jump to state `10`
+  - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same fields later, so this is a real app-side replay-launch lane, not dead scratch
 - While those breaks fire, also watch the adjacent global routing scratch lanes that were narrowed statically:
   - `data_4df904 + 110` active front-end state
   - `data_4df904 + 119190` mode / owner bank selector
@@ -261,6 +264,7 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which function writes the preserved-owner bridge slot consumed by `26/27/28`?
 - Which helper first seeds `[controller + 0x98]` before `update_frontend_state_machine` reaches state `26/27/28`?
 - Do the replay launch scratch globals above collapse into that same preserved-owner write, or are they parallel owner-selection lanes?
+- Which function first turns the app-side replay scratch above into `game + 0xff25d1`?
 
 ### Done when
 

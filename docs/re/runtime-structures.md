@@ -247,11 +247,21 @@ Current practical read:
   - `complete_subgame` only calls `add_arcade_high_score` / `add_survival_high_score` when `selected_level_record_active == 0`, so transient selected-record postal final-loss runs keep `app + 0x30d == 0` and therefore take the native `0x1a -> owner 2` New Game override instead of the `0x1b` return
 - `update_galaxy` and `update_challenge_setup_screen` both seed `selected_level_record_active = 1` and populate `selected_level_record` before returning to `update_subgame` state `1`
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
+- a second replay-launch lane now has stronger static shape on the app side:
+  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later replay-return state (`0x12` from high-score rows, `2` from the menu replay path)
+  - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
+  - `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`
+  - `update_pause_menu` checks `app + 0x1066be9` to choose the replay-owned exit-prompt lane
+  - `update_completion_screen` state `3` returns to the state saved at `app + 0x1066bf0`
+  - `update_frontend_state_machine` state `0x1c` also clears app dword `+0x12e55e0` before the rebuild handoff
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record
 - `initialize_subgame` also reads `selected_level_record_persistent` to restore the saved replay-speed scalar before the first mode controller reset
 - `destroy_subgame` clears `selected_level_record_persistent` and writes `app + 0x1bc = 0x12` on that teardown path
 - `update_subgame` clears `selected_level_record_active` when the persistent lane is absent on state `0`, and later re-arms `selected_level_record_active = (selected_level_record_persistent == 1)` on rebuild state `7`
-- the writer for `selected_level_record_persistent` is still unresolved; current static evidence only confirms that it is a separate lifecycle lane, not that frontend selected-record launches set it directly
+- the writer for `selected_level_record_persistent` is still unresolved; current static evidence now narrows the upstream source more sharply:
+  - `update_galaxy` and `update_challenge_setup_screen` only expose the transient game-side `selected_level_record_active` lane
+  - replay-row and random replay launches already have a separate app-side replay scratch lane
+  - the still-missing step is the exact copy or constructor path that turns that app-side replay scratch into `game + 0xff25d1`
 - `game + 0x12727d8` is the gameplay row-event display controller, not a loose flag cluster:
   - `initialize_subgoldy` clears `row_event_display.state`
   - `destroy_subgame` and the completion leg in `update_subgoldy` both flush it through `flush_row_event_display`

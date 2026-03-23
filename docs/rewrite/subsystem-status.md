@@ -351,6 +351,9 @@ Implemented now:
 - BN plus IDA now also sharpen the selected-record bridge inputs:
   - `update_galaxy` and `update_challenge_setup_screen` seed `selected_level_record_active = 1` and the selected-record pointer, but do not show a matching write to `selected_level_record_persistent`
   - `initialize_subgame`, `update_subgame`, `build_subgame_level`, and `destroy_subgame` all treat `selected_level_record_persistent` as a separate lifecycle lane that survives rebuild state `7` and is cleared on teardown
+- BN plus IDA also now expose a separate app-side replay-launch scratch lane that is not the same as the transient selected-record path:
+  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec`, `+0x1066be8`, `+0x1066be9`, `+0x1066bf0`, and `+119190` before jumping to frontend state `10`
+  - `initialize_click_start`, `update_pause_menu`, and `update_completion_screen` all consume those same app fields later, which means the native saved-replay launch path already has an app-owned control lane even though the exact copy into `game + 0xff25d1` is still missing
 - the port now follows the confirmed `26 -> 2` New Game return for tutorial completion and ordinary postal final loss instead of forcing those exits through the main menu
 - replay-backed pause abort now follows the same launch-surface return lane as result-screen replay exits instead of flattening everything to mode-only route/main-menu returns
 - replay-backed result exits no longer use opcode `28`; the current frontend-selected replay path now maps challenge, time-trial, and postal completion returns through the confirmed non-persistent `0x1b` rebuild-return lane instead of pretending those returns are respawn-style rebuilds or overclaiming the separate persistent `0x1a` lane
@@ -363,6 +366,7 @@ Still missing or approximate:
 - the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
 - the writer and exact semantics of the saved outer-owner field behind the `26/27/28` bridge jump outside the now-confirmed respawn self-return case
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
+- the exact handoff from the app-side replay-launch scratch (`+0x1066bec/+0x1066be8/+0x1066be9/+0x1066bf0`) into the subgame-local persistent lane at `game + 0xff25d1`
 - the exact non-selected-record postal final-loss use of the app-side `data_4df904 + 0x30d` high-score-entry / high-score-screen continuation flag
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge
 
@@ -380,7 +384,7 @@ Implemented now:
 
 - enough score/config structure to preserve replay-bearing records
 - route-map and high-score UI have the right broad replay concepts in place
-- selected replay actions now launch the recovered selected-level-record path instead of dead-end stubs
+- selected replay actions now launch the recovered transient selected-level-record path instead of dead-end stubs
 - replay-backed rebuilds now reuse the compact record's saved mode, route index, runtime build flags, build seed, challenge tuning, and ambient hazard scalars
 - selected replay runs now preserve the exact saved score entry as a live replay source, decode the compact secondary lane once into a runner-facing cache, and feed those replay samples into gameplay instead of dropping the payload on launch
 - replay playback now consumes the recovered lateral `i16` lane as direct world-`x` motion and suppresses live steering/fire input while a selected-record replay is active
@@ -390,6 +394,7 @@ Implemented now:
 
 Still missing or approximate:
 
+- the native app-side replay-launch scratch used by high-score replay rows and the random menu replay path is still not ported; the current Zig replay launchers only cover the transient selected-record lane
 - the saved secondary-lane payload still only has neutral decode/plumbing; it does not yet drive a grounded gameplay consumer
 - replay flag bits `0x1/0x2` still do not drive a grounded audio/effect parity path beyond those recovered movement-progress substitutions
 - full replay payload read/write parity
