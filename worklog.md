@@ -72,3 +72,51 @@
 
 ### Next target
 - Port the garbage-impact motion owner so both native negative rings and garbage hits feed the same recovered velocity controller.
+
+## 2026-03-23 18:58 - Iteration: route respawn through outer opcode 28
+
+### Target
+- Respawn ownership in `update_subgoldy_resurrect` / outer bridge handoff
+
+### Why this target
+- The outer bridge remains the top architectural risk, and Binary Ninja evidence now pins one missing lane tightly enough to replace a Zig-side special case: respawn still reloaded the level locally instead of using the native `0x1c` rebuild bridge.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy_resurrect` (`0x441fd0`) copies `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c` on the respawn branch.
+  - The same respawn branch decrements visible lives only for gameplay mode `0` before the bridge write, matching the earlier March 15 debugger capture.
+  - `update_frontend_state_machine` treats state `0x1c` as `destroy_subgame -> clear replay_active -> initialize_subgame -> jump to saved owner`.
+- Likely:
+  - The saved return slot at `app + 0x1bc` is a generic outer-owner state, not only a launch-surface frontend menu owner, because respawn writes the current active owner into it.
+- Unknown:
+  - The remaining final-loss writes that choose between `0x1a`, `0x1b`, and the special `+0x1bc = 2` override still need tighter reconstruction.
+
+### Zig changes
+- `zig/src/main.zig`
+- Replaced the bespoke respawn reload path with an explicit outer-bridge request using opcode `28` plus a respawn-only active-run rebuild target.
+- Captured the live runner state before teardown, rebuilt through the shared bridge lane, then restored the native-surviving respawn lanes onto the rebuilt runner.
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Updated the bridge notes so they now record the confirmed `app + 0x1b8/+0x1bc` respawn write pattern and no longer describe respawn as only an app-local reload helper.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig fmt zig/src/gameplay.zig`
+- `zig build test`
+- `zig build`
+- This confirms the new bridge target compiles, the focused respawn bridge test passes, and the wider runtime still builds after the ownership change.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `75f7775 bridge: route respawn through outer opcode 28`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- Final-loss bridge ownership is still only partially literal, especially the `0x1a` vs `0x1b` split and the special saved-owner override to state `2`.
+- The port still rebuilds respawn through the app-side loader instead of the literal Windows frontend state-machine driver.
+
+### Next target
+- Reconstruct the final-loss leg in `update_subgoldy_resurrect`, especially when it overwrites the saved return slot with `2` versus preserving the current owner before states `0x1a/0x1b`.
