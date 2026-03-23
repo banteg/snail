@@ -906,3 +906,53 @@
 
 ### Next target
 - Trace the transient replay-backed overlay route for route-map best-trial launches strongly enough to decide whether it shares the same non-clear rebuild lane as pause abandon or uses a different bridge/helper path.
+
+## 2026-03-23 21:35 - Iteration: restart selected replay on native marker exit
+
+### Target
+- Selected-record replay flag-`0x8` tail routing in `update_subgoldy`
+
+### Why this target
+- The outer bridge is still the top ownership risk, and the last replay-side “overlay lane” was still running on a direct Zig UI shortcut even though BN plus IDA were finally strong enough to pin the native marker branch directly.
+
+### Original behavior evidence
+- Confirmed:
+  - `update_subgoldy` (`0x43b120`) checks the selected-record sample byte at `record + runtime_track_index * 6 + 0x74` while `selected_level_record_active != 0`, `runtime_track_index < sample_count`, and `movement_state != 2`.
+  - That branch copies replay `x` from sample word `+0x70`, feeds `track_state_latch` from sample bit `0x4`, and when sample bit `0x8` is set writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, then calls `begin_frontend_fade_in(app + 0x24)`.
+  - `update_frontend_state_machine` state `10` is the subgame-init owner, so the marker loops back through `initialize_subgame` rather than returning to the launch surface.
+- Likely:
+  - The app byte at `+0x30c` is a generic front-end fade/transition latch reused by other launch helpers, not a replay-only ownership selector.
+- Unknown:
+  - The exact user-facing semantics of app byte `+0x30c`.
+  - Whether any other replay sample bits besides `0x1/0x2/0x4/0x8` drive additional native gameplay or UI consumers.
+
+### Zig changes
+- `zig/src/main.zig`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/port-status.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- Replaced the selected-replay marker shortcut that jumped straight back to route-map/high-score UI with a native-shaped destroy-return replay restart request.
+- Added focused coverage that pins replay flag-`0x8` to `opcode 26` plus the current replay target, preserving the selected-record context instead of clearing it.
+- Reduced one explicit bridge scaffold: the route-map replay “overlay exit” no longer depends on the old launch-surface shortcut.
+
+### Verification
+- `zig fmt zig/src/main.zig`
+- `zig build test`
+- `zig build`
+- `git diff --check`
+- This confirms the new replay-marker bridge compiles, the added bridge regression passes, the full runtime still builds, and the mixed Zig/docs patch is whitespace-clean.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `2dd1e3d` `bridge: restart selected replay on native marker exit`
+- Push: pending push after worklog commit
+
+### Remaining gaps
+- The current port still maps challenge-side rebuild returns onto the `Challenge Mode` menu stand-in instead of the literal challenge-setup controller.
+- The ordinary postal final-loss split on app byte `+0x30d` is still only partially recovered.
+- The literal Windows outer-controller rebuild still remains abstracted behind the Zig bridge request lane.
+
+### Next target
+- Recover the ordinary non-selected postal final-loss `+0x30d` split strongly enough to replace the last remaining postal bridge heuristic.
