@@ -6941,9 +6941,10 @@ const AppState = struct {
             // PORT(verified): `update_galaxy` / `update_challenge_setup_screen` seed the active
             // selected-level-record lane without touching the separate persistent bit, and the
             // corresponding `update_subgoldy` post-run completion path uses state `0x1b` for
-            // those transient returns. `update_subgoldy_resurrect` still has the unresolved
-            // postal final-loss split on `data_4df904 + 0x30d`, so only promote the confirmed
-            // postal completion side to rebuild-return for now.
+            // those transient returns. BN plus IDA now also show `complete_subgame` only arms
+            // app byte `+0x30d` while `selected_level_record_active == 0`, so transient postal
+            // replay final loss keeps the native `0x1a -> owner 2` destroy-return override
+            // instead of reusing the postal high-score continuation lane.
             .completion, .challenge => .rebuild_return,
             .postal => switch (outcome) {
                 .completed => .rebuild_return,
@@ -14250,6 +14251,53 @@ test "selected replay results skip persistence and score-table awards" {
     try std.testing.expect(!result.time_trial_record_improved);
     try std.testing.expect(!result.unlocked_next_route);
     try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
+}
+
+test "transient postal replay failure stays off the post-level high-score lane" {
+    var state: AppState = undefined;
+    state.selected_level_record_source = .{ .postal = 2 };
+    state.selected_level_record_persistent = false;
+
+    const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
+    samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
+    state.selected_replay_cache = .{
+        .allocator = std.testing.allocator,
+        .samples = samples,
+    };
+    defer if (state.selected_replay_cache) |*replay| replay.deinit();
+
+    var result = PendingRunResult{
+        .outcome = .failed,
+        .level_name = "Replay",
+        .mode = .postal,
+        .elapsed_millis = 1234,
+        .parcel_count = 0,
+        .parcel_target = 0,
+        .score = 42_000,
+        .score_is_partial = true,
+        .high_score_mode = .postal,
+        .high_score_rank = 0,
+        .completion_owner = .postal_failure,
+        .persistence = .failed,
+        .return_target = .main_menu,
+    };
+    state.applySelectedReplayResultOverrides(&result);
+
+    try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
+    try std.testing.expect(result.high_score_mode == null);
+    try std.testing.expect(result.high_score_rank == null);
+    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
+
+    state.pending_run_result = result;
+    try std.testing.expectEqual(@as(?PendingHighScoreEntry, null), state.pendingRunHighScoreContext());
+    try std.testing.expectEqual(@as(?StandalonePostLevelHighScoreEntry, null), state.failedResultPostLevelHighScoreEntry());
+    try std.testing.expectEqualDeep(
+        OuterBridgeRequest{
+            .opcode = .destroy_return,
+            .target = .{ .new_game_menu = .postal_mode },
+        },
+        state.outerBridgeRequestForPendingRunResult(result),
+    );
 }
 
 test "health pickup burst uses the recovered smoke packet and downward drift" {
