@@ -1994,3 +1994,55 @@
 
 ### Next target
 - Recover either the non-startup helper that still seeds saved owners before `26/27/28`, or the New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14`.
+
+## 2026-03-24 01:37 - Iteration: Attachment-exit special clear narrowing
+
+### Target
+- `update_subgoldy` late retirement of `attachment_exit_pending`, specifically the unresolved clear at `0x43bcb3`
+
+### Why this target
+- Attachment-follow retirement is still one of the highest-value open parity gaps, and the New Game replay-attract lane stayed blocked on an unresolved timer-step producer.
+- Static BN plus the checked-in IDA export were already strong enough to shrink one of the remaining anonymous late-clear sites without guessing new Zig runtime behavior.
+
+### Original behavior evidence
+- Confirmed:
+  - BN field xrefs still limit later retirement of `attachment_exit_pending` to five `update_subgoldy` clear sites: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`.
+  - BN disassembly around `0x43bb32..0x43bcb3`, corroborated by the checked-in IDA export for `update_subgoldy`, now places `0x43bcb3` in the non-follow active-track motion branch that checks the current runtime cell for tiles `0x0f`, `0x10`, `0x12`, or `0x13`.
+  - The same branch also reaches `0x43bcb3` for slide-family cells only when `damage_gauge.state == 2`.
+  - `0x43ce75` remains the separate jetpack-owned late clear behind `jetpack_gauge.state == 1`.
+- Likely:
+  - `0x43bcb3` is a family-specific active-track retirement lane rather than a plain timer-expiry or helper-side clear.
+- Unknown:
+  - Which later clear actually wins after swept re-entry in the common case: `0x43bcb3`, grounded snap `0x43bf6f`, or floor-snap `0x43c06d`.
+  - Whether a geometrically valid `0x40`/`0x80` overlap can still drive two successful swept probes before one of those late clears wins.
+
+### Zig changes
+- `docs/re/attachment-follow.md`
+- `docs/re/runtime-structures.md`
+- `docs/rewrite/subsystem-status.md`
+- `docs/rewrite/remaining-work-checklist.md`
+- `docs/re/windows-debugging-wants.md`
+- `analysis/symbols/gameplay-functions.json`
+- No Zig runtime code changed this run; the repo memory now records the special `0x43bcb3` owner more precisely and narrows the next live-debug target.
+- Reduced one attachment-exit unknown from "unresolved late clear" to a concrete floor-cache/slide-family motion branch.
+
+### Verification
+- Re-read BN disassembly/decompile around `0x43bb32..0x43bcb3` in `update_subgoldy`.
+- Re-read the checked-in IDA export for the same region as a second opinion on control flow and tile-family gating.
+- Ran `jq empty analysis/symbols/gameplay-functions.json`.
+- Ran `git diff --check`.
+- This gives high confidence that the updated docs and symbol note match direct static evidence and remain mechanically valid.
+
+### Git
+- Branch: `master`
+- Commit(s):
+  - `a3bf614` `re: narrow attachment-exit special clear branch`
+- Push: pushed to remote branch
+
+### Remaining gaps
+- The port still lacks the native post-follow active-track carryover that would justify tightening the current grounded-settle proxy in Zig.
+- The common post-swept-re-entry retirement lane still needs live confirmation.
+- The New Game replay-attract timer-step writer at `data_4df904 + 0x4f2dc + 0x14` remains unresolved.
+
+### Next target
+- Live-probe `update_subgoldy` after swept re-entry, watching `player + 0x41d`, to determine whether the common late retirement runs through `0x43bcb3` or the grounded/floor-snap clears at `0x43bf6f` / `0x43c06d`.
