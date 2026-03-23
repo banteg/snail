@@ -4823,6 +4823,26 @@ pub const Runner = struct {
         };
     }
 
+    fn attachmentWorldPositionFromLocal(
+        pose: attachment_builders.WorldPose,
+        local_position: attachment_builders.Vec3,
+    ) attachment_builders.Vec3 {
+        return .{
+            .x = pose.position.x +
+                (pose.basis_right.x * local_position.x) +
+                (pose.basis_up.x * local_position.y) +
+                (pose.basis_forward.x * local_position.z),
+            .y = pose.position.y +
+                (pose.basis_right.y * local_position.x) +
+                (pose.basis_up.y * local_position.y) +
+                (pose.basis_forward.y * local_position.z),
+            .z = pose.position.z +
+                (pose.basis_right.z * local_position.x) +
+                (pose.basis_up.z * local_position.y) +
+                (pose.basis_forward.z * local_position.z),
+        };
+    }
+
     fn attachmentLocalPosition(pose: attachment_builders.WorldPose, world_position: attachment_builders.Vec3) attachment_builders.Vec3 {
         const delta = attachment_builders.Vec3.sub(world_position, pose.position);
         return .{
@@ -5343,18 +5363,6 @@ pub const Runner = struct {
         built: *const attachment_builders.BuiltAttachment,
         sample: RowSample,
     ) ?InstalledAttachmentEntry {
-        const start_progress = std.math.clamp(
-            self.previous_row_position - @as(f32, @floatFromInt(built.row.global_row)),
-            0.0,
-            @as(f32, @floatFromInt(built.template.sample_count)),
-        );
-        const end_progress = std.math.clamp(
-            self.row_position - @as(f32, @floatFromInt(built.row.global_row)),
-            0.0,
-            @as(f32, @floatFromInt(built.template.sample_count)),
-        );
-        if (end_progress <= start_progress) return null;
-
         const current_lane_center = std.math.clamp(
             self.lane_center,
             @as(f32, @floatFromInt(sample.traversable_bounds.min)) + 0.5,
@@ -5362,17 +5370,27 @@ pub const Runner = struct {
         );
         const start_world_position = trackEntryWorldPosition(preview, self.previous_row_position, self.previous_lane_center);
         const end_world_position = trackEntryWorldPosition(preview, self.row_position, current_lane_center);
-        const end_index = @min(
-            @as(usize, @intFromFloat(@floor(end_progress))),
-            @as(usize, built.template.sample_count - 1),
-        );
-        const start_index = @min(
-            @as(usize, @intFromFloat(@floor(start_progress))),
-            end_index,
-        );
+        return installedAttachmentEntryForSweep(built, start_world_position, end_world_position);
+    }
 
-        var candidate_index = end_index;
-        while (true) {
+    fn installedAttachmentEntryForSweep(
+        built: *const attachment_builders.BuiltAttachment,
+        start_world_position: attachment_builders.Vec3,
+        end_world_position: attachment_builders.Vec3,
+    ) ?InstalledAttachmentEntry {
+        // PORT(verified): Windows `try_enter_track_attachment_from_swept_motion` walks the
+        // installed sample array from tail to head, skips samples whose world-up Y component
+        // is negative, and applies the raw local sweep thresholds against each sample pose.
+        const sample_count = @min(@as(usize, built.template.sample_count), built.template.samples.len);
+        if (sample_count == 0) return null;
+
+        var candidate_index = sample_count;
+        while (candidate_index > 0) {
+            candidate_index -= 1;
+
+            const sample = built.template.samples[candidate_index];
+            if (sample.basis_up.y < 0.0) continue;
+
             const candidate_progress: f32 = @floatFromInt(candidate_index);
             const candidate_pose = attachment_builders.worldPoseForTemplate(
                 &built.template,
@@ -5382,32 +5400,27 @@ pub const Runner = struct {
                 0.0,
             );
             const start_local = attachmentLocalPosition(candidate_pose, start_world_position);
-            const sample_length = attachment_builders.deltaLengthAtProgress(&built.template, candidate_progress);
+            const sample_length = sample.delta_length;
 
-            if (@abs(start_local.x) <= attachmentTemplateHalfSpan(built) + attachment_side_exit_margin and
-                start_local.y >= attachment_entry_start_y_tolerance and
-                start_local.z >= 0.0 and
-                start_local.z <= sample_length)
-            {
-                const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
-                if (end_local.y <= attachment_entry_end_y_tolerance) {
-                    const sample_fraction = if (sample_length <= 0.0001)
-                        0.0
-                    else
-                        std.math.clamp(start_local.z / sample_length, 0.0, 1.0);
-                    const progress = candidate_progress + sample_fraction;
-                    const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, start_local.x);
-                    return .{
-                        .sample_index = candidate_index,
-                        .local_progress = start_local.z,
-                        .lateral_offset = lateral_offset,
-                        .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, start_local.y),
-                    };
-                }
-            }
+            if (@abs(start_local.x) > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin) continue;
+            if (start_local.y < attachment_entry_start_y_tolerance) continue;
+            if (start_local.z < 0.0 or start_local.z > sample_length) continue;
 
-            if (candidate_index == start_index) break;
-            candidate_index -= 1;
+            const end_local = attachmentLocalPosition(candidate_pose, end_world_position);
+            if (end_local.y > attachment_entry_end_y_tolerance) continue;
+
+            const sample_fraction = if (sample_length <= 0.0001)
+                0.0
+            else
+                std.math.clamp(start_local.z / sample_length, 0.0, 1.0);
+            const progress = candidate_progress + sample_fraction;
+            const lateral_offset = attachmentLateralOffsetFromLocalX(&built.template, progress, start_local.x);
+            return .{
+                .sample_index = candidate_index,
+                .local_progress = start_local.z,
+                .lateral_offset = lateral_offset,
+                .vertical_offset = attachmentEntryVerticalOffset(built.template.spec.family, start_local.y),
+            };
         }
 
         return null;
@@ -9167,6 +9180,97 @@ test "loop side threshold preserves airborne fall height" {
         runner.row_position,
     ) orelse 0.0;
     try std.testing.expect(fallen_position.y > floor_height + 0.5);
+}
+
+test "installed attachment sweep scans the full template from tail to head" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+
+    var candidate_index: ?usize = null;
+    var sample_index = @min(@as(usize, built.template.sample_count), built.template.samples.len);
+    while (sample_index > 0) {
+        sample_index -= 1;
+        const template_sample = built.template.samples[sample_index];
+        if (template_sample.basis_up.y >= 0.0 and template_sample.delta_length > 0.1) {
+            candidate_index = sample_index;
+            break;
+        }
+    }
+    const matched_index = candidate_index orelse return error.TestUnexpectedResult;
+    try std.testing.expect(matched_index > 0);
+
+    const sample_length = built.template.samples[matched_index].delta_length;
+    const candidate_progress: f32 = @floatFromInt(matched_index);
+    const pose = attachment_builders.worldPoseForTemplate(
+        &built.template,
+        candidate_progress,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const start_local = attachment_builders.Vec3{
+        .x = 0.0,
+        .y = 0.0,
+        .z = sample_length * 0.5,
+    };
+    const start_world_position = Runner.attachmentWorldPositionFromLocal(pose, start_local);
+    const end_world_position = Runner.attachmentWorldPositionFromLocal(pose, .{
+        .x = 0.0,
+        .y = -0.05,
+        .z = start_local.z,
+    });
+
+    const entry = Runner.installedAttachmentEntryForSweep(built, start_world_position, end_world_position).?;
+    try std.testing.expectEqual(matched_index, entry.sample_index);
+    try std.testing.expectApproxEqAbs(start_local.z, entry.local_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), entry.lateral_offset, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), entry.vertical_offset, 0.0001);
+}
+
+test "installed attachment sweep rejects upside-down samples" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/INVERT.TXT");
+    defer fixture.deinit();
+
+    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
+    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
+
+    var inverted_index: ?usize = null;
+    for (built.template.samples, 0..) |template_sample, sample_index| {
+        if (sample_index >= built.template.sample_count) break;
+        if (template_sample.basis_up.y < 0.0 and template_sample.delta_length > 0.1) {
+            inverted_index = sample_index;
+            break;
+        }
+    }
+    const matched_index = inverted_index orelse return error.TestUnexpectedResult;
+
+    const sample_length = built.template.samples[matched_index].delta_length;
+    const candidate_progress: f32 = @floatFromInt(matched_index);
+    const pose = attachment_builders.worldPoseForTemplate(
+        &built.template,
+        candidate_progress,
+        built.row.global_row,
+        0.0,
+        0.0,
+    );
+    const start_local = attachment_builders.Vec3{
+        .x = 0.0,
+        .y = 0.0,
+        .z = sample_length * 0.5,
+    };
+    const start_world_position = Runner.attachmentWorldPositionFromLocal(pose, start_local);
+    const end_world_position = Runner.attachmentWorldPositionFromLocal(pose, .{
+        .x = 0.0,
+        .y = -0.05,
+        .z = start_local.z,
+    });
+
+    try std.testing.expect(
+        Runner.installedAttachmentEntryForSweep(built, start_world_position, end_world_position) == null,
+    );
 }
 
 test "installed attachment entry respects template width" {

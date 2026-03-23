@@ -28,6 +28,16 @@ The strong static chain from this bundle is:
 
 Later, `update_subgoldy` can enter `try_enter_track_attachment_from_swept_motion`, but the entry test is against installed sampled geometry, not against row glyph metadata alone.
 
+Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_motion`:
+
+- scans the installed sample array from tail to head instead of limiting the test to a source-row progress window
+- rejects candidate samples whose world-up Y component (`sample + 0x14`) is negative
+- applies the raw local sweep thresholds against the candidate pose:
+  - `x` within `width / 2 +/- 0.3`
+  - start `y >= -0.2`
+  - start `z` within `[0, delta_length]`
+  - end `y <= 0.001`
+
 ## Follow-State Functions
 
 The current chain looks like this:

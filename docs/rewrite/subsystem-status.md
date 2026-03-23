@@ -188,7 +188,7 @@ Implemented now:
 - natural-end exit now uses template progress and template end pose
 - elevated side exits preserve airborne height instead of snapping straight to the floor
 - `SUPERTRAMP` has a dedicated launch exit path
-- a geometric installed-entry attempt now runs before the old source-row fallback
+- the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples before the old source-row fallback
 - source-row installed-entry fallback remains in place for stability where the geometric entry is not yet strong enough
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
 
