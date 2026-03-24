@@ -203,6 +203,9 @@ const HOOK_PROFILES = {
     outer_bridge_initialize_subgame: true,
     outer_bridge_build_subgame_level: true,
     outer_bridge_update_subgame: true,
+    outer_bridge_update_new_game_menu: true,
+    outer_bridge_update_main_menu: true,
+    outer_bridge_update_high_score_screen: true,
     outer_bridge_initialize_click_start: true,
     outer_bridge_update_pause_menu: true,
     outer_bridge_exit_high_score_screen: true,
@@ -246,6 +249,9 @@ const LIMITS = {
   outer_bridge_initialize_subgame: 256,
   outer_bridge_build_subgame_level: 256,
   outer_bridge_update_subgame: 512,
+  outer_bridge_update_new_game_menu: 256,
+  outer_bridge_update_main_menu: 256,
+  outer_bridge_update_high_score_screen: 256,
   outer_bridge_initialize_click_start: 256,
   outer_bridge_update_pause_menu: 256,
   outer_bridge_exit_high_score_screen: 256,
@@ -286,6 +292,9 @@ const VA = {
   respawn_life_decrement: 0x44205b,
   respawn_complete_subgame_branch: 0x442096,
   exit_high_score_screen_entry: 0x417b50,
+  update_high_score_screen_entry: 0x417260,
+  update_new_game_menu_entry: 0x417eb0,
+  update_main_menu_entry: 0x419e00,
   initialize_subgame_entry: 0x4374b0,
   build_subgame_level_entry: 0x437eb0,
   update_subgame_entry: 0x438b90,
@@ -1498,6 +1507,9 @@ function installHooks(module) {
     HOOKS.outer_bridge_initialize_subgame ||
     HOOKS.outer_bridge_build_subgame_level ||
     HOOKS.outer_bridge_update_subgame ||
+    HOOKS.outer_bridge_update_new_game_menu ||
+    HOOKS.outer_bridge_update_main_menu ||
+    HOOKS.outer_bridge_update_high_score_screen ||
     HOOKS.outer_bridge_initialize_click_start ||
     HOOKS.outer_bridge_update_pause_menu ||
     HOOKS.outer_bridge_exit_high_score_screen ||
@@ -1549,6 +1561,63 @@ function installHooks(module) {
       });
     }
 
+    if (HOOKS.outer_bridge_update_new_game_menu) {
+      Interceptor.attach(fromVa(module, VA.update_new_game_menu_entry), {
+        onEnter() {
+          const app = summarizeAppState(getAppPtr(module));
+          const digest = JSON.stringify(app);
+          maybeEmitSampled(
+            'outer_bridge_update_new_game_menu',
+            app !== null ? app.ptr : 'app',
+            digest,
+            16,
+            {
+              menu: hex(asPtr(this.context.ecx)),
+              app,
+            },
+          );
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_update_main_menu) {
+      Interceptor.attach(fromVa(module, VA.update_main_menu_entry), {
+        onEnter() {
+          const app = summarizeAppState(getAppPtr(module));
+          const digest = JSON.stringify(app);
+          maybeEmitSampled(
+            'outer_bridge_update_main_menu',
+            app !== null ? app.ptr : 'app',
+            digest,
+            16,
+            {
+              menu: hex(asPtr(this.context.ecx)),
+              app,
+            },
+          );
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_update_high_score_screen) {
+      Interceptor.attach(fromVa(module, VA.update_high_score_screen_entry), {
+        onEnter() {
+          const app = summarizeAppState(getAppPtr(module));
+          const digest = JSON.stringify(app);
+          maybeEmitSampled(
+            'outer_bridge_update_high_score_screen',
+            app !== null ? app.ptr : 'app',
+            digest,
+            16,
+            {
+              screen: hex(asPtr(this.context.ecx)),
+              app,
+            },
+          );
+        },
+      });
+    }
+
     if (HOOKS.outer_bridge_initialize_click_start) {
       Interceptor.attach(fromVa(module, VA.initialize_click_start_entry), {
         onEnter() {
@@ -1563,10 +1632,18 @@ function installHooks(module) {
     if (HOOKS.outer_bridge_update_pause_menu) {
       Interceptor.attach(fromVa(module, VA.update_pause_menu_entry), {
         onEnter() {
-          emit('outer_bridge_update_pause_menu', {
-            pause: hex(asPtr(this.context.ecx)),
-            app: summarizeAppState(getAppPtr(module)),
-          });
+          const app = summarizeAppState(getAppPtr(module));
+          const digest = JSON.stringify(app);
+          maybeEmitSampled(
+            'outer_bridge_update_pause_menu',
+            app !== null ? app.ptr : 'app',
+            digest,
+            16,
+            {
+              pause: hex(asPtr(this.context.ecx)),
+              app,
+            },
+          );
         },
       });
     }

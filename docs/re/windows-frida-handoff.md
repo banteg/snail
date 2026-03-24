@@ -310,11 +310,18 @@ Latest stable attachment-side result on 2026-03-24:
   - `outer_bridge_initialize_subgame`
   - `outer_bridge_build_subgame_level`
   - `outer_bridge_update_subgame`
+  - `outer_bridge_update_new_game_menu`
+  - `outer_bridge_update_main_menu`
+  - `outer_bridge_update_high_score_screen`
   - `outer_bridge_initialize_click_start`
   - `outer_bridge_update_pause_menu`
   - `outer_bridge_exit_high_score_screen`
   - `outer_bridge_restore_saved_return`
 - that profile is intended for frontend / saved-owner bridge captures, not attachment or death work
+- `snailmail-trace-20260324-192219-696.ndjson` already proved the first half of that section-4 Frida lane:
+  - persistent high-score replay launch came in with `mode=1`, `selector=2`, `selected_record_persistent=1`, `replay_return=0x12`
+  - the later pause-abandon path hit `outer_bridge_restore_saved_return` with `completion_state = 3`, `saved = 0x12`, and `owner = 0xb`
+  - but the auto-exit half still remained invisible because the first outer-bridge revision did not yet hook `update_high_score_screen`, `update_new_game_menu`, or `update_main_menu`
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.

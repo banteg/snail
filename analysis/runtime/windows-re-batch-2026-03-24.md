@@ -343,10 +343,17 @@ Net status for section 4:
   - `initialize_subgame`
   - `build_subgame_level`
   - `update_subgame` state changes
+  - `update_new_game_menu`
+  - `update_main_menu`
+  - `update_high_score_screen`
   - `initialize_click_start`
   - `update_pause_menu`
   - `exit_high_score_screen`
   - `completion_restore_owner_from_saved_return`
+- the first Frida outer-bridge run already re-confirmed the persistent replay pause-return lane:
+  - persistent high-score replay launch entered with `selected_record_persistent = 1` and `replay_return = 0x12`
+  - pause abandon later hit `outer_bridge_restore_saved_return` with `completion_state = 3` and `saved = 0x12`
+  - the missing part is still the frontend-side auto-exit restore, which needs the newly added `update_high_score_screen` / `update_main_menu` coverage
 
 ## Done Criteria
 

@@ -36,6 +36,9 @@ That profile keeps only the stable section-4 owner / replay bridge probes enable
 - `outer_bridge_initialize_subgame`
 - `outer_bridge_build_subgame_level`
 - `outer_bridge_update_subgame`
+- `outer_bridge_update_new_game_menu`
+- `outer_bridge_update_main_menu`
+- `outer_bridge_update_high_score_screen`
 - `outer_bridge_initialize_click_start`
 - `outer_bridge_update_pause_menu`
 - `outer_bridge_exit_high_score_screen`
