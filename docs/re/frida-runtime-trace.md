@@ -30,15 +30,21 @@ The current default Windows pack is also conservative. These probes are present 
 
 Use the broad script when you need one capture that covers movement, attachments, pickups, and hazards together.
 
-The current checked-in default is `TRACE_PROFILE = 'completion_handoff'` near the top of the script.
-That profile only keeps the section-2 probes enabled:
+The current checked-in default is `TRACE_PROFILE = 'failure_handoff'` near the top of the script.
+That profile only keeps the section-1 probes enabled:
 
-- `level_start`
-- `completion_handoff_arm`
-- `completion_screen_init`
-- `complete_subgame_call`
+- `death_select_respawn`
+- `death_select_final_loss`
+- `respawn_enter`
+- `respawn_life_decrement`
+- `respawn_complete_subgame_branch`
 
-Switch `TRACE_PROFILE` back to `broad_runtime` when you want the wider stable pack again.
+The crash-prone helper-side death hooks still stay off in that profile:
+
+- `death_handoff_cutscene`
+- `death_handoff_update`
+
+Switch `TRACE_PROFILE` to `completion_handoff` for section 2 or back to `broad_runtime` when you want the wider stable pack again.
 
 The completion profile now allows `384` `completion_handoff_arm` rows. In practice that was enough to prove the handoff does not naturally advance past `4.983` in the observed Postal completion lane; the local `update_subgoldy` recovery explains this as a `5.1f` clamp followed by an immediate one-step subtraction back to `~4.983` before the `> 5.0` completion branch.
 

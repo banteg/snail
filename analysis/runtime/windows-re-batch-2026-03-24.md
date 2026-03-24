@@ -61,6 +61,19 @@ Net status for section 1:
 - ordinary spare-life death clearly enters the respawn helper and progresses through a full rebuild-sized timer window before the level restarts
 - section 1 is still incomplete because the life-decrement commit, final-loss branch, and non-Postal death lanes were not captured in the stable pack
 
+Current setup:
+- `tools/frida/snailmail-runtime-trace.js` now defaults to the `failure_handoff` profile
+- that profile keeps the stable death-side hooks on and re-enables only the two missing respawn commit probes:
+  - `death_select_respawn`
+  - `death_select_final_loss`
+  - `respawn_enter`
+  - `respawn_life_decrement`
+  - `respawn_complete_subgame_branch`
+- the crash-prone helper-side probes remain off:
+  - `death_handoff_cutscene`
+  - `death_handoff_update`
+- first pass should still be a spare-life Postal hazard death to verify that `respawn_life_decrement` and `respawn_complete_subgame_branch` stay stable before using the same profile for final-loss and non-Postal lanes
+
 ## 2. Completion Handoff
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 3.

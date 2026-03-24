@@ -158,11 +158,15 @@ Important payload notes for the current script:
 - the stable March 24 Windows death pack now disables these crash-prone probes by default:
   - `death_handoff_cutscene`
   - `death_handoff_update`
+ - the current section-1 `failure_handoff` profile re-enables the two respawn commit probes while still keeping the helper-side death hooks off:
   - `respawn_life_decrement`
   - `respawn_complete_subgame_branch`
 - the stable reduced death-side probes are:
   - `death_select_state_set` at `0x441fa0`
   - `update_subgoldy_resurrect_enter` at `0x441fd0`
+- the current checked-in `failure_handoff` profile extends that stable reduced pack with:
+  - `respawn_life_decrement` at `0x44205b`
+  - `respawn_complete_subgame_branch` at `0x442096`
 - the newer script also emits focused handoff events with app-side owner state from `data_4df904`:
   - `completion_handoff_arm`
   - `completion_screen_init`
