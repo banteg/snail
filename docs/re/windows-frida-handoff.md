@@ -263,6 +263,16 @@ Latest stable attachment-side result on 2026-03-24:
 - in those longer windows, `attachment_exit_progress` climbed from about `0.017` / `0.133` to about `2.95` / `2.933`, and both follow-effect gates flipped on around `0.67`
 - neither `post_follow_value_a` nor `post_follow_value_b` went nonzero anywhere in the trace
 - the first reattached `player_update` after each long skim window showed `attachment_exit_pending = 0` and `attachment_exit_progress = 0`, so the next successful `attachment_begin` is now runtime-confirmed as one generic non-jetpack retirement path
+- `snailmail-trace-20260324-183511-4812.ndjson` then provided the clean terminal-detach contrast case:
+  - `attachment_begin = 7`
+  - `attachment_update = 1033`
+  - `attachment_end = 0`
+  - `attachment_probe = 0`
+  - the last attached frame is `attachment_update retval = 3` on row `394`, template kind `29`, sample index `27`
+  - the next free `player_update` lands detached on row `421`, tile `0x01`, then the player settles on row `422`, tile `0x0f`
+  - `attachment_exit_pending`, `attachment_exit_progress`, `post_follow_value_a`, and `post_follow_value_b` all stay zero through that window
+  - no `attachment_end` event fires anywhere in the trace
+- current interpretation: a clean terminal `HalfPipe` exit can fall straight out through the `retval = 3` path without ever entering the pending-exit family, so the unresolved section-3 behavior must belong to a different skim / partial re-entry lane
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.

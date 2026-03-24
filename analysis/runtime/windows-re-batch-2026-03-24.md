@@ -219,6 +219,22 @@ Net status after the Frida pass:
   - the reduced `0x43b99d` follow-state return-value dispatch hook also caused the same startup crash
   - the default checked-in section-3 pack is back to the last known stable event set
 
+Stable terminal-detach follow-up on 2026-03-24:
+- fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-183511-4812.ndjson`
+- the same stable `attachment_exit` profile stayed up on a clean `HalfPipe` exit and captured:
+  - `attachment_begin = 7`
+  - `attachment_update = 1033`
+  - `attachment_end = 0`
+  - `attachment_probe = 0`
+- the terminal detach is now runtime-confirmed as a separate family from the longer skim windows:
+  - the last attached frame is `attachment_update retval = 3` on row `394`, template kind `29`, sample index `27`, with follow state flipping inactive
+  - the very next free `player_update` lands detached on row `421`, tile `0x01`, then settles onto row `422`, tile `0x0f`
+  - `attachment_exit_pending`, `attachment_exit_progress`, `post_follow_value_a`, and `post_follow_value_b` all stay zero throughout that detach window
+  - no `attachment_end` event fires anywhere in the trace
+- current read:
+  - the clean terminal `HalfPipe` completion path does not use the pending-exit retirement family at all
+  - the unresolved section-3 behavior must belong to a different skim / partial re-entry lane than this direct `retval = 3` terminal detach
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.
