@@ -79,6 +79,7 @@ Current 2026-03-24 result:
 - fresh Frida artifacts:
   - `C:\share\snail\frida\snailmail-trace-20260324-171046-15324.ndjson`
   - `C:\share\snail\frida\snailmail-trace-20260324-172644-2560.ndjson`
+  - `C:\share\snail\frida\snailmail-trace-20260324-173402-14228.ndjson`
 - `tools/frida/snailmail-runtime-trace.js` now defaults to the `completion_handoff` profile, and the latest stable capture confirmed `hooks_installed.profile = "completion_handoff"`
 - the stable completion-side Frida pack now lands the first two required handoff anchors without crashing:
   - `completion_handoff_arm` first fires on the live Postal player with `timer = 0.0`, `step = 0.017`, and `app.owner = 0xb`
@@ -89,14 +90,20 @@ Current 2026-03-24 result:
 - the `2.0s` voice gate is now materially narrowed to the live player-owned completion handoff state:
   - `completion_handoff_arm` stayed `voice_gate = false` at `timer = 2.000`
   - the next sample at `timer = 2.017` flipped to `voice_gate = true` on the same player and app owner
-- the remaining gap for section 2 is the `5.0s` fade owner:
-  - the stable trace suppressed `completion_handoff_arm` after `256` rows at `timer = 4.25`
-  - the Frida event budget has now been raised so the next focused completion run can observe the handoff past `5.0s`
+- the extended completion trace plus static recovery closes the `5.0s` fade owner too:
+  - the longer run reached a stable plateau at `timer = 4.983` while `completion_handoff.active = 1`, `voice_gate = 1`, and `app.owner = 0xb` stayed unchanged on the same player
+  - the first `complete_subgame_call` then fired from `0x43c9af -> 0x43c9b4` on the same game/app owner
+  - the local decompile of the same `update_subgoldy` block shows why the runtime stalls at `4.983`: once `player + 0x444` exceeds `2.0`, some lanes force it to `5.1f`, then the code immediately subtracts `player + 0x448` back down by one step before checking `> 5.0`
+  - those checks are on the same player-owned handoff fields we traced live:
+    - `player + 0x444` (`this + 1092`) is the completion timer
+    - `player + 0x448` (`this + 1096`) is the per-tick step
+    - `player + 0x44e` (`this + 1102`) is the one-shot `2.0s` voice latch
 
 Net status for section 2:
 - the first completion arm, the first completion-screen init call, and the first `complete_subgame` call are now captured on Windows with Frida
 - the exact `2.0s` voice gate flip is now live-confirmed on the player-owned completion handoff state
-- section 2 is still incomplete only because the `5.0s` fade threshold was not yet observed directly in the unsuppressed trace
+- the exact `5.0s` fade gate owner is now closed too: it is the same player-owned completion handoff timer at `player + 0x444`, stepped by `player + 0x448`, with the runtime plateau at `4.983` explained by the local `5.1f` clamp-and-subtract branch
+- section 2 is complete
 
 ## 3. Attachment-Exit Consumers
 

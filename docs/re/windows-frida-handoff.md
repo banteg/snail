@@ -220,7 +220,13 @@ Latest stable completion-side result on 2026-03-24:
 - it captured the first `completion_handoff_arm`, one `completion_screen_init`, and the first `complete_subgame_call`
 - `completion_handoff_arm` first flipped `voice_gate` from `false` at `timer = 2.000` to `true` at `timer = 2.017` on the same live player-owned handoff state
 - the current `completion_screen_init` hook is trustworthy as a call confirmation but still has a bad field decode, so do not trust its derived `player` or `game` fields yet
-- the current remaining section-2 ask is only the direct `5.0s` fade observation, and the script now raises the completion-arm budget to carry that trace past `5.0s`
+- `snailmail-trace-20260324-173402-14228.ndjson` extended the same lane and showed the handoff timer flattening at `4.983` while the same player-owned handoff state and `app.owner = 0xb` remained live until `complete_subgame`
+- local recovery of the same `update_subgoldy` block closes the reason for that plateau:
+  - `player + 0x444` is the completion timer
+  - `player + 0x448` is the step
+  - `player + 0x44e` is the one-shot `2.0s` voice latch
+  - once the completion logic forces the timer to `5.1f`, it immediately subtracts one step back to `~4.983` before checking the `> 5.0` branch
+- section 2 is now considered closed
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
