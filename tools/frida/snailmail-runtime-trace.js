@@ -6,7 +6,7 @@ const MODULE_POLL_MS = 250;
 const TRACE_OUTPUT_DIR = 'C:\\share\\snail\\frida';
 const TRACE_OUTPUT_PREFIX = 'snailmail-trace';
 const ERROR_ALREADY_EXISTS = 183;
-const TRACE_PROFILE = 'attachment_survey';
+const TRACE_PROFILE = 'outer_bridge';
 
 const HOOK_PROFILES = {
   broad_runtime: {
@@ -169,6 +169,45 @@ const HOOK_PROFILES = {
     salt_deactivate: true,
     slug_spawn: true,
   },
+  outer_bridge: {
+    level_start: false,
+    path_lookup: false,
+    movement_flags_update: false,
+    player_update: false,
+    completion_handoff_arm: false,
+    completion_screen_init: false,
+    complete_subgame_call: false,
+    death_handoff_cutscene: false,
+    death_handoff_update: false,
+    death_select_respawn: false,
+    death_select_final_loss: false,
+    respawn_enter: false,
+    respawn_life_decrement: false,
+    respawn_complete_subgame_branch: false,
+    track_pair_payload: false,
+    attachment_follow_dispatch: false,
+    attachment_probe: false,
+    attachment_begin: false,
+    attachment_update: false,
+    attachment_end: false,
+    attachment_end_callsite: false,
+    floor_sample: false,
+    garbage_spawn: false,
+    health_pickup: false,
+    jetpack_pickup: false,
+    ring_effect: false,
+    salt_spawn: false,
+    salt_update: false,
+    salt_deactivate: false,
+    slug_spawn: false,
+    outer_bridge_initialize_subgame: true,
+    outer_bridge_build_subgame_level: true,
+    outer_bridge_update_subgame: true,
+    outer_bridge_initialize_click_start: true,
+    outer_bridge_update_pause_menu: true,
+    outer_bridge_exit_high_score_screen: true,
+    outer_bridge_restore_saved_return: true,
+  },
 };
 
 const HOOKS = HOOK_PROFILES[TRACE_PROFILE] || HOOK_PROFILES.broad_runtime;
@@ -204,6 +243,13 @@ const LIMITS = {
   salt_update: 4096,
   salt_deactivate: 4096,
   slug_spawn: 1024,
+  outer_bridge_initialize_subgame: 256,
+  outer_bridge_build_subgame_level: 256,
+  outer_bridge_update_subgame: 512,
+  outer_bridge_initialize_click_start: 256,
+  outer_bridge_update_pause_menu: 256,
+  outer_bridge_exit_high_score_screen: 256,
+  outer_bridge_restore_saved_return: 128,
 };
 
 const VA = {
@@ -239,6 +285,13 @@ const VA = {
   update_subgoldy_resurrect_enter: 0x441fd0,
   respawn_life_decrement: 0x44205b,
   respawn_complete_subgame_branch: 0x442096,
+  exit_high_score_screen_entry: 0x417b50,
+  initialize_subgame_entry: 0x4374b0,
+  build_subgame_level_entry: 0x437eb0,
+  update_subgame_entry: 0x438b90,
+  update_pause_menu_entry: 0x4407a0,
+  initialize_click_start_entry: 0x442170,
+  completion_restore_owner_from_saved_return: 0x406ab7,
 };
 
 const ATTACHMENT_PROBE_SITES = [
@@ -276,10 +329,30 @@ const ATTACHMENT_END_CALLSITES = [
 ];
 
 const APP = {
+  active: 0x94,
+  route: 0x98,
   owner: 0x1b8,
   saved: 0x1bc,
+  bank: 0x1d196,
+  route_kind: 0x74658,
   completion_state: 0x4f3ac,
+  replay_active: 0x1066be8,
+  replay_persistent: 0x1066be9,
+  replay_ptr: 0x1066bec,
   replay_return: 0x1066bf0,
+  menu_hide: 0x4f2e0,
+  menu_t: 0x4f2e4,
+  menu_step: 0x4f2e8,
+};
+
+const GAME = {
+  state: 0x3c,
+  mode: 0x40,
+  mode_arg: 0x44,
+  selector: 0x1270fc8,
+  selected_record_active: 0xff25d0,
+  selected_record_persistent: 0xff25d1,
+  selected_record_ptr: 0xff25d4,
 };
 
 const SEGMENT_PATH_INDEX_NAMES = [
@@ -1006,10 +1079,38 @@ function summarizeAppState(appPtr) {
 
   return {
     ptr: hex(app),
+    active: safeReadU32(app, APP.active),
+    route: safeReadU32(app, APP.route),
     owner: safeReadU32(app, APP.owner),
     saved: safeReadU32(app, APP.saved),
+    bank: safeReadU8(app, APP.bank),
+    route_kind: safeReadU32(app, APP.route_kind),
     completion_state: safeReadU32(app, APP.completion_state),
+    replay_active: boolFlag(safeReadU8(app, APP.replay_active)),
+    replay_persistent: boolFlag(safeReadU8(app, APP.replay_persistent)),
+    replay_ptr: hex(safeReadPointer(app, APP.replay_ptr)),
     replay_return: safeReadU32(app, APP.replay_return),
+    menu_hide: safeReadU32(app, APP.menu_hide),
+    menu_t: safeReadFloat(app, APP.menu_t),
+    menu_step: safeReadFloat(app, APP.menu_step),
+  };
+}
+
+function summarizeOuterBridgeGame(gamePtr) {
+  const game = asPtr(gamePtr);
+  if (game === null || game.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(game),
+    state: safeReadU32(game, GAME.state),
+    mode: safeReadU32(game, GAME.mode),
+    mode_arg: safeReadU32(game, GAME.mode_arg),
+    selector: safeReadU32(game, GAME.selector),
+    selected_record_active: boolFlag(safeReadU8(game, GAME.selected_record_active)),
+    selected_record_persistent: boolFlag(safeReadU8(game, GAME.selected_record_persistent)),
+    selected_record_ptr: hex(safeReadPointer(game, GAME.selected_record_ptr)),
   };
 }
 
@@ -1391,6 +1492,104 @@ function installHooks(module) {
         });
       },
     });
+  }
+
+  if (
+    HOOKS.outer_bridge_initialize_subgame ||
+    HOOKS.outer_bridge_build_subgame_level ||
+    HOOKS.outer_bridge_update_subgame ||
+    HOOKS.outer_bridge_initialize_click_start ||
+    HOOKS.outer_bridge_update_pause_menu ||
+    HOOKS.outer_bridge_exit_high_score_screen ||
+    HOOKS.outer_bridge_restore_saved_return
+  ) {
+    const seenOuterBridgeSubgameState = new Map();
+
+    if (HOOKS.outer_bridge_initialize_subgame) {
+      Interceptor.attach(fromVa(module, VA.initialize_subgame_entry), {
+        onEnter() {
+          const game = asPtr(this.context.ecx);
+          emit('outer_bridge_initialize_subgame', {
+            game: summarizeOuterBridgeGame(game),
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_build_subgame_level) {
+      Interceptor.attach(fromVa(module, VA.build_subgame_level_entry), {
+        onEnter() {
+          const game = asPtr(this.context.ecx);
+          emit('outer_bridge_build_subgame_level', {
+            game: summarizeOuterBridgeGame(game),
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_update_subgame) {
+      Interceptor.attach(fromVa(module, VA.update_subgame_entry), {
+        onEnter() {
+          const game = asPtr(this.context.ecx);
+          const gameSummary = summarizeOuterBridgeGame(game);
+          const gameKey = gameSummary !== null ? gameSummary.ptr : hex(game);
+          const nextState = gameSummary !== null ? gameSummary.state : null;
+          const prevState = seenOuterBridgeSubgameState.get(gameKey);
+          if (prevState === nextState) {
+            return;
+          }
+          seenOuterBridgeSubgameState.set(gameKey, nextState);
+          emit('outer_bridge_update_subgame', {
+            game: gameSummary,
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_initialize_click_start) {
+      Interceptor.attach(fromVa(module, VA.initialize_click_start_entry), {
+        onEnter() {
+          emit('outer_bridge_initialize_click_start', {
+            click: hex(asPtr(this.context.ecx)),
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_update_pause_menu) {
+      Interceptor.attach(fromVa(module, VA.update_pause_menu_entry), {
+        onEnter() {
+          emit('outer_bridge_update_pause_menu', {
+            pause: hex(asPtr(this.context.ecx)),
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_exit_high_score_screen) {
+      Interceptor.attach(fromVa(module, VA.exit_high_score_screen_entry), {
+        onEnter() {
+          emit('outer_bridge_exit_high_score_screen', {
+            app: summarizeAppState(asPtr(this.context.ecx)),
+          });
+        },
+      });
+    }
+
+    if (HOOKS.outer_bridge_restore_saved_return) {
+      Interceptor.attach(fromVa(module, VA.completion_restore_owner_from_saved_return), {
+        onEnter() {
+          emit('outer_bridge_restore_saved_return', {
+            app: summarizeAppState(asPtr(this.context.eax)),
+          });
+        },
+      });
+    }
   }
 
   if (HOOKS.death_handoff_cutscene) {

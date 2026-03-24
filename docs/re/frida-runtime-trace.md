@@ -30,34 +30,26 @@ The current default Windows pack is also conservative. These probes are present 
 
 Use the broad script when you need one capture that covers movement, attachments, pickups, and hazards together.
 
-The current checked-in default is `TRACE_PROFILE = 'attachment_survey'` near the top of the script.
-That profile keeps the stable attachment-family probes enabled while adding general runtime context:
+The current checked-in default is `TRACE_PROFILE = 'outer_bridge'` near the top of the script.
+That profile keeps only the stable section-4 owner / replay bridge probes enabled:
 
-- `level_start`
-- `path_lookup`
-- `movement_flags_update`
-- `player_update`
-- `track_pair_payload`
-- `attachment_begin`
-- `attachment_update`
-- `attachment_end`
-- `floor_sample`
-- `health_pickup`
-- `jetpack_pickup`
-- `ring_effect`
-- `salt_spawn`
-- `salt_update`
-- `salt_deactivate`
-- `slug_spawn`
+- `outer_bridge_initialize_subgame`
+- `outer_bridge_build_subgame_level`
+- `outer_bridge_update_subgame`
+- `outer_bridge_initialize_click_start`
+- `outer_bridge_update_pause_menu`
+- `outer_bridge_exit_high_score_screen`
+- `outer_bridge_restore_saved_return`
 
 The current profile still leaves the unrelated high-noise families off:
 
+- attachment-side hooks
 - death-side hooks
 - completion-side hooks
 - the crashing mid-function attachment probes (`attachment_follow_dispatch`, `attachment_probe`, and `attachment_end_callsite`)
 - `garbage_spawn`
 
-Switch `TRACE_PROFILE` to `failure_handoff` for section 1, `completion_handoff` for section 2, `attachment_exit` for the narrow section-3 pass, or back to `broad_runtime` when you want the widest pack again.
+Switch `TRACE_PROFILE` to `failure_handoff` for section 1, `completion_handoff` for section 2, `attachment_exit` or `attachment_survey` for section 3, or back to `broad_runtime` when you want the widest pack again.
 
 The completion profile now allows `384` `completion_handoff_arm` rows. In practice that was enough to prove the handoff does not naturally advance past `4.983` in the observed Postal completion lane; the local `update_subgoldy` recovery explains this as a `5.1f` clamp followed by an immediate one-step subtraction back to `~4.983` before the `> 5.0` completion branch.
 
@@ -179,6 +171,7 @@ Current hooks in the script:
     - `attachment_probe` still did not fire, so the swept-entry helper itself remains unconfirmed in the stable Frida lane
     - `snailmail-trace-20260324-183511-4812.ndjson` captured the clean contrast case: a terminal `HalfPipe` detach with `attachment_update retval = 3`, no `attachment_end`, no `attachment_exit_pending`, and no nonzero post-follow carryover values
     - `snailmail-trace-20260324-185444-12876.ndjson` extended that picture in Challenge mode with four pending windows across template kinds `45`, `16`, and `32`, including both in-place clears and a next-`attachment_begin` retirement
+    - `snailmail-trace-20260324-190319-9964.ndjson` then captured the first long natural retirement in the stable lane: kind `24` variant `0` stayed pending until the next `level_start` / `attachment_begin`, while shorter kind `16` and kind `0` windows still cleared in place
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
   - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`

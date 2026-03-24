@@ -265,6 +265,27 @@ Generic attachment survey follow-up on 2026-03-24:
   - `post_follow_value_a` and `post_follow_value_b` still never go nonzero
   - no direct consumer of `post_follow_value_b`
 
+Long Challenge survey follow-up on 2026-03-24:
+- fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-190319-9964.ndjson`
+- the same stable survey pack stayed up through a longer Challenge run and captured:
+  - `attachment_begin = 21`
+  - `attachment_end = 3`
+  - `player_update = 2626`
+  - `post_follow_value_a = 0` everywhere
+  - `post_follow_value_b = 0` everywhere
+- this is the first clean runtime capture of a long pending window retiring naturally:
+  - kind `24` variant `0` ends at line `2392`
+  - the pending window then runs from line `2393` through `2463`, with `attachment_exit_progress = 0.017 -> 2.883`
+  - both follow-effect gates are on by the tail of that window
+  - the next `level_start` at line `2464` and fresh `attachment_begin` at line `2465` retire it on the first reattached frame at line `2467`
+- the same run also preserved the short in-place clear family:
+  - kind `16` variant `1`: `0.017 -> 0.1`, then clears in place onto tile `0x01`
+  - kind `0` variant `1`: `0.017 -> 0.55`, then clears in place onto tile `0x01`
+- current read after the longer run:
+  - long pending windows now have a solid generic retirement path: survive off-track, then clear on the first reattached frame after the next `level_start` / `attachment_begin`
+  - short pending windows can still clear in place without reattachment
+  - section 3 is still not fully closed because `attachment_probe` never fires and `post_follow_value_b` still has no observed consumer
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.
@@ -318,6 +339,14 @@ Net status for section 4:
 - the ordinary startup, respawn, transient pause-return, and route-map Time Trial replay lanes are now materially narrowed and do not support `0x1a/0x1b` as their live bridge
 - high-score replay rows are now confirmed as a persistent replay-backed return family and they do use saved-return state `0x12`
 - section 4 still needs one more targeted Windows pass only if we need the explicit live `0x1a/0x1b` producer or a corrected completion-to-main-menu restore trace
+- the checked-in Frida default is now an `outer_bridge` profile that traces the subgame/replay-side owner path through:
+  - `initialize_subgame`
+  - `build_subgame_level`
+  - `update_subgame` state changes
+  - `initialize_click_start`
+  - `update_pause_menu`
+  - `exit_high_score_screen`
+  - `completion_restore_owner_from_saved_return`
 
 ## Done Criteria
 

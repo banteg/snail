@@ -298,6 +298,23 @@ Latest stable attachment-side result on 2026-03-24:
     - another begins as kind `36` and ends as kind `16`
     - another begins as kind `35` and ends as kind `32`
 - current interpretation: the generic attachment-exit machinery is not specific to the earlier `HalfPipe` family, and begin/end template kind alone is not a reliable way to model every attachment segment
+- `snailmail-trace-20260324-190319-9964.ndjson` then closed the strongest remaining runtime question in that family:
+  - `attachment_begin = 21`, `attachment_end = 3`, `player_update = 2626`
+  - the long kind `24` variant `0` pending window runs from line `2393` to `2463`, reaching `attachment_exit_progress = 2.883` with both follow-effect gates on
+  - the next `level_start` at line `2464` and `attachment_begin` at line `2465` retire that window on the first reattached frame at line `2467`
+  - the same trace keeps the short in-place clear family too:
+    - kind `16` variant `1`: `0.017 -> 0.1`
+    - kind `0` variant `1`: `0.017 -> 0.55`
+  - `post_follow_value_a` and `post_follow_value_b` still never go nonzero anywhere in the longer run
+- the current checked-in default is now the narrow `outer_bridge` profile for section 4:
+  - `outer_bridge_initialize_subgame`
+  - `outer_bridge_build_subgame_level`
+  - `outer_bridge_update_subgame`
+  - `outer_bridge_initialize_click_start`
+  - `outer_bridge_update_pause_menu`
+  - `outer_bridge_exit_high_score_screen`
+  - `outer_bridge_restore_saved_return`
+- that profile is intended for frontend / saved-owner bridge captures, not attachment or death work
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
