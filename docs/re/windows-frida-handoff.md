@@ -184,7 +184,6 @@ Important payload notes for the current script:
 - the current checked-in default is now the section-3 `attachment_exit` profile:
   - `movement_flags_update`
   - `player_update`
-  - `attachment_follow_dispatch`
   - `attachment_begin`
   - `attachment_update`
   - `attachment_end`
@@ -220,7 +219,6 @@ Expected event names in the NDJSON:
 - `respawn_life_decrement`
 - `respawn_complete_subgame_branch`
 - `track_pair_payload`
-- `attachment_follow_dispatch`
 - `attachment_begin`
 - `attachment_update`
 - `attachment_end`

@@ -35,7 +35,6 @@ That profile only keeps the section-3 probes enabled:
 
 - `movement_flags_update`
 - `player_update`
-- `attachment_follow_dispatch`
 - `attachment_begin`
 - `attachment_update`
 - `attachment_end`
@@ -144,7 +143,8 @@ Current hooks in the script:
   - older stable hook target for attempted path-attachment entry
   - the more aggressive direct `update_subgoldy` callsite hooks at `0x43bdf0` and `0x43bec5` were tried and then removed from the default Windows pack after a startup crash
 - `0x43b99d` `attachment_follow_dispatch`
-  - logs the return value from `update_track_attachment_follow_state` before `update_subgoldy` jumps through the local switch table
+  - was also tried as a reduced higher-detail hook and caused the same startup crash on this host
+  - it is not enabled in the default checked-in Windows pack
 - `0x420c40` `begin_track_attachment_follow_state`
   - logs the actual transition into attachment-follow state
   - now emits both the full follow-state summary and the resolved attachment-template summary

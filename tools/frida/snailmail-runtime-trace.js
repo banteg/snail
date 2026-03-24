@@ -121,7 +121,7 @@ const HOOK_PROFILES = {
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
     track_pair_payload: false,
-    attachment_follow_dispatch: true,
+    attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: true,
     attachment_update: true,

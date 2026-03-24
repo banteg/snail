@@ -182,7 +182,6 @@ Current setup:
 - that profile keeps only the live player and attachment-exit state hooks needed for section 3:
   - `movement_flags_update`
   - `player_update`
-  - `attachment_follow_dispatch`
   - `attachment_begin`
   - `attachment_update`
   - `attachment_end`
@@ -215,9 +214,10 @@ Net status after the Frida pass:
 - but the generic non-jetpack retirement behavior is now partially closed at runtime:
   - `attachment_exit_pending` can persist through an off-track skim window
   - that pending state is cleared by the next successful reattachment, not only by the already known jetpack branch
-- the current safer higher-detail local script revision keeps only the stable extra branch signal:
-  - the `0x43b99d` follow-state return-value dispatch
-  - the direct `0x43bdf0` / `0x43bec5` and `end_track_attachment_follow_state` callsite hooks were removed from the default pack after they caused a startup crash
+- the attempted higher-detail local script revisions were not stable on this host:
+  - the direct `0x43bdf0` / `0x43bec5` and `end_track_attachment_follow_state` callsite hooks caused a startup crash
+  - the reduced `0x43b99d` follow-state return-value dispatch hook also caused the same startup crash
+  - the default checked-in section-3 pack is back to the last known stable event set
 
 ## 4. Outer Bridge
 
