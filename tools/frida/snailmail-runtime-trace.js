@@ -6,7 +6,7 @@ const MODULE_POLL_MS = 250;
 const TRACE_OUTPUT_DIR = 'C:\\share\\snail\\frida';
 const TRACE_OUTPUT_PREFIX = 'snailmail-trace';
 const ERROR_ALREADY_EXISTS = 183;
-const TRACE_PROFILE = 'attachment_exit';
+const TRACE_PROFILE = 'attachment_survey';
 
 const HOOK_PROFILES = {
   broad_runtime: {
@@ -136,6 +136,38 @@ const HOOK_PROFILES = {
     salt_update: false,
     salt_deactivate: false,
     slug_spawn: false,
+  },
+  attachment_survey: {
+    level_start: true,
+    path_lookup: true,
+    movement_flags_update: true,
+    player_update: true,
+    completion_handoff_arm: false,
+    completion_screen_init: false,
+    complete_subgame_call: false,
+    death_handoff_cutscene: false,
+    death_handoff_update: false,
+    death_select_respawn: false,
+    death_select_final_loss: false,
+    respawn_enter: false,
+    respawn_life_decrement: false,
+    respawn_complete_subgame_branch: false,
+    track_pair_payload: true,
+    attachment_follow_dispatch: false,
+    attachment_probe: false,
+    attachment_begin: true,
+    attachment_update: true,
+    attachment_end: true,
+    attachment_end_callsite: false,
+    floor_sample: true,
+    garbage_spawn: false,
+    health_pickup: true,
+    jetpack_pickup: true,
+    ring_effect: true,
+    salt_spawn: true,
+    salt_update: true,
+    salt_deactivate: true,
+    slug_spawn: true,
   },
 };
 

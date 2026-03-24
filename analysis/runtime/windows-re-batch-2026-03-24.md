@@ -234,6 +234,10 @@ Stable terminal-detach follow-up on 2026-03-24:
 - current read:
   - the clean terminal `HalfPipe` completion path does not use the pending-exit retirement family at all
   - the unresolved section-3 behavior must belong to a different skim / partial re-entry lane than this direct `retval = 3` terminal detach
+- follow-up instrumentation change:
+  - the checked-in default Frida profile is now `attachment_survey`, a stable generic attachment-family pack for Challenge or mixed-level runs
+  - it adds `level_start`, `path_lookup`, `track_pair_payload`, `floor_sample`, and pickup/hazard context on top of the stable attachment hooks
+  - the known crashing mid-function section-3 probes stay disabled in that survey profile
 
 ## 4. Outer Bridge
 
