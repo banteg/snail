@@ -44,6 +44,11 @@ That profile keeps only the stable section-4 owner / replay bridge probes enable
 - `outer_bridge_exit_high_score_screen`
 - `outer_bridge_restore_saved_return`
 
+Recent section-4 result in the current default profile:
+
+- `snailmail-trace-20260324-192219-696.ndjson` proved the persistent replay pause-return lane through `outer_bridge_restore_saved_return`
+- `snailmail-trace-20260324-212434-14928.ndjson` then captured the frontend-side natural auto-exit path into `update_high_score_screen` and later `update_main_menu`, while preserving `saved = 0x12`
+
 The current profile still leaves the unrelated high-noise families off:
 
 - attachment-side hooks

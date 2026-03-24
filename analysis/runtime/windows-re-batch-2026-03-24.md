@@ -354,6 +354,13 @@ Net status for section 4:
   - persistent high-score replay launch entered with `selected_record_persistent = 1` and `replay_return = 0x12`
   - pause abandon later hit `outer_bridge_restore_saved_return` with `completion_state = 3` and `saved = 0x12`
   - the missing part is still the frontend-side auto-exit restore, which needs the newly added `update_high_score_screen` / `update_main_menu` coverage
+- the next Frida outer-bridge run then landed the missing frontend-side auto-exit trace:
+  - fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-212434-14928.ndjson`
+  - before launch, `update_main_menu` ran with `owner = 5`, then `update_high_score_screen` ran with `owner = 19`
+  - the replay row launched as a persistent replay family again: `initialize_subgame` entered with `mode = 1`, `selector = 2`, `selected_record_persistent = 1`, and `replay_return = 0x12`
+  - after natural replay end, control returned to `update_high_score_screen` with `owner = 19`, `saved = 0x12`, `replay_active = 1`, and `replay_persistent = 0`
+  - later the same trace entered `update_main_menu` with `owner = 5` while still preserving `saved = 0x12`
+  - no `outer_bridge_exit_high_score_screen` hit fired in that path, so the return does not appear to route through the previously watched helper entry
 
 ## Done Criteria
 

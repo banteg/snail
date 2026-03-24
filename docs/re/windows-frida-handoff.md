@@ -322,6 +322,12 @@ Latest stable attachment-side result on 2026-03-24:
   - persistent high-score replay launch came in with `mode=1`, `selector=2`, `selected_record_persistent=1`, `replay_return=0x12`
   - the later pause-abandon path hit `outer_bridge_restore_saved_return` with `completion_state = 3`, `saved = 0x12`, and `owner = 0xb`
   - but the auto-exit half still remained invisible because the first outer-bridge revision did not yet hook `update_high_score_screen`, `update_new_game_menu`, or `update_main_menu`
+- `snailmail-trace-20260324-212434-14928.ndjson` then closed that frontend-side gap:
+  - before replay launch, the trace shows `update_main_menu owner = 5`, then `update_high_score_screen owner = 19`
+  - the replay row itself still launches as the persistent replay family with `selected_record_persistent = 1` and `replay_return = 0x12`
+  - after natural replay end, control returns to `update_high_score_screen` with `owner = 19`, `saved = 0x12`, `replay_active = 1`, and `replay_persistent = 0`
+  - later the same trace reaches `update_main_menu` with `owner = 5` while still preserving `saved = 0x12`
+  - no `outer_bridge_exit_high_score_screen` event fired, so this auto-exit path does not appear to route through that helper entry
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
