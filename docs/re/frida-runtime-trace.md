@@ -48,6 +48,7 @@ Recent section-4 result in the current default profile:
 
 - `snailmail-trace-20260324-192219-696.ndjson` proved the persistent replay pause-return lane through `outer_bridge_restore_saved_return`
 - `snailmail-trace-20260324-212434-14928.ndjson` then captured the frontend-side natural auto-exit path into `update_high_score_screen` and later `update_main_menu`, while preserving `saved = 0x12`
+- `snailmail-trace-20260324-222809-14556.ndjson` then showed that plain New Game idling does not currently seed the local `menu_t` / `menu_step` replay timer fields, so the static random-replay branch did not fire in runtime on this build
 
 The current profile still leaves the unrelated high-noise families off:
 

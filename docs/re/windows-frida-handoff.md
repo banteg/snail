@@ -334,6 +334,11 @@ Latest stable attachment-side result on 2026-03-24:
   - `build_subgame_level` only armed the transient lane: `selected_record_persistent = 0`, `replay_persistent = 0`, `replay_return = 0`
   - after the watched run ended, control rebuilt back through `initialize_subgame` with `saved = 0xa`, then returned into `update_new_game_menu owner = 0` and `update_main_menu owner = 5`
   - so this path is not the missing `0x1a/0x1b` producer either
+- `snailmail-trace-20260324-222809-14556.ndjson` then checked the plain New Game idle lane directly:
+  - `update_new_game_menu` stayed flat at `owner = 0`, `replay_active = 0`, `replay_persistent = 0`, and `replay_return = 0`
+  - the exposed menu-local replay timer fields stayed flat too: `menu_t = 0`, `menu_step = 0`
+  - no `initialize_subgame` or replay-backed launch happened in that window
+  - current read: the static random replay branch in `update_new_game_menu` is real, but plain idling on this build does not seed the local timer or step needed to reach it
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.

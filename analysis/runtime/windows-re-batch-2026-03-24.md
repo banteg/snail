@@ -368,6 +368,12 @@ Net status for section 4:
   - `build_subgame_level` then armed only the transient replay lane: `selected_record_active = 1`, `selected_record_persistent = 0`, `replay_active = 1`, `replay_persistent = 0`, `replay_return = 0`
   - after the watched run ended, control rebuilt back through `initialize_subgame` with `saved = 0xa`, then returned into `update_new_game_menu owner = 0` and `update_main_menu owner = 5`
   - current read: Time Trial `watch best time trial` is not the missing `0x1a/0x1b` producer; it behaves like another transient replay-backed route-map lane
+- a final Frida pass on plain New Game idling did not arm the static random-replay branch:
+  - fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-222809-14556.ndjson`
+  - `update_new_game_menu` stayed flat at `owner = 0`, `replay_active = 0`, `replay_persistent = 0`, and `replay_return = 0`
+  - the menu-local replay timer fields also stayed flat for the whole capture: `menu_t = 0`, `menu_step = 0`
+  - no `initialize_subgame`, no replay pointer, and no launch transition landed in that window
+  - current read: the random replay branch does exist statically in `update_new_game_menu`, but plain idling on this build does not seed the menu-local timer or step that would let it fire
 
 ## Done Criteria
 
@@ -377,9 +383,10 @@ This batch is complete only when all of these are true:
 - no Zig proxy patch was made during the batch
 
 Current batch status:
-- section 3 now has fresh partial Windows evidence, but not its full done criteria
-- section 4 now has fresh partial Windows evidence, but not its full done criteria
-- sections 1 and 2 still need fresh Windows captures before the replacement decision is ready
+- sections 1 and 2 now have fresh Windows captures and are effectively closed for the current porting decision
+- section 3 now has fresh Windows evidence for both long pending-window retirement and short in-place clears, but it still does not have a confirmed runtime producer or consumer for `post_follow_value_b`
+- section 4 now has fresh Windows evidence for all practical UI replay and return lanes we could reach from normal frontend flow
+- the remaining section-4 gap is the explicit live `0x1a/0x1b` producer, which now looks more like a static-only or rarer frontend lane than an ordinary menu flow
 
 ## Expected Next Replacement Boundary
 
