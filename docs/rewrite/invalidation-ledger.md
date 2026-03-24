@@ -27,3 +27,15 @@ Template:
 - invalidated claim:
 - replacement evidence:
 - port consequence:
+
+## 2026-03-25 - Outer bridge
+
+- invalidated claim: ordinary respawn rebuild should stay modeled as a saved-owner bridge opcode lane
+- replacement evidence: March 24 Windows capture shows ordinary respawn rebuilding through direct owner `0x1c`, not `0x1a/0x1b`
+- port consequence: respawn bridge state in Zig must store the direct selector as authoritative and stop using the request dispatcher as the conceptual center
+
+## 2026-03-25 - Runtime capture policy
+
+- invalidated claim: broader Windows capture is still the default next step for bridge and attachment work
+- replacement evidence: the stable March 24 packets closed the practical bridge handoff lanes, while broader probe sets caused host hangs
+- port consequence: outer bridge is unblocked for replacement from the locked capture baseline; attachment exit stays static-RE only until a narrower stable proof exists

@@ -107,6 +107,7 @@ Do not use commit count as the primary success metric.
 
 ## Current Freeze
 
-- Freeze further attachment-exit micro-narrowing Zig changes until fresh Windows evidence lands.
-- Freeze further outer-bridge micro-narrowing Zig changes until fresh Windows evidence lands.
-- The active batch packet is `analysis/runtime/windows-re-batch-2026-03-24.md`.
+- Wider Windows capture is currently suspended on this host after broader Frida or CDB attempts caused system hangs.
+- Outer bridge is now the active `static-closable` replacement target from `analysis/runtime/outer-bridge-post-capture-2026-03-25.md`.
+- Attachment-exit carryover remains evidence-capped static RE only from `analysis/runtime/attachment-exit-static-re-2026-03-25.md`.
+- Treat the March 24 runtime captures as the locked evidence baseline unless a future single-hook probe is both stable and strictly necessary.

@@ -121,3 +121,4 @@ When a native owner is known, the matching scaffold must shrink in the same patc
 - do not add durable tests for unconfirmed Zig-local proxy behavior
 - do not let a green test run for a proxy become evidence of parity
 - do not leave important reasoning only in chat output
+- when runtime capture is host-capped, treat the locked packet as the evidence baseline and proceed only on subsystems that are already `static-closable`

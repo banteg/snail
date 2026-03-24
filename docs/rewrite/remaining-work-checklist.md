@@ -125,7 +125,7 @@ Work this top-down unless a new runtime capture invalidates the order.
   - newer controller-layout narrowing: the same menu-local object at `data_4df904 + 0x4f2dc` now has a firmer partial shape: cursor `+0x0`, likely hide latch `+0x4`, secondary startup suppressor timer `+0x8/+0xc`, and attract accumulator/step `+0x10/+0x14`
   - likely next step: trace `[controller + 0x98]`, `data_4df904 + 110`, `+119190`, `+4299515`, `+4299516`, and `+17198056/+17198057` together in one Windows session
 - [x] Port rebuild/teardown/return ownership into one explicit boundary instead of distributing it across runner and app helpers
-  - current port shape: result exits and abandon exits now route through one `OuterBridgeRequest` lane with native opcode names plus a preserved launch-surface owner captured on level entry
+  - current port shape: result exits and abandon exits now route through one owner-driven bridge transition lane with native opcode names plus explicit saved-owner and saved-replay-return state on `AppState`
 - [ ] Finish moving any remaining post-overlay/final-loss/thanks-for-playing updates onto that same explicit bridge
   - current narrowing: respawn now follows the confirmed `update_subgoldy_resurrect -> save current owner -> state 0x1c` bridge lane instead of an app-local reload helper
   - newer narrowing: selected-level-record final loss is no longer lumped into opcode `28`; BN disassembly now shows `complete_subgame(game, 1)` followed by `save current owner -> state 0x1a`

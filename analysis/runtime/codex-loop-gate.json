@@ -1,17 +1,17 @@
 {
-  "phase": "re",
-  "classification": "runtime-blocked",
-  "focus": "Windows handoff and attachment-exit evidence batch",
-  "blocker": "Fresh Windows runtime evidence is required before more bridge or attachment-exit Zig changes.",
+  "phase": "replace",
+  "classification": "static-closable",
+  "focus": "Outer bridge replacement from the locked March 24 Windows evidence baseline",
+  "blocker": "Attachment-exit carryover remains evidence-capped static RE only; do not widen Windows capture or attach new gameplay semantics there.",
   "required_artifacts": [
-    "docs/re/windows-debugging-wants.md",
-    "docs/re/windows-cdb-session-2026-03-15.md",
-    "docs/re/frida-runtime-trace.md",
-    "analysis/runtime/windows-re-batch-2026-03-24.md"
+    "analysis/runtime/windows-re-batch-2026-03-24.md",
+    "analysis/runtime/windows-outer-bridge-capture-2026-03-24.md",
+    "analysis/runtime/outer-bridge-post-capture-2026-03-25.md",
+    "analysis/runtime/attachment-exit-static-re-2026-03-25.md"
   ],
   "freshness_artifacts": [
-    "analysis/runtime/windows-re-batch-2026-03-24.md"
+    "analysis/runtime/outer-bridge-post-capture-2026-03-25.md"
   ],
-  "packet_path": "analysis/runtime/windows-re-batch-2026-03-24.md",
-  "notes": "Freeze further attachment-exit micro-narrowing and bridge micro-narrowing code changes until a fresh Windows batch lands. The batch packet is the active working dossier for the loop."
+  "packet_path": "analysis/runtime/outer-bridge-post-capture-2026-03-25.md",
+  "notes": "Wider Windows capture is suspended due to host instability. Outer bridge is the active static-closable replacement target. Attachment exit stays evidence-capped static RE only until its remaining consumer and retirement questions close without new wide capture."
 }

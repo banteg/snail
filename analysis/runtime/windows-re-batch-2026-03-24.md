@@ -1,7 +1,7 @@
 # Windows RE Batch 2026-03-24
 
-This is the current runtime-blocked packet for the automated port loop.
-It is also the active working dossier for the current loop target.
+This was the March 24 runtime-blocked packet for the automated port loop.
+It is now the locked runtime evidence baseline for the post-capture bridge and attachment follow-up dossiers.
 
 Rule for this batch:
 - no Zig edits
