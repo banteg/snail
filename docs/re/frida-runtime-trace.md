@@ -21,6 +21,13 @@ The remaining static RE gap is no longer basic file formats. It is runtime behav
 
 The Frida script is intentionally narrow. It only hooks the points that answer those questions.
 
+The current default Windows pack is also conservative. These probes are present in the script but disabled by default because the broader March 24 death-side pack repeatedly crashed the live Windows process before the respawn transition settled:
+
+- `death_handoff_cutscene`
+- `death_handoff_update`
+- `respawn_life_decrement`
+- `respawn_complete_subgame_branch`
+
 Use the broad script when you need one capture that covers movement, attachments, pickups, and hazards together.
 
 Use the path oracle when you need to answer the still-open path questions specifically:
@@ -80,6 +87,28 @@ Current hooks in the script:
   - now samples `cell` and `before_cell` directly from the player's world position through `get_track_grid_cell_at_world_position`
   - keeps the ambiguous legacy field under `raw_cell` and `before_raw_cell` for debugging only
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
+- `0x43c7b7` `completion_handoff_active_arm`
+  - emits the first live completion-handoff arm with the player handoff fields and app owner state
+- `0x446bfe` `initialize_completion_screen_call`
+  - emits the first cutscene-side completion-screen initializer with cutscene state, player handoff fields, and app owner state
+- `0x43c981`, `0x43c9af`, `0x43c9c8` `complete_subgame` callsites
+  - emit the first live `complete_subgame` callsite family reached during completion or failure flow
+- `0x446b04` `death_handoff_via_cutscene`
+  - emits the cutscene caller into the shared death handoff helper, with live player state, gates, and app owner state
+  - currently disabled by default in the stable Windows pack
+- `0x43c093` `death_handoff_via_update_subgoldy`
+  - emits the gameplay-side death handoff with movement state and follow-exit gates
+  - currently disabled by default in the stable Windows pack
+- `0x441fa0` `death_select_state_set`
+  - emits `death_select_respawn` or `death_select_final_loss` from the shared state-set helper entry
+- `0x441fd0` `update_subgoldy_resurrect_enter`
+  - emits the respawn helper entry with the stored `final_loss` flag at `player+0x80` and the live respawn timers
+- `0x44205b` `respawn_life_decrement`
+  - emits the visible-life decrement commit point during respawn
+  - currently disabled by default in the stable Windows pack
+- `0x442096` `respawn_complete_subgame_branch`
+  - emits the branch that diverts respawn flow back through `complete_subgame`
+  - currently disabled by default in the stable Windows pack
 - `0x43a1a0` `update_player_movement_flags`
   - emits sampled selector-to-flag transitions for the `movement_flag_selector -> movement_flags` switch
   - includes the live movement integrator fields:
@@ -142,7 +171,7 @@ C:\share\snail\frida\snailmail-trace-YYYYMMDD-HHMMSS-<pid>.ndjson
 
 It also mirrors the same JSON lines to standard output so live debugging still works without changing the payload format.
 
-Event names currently emitted:
+Event names currently emitted or available when the matching hook is enabled:
 
 - `module_ready`
 - `hooks_installed`
@@ -150,6 +179,16 @@ Event names currently emitted:
 - `path_lookup`
 - `movement_flags_update`
 - `player_update`
+- `completion_handoff_arm`
+- `completion_screen_init`
+- `complete_subgame_call`
+- `death_handoff_cutscene`
+- `death_handoff_update`
+- `death_select_respawn`
+- `death_select_final_loss`
+- `respawn_enter`
+- `respawn_life_decrement`
+- `respawn_complete_subgame_branch`
 - `track_pair_payload`
 - `attachment_probe`
 - `attachment_begin`
@@ -198,6 +237,15 @@ Important payload details:
   - orientation-like vector fields
   - resolved template summary
 - `attachment_end` now includes both pre-exit and post-exit follow-state snapshots, so the next capture can prove which fields are latched, zeroed, or copied across the exit boundary
+- the new death and completion handoff events also include app-side owner state from the singleton at `data_4df904`:
+  - `owner`
+  - `saved`
+  - `completion_state`
+  - `replay_return`
+- the stable March 24 spare-life Frida capture showed:
+  - `death_select_respawn` with `final_loss = 0`, `lives = 3`, `app.owner = 0xb`
+  - repeated `respawn_enter` ticks advancing `respawn_progress` from `0.0` to `1.008`
+  - a follow-on `level_start` plus `attachment_begin`, which makes the current best read a level-start rebuild after ordinary respawn
 - `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the movement integrator and row-event state:
   - `movement_progress`
   - `track_z_offset`

@@ -40,6 +40,27 @@ Capture notes:
 - watch `player + 0x41d`, `+0x424`, `+0x42c`, `+0x430`, `+0x434`, `+0x438`
 - record one spare-life postal death, one no-life postal death, and one challenge or time-trial death
 
+Current 2026-03-24 result:
+- fresh Frida artifacts:
+  - `C:\share\snail\frida\snailmail-trace-20260324-164207-9944.ndjson`
+  - `C:\share\snail\frida\snailmail-trace-20260324-165745-4468.ndjson`
+- the crash-prone death-side probes were narrowed out of the default Frida pack after repeated live crashes on the broader cutscene and helper hooks
+- the reduced Frida pack is now stable and captured the spare-life Postal death selector plus the live respawn helper run
+  - `death_select_respawn` fired with `final_loss = 0`, `lives = 3`, `app.owner = 0xb`, `app.saved = 0`
+  - `respawn_enter` then ran repeatedly on the same player with `death_flag84 = 1`
+  - `respawn_progress` advanced from `0.0` to `1.008` at `step = 0.008`
+  - the same trace then rolled into a fresh `level_start` and `attachment_begin`, which is consistent with a level-start rebuild rather than an in-place resume
+- the stable reduced Frida pack does not yet capture:
+  - the visible-life decrement commit point
+  - the final-loss selector lane
+  - whether hazard death and floor-gap fall share the same late handoff
+  - a Challenge or Time Trial death lane
+
+Net status for section 1:
+- the spare-life Postal respawn selector is now confirmed on Windows with a stable Frida capture
+- ordinary spare-life death clearly enters the respawn helper and progresses through a full rebuild-sized timer window before the level restarts
+- section 1 is still incomplete because the life-decrement commit, final-loss branch, and non-Postal death lanes were not captured in the stable pack
+
 ## 2. Completion Handoff
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 3.

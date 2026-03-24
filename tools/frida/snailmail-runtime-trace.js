@@ -12,6 +12,16 @@ const HOOKS = {
   path_lookup: true,
   movement_flags_update: true,
   player_update: true,
+  completion_handoff_arm: true,
+  completion_screen_init: true,
+  complete_subgame_call: true,
+  death_handoff_cutscene: false,
+  death_handoff_update: false,
+  death_select_respawn: true,
+  death_select_final_loss: true,
+  respawn_enter: true,
+  respawn_life_decrement: false,
+  respawn_complete_subgame_branch: false,
   track_pair_payload: true,
   attachment_probe: true,
   attachment_begin: true,
@@ -33,6 +43,16 @@ const LIMITS = {
   path_lookup: 2048,
   movement_flags_update: 2048,
   player_update: 4096,
+  completion_handoff_arm: 256,
+  completion_screen_init: 256,
+  complete_subgame_call: 256,
+  death_handoff_cutscene: 256,
+  death_handoff_update: 256,
+  death_select_respawn: 128,
+  death_select_final_loss: 128,
+  respawn_enter: 256,
+  respawn_life_decrement: 128,
+  respawn_complete_subgame_branch: 128,
   track_pair_payload: 2048,
   attachment_probe: 4096,
   attachment_begin: 1024,
@@ -50,6 +70,7 @@ const LIMITS = {
 };
 
 const VA = {
+  app_ptr_global: 0x4df904,
   find_segment_path_index_by_name: 0x429ae0,
   begin_track_attachment_follow_state: 0x420c40,
   update_track_attachment_follow_state: 0x420cb0,
@@ -70,6 +91,24 @@ const VA = {
   deactivate_salt_runtime_entity: 0x441740,
   spawn_slug_runtime_entity: 0x43dc80,
   get_track_cell_row_index: 0x447040,
+  completion_handoff_active_arm: 0x43c7b7,
+  initialize_completion_screen_call: 0x446bfe,
+  complete_subgame_43c981: 0x43c981,
+  complete_subgame_43c9af: 0x43c9af,
+  complete_subgame_43c9c8: 0x43c9c8,
+  death_handoff_via_cutscene: 0x446b04,
+  death_handoff_via_update_subgoldy: 0x43c093,
+  death_select_state_set: 0x441fa0,
+  update_subgoldy_resurrect_enter: 0x441fd0,
+  respawn_life_decrement: 0x44205b,
+  respawn_complete_subgame_branch: 0x442096,
+};
+
+const APP = {
+  owner: 0x1b8,
+  saved: 0x1bc,
+  completion_state: 0x4f3ac,
+  replay_return: 0x1066bf0,
 };
 
 const SEGMENT_PATH_INDEX_NAMES = [
@@ -784,6 +823,42 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
   };
 }
 
+function getAppPtr(module) {
+  return safeReadPointer(fromVa(module, VA.app_ptr_global), 0);
+}
+
+function summarizeAppState(appPtr) {
+  const app = asPtr(appPtr);
+  if (app === null || app.isNull()) {
+    return null;
+  }
+
+  return {
+    ptr: hex(app),
+    owner: safeReadU32(app, APP.owner),
+    saved: safeReadU32(app, APP.saved),
+    completion_state: safeReadU32(app, APP.completion_state),
+    replay_return: safeReadU32(app, APP.replay_return),
+  };
+}
+
+function summarizeCompletionHandoff(playerPtr) {
+  const player = asPtr(playerPtr);
+  if (player === null || player.isNull()) {
+    return null;
+  }
+
+  return {
+    active: boolFlag(safeReadU32(player, 0x440)),
+    timer: safeReadFloat(player, 0x444),
+    step: safeReadFloat(player, 0x448),
+    voice_gate: boolFlag(safeReadU8(player, 0x44e)),
+    exit_pending: boolFlag(safeReadU8(player, 0x41d)),
+    gate_a: boolFlag(safeReadU8(player, 0x44c)),
+    gate_b: boolFlag(safeReadU8(player, 0x44d)),
+  };
+}
+
 function maybeEmitSampled(event, key, digest, stride, extra) {
   if (!sampledState[event]) {
     sampledState[event] = new Map();
@@ -1000,6 +1075,194 @@ function installHooks(module) {
           attachment_exit_progress_step: after.attachment_exit_progress_step,
           follow_effect_gate_a: after.follow_effect_gate_a,
           follow_effect_gate_b: after.follow_effect_gate_b,
+        });
+      },
+    });
+  }
+
+  if (HOOKS.completion_handoff_arm) {
+    Interceptor.attach(fromVa(module, VA.completion_handoff_active_arm), {
+      onEnter() {
+        const player = asPtr(this.context.ebp);
+        emit('completion_handoff_arm', {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          completion_handoff: summarizeCompletionHandoff(player),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.completion_screen_init) {
+    Interceptor.attach(fromVa(module, VA.initialize_completion_screen_call), {
+      onEnter() {
+        const cutscene = asPtr(this.context.ecx);
+        const player = safeReadPointer(cutscene, 4);
+        emit('completion_screen_init', {
+          cutscene: hex(cutscene),
+          cutscene_state: safeReadU32(cutscene, 0xc),
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          completion_handoff: summarizeCompletionHandoff(player),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.complete_subgame_call) {
+    [
+      ['0x43c981', VA.complete_subgame_43c981],
+      ['0x43c9af', VA.complete_subgame_43c9af],
+      ['0x43c9c8', VA.complete_subgame_43c9c8],
+    ].forEach(function (entry) {
+      Interceptor.attach(fromVa(module, entry[1]), {
+        onEnter() {
+          const player = asPtr(this.context.ebp);
+          emit('complete_subgame_call', {
+            callsite: entry[0],
+            player: hex(player),
+            game: hex(safeReadPointer(player, 0x408)),
+            mode: safeReadU32(player, 0x2970),
+            lives: safeReadU32(player, 0x4340),
+            completion_handoff: summarizeCompletionHandoff(player),
+            app: summarizeAppState(getAppPtr(module)),
+          });
+        },
+      });
+    });
+  }
+
+  if (HOOKS.death_handoff_cutscene) {
+    Interceptor.attach(fromVa(module, VA.death_handoff_via_cutscene), {
+      onEnter() {
+        const player = asPtr(this.context.ecx);
+        emit('death_handoff_cutscene', {
+          source: 'update_cutscene',
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          world_y: safeReadFloat(player, 0x6c),
+          world_z: safeReadFloat(player, 0x70),
+          death_flag84: boolFlag(safeReadU8(player, 0x84)),
+          exit_pending: boolFlag(safeReadU8(player, 0x41d)),
+          gate_a: boolFlag(safeReadU8(player, 0x44c)),
+          gate_b: boolFlag(safeReadU8(player, 0x44d)),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.death_handoff_update) {
+    Interceptor.attach(fromVa(module, VA.death_handoff_via_update_subgoldy), {
+      onEnter() {
+        const player = asPtr(this.context.ebp);
+        emit('death_handoff_update', {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          world_y: safeReadFloat(player, 0x6c),
+          world_z: safeReadFloat(player, 0x70),
+          movement_state: safeReadU32(player, 0x2984),
+          death_flag84: boolFlag(safeReadU8(player, 0x84)),
+          exit_pending: boolFlag(safeReadU8(player, 0x41d)),
+          gate_a: boolFlag(safeReadU8(player, 0x44c)),
+          gate_b: boolFlag(safeReadU8(player, 0x44d)),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.death_select_respawn || HOOKS.death_select_final_loss) {
+    Interceptor.attach(fromVa(module, VA.death_select_state_set), {
+      onEnter(args) {
+        const player = asPtr(this.context.ecx);
+        const finalLoss = args[0].toInt32();
+        const payload = {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          world_y: safeReadFloat(player, 0x6c),
+          world_z: safeReadFloat(player, 0x70),
+          final_loss: finalLoss,
+          app: summarizeAppState(getAppPtr(module)),
+        };
+
+        if (finalLoss === 0) {
+          if (HOOKS.death_select_respawn) {
+            emit('death_select_respawn', payload);
+          }
+          return;
+        }
+
+        if (finalLoss === 1 && HOOKS.death_select_final_loss) {
+          emit('death_select_final_loss', payload);
+        }
+      },
+    });
+  }
+
+  if (HOOKS.respawn_enter) {
+    Interceptor.attach(fromVa(module, VA.update_subgoldy_resurrect_enter), {
+      onEnter() {
+        const player = asPtr(this.context.ecx);
+        emit('respawn_enter', {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          final_loss: safeReadU32(player, 0x80),
+          death_flag84: boolFlag(safeReadU8(player, 0x84)),
+          respawn_progress: safeReadFloat(player, 0x8c),
+          respawn_progress_step: safeReadFloat(player, 0x90),
+          game_fade: safeReadU32(safeReadPointer(player, 0x408), 0xc),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.respawn_life_decrement) {
+    Interceptor.attach(fromVa(module, VA.respawn_life_decrement), {
+      onEnter() {
+        const player = asPtr(this.context.esi);
+        emit('respawn_life_decrement', {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives_before: safeReadU32(player, 0x4340),
+          respawn_progress: safeReadFloat(player, 0x8c),
+          game_fade: safeReadU32(safeReadPointer(player, 0x408), 0x24),
+          final_loss: safeReadU32(player, 0x80),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
+    });
+  }
+
+  if (HOOKS.respawn_complete_subgame_branch) {
+    Interceptor.attach(fromVa(module, VA.respawn_complete_subgame_branch), {
+      onEnter() {
+        const player = asPtr(this.context.esi);
+        emit('respawn_complete_subgame_branch', {
+          player: hex(player),
+          game: hex(safeReadPointer(player, 0x408)),
+          mode: safeReadU32(player, 0x2970),
+          lives: safeReadU32(player, 0x4340),
+          respawn_progress: safeReadFloat(player, 0x8c),
+          game_fade: safeReadU32(safeReadPointer(player, 0x408), 0x24),
+          final_loss: safeReadU32(player, 0x80),
+          app: summarizeAppState(getAppPtr(module)),
         });
       },
     });

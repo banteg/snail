@@ -23,6 +23,8 @@ The remaining gaps are runtime-behavior questions:
 
 - when `P/p` rows become real attachment-follow transitions
 - how the player state evolves while attachment-follow is active and when it exits
+- how the death path selects respawn vs final loss and when visible lives decrement
+- when completion arms, initializes the completion screen, and first calls `complete_subgame`
 - how often `Salt:` spawns without authored `&` rows
 - how live salt hazards move after spawn
 - where health, jetpack, and ring rows become live entities or effects
@@ -62,6 +64,15 @@ The script currently hooks these points:
 - `0x437eb0` `normalize_level_runtime_fields`
 - `0x429ae0` `find_segment_path_index_by_name`
 - `0x43b120` `update_subgoldy`
+- `0x43c7b7` `completion_handoff_active_arm`
+- `0x446bfe` `initialize_completion_screen_call`
+- `0x43c981`, `0x43c9af`, `0x43c9c8` `complete_subgame` callsites
+- `0x446b04` `death_handoff_via_cutscene`
+- `0x43c093` `death_handoff_via_update_subgoldy`
+- `0x441fa0` `death_select_state_set`
+- `0x441fd0` `update_subgoldy_resurrect_enter`
+- `0x44205b` `respawn_life_decrement`
+- `0x442096` `respawn_complete_subgame_branch`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
 - `0x420c40` `begin_track_attachment_follow_state`
 - `0x420cb0` `update_track_attachment_follow_state`
@@ -144,6 +155,25 @@ Important payload notes for the current script:
   - `before_follow_state_summary`, `before_template_summary`, `before_follow_sample_index`, `before_follow_progress`
   - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
 - if you are reusing an older local script copy on Windows, replace it first; the March 8 long capture proved the older copy misses `player_update` entirely and misreports `attachment_end`
+- the stable March 24 Windows death pack now disables these crash-prone probes by default:
+  - `death_handoff_cutscene`
+  - `death_handoff_update`
+  - `respawn_life_decrement`
+  - `respawn_complete_subgame_branch`
+- the stable reduced death-side probes are:
+  - `death_select_state_set` at `0x441fa0`
+  - `update_subgoldy_resurrect_enter` at `0x441fd0`
+- the newer script also emits focused handoff events with app-side owner state from `data_4df904`:
+  - `completion_handoff_arm`
+  - `completion_screen_init`
+  - `complete_subgame_call`
+  - `death_handoff_cutscene`
+  - `death_handoff_update`
+  - `death_select_respawn`
+  - `death_select_final_loss`
+  - `respawn_enter`
+  - `respawn_life_decrement`
+  - `respawn_complete_subgame_branch`
 
 Expected event names in the NDJSON:
 
@@ -153,6 +183,16 @@ Expected event names in the NDJSON:
 - `path_lookup`
 - `movement_flags_update`
 - `player_update`
+- `completion_handoff_arm`
+- `completion_screen_init`
+- `complete_subgame_call`
+- `death_handoff_cutscene`
+- `death_handoff_update`
+- `death_select_respawn`
+- `death_select_final_loss`
+- `respawn_enter`
+- `respawn_life_decrement`
+- `respawn_complete_subgame_branch`
 - `track_pair_payload`
 - `attachment_probe`
 - `attachment_begin`
@@ -167,6 +207,12 @@ Expected event names in the NDJSON:
 - `salt_update`
 - `salt_deactivate`
 - `slug_spawn`
+
+Latest stable death-side result on 2026-03-24:
+
+- `snailmail-trace-20260324-165745-4468.ndjson` loaded the reduced pack without crashing
+- it captured a spare-life Postal death with `death_select_respawn` followed by repeated `respawn_enter`
+- the same trace then rolled into a fresh `level_start` and `attachment_begin`, which currently looks like an ordinary respawn rebuild path
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
