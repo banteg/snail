@@ -115,6 +115,7 @@ Current 2026-03-24 result:
 - fresh focused packs:
   - `artifacts/cdb-outer-bridge-startup-pack-2026-03-24.txt`
   - `artifacts/cdb-outer-bridge-pause-return-pack-2026-03-24.txt`
+  - `artifacts/cdb-outer-bridge-time-trial-replay-pack-2026-03-24.txt`
 - normal fresh Postal startup did not use the saved-owner bridge
   - `initialize_subgame` entered with `selector=2`
   - `build_subgame_level` saw `selector=3`
@@ -128,14 +129,25 @@ Current 2026-03-24 result:
   - it stored current owner `0xb` into the completion-screen saved slot
   - it chose completion state `2`
   - it switched owner `0xb -> 0x8 -> 0x9` as control moved into `update_completion_screen`
+- route-map Time Trial replay launch also stayed on the transient lane
+  - `build_subgame_level` saw `rec_active=1`, `rec_persist=0`, `replay_a=1`, `replay_p=0`
+  - `initialize_click_start` still had `saved_return=0`
+  - pause `End Game` stayed in completion state `2`
+  - completion rebuilt subgame directly instead of consuming a saved-return owner
+- high-score replay rows did arm the persistent replay family
+  - `initialize_subgame` saw `rec_persist=1`, `replay_p=1`, and `saved_return=0x12`
+  - pause `End Game` on that replay chose completion state `3`
+  - `completion_restore_owner_from_saved_return` consumed `saved_return=0x12`
+  - the immediate rebuild preserved `saved=0x12` and `replay_p=1`
 - the section is still incomplete because the capture did not yet show:
   - a live `0x1a/0x1b` bridge producer
-  - the final completion-screen owner restore back into the main menu
+  - a trustworthy final completion-to-main-menu restore trace
+  - the current `main_menu_enter` probe produced garbage owner values after teardown and needs to be corrected before reuse
 
 Net status for section 4:
-- the ordinary startup, respawn, and transient pause-return lanes are now materially narrowed and do not support `0x1a/0x1b` as their live bridge
-- the remaining unknown `0x1a/0x1b` producers are now more likely to belong to replay-backed or other persistent return families
-- section 4 still needs one more targeted Windows pass to capture either a persistent `0x1a/0x1b` producer or the final completion-screen restore to main menu
+- the ordinary startup, respawn, transient pause-return, and route-map Time Trial replay lanes are now materially narrowed and do not support `0x1a/0x1b` as their live bridge
+- high-score replay rows are now confirmed as a persistent replay-backed return family and they do use saved-return state `0x12`
+- section 4 still needs one more targeted Windows pass only if we need the explicit live `0x1a/0x1b` producer or a corrected completion-to-main-menu restore trace
 
 ## Done Criteria
 
