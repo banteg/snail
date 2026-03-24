@@ -361,6 +361,13 @@ Net status for section 4:
   - after natural replay end, control returned to `update_high_score_screen` with `owner = 19`, `saved = 0x12`, `replay_active = 1`, and `replay_persistent = 0`
   - later the same trace entered `update_main_menu` with `owner = 5` while still preserving `saved = 0x12`
   - no `outer_bridge_exit_high_score_screen` hit fired in that path, so the return does not appear to route through the previously watched helper entry
+- a later Frida pass on Time Trial `watch best time trial` stayed on the transient route-map family:
+  - fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-222332-4952.ndjson`
+  - `update_new_game_menu` sat at `owner = 0` with `replay_active = 0`, `replay_persistent = 0`, and `replay_return = 0` until the launch
+  - launch entered `initialize_subgame` with `mode = 4`, `selector = 2`, `route_kind = 4`, and still no persistent replay marker
+  - `build_subgame_level` then armed only the transient replay lane: `selected_record_active = 1`, `selected_record_persistent = 0`, `replay_active = 1`, `replay_persistent = 0`, `replay_return = 0`
+  - after the watched run ended, control rebuilt back through `initialize_subgame` with `saved = 0xa`, then returned into `update_new_game_menu owner = 0` and `update_main_menu owner = 5`
+  - current read: Time Trial `watch best time trial` is not the missing `0x1a/0x1b` producer; it behaves like another transient replay-backed route-map lane
 
 ## Done Criteria
 

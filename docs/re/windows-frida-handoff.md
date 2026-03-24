@@ -328,6 +328,12 @@ Latest stable attachment-side result on 2026-03-24:
   - after natural replay end, control returns to `update_high_score_screen` with `owner = 19`, `saved = 0x12`, `replay_active = 1`, and `replay_persistent = 0`
   - later the same trace reaches `update_main_menu` with `owner = 5` while still preserving `saved = 0x12`
   - no `outer_bridge_exit_high_score_screen` event fired, so this auto-exit path does not appear to route through that helper entry
+- `snailmail-trace-20260324-222332-4952.ndjson` then showed that Time Trial `watch best time trial` is still the transient family:
+  - `update_new_game_menu` stayed at `owner = 0` with no replay markers before launch
+  - launch entered `initialize_subgame mode = 4`, `selector = 2`, `route_kind = 4`
+  - `build_subgame_level` only armed the transient lane: `selected_record_persistent = 0`, `replay_persistent = 0`, `replay_return = 0`
+  - after the watched run ended, control rebuilt back through `initialize_subgame` with `saved = 0xa`, then returned into `update_new_game_menu owner = 0` and `update_main_menu owner = 5`
+  - so this path is not the missing `0x1a/0x1b` producer either
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
