@@ -65,8 +65,8 @@ The script currently hooks these points:
 - `0x429ae0` `find_segment_path_index_by_name`
 - `0x43b120` `update_subgoldy`
 - `0x43c7b7` `completion_handoff_active_arm`
-- `0x446bfe` `initialize_completion_screen_call`
-- `0x43c981`, `0x43c9af`, `0x43c9c8` `complete_subgame` callsites
+- `0x404920` `initialize_completion_screen_entry` filtered to completion return `0x446c03`
+- `0x438700` `complete_subgame_entry` filtered to completion returns `0x43c986`, `0x43c9b4`, and `0x43c9cd`
 - `0x446b04` `death_handoff_via_cutscene`
 - `0x43c093` `death_handoff_via_update_subgoldy`
 - `0x441fa0` `death_select_state_set`

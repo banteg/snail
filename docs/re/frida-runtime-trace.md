@@ -99,10 +99,11 @@ Current hooks in the script:
   - this is a `thiscall` method, so the script now reads the player object from `ecx`
 - `0x43c7b7` `completion_handoff_active_arm`
   - emits the first live completion-handoff arm with the player handoff fields and app owner state
-- `0x446bfe` `initialize_completion_screen_call`
-  - emits the first cutscene-side completion-screen initializer with cutscene state, player handoff fields, and app owner state
-- `0x43c981`, `0x43c9af`, `0x43c9c8` `complete_subgame` callsites
-  - emit the first live `complete_subgame` callsite family reached during completion or failure flow
+- `0x404920` `initialize_completion_screen_entry`
+  - emits the completion-screen init helper only when it returns to `0x446c03`
+  - derives the live player from the passed `player + 0x4338` payload pointer
+- `0x438700` `complete_subgame_entry`
+  - emits the completion-side `complete_subgame` family only when the return address maps to `0x43c981`, `0x43c9af`, or `0x43c9c8`
 - `0x446b04` `death_handoff_via_cutscene`
   - emits the cutscene caller into the shared death handoff helper, with live player state, gates, and app owner state
   - currently disabled by default in the stable Windows pack

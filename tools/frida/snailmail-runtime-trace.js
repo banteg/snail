@@ -127,10 +127,8 @@ const VA = {
   spawn_slug_runtime_entity: 0x43dc80,
   get_track_cell_row_index: 0x447040,
   completion_handoff_active_arm: 0x43c7b7,
-  initialize_completion_screen_call: 0x446bfe,
-  complete_subgame_43c981: 0x43c981,
-  complete_subgame_43c9af: 0x43c9af,
-  complete_subgame_43c9c8: 0x43c9c8,
+  initialize_completion_screen_entry: 0x404920,
+  complete_subgame_entry: 0x438700,
   death_handoff_via_cutscene: 0x446b04,
   death_handoff_via_update_subgoldy: 0x43c093,
   death_select_state_set: 0x441fa0,
@@ -1132,13 +1130,22 @@ function installHooks(module) {
   }
 
   if (HOOKS.completion_screen_init) {
-    Interceptor.attach(fromVa(module, VA.initialize_completion_screen_call), {
-      onEnter() {
-        const cutscene = asPtr(this.context.ecx);
-        const player = safeReadPointer(cutscene, 4);
+    const completionInitReturn = fromVa(module, 0x446c03);
+    Interceptor.attach(fromVa(module, VA.initialize_completion_screen_entry), {
+      onEnter(args) {
+        const returnAddress = safeReadPointer(this.context.esp, 0);
+        if (returnAddress === null || !returnAddress.equals(completionInitReturn)) {
+          return;
+        }
+
+        const completionPayload = asPtr(args[0]);
+        const player =
+          completionPayload !== null && !completionPayload.isNull() ? completionPayload.sub(0x4338) : null;
         emit('completion_screen_init', {
-          cutscene: hex(cutscene),
-          cutscene_state: safeReadU32(cutscene, 0xc),
+          return_to: '0x446c03',
+          init_owner: hex(this.context.ecx),
+          completion_payload: hex(completionPayload),
+          completion_flag: args[1].toInt32(),
           player: hex(player),
           game: hex(safeReadPointer(player, 0x408)),
           mode: safeReadU32(player, 0x2970),
@@ -1151,25 +1158,28 @@ function installHooks(module) {
   }
 
   if (HOOKS.complete_subgame_call) {
-    [
-      ['0x43c981', VA.complete_subgame_43c981],
-      ['0x43c9af', VA.complete_subgame_43c9af],
-      ['0x43c9c8', VA.complete_subgame_43c9c8],
-    ].forEach(function (entry) {
-      Interceptor.attach(fromVa(module, entry[1]), {
-        onEnter() {
-          const player = asPtr(this.context.ebp);
-          emit('complete_subgame_call', {
-            callsite: entry[0],
-            player: hex(player),
-            game: hex(safeReadPointer(player, 0x408)),
-            mode: safeReadU32(player, 0x2970),
-            lives: safeReadU32(player, 0x4340),
-            completion_handoff: summarizeCompletionHandoff(player),
-            app: summarizeAppState(getAppPtr(module)),
-          });
-        },
-      });
+    const completeSubgameReturns = {
+      [fromVa(module, 0x43c986).toString()]: '0x43c981',
+      [fromVa(module, 0x43c9b4).toString()]: '0x43c9af',
+      [fromVa(module, 0x43c9cd).toString()]: '0x43c9c8',
+    };
+
+    Interceptor.attach(fromVa(module, VA.complete_subgame_entry), {
+      onEnter(args) {
+        const returnAddress = safeReadPointer(this.context.esp, 0);
+        const callsite = returnAddress !== null ? completeSubgameReturns[returnAddress.toString()] : null;
+        if (!callsite) {
+          return;
+        }
+
+        emit('complete_subgame_call', {
+          callsite: callsite,
+          return_to: hex(returnAddress),
+          game: hex(this.context.ecx),
+          arg0: args[0].toInt32(),
+          app: summarizeAppState(getAppPtr(module)),
+        });
+      },
     });
   }
 
