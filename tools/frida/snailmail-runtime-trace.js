@@ -78,7 +78,7 @@ const LIMITS = {
   path_lookup: 2048,
   movement_flags_update: 2048,
   player_update: 4096,
-  completion_handoff_arm: 256,
+  completion_handoff_arm: 384,
   completion_screen_init: 256,
   complete_subgame_call: 256,
   death_handoff_cutscene: 256,

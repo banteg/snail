@@ -75,9 +75,28 @@ Capture notes:
 - break on `update_subgoldy`, `update_cutscene`, `initialize_completion_screen`, `complete_subgame`
 - watch `player + 0x440`, `+0x444`, `+0x448`, `+0x44e`
 
-Current setup:
-- `tools/frida/snailmail-runtime-trace.js` now defaults to the `completion_handoff` profile
-- the next Windows Frida pass should verify `hooks_installed.profile = "completion_handoff"` before using the capture
+Current 2026-03-24 result:
+- fresh Frida artifacts:
+  - `C:\share\snail\frida\snailmail-trace-20260324-171046-15324.ndjson`
+  - `C:\share\snail\frida\snailmail-trace-20260324-172644-2560.ndjson`
+- `tools/frida/snailmail-runtime-trace.js` now defaults to the `completion_handoff` profile, and the latest stable capture confirmed `hooks_installed.profile = "completion_handoff"`
+- the stable completion-side Frida pack now lands the first two required handoff anchors without crashing:
+  - `completion_handoff_arm` first fires on the live Postal player with `timer = 0.0`, `step = 0.017`, and `app.owner = 0xb`
+  - `completion_screen_init` is now runtime-confirmed as a real call in the completion lane via the filtered callee-entry hook returning to `0x446c03`
+  - the current `completion_screen_init` payload decode is still wrong, so this event is trustworthy as a call confirmation, not yet as a field-level state dump
+- the first `complete_subgame` call is now runtime-confirmed:
+  - `complete_subgame_call` fired once at `callsite = 0x43c9af`, `return_to = 0x43c9b4`, `arg0 = 0`, with `app.owner = 0xb`
+- the `2.0s` voice gate is now materially narrowed to the live player-owned completion handoff state:
+  - `completion_handoff_arm` stayed `voice_gate = false` at `timer = 2.000`
+  - the next sample at `timer = 2.017` flipped to `voice_gate = true` on the same player and app owner
+- the remaining gap for section 2 is the `5.0s` fade owner:
+  - the stable trace suppressed `completion_handoff_arm` after `256` rows at `timer = 4.25`
+  - the Frida event budget has now been raised so the next focused completion run can observe the handoff past `5.0s`
+
+Net status for section 2:
+- the first completion arm, the first completion-screen init call, and the first `complete_subgame` call are now captured on Windows with Frida
+- the exact `2.0s` voice gate flip is now live-confirmed on the player-owned completion handoff state
+- section 2 is still incomplete only because the `5.0s` fade threshold was not yet observed directly in the unsuppressed trace
 
 ## 3. Attachment-Exit Consumers
 

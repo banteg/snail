@@ -40,6 +40,8 @@ That profile only keeps the section-2 probes enabled:
 
 Switch `TRACE_PROFILE` back to `broad_runtime` when you want the wider stable pack again.
 
+The completion profile now allows `384` `completion_handoff_arm` rows, which is enough to carry a clean `0.017`-step handoff trace past the `5.0s` fade threshold instead of suppressing at `4.25s`.
+
 Use the path oracle when you need to answer the still-open path questions specifically:
 
 - which installed bank root a `P/p` row uses in practice

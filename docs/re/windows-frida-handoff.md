@@ -213,6 +213,14 @@ Latest stable death-side result on 2026-03-24:
 - `snailmail-trace-20260324-165745-4468.ndjson` loaded the reduced pack without crashing
 - it captured a spare-life Postal death with `death_select_respawn` followed by repeated `respawn_enter`
 - the same trace then rolled into a fresh `level_start` and `attachment_begin`, which currently looks like an ordinary respawn rebuild path
+
+Latest stable completion-side result on 2026-03-24:
+
+- `snailmail-trace-20260324-172644-2560.ndjson` loaded the `completion_handoff` profile without crashing
+- it captured the first `completion_handoff_arm`, one `completion_screen_init`, and the first `complete_subgame_call`
+- `completion_handoff_arm` first flipped `voice_gate` from `false` at `timer = 2.000` to `true` at `timer = 2.017` on the same live player-owned handoff state
+- the current `completion_screen_init` hook is trustworthy as a call confirmation but still has a bad field decode, so do not trust its derived `player` or `game` fields yet
+- the current remaining section-2 ask is only the direct `5.0s` fade observation, and the script now raises the completion-arm budget to carry that trace past `5.0s`
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.
