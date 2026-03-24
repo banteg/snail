@@ -110,7 +110,7 @@ Capture notes:
 - watch `[controller + 0x94]`, `[controller + 0x98]`, and the replay scratch lanes already listed in the debugger wants doc
 
 Current 2026-03-24 result:
-- fresh checked-in note: `analysis/cdb/windows-outer-bridge-capture-2026-03-24.md`
+- fresh checked-in note: `analysis/runtime/windows-outer-bridge-capture-2026-03-24.md`
 - fresh artifact log: `artifacts/snailmail-windbg.log`
 - fresh focused packs:
   - `artifacts/cdb-outer-bridge-startup-pack-2026-03-24.txt`
