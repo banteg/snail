@@ -178,6 +178,7 @@ Current hooks in the script:
     - neither `post_follow_value_a` nor `post_follow_value_b` went nonzero anywhere in that trace
     - `attachment_probe` still did not fire, so the swept-entry helper itself remains unconfirmed in the stable Frida lane
     - `snailmail-trace-20260324-183511-4812.ndjson` captured the clean contrast case: a terminal `HalfPipe` detach with `attachment_update retval = 3`, no `attachment_end`, no `attachment_exit_pending`, and no nonzero post-follow carryover values
+    - `snailmail-trace-20260324-185444-12876.ndjson` extended that picture in Challenge mode with four pending windows across template kinds `45`, `16`, and `32`, including both in-place clears and a next-`attachment_begin` retirement
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
   - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`

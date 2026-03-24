@@ -284,6 +284,20 @@ Latest stable attachment-side result on 2026-03-24:
   - `attachment_exit_pending`, `attachment_exit_progress`, `post_follow_value_a`, and `post_follow_value_b` all stay zero through that window
   - no `attachment_end` event fires anywhere in the trace
 - current interpretation: a clean terminal `HalfPipe` exit can fall straight out through the `retval = 3` path without ever entering the pending-exit family, so the unresolved section-3 behavior must belong to a different skim / partial re-entry lane
+- `snailmail-trace-20260324-185444-12876.ndjson` then generalized the same machinery in Challenge mode:
+  - `level_start = 2`, `path_lookup = 73`, `attachment_begin = 6`, `attachment_update = 812`, `attachment_end = 4`
+  - the first pending window appears in `level_mode = 1` at line `507`, on template kind `45`, row `54`, tile `0x00`
+  - the run contains four pending windows total:
+    - short kind `45`: `0.017 -> 0.3`, then pending clears in place with `attachment_active = 1` and no observed `attachment_begin`
+    - long kind `45`: `0.017 -> 3.3`, both follow-effect gates flip on, then the next `level_start` / `attachment_begin` clears it on the first reattached frame
+    - short kind `16`: `0.017 -> 0.65`, then pending clears in place with `follow_effect_gate_a = 1`, `follow_effect_gate_b = 0`
+    - long kind `32`: `0.017 -> 3.533`, both gates on, still pending at end of capture
+  - `post_follow_value_a` and `post_follow_value_b` still stay zero everywhere in this broader survey run
+  - the traced attachment kind is not rigid across every runtime segment:
+    - one segment begins as kind `36` and ends as kind `45`
+    - another begins as kind `36` and ends as kind `16`
+    - another begins as kind `35` and ends as kind `32`
+- current interpretation: the generic attachment-exit machinery is not specific to the earlier `HalfPipe` family, and begin/end template kind alone is not a reliable way to model every attachment segment
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.

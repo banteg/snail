@@ -239,6 +239,32 @@ Stable terminal-detach follow-up on 2026-03-24:
   - it adds `level_start`, `path_lookup`, `track_pair_payload`, `floor_sample`, and pickup/hazard context on top of the stable attachment hooks
   - the known crashing mid-function section-3 probes stay disabled in that survey profile
 
+Generic attachment survey follow-up on 2026-03-24:
+- fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-185444-12876.ndjson`
+- the broader stable `attachment_survey` profile stayed up through a Challenge-mode run and captured:
+  - `level_start = 2`
+  - `path_lookup = 73`
+  - `attachment_begin = 6`
+  - `attachment_update = 812`
+  - `attachment_end = 4`
+- this run matters because it generalizes the attachment-exit machinery beyond the earlier `ARCADE007` / `HalfPipe` lane:
+  - the first pending window starts at line `507` in Challenge mode (`level_mode = 1`) on template kind `45`, row `54`, tile `0x00`
+  - across the run there are four pending windows: two short ones and two long ones
+  - the longer kind-`45` window grows from `attachment_exit_progress = 0.017` to `3.3`, flips both follow-effect gates on, then clears on the first reattached frame after a fresh `attachment_begin` at the next `level_start`
+  - the final kind-`32` window grows from `0.017` to `3.533` with both gates on and remains pending until the capture ends
+- the short windows refine the retirement picture:
+  - kind `45`: `0.017 -> 0.3`, then `attachment_exit_pending` clears in place with `attachment_active = 1` and no observed `attachment_begin`
+  - kind `16`: `0.017 -> 0.65`, then `attachment_exit_pending` clears in place with `attachment_active = 1`, `follow_effect_gate_a = 1`, `follow_effect_gate_b = 0`, and no observed `attachment_begin`
+- the attachment family is broader and less rigid than the earlier `HalfPipe` model suggested:
+  - one uninterrupted traced stretch begins as kind `36` at row `40` and ends as kind `45` at row `54`
+  - another begins as kind `36` at row `55` and ends as kind `16` at row `71`
+  - another begins as kind `35` at row `126` and ends as kind `32` at row `164`
+  - current read: begin/end template kind does not stay constant across every runtime attachment segment, so section-3 work should target the generic pending-exit machinery rather than only one named track piece
+- still open after this survey run:
+  - no direct `attachment_probe` hit
+  - `post_follow_value_a` and `post_follow_value_b` still never go nonzero
+  - no direct consumer of `post_follow_value_b`
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.
