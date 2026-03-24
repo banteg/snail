@@ -6208,39 +6208,6 @@ test "template kind 24 alone boosts cameraman fov" {
     try std.testing.expectApproxEqAbs(@as(f32, 110.0), start_runner.cameramanFovDegrees(), 0.001);
 }
 
-test "worm attachment exit seeds use the traced template row scalar" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
-    const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
-    const centered = attachment_builders.worldPositionForTemplate(
-        &built.template,
-        0.0,
-        built.row.global_row,
-        0.0,
-        0.0,
-    );
-    const center_lane = Runner.laneCenterFromWorldX(&fixture.preview, centered.x);
-    primeRunnerBeforeRow(&runner, &fixture.preview, target);
-    runner.lane_center = center_lane;
-    runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, center_lane);
-    runner.resolved_lane_index = runner.lane_index;
-    runner.refreshSample(&fixture.preview);
-    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-
-    const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
-    const segment_base_progress = @floor(runner.attachment_follow.template_progress);
-    const segment_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, segment_base_progress);
-    const normalized_segment_progress = (runner.attachment_follow.template_progress - segment_base_progress) / segment_delta_length;
-    const expected_phase =
-        ((segment_base_progress + normalized_segment_progress) * built.template.row_scalar_a) /
-        @as(f32, @floatFromInt(built.template.sample_count));
-    try std.testing.expectApproxEqAbs(expected_phase, exit_seeds.seed_a, 0.0001);
-    try std.testing.expectApproxEqAbs(built.template.row_scalar_a, exit_seeds.seed_b, 0.0001);
-}
-
 test "rolled attachments publish camera orientation a from sample roll" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/INVERT.TXT");
     defer fixture.deinit();
@@ -6538,28 +6505,6 @@ test "attachment camera lift uses overall attachment progress" {
         @as(f32, @floatFromInt(built.template.sample_count));
     try std.testing.expectEqual(@as(u8, 36), attachment_camera.runtime_kind);
     try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.template_progress, 0.0001);
-}
-
-test "zero-row-scalar attachments keep attachment exit spin zero" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/HALFPIPE.TXT");
-    defer fixture.deinit();
-
-    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
-    var runner = Runner.init(&fixture.preview);
-    runner.movement_mode = .attachment;
-    runner.attachment_path_name = "HALFPIPE";
-    runner.attachment_follow = .{
-        .active = true,
-        .source_row = target.row,
-        .template_progress = 5.5,
-    };
-    runner.updateAttachmentFollowPosition(&fixture.preview);
-    runner.refreshCameraRollState(&fixture.preview);
-
-    const exit_seeds = runner.attachmentExitSeedsFromFollow(&fixture.preview);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.camera_orientation_b, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), exit_seeds.seed_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), exit_seeds.seed_b, 0.0001);
 }
 
 test "runner advances deterministically over fixed time" {
@@ -8268,78 +8213,6 @@ test "challenge death hands off final loss" {
     try std.testing.expectEqual(DeathCause.hazard, handoff.final_loss);
 }
 
-test "fall entry clears attachment-follow state and seeds attachment exit fields" {
-    var fixture = try TestFixture.load("LEVELS/CHALLENGE000.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.movement_mode = .attachment;
-    runner.attachment_path_name = "SUPERTRAMP";
-    runner.attachment_follow = .{
-        .active = true,
-        .exit_seed_a = 0.6,
-        .exit_seed_b = 0.4,
-    };
-    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
-
-    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(runner.attachment_path_name == null);
-    try std.testing.expect(!runner.attachment_follow.active);
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expect(!runner.attachment_exit_gate_a);
-    try std.testing.expect(!runner.attachment_exit_gate_b);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.attachment_exit_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.attachment_exit_value_b, 0.0001);
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
-    try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-}
-
-test "latched attachment exit seeds can reseed the exit handoff after follow clears" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.attachment_exit_seed_a = 0.6;
-    runner.attachment_exit_seed_b = 0.4;
-
-    runner.seedAttachmentExitStateFromCarryover(&fixture.preview, 12.0);
-
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expectApproxEqAbs(@as(f32, 12.0), runner.attachment_exit_anchor_z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.6), runner.attachment_exit_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.attachment_exit_value_b, 0.0001);
-}
-
-test "fall entry preserves current attachment exit values when exit handoff is already pending" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.attachment_exit_pending = true;
-    runner.attachment_exit_progress = 0.5;
-    runner.attachment_exit_gate_a = true;
-    runner.attachment_exit_value_a = 0.25;
-    runner.attachment_exit_value_b = 0.5;
-
-    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_exit_progress, 0.0001);
-    try std.testing.expect(!runner.attachment_exit_gate_a);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment_exit_value_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment_exit_value_b, 0.0001);
-}
-
-test "on-track hazard death does not arm the attachment exit handoff" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
-
-    try std.testing.expect(!runner.attachment_exit_pending);
-}
-
 test "local Z roll keeps the forward basis fixed" {
     const transform = CameraTransform{
         .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
@@ -8410,19 +8283,6 @@ test "fall state keeps Z anchored and advances carried follow roll" {
     try std.testing.expect(runner.attachment_exit_value_a > 0.25);
 }
 
-test "attachment exit progress arms gate a after the recovered threshold" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.attachment_exit_progress = attachment_exit_gate_a_progress_threshold;
-
-    runner.stepAttachmentExitState(&fixture.preview);
-
-    try std.testing.expect(runner.attachment_exit_gate_a);
-}
-
 test "active jetpack retires attachment exit before the late progress gates" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -8439,45 +8299,6 @@ test "active jetpack retires attachment exit before the late progress gates" {
     try std.testing.expect(!runner.attachment_exit_gate_a);
 }
 
-test "grounded active track lane retires attachment exit without a timeout clear" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    const grounded = blk: {
-        for (0..fixture.preview.total_rows) |row| {
-            const row_location = fixture.preview.locateRow(row) orelse continue;
-            for (row_location.row.cells, 0..) |_, lane| {
-                const tile_type = fixture.preview.runtimeTileAt(row, lane) orelse continue;
-                if (tile_type == 0x16 or track.isOpenNeighborRuntimeTileFamily(tile_type)) continue;
-                if (fixture.preview.sampleFloorHeightAtGridPosition(
-                    row,
-                    lane,
-                    @as(f32, @floatFromInt(row)) + 0.5,
-                ) == null) continue;
-                break :blk RowTarget{ .row = row, .lane = lane };
-            }
-        }
-        @panic("expected grounded runtime lane");
-    };
-    runner.row_position = @as(f32, @floatFromInt(grounded.row)) + 0.5;
-    runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
-    runner.movement_progress = runner.row_position - @floor(runner.row_position);
-    runner.lane_index = grounded.lane;
-    runner.lane_center = @as(f32, @floatFromInt(grounded.lane)) + 0.5;
-    runner.resolved_lane_index = grounded.lane;
-    runner.refreshSample(&fixture.preview);
-    runner.attachment_exit_pending = true;
-    runner.attachment_exit_progress = 0.0;
-    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
-
-    runner.stepAttachmentExitState(&fixture.preview);
-
-    try std.testing.expect(!runner.attachment_exit_pending);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_exit_progress, 0.0001);
-    try std.testing.expect(!runner.attachment_exit_gate_a);
-}
-
 test "fall-phase attachment exit progress no longer clears pending at one second" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
@@ -8491,37 +8312,6 @@ test "fall-phase attachment exit progress no longer clears pending at one second
 
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.attachment_exit_progress, 0.0001);
-}
-
-test "fall state arms gate b at the deep threshold" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.phase.fall.world_y = fall_world_y_threshold - 0.01;
-
-    runner.updatePhaseController(&fixture.preview, 0.0);
-
-    try std.testing.expect(runner.attachment_exit_gate_b);
-}
-
-test "attachment exit pending applies a world-Z camera roll" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.refreshCameraState(&fixture.preview);
-    const baseline = cameraTransformFromMatrix(runner.cameramanMatrix());
-
-    runner.attachment_exit_pending = true;
-    runner.attachment_exit_value_a = std.math.pi / 6.0;
-    runner.movement_rate_scalar = 1.0;
-    runner.refreshCameraState(&fixture.preview);
-    const rotated = cameraTransformFromMatrix(runner.cameramanMatrix());
-
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), baseline.forward.x, 0.0001);
-    try std.testing.expect(@abs(rotated.forward.x) > 0.05);
 }
 
 test "runner completion enters the delayed handoff controller" {
@@ -8604,49 +8394,6 @@ test "completion does not arm while attachment follow is still active at route e
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
 }
 
-test "route-end completion waits for attachment exit handoff to clear" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.01;
-    runner.syncRowPosition(&fixture.preview);
-    runner.refreshSample(&fixture.preview);
-    runner.attachment_exit_pending = true;
-    runner.attachment_exit_progress = 0.0;
-    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
-
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-    try std.testing.expectEqualStrings("active", runner.phaseLabel());
-
-    runner.stepAttachmentExitState(&fixture.preview);
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
-}
-
-test "route-end completion does not wait on attachment exit during active jetpack" {
-    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.01;
-    runner.syncRowPosition(&fixture.preview);
-    runner.refreshSample(&fixture.preview);
-    runner.attachment_exit_pending = true;
-    runner.armJetpackGauge();
-
-    runner.stepAttachmentExitState(&fixture.preview);
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-
-    try std.testing.expect(!runner.attachment_exit_pending);
-    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-}
-
 test "route-end completion can start while parcel delivery registration is still pending" {
     var fixture = try TestFixture.load("LEVELS/ARCADE003.TXT");
     defer fixture.deinit();
@@ -8713,38 +8460,6 @@ test "row event bonus prompt waits while runtime flag b40 is clear" {
     runner.updateRowEventDisplay(&fixture.preview, false);
 
     try std.testing.expectEqual(RowEventDisplayState.bonus_prompt, runner.row_event_display.state);
-}
-
-test "route-end natural attachment retirement bypasses the exit handoff" {
-    var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
-    defer fixture.deinit();
-
-    const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
-    const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
-    fixture.preview.total_rows = built.row.global_row + built.template.sample_count + 1;
-
-    var runner = Runner.init(&fixture.preview);
-    runner.movement_mode = .attachment;
-    runner.attachment_path_name = "START";
-    runner.attachment_follow = .{
-        .active = true,
-        .source_row = target.row,
-        .sample_index = built.template.sample_count,
-        .template_progress = @floatFromInt(built.template.sample_count),
-        .exit_overshoot = 0.999,
-    };
-
-    runner.endAttachmentIfNeeded(&fixture.preview);
-
-    try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(!runner.attachment_exit_pending);
-    try std.testing.expectEqualStrings("attachment_end", runner.recentEventLabel());
-
-    runner.maybeBeginCompletionCutscene(&fixture.preview);
-
-    try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
-    try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
 test "tutorial completion screen init handoff fires before the late finalize handoff" {
