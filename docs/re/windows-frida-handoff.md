@@ -250,6 +250,16 @@ Before running any new capture, sync the latest repo copy of [tools/frida/snailm
 
 Without that update, the capture will still be useful for probes, pickups, and hazard spawns, but it will under-report player state and attachment exits.
 
+Current checked-in default:
+
+- `TRACE_PROFILE = "completion_handoff"` in [tools/frida/snailmail-runtime-trace.js](../../tools/frida/snailmail-runtime-trace.js)
+- that profile keeps only:
+  - `level_start`
+  - `completion_handoff_arm`
+  - `completion_screen_init`
+  - `complete_subgame_call`
+- verify the trace by checking `hooks_installed.profile = "completion_handoff"` in the second NDJSON row
+
 For the path oracle, the newest script focuses on:
 
 - installed `P/p` row ownership after `populate_runtime_track_cells_from_segments`

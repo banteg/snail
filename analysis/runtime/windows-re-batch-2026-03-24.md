@@ -75,6 +75,10 @@ Capture notes:
 - break on `update_subgoldy`, `update_cutscene`, `initialize_completion_screen`, `complete_subgame`
 - watch `player + 0x440`, `+0x444`, `+0x448`, `+0x44e`
 
+Current setup:
+- `tools/frida/snailmail-runtime-trace.js` now defaults to the `completion_handoff` profile
+- the next Windows Frida pass should verify `hooks_installed.profile = "completion_handoff"` before using the capture
+
 ## 3. Attachment-Exit Consumers
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 4 and [docs/re/windows-cdb-session-2026-03-15.md](../../docs/re/windows-cdb-session-2026-03-15.md).

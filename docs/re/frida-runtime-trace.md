@@ -30,6 +30,16 @@ The current default Windows pack is also conservative. These probes are present 
 
 Use the broad script when you need one capture that covers movement, attachments, pickups, and hazards together.
 
+The current checked-in default is `TRACE_PROFILE = 'completion_handoff'` near the top of the script.
+That profile only keeps the section-2 probes enabled:
+
+- `level_start`
+- `completion_handoff_arm`
+- `completion_screen_init`
+- `complete_subgame_call`
+
+Switch `TRACE_PROFILE` back to `broad_runtime` when you want the wider stable pack again.
+
 Use the path oracle when you need to answer the still-open path questions specifically:
 
 - which installed bank root a `P/p` row uses in practice
@@ -452,6 +462,8 @@ frida -n SnailMail_unwrapped.exe -l .\tools\frida\snailmail-runtime-trace.js
 ```
 
 Watch the first console line from the script. It prints the exact NDJSON path it opened under `C:\share\snail\frida\`.
+
+For the current section-2 pass, also verify the second row shows `hooks_installed.profile = "completion_handoff"` before trusting the capture.
 
 If you only have the wrapper path handy, do not attach to `SnailMail.exe`. In the common case the wrapper launches a separate gameplay process, so the script needs the gameplay image directly. Falling back to `SnailMail.RWG` is still valid if you have not generated the unwrapped image yet.
 
