@@ -253,6 +253,18 @@ Latest stable completion-side result on 2026-03-24:
   - `player + 0x44e` is the one-shot `2.0s` voice latch
   - once the completion logic forces the timer to `5.1f`, it immediately subtracts one step back to `~4.983` before checking the `> 5.0` branch
 - section 2 is now considered closed
+
+Latest stable attachment-side result on 2026-03-24:
+
+- `snailmail-trace-20260324-175650-8440.ndjson` loaded the `attachment_exit` profile without crashing
+- it captured `21` real `attachment_begin` events, `2976` `attachment_update` events, and `4` real `attachment_end` events on `ARCADE007`
+- the trace did not hit `attachment_probe`, so the swept-entry helper itself is still not directly confirmed on this pass
+- the four detach events split into two runtime families:
+  - two retired immediately with no sustained `attachment_exit_pending` window
+  - two kept `attachment_exit_pending = 1` for about `2.93` to `2.95` seconds while the player stayed unattached on tile `0x00`
+- in those longer windows, `attachment_exit_progress` climbed from about `0.017` / `0.133` to about `2.95` / `2.933`, and both follow-effect gates flipped on around `0.67`
+- neither `post_follow_value_a` nor `post_follow_value_b` went nonzero anywhere in the trace
+- the first reattached `player_update` after each long skim window showed `attachment_exit_pending = 0` and `attachment_exit_progress = 0`, so the next successful `attachment_begin` is now runtime-confirmed as one generic non-jetpack retirement path
 ## How To Run
 
 Run the spawn flow from `artifacts\bin` on the Windows machine so the game starts with the expected working directory.

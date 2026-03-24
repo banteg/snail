@@ -158,6 +158,11 @@ Current hooks in the script:
     - `before_follow_progress`
     - `before_cell` and `before_raw_cell`
     - post-call `attachment_exit_pending`, `attachment_exit_anchor_z`, `attachment_exit_progress`, `attachment_exit_progress_step`, and the follow-effect gates
+  - latest stable `attachment_exit` result on 2026-03-24:
+    - `snailmail-trace-20260324-175650-8440.ndjson` captured `4` real detach events on `ARCADE007`
+    - two retired immediately, while two held `attachment_exit_pending = 1` for about `2.93` to `2.95` seconds before the next `attachment_begin` cleared it on the first reattached frame
+    - neither `post_follow_value_a` nor `post_follow_value_b` went nonzero anywhere in that trace
+    - `attachment_probe` still did not fire, so the swept-entry helper itself remains unconfirmed in the stable Frida lane
 - `0x43d4d0` `sample_track_floor_height_at_position`
   - logs sampled floor-query positions and the runtime cell chosen for that query
   - now also includes the runtime cell floor slot from `cell + 0x14`, which is the special height source for shipped tile `0x16`

@@ -189,6 +189,33 @@ Current setup:
 - death, completion, pickup, hazard, and replay-side hooks stay off
 - first pass should still use `ARCADE007` and a `HalfPipe` exit with an attempted skim back onto the path or adjacent floor before the fall settles
 
+Frida follow-up on 2026-03-24:
+- fresh artifact: `C:/share/snail/frida/snailmail-trace-20260324-175650-8440.ndjson`
+- the stable `attachment_exit` profile captured real detach cycles without crashing:
+  - `attachment_begin = 21`
+  - `attachment_update = 2976`
+  - `attachment_end = 4`
+  - `attachment_probe = 0`
+- all four `attachment_end` hits were real off-track drops onto tile `0x00`, but they split into two runtime families:
+  - two exits retired immediately or nearly immediately with no sustained pending window
+  - two exits kept `attachment_exit_pending = 1` for roughly `2.93` to `2.95` seconds, then cleared it on the first reattached frame when a fresh `attachment_begin` landed
+- in the two longer windows, `attachment_exit_progress` rose from about `0.017` / `0.133` to about `2.95` / `2.933`, while the player stayed unattached on tile `0x00`
+- both long windows flipped from `follow_effect_gate_a = 0`, `follow_effect_gate_b = 0` to `follow_effect_gate_a = 1`, `follow_effect_gate_b = 1` around `attachment_exit_progress ~= 0.667` / `0.683`
+- neither `post_follow_value_a` nor `post_follow_value_b` went nonzero anywhere in this Frida trace
+- the reentry path is now runtime-confirmed at a higher level even though the direct swept probe hook did not fire:
+  - `attachment_exit_pending` stayed set until the next `attachment_begin`
+  - the first reattached `player_update` frame immediately showed `attachment_exit_pending = 0` and `attachment_exit_progress = 0`
+
+Net status after the Frida pass:
+- section 3 is still incomplete
+- the strongest remaining gaps are now narrower:
+  - no direct consumer of `post_follow_value_b`
+  - no direct `attachment_probe` hit for the swept re-entry helper itself
+  - no proof yet whether overlapping `0x40` / `0x80` probes can both succeed in one tick
+- but the generic non-jetpack retirement behavior is now partially closed at runtime:
+  - `attachment_exit_pending` can persist through an off-track skim window
+  - that pending state is cleared by the next successful reattachment, not only by the already known jetpack branch
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.
