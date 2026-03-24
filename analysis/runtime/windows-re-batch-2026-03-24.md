@@ -109,6 +109,34 @@ Capture notes:
 - also break on `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, `exit_high_score_screen`
 - watch `[controller + 0x94]`, `[controller + 0x98]`, and the replay scratch lanes already listed in the debugger wants doc
 
+Current 2026-03-24 result:
+- fresh checked-in note: `analysis/cdb/windows-outer-bridge-capture-2026-03-24.md`
+- fresh artifact log: `artifacts/snailmail-windbg.log`
+- fresh focused packs:
+  - `artifacts/cdb-outer-bridge-startup-pack-2026-03-24.txt`
+  - `artifacts/cdb-outer-bridge-pause-return-pack-2026-03-24.txt`
+- normal fresh Postal startup did not use the saved-owner bridge
+  - `initialize_subgame` entered with `selector=2`
+  - `build_subgame_level` saw `selector=3`
+  - early gameplay then settled onto `selector=1`
+  - neither `startup_bridge_to_26` nor `startup_bridge_to_27` fired
+- ordinary spare-life respawn rebuild used direct owner `0x1c`, not `0x1a/0x1b`
+  - `initialize_subgame` re-entered from live `state=2` with `selector=0`, `app_owner=0x1c`, `app_saved=0xb`
+  - one tick later the rebuild restored owner `0xb` while preserving saved owner `0xb`
+- transient pause `End Game` also stayed off the persistent bridge
+  - `update_pause_menu` ran with `persist=0`
+  - it stored current owner `0xb` into the completion-screen saved slot
+  - it chose completion state `2`
+  - it switched owner `0xb -> 0x8 -> 0x9` as control moved into `update_completion_screen`
+- the section is still incomplete because the capture did not yet show:
+  - a live `0x1a/0x1b` bridge producer
+  - the final completion-screen owner restore back into the main menu
+
+Net status for section 4:
+- the ordinary startup, respawn, and transient pause-return lanes are now materially narrowed and do not support `0x1a/0x1b` as their live bridge
+- the remaining unknown `0x1a/0x1b` producers are now more likely to belong to replay-backed or other persistent return families
+- section 4 still needs one more targeted Windows pass to capture either a persistent `0x1a/0x1b` producer or the final completion-screen restore to main menu
+
 ## Done Criteria
 
 This batch is complete only when all of these are true:
@@ -118,7 +146,8 @@ This batch is complete only when all of these are true:
 
 Current batch status:
 - section 3 now has fresh partial Windows evidence, but not its full done criteria
-- sections 1, 2, and 4 still need fresh Windows captures before the replacement decision is ready
+- section 4 now has fresh partial Windows evidence, but not its full done criteria
+- sections 1 and 2 still need fresh Windows captures before the replacement decision is ready
 
 ## Expected Next Replacement Boundary
 
