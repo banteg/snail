@@ -36,13 +36,13 @@ That profile only keeps the section-1 probes enabled:
 - `death_select_respawn`
 - `death_select_final_loss`
 - `respawn_enter`
-- `respawn_life_decrement`
-- `respawn_complete_subgame_branch`
 
 The crash-prone helper-side death hooks still stay off in that profile:
 
 - `death_handoff_cutscene`
 - `death_handoff_update`
+- `respawn_life_decrement`
+- `respawn_complete_subgame_branch`
 
 Switch `TRACE_PROFILE` to `completion_handoff` for section 2 or back to `broad_runtime` when you want the wider stable pack again.
 
