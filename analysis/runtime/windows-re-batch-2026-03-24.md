@@ -57,16 +57,27 @@ Current 2026-03-24 result:
 - the restored stable failure profile then captured the missing final-loss selector lane without crashing:
   - `death_select_final_loss` fired with `final_loss = 1`, `lives = 0`, `app.owner = 0xb`, and `app.saved = 0xb`
   - the same trace also re-saw earlier spare-life selectors at `lives = 3` and `lives = 1`, so the reduced pack is safe for repeated life-burn runs
-- the stable reduced Frida pack does not yet capture:
-  - whether hazard death and floor-gap fall share the same late handoff
-  - a Challenge or Time Trial death lane
+- three more stable reduced-pack traces then closed the remaining death-lane comparisons:
+  - Postal hazard vs Postal fall on spare lives:
+    - hazard slug death hit `death_select_respawn` with `lives = 3`, `world_y = 0.49`, `world_z = 34.869`, `app.saved = 0`
+    - Postal fall death hit `death_select_respawn` with `lives = 2`, `world_y = -7.059`, `world_z = 193.373`, `app.saved = 0xb`
+    - both therefore retire through the same spare-life respawn selector on the stable pack
+  - Time Trial hazard vs Time Trial fall:
+    - hazard death hit `death_select_final_loss` with `lives = 0`, `world_y = 0.49`, `world_z = 34.378`, `app.saved = 0`
+    - Time Trial fall death hit `death_select_final_loss` with `lives = 0`, `world_y = -7.033`, `world_z = 193.982`, `app.saved = 0xb`
+    - both therefore retire through the same final-loss selector lane on the stable pack
+  - Challenge fall death:
+    - Challenge fall death hit `death_select_final_loss` with `lives = 0`, `world_y = -7.211`, `world_z = 267.918`, `app.saved = 0`
+    - that closes the required non-Postal death-family evidence with one additional shipped mode beyond Time Trial
 
 Net status for section 1:
 - the spare-life Postal respawn selector is now confirmed on Windows with a stable Frida capture
 - ordinary spare-life death clearly enters the respawn helper and progresses through a full rebuild-sized timer window before the level restarts
 - the visible-life decrement commit point is now captured on Windows, but only in a crash-prone narrower retry
 - the final-loss selector lane is now also confirmed on Windows with the stable reduced Frida pack
-- section 1 is still incomplete only because the hazard-vs-floor-gap comparison and non-Postal death lanes were not captured yet
+- Postal hazard death and Postal floor-gap fall share the same spare-life respawn selector on the stable reduced pack
+- Time Trial hazard death and Time Trial fall share the same final-loss selector on the stable reduced pack
+- section 1 is complete
 
 Current setup:
 - `tools/frida/snailmail-runtime-trace.js` now defaults to the `failure_handoff` profile
@@ -79,7 +90,7 @@ Current setup:
   - `death_handoff_update`
   - `respawn_life_decrement`
   - `respawn_complete_subgame_branch`
-- next pass should be a clean floor-gap or void-style fall in Postal, because the selector itself is now settled and the remaining question is whether the late handoff matches the hazard-death lane
+- section 1 no longer needs fresh Windows captures unless we later decide we need completion-screen or high-score-entry follow-through after non-Postal final loss
 
 ## 2. Completion Handoff
 

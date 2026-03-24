@@ -172,6 +172,15 @@ Important payload notes for the current script:
 - `snailmail-trace-20260324-174348-6980.ndjson` confirmed that the restored reduced `failure_handoff` profile is stable again and does land the missing final-loss selector:
   - `death_select_final_loss` fired with `final_loss = 1`, `lives = 0`, `app.owner = 0xb`, and `app.saved = 0xb`
   - the same run also re-saw earlier spare-life respawn selectors while the player burned lives down, so the reduced pack is safe for repeated life-burn repros
+- the next three reduced-pack traces closed the remaining section-1 asks:
+  - `snailmail-trace-20260324-174803-7452.ndjson`
+    - Postal slug death and Postal fall death both landed `death_select_respawn`
+    - the fall lane is distinguishable by negative `world_y` and later `world_z`, but the selector outcome is the same
+  - `snailmail-trace-20260324-174918-6984.ndjson`
+    - Time Trial hazard death and Time Trial fall death both landed `death_select_final_loss`
+  - `snailmail-trace-20260324-175010-6056.ndjson`
+    - Challenge fall death also landed `death_select_final_loss`
+    - this closes the required non-Postal death-family evidence, even though the current reduced profile does not trace the later high-score-entry UI
 - the newer script also emits focused handoff events with app-side owner state from `data_4df904`:
   - `completion_handoff_arm`
   - `completion_screen_init`
