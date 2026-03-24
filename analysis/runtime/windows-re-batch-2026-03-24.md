@@ -54,8 +54,10 @@ Current 2026-03-24 result:
 - a one-off narrower retry also captured the visible-life decrement commit point before the process crashed again:
   - `respawn_life_decrement` fired once at `respawn_progress = 1.008` with `lives_before = 3`, `final_loss = 0`, and `game_fade = 74`
   - that trace still terminated immediately afterward, so `respawn_life_decrement` and `respawn_complete_subgame_branch` are not safe to leave armed by default
+- the restored stable failure profile then captured the missing final-loss selector lane without crashing:
+  - `death_select_final_loss` fired with `final_loss = 1`, `lives = 0`, `app.owner = 0xb`, and `app.saved = 0xb`
+  - the same trace also re-saw earlier spare-life selectors at `lives = 3` and `lives = 1`, so the reduced pack is safe for repeated life-burn runs
 - the stable reduced Frida pack does not yet capture:
-  - the final-loss selector lane
   - whether hazard death and floor-gap fall share the same late handoff
   - a Challenge or Time Trial death lane
 
@@ -63,7 +65,8 @@ Net status for section 1:
 - the spare-life Postal respawn selector is now confirmed on Windows with a stable Frida capture
 - ordinary spare-life death clearly enters the respawn helper and progresses through a full rebuild-sized timer window before the level restarts
 - the visible-life decrement commit point is now captured on Windows, but only in a crash-prone narrower retry
-- section 1 is still incomplete because the final-loss branch, hazard-vs-floor-gap comparison, and non-Postal death lanes were not captured in a stable pack
+- the final-loss selector lane is now also confirmed on Windows with the stable reduced Frida pack
+- section 1 is still incomplete only because the hazard-vs-floor-gap comparison and non-Postal death lanes were not captured yet
 
 Current setup:
 - `tools/frida/snailmail-runtime-trace.js` now defaults to the `failure_handoff` profile
@@ -76,7 +79,7 @@ Current setup:
   - `death_handoff_update`
   - `respawn_life_decrement`
   - `respawn_complete_subgame_branch`
-- next pass should be a no-life Postal death, because the selector itself is still stable and that is the missing branch with the best remaining signal
+- next pass should be a clean floor-gap or void-style fall in Postal, because the selector itself is now settled and the remaining question is whether the late handoff matches the hazard-death lane
 
 ## 2. Completion Handoff
 

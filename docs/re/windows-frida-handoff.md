@@ -169,6 +169,9 @@ Important payload notes for the current script:
 - `snailmail-trace-20260324-174006-708.ndjson` did capture one useful extra fact before crashing:
   - `respawn_life_decrement` fired once at `respawn_progress = 1.008` with `lives_before = 3`, `final_loss = 0`, and `game_fade = 74`
   - because that run died immediately afterward, `0x44205b` and `0x442096` are now treated as crash-prone and are no longer armed by default
+- `snailmail-trace-20260324-174348-6980.ndjson` confirmed that the restored reduced `failure_handoff` profile is stable again and does land the missing final-loss selector:
+  - `death_select_final_loss` fired with `final_loss = 1`, `lives = 0`, `app.owner = 0xb`, and `app.saved = 0xb`
+  - the same run also re-saw earlier spare-life respawn selectors while the player burned lives down, so the reduced pack is safe for repeated life-burn repros
 - the newer script also emits focused handoff events with app-side owner state from `data_4df904`:
   - `completion_handoff_arm`
   - `completion_screen_init`
