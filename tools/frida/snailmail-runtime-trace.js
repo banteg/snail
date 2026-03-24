@@ -122,11 +122,11 @@ const HOOK_PROFILES = {
     respawn_complete_subgame_branch: false,
     track_pair_payload: false,
     attachment_follow_dispatch: true,
-    attachment_probe: true,
+    attachment_probe: false,
     attachment_begin: true,
     attachment_update: true,
     attachment_end: true,
-    attachment_end_callsite: true,
+    attachment_end_callsite: false,
     floor_sample: false,
     garbage_spawn: false,
     health_pickup: false,
@@ -221,21 +221,6 @@ const ATTACHMENT_PROBE_SITES = [
     callsite: '0x43bec5',
     return_to: '0x43beca',
     lane_flag: '0x80',
-  },
-];
-
-const ATTACHMENT_FOLLOW_CASE_SITES = [
-  {
-    va: 0x43b9c2,
-    case_label: 'retval_0',
-  },
-  {
-    va: 0x43b9ad,
-    case_label: 'retval_1_or_3',
-  },
-  {
-    va: 0x43b9f1,
-    case_label: 'retval_2',
   },
 ];
 
@@ -1608,28 +1593,6 @@ function installHooks(module) {
           follow_effect_gate_b: playerSummary !== null ? playerSummary.follow_effect_gate_b : null,
         });
       },
-    });
-
-    ATTACHMENT_FOLLOW_CASE_SITES.forEach(function (site) {
-      Interceptor.attach(fromVa(module, site.va), {
-        onEnter() {
-          const player = asPtr(this.context.ebp);
-          const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
-          const updateState = getCurrentUpdateSubgoldyState();
-          emit('attachment_follow_case', {
-            callsite: hex(this.context.eip),
-            case_label: site.case_label,
-            update_seq: updateState !== null ? updateState.seq : null,
-            retval: this.context.eax.toInt32(),
-            player: playerSummary !== null ? playerSummary.ptr : hex(player),
-            player_position: playerSummary !== null ? playerSummary.position : safeReadVec3(player, 0x68),
-            cell: playerSummary !== null ? playerSummary.cell : null,
-            attachment_active: playerSummary !== null ? playerSummary.attachment_active : null,
-            attachment_exit_pending: playerSummary !== null ? playerSummary.attachment_exit_pending : null,
-            attachment_exit_progress: playerSummary !== null ? playerSummary.attachment_exit_progress : null,
-          });
-        },
-      });
     });
   }
 

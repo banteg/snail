@@ -183,11 +183,9 @@ Current setup:
   - `movement_flags_update`
   - `player_update`
   - `attachment_follow_dispatch`
-  - `attachment_probe`
   - `attachment_begin`
   - `attachment_update`
   - `attachment_end`
-  - `attachment_end_callsite`
 - death, completion, pickup, hazard, and replay-side hooks stay off
 - first pass should still use `ARCADE007` and a `HalfPipe` exit with an attempted skim back onto the path or adjacent floor before the fall settles
 
@@ -217,10 +215,9 @@ Net status after the Frida pass:
 - but the generic non-jetpack retirement behavior is now partially closed at runtime:
   - `attachment_exit_pending` can persist through an off-track skim window
   - that pending state is cleared by the next successful reattachment, not only by the already known jetpack branch
-- the current higher-detail local script revision also adds direct `update_subgoldy` callsite tracing for:
+- the current safer higher-detail local script revision keeps only the stable extra branch signal:
   - the `0x43b99d` follow-state return-value dispatch
-  - the `0x43bdf0` / `0x43bec5` swept re-entry callsites
-  - the `0x43b9b8`, `0x43c008`, `0x43c34b`, and `0x43c507` `end_track_attachment_follow_state` callsites
+  - the direct `0x43bdf0` / `0x43bec5` and `end_track_attachment_follow_state` callsite hooks were removed from the default pack after they caused a startup crash
 
 ## 4. Outer Bridge
 

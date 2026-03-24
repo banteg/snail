@@ -36,11 +36,9 @@ That profile only keeps the section-3 probes enabled:
 - `movement_flags_update`
 - `player_update`
 - `attachment_follow_dispatch`
-- `attachment_probe`
 - `attachment_begin`
 - `attachment_update`
 - `attachment_end`
-- `attachment_end_callsite`
 
 The current profile still leaves the unrelated high-noise families off:
 
@@ -144,11 +142,9 @@ Current hooks in the script:
   - logs the scalar payload pushed into the cached pair cells and the resolved rows of `cached_track_pair_cell_a/b`
 - `0x42c770` `try_enter_track_attachment_from_swept_motion`
   - older stable hook target for attempted path-attachment entry
-  - the newer section-3 Windows pack instead traces the direct `update_subgoldy` callsites `0x43bdf0` and `0x43bec5`, labeled as the `0x40` and `0x80` swept re-entry lanes
+  - the more aggressive direct `update_subgoldy` callsite hooks at `0x43bdf0` and `0x43bec5` were tried and then removed from the default Windows pack after a startup crash
 - `0x43b99d` `attachment_follow_dispatch`
   - logs the return value from `update_track_attachment_follow_state` before `update_subgoldy` jumps through the local switch table
-- `0x43b9b8`, `0x43c008`, `0x43c34b`, `0x43c507` `attachment_end_callsite`
-  - log the four `update_subgoldy` sites that actually call `end_track_attachment_follow_state`
 - `0x420c40` `begin_track_attachment_follow_state`
   - logs the actual transition into attachment-follow state
   - now emits both the full follow-state summary and the resolved attachment-template summary
