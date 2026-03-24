@@ -177,6 +177,18 @@ Net status for section 3:
 - section 3 is still incomplete because the real post-swept-re-entry retirement path and the overlapping `0x40` / `0x80` probe behavior were not hit in this session
 - if this section is revisited, keep the current focused pack and bias the repro toward skimming back onto the path or adjacent floor immediately after a `HalfPipe` exit
 
+Current setup:
+- `tools/frida/snailmail-runtime-trace.js` now defaults to the `attachment_exit` profile
+- that profile keeps only the live player and attachment-exit state hooks needed for section 3:
+  - `movement_flags_update`
+  - `player_update`
+  - `attachment_probe`
+  - `attachment_begin`
+  - `attachment_update`
+  - `attachment_end`
+- death, completion, pickup, hazard, and replay-side hooks stay off
+- first pass should still use `ARCADE007` and a `HalfPipe` exit with an attempted skim back onto the path or adjacent floor before the fall settles
+
 ## 4. Outer Bridge
 
 Use [docs/re/windows-debugging-wants.md](../../docs/re/windows-debugging-wants.md) section 5.

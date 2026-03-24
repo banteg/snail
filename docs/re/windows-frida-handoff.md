@@ -181,6 +181,14 @@ Important payload notes for the current script:
   - `snailmail-trace-20260324-175010-6056.ndjson`
     - Challenge fall death also landed `death_select_final_loss`
     - this closes the required non-Postal death-family evidence, even though the current reduced profile does not trace the later high-score-entry UI
+- the current checked-in default is now the section-3 `attachment_exit` profile:
+  - `movement_flags_update`
+  - `player_update`
+  - `attachment_probe`
+  - `attachment_begin`
+  - `attachment_update`
+  - `attachment_end`
+- that profile is intended for `ARCADE007` / `HalfPipe` re-entry work and keeps death, completion, pickup, hazard, salt, and slug hooks off
 - the newer script also emits focused handoff events with app-side owner state from `data_4df904`:
   - `completion_handoff_arm`
   - `completion_screen_init`
