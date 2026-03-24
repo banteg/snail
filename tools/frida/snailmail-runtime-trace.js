@@ -25,10 +25,12 @@ const HOOK_PROFILES = {
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
     track_pair_payload: true,
+    attachment_follow_dispatch: true,
     attachment_probe: true,
     attachment_begin: true,
     attachment_update: true,
     attachment_end: true,
+    attachment_end_callsite: true,
     floor_sample: true,
     garbage_spawn: true,
     health_pickup: true,
@@ -55,10 +57,12 @@ const HOOK_PROFILES = {
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
     track_pair_payload: false,
+    attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: false,
     attachment_update: false,
     attachment_end: false,
+    attachment_end_callsite: false,
     floor_sample: false,
     garbage_spawn: false,
     health_pickup: false,
@@ -85,10 +89,12 @@ const HOOK_PROFILES = {
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
     track_pair_payload: false,
+    attachment_follow_dispatch: false,
     attachment_probe: false,
     attachment_begin: false,
     attachment_update: false,
     attachment_end: false,
+    attachment_end_callsite: false,
     floor_sample: false,
     garbage_spawn: false,
     health_pickup: false,
@@ -115,10 +121,12 @@ const HOOK_PROFILES = {
     respawn_life_decrement: false,
     respawn_complete_subgame_branch: false,
     track_pair_payload: false,
+    attachment_follow_dispatch: true,
     attachment_probe: true,
     attachment_begin: true,
     attachment_update: true,
     attachment_end: true,
+    attachment_end_callsite: true,
     floor_sample: false,
     garbage_spawn: false,
     health_pickup: false,
@@ -149,10 +157,12 @@ const LIMITS = {
   respawn_life_decrement: 128,
   respawn_complete_subgame_branch: 128,
   track_pair_payload: 2048,
+  attachment_follow_dispatch: 2048,
   attachment_probe: 4096,
   attachment_begin: 1024,
   attachment_update: 4096,
   attachment_end: 1024,
+  attachment_end_callsite: 1024,
   floor_sample: 4096,
   garbage_spawn: 4096,
   health_pickup: 1024,
@@ -170,6 +180,8 @@ const VA = {
   begin_track_attachment_follow_state: 0x420c40,
   update_track_attachment_follow_state: 0x420cb0,
   try_enter_track_attachment_from_swept_motion: 0x42c770,
+  update_subgoldy_attachment_probe_flag40: 0x43bdf0,
+  update_subgoldy_attachment_probe_flag80: 0x43bec5,
   update_player_movement_flags: 0x43a1a0,
   normalize_level_runtime_fields: 0x437eb0,
   end_track_attachment_follow_state: 0x43af60,
@@ -196,6 +208,55 @@ const VA = {
   respawn_life_decrement: 0x44205b,
   respawn_complete_subgame_branch: 0x442096,
 };
+
+const ATTACHMENT_PROBE_SITES = [
+  {
+    va: VA.update_subgoldy_attachment_probe_flag40,
+    callsite: '0x43bdf0',
+    return_to: '0x43bdf5',
+    lane_flag: '0x40',
+  },
+  {
+    va: VA.update_subgoldy_attachment_probe_flag80,
+    callsite: '0x43bec5',
+    return_to: '0x43beca',
+    lane_flag: '0x80',
+  },
+];
+
+const ATTACHMENT_FOLLOW_CASE_SITES = [
+  {
+    va: 0x43b9c2,
+    case_label: 'retval_0',
+  },
+  {
+    va: 0x43b9ad,
+    case_label: 'retval_1_or_3',
+  },
+  {
+    va: 0x43b9f1,
+    case_label: 'retval_2',
+  },
+];
+
+const ATTACHMENT_END_CALLSITES = [
+  {
+    va: 0x43b9b8,
+    callsite: '0x43b9b8',
+  },
+  {
+    va: 0x43c008,
+    callsite: '0x43c008',
+  },
+  {
+    va: 0x43c34b,
+    callsite: '0x43c34b',
+  },
+  {
+    va: 0x43c507,
+    callsite: '0x43c507',
+  },
+];
 
 const APP = {
   owner: 0x1b8,
@@ -970,6 +1031,67 @@ function maybeEmitSampled(event, key, digest, stride, extra) {
   }
 }
 
+let nextUpdateSubgoldySeq = 1;
+const updateSubgoldyStateByThread = Object.create(null);
+const recentAttachmentProbesByPlayer = Object.create(null);
+
+function setCurrentUpdateSubgoldyState(playerPtr) {
+  const tid = Process.getCurrentThreadId();
+  const state = {
+    seq: nextUpdateSubgoldySeq,
+    player: hex(playerPtr),
+  };
+  nextUpdateSubgoldySeq += 1;
+  updateSubgoldyStateByThread[tid] = state;
+  return state;
+}
+
+function clearCurrentUpdateSubgoldyState() {
+  const tid = Process.getCurrentThreadId();
+  delete updateSubgoldyStateByThread[tid];
+}
+
+function getCurrentUpdateSubgoldyState() {
+  const tid = Process.getCurrentThreadId();
+  return updateSubgoldyStateByThread[tid] || null;
+}
+
+function rememberAttachmentProbe(playerPtr, probe) {
+  const key = hex(playerPtr);
+  if (key === null || probe === null) {
+    return;
+  }
+
+  const existing = recentAttachmentProbesByPlayer[key] || [];
+  existing.push(probe);
+
+  const filtered = existing.filter(function (item) {
+    if (probe.update_seq === null || item.update_seq === null) {
+      return true;
+    }
+    return probe.update_seq >= item.update_seq && probe.update_seq - item.update_seq <= 2;
+  });
+
+  recentAttachmentProbesByPlayer[key] = filtered.slice(-8);
+}
+
+function getRecentAttachmentProbes(playerPtr, updateSeq) {
+  const key = hex(playerPtr);
+  if (key === null) {
+    return null;
+  }
+
+  const probes = recentAttachmentProbesByPlayer[key] || [];
+  const filtered = probes.filter(function (item) {
+    if (updateSeq === null || item.update_seq === null) {
+      return true;
+    }
+    return Math.abs(item.update_seq - updateSeq) <= 1;
+  });
+
+  return filtered.length > 0 ? filtered : null;
+}
+
 function installHooks(module) {
   if (hookInstalled) {
     return;
@@ -978,6 +1100,17 @@ function installHooks(module) {
 
   const getTrackCellRowIndex = makeTrackCellRowIndex(module);
   const getTrackGridCellAtWorldPosition = makeTrackGridCellLocator(module);
+
+  if (HOOKS.attachment_probe || HOOKS.attachment_begin || HOOKS.attachment_follow_dispatch || HOOKS.attachment_end_callsite) {
+    Interceptor.attach(fromVa(module, VA.update_subgoldy), {
+      onEnter() {
+        setCurrentUpdateSubgoldyState(this.context.ecx);
+      },
+      onLeave() {
+        clearCurrentUpdateSubgoldyState();
+      },
+    });
+  }
 
   emit('module_ready', {
     module: module.name,
@@ -1410,35 +1543,130 @@ function installHooks(module) {
   }
 
   if (HOOKS.attachment_probe) {
-    Interceptor.attach(fromVa(module, VA.try_enter_track_attachment_from_swept_motion), {
-      onEnter(args) {
-        const cell = args[6];
-        const template = this.context.ecx;
-        emit('attachment_probe', {
-          template: hex(template),
-          template_summary: summarizeAttachmentTemplate(template),
-          build_flags: safeReadU32(safeReadPointer(template, 0x408), RUNTIME.build_flags),
-          cell: summarizeCell(cell, getTrackCellRowIndex, null),
-          position: {
-            x: floatArg(args[0]),
-            y: floatArg(args[1]),
-            z: floatArg(args[2]),
-          },
-          velocity: {
-            x: floatArg(args[3]),
-            y: floatArg(args[4]),
-            z: floatArg(args[5]),
-          },
+    ATTACHMENT_PROBE_SITES.forEach(function (site) {
+      Interceptor.attach(fromVa(module, site.va), {
+        onEnter() {
+          const player = asPtr(this.context.ebp);
+          const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
+          const updateState = getCurrentUpdateSubgoldyState();
+          const probe = {
+            callsite: site.callsite,
+            return_to: site.return_to,
+            lane_flag: site.lane_flag,
+            update_seq: updateState !== null ? updateState.seq : null,
+            player: playerSummary !== null ? playerSummary.ptr : hex(player),
+            game: playerSummary !== null ? playerSummary.game : hex(safeReadPointer(player, 0x408)),
+            build_flags: playerSummary !== null ? playerSummary.build_flags : null,
+            template: hex(this.context.ecx),
+            template_summary: summarizeAttachmentTemplate(this.context.ecx),
+            player_position: playerSummary !== null ? playerSummary.position : safeReadVec3(player, 0x68),
+            cell: playerSummary !== null ? playerSummary.cell : null,
+            attachment_active: playerSummary !== null ? playerSummary.attachment_active : null,
+            attachment_exit_pending: playerSummary !== null ? playerSummary.attachment_exit_pending : null,
+            attachment_exit_progress: playerSummary !== null ? playerSummary.attachment_exit_progress : null,
+            post_follow_value_a: playerSummary !== null ? playerSummary.post_follow_value_a : null,
+            post_follow_value_b: playerSummary !== null ? playerSummary.post_follow_value_b : null,
+            follow_effect_gate_a: playerSummary !== null ? playerSummary.follow_effect_gate_a : null,
+            follow_effect_gate_b: playerSummary !== null ? playerSummary.follow_effect_gate_b : null,
+            movement_flags: playerSummary !== null ? playerSummary.movement_flags : null,
+            movement_progress: playerSummary !== null ? playerSummary.movement_progress : null,
+          };
+
+          rememberAttachmentProbe(player, {
+            callsite: probe.callsite,
+            return_to: probe.return_to,
+            lane_flag: probe.lane_flag,
+            update_seq: probe.update_seq,
+          });
+          emit('attachment_probe', probe);
+        },
+      });
+    });
+  }
+
+  if (HOOKS.attachment_follow_dispatch) {
+    Interceptor.attach(fromVa(module, 0x43b99d), {
+      onEnter() {
+        const player = asPtr(this.context.ebp);
+        const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
+        const updateState = getCurrentUpdateSubgoldyState();
+        emit('attachment_follow_dispatch', {
+          callsite: '0x43b99d',
+          update_seq: updateState !== null ? updateState.seq : null,
+          retval: this.context.eax.toInt32(),
+          player: playerSummary !== null ? playerSummary.ptr : hex(player),
+          game: playerSummary !== null ? playerSummary.game : hex(safeReadPointer(player, 0x408)),
+          build_flags: playerSummary !== null ? playerSummary.build_flags : null,
+          player_position: playerSummary !== null ? playerSummary.position : safeReadVec3(player, 0x68),
+          cell: playerSummary !== null ? playerSummary.cell : null,
+          attachment_active: playerSummary !== null ? playerSummary.attachment_active : null,
+          attachment_exit_pending: playerSummary !== null ? playerSummary.attachment_exit_pending : null,
+          attachment_exit_progress: playerSummary !== null ? playerSummary.attachment_exit_progress : null,
+          post_follow_value_a: playerSummary !== null ? playerSummary.post_follow_value_a : null,
+          post_follow_value_b: playerSummary !== null ? playerSummary.post_follow_value_b : null,
+          follow_effect_gate_a: playerSummary !== null ? playerSummary.follow_effect_gate_a : null,
+          follow_effect_gate_b: playerSummary !== null ? playerSummary.follow_effect_gate_b : null,
         });
       },
+    });
+
+    ATTACHMENT_FOLLOW_CASE_SITES.forEach(function (site) {
+      Interceptor.attach(fromVa(module, site.va), {
+        onEnter() {
+          const player = asPtr(this.context.ebp);
+          const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
+          const updateState = getCurrentUpdateSubgoldyState();
+          emit('attachment_follow_case', {
+            callsite: hex(this.context.eip),
+            case_label: site.case_label,
+            update_seq: updateState !== null ? updateState.seq : null,
+            retval: this.context.eax.toInt32(),
+            player: playerSummary !== null ? playerSummary.ptr : hex(player),
+            player_position: playerSummary !== null ? playerSummary.position : safeReadVec3(player, 0x68),
+            cell: playerSummary !== null ? playerSummary.cell : null,
+            attachment_active: playerSummary !== null ? playerSummary.attachment_active : null,
+            attachment_exit_pending: playerSummary !== null ? playerSummary.attachment_exit_pending : null,
+            attachment_exit_progress: playerSummary !== null ? playerSummary.attachment_exit_progress : null,
+          });
+        },
+      });
+    });
+  }
+
+  if (HOOKS.attachment_end_callsite) {
+    ATTACHMENT_END_CALLSITES.forEach(function (site) {
+      Interceptor.attach(fromVa(module, site.va), {
+        onEnter() {
+          const player = asPtr(this.context.ebp);
+          const playerSummary = summarizePlayer(player, getTrackCellRowIndex);
+          const updateState = getCurrentUpdateSubgoldyState();
+          emit('attachment_end_callsite', {
+            callsite: site.callsite,
+            update_seq: updateState !== null ? updateState.seq : null,
+            player: playerSummary !== null ? playerSummary.ptr : hex(player),
+            player_position: playerSummary !== null ? playerSummary.position : safeReadVec3(player, 0x68),
+            cell: playerSummary !== null ? playerSummary.cell : null,
+            attachment_active: playerSummary !== null ? playerSummary.attachment_active : null,
+            attachment_exit_pending: playerSummary !== null ? playerSummary.attachment_exit_pending : null,
+            attachment_exit_progress: playerSummary !== null ? playerSummary.attachment_exit_progress : null,
+            post_follow_value_a: playerSummary !== null ? playerSummary.post_follow_value_a : null,
+            post_follow_value_b: playerSummary !== null ? playerSummary.post_follow_value_b : null,
+            follow_effect_gate_a: playerSummary !== null ? playerSummary.follow_effect_gate_a : null,
+            follow_effect_gate_b: playerSummary !== null ? playerSummary.follow_effect_gate_b : null,
+          });
+        },
+      });
     });
   }
 
   if (HOOKS.attachment_begin) {
     Interceptor.attach(fromVa(module, VA.begin_track_attachment_follow_state), {
       onEnter(args) {
+        const updateState = getCurrentUpdateSubgoldyState();
+        const recentProbes = getRecentAttachmentProbes(args[2], updateState !== null ? updateState.seq : null);
         const follow = summarizeFollowState(this.context.ecx, getTrackCellRowIndex);
         emit('attachment_begin', {
+          update_seq: updateState !== null ? updateState.seq : null,
           follow_state: follow !== null ? follow.ptr : hex(this.context.ecx),
           follow_state_summary: follow,
           template: follow !== null ? follow.template : null,
@@ -1447,6 +1675,7 @@ function installHooks(module) {
           cell: summarizeCell(args[0], getTrackCellRowIndex, safeReadPointer(args[2], 0x408)),
           player_position: safeReadVec3(args[1], 0),
           player: hex(args[2]),
+          recent_attachment_probes: recentProbes,
           attachment_active: follow !== null ? follow.active : null,
           follow_sample_index: follow !== null ? follow.sample_index : null,
           follow_progress: follow !== null ? follow.progress : null,
