@@ -2,6 +2,11 @@
 
 This page is the current working checklist for the remaining reverse-engineering and porting work.
 
+Reference backlog:
+- not default loop context
+- active execution should start from the current gate packet or subsystem dossier
+- update this page when priority order changes or a blind spot materially closes, not for every local narrowing
+
 It is intentionally narrower than the broad rewrite plan and more action-oriented than the status ledgers:
 
 - [port-status.md](port-status.md) says what is verified vs partial

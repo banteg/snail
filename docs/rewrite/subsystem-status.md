@@ -2,6 +2,11 @@
 
 This page is the detailed working tracker for the Zig port.
 
+Reference only:
+- not default loop context
+- use the active dossier or packet first
+- keep transient narrowing in focused notes or runtime packets instead of appending every micro-finding here
+
 Use it when picking the next task. [`port-status.md`](port-status.md) stays the short ledger; this page is the fuller subsystem-by-subsystem read of what is implemented now, what is still approximate, and what the next grounded work should be.
 
 ## Status Legend

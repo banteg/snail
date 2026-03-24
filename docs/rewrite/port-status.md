@@ -2,6 +2,11 @@
 
 This page is the short ledger for what the Zig runtime currently treats as verified, partial, fallback, scaffold, or debug-only.
 
+Reference only:
+- not default loop context
+- use the active dossier or packet first
+- update this ledger only when shipped behavior changes or a subsystem model materially changes
+
 For the fuller subsystem-by-subsystem tracker, see [subsystem-status.md](subsystem-status.md).
 
 Code-level convention:

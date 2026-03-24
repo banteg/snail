@@ -67,13 +67,19 @@ This is the operating policy for the automated decompile-guided port loop.
 - `parity`
   - confirmed native behavior
   - durable
+  - requires cited native evidence from BN, IDA, runtime capture, screenshot comparison, or trace packets
 - `safety`
   - crash or integrity guards
   - durable
+  - does not count as parity evidence
 - `scaffold`
   - temporary tests that are expected to change or disappear during replacement
+  - may be deleted or rewritten in the same patch that replaces the scaffold
 
 Do not add new durable tests for unconfirmed Zig-local proxy behavior.
+Do not add durable behavior tests for `PORT(scaffold)` or `PORT(fallback)` behavior on unresolved authority boundaries.
+If a patch touches an unresolved owner or controller boundary, it must shrink scaffold or refresh evidence instead of adding a new durable proxy test.
+A green local test run proves internal consistency, not parity, unless the test is explicitly backed by native evidence.
 
 ## Extraction Policy
 

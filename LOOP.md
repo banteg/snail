@@ -89,6 +89,15 @@ Run the narrowest meaningful checks for the phase:
 
 Do not claim parity confidence that you did not earn.
 
+## Test Rules
+
+- treat every new behavior test as one of: `parity`, `safety`, or `scaffold`
+- `parity` tests require cited native evidence from BN, IDA, runtime capture, screenshot comparison, or trace packets
+- `safety` tests may assert crash, integrity, or inertness guards, but they do not count as parity evidence
+- `scaffold` tests are temporary and may be deleted or rewritten in the same patch that replaces the scaffold
+- do not add durable behavior tests for `PORT(scaffold)` or `PORT(fallback)` behavior on an unresolved authority boundary
+- if a patch touches an unresolved owner or controller boundary, it must shrink scaffold or refresh evidence; it must not add a new durable test for the current proxy
+
 ## Documentation
 
 - keep transient narrowing in one focused RE note or packet
@@ -110,4 +119,5 @@ When a native owner is known, the matching scaffold must shrink in the same patc
 - do not over-trust decompiler variable names
 - do not patch around an unresolved runtime-blocked question
 - do not add durable tests for unconfirmed Zig-local proxy behavior
+- do not let a green test run for a proxy become evidence of parity
 - do not leave important reasoning only in chat output
