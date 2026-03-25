@@ -1,3 +1,6 @@
+const frontend_widget = @import("widget.zig");
+const game_font = @import("../game_font.zig");
+
 pub const Mode = enum {
     quit_app,
     abandon_run,
@@ -27,3 +30,22 @@ pub const choices = [_]Choice{
 pub const title_y: f32 = 200.0;
 pub const yes_x: f32 = -80.0;
 pub const no_x: f32 = 80.0;
+
+pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
+    const title_rect = frontend_widget.widgetTextRect(
+        font,
+        .menu_button,
+        .center,
+        "Do you really want to quit?",
+        title_y,
+        0.0,
+    );
+    return frontend_widget.widgetTextRect(
+        font,
+        .menu_button,
+        .center,
+        text,
+        frontend_widget.stackBelow(title_rect),
+        center_offset_x,
+    );
+}

@@ -1589,16 +1589,12 @@ const FrontendQueuedAction = union(enum) {
     options_menu: OptionsMenuItem,
     pause_menu: PauseMenuItem,
     route_map_menu: RouteMenuAction,
-    help_menu: HelpMenuAction,
+    help_menu: frontend_help.Action,
     high_scores_menu: frontend_high_score_screen.MenuAction,
     high_score_replay: usize,
     post_level_high_scores: frontend_high_score_screen.PostLevelAction,
     completion_screen: frontend_completion_screen.Action,
     exit_prompt: frontend_exit_prompt.Choice,
-};
-
-const HelpMenuAction = enum {
-    back,
 };
 
 const FrontendQueuedActivation = struct {
@@ -3766,7 +3762,7 @@ const AppState = struct {
             return;
         };
 
-        const yes_rect = exitPromptTextRect(self, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
+        const yes_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
         if (frontend_widget.hitRect(yes_rect, self.exit_prompt_button_states[0]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForExitPrompt(0));
             self.exit_prompt_choice_index = 0;
@@ -3776,7 +3772,7 @@ const AppState = struct {
             return;
         }
 
-        const no_rect = exitPromptTextRect(self, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
+        const no_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
         if (frontend_widget.hitRect(no_rect, self.exit_prompt_button_states[1]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForExitPrompt(1));
             self.exit_prompt_choice_index = 1;
@@ -4917,7 +4913,7 @@ const AppState = struct {
         }
     }
 
-    fn performHelpMenuItem(self: *AppState, item: HelpMenuAction) !void {
+    fn performHelpMenuItem(self: *AppState, item: frontend_help.Action) !void {
         switch (item) {
             .back => try self.returnToNewGameMenu(.help),
         }
@@ -8056,28 +8052,6 @@ fn challengeSetupLayoutState(
     };
 }
 
-fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
-    // PORT(verified): `initialize_exit_prompt` seeds the Yes/No widgets at `330`, but then
-    // immediately runs both through `stack_widget_below(title)`. The live authored Y comes
-    // from the title height plus the shared shell-font stack gap, not the constructor seed.
-    const title_rect = frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .menu_button,
-        .center,
-        "Do you really want to quit?",
-        frontend_exit_prompt.title_y,
-        0.0,
-    );
-    return frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .menu_button,
-        .center,
-        text,
-        frontend_widget.stackBelow(title_rect),
-        center_offset_x,
-    );
-}
-
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     for (main_menu_items, 0..) |item, index| {
         const text_rect = frontend_main_menu.textRect(&state.ui_font, item);
@@ -8438,7 +8412,7 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         art,
         &state.ui_font,
         frontend_exit_prompt.choices[0].label(),
-        exitPromptTextRect(state, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x),
+        frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x),
         state.exit_prompt_button_states[0],
         false,
     );
@@ -8447,7 +8421,7 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         art,
         &state.ui_font,
         frontend_exit_prompt.choices[1].label(),
-        exitPromptTextRect(state, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x),
+        frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x),
         state.exit_prompt_button_states[1],
         false,
     );
