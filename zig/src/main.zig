@@ -851,7 +851,7 @@ const RunOutcome = enum {
     failed,
 };
 
-fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_bridge.ResultReturnTarget {
+fn outerReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_bridge.OuterReturnTarget {
     return switch (owner) {
         .postal_route_map => .postal_route_map,
         .postal_final => .thanks_screen,
@@ -973,7 +973,7 @@ const PendingRunResult = struct {
     unlocked_next_route: bool = false,
     completion_owner: CompletionFlowOwner = .tutorial_completion,
     persistence: PendingRunPersistence = .none,
-    return_target: frontend_bridge.ResultReturnTarget,
+    outer_return_target: frontend_bridge.OuterReturnTarget,
 };
 
 const StandalonePostLevelHighScoreEntry = struct {
@@ -1122,8 +1122,8 @@ const AppState = struct {
     active_frontend_level_index: usize = 0,
     current_outer_owner: frontend_bridge.OuterOwnerState = frontend_bridge.outerOwnerStateMainMenu(),
     saved_outer_owner: frontend_bridge.OuterOwnerState = frontend_bridge.outerOwnerStateMainMenu(),
-    saved_replay_return_owner: ?frontend_bridge.SavedReplayReturnOwner = null,
-    subgame_continuation_selector: u8 = 0,
+    saved_replay_return_outer_owner: ?frontend_bridge.SavedReplayReturnOuterOwner = null,
+    subgame_rebuild_selector: u8 = 0,
     pending_respawn_bridge_state: ?RespawnBridgeState = null,
     high_score_screen_owner: frontend_high_score_screen.Owner = .{ .main_menu_browse = .postal },
     post_level_high_score_return_owner: ?frontend_bridge.OuterOwnerState = null,
@@ -1135,7 +1135,7 @@ const AppState = struct {
     selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride = null,
     selected_level_record_source: ?frontend_bridge.SelectedLevelRecordSource = null,
     selected_level_record_persistent: bool = false,
-    selected_level_record_return_target: ?frontend_bridge.ResultReturnTarget = null,
+    selected_level_record_outer_return_target: ?frontend_bridge.OuterReturnTarget = null,
     selected_replay_cache: ?high_score.DecodedReplay = null,
     selected_replay_fade_exit_pending: bool = false,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
@@ -3683,7 +3683,7 @@ const AppState = struct {
                     },
                     .visible_life_stock = 3,
                     .completion_owner = .postal_route_map,
-                    .return_target = .postal_route_map,
+                    .outer_return_target = .postal_route_map,
                 };
                 try self.enterGamePhase(.completion_screen);
             },
@@ -4029,11 +4029,11 @@ const AppState = struct {
         // `0x1a/0x1b` saved-owner bridge family. Keep the existing effect endpoint but store
         // the direct selector as authoritative bridge state.
         opcode.* = .rebuild_clear_replay_return;
-        self.subgame_continuation_selector = 0x1c;
+        self.subgame_rebuild_selector = 0x1c;
         return frontend_bridge.outerOwnerStateResumeActiveRun();
     }
 
-    fn postRunSelectedLevelRecordReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?frontend_bridge.ResultReturnTarget {
+    fn postRunSelectedLevelRecordOuterReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?frontend_bridge.OuterReturnTarget {
         const source = self.selected_level_record_source orelse return null;
         if (self.selected_level_record_persistent) return null;
 
@@ -4060,8 +4060,8 @@ const AppState = struct {
     ) frontend_bridge.OuterOwnerState {
         const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode(result.outcome);
         const selected_level_record_return = self.selected_level_record_source != null;
-        const return_target = self.postRunSelectedLevelRecordReturnTargetOverride(result) orelse result.return_target;
-        return switch (return_target) {
+        const outer_return_target = self.postRunSelectedLevelRecordOuterReturnTargetOverride(result) orelse result.outer_return_target;
+        return switch (outer_return_target) {
             .main_menu => blk: {
                 opcode.* = .destroy_return;
                 break :blk frontend_bridge.outerOwnerStateMainMenu();
@@ -4122,7 +4122,7 @@ const AppState = struct {
                             .{
                                 .source = source,
                                 .persistent = self.selected_level_record_persistent,
-                                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
+                                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
                             }
                         else
                             null,
@@ -4192,7 +4192,7 @@ const AppState = struct {
         opcode: frontend_bridge.OuterBridgeOpcode,
         next_owner: frontend_bridge.OuterOwnerState,
     ) !void {
-        self.subgame_continuation_selector = @intFromEnum(opcode);
+        self.subgame_rebuild_selector = @intFromEnum(opcode);
         try self.applyOuterBridgeTeardown(opcode, next_owner);
         self.current_outer_owner = next_owner;
 
@@ -4244,7 +4244,7 @@ const AppState = struct {
             .damage_gauge = runner.damage_gauge,
             .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
             .persistence = .failed,
-            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
+            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -4341,7 +4341,7 @@ const AppState = struct {
             frontend_bridge.SelectedLevelRecordLaunch{
                 .source = source,
                 .persistent = self.selected_level_record_persistent,
-                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
+                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
             }
         else
             null;
@@ -4859,7 +4859,7 @@ const AppState = struct {
             .damage_gauge = runner.damage_gauge,
             .completion_owner = completionFlowOwnerForOutcome(.completed, active_mode),
             .persistence = .completed,
-            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.completed, active_mode)),
+            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.completed, active_mode)),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -4871,7 +4871,7 @@ const AppState = struct {
                     self.active_frontend_level_index,
                     highest_available,
                 );
-                result.return_target = resultReturnTargetForCompletionOwner(result.completion_owner);
+                result.outer_return_target = outerReturnTargetForCompletionOwner(result.completion_owner);
                 // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
                 // not the arcade-high-score commit path. Only the last postal route upgrades
                 // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
@@ -4947,7 +4947,7 @@ const AppState = struct {
             .damage_gauge = runner.damage_gauge,
             .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
             .persistence = .failed,
-            .return_target = resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
+            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
         };
 
         switch (active_mode orelse .tutorial) {
@@ -5358,13 +5358,13 @@ const AppState = struct {
         return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
     }
 
-    fn selectedReplayLaunchReturnTarget(self: *const AppState) ?frontend_bridge.ResultReturnTarget {
-        if (self.saved_replay_return_owner) |state| {
-            return frontend_bridge.resultReturnTargetForSavedReplayReturnOwner(state);
+    fn selectedReplayLaunchOuterReturnTarget(self: *const AppState) ?frontend_bridge.OuterReturnTarget {
+        if (self.saved_replay_return_outer_owner) |state| {
+            return frontend_bridge.outerReturnTargetForSavedReplayReturnOuterOwner(state);
         }
-        if (self.selected_level_record_return_target) |target| return target;
+        if (self.selected_level_record_outer_return_target) |target| return target;
         const source = self.selected_level_record_source orelse return null;
-        return frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source);
+        return frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source);
     }
 
     fn selectedReplayLaunchMode(self: *const AppState) ?FrontendLevelMode {
@@ -5381,7 +5381,7 @@ const AppState = struct {
     fn selectedReplayLaunchOwnerState(self: *const AppState) ?frontend_bridge.OuterOwnerState {
         const source = self.selected_level_record_source orelse return null;
         const mode = self.selectedReplayLaunchMode() orelse return null;
-        if (self.saved_replay_return_owner) |return_state| {
+        if (self.saved_replay_return_outer_owner) |return_state| {
             return switch (return_state) {
                 .new_game_menu => frontend_bridge.outerOwnerStateNewGameMenu(frontend_bridge.newGameMenuItemForBridgeMode(mode)),
                 .high_scores_menu => frontend_bridge.outerOwnerStateHighScores(switch (source) {
@@ -5390,8 +5390,8 @@ const AppState = struct {
                 }),
             };
         }
-        const return_target = self.selectedReplayLaunchReturnTarget() orelse return null;
-        return frontend_bridge.outerOwnerStateForSelectedReplayLaunch(mode, source, return_target, self.active_frontend_level_index);
+        const outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse return null;
+        return frontend_bridge.outerOwnerStateForSelectedReplayLaunch(mode, source, outer_return_target, self.active_frontend_level_index);
     }
 
     fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
@@ -5401,8 +5401,8 @@ const AppState = struct {
         result.high_score_rank = null;
         result.time_trial_record_improved = false;
         result.unlocked_next_route = false;
-        if (self.selectedReplayLaunchReturnTarget()) |return_target| {
-            result.return_target = return_target;
+        if (self.selectedReplayLaunchOuterReturnTarget()) |outer_return_target| {
+            result.outer_return_target = outer_return_target;
         }
     }
 
@@ -5429,7 +5429,7 @@ const AppState = struct {
             .selected_level_record_launch = .{
                 .source = source,
                 .persistent = self.selected_level_record_persistent,
-                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
+                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
             },
         });
     }
@@ -5453,12 +5453,12 @@ const AppState = struct {
             launch.persistent
         else
             false;
-        self.saved_replay_return_owner = if (selected_level_record_launch) |launch|
-            frontend_bridge.savedReplayReturnOwnerForLaunch(launch)
+        self.saved_replay_return_outer_owner = if (selected_level_record_launch) |launch|
+            frontend_bridge.savedReplayReturnOuterOwnerForLaunch(launch)
         else
             null;
-        self.selected_level_record_return_target = if (selected_level_record_launch) |launch|
-            if (frontend_bridge.savedReplayReturnOwnerForLaunch(launch) == null) launch.return_target else null
+        self.selected_level_record_outer_return_target = if (selected_level_record_launch) |launch|
+            if (frontend_bridge.savedReplayReturnOuterOwnerForLaunch(launch) == null) launch.outer_return_target else null
         else
             null;
         self.selected_replay_fade_exit_pending = false;
@@ -7125,15 +7125,15 @@ fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) 
     };
 }
 
-fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) frontend_bridge.ResultReturnTarget {
+fn outerReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) frontend_bridge.OuterReturnTarget {
     // PORT(verified): the ordinary postal completion path still returns through the
     // post-completion Star Map owner. Only the final shipped route upgrades to the
     // thanks-screen path.
-    return resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
+    return outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
 }
 
-fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) frontend_bridge.ResultReturnTarget {
-    return resultReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
+fn postalCompletionOuterReturnTarget(current_index: usize, highest_available: usize) frontend_bridge.OuterReturnTarget {
+    return outerReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
 }
 
 fn postalCompletionOwner(current_index: usize, highest_available: usize) CompletionFlowOwner {
@@ -8577,22 +8577,22 @@ test "route map body text stays empty without route script copy" {
 }
 
 test "run return targets follow the recovered native bridge where confirmed" {
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, resultReturnTargetForOutcome(.completed, .postal));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.completed, .time_trial));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.completed, .challenge));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.completed, .tutorial));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .postal));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.failed, .challenge));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.failed, .time_trial));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.postal_route_map, outerReturnTargetForOutcome(.completed, .postal));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.time_trial_route_map, outerReturnTargetForOutcome(.completed, .time_trial));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.challenge_setup_menu, outerReturnTargetForOutcome(.completed, .challenge));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.new_game_menu, outerReturnTargetForOutcome(.completed, .tutorial));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.new_game_menu, outerReturnTargetForOutcome(.failed, .postal));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.challenge_setup_menu, outerReturnTargetForOutcome(.failed, .challenge));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.time_trial_route_map, outerReturnTargetForOutcome(.failed, .time_trial));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.main_menu, outerReturnTargetForOutcome(.failed, .tutorial));
 }
 
 test "completion flow owners map postal loops to the recovered return targets" {
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, resultReturnTargetForCompletionOwner(.postal_route_map));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, resultReturnTargetForCompletionOwner(.postal_final));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForCompletionOwner(.postal_failure));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_completion));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_failure));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.postal_route_map, outerReturnTargetForCompletionOwner(.postal_route_map));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.thanks_screen, outerReturnTargetForCompletionOwner(.postal_final));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.new_game_menu, outerReturnTargetForCompletionOwner(.postal_failure));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.challenge_setup_menu, outerReturnTargetForCompletionOwner(.challenge_completion));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.challenge_setup_menu, outerReturnTargetForCompletionOwner(.challenge_failure));
 }
 
 test "respawn bridge state preserves the active run across rebuilds" {
@@ -8616,7 +8616,7 @@ test "respawn bridge state preserves the active run across rebuilds" {
     const respawn_owner = state.outerOwnerForRespawnActiveRun(&respawn_opcode);
     try std.testing.expect(respawn_owner != null);
     try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.rebuild_clear_replay_return, respawn_opcode);
-    try std.testing.expectEqual(@as(u8, 0x1c), state.subgame_continuation_selector);
+    try std.testing.expectEqual(@as(u8, 0x1c), state.subgame_rebuild_selector);
     try std.testing.expectEqual(frontend_bridge.OuterOwner.resume_active_run, respawn_owner.?.owner);
 
     const bridge_state = state.pending_respawn_bridge_state orelse return error.TestExpectedRespawnBridgeState;
@@ -8631,9 +8631,9 @@ test "respawn bridge state preserves the active run across rebuilds" {
 }
 
 test "final postal completion returns through the thanks screen" {
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x33, 0x33));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.postal_route_map, postalCompletionOuterReturnTarget(1, 0x32));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.thanks_screen, postalCompletionOuterReturnTarget(0x32, 0x32));
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.thanks_screen, postalCompletionOuterReturnTarget(0x33, 0x33));
 }
 
 test "frontend widget shortcut codes follow the recovered pause and post-score widgets" {
@@ -8668,7 +8668,7 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
         .score_is_partial = false,
         .high_score_mode = .postal,
         .high_score_rank = 0,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
     state.high_score_screen_owner = .{ .post_level_entry = .{
         .mode = .postal,
@@ -8751,7 +8751,7 @@ test "completion reveal stages the bonus line before continue" {
         .score = 50_000,
         .score_is_partial = false,
         .score_totals = .{ .completion_bonus = 50_000 },
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
 
     const summary = completionSummary(result);
@@ -8771,7 +8771,7 @@ test "completion reveal skips the bonus stage when no bonus line exists" {
         .parcel_target = 7,
         .score = 0,
         .score_is_partial = true,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
 
     const summary = completionSummary(result);
@@ -8791,7 +8791,7 @@ test "completion overlay helpers distinguish overlay from finalized screen" {
         .parcel_target = 7,
         .score = 50_000,
         .score_is_partial = true,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
     state.game_phase = .level;
     state.completion_overlay_active = true;
@@ -8821,7 +8821,7 @@ test "completion reveal advances while the early overlay is active in level phas
         .score = 50_000,
         .score_is_partial = false,
         .score_totals = .{ .completion_bonus = 50_000 },
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
     state.game_phase = .level;
     state.completion_overlay_active = true;
@@ -8843,7 +8843,7 @@ test "postal completion copy matches the recovered widget strings" {
         .parcel_target = 1,
         .score = 0,
         .score_is_partial = false,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     })));
     try std.testing.expectEqualStrings("1 Package Delivered", try frontend_completion_screen.packageLine(&buffer, completionSummary(.{
         .level_name = "To Infinity!",
@@ -8853,7 +8853,7 @@ test "postal completion copy matches the recovered widget strings" {
         .parcel_target = 1,
         .score = 0,
         .score_is_partial = false,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     })));
     try std.testing.expectEqualStrings("07 Packages Delivered", try frontend_completion_screen.packageLine(&buffer, completionSummary(.{
         .level_name = "To Infinity!",
@@ -8863,7 +8863,7 @@ test "postal completion copy matches the recovered widget strings" {
         .parcel_target = 7,
         .score = 0,
         .score_is_partial = false,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     })));
 }
 
@@ -9000,7 +9000,7 @@ test "ordinary postal completion commits unlock progress without staging arcade 
         .score_is_partial = true,
         .completion_owner = .postal_route_map,
         .persistence = .completed,
-        .return_target = .postal_route_map,
+        .outer_return_target = .postal_route_map,
     };
 
     try state.commitPendingRunResultIfNeeded();
@@ -9010,7 +9010,7 @@ test "ordinary postal completion commits unlock progress without staging arcade 
     try std.testing.expectEqual(@as(?high_score.Mode, null), updated.high_score_mode);
     try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
     try std.testing.expect(updated.unlocked_next_route);
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, updated.return_target);
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.postal_route_map, updated.outer_return_target);
     try std.testing.expectEqual(@as(u32, 2), state.runtime_config.routeUnlockLimit());
 }
 
@@ -9052,7 +9052,7 @@ test "final postal completion stages postal score entry before thanks return" {
         .score_is_partial = true,
         .completion_owner = .postal_final,
         .persistence = .completed,
-        .return_target = .thanks_screen,
+        .outer_return_target = .thanks_screen,
     };
 
     try state.commitPendingRunResultIfNeeded();
@@ -9060,7 +9060,7 @@ test "final postal completion stages postal score entry before thanks return" {
     const updated = state.pending_run_result.?;
     try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
     try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, updated.return_target);
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.thanks_screen, updated.outer_return_target);
     try std.testing.expect(!updated.unlocked_next_route);
     const context = state.pendingRunHighScoreContext() orelse return error.TestExpectedPendingHighScoreEntry;
     try std.testing.expectEqual(high_score.Mode.postal, context.mode);
@@ -9107,7 +9107,7 @@ test "postal failure only stages post-level score entry when the score qualifies
         .score_is_partial = true,
         .completion_owner = .postal_failure,
         .persistence = .failed,
-        .return_target = .new_game_menu,
+        .outer_return_target = .new_game_menu,
     };
 
     try state.commitPendingRunResultIfNeeded();
@@ -9117,7 +9117,7 @@ test "postal failure only stages post-level score entry when the score qualifies
     try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
     try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
     try std.testing.expectEqual(@as(?frontend_high_score_screen.PendingEntry, null), state.pendingRunHighScoreContext());
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, updated.return_target);
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.new_game_menu, updated.outer_return_target);
 }
 
 test "postal abandon can stage standalone post-level score entry" {
@@ -9164,7 +9164,7 @@ test "postal abandon can stage standalone post-level score entry" {
         .score_is_partial = true,
         .completion_owner = .postal_failure,
         .persistence = .failed,
-        .return_target = .new_game_menu,
+        .outer_return_target = .new_game_menu,
     })) orelse return error.TestExpectedPendingHighScoreEntry;
 
     try std.testing.expectEqual(high_score.Mode.postal, staged.context.mode);
@@ -9181,8 +9181,8 @@ test "parity: persistent high-score replay abandon restores the saved return own
     state.selected_level_record_override = null;
     state.selected_level_record_source = .{ .postal = 0 };
     state.selected_level_record_persistent = true;
-    state.saved_replay_return_owner = .high_scores_menu;
-    state.selected_level_record_return_target = null;
+    state.saved_replay_return_outer_owner = .high_scores_menu;
+    state.selected_level_record_outer_return_target = null;
 
     var opcode: frontend_bridge.OuterBridgeOpcode = .rebuild_return;
     const owner = state.outerOwnerForAbandonActiveRun(&opcode);
@@ -9236,7 +9236,7 @@ test "standalone postal abandon skips score entry when the score does not qualif
         .score_is_partial = true,
         .completion_owner = .postal_failure,
         .persistence = .failed,
-        .return_target = .new_game_menu,
+        .outer_return_target = .new_game_menu,
     }));
 }
 
@@ -9281,7 +9281,7 @@ test "challenge abandon keeps post-level score entry on the challenge return lan
         .score_is_partial = true,
         .completion_owner = .challenge_failure,
         .persistence = .failed,
-        .return_target = .challenge_setup_menu,
+        .outer_return_target = .challenge_setup_menu,
     })) orelse return error.TestExpectedPendingHighScoreEntry;
 
     try std.testing.expectEqual(high_score.Mode.challenge, staged.context.mode);
@@ -9298,8 +9298,8 @@ test "parity: transient time-trial replay abandon stays on the rebuild route-map
     state.selected_level_record_override = null;
     state.selected_level_record_source = .{ .completion = 0 };
     state.selected_level_record_persistent = false;
-    state.saved_replay_return_owner = null;
-    state.selected_level_record_return_target = null;
+    state.saved_replay_return_outer_owner = null;
+    state.selected_level_record_outer_return_target = null;
 
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -9546,8 +9546,8 @@ test "selected replay results skip persistence and score-table awards" {
     state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .challenge = 2 };
     state.selected_level_record_persistent = false;
-    state.saved_replay_return_owner = null;
-    state.selected_level_record_return_target = null;
+    state.saved_replay_return_outer_owner = null;
+    state.selected_level_record_outer_return_target = null;
     state.selected_replay_cache = null;
 
     const raw_record = try std.testing.allocator.alloc(u8, 0x88 + 5);
@@ -9571,7 +9571,7 @@ test "selected replay results skip persistence and score-table awards" {
         .time_trial_record_improved = true,
         .unlocked_next_route = true,
         .persistence = .completed,
-        .return_target = .main_menu,
+        .outer_return_target = .main_menu,
     };
     state.applySelectedReplayResultOverrides(&result);
 
@@ -9580,7 +9580,7 @@ test "selected replay results skip persistence and score-table awards" {
     try std.testing.expect(result.high_score_rank == null);
     try std.testing.expect(!result.time_trial_record_improved);
     try std.testing.expect(!result.unlocked_next_route);
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.high_scores_menu, result.return_target);
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.high_scores_menu, result.outer_return_target);
 }
 
 test "transient postal replay failure stays off the post-level high-score lane" {
@@ -9589,8 +9589,8 @@ test "transient postal replay failure stays off the post-level high-score lane" 
     state.active_frontend_mode = null;
     state.selected_level_record_source = .{ .postal = 2 };
     state.selected_level_record_persistent = false;
-    state.saved_replay_return_owner = null;
-    state.selected_level_record_return_target = null;
+    state.saved_replay_return_outer_owner = null;
+    state.selected_level_record_outer_return_target = null;
 
     const samples = try std.testing.allocator.alloc(high_score.DecodedReplaySample, 1);
     samples[0] = .{ .lateral = 0, .secondary_lane = 0, .flags = 0 };
@@ -9613,14 +9613,14 @@ test "transient postal replay failure stays off the post-level high-score lane" 
         .high_score_rank = 0,
         .completion_owner = .postal_failure,
         .persistence = .failed,
-        .return_target = .main_menu,
+        .outer_return_target = .main_menu,
     };
     state.applySelectedReplayResultOverrides(&result);
 
     try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
     try std.testing.expect(result.high_score_mode == null);
     try std.testing.expect(result.high_score_rank == null);
-    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.high_scores_menu, result.return_target);
+    try std.testing.expectEqual(frontend_bridge.OuterReturnTarget.high_scores_menu, result.outer_return_target);
 
     state.pending_run_result = result;
     try std.testing.expectEqual(@as(?frontend_high_score_screen.PendingEntry, null), state.pendingRunHighScoreContext());

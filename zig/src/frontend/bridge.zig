@@ -2,7 +2,7 @@ const std = @import("std");
 const frontend = @import("../frontend.zig");
 const high_score = @import("../high_score.zig");
 
-pub const ResultReturnTarget = enum {
+pub const OuterReturnTarget = enum {
     main_menu,
     new_game_menu,
     challenge_setup_menu,
@@ -34,7 +34,7 @@ pub const SelectedLevelRecordSource = union(enum) {
     completion: usize,
 };
 
-pub const SavedReplayReturnOwner = enum(u32) {
+pub const SavedReplayReturnOuterOwner = enum(u32) {
     new_game_menu = 2,
     high_scores_menu = 18,
 };
@@ -42,13 +42,13 @@ pub const SavedReplayReturnOwner = enum(u32) {
 pub const SelectedLevelRecordLaunch = struct {
     source: SelectedLevelRecordSource,
     persistent: bool,
-    return_target: ResultReturnTarget,
+    outer_return_target: OuterReturnTarget,
 
     pub fn defaultForSource(source: SelectedLevelRecordSource) SelectedLevelRecordLaunch {
         return .{
             .source = source,
             .persistent = defaultSelectedLevelRecordLaunchPersistent(source),
-            .return_target = defaultSelectedLevelRecordLaunchReturnTarget(source),
+            .outer_return_target = defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
         };
     }
 };
@@ -153,7 +153,7 @@ pub fn defaultSelectedLevelRecordLaunchPersistent(source: SelectedLevelRecordSou
     };
 }
 
-pub fn defaultSelectedLevelRecordLaunchReturnTarget(source: SelectedLevelRecordSource) ResultReturnTarget {
+pub fn defaultSelectedLevelRecordLaunchOuterReturnTarget(source: SelectedLevelRecordSource) OuterReturnTarget {
     return switch (source) {
         .completion => .time_trial_route_map,
         .postal, .challenge => .high_scores_menu,
@@ -161,16 +161,16 @@ pub fn defaultSelectedLevelRecordLaunchReturnTarget(source: SelectedLevelRecordS
     };
 }
 
-pub fn savedReplayReturnOwnerForLaunch(launch: SelectedLevelRecordLaunch) ?SavedReplayReturnOwner {
+pub fn savedReplayReturnOuterOwnerForLaunch(launch: SelectedLevelRecordLaunch) ?SavedReplayReturnOuterOwner {
     if (!launch.persistent) return null;
-    return switch (launch.return_target) {
+    return switch (launch.outer_return_target) {
         .new_game_menu => .new_game_menu,
         .high_scores_menu => .high_scores_menu,
         else => null,
     };
 }
 
-pub fn resultReturnTargetForSavedReplayReturnOwner(state: SavedReplayReturnOwner) ResultReturnTarget {
+pub fn outerReturnTargetForSavedReplayReturnOuterOwner(state: SavedReplayReturnOuterOwner) OuterReturnTarget {
     return switch (state) {
         .new_game_menu => .new_game_menu,
         .high_scores_menu => .high_scores_menu,
@@ -224,10 +224,10 @@ pub fn outerOwnerStateReplay(target: ReplayLevelTarget) OuterOwnerState {
 pub fn outerOwnerStateForSelectedReplayLaunch(
     mode: frontend.FrontendLevelMode,
     source: SelectedLevelRecordSource,
-    return_target: ResultReturnTarget,
+    outer_return_target: OuterReturnTarget,
     active_level_index: usize,
 ) OuterOwnerState {
-    return switch (return_target) {
+    return switch (outer_return_target) {
         .main_menu => outerOwnerStateMainMenu(),
         .new_game_menu => outerOwnerStateNewGameMenu(newGameMenuItemForBridgeMode(mode)),
         .challenge_setup_menu => outerOwnerStateChallengeSetupMenu(),
@@ -258,7 +258,7 @@ pub fn savedOuterOwnerForLevelLaunch(
     selected_level_record_launch: ?SelectedLevelRecordLaunch,
 ) OuterOwnerState {
     if (selected_level_record_launch) |launch| {
-        return outerOwnerStateForSelectedReplayLaunch(mode, launch.source, launch.return_target, level_index);
+        return outerOwnerStateForSelectedReplayLaunch(mode, launch.source, launch.outer_return_target, level_index);
     }
 
     return switch (mode) {
