@@ -8,7 +8,12 @@ const config = @import("config.zig");
 const debug_levels = @import("debug_levels.zig");
 const frontend = @import("frontend.zig");
 const frontend_bridge = @import("frontend_bridge.zig");
+const frontend_completion_screen = @import("frontend_completion_screen.zig");
+const frontend_help = @import("frontend_help.zig");
 const frontend_high_score_screen = @import("frontend_high_score_screen.zig");
+const frontend_options_menu = @import("frontend_options_menu.zig");
+const frontend_pause_menu = @import("frontend_pause_menu.zig");
+const frontend_route_map = @import("frontend_route_map.zig");
 const frontend_thanks = @import("frontend_thanks.zig");
 const frontend_widget = @import("frontend_widget.zig");
 const galaxy = @import("galaxy.zig");
@@ -389,7 +394,6 @@ const FrontendLevelMode = frontend.FrontendLevelMode;
 const OptionsMenuItem = frontend.OptionsMenuItem;
 const options_menu_items = frontend.options_menu_items;
 const PauseMenuItem = frontend.PauseMenuItem;
-const pause_menu_items = frontend.pause_menu_items;
 const RouteMenuAction = frontend.RouteMenuAction;
 const frontendRouteModeLabel = frontend.frontendRouteModeLabel;
 const routeMenuActionLabel = frontend.routeMenuActionLabel;
@@ -1275,6 +1279,28 @@ fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_bri
     };
 }
 
+fn completionSummary(result: PendingRunResult) frontend_completion_screen.Summary {
+    return .{
+        .outcome = switch (result.outcome) {
+            .completed => .completed,
+            .failed => .failed,
+        },
+        .level_name = result.level_name,
+        .mode = result.mode,
+        .elapsed_millis = result.elapsed_millis,
+        .parcel_count = result.parcel_count,
+        .parcel_target = result.parcel_target,
+        .score = result.score,
+        .score_is_partial = result.score_is_partial,
+        .score_totals = result.score_totals,
+        .visible_life_stock = result.visible_life_stock,
+        .damage_gauge = result.damage_gauge,
+        .high_score_rank = result.high_score_rank,
+        .time_trial_record_improved = result.time_trial_record_improved,
+        .unlocked_next_route = result.unlocked_next_route,
+    };
+}
+
 const NativeGameplaySoundCues = struct {
     completion_arm_cheers: bool = false,
     extra_life: bool = false,
@@ -1898,10 +1924,6 @@ const CompletionFlowOwner = enum {
     tutorial_failure,
 };
 
-const CompletionAction = enum {
-    continue_flow,
-};
-
 const ExitPromptMode = enum {
     quit_app,
     abandon_run,
@@ -1973,8 +1995,6 @@ const new_game_start_y: f32 = 80.0;
 const new_game_help_anchor_y: f32 = 350.0;
 const new_game_help_center_offset_x: f32 = -220.0;
 const new_game_back_center_offset_x: f32 = 0.0;
-// PORT(verified): `initialize_help` places the lone Back control at `(center, y=420)`.
-const help_back_anchor_y: f32 = 420.0;
 const challenge_setup_button_count = challenge_setup_menu_items.len;
 const challenge_setup_difficulty_button_index: usize = 0;
 const challenge_setup_speed_button_index: usize = 1;
@@ -1991,52 +2011,8 @@ const options_fullscreen_button_index: usize = 0;
 const options_sound_button_index: usize = 1;
 const options_music_button_index: usize = 2;
 const options_back_button_index: usize = 3;
-// PORT(verified): `initialize_options` seeds the fullscreen row at `y = 75`, then nudges
-// the widget down by `+8`, so the final authored-space anchor is `83`.
-const options_fullscreen_anchor_y: f32 = 83.0;
-// PORT(verified): `initialize_options` keeps the options rows on the centered shell-font path.
-// The constructor's `90.0` seed is only the left-measure start fed into `sub_44abe0`; the final
-// centered X comes from `arg13 + 320 - width*0.5`, and `arg13` stays `0.0` for this screen.
-const options_button_center_offset_x: f32 = 0.0;
 const options_slider_adjust_step: f32 = 0.2;
 const options_slider_display_lerp: f32 = 0.8;
-// PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
-// scale `0.83`, the bottom Back/Exit control at `(20,420)` with absolute alignment, and
-// `open_galaxy_route` seeds the selected route card from `(route_x + 60, route_y - 130)`.
-const route_map_title_x: f32 = 15.0;
-const route_map_title_y: f32 = 15.0;
-const route_map_title_scale: f32 = 0.83;
-// PORT(verified): `initialize_galaxy` seeds sprite `138` at `(300,10)`. The shipped
-// `SPACEMAPLOGO.TGA` art is `256x64`, and the Windows sprite path uses that authored size.
-const route_map_logo_x: f32 = 300.0;
-const route_map_logo_y: f32 = 10.0;
-const route_map_logo_width: f32 = 256.0;
-const route_map_logo_height: f32 = 64.0;
-const route_map_back_x: f32 = 20.0;
-const route_map_back_y: f32 = 420.0;
-const route_map_card_title_scale: f32 = 0.9;
-const route_map_card_subtitle_scale: f32 = 0.9;
-const route_map_card_body_scale: f32 = 0.7;
-// PORT(verified): `open_galaxy_route` expands the selected card bounds by `8` on the
-// left/right and bottom edges only. The top edge stays anchored to the title widget.
-const route_map_card_horizontal_padding: f32 = 8.0;
-const route_map_card_bottom_padding: f32 = 8.0;
-const route_map_card_horizontal_pointer_gap: f32 = 6.0;
-const route_map_card_star_gap: f32 = 16.0;
-const route_map_card_right_limit: f32 = 631.0;
-const route_map_card_min_top: f32 = 49.0;
-const route_map_card_bottom_y: f32 = 450.0;
-const route_map_card_text_gap: f32 = 0.0;
-const route_map_primary_button_gap: f32 = 20.0;
-const route_map_replay_button_gap: f32 = 10.0;
-// PORT(verified): `sub_401130` renders the selected route card (`69516`) as a type-20 style
-// 9-slice frame with a recovered authored edge size of `26.0`, not as a stretched quad.
-const route_map_card_frame_edge: f32 = 26.0;
-// PORT(verified): `update_galaxy` draws galaxy sprites `139..148` as `256x256` quads
-// centered on the transformed `sub_4088E0` points, and the inter-route connector uses
-// `LINE.TGA` at width `4.0`.
-const route_map_galaxy_size: f32 = 256.0;
-const route_map_path_line_width: f32 = 4.0;
 const high_score_button_count = 2;
 const high_score_replay_button_count = high_score.visible_entry_count;
 const help_button_count = 1;
@@ -2044,49 +2020,8 @@ const route_map_button_count = 3;
 const route_map_primary_button_index: usize = 0;
 const route_map_replay_button_index: usize = 1;
 const route_map_back_button_index: usize = 2;
-// PORT(verified): `cRSubPause::Init()` creates the centered pause stack with `End Game`
-// at `y = 145`, then chains `Options` and `Resume` below it with the shared shell-font
-// widget stack helper.
-const pause_menu_start_y: f32 = 145.0;
-const pause_menu_center_offset_x: f32 = 0.0;
-const pause_menu_button_count = pause_menu_items.len;
+const pause_menu_button_count = frontend_pause_menu.items.len;
 const exit_prompt_button_count = 2;
-// PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
-// row pitch `27`, and footer row `111 + 10*27 = 381`. Each visible row is a separate
-// type-22 widget bundle anchored at `x = -228/-222/-180/+160/+125` for postal or
-// `x = -228/-222/-180/+125/+170` for challenge, rather than a single freehand text strip.
-const high_score_title_y: f32 = 64.0;
-const high_score_row_start_y: f32 = 111.0;
-const high_score_row_pitch: f32 = 27.0;
-const high_score_footer_y: f32 = 381.0;
-const high_score_rank_marker_x: f32 = -228.0;
-const high_score_rank_number_x: f32 = -222.0;
-const high_score_name_x: f32 = -180.0;
-const high_score_postal_score_x: f32 = 160.0;
-const high_score_postal_replay_x: f32 = 125.0;
-const high_score_challenge_score_x: f32 = 125.0;
-const high_score_challenge_replay_x: f32 = 170.0;
-const high_score_entry_cancel_x: f32 = -110.0;
-const high_score_entry_submit_x: f32 = 55.0;
-const high_score_back_x: f32 = -132.0;
-const high_score_toggle_x: f32 = 33.0;
-// PORT(verified): `initialize_completion_screen` uses title `80`, package line `160`,
-// parcel icon sprite `122` at `(100, 144)`, optional bonus widget `302`, and continue `320/400`.
-const completion_title_y: f32 = 80.0;
-const completion_package_y: f32 = 160.0;
-const completion_parcel_icon_x: f32 = 100.0;
-const completion_parcel_icon_y: f32 = 144.0;
-const completion_parcel_icon_width: f32 = 32.0;
-const completion_parcel_icon_height: f32 = 64.0;
-const completion_bonus_y: f32 = 302.0;
-const completion_continue_y: f32 = 320.0;
-const completion_continue_y_with_bonus: f32 = 400.0;
-// PORT(verified): `initialize_completion_screen` seeds an owner-local reveal step of `1/24`
-// and starts the bonus plus continue widgets hidden. Stage those UI elements in instead of
-// drawing the whole summary immediately.
-const completion_reveal_step: f32 = 1.0 / 24.0;
-const completion_reveal_bonus_threshold: f32 = 1.0;
-const completion_reveal_continue_threshold: f32 = 2.0;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -2171,7 +2106,7 @@ const FrontendQueuedAction = union(enum) {
     high_scores_menu: frontend_high_score_screen.MenuAction,
     high_score_replay: usize,
     post_level_high_scores: frontend_high_score_screen.PostLevelAction,
-    completion_screen: CompletionAction,
+    completion_screen: frontend_completion_screen.Action,
     exit_prompt: ExitPromptChoice,
 };
 
@@ -4009,7 +3944,8 @@ const AppState = struct {
             return;
         };
 
-        const fullscreen_rect = optionsTextRect(self, .fullscreen);
+        const layout_state = self.optionsMenuLayoutState();
+        const fullscreen_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .fullscreen);
         if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[options_fullscreen_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(0));
             self.options_menu_index = 0;
@@ -4019,7 +3955,7 @@ const AppState = struct {
             return;
         }
 
-        const sound_slider = optionsSliderLayout(self, .sound_volume);
+        const sound_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .sound_volume);
         if (sound_slider.less_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .less));
             self.options_menu_index = 1;
@@ -4042,7 +3978,7 @@ const AppState = struct {
             return;
         }
 
-        const music_slider = optionsSliderLayout(self, .music_volume);
+        const music_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .music_volume);
         if (music_slider.less_rect.contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .less));
             self.options_menu_index = 2;
@@ -4065,7 +4001,7 @@ const AppState = struct {
             return;
         }
 
-        const back_rect = optionsTextRect(self, .back);
+        const back_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .back);
         if (frontend_widget.hitRect(back_rect, self.options_button_states[options_back_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(3));
             self.options_menu_index = 3;
@@ -4078,6 +4014,16 @@ const AppState = struct {
         self.setFrontendHoverTarget(null);
     }
 
+    fn optionsMenuLayoutState(self: *const AppState) frontend_options_menu.LayoutState {
+        return .{
+            .fullscreen_enabled = self.runtime_config.fullscreenEnabled(),
+            .sound_value = self.runtime_config.soundVolume(),
+            .music_value = self.runtime_config.musicVolume(),
+            .sound_row_state = self.options_button_states[options_sound_button_index],
+            .music_row_state = self.options_button_states[options_music_button_index],
+        };
+    }
+
     fn updatePauseMenuMouseSelection(self: *AppState) void {
         const local_mouse = self.currentFrontendMouseLocal() orelse {
             self.setFrontendHoverTarget(null);
@@ -4085,8 +4031,8 @@ const AppState = struct {
         };
         var hovered_index: ?usize = null;
 
-        for (pause_menu_items, 0..) |item, index| {
-            const text_rect = pauseMenuTextRect(&self.ui_font, item);
+        for (frontend_pause_menu.items, 0..) |item, index| {
+            const text_rect = frontend_pause_menu.textRect(&self.ui_font, item);
             if (frontend_widget.hitRect(text_rect, self.pause_menu_button_states[index]).contains(local_mouse)) {
                 hovered_index = index;
             }
@@ -4096,7 +4042,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForPauseMenu(index));
             self.pause_menu_index = index;
             if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .pause_menu = pause_menu_items[index] });
+                self.queueFrontendActivation(.{ .pause_menu = frontend_pause_menu.items[index] });
             }
         } else {
             self.setFrontendHoverTarget(null);
@@ -4117,7 +4063,7 @@ const AppState = struct {
             return;
         };
 
-        const back_rect = routeMapBackTextRect(self);
+        const back_rect = frontend_route_map.backTextRect(&self.ui_font, self.route_map_screen_mode);
         if (frontend_widget.hitRect(back_rect, self.route_map_button_states[route_map_back_button_index]).contains(local_mouse)) {
             self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
@@ -4131,8 +4077,9 @@ const AppState = struct {
             return;
         }
 
+        const maybe_names = if (self.galaxy_names) |*names| names else null;
         const hovered_route_index = if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode))
-            routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode))
+            frontend_route_map.hoveredRouteIndex(maybe_names, local_mouse, self.availableFrontendRouteLimit(mode))
         else
             null;
         self.route_map_hover_state = if (hovered_route_index != null) .route else .none;
@@ -4141,9 +4088,9 @@ const AppState = struct {
         if (self.currentRouteMapOpenIndex()) |route_index| {
             const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
             const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-            const route_body = routeMapBodyText(if (self.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
-            if (routeMapPointForRouteIndex(self, route_index)) |route_point| {
-                const card_layout = routeMapCardLayout(
+            const route_body = frontend_route_map.bodyText(if (self.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
+            if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |route_point| {
+                const card_layout = frontend_route_map.cardLayout(
                     &self.ui_font,
                     route_point,
                     route_galaxy_name,
@@ -4215,7 +4162,7 @@ const AppState = struct {
             return;
         };
 
-        const back_rect = helpBackTextRect(&self.ui_font);
+        const back_rect = frontend_help.backTextRect(&self.ui_font);
         if (frontend_widget.hitRect(back_rect, self.help_button_states[0]).contains(local_mouse)) {
             self.setFrontendHoverTarget(.help_back);
             if (rl.isMouseButtonPressed(.left)) {
@@ -4229,7 +4176,7 @@ const AppState = struct {
 
     fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
         const selected_mode = self.activeHighScoreScreenMode();
-        if (!highScoreRowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
+        if (!frontend_high_score_screen.rowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
         const entries = self.high_score_tables.visibleEntries(selected_mode);
         return entry_index < entries.len and entries[entry_index].has_replay;
     }
@@ -4241,7 +4188,7 @@ const AppState = struct {
         };
 
         if (self.postLevelHighScoreContext() != null) {
-            const cancel_rect = highScoreFooterTextRect(self, frontend_high_score_screen.post_level_actions[0].label(), high_score_entry_cancel_x);
+            const cancel_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[0].label(), frontend_high_score_screen.entry_cancel_x);
             if (frontend_widget.hitRect(cancel_rect, self.post_level_high_score_button_states[0]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(0));
                 self.post_level_high_score_action_index = 0;
@@ -4251,7 +4198,7 @@ const AppState = struct {
                 return;
             }
 
-            const submit_rect = highScoreFooterTextRect(self, frontend_high_score_screen.post_level_actions[1].label(), high_score_entry_submit_x);
+            const submit_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[1].label(), frontend_high_score_screen.entry_submit_x);
             if (frontend_widget.hitRect(submit_rect, self.post_level_high_score_button_states[1]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(1));
                 self.post_level_high_score_action_index = 1;
@@ -4263,10 +4210,10 @@ const AppState = struct {
         } else {
             const selected_mode = self.activeHighScoreScreenMode();
             const entries = self.high_score_tables.visibleEntries(selected_mode);
-            if (highScoreRowsShowReplay(selected_mode, false)) {
+            if (frontend_high_score_screen.rowsShowReplay(selected_mode, false)) {
                 for (entries, 0..) |entry, entry_index| {
                     if (!entry.has_replay) continue;
-                    const replay_rect = highScoreReplayTextRect(self, selected_mode, high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch);
+                    const replay_rect = frontend_high_score_screen.replayTextRect(&self.ui_font, selected_mode, frontend_high_score_screen.row_start_y + @as(f32, @floatFromInt(entry_index)) * frontend_high_score_screen.row_pitch);
                     if (frontend_widget.hitRect(replay_rect, self.high_score_replay_button_states[entry_index]).contains(local_mouse)) {
                         self.setFrontendHoverTarget(hoverTargetForHighScoreReplay(entry_index));
                         if (rl.isMouseButtonPressed(.left)) {
@@ -4277,7 +4224,7 @@ const AppState = struct {
                 }
             }
 
-            const back_rect = highScoreFooterTextRect(self, "Back", high_score_back_x);
+            const back_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, "Back", frontend_high_score_screen.back_x);
             if (frontend_widget.hitRect(back_rect, self.high_score_button_states[0]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForHighScores(0));
                 self.high_scores_action_index = 0;
@@ -4287,7 +4234,8 @@ const AppState = struct {
                 return;
             }
 
-            const toggle_rect = highScoreFooterTextRect(self, highScoreTableToggleLabel(self.activeHighScoreScreenMode()), high_score_toggle_x);
+            const toggle_label = frontend_high_score_screen.tableToggleLabel(self.activeHighScoreScreenMode());
+            const toggle_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, toggle_label, frontend_high_score_screen.toggle_x);
             if (frontend_widget.hitRect(toggle_rect, self.high_score_button_states[1]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForHighScores(1));
                 self.high_scores_action_index = 1;
@@ -4314,7 +4262,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(null);
             return;
         };
-        const continue_rect = completionContinueTextRect(&self.ui_font, result);
+        const continue_rect = frontend_completion_screen.continueTextRect(&self.ui_font, completionSummary(result));
         if (frontend_widget.hitRect(continue_rect, self.completion_continue_button_state).contains(local_mouse)) {
             self.setFrontendHoverTarget(.completion_continue);
             if (rl.isMouseButtonPressed(.left)) {
@@ -5061,15 +5009,15 @@ const AppState = struct {
             .pause_menu => {
                 self.updatePauseMenuMouseSelection();
                 if (rl.isKeyPressed(.up)) {
-                    self.pause_menu_index = wrappedIndex(pause_menu_items.len, self.pause_menu_index, -1);
+                    self.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, self.pause_menu_index, -1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down)) {
-                    self.pause_menu_index = wrappedIndex(pause_menu_items.len, self.pause_menu_index, 1);
+                    self.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, self.pause_menu_index, 1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .pause_menu = pause_menu_items[self.pause_menu_index] });
+                    self.queueFrontendActivation(.{ .pause_menu = frontend_pause_menu.items[self.pause_menu_index] });
                 }
             },
             .route_map_menu => {
@@ -5548,7 +5496,7 @@ const AppState = struct {
         }
     }
 
-    fn performCompletionAction(self: *AppState, action: CompletionAction) !void {
+    fn performCompletionAction(self: *AppState, action: frontend_completion_screen.Action) !void {
         switch (action) {
             .continue_flow => try self.continueCompletionScreen(),
         }
@@ -5587,26 +5535,16 @@ const AppState = struct {
                 .post_level_entry => try self.cancelPostLevelHighScoreEntry(),
             },
             .switch_table => switch (self.high_score_screen_owner) {
-                .main_menu_browse => {
-                    const next_index = wrappedIndex(frontend_high_score_screen.screen_modes.len, self.high_scores_menu_index, 1);
-                    self.setHighScoreBrowseOwner(frontend_high_score_screen.screen_modes[next_index]);
+                .main_menu_browse, .post_level_entry => if (frontend_high_score_screen.nextBrowseMode(self.high_score_screen_owner)) |next_mode| {
+                    self.setHighScoreBrowseOwner(next_mode);
                 },
-                .post_level_entry => {},
             },
         }
     }
 
     fn performHighScoreReplay(self: *AppState, entry_index: usize) !void {
-        switch (self.high_score_screen_owner) {
-            .main_menu_browse => {},
-            .post_level_entry => return,
-        }
+        const source = frontend_high_score_screen.replaySource(self.high_score_screen_owner, entry_index) orelse return;
         if (!self.highScoreReplayAvailable(entry_index)) return;
-        const selected_mode = self.activeHighScoreScreenMode();
-        const source: frontend_bridge.SelectedLevelRecordSource = switch (selected_mode) {
-            .postal => .{ .postal = entry_index },
-            .challenge => .{ .challenge = entry_index },
-        };
         try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(source));
     }
 
@@ -6639,7 +6577,8 @@ const AppState = struct {
             self.completion_screen_reveal_progress = 0.0;
             return;
         };
-        self.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else completionRevealTarget(result);
+        const summary = completionSummary(result);
+        self.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else frontend_completion_screen.revealTarget(summary);
     }
 
     fn completionScreenActive(self: *const AppState) bool {
@@ -6660,10 +6599,10 @@ const AppState = struct {
     fn stepCompletionScreenReveal(self: *AppState) void {
         if (!self.completionScreenActive()) return;
         const result = self.pending_run_result orelse return;
-        const target = completionRevealTarget(result);
+        const target = frontend_completion_screen.revealTarget(completionSummary(result));
         if (self.completion_screen_reveal_progress >= target) return;
         self.completion_screen_reveal_progress = std.math.clamp(
-            self.completion_screen_reveal_progress + completion_reveal_step,
+            self.completion_screen_reveal_progress + frontend_completion_screen.reveal_step,
             0.0,
             target,
         );
@@ -6680,12 +6619,12 @@ const AppState = struct {
     }
 
     fn completionBonusVisible(self: *const AppState, result: PendingRunResult) bool {
-        return completionBonusVisibleAtProgress(result, self.completion_screen_reveal_progress);
+        return frontend_completion_screen.bonusVisibleAtProgress(completionSummary(result), self.completion_screen_reveal_progress);
     }
 
     fn completionContinueVisible(self: *const AppState) bool {
         const result = self.pending_run_result orelse return false;
-        return completionContinueVisibleAtProgress(result, self.completion_screen_reveal_progress);
+        return frontend_completion_screen.continueVisibleAtProgress(completionSummary(result), self.completion_screen_reveal_progress);
     }
 
     fn commitRunResultIfNeeded(self: *AppState, result: PendingRunResult) !PendingRunResult {
@@ -8633,7 +8572,7 @@ fn challengeSetupSliderLayout(state: *const AppState, item: ChallengeSetupMenuIt
         .speed => challenge_setup_speed_button_index,
         .play, .watch_replay, .back => unreachable,
     };
-    const value_text = optionsSliderValueText(value, &value_buffer);
+    const value_text = frontend_options_menu.sliderValueText(value, &value_buffer);
     return frontend_widget.sliderLayout(
         &state.ui_font,
         title_rect,
@@ -8686,88 +8625,6 @@ fn challengeSetupTextRect(state: *const AppState, item: ChallengeSetupMenuItem) 
     };
 }
 
-fn optionsMenuMeasurementLabel(state: *const AppState, item: OptionsMenuItem) []const u8 {
-    return switch (item) {
-        .fullscreen => if (state.runtime_config.fullscreenEnabled()) "Full-screen On" else "Full-screen Off",
-        .sound_volume => "     Sounds Volume     >",
-        .music_volume => "      Music Volume      >",
-        .back => "Back",
-    };
-}
-
-fn optionsMenuVisibleLabel(state: *const AppState, item: OptionsMenuItem) []const u8 {
-    return switch (item) {
-        .fullscreen => optionsMenuMeasurementLabel(state, .fullscreen),
-        .sound_volume => "Sounds Volume",
-        .music_volume => "Music Volume",
-        .back => "Back",
-    };
-}
-
-fn optionsSliderLayout(state: *const AppState, item: OptionsMenuItem) frontend_widget.SliderLayout {
-    var value_buffer: [16]u8 = undefined;
-    const title_rect = switch (item) {
-        .sound_volume => optionsTextRect(state, .sound_volume),
-        .music_volume => optionsTextRect(state, .music_volume),
-        else => unreachable,
-    };
-    const value = switch (item) {
-        .sound_volume => state.runtime_config.soundVolume(),
-        .music_volume => state.runtime_config.musicVolume(),
-        else => unreachable,
-    };
-    const value_text = optionsSliderValueText(value, &value_buffer);
-    const button_index = switch (item) {
-        .sound_volume => options_sound_button_index,
-        .music_volume => options_music_button_index,
-        else => unreachable,
-    };
-    return frontend_widget.sliderLayout(
-        &state.ui_font,
-        title_rect,
-        state.options_button_states[button_index],
-        value_text,
-    );
-}
-
-fn optionsTextRect(state: *const AppState, item: OptionsMenuItem) frontend_widget.Rect {
-    return switch (item) {
-        .fullscreen => frontend_widget.type20TextRect(
-            &state.ui_font,
-            optionsMenuMeasurementLabel(state, .fullscreen),
-            options_fullscreen_anchor_y,
-            options_button_center_offset_x,
-        ),
-        .sound_volume => frontend_widget.type20TextRect(
-            &state.ui_font,
-            optionsMenuMeasurementLabel(state, .sound_volume),
-            optionsTextRect(state, .fullscreen).top + optionsTextRect(state, .fullscreen).height + frontend_widget.type20_stack_gap,
-            options_button_center_offset_x,
-        ),
-        .music_volume => frontend_widget.type20TextRect(
-            &state.ui_font,
-            optionsMenuMeasurementLabel(state, .music_volume),
-            // PORT(verified): `initialize_options` stacks Music below the full slider parent,
-            // not below a hardcoded surrogate row height. The parent frame height comes from
-            // the child-arrow/value layout in the shared widget pipeline.
-            frontend_widget.sliderStackBelowLayout(optionsSliderLayout(state, .sound_volume)),
-            options_button_center_offset_x,
-        ),
-        .back => frontend_widget.type20TextRect(
-            &state.ui_font,
-            "Back",
-            // PORT(verified): the Back button is chained from the Music slider widget after
-            // its children are attached, so this needs the live computed slider frame height.
-            frontend_widget.sliderStackBelowLayout(optionsSliderLayout(state, .music_volume)),
-            options_button_center_offset_x,
-        ),
-    };
-}
-
-fn optionsSliderValueText(value: f32, buffer: []u8) []const u8 {
-    return std.fmt.bufPrint(buffer, "{d:0>2.0}%", .{std.math.clamp(value, 0.0, 1.0) * 100.0}) catch "00%";
-}
-
 fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_widget.Rect {
     return switch (item) {
         .new_game => frontend_widget.type20TextRect(font, item.label(), main_menu_start_y, frontend_widget.type20_center_offset_x),
@@ -8800,104 +8657,6 @@ fn newGameBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
         frontend_widget.stackBelow(newGameMenuTextRect(font, .challenge_mode)),
         new_game_back_center_offset_x,
     );
-}
-
-fn helpBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Back", help_back_anchor_y, 0.0);
-}
-
-fn pauseMenuTextRect(font: *const game_font.Loaded, item: PauseMenuItem) frontend_widget.Rect {
-    return switch (item) {
-        .end_game => frontend_widget.type20TextRect(font, item.label(), pause_menu_start_y, pause_menu_center_offset_x),
-        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(pauseMenuTextRect(font, .end_game)), pause_menu_center_offset_x),
-        .@"resume" => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(pauseMenuTextRect(font, .options)), pause_menu_center_offset_x),
-    };
-}
-
-fn routeMapBackTextRect(state: *const AppState) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .menu_button, .absolute, routeMapBackLabel(state), route_map_back_y, route_map_back_x);
-}
-
-fn routeMapBackLabel(state: *const AppState) []const u8 {
-    return frontend_bridge.routeMapBackLabelForScreenMode(state.route_map_screen_mode);
-}
-
-fn routeMapBodyText(maybe_text: ?[]const u8) []const u8 {
-    // PORT(verified): `open_galaxy_route` copies the route body from the per-route record
-    // once when the card opens. `update_galaxy` does not swap that body text based on
-    // hover state or selected action.
-    return maybe_text orelse "";
-}
-
-fn highScoreFooterTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, text, high_score_footer_y, center_offset_x);
-}
-
-fn highScoreRowBackgroundText(mode: high_score.Mode) []const u8 {
-    return switch (mode) {
-        .postal => "                                               ",
-        .challenge => "                                           ",
-    };
-}
-
-fn highScoreRowBackgroundTextRect(state: *const AppState, mode: high_score.Mode, row_y: f32) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, highScoreRowBackgroundText(mode), row_y, high_score_rank_marker_x);
-}
-
-fn highScoreRankTextRect(state: *const AppState, row_y: f32, rank_text: []const u8) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, rank_text, row_y, high_score_rank_number_x);
-}
-
-fn highScoreNameTextRect(state: *const AppState, row_y: f32, display_name: []const u8) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(&state.ui_font, .compact_score_row, .left, display_name, row_y, high_score_name_x);
-}
-
-fn highScoreScoreTextRect(state: *const AppState, mode: high_score.Mode, row_y: f32, score_text: []const u8) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .compact_score_row,
-        .right,
-        score_text,
-        row_y,
-        switch (mode) {
-            .postal => high_score_postal_score_x,
-            .challenge => high_score_challenge_score_x,
-        },
-    );
-}
-
-fn highScoreReplayTextRect(state: *const AppState, mode: high_score.Mode, row_y: f32) frontend_widget.Rect {
-    return frontend_widget.widgetTextRect(
-        &state.ui_font,
-        .compact_score_row,
-        .center,
-        "Replay",
-        row_y,
-        switch (mode) {
-            .postal => high_score_postal_replay_x,
-            .challenge => high_score_challenge_replay_x,
-        },
-    );
-}
-
-fn completionTitleTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, completion_title_y, 0.0);
-}
-
-fn completionPackageTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, completion_package_y, 0.0);
-}
-
-fn completionBonusTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, completion_bonus_y, 0.0);
-}
-
-fn completionContinueAnchorY(result: PendingRunResult) f32 {
-    return if (completionHasBonusLine(result)) completion_continue_y_with_bonus else completion_continue_y;
-}
-
-fn completionContinueTextRect(font: *const game_font.Loaded, result: PendingRunResult) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Click to Continue", completionContinueAnchorY(result), 0.0);
 }
 
 fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
@@ -9007,7 +8766,7 @@ fn drawChallengeSetupSliderRow(
         &state.ui_font,
         challengeSetupVisibleLabel(item),
         challengeSetupTextRect(state, item),
-        optionsSliderValueText(value, &value_buffer),
+        frontend_options_menu.sliderValueText(value, &value_buffer),
         value,
         displayed_value,
         row_state,
@@ -9083,14 +8842,15 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
 }
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
+    const menu_layout = state.optionsMenuLayoutState();
     frontend_widget.drawType20Button(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
         },
         &state.ui_font,
-        optionsMenuVisibleLabel(state, .fullscreen),
-        optionsTextRect(state, .fullscreen),
+        frontend_options_menu.visibleLabel(menu_layout, .fullscreen),
+        frontend_options_menu.textRect(&state.ui_font, menu_layout, .fullscreen),
         state.options_button_states[options_fullscreen_button_index],
         false,
     );
@@ -9122,7 +8882,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         },
         &state.ui_font,
         "Back",
-        optionsTextRect(state, .back),
+        frontend_options_menu.textRect(&state.ui_font, menu_layout, .back),
         state.options_button_states[options_back_button_index],
         false,
     );
@@ -9133,7 +8893,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    for (pause_menu_items, 0..) |item, index| {
+    for (frontend_pause_menu.items, 0..) |item, index| {
         frontend_widget.drawType20Button(
             layout,
             .{
@@ -9141,23 +8901,12 @@ fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             },
             &state.ui_font,
             item.label(),
-            pauseMenuTextRect(&state.ui_font, item),
+            frontend_pause_menu.textRect(&state.ui_font, item),
             state.pause_menu_button_states[index],
             false,
         );
     }
 }
-
-const RouteMapCardLayout = struct {
-    card_rect: frontend_widget.Rect,
-    title_rect: frontend_widget.Rect,
-    subtitle_rect: frontend_widget.Rect,
-    body_rect: frontend_widget.Rect,
-    primary_text_rect: frontend_widget.Rect,
-    replay_text_rect: ?frontend_widget.Rect,
-    pointer_start: galaxy.Point,
-    pointer_end: galaxy.Point,
-};
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const mode = state.frontend_route_mode orelse return;
@@ -9166,17 +8915,18 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     };
     // PORT(verified): `initialize_galaxy` passes an explicit white color into the title
     // widget constructor instead of reusing the orange menu-heading tint.
-    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", route_map_title_x, route_map_title_y, route_map_title_scale, .ray_white);
+    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", frontend_route_map.title_x, frontend_route_map.title_y, frontend_route_map.title_scale, .ray_white);
     drawRouteMapLogo(state, layout);
     drawRouteMapStars(state, layout, mode);
     if (state.currentRouteMapOpenIndex()) |route_index| {
         const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
         const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-        const route_body = routeMapBodyText(if (state.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
+        const route_body = frontend_route_map.bodyText(if (state.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
         const primary_label = routeMenuActionLabel(mode, .play);
         const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
-        if (routeMapPointForRouteIndex(state, route_index)) |route_point| {
-            const card_layout = routeMapCardLayout(
+        const maybe_names = if (state.galaxy_names) |*names| names else null;
+        if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |route_point| {
+            const card_layout = frontend_route_map.cardLayout(
                 &state.ui_font,
                 route_point,
                 route_galaxy_name,
@@ -9194,8 +8944,8 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         layout,
         widget_art,
         &state.ui_font,
-        routeMapBackLabel(state),
-        routeMapBackTextRect(state),
+        frontend_route_map.backLabel(state.route_map_screen_mode),
+        frontend_route_map.backTextRect(&state.ui_font, state.route_map_screen_mode),
         state.route_map_button_states[route_map_back_button_index],
         false,
     );
@@ -9213,14 +8963,14 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     };
     var title_state = frontend_widget.TextButtonState{};
     title_state.snapFor(.footer_button, false);
-    const title_text = if (pending_entry != null) "Enter your name here!" else highScoreScreenTitle(selected_mode);
+    const title_text = frontend_high_score_screen.title(state.high_score_screen_owner);
     frontend_widget.drawTextButton(
         layout,
         art,
         &state.ui_font,
         .footer_button,
         title_text,
-        frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, title_text, high_score_title_y, 0.0),
+        frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, title_text, frontend_high_score_screen.title_y, 0.0),
         title_state,
         false,
     );
@@ -9238,7 +8988,7 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             &state.ui_font,
             .footer_button,
             frontend_high_score_screen.post_level_actions[0].label(),
-            highScoreFooterTextRect(state, frontend_high_score_screen.post_level_actions[0].label(), high_score_entry_cancel_x),
+            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.post_level_actions[0].label(), frontend_high_score_screen.entry_cancel_x),
             state.post_level_high_score_button_states[0],
             false,
         );
@@ -9248,7 +8998,7 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             &state.ui_font,
             .footer_button,
             frontend_high_score_screen.post_level_actions[1].label(),
-            highScoreFooterTextRect(state, frontend_high_score_screen.post_level_actions[1].label(), high_score_entry_submit_x),
+            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.post_level_actions[1].label(), frontend_high_score_screen.entry_submit_x),
             state.post_level_high_score_button_states[1],
             false,
         );
@@ -9260,7 +9010,7 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             &state.ui_font,
             .footer_button,
             "Back",
-            highScoreFooterTextRect(state, "Back", high_score_back_x),
+            frontend_high_score_screen.footerTextRect(&state.ui_font, "Back", frontend_high_score_screen.back_x),
             state.high_score_button_states[0],
             false,
         );
@@ -9269,8 +9019,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             art,
             &state.ui_font,
             .footer_button,
-            highScoreTableToggleLabel(selected_mode),
-            highScoreFooterTextRect(state, highScoreTableToggleLabel(selected_mode), high_score_toggle_x),
+            frontend_high_score_screen.tableToggleLabel(selected_mode),
+            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.tableToggleLabel(selected_mode), frontend_high_score_screen.toggle_x),
             state.high_score_button_states[1],
             false,
         );
@@ -9318,7 +9068,7 @@ fn drawHighScoreTable(
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    const row_background_text = highScoreRowBackgroundText(mode);
+    const row_background_text = frontend_high_score_screen.rowBackgroundText(mode);
     const text_only_score_cell: frontend_widget.DrawOptions = .{
         // PORT(verified): `initialize_high_score_screen` gives the rank, name,
         // and numeric score cells flags `0x20400000`, so those type-22 widgets
@@ -9330,7 +9080,7 @@ fn drawHighScoreTable(
         const row_highlighted = highlight_index != null and highlight_index.? == entry_index;
         if (!table_entry.isActive() and !row_highlighted) continue;
 
-        const row_y = high_score_row_start_y + @as(f32, @floatFromInt(entry_index)) * high_score_row_pitch;
+        const row_y = frontend_high_score_screen.row_start_y + @as(f32, @floatFromInt(entry_index)) * frontend_high_score_screen.row_pitch;
         var row_state = frontend_widget.TextButtonState{};
         row_state.snapFor(.compact_score_row, row_highlighted);
         frontend_widget.drawTextButton(
@@ -9339,7 +9089,7 @@ fn drawHighScoreTable(
             &state.ui_font,
             .compact_score_row,
             row_background_text,
-            highScoreRowBackgroundTextRect(state, mode, row_y),
+            frontend_high_score_screen.rowBackgroundTextRect(&state.ui_font, mode, row_y),
             row_state,
             false,
         );
@@ -9349,7 +9099,7 @@ fn drawHighScoreTable(
         const display_name = if (row_highlighted and editing_name != null)
             editing_name.?
         else
-            highScoreDisplayName(&table_entry);
+            frontend_high_score_screen.displayName(&table_entry);
 
         frontend_widget.drawTextButtonWithOptions(
             layout,
@@ -9357,7 +9107,7 @@ fn drawHighScoreTable(
             &state.ui_font,
             .compact_score_row,
             rank_text,
-            highScoreRankTextRect(state, row_y, rank_text),
+            frontend_high_score_screen.rankTextRect(&state.ui_font, row_y, rank_text),
             row_state,
             false,
             text_only_score_cell,
@@ -9368,7 +9118,7 @@ fn drawHighScoreTable(
             &state.ui_font,
             .compact_score_row,
             display_name,
-            highScoreNameTextRect(state, row_y, display_name),
+            frontend_high_score_screen.nameTextRect(&state.ui_font, row_y, display_name),
             row_state,
             false,
             text_only_score_cell,
@@ -9385,36 +9135,24 @@ fn drawHighScoreTable(
             &state.ui_font,
             .compact_score_row,
             score_text,
-            highScoreScoreTextRect(state, mode, row_y, score_text),
+            frontend_high_score_screen.scoreTextRect(&state.ui_font, mode, row_y, score_text),
             row_state,
             false,
             text_only_score_cell,
         );
-        if (highScoreRowsShowReplay(mode, hide_replay) and table_entry.has_replay) {
+        if (frontend_high_score_screen.rowsShowReplay(mode, hide_replay) and table_entry.has_replay) {
             frontend_widget.drawTextButton(
                 layout,
                 art,
                 &state.ui_font,
                 .compact_score_row,
                 "Replay",
-                highScoreReplayTextRect(state, mode, row_y),
+                frontend_high_score_screen.replayTextRect(&state.ui_font, mode, row_y),
                 state.high_score_replay_button_states[entry_index],
                 false,
             );
         }
     }
-}
-
-fn highScoreDisplayName(entry: *const high_score.Entry) []const u8 {
-    const name = entry.name();
-    if (name.len == 0) return "---";
-    return name;
-}
-
-fn highScoreRowsShowReplay(mode: high_score.Mode, in_name_entry: bool) bool {
-    // PORT(verified): `initialize_high_score_screen` only enables the row Replay widgets for the
-    // Challenge table, and `update_high_score_screen` suppresses them while inline name-entry is active.
-    return mode == .challenge and !in_name_entry;
 }
 
 fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
@@ -9712,9 +9450,10 @@ fn drawOptionsSliderRow(
     less_hovered: bool,
     more_hovered: bool,
 ) void {
+    const menu_layout = state.optionsMenuLayoutState();
     var value_buffer: [16]u8 = undefined;
-    const title_rect = optionsTextRect(state, item);
-    const value_text = optionsSliderValueText(value, &value_buffer);
+    const title_rect = frontend_options_menu.textRect(&state.ui_font, menu_layout, item);
+    const value_text = frontend_options_menu.sliderValueText(value, &value_buffer);
     frontend_widget.drawSliderMenuRow(
         layout,
         .{
@@ -9722,7 +9461,7 @@ fn drawOptionsSliderRow(
         },
         state.slider_art.textures(),
         &state.ui_font,
-        optionsMenuVisibleLabel(state, item),
+        frontend_options_menu.visibleLabel(menu_layout, item),
         title_rect,
         value_text,
         value,
@@ -9731,177 +9470,6 @@ fn drawOptionsSliderRow(
         less_hovered,
         more_hovered,
     );
-}
-
-fn routeMapCardLayout(
-    font: *const game_font.Loaded,
-    route_point: galaxy.Point,
-    route_galaxy_name: []const u8,
-    route_level_name: []const u8,
-    route_body: []const u8,
-    primary_action: []const u8,
-    replay_action: ?[]const u8,
-) RouteMapCardLayout {
-    var title_left = route_point.x + 60.0;
-    var title_top = route_point.y - 130.0;
-
-    while (true) {
-        const title_rect = uiFontTextRectAbsolute(font, route_galaxy_name, title_left, title_top, route_map_card_title_scale);
-        const subtitle_rect = uiFontTextRectAbsolute(
-            font,
-            route_level_name,
-            title_left,
-            frontend_widget.stackBelowWithGap(title_rect, route_map_card_text_gap),
-            route_map_card_subtitle_scale,
-        );
-        const body_rect = uiFontTextRectAbsolute(
-            font,
-            route_body,
-            title_left,
-            frontend_widget.stackBelowWithGap(subtitle_rect, route_map_card_text_gap),
-            route_map_card_body_scale,
-        );
-        // PORT(verified): `open_galaxy_route` chains the selected route card with the shared
-        // `stack_widget_below` helper: title -> subtitle -> body -> replay? -> primary. The
-        // title/subtitle/body use zero extra gap, the replay row uses `10`, and the primary
-        // action uses `20`. Windows first centers the action widgets from the title width,
-        // then recenters them from the final card box after the clamp loop.
-        const title_center_offset = title_rect.left + title_rect.width * 0.5 - 320.0;
-
-        var primary_text_rect = frontend_widget.widgetTextRect(
-            font,
-            .menu_button,
-            .center,
-            primary_action,
-            frontend_widget.stackBelowWithGap(body_rect, route_map_primary_button_gap),
-            title_center_offset,
-        );
-        var replay_text_rect: ?frontend_widget.Rect = null;
-        if (replay_action) |label| {
-            replay_text_rect = frontend_widget.widgetTextRect(
-                font,
-                .route_map_secondary_action,
-                .center,
-                label,
-                frontend_widget.stackBelowWithGap(body_rect, route_map_replay_button_gap),
-                title_center_offset,
-            );
-            primary_text_rect = frontend_widget.widgetTextRect(
-                font,
-                .menu_button,
-                .center,
-                primary_action,
-                frontend_widget.stackBelowWithGap(replay_text_rect.?, route_map_primary_button_gap),
-                title_center_offset,
-            );
-        }
-
-        var left = @min(title_rect.left, @min(subtitle_rect.left, @min(body_rect.left, primary_text_rect.left)));
-        const top = @min(title_rect.top, @min(subtitle_rect.top, @min(body_rect.top, primary_text_rect.top)));
-        var right = @max(
-            title_rect.left + title_rect.width,
-            @max(
-                subtitle_rect.left + subtitle_rect.width,
-                @max(body_rect.left + body_rect.width, primary_text_rect.left + primary_text_rect.width),
-            ),
-        );
-        var bottom = @max(
-            title_rect.top + title_rect.height,
-            @max(
-                subtitle_rect.top + subtitle_rect.height,
-                @max(body_rect.top + body_rect.height, primary_text_rect.top + primary_text_rect.height),
-            ),
-        );
-        // PORT(verified): `open_galaxy_route` clamps the selected card against the title,
-        // subtitle, body, and primary action widgets only. The replay action is recentered
-        // from the finished card box afterwards, but it does not expand the box bounds.
-        left -= route_map_card_horizontal_padding;
-        right += route_map_card_horizontal_padding;
-        bottom += route_map_card_bottom_padding;
-
-        var adjusted = false;
-        if (right > route_map_card_right_limit) {
-            title_left = route_point.x - (right - left) - 40.0;
-            adjusted = true;
-        }
-        if (top < route_map_card_min_top) {
-            title_top = 50.0;
-            adjusted = true;
-        }
-        if (bottom > route_map_card_bottom_y) {
-            title_top = route_map_card_bottom_y - (bottom - top);
-            adjusted = true;
-        }
-        if (adjusted) continue;
-
-        const card_rect: frontend_widget.Rect = .{
-            .left = left,
-            .top = top,
-            .width = right - left,
-            .height = bottom - top,
-        };
-        const card_center_offset = card_rect.left + card_rect.width * 0.5 - 320.0;
-        primary_text_rect = frontend_widget.widgetTextRect(
-            font,
-            .menu_button,
-            .center,
-            primary_action,
-            primary_text_rect.top,
-            card_center_offset,
-        );
-        if (replay_action) |label| {
-            if (replay_text_rect) |replay_rect| {
-                replay_text_rect = frontend_widget.widgetTextRect(
-                    font,
-                    .route_map_secondary_action,
-                    .center,
-                    label,
-                    replay_rect.top,
-                    card_center_offset,
-                );
-            }
-        }
-        const pointer_start_x = if (card_rect.left <= route_point.x)
-            route_point.x - route_map_card_star_gap
-        else
-            route_point.x + route_map_card_star_gap;
-        const pointer_end_x = if (card_rect.left <= route_point.x)
-            card_rect.left + card_rect.width + route_map_card_horizontal_pointer_gap
-        else
-            card_rect.left - route_map_card_horizontal_pointer_gap;
-        return .{
-            .card_rect = card_rect,
-            .title_rect = title_rect,
-            .subtitle_rect = subtitle_rect,
-            .body_rect = body_rect,
-            .primary_text_rect = primary_text_rect,
-            .replay_text_rect = replay_text_rect,
-            .pointer_start = .{ .x = pointer_start_x, .y = route_point.y },
-            .pointer_end = .{ .x = pointer_end_x, .y = route_point.y },
-        };
-    }
-}
-
-fn routeMapPointForRouteIndex(state: *const AppState, route_index: usize) ?galaxy.Point {
-    if (state.galaxy_names) |names| {
-        if (names.routePointForRouteIndex(route_index)) |point| return point;
-    }
-    return galaxy.routePointForRouteIndex(route_index);
-}
-
-fn routeMapHoveredRouteIndex(state: *const AppState, local_mouse: rl.Vector2, route_limit: usize) ?usize {
-    if (route_limit == 0) return null;
-
-    const selection_radius_squared = 17.0 * 17.0;
-    for (1..@min(route_limit, galaxy.map_route_count) + 1) |route_index| {
-        const point = routeMapPointForRouteIndex(state, route_index) orelse continue;
-        const dx = point.x - local_mouse.x;
-        const dy = point.y - local_mouse.y;
-        if (dx * dx + dy * dy < selection_radius_squared) {
-            return route_index;
-        }
-    }
-    return null;
 }
 
 fn drawRouteMapConnection(
@@ -9954,7 +9522,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
     for (0..galaxy.map_galaxy_count) |galaxy_index| {
         const center = galaxy.galaxyCenter(galaxy_index);
         if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
-            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, route_map_galaxy_size, route_map_galaxy_size, .white);
+            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, frontend_route_map.galaxy_size, frontend_route_map.galaxy_size, .white);
         }
     }
 
@@ -9994,7 +9562,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
                         names.routePointForRouteIndex(start_route_index).?,
                         names.routePointForRouteIndex(end_route_index).?,
                         state.route_map_art.line,
-                        route_map_path_line_width,
+                        frontend_route_map.path_line_width,
                         line_tint,
                     );
                 }
@@ -10013,7 +9581,8 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
     for (1..@min(available_limit, galaxy.map_route_count) + 1) |route_index| {
         const highlight_alpha = state.route_map_route_highlight_alpha[route_index];
         if (highlight_alpha <= 0.001) continue;
-        if (routeMapPointForRouteIndex(state, route_index)) |selected_point| {
+        const maybe_names = if (state.galaxy_names) |*names| names else null;
+        if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |selected_point| {
             if (state.route_map_art.level_select) |loaded_texture| {
                 drawTextureCenteredLocal(
                     layout,
@@ -10037,7 +9606,7 @@ fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: Fronte
 fn drawRouteMapCard(
     state: *const AppState,
     layout: VirtualLayout,
-    card_layout: RouteMapCardLayout,
+    card_layout: frontend_route_map.CardLayout,
     route_galaxy_name: []const u8,
     route_level_name: []const u8,
     route_body: []const u8,
@@ -10049,15 +9618,15 @@ fn drawRouteMapCard(
             layout,
             loaded_texture.texture,
             card_layout.card_rect,
-            route_map_card_frame_edge,
-            route_map_card_frame_edge / 128.0,
+            frontend_route_map.card_frame_edge,
+            frontend_route_map.card_frame_edge / 128.0,
             .white,
         );
     }
 
-    drawUiFontTextRect(state, layout, route_galaxy_name, card_layout.title_rect, route_map_card_title_scale, .ray_white);
-    drawUiFontTextRect(state, layout, route_level_name, card_layout.subtitle_rect, route_map_card_subtitle_scale, .ray_white);
-    drawUiFontTextRect(state, layout, route_body, card_layout.body_rect, route_map_card_body_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_galaxy_name, card_layout.title_rect, frontend_route_map.card_title_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_level_name, card_layout.subtitle_rect, frontend_route_map.card_subtitle_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_body, card_layout.body_rect, frontend_route_map.card_body_scale, .ray_white);
 
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
@@ -10092,10 +9661,10 @@ fn drawRouteMapLogo(state: *const AppState, layout: VirtualLayout) void {
     drawTextureLocalRect(
         layout,
         loaded_texture,
-        route_map_logo_x,
-        route_map_logo_y,
-        route_map_logo_width,
-        route_map_logo_height,
+        frontend_route_map.logo_x,
+        frontend_route_map.logo_y,
+        frontend_route_map.logo_width,
+        frontend_route_map.logo_height,
         .white,
     );
 }
@@ -10133,58 +9702,6 @@ fn drawFrontendNoticeBlock(
         );
         line_index += 1;
     }
-}
-
-fn highScoreScreenTitle(mode: high_score.Mode) []const u8 {
-    return switch (mode) {
-        .postal => "Postal High Scores",
-        .challenge => "Challenge High Scores",
-    };
-}
-
-fn highScoreTableToggleLabel(mode: high_score.Mode) []const u8 {
-    return switch (mode) {
-        .postal => "Challenge Score",
-        .challenge => "Postal Scores",
-    };
-}
-
-fn completionHasBonusLine(result: PendingRunResult) bool {
-    return result.outcome == .completed and result.score_totals.completion_bonus > 0;
-}
-
-fn completionRevealTarget(result: PendingRunResult) f32 {
-    if (result.outcome != .completed) return completion_reveal_bonus_threshold;
-    return if (completionHasBonusLine(result))
-        completion_reveal_continue_threshold
-    else
-        completion_reveal_bonus_threshold;
-}
-
-fn completionBonusVisibleAtProgress(result: PendingRunResult, progress: f32) bool {
-    return completionHasBonusLine(result) and progress >= completion_reveal_bonus_threshold;
-}
-
-fn completionContinueVisibleAtProgress(result: PendingRunResult, progress: f32) bool {
-    return progress >= if (completionHasBonusLine(result))
-        completion_reveal_continue_threshold
-    else
-        completion_reveal_bonus_threshold;
-}
-
-fn completionPackageLine(buffer: []u8, result: PendingRunResult) ![]const u8 {
-    return if (result.parcel_count == 1)
-        std.fmt.bufPrint(buffer, "1 Package Delivered", .{})
-    else
-        std.fmt.bufPrint(buffer, "{d:0>2} Packages Delivered", .{result.parcel_count});
-}
-
-fn completionBonusLine(buffer: []u8, result: PendingRunResult) !?[]const u8 {
-    if (!completionHasBonusLine(result)) return null;
-    if (result.score_totals.completion_bonus == 50_000 and result.parcel_count == result.parcel_target) {
-        return try std.fmt.bufPrint(buffer, "Perfect Score! 50,000 Bonus Points!", .{});
-    }
-    return try std.fmt.bufPrint(buffer, "{d} Bonus Points!", .{result.score_totals.completion_bonus});
 }
 
 fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
@@ -10325,33 +9842,14 @@ fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
         },
         &state.ui_font,
         "Back",
-        helpBackTextRect(&state.ui_font),
+        frontend_help.backTextRect(&state.ui_font),
         state.help_button_states[0],
         false,
     );
 }
 
 fn resultTitle(result: PendingRunResult) []const u8 {
-    return switch (result.outcome) {
-        .completed => if (result.mode) |mode|
-            switch (mode) {
-                .postal => "Delivery Complete!",
-                .time_trial => "Route Complete",
-                .challenge => "Challenge Complete",
-                .tutorial => "Tutorial Complete",
-            }
-        else
-            "Level Complete",
-        .failed => if (result.mode) |mode|
-            switch (mode) {
-                .postal => "Game Over",
-                .time_trial => "Route Failed",
-                .challenge => "Challenge Failed",
-                .tutorial => "Tutorial Failed",
-            }
-        else
-            "Run Failed",
-    };
+    return frontend_completion_screen.title(completionSummary(result));
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -11120,10 +10618,10 @@ fn drawCompletionParcelIcon(state: *const AppState, layout: VirtualLayout) void 
     drawTextureLocalRect(
         layout,
         loaded_texture,
-        completion_parcel_icon_x,
-        completion_parcel_icon_y,
-        completion_parcel_icon_width,
-        completion_parcel_icon_height,
+        frontend_completion_screen.parcel_icon_x,
+        frontend_completion_screen.parcel_icon_y,
+        frontend_completion_screen.parcel_icon_width,
+        frontend_completion_screen.parcel_icon_height,
         .white,
     );
 }
@@ -11142,14 +10640,15 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
         .flags = 0x20400002,
     };
 
-    const title_text = resultTitle(result);
+    const summary = completionSummary(result);
+    const title_text = frontend_completion_screen.title(summary);
     frontend_widget.drawTextButtonWithOptions(
         layout,
         widget_art,
         &state.ui_font,
         .menu_button,
         title_text,
-        completionTitleTextRect(&state.ui_font, title_text),
+        frontend_completion_screen.titleTextRect(&state.ui_font, title_text),
         idle_state,
         false,
         completion_text_only,
@@ -11157,7 +10656,7 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
 
     var package_buffer: [64]u8 = undefined;
     const package_text = switch (result.mode orelse .tutorial) {
-        .postal => try completionPackageLine(&package_buffer, result),
+        .postal => try frontend_completion_screen.packageLine(&package_buffer, summary),
         .time_trial, .challenge, .tutorial => result.level_name,
     };
     frontend_widget.drawTextButtonWithOptions(
@@ -11166,7 +10665,7 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
         &state.ui_font,
         .menu_button,
         package_text,
-        completionPackageTextRect(&state.ui_font, package_text),
+        frontend_completion_screen.packageTextRect(&state.ui_font, package_text),
         idle_state,
         false,
         completion_text_only,
@@ -11177,14 +10676,14 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
     }
 
     if (state.completionBonusVisible(result)) {
-        if (try completionBonusLine(&package_buffer, result)) |bonus_text| {
+        if (try frontend_completion_screen.bonusLine(&package_buffer, summary)) |bonus_text| {
             frontend_widget.drawTextButtonWithOptions(
                 layout,
                 widget_art,
                 &state.ui_font,
                 .menu_button,
                 bonus_text,
-                completionBonusTextRect(&state.ui_font, bonus_text),
+                frontend_completion_screen.bonusTextRect(&state.ui_font, bonus_text),
                 idle_state,
                 false,
                 completion_text_only,
@@ -11199,7 +10698,7 @@ fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, resul
             &state.ui_font,
             .menu_button,
             "Click to Continue",
-            completionContinueTextRect(&state.ui_font, result),
+            frontend_completion_screen.continueTextRect(&state.ui_font, summary),
             state.completion_continue_button_state,
             false,
             completion_text_only,
@@ -11215,7 +10714,8 @@ fn drawFailedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: 
     const title_y: i32 = @intFromFloat(title_point.y);
     const body_x: i32 = @intFromFloat(body_point.x);
     const body_y: i32 = @intFromFloat(body_point.y);
-    const title = resultTitle(result);
+    const summary = completionSummary(result);
+    const title = frontend_completion_screen.title(summary);
     var elapsed_buffer: [32]u8 = undefined;
     const elapsed_text = try formatElapsedMillis(&elapsed_buffer, result.elapsed_millis);
 
@@ -11299,7 +10799,7 @@ fn drawFailedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: 
         },
         &state.ui_font,
         "Click to Continue",
-        completionContinueTextRect(&state.ui_font, result),
+        frontend_completion_screen.continueTextRect(&state.ui_font, summary),
         state.completion_continue_button_state,
         false,
     );
@@ -13042,9 +12542,9 @@ test "route map replay gate follows time-trial completion replays" {
 }
 
 test "high-score row replay is challenge-only" {
-    try std.testing.expect(!highScoreRowsShowReplay(.postal, false));
-    try std.testing.expect(highScoreRowsShowReplay(.challenge, false));
-    try std.testing.expect(!highScoreRowsShowReplay(.challenge, true));
+    try std.testing.expect(!frontend_high_score_screen.rowsShowReplay(.postal, false));
+    try std.testing.expect(frontend_high_score_screen.rowsShowReplay(.challenge, false));
+    try std.testing.expect(!frontend_high_score_screen.rowsShowReplay(.challenge, true));
 }
 
 test "route map screen modes follow windows route-map entry paths" {
@@ -13059,8 +12559,8 @@ test "route map screen modes follow windows route-map entry paths" {
 }
 
 test "route map body text stays empty without route script copy" {
-    try std.testing.expectEqualStrings("", routeMapBodyText(null));
-    try std.testing.expectEqualStrings("My first route!", routeMapBodyText("My first route!"));
+    try std.testing.expectEqualStrings("", frontend_route_map.bodyText(null));
+    try std.testing.expectEqualStrings("My first route!", frontend_route_map.bodyText("My first route!"));
 }
 
 test "run return targets follow the recovered native bridge where confirmed" {
@@ -13241,11 +12741,12 @@ test "completion reveal stages the bonus line before continue" {
         .return_target = .postal_route_map,
     };
 
-    try std.testing.expect(!completionBonusVisibleAtProgress(result, 0.999));
-    try std.testing.expect(!completionContinueVisibleAtProgress(result, 0.999));
-    try std.testing.expect(completionBonusVisibleAtProgress(result, 1.0));
-    try std.testing.expect(!completionContinueVisibleAtProgress(result, 1.999));
-    try std.testing.expect(completionContinueVisibleAtProgress(result, 2.0));
+    const summary = completionSummary(result);
+    try std.testing.expect(!frontend_completion_screen.bonusVisibleAtProgress(summary, 0.999));
+    try std.testing.expect(!frontend_completion_screen.continueVisibleAtProgress(summary, 0.999));
+    try std.testing.expect(frontend_completion_screen.bonusVisibleAtProgress(summary, 1.0));
+    try std.testing.expect(!frontend_completion_screen.continueVisibleAtProgress(summary, 1.999));
+    try std.testing.expect(frontend_completion_screen.continueVisibleAtProgress(summary, 2.0));
 }
 
 test "completion reveal skips the bonus stage when no bonus line exists" {
@@ -13260,9 +12761,10 @@ test "completion reveal skips the bonus stage when no bonus line exists" {
         .return_target = .postal_route_map,
     };
 
-    try std.testing.expect(!completionBonusVisibleAtProgress(result, 1.0));
-    try std.testing.expect(!completionContinueVisibleAtProgress(result, 0.999));
-    try std.testing.expect(completionContinueVisibleAtProgress(result, 1.0));
+    const summary = completionSummary(result);
+    try std.testing.expect(!frontend_completion_screen.bonusVisibleAtProgress(summary, 1.0));
+    try std.testing.expect(!frontend_completion_screen.continueVisibleAtProgress(summary, 0.999));
+    try std.testing.expect(frontend_completion_screen.continueVisibleAtProgress(summary, 1.0));
 }
 
 test "completion overlay helpers distinguish overlay from finalized screen" {
@@ -13315,7 +12817,7 @@ test "completion reveal advances while the early overlay is active in level phas
 
     state.stepCompletionScreenReveal();
 
-    try std.testing.expectApproxEqAbs(completion_reveal_step, state.completion_screen_reveal_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(frontend_completion_screen.reveal_step, state.completion_screen_reveal_progress, 0.0001);
 }
 
 test "postal completion copy matches the recovered widget strings" {
@@ -13330,7 +12832,7 @@ test "postal completion copy matches the recovered widget strings" {
         .score_is_partial = false,
         .return_target = .postal_route_map,
     }));
-    try std.testing.expectEqualStrings("1 Package Delivered", try completionPackageLine(&buffer, .{
+    try std.testing.expectEqualStrings("1 Package Delivered", try frontend_completion_screen.packageLine(&buffer, completionSummary(.{
         .level_name = "To Infinity!",
         .mode = .postal,
         .elapsed_millis = 0,
@@ -13339,8 +12841,8 @@ test "postal completion copy matches the recovered widget strings" {
         .score = 0,
         .score_is_partial = false,
         .return_target = .postal_route_map,
-    }));
-    try std.testing.expectEqualStrings("07 Packages Delivered", try completionPackageLine(&buffer, .{
+    })));
+    try std.testing.expectEqualStrings("07 Packages Delivered", try frontend_completion_screen.packageLine(&buffer, completionSummary(.{
         .level_name = "To Infinity!",
         .mode = .postal,
         .elapsed_millis = 0,
@@ -13349,7 +12851,7 @@ test "postal completion copy matches the recovered widget strings" {
         .score = 0,
         .score_is_partial = false,
         .return_target = .postal_route_map,
-    }));
+    })));
 }
 
 test "elapsed millis format as mm:ss.cc" {
@@ -13367,6 +12869,18 @@ test "tutorial score format uses commas" {
 test "high score mode index follows screen order" {
     try std.testing.expectEqual(@as(usize, 0), frontend_high_score_screen.modeIndex(.postal));
     try std.testing.expectEqual(@as(usize, 1), frontend_high_score_screen.modeIndex(.challenge));
+}
+
+test "high score controller helpers stay screen-local" {
+    try std.testing.expectEqualStrings("Postal High Scores", frontend_high_score_screen.title(.{ .main_menu_browse = .postal }));
+    try std.testing.expectEqualStrings("Enter your name here!", frontend_high_score_screen.title(.{ .post_level_entry = .{ .mode = .postal, .rank = 0 } }));
+    try std.testing.expectEqual(high_score.Mode.challenge, frontend_high_score_screen.nextBrowseMode(.{ .main_menu_browse = .postal }).?);
+    try std.testing.expect(frontend_high_score_screen.nextBrowseMode(.{ .post_level_entry = .{ .mode = .postal, .rank = 0 } }) == null);
+    try std.testing.expectEqualDeep(
+        frontend_bridge.SelectedLevelRecordSource{ .challenge = 3 },
+        frontend_high_score_screen.replaySource(.{ .main_menu_browse = .challenge }, 3).?,
+    );
+    try std.testing.expect(frontend_high_score_screen.replaySource(.{ .post_level_entry = .{ .mode = .challenge, .rank = 3 } }, 3) == null);
 }
 
 test "new game menu mapping matches frontend route modes" {
