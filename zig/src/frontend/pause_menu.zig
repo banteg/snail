@@ -1,6 +1,9 @@
+const app_ui = @import("../app_ui.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
+
+const VirtualLayout = app_ui.VirtualLayout;
 
 // PORT(verified): `cRSubPause::Init()` creates the centered pause stack with `End Game`
 // at `y = 145`, then chains `Options` and `Resume` below it with the shared shell-font
@@ -15,4 +18,20 @@ pub fn textRect(font: *const game_font.Loaded, item: frontend.PauseMenuItem) fro
         .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .end_game)), center_offset_x),
         .@"resume" => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), center_offset_x),
     };
+}
+
+pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+    for (items, 0..) |item, index| {
+        frontend_widget.drawType20Button(
+            layout,
+            .{
+                .border = state.frontend_widget_art.border.?.texture,
+            },
+            &state.ui_font,
+            item.label(),
+            textRect(&state.ui_font, item),
+            state.pause_menu_button_states[index],
+            false,
+        );
+    }
 }

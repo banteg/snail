@@ -1,6 +1,9 @@
+const app_ui = @import("../app_ui.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
+
+const VirtualLayout = app_ui.VirtualLayout;
 
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
 // High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
@@ -15,4 +18,20 @@ pub fn textRect(font: *const game_font.Loaded, item: frontend.MainMenuItem) fron
         .credits => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), frontend_widget.type20_center_offset_x),
         .exit => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .credits)), frontend_widget.type20_center_offset_x),
     };
+}
+
+pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+    for (frontend.main_menu_items, 0..) |item, index| {
+        frontend_widget.drawType20Button(
+            layout,
+            .{
+                .border = state.frontend_widget_art.border.?.texture,
+            },
+            &state.ui_font,
+            item.label(),
+            textRect(&state.ui_font, item),
+            state.main_menu_button_states[index],
+            false,
+        );
+    }
 }

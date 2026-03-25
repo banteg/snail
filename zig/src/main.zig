@@ -6768,20 +6768,7 @@ fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    for (main_menu_items, 0..) |item, index| {
-        const text_rect = frontend_main_menu.textRect(&state.ui_font, item);
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            item.label(),
-            text_rect,
-            state.main_menu_button_states[index],
-            false,
-        );
-    }
+    frontend_main_menu.drawMenuUi(state, layout);
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -6789,43 +6776,12 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    for (new_game_menu_items[0..4], 0..) |item, index| {
-        if (!state.newGameMenuItemVisible(item)) continue;
-        const text_rect = frontend_new_game_menu.textRect(&state.ui_font, item);
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            item.label(),
-            text_rect,
-            state.new_game_button_states[index],
-            false,
-        );
-    }
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Help",
-        frontend_new_game_menu.helpTextRect(&state.ui_font),
-        state.new_game_button_states[4],
-        false,
-    );
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Back",
-        frontend_new_game_menu.backTextRect(&state.ui_font),
-        state.new_game_button_states[5],
-        false,
-    );
+    frontend_new_game_menu.drawMenuUi(state, layout, .{
+        state.newGameMenuItemVisible(.tutorial),
+        state.newGameMenuItemVisible(.postal_mode),
+        state.newGameMenuItemVisible(.time_trial),
+        state.newGameMenuItemVisible(.challenge_mode),
+    });
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -6860,19 +6816,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    for (frontend_pause_menu.items, 0..) |item, index| {
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            item.label(),
-            frontend_pause_menu.textRect(&state.ui_font, item),
-            state.pause_menu_button_states[index],
-            false,
-        );
-    }
+    frontend_pause_menu.drawMenuUi(state, layout);
 }
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -7299,17 +7243,7 @@ fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Back",
-        frontend_help.backTextRect(&state.ui_font),
-        state.help_button_states[0],
-        false,
-    );
+    frontend_help.drawMenuUi(state, layout);
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
