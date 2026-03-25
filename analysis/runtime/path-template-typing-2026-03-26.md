@@ -86,10 +86,24 @@ Recovered `PathTemplateStripMesh` shape behind `PathTemplate + 0x24`:
 - `+0x58`: `facequad_capacity`
 - `+0x5c`: `facequads`
 
-Recovered `TextureRef` prefix used by strip-mesh quads:
+Recovered `TextureRef` / `TextureRefList` shape used by strip-mesh quads:
 
-- `+0x00`: `flags`
-- the rest of the record is still intentionally left opaque in the checked-in header
+- `TextureRefList +0x00`: `count`
+- `TextureRefList +0x04`: `capacity`
+- `TextureRefList +0x08`: first `TextureRef` entry
+- `TextureRef` size: `0xa4`
+- `TextureRef +0x00`: `flags`
+- `TextureRef +0x0c`: `texture_path`
+- `TextureRef +0x8c`: `slot_index`
+- `TextureRef +0x98` and `+0xa0`: still intentionally opaque in the checked-in header
+
+That is the cleanup behind `get_or_create_texture_ref` returning:
+
+```c
+&texture_list->entries[i]
+```
+
+rather than a raw `&texture_list[i * 0x29 + 2]` style pointer.
 
 One named mesh flag is now safe:
 
@@ -147,7 +161,9 @@ Applied in the live BN database:
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
-- `get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
+- `get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
+- `rotate_matrix_world_z(PathTemplateTransform* transform, float angle)` as a typed `__thiscall` helper
+- `compute_kind42_attachment_transform(float arg1, float arg2, float arg3, PathTemplateTransform* transform, float* out_angle)`
 - `allocate_path_nodes(PathTemplate* self)` now reads back as returning `PathTemplateSample*`, which matches its actual `secondary_samples` return
 - `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
@@ -173,6 +189,7 @@ It also cleaned up the repeated texture-path slots across the constructor family
 - paired constructors now consistently spell the trailing texture paths as `texture_a` / `texture_b`
 - single-texture constructors now use `texture_path`
 - the three-texture supertramp constructor now uses `texture_a` / `texture_b` / `texture_c`
+- the IDA mirror declarations now use those same parameter names instead of stale `arg4` / `arg5` / `arg6` slots for the affected constructors
 
 One caution remains:
 

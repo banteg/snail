@@ -12,7 +12,7 @@ import idc
 TRUSTED_DECLARATIONS = [
     (
         "get_or_create_texture_ref",
-        "TextureRef* __thiscall get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4);",
+        "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);",
     ),
     (
         "allocate_path_nodes",
@@ -35,12 +35,20 @@ TRUSTED_DECLARATIONS = [
         "int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);",
     ),
     (
+        "rotate_matrix_world_z",
+        "int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);",
+    ),
+    (
         "normalize_vector",
         "double __fastcall normalize_vector(Vec3* vector);",
     ),
     (
         "cross_vectors",
         "int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);",
+    ),
+    (
+        "compute_kind42_attachment_transform",
+        "int32_t __stdcall compute_kind42_attachment_transform(float arg1, float arg2, float arg3, PathTemplateTransform* transform, float* out_angle);",
     ),
     (
         "request_object_vertices",
@@ -56,19 +64,19 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "initialize_loopout_path_template_pair",
-        "int32_t __thiscall initialize_loopout_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* arg4, char* arg5);",
+        "int32_t __thiscall initialize_loopout_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_detour_path_template_pair",
-        "int32_t __thiscall initialize_detour_path_template_pair(PathTemplate* self, int32_t arg2, char* arg3, char* arg4);",
+        "int32_t __thiscall initialize_detour_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_supertramp_path_template_pair",
-        "int32_t __thiscall initialize_supertramp_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* arg4, char* arg5, char* arg6);",
+        "int32_t __thiscall initialize_supertramp_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b, char* texture_c);",
     ),
     (
         "initialize_kind42_path_template_pair",
-        "int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate* self, int32_t arg2, char* arg3, char* arg4);",
+        "int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_halfpipe_path_template_pair",

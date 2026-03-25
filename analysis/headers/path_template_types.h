@@ -29,8 +29,17 @@ typedef struct Color4f {
 
 typedef struct TextureRef {
     uint32_t flags;
-    uint8_t _pad_04[0x25];
+    uint8_t _pad_04[0x8];
+    char texture_path[0x80];
+    int32_t slot_index;
+    uint8_t _pad_90[0x14];
 } TextureRef;
+
+typedef struct TextureRefList {
+    int32_t count;
+    int32_t capacity;
+    TextureRef entries[1];
+} TextureRefList;
 
 typedef enum PathTemplateStripMeshFlags {
     PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,
@@ -114,14 +123,22 @@ typedef struct PathTemplate {
     float header_a4;
 } PathTemplate;
 
-TextureRef* __thiscall get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
+TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
 PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);
 int32_t __fastcall finalize_path_template_record(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
 int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
 int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);
+int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);
 double __fastcall normalize_vector(Vec3* vector);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
+int32_t __stdcall compute_kind42_attachment_transform(
+    float arg1,
+    float arg2,
+    float arg3,
+    PathTemplateTransform* transform,
+    float* out_angle
+);
 void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
 void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);

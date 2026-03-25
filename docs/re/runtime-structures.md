@@ -613,10 +613,16 @@ High-confidence `ObjectFaceQuad` fields:
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs
 
-High-confidence `TextureRef` prefix used by facequads:
+High-confidence `TextureRef` / `TextureRefList` surface used by facequads:
 
-- `+0x00`: `flags`
-- the rest of the record stays intentionally opaque in the checked-in type header for now
+- `TextureRefList +0x00`: `count`
+- `TextureRefList +0x04`: `capacity`
+- `TextureRefList +0x08`: first `TextureRef` entry
+- `TextureRef` size: `0xa4`
+- `TextureRef +0x00`: `flags`
+- `TextureRef +0x0c`: `texture_path`
+- `TextureRef +0x8c`: `slot_index`
+- `TextureRef +0x98` and `+0xa0` remain intentionally opaque in the checked-in type header for now
 
 Binary Ninja typing note:
 
