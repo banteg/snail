@@ -4442,7 +4442,7 @@ const AppState = struct {
             runner.flushPendingParcelDeliveries();
         }
         const runner = self.level_runner orelse return null;
-        const elapsed_millis = completionElapsedMillis(runner);
+        const elapsed_millis = runner.stopwatch.elapsedMillis();
         var result = PendingRunResult{
             .outcome = .failed,
             .level_name = loaded_level.name,
@@ -5057,7 +5057,7 @@ const AppState = struct {
         }
         const runner = self.level_runner orelse return;
         const parcel_count = runner.counters.parcels;
-        const elapsed_millis = completionElapsedMillis(runner);
+        const elapsed_millis = runner.stopwatch.elapsedMillis();
         var result = PendingRunResult{
             .outcome = .completed,
             .level_name = loaded_level.name,
@@ -5145,7 +5145,7 @@ const AppState = struct {
             runner.flushPendingParcelDeliveries();
         }
         const runner = self.level_runner orelse return;
-        const elapsed_millis = completionElapsedMillis(runner);
+        const elapsed_millis = runner.stopwatch.elapsedMillis();
         var result = PendingRunResult{
             .outcome = .failed,
             .level_name = loaded_level.name,
@@ -8233,10 +8233,6 @@ fn routeMapHasReplayEntry(
     return tables.completion[completion_index].has_replay;
 }
 
-fn completionElapsedMillis(runner: gameplay.Runner) u32 {
-    return runner.stopwatch.elapsedMillis();
-}
-
 fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
     const total_seconds = @divTrunc(elapsed_millis, 1000);
     const minutes = @divTrunc(total_seconds, 60);
@@ -8283,10 +8279,6 @@ fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
         state.help_button_states[0],
         false,
     );
-}
-
-fn resultTitle(result: PendingRunResult) []const u8 {
-    return frontend_completion_screen.title(completionSummary(result));
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -11251,7 +11243,7 @@ test "completion reveal advances while the early overlay is active in level phas
 
 test "postal completion copy matches the recovered widget strings" {
     var buffer: [64]u8 = undefined;
-    try std.testing.expectEqualStrings("Delivery Complete!", resultTitle(.{
+    try std.testing.expectEqualStrings("Delivery Complete!", frontend_completion_screen.title(completionSummary(.{
         .level_name = "To Infinity!",
         .mode = .postal,
         .elapsed_millis = 0,
@@ -11260,7 +11252,7 @@ test "postal completion copy matches the recovered widget strings" {
         .score = 0,
         .score_is_partial = false,
         .return_target = .postal_route_map,
-    }));
+    })));
     try std.testing.expectEqualStrings("1 Package Delivered", try frontend_completion_screen.packageLine(&buffer, completionSummary(.{
         .level_name = "To Infinity!",
         .mode = .postal,
