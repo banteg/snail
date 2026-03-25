@@ -98,6 +98,53 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
     return removed
 
 
+def _build_mismatches(manifest, exported_entries: list[dict[str, object]]) -> list[dict[str, object]]:
+    manifest_by_name = {function.name: function for function in manifest.functions}
+    mismatches: list[dict[str, object]] = []
+    seen_selectors: set[str] = set()
+    for entry in exported_entries:
+        selector = entry.get("selector")
+        if not isinstance(selector, str):
+            continue
+        seen_selectors.add(selector)
+        manifest_function = manifest_by_name.get(selector)
+        if manifest_function is None:
+            mismatches.append(
+                {
+                    "reason": "unexpected_selector",
+                    "selector": selector,
+                    "observed_address": entry.get("address"),
+                    "observed_name": entry.get("name"),
+                }
+            )
+            continue
+        observed_address = entry.get("address")
+        observed_name = entry.get("name")
+        if observed_address != manifest_function.address_hex or observed_name != manifest_function.name:
+            mismatches.append(
+                {
+                    "reason": "selector_resolved_differently",
+                    "selector": selector,
+                    "manifest_address": manifest_function.address_hex,
+                    "manifest_name": manifest_function.name,
+                    "observed_address": observed_address,
+                    "observed_name": observed_name,
+                }
+            )
+    for function in manifest.functions:
+        if function.name in seen_selectors:
+            continue
+        mismatches.append(
+            {
+                "reason": "missing_selector",
+                "selector": function.name,
+                "manifest_address": function.address_hex,
+                "manifest_name": function.name,
+            }
+        )
+    return mismatches
+
+
 def main() -> int:
     args = parse_args()
     ida_bin = find_ida_binary(args.ida_bin)
@@ -140,6 +187,7 @@ def main() -> int:
         if isinstance(artifact, str):
             expected_paths.add(Path(artifact).resolve())
     removed = _prune_stale_artifacts(out_dir, expected_paths)
+    mismatches = _build_mismatches(manifest, exported_entries)
 
     summary = {
         "tool": "ida",
@@ -148,6 +196,8 @@ def main() -> int:
         "out_dir": str(out_dir.relative_to(REPO_ROOT)),
         "function_count": len(manifest.functions),
         "exported": exported_entries,
+        "mismatch_count": len(mismatches),
+        "mismatches": mismatches,
         "failed": payload.get("failed", []),
         "removed_stale_artifacts": removed,
     }

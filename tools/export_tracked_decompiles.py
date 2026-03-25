@@ -140,8 +140,12 @@ def main() -> int:
         "function_count": len(manifest.functions),
         "bn_index": str(bn_index.relative_to(REPO_ROOT)),
         "ida_index": str(ida_index.relative_to(REPO_ROOT)),
-        "bn_exported": bn_result.get("function_count"),
+        "bn_exported": len(bn_result.get("exports", [])),
         "ida_exported": len(ida_result.get("exported", [])),
+        "bn_mismatch_count": bn_result.get("mismatch_count", 0),
+        "ida_mismatch_count": ida_result.get("mismatch_count", 0),
+        "total_mismatch_count": bn_result.get("mismatch_count", 0) + ida_result.get("mismatch_count", 0),
+        "has_mismatches": bool(bn_result.get("mismatch_count", 0) or ida_result.get("mismatch_count", 0)),
         "sync_ida_symbols": args.sync_ida_symbols,
     }
     (root / "index.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")

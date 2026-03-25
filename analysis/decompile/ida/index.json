@@ -3918,6 +3918,25 @@
       "artifact": "/Users/banteg/dev/banteg/snail-mail/analysis/decompile/ida/functions/0044fd90-initialize_translation_matrix.c"
     }
   ],
+  "mismatch_count": 2,
+  "mismatches": [
+    {
+      "reason": "selector_resolved_differently",
+      "selector": "uninit_tips",
+      "manifest_address": "0x448d10",
+      "manifest_name": "uninit_tips",
+      "observed_address": "0x448dd0",
+      "observed_name": "uninit_tutorial"
+    },
+    {
+      "reason": "selector_resolved_differently",
+      "selector": "release_mouse_input",
+      "manifest_address": "0x44c2c0",
+      "manifest_name": "release_mouse_input",
+      "observed_address": "0x411d80",
+      "observed_name": "uninitialize_input_devices"
+    }
+  ],
   "failed": [],
   "removed_stale_artifacts": []
 }

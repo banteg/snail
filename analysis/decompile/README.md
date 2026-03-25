@@ -15,7 +15,25 @@ Layout:
 - `binja/index.json`: Binary Ninja export index
 - `ida/functions/`: IDA pseudocode exports for every named manifest function
 - `ida/index.json`: IDA export index
-- `index.json`: top-level refresh summary
+- `index.json`: top-level refresh summary, including combined mismatch counts
+
+Each per-tool index also records mismatch data:
+
+- `mismatch_count`
+- `mismatches`
+
+The top-level `index.json` also records:
+
+- `bn_mismatch_count`
+- `ida_mismatch_count`
+- `total_mismatch_count`
+- `has_mismatches`
+
+Those entries flag cases where the tracked manifest does not line up with what the
+tool actually exported, for example:
+
+- manifest name differs from the live Binary Ninja name at the same address
+- an IDA selector resolves to a different function start or name than the manifest expects
 
 Refresh the tracked snapshots with:
 
@@ -28,3 +46,4 @@ Notes:
 - the Binary Ninja lane exports from the active target by default; pass `--bn-target` if needed
 - the IDA lane exports from the tracked `.i64` unless `--ida-db` is provided
 - reruns prune stale `.c` files from the tracked output trees when a manifest name changes
+- inspect mismatch entries first when one tool appears to “miss” a function; they often indicate real database drift rather than an export failure

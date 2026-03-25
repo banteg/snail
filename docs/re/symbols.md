@@ -32,5 +32,7 @@ The preferred tracked snapshot lane now lives under `analysis/decompile/`:
 - `analysis/decompile/binja/functions/`: Binary Ninja exports for every manifest function
 - `analysis/decompile/ida/functions/`: IDA exports for every manifest function
 - the per-tool `index.json` files keep the export set reviewable in git
+- those indexes now also flag manifest-to-tool mismatches so selector drift shows up as tracked data instead of a silent export surprise
+- the top-level `analysis/decompile/index.json` rolls those counts up so a full refresh immediately shows whether either lane drifted
 
 The targeted IDA export path still writes to `artifacts/ida/functions/` by default, which remains useful for one-off second-opinion checks without refreshing the whole tracked snapshot.

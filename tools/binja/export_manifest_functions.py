@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -70,6 +71,27 @@ def _load_target_metadata(target_selector: str) -> dict[str, object]:
     raise RuntimeError(f"could not resolve Binary Ninja target: {target_selector}")
 
 
+def _run_bn_json(*args: str) -> object:
+    with tempfile.NamedTemporaryFile(suffix=".json", delete=False) as handle:
+        out_path = Path(handle.name)
+    try:
+        completed = subprocess.run(
+            ["bn", *args, "--format", "json", "--out", str(out_path)],
+            cwd=REPO_ROOT,
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+        if completed.returncode != 0:
+            raise RuntimeError(
+                f"bn {' '.join(args)} failed with exit code {completed.returncode}:"
+                f"\n{completed.stderr.strip()}"
+            )
+        return json.loads(out_path.read_text(encoding="utf-8"))
+    finally:
+        out_path.unlink(missing_ok=True)
+
+
 def _artifact_path(out_dir: Path, function: FunctionSymbol) -> Path:
     return out_dir / f"{function.address:08x}-{_safe_name(function.name)}.c"
 
@@ -111,6 +133,23 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
         path.unlink()
         removed.append(str(path.relative_to(REPO_ROOT)))
     return removed
+
+
+def _load_live_function_map(target_selector: str) -> dict[int, dict[str, object]]:
+    payload = _run_bn_json("function", "list", "--target", target_selector)
+    if not isinstance(payload, list):
+        raise RuntimeError("unexpected `bn function list --format json` output")
+
+    live: dict[int, dict[str, object]] = {}
+    for entry in payload:
+        if not isinstance(entry, dict):
+            continue
+        address_text = entry.get("address")
+        name = entry.get("name")
+        if not isinstance(address_text, str) or not isinstance(name, str):
+            continue
+        live[int(address_text, 16)] = entry
+    return live
 
 
 def parse_args() -> argparse.Namespace:
@@ -155,10 +194,33 @@ def main() -> int:
 
     target_metadata = _load_target_metadata(args.target)
     target_selector = str(target_metadata.get("target_id") or args.target)
+    live_functions = _load_live_function_map(target_selector)
 
     exported: list[dict[str, object]] = []
+    mismatches: list[dict[str, object]] = []
     expected_paths: set[Path] = set()
     for function in manifest.functions:
+        live = live_functions.get(function.address)
+        if live is None:
+            mismatches.append(
+                {
+                    "reason": "missing_live_function",
+                    "manifest_address": function.address_hex,
+                    "manifest_name": function.name,
+                }
+            )
+        else:
+            observed_name = live.get("name")
+            if observed_name != function.name:
+                mismatches.append(
+                    {
+                        "reason": "name_mismatch",
+                        "manifest_address": function.address_hex,
+                        "manifest_name": function.name,
+                        "observed_address": live.get("address"),
+                        "observed_name": observed_name,
+                    }
+                )
         decompile_text = _run_bn(
             "decompile",
             "--target",
@@ -184,6 +246,8 @@ def main() -> int:
         "manifest": str(manifest_path.relative_to(REPO_ROOT)),
         "out_dir": str(out_dir.relative_to(REPO_ROOT)),
         "function_count": len(exported),
+        "mismatch_count": len(mismatches),
+        "mismatches": mismatches,
         "removed_stale_artifacts": removed,
         "exports": exported,
     }

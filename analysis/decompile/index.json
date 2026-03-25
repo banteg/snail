@@ -6,5 +6,9 @@
   "ida_index": "analysis/decompile/ida/index.json",
   "bn_exported": 652,
   "ida_exported": 652,
+  "bn_mismatch_count": 12,
+  "ida_mismatch_count": 2,
+  "total_mismatch_count": 14,
+  "has_mismatches": true,
   "sync_ida_symbols": true
 }
