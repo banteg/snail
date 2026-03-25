@@ -5,7 +5,7 @@
 /* function: initialize_snake_path_template_pair @ 0x423580 */
 
 0042358c        int32_t i_4 = 0
-00423594        self->kind = 0x1d
+00423594        self->kind = PATH_TEMPLATE_KIND_SNAKE
 0042359b        self->is_mirrored_x = 0
 0042359f        self->side_exit_mode = 0
 004235a2        self->width_cells = texture_a

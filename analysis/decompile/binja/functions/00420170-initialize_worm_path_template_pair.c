@@ -5,7 +5,7 @@
 /* function: initialize_worm_path_template_pair @ 0x420170 */
 
 00420180        int32_t i_3 = 0
-00420183        self->kind = 0x18
+00420183        self->kind = PATH_TEMPLATE_KIND_WORM
 00420186        self->is_mirrored_x = 0
 0042018a        self->side_exit_mode = 0
 0042018d        self->width_cells = 0x10

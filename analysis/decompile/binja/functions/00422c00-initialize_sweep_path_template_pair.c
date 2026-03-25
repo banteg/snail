@@ -5,7 +5,7 @@
 /* function: initialize_sweep_path_template_pair @ 0x422c00 */
 
 00422c0c        int32_t i_4 = 0
-00422c14        self->kind = 0x1c
+00422c14        self->kind = PATH_TEMPLATE_KIND_SWEEP
 00422c1b        self->is_mirrored_x = 0
 00422c1f        self->side_exit_mode = 0
 00422c22        self->width_cells = texture_a

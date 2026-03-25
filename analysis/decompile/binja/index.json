@@ -13,6 +13,93 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
   "function_count": 652,
+  "mismatch_count": 12,
+  "mismatches": [
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x402790",
+      "manifest_name": "set_frontend_widget_shortcut_key",
+      "observed_address": "0x402790",
+      "observed_name": "sub_402790"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x403f60",
+      "manifest_name": "queue_frontend_widget_flag_after_delay",
+      "observed_address": "0x403f60",
+      "observed_name": "sub_403f60"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x411d80",
+      "manifest_name": "uninitialize_input_devices",
+      "observed_address": "0x411d80",
+      "observed_name": "sub_411d80"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x4126c0",
+      "manifest_name": "submit_sprite_draw_batches",
+      "observed_address": "0x4126c0",
+      "observed_name": "sub_4126c0"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x413670",
+      "manifest_name": "configure_sprite_render_state",
+      "observed_address": "0x413670",
+      "observed_name": "sub_413670"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x4137f0",
+      "manifest_name": "draw_sprite_quad",
+      "observed_address": "0x4137f0",
+      "observed_name": "sub_4137f0"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x431540",
+      "manifest_name": "delete_file_path_with_directory_walk",
+      "observed_address": "0x431540",
+      "observed_name": "sub_431540"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x44c880",
+      "manifest_name": "initialize_global_identity_matrix",
+      "observed_address": "0x44c880",
+      "observed_name": "sub_44c880"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x44dbf0",
+      "manifest_name": "pack_color_rgba_u8",
+      "observed_address": "0x44dbf0",
+      "observed_name": "sub_44dbf0"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x44e410",
+      "manifest_name": "update_sprite_facing_angle",
+      "observed_address": "0x44e410",
+      "observed_name": "sub_44e410"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x44e540",
+      "manifest_name": "set_sprite_manager_paused",
+      "observed_address": "0x44e540",
+      "observed_name": "sub_44e540"
+    },
+    {
+      "reason": "name_mismatch",
+      "manifest_address": "0x44fd90",
+      "manifest_name": "initialize_translation_matrix",
+      "observed_address": "0x44fd90",
+      "observed_name": "sub_44fd90"
+    }
+  ],
   "removed_stale_artifacts": [],
   "exports": [
     {
@@ -3274,93 +3361,6 @@
       "address": "0x44fd90",
       "name": "initialize_translation_matrix",
       "artifact": "analysis/decompile/binja/functions/0044fd90-initialize_translation_matrix.c"
-    }
-  ],
-  "mismatch_count": 12,
-  "mismatches": [
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x402790",
-      "manifest_name": "set_frontend_widget_shortcut_key",
-      "observed_address": "0x402790",
-      "observed_name": "sub_402790"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x403f60",
-      "manifest_name": "queue_frontend_widget_flag_after_delay",
-      "observed_address": "0x403f60",
-      "observed_name": "sub_403f60"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x411d80",
-      "manifest_name": "uninitialize_input_devices",
-      "observed_address": "0x411d80",
-      "observed_name": "sub_411d80"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x4126c0",
-      "manifest_name": "submit_sprite_draw_batches",
-      "observed_address": "0x4126c0",
-      "observed_name": "sub_4126c0"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x413670",
-      "manifest_name": "configure_sprite_render_state",
-      "observed_address": "0x413670",
-      "observed_name": "sub_413670"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x4137f0",
-      "manifest_name": "draw_sprite_quad",
-      "observed_address": "0x4137f0",
-      "observed_name": "sub_4137f0"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x431540",
-      "manifest_name": "delete_file_path_with_directory_walk",
-      "observed_address": "0x431540",
-      "observed_name": "sub_431540"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44c880",
-      "manifest_name": "initialize_global_identity_matrix",
-      "observed_address": "0x44c880",
-      "observed_name": "sub_44c880"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44dbf0",
-      "manifest_name": "pack_color_rgba_u8",
-      "observed_address": "0x44dbf0",
-      "observed_name": "sub_44dbf0"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44e410",
-      "manifest_name": "update_sprite_facing_angle",
-      "observed_address": "0x44e410",
-      "observed_name": "sub_44e410"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44e540",
-      "manifest_name": "set_sprite_manager_paused",
-      "observed_address": "0x44e540",
-      "observed_name": "sub_44e540"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44fd90",
-      "manifest_name": "initialize_translation_matrix",
-      "observed_address": "0x44fd90",
-      "observed_name": "sub_44fd90"
     }
   ]
 }

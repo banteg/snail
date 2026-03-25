@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_wibble_path_template_pair @ 0x4289a0 */
 
-004289b4        self->kind = 0x28
+004289b4        self->kind = PATH_TEMPLATE_KIND_WIBBLE
 004289bb        self->is_mirrored_x = 0
 004289bf        self->side_exit_mode = 0
 004289c2        self->width_cells = texture_a

@@ -118,7 +118,7 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
   float v115; // [esp+90h] [ebp-4h]
 
   v3 = 0;
-  self->kind = 24;
+  self->kind = PATH_TEMPLATE_KIND_WORM;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = 16;
@@ -423,7 +423,7 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
               v50->vertex_index_c = LOWORD(self->width_cells) * (v3 + 1) + v69 % (signed int)self->width_cells;
               v50->vertex_index_d = v47 + LOWORD(self->width_cells) * (v3 + 1);
             }
-            v50->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_path, 0, 0);
+            v50->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
             v51 = v82;
             v84 = (float)(int)self->width_cells;
             v52 = v73 / v84;

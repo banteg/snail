@@ -13,7 +13,7 @@
 004217ea        x87_r6_1 - temp1
 004217ec        float* eax_3
 004217ec        eax_3.w = (x87_r6_1 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_1, temp1) ? 1 : 0) << 0xa | (x87_r6_1 == temp1 ? 1 : 0) << 0xe | 0x3800
-004217f1        float var_ec
+004217f1        float out_angle
 004217f1        if ((eax_3:1.b & 0x41) == 0)
 0042183d        int32_t eax_7
 004217f3        int32_t ecx_1 = *(arg1 + 0xc)
@@ -35,7 +35,7 @@
 004219dc        *(*(arg1 + 0x24) + 0x1fc) = fconvert.s(x87_r7_6)
 004219ed        return 3
 004218e0        arg4[1] = fconvert.s(fconvert.t(arg4[2]) * fconvert.t(0.699999988f))
-004218ec        var_ec = *arg3
+004218ec        out_angle = *arg3
 004218f0        void* edx_5 = *(arg1 + 4)
 004218f6        long double x87_r7_3 = x87_r7_1 + fconvert.t(*(edx_5 + 0x50))
 004218f9        int32_t edx_6 = *(edx_5 + 0x5c)
@@ -48,10 +48,10 @@
 0042195d        *arg3 = fconvert.s(fconvert.t(*edx_8) + fconvert.t(*(eax_22 - 0x78)) + fconvert.t(fconvert.s(x87_r7_3 * fconvert.t(*(edx_6 + (eax_21 << 3) - 0x88)))))
 0042196d        arg3[1] = fconvert.s(x87_r6_16)
 00421978        arg3[2] = fconvert.s(fconvert.t(var_c4) + x87_r7_4)
-0042197b        float eax_24 = var_ec
-0042197f        *arg3 = eax_24
+0042197b        float out_angle_1 = out_angle
+0042197f        *arg3 = out_angle_1
 00421984        float* edx_13 = *(arg1 + 0x24) + 0x1f4
-0042198d        *edx_13 = eax_24
+0042198d        *edx_13 = out_angle_1
 00421992        edx_13[1] = arg3[1]
 0042199d        edx_13[2] = arg3[2]
 004219a6        return 3
@@ -80,8 +80,8 @@
 00421a55        var_f4 = fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c)) * (fconvert.t(*(ecx_8 + 0x144)) - fconvert.t(*(ecx_8 + 0x9c))) + fconvert.t(*(ecx_8 + 0x9c)))
 00421a2d        var_f4 = *(ecx_8 + 0x9c)
 00421a5b        if (ebx != edi)
-00421a8b        var_ec = fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c)) * (fconvert.t(*(ecx_8 + 0x148)) - fconvert.t(*(ecx_8 + 0xa0))) + fconvert.t(*(ecx_8 + 0xa0)))
-00421a63        var_ec = *(ecx_8 + 0xa0)
+00421a8b        out_angle = fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c)) * (fconvert.t(*(ecx_8 + 0x148)) - fconvert.t(*(ecx_8 + 0xa0))) + fconvert.t(*(ecx_8 + 0xa0)))
+00421a63        out_angle = *(ecx_8 + 0xa0)
 00421a93        float transform
 00421a93        float var_bc_1
 00421a93        float var_b8_1
@@ -113,22 +113,23 @@
 00421c40        edx_18 = arg4
 00421c47        esi_11 = arg3
 00421c4e        ecx_21 = &arg1[0x18]
+00421c51        float* eax_37 = ecx_21
 00421c53        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_f4))
 00421c5f        var_bc_1 = fconvert.s(fconvert.t(var_bc) * fconvert.t(var_f4))
 00421c6b        var_b8_1 = fconvert.s(fconvert.t(var_b8) * fconvert.t(var_f4))
 00421c75        *(arg1 + 0x14) = fconvert.s(fconvert.t(edx_18[1]) + fconvert.t(*(arg1 + 0x14)))
 00421c7a        long double x87_r7_50 = fconvert.t(*esi_11) - fconvert.t(var_e8)
-00421cae        *ecx_21 = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(transform))) + fconvert.t(var_e4_2))
-00421cbc        ecx_21[1] = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_bc_1) * x87_r7_50)) + fconvert.t(var_e0_2))
-00421cc7        ecx_21[2] = fconvert.s(x87_r7_50 * fconvert.t(var_b8_1) + fconvert.t(var_dc_2))
+00421cae        *eax_37 = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(transform))) + fconvert.t(var_e4_2))
+00421cbc        eax_37[1] = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_bc_1) * x87_r7_50)) + fconvert.t(var_e0_2))
+00421cc7        eax_37[2] = fconvert.s(x87_r7_50 * fconvert.t(var_b8_1) + fconvert.t(var_dc_2))
 00421a99        esi_11 = arg3
-00421ab9        float* var_114_1 = &transform
-00421ac0        compute_kind42_attachment_transform(var_ec, fconvert.s(fconvert.t(*esi_11) - fconvert.t(var_e8)), 0.49000001f, &transform, &var_ec)
+00421ab9        int32_t* var_114_1 = &transform
+00421ac0        compute_kind42_attachment_transform(out_angle, fconvert.s(fconvert.t(*esi_11) - fconvert.t(var_e8)), 0.49000001f, &transform, &out_angle)
 00421ad4        int32_t ecx_19 = *(arg1 + 0xc) * 0x15
-00421ad7        int32_t eax_34 = *(*(arg1 + 4) + 0x5c)
+00421ad7        int32_t eax_33 = *(*(arg1 + 4) + 0x5c)
 00421ada        edx_18 = arg4
 00421af4        ecx_21 = &arg1[0x18]
-00421af7        long double x87_r7_24 = fconvert.t(*(eax_34 + (ecx_19 << 3) + 0x88)) * fconvert.t(*(arg1 + 0x10)) + fconvert.t(*(*(arg1 + 8) + 0x18)) + fconvert.t(*(eax_34 + (ecx_19 << 3) + 0x38))
+00421af7        long double x87_r7_24 = fconvert.t(*(eax_33 + (ecx_19 << 3) + 0x88)) * fconvert.t(*(arg1 + 0x10)) + fconvert.t(*(*(arg1 + 8) + 0x18)) + fconvert.t(*(eax_33 + (ecx_19 << 3) + 0x38))
 00421b06        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_f4))
 00421b12        var_bc_1 = fconvert.s(fconvert.t(var_bc) * fconvert.t(var_f4))
 00421b1e        var_b8_1 = fconvert.s(fconvert.t(var_b8) * fconvert.t(var_f4))
@@ -139,47 +140,47 @@
 00421b2e        *(arg1 + 0x1c) = var_8c
 00421b31        *(arg1 + 0x14) = fconvert.s(x87_r6_36)
 00421b34        *(arg1 + 0x20) = fconvert.s(x87_r7_24)
-00421cd1        float* eax_40 = *(arg1 + 0x24) + 0x1c4
-00421cd6        *eax_40 = transform
-00421cdc        eax_40[1] = var_bc_1
-00421ce3        eax_40[2] = var_b8_1
-00421ced        int32_t* eax_42 = *(arg1 + 0x24) + 0x1d4
+00421cd1        int32_t* eax_39 = *(arg1 + 0x24) + 0x1c4
+00421cd6        *eax_39 = transform
+00421cdc        eax_39[1] = var_bc_1
+00421ce3        eax_39[2] = var_b8_1
+00421ced        int32_t* eax_41 = *(arg1 + 0x24) + 0x1d4
 00421cf2        int32_t var_b0
-00421cf2        *eax_42 = var_b0
+00421cf2        *eax_41 = var_b0
 00421cf8        int32_t var_ac
-00421cf8        eax_42[1] = var_ac
+00421cf8        eax_41[1] = var_ac
 00421cff        int32_t var_a8
-00421cff        eax_42[2] = var_a8
-00421d09        int32_t* eax_44 = *(arg1 + 0x24) + 0x1e4
+00421cff        eax_41[2] = var_a8
+00421d09        int32_t* eax_43 = *(arg1 + 0x24) + 0x1e4
 00421d0e        int32_t var_a0
-00421d0e        *eax_44 = var_a0
+00421d0e        *eax_43 = var_a0
 00421d14        int32_t var_9c
-00421d14        eax_44[1] = var_9c
+00421d14        eax_43[1] = var_9c
 00421d1b        int32_t var_98
-00421d1b        eax_44[2] = var_98
-00421d1e        void* eax_45 = *(arg1 + 0x24)
-00421d2e        *(eax_45 + 0x24c) = *(eax_45 + 0x258)
-00421d33        *(eax_45 + 0x250) = *(eax_45 + 0x25c)
-00421d3a        *(eax_45 + 0x254) = *(eax_45 + 0x260)
+00421d1b        eax_43[2] = var_98
+00421d1e        void* eax_44 = *(arg1 + 0x24)
+00421d2e        *(eax_44 + 0x24c) = *(eax_44 + 0x258)
+00421d33        *(eax_44 + 0x250) = *(eax_44 + 0x25c)
+00421d3a        *(eax_44 + 0x254) = *(eax_44 + 0x260)
 00421d3f        long double x87_r7_54 = fconvert.t(*esi_11) - fconvert.t(var_e8)
 00421d43        long double temp3 = fconvert.t(0f)
 00421d43        x87_r7_54 - temp3
-00421d49        int32_t* eax_46
-00421d49        eax_46.w = (x87_r7_54 < temp3 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, temp3) ? 1 : 0) << 0xa | (x87_r7_54 == temp3 ? 1 : 0) << 0xe | 0x3800
-00421d4e        if ((eax_46:1.b & 1) != 0)
+00421d49        int32_t* eax_45
+00421d49        eax_45.w = (x87_r7_54 < temp3 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, temp3) ? 1 : 0) << 0xa | (x87_r7_54 == temp3 ? 1 : 0) << 0xe | 0x3800
+00421d4e        if ((eax_45:1.b & 1) != 0)
 00421d50        x87_r7_54 = fneg(x87_r7_54)
 00421d52        void* edi_15 = *(arg1 + 4)
 00421d64        long double x87_r7_55 = float.t(*(edi_15 + 0x54)) * fconvert.t(0.5f) + fconvert.t(0.300000012f)
 00421d66        x87_r7_54 - x87_r7_55
-00421d68        eax_46.w = (x87_r7_54 < x87_r7_55 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, x87_r7_55) ? 1 : 0) << 0xa | (x87_r7_54 == x87_r7_55 ? 1 : 0) << 0xe
-00421d6d        if ((eax_46:1.b & 0x41) != 0)
+00421d68        eax_45.w = (x87_r7_54 < x87_r7_55 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_54, x87_r7_55) ? 1 : 0) << 0xa | (x87_r7_54 == x87_r7_55 ? 1 : 0) << 0xe
+00421d6d        if ((eax_45:1.b & 0x41) != 0)
 00421da9        if (*(edi_15 + 0x38) != 0x2a)
 00421daf        *esi_11 = fconvert.s(fconvert.t(*esi_11) + fconvert.t(*edx_18))
 00421dbc        return 0
-00421d72        int32_t eax_47 = *ecx_21
+00421d72        int32_t eax_46 = *ecx_21
 00421d74        int32_t* edx_21 = *(arg1 + 0x24) + 0x1f4
 00421d7a        *arg1 = 0
-00421d80        *edx_21 = eax_47
+00421d80        *edx_21 = eax_46
 00421d85        edx_21[1] = ecx_21[1]
 00421d8d        edx_21[2] = ecx_21[2]
 00421d99        int32_t result

@@ -5,7 +5,7 @@
 /* function: initialize_turnover_path_template_pair @ 0x426cb0 */
 
 00426cc5        int32_t i_2 = 0
-00426cc9        self->kind = 0x25
+00426cc9        self->kind = PATH_TEMPLATE_KIND_TURNOVER
 00426cd0        self->is_mirrored_x = 0
 00426cd4        self->side_exit_mode = 0
 00426cd7        self->width_cells = arg3

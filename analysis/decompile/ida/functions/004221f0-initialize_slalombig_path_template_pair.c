@@ -99,7 +99,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
 
   v6 = 0;
   self->width_cells = arg3;
-  self->kind = 23;
+  self->kind = PATH_TEMPLATE_KIND_SLALOMBIG;
   v7 = arg2 + 4;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
@@ -207,7 +207,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
           (Vec3 *)&self->primary_samples[v11 - 1].transform.basis_forward);
         v18 = &self->primary_samples[v11];
         v47 = v18[-1].center_x * 0.2617994;
-        rotate_matrix_world_z(&v18[-1].transform.basis_right.x, v47);
+        rotate_matrix_world_z(&v18[-1].transform, v47);
         v19 = &self->secondary_samples[v11 - 1].transform.basis_up;
         v19->x = 0.0;
         v19->y = 1.0;
@@ -227,7 +227,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
           (Vec3 *)&self->secondary_samples[v11 - 1].transform.basis_up,
           (Vec3 *)&self->secondary_samples[v11 - 1].transform.basis_forward);
         v48 = self->primary_samples[v11 - 1].center_x * 0.2617994;
-        rotate_matrix_world_z(&self->secondary_samples[v11 - 1].transform.basis_right.x, v48);
+        rotate_matrix_world_z(&self->secondary_samples[v11 - 1].transform, v48);
       }
       ++v10;
       ++v11;
@@ -356,7 +356,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
               v45->vertex_index_b = v6 + v43 * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_c = v6 + (v43 + 1) * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_d = (v43 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v45->texture_ref = get_or_create_texture_ref(dword_4B7790, v93, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v93, 0, 0);
               v45->u0 = v49;
               v45->v0 = arg3e;
               v45->u1 = arg2c;
@@ -371,7 +371,7 @@ int32_t __thiscall initialize_slalombig_path_template_pair(
               v45->vertex_index_b = v43 * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v45->vertex_index_c = (v43 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v45->vertex_index_d = v6 + (v43 + 1) * (LOWORD(self->width_cells) + 1);
-              v45->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v45->u0 = arg2c;
               v45->v0 = arg3e;
               v45->u1 = v49;

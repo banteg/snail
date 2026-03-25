@@ -5,10 +5,10 @@
 /* function: initialize_loopbow_path_template_pair @ 0x42ba80 */
 
 0042ba92        int32_t i_4 = 0
-0042ba98        self->kind = 0
+0042ba98        self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY
 0042ba9b        float var_80 = 0f
 0042ba9f        if (arg3 == 4)
-0042baa1        self->kind = 0
+0042baa1        self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY
 0042baa4        var_80 = 0.5f
 0042bab9        self->is_mirrored_x = 0
 0042babd        self->side_exit_mode = 0

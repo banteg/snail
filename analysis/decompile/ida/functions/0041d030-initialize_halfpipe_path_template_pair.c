@@ -97,7 +97,7 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
   char *v92; // [esp+78h] [ebp+18h]
 
   v7 = 0;
-  self->kind = 16;
+  self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg4;
@@ -349,7 +349,7 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
               v45->vertex_index_b = v43 + v7 * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_c = v43 + (v7 + 1) * (LOWORD(self->width_cells) + 1);
               v45->vertex_index_d = (v7 + 1) * (LOWORD(self->width_cells) + 1) + v43 + 1;
-              v45->texture_ref = get_or_create_texture_ref(dword_4B7790, v92, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v92, 0, 0);
               v45->u0 = arg4e;
               v45->v0 = arg3b;
               v45->u1 = arg2d;
@@ -364,7 +364,7 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
               v45->vertex_index_b = v7 * (LOWORD(self->width_cells) + 1) + v43 + 1;
               v45->vertex_index_c = (v7 + 1) * (LOWORD(self->width_cells) + 1) + v43 + 1;
               v45->vertex_index_d = v43 + (v7 + 1) * (LOWORD(self->width_cells) + 1);
-              v45->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+              v45->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v45->u0 = arg2d;
               v45->v0 = arg3b;
               v45->u1 = arg4e;

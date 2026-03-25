@@ -100,11 +100,11 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   char *v95; // [esp+C4h] [ebp+14h]
 
   v6 = 0;
-  self->kind = 0;
+  self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
   v70 = 0.0;
   if ( arg3 == 4 )
   {
-    self->kind = 0;
+    self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
     v70 = 0.5;
   }
   self->is_mirrored_x = 0;
@@ -376,7 +376,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
               v44->vertex_index_b = v6 + v42 * (LOWORD(self->width_cells) + 1);
               v44->vertex_index_c = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
               v44->vertex_index_d = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->texture_ref = get_or_create_texture_ref(dword_4B7790, v95, 0, 0);
+              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
               v44->u0 = v53;
               v44->v0 = v73;
               v44->u1 = v71;
@@ -391,7 +391,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
               v44->vertex_index_b = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v44->vertex_index_c = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
               v44->vertex_index_d = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
-              v44->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v44->u0 = v71;
               v44->v0 = v73;
               v44->u1 = v53;

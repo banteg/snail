@@ -91,7 +91,7 @@ int32_t __thiscall initialize_snake_path_template_pair(
   char *v86; // [esp+7Ch] [ebp+14h]
 
   v5 = 0;
-  self->kind = 29;
+  self->kind = PATH_TEMPLATE_KIND_SNAKE;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = (uint32_t)texture_a;
@@ -334,7 +334,7 @@ int32_t __thiscall initialize_snake_path_template_pair(
               v41->vertex_index_b = v39 + v5 * (LOWORD(self->width_cells) + 1);
               v41->vertex_index_c = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
               v41->vertex_index_d = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->texture_ref = get_or_create_texture_ref(dword_4B7790, v86, 0, 0);
+              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v86, 0, 0);
               v41->u0 = v45;
               v41->v0 = v44;
               v41->u1 = texture_af;
@@ -349,7 +349,7 @@ int32_t __thiscall initialize_snake_path_template_pair(
               v41->vertex_index_b = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
               v41->vertex_index_c = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
               v41->vertex_index_d = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v41->texture_ref = get_or_create_texture_ref(dword_4B7790, v85, 0, 0);
+              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v85, 0, 0);
               v41->u0 = texture_af;
               v41->v0 = v44;
               v41->u1 = v45;

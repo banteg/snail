@@ -5,7 +5,7 @@
 /* function: initialize_turnunder_path_template_pair @ 0x427fe0 */
 
 00427ff5        int32_t i_2 = 0
-00427ff9        self->kind = 0x27
+00427ff9        self->kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY
 00428000        self->is_mirrored_x = 0
 00428004        self->side_exit_mode = 0
 00428007        self->width_cells = arg3

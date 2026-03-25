@@ -354,7 +354,7 @@ LABEL_16:
               v47->vertex_index_b = v45 + v9 * (LOWORD(self->width_cells) + 1);
               v47->vertex_index_c = v45 + (v9 + 1) * (LOWORD(self->width_cells) + 1);
               v47->vertex_index_d = (v9 + 1) * (LOWORD(self->width_cells) + 1) + v45 + 1;
-              v47->texture_ref = get_or_create_texture_ref(dword_4B7790, v91, 0, 0);
+              v47->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v91, 0, 0);
               v47->u0 = arg5d;
               v47->v0 = texture_ab;
               v47->u1 = arg3d;
@@ -369,7 +369,7 @@ LABEL_16:
               v47->vertex_index_b = v9 * (LOWORD(self->width_cells) + 1) + v45 + 1;
               v47->vertex_index_c = (v9 + 1) * (LOWORD(self->width_cells) + 1) + v45 + 1;
               v47->vertex_index_d = v45 + (v9 + 1) * (LOWORD(self->width_cells) + 1);
-              v47->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+              v47->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v47->u0 = arg3d;
               v47->v0 = texture_ab;
               v47->u1 = arg5d;

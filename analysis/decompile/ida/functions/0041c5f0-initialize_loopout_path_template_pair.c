@@ -6,8 +6,8 @@ int32_t __thiscall initialize_loopout_path_template_pair(
         PathTemplate *self,
         float arg2,
         int32_t arg3,
-        char *arg4,
-        char *arg5)
+        char *texture_a,
+        char *texture_b)
 {
   double v6; // st7
   int v7; // edi
@@ -86,7 +86,7 @@ int32_t __thiscall initialize_loopout_path_template_pair(
   float arg3e; // [esp+6Ch] [ebp+8h]
   char *v82; // [esp+78h] [ebp+14h]
 
-  self->kind = 25;
+  self->kind = PATH_TEMPLATE_KIND_LOOPOUT;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg3;
@@ -330,7 +330,7 @@ int32_t __thiscall initialize_loopout_path_template_pair(
             v39->vertex_index_b = v37 + i * (LOWORD(self->width_cells) + 1);
             v39->vertex_index_c = v37 + (i + 1) * (LOWORD(self->width_cells) + 1);
             v39->vertex_index_d = (i + 1) * (LOWORD(self->width_cells) + 1) + v37 + 1;
-            v39->texture_ref = get_or_create_texture_ref(dword_4B7790, v82, 0, 0);
+            v39->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v82, 0, 0);
             v39->u0 = v43;
             v39->v0 = arg3e;
             v39->u1 = arg2d;
@@ -345,7 +345,7 @@ int32_t __thiscall initialize_loopout_path_template_pair(
             v39->vertex_index_b = i * (LOWORD(self->width_cells) + 1) + v37 + 1;
             v39->vertex_index_c = (i + 1) * (LOWORD(self->width_cells) + 1) + v37 + 1;
             v39->vertex_index_d = v37 + (i + 1) * (LOWORD(self->width_cells) + 1);
-            v39->texture_ref = get_or_create_texture_ref(dword_4B7790, arg5, 0, 0);
+            v39->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
             v39->u0 = arg2d;
             v39->v0 = arg3e;
             v39->u1 = v43;

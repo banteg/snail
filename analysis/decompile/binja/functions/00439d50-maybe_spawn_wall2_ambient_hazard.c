@@ -70,7 +70,7 @@
 00439f13        if ((lane_bits:1.b & 1) != 0)
 00439f24        return destroy_wall2_ambient_hazard(arg1)
 00439f2b        if (lane_bits.b == 0x1d || lane_bits.b == 0x1e)
-00439f73        if (arg1->template_record->kind == 0x18)
+00439f73        if (arg1->template_record->kind == PATH_TEMPLATE_KIND_WORM)
 00439f8c        arg1->_pad_1c[4].d = fconvert.s(fconvert.t(arg1->_pad_1c[4].d) - fconvert.t(*(ecx + 0x74650)) * fconvert.t(0.0333333351f))
 00439f8f        set_color_alpha(&arg1->track_z_anchor, 0x3f4ccccd)
 00439f94        ecx = data_4df904

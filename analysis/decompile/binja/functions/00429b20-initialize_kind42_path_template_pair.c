@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_kind42_path_template_pair @ 0x429b20 */
 
-00429b3a        self->kind = 0x2a
+00429b3a        self->kind = PATH_TEMPLATE_KIND_NONLINEAR_42
 00429b41        self->is_mirrored_x = 0
 00429b45        self->side_exit_mode = 0
 00429b48        self->width_cells = texture_a
@@ -65,12 +65,12 @@
 00429db1        i_1 += 0xa8
 00429dbd        var_9c_1 += 1
 00429dc7        int32_t var_9c_2 = 0
-00429f6e        float var_5c
+00429f6e        float out_angle
 00429de3        void* i_2 = 0xa80
 00429f6e        while (i_2 s< 0x20d0)
 00429dec        long double x87_r7_30 = float.t(var_9c_2)
 00429df0        struct PathTemplateSample* primary_samples = self->primary_samples
-00429dfb        var_5c = fconvert.s(x87_r7_30 * fconvert.t(0.184799567f))
+00429dfb        out_angle = fconvert.s(x87_r7_30 * fconvert.t(0.184799567f))
 00429e19        *(&primary_samples->center_x + i_2) = fconvert.s((fconvert.t(primary_samples->__offset(0x2160).d) - fconvert.t(primary_samples->center_x)) * x87_r7_30 * fconvert.t(0.0294117648f) + fconvert.t(primary_samples->center_x))
 00429e25        *(&self->primary_samples->rotation_scalar_98 + i_2) = 0
 00429e2f        *(&self->primary_samples->rotation_scalar_94 + i_2) = 0
@@ -139,7 +139,7 @@
 0042a122        struct PathTemplateStripMesh* strip_mesh = self->strip_mesh
 0042a129        struct ObjectFaceQuad* facequads = strip_mesh->facequads
 0042a12c        struct Vec3* vertices = strip_mesh->vertices
-0042a133        void transform
+0042a133        struct PathTemplateTransform transform
 0042a133        set_matrix_identity(&transform)
 0042a13b        int32_t i_4 = 0
 0042a13f        if (self->segment_count s>= 0)
@@ -173,12 +173,10 @@
 0042a24c        int32_t i_6 = i_4 - 1
 0042a24f        if (i_4 != self->segment_count)
 0042a251        i_6 = i_4
-0042a288        compute_kind42_attachment_transform((&self->primary_samples->special_scalar)[i_6 * 0x2a], vertices[(self->width_cells + 1) * i_4 + ebx].x, 0f, &transform, &var_5c)
+0042a288        compute_kind42_attachment_transform((&self->primary_samples->special_scalar)[i_6 * 0x2a], vertices[(self->width_cells + 1) * i_4 + ebx].x, 0f, &transform, &out_angle)
 0042a29a        if (var_84_1 s> 0xa8 && i_4 != self->segment_count)
-0042a2af        float var_10
-0042a2af        vertices[(self->width_cells + 1) * i_4 + ebx].x = fconvert.s(fconvert.t(var_10))
-0042a2c5        float var_c
-0042a2c5        vertices[(self->width_cells + 1) * i_4 + ebx].y = fconvert.s(fconvert.t(var_c))
+0042a2af        vertices[(self->width_cells + 1) * i_4 + ebx].x = fconvert.s(fconvert.t(transform.position.x))
+0042a2c5        vertices[(self->width_cells + 1) * i_4 + ebx].y = fconvert.s(fconvert.t(transform.position.y))
 0042a2c9        width_cells = self->width_cells
 0042a2cc        eax_50 = var_84_1
 0042a2d0        ebx += 1

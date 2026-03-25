@@ -5,7 +5,7 @@
 /* function: initialize_sbend_path_template_pair @ 0x42df00 */
 
 0042df17        int32_t edi = 0
-0042df19        self->kind = 0x10
+0042df19        self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY
 0042df20        self->is_mirrored_x = 0
 0042df24        self->side_exit_mode = 0
 0042df27        self->width_cells = arg2

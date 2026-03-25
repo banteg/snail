@@ -88,7 +88,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
   int arg2e; // [esp+6Ch] [ebp+4h]
   float arg2f; // [esp+6Ch] [ebp+4h]
 
-  self->kind = 39;
+  self->kind = PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = 4;
@@ -195,7 +195,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
       (Vec3 *)&self->primary_samples[v8],
       (Vec3 *)&self->primary_samples[v8].transform.basis_up,
       (Vec3 *)&self->primary_samples[v8].transform.basis_forward);
-    rotate_matrix_world_z(&self->primary_samples[v8].transform.basis_right.x, v57);
+    rotate_matrix_world_z(&self->primary_samples[v8].transform, v57);
     qmemcpy(&self->secondary_samples[v8], &self->primary_samples[v8], 0x40u);
     primary_samples = self->primary_samples;
     v15 = primary_samples[v8].transform.basis_up.x * 0.49000001;
@@ -331,7 +331,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
             v42->vertex_index_b = v40 + j * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_c = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v42->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-            v42->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
             v42->u0 = v48;
             v42->v0 = v51;
             v42->u1 = arg2f;
@@ -346,7 +346,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
             v42->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
             v42->vertex_index_d = v40 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v42->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_a, 0, 0);
+            v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
             v42->u0 = arg2f;
             v42->v0 = v51;
             v42->u1 = v48;

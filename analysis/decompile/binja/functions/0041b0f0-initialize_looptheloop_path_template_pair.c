@@ -4,10 +4,10 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_looptheloop_path_template_pair @ 0x41b0f0 */
 
-0041b102        self->kind = 0
+0041b102        self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY
 0041b105        float var_54 = 0f
 0041b109        if (arg3 == 4)
-0041b10b        self->kind = 0
+0041b10b        self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY
 0041b10e        var_54 = 0.300000012f
 0041b120        self->is_mirrored_x = 0
 0041b124        self->side_exit_mode = 0

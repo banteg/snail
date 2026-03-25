@@ -5,7 +5,7 @@
 /* function: initialize_halfpipe_path_template_pair @ 0x41d030 */
 
 0041d046        int32_t i_3 = 0
-0041d049        self->kind = 0x10
+0041d049        self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY
 0041d050        self->is_mirrored_x = 0
 0041d054        self->side_exit_mode = 0
 0041d057        self->width_cells = arg4

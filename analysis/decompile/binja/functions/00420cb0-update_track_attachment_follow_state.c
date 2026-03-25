@@ -66,7 +66,7 @@
 00420f42        if ((eax_31:1.b & 0x41) == 0)
 00420f44        motion->z = 1f
 00420f4b        struct PathTemplate* template_record_4 = follow_state->template_record
-00420f52        if (template_record_4->kind != 0x1f)
+00420f52        if (template_record_4->kind != PATH_TEMPLATE_KIND_SUPERTRAMP)
 00421077        out_position->z = fconvert.s(fconvert.t(*(&template_record_4->secondary_samples[template_record_4->segment_count] - 0x70)) + fconvert.t(follow_state->source_cell->world_z) + fconvert.t(template_record_4->width_or_scale) + fconvert.t(var_180))
 00420f68        int32_t var_194_2 = 0xffffffff
 00420f6a        int32_t var_198_2 = 0
@@ -131,13 +131,13 @@
 00421147        struct Vec3* out_position_1
 00421147        struct Vec3* esi_9
 00421147        float* edi_1
-00421147        float transform
+00421147        float transform_1
 00421147        float var_160
 00421147        float var_15c
 00421147        int32_t var_144
 00421147        int32_t var_140
 00421147        int32_t var_13c
-00421147        if (template_record_3->kind != 0x2a)
+00421147        if (template_record_3->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
 004212dc        struct PathTemplateSample* secondary_samples_3 = template_record_3->secondary_samples
 004212ec        void* esi_10 = secondary_samples_3 + eax_28
 004212ef        struct TrackRowCell* source_cell = follow_state->source_cell
@@ -155,23 +155,23 @@
 0042139b        int32_t var_4c_1 = 0
 004213a6        int32_t var_50_1 = 0
 004213b4        float var_80[0xc]
-004213b4        int32_t var_194_5 = __builtin_memcpy(&var_80, &template_record_3->secondary_samples[sample_index_3 + 1], 0x40)
-004213d3        linear_interpolate_matrix(&transform, &var_c0, &var_80, fconvert.s(x87_r7_58 / fconvert.t(*(&template_record_3->secondary_samples->delta_length + eax_28))))
-00421332        set_matrix_identity(&transform)
+004213b4        int32_t var_194_4 = __builtin_memcpy(&var_80, &template_record_3->secondary_samples[sample_index_3 + 1], 0x40)
+004213d3        linear_interpolate_matrix(&transform_1, &var_c0, &var_80, fconvert.s(x87_r7_58 / fconvert.t(*(&template_record_3->secondary_samples->delta_length + eax_28))))
+00421332        set_matrix_identity(&transform_1)
 004213ee        esi_9 = &follow_state->output_position
 004213f1        out_position_1 = out_position
 004213f8        edi_1 = &motion->y
-004213fd        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_180_1))
+004213fd        transform_1 = fconvert.s(fconvert.t(transform_1) * fconvert.t(var_180_1))
 00421409        float var_160_2 = fconvert.s(fconvert.t(var_160) * fconvert.t(var_180_1))
 00421415        float var_15c_2 = fconvert.s(fconvert.t(var_15c) * fconvert.t(var_180_1))
 0042141b        long double x87_r7_67 = fconvert.t((edi_1 - 4)->y) + fconvert.t(follow_state->vertical_offset)
 0042141e        follow_state->vertical_offset = fconvert.s(x87_r7_67)
 00421441        long double x87_r6_24 = fconvert.t(out_position->x) - fconvert.t(var_168)
-00421497        esi_9->x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(x87_r6_24 * fconvert.t(transform))) + fconvert.t(var_174_2))) + fconvert.t(fconvert.s(fconvert.t(var_154) * x87_r7_67)))
+00421497        esi_9->x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(x87_r6_24 * fconvert.t(transform_1))) + fconvert.t(var_174_2))) + fconvert.t(fconvert.s(fconvert.t(var_154) * x87_r7_67)))
 004214a3        esi_9->y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_160_2) * x87_r6_24)) + fconvert.t(var_170_2))) + fconvert.t(fconvert.s(fconvert.t(var_150) * x87_r7_67)))
 004214ae        esi_9->z = fconvert.s(x87_r6_24 * fconvert.t(var_15c_2) + fconvert.t(var_16c_2) + x87_r7_67 * fconvert.t(var_14c))
 004214ba        int32_t* eax_59 = data_4df904 + 0x42fdb4
-004214c1        *eax_59 = transform
+004214c1        *eax_59 = transform_1
 004214c7        eax_59[1] = var_160_2
 004214ce        eax_59[2] = var_15c_2
 004214db        int32_t* edx_38 = data_4df904 + 0x42fdc4
@@ -183,47 +183,47 @@
 00421507        ecx_70[1] = var_140
 0042150e        ecx_70[2] = var_13c
 0042114d        out_position_1 = out_position
-0042115c        float* var_194_3 = &var_17c
-00421167        float* var_198_3 = &transform
+0042115c        float* out_angle = &var_17c
+00421167        struct PathTemplateTransform* transform = &transform_1
 00421168        float var_19c_3 = 0.49000001f
-0042116d        float* var_1a0_1 = &transform
+0042116d        float* var_1a0_1 = &transform_1
 0042116e        float var_1a0_2 = fconvert.s(fconvert.t(out_position_1->x) - fconvert.t(var_168))
 00421171        float var_1a4 = var_178
-00421174        compute_kind42_attachment_transform(var_1a4, var_1a0_2, var_19c_3, var_198_3, var_194_3)
+00421174        compute_kind42_attachment_transform(var_1a4, var_1a0_2, var_19c_3, transform, out_angle)
 00421179        uint32_t sample_index = follow_state->sample_index
 00421189        int32_t var_134
 00421189        float var_130
 00421189        if (sample_index == 0 || sample_index == follow_state->template_record->segment_count - 1)
-00421192        void transform_1
-00421192        set_matrix_identity(&transform_1)
+00421192        void transform_2
+00421192        set_matrix_identity(&transform_2)
 004211a3        int32_t var_d0_1 = var_134
 004211ad        float var_cc_1 = var_130
 004211c4        int32_t var_12c
 004211c4        int32_t var_c8_1 = var_12c
 004211cb        bool cond:2_1 = follow_state->sample_index != 0
 004211cd        float var_40[0x10]
-004211cd        __builtin_memcpy(&var_40, &transform, 0x40)
+004211cd        __builtin_memcpy(&var_40, &transform_1, 0x40)
 004211cf        float progress
 004211cf        if (cond:2_1)
 004211e3        progress = fconvert.s(fconvert.t(1f) - fconvert.t(follow_state->progress))
 004211d4        progress = follow_state->progress
-00421200        linear_interpolate_matrix(&transform, &transform_1, &var_40, progress)
+00421200        linear_interpolate_matrix(&transform_1, &transform_2, &var_40, progress)
 0042120b        esi_9 = &follow_state->output_position
 00421217        uint32_t ecx_51 = follow_state->sample_index * 0x15
 0042121a        struct PathTemplateSample* secondary_samples_1 = follow_state->template_record->secondary_samples
 00421234        edi_1 = &motion->y
 0042123e        long double x87_r7_43 = fconvert.t((&secondary_samples_1->delta_dir_to_next.z)[ecx_51 * 2]) * fconvert.t(follow_state->progress) + fconvert.t(follow_state->source_cell->world_z) + fconvert.t((&secondary_samples_1->transform.position.z)[ecx_51 * 2])
-0042124d        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_180_1))
+0042124d        transform_1 = fconvert.s(fconvert.t(transform_1) * fconvert.t(var_180_1))
 00421259        float var_160_1 = fconvert.s(fconvert.t(var_160) * fconvert.t(var_180_1))
 00421265        float var_15c_1 = fconvert.s(fconvert.t(var_15c) * fconvert.t(var_180_1))
 0042126b        long double x87_r6_18 = fconvert.t((edi_1 - 4)->y) + fconvert.t(follow_state->vertical_offset)
 0042126e        esi_9->x = var_134
-00421270        float transform_2 = transform
+00421270        float transform_3 = transform_1
 00421274        follow_state->output_position.y = var_130
 00421277        follow_state->vertical_offset = fconvert.s(x87_r6_18)
 0042127a        follow_state->output_position.z = fconvert.s(x87_r7_43)
 00421283        int32_t* edx_28 = data_4df904 + 0x42fdb4
-00421289        *edx_28 = transform_2
+00421289        *edx_28 = transform_3
 0042128f        edx_28[1] = var_160_1
 00421296        edx_28[2] = var_15c_1
 004212a3        int32_t* ecx_56 = data_4df904 + 0x42fdc4

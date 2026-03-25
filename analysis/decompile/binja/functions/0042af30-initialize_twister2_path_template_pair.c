@@ -5,7 +5,7 @@
 /* function: initialize_twister2_path_template_pair @ 0x42af30 */
 
 0042af3d        int32_t i_3 = 0
-0042af44        self->kind = 0x2d
+0042af44        self->kind = PATH_TEMPLATE_KIND_TWISTER2
 0042af4b        self->is_mirrored_x = 0
 0042af4f        self->side_exit_mode = 0
 0042af52        self->width_cells = arg3

@@ -86,7 +86,7 @@ int32_t __thiscall initialize_start_path_template_pair(
   float arg3e; // [esp+60h] [ebp+8h]
   char *v82; // [esp+68h] [ebp+10h]
 
-  self->kind = 36;
+  self->kind = PATH_TEMPLATE_KIND_START;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg3;
@@ -312,7 +312,7 @@ int32_t __thiscall initialize_start_path_template_pair(
             v40->vertex_index_b = v38 + j * (LOWORD(self->width_cells) + 1);
             v40->vertex_index_c = v38 + (j + 1) * (LOWORD(self->width_cells) + 1);
             v40->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v38 + 1;
-            v40->texture_ref = get_or_create_texture_ref(dword_4B7790, v82, 0, 0);
+            v40->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v82, 0, 0);
             v40->u0 = v44;
             v40->v0 = arg3e;
             v40->u1 = arg2d;
@@ -327,7 +327,7 @@ int32_t __thiscall initialize_start_path_template_pair(
             v40->vertex_index_b = j * (LOWORD(self->width_cells) + 1) + v38 + 1;
             v40->vertex_index_c = (j + 1) * (LOWORD(self->width_cells) + 1) + v38 + 1;
             v40->vertex_index_d = v38 + (j + 1) * (LOWORD(self->width_cells) + 1);
-            v40->texture_ref = get_or_create_texture_ref(dword_4B7790, v82, 0, 0);
+            v40->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v82, 0, 0);
             v40->u0 = arg2d;
             v40->v0 = arg3e;
             v40->u1 = v44;

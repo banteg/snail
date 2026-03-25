@@ -6,9 +6,9 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
         PathTemplate *self,
         float arg2,
         int32_t arg3,
-        char *arg4,
-        char *arg5,
-        char *arg6)
+        char *texture_a,
+        char *texture_b,
+        char *texture_c)
 {
   double v7; // st7
   uint32_t segment_count; // eax
@@ -75,7 +75,7 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
   float arg3d; // [esp+34h] [ebp+8h]
   int v71; // [esp+48h] [ebp+1Ch]
 
-  self->kind = 31;
+  self->kind = PATH_TEMPLATE_KIND_SUPERTRAMP;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg3;
@@ -266,13 +266,13 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
           }
           if ( (((unsigned __int8)j ^ (unsigned __int8)v31) & 1) != 0 )
           {
-            v35 = arg5;
+            v35 = texture_b;
 LABEL_22:
-            texture_ref = get_or_create_texture_ref(dword_4B7790, v35, 0, 0);
+            texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v35, 0, 0);
           }
           else
           {
-            texture_ref = get_or_create_texture_ref(dword_4B7790, arg5, 0, 0);
+            texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
           }
           v34->texture_ref = texture_ref;
           v34->u0 = arg2d;
@@ -291,7 +291,7 @@ LABEL_22:
         v37->vertex_index_b = v31 + j * (LOWORD(self->width_cells) + 1);
         v37->vertex_index_c = v31 + (j + 1) * (LOWORD(self->width_cells) + 1);
         v37->vertex_index_d = (j + 1) * (LOWORD(self->width_cells) + 1) + v31 + 1;
-        v37->texture_ref = get_or_create_texture_ref(dword_4B7790, arg6, 0, 0);
+        v37->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_c, 0, 0);
         v37->u0 = v39;
         v37->v0 = arg3d;
         v37->u1 = arg2d;

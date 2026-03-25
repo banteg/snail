@@ -16,13 +16,12 @@
 004444f6        int32_t eax_2 = get_track_cell_row_index(cell)
 0044450f        int32_t ecx_5 = (__ftol(x87control_1, fconvert.t(arg2[2])) - eax_2) * 7
 0044451d        float* eax_6 = template_record->primary_samples + ecx_5 * 0x18
-00444520        if (template_record->kind == 0x2a)
-0044453f        float var_40[0xc]
-0044453f        int32_t eax_8 = compute_kind42_attachment_transform(eax_6[0x28], *arg2, arg2[1], &var_40, arg3)
-0044454c        int32_t var_10
-0044454c        *arg2 = var_10
-0044454e        int32_t var_c
-0044454e        arg2[1] = var_c
+00444520        if (template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42)
+0044453f        struct PathTemplateTransform transform
+0044453f        int32_t eax_8 = compute_kind42_attachment_transform(eax_6[0x28], *arg2, arg2[1], &transform, arg3)
+00444548        float y = transform.position.y
+0044454c        *arg2 = transform.position.x
+0044454e        arg2[1] = y
 00444557        return eax_8
 0044455a        long double x87_r7_2 = fconvert.t(arg2[1])
 0044456f        long double x87_r7_3 = x87_r7_2 * fconvert.t(eax_6[6])

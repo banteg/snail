@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_invert_path_template_pair @ 0x429250 */
 
-00429264        self->kind = 0x29
+00429264        self->kind = PATH_TEMPLATE_KIND_INVERT
 0042926b        self->is_mirrored_x = 0
 0042926f        self->side_exit_mode = 0
 00429272        self->width_cells = texture_a

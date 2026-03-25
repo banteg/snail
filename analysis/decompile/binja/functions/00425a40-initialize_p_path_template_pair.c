@@ -58,7 +58,7 @@
 00425bde        (&self->secondary_samples->transform.position.z)[&texture_a[1] * 0x2a] = fconvert.s(fconvert.t(fconvert.s(x87_r7_5)))
 00425be2        if (texture_a s> 0)
 00425bec        void* edi_3 = 0xa8
-00425bf9        uint32_t kind = self->kind
+00425bf9        enum PathTemplateKind kind = self->kind
 00425c09        arg5 = fconvert.s(float.t(arg5) * fconvert.t(3.14159274f) / fconvert.t(fconvert.s(float.t(texture_a))))
 00425c0d        if (kind == 0x21)
 00425c6e        struct PathTemplateSample* secondary_samples_4 = secondary_samples

@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_loopout_path_template_pair @ 0x41c5f0 */
 
-0041c609        self->kind = 0x19
+0041c609        self->kind = PATH_TEMPLATE_KIND_LOOPOUT
 0041c610        self->is_mirrored_x = 0
 0041c614        self->side_exit_mode = 0
 0041c617        self->width_cells = arg3

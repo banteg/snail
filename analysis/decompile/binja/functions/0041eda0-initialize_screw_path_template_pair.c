@@ -6,7 +6,7 @@
 
 0041edac        int32_t i_3 = 0
 0041edb7        self->width_cells = arg3
-0041edc4        self->kind = 0x15
+0041edc4        self->kind = PATH_TEMPLATE_KIND_SCREW
 0041edcf        self->is_mirrored_x = 0
 0041edd3        self->side_exit_mode = 0
 0041edd6        self->width_or_scale = 1f

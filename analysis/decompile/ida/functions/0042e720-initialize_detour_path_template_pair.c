@@ -2,7 +2,11 @@
 /* function: initialize_detour_path_template_pair @ 0x42e720 */
 /* selector: initialize_detour_path_template_pair */
 
-int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int32_t arg2, char *arg3, char *arg4)
+int32_t __thiscall initialize_detour_path_template_pair(
+        PathTemplate *self,
+        int32_t arg2,
+        char *texture_a,
+        char *texture_b)
 {
   signed int v5; // ebx
   double width_cells; // st7
@@ -84,7 +88,7 @@ int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int3
   float arg2d; // [esp+6Ch] [ebp+4h]
 
   v5 = 0;
-  self->kind = 15;
+  self->kind = PATH_TEMPLATE_KIND_DETOUR;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg2;
@@ -170,7 +174,7 @@ int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int3
         (Vec3 *)&self->primary_samples[i - 1].transform.basis_forward);
       v15 = &self->primary_samples[i];
       v45 = (1.0 - cosine(v51)) * 0.5 * v15[-1].center_x * 0.39269909;
-      rotate_matrix_world_z(&v15[-1].transform.basis_right.x, v45);
+      rotate_matrix_world_z(&v15[-1].transform, v45);
       v16 = &self->secondary_samples[i - 1].transform.basis_up;
       v16->x = 0.0;
       v16->y = 1.0;
@@ -190,7 +194,7 @@ int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int3
         (Vec3 *)&self->secondary_samples[i - 1].transform.basis_up,
         (Vec3 *)&self->secondary_samples[i - 1].transform.basis_forward);
       v46 = (1.0 - cosine(v51)) * 0.5 * self->primary_samples[i - 1].center_x * 0.39269909;
-      rotate_matrix_world_z(&self->secondary_samples[i - 1].transform.basis_right.x, v46);
+      rotate_matrix_world_z(&self->secondary_samples[i - 1].transform, v46);
     }
   }
   v20 = 0;
@@ -317,7 +321,7 @@ int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int3
               v42->vertex_index_b = v40 + v5 * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_c = v40 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
               v42->vertex_index_d = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
-              v42->texture_ref = get_or_create_texture_ref(dword_4B7790, arg4, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v42->u0 = v48;
               v42->v0 = v47;
               v42->u1 = arg2d;
@@ -332,7 +336,7 @@ int32_t __thiscall initialize_detour_path_template_pair(PathTemplate *self, int3
               v42->vertex_index_b = v5 * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_c = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v40 + 1;
               v42->vertex_index_d = v40 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v42->texture_ref = get_or_create_texture_ref(dword_4B7790, arg3, 0, 0);
+              v42->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
               v42->u0 = arg2d;
               v42->v0 = v47;
               v42->u1 = v48;

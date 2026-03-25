@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_supertramp_path_template_pair @ 0x423f10 */
 
-00423f29        self->kind = 0x1f
+00423f29        self->kind = PATH_TEMPLATE_KIND_SUPERTRAMP
 00423f30        self->is_mirrored_x = 0
 00423f34        self->side_exit_mode = 0
 00423f37        self->width_cells = arg3

@@ -3,7 +3,11 @@
 /* selector: initialize_kind42_path_template_pair */
 
 // Builds one nonlinear kind-42 attachment template branch. The constructor seeds sample_count=66, writes the special per-sample scalar at +0xa0, and emits a generated strip mesh through the shared kind-42 transform helper. Android's cRPath::BuildHalfPipe is a strong structural match, but the exact Windows public-path mapping remains open.
-int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate *self, int32_t arg2, char *arg3, char *arg4)
+int32_t __thiscall initialize_kind42_path_template_pair(
+        PathTemplate *self,
+        int32_t arg2,
+        char *texture_a,
+        char *texture_b)
 {
   int v5; // esi
   double v6; // st7
@@ -96,10 +100,10 @@ int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate *self, int3
   char *v94; // [esp+C0h] [ebp+10h]
   char *v95; // [esp+C4h] [ebp+14h]
 
-  self->kind = 42;
+  self->kind = PATH_TEMPLATE_KIND_NONLINEAR_42;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
-  self->width_cells = (uint32_t)arg3;
+  self->width_cells = (uint32_t)texture_a;
   self->width_or_scale = 1.0;
   self->segment_count = 66;
   self->segment_count_f = 66.0;
@@ -302,7 +306,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate *self, int3
           self->primary_samples[v45].special_scalar,
           vertices[v36 + v33 * (self->width_cells + 1)].x,
           0.0,
-          (int)&v93,
+          &v93,
           v88);
         if ( v73 > 168 && v33 != self->segment_count )
         {
@@ -345,7 +349,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate *self, int3
             v49->vertex_index_b = v47 + k * (LOWORD(self->width_cells) + 1);
             v49->vertex_index_c = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
             v49->vertex_index_d = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
-            v49->texture_ref = get_or_create_texture_ref(dword_4B7790, v95, 0, 0);
+            v49->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
             v49->u0 = v81;
             v49->v0 = v74;
             v49->u1 = v58;
@@ -360,7 +364,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate *self, int3
             v49->vertex_index_b = k * (LOWORD(self->width_cells) + 1) + v47 + 1;
             v49->vertex_index_c = (k + 1) * (LOWORD(self->width_cells) + 1) + v47 + 1;
             v49->vertex_index_d = v47 + (k + 1) * (LOWORD(self->width_cells) + 1);
-            v49->texture_ref = get_or_create_texture_ref(dword_4B7790, v94, 0, 0);
+            v49->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v94, 0, 0);
             v49->u0 = v58;
             v49->v0 = v74;
             v49->u1 = v81;

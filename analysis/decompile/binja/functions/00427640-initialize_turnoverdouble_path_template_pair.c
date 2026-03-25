@@ -5,7 +5,7 @@
 /* function: initialize_turnoverdouble_path_template_pair @ 0x427640 */
 
 00427655        int32_t i_2 = 0
-00427659        self->kind = 0x26
+00427659        self->kind = PATH_TEMPLATE_KIND_TURNOVERDOUBLE
 00427660        self->is_mirrored_x = 0
 00427664        self->side_exit_mode = 0
 00427667        self->width_cells = arg3

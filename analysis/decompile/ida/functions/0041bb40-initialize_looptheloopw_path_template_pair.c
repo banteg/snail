@@ -95,11 +95,11 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
   float arg3e; // [esp+7Ch] [ebp+8h]
   char *v91; // [esp+88h] [ebp+14h]
 
-  self->kind = 0;
+  self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY;
   v47 = 0.0;
   if ( arg3 == 4 )
   {
-    self->kind = 6;
+    self->kind = PATH_TEMPLATE_KIND_LOOPTHELOOPW;
     v47 = 0.30000001;
   }
   self->is_mirrored_x = 0;
@@ -215,7 +215,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
         (Vec3 *)&self->primary_samples[v12].transform.basis_forward,
         (Vec3 *)&self->primary_samples[v12],
         (Vec3 *)&self->primary_samples[v12].transform.basis_up);
-      rotate_matrix_world_z(&self->primary_samples[v12].transform.basis_right.x, v63);
+      rotate_matrix_world_z(&self->primary_samples[v12].transform, v63);
       v17 = &self->secondary_samples[v12];
       v17->transform.basis_right.x = 1.0;
       v17->transform.basis_right.y = 0.0;
@@ -228,7 +228,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
         (Vec3 *)&self->secondary_samples[v12].transform.basis_forward,
         (Vec3 *)&self->secondary_samples[v12],
         (Vec3 *)&self->secondary_samples[v12].transform.basis_up);
-      rotate_matrix_world_z(&self->secondary_samples[v12++].transform.basis_right.x, v63);
+      rotate_matrix_world_z(&self->secondary_samples[v12++].transform, v63);
       if ( ++arg3c >= v49 )
         break;
       v11 = v61;
@@ -356,7 +356,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
             v41->vertex_index_b = v39 + i * (LOWORD(self->width_cells) + 1);
             v41->vertex_index_c = v39 + (i + 1) * (LOWORD(self->width_cells) + 1);
             v41->vertex_index_d = (i + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-            v41->texture_ref = get_or_create_texture_ref(dword_4B7790, v91, 0, 0);
+            v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v91, 0, 0);
             v41->u0 = v50;
             v41->v0 = arg3e;
             v41->u1 = arg2d;
@@ -371,7 +371,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
             v41->vertex_index_b = i * (LOWORD(self->width_cells) + 1) + v39 + 1;
             v41->vertex_index_c = (i + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
             v41->vertex_index_d = v39 + (i + 1) * (LOWORD(self->width_cells) + 1);
-            v41->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+            v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
             v41->u0 = arg2d;
             v41->v0 = arg3e;
             v41->u1 = v50;

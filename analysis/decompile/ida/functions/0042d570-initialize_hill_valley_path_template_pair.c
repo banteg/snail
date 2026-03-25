@@ -93,7 +93,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
   float arg5e; // [esp+5Ch] [ebp+10h]
 
   v8 = 0;
-  self->kind = 16;
+  self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg2;
@@ -341,7 +341,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
               v46->vertex_index_b = v44 + v8 * (LOWORD(self->width_cells) + 1);
               v46->vertex_index_c = v44 + (v8 + 1) * (LOWORD(self->width_cells) + 1);
               v46->vertex_index_d = (v8 + 1) * (LOWORD(self->width_cells) + 1) + v44 + 1;
-              v46->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_b, 0, 0);
+              v46->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
               v46->u0 = arg2c;
               v46->v0 = arg3b;
               v46->u1 = arg5e;
@@ -356,7 +356,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
               v46->vertex_index_b = v8 * (LOWORD(self->width_cells) + 1) + v44 + 1;
               v46->vertex_index_c = (v8 + 1) * (LOWORD(self->width_cells) + 1) + v44 + 1;
               v46->vertex_index_d = v44 + (v8 + 1) * (LOWORD(self->width_cells) + 1);
-              v46->texture_ref = get_or_create_texture_ref(dword_4B7790, texture_a, 0, 0);
+              v46->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_a, 0, 0);
               v46->u0 = arg5e;
               v46->v0 = arg3b;
               v46->u1 = arg2c;
