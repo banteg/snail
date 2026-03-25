@@ -2,7 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app_ui = @import("../app_ui.zig");
 const background = @import("../background.zig");
-const debug_levels = @import("../debug_levels.zig");
+const debug_levels = @import("levels.zig");
 const object = @import("../object.zig");
 const xanim = @import("../xanim.zig");
 

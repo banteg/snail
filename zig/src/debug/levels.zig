@@ -1,11 +1,11 @@
 const std = @import("std");
 const rl = @import("raylib");
-const attachment_builders = @import("attachment_builders.zig");
-const app_ui = @import("app_ui.zig");
-const gameplay = @import("gameplay.zig");
-const level = @import("level.zig");
-const segment = @import("segment.zig");
-const track = @import("track.zig");
+const attachment_builders = @import("../attachment_builders.zig");
+const app_ui = @import("../app_ui.zig");
+const gameplay = @import("../gameplay.zig");
+const level = @import("../level.zig");
+const segment = @import("../segment.zig");
+const track = @import("../track.zig");
 
 pub fn drawLevelPanel(state: anytype) !void {
     const level_entry = state.catalog.level_entries[state.level_index];
