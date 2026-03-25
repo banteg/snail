@@ -21,6 +21,7 @@ const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
+const gameplay_assets = @import("gameplay_assets.zig");
 const gameplay_runtime_entities = @import("gameplay_runtime_entities.zig");
 const gameplay_voice = @import("gameplay_voice.zig");
 const high_score = @import("high_score.zig");
@@ -71,307 +72,6 @@ const default_texture_path = app.default_texture_path;
 const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
-const gameplay_turbo_talk_model_path = "X/TURBO-TALK-000.X2";
-const gameplay_turbo_into_shell_model_path = "X/TURBO-INTOSHELL-000.X2";
-const gameplay_barrier_object_path = "OBJECTS/BARRIER/_OBJECT.TXT";
-const gameplay_lazer_object_path = "OBJECTS/LAZER/_OBJECT.TXT";
-const gameplay_vapour_lazer_object_path = "OBJECTS/VAPOURLAZER/_OBJECT.TXT";
-const gameplay_salt_model_path = "X/SALT.X2";
-const gameplay_turret_model_path = "X/BLASTERTOP-BASE-000.X2";
-const gameplay_blaster_top_model_path = "X/BLASTERTOP-BASE-000.X2";
-const gameplay_blaster_top_draw_model_paths = [_][]const u8{
-    "X/BLASTERTOP-DRAW-000.X2",
-    "X/BLASTERTOP-DRAW-001.X2",
-    "X/BLASTERTOP-DRAW-002.X2",
-    "X/BLASTERTOP-DRAW-003.X2",
-    "X/BLASTERTOP-DRAW-004.X2",
-    "X/BLASTERTOP-DRAW-005.X2",
-};
-const gameplay_blaster_top_fire_model_path = "X/BLASTERTOP-FIRE-000.X2";
-const gameplay_blaster_left_model_path = "X/BLASTERLEFT-BASE-000.X2";
-const gameplay_blaster_left_draw_model_paths = [_][]const u8{
-    "X/BLASTERLEFT-DRAW-000.X2",
-    "X/BLASTERLEFT-DRAW-001.X2",
-    "X/BLASTERLEFT-DRAW-002.X2",
-    "X/BLASTERLEFT-DRAW-003.X2",
-    "X/BLASTERLEFT-DRAW-004.X2",
-    "X/BLASTERLEFT-DRAW-005.X2",
-};
-const gameplay_blaster_right_model_path = "X/BLASTERRIGHT-BASE-000.X2";
-const gameplay_blaster_right_draw_model_paths = [_][]const u8{
-    "X/BLASTERRIGHT-DRAW-000.X2",
-    "X/BLASTERRIGHT-DRAW-001.X2",
-    "X/BLASTERRIGHT-DRAW-002.X2",
-    "X/BLASTERRIGHT-DRAW-003.X2",
-    "X/BLASTERRIGHT-DRAW-004.X2",
-    "X/BLASTERRIGHT-DRAW-005.X2",
-};
-const gameplay_laser_left_model_path = "X/LASERLEFT-BASE-000.X2";
-const gameplay_laser_left_draw_model_paths = [_][]const u8{
-    "X/LASERLEFT-DRAW-000.X2",
-    "X/LASERLEFT-DRAW-001.X2",
-    "X/LASERLEFT-DRAW-002.X2",
-    "X/LASERLEFT-DRAW-003.X2",
-};
-const gameplay_laser_right_model_path = "X/LASERRIGHT-BASE-000.X2";
-const gameplay_laser_right_draw_model_paths = [_][]const u8{
-    "X/LASERRIGHT-DRAW-000.X2",
-    "X/LASERRIGHT-DRAW-001.X2",
-    "X/LASERRIGHT-DRAW-002.X2",
-    "X/LASERRIGHT-DRAW-003.X2",
-};
-const gameplay_rocket_launcher_model_path = "X/ROCKETLAUNCHER-BASE-000.X2";
-const gameplay_rocket_launcher_draw_model_paths = [_][]const u8{
-    "X/ROCKETLAUNCHER-DRAW-000.X2",
-    "X/ROCKETLAUNCHER-DRAW-001.X2",
-    "X/ROCKETLAUNCHER-DRAW-002.X2",
-};
-const gameplay_rocket_model_path = "X/ROCKET-BASE-000.X2";
-const gameplay_jetpack_thrust_model_paths = [_][]const u8{
-    "X/JETPACKTHRUST-BASE-000.X2",
-    "X/JETPACKTHRUST-BASE-001.X2",
-    "X/JETPACKTHRUST-BASE-002.X2",
-};
-const gameplay_invincible_model_paths = [_][]const u8{
-    "X/INVINCIBLE-BASE-000.X2",
-    "X/INVINCIBLE-BASE-001.X2",
-    "X/INVINCIBLE-BASE-002.X2",
-    "X/INVINCIBLE-BASE-003.X2",
-};
-const gameplay_slug_sprite_paths = [_][]const u8{
-    "SPRITES/SLUG000.TGA",
-    "SPRITES/SLUG001.TGA",
-};
-const gameplay_garbage_sprite_paths = [_][]const u8{
-    "SPRITES/GARBAGEA.TGA",
-    "SPRITES/GARBAGEB.TGA",
-    "SPRITES/GARBAGEC.TGA",
-    "SPRITES/GARBAGED.TGA",
-};
-const gameplay_health_sprite_path = "SPRITES/HEALTH.TGA";
-const gameplay_jetpack_sprite_paths = [_][]const u8{
-    "SPRITES/JETPACK000.TGA",
-    "SPRITES/JETPACK001.TGA",
-};
-const gameplay_parcel_sprite_path = "SPRITES/PARCEL000.TGA";
-const gameplay_ring_sprite_path = "SPRITES/PARTICLERING-SMALL.TGA";
-const gameplay_ring_big_sprite_path = "SPRITES/PARTICLERING-BIG.TGA";
-const gameplay_slow_ring_sprite_path = "SPRITES/PARTICLESLOW-SMALL.TGA";
-const gameplay_powerup_sprite_path = "SPRITES/PARTICLEBLASTERS.TGA";
-const gameplay_life_sprite_path = "SPRITES/LIFE.TGA";
-const gameplay_progress_bar_sprite_path = "SPRITES/PROGRESS-BAR.TGA";
-const gameplay_progress_bar_lit_sprite_path = "SPRITES/PROGRESS-BAR-LIT.TGA";
-const gameplay_progress_cursor_sprite_path = "SPRITES/PROGRESS-CURSOR.TGA";
-const gameplay_damage_gauge_sprite_path = "SPRITES/DAMAGEGUAGE.TGA";
-const gameplay_damage_gauge_full_sprite_path = "SPRITES/DAMAGEGUAGEFULL.TGA";
-const gameplay_damage_gauge_bright_sprite_path = "SPRITES/DAMAGEGUAGEBRIGHT.TGA";
-const gameplay_warning_sprite_path = "SPRITES/WARNING.TGA";
-const gameplay_explode_big_sprite_path = "SPRITES/PARTICLEEXPLODE-BIG.TGA";
-const gameplay_explode_small_sprite_path = "SPRITES/PARTICLEEXPLODE-SMALL.TGA";
-const gameplay_slug_goo_sprite_path = "SPRITES/SLUGGOO.TGA";
-const gameplay_smoke_sprite_path = "SPRITES/SMOKE.TGA";
-const background_light_streak_sprite_path = background.light_streak_sprite_path;
-const gameplay_turbo_fire_sound_paths = [_][]const u8{
-    "SFX2/TURBOFIRE1.OGG",
-    "SFX2/TURBOFIRE2.OGG",
-};
-const gameplay_laser_sound_paths = [_][]const u8{
-    "SFX2/LASER1.OGG",
-    "SFX2/LASER2.OGG",
-    "SFX2/LASER3.OGG",
-};
-const gameplay_rocket_sound_paths = [_][]const u8{
-    "SFX2/ROCKET1.OGG",
-    "SFX2/ROCKET2.OGG",
-    "SFX2/ROCKET3.OGG",
-};
-const gameplay_heart_sound_path = "SFX2/HEART.OGG";
-const gameplay_jetpack_sound_path = "SFX2/JETPACK.OGG";
-const gameplay_jetpack_shutoff_sound_path = "SFX2/SERVO2.OGG";
-const gameplay_slow_ring_sound_path = "SFX2/SLOWRING.OGG";
-const gameplay_invincible_sound_path = "SFX2/INVINCIBLE.OGG";
-const gameplay_explode_ring_sound_path = "SFX2/EXPLODERING.OGG";
-const gameplay_enemy_fire_sound_path = "SFX2/ENEMYFIRE.OGG";
-const gameplay_boing_sound_path = "SFX2/BOING.OGG";
-const gameplay_completion_init_sound_path = "SFX2/SKIDSTOP.OGG";
-const gameplay_row_event_confirm_sound_path = "SFX2/SELECT.OGG";
-const gameplay_place_package_sound_path = "SFX2/PLACEPACKAGE.OGG";
-const gameplay_package_count_sound_path = "SFX2/PACKAGECOUNT.OGG";
-const gameplay_perfect_sound_path = "SFX2/PERFECT.OGG";
-const gameplay_powerup_pickup_sound_paths = [_][]const u8{
-    "SFX2/PW1.OGG",
-    "SFX2/PW2.OGG",
-    "SFX2/PW3.OGG",
-    "SFX2/PW4.OGG",
-    "SFX2/PW5.OGG",
-    "SFX2/PW6.OGG",
-    "SFX2/PW7.OGG",
-};
-const native_jetpack_visual_shutoff_threshold: f32 = 0.94;
-const gameplay_asteroid_impact_sound_paths = [_][]const u8{
-    "SFX2/ASTEROIDIMPACT1.OGG",
-    "SFX2/ASTEROIDIMPACT2.OGG",
-};
-const gameplay_wall_hit_sound_path = "SFX2/WALLHIT.OGG";
-const gameplay_slug_hit_voice_paths = [_][]const u8{
-    "VOICE/SLUG-HIT1.OGG",
-    "VOICE/SLUG-HIT2.OGG",
-    "VOICE/SLUG-HIT3.OGG",
-};
-const gameplay_slug_ambient_voice_paths = [_][]const u8{
-    "VOICE/BACKOFFSLUGS.OGG",
-    "VOICE/SLUG-SNAILALERT.OGG",
-    "VOICE/SLUG-HESTOOFAST.OGG",
-    "VOICE/SLUG-GOTHIM.OGG",
-};
-const gameplay_slug_death_voice_paths = [_][]const u8{
-    "VOICE/SLUG-DEATH1.OGG",
-    "VOICE/SLUG-DEATH2.OGG",
-};
-const gameplay_native_voice_damage_paths = [_][]const u8{
-    "VOICE/HEYIJUSTWAXED.OGG",
-    "VOICE/IMGONNANEEDANEWSHELL.OGG",
-    "VOICE/ITBURNS.OGG",
-    "VOICE/MYEYES.OGG",
-    "VOICE/THATSGONNALEAVEAMARK.OGG",
-    "VOICE/UHOH.OGG",
-};
-const gameplay_native_voice_dying_paths = [_][]const u8{
-    "VOICE/ABANDONSHELL.OGG",
-    "VOICE/IMFALLINGANDICANTGETUP.OGG",
-    "VOICE/INEEDANEWJOB.OGG",
-    "VOICE/NOTCOOL.OGG",
-    "VOICE/THISISNOTMYDAY.OGG",
-};
-const gameplay_native_voice_slugged_paths = [_][]const u8{
-    "VOICE/INEEDANEWJOB.OGG",
-    "VOICE/NOTCOOL.OGG",
-    "VOICE/THISISNOTMYDAY.OGG",
-};
-const gameplay_native_voice_enemies_paths = [_][]const u8{
-    "VOICE/ALWAYSTIPYOURMAILCARRIER.OGG",
-    "VOICE/ALWAYSTIPYOURPOSTALWORKER.OGG",
-    "VOICE/BACKOFF.OGG",
-    "VOICE/BACKOFFSLUGS.OGG",
-    "VOICE/COMINGTHROUGH.OGG",
-    "VOICE/MAKEWAY.OGG",
-};
-const gameplay_native_voice_fall_paths = [_][]const u8{
-    "VOICE/FALL1.OGG",
-    "VOICE/FALL2.OGG",
-    "VOICE/FALL3.OGG",
-};
-const gameplay_native_voice_misc_paths = [_][]const u8{
-    "VOICE/CHECKMEOUT.OGG",
-    "VOICE/DONTHATEME.OGG",
-    "VOICE/FOOTACHE.OGG",
-    "VOICE/GOTMAIL.OGG",
-    "VOICE/ISURECOULDUSE.OGG",
-    "VOICE/ITSNOTJUSTASHELL.OGG",
-    "VOICE/MYNAMEISTURBO.OGG",
-    "VOICE/PARTFOOTPARTTUMMY.OGG",
-    "VOICE/SNAILSINSPACE.OGG",
-    "VOICE/THATWASCOOL.OGG",
-    "VOICE/HELLINASHELL.OGG",
-    "VOICE/TRAILBLAZER.OGG",
-    "VOICE/ESCARGOT.OGG",
-};
-const gameplay_native_voice_victory_paths = [_][]const u8{
-    "VOICE/HOWSTHATFOREXPRESSSERVICE.OGG",
-    "VOICE/IDESERVEAPROMOTION.OGG",
-    "VOICE/IDESERVEARAISE.OGG",
-    "VOICE/IGOTAHOTFOOT.OGG",
-    "VOICE/IMTHESNAIL.OGG",
-    "VOICE/ONTIMEANDFEELINGFINE.OGG",
-    "VOICE/SOMEBODYPINCHME.OGG",
-};
-const gameplay_native_voice_ouch_paths = [_][]const u8{
-    "VOICE/OW1.OGG",
-    "VOICE/OW2.OGG",
-    "VOICE/OW3.OGG",
-    "VOICE/OW4.OGG",
-};
-const gameplay_native_voice_worm_tunnel_paths = [_][]const u8{
-    "VOICE/WHOAHDUDE.OGG",
-    "VOICE/ZIPPIDYDOODAH.OGG",
-    "VOICE/WHOHOHOHOAH.OGG",
-};
-const gameplay_native_voice_supertramp_paths = [_][]const u8{
-    "VOICE/WHOAHDUDE.OGG",
-    "VOICE/WOOHOO.OGG",
-    "VOICE/WHOHOHOHOAH.OGG",
-};
-const gameplay_native_voice_package_paths = [_][]const u8{
-    "VOICE/POSTAGEDUE.OGG",
-    "VOICE/SOMEBODYCALLFORADELIVERY.OGG",
-    "VOICE/SPECIALDELIVERY.OGG",
-    "VOICE/SPEEDYDELIVERY.OGG",
-};
-const gameplay_native_voice_powerup_paths = [_][]const u8{
-    "VOICE/FULLYLOADED.OGG",
-    "VOICE/HELLINASHELL.OGG",
-    "VOICE/IMONFIRE.OGG",
-    "VOICE/IMONFIREBABY.OGG",
-    "VOICE/IMPACKIN.OGG",
-    "VOICE/MYNEWMAILINGTECHNIQUE.OGG",
-    "VOICE/MYSHELLISTRICKEDOUT.OGG",
-    "VOICE/SMOKIN.OGG",
-    "VOICE/SOMEBODYSTOPME.OGG",
-    "VOICE/TRAILBLAZER.OGG",
-    "VOICE/THATWASAWESOME.OGG",
-};
-const gameplay_native_voice_slow_paths = [_][]const u8{
-    "VOICE/AMIEVENMOVING.OGG",
-    "VOICE/ANYSLOWER.OGG",
-    "VOICE/COMEON.OGG",
-    "VOICE/FASTERISBETTER.OGG",
-    "VOICE/ICANDOBETTER.OGG",
-    "VOICE/FASTERWOULDBEBETTER.OGG",
-    "VOICE/ISLEEPFASTERTHANTHIS.OGG",
-};
-const gameplay_native_voice_start_paths = [_][]const u8{
-    "VOICE/ALLOWSIXTOEIGHTMINUTES.OGG",
-    "VOICE/BRINGITON.OGG",
-    "VOICE/IFEELTHENEEDFORSPEED.OGG",
-    "VOICE/JUSTRYANDSTOPME.OGG",
-    "VOICE/THISISAJOB.OGG",
-    "VOICE/TURBOSTHENAME.OGG",
-    "VOICE/WATCHOUT.OGG",
-    "VOICE/ZOOMZOOM.OGG",
-    "VOICE/SNAILMAILALWAYSONTIME.OGG",
-    "VOICE/SNAILMAILINTHIRTYMINUTES.OGG",
-};
-const gameplay_native_voice_tutorial_paths = [_][]const u8{
-    "VOICE/TUT1.OGG",
-    "VOICE/TUT2.OGG",
-    "VOICE/TUT3.OGG",
-    "VOICE/TUT4.OGG",
-    "VOICE/TUT5.OGG",
-    "VOICE/TUT6.OGG",
-    "VOICE/TUT7.OGG",
-    "VOICE/TUT8.OGG",
-    "VOICE/TUT9.OGG",
-    "VOICE/TUT10.OGG",
-    "VOICE/TUT11.OGG",
-    "VOICE/TUT12.OGG",
-    "VOICE/TUT13.OGG",
-    "VOICE/TUT14.OGG",
-    "VOICE/TUT15.OGG",
-    "VOICE/TUT16.OGG",
-    "VOICE/TUT17.OGG",
-    "VOICE/TUT18.OGG",
-};
-const gameplay_native_voice_postal_paths = [_][]const u8{
-    "VOICE/IMGOINGPOSTAL.OGG",
-    "VOICE/IMGOINGPOSTAL2.OGG",
-    "VOICE/IMGOINGPOSTAL3.OGG",
-};
-const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
-const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
-const gameplay_weapon_change_sound_path = "SFX2/SERVO1.OGG";
-const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
-const native_gameplay_slow_voice_timer_step: f32 = 1.0 / 60.0;
-const native_gameplay_start_voice_tick: u64 = 18;
 const native_runtime_tile_wall: u8 = 0x0e;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
@@ -494,11 +194,11 @@ const FrontendSoundFx = struct {
 };
 
 const GameplaySpriteArt = struct {
-    slug_frames: [gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_slug_sprite_paths.len,
-    garbage_variants: [gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_garbage_sprite_paths.len,
+    slug_frames: [gameplay_assets.gameplay_slug_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_slug_sprite_paths.len,
+    garbage_variants: [gameplay_assets.gameplay_garbage_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_garbage_sprite_paths.len,
     health: ?assets.LoadedTexture = null,
     life: ?assets.LoadedTexture = null,
-    jetpack_frames: [gameplay_jetpack_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_jetpack_sprite_paths.len,
+    jetpack_frames: [gameplay_assets.gameplay_jetpack_sprite_paths.len]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** gameplay_assets.gameplay_jetpack_sprite_paths.len,
     parcel: ?assets.LoadedTexture = null,
     ring: ?assets.LoadedTexture = null,
     ring_big: ?assets.LoadedTexture = null,
@@ -611,9 +311,9 @@ const GameplaySpriteArt = struct {
 };
 
 const GameplaySoundFx = struct {
-    turbo_fire: [gameplay_turbo_fire_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_turbo_fire_sound_paths.len,
-    laser: [gameplay_laser_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_laser_sound_paths.len,
-    rocket: [gameplay_rocket_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_rocket_sound_paths.len,
+    turbo_fire: [gameplay_assets.gameplay_turbo_fire_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_assets.gameplay_turbo_fire_sound_paths.len,
+    laser: [gameplay_assets.gameplay_laser_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_assets.gameplay_laser_sound_paths.len,
+    rocket: [gameplay_assets.gameplay_rocket_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_assets.gameplay_rocket_sound_paths.len,
     cheers: ?assets.LoadedSound = null,
     extra_life: ?assets.LoadedSound = null,
     weapon_change: ?assets.LoadedSound = null,
@@ -630,8 +330,8 @@ const GameplaySoundFx = struct {
     place_package: ?assets.LoadedSound = null,
     package_count: ?assets.LoadedSound = null,
     perfect: ?assets.LoadedSound = null,
-    powerup_pickup: [gameplay_powerup_pickup_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_powerup_pickup_sound_paths.len,
-    asteroid_impact: [gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_asteroid_impact_sound_paths.len,
+    powerup_pickup: [gameplay_assets.gameplay_powerup_pickup_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_assets.gameplay_powerup_pickup_sound_paths.len,
+    asteroid_impact: [gameplay_assets.gameplay_asteroid_impact_sound_paths.len]?assets.LoadedSound = [_]?assets.LoadedSound{null} ** gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
     wall_hit: ?assets.LoadedSound = null,
     postal_warning: ?assets.LoadedSound = null,
 
@@ -705,7 +405,7 @@ const GameplayWeaponModelSet = struct {
 };
 
 const GameplayInvincibleModelSet = struct {
-    frames: [gameplay_invincible_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_invincible_model_paths.len,
+    frames: [gameplay_assets.gameplay_invincible_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_assets.gameplay_invincible_model_paths.len,
 
     fn unload(self: *GameplayInvincibleModelSet) void {
         for (&self.frames) |*model| {
@@ -717,7 +417,7 @@ const GameplayInvincibleModelSet = struct {
     }
 
     fn currentModel(self: *const GameplayInvincibleModelSet, render_time_seconds: f64) ?*const x2.Uploaded {
-        const frame_count = comptime gameplay_invincible_model_paths.len;
+        const frame_count = comptime gameplay_assets.gameplay_invincible_model_paths.len;
         const frame_index: usize = @intFromFloat(@mod(@floor(render_time_seconds * 10.0), @as(f64, @floatFromInt(frame_count))));
         if (self.frames[frame_index]) |*model| return model;
         if (self.frames[0]) |*model| return model;
@@ -726,7 +426,7 @@ const GameplayInvincibleModelSet = struct {
 };
 
 const GameplayJetpackModelSet = struct {
-    frames: [gameplay_jetpack_thrust_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_jetpack_thrust_model_paths.len,
+    frames: [gameplay_assets.gameplay_jetpack_thrust_model_paths.len]?x2.Uploaded = [_]?x2.Uploaded{null} ** gameplay_assets.gameplay_jetpack_thrust_model_paths.len,
 
     fn unload(self: *GameplayJetpackModelSet) void {
         for (&self.frames) |*model| {
@@ -744,7 +444,7 @@ const GameplayJetpackModelSet = struct {
         hide_ticks: u8,
         render_time_seconds: f64,
     ) ?*const x2.Uploaded {
-        const frame_count = comptime gameplay_jetpack_thrust_model_paths.len;
+        const frame_count = comptime gameplay_assets.gameplay_jetpack_thrust_model_paths.len;
         if (draw_ticks > 0) {
             const capped_ticks = @min(draw_ticks, frame_count);
             const frame_index = frame_count - capped_ticks;
@@ -774,8 +474,8 @@ const GameplayJetpackVisualState = struct {
 
     fn noteActiveChange(self: *GameplayJetpackVisualState, previous_active: bool, current_active: bool) void {
         if (previous_active == current_active) return;
-        if (previous_active) self.hide_ticks = gameplay_jetpack_thrust_model_paths.len;
-        if (current_active) self.draw_ticks = gameplay_jetpack_thrust_model_paths.len;
+        if (previous_active) self.hide_ticks = gameplay_assets.gameplay_jetpack_thrust_model_paths.len;
+        if (current_active) self.draw_ticks = gameplay_assets.gameplay_jetpack_thrust_model_paths.len;
     }
 };
 
@@ -833,13 +533,13 @@ const GameplayWeaponVisualState = struct {
     fn noteCenterChannelChange(self: *GameplayWeaponVisualState, previous: u8, current: u8) void {
         if (previous == current) return;
         switch (previous) {
-            1 => self.top_hide_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
-            3 => self.rocket_hide_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            1 => self.top_hide_ticks = @intCast(gameplay_assets.gameplay_blaster_top_draw_model_paths.len),
+            3 => self.rocket_hide_ticks = @intCast(gameplay_assets.gameplay_rocket_launcher_draw_model_paths.len),
             else => {},
         }
         switch (current) {
-            1 => self.top_draw_ticks = @intCast(gameplay_blaster_top_draw_model_paths.len),
-            3 => self.rocket_draw_ticks = @intCast(gameplay_rocket_launcher_draw_model_paths.len),
+            1 => self.top_draw_ticks = @intCast(gameplay_assets.gameplay_blaster_top_draw_model_paths.len),
+            3 => self.rocket_draw_ticks = @intCast(gameplay_assets.gameplay_rocket_launcher_draw_model_paths.len),
             else => {},
         }
     }
@@ -871,17 +571,17 @@ const GameplayWeaponVisualState = struct {
 
 fn sideWeaponDrawTickCount(state_value: u8) u8 {
     return switch (state_value) {
-        1 => @intCast(@max(gameplay_blaster_left_draw_model_paths.len, gameplay_blaster_right_draw_model_paths.len)),
-        2 => @intCast(@max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len)),
+        1 => @intCast(@max(gameplay_assets.gameplay_blaster_left_draw_model_paths.len, gameplay_assets.gameplay_blaster_right_draw_model_paths.len)),
+        2 => @intCast(@max(gameplay_assets.gameplay_laser_left_draw_model_paths.len, gameplay_assets.gameplay_laser_right_draw_model_paths.len)),
         else => @intCast(@max(
-            @max(gameplay_blaster_left_draw_model_paths.len, gameplay_blaster_right_draw_model_paths.len),
-            @max(gameplay_laser_left_draw_model_paths.len, gameplay_laser_right_draw_model_paths.len),
+            @max(gameplay_assets.gameplay_blaster_left_draw_model_paths.len, gameplay_assets.gameplay_blaster_right_draw_model_paths.len),
+            @max(gameplay_assets.gameplay_laser_left_draw_model_paths.len, gameplay_assets.gameplay_laser_right_draw_model_paths.len),
         )),
     };
 }
 
 fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
-    return runner.jetpack.active and runner.jetpack.progress <= native_jetpack_visual_shutoff_threshold;
+    return runner.jetpack.active and runner.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold;
 }
 
 const GameplayEffectKind = enum {
@@ -946,22 +646,22 @@ const native_global_audio_bank_paths = [_][]const u8{
 };
 
 const native_global_voice_set_paths = .{
-    gameplay_native_voice_damage_paths[0..],
-    gameplay_native_voice_dying_paths[0..],
-    gameplay_native_voice_enemies_paths[0..],
-    gameplay_native_voice_fall_paths[0..],
-    gameplay_native_voice_misc_paths[0..],
-    gameplay_native_voice_powerup_paths[0..],
-    gameplay_native_voice_slow_paths[0..],
-    gameplay_native_voice_start_paths[0..],
-    gameplay_native_voice_victory_paths[0..],
-    gameplay_native_voice_ouch_paths[0..],
-    gameplay_native_voice_package_paths[0..],
-    gameplay_native_voice_slugged_paths[0..],
-    gameplay_native_voice_worm_tunnel_paths[0..],
-    gameplay_native_voice_tutorial_paths[0..],
-    gameplay_native_voice_postal_paths[0..],
-    gameplay_native_voice_supertramp_paths[0..],
+    gameplay_assets.gameplay_native_voice_damage_paths[0..],
+    gameplay_assets.gameplay_native_voice_dying_paths[0..],
+    gameplay_assets.gameplay_native_voice_enemies_paths[0..],
+    gameplay_assets.gameplay_native_voice_fall_paths[0..],
+    gameplay_assets.gameplay_native_voice_misc_paths[0..],
+    gameplay_assets.gameplay_native_voice_powerup_paths[0..],
+    gameplay_assets.gameplay_native_voice_slow_paths[0..],
+    gameplay_assets.gameplay_native_voice_start_paths[0..],
+    gameplay_assets.gameplay_native_voice_victory_paths[0..],
+    gameplay_assets.gameplay_native_voice_ouch_paths[0..],
+    gameplay_assets.gameplay_native_voice_package_paths[0..],
+    gameplay_assets.gameplay_native_voice_slugged_paths[0..],
+    gameplay_assets.gameplay_native_voice_worm_tunnel_paths[0..],
+    gameplay_assets.gameplay_native_voice_tutorial_paths[0..],
+    gameplay_assets.gameplay_native_voice_postal_paths[0..],
+    gameplay_assets.gameplay_native_voice_supertramp_paths[0..],
 };
 
 fn nativeGlobalAudioSamplePath(sample_index: usize) ?[]const u8 {
@@ -994,22 +694,22 @@ fn nativeGlobalAudioSampleIndexForPath(sample_path: []const u8) ?usize {
 
 fn nativeGameplayVoicePaths(set_id: gameplay_voice.NativeSet) []const []const u8 {
     return switch (set_id) {
-        .damage => gameplay_native_voice_damage_paths[0..],
-        .dying => gameplay_native_voice_dying_paths[0..],
-        .enemies => gameplay_native_voice_enemies_paths[0..],
-        .fall => gameplay_native_voice_fall_paths[0..],
-        .misc => gameplay_native_voice_misc_paths[0..],
-        .package => gameplay_native_voice_package_paths[0..],
-        .postal => gameplay_native_voice_postal_paths[0..],
-        .powerup => gameplay_native_voice_powerup_paths[0..],
-        .slow => gameplay_native_voice_slow_paths[0..],
-        .slugged => gameplay_native_voice_slugged_paths[0..],
-        .start => gameplay_native_voice_start_paths[0..],
-        .supertramp => gameplay_native_voice_supertramp_paths[0..],
-        .tutorial => gameplay_native_voice_tutorial_paths[0..],
-        .ouch => gameplay_native_voice_ouch_paths[0..],
-        .victory => gameplay_native_voice_victory_paths[0..],
-        .worm_tunnel => gameplay_native_voice_worm_tunnel_paths[0..],
+        .damage => gameplay_assets.gameplay_native_voice_damage_paths[0..],
+        .dying => gameplay_assets.gameplay_native_voice_dying_paths[0..],
+        .enemies => gameplay_assets.gameplay_native_voice_enemies_paths[0..],
+        .fall => gameplay_assets.gameplay_native_voice_fall_paths[0..],
+        .misc => gameplay_assets.gameplay_native_voice_misc_paths[0..],
+        .package => gameplay_assets.gameplay_native_voice_package_paths[0..],
+        .postal => gameplay_assets.gameplay_native_voice_postal_paths[0..],
+        .powerup => gameplay_assets.gameplay_native_voice_powerup_paths[0..],
+        .slow => gameplay_assets.gameplay_native_voice_slow_paths[0..],
+        .slugged => gameplay_assets.gameplay_native_voice_slugged_paths[0..],
+        .start => gameplay_assets.gameplay_native_voice_start_paths[0..],
+        .supertramp => gameplay_assets.gameplay_native_voice_supertramp_paths[0..],
+        .tutorial => gameplay_assets.gameplay_native_voice_tutorial_paths[0..],
+        .ouch => gameplay_assets.gameplay_native_voice_ouch_paths[0..],
+        .victory => gameplay_assets.gameplay_native_voice_victory_paths[0..],
+        .worm_tunnel => gameplay_assets.gameplay_native_voice_worm_tunnel_paths[0..],
     };
 }
 
@@ -1182,33 +882,33 @@ fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Ca
     var art = GameplaySpriteArt{};
     errdefer art.unload();
 
-    for (gameplay_slug_sprite_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_slug_sprite_paths, 0..) |path, index| {
         art.slug_frames[index] = try catalog.loadTextureByPath(allocator, path);
     }
-    for (gameplay_garbage_sprite_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_garbage_sprite_paths, 0..) |path, index| {
         art.garbage_variants[index] = try catalog.loadTextureByPath(allocator, path);
     }
-    art.health = try catalog.loadTextureByPath(allocator, gameplay_health_sprite_path);
-    art.life = try catalog.loadTextureByPath(allocator, gameplay_life_sprite_path);
-    for (gameplay_jetpack_sprite_paths, 0..) |path, index| {
+    art.health = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_health_sprite_path);
+    art.life = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_life_sprite_path);
+    for (gameplay_assets.gameplay_jetpack_sprite_paths, 0..) |path, index| {
         art.jetpack_frames[index] = try catalog.loadTextureByPath(allocator, path);
     }
-    art.parcel = try catalog.loadTextureByPath(allocator, gameplay_parcel_sprite_path);
-    art.ring = try catalog.loadTextureByPath(allocator, gameplay_ring_sprite_path);
-    art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_ring_big_sprite_path);
-    art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_slow_ring_sprite_path);
-    art.powerup = try catalog.loadTextureByPath(allocator, gameplay_powerup_sprite_path);
-    art.progress_bar = try catalog.loadTextureByPath(allocator, gameplay_progress_bar_sprite_path);
-    art.progress_bar_lit = try catalog.loadTextureByPath(allocator, gameplay_progress_bar_lit_sprite_path);
-    art.progress_cursor = try catalog.loadTextureByPath(allocator, gameplay_progress_cursor_sprite_path);
-    art.damage_gauge = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_sprite_path);
-    art.damage_gauge_full = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_full_sprite_path);
-    art.damage_gauge_bright = try catalog.loadTextureByPath(allocator, gameplay_damage_gauge_bright_sprite_path);
-    art.warning = try catalog.loadTextureByPath(allocator, gameplay_warning_sprite_path);
-    art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_explode_big_sprite_path);
-    art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_explode_small_sprite_path);
-    art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_slug_goo_sprite_path);
-    art.smoke = try catalog.loadTextureByPath(allocator, gameplay_smoke_sprite_path);
+    art.parcel = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_parcel_sprite_path);
+    art.ring = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_ring_sprite_path);
+    art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_ring_big_sprite_path);
+    art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_slow_ring_sprite_path);
+    art.powerup = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_powerup_sprite_path);
+    art.progress_bar = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_bar_sprite_path);
+    art.progress_bar_lit = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_bar_lit_sprite_path);
+    art.progress_cursor = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_cursor_sprite_path);
+    art.damage_gauge = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_sprite_path);
+    art.damage_gauge_full = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_full_sprite_path);
+    art.damage_gauge_bright = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_bright_sprite_path);
+    art.warning = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_warning_sprite_path);
+    art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_explode_big_sprite_path);
+    art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_explode_small_sprite_path);
+    art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_slug_goo_sprite_path);
+    art.smoke = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_smoke_sprite_path);
 
     return art;
 }
@@ -1219,39 +919,39 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     var sound_fx = GameplaySoundFx{};
     errdefer sound_fx.unload();
 
-    for (gameplay_turbo_fire_sound_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_turbo_fire_sound_paths, 0..) |path, index| {
         sound_fx.turbo_fire[index] = try catalog.loadSoundByPath(allocator, path);
     }
-    for (gameplay_laser_sound_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_laser_sound_paths, 0..) |path, index| {
         sound_fx.laser[index] = try catalog.loadSoundByPath(allocator, path);
     }
-    for (gameplay_rocket_sound_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_rocket_sound_paths, 0..) |path, index| {
         sound_fx.rocket[index] = try catalog.loadSoundByPath(allocator, path);
     }
-    sound_fx.cheers = try catalog.loadSoundByPath(allocator, gameplay_cheers_sound_path);
-    sound_fx.extra_life = try catalog.loadSoundByPath(allocator, gameplay_extra_life_sound_path);
-    sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_weapon_change_sound_path);
-    sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_heart_sound_path);
-    sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_jetpack_sound_path);
-    sound_fx.jetpack_shutoff = try catalog.loadSoundByPath(allocator, gameplay_jetpack_shutoff_sound_path);
-    sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_slow_ring_sound_path);
-    sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_invincible_sound_path);
-    sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_explode_ring_sound_path);
-    sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_enemy_fire_sound_path);
-    sound_fx.boing = try catalog.loadSoundByPath(allocator, gameplay_boing_sound_path);
-    sound_fx.completion_init = try catalog.loadSoundByPath(allocator, gameplay_completion_init_sound_path);
-    sound_fx.row_event_confirm = try catalog.loadSoundByPath(allocator, gameplay_row_event_confirm_sound_path);
-    sound_fx.place_package = try catalog.loadSoundByPath(allocator, gameplay_place_package_sound_path);
-    sound_fx.package_count = try catalog.loadSoundByPath(allocator, gameplay_package_count_sound_path);
-    sound_fx.perfect = try catalog.loadSoundByPath(allocator, gameplay_perfect_sound_path);
-    for (gameplay_powerup_pickup_sound_paths, 0..) |path, index| {
+    sound_fx.cheers = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_cheers_sound_path);
+    sound_fx.extra_life = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_extra_life_sound_path);
+    sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_weapon_change_sound_path);
+    sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_heart_sound_path);
+    sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_jetpack_sound_path);
+    sound_fx.jetpack_shutoff = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_jetpack_shutoff_sound_path);
+    sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_slow_ring_sound_path);
+    sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_invincible_sound_path);
+    sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_explode_ring_sound_path);
+    sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_enemy_fire_sound_path);
+    sound_fx.boing = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_boing_sound_path);
+    sound_fx.completion_init = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_completion_init_sound_path);
+    sound_fx.row_event_confirm = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_row_event_confirm_sound_path);
+    sound_fx.place_package = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_place_package_sound_path);
+    sound_fx.package_count = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_package_count_sound_path);
+    sound_fx.perfect = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_perfect_sound_path);
+    for (gameplay_assets.gameplay_powerup_pickup_sound_paths, 0..) |path, index| {
         sound_fx.powerup_pickup[index] = try catalog.loadSoundByPath(allocator, path);
     }
-    for (gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
+    for (gameplay_assets.gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
         sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
     }
-    sound_fx.wall_hit = try catalog.loadSoundByPath(allocator, gameplay_wall_hit_sound_path);
-    sound_fx.postal_warning = try catalog.loadSoundByPath(allocator, gameplay_postal_warning_sound_path);
+    sound_fx.wall_hit = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_wall_hit_sound_path);
+    sound_fx.postal_warning = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_postal_warning_sound_path);
 
     return sound_fx;
 }
@@ -1367,7 +1067,7 @@ fn nativeRingPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runne
         return switch (effect_kind) {
             1 => 0,
             4, 5, 8 => @min(
-                gameplay_powerup_pickup_sound_paths.len - 1,
+                gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1,
                 @as(usize, @intCast(@max(current.movement_flag_selector, 1) - 1)),
             ),
             else => null,
@@ -1376,7 +1076,7 @@ fn nativeRingPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runne
 
     if (current.counters.ring_powerup <= previous.counters.ring_powerup) return null;
     return @min(
-        gameplay_powerup_pickup_sound_paths.len - 1,
+        gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1,
         @as(usize, current.counters.ring_powerup - 1),
     );
 }
@@ -1424,10 +1124,10 @@ fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) N
     return .{
         .activate = !previous.jetpack.active and current.jetpack.active,
         .deactivate = (previous.jetpack.active and current.jetpack.active and
-            previous.jetpack.progress <= native_jetpack_visual_shutoff_threshold and
-            current.jetpack.progress > native_jetpack_visual_shutoff_threshold) or
+            previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold and
+            current.jetpack.progress > gameplay_assets.native_jetpack_visual_shutoff_threshold) or
             (previous.jetpack.active and !current.jetpack.active and
-                previous.jetpack.progress <= native_jetpack_visual_shutoff_threshold),
+                previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold),
     };
 }
 
@@ -1516,7 +1216,7 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     current.native_ring_effect_token +%= 1;
     current.movement_flag_selector = 8;
     try std.testing.expectEqual(
-        @as(?usize, gameplay_powerup_pickup_sound_paths.len - 1),
+        @as(?usize, gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1),
         nativeRingPickupSoundIndex(previous, current),
     );
     try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
@@ -1607,10 +1307,10 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{ .jetpack = .{
         .active = true,
-        .progress = native_jetpack_visual_shutoff_threshold,
+        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold,
     } };
     current = previous;
-    current.jetpack.progress = native_jetpack_visual_shutoff_threshold + 0.01;
+    current.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01;
     try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
 
     previous = gameplay.Runner{ .jetpack = .{
@@ -1624,7 +1324,7 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
 
     previous = gameplay.Runner{ .jetpack = .{
         .active = true,
-        .progress = native_jetpack_visual_shutoff_threshold + 0.01,
+        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01,
     } };
     current = previous;
     current.jetpack.active = false;
@@ -1694,10 +1394,10 @@ test "native jetpack visual presentation follows the recovered 0.94 shutoff edge
     runner.jetpack.progress = 0.25;
     try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
 
-    runner.jetpack.progress = native_jetpack_visual_shutoff_threshold;
+    runner.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
     try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
 
-    runner.jetpack.progress = native_jetpack_visual_shutoff_threshold + 0.01;
+    runner.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01;
     try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
 
     runner.jetpack.active = false;
@@ -1709,15 +1409,15 @@ test "jetpack visual state keeps native draw and hide legs around the shutoff ed
     var visuals = GameplayJetpackVisualState{};
 
     visuals.noteActiveChange(false, true);
-    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len), visuals.draw_ticks);
+    try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len), visuals.draw_ticks);
     try std.testing.expectEqual(@as(u8, 0), visuals.hide_ticks);
     visuals.tick();
-    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len - 1), visuals.draw_ticks);
+    try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len - 1), visuals.draw_ticks);
 
     visuals.noteActiveChange(true, false);
-    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len), visuals.hide_ticks);
+    try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len), visuals.hide_ticks);
     visuals.tick();
-    try std.testing.expectEqual(@as(u8, gameplay_jetpack_thrust_model_paths.len - 1), visuals.hide_ticks);
+    try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len - 1), visuals.hide_ticks);
 }
 
 fn nativeGameplayWeaponUpgradeVoiceCue(
@@ -1739,8 +1439,8 @@ fn nativeGameplayVoiceCues(
     runtime_build_flags: u32,
 ) NativeGameplayVoiceCues {
     return .{
-        .start = previous.tick_count < native_gameplay_start_voice_tick and
-            current.tick_count >= native_gameplay_start_voice_tick,
+        .start = previous.tick_count < gameplay_assets.native_gameplay_start_voice_tick and
+            current.tick_count >= gameplay_assets.native_gameplay_start_voice_tick,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
         .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
         .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
@@ -1758,11 +1458,11 @@ test "native gameplay voice cues fire on the recovered startup timer" {
     var current = previous;
     const runtime_build_flags = track.postalChallengeRuntimeBuildFlags;
 
-    current.tick_count = native_gameplay_start_voice_tick - 1;
+    current.tick_count = gameplay_assets.native_gameplay_start_voice_tick - 1;
     try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
 
     previous = current;
-    current.tick_count = native_gameplay_start_voice_tick;
+    current.tick_count = gameplay_assets.native_gameplay_start_voice_tick;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).start);
 
     previous = gameplay.Runner{};
@@ -2605,7 +2305,7 @@ const AppState = struct {
         errdefer slider_art.unload();
         var route_map_art = try loadRouteMapArt(allocator, &catalog);
         errdefer route_map_art.unload();
-        var background_light_streak_texture = try catalog.loadTextureByPath(allocator, background_light_streak_sprite_path);
+        var background_light_streak_texture = try catalog.loadTextureByPath(allocator, gameplay_assets.background_light_streak_sprite_path);
         rl.setTextureFilter(background_light_streak_texture.texture, .point);
         errdefer background_light_streak_texture.unload();
         var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
@@ -2993,7 +2693,7 @@ const AppState = struct {
         if (self.game_phase != .level) return;
         if (!self.isTutorialGameplay()) return;
         const desired_model_path = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
-            gameplay_turbo_talk_model_path
+            gameplay_assets.gameplay_turbo_talk_model_path
         else
             default_model_path;
         if (self.current_gameplay_turbo_model_path) |current_path| {
@@ -3005,7 +2705,7 @@ const AppState = struct {
     fn reloadGameplayBarrier(self: *AppState) !void {
         self.unloadGameplayBarrier();
 
-        const entry_index = self.catalog.findObjectIndex(gameplay_barrier_object_path) orelse return;
+        const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
         self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
@@ -3018,7 +2718,7 @@ const AppState = struct {
     fn reloadGameplayLazer(self: *AppState) !void {
         self.unloadGameplayLazer();
 
-        const entry_index = self.catalog.findObjectIndex(gameplay_lazer_object_path) orelse return;
+        const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
         self.current_gameplay_lazer_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
@@ -3027,7 +2727,7 @@ const AppState = struct {
             true,
         );
 
-        if (self.catalog.findObjectIndex(gameplay_vapour_lazer_object_path)) |vapour_index| {
+        if (self.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path)) |vapour_index| {
             self.current_gameplay_vapour_lazer_object = try object.LoadedObject.loadFromArchive(
                 self.allocator,
                 &self.catalog,
@@ -3040,7 +2740,7 @@ const AppState = struct {
     fn reloadGameplaySalt(self: *AppState) !void {
         self.unloadGameplaySalt();
 
-        const entry_index = self.catalog.findModelIndex(gameplay_salt_model_path) orelse return;
+        const entry_index = self.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) orelse return;
         const entry = self.catalog.model_entries[entry_index];
         self.current_gameplay_salt_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
@@ -3091,7 +2791,7 @@ const AppState = struct {
     fn reloadGameplayActorModels(self: *AppState) !void {
         self.unloadGameplayActorModels();
 
-        const turret_index = self.catalog.findModelIndex(gameplay_turret_model_path) orelse return;
+        const turret_index = self.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) orelse return;
         self.current_gameplay_turret_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
             &self.catalog,
@@ -3101,41 +2801,41 @@ const AppState = struct {
 
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_blaster_top_models,
-            gameplay_blaster_top_model_path,
-            &gameplay_blaster_top_draw_model_paths,
-            gameplay_blaster_top_fire_model_path,
+            gameplay_assets.gameplay_blaster_top_model_path,
+            &gameplay_assets.gameplay_blaster_top_draw_model_paths,
+            gameplay_assets.gameplay_blaster_top_fire_model_path,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_blaster_left_models,
-            gameplay_blaster_left_model_path,
-            &gameplay_blaster_left_draw_model_paths,
+            gameplay_assets.gameplay_blaster_left_model_path,
+            &gameplay_assets.gameplay_blaster_left_draw_model_paths,
             null,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_blaster_right_models,
-            gameplay_blaster_right_model_path,
-            &gameplay_blaster_right_draw_model_paths,
+            gameplay_assets.gameplay_blaster_right_model_path,
+            &gameplay_assets.gameplay_blaster_right_draw_model_paths,
             null,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_laser_left_models,
-            gameplay_laser_left_model_path,
-            &gameplay_laser_left_draw_model_paths,
+            gameplay_assets.gameplay_laser_left_model_path,
+            &gameplay_assets.gameplay_laser_left_draw_model_paths,
             null,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_laser_right_models,
-            gameplay_laser_right_model_path,
-            &gameplay_laser_right_draw_model_paths,
+            gameplay_assets.gameplay_laser_right_model_path,
+            &gameplay_assets.gameplay_laser_right_draw_model_paths,
             null,
         );
         try self.loadGameplayWeaponModelSet(
             &self.current_gameplay_rocket_launcher_models,
-            gameplay_rocket_launcher_model_path,
-            &gameplay_rocket_launcher_draw_model_paths,
+            gameplay_assets.gameplay_rocket_launcher_model_path,
+            &gameplay_assets.gameplay_rocket_launcher_draw_model_paths,
             null,
         );
-        for (gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
+        for (gameplay_assets.gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
             if (self.catalog.findModelIndex(path)) |entry_index| {
                 self.current_gameplay_jetpack_thrust_models.frames[index] = try x2.Uploaded.loadFromArchive(
                     self.allocator,
@@ -3145,7 +2845,7 @@ const AppState = struct {
                 );
             }
         }
-        if (self.catalog.findModelIndex(gameplay_rocket_model_path)) |entry_index| {
+        if (self.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path)) |entry_index| {
             self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
                 &self.catalog,
@@ -3153,7 +2853,7 @@ const AppState = struct {
                 true,
             );
         }
-        for (gameplay_invincible_model_paths, 0..) |path, index| {
+        for (gameplay_assets.gameplay_invincible_model_paths, 0..) |path, index| {
             if (self.catalog.findModelIndex(path)) |entry_index| {
                 self.current_gameplay_invincible_models.frames[index] = try x2.Uploaded.loadFromArchive(
                     self.allocator,
@@ -4419,7 +4119,7 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
         }
         if (nativeGameplaySlowVoiceBandActive(previous, current)) {
-            self.native_gameplay_slow_voice_progress += native_gameplay_slow_voice_timer_step;
+            self.native_gameplay_slow_voice_progress += gameplay_assets.native_gameplay_slow_voice_timer_step;
             if (self.native_gameplay_slow_voice_progress > 1.0) {
                 self.native_gameplay_slow_voice_progress = 0.0;
                 self.tryPlayNativeGameplayVoiceSet(.slow, .wait_for_frequency) catch {};
@@ -4465,15 +4165,15 @@ const AppState = struct {
         if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             const fired_sound = switch (nativeMovementStateSoundFamily(current)) {
                 .turbo => self.pickNativeMovementStateSoundVariant(
-                    gameplay_turbo_fire_sound_paths.len,
+                    gameplay_assets.gameplay_turbo_fire_sound_paths.len,
                     self.current_gameplay_sound_fx.turbo_fire,
                 ),
                 .laser => self.pickNativeMovementStateSoundVariant(
-                    gameplay_laser_sound_paths.len,
+                    gameplay_assets.gameplay_laser_sound_paths.len,
                     self.current_gameplay_sound_fx.laser,
                 ),
                 .rocket => self.pickNativeMovementStateSoundVariant(
-                    gameplay_rocket_sound_paths.len,
+                    gameplay_assets.gameplay_rocket_sound_paths.len,
                     self.current_gameplay_sound_fx.rocket,
                 ),
             };
@@ -4507,13 +4207,13 @@ const AppState = struct {
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
             self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_asteroid_impact_sound_paths.len,
+                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
         }
         if (current.counters.salt_hits > previous.counters.salt_hits) {
             self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_asteroid_impact_sound_paths.len,
+                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
         }
@@ -4522,18 +4222,18 @@ const AppState = struct {
         }
         if (current.counters.slug_hits > previous.counters.slug_hits) {
             self.tryPlayGameplayVoiceVariant(
-                gameplay_slug_hit_voice_paths.len,
-                gameplay_slug_hit_voice_paths,
+                gameplay_assets.gameplay_slug_hit_voice_paths.len,
+                gameplay_assets.gameplay_slug_hit_voice_paths,
             ) catch {};
         }
         if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
             self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_asteroid_impact_sound_paths.len,
+                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
                 self.current_gameplay_sound_fx.asteroid_impact,
             ));
             self.tryPlayGameplayVoiceVariant(
-                gameplay_slug_death_voice_paths.len,
-                gameplay_slug_death_voice_paths,
+                gameplay_assets.gameplay_slug_death_voice_paths.len,
+                gameplay_assets.gameplay_slug_death_voice_paths,
             ) catch {};
         }
     }
@@ -7374,8 +7074,8 @@ const AppState = struct {
                 self.noteGameplaySlugVoiceCell(row, lane);
                 if (deterministicGameplayAmbientSlugRoll(row, lane) > 0.6) {
                     self.tryPlayGameplayVoiceVariant(
-                        gameplay_slug_ambient_voice_paths.len,
-                        gameplay_slug_ambient_voice_paths,
+                        gameplay_assets.gameplay_slug_ambient_voice_paths.len,
+                        gameplay_assets.gameplay_slug_ambient_voice_paths,
                     ) catch {};
                 }
                 return;
@@ -11316,7 +11016,7 @@ fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLev
     const base_phase = deterministicGameplayActorYaw(global_row, lane_index);
     const frame_index: usize = @intFromFloat(@mod(
         @floor((state.render_time_seconds * 8.0) + @as(f64, base_phase * 2.0)),
-        @as(f64, @floatFromInt(gameplay_slug_sprite_paths.len)),
+        @as(f64, @floatFromInt(gameplay_assets.gameplay_slug_sprite_paths.len)),
     ));
     const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
     const bob_phase = base_phase + @as(f32, @floatCast(state.render_time_seconds * 3.0));
@@ -11346,7 +11046,7 @@ fn drawGameplayGarbageActor(
 ) void {
     _ = preview;
     if (hazard.state == .inactive) return;
-    const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_garbage_sprite_paths.len));
+    const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
     const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
     drawGameplayBillboardTextureRectRolled(
         loaded_texture.texture,
@@ -11451,7 +11151,7 @@ fn drawGameplayJetpackPickupActor(
     camera: rl.Camera3D,
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
-    const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_jetpack_sprite_paths.len))));
+    const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_assets.gameplay_jetpack_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
     drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, .white);
 }
