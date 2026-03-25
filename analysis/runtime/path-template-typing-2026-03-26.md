@@ -47,6 +47,11 @@ Recovered Windows `PathTemplate` fields that matter for the constructor/follow p
 - `+0x98`: `installed_heading_delta`
 - `+0x9c`: unresolved special runtime flag
 
+Two byte-lane clarifications from the constructor-family audit:
+
+- `is_mirrored_x` is a byte flag, not a `uint32_t`
+- `special_runtime_flag_9c` is also a byte flag; keep the name conservative because its exact gameplay meaning is still open
+
 Recovered `PathTemplateSample` shape:
 
 - size: `0xa8`
@@ -76,6 +81,17 @@ Recovered `PathTemplateStripMesh` shape behind `PathTemplate + 0x24`:
 - `+0x54`: `facequad_count`
 - `+0x58`: `facequad_capacity`
 - `+0x5c`: `facequads`
+
+Recovered `TextureRef` prefix used by strip-mesh quads:
+
+- `+0x00`: `flags`
+- the rest of the record is still intentionally left opaque in the checked-in header
+
+One named mesh flag is now safe:
+
+- `0x10000`: `PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS`
+
+That name is justified by the mirror path and constructor-family readback. Other strip-mesh bits still stay numeric until they close cleanly.
 
 Recovered `ObjectFaceQuad` shape:
 
@@ -123,6 +139,7 @@ Applied in the live BN database:
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
+- `get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
 
 The same trusted slice now has a checked-in narrow IDA mirror as well:
 
@@ -141,24 +158,21 @@ That family-wide constructor pass materially improves the first screenful of dec
 - `initialize_supertramp_path_template_pair`
 - the other already-recovered path-template constructors that were still spelling the owner as `arg1`
 
+It also cleaned up the repeated texture-path slots across the constructor family:
+
+- paired constructors now consistently spell the trailing texture paths as `texture_a` / `texture_b`
+- single-texture constructors now use `texture_path`
+- the three-texture supertramp constructor now uses `texture_a` / `texture_b` / `texture_c`
+
 One caution remains:
 
 - the `thiscall` stack argument names on `initialize_kind42_path_template_pair` are still presentation-noisy in BN
 - keep the field model and array layout; do not over-trust the pretty parameter names there yet
 
-Two holdouts remain:
+Earlier notes that called out `initialize_sweep_path_template_pair` and `initialize_sbend_path_template_pair` as typing holdouts are now stale. Both functions now read back in BN with the expected `PathTemplate* self` constructor shape.
 
-- `initialize_sweep_path_template_pair` is still so weakly typed in BN that it currently decompiles as `int32_t()`
-- `initialize_sbend_path_template_pair` rejected the live `PathTemplate* self` rewrite during BN verification, so it should be revisited with a narrower type/prototype pass instead of brute forcing it
+The remaining rough edges in this family are presentation-level, not structural:
 
-More precise current read on those holdouts:
-
-- `initialize_sweep_path_template_pair` raw disassembly still clearly shows the normal constructor shape:
-  - `mov esi, ecx` for `self`
-  - writes to `self + 0x38/0x3c/0x40/0x44/0x54/0x58/0x5c`
-  - a first stack argument loaded before register saves and copied into `self->width_cells`
-  - later stack-slot reads consistent with texture or helper arguments
-- despite that, BN currently rolls back any live prototype rewrite for `sweep`
-- `initialize_sbend_path_template_pair` behaves similarly: the decompile shape is constructor-like, but BN verification still refuses the `PathTemplate* self` signature
-
-So the right next step for either one is not another broad prototype shove. It is a narrower investigation into why BN's verifier disagrees with the obvious constructor shape.
+- some quad-emission locals still display as `int16_t*` aliases instead of clean `ObjectFaceQuad*` locals
+- some sample-array writes still show `*(&self->primary_samples->field + i)` style indexing
+- `initialize_kind42_path_template_pair` still has noisier-than-average stack argument naming

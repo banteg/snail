@@ -566,6 +566,11 @@ High-confidence `PathTemplate` fields:
 - `+0x98`: `installed_heading_delta`
 - `+0x9c`: `special_runtime_flag_9c`
 
+Byte-lane clarifications:
+
+- `is_mirrored_x` is a byte flag, not a `uint32_t`
+- `special_runtime_flag_9c` is also a byte flag; its exact gameplay meaning is still unresolved, so keep the name conservative
+
 Still unresolved from the current Windows package:
 
 - whether `+0xa0/+0xa4` are template fields at all in the special live-update branch
@@ -595,12 +600,21 @@ High-confidence `PathTemplateStripMesh` fields:
 - `+0x58`: `facequad_capacity`
 - `+0x5c`: `facequads`
 
+One strip-mesh flag is now safely named from the constructor-family and mirror-helper readback:
+
+- `0x10000`: `PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS`
+
 High-confidence `ObjectFaceQuad` fields:
 
 - `+0x00`: `flags`
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs
+
+High-confidence `TextureRef` prefix used by facequads:
+
+- `+0x00`: `flags`
+- the rest of the record stays intentionally opaque in the checked-in type header for now
 
 Binary Ninja typing note:
 
