@@ -8,7 +8,9 @@ const config = @import("config.zig");
 const debug_levels = @import("debug_levels.zig");
 const frontend = @import("frontend.zig");
 const frontend_bridge = @import("frontend/bridge.zig");
+const frontend_challenge_setup_menu = @import("frontend/challenge_setup_menu.zig");
 const frontend_completion_screen = @import("frontend/completion_screen.zig");
+const frontend_exit_prompt = @import("frontend/exit_prompt.zig");
 const frontend_help = @import("frontend/help.zig");
 const frontend_high_score_screen = @import("frontend/high_score_screen.zig");
 const frontend_options_menu = @import("frontend/options_menu.zig");
@@ -1924,65 +1926,6 @@ const CompletionFlowOwner = enum {
     tutorial_failure,
 };
 
-const ExitPromptMode = enum {
-    quit_app,
-    abandon_run,
-    leave_route_map,
-};
-
-const ExitPromptChoice = enum {
-    no,
-    yes,
-
-    fn label(self: ExitPromptChoice) []const u8 {
-        return switch (self) {
-            .no => "No",
-            .yes => "Yes",
-        };
-    }
-};
-
-const exit_prompt_choices = [_]ExitPromptChoice{
-    .yes,
-    .no,
-};
-
-const challenge_setup_menu_items = [_]ChallengeSetupMenuItem{
-    .difficulty,
-    .speed,
-    .play,
-    .watch_replay,
-    .back,
-};
-
-const challenge_setup_menu_items_without_replay = [_]ChallengeSetupMenuItem{
-    .difficulty,
-    .speed,
-    .play,
-    .back,
-};
-
-const route_menu_actions_without_replay = [_]RouteMenuAction{
-    .play,
-    .back,
-};
-
-const route_menu_actions_with_replay = [_]RouteMenuAction{
-    .play,
-    .watch_best_trial,
-    .back,
-};
-
-const route_menu_actions_closed = [_]RouteMenuAction{
-    .back,
-};
-
-const RouteMapHoverState = enum(u8) {
-    none = 0,
-    card = 1,
-    route = 2,
-};
-
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
 // High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
 // `y = 390` first, but immediately overrides it by chaining from Credits.
@@ -1995,17 +1938,6 @@ const new_game_start_y: f32 = 80.0;
 const new_game_help_anchor_y: f32 = 350.0;
 const new_game_help_center_offset_x: f32 = -220.0;
 const new_game_back_center_offset_x: f32 = 0.0;
-const challenge_setup_button_count = challenge_setup_menu_items.len;
-const challenge_setup_difficulty_button_index: usize = 0;
-const challenge_setup_speed_button_index: usize = 1;
-const challenge_setup_play_button_index: usize = 2;
-const challenge_setup_watch_replay_button_index: usize = 3;
-const challenge_setup_back_button_index: usize = 4;
-const challenge_setup_difficulty_anchor_y: f32 = 80.0;
-const challenge_setup_center_offset_x: f32 = 0.0;
-const challenge_setup_play_offset_with_replay_x: f32 = 100.0;
-const challenge_setup_watch_replay_offset_x: f32 = -100.0;
-const challenge_setup_slider_adjust_step: i32 = 1;
 const options_button_count = 4;
 const options_fullscreen_button_index: usize = 0;
 const options_sound_button_index: usize = 1;
@@ -2022,12 +1954,6 @@ const route_map_replay_button_index: usize = 1;
 const route_map_back_button_index: usize = 2;
 const pause_menu_button_count = frontend_pause_menu.items.len;
 const exit_prompt_button_count = 2;
-// PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
-// seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
-// `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
-const exit_prompt_title_y: f32 = 200.0;
-const exit_prompt_yes_x: f32 = -80.0;
-const exit_prompt_no_x: f32 = 80.0;
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 const frontend_canvas_width: i32 = 640;
 const frontend_canvas_height: i32 = 480;
@@ -2087,18 +2013,10 @@ const FrontendHoverTarget = enum(u8) {
     exit_prompt_no,
 };
 
-const ChallengeSetupMenuItem = enum {
-    difficulty,
-    speed,
-    play,
-    watch_replay,
-    back,
-};
-
 const FrontendQueuedAction = union(enum) {
     main_menu: MainMenuItem,
     new_game_menu: NewGameMenuItem,
-    challenge_setup_menu: ChallengeSetupMenuItem,
+    challenge_setup_menu: frontend_challenge_setup_menu.Item,
     options_menu: OptionsMenuItem,
     pause_menu: PauseMenuItem,
     route_map_menu: RouteMenuAction,
@@ -2107,7 +2025,7 @@ const FrontendQueuedAction = union(enum) {
     high_score_replay: usize,
     post_level_high_scores: frontend_high_score_screen.PostLevelAction,
     completion_screen: frontend_completion_screen.Action,
-    exit_prompt: ExitPromptChoice,
+    exit_prompt: frontend_exit_prompt.Choice,
 };
 
 const HelpMenuAction = enum {
@@ -2144,7 +2062,7 @@ fn hoverTargetForNewGame(index: usize) FrontendHoverTarget {
     };
 }
 
-fn hoverTargetForChallengeSetupItem(item: ChallengeSetupMenuItem) FrontendHoverTarget {
+fn hoverTargetForChallengeSetupItem(item: frontend_challenge_setup_menu.Item) FrontendHoverTarget {
     return switch (item) {
         .difficulty => .challenge_setup_difficulty,
         .speed => .challenge_setup_speed,
@@ -2155,7 +2073,7 @@ fn hoverTargetForChallengeSetupItem(item: ChallengeSetupMenuItem) FrontendHoverT
 }
 
 fn hoverTargetForChallengeSetupSliderArrow(
-    item: ChallengeSetupMenuItem,
+    item: frontend_challenge_setup_menu.Item,
     direction: frontend_widget.SliderDirection,
 ) FrontendHoverTarget {
     return switch (item) {
@@ -2171,7 +2089,7 @@ fn hoverTargetForChallengeSetupSliderArrow(
     };
 }
 
-fn sliderHoverTargetBelongsToChallengeSetupRow(target: FrontendHoverTarget, item: ChallengeSetupMenuItem) bool {
+fn sliderHoverTargetBelongsToChallengeSetupRow(target: FrontendHoverTarget, item: frontend_challenge_setup_menu.Item) bool {
     return switch (item) {
         .difficulty => switch (target) {
             .challenge_setup_difficulty,
@@ -2506,7 +2424,7 @@ const AppState = struct {
     new_game_menu_index: usize = 0,
     new_game_button_states: [new_game_menu_items.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** new_game_menu_items.len,
     challenge_setup_index: usize = 0,
-    challenge_setup_button_states: [challenge_setup_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** challenge_setup_button_count,
+    challenge_setup_button_states: [frontend_challenge_setup_menu.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_challenge_setup_menu.button_count,
     options_menu_index: usize = 0,
     options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
     pause_menu_index: usize = 0,
@@ -2521,7 +2439,7 @@ const AppState = struct {
     exit_prompt_choice_index: usize = 0,
     exit_prompt_button_states: [exit_prompt_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** exit_prompt_button_count,
     exit_prompt_return_phase: GamePhase = .main_menu,
-    exit_prompt_mode: ExitPromptMode = .quit_app,
+    exit_prompt_mode: frontend_exit_prompt.Mode = .quit_app,
     post_level_high_score_action_index: usize = 1,
     post_level_high_score_button_states: [frontend_high_score_screen.post_level_actions.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_high_score_screen.post_level_actions.len,
     post_level_high_score_name_len: usize = 0,
@@ -2550,7 +2468,7 @@ const AppState = struct {
     start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
     route_map_open_index: ?usize = null,
-    route_map_hover_state: RouteMapHoverState = .none,
+    route_map_hover_state: frontend_route_map.HoverState = .none,
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
@@ -3628,7 +3546,7 @@ const AppState = struct {
         const challenge_setup_active = self.game_phase == .challenge_setup_menu and !self.frontend_transition.blocksInput();
         const selected_challenge_item = self.currentChallengeSetupSelectedItem();
         for (&self.challenge_setup_button_states, 0..) |*state, index| {
-            const item = challenge_setup_menu_items[index];
+            const item = frontend_challenge_setup_menu.items[index];
             const hot = switch (item) {
                 .difficulty, .speed => blk: {
                     const active_target = self.activeFrontendButtonTarget();
@@ -3730,7 +3648,7 @@ const AppState = struct {
         }
         const selected_challenge_item = self.currentChallengeSetupSelectedItem();
         for (&self.challenge_setup_button_states, 0..) |*state, index| {
-            const item = challenge_setup_menu_items[index];
+            const item = frontend_challenge_setup_menu.items[index];
             const hot = switch (item) {
                 .difficulty, .speed => blk: {
                     const active_target = self.activeFrontendButtonTarget();
@@ -3870,7 +3788,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.difficulty, -challenge_setup_slider_adjust_step);
+                self.stepChallengeSetupMenuValue(.difficulty, -frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -3878,7 +3796,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.difficulty, challenge_setup_slider_adjust_step);
+                self.stepChallengeSetupMenuValue(.difficulty, frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -3893,7 +3811,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.speed, .less));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.speed, -challenge_setup_slider_adjust_step);
+                self.stepChallengeSetupMenuValue(.speed, -frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -3901,7 +3819,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.speed, .more));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.speed, challenge_setup_slider_adjust_step);
+                self.stepChallengeSetupMenuValue(.speed, frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -3918,9 +3836,9 @@ const AppState = struct {
                 .play, .watch_replay, .back => {
                     const text_rect = challengeSetupTextRect(self, item);
                     const button_index = switch (item) {
-                        .play => challenge_setup_play_button_index,
-                        .watch_replay => challenge_setup_watch_replay_button_index,
-                        .back => challenge_setup_back_button_index,
+                        .play => frontend_challenge_setup_menu.play_button_index,
+                        .watch_replay => frontend_challenge_setup_menu.watch_replay_button_index,
+                        .back => frontend_challenge_setup_menu.back_button_index,
                         .difficulty, .speed => unreachable,
                     };
                     if (frontend_widget.hitRect(text_rect, self.challenge_setup_button_states[button_index]).contains(local_mouse)) {
@@ -4279,7 +4197,7 @@ const AppState = struct {
             return;
         };
 
-        const yes_rect = exitPromptTextRect(self, exit_prompt_choices[0].label(), exit_prompt_yes_x);
+        const yes_rect = exitPromptTextRect(self, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
         if (frontend_widget.hitRect(yes_rect, self.exit_prompt_button_states[0]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForExitPrompt(0));
             self.exit_prompt_choice_index = 0;
@@ -4289,7 +4207,7 @@ const AppState = struct {
             return;
         }
 
-        const no_rect = exitPromptTextRect(self, exit_prompt_choices[1].label(), exit_prompt_no_x);
+        const no_rect = exitPromptTextRect(self, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
         if (frontend_widget.hitRect(no_rect, self.exit_prompt_button_states[1]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForExitPrompt(1));
             self.exit_prompt_choice_index = 1;
@@ -4966,11 +4884,11 @@ const AppState = struct {
                 const selected = self.currentChallengeSetupSelectedItem();
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
                     self.noteFrontendKeyboardNavigation();
-                    self.stepChallengeSetupMenuValue(selected, -challenge_setup_slider_adjust_step);
+                    self.stepChallengeSetupMenuValue(selected, -frontend_challenge_setup_menu.slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
                     self.noteFrontendKeyboardNavigation();
-                    self.stepChallengeSetupMenuValue(selected, challenge_setup_slider_adjust_step);
+                    self.stepChallengeSetupMenuValue(selected, frontend_challenge_setup_menu.slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     switch (selected) {
@@ -5077,15 +4995,15 @@ const AppState = struct {
             .exit_prompt => {
                 try self.updateExitPromptMouseSelection();
                 if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                    self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, -1);
+                    self.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, self.exit_prompt_choice_index, -1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                    self.exit_prompt_choice_index = wrappedIndex(exit_prompt_choices.len, self.exit_prompt_choice_index, 1);
+                    self.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, self.exit_prompt_choice_index, 1);
                     self.noteFrontendKeyboardNavigation();
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .exit_prompt = exit_prompt_choices[self.exit_prompt_choice_index] });
+                    self.queueFrontendActivation(.{ .exit_prompt = frontend_exit_prompt.choices[self.exit_prompt_choice_index] });
                 }
             },
             .completion_screen => {
@@ -5374,14 +5292,14 @@ const AppState = struct {
         return self.high_score_tables.challenge[0].has_replay;
     }
 
-    fn challengeSetupVisibleItems(self: *const AppState) []const ChallengeSetupMenuItem {
+    fn challengeSetupVisibleItems(self: *const AppState) []const frontend_challenge_setup_menu.Item {
         return if (self.challengeSetupReplayAvailable())
-            challenge_setup_menu_items[0..]
+            frontend_challenge_setup_menu.items[0..]
         else
-            challenge_setup_menu_items_without_replay[0..];
+            frontend_challenge_setup_menu.items_without_replay[0..];
     }
 
-    fn currentChallengeSetupSelectedItem(self: *const AppState) ChallengeSetupMenuItem {
+    fn currentChallengeSetupSelectedItem(self: *const AppState) frontend_challenge_setup_menu.Item {
         const items = self.challengeSetupVisibleItems();
         return items[@min(self.challenge_setup_index, items.len - 1)];
     }
@@ -5399,7 +5317,7 @@ const AppState = struct {
         try self.enterGamePhase(.challenge_setup_menu);
     }
 
-    fn performChallengeSetupMenuItem(self: *AppState, item: ChallengeSetupMenuItem) !void {
+    fn performChallengeSetupMenuItem(self: *AppState, item: frontend_challenge_setup_menu.Item) !void {
         switch (item) {
             .difficulty, .speed => {},
             .play => try self.enterFrontendLevelPath(.challenge, 0),
@@ -5465,7 +5383,7 @@ const AppState = struct {
         try self.enterGamePhase(.exit_prompt);
     }
 
-    fn performExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
+    fn performExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
         switch (choice) {
             .no => try self.enterGamePhase(self.exit_prompt_return_phase),
             .yes => switch (self.exit_prompt_mode) {
@@ -5476,7 +5394,7 @@ const AppState = struct {
         }
     }
 
-    fn activateExitPromptChoice(self: *AppState, choice: ExitPromptChoice) !void {
+    fn activateExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
         self.playFrontendSelectSound();
         try self.performExitPromptChoice(choice);
     }
@@ -6117,11 +6035,11 @@ const AppState = struct {
     // on the route-open flag at `this + 8`. When the card is closed, only the absolute Back
     // control remains actionable; Play and Watch Best Trial are hidden until `open_galaxy_route`.
     fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
-        if (!self.routeMapCardIsOpen()) return &route_menu_actions_closed;
+        if (!self.routeMapCardIsOpen()) return &frontend_route_map.actions_closed;
         return if (self.routeMapShowsReplay())
-            &route_menu_actions_with_replay
+            &frontend_route_map.actions_with_replay
         else
-            &route_menu_actions_without_replay;
+            &frontend_route_map.actions_without_replay;
     }
 
     fn activeRouteMenuHotAction(self: *const AppState) RouteMenuAction {
@@ -7728,7 +7646,7 @@ const AppState = struct {
         }
     }
 
-    fn stepChallengeSetupMenuValue(self: *AppState, item: ChallengeSetupMenuItem, delta_raw: i32) void {
+    fn stepChallengeSetupMenuValue(self: *AppState, item: frontend_challenge_setup_menu.Item, delta_raw: i32) void {
         if (delta_raw == 0) return;
 
         switch (item) {
@@ -8535,27 +8453,7 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     );
 }
 
-fn challengeSetupMeasurementLabel(item: ChallengeSetupMenuItem) []const u8 {
-    return switch (item) {
-        .difficulty => "   Select Difficulty    >",
-        .speed => "      Select Speed      >",
-        .play => "Play",
-        .watch_replay => "Watch Replay",
-        .back => "Back",
-    };
-}
-
-fn challengeSetupVisibleLabel(item: ChallengeSetupMenuItem) []const u8 {
-    return switch (item) {
-        .difficulty => "Select Difficulty",
-        .speed => "Select Speed",
-        .play => "Play",
-        .watch_replay => "Watch Replay",
-        .back => "Back",
-    };
-}
-
-fn challengeSetupSliderLayout(state: *const AppState, item: ChallengeSetupMenuItem) frontend_widget.SliderLayout {
+fn challengeSetupSliderLayout(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.SliderLayout {
     var value_buffer: [16]u8 = undefined;
     const title_rect = switch (item) {
         .difficulty => challengeSetupTextRect(state, .difficulty),
@@ -8568,8 +8466,8 @@ fn challengeSetupSliderLayout(state: *const AppState, item: ChallengeSetupMenuIt
         .play, .watch_replay, .back => unreachable,
     };
     const button_index = switch (item) {
-        .difficulty => challenge_setup_difficulty_button_index,
-        .speed => challenge_setup_speed_button_index,
+        .difficulty => frontend_challenge_setup_menu.difficulty_button_index,
+        .speed => frontend_challenge_setup_menu.speed_button_index,
         .play, .watch_replay, .back => unreachable,
     };
     const value_text = frontend_options_menu.sliderValueText(value, &value_buffer);
@@ -8581,37 +8479,37 @@ fn challengeSetupSliderLayout(state: *const AppState, item: ChallengeSetupMenuIt
     );
 }
 
-fn challengeSetupTextRect(state: *const AppState, item: ChallengeSetupMenuItem) frontend_widget.Rect {
+fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.Rect {
     return switch (item) {
         .difficulty => frontend_widget.type20TextRect(
             &state.ui_font,
-            challengeSetupMeasurementLabel(.difficulty),
-            challenge_setup_difficulty_anchor_y,
-            challenge_setup_center_offset_x,
+            frontend_challenge_setup_menu.measurementLabel(.difficulty),
+            frontend_challenge_setup_menu.difficulty_anchor_y,
+            frontend_challenge_setup_menu.center_offset_x,
         ),
         .speed => frontend_widget.type20TextRect(
             &state.ui_font,
-            challengeSetupMeasurementLabel(.speed),
+            frontend_challenge_setup_menu.measurementLabel(.speed),
             // PORT(verified): `initialize_challenge_setup_screen` stacks Speed beneath the
             // fully laid-out Difficulty slider row, so the child spacing follows the computed
             // parent frame rather than a fixed title baseline.
             frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .difficulty)),
-            challenge_setup_center_offset_x,
+            frontend_challenge_setup_menu.center_offset_x,
         ),
         .play => frontend_widget.type20TextRect(
             &state.ui_font,
             "Play",
             frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .speed)),
             if (state.challengeSetupReplayAvailable())
-                challenge_setup_play_offset_with_replay_x
+                frontend_challenge_setup_menu.play_offset_with_replay_x
             else
-                challenge_setup_center_offset_x,
+                frontend_challenge_setup_menu.center_offset_x,
         ),
         .watch_replay => frontend_widget.type20TextRect(
             &state.ui_font,
             "Watch Replay",
             frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .speed)),
-            challenge_setup_watch_replay_offset_x,
+            frontend_challenge_setup_menu.watch_replay_offset_x,
         ),
         .back => frontend_widget.type20TextRect(
             &state.ui_font,
@@ -8620,7 +8518,7 @@ fn challengeSetupTextRect(state: *const AppState, item: ChallengeSetupMenuItem) 
                 challengeSetupTextRect(state, .watch_replay)
             else
                 challengeSetupTextRect(state, .play)),
-            challenge_setup_center_offset_x,
+            frontend_challenge_setup_menu.center_offset_x,
         ),
     };
 }
@@ -8668,7 +8566,7 @@ fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x:
         .menu_button,
         .center,
         "Do you really want to quit?",
-        exit_prompt_title_y,
+        frontend_exit_prompt.title_y,
         0.0,
     );
     return frontend_widget.widgetTextRect(
@@ -8749,7 +8647,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 fn drawChallengeSetupSliderRow(
     state: *const AppState,
     layout: VirtualLayout,
-    item: ChallengeSetupMenuItem,
+    item: frontend_challenge_setup_menu.Item,
     value: f32,
     displayed_value: f32,
     row_state: frontend_widget.TextButtonState,
@@ -8764,7 +8662,7 @@ fn drawChallengeSetupSliderRow(
         },
         state.slider_art.textures(),
         &state.ui_font,
-        challengeSetupVisibleLabel(item),
+        frontend_challenge_setup_menu.visibleLabel(item),
         challengeSetupTextRect(state, item),
         frontend_options_menu.sliderValueText(value, &value_buffer),
         value,
@@ -8785,7 +8683,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
         .difficulty,
         @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01,
         state.challenge_setup_difficulty_display_value,
-        state.challenge_setup_button_states[challenge_setup_difficulty_button_index],
+        state.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
         if (active_target) |target| target == .challenge_setup_difficulty_less else false,
         if (active_target) |target| target == .challenge_setup_difficulty_more else false,
     );
@@ -8795,7 +8693,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
         .speed,
         @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01,
         state.challenge_setup_speed_display_value,
-        state.challenge_setup_button_states[challenge_setup_speed_button_index],
+        state.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
         if (active_target) |target| target == .challenge_setup_speed_less else false,
         if (active_target) |target| target == .challenge_setup_speed_more else false,
     );
@@ -8808,7 +8706,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
         &state.ui_font,
         "Play",
         challengeSetupTextRect(state, .play),
-        state.challenge_setup_button_states[challenge_setup_play_button_index],
+        state.challenge_setup_button_states[frontend_challenge_setup_menu.play_button_index],
         false,
     );
     if (replay_available) {
@@ -8820,7 +8718,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
             &state.ui_font,
             "Watch Replay",
             challengeSetupTextRect(state, .watch_replay),
-            state.challenge_setup_button_states[challenge_setup_watch_replay_button_index],
+            state.challenge_setup_button_states[frontend_challenge_setup_menu.watch_replay_button_index],
             false,
         );
     }
@@ -8832,7 +8730,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
         &state.ui_font,
         "Back",
         challengeSetupTextRect(state, .back),
-        state.challenge_setup_button_states[challenge_setup_back_button_index],
+        state.challenge_setup_button_states[frontend_challenge_setup_menu.back_button_index],
         false,
     );
 
@@ -9035,13 +8933,13 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
     const art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    drawFrontendHeading(state, layout, 320.0, exit_prompt_title_y, "Do you really want to quit?", 26, .center, .ray_white);
+    drawFrontendHeading(state, layout, 320.0, frontend_exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
     frontend_widget.drawType20Button(
         layout,
         art,
         &state.ui_font,
-        exit_prompt_choices[0].label(),
-        exitPromptTextRect(state, exit_prompt_choices[0].label(), exit_prompt_yes_x),
+        frontend_exit_prompt.choices[0].label(),
+        exitPromptTextRect(state, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x),
         state.exit_prompt_button_states[0],
         false,
     );
@@ -9049,8 +8947,8 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         layout,
         art,
         &state.ui_font,
-        exit_prompt_choices[1].label(),
-        exitPromptTextRect(state, exit_prompt_choices[1].label(), exit_prompt_no_x),
+        frontend_exit_prompt.choices[1].label(),
+        exitPromptTextRect(state, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x),
         state.exit_prompt_button_states[1],
         false,
     );

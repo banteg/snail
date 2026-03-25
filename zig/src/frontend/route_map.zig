@@ -1,8 +1,30 @@
 const rl = @import("raylib");
+const frontend = @import("../frontend.zig");
 const frontend_bridge = @import("bridge.zig");
 const frontend_widget = @import("widget.zig");
 const galaxy = @import("../galaxy.zig");
 const game_font = @import("../game_font.zig");
+
+pub const actions_without_replay = [_]frontend.RouteMenuAction{
+    .play,
+    .back,
+};
+
+pub const actions_with_replay = [_]frontend.RouteMenuAction{
+    .play,
+    .watch_best_trial,
+    .back,
+};
+
+pub const actions_closed = [_]frontend.RouteMenuAction{
+    .back,
+};
+
+pub const HoverState = enum(u8) {
+    none = 0,
+    card = 1,
+    route = 2,
+};
 
 // PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
 // scale `0.83`, the bottom Back/Exit control at `(20,420)` with absolute alignment, and
