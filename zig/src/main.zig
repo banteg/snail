@@ -13,6 +13,8 @@ const frontend_completion_screen = @import("frontend/completion_screen.zig");
 const frontend_exit_prompt = @import("frontend/exit_prompt.zig");
 const frontend_help = @import("frontend/help.zig");
 const frontend_high_score_screen = @import("frontend/high_score_screen.zig");
+const frontend_main_menu = @import("frontend/main_menu.zig");
+const frontend_new_game_menu = @import("frontend/new_game_menu.zig");
 const frontend_options_menu = @import("frontend/options_menu.zig");
 const frontend_pause_menu = @import("frontend/pause_menu.zig");
 const frontend_route_map = @import("frontend/route_map.zig");
@@ -1505,18 +1507,6 @@ const CompletionFlowOwner = enum {
     tutorial_failure,
 };
 
-// PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
-// High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with
-// `y = 390` first, but immediately overrides it by chaining from Credits.
-const main_menu_start_y: f32 = 90.0;
-// PORT(verified): `initialize_new_game_menu` seeds Tutorial at `y = 80`, chains Postal,
-// Time Trial, and Challenge Mode with `stack_widget_below`, places Help explicitly at
-// `(center - 220, y = 350)`, then seeds Back at `y = 350` but immediately stacks it below
-// Challenge Mode. The explicit `350` for Back is only a constructor seed.
-const new_game_start_y: f32 = 80.0;
-const new_game_help_anchor_y: f32 = 350.0;
-const new_game_help_center_offset_x: f32 = -220.0;
-const new_game_back_center_offset_x: f32 = 0.0;
 const options_button_count = 4;
 const options_fullscreen_button_index: usize = 0;
 const options_sound_button_index: usize = 1;
@@ -3303,7 +3293,7 @@ const AppState = struct {
         var hovered_index: ?usize = null;
 
         for (main_menu_items, 0..) |item, index| {
-            const text_rect = mainMenuTextRect(&self.ui_font, item);
+            const text_rect = frontend_main_menu.textRect(&self.ui_font, item);
             if (frontend_widget.hitRect(text_rect, self.main_menu_button_states[index]).contains(local_mouse)) {
                 hovered_index = index;
             }
@@ -3329,18 +3319,18 @@ const AppState = struct {
 
         for (new_game_menu_items[0..4], 0..) |item, index| {
             if (!self.newGameMenuItemVisible(item)) continue;
-            const text_rect = newGameMenuTextRect(&self.ui_font, item);
+            const text_rect = frontend_new_game_menu.textRect(&self.ui_font, item);
             if (frontend_widget.hitRect(text_rect, self.new_game_button_states[index]).contains(local_mouse)) {
                 hovered_index = index;
             }
         }
 
-        const help_rect = newGameHelpTextRect(&self.ui_font);
+        const help_rect = frontend_new_game_menu.helpTextRect(&self.ui_font);
         if (frontend_widget.hitRect(help_rect, self.new_game_button_states[4]).contains(local_mouse)) {
             hovered_index = 4;
         }
 
-        const back_rect = newGameBackTextRect(&self.ui_font);
+        const back_rect = frontend_new_game_menu.backTextRect(&self.ui_font);
         if (frontend_widget.hitRect(back_rect, self.new_game_button_states[5]).contains(local_mouse)) {
             hovered_index = 5;
         }
@@ -8102,40 +8092,6 @@ fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup
     };
 }
 
-fn mainMenuTextRect(font: *const game_font.Loaded, item: MainMenuItem) frontend_widget.Rect {
-    return switch (item) {
-        .new_game => frontend_widget.type20TextRect(font, item.label(), main_menu_start_y, frontend_widget.type20_center_offset_x),
-        .high_scores => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .new_game)), frontend_widget.type20_center_offset_x),
-        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .high_scores)), frontend_widget.type20_center_offset_x),
-        .credits => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .options)), frontend_widget.type20_center_offset_x),
-        .exit => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(mainMenuTextRect(font, .credits)), frontend_widget.type20_center_offset_x),
-    };
-}
-
-fn newGameMenuTextRect(font: *const game_font.Loaded, item: NewGameMenuItem) frontend_widget.Rect {
-    return switch (item) {
-        .tutorial => frontend_widget.type20TextRect(font, item.label(), new_game_start_y, frontend_widget.type20_center_offset_x),
-        .postal_mode => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(newGameMenuTextRect(font, .tutorial)), frontend_widget.type20_center_offset_x),
-        .time_trial => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(newGameMenuTextRect(font, .postal_mode)), frontend_widget.type20_center_offset_x),
-        .challenge_mode => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(newGameMenuTextRect(font, .time_trial)), frontend_widget.type20_center_offset_x),
-        .help => newGameHelpTextRect(font),
-        .back => newGameBackTextRect(font),
-    };
-}
-
-fn newGameHelpTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Help", new_game_help_anchor_y, new_game_help_center_offset_x);
-}
-
-fn newGameBackTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(
-        font,
-        "Back",
-        frontend_widget.stackBelow(newGameMenuTextRect(font, .challenge_mode)),
-        new_game_back_center_offset_x,
-    );
-}
-
 fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x: f32) frontend_widget.Rect {
     // PORT(verified): `initialize_exit_prompt` seeds the Yes/No widgets at `330`, but then
     // immediately runs both through `stack_widget_below(title)`. The live authored Y comes
@@ -8160,7 +8116,7 @@ fn exitPromptTextRect(state: *const AppState, text: []const u8, center_offset_x:
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     for (main_menu_items, 0..) |item, index| {
-        const text_rect = mainMenuTextRect(&state.ui_font, item);
+        const text_rect = frontend_main_menu.textRect(&state.ui_font, item);
         frontend_widget.drawType20Button(
             layout,
             .{
@@ -8182,7 +8138,7 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     for (new_game_menu_items[0..4], 0..) |item, index| {
         if (!state.newGameMenuItemVisible(item)) continue;
-        const text_rect = newGameMenuTextRect(&state.ui_font, item);
+        const text_rect = frontend_new_game_menu.textRect(&state.ui_font, item);
         frontend_widget.drawType20Button(
             layout,
             .{
@@ -8202,7 +8158,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         },
         &state.ui_font,
         "Help",
-        newGameHelpTextRect(&state.ui_font),
+        frontend_new_game_menu.helpTextRect(&state.ui_font),
         state.new_game_button_states[4],
         false,
     );
@@ -8213,7 +8169,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         },
         &state.ui_font,
         "Back",
-        newGameBackTextRect(&state.ui_font),
+        frontend_new_game_menu.backTextRect(&state.ui_font),
         state.new_game_button_states[5],
         false,
     );
