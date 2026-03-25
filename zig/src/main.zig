@@ -27,6 +27,7 @@ const gameplay_audio_catalog = @import("gameplay/audio_catalog.zig");
 const gameplay_audio_cues = @import("gameplay/audio_cues.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
+const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const gameplay_voice = @import("gameplay/voice.zig");
 const high_score = @import("high_score.zig");
@@ -1886,7 +1887,7 @@ const AppState = struct {
         return self.currentUiMouseLocal();
     }
 
-    fn currentUiMouseLocal(self: *const AppState) ?rl.Vector2 {
+    pub fn currentUiMouseLocal(self: *const AppState) ?rl.Vector2 {
         if (self.mouse_local_override) |mouse| {
             return .{ .x = mouse.x, .y = mouse.y };
         }
@@ -3545,7 +3546,7 @@ const AppState = struct {
                         self.level_prompt_queue.dismissActive();
                     } else if (rl.isMouseButtonPressed(.left)) {
                         if (self.currentUiMouseLocal()) |mouse| {
-                            if (activeLevelPromptOkHitRect(self, &self.level_prompt_queue, true)) |ok_button| {
+                            if (gameplay_prompt_overlay.activeOkHitRect(self, &self.level_prompt_queue, true)) |ok_button| {
                                 if (ok_button.contains(mouse)) {
                                     self.level_prompt_queue.dismissActive();
                                 }
@@ -7859,7 +7860,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             drawGameplayProgressBar(state, layout, runner);
             drawGameplayStatusWidgets(state, layout, runner);
             try drawGameplayRowEventWidget(state, layout, runner);
-            try drawGameplayPromptStack(state, layout, &state.level_prompt_queue);
+            try gameplay_prompt_overlay.drawGameplayStack(state, layout, &state.level_prompt_queue);
         }
     }
 
@@ -7876,140 +7877,6 @@ fn gameplayHudTitle(loaded_level: level.Definition, runner: gameplay.Runner) [:0
     };
 }
 
-const gameplay_prompt_anchor_y: f32 = 330.0;
-const tutorial_prompt_anchor_y: f32 = 116.0;
-const tutorial_prompt_interactive_anchor_y: f32 = 176.0;
-
-const ActiveLevelPromptLayout = struct {
-    lines: [frontend_widget.multiline_prompt_max_lines][]const u8 = [_][]const u8{""} ** frontend_widget.multiline_prompt_max_lines,
-    line_count: usize = 0,
-    widget_layout: frontend_widget.MultilinePromptLayout = .{},
-};
-
-fn levelPromptLines(text: []const u8, lines: *[frontend_widget.multiline_prompt_max_lines][]const u8) []const []const u8 {
-    var count: usize = 0;
-    var start: usize = 0;
-    for (text, 0..) |char, index| {
-        if (char != '>') continue;
-        if (count < lines.len) {
-            lines[count] = text[start..index];
-            count += 1;
-        }
-        start = index + 1;
-    }
-    if (count < lines.len) {
-        lines[count] = text[start..];
-        count += 1;
-    }
-    return lines[0..count];
-}
-
-fn levelPromptAnchorY(tutorial: bool, interactive: bool) f32 {
-    if (!tutorial) return gameplay_prompt_anchor_y;
-    return if (interactive) tutorial_prompt_interactive_anchor_y else tutorial_prompt_anchor_y;
-}
-
-fn activeLevelPromptLayout(state: *const AppState, prompt: level_prompt.Entry, tutorial: bool) ActiveLevelPromptLayout {
-    return promptLayoutForText(state, prompt.message, tutorial, prompt.interactive);
-}
-
-fn promptLayoutForText(state: *const AppState, text: []const u8, tutorial: bool, interactive: bool) ActiveLevelPromptLayout {
-    var prompt_layout = ActiveLevelPromptLayout{};
-    const lines = levelPromptLines(text, &prompt_layout.lines);
-    prompt_layout.line_count = lines.len;
-    prompt_layout.widget_layout = frontend_widget.type20PromptLayout(
-        &state.ui_font,
-        lines,
-        levelPromptAnchorY(tutorial, interactive),
-        interactive,
-    );
-    return prompt_layout;
-}
-
-fn activeLevelPromptOkHitRect(state: *const AppState, queue: *const level_prompt.Queue, tutorial: bool) ?frontend_widget.Rect {
-    const prompt = queue.active() orelse return null;
-    if (!prompt.interactive) return null;
-    const prompt_layout = activeLevelPromptLayout(state, prompt, tutorial);
-    const ok_text_rect = prompt_layout.widget_layout.ok_text_rect orelse return null;
-    var idle_state = frontend_widget.TextButtonState{};
-    idle_state.snapFor(.menu_button, false);
-    return frontend_widget.hitRect(ok_text_rect, idle_state);
-}
-
-fn drawLevelPromptMessageLines(state: *const AppState, layout: VirtualLayout, prompt_layout: ActiveLevelPromptLayout) void {
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    for (0..prompt_layout.line_count) |index| {
-        const line = prompt_layout.lines[index];
-        var text_state = frontend_widget.TextButtonState{};
-        text_state.snapFor(.menu_button, true);
-        frontend_widget.drawTextButtonWithOptions(
-            layout,
-            widget_art,
-            &state.ui_font,
-            .menu_button,
-            line,
-            prompt_layout.widget_layout.line_rects[index],
-            text_state,
-            false,
-            .{ .flags = @intFromEnum(frontend_widget.WidgetFlags.invisible_background) },
-        );
-    }
-}
-
-fn drawLevelPromptWidget(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue, tutorial: bool) !void {
-    const prompt = queue.active() orelse return;
-    const prompt_layout = activeLevelPromptLayout(state, prompt, tutorial);
-    var frame_state = frontend_widget.TextButtonState{};
-    frame_state.snapFor(.menu_button, false);
-    const colors = frontend_widget.colorsForState(frame_state, false);
-    frontend_widget.drawNineSliceFrame(
-        layout,
-        state.frontend_widget_art.border.?.texture,
-        prompt_layout.widget_layout.frame_rect,
-        frontend_widget.type20_border_edge,
-        frontend_widget.type20_border_edge / 128.0,
-        colors.fill,
-    );
-    drawLevelPromptMessageLines(state, layout, prompt_layout);
-
-    if (prompt_layout.widget_layout.ok_text_rect) |ok_text_rect| {
-        var idle_state = frontend_widget.TextButtonState{};
-        idle_state.snapFor(.menu_button, false);
-        const hit_rect = frontend_widget.hitRect(ok_text_rect, idle_state);
-        const hovered = if (state.currentUiMouseLocal()) |mouse|
-            hit_rect.contains(mouse)
-        else
-            false;
-        var ok_state = frontend_widget.TextButtonState{};
-        ok_state.snapFor(.menu_button, hovered);
-        frontend_widget.drawTextButton(
-            layout,
-            .{ .border = state.frontend_widget_art.border.?.texture },
-            &state.ui_font,
-            .menu_button,
-            "OK",
-            ok_text_rect,
-            ok_state,
-            false,
-        );
-    }
-}
-
-fn drawGameplayPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    try drawLevelPromptWidget(state, layout, queue, false);
-}
-
-fn drawStaticPromptWidget(state: *const AppState, layout: VirtualLayout, text: []const u8, tutorial: bool) void {
-    const prompt_layout = promptLayoutForText(state, text, tutorial, false);
-    drawLevelPromptMessageLines(state, layout, prompt_layout);
-}
-
-fn drawTutorialPromptStack(state: *const AppState, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    try drawLevelPromptWidget(state, layout, queue, true);
-}
-
 fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_level: level.Definition, runner: gameplay.Runner) !void {
     try drawTutorialGameplayHud(state, layout, loaded_level, runner);
     drawGameplayProgressBar(state, layout, runner);
@@ -8020,11 +7887,11 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, loaded_
     }
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
-            drawStaticPromptWidget(state, layout, "Click to Start", true);
+            gameplay_prompt_overlay.drawStaticWidget(state, layout, "Click to Start", true);
         }
         return;
     }
-    try drawTutorialPromptStack(state, layout, &state.level_prompt_queue);
+    try gameplay_prompt_overlay.drawTutorialStack(state, layout, &state.level_prompt_queue);
 }
 
 fn tutorialGameplayBestScore(state: *const AppState) u32 {
