@@ -8023,72 +8023,36 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn challengeSetupSliderLayout(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.SliderLayout {
-    var value_buffer: [16]u8 = undefined;
-    const title_rect = switch (item) {
-        .difficulty => challengeSetupTextRect(state, .difficulty),
-        .speed => challengeSetupTextRect(state, .speed),
-        .play, .watch_replay, .back => unreachable,
-    };
-    const value = switch (item) {
-        .difficulty => @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01,
-        .speed => @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01,
-        .play, .watch_replay, .back => unreachable,
-    };
-    const button_index = switch (item) {
-        .difficulty => frontend_challenge_setup_menu.difficulty_button_index,
-        .speed => frontend_challenge_setup_menu.speed_button_index,
-        .play, .watch_replay, .back => unreachable,
-    };
-    const value_text = frontend_options_menu.sliderValueText(value, &value_buffer);
-    return frontend_widget.sliderLayout(
+    var difficulty_buffer: [16]u8 = undefined;
+    var speed_buffer: [16]u8 = undefined;
+    return frontend_challenge_setup_menu.sliderLayout(
         &state.ui_font,
-        title_rect,
-        state.challenge_setup_button_states[button_index],
-        value_text,
+        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
+        item,
     );
 }
 
 fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.Rect {
-    return switch (item) {
-        .difficulty => frontend_widget.type20TextRect(
-            &state.ui_font,
-            frontend_challenge_setup_menu.measurementLabel(.difficulty),
-            frontend_challenge_setup_menu.difficulty_anchor_y,
-            frontend_challenge_setup_menu.center_offset_x,
-        ),
-        .speed => frontend_widget.type20TextRect(
-            &state.ui_font,
-            frontend_challenge_setup_menu.measurementLabel(.speed),
-            // PORT(verified): `initialize_challenge_setup_screen` stacks Speed beneath the
-            // fully laid-out Difficulty slider row, so the child spacing follows the computed
-            // parent frame rather than a fixed title baseline.
-            frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .difficulty)),
-            frontend_challenge_setup_menu.center_offset_x,
-        ),
-        .play => frontend_widget.type20TextRect(
-            &state.ui_font,
-            "Play",
-            frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .speed)),
-            if (state.challengeSetupReplayAvailable())
-                frontend_challenge_setup_menu.play_offset_with_replay_x
-            else
-                frontend_challenge_setup_menu.center_offset_x,
-        ),
-        .watch_replay => frontend_widget.type20TextRect(
-            &state.ui_font,
-            "Watch Replay",
-            frontend_widget.sliderStackBelowLayout(challengeSetupSliderLayout(state, .speed)),
-            frontend_challenge_setup_menu.watch_replay_offset_x,
-        ),
-        .back => frontend_widget.type20TextRect(
-            &state.ui_font,
-            "Back",
-            frontend_widget.stackBelow(if (state.challengeSetupReplayAvailable())
-                challengeSetupTextRect(state, .watch_replay)
-            else
-                challengeSetupTextRect(state, .play)),
-            frontend_challenge_setup_menu.center_offset_x,
-        ),
+    var difficulty_buffer: [16]u8 = undefined;
+    var speed_buffer: [16]u8 = undefined;
+    return frontend_challenge_setup_menu.textRect(
+        &state.ui_font,
+        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
+        item,
+    );
+}
+
+fn challengeSetupLayoutState(
+    self: *const AppState,
+    difficulty_buffer: []u8,
+    speed_buffer: []u8,
+) frontend_challenge_setup_menu.LayoutState {
+    return .{
+        .replay_available = self.challengeSetupReplayAvailable(),
+        .difficulty_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplayDifficultyValue())) * 0.01, difficulty_buffer),
+        .speed_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplaySpeedValue())) * 0.01, speed_buffer),
+        .difficulty_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
+        .speed_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
     };
 }
 
