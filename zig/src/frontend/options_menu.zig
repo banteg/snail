@@ -1,7 +1,11 @@
+const app_ui = @import("../app_ui.zig");
+const frontend_activation = @import("activation.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 const std = @import("std");
+
+const VirtualLayout = app_ui.VirtualLayout;
 
 // PORT(verified): `initialize_options` seeds the fullscreen row at `y = 75`, then nudges
 // the widget down by `+8`, so the final authored-space anchor is `83`.
@@ -95,4 +99,90 @@ pub fn textRect(font: *const game_font.Loaded, state: LayoutState, item: fronten
             button_center_offset_x,
         ),
     };
+}
+
+pub fn drawMenuUi(
+    state: anytype,
+    layout: VirtualLayout,
+    menu_layout: LayoutState,
+    active_target: ?frontend_activation.HoverTarget,
+    slider_textures: frontend_widget.SliderTextures,
+) void {
+    frontend_widget.drawType20Button(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        visibleLabel(menu_layout, .fullscreen),
+        textRect(&state.ui_font, menu_layout, .fullscreen),
+        state.options_button_states[fullscreen_button_index],
+        false,
+    );
+    drawSliderRow(
+        state,
+        layout,
+        menu_layout,
+        .sound_volume,
+        state.runtime_config.soundVolume(),
+        state.options_sound_display_value,
+        state.options_button_states[sound_button_index],
+        if (active_target) |target| target == .options_sound_less else false,
+        if (active_target) |target| target == .options_sound_more else false,
+        slider_textures,
+    );
+    drawSliderRow(
+        state,
+        layout,
+        menu_layout,
+        .music_volume,
+        state.runtime_config.musicVolume(),
+        state.options_music_display_value,
+        state.options_button_states[music_button_index],
+        if (active_target) |target| target == .options_music_less else false,
+        if (active_target) |target| target == .options_music_more else false,
+        slider_textures,
+    );
+    frontend_widget.drawType20Button(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        "Back",
+        textRect(&state.ui_font, menu_layout, .back),
+        state.options_button_states[back_button_index],
+        false,
+    );
+}
+
+fn drawSliderRow(
+    state: anytype,
+    layout: VirtualLayout,
+    menu_layout: LayoutState,
+    item: frontend.OptionsMenuItem,
+    value: f32,
+    displayed_value: f32,
+    row_state: frontend_widget.TextButtonState,
+    less_hovered: bool,
+    more_hovered: bool,
+    slider_textures: frontend_widget.SliderTextures,
+) void {
+    var value_buffer: [16]u8 = undefined;
+    frontend_widget.drawSliderMenuRow(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        slider_textures,
+        &state.ui_font,
+        visibleLabel(menu_layout, item),
+        textRect(&state.ui_font, menu_layout, item),
+        sliderValueText(value, &value_buffer),
+        value,
+        displayed_value,
+        row_state,
+        less_hovered,
+        more_hovered,
+    );
 }

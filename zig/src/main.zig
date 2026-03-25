@@ -6733,6 +6733,20 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     );
 }
 
+fn challengeSetupLayoutState(
+    self: *const AppState,
+    difficulty_buffer: []u8,
+    speed_buffer: []u8,
+) frontend_challenge_setup_menu.LayoutState {
+    return .{
+        .replay_available = self.challengeSetupReplayAvailable(),
+        .difficulty_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplayDifficultyValue())) * 0.01, difficulty_buffer),
+        .speed_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplaySpeedValue())) * 0.01, speed_buffer),
+        .difficulty_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
+        .speed_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
+    };
+}
+
 fn challengeSetupSliderLayout(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.SliderLayout {
     var difficulty_buffer: [16]u8 = undefined;
     var speed_buffer: [16]u8 = undefined;
@@ -6751,20 +6765,6 @@ fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup
         challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
         item,
     );
-}
-
-fn challengeSetupLayoutState(
-    self: *const AppState,
-    difficulty_buffer: []u8,
-    speed_buffer: []u8,
-) frontend_challenge_setup_menu.LayoutState {
-    return .{
-        .replay_available = self.challengeSetupReplayAvailable(),
-        .difficulty_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplayDifficultyValue())) * 0.01, difficulty_buffer),
-        .speed_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplaySpeedValue())) * 0.01, speed_buffer),
-        .difficulty_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
-        .speed_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
-    };
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -6832,94 +6832,16 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
-fn drawChallengeSetupSliderRow(
-    state: *const AppState,
-    layout: VirtualLayout,
-    item: frontend_challenge_setup_menu.Item,
-    value: f32,
-    displayed_value: f32,
-    row_state: frontend_widget.TextButtonState,
-    less_hovered: bool,
-    more_hovered: bool,
-) void {
-    var value_buffer: [16]u8 = undefined;
-    frontend_widget.drawSliderMenuRow(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        state.slider_art.textures(),
-        &state.ui_font,
-        frontend_challenge_setup_menu.visibleLabel(item),
-        challengeSetupTextRect(state, item),
-        frontend_options_menu.sliderValueText(value, &value_buffer),
-        value,
-        displayed_value,
-        row_state,
-        less_hovered,
-        more_hovered,
-    );
-}
-
 fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const active_target = state.activeFrontendButtonTarget();
-    const replay_available = state.challengeSetupReplayAvailable();
-
-    drawChallengeSetupSliderRow(
+    var difficulty_buffer: [16]u8 = undefined;
+    var speed_buffer: [16]u8 = undefined;
+    frontend_challenge_setup_menu.drawMenuUi(
         state,
         layout,
-        .difficulty,
-        @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01,
-        state.challenge_setup_difficulty_display_value,
-        state.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
-        if (active_target) |target| target == .challenge_setup_difficulty_less else false,
-        if (active_target) |target| target == .challenge_setup_difficulty_more else false,
-    );
-    drawChallengeSetupSliderRow(
-        state,
-        layout,
-        .speed,
-        @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01,
-        state.challenge_setup_speed_display_value,
-        state.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
-        if (active_target) |target| target == .challenge_setup_speed_less else false,
-        if (active_target) |target| target == .challenge_setup_speed_more else false,
-    );
-
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Play",
-        challengeSetupTextRect(state, .play),
-        state.challenge_setup_button_states[frontend_challenge_setup_menu.play_button_index],
-        false,
-    );
-    if (replay_available) {
-        frontend_widget.drawType20Button(
-            layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
-            "Watch Replay",
-            challengeSetupTextRect(state, .watch_replay),
-            state.challenge_setup_button_states[frontend_challenge_setup_menu.watch_replay_button_index],
-            false,
-        );
-    }
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Back",
-        challengeSetupTextRect(state, .back),
-        state.challenge_setup_button_states[frontend_challenge_setup_menu.back_button_index],
-        false,
+        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
+        active_target,
+        state.slider_art.textures(),
     );
 
     if (state.game_status_message) |message| {
@@ -6929,49 +6851,8 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
 
 fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const menu_layout = state.optionsMenuLayoutState();
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        frontend_options_menu.visibleLabel(menu_layout, .fullscreen),
-        frontend_options_menu.textRect(&state.ui_font, menu_layout, .fullscreen),
-        state.options_button_states[frontend_options_menu.fullscreen_button_index],
-        false,
-    );
     const active_target = state.activeFrontendButtonTarget();
-    drawOptionsSliderRow(
-        state,
-        layout,
-        .sound_volume,
-        state.runtime_config.soundVolume(),
-        state.options_sound_display_value,
-        state.options_button_states[frontend_options_menu.sound_button_index],
-        if (active_target) |target| target == .options_sound_less else false,
-        if (active_target) |target| target == .options_sound_more else false,
-    );
-    drawOptionsSliderRow(
-        state,
-        layout,
-        .music_volume,
-        state.runtime_config.musicVolume(),
-        state.options_music_display_value,
-        state.options_button_states[frontend_options_menu.music_button_index],
-        if (active_target) |target| target == .options_music_less else false,
-        if (active_target) |target| target == .options_music_more else false,
-    );
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Back",
-        frontend_options_menu.textRect(&state.ui_font, menu_layout, .back),
-        state.options_button_states[frontend_options_menu.back_button_index],
-        false,
-    );
+    frontend_options_menu.drawMenuUi(state, layout, menu_layout, active_target, state.slider_art.textures());
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -7265,38 +7146,6 @@ fn drawTextureCenteredLocal(
         local_width,
         local_height,
         tint,
-    );
-}
-
-fn drawOptionsSliderRow(
-    state: *const AppState,
-    layout: VirtualLayout,
-    item: OptionsMenuItem,
-    value: f32,
-    displayed_value: f32,
-    row_state: frontend_widget.TextButtonState,
-    less_hovered: bool,
-    more_hovered: bool,
-) void {
-    const menu_layout = state.optionsMenuLayoutState();
-    var value_buffer: [16]u8 = undefined;
-    const title_rect = frontend_options_menu.textRect(&state.ui_font, menu_layout, item);
-    const value_text = frontend_options_menu.sliderValueText(value, &value_buffer);
-    frontend_widget.drawSliderMenuRow(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        state.slider_art.textures(),
-        &state.ui_font,
-        frontend_options_menu.visibleLabel(menu_layout, item),
-        title_rect,
-        value_text,
-        value,
-        displayed_value,
-        row_state,
-        less_hovered,
-        more_hovered,
     );
 }
 
