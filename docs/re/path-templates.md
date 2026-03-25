@@ -149,14 +149,20 @@ High-confidence fields on the `0xa8`-byte record:
 - `+0x38`: attachment kind or constructor family id
 - `+0x3c`: mirror flag
 - `+0x40`: terminal or return flag read by `update_track_attachment_follow_state`
-- `+0x44`: sample count
-- `+0x4c`: float copy of the effective sample count
+- `+0x44`: segment count
+- `+0x4c`: float copy of the effective segment count
 - `+0x50`: scale or width-like constructor parameter
-- `+0x54`: subdivision count used for the generated strip mesh
-- `+0x58`: pointer to the primary sampled point array
-- `+0x5c`: pointer to the mirrored or secondary sampled point array
+- `+0x54`: width-cell count used for the generated strip mesh
+- `+0x58`: pointer to the primary sampled-point array
+- `+0x5c`: pointer to the mirrored or secondary sampled-point array
 - `+0x98`: install-time row scalar written during entry/begin
 - `+0x9c`: template-side special flag checked by live update
+
+This is the main reason the raw decompile reads so badly:
+
+- `*(_DWORD *)(this + 88)` and `*(_DWORD *)(this + 92)` are not vtables
+- they are the two sample-array pointers at `+0x58` and `+0x5c`
+- expressions like `*(float *)(*(_DWORD *)(this + 88) + v8 + 144)` are just per-sample field accesses at `sample_offset + 0x90`
 
 Still unresolved from this package:
 
@@ -166,12 +172,14 @@ Still unresolved from this package:
 High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c` arrays:
 
 - record size: `0xa8`
+- `+0x00/+0x10/+0x20`: three `0x10`-byte matrix rows, not three packed `Vec3`s
 - `+0x30/+0x34/+0x38`: world position used by the follow-state update
 - `+0x80/+0x84/+0x88`: delta vector toward the next sample
 - `+0x8c`: delta length, which `update_track_attachment_follow_state` multiplies by the per-tick path factor
-- `+0x90/+0x94/+0x98`: orientation-like vector that gets mirrored on X
+- `+0x90`: `center_x`
+- `+0x94/+0x98`: family-specific rotation or carryover scalars; these are zeroed in the recovered halfpipe and kind-`42` constructors
 - `+0x9c`: scalar used by the ordinary follow path
-- `+0xa0`: extra scalar copied verbatim by the mirror helper
+- `+0xa0`: extra scalar copied verbatim by the mirror helper and consumed by the nonlinear kind-`42` branch
 
 What the mirror helper actually does:
 

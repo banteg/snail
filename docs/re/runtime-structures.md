@@ -559,21 +559,21 @@ High-confidence `PathTemplate` fields:
 - `+0x44`: `segment_count`
 - `+0x4c`: `segment_count_f`
 - `+0x54`: `width_cells`
-- `+0x58`: `primary_points`
-- `+0x5c`: `secondary_points`
+- `+0x58`: `primary_samples`
+- `+0x5c`: `secondary_samples`
 - `+0x98`: `installed_heading_delta`
-- `+0x9c`: `special_runtime_cell_swaps`
+- `+0x9c`: `special_runtime_flag_9c`
 
 Still unresolved from the current Windows package:
 
 - whether `+0xa0/+0xa4` are template fields at all in the special live-update branch
-- the exact producer that sets `special_runtime_cell_swaps`
+- the exact producer that sets `special_runtime_flag_9c`
 
 High-confidence `PathTemplateSample` fields:
 
-- `+0x00`: `basis_right`
-- `+0x10`: `basis_up`
-- `+0x20`: `basis_forward`
+- `+0x00`: `basis_right` row start
+- `+0x10`: `basis_up` row start
+- `+0x20`: `basis_forward` row start
 - `+0x30`: `position`
 - `+0x80`: `delta_dir_to_next`
 - `+0x8c`: `delta_length`
@@ -581,14 +581,20 @@ High-confidence `PathTemplateSample` fields:
 - `+0x94`: `rotation_scalar_94`
 - `+0x98`: `rotation_scalar_98`
 - `+0x9c`: `lateral_scale`
-- `+0xa0`: `warp_phase`
+- `+0xa0`: `special_scalar`
+
+Binary Ninja typing note:
+
+- the repeated decompile pattern `*(_DWORD *)(this + 88)` / `*(_DWORD *)(this + 92)` is now confirmed as `primary_samples` / `secondary_samples`
+- these are struct pointers, not vtables
+- the first `0x30` bytes of each sample are a `3x4` matrix block, which is why the old raw output kept surfacing `+0x10` and `+0x20` row offsets
 
 This matches the recovered follow-state update behavior:
 
 - `segment_count` bounds the active sample index
 - the current sample `delta_length` scales the per-tick path factor
 - `position` and `delta_dir_to_next` feed the interpolated output pose
-- `warp_phase` is the field consumed by the special nonlinear kind-`42` / `WARP`-like branch
+- `special_scalar` is the field consumed by the special nonlinear kind-`42` branch
 
 ## Current Zig Port Attachment Types
 
