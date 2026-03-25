@@ -4378,7 +4378,7 @@ const AppState = struct {
         try self.enterGamePhase(self.options_return_phase);
     }
 
-    // PORT(verified): `update_help` writes frontend state `2` on Back, and the frontend
+    // PORT(verified): `update_help_screen` writes frontend state `2` on Back, and the frontend
     // state machine handles that by rebuilding the New Game screen/controller path rather than
     // jumping straight to the main menu. The normal Star Map `update_galaxy -> return 3`
     // path in `update_subgame` also tears down the galaxy screen and returns to the New Game

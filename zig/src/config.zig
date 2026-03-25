@@ -45,7 +45,7 @@ pub const LoadResult = struct {
 // PORT(partial): this preserves the full 0xc4-byte SnailMail.cfg blob while only exposing the
 // recovered sound/music/fullscreen fields plus the New Game tutorial gate byte at `+0xc0`.
 // Evidence: `initialize_default_runtime_config`, `initialize_new_game_menu`,
-// `update_new_game_menu`, `initialize_options`, `update_options`, and
+// `update_new_game_menu`, `initialize_options_menu`, `update_options_menu`, and
 // `apply_audio_config_volumes`.
 pub const Blob = struct {
     bytes: [byte_len]u8,

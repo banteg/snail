@@ -45,14 +45,14 @@ Current high-signal entries:
   - note: the main-menu exit path now uses a shared `Do you really want to quit?` prompt instead of terminating immediately
   - replace when: the remaining owner-specific layouts and any post-completion uses of the shared exit prompt are ported
 - front-end options menu fields: `partial`
-  - evidence: Binary Ninja decompile of `initialize_options`, `update_options`, `destroy_options`, and `apply_audio_config_volumes`, plus cross-port Android and iOS symbols for `cROptions::{Init, AI, UnInit}`
+  - evidence: Binary Ninja decompile of `initialize_options_menu`, `update_options_menu`, `destroy_options_menu`, and `apply_audio_config_volumes`, plus cross-port Android and iOS symbols for `cROptions::{Init, AI, UnInit}`
   - implementation: [`config.zig`](../../zig/src/config.zig), [`main.zig`](../../zig/src/main.zig)
   - note: the current port now renders the recovered fullscreen/music/sound/back rows directly on `Menubg` instead of the older two-panel helper UI
   - replace when: the original slider widgets, audio test feedback, and any remaining option fields are ported
 - help screen flow: `partial`
-  - evidence: Binary Ninja decompile of `initialize_help`, `destroy_help`, and `update_help`, plus cross-port Android and iOS symbols for `cRHelp::{Init, AI}`
+  - evidence: Binary Ninja decompile of `initialize_help_screen`, `destroy_help_screen`, and `update_help_screen`, plus cross-port Android and iOS symbols for `cRHelp::{Init, AI}`
   - implementation: [`main.zig`](../../zig/src/main.zig)
-  - note: the current port now returns `Back` to the recovered New Game flow instead of jumping straight to the main menu, which matches the Windows `update_help -> frontend state 2` handoff better
+  - note: the current port now returns `Back` to the recovered New Game flow instead of jumping straight to the main menu, which matches the Windows `update_help_screen -> frontend state 2` handoff better
   - replace when: the original Help-screen teardown path and any missing transition details are ported
 - delivery-route map flow: `partial`
   - evidence: Binary Ninja decompile of `initialize_galaxy`, `destroy_galaxy`, `update_galaxy`, `close_galaxy_route`, `open_galaxy_route`, and `load_frontend_level_by_mode_and_index`, plus cross-port Android and iOS symbols for `cRGalaxy::{Init, AI, BoxOff, Open}` and Android `cRGalaxy::UnInit()`

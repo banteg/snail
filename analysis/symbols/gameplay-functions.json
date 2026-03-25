@@ -697,17 +697,17 @@
     },
     {
       "address": "0x416800",
-      "name": "initialize_help",
+      "name": "initialize_help_screen",
       "description": "Starts MAINMENU.OGG, loads Help.txt into the shared backdrop renderer, and allocates the single Back control. Cross-port Android and iOS symbols match this helper to `cRHelp::Init()`."
     },
     {
       "address": "0x4168c0",
-      "name": "destroy_help",
+      "name": "destroy_help_screen",
       "description": "Clears the Help-screen shell-font scene before control returns to the owning front-end state."
     },
     {
       "address": "0x4168d0",
-      "name": "update_help",
+      "name": "update_help_screen",
       "description": "Handles the Help-screen Back action, tears down the shell-font scene, and returns control to the New Game front-end flow via state `2`. Cross-port Android and iOS symbols match this helper to `cRHelp::AI()`."
     },
     {
@@ -904,17 +904,17 @@
     },
     {
       "address": "0x41ace0",
-      "name": "initialize_options",
+      "name": "initialize_options_menu",
       "description": "Constructs the Options screen widgets, seeds them from SnailMail.cfg, and links the fullscreen, sounds, music, and back controls. Cross-port Android and iOS symbols match this helper to `cROptions::Init()`."
     },
     {
       "address": "0x41aee0",
-      "name": "destroy_options",
+      "name": "destroy_options_menu",
       "description": "Tears down the Options-screen widgets and writes the current SnailMail.cfg blob back to disk. Cross-port Android and iOS symbols match this helper to `cROptions::UnInit()`."
     },
     {
       "address": "0x41af60",
-      "name": "update_options",
+      "name": "update_options_menu",
       "description": "Runs the Options-screen state machine, including fullscreen toggles, slider updates, audio-volume refresh, save, and return to the owning front-end state. Cross-port Android and iOS symbols match this helper to `cROptions::AI()`."
     },
     {

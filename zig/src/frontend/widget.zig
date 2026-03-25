@@ -456,7 +456,7 @@ pub fn type20PromptLayout(
 }
 
 pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
-    // PORT(verified): `initialize_options` uses `stack_widget_below` after the slider children
+    // PORT(verified): `initialize_options_menu` uses `stack_widget_below` after the slider children
     // are attached, so the next row should follow the computed parent frame height rather than
     // a separate hardcoded row-size surrogate.
     return layout.frame_rect.top + layout.frame_rect.height + type20_stack_gap;
