@@ -226,8 +226,8 @@ pub const high_scores_menu_items = [_]HighScoresMenuItem{
     .back,
 };
 
-// PORT(partial): the original options screen is a centered type-20 widget stack with two
-// `0x100000` slider rows and a type-21 `%02i%%` child readout. The port now uses that
+// PORT(partial): the original options screen is a centered menu-button widget stack with two
+// slider rows and a slider-value `%02i%%` child readout. The port now uses that
 // recovered parent/child widget path instead of a custom options-only renderer, but still
 // lacks some lower-level polish from `draw_frontend_widget`, such as the additive glow path.
 pub const OptionsMenuItem = enum {

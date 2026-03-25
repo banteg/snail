@@ -183,8 +183,8 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .source_edge_fraction = menu_button_border_edge / 128.0,
         },
         .slider_value => .{
-            // PORT(verified): `sub_401D30(..., widget_type=21, ...)` is the slider readout
-            // child path. It keeps the type-20 shell border metrics but drops text scale to 1.0.
+            // PORT(verified): `sub_401D30(..., widget_type=21, ...)` is the slider-value
+            // child path. It keeps the menu-button shell border metrics but drops text scale to 1.0.
             .text_scale = 1.0,
             .idle_padding = menu_button_idle_padding,
             .hot_padding = menu_button_hot_padding,
@@ -199,7 +199,7 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .source_edge_fraction = 0.1,
         },
         .footer_button => .{
-            // PORT(verified): type-23 footer widgets keep the standard shell border path
+            // PORT(verified): footer-button widgets keep the standard shell border path
             // (`edge = 20`) while using their own smaller text scale and padding targets.
             .text_scale = 1.14,
             .idle_padding = 6.0,
@@ -209,7 +209,7 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
         },
         .route_map_secondary_action => .{
             // PORT(verified): `initialize_galaxy` / `open_galaxy_route` keep the replay action
-            // on the type-20 shell border, but override the text scale to `0.8` and idle pad
+            // on the menu-button shell border, but override the text scale to `0.8` and idle pad
             // to `8.0` for the "Watch Best Trial" button.
             .text_scale = 0.8,
             .idle_padding = 8.0,

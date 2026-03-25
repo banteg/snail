@@ -64,7 +64,7 @@ pub const card_bottom_y: f32 = 450.0;
 pub const card_text_gap: f32 = 0.0;
 pub const primary_button_gap: f32 = 20.0;
 pub const replay_button_gap: f32 = 10.0;
-// PORT(verified): `sub_401130` renders the selected route card (`69516`) as a type-20 style
+// PORT(verified): `sub_401130` renders the selected route card (`69516`) as a menu-button-style
 // 9-slice frame with a recovered authored edge size of `26.0`, not as a stretched quad.
 pub const card_frame_edge: f32 = 26.0;
 // PORT(verified): `update_galaxy` draws galaxy sprites `139..148` as `256x256` quads

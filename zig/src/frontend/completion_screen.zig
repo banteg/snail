@@ -146,7 +146,7 @@ pub fn drawCompleted(
         // PORT(verified): `initialize_completion_screen` builds the title,
         // package line, bonus line, and continue prompt with flags
         // `0x20400002`, which suppress the pill background while keeping the
-        // type-20 shell-font metrics.
+        // menu-button shell-font metrics.
         .flags = 0x20400002,
     };
 

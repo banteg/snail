@@ -9,7 +9,7 @@ const VirtualLayout = app_ui.VirtualLayout;
 
 // PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
 // row pitch `27`, and footer row `111 + 10*27 = 381`. Each visible row is a separate
-// type-22 widget bundle anchored at `x = -228/-222/-180/+160/+125` for postal or
+// compact-score-row widget bundle anchored at `x = -228/-222/-180/+160/+125` for postal or
 // `x = -228/-222/-180/+125/+170` for challenge, rather than a single freehand text strip.
 pub const title_y: f32 = 64.0;
 pub const row_start_y: f32 = 111.0;
@@ -274,7 +274,7 @@ fn drawTable(
     const row_background_text = rowBackgroundText(mode);
     const text_only_score_cell: frontend_widget.DrawOptions = .{
         // PORT(verified): `initialize_high_score_screen` gives the rank, name,
-        // and numeric score cells flags `0x20400000`, so those type-22 widgets
+        // and numeric score cells flags `0x20400000`, so those compact-score-row widgets
         // render as text-only entries on top of the shared row background.
         .flags = 0x20400000,
     };
