@@ -6,7 +6,6 @@ const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
 const debug_browser = @import("debug/browser.zig");
-const debug_levels = @import("debug/levels.zig");
 const frontend = @import("frontend.zig");
 const frontend_activation = @import("frontend/activation.zig");
 const frontend_bridge = @import("frontend/bridge.zig");
@@ -6615,7 +6614,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         } else {
             rl.drawRectangleRec(bounds, .black);
         }
-        drawGameplayLevelViewport(state);
+        drawSubgameViewport(state);
     } else if (state.current_game_background) |loaded_background| {
         if (state.current_game_background_runtime) |runtime| {
             switch (state.game_phase) {
@@ -7849,7 +7848,7 @@ fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawGameplayLevelViewport(state);
+    drawSubgameViewport(state);
 
     const loaded_level = state.current_level orelse return;
     if (state.level_runner) |runner| {
@@ -8580,7 +8579,7 @@ fn jetpackGaugeColor(warning_band: gameplay.JetpackWarningBand, pulse: f32) rl.C
 }
 
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawGameplayLevelViewport(state);
+    drawSubgameViewport(state);
     const result = state.pending_run_result orelse return;
     if (result.outcome == .completed) {
         try drawCompletedRunScreenUi(state, layout, result);
@@ -8801,32 +8800,38 @@ fn drawFailedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: 
     );
 }
 
-fn drawGameplayLevelViewport(state: *const AppState) void {
+fn drawSubgameViewport(state: *const AppState) void {
     const loaded_track_preview = state.current_track_preview orelse return;
-    const runner = state.level_runner orelse {
-        debug_levels.drawLevelViewport(state);
-        return;
-    };
-    const camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
+    const runner = state.level_runner;
+    const selected_segment_index = if (runner) |live_runner|
+        if (loaded_track_preview.locateRow(live_runner.current_global_row)) |row_location|
+            row_location.segment_index
+        else
+            0
+    else if (loaded_track_preview.segments.len != 0 and state.level_segment_index < loaded_track_preview.segments.len)
+        state.level_segment_index
+    else
+        0;
+    const camera = if (runner != null)
+        gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees)
+    else
+        loaded_track_preview.previewCamera(@floatCast(state.render_time_seconds), selected_segment_index);
     camera.begin();
     defer rl.endMode3D();
 
-    const selected_segment_index = if (loaded_track_preview.locateRow(runner.current_global_row)) |row_location|
-        row_location.segment_index
-    else
-        0;
     if (state.current_game_track_scene) |*scene| {
         scene.drawGameplay(&loaded_track_preview, selected_segment_index);
     } else {
         loaded_track_preview.draw(selected_segment_index);
     }
+    const live_runner = runner orelse return;
     if (state.gameplay_click_start_active) {
-        drawGameplayTurbo(state, &loaded_track_preview, runner);
+        drawGameplayTurbo(state, &loaded_track_preview, live_runner);
         return;
     }
-    drawGameplayRuntimeActors(state, &loaded_track_preview, runner, camera);
-    drawGameplayBarrier(state, &loaded_track_preview, runner);
-    drawGameplayTurbo(state, &loaded_track_preview, runner);
+    drawGameplayRuntimeActors(state, &loaded_track_preview, live_runner, camera);
+    drawGameplayBarrier(state, &loaded_track_preview, live_runner);
+    drawGameplayTurbo(state, &loaded_track_preview, live_runner);
 }
 const BillboardUv = struct {
     left: f32,
