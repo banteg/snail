@@ -333,7 +333,7 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
         switch (built.template.spec.family) {
-            .kind42 => drawKind42Attachment(scene, built),
+            .warp_halfpipe => drawWarpHalfpipeAttachment(scene, built),
             else => drawOrdinaryAttachment(scene, built),
         }
     }
@@ -370,7 +370,7 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     }
 }
 
-fn drawKind42Attachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+fn drawWarpHalfpipeAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     const template = &built.template;
     if (template.samples.len < 2) return;
 
@@ -392,10 +392,10 @@ fn drawKind42Attachment(scene: *const Scene, built: *const attachment_builders.B
             drawDoubleSidedTexturedQuad(
                 scene.textures.track.texture,
                 scene.textures.track.texture,
-                kind42AttachmentVertex(template, built.row.global_row, front_progress, left_offset),
-                kind42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
-                kind42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
-                kind42AttachmentVertex(template, built.row.global_row, front_progress, right_offset),
+                warpHalfpipeAttachmentVertex(template, built.row.global_row, front_progress, left_offset),
+                warpHalfpipeAttachmentVertex(template, built.row.global_row, back_progress, left_offset),
+                warpHalfpipeAttachmentVertex(template, built.row.global_row, back_progress, right_offset),
+                warpHalfpipeAttachmentVertex(template, built.row.global_row, front_progress, right_offset),
                 topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
@@ -415,7 +415,7 @@ fn attachmentVertex(
     };
 }
 
-fn kind42AttachmentVertex(
+fn warpHalfpipeAttachmentVertex(
     template: *const attachment_builders.Template,
     source_row: usize,
     progress: f32,

@@ -121,7 +121,7 @@ pub const BuilderFamily = enum {
     loopout,
     sweep,
     snake,
-    kind42,
+    warp_halfpipe,
     supertramp,
     slalomdouble,
     p_family,
@@ -153,7 +153,7 @@ pub const BuilderFamily = enum {
             .loopout => "loopout",
             .sweep => "sweep",
             .snake => "snake",
-            .kind42 => "kind42",
+            .warp_halfpipe => "warp_halfpipe",
             .supertramp => "supertramp",
             .slalomdouble => "slalomdouble",
             .p_family => "p_family",
@@ -580,8 +580,8 @@ pub fn worldPoseForTemplate(
     const pose = samplePoseAtProgress(template, progress);
     const local_lateral = lateral_offset * pose.lateral_scale;
     const base_row: f32 = @floatFromInt(source_row);
-    if (template.spec.family == .kind42) {
-        const local_transform = kind42LocalTransform(pose.special_scalar, local_lateral, kind42_rider_height + vertical_offset);
+    if (template.spec.family == .warp_halfpipe) {
+        const local_transform = warpHalfpipeLocalTransform(pose.special_scalar, local_lateral, warp_halfpipe_rider_height + vertical_offset);
         return .{
             .position = .{
                 .x = pose.position.x + (pose.basis_right.x * (pose.center_x + local_transform.position.x)) + (pose.basis_up.x * local_transform.position.y),
@@ -628,26 +628,26 @@ const SurfaceBasis = struct {
     forward: Vec3,
 };
 
-const kind42_rider_height: f32 = 0.49;
+const warp_halfpipe_rider_height: f32 = 0.49;
 
-const Kind42LocalTransform = struct {
+const WarpHalfpipeLocalTransform = struct {
     position: Vec3,
     right: Vec3,
     up: Vec3,
 };
 
-fn kind42LocalTransform(radius: f32, lateral_offset: f32, rider_height: f32) Kind42LocalTransform {
+fn warpHalfpipeLocalTransform(radius: f32, lateral_offset: f32, rider_height: f32) WarpHalfpipeLocalTransform {
     if (radius <= 4.0001) {
         const angle = std.math.clamp(lateral_offset * (std.math.pi * 0.125), -std.math.pi * 0.5, std.math.pi * 0.5);
-        return kind42LocalTransformForAngle(radius, angle, rider_height);
+        return warpHalfpipeLocalTransformForAngle(radius, angle, rider_height);
     }
 
     const chord = std.math.sqrt(@max(0.0, (radius * radius) - 16.0));
     const lateral_angle = std.math.atan2(4.0, chord) * lateral_offset * 0.25;
-    return kind42LocalTransformForAngle(radius, lateral_angle, rider_height);
+    return warpHalfpipeLocalTransformForAngle(radius, lateral_angle, rider_height);
 }
 
-fn kind42LocalTransformForAngle(radius: f32, lateral_angle: f32, rider_height: f32) Kind42LocalTransform {
+fn warpHalfpipeLocalTransformForAngle(radius: f32, lateral_angle: f32, rider_height: f32) WarpHalfpipeLocalTransform {
     const travel_radius = @max(0.0, radius - rider_height);
     const sin_angle = std.math.sin(lateral_angle);
     const cos_angle = std.math.cos(lateral_angle);
@@ -723,7 +723,7 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         }),
         .sweep => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 28, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 3.0, .lateral_cycles = 0.5 }),
         .snake => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 29, .width_cells = 4, .sample_count = 27, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
-        .warp, .halfpipe => try buildKind42Template(allocator, spec),
+        .warp, .halfpipe => try buildWarpHalfpipeTemplate(allocator, spec),
         .slalomdouble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 32, .width_cells = 4, .sample_count = 70, .lateral_amplitude = 2.5, .lateral_cycles = 4.0 }),
         .wibble => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 40, .width_cells = 8, .sample_count = 32, .lateral_amplitude = 1.5, .lateral_cycles = 3.0, .vertical_amplitude = 0.75, .vertical_cycles = 2.0 }),
         .invert => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 41, .width_cells = 8, .sample_count = 34, .roll_cycles = 0.5 }),
@@ -1385,7 +1385,7 @@ fn buildSupertrampTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Te
     };
 }
 
-fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
+fn buildWarpHalfpipeTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Template {
     const width_cells: u16 = 8;
     const sample_count: usize = 66;
     const point_count: usize = sample_count + 1;
@@ -1401,10 +1401,10 @@ fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Templa
             },
             .special_scalar = switch (spec.public_path) {
                 // PORT(partial): Android `BuildHalfPipe` is a straight longitudinal strip with a
-                // tapered kind-42 cross-section at the entry/exit and a constant-radius trough in
+                // tapered warp/halfpipe cross-section at the entry/exit and a constant-radius trough in
                 // the middle. Windows `HALFPIPE` now proves live runtime kind 42, while public
                 // `WARP` is still unresolved, so only `HALFPIPE` takes the tapered branch here.
-                .halfpipe => kind42HalfpipeRadiusForPoint(index, sample_count),
+                .halfpipe => warpHalfpipeRadiusForPoint(index, sample_count),
                 .warp => 4.0,
                 else => 4.0,
             },
@@ -1429,21 +1429,21 @@ fn buildKind42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !Templa
     };
 }
 
-fn kind42HalfpipeRadiusForPoint(point_index: usize, sample_count: usize) f32 {
+fn warpHalfpipeRadiusForPoint(point_index: usize, sample_count: usize) f32 {
     const edge_count: usize = 16;
     const middle_start = edge_count;
     const exit_start = sample_count - edge_count;
 
     if (point_index < middle_start) {
-        return kind42HalfpipeEdgeRadius((edge_count - 1) - point_index);
+        return warpHalfpipeEdgeRadius((edge_count - 1) - point_index);
     }
     if (point_index >= exit_start) {
-        return kind42HalfpipeEdgeRadius(@min(point_index - exit_start, edge_count - 1));
+        return warpHalfpipeEdgeRadius(@min(point_index - exit_start, edge_count - 1));
     }
     return 4.0;
 }
 
-fn kind42HalfpipeEdgeRadius(step_index: usize) f32 {
+fn warpHalfpipeEdgeRadius(step_index: usize) f32 {
     const phase = (@as(f32, @floatFromInt(step_index)) * 0.0625) - 0.2;
     const local_depth = (((std.math.sin(phase) * -0.5) + 0.5) * 0.95 + 0.05) * 4.0;
     return ((local_depth * local_depth) + 16.0) / (local_depth * 2.0);
@@ -1594,7 +1594,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         },
         .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial, .runtime_kind = 28, .sample_count = 30, .subdivision_count = 4 },
         .snake => .{ .public_path = public_path, .family = .snake, .status = .partial, .runtime_kind = 29, .sample_count = 27, .subdivision_count = 4 },
-        .warp, .halfpipe => .{ .public_path = public_path, .family = .kind42, .status = .partial, .runtime_kind = 42, .sample_count = 66, .subdivision_count = 8 },
+        .warp, .halfpipe => .{ .public_path = public_path, .family = .warp_halfpipe, .status = .partial, .runtime_kind = 42, .sample_count = 66, .subdivision_count = 8 },
         .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .runtime_kind = 31, .sample_count = 32, .subdivision_count = 2 },
         .slalomdouble => .{ .public_path = public_path, .family = .slalomdouble, .status = .partial, .runtime_kind = 32, .sample_count = 70, .subdivision_count = 4 },
         .p0 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .runtime_kind = 33, .sample_count = 16, .subdivision_count = 3 },
@@ -1863,7 +1863,7 @@ test "build loopbow template from recovered ordinary family shape" {
     try std.testing.expect(mid.position.x < 3.0);
 }
 
-test "build halfpipe template with tapered kind42 radius" {
+test "build halfpipe template with tapered warp-halfpipe radius" {
     const spec = specForPublicPath(.halfpipe);
     var template = (try buildTemplate(std.testing.allocator, spec)).?;
     defer template.deinit(std.testing.allocator);
