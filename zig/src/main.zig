@@ -23,6 +23,7 @@ const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay_audio_catalog = @import("gameplay_audio_catalog.zig");
+const gameplay_audio_cues = @import("gameplay_audio_cues.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay_assets.zig");
 const gameplay_runtime_entities = @import("gameplay_runtime_entities.zig");
@@ -75,7 +76,6 @@ const default_texture_path = app.default_texture_path;
 const default_audio_path = app.default_audio_path;
 const default_model_path = app.default_model_path;
 const default_object_path = app.default_object_path;
-const native_runtime_tile_wall: u8 = 0x0e;
 const default_level_path = app.default_level_path;
 const simulation_step_seconds = 1.0 / 60.0;
 const status_message_duration_ticks: u32 = 180;
@@ -884,361 +884,6 @@ fn completionSummary(result: PendingRunResult) frontend_completion_screen.Summar
     };
 }
 
-const NativeGameplaySoundCues = struct {
-    completion_arm_cheers: bool = false,
-    extra_life: bool = false,
-    trampoline_bounce: bool = false,
-    wall_barrier_hit: bool = false,
-    parcel_pickup: bool = false,
-    parcel_delivery: bool = false,
-    parcel_bonus: bool = false,
-    row_event_confirm: bool = false,
-};
-
-const NativeJetpackSoundCues = struct {
-    activate: bool = false,
-    deactivate: bool = false,
-};
-
-const NativeGameplayVoiceCues = struct {
-    start: bool = false,
-    package_pickup: bool = false,
-    weapon_upgrade: bool = false,
-    damage_entry: bool = false,
-    damage_escalation: bool = false,
-};
-
-const NativeMovementStateSoundFamily = enum {
-    turbo,
-    laser,
-    rocket,
-};
-
-fn runnerInCompletionHandoff(runner: gameplay.Runner) bool {
-    return switch (runner.phase) {
-        .completion_handoff => true,
-        else => false,
-    };
-}
-
-fn nativeGameplaySoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeGameplaySoundCues {
-    return .{
-        .completion_arm_cheers = !runnerInCompletionHandoff(previous) and runnerInCompletionHandoff(current),
-        .extra_life = current.score.total > previous.score.total and current.visible_life_stock > previous.visible_life_stock,
-        .trampoline_bounce = current.counters.trampoline_rows > previous.counters.trampoline_rows,
-        .wall_barrier_hit = previous.current_runtime_tile_hint != native_runtime_tile_wall and
-            current.current_runtime_tile_hint == native_runtime_tile_wall,
-        .parcel_pickup = current.counters.parcels > previous.counters.parcels,
-        .parcel_delivery = current.registeredParcelCount() > previous.registeredParcelCount(),
-        .parcel_bonus = current.row_event_display.bonus_enabled and
-            current.row_event_display.parcel_target_count != 0 and
-            previous.registeredParcelCount() < current.row_event_display.parcel_target_count and
-            current.registeredParcelCount() == current.row_event_display.parcel_target_count,
-        .row_event_confirm = previous.row_event_display.gate_18 == 0 and current.row_event_display.gate_18 != 0,
-    };
-}
-
-fn nativeRingEffectKindTriggered(previous: gameplay.Runner, current: gameplay.Runner) ?u8 {
-    if (current.native_ring_effect_token == previous.native_ring_effect_token) return null;
-    return current.last_native_ring_effect_kind;
-}
-
-fn nativeRingPickupSoundIndex(previous: gameplay.Runner, current: gameplay.Runner) ?usize {
-    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
-        return switch (effect_kind) {
-            1 => 0,
-            4, 5, 8 => @min(
-                gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1,
-                @as(usize, @intCast(@max(current.movement_flag_selector, 1) - 1)),
-            ),
-            else => null,
-        };
-    }
-
-    if (current.counters.ring_powerup <= previous.counters.ring_powerup) return null;
-    return @min(
-        gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1,
-        @as(usize, current.counters.ring_powerup - 1),
-    );
-}
-
-fn nativeSlowRingSoundTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
-        return effect_kind == 3 or effect_kind == 7;
-    }
-    return current.slow_ticks > previous.slow_ticks;
-}
-
-fn nativeExplodeRingSoundTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
-        return effect_kind == 2 or effect_kind == 6;
-    }
-    return current.counters.ring_explode > previous.counters.ring_explode;
-}
-
-fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return current.movement_flags != previous.movement_flags;
-}
-
-fn nativeMovementStateSoundFamily(current: gameplay.Runner) NativeMovementStateSoundFamily {
-    if ((current.movement_flags & 0x7) != 0) return .turbo;
-    if ((current.movement_flags & 0x18) != 0) return .laser;
-    if ((current.movement_flags & 0x60) != 0) return .rocket;
-    return .turbo;
-}
-
-fn nativeMovementStateAttachmentExitGain(camera_position: rl.Vector3, player_position: rl.Vector3, attachment_exit_pending: bool) ?f32 {
-    if (!attachment_exit_pending) return null;
-    const delta = rl.Vector3{
-        .x = camera_position.x - player_position.x,
-        .y = camera_position.y - player_position.y,
-        .z = camera_position.z - player_position.z,
-    };
-    return std.math.clamp(1.0 - (vectorLength(delta) * (1.0 / 60.0)), 0.0, 1.0);
-}
-
-fn nativeMovementStateVariantIndexForSample(sample: u32, comptime count: usize) usize {
-    return @min(count - 1, @as(usize, @intCast((@as(u64, sample) * count) / 0x8000)));
-}
-
-fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeJetpackSoundCues {
-    return .{
-        .activate = !previous.jetpack.active and current.jetpack.active,
-        .deactivate = (previous.jetpack.active and current.jetpack.active and
-            previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold and
-            current.jetpack.progress > gameplay_assets.native_jetpack_visual_shutoff_threshold) or
-            (previous.jetpack.active and !current.jetpack.active and
-                previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold),
-    };
-}
-
-fn nativeGameplaySlowVoiceBandActive(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    if (current.phase != .active) return false;
-    if (current.movement_mode != .track) return false;
-    if (current.attachment_exit_pending) return false;
-
-    const configured_step = current.movement_rate_scalar;
-    if (configured_step <= 0.0001) return false;
-
-    const actual_forward_step = @max(0.0, current.row_position - previous.row_position);
-    const lower_bound = configured_step * 0.17;
-    const upper_bound = lower_bound + ((configured_step * 0.5) - lower_bound) * 0.1;
-    return actual_forward_step > lower_bound and actual_forward_step < upper_bound;
-}
-
-test "native gameplay sound cues fire for completion-arm and score-bucket life gain" {
-    var previous = gameplay.Runner{};
-    var current = previous;
-
-    try std.testing.expectEqual(NativeGameplaySoundCues{}, nativeGameplaySoundCues(previous, current));
-
-    current.phase = .completion_handoff;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).completion_arm_cheers);
-
-    previous = current;
-    try std.testing.expect(!nativeGameplaySoundCues(previous, current).completion_arm_cheers);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.score.total = 50_000;
-    current.visible_life_stock = previous.visible_life_stock + 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).extra_life);
-
-    current.score.total = previous.score.total;
-    try std.testing.expect(!nativeGameplaySoundCues(previous, current).extra_life);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.counters.trampoline_rows = 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).trampoline_bounce);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.current_runtime_tile_hint = native_runtime_tile_wall;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).wall_barrier_hit);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.counters.parcels = 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).parcel_pickup);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.row_event_display.delivered_parcel_count = 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).parcel_delivery);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.row_event_display.parcel_target_count = 1;
-    current.row_event_display.bonus_enabled = true;
-    current.row_event_display.delivered_parcel_count = 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).parcel_bonus);
-
-    current.row_event_display.bonus_enabled = false;
-    try std.testing.expect(!nativeGameplaySoundCues(previous, current).parcel_bonus);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.row_event_display.gate_18 = 1;
-    try std.testing.expect(nativeGameplaySoundCues(previous, current).row_event_confirm);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    try std.testing.expectEqual(@as(?usize, null), nativeRingPickupSoundIndex(previous, current));
-
-    current.last_native_ring_effect_kind = 1;
-    current.native_ring_effect_token = 1;
-    try std.testing.expectEqual(@as(?usize, 0), nativeRingPickupSoundIndex(previous, current));
-    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
-    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
-
-    previous = current;
-    current.last_native_ring_effect_kind = 8;
-    current.native_ring_effect_token +%= 1;
-    current.movement_flag_selector = 8;
-    try std.testing.expectEqual(
-        @as(?usize, gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1),
-        nativeRingPickupSoundIndex(previous, current),
-    );
-    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
-    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.last_native_ring_effect_kind = 3;
-    current.native_ring_effect_token = 1;
-    try std.testing.expectEqual(@as(?usize, null), nativeRingPickupSoundIndex(previous, current));
-    try std.testing.expect(nativeSlowRingSoundTriggered(previous, current));
-    try std.testing.expect(!nativeExplodeRingSoundTriggered(previous, current));
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.last_native_ring_effect_kind = 2;
-    current.native_ring_effect_token = 1;
-    try std.testing.expect(!nativeSlowRingSoundTriggered(previous, current));
-    try std.testing.expect(nativeExplodeRingSoundTriggered(previous, current));
-
-    try std.testing.expectEqual(
-        @as(?f32, null),
-        nativeMovementStateAttachmentExitGain(
-            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            .{ .x = 0.0, .y = 0.0, .z = 30.0 },
-            false,
-        ),
-    );
-    try std.testing.expectApproxEqAbs(
-        @as(f32, 0.5),
-        nativeMovementStateAttachmentExitGain(
-            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            .{ .x = 0.0, .y = 0.0, .z = 30.0 },
-            true,
-        ).?,
-        0.0001,
-    );
-    try std.testing.expectApproxEqAbs(
-        @as(f32, 0.0),
-        nativeMovementStateAttachmentExitGain(
-            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-            .{ .x = 0.0, .y = 0.0, .z = 120.0 },
-            true,
-        ).?,
-        0.0001,
-    );
-    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(0, 2));
-    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(16383, 2));
-    try std.testing.expectEqual(@as(usize, 1), nativeMovementStateVariantIndexForSample(16384, 2));
-    try std.testing.expectEqual(@as(usize, 2), nativeMovementStateVariantIndexForSample(32767, 3));
-    previous = gameplay.Runner{};
-    current = previous;
-    current.movement_flags = 8;
-    try std.testing.expectEqualDeep(
-        gameplay.WeaponChannelStates{ .right = 2 },
-        gameplay.nativeWeaponChannelStates(current.movement_flags),
-    );
-    try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.movement_flags = 2;
-    try std.testing.expectEqualDeep(
-        gameplay.WeaponChannelStates{ .left = 1, .right = 1 },
-        gameplay.nativeWeaponChannelStates(current.movement_flags),
-    );
-    try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
-
-    previous = gameplay.Runner{};
-    current = previous;
-    try std.testing.expect(!nativeWeaponPresentationChanged(previous, current));
-    try std.testing.expectEqual(NativeMovementStateSoundFamily.turbo, nativeMovementStateSoundFamily(current));
-
-    current.weapon_level = 2;
-    current.movement_flags = 144;
-    try std.testing.expectEqual(NativeMovementStateSoundFamily.laser, nativeMovementStateSoundFamily(current));
-
-    current.movement_flags = 192;
-    try std.testing.expectEqual(NativeMovementStateSoundFamily.rocket, nativeMovementStateSoundFamily(current));
-
-    previous = gameplay.Runner{};
-    current = previous;
-    try std.testing.expectEqual(NativeJetpackSoundCues{}, nativeJetpackSoundCues(previous, current));
-
-    current.jetpack.active = true;
-    try std.testing.expect(nativeJetpackSoundCues(previous, current).activate);
-    try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
-
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold,
-    } };
-    current = previous;
-    current.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01;
-    try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
-
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = 0.25,
-    } };
-    current = previous;
-    current.jetpack.active = false;
-    current.jetpack.progress = 0.0;
-    try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
-
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01,
-    } };
-    current = previous;
-    current.jetpack.active = false;
-    current.jetpack.progress = 0.0;
-    try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
-}
-
-test "native slowdown voice band follows the recovered narrow forward-speed window" {
-    var previous = gameplay.Runner{};
-    var current = previous;
-    previous.row_position = 10.0;
-    current.row_position = 10.038;
-    current.movement_rate_scalar = 0.2;
-
-    try std.testing.expect(nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.03;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.05;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.038;
-    current.attachment_exit_pending = true;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current = previous;
-    current.row_position = 10.038;
-    current.movement_rate_scalar = 0.2;
-    current.movement_mode = .attachment;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-}
-
 test "weapon visual state keeps native side blaster and laser families distinct" {
     var visuals = GameplayWeaponVisualState{};
 
@@ -1299,167 +944,6 @@ test "jetpack visual state keeps native draw and hide legs around the shutoff ed
     try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len), visuals.hide_ticks);
     visuals.tick();
     try std.testing.expectEqual(@as(u8, gameplay_assets.gameplay_jetpack_thrust_model_paths.len - 1), visuals.hide_ticks);
-}
-
-fn nativeGameplayWeaponUpgradeVoiceCue(
-    previous: gameplay.Runner,
-    current: gameplay.Runner,
-    runtime_build_flags: u32,
-) bool {
-    if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
-        return (effect_kind == 4 or effect_kind == 5) and
-            (runtime_build_flags & 0x10) != 0 and
-            current.session_mode != .time_trial;
-    }
-    return current.weapon_level > previous.weapon_level;
-}
-
-fn nativeGameplayVoiceCues(
-    previous: gameplay.Runner,
-    current: gameplay.Runner,
-    runtime_build_flags: u32,
-) NativeGameplayVoiceCues {
-    return .{
-        .start = previous.tick_count < gameplay_assets.native_gameplay_start_voice_tick and
-            current.tick_count >= gameplay_assets.native_gameplay_start_voice_tick,
-        .package_pickup = current.counters.parcels > previous.counters.parcels,
-        .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
-        .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
-        .damage_escalation = previous.damage_warning_state != .draining and
-            current.damage_warning_state == .draining,
-    };
-}
-
-fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return previous.damage_warning_actor.sample_generation != current.damage_warning_actor.sample_generation;
-}
-
-test "native gameplay voice cues fire on the recovered startup timer" {
-    var previous = gameplay.Runner{};
-    var current = previous;
-    const runtime_build_flags = track.postalChallengeRuntimeBuildFlags;
-
-    current.tick_count = gameplay_assets.native_gameplay_start_voice_tick - 1;
-    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
-
-    previous = current;
-    current.tick_count = gameplay_assets.native_gameplay_start_voice_tick;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).start);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.counters.parcels = 1;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).package_pickup);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.last_native_ring_effect_kind = 4;
-    current.native_ring_effect_token = 1;
-    current.session_mode = .postal;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).weapon_upgrade);
-
-    current = previous;
-    current.last_native_ring_effect_kind = 8;
-    current.native_ring_effect_token = 1;
-    current.session_mode = .postal;
-    try std.testing.expect(!nativeGameplayVoiceCues(previous, current, runtime_build_flags).weapon_upgrade);
-
-    previous = gameplay.Runner{};
-    current = previous;
-    current.damage_gauge = 0.04;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_entry);
-
-    previous = gameplay.Runner{ .damage_warning_state = .filling };
-    current = previous;
-    current.damage_warning_state = .draining;
-    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_escalation);
-
-    previous = current;
-    try std.testing.expectEqual(NativeGameplayVoiceCues{}, nativeGameplayVoiceCues(previous, current, runtime_build_flags));
-}
-
-test "native gameplay warning loop keys from the warning actor cadence" {
-    const previous = gameplay.Runner{};
-    var current = previous;
-    try std.testing.expect(!nativeGameplayWarningLoopTriggered(previous, current));
-
-    current.damage_warning_actor.sample_generation = 1;
-    try std.testing.expect(nativeGameplayWarningLoopTriggered(previous, current));
-}
-
-fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_runtime_kind: ?u8) bool {
-    if (previous_attachment_runtime_kind != 31) return false;
-    if (current.movement_mode == .attachment or current.attachment_follow.active) return false;
-    return current.launch.active and current.launch.vertical_velocity > 0.0;
-}
-
-test "native supertramp exit voice keys from the launch handoff" {
-    const launched = gameplay.Runner{
-        .movement_mode = .track,
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 1.0,
-        },
-    };
-    try std.testing.expect(nativeGameplaySupertrampExitVoice(launched, 31));
-    try std.testing.expect(!nativeGameplaySupertrampExitVoice(launched, 24));
-    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
-        .movement_mode = .track,
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 0.0,
-        },
-    }, 31));
-    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
-        .movement_mode = .attachment,
-        .attachment_follow = .{ .active = true },
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 1.0,
-        },
-    }, 31));
-}
-
-const NativeDeathCutsceneVoiceCues = struct {
-    entry: bool = false,
-    fallback: bool = false,
-};
-
-fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeDeathCutsceneVoiceCues {
-    const death_cutscene_active = current.cutscene_id == gameplay.cutscene_death_id and current.deathCause() == .hazard;
-    if (!death_cutscene_active) return .{};
-
-    return .{
-        .entry = previous.cutscene_camera.state != 11 and current.cutscene_camera.state == 11,
-        .fallback = previous.cutscene_camera.state != 12 and
-            current.cutscene_camera.state == 12 and
-            !current.attachment_exit_gate_b,
-    };
-}
-
-test "native death cutscene voice cues key from states 11 and 12" {
-    var previous = gameplay.Runner{};
-    var current = previous;
-    current.cutscene_id = gameplay.cutscene_death_id;
-    current.phase = .{ .fall = .{
-        .cause = .hazard,
-        .world_x = 0.0,
-        .world_y = 0.0,
-        .world_z = 0.0,
-        .vertical_velocity = 0.0,
-        .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-        .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-    } };
-    current.cutscene_camera.state = 11;
-    try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).entry);
-    try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
-
-    previous = current;
-    current.cutscene_camera.state = 12;
-    try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).fallback);
-
-    current.attachment_exit_gate_b = true;
-    try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
 }
 
 const PendingRunPersistence = enum {
@@ -3928,9 +3412,9 @@ const AppState = struct {
         _: gameplay.RunnerInput,
     ) void {
         if (!self.audio_ready) return;
-        const native_sound_cues = nativeGameplaySoundCues(previous, current);
-        const native_jetpack_sound_cues = nativeJetpackSoundCues(previous, current);
-        const native_voice_cues = nativeGameplayVoiceCues(previous, current, preview.runtime_build_flags);
+        const native_sound_cues = gameplay_audio_cues.nativeGameplaySoundCues(previous, current);
+        const native_jetpack_sound_cues = gameplay_audio_cues.nativeJetpackSoundCues(previous, current);
+        const native_voice_cues = gameplay_audio_cues.nativeGameplayVoiceCues(previous, current, preview.runtime_build_flags);
 
         if (native_sound_cues.completion_arm_cheers) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.cheers);
@@ -3962,7 +3446,7 @@ const AppState = struct {
         if (native_jetpack_sound_cues.deactivate) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack_shutoff);
         }
-        if (nativeRingPickupSoundIndex(previous, current)) |sound_index| {
+        if (gameplay_audio_cues.nativeRingPickupSoundIndex(previous, current)) |sound_index| {
             self.playGameplayEffect(self.current_gameplay_sound_fx.powerup_pickup[sound_index]);
         }
         if (native_voice_cues.start) {
@@ -3983,7 +3467,7 @@ const AppState = struct {
         if (native_voice_cues.damage_escalation) {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
         }
-        if (nativeGameplaySlowVoiceBandActive(previous, current)) {
+        if (gameplay_audio_cues.nativeGameplaySlowVoiceBandActive(previous, current)) {
             self.native_gameplay_slow_voice_progress += gameplay_assets.native_gameplay_slow_voice_timer_step;
             if (self.native_gameplay_slow_voice_progress > 1.0) {
                 self.native_gameplay_slow_voice_progress = 0.0;
@@ -3992,7 +3476,7 @@ const AppState = struct {
         } else {
             self.native_gameplay_slow_voice_progress = 0.0;
         }
-        const death_cutscene_voice_cues = nativeDeathCutsceneVoiceCues(previous, current);
+        const death_cutscene_voice_cues = gameplay_audio_cues.nativeDeathCutsceneVoiceCues(previous, current);
         if (death_cutscene_voice_cues.entry) {
             self.tryPlayNativeGameplayVoiceSet(.fall, .interrupt_current) catch {};
         }
@@ -4010,7 +3494,7 @@ const AppState = struct {
                 }
             }
         }
-        if (nativeGameplaySupertrampExitVoice(current, previous_attachment_runtime_kind)) {
+        if (gameplay_audio_cues.nativeGameplaySupertrampExitVoice(current, previous_attachment_runtime_kind)) {
             self.tryPlayNativeGameplayVoiceSet(.supertramp, .wait_for_idle) catch {};
         }
         if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {
@@ -4023,12 +3507,12 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.dying, .interrupt_current) catch {};
         }
 
-        if (nativeGameplayWarningLoopTriggered(previous, current)) {
+        if (gameplay_audio_cues.nativeGameplayWarningLoopTriggered(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
         }
 
         if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-            const fired_sound = switch (nativeMovementStateSoundFamily(current)) {
+            const fired_sound = switch (gameplay_audio_cues.nativeMovementStateSoundFamily(current)) {
                 .turbo => self.pickNativeMovementStateSoundVariant(
                     gameplay_assets.gameplay_turbo_fire_sound_paths.len,
                     self.current_gameplay_sound_fx.turbo_fire,
@@ -4042,7 +3526,7 @@ const AppState = struct {
                     self.current_gameplay_sound_fx.rocket,
                 ),
             };
-            if (nativeMovementStateAttachmentExitGain(
+            if (gameplay_audio_cues.nativeMovementStateAttachmentExitGain(
                 cameraWorldTransformFromMatrix(self.subgame_camera.shared_matrix).position,
                 current.worldPosition(preview, 0.0),
                 current.attachment_exit_pending,
@@ -4055,7 +3539,7 @@ const AppState = struct {
         if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.enemy_fire);
         }
-        if (nativeWeaponPresentationChanged(previous, current)) {
+        if (gameplay_audio_cues.nativeWeaponPresentationChanged(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
         }
         if (current.counters.health_pickups > previous.counters.health_pickups) {
@@ -4064,10 +3548,10 @@ const AppState = struct {
         if (current.invincible_ticks > previous.invincible_ticks) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.invincible);
         }
-        if (nativeSlowRingSoundTriggered(previous, current)) {
+        if (gameplay_audio_cues.nativeSlowRingSoundTriggered(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
         }
-        if (nativeExplodeRingSoundTriggered(previous, current)) {
+        if (gameplay_audio_cues.nativeExplodeRingSoundTriggered(previous, current)) {
             self.playGameplayEffect(self.current_gameplay_sound_fx.explode_ring);
         }
         if (current.counters.garbage_hits > previous.counters.garbage_hits) {
@@ -6975,7 +6459,7 @@ const AppState = struct {
     }
 
     fn nextNativeMovementStateVariantIndex(self: *AppState, comptime count: usize) usize {
-        return nativeMovementStateVariantIndexForSample(self.nextMathRandomInt15(), count);
+        return gameplay_audio_cues.nativeMovementStateVariantIndexForSample(self.nextMathRandomInt15(), count);
     }
 
     fn pickGameplaySoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
