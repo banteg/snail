@@ -5011,10 +5011,6 @@ const AppState = struct {
         }
     }
 
-    fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
-        return frontendModeDispatch(mode).runtime_build_flags;
-    }
-
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
         return if (self.current_track_preview) |preview|
             preview.runtime_build_flags
@@ -7696,18 +7692,6 @@ const FrontendTextAlign = enum {
     right,
 };
 
-const FrontendButtonOptions = struct {
-    min_width: f32 = 0.0,
-    show_cursor: bool = true,
-};
-
-const FrontendButtonColors = struct {
-    fill: rl.Color,
-    outline: rl.Color,
-    text: rl.Color,
-    shadow: rl.Color,
-};
-
 fn drawFrontendTextAligned(
     state: *const AppState,
     layout: VirtualLayout,
@@ -7727,44 +7711,6 @@ fn drawFrontendTextAligned(
         .right => @as(i32, @intFromFloat(point.x)) - width,
     };
     drawAppText(state, text, draw_x, @intFromFloat(point.y), font_size, color);
-}
-
-fn frontendButtonColors(active: bool) FrontendButtonColors {
-    return if (active)
-        .{
-            .fill = .{ .r = 184, .g = 112, .b = 214, .a = 232 },
-            .outline = .{ .r = 226, .g = 194, .b = 255, .a = 255 },
-            .text = .ray_white,
-            .shadow = .{ .r = 74, .g = 18, .b = 84, .a = 220 },
-        }
-    else
-        .{
-            .fill = .{ .r = 96, .g = 78, .b = 152, .a = 164 },
-            .outline = .{ .r = 112, .g = 96, .b = 176, .a = 112 },
-            .text = .{ .r = 216, .g = 138, .b = 28, .a = 255 },
-            .shadow = .{ .r = 40, .g = 16, .b = 58, .a = 220 },
-        };
-}
-
-fn measureFrontendLocalTextWidth(state: *const AppState, layout: VirtualLayout, text: []const u8, authored_size: i32) f32 {
-    const pixel_width = measureAppText(state, text, layout.fontSize(authored_size));
-    return @as(f32, @floatFromInt(pixel_width)) / layout.scale;
-}
-
-fn drawFrontendPill(
-    layout: VirtualLayout,
-    center_x: f32,
-    center_y: f32,
-    width: f32,
-    height: f32,
-    fill: rl.Color,
-    outline: rl.Color,
-) void {
-    const shadow_rect = layout.mapRect(center_x - width * 0.5, center_y - height * 0.5 + 2.0, width, height);
-    const rect = layout.mapRect(center_x - width * 0.5, center_y - height * 0.5, width, height);
-    rl.drawRectangleRounded(shadow_rect, 0.4, 10, .{ .r = 30, .g = 6, .b = 34, .a = 110 });
-    rl.drawRectangleRounded(rect, 0.4, 10, fill);
-    rl.drawRectangleRoundedLinesEx(rect, 0.4, 10, layout.scaleFloat(1.0), outline);
 }
 
 fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local_x: f32, local_y: f32) void {
@@ -7874,25 +7820,6 @@ fn drawUiFontTextRect(
     color: rl.Color,
 ) void {
     drawUiFontTextAbsolute(state, layout, text, rect.left, rect.top, text_scale, color);
-}
-
-fn drawFrontendMenuButton(
-    state: *const AppState,
-    layout: VirtualLayout,
-    center_x: f32,
-    center_y: f32,
-    text: []const u8,
-    active: bool,
-    options: FrontendButtonOptions,
-) void {
-    const authored_font_size: i32 = if (active) 28 else 26;
-    const horizontal_padding: f32 = if (active) 54.0 else 42.0;
-    const local_width = @max(measureFrontendLocalTextWidth(state, layout, text, authored_font_size) + horizontal_padding, options.min_width);
-    const local_height: f32 = if (active) 38.0 else 34.0;
-    const colors = frontendButtonColors(active);
-    drawFrontendPill(layout, center_x, center_y, local_width, local_height, colors.fill, colors.outline);
-    drawFrontendTextAligned(state, layout, center_x + 2.0, center_y - @as(f32, if (active) 13 else 12), text, authored_font_size, colors.shadow, .center);
-    drawFrontendTextAligned(state, layout, center_x, center_y - @as(f32, if (active) 15 else 14), text, authored_font_size, colors.text, .center);
 }
 
 fn drawTextureLocalRectSource(
@@ -8261,47 +8188,35 @@ fn postalCompletionOwner(current_index: usize, highest_available: usize) Complet
         .postal_route_map;
 }
 
-const FrontendModeDispatch = struct {
-    session_mode: gameplay.SessionMode,
-    runtime_build_flags: u32,
-    completion_bonus_enabled: bool,
-};
-
-fn frontendModeDispatch(mode: ?FrontendLevelMode) FrontendModeDispatch {
-    // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
-    // mode differences through a small mode-to-config lane in `set_subgame_features` and
-    // `build_subgame_level`. Keep the shared runner wiring centralized here instead of
-    // scattering per-mode switches across unrelated helpers.
+// PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
+// mode differences through a small mode-to-config lane in `set_subgame_features` and
+// `build_subgame_level`. Keep the mode helpers literal and local instead of routing
+// them through an intermediate config struct.
+fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
     return switch (mode orelse .postal) {
-        .postal => .{
-            .session_mode = .postal,
-            .runtime_build_flags = track.postalChallengeRuntimeBuildFlags,
-            .completion_bonus_enabled = true,
-        },
-        .challenge => .{
-            .session_mode = .challenge,
-            .runtime_build_flags = track.postalChallengeRuntimeBuildFlags,
-            .completion_bonus_enabled = false,
-        },
-        .time_trial => .{
-            .session_mode = .time_trial,
-            .runtime_build_flags = track.timeTrialRuntimeBuildFlags,
-            .completion_bonus_enabled = false,
-        },
-        .tutorial => .{
-            .session_mode = .tutorial,
-            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
-            .completion_bonus_enabled = false,
-        },
+        .postal, .challenge => track.postalChallengeRuntimeBuildFlags,
+        .time_trial => track.timeTrialRuntimeBuildFlags,
+        .tutorial => track.tutorialRuntimeBuildFlags,
     };
 }
 
 fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
-    return frontendModeDispatch(mode).session_mode;
+    return switch (mode orelse .postal) {
+        .postal => .postal,
+        .challenge => .challenge,
+        .time_trial => .time_trial,
+        .tutorial => .tutorial,
+    };
 }
 
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
-    return frontendModeDispatch(mode).completion_bonus_enabled;
+    // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
+    // mode differences through a small mode-to-config lane in `set_subgame_features` and
+    // `build_subgame_level`. Postal is the only mode that keeps the completion bonus lane.
+    return switch (mode orelse .postal) {
+        .postal => true,
+        .challenge, .time_trial, .tutorial => false,
+    };
 }
 
 fn routeMapHasReplayEntry(
@@ -11038,16 +10953,16 @@ test "completion bonus only applies to postal mode" {
     try std.testing.expect(completionBonusAppliesForMode(null));
 }
 
-test "frontend mode dispatch matches the recovered shared subgame routing" {
-    try std.testing.expectEqual(gameplay.SessionMode.postal, frontendModeDispatch(.postal).session_mode);
-    try std.testing.expectEqual(gameplay.SessionMode.challenge, frontendModeDispatch(.challenge).session_mode);
-    try std.testing.expectEqual(gameplay.SessionMode.time_trial, frontendModeDispatch(.time_trial).session_mode);
-    try std.testing.expectEqual(gameplay.SessionMode.tutorial, frontendModeDispatch(.tutorial).session_mode);
+test "frontend mode helpers match the recovered shared subgame routing" {
+    try std.testing.expectEqual(gameplay.SessionMode.postal, runnerSessionModeForFrontendMode(.postal));
+    try std.testing.expectEqual(gameplay.SessionMode.challenge, runnerSessionModeForFrontendMode(.challenge));
+    try std.testing.expectEqual(gameplay.SessionMode.time_trial, runnerSessionModeForFrontendMode(.time_trial));
+    try std.testing.expectEqual(gameplay.SessionMode.tutorial, runnerSessionModeForFrontendMode(.tutorial));
 
-    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, frontendModeDispatch(.postal).runtime_build_flags);
-    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, frontendModeDispatch(.challenge).runtime_build_flags);
-    try std.testing.expectEqual(track.timeTrialRuntimeBuildFlags, frontendModeDispatch(.time_trial).runtime_build_flags);
-    try std.testing.expectEqual(track.tutorialRuntimeBuildFlags, frontendModeDispatch(.tutorial).runtime_build_flags);
+    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, runtimeBuildFlagsForFrontendMode(.postal));
+    try std.testing.expectEqual(track.postalChallengeRuntimeBuildFlags, runtimeBuildFlagsForFrontendMode(.challenge));
+    try std.testing.expectEqual(track.timeTrialRuntimeBuildFlags, runtimeBuildFlagsForFrontendMode(.time_trial));
+    try std.testing.expectEqual(track.tutorialRuntimeBuildFlags, runtimeBuildFlagsForFrontendMode(.tutorial));
 }
 
 test "route map replay gate follows time-trial completion replays" {
