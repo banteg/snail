@@ -579,6 +579,13 @@ Still unresolved from the current Windows package:
 High-confidence `PathTemplateSample` fields:
 
 - `+0x00..+0x3f`: `TransformMatrix`
+
+The shared checked-in reverse-engineering header at
+[`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h)
+now also mirrors the stable `FollowState` prefix used by the attachment-follow
+helpers. Treat that header as the current repo-owned typed source for the
+`PathTemplate` / strip-mesh / follow-state slice that we actively mirror into
+IDA.
   - `+0x00`: `basis_right`
   - `+0x10`: `basis_up`
   - `+0x20`: `basis_forward`

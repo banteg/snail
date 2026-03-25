@@ -229,3 +229,16 @@ The current helper split is intentionally broader than the path-template family:
 
 - `TransformMatrix`, `normalize_vector_from_source`, `set_matrix_z_direction`, and `orthogonalize_matrix` are now modeled as shared math helpers because their xrefs span cameraman, overlay, gameplay, and path code
 - the color-writer helpers are now explicitly typed on `Color4f` / `ColorBGRA8`, which cleans up frontend, hazard, galaxy, worm-path, and track-render callsites at once
+
+The checked-in header now also carries the stable `FollowState` slice used by the attachment-follow helpers:
+
+- `FollowState.active`
+- `FollowState.template_record`
+- `FollowState.source_cell`
+- `FollowState.sample_index`
+- `FollowState.progress`
+- `FollowState.vertical_offset`
+- `FollowState.output_position`
+- `FollowState.player`
+
+The five orientation floats remain intentionally neutral as `orientation_a` through `orientation_e`. They are live and useful for decompile readability, but they are not semantically closed enough to overname yet.

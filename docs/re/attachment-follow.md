@@ -107,6 +107,8 @@ The current high-confidence follow-state layout is:
 - `+0x2c`: interpolated output position written by `update_track_attachment_follow_state`
 - `+0x38`: player pointer
 
+That same stable layout is now checked in as [`FollowState`](../../analysis/headers/path_template_types.h) and mirrored into IDA through the narrow typed-header sync lane. The five orientation floats stay conservatively named as `orientation_a` through `orientation_e`.
+
 Recovered begin-state behavior from `begin_track_attachment_follow_state`:
 
 - sets the active flag to `1`

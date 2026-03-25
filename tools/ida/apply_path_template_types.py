@@ -99,6 +99,14 @@ TRUSTED_DECLARATIONS = [
         "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
     ),
     (
+        "begin_track_attachment_follow_state",
+        "PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
+    ),
+    (
+        "update_track_attachment_follow_state",
+        "int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);",
+    ),
+    (
         "initialize_loopout_path_template_pair",
         "int32_t __thiscall initialize_loopout_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),

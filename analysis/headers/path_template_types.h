@@ -34,6 +34,9 @@ typedef struct ColorBGRA8 {
     uint8_t a;
 } ColorBGRA8;
 
+typedef struct TrackRowCell TrackRowCell;
+typedef struct Player Player;
+
 typedef struct TextureRef {
     uint32_t flags;
     uint8_t _pad_04[0x8];
@@ -164,6 +167,23 @@ typedef struct PathTemplate {
     float header_a4;
 } PathTemplate;
 
+typedef struct FollowState {
+    uint8_t active;
+    uint8_t _pad_01[0x3];
+    PathTemplate* template_record;
+    TrackRowCell* source_cell;
+    uint32_t sample_index;
+    float progress;
+    float vertical_offset;
+    float orientation_a;
+    float orientation_b;
+    float orientation_c;
+    float orientation_d;
+    float orientation_e;
+    Vec3 output_position;
+    Player* player;
+} FollowState;
+
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
 PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);
 int32_t __fastcall finalize_path_template_record(PathTemplate* self);
@@ -192,6 +212,8 @@ float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
+PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
+int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(
     PathTemplate* self,
