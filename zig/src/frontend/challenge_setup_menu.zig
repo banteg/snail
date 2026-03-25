@@ -89,31 +89,31 @@ pub fn sliderLayout(font: *const game_font.Loaded, state: LayoutState, item: Ite
 
 pub fn textRect(font: *const game_font.Loaded, state: LayoutState, item: Item) frontend_widget.Rect {
     return switch (item) {
-        .difficulty => frontend_widget.type20TextRect(
+        .difficulty => frontend_widget.menuButtonTextRect(
             font,
             measurementLabel(.difficulty),
             difficulty_anchor_y,
             center_offset_x,
         ),
-        .speed => frontend_widget.type20TextRect(
+        .speed => frontend_widget.menuButtonTextRect(
             font,
             measurementLabel(.speed),
             frontend_widget.sliderStackBelowLayout(sliderLayout(font, state, .difficulty)),
             center_offset_x,
         ),
-        .play => frontend_widget.type20TextRect(
+        .play => frontend_widget.menuButtonTextRect(
             font,
             "Play",
             frontend_widget.sliderStackBelowLayout(sliderLayout(font, state, .speed)),
             if (state.replay_available) play_offset_with_replay_x else center_offset_x,
         ),
-        .watch_replay => frontend_widget.type20TextRect(
+        .watch_replay => frontend_widget.menuButtonTextRect(
             font,
             "Watch Replay",
             frontend_widget.sliderStackBelowLayout(sliderLayout(font, state, .speed)),
             watch_replay_offset_x,
         ),
-        .back => frontend_widget.type20TextRect(
+        .back => frontend_widget.menuButtonTextRect(
             font,
             "Back",
             frontend_widget.stackBelow(if (state.replay_available)
@@ -157,7 +157,7 @@ pub fn drawMenuUi(
         slider_textures,
     );
 
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
@@ -169,7 +169,7 @@ pub fn drawMenuUi(
         false,
     );
     if (layout_state.replay_available) {
-        frontend_widget.drawType20Button(
+        frontend_widget.drawMenuButton(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,
@@ -181,7 +181,7 @@ pub fn drawMenuUi(
             false,
         );
     }
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

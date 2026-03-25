@@ -40,21 +40,21 @@ pub const SliderTextures = struct {
 
 pub const multiline_prompt_max_lines: usize = 8;
 
-pub const type20_idle_padding: f32 = 9.0;
+pub const menu_button_idle_padding: f32 = 9.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+536 = 13.0` for the
 // shell-font menu widget hot padding, and `sub_402820` animates toward that target.
-pub const type20_hot_padding: f32 = 13.0;
+pub const menu_button_hot_padding: f32 = 13.0;
 // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+620 = 26.0` for the
 // shell-font menu widget, and `sub_4027B0` chains the next button by adding that recovered
 // gap to the previous widget's measured text height.
-pub const type20_stack_gap: f32 = 26.0;
+pub const menu_button_stack_gap: f32 = 26.0;
 // PORT(verified): the standard centered shell-font menu constructors pass `x = 20.0`
 // with alignment `2`, matching the authored-space offset used by the Windows main/new game
 // menu button stack.
-pub const type20_center_offset_x: f32 = 20.0;
+pub const menu_button_center_offset_x: f32 = 20.0;
 // PORT(verified): `sub_401130` renders the standard shell border with a fixed authored
 // corner size of `+560 = 20.0`. Compact score rows use the smaller 4px edge path.
-pub const type20_border_edge: f32 = 20.0;
+pub const menu_button_border_edge: f32 = 20.0;
 pub const compact_border_edge: f32 = 4.0;
 pub const cursor_hotspot_x: f32 = 8.0;
 pub const cursor_hotspot_y: f32 = 7.0;
@@ -148,7 +148,7 @@ pub const Metrics = struct {
 
 pub const TextButtonState = struct {
     hot_blend: f32 = 0.0,
-    current_padding: f32 = type20_idle_padding,
+    current_padding: f32 = menu_button_idle_padding,
 
     pub fn snapFor(self: *TextButtonState, widget_type: WidgetType, hot: bool) void {
         const metrics = metricsForType(widget_type);
@@ -177,19 +177,19 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             // PORT(verified): `sub_401D30(..., widget_type=20, ...)` seeds `+1776 = 1.3`
             // for the shell-font menu button scale.
             .text_scale = 1.3,
-            .idle_padding = type20_idle_padding,
-            .hot_padding = type20_hot_padding,
-            .border_edge = type20_border_edge,
-            .source_edge_fraction = type20_border_edge / 128.0,
+            .idle_padding = menu_button_idle_padding,
+            .hot_padding = menu_button_hot_padding,
+            .border_edge = menu_button_border_edge,
+            .source_edge_fraction = menu_button_border_edge / 128.0,
         },
         .slider_value => .{
             // PORT(verified): `sub_401D30(..., widget_type=21, ...)` is the slider readout
             // child path. It keeps the type-20 shell border metrics but drops text scale to 1.0.
             .text_scale = 1.0,
-            .idle_padding = type20_idle_padding,
-            .hot_padding = type20_hot_padding,
-            .border_edge = type20_border_edge,
-            .source_edge_fraction = type20_border_edge / 128.0,
+            .idle_padding = menu_button_idle_padding,
+            .hot_padding = menu_button_hot_padding,
+            .border_edge = menu_button_border_edge,
+            .source_edge_fraction = menu_button_border_edge / 128.0,
         },
         .compact_score_row => .{
             .text_scale = 0.65,
@@ -204,8 +204,8 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             .text_scale = 1.14,
             .idle_padding = 6.0,
             .hot_padding = 7.0,
-            .border_edge = type20_border_edge,
-            .source_edge_fraction = type20_border_edge / 128.0,
+            .border_edge = menu_button_border_edge,
+            .source_edge_fraction = menu_button_border_edge / 128.0,
         },
         .route_map_secondary_action => .{
             // PORT(verified): `initialize_galaxy` / `open_galaxy_route` keep the replay action
@@ -213,14 +213,14 @@ pub fn metricsForType(widget_type: WidgetType) Metrics {
             // to `8.0` for the "Watch Best Trial" button.
             .text_scale = 0.8,
             .idle_padding = 8.0,
-            .hot_padding = type20_hot_padding,
-            .border_edge = type20_border_edge,
-            .source_edge_fraction = type20_border_edge / 128.0,
+            .hot_padding = menu_button_hot_padding,
+            .border_edge = menu_button_border_edge,
+            .source_edge_fraction = menu_button_border_edge / 128.0,
         },
     };
 }
 
-pub fn type20TextRect(font: *const game_font.Loaded, text: []const u8, anchor_y: f32, center_offset_x: f32) Rect {
+pub fn menuButtonTextRect(font: *const game_font.Loaded, text: []const u8, anchor_y: f32, center_offset_x: f32) Rect {
     return widgetTextRect(font, .menu_button, .center, text, anchor_y, center_offset_x);
 }
 
@@ -251,7 +251,7 @@ pub fn widgetTextRect(
 }
 
 pub fn stackBelow(rect: Rect) f32 {
-    return stackBelowWithGap(rect, type20_stack_gap);
+    return stackBelowWithGap(rect, menu_button_stack_gap);
 }
 
 pub fn stackBelowWithGap(rect: Rect, child_gap: f32) f32 {
@@ -284,7 +284,7 @@ pub fn colorsForState(state: TextButtonState, disabled: bool) ButtonColors {
     };
 }
 
-pub fn drawType20Button(
+pub fn drawMenuButton(
     layout: app_ui.VirtualLayout,
     art: Art,
     font: *const game_font.Loaded,
@@ -405,7 +405,7 @@ pub fn sliderLayout(
     };
 }
 
-pub fn type20PromptLayout(
+pub fn menuPromptLayout(
     font: *const game_font.Loaded,
     lines: []const []const u8,
     anchor_y: f32,
@@ -459,7 +459,7 @@ pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
     // PORT(verified): `initialize_options_menu` uses `stack_widget_below` after the slider children
     // are attached, so the next row should follow the computed parent frame height rather than
     // a separate hardcoded row-size surrogate.
-    return layout.frame_rect.top + layout.frame_rect.height + type20_stack_gap;
+    return layout.frame_rect.top + layout.frame_rect.height + menu_button_stack_gap;
 }
 
 pub fn drawSliderMenuRow(
@@ -482,7 +482,7 @@ pub fn drawSliderMenuRow(
     const slider_layout = sliderLayout(font, text_rect, row_state, value_text);
     const title_metrics = metricsForType(.menu_button);
 
-    drawNineSliceFrame(layout, art.border, slider_layout.frame_rect, type20_border_edge, type20_border_edge / 128.0, colors.fill);
+    drawNineSliceFrame(layout, art.border, slider_layout.frame_rect, menu_button_border_edge, menu_button_border_edge / 128.0, colors.fill);
 
     const shadow_point = layout.mapPoint(text_rect.left + 2.0, text_rect.top + 2.0);
     const text_point = layout.mapPoint(text_rect.left, text_rect.top);
@@ -743,8 +743,8 @@ fn hasFlag(flags: u32, needle: WidgetFlags) bool {
     return (flags & @intFromEnum(needle)) != 0;
 }
 
-test "type20 text rect is centered around 320 plus offset" {
-    const rect = alignedTextRect(80.0, 44.2, 90.0, .center, type20_center_offset_x);
+test "menu button text rect is centered around 320 plus offset" {
+    const rect = alignedTextRect(80.0, 44.2, 90.0, .center, menu_button_center_offset_x);
     try std.testing.expectEqual(@as(f32, 300.0), rect.left);
     try std.testing.expectEqual(@as(f32, 90.0), rect.top);
     try std.testing.expectEqual(@as(f32, 80.0), rect.width);
@@ -772,8 +772,8 @@ test "stack below uses the recovered 26 pixel gap" {
 
 test "footer widgets keep the standard shell edge" {
     const metrics = metricsForType(.footer_button);
-    try std.testing.expectApproxEqAbs(type20_border_edge, metrics.border_edge, 0.001);
-    try std.testing.expectApproxEqAbs(type20_border_edge / 128.0, metrics.source_edge_fraction, 0.0001);
+    try std.testing.expectApproxEqAbs(menu_button_border_edge, metrics.border_edge, 0.001);
+    try std.testing.expectApproxEqAbs(menu_button_border_edge / 128.0, metrics.source_edge_fraction, 0.0001);
 }
 
 test "slider arrow rect uses the recovered authored offsets" {
@@ -786,7 +786,7 @@ test "slider arrow rect uses the recovered authored offsets" {
     try std.testing.expectEqual(@as(f32, 186.0), more_rect.top);
 }
 
-test "type20 prompt layout stacks an ok button below the frame" {
+test "menu prompt layout stacks an ok button below the frame" {
     var font: game_font.Loaded = undefined;
     font.nominal_height = 0.0;
 
@@ -794,7 +794,7 @@ test "type20 prompt layout stacks an ok button below the frame" {
         "Hi! I'm Turbo the Snail.",
         "Steer with the mouse!",
     };
-    const layout = type20PromptLayout(&font, &lines, 176.0, true);
+    const layout = menuPromptLayout(&font, &lines, 176.0, true);
 
     try std.testing.expect(layout.ok_text_rect != null);
     try std.testing.expect(layout.frame_rect.width >= 240.0);

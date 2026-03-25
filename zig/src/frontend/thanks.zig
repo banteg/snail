@@ -98,7 +98,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
         &state.ui_font,
         .menu_button,
         text,
-        frontend_widget.type20TextRect(&state.ui_font, text, message_y, 0.0),
+        frontend_widget.menuButtonTextRect(&state.ui_font, text, message_y, 0.0),
         idle_state,
         false,
         .{ .flags = 0x20400002 },

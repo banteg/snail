@@ -14,15 +14,15 @@ pub const items = frontend.pause_menu_items;
 
 pub fn textRect(font: *const game_font.Loaded, item: frontend.PauseMenuItem) frontend_widget.Rect {
     return switch (item) {
-        .end_game => frontend_widget.type20TextRect(font, item.label(), start_y, center_offset_x),
-        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .end_game)), center_offset_x),
-        .@"resume" => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), center_offset_x),
+        .end_game => frontend_widget.menuButtonTextRect(font, item.label(), start_y, center_offset_x),
+        .options => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .end_game)), center_offset_x),
+        .@"resume" => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), center_offset_x),
     };
 }
 
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
     for (items, 0..) |item, index| {
-        frontend_widget.drawType20Button(
+        frontend_widget.drawMenuButton(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,

@@ -69,7 +69,7 @@ fn layoutForText(state: anytype, text: []const u8, tutorial: bool, interactive: 
     var prompt_layout = ActiveLayout{};
     const lines = promptLines(text, &prompt_layout.lines);
     prompt_layout.line_count = lines.len;
-    prompt_layout.widget_layout = frontend_widget.type20PromptLayout(
+    prompt_layout.widget_layout = frontend_widget.menuPromptLayout(
         &state.ui_font,
         lines,
         anchorY(tutorial, interactive),
@@ -110,8 +110,8 @@ fn drawWidget(state: anytype, layout: VirtualLayout, queue: *const level_prompt.
         layout,
         state.frontend_widget_art.border.?.texture,
         prompt_layout.widget_layout.frame_rect,
-        frontend_widget.type20_border_edge,
-        frontend_widget.type20_border_edge / 128.0,
+        frontend_widget.menu_button_border_edge,
+        frontend_widget.menu_button_border_edge / 128.0,
         colors.fill,
     );
     drawMessageLines(state, layout, prompt_layout);

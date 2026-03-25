@@ -16,21 +16,21 @@ pub const back_center_offset_x: f32 = 0.0;
 
 pub fn textRect(font: *const game_font.Loaded, item: frontend.NewGameMenuItem) frontend_widget.Rect {
     return switch (item) {
-        .tutorial => frontend_widget.type20TextRect(font, item.label(), start_y, frontend_widget.type20_center_offset_x),
-        .postal_mode => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .tutorial)), frontend_widget.type20_center_offset_x),
-        .time_trial => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .postal_mode)), frontend_widget.type20_center_offset_x),
-        .challenge_mode => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .time_trial)), frontend_widget.type20_center_offset_x),
+        .tutorial => frontend_widget.menuButtonTextRect(font, item.label(), start_y, frontend_widget.menu_button_center_offset_x),
+        .postal_mode => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .tutorial)), frontend_widget.menu_button_center_offset_x),
+        .time_trial => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .postal_mode)), frontend_widget.menu_button_center_offset_x),
+        .challenge_mode => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .time_trial)), frontend_widget.menu_button_center_offset_x),
         .help => helpTextRect(font),
         .back => backTextRect(font),
     };
 }
 
 pub fn helpTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Help", help_anchor_y, help_center_offset_x);
+    return frontend_widget.menuButtonTextRect(font, "Help", help_anchor_y, help_center_offset_x);
 }
 
 pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(
+    return frontend_widget.menuButtonTextRect(
         font,
         "Back",
         frontend_widget.stackBelow(textRect(font, .challenge_mode)),
@@ -41,7 +41,7 @@ pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout, visible_items: [4]bool) void {
     for (frontend.new_game_menu_items[0..4], 0..) |item, index| {
         if (!visible_items[index]) continue;
-        frontend_widget.drawType20Button(
+        frontend_widget.drawMenuButton(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,
@@ -53,7 +53,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout, visible_items: [4]bool)
             false,
         );
     }
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
@@ -64,7 +64,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout, visible_items: [4]bool)
         state.new_game_button_states[4],
         false,
     );
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

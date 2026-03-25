@@ -55,7 +55,7 @@ pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x
 }
 
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
@@ -66,7 +66,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
         state.exit_prompt_button_states[0],
         false,
     );
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

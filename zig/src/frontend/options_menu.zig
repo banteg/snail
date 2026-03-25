@@ -74,25 +74,25 @@ pub fn sliderLayout(font: *const game_font.Loaded, state: LayoutState, item: fro
 
 pub fn textRect(font: *const game_font.Loaded, state: LayoutState, item: frontend.OptionsMenuItem) frontend_widget.Rect {
     return switch (item) {
-        .fullscreen => frontend_widget.type20TextRect(
+        .fullscreen => frontend_widget.menuButtonTextRect(
             font,
             measurementLabel(state, .fullscreen),
             fullscreen_anchor_y,
             button_center_offset_x,
         ),
-        .sound_volume => frontend_widget.type20TextRect(
+        .sound_volume => frontend_widget.menuButtonTextRect(
             font,
             measurementLabel(state, .sound_volume),
-            textRect(font, state, .fullscreen).top + textRect(font, state, .fullscreen).height + frontend_widget.type20_stack_gap,
+            textRect(font, state, .fullscreen).top + textRect(font, state, .fullscreen).height + frontend_widget.menu_button_stack_gap,
             button_center_offset_x,
         ),
-        .music_volume => frontend_widget.type20TextRect(
+        .music_volume => frontend_widget.menuButtonTextRect(
             font,
             measurementLabel(state, .music_volume),
             frontend_widget.sliderStackBelowLayout(sliderLayout(font, state, .sound_volume)),
             button_center_offset_x,
         ),
-        .back => frontend_widget.type20TextRect(
+        .back => frontend_widget.menuButtonTextRect(
             font,
             "Back",
             frontend_widget.sliderStackBelowLayout(sliderLayout(font, state, .music_volume)),
@@ -108,7 +108,7 @@ pub fn drawMenuUi(
     active_target: ?frontend_activation.HoverTarget,
     slider_textures: frontend_widget.SliderTextures,
 ) void {
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,
@@ -143,7 +143,7 @@ pub fn drawMenuUi(
         if (active_target) |target| target == .options_music_more else false,
         slider_textures,
     );
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

@@ -12,17 +12,17 @@ pub const start_y: f32 = 90.0;
 
 pub fn textRect(font: *const game_font.Loaded, item: frontend.MainMenuItem) frontend_widget.Rect {
     return switch (item) {
-        .new_game => frontend_widget.type20TextRect(font, item.label(), start_y, frontend_widget.type20_center_offset_x),
-        .high_scores => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .new_game)), frontend_widget.type20_center_offset_x),
-        .options => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .high_scores)), frontend_widget.type20_center_offset_x),
-        .credits => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), frontend_widget.type20_center_offset_x),
-        .exit => frontend_widget.type20TextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .credits)), frontend_widget.type20_center_offset_x),
+        .new_game => frontend_widget.menuButtonTextRect(font, item.label(), start_y, frontend_widget.menu_button_center_offset_x),
+        .high_scores => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .new_game)), frontend_widget.menu_button_center_offset_x),
+        .options => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .high_scores)), frontend_widget.menu_button_center_offset_x),
+        .credits => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .options)), frontend_widget.menu_button_center_offset_x),
+        .exit => frontend_widget.menuButtonTextRect(font, item.label(), frontend_widget.stackBelow(textRect(font, .credits)), frontend_widget.menu_button_center_offset_x),
     };
 }
 
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
     for (frontend.main_menu_items, 0..) |item, index| {
-        frontend_widget.drawType20Button(
+        frontend_widget.drawMenuButton(
             layout,
             .{
                 .border = state.frontend_widget_art.border.?.texture,

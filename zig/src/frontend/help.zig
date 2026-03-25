@@ -12,11 +12,11 @@ pub const button_count: usize = 1;
 pub const back_anchor_y: f32 = 420.0;
 
 pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Back", back_anchor_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, "Back", back_anchor_y, 0.0);
 }
 
 pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

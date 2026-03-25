@@ -153,8 +153,8 @@ pub fn drawRowEventWidget(
             .width = row_event_widget_frame_width,
             .height = row_event_widget_frame_height,
         },
-        frontend_widget.type20_border_edge,
-        frontend_widget.type20_border_edge / 128.0,
+        frontend_widget.menu_button_border_edge,
+        frontend_widget.menu_button_border_edge / 128.0,
         .{ .r = colors.fill.r, .g = colors.fill.g, .b = colors.fill.b, .a = 176 },
     );
 

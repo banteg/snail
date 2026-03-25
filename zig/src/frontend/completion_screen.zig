@@ -114,19 +114,19 @@ pub fn continueAnchorY(summary: Summary) f32 {
 }
 
 pub fn titleTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, title_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, title_y, 0.0);
 }
 
 pub fn packageTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, package_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, package_y, 0.0);
 }
 
 pub fn bonusTextRect(font: *const game_font.Loaded, text: []const u8) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, text, bonus_y, 0.0);
+    return frontend_widget.menuButtonTextRect(font, text, bonus_y, 0.0);
 }
 
 pub fn continueTextRect(font: *const game_font.Loaded, summary: Summary) frontend_widget.Rect {
-    return frontend_widget.type20TextRect(font, "Click to Continue", continueAnchorY(summary), 0.0);
+    return frontend_widget.menuButtonTextRect(font, "Click to Continue", continueAnchorY(summary), 0.0);
 }
 
 pub fn drawCompleted(
@@ -305,7 +305,7 @@ pub fn drawFailed(
         drawAppText(state, rank_text, body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
     }
 
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         .{
             .border = state.frontend_widget_art.border.?.texture,

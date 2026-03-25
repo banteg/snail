@@ -292,7 +292,7 @@ pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
         }
     }
 
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         widget_art,
         &state.ui_font,
@@ -569,7 +569,7 @@ fn drawCard(
     const widget_art: frontend_widget.Art = .{
         .border = state.frontend_widget_art.border.?.texture,
     };
-    frontend_widget.drawType20Button(
+    frontend_widget.drawMenuButton(
         layout,
         widget_art,
         &state.ui_font,
