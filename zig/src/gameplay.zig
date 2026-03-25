@@ -2,9 +2,21 @@ const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
+const gameplay_runtime_entities = @import("gameplay_runtime_entities.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
 const track = @import("track.zig");
+
+const RuntimeHazardKind = gameplay_runtime_entities.HazardKind;
+const RuntimeHazardState = gameplay_runtime_entities.HazardState;
+const RuntimeHazard = gameplay_runtime_entities.Hazard;
+const RuntimePickupKind = gameplay_runtime_entities.PickupKind;
+const RuntimePickup = gameplay_runtime_entities.Pickup;
+const RuntimeRingEffectState = gameplay_runtime_entities.RingEffectState;
+const RuntimeRingEffect = gameplay_runtime_entities.RingEffect;
+const TrackParcelRuntime = gameplay_runtime_entities.TrackParcel;
+const TrackParcelHomeAnchor = gameplay_runtime_entities.TrackParcelHomeAnchor;
+const TurretState = gameplay_runtime_entities.TurretState;
 
 pub const RunnerInput = struct {
     lane_delta: i8 = 0,
@@ -102,121 +114,6 @@ const FallState = struct {
     vertical_velocity: f32 = 0.0,
     basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-};
-
-pub const RuntimeHazardKind = enum {
-    garbage,
-    salt,
-};
-
-pub const RuntimeHazardState = enum(u8) {
-    inactive = 0,
-    active = 1,
-    burst_setup = 2,
-    burst = 3,
-};
-
-pub const RuntimeHazard = struct {
-    row: usize,
-    lane: usize,
-    kind: RuntimeHazardKind,
-    state: RuntimeHazardState = .active,
-    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_scale: f32 = 1.0,
-    presentation_phase: f32 = 0.0,
-    yaw_radians: f32 = 0.0,
-    arming_progress: f32 = 1.0,
-    arming_step: f32 = 0.0,
-    burst_side: i8 = 0,
-};
-
-pub const RuntimePickupKind = enum {
-    health,
-    jetpack,
-};
-
-pub const RuntimePickup = struct {
-    row: usize,
-    lane: usize,
-    kind: RuntimePickupKind,
-    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_phase: f32 = 0.0,
-    presentation_phase_step: f32 = 0.0,
-};
-
-pub const RuntimeRingEffect = struct {
-    row: usize,
-    lane: usize,
-    kind: u8,
-    state: RuntimeRingEffectState = .active,
-    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_scale: f32 = 1.0,
-    movement_flag_selector_snapshot: u8 = 0,
-    effect_progress: f32 = 0.0,
-    effect_progress_step: f32 = 0.0,
-};
-
-pub const RuntimeRingEffectState = enum(u8) {
-    active,
-    collect_setup,
-    collect_follow,
-    miss_setup,
-    miss_expand,
-};
-
-pub const TrackParcelRuntime = struct {
-    state: u32 = 0,
-    row: usize = 0,
-    parcel_id: i32 = 0,
-    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    flight_anchor: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_scale: f32 = 1.0,
-    bob_phase: f32 = 0.0,
-    bob_phase_step: f32 = track_parcel_bob_phase_step,
-    progress: f32 = 0.0,
-    progress_step: f32 = 0.0,
-    target_distance: f32 = 0.0,
-    travel_dir: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    delivery_offset: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-
-    pub fn active(self: TrackParcelRuntime) bool {
-        return self.state != 0;
-    }
-
-    pub fn presentationPosition(self: TrackParcelRuntime) rl.Vector3 {
-        return switch (self.state) {
-            1 => blk: {
-                var position = self.world_position;
-                position.y += std.math.sin(self.bob_phase * std.math.tau) * track_parcel_bob_amplitude;
-                break :blk position;
-            },
-            5, 7 => self.presentation_position,
-            else => self.world_position,
-        };
-    }
-
-    pub fn presentationScale(self: TrackParcelRuntime) f32 {
-        return switch (self.state) {
-            5, 7 => self.presentation_scale,
-            else => 1.0,
-        };
-    }
-};
-
-const TrackParcelHomeAnchor = struct {
-    active: bool = false,
-    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-};
-
-const TurretState = struct {
-    row: usize,
-    lane: usize,
-    seconds: f32 = 0.0,
-    flash_ticks: u8 = 0,
 };
 
 pub const Projectile = struct {

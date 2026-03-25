@@ -7,10 +7,15 @@ const background = @import("background.zig");
 const config = @import("config.zig");
 const debug_levels = @import("debug_levels.zig");
 const frontend = @import("frontend.zig");
+const frontend_bridge = @import("frontend_bridge.zig");
+const frontend_high_score_screen = @import("frontend_high_score_screen.zig");
+const frontend_thanks = @import("frontend_thanks.zig");
 const frontend_widget = @import("frontend_widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay = @import("gameplay.zig");
+const gameplay_runtime_entities = @import("gameplay_runtime_entities.zig");
+const gameplay_voice = @import("gameplay_voice.zig");
 const high_score = @import("high_score.zig");
 const intro = @import("intro.zig");
 const level_prompt = @import("level_prompt.zig");
@@ -358,9 +363,6 @@ const gameplay_cheers_sound_path = "SFX2/CHEERS.OGG";
 const gameplay_extra_life_sound_path = "SFX2/EXTRALIFE.OGG";
 const gameplay_weapon_change_sound_path = "SFX2/SERVO1.OGG";
 const gameplay_postal_warning_sound_path = "SFX2/POSTALLOOP.OGG";
-const native_gameplay_voice_set_cooldown_step: f32 = 1.0 / 240.0;
-const native_gameplay_voice_manager_global_step: f32 = 1.0 / 60.0;
-const native_gameplay_voice_manager_frequency_seconds: f32 = 20.0;
 const native_gameplay_slow_voice_timer_step: f32 = 1.0 / 60.0;
 const native_gameplay_start_voice_tick: u64 = 18;
 const native_runtime_tile_wall: u8 = 0x0e;
@@ -883,146 +885,6 @@ const GameplayEffectKind = enum {
     smoke,
 };
 
-const GameplayVoiceManager = struct {
-    active: bool = false,
-    progress: f32 = 0.0,
-    delta: f32 = 1.0 / 60.0,
-
-    fn tick(self: *GameplayVoiceManager) void {
-        if (!self.active or self.progress <= 0.0) return;
-        self.progress += self.delta;
-        if (self.progress > 1.0) {
-            self.active = false;
-            self.progress = 0.0;
-        }
-    }
-
-    fn arm(self: *GameplayVoiceManager) void {
-        self.active = true;
-        self.progress = self.delta;
-    }
-
-    fn clear(self: *GameplayVoiceManager) void {
-        self.* = .{};
-    }
-};
-
-const NativeGameplayVoiceSet = enum(u8) {
-    damage = 0,
-    dying = 1,
-    enemies = 2,
-    fall = 3,
-    misc = 4,
-    powerup = 5,
-    slow = 6,
-    start = 7,
-    victory = 8,
-    ouch = 9,
-    package = 10,
-    slugged = 11,
-    worm_tunnel = 12,
-    tutorial = 13,
-    postal = 14,
-    supertramp = 15,
-};
-
-const NativeGameplayVoiceMode = enum(u2) {
-    wait_for_idle = 0,
-    wait_for_frequency = 1,
-    interrupt_current = 2,
-};
-
-const NativeGameplayVoiceSetState = struct {
-    next_index: usize = 0,
-    cooldown_progress: f32 = 0.0,
-    cooldown_step: f32 = native_gameplay_voice_set_cooldown_step,
-
-    fn tick(self: *NativeGameplayVoiceSetState) void {
-        if (self.cooldown_progress <= 0.0) return;
-        self.cooldown_progress += self.cooldown_step;
-        if (self.cooldown_progress > 1.0) {
-            self.cooldown_progress = 0.0;
-        }
-    }
-};
-
-const NativeGameplayVoiceManager = struct {
-    global_progress: f32 = 0.0,
-    global_step: f32 = native_gameplay_voice_manager_global_step,
-    global_frequency_seconds: f32 = native_gameplay_voice_manager_frequency_seconds,
-    sets: [16]NativeGameplayVoiceSetState = [_]NativeGameplayVoiceSetState{.{}} ** 16,
-
-    fn tick(self: *NativeGameplayVoiceManager) void {
-        for (&self.sets) |*set_state| {
-            set_state.tick();
-        }
-        self.global_progress += self.global_step;
-    }
-
-    fn clear(self: *NativeGameplayVoiceManager) void {
-        self.* = .{};
-    }
-
-    fn requestPlay(
-        self: *NativeGameplayVoiceManager,
-        set_id: NativeGameplayVoiceSet,
-        mode: NativeGameplayVoiceMode,
-        voice_busy: bool,
-        sample_count: usize,
-    ) ?usize {
-        if (sample_count == 0) return null;
-        switch (mode) {
-            .wait_for_idle => {
-                if (voice_busy) return null;
-            },
-            .wait_for_frequency => {
-                if (voice_busy) return null;
-                if (self.global_progress < self.global_frequency_seconds) return null;
-            },
-            .interrupt_current => {},
-        }
-
-        const set_state = &self.sets[@intFromEnum(set_id)];
-        if (set_state.cooldown_progress != 0.0) return null;
-
-        const sample_index = set_state.next_index % sample_count;
-        set_state.next_index = (sample_index + 1) % sample_count;
-        set_state.cooldown_progress = set_state.cooldown_step;
-        if (mode != .wait_for_idle) {
-            self.global_progress = 0.0;
-        }
-        return sample_index;
-    }
-
-    fn requestPayloadPlay(
-        self: *NativeGameplayVoiceManager,
-        set_id: NativeGameplayVoiceSet,
-        mode: NativeGameplayVoiceMode,
-        voice_busy: bool,
-        payload_index: usize,
-    ) ?usize {
-        switch (mode) {
-            .wait_for_idle => {
-                if (voice_busy) return null;
-            },
-            .wait_for_frequency => {
-                if (voice_busy) return null;
-                if (self.global_progress < self.global_frequency_seconds) return null;
-            },
-            .interrupt_current => {},
-        }
-
-        const set_state = &self.sets[@intFromEnum(set_id)];
-        if (set_state.cooldown_progress != 0.0) return null;
-
-        set_state.cooldown_progress = set_state.cooldown_step;
-        if (mode != .wait_for_idle) {
-            self.global_progress = 0.0;
-        }
-        return payload_index;
-    }
-};
-
 const native_global_audio_bank_paths = [_][]const u8{
     "SFX2/CHEERS.OGG",
     "SFX2/PW1.OGG",
@@ -1124,7 +986,7 @@ fn nativeGlobalAudioSampleIndexForPath(sample_path: []const u8) ?usize {
     return null;
 }
 
-fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
+fn nativeGameplayVoicePaths(set_id: gameplay_voice.NativeSet) []const []const u8 {
     return switch (set_id) {
         .damage => gameplay_native_voice_damage_paths[0..],
         .dying => gameplay_native_voice_dying_paths[0..],
@@ -1146,7 +1008,7 @@ fn nativeGameplayVoicePaths(set_id: NativeGameplayVoiceSet) []const []const u8 {
 }
 
 test "native gameplay voice manager enforces native mode gates" {
-    var manager: NativeGameplayVoiceManager = .{};
+    var manager: gameplay_voice.NativeManager = .{};
 
     try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
     try std.testing.expectEqual(@as(?usize, 0), manager.requestPlay(.victory, .wait_for_idle, false, 3));
@@ -1158,7 +1020,7 @@ test "native gameplay voice manager enforces native mode gates" {
     }
     try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
 
-    manager.global_progress = native_gameplay_voice_manager_frequency_seconds;
+    manager.global_progress = gameplay_voice.manager_frequency_seconds;
     try std.testing.expectEqual(@as(?usize, 1), manager.requestPlay(.victory, .wait_for_frequency, false, 3));
 
     manager.clear();
@@ -1167,8 +1029,8 @@ test "native gameplay voice manager enforces native mode gates" {
 }
 
 test "native gameplay voice manager payload play preserves set rotation" {
-    var manager: NativeGameplayVoiceManager = .{};
-    manager.global_progress = native_gameplay_voice_manager_frequency_seconds;
+    var manager: gameplay_voice.NativeManager = .{};
+    manager.global_progress = gameplay_voice.manager_frequency_seconds;
 
     try std.testing.expectEqual(@as(?usize, 133), manager.requestPayloadPlay(.tutorial, .interrupt_current, false, 133));
     try std.testing.expectEqual(@as(?usize, null), manager.requestPlay(.tutorial, .interrupt_current, false, 18));
@@ -1388,63 +1250,6 @@ fn loadGameplaySoundFx(allocator: std.mem.Allocator, catalog: *const assets.Cata
     return sound_fx;
 }
 
-const ResultReturnTarget = enum {
-    main_menu,
-    new_game_menu,
-    challenge_setup_menu,
-    postal_route_map,
-    time_trial_route_map,
-    high_scores_menu,
-    replay_current_level,
-    thanks_screen,
-};
-
-const OuterBridgeOpcode = enum(u8) {
-    destroy_return = 26,
-    rebuild_return = 27,
-    rebuild_clear_replay_return = 28,
-    init_thanks_screen = 29,
-    update_thanks_screen = 30,
-};
-
-const RouteMapBridgeTarget = struct {
-    mode: FrontendLevelMode,
-    screen_mode: RouteMapScreenMode,
-    start_route_override: ?usize = null,
-};
-
-const ReplayLevelBridgeTarget = struct {
-    mode: FrontendLevelMode,
-    level_index: usize,
-    selected_level_record_override: ?SelectedLevelRecordOverride = null,
-    selected_level_record_launch: ?SelectedLevelRecordLaunch = null,
-};
-
-const OuterOwner = enum {
-    main_menu,
-    challenge_setup_menu,
-    new_game_menu,
-    route_map,
-    high_scores_menu,
-    replay_current_level,
-    thanks_screen,
-    resume_active_run,
-};
-
-const OuterOwnerState = struct {
-    owner: OuterOwner = .main_menu,
-    new_game_menu_item: NewGameMenuItem = .tutorial,
-    route_map: RouteMapBridgeTarget = .{
-        .mode = .postal,
-        .screen_mode = .normal,
-    },
-    high_score_mode: high_score.Mode = .postal,
-    replay: ReplayLevelBridgeTarget = .{
-        .mode = .postal,
-        .level_index = 0,
-    },
-};
-
 const RespawnBridgeState = struct {
     frontend_mode: ?FrontendLevelMode,
     frontend_level_index: usize,
@@ -1456,7 +1261,7 @@ const RunOutcome = enum {
     failed,
 };
 
-fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) ResultReturnTarget {
+fn resultReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_bridge.ResultReturnTarget {
     return switch (owner) {
         .postal_route_map => .postal_route_map,
         .postal_final => .thanks_screen,
@@ -2054,83 +1859,6 @@ const PendingRunPersistence = enum {
     failed,
 };
 
-const ThanksScreenStage = enum(u8) {
-    title_visible = 0,
-    title_hidden = 1,
-    challenge_visible = 2,
-    challenge_hidden = 3,
-    time_trial_visible = 4,
-    time_trial_hidden = 5,
-    continue_visible = 6,
-    continue_hold = 7,
-};
-
-const ThanksScreenController = struct {
-    stage: ThanksScreenStage = .title_visible,
-    progress: f32 = 0.0,
-    progress_step: f32 = thanks_screen_hold_step,
-
-    fn reset(self: *ThanksScreenController) void {
-        self.* = .{};
-    }
-
-    fn step(self: *ThanksScreenController) void {
-        if (self.progress_step <= 0.0) return;
-
-        self.progress += self.progress_step;
-        if (self.progress <= 1.0) return;
-
-        self.progress = 0.0;
-        switch (self.stage) {
-            .title_visible => {
-                self.stage = .title_hidden;
-                self.progress_step = thanks_screen_hide_step;
-            },
-            .title_hidden => {
-                self.stage = .challenge_visible;
-                self.progress_step = thanks_screen_hold_step;
-            },
-            .challenge_visible => {
-                self.stage = .challenge_hidden;
-                self.progress_step = thanks_screen_hide_step;
-            },
-            .challenge_hidden => {
-                self.stage = .time_trial_visible;
-                self.progress_step = thanks_screen_hold_step;
-            },
-            .time_trial_visible => {
-                self.stage = .time_trial_hidden;
-                self.progress_step = thanks_screen_hide_step;
-            },
-            .time_trial_hidden => {
-                self.stage = .continue_visible;
-                self.progress_step = thanks_screen_hold_step;
-            },
-            .continue_visible => {
-                self.stage = .continue_hold;
-                self.progress_step = 0.0;
-            },
-            .continue_hold => {},
-        }
-    }
-
-    fn allowsContinue(self: *const ThanksScreenController) bool {
-        return @intFromEnum(self.stage) >= @intFromEnum(ThanksScreenStage.challenge_visible);
-    }
-
-    fn currentText(self: *const ThanksScreenController) ?[]const u8 {
-        return switch (self.stage) {
-            .title_visible => "Thanks For Playing!",
-            .title_hidden => null,
-            .challenge_visible => "Test your reflexes in Challenge Mode!",
-            .challenge_hidden => null,
-            .time_trial_visible => "Improve your skills in Time Trial!",
-            .time_trial_hidden => null,
-            .continue_visible, .continue_hold => "Click to Continue",
-        };
-    }
-};
-
 const PendingRunResult = struct {
     outcome: RunOutcome = .completed,
     level_name: []const u8,
@@ -2149,18 +1877,13 @@ const PendingRunResult = struct {
     unlocked_next_route: bool = false,
     completion_owner: CompletionFlowOwner = .tutorial_completion,
     persistence: PendingRunPersistence = .none,
-    return_target: ResultReturnTarget,
-};
-
-const PendingHighScoreEntry = struct {
-    mode: high_score.Mode,
-    rank: usize,
+    return_target: frontend_bridge.ResultReturnTarget,
 };
 
 const StandalonePostLevelHighScoreEntry = struct {
-    context: PendingHighScoreEntry,
-    return_owner: OuterOwnerState,
-    return_opcode: OuterBridgeOpcode,
+    context: frontend_high_score_screen.PendingEntry,
+    return_owner: frontend_bridge.OuterOwnerState,
+    return_opcode: frontend_bridge.OuterBridgeOpcode,
 };
 
 const CompletionFlowOwner = enum {
@@ -2175,74 +1898,8 @@ const CompletionFlowOwner = enum {
     tutorial_failure,
 };
 
-const HighScoreScreenOwner = union(enum) {
-    main_menu_browse: high_score.Mode,
-    post_level_entry: PendingHighScoreEntry,
-};
-
-const SelectedLevelRecordSource = union(enum) {
-    postal: usize,
-    challenge: usize,
-    challenge_setup: usize,
-    completion: usize,
-};
-
-const SavedReplayReturnOwner = enum(u32) {
-    new_game_menu = 2,
-    high_scores_menu = 18,
-};
-
-const SelectedLevelRecordLaunch = struct {
-    source: SelectedLevelRecordSource,
-    persistent: bool,
-    return_target: ResultReturnTarget,
-
-    fn defaultForSource(source: SelectedLevelRecordSource) SelectedLevelRecordLaunch {
-        return .{
-            .source = source,
-            .persistent = defaultSelectedLevelRecordLaunchPersistent(source),
-            .return_target = defaultSelectedLevelRecordLaunchReturnTarget(source),
-        };
-    }
-};
-
-const SelectedLevelRecordOverride = struct {
-    mode: FrontendLevelMode,
-    level_index: usize,
-    runtime_build_flags: u32,
-    replay_speed_scalar: f32,
-    challenge_speed_value: u32,
-    challenge_difficulty_value: u32,
-    challenge_difficulty_scalar: f32,
-    runtime_build_seed: u32,
-    garbage_scalar: f32,
-    salt_scalar: f32,
-
-    fn fromHighScoreEntry(entry: *const high_score.Entry) ?SelectedLevelRecordOverride {
-        const raw_mode = std.math.cast(i32, entry.replay_mode_id) orelse return null;
-        const mode = std.meta.intToEnum(FrontendLevelMode, raw_mode) catch return null;
-        return .{
-            .mode = mode,
-            .level_index = @intCast(entry.replay_level_index),
-            .runtime_build_flags = entry.runtime_build_flags,
-            .replay_speed_scalar = entry.replay_speed_scalar,
-            .challenge_speed_value = entry.challenge_speed_value,
-            .challenge_difficulty_value = entry.challenge_difficulty_value,
-            .challenge_difficulty_scalar = entry.challenge_difficulty_scalar,
-            .runtime_build_seed = entry.runtime_build_seed,
-            .garbage_scalar = entry.garbage_scalar,
-            .salt_scalar = entry.salt_scalar,
-        };
-    }
-};
-
 const CompletionAction = enum {
     continue_flow,
-};
-
-const high_score_screen_modes = [_]high_score.Mode{
-    .postal,
-    .challenge,
 };
 
 const ExitPromptMode = enum {
@@ -2268,23 +1925,6 @@ const exit_prompt_choices = [_]ExitPromptChoice{
     .no,
 };
 
-const PostLevelHighScoreAction = enum {
-    cancel,
-    submit,
-
-    fn label(self: PostLevelHighScoreAction) []const u8 {
-        return switch (self) {
-            .cancel => "Cancel",
-            .submit => "Submit",
-        };
-    }
-};
-
-const post_level_high_score_actions = [_]PostLevelHighScoreAction{
-    .cancel,
-    .submit,
-};
-
 const challenge_setup_menu_items = [_]ChallengeSetupMenuItem{
     .difficulty,
     .speed,
@@ -2298,16 +1938,6 @@ const challenge_setup_menu_items_without_replay = [_]ChallengeSetupMenuItem{
     .speed,
     .play,
     .back,
-};
-
-const HighScoreMenuAction = enum {
-    back,
-    switch_table,
-};
-
-const high_score_menu_actions = [_]HighScoreMenuAction{
-    .back,
-    .switch_table,
 };
 
 const route_menu_actions_without_replay = [_]RouteMenuAction{
@@ -2329,12 +1959,6 @@ const RouteMapHoverState = enum(u8) {
     none = 0,
     card = 1,
     route = 2,
-};
-
-const RouteMapScreenMode = enum(u8) {
-    normal = 0,
-    post_completion_exit = 1,
-    replay = 2,
 };
 
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
@@ -2463,12 +2087,6 @@ const completion_continue_y_with_bonus: f32 = 400.0;
 const completion_reveal_step: f32 = 1.0 / 24.0;
 const completion_reveal_bonus_threshold: f32 = 1.0;
 const completion_reveal_continue_threshold: f32 = 2.0;
-// PORT(verified): `initialize_thanks_screen` and `update_thanks_screen` keep one centered
-// type-20 widget at `y = 435`, revealing each message for 240 ticks and hiding the first
-// two between swaps over 30 ticks before settling on `Click to Continue`.
-const thanks_screen_message_y: f32 = 435.0;
-const thanks_screen_hold_step: f32 = 1.0 / 240.0;
-const thanks_screen_hide_step: f32 = 1.0 / 30.0;
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at
 // `y = stack_widget_below(title)` while keeping their `x = -80/+80` offsets.
@@ -2550,9 +2168,9 @@ const FrontendQueuedAction = union(enum) {
     pause_menu: PauseMenuItem,
     route_map_menu: RouteMenuAction,
     help_menu: HelpMenuAction,
-    high_scores_menu: HighScoreMenuAction,
+    high_scores_menu: frontend_high_score_screen.MenuAction,
     high_score_replay: usize,
-    post_level_high_scores: PostLevelHighScoreAction,
+    post_level_high_scores: frontend_high_score_screen.PostLevelAction,
     completion_screen: CompletionAction,
     exit_prompt: ExitPromptChoice,
 };
@@ -2707,160 +2325,6 @@ fn newGameMenuIndexForItem(target: NewGameMenuItem) usize {
         if (item == target) return index;
     }
     return 0;
-}
-
-fn defaultRouteMapScreenMode(mode: FrontendLevelMode) RouteMapScreenMode {
-    // PORT(verified): `initialize_galaxy` uses internal mode `2` for the Time Trial / replay
-    // Star Map path, while normal Postal entry starts in mode `0`.
-    return switch (mode) {
-        .postal => .normal,
-        .time_trial => .replay,
-        .challenge, .tutorial => unreachable,
-    };
-}
-
-fn newGameMenuItemForBridgeMode(mode: ?FrontendLevelMode) NewGameMenuItem {
-    return switch (mode orelse .postal) {
-        .tutorial => .tutorial,
-        .postal => .postal_mode,
-        .time_trial => .time_trial,
-        .challenge => .challenge_mode,
-    };
-}
-
-fn defaultSelectedLevelRecordLaunchPersistent(source: SelectedLevelRecordSource) bool {
-    // PORT(verified): `update_frontend_state_machine` initializes subgame at
-    // `data_4df904 + 0x74618`, so the app replay-launch scratch that
-    // `update_high_score_screen` / `update_new_game_menu` seed at
-    // `+0x1066be8/+0x1066be9/+0x1066bec` aliases
-    // `game + 0xff25d0/+0xff25d1/+0xff25d4` exactly. Route-map best-trial launchers
-    // still seed only the transient game-side active lane.
-    return switch (source) {
-        .postal, .challenge => true,
-        .challenge_setup, .completion => false,
-    };
-}
-
-fn defaultSelectedLevelRecordLaunchReturnTarget(source: SelectedLevelRecordSource) ResultReturnTarget {
-    return switch (source) {
-        .completion => .time_trial_route_map,
-        .postal, .challenge => .high_scores_menu,
-        .challenge_setup => .challenge_setup_menu,
-    };
-}
-
-fn savedReplayReturnOwnerForLaunch(launch: SelectedLevelRecordLaunch) ?SavedReplayReturnOwner {
-    if (!launch.persistent) return null;
-    return switch (launch.return_target) {
-        .new_game_menu => .new_game_menu,
-        .high_scores_menu => .high_scores_menu,
-        else => null,
-    };
-}
-
-fn resultReturnTargetForSavedReplayReturnOwner(state: SavedReplayReturnOwner) ResultReturnTarget {
-    return switch (state) {
-        .new_game_menu => .new_game_menu,
-        .high_scores_menu => .high_scores_menu,
-    };
-}
-
-fn outerOwnerStateMainMenu() OuterOwnerState {
-    return .{ .owner = .main_menu };
-}
-
-fn outerOwnerStateChallengeSetupMenu() OuterOwnerState {
-    return .{ .owner = .challenge_setup_menu };
-}
-
-fn outerOwnerStateThanksScreen() OuterOwnerState {
-    return .{ .owner = .thanks_screen };
-}
-
-fn outerOwnerStateResumeActiveRun() OuterOwnerState {
-    return .{ .owner = .resume_active_run };
-}
-
-fn outerOwnerStateNewGameMenu(item: NewGameMenuItem) OuterOwnerState {
-    return .{
-        .owner = .new_game_menu,
-        .new_game_menu_item = item,
-    };
-}
-
-fn outerOwnerStateRouteMap(target: RouteMapBridgeTarget) OuterOwnerState {
-    return .{
-        .owner = .route_map,
-        .route_map = target,
-    };
-}
-
-fn outerOwnerStateHighScores(mode: high_score.Mode) OuterOwnerState {
-    return .{
-        .owner = .high_scores_menu,
-        .high_score_mode = mode,
-    };
-}
-
-fn outerOwnerStateReplay(target: ReplayLevelBridgeTarget) OuterOwnerState {
-    return .{
-        .owner = .replay_current_level,
-        .replay = target,
-    };
-}
-
-fn outerOwnerStateForSelectedReplayLaunch(
-    mode: FrontendLevelMode,
-    source: SelectedLevelRecordSource,
-    return_target: ResultReturnTarget,
-    active_level_index: usize,
-) OuterOwnerState {
-    return switch (return_target) {
-        .main_menu => outerOwnerStateMainMenu(),
-        .new_game_menu => outerOwnerStateNewGameMenu(newGameMenuItemForBridgeMode(mode)),
-        .challenge_setup_menu => outerOwnerStateChallengeSetupMenu(),
-        .postal_route_map => outerOwnerStateRouteMap(.{
-            .mode = .postal,
-            .screen_mode = .post_completion_exit,
-        }),
-        .time_trial_route_map => outerOwnerStateRouteMap(.{
-            .mode = .time_trial,
-            .screen_mode = defaultRouteMapScreenMode(.time_trial),
-            .start_route_override = active_level_index,
-        }),
-        .high_scores_menu => outerOwnerStateHighScores(switch (source) {
-            .challenge => .challenge,
-            else => .postal,
-        }),
-        .replay_current_level => outerOwnerStateReplay(.{
-            .mode = mode,
-            .level_index = active_level_index,
-        }),
-        .thanks_screen => outerOwnerStateThanksScreen(),
-    };
-}
-
-fn savedOuterOwnerForLevelLaunch(
-    mode: FrontendLevelMode,
-    level_index: usize,
-    selected_level_record_launch: ?SelectedLevelRecordLaunch,
-) OuterOwnerState {
-    if (selected_level_record_launch) |launch| {
-        return outerOwnerStateForSelectedReplayLaunch(mode, launch.source, launch.return_target, level_index);
-    }
-
-    return switch (mode) {
-        .postal => outerOwnerStateRouteMap(.{
-            .mode = .postal,
-            .screen_mode = defaultRouteMapScreenMode(.postal),
-        }),
-        .time_trial => outerOwnerStateRouteMap(.{
-            .mode = .time_trial,
-            .screen_mode = defaultRouteMapScreenMode(.time_trial),
-        }),
-        .challenge => outerOwnerStateChallengeSetupMenu(),
-        .tutorial => outerOwnerStateNewGameMenu(.tutorial),
-    };
 }
 
 fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
@@ -3124,7 +2588,7 @@ const AppState = struct {
     exit_prompt_return_phase: GamePhase = .main_menu,
     exit_prompt_mode: ExitPromptMode = .quit_app,
     post_level_high_score_action_index: usize = 1,
-    post_level_high_score_button_states: [post_level_high_score_actions.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** post_level_high_score_actions.len,
+    post_level_high_score_button_states: [frontend_high_score_screen.post_level_actions.len]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_high_score_screen.post_level_actions.len,
     post_level_high_score_name_len: usize = 0,
     post_level_high_score_name_buf: [high_score.name_capacity]u8 = [_]u8{0} ** high_score.name_capacity,
     high_score_tables: high_score.Tables,
@@ -3138,15 +2602,15 @@ const AppState = struct {
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
     native_gameplay_slow_voice_progress: f32 = 0.0,
-    gameplay_voice_manager: GameplayVoiceManager = .{},
-    native_gameplay_voice_manager: NativeGameplayVoiceManager = .{},
+    gameplay_voice_manager: gameplay_voice.VoiceManager = .{},
+    native_gameplay_voice_manager: gameplay_voice.NativeManager = .{},
     announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
     announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
     level_prompt_queue: level_prompt.Queue = .{},
     mouse_level_lane_target: ?f32 = null,
     frontend_route_mode: ?FrontendLevelMode = null,
-    route_map_screen_mode: RouteMapScreenMode = .normal,
+    route_map_screen_mode: frontend_bridge.RouteMapScreenMode = .normal,
     frontend_route_index: usize = 0,
     start_route_index_override: ?usize = null,
     route_menu_action_index: usize = 0,
@@ -3155,22 +2619,22 @@ const AppState = struct {
     route_map_hovered_index: ?usize = null,
     active_frontend_mode: ?FrontendLevelMode = null,
     active_frontend_level_index: usize = 0,
-    current_outer_owner: OuterOwnerState = outerOwnerStateMainMenu(),
-    saved_outer_owner: OuterOwnerState = outerOwnerStateMainMenu(),
-    saved_replay_return_owner: ?SavedReplayReturnOwner = null,
+    current_outer_owner: frontend_bridge.OuterOwnerState = frontend_bridge.outerOwnerStateMainMenu(),
+    saved_outer_owner: frontend_bridge.OuterOwnerState = frontend_bridge.outerOwnerStateMainMenu(),
+    saved_replay_return_owner: ?frontend_bridge.SavedReplayReturnOwner = null,
     subgame_continuation_selector: u8 = 0,
     pending_respawn_bridge_state: ?RespawnBridgeState = null,
-    high_score_screen_owner: HighScoreScreenOwner = .{ .main_menu_browse = .postal },
-    post_level_high_score_return_owner: ?OuterOwnerState = null,
-    post_level_high_score_return_opcode: OuterBridgeOpcode = .destroy_return,
+    high_score_screen_owner: frontend_high_score_screen.Owner = .{ .main_menu_browse = .postal },
+    post_level_high_score_return_owner: ?frontend_bridge.OuterOwnerState = null,
+    post_level_high_score_return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return,
     math_random_state: u32 = 1,
     current_runtime_build_seed: u32 = 0,
     current_runtime_build_seed_level_index: ?usize = null,
     current_runtime_build_seed_mode: ?FrontendLevelMode = null,
-    selected_level_record_override: ?SelectedLevelRecordOverride = null,
-    selected_level_record_source: ?SelectedLevelRecordSource = null,
+    selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride = null,
+    selected_level_record_source: ?frontend_bridge.SelectedLevelRecordSource = null,
     selected_level_record_persistent: bool = false,
-    selected_level_record_return_target: ?ResultReturnTarget = null,
+    selected_level_record_return_target: ?frontend_bridge.ResultReturnTarget = null,
     selected_replay_cache: ?high_score.DecodedReplay = null,
     selected_replay_fade_exit_pending: bool = false,
     route_map_route_highlight_alpha: [galaxy.map_route_count + 1]f32 = [_]f32{0.0} ** (galaxy.map_route_count + 1),
@@ -3201,7 +2665,7 @@ const AppState = struct {
     pending_frontend_activation: ?FrontendQueuedActivation = null,
     completion_continue_button_state: frontend_widget.TextButtonState = .{},
     completion_screen_reveal_progress: f32 = 0.0,
-    thanks_screen_controller: ThanksScreenController = .{},
+    thanks_screen_controller: frontend_thanks.Controller = .{},
     slider_art: SliderArt = .{},
     route_map_art: RouteMapArt = .{},
     challenge_setup_speed_display_value: f32 = 0.0,
@@ -4667,7 +4131,7 @@ const AppState = struct {
             return;
         }
 
-        const hovered_route_index = if (routeMapAllowsRouteSwitching(self.route_map_screen_mode))
+        const hovered_route_index = if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode))
             routeMapHoveredRouteIndex(self, local_mouse, self.availableFrontendRouteLimit(mode))
         else
             null;
@@ -4777,7 +4241,7 @@ const AppState = struct {
         };
 
         if (self.postLevelHighScoreContext() != null) {
-            const cancel_rect = highScoreFooterTextRect(self, post_level_high_score_actions[0].label(), high_score_entry_cancel_x);
+            const cancel_rect = highScoreFooterTextRect(self, frontend_high_score_screen.post_level_actions[0].label(), high_score_entry_cancel_x);
             if (frontend_widget.hitRect(cancel_rect, self.post_level_high_score_button_states[0]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(0));
                 self.post_level_high_score_action_index = 0;
@@ -4787,7 +4251,7 @@ const AppState = struct {
                 return;
             }
 
-            const submit_rect = highScoreFooterTextRect(self, post_level_high_score_actions[1].label(), high_score_entry_submit_x);
+            const submit_rect = highScoreFooterTextRect(self, frontend_high_score_screen.post_level_actions[1].label(), high_score_entry_submit_x);
             if (frontend_widget.hitRect(submit_rect, self.post_level_high_score_button_states[1]).contains(local_mouse)) {
                 self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(1));
                 self.post_level_high_score_action_index = 1;
@@ -5619,11 +5083,11 @@ const AppState = struct {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, 1);
                     self.noteFrontendKeyboardNavigation();
                 }
-                if (routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.left)) {
+                if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.left)) {
                     self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(-1);
                 }
-                if (routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.right)) {
+                if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.right)) {
                     self.noteFrontendKeyboardNavigation();
                     try self.stepFrontendRouteSelection(1);
                 }
@@ -5638,27 +5102,27 @@ const AppState = struct {
                 if (self.postLevelHighScoreContext() != null) {
                     self.collectPostLevelHighScoreTextInput();
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                        self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, -1);
+                        self.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, self.post_level_high_score_action_index, -1);
                         self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                        self.post_level_high_score_action_index = wrappedIndex(post_level_high_score_actions.len, self.post_level_high_score_action_index, 1);
+                        self.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, self.post_level_high_score_action_index, 1);
                         self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        self.queueFrontendActivation(.{ .post_level_high_scores = post_level_high_score_actions[self.post_level_high_score_action_index] });
+                        self.queueFrontendActivation(.{ .post_level_high_scores = frontend_high_score_screen.post_level_actions[self.post_level_high_score_action_index] });
                     }
                 } else {
                     if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                        self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, -1);
+                        self.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, self.high_scores_action_index, -1);
                         self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                        self.high_scores_action_index = wrappedIndex(high_score_menu_actions.len, self.high_scores_action_index, 1);
+                        self.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, self.high_scores_action_index, 1);
                         self.noteFrontendKeyboardNavigation();
                     }
                     if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        self.queueFrontendActivation(.{ .high_scores_menu = high_score_menu_actions[self.high_scores_action_index] });
+                        self.queueFrontendActivation(.{ .high_scores_menu = frontend_high_score_screen.menu_actions[self.high_scores_action_index] });
                     }
                 }
             },
@@ -5783,9 +5247,9 @@ const AppState = struct {
             self.normalizeNewGameMenuSelection();
         }
         switch (phase) {
-            .main_menu => self.current_outer_owner = outerOwnerStateMainMenu(),
-            .new_game_menu => self.current_outer_owner = outerOwnerStateNewGameMenu(new_game_menu_items[self.new_game_menu_index]),
-            .thanks_screen => self.current_outer_owner = outerOwnerStateThanksScreen(),
+            .main_menu => self.current_outer_owner = frontend_bridge.outerOwnerStateMainMenu(),
+            .new_game_menu => self.current_outer_owner = frontend_bridge.outerOwnerStateNewGameMenu(new_game_menu_items[self.new_game_menu_index]),
+            .thanks_screen => self.current_outer_owner = frontend_bridge.outerOwnerStateThanksScreen(),
             else => {},
         }
         try self.syncGamePhaseResources();
@@ -5879,24 +5343,14 @@ const AppState = struct {
     }
 
     fn activeHighScoreScreenMode(self: *const AppState) high_score.Mode {
-        return switch (self.high_score_screen_owner) {
-            .main_menu_browse => |mode| mode,
-            .post_level_entry => |context| context.mode,
-        };
-    }
-
-    fn highScoreBrowseBackOwner(mode: high_score.Mode) OuterOwnerState {
-        return switch (mode) {
-            .postal => outerOwnerStateNewGameMenu(.postal_mode),
-            .challenge => outerOwnerStateChallengeSetupMenu(),
-        };
+        return self.high_score_screen_owner.activeMode();
     }
 
     fn setHighScoreBrowseOwner(self: *AppState, mode: high_score.Mode) void {
-        self.high_scores_menu_index = highScoreModeIndex(mode);
+        self.high_scores_menu_index = frontend_high_score_screen.modeIndex(mode);
         self.high_score_screen_owner = .{ .main_menu_browse = mode };
         self.clearPostLevelHighScoreEntry();
-        self.current_outer_owner = outerOwnerStateHighScores(mode);
+        self.current_outer_owner = frontend_bridge.outerOwnerStateHighScores(mode);
     }
 
     fn enterHighScoreBrowseScreen(self: *AppState, mode: high_score.Mode) !void {
@@ -5904,22 +5358,22 @@ const AppState = struct {
         try self.enterGamePhase(.high_scores_menu);
     }
 
-    fn enterPostLevelHighScoreScreen(self: *AppState, context: PendingHighScoreEntry) !void {
+    fn enterPostLevelHighScoreScreen(self: *AppState, context: frontend_high_score_screen.PendingEntry) !void {
         try self.enterPostLevelHighScoreScreenWithReturn(context, null, null);
     }
 
     fn enterPostLevelHighScoreScreenWithReturn(
         self: *AppState,
-        context: PendingHighScoreEntry,
-        return_owner: ?OuterOwnerState,
-        return_opcode: ?OuterBridgeOpcode,
+        context: frontend_high_score_screen.PendingEntry,
+        return_owner: ?frontend_bridge.OuterOwnerState,
+        return_opcode: ?frontend_bridge.OuterBridgeOpcode,
     ) !void {
         self.high_score_screen_owner = .{ .post_level_entry = context };
-        self.high_scores_menu_index = highScoreModeIndex(context.mode);
+        self.high_scores_menu_index = frontend_high_score_screen.modeIndex(context.mode);
         self.preparePostLevelHighScoreEntry(context);
         self.post_level_high_score_return_owner = return_owner;
         self.post_level_high_score_return_opcode = return_opcode orelse .destroy_return;
-        self.current_outer_owner = outerOwnerStateHighScores(context.mode);
+        self.current_outer_owner = frontend_bridge.outerOwnerStateHighScores(context.mode);
         try self.enterGamePhase(.high_scores_menu);
     }
 
@@ -5993,7 +5447,7 @@ const AppState = struct {
     fn enterChallengeSetupMenu(self: *AppState) !void {
         try self.setSelectedLevelRecordContext(null, null);
         self.challenge_setup_index = 0;
-        self.current_outer_owner = outerOwnerStateChallengeSetupMenu();
+        self.current_outer_owner = frontend_bridge.outerOwnerStateChallengeSetupMenu();
         try self.enterGamePhase(.challenge_setup_menu);
     }
 
@@ -6003,7 +5457,7 @@ const AppState = struct {
             .play => try self.enterFrontendLevelPath(.challenge, 0),
             .watch_replay => {
                 if (!self.challengeSetupReplayAvailable()) return;
-                try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 }));
+                try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 }));
             },
             .back => try self.returnToNewGameMenu(.challenge_setup_menu),
         }
@@ -6085,7 +5539,7 @@ const AppState = struct {
             .watch_best_trial => {
                 const route_index = self.currentRouteMapOpenIndex() orelse return;
                 const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return;
-                try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(.{ .completion = completion_index }));
+                try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(.{ .completion = completion_index }));
             },
             .back => if (self.route_map_screen_mode == .post_completion_exit)
                 try self.beginRouteMapExitPrompt()
@@ -6100,23 +5554,23 @@ const AppState = struct {
         }
     }
 
-    fn performPostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
+    fn performPostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
         switch (action) {
             .cancel => try self.cancelPostLevelHighScoreEntry(),
             .submit => try self.submitPostLevelHighScore(),
         }
     }
 
-    fn activatePostLevelHighScoreAction(self: *AppState, action: PostLevelHighScoreAction) !void {
+    fn activatePostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
         self.playFrontendSelectSound();
         try self.performPostLevelHighScoreAction(action);
     }
 
-    fn performHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
+    fn performHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
         switch (action) {
             .back => switch (self.high_score_screen_owner) {
                 .main_menu_browse => |mode| {
-                    const owner = highScoreBrowseBackOwner(mode);
+                    const owner = frontend_bridge.highScoreBrowseBackOwner(mode);
                     // PORT(verified): `exit_high_score_screen` restores owner `2` for postal
                     // browse and owner `10` for challenge browse. In the port, those map to
                     // the New Game controller with the Postal item selected and the literal
@@ -6134,8 +5588,8 @@ const AppState = struct {
             },
             .switch_table => switch (self.high_score_screen_owner) {
                 .main_menu_browse => {
-                    const next_index = wrappedIndex(high_score_screen_modes.len, self.high_scores_menu_index, 1);
-                    self.setHighScoreBrowseOwner(high_score_screen_modes[next_index]);
+                    const next_index = wrappedIndex(frontend_high_score_screen.screen_modes.len, self.high_scores_menu_index, 1);
+                    self.setHighScoreBrowseOwner(frontend_high_score_screen.screen_modes[next_index]);
                 },
                 .post_level_entry => {},
             },
@@ -6149,14 +5603,14 @@ const AppState = struct {
         }
         if (!self.highScoreReplayAvailable(entry_index)) return;
         const selected_mode = self.activeHighScoreScreenMode();
-        const source: SelectedLevelRecordSource = switch (selected_mode) {
+        const source: frontend_bridge.SelectedLevelRecordSource = switch (selected_mode) {
             .postal => .{ .postal = entry_index },
             .challenge => .{ .challenge = entry_index },
         };
-        try self.enterSelectedLevelRecordSource(SelectedLevelRecordLaunch.defaultForSource(source));
+        try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(source));
     }
 
-    fn activateHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
+    fn activateHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
         self.playFrontendSelectSound();
         try self.performHighScoreMenuAction(action);
     }
@@ -6172,8 +5626,8 @@ const AppState = struct {
 
     fn outerOwnerForAbandonActiveRun(
         self: *const AppState,
-        opcode: *OuterBridgeOpcode,
-    ) OuterOwnerState {
+        opcode: *frontend_bridge.OuterBridgeOpcode,
+    ) frontend_bridge.OuterOwnerState {
         if (self.selected_level_record_persistent) {
             const owner = self.selectedReplayLaunchOwnerState() orelse self.saved_outer_owner;
             opcode.* = .destroy_return;
@@ -6181,7 +5635,7 @@ const AppState = struct {
         }
 
         if (self.selectedReplayPlaybackActive()) {
-            const owner = self.selectedReplayLaunchOwnerState() orelse outerOwnerStateMainMenu();
+            const owner = self.selectedReplayLaunchOwnerState() orelse frontend_bridge.outerOwnerStateMainMenu();
             // PORT(verified): when `app + 0x1066be9` is clear, BN `update_pause_menu` falls
             // through to completion state `2`. BN plus IDA then show `update_completion_screen`
             // state `2` destroying subgame, and on the time-trial replay path (`level_mode == 4`)
@@ -6194,7 +5648,7 @@ const AppState = struct {
 
         if (self.saved_outer_owner.owner == .challenge_setup_menu) {
             opcode.* = .rebuild_return;
-            return outerOwnerStateChallengeSetupMenu();
+            return frontend_bridge.outerOwnerStateChallengeSetupMenu();
         }
 
         opcode.* = .destroy_return;
@@ -6203,8 +5657,8 @@ const AppState = struct {
 
     fn outerOwnerForRespawnActiveRun(
         self: *AppState,
-        opcode: *OuterBridgeOpcode,
-    ) ?OuterOwnerState {
+        opcode: *frontend_bridge.OuterBridgeOpcode,
+    ) ?frontend_bridge.OuterOwnerState {
         var previous_runner = self.level_runner orelse return null;
         previous_runner.flushPendingParcelDeliveries();
         self.pending_respawn_bridge_state = .{
@@ -6217,10 +5671,10 @@ const AppState = struct {
         // the direct selector as authoritative bridge state.
         opcode.* = .rebuild_clear_replay_return;
         self.subgame_continuation_selector = 0x1c;
-        return outerOwnerStateResumeActiveRun();
+        return frontend_bridge.outerOwnerStateResumeActiveRun();
     }
 
-    fn postRunSelectedLevelRecordReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?ResultReturnTarget {
+    fn postRunSelectedLevelRecordReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?frontend_bridge.ResultReturnTarget {
         const source = self.selected_level_record_source orelse return null;
         if (self.selected_level_record_persistent) return null;
 
@@ -6243,30 +5697,30 @@ const AppState = struct {
     fn outerOwnerForPendingRunResult(
         self: *const AppState,
         result: PendingRunResult,
-        opcode: *OuterBridgeOpcode,
-    ) OuterOwnerState {
+        opcode: *frontend_bridge.OuterBridgeOpcode,
+    ) frontend_bridge.OuterOwnerState {
         const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode(result.outcome);
         const selected_level_record_return = self.selected_level_record_source != null;
         const return_target = self.postRunSelectedLevelRecordReturnTargetOverride(result) orelse result.return_target;
         return switch (return_target) {
             .main_menu => blk: {
                 opcode.* = .destroy_return;
-                break :blk outerOwnerStateMainMenu();
+                break :blk frontend_bridge.outerOwnerStateMainMenu();
             },
             .new_game_menu => blk: {
                 opcode.* = .destroy_return;
-                break :blk outerOwnerStateNewGameMenu(newGameMenuItemForBridgeMode(result.mode));
+                break :blk frontend_bridge.outerOwnerStateNewGameMenu(frontend_bridge.newGameMenuItemForBridgeMode(result.mode));
             },
             .challenge_setup_menu => blk: {
                 opcode.* = if (selected_level_record_return)
                     selected_level_record_result_opcode
                 else
                     .rebuild_return;
-                break :blk outerOwnerStateChallengeSetupMenu();
+                break :blk frontend_bridge.outerOwnerStateChallengeSetupMenu();
             },
             .postal_route_map => blk: {
                 opcode.* = .destroy_return;
-                break :blk outerOwnerStateRouteMap(.{
+                break :blk frontend_bridge.outerOwnerStateRouteMap(.{
                     .mode = .postal,
                     .screen_mode = .post_completion_exit,
                 });
@@ -6277,9 +5731,9 @@ const AppState = struct {
                 // is armed. The current Zig selected-level launch path is therefore transient
                 // until the native persistent writer is recovered.
                 opcode.* = selected_level_record_result_opcode;
-                break :blk outerOwnerStateRouteMap(.{
+                break :blk frontend_bridge.outerOwnerStateRouteMap(.{
                     .mode = .time_trial,
-                    .screen_mode = defaultRouteMapScreenMode(.time_trial),
+                    .screen_mode = frontend_bridge.defaultRouteMapScreenMode(.time_trial),
                     .start_route_override = if (selected_level_record_return)
                         self.active_frontend_level_index
                     else
@@ -6288,7 +5742,7 @@ const AppState = struct {
             },
             .high_scores_menu => blk: {
                 opcode.* = selected_level_record_result_opcode;
-                break :blk outerOwnerStateHighScores(if (self.selected_level_record_source) |source|
+                break :blk frontend_bridge.outerOwnerStateHighScores(if (self.selected_level_record_source) |source|
                     switch (source) {
                         .postal => .postal,
                         .challenge => .challenge,
@@ -6301,7 +5755,7 @@ const AppState = struct {
             .replay_current_level => blk: {
                 if (self.selected_level_record_override) |record| {
                     opcode.* = .rebuild_return;
-                    break :blk outerOwnerStateReplay(.{
+                    break :blk frontend_bridge.outerOwnerStateReplay(.{
                         .mode = record.mode,
                         .level_index = record.level_index,
                         .selected_level_record_override = record,
@@ -6309,7 +5763,7 @@ const AppState = struct {
                             .{
                                 .source = source,
                                 .persistent = self.selected_level_record_persistent,
-                                .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+                                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
                             }
                         else
                             null,
@@ -6317,25 +5771,25 @@ const AppState = struct {
                 }
                 if (result.mode) |mode| {
                     opcode.* = .rebuild_return;
-                    break :blk outerOwnerStateReplay(.{
+                    break :blk frontend_bridge.outerOwnerStateReplay(.{
                         .mode = mode,
                         .level_index = self.active_frontend_level_index,
                     });
                 }
                 opcode.* = .destroy_return;
-                break :blk outerOwnerStateMainMenu();
+                break :blk frontend_bridge.outerOwnerStateMainMenu();
             },
             .thanks_screen => blk: {
                 opcode.* = .init_thanks_screen;
-                break :blk outerOwnerStateThanksScreen();
+                break :blk frontend_bridge.outerOwnerStateThanksScreen();
             },
         };
     }
 
     fn outerBridgeTransitionClearsSelectedReplayContext(
         self: *const AppState,
-        opcode: OuterBridgeOpcode,
-        next_owner: OuterOwnerState,
+        opcode: frontend_bridge.OuterBridgeOpcode,
+        next_owner: frontend_bridge.OuterOwnerState,
     ) bool {
         if (opcode == .rebuild_clear_replay_return) return true;
         if (self.selected_level_record_source == null) return false;
@@ -6347,8 +5801,8 @@ const AppState = struct {
 
     fn applyOuterBridgeTeardown(
         self: *AppState,
-        opcode: OuterBridgeOpcode,
-        next_owner: OuterOwnerState,
+        opcode: frontend_bridge.OuterBridgeOpcode,
+        next_owner: frontend_bridge.OuterOwnerState,
     ) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
@@ -6376,8 +5830,8 @@ const AppState = struct {
 
     fn runOuterBridgeTransition(
         self: *AppState,
-        opcode: OuterBridgeOpcode,
-        next_owner: OuterOwnerState,
+        opcode: frontend_bridge.OuterBridgeOpcode,
+        next_owner: frontend_bridge.OuterOwnerState,
     ) !void {
         self.subgame_continuation_selector = @intFromEnum(opcode);
         try self.applyOuterBridgeTeardown(opcode, next_owner);
@@ -6482,11 +5936,11 @@ const AppState = struct {
             // exit_high_score_screen` then restores owner by the run mode lane (`state 2` for
             // postal, `state 10` for challenge), not by the preserved gameplay launch surface.
             .return_owner = blk: {
-                var opcode: OuterBridgeOpcode = .destroy_return;
+                var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
                 break :blk self.outerOwnerForPendingRunResult(committed, &opcode);
             },
             .return_opcode = blk: {
-                var opcode: OuterBridgeOpcode = .destroy_return;
+                var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
                 _ = self.outerOwnerForPendingRunResult(committed, &opcode);
                 break :blk opcode;
             },
@@ -6496,7 +5950,7 @@ const AppState = struct {
     fn abandonActiveRun(self: *AppState) !void {
         self.pending_run_result = null;
         self.clearPostLevelHighScoreEntry();
-        var return_opcode: OuterBridgeOpcode = .destroy_return;
+        var return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
         const return_owner = self.outerOwnerForAbandonActiveRun(&return_opcode);
         if (!self.selectedReplayPlaybackActive()) {
             if (self.currentFailedRunResult()) |result| {
@@ -6512,8 +5966,8 @@ const AppState = struct {
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
         self.active_frontend_mode = null;
         self.active_frontend_level_index = 0;
-        self.current_outer_owner = outerOwnerStateMainMenu();
-        self.saved_outer_owner = outerOwnerStateMainMenu();
+        self.current_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
+        self.saved_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
         try self.setSelectedLevelRecordContext(null, null);
         try self.loadGameLevel(level_path);
         try self.enterGamePhase(.level);
@@ -6523,21 +5977,21 @@ const AppState = struct {
         try self.beginFrontendLevelPath(mode, level_index, null, null);
     }
 
-    fn enterSelectedLevelRecordPath(self: *AppState, record: SelectedLevelRecordOverride) !void {
+    fn enterSelectedLevelRecordPath(self: *AppState, record: frontend_bridge.SelectedLevelRecordOverride) !void {
         const selected_level_record_launch = if (self.selected_level_record_source) |source|
-            SelectedLevelRecordLaunch{
+            frontend_bridge.SelectedLevelRecordLaunch{
                 .source = source,
                 .persistent = self.selected_level_record_persistent,
-                .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
             }
         else
             null;
         try self.beginFrontendLevelPath(record.mode, record.level_index, record, selected_level_record_launch);
     }
 
-    fn enterSelectedLevelRecordSource(self: *AppState, launch: SelectedLevelRecordLaunch) !void {
+    fn enterSelectedLevelRecordSource(self: *AppState, launch: frontend_bridge.SelectedLevelRecordLaunch) !void {
         const entry = self.selectedReplayEntryForSource(launch.source) orelse return;
-        const record = SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
+        const record = frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
         try self.beginFrontendLevelPath(record.mode, record.level_index, record, launch);
     }
 
@@ -6545,15 +5999,15 @@ const AppState = struct {
         self: *AppState,
         mode: FrontendLevelMode,
         level_index: usize,
-        selected_level_record_override: ?SelectedLevelRecordOverride,
-        selected_level_record_launch: ?SelectedLevelRecordLaunch,
+        selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride,
+        selected_level_record_launch: ?frontend_bridge.SelectedLevelRecordLaunch,
     ) !void {
         var path_buffer: [64]u8 = undefined;
         const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
         try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_launch);
         self.active_frontend_mode = mode;
         self.active_frontend_level_index = level_index;
-        self.saved_outer_owner = savedOuterOwnerForLevelLaunch(mode, level_index, selected_level_record_launch);
+        self.saved_outer_owner = frontend_bridge.savedOuterOwnerForLevelLaunch(mode, level_index, selected_level_record_launch);
         self.current_outer_owner = self.saved_outer_owner;
         self.seed_level_intro_cutscene = true;
         try self.loadGameLevel(level_path);
@@ -6594,14 +6048,14 @@ const AppState = struct {
     }
 
     fn enterRouteMapMenu(self: *AppState, mode: FrontendLevelMode) !void {
-        try self.enterRouteMapMenuWithScreenMode(mode, defaultRouteMapScreenMode(mode));
+        try self.enterRouteMapMenuWithScreenMode(mode, frontend_bridge.defaultRouteMapScreenMode(mode));
     }
 
-    fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: RouteMapScreenMode) !void {
+    fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: frontend_bridge.RouteMapScreenMode) !void {
         try self.setSelectedLevelRecordContext(null, null);
         self.frontend_route_mode = mode;
         self.route_map_screen_mode = screen_mode;
-        self.current_outer_owner = outerOwnerStateRouteMap(.{
+        self.current_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
             .mode = mode,
             .screen_mode = screen_mode,
             .start_route_override = self.start_route_index_override,
@@ -6666,7 +6120,7 @@ const AppState = struct {
     // open instead of letting the user dismiss the card into an empty Star Map.
     fn routeMapCanCloseCard(self: *const AppState) bool {
         if (!self.routeMapCardIsOpen()) return false;
-        if (!routeMapAllowsRouteSwitching(self.route_map_screen_mode)) return false;
+        if (!frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode)) return false;
         const mode = self.frontend_route_mode orelse return false;
         return self.availableFrontendRouteLimit(mode) > 1;
     }
@@ -7175,7 +6629,7 @@ const AppState = struct {
     fn beginRespawnRun(self: *AppState) !void {
         self.completion_overlay_active = false;
         self.preserve_completion_screen_reveal_on_enter = false;
-        var opcode: OuterBridgeOpcode = .rebuild_clear_replay_return;
+        var opcode: frontend_bridge.OuterBridgeOpcode = .rebuild_clear_replay_return;
         const owner = self.outerOwnerForRespawnActiveRun(&opcode) orelse return;
         try self.runOuterBridgeTransition(opcode, owner);
     }
@@ -7343,11 +6797,11 @@ const AppState = struct {
             // the post-level high-score owner takes over, the later return owner is already
             // fixed and no longer belongs to the live completion-screen result object.
             .return_owner = blk: {
-                var opcode: OuterBridgeOpcode = .destroy_return;
+                var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
                 break :blk self.outerOwnerForPendingRunResult(result, &opcode);
             },
             .return_opcode = blk: {
-                var opcode: OuterBridgeOpcode = .destroy_return;
+                var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
                 _ = self.outerOwnerForPendingRunResult(result, &opcode);
                 break :blk opcode;
             },
@@ -7386,12 +6840,12 @@ const AppState = struct {
         self.pending_run_result = null;
         self.completion_overlay_active = false;
         self.preserve_completion_screen_reveal_on_enter = false;
-        var opcode: OuterBridgeOpcode = .destroy_return;
+        var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
         const owner = self.outerOwnerForPendingRunResult(result, &opcode);
         try self.runOuterBridgeTransition(opcode, owner);
     }
 
-    fn pendingRunHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
+    fn pendingRunHighScoreContext(self: *const AppState) ?frontend_high_score_screen.PendingEntry {
         const result = self.pending_run_result orelse return null;
         const mode = result.high_score_mode orelse return null;
         const rank = result.high_score_rank orelse return null;
@@ -7401,14 +6855,14 @@ const AppState = struct {
         };
     }
 
-    fn postLevelHighScoreContext(self: *const AppState) ?PendingHighScoreEntry {
+    fn postLevelHighScoreContext(self: *const AppState) ?frontend_high_score_screen.PendingEntry {
         return switch (self.high_score_screen_owner) {
             .post_level_entry => |context| context,
             .main_menu_browse => null,
         };
     }
 
-    fn preparePostLevelHighScoreEntry(self: *AppState, context: PendingHighScoreEntry) void {
+    fn preparePostLevelHighScoreEntry(self: *AppState, context: frontend_high_score_screen.PendingEntry) void {
         self.clearPostLevelHighScoreEntry();
         self.post_level_high_score_action_index = 1;
 
@@ -7488,7 +6942,7 @@ const AppState = struct {
         return &self.high_score_tables.completion[completion_index];
     }
 
-    fn selectedReplayEntryForSource(self: *const AppState, source: SelectedLevelRecordSource) ?*const high_score.Entry {
+    fn selectedReplayEntryForSource(self: *const AppState, source: frontend_bridge.SelectedLevelRecordSource) ?*const high_score.Entry {
         return switch (source) {
             .postal => |index| if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
             .challenge => |index| if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
@@ -7508,7 +6962,7 @@ const AppState = struct {
         return entry.replaySampleCount() != 0;
     }
 
-    fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) OuterBridgeOpcode {
+    fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) frontend_bridge.OuterBridgeOpcode {
         const source = self.selected_level_record_source orelse return .destroy_return;
         if (self.selected_level_record_persistent) return .destroy_return;
 
@@ -7548,13 +7002,13 @@ const AppState = struct {
         return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
     }
 
-    fn selectedReplayLaunchReturnTarget(self: *const AppState) ?ResultReturnTarget {
+    fn selectedReplayLaunchReturnTarget(self: *const AppState) ?frontend_bridge.ResultReturnTarget {
         if (self.saved_replay_return_owner) |state| {
-            return resultReturnTargetForSavedReplayReturnOwner(state);
+            return frontend_bridge.resultReturnTargetForSavedReplayReturnOwner(state);
         }
         if (self.selected_level_record_return_target) |target| return target;
         const source = self.selected_level_record_source orelse return null;
-        return defaultSelectedLevelRecordLaunchReturnTarget(source);
+        return frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source);
     }
 
     fn selectedReplayLaunchMode(self: *const AppState) ?FrontendLevelMode {
@@ -7568,20 +7022,20 @@ const AppState = struct {
         };
     }
 
-    fn selectedReplayLaunchOwnerState(self: *const AppState) ?OuterOwnerState {
+    fn selectedReplayLaunchOwnerState(self: *const AppState) ?frontend_bridge.OuterOwnerState {
         const source = self.selected_level_record_source orelse return null;
         const mode = self.selectedReplayLaunchMode() orelse return null;
         if (self.saved_replay_return_owner) |return_state| {
             return switch (return_state) {
-                .new_game_menu => outerOwnerStateNewGameMenu(newGameMenuItemForBridgeMode(mode)),
-                .high_scores_menu => outerOwnerStateHighScores(switch (source) {
+                .new_game_menu => frontend_bridge.outerOwnerStateNewGameMenu(frontend_bridge.newGameMenuItemForBridgeMode(mode)),
+                .high_scores_menu => frontend_bridge.outerOwnerStateHighScores(switch (source) {
                     .challenge => .challenge,
                     else => .postal,
                 }),
             };
         }
         const return_target = self.selectedReplayLaunchReturnTarget() orelse return null;
-        return outerOwnerStateForSelectedReplayLaunch(mode, source, return_target, self.active_frontend_level_index);
+        return frontend_bridge.outerOwnerStateForSelectedReplayLaunch(mode, source, return_target, self.active_frontend_level_index);
     }
 
     fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
@@ -7598,12 +7052,12 @@ const AppState = struct {
 
     fn outerOwnerForSelectedReplayMarker(
         self: *const AppState,
-        opcode: *OuterBridgeOpcode,
-    ) ?OuterOwnerState {
+        opcode: *frontend_bridge.OuterBridgeOpcode,
+    ) ?frontend_bridge.OuterOwnerState {
         const source = self.selected_level_record_source orelse return null;
         const record = self.selected_level_record_override orelse blk: {
             const entry = self.selectedReplayEntryForSource(source) orelse return null;
-            break :blk SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return null;
+            break :blk frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return null;
         };
         // PORT(verified): `update_subgoldy` consumes selected-record replay flag bit `0x8`
         // directly. When it hits, Windows writes `app + 0x1b8 = 0x1a`,
@@ -7612,14 +7066,14 @@ const AppState = struct {
         // this marker loops back into the current replay rather than returning
         // to the launch surface.
         opcode.* = .destroy_return;
-        return outerOwnerStateReplay(.{
+        return frontend_bridge.outerOwnerStateReplay(.{
             .mode = record.mode,
             .level_index = record.level_index,
             .selected_level_record_override = record,
             .selected_level_record_launch = .{
                 .source = source,
                 .persistent = self.selected_level_record_persistent,
-                .return_target = self.selectedReplayLaunchReturnTarget() orelse defaultSelectedLevelRecordLaunchReturnTarget(source),
+                .return_target = self.selectedReplayLaunchReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchReturnTarget(source),
             },
         });
     }
@@ -7633,8 +7087,8 @@ const AppState = struct {
 
     fn setSelectedLevelRecordContext(
         self: *AppState,
-        selected_level_record_override: ?SelectedLevelRecordOverride,
-        selected_level_record_launch: ?SelectedLevelRecordLaunch,
+        selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride,
+        selected_level_record_launch: ?frontend_bridge.SelectedLevelRecordLaunch,
     ) !void {
         self.clearSelectedReplayCache();
         self.selected_level_record_override = selected_level_record_override;
@@ -7644,11 +7098,11 @@ const AppState = struct {
         else
             false;
         self.saved_replay_return_owner = if (selected_level_record_launch) |launch|
-            savedReplayReturnOwnerForLaunch(launch)
+            frontend_bridge.savedReplayReturnOwnerForLaunch(launch)
         else
             null;
         self.selected_level_record_return_target = if (selected_level_record_launch) |launch|
-            if (savedReplayReturnOwnerForLaunch(launch) == null) launch.return_target else null
+            if (frontend_bridge.savedReplayReturnOwnerForLaunch(launch) == null) launch.return_target else null
         else
             null;
         self.selected_replay_fade_exit_pending = false;
@@ -7666,7 +7120,7 @@ const AppState = struct {
             .idle => self.frontend_transition.beginOverlayFadeOut(),
             .black_idle => {
                 self.selected_replay_fade_exit_pending = false;
-                var opcode: OuterBridgeOpcode = .destroy_return;
+                var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
                 const owner = self.outerOwnerForSelectedReplayMarker(&opcode) orelse return false;
                 try self.runOuterBridgeTransition(opcode, owner);
                 self.frontend_transition.completeHandoff();
@@ -7977,11 +7431,11 @@ const AppState = struct {
         rl.playSound(self.current_voice_sound.?.sound);
     }
 
-    fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode) !void {
+    fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !void {
         _ = try self.tryPlayNativeGameplayVoiceSetPlayed(set_id, mode);
     }
 
-    fn tryPlayNativeGameplayVoiceSetPlayed(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode) !bool {
+    fn tryPlayNativeGameplayVoiceSetPlayed(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !bool {
         if (!self.audio_ready) return false;
         const paths = nativeGameplayVoicePaths(set_id);
         if (paths.len == 0) return false;
@@ -7996,7 +7450,7 @@ const AppState = struct {
         return true;
     }
 
-    fn tryPlayNativeGameplayVoicePayload(self: *AppState, set_id: NativeGameplayVoiceSet, mode: NativeGameplayVoiceMode, payload_index: usize) !bool {
+    fn tryPlayNativeGameplayVoicePayload(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode, payload_index: usize) !bool {
         if (!self.audio_ready) return false;
 
         const sample_index = self.native_gameplay_voice_manager.requestPayloadPlay(
@@ -9365,21 +8819,7 @@ fn routeMapBackTextRect(state: *const AppState) frontend_widget.Rect {
 }
 
 fn routeMapBackLabel(state: *const AppState) []const u8 {
-    return routeMapBackLabelForScreenMode(state.route_map_screen_mode);
-}
-
-fn routeMapBackLabelForScreenMode(screen_mode: RouteMapScreenMode) []const u8 {
-    return switch (screen_mode) {
-        .post_completion_exit => "Exit",
-        .normal, .replay => "Back",
-    };
-}
-
-fn routeMapAllowsRouteSwitching(screen_mode: RouteMapScreenMode) bool {
-    // PORT(verified): `update_galaxy` skips the open/switch/close route branch entirely
-    // for internal mode `1`, keeping the postal-return Star Map locked on its current
-    // route card while still allowing Play/Exit.
-    return screen_mode != .post_completion_exit;
+    return frontend_bridge.routeMapBackLabelForScreenMode(state.route_map_screen_mode);
 }
 
 fn routeMapBodyText(maybe_text: ?[]const u8) []const u8 {
@@ -9797,8 +9237,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             art,
             &state.ui_font,
             .footer_button,
-            post_level_high_score_actions[0].label(),
-            highScoreFooterTextRect(state, post_level_high_score_actions[0].label(), high_score_entry_cancel_x),
+            frontend_high_score_screen.post_level_actions[0].label(),
+            highScoreFooterTextRect(state, frontend_high_score_screen.post_level_actions[0].label(), high_score_entry_cancel_x),
             state.post_level_high_score_button_states[0],
             false,
         );
@@ -9807,8 +9247,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
             art,
             &state.ui_font,
             .footer_button,
-            post_level_high_score_actions[1].label(),
-            highScoreFooterTextRect(state, post_level_high_score_actions[1].label(), high_score_entry_submit_x),
+            frontend_high_score_screen.post_level_actions[1].label(),
+            highScoreFooterTextRect(state, frontend_high_score_screen.post_level_actions[1].label(), high_score_entry_submit_x),
             state.post_level_high_score_button_states[1],
             false,
         );
@@ -10764,14 +10204,14 @@ fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) 
     };
 }
 
-fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) ResultReturnTarget {
+fn resultReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) frontend_bridge.ResultReturnTarget {
     // PORT(verified): the ordinary postal completion path still returns through the
     // post-completion Star Map owner. Only the final shipped route upgrades to the
     // thanks-screen path.
     return resultReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
 }
 
-fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) ResultReturnTarget {
+fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) frontend_bridge.ResultReturnTarget {
     return resultReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
 }
 
@@ -11668,7 +11108,7 @@ fn drawThanksScreenUi(state: *const AppState, layout: VirtualLayout) void {
         &state.ui_font,
         .menu_button,
         text,
-        frontend_widget.type20TextRect(&state.ui_font, text, thanks_screen_message_y, 0.0),
+        frontend_widget.type20TextRect(&state.ui_font, text, frontend_thanks.message_y, 0.0),
         idle_state,
         false,
         .{ .flags = 0x20400002 },
@@ -12436,7 +11876,7 @@ fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool
     return @as(f32, @floatFromInt(global_row)) + 0.25 >= runner.row_position;
 }
 
-fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay.RuntimeHazard) bool {
+fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay_runtime_entities.Hazard) bool {
     const trailing_rows: f32 = switch (hazard.kind) {
         .garbage => switch (hazard.state) {
             .active => @as(f32, 0.25),
@@ -12448,12 +11888,12 @@ fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay.RuntimeH
         hazard.world_position.z <= runner.row_position + 72.0;
 }
 
-fn shouldRenderGameplayPickup(runner: gameplay.Runner, pickup: gameplay.RuntimePickup) bool {
+fn shouldRenderGameplayPickup(runner: gameplay.Runner, pickup: gameplay_runtime_entities.Pickup) bool {
     return pickup.world_position.z + 0.25 >= runner.row_position and
         pickup.world_position.z <= runner.row_position + 72.0;
 }
 
-fn shouldRenderGameplayRingEffect(runner: gameplay.Runner, effect: gameplay.RuntimeRingEffect) bool {
+fn shouldRenderGameplayRingEffect(runner: gameplay.Runner, effect: gameplay_runtime_entities.RingEffect) bool {
     return effect.world_position.z + 0.25 >= runner.row_position and
         effect.world_position.z <= runner.row_position + 72.0;
 }
@@ -12504,7 +11944,7 @@ fn drawGameplayGarbageActor(
     state: *const AppState,
     preview: *const track.LoadedLevelPreview,
     camera: rl.Camera3D,
-    hazard: gameplay.RuntimeHazard,
+    hazard: gameplay_runtime_entities.Hazard,
 ) void {
     _ = preview;
     if (hazard.state == .inactive) return;
@@ -12525,7 +11965,7 @@ fn drawGameplayGarbageActor(
 fn drawGameplaySaltActor(
     state: *const AppState,
     camera: rl.Camera3D,
-    hazard: gameplay.RuntimeHazard,
+    hazard: gameplay_runtime_entities.Hazard,
 ) void {
     if (hazard.state != .active) return;
     const presentation_alpha: u8 = 232;
@@ -12602,7 +12042,7 @@ fn drawGameplayTurretActor(
 fn drawGameplayHealthPickupActor(
     state: *const AppState,
     camera: rl.Camera3D,
-    pickup: gameplay.RuntimePickup,
+    pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const loaded_texture = state.current_gameplay_sprites.health orelse return;
     drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, .white);
@@ -12611,7 +12051,7 @@ fn drawGameplayHealthPickupActor(
 fn drawGameplayJetpackPickupActor(
     state: *const AppState,
     camera: rl.Camera3D,
-    pickup: gameplay.RuntimePickup,
+    pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_jetpack_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
@@ -12653,7 +12093,7 @@ fn drawGameplayStaticRingActor(
 fn drawGameplayRuntimeRingEffectActor(
     state: *const AppState,
     camera: rl.Camera3D,
-    effect: gameplay.RuntimeRingEffect,
+    effect: gameplay_runtime_entities.RingEffect,
 ) void {
     const ring_kind = gameplay.nativeRuntimeRingKindLabel(effect.kind) orelse return;
     const position = effect.presentation_position;
@@ -12678,7 +12118,7 @@ fn drawGameplayRuntimeRingEffectActor(
 fn drawGameplayTrackParcelActor(
     state: *const AppState,
     camera: rl.Camera3D,
-    parcel: gameplay.TrackParcelRuntime,
+    parcel: gameplay_runtime_entities.TrackParcel,
 ) void {
     const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
     const position = parcel.presentationPosition();
@@ -13547,13 +12987,6 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
     return @intCast(next);
 }
 
-fn highScoreModeIndex(mode: high_score.Mode) usize {
-    for (high_score_screen_modes, 0..) |candidate, index| {
-        if (candidate == mode) return index;
-    }
-    return 0;
-}
-
 // PORT(verified): the original window bootstrap falls back to a 640x480 client area
 // in windowed mode, while its fullscreen presets are also all 4:3.
 // Evidence: sub_4119d0.
@@ -13615,14 +13048,14 @@ test "high-score row replay is challenge-only" {
 }
 
 test "route map screen modes follow windows route-map entry paths" {
-    try std.testing.expectEqual(RouteMapScreenMode.normal, defaultRouteMapScreenMode(.postal));
-    try std.testing.expectEqual(RouteMapScreenMode.replay, defaultRouteMapScreenMode(.time_trial));
-    try std.testing.expect(routeMapAllowsRouteSwitching(.normal));
-    try std.testing.expect(routeMapAllowsRouteSwitching(.replay));
-    try std.testing.expect(!routeMapAllowsRouteSwitching(.post_completion_exit));
-    try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.normal));
-    try std.testing.expectEqualStrings("Back", routeMapBackLabelForScreenMode(.replay));
-    try std.testing.expectEqualStrings("Exit", routeMapBackLabelForScreenMode(.post_completion_exit));
+    try std.testing.expectEqual(frontend_bridge.RouteMapScreenMode.normal, frontend_bridge.defaultRouteMapScreenMode(.postal));
+    try std.testing.expectEqual(frontend_bridge.RouteMapScreenMode.replay, frontend_bridge.defaultRouteMapScreenMode(.time_trial));
+    try std.testing.expect(frontend_bridge.routeMapAllowsRouteSwitching(.normal));
+    try std.testing.expect(frontend_bridge.routeMapAllowsRouteSwitching(.replay));
+    try std.testing.expect(!frontend_bridge.routeMapAllowsRouteSwitching(.post_completion_exit));
+    try std.testing.expectEqualStrings("Back", frontend_bridge.routeMapBackLabelForScreenMode(.normal));
+    try std.testing.expectEqualStrings("Back", frontend_bridge.routeMapBackLabelForScreenMode(.replay));
+    try std.testing.expectEqualStrings("Exit", frontend_bridge.routeMapBackLabelForScreenMode(.post_completion_exit));
 }
 
 test "route map body text stays empty without route script copy" {
@@ -13631,22 +13064,22 @@ test "route map body text stays empty without route script copy" {
 }
 
 test "run return targets follow the recovered native bridge where confirmed" {
-    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, resultReturnTargetForOutcome(.completed, .postal));
-    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.completed, .time_trial));
-    try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.completed, .challenge));
-    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.completed, .tutorial));
-    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .postal));
-    try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.failed, .challenge));
-    try std.testing.expectEqual(ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.failed, .time_trial));
-    try std.testing.expectEqual(ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, resultReturnTargetForOutcome(.completed, .postal));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.completed, .time_trial));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.completed, .challenge));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.completed, .tutorial));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForOutcome(.failed, .postal));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForOutcome(.failed, .challenge));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.time_trial_route_map, resultReturnTargetForOutcome(.failed, .time_trial));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.main_menu, resultReturnTargetForOutcome(.failed, .tutorial));
 }
 
 test "completion flow owners map postal loops to the recovered return targets" {
-    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, resultReturnTargetForCompletionOwner(.postal_route_map));
-    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, resultReturnTargetForCompletionOwner(.postal_final));
-    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, resultReturnTargetForCompletionOwner(.postal_failure));
-    try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_completion));
-    try std.testing.expectEqual(ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_failure));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, resultReturnTargetForCompletionOwner(.postal_route_map));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, resultReturnTargetForCompletionOwner(.postal_final));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, resultReturnTargetForCompletionOwner(.postal_failure));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_completion));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.challenge_setup_menu, resultReturnTargetForCompletionOwner(.challenge_failure));
 }
 
 test "respawn bridge state preserves the active run across rebuilds" {
@@ -13666,12 +13099,12 @@ test "respawn bridge state preserves the active run across rebuilds" {
     state.level_runner.?.collected_parcel_rows[0] = 42;
     state.level_runner.?.collected_parcel_row_count = 1;
 
-    var respawn_opcode: OuterBridgeOpcode = .destroy_return;
+    var respawn_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
     const respawn_owner = state.outerOwnerForRespawnActiveRun(&respawn_opcode);
     try std.testing.expect(respawn_owner != null);
-    try std.testing.expectEqual(OuterBridgeOpcode.rebuild_clear_replay_return, respawn_opcode);
+    try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.rebuild_clear_replay_return, respawn_opcode);
     try std.testing.expectEqual(@as(u8, 0x1c), state.subgame_continuation_selector);
-    try std.testing.expectEqual(OuterOwner.resume_active_run, respawn_owner.?.owner);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.resume_active_run, respawn_owner.?.owner);
 
     const bridge_state = state.pending_respawn_bridge_state orelse return error.TestExpectedRespawnBridgeState;
     try std.testing.expectEqual(@as(?FrontendLevelMode, .postal), bridge_state.frontend_mode);
@@ -13685,9 +13118,9 @@ test "respawn bridge state preserves the active run across rebuilds" {
 }
 
 test "final postal completion returns through the thanks screen" {
-    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
-    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
-    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x33, 0x33));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, postalCompletionReturnTarget(1, 0x32));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x32, 0x32));
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, postalCompletionReturnTarget(0x33, 0x33));
 }
 
 test "frontend widget shortcut codes follow the recovered pause and post-score widgets" {
@@ -13932,8 +13365,8 @@ test "tutorial score format uses commas" {
 }
 
 test "high score mode index follows screen order" {
-    try std.testing.expectEqual(@as(usize, 0), highScoreModeIndex(.postal));
-    try std.testing.expectEqual(@as(usize, 1), highScoreModeIndex(.challenge));
+    try std.testing.expectEqual(@as(usize, 0), frontend_high_score_screen.modeIndex(.postal));
+    try std.testing.expectEqual(@as(usize, 1), frontend_high_score_screen.modeIndex(.challenge));
 }
 
 test "new game menu mapping matches frontend route modes" {
@@ -14050,7 +13483,7 @@ test "ordinary postal completion commits unlock progress without staging arcade 
     try std.testing.expectEqual(@as(?high_score.Mode, null), updated.high_score_mode);
     try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
     try std.testing.expect(updated.unlocked_next_route);
-    try std.testing.expectEqual(ResultReturnTarget.postal_route_map, updated.return_target);
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.postal_route_map, updated.return_target);
     try std.testing.expectEqual(@as(u32, 2), state.runtime_config.routeUnlockLimit());
 }
 
@@ -14100,7 +13533,7 @@ test "final postal completion stages postal score entry before thanks return" {
     const updated = state.pending_run_result.?;
     try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
     try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
-    try std.testing.expectEqual(ResultReturnTarget.thanks_screen, updated.return_target);
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.thanks_screen, updated.return_target);
     try std.testing.expect(!updated.unlocked_next_route);
     const context = state.pendingRunHighScoreContext() orelse return error.TestExpectedPendingHighScoreEntry;
     try std.testing.expectEqual(high_score.Mode.postal, context.mode);
@@ -14156,8 +13589,8 @@ test "postal failure only stages post-level score entry when the score qualifies
     try std.testing.expectEqual(PendingRunPersistence.none, updated.persistence);
     try std.testing.expectEqual(@as(?high_score.Mode, .postal), updated.high_score_mode);
     try std.testing.expectEqual(@as(?usize, null), updated.high_score_rank);
-    try std.testing.expectEqual(@as(?PendingHighScoreEntry, null), state.pendingRunHighScoreContext());
-    try std.testing.expectEqual(ResultReturnTarget.new_game_menu, updated.return_target);
+    try std.testing.expectEqual(@as(?frontend_high_score_screen.PendingEntry, null), state.pendingRunHighScoreContext());
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.new_game_menu, updated.return_target);
 }
 
 test "postal abandon can stage standalone post-level score entry" {
@@ -14184,7 +13617,7 @@ test "postal abandon can stage standalone post-level score entry" {
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
-    state.saved_outer_owner = outerOwnerStateRouteMap(.{
+    state.saved_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
         .mode = .postal,
         .screen_mode = .normal,
     });
@@ -14209,8 +13642,8 @@ test "postal abandon can stage standalone post-level score entry" {
 
     try std.testing.expectEqual(high_score.Mode.postal, staged.context.mode);
     try std.testing.expectEqual(@as(usize, 0), staged.context.rank);
-    try std.testing.expectEqual(OuterOwner.new_game_menu, staged.return_owner.owner);
-    try std.testing.expectEqual(OuterBridgeOpcode.destroy_return, staged.return_opcode);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.new_game_menu, staged.return_owner.owner);
+    try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.destroy_return, staged.return_opcode);
     try std.testing.expectEqual(@as(u32, 900), state.high_score_tables.postal[0].score);
 }
 
@@ -14224,11 +13657,11 @@ test "parity: persistent high-score replay abandon restores the saved return own
     state.saved_replay_return_owner = .high_scores_menu;
     state.selected_level_record_return_target = null;
 
-    var opcode: OuterBridgeOpcode = .rebuild_return;
+    var opcode: frontend_bridge.OuterBridgeOpcode = .rebuild_return;
     const owner = state.outerOwnerForAbandonActiveRun(&opcode);
 
-    try std.testing.expectEqual(OuterBridgeOpcode.destroy_return, opcode);
-    try std.testing.expectEqual(OuterOwner.high_scores_menu, owner.owner);
+    try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.destroy_return, opcode);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.high_scores_menu, owner.owner);
     try std.testing.expectEqual(high_score.Mode.postal, owner.high_score_mode);
 }
 
@@ -14256,7 +13689,7 @@ test "standalone postal abandon skips score entry when the score does not qualif
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
-    state.saved_outer_owner = outerOwnerStateRouteMap(.{
+    state.saved_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
         .mode = .postal,
         .screen_mode = .normal,
     });
@@ -14304,7 +13737,7 @@ test "challenge abandon keeps post-level score entry on the challenge return lan
     state.selected_level_record_override = null;
     state.selected_level_record_source = null;
     state.selected_replay_cache = null;
-    state.saved_outer_owner = outerOwnerStateChallengeSetupMenu();
+    state.saved_outer_owner = frontend_bridge.outerOwnerStateChallengeSetupMenu();
 
     for (state.high_score_tables.challenge[0..high_score.visible_entry_count], 0..) |*entry, index| {
         entry.* = .{ .score = @as(u32, @intCast(100 - index)) };
@@ -14326,8 +13759,8 @@ test "challenge abandon keeps post-level score entry on the challenge return lan
 
     try std.testing.expectEqual(high_score.Mode.challenge, staged.context.mode);
     try std.testing.expectEqual(@as(usize, 0), staged.context.rank);
-    try std.testing.expectEqual(OuterOwner.challenge_setup_menu, staged.return_owner.owner);
-    try std.testing.expectEqual(OuterBridgeOpcode.rebuild_return, staged.return_opcode);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.challenge_setup_menu, staged.return_owner.owner);
+    try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.rebuild_return, staged.return_opcode);
     try std.testing.expectEqual(@as(u32, 900), state.high_score_tables.challenge[0].score);
 }
 
@@ -14349,19 +13782,19 @@ test "parity: transient time-trial replay abandon stays on the rebuild route-map
     };
     defer if (state.selected_replay_cache) |*replay| replay.deinit();
 
-    var opcode: OuterBridgeOpcode = .destroy_return;
+    var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
     const owner = state.outerOwnerForAbandonActiveRun(&opcode);
 
-    try std.testing.expectEqual(OuterBridgeOpcode.rebuild_return, opcode);
-    try std.testing.expectEqual(OuterOwner.route_map, owner.owner);
+    try std.testing.expectEqual(frontend_bridge.OuterBridgeOpcode.rebuild_return, opcode);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.route_map, owner.owner);
     try std.testing.expectEqual(FrontendLevelMode.time_trial, owner.route_map.mode);
-    try std.testing.expectEqual(defaultRouteMapScreenMode(.time_trial), owner.route_map.screen_mode);
+    try std.testing.expectEqual(frontend_bridge.defaultRouteMapScreenMode(.time_trial), owner.route_map.screen_mode);
     try std.testing.expectEqual(@as(?usize, 5), owner.route_map.start_route_override);
 }
 
 test "high-score browse owner drives table toggles while post-level entry stays fixed" {
     var state: AppState = undefined;
-    state.high_scores_menu_index = highScoreModeIndex(.postal);
+    state.high_scores_menu_index = frontend_high_score_screen.modeIndex(.postal);
     state.high_score_screen_owner = .{ .main_menu_browse = .postal };
 
     try state.performHighScoreMenuAction(.switch_table);
@@ -14376,46 +13809,46 @@ test "high-score browse owner drives table toggles while post-level entry stays 
 }
 
 test "parity: high-score browse back returns to the owning frontend controller" {
-    const postal_owner = AppState.highScoreBrowseBackOwner(.postal);
-    try std.testing.expectEqual(OuterOwner.new_game_menu, postal_owner.owner);
+    const postal_owner = frontend_bridge.highScoreBrowseBackOwner(.postal);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.new_game_menu, postal_owner.owner);
     try std.testing.expectEqual(NewGameMenuItem.postal_mode, postal_owner.new_game_menu_item);
 
-    const challenge_owner = AppState.highScoreBrowseBackOwner(.challenge);
-    try std.testing.expectEqual(OuterOwner.challenge_setup_menu, challenge_owner.owner);
+    const challenge_owner = frontend_bridge.highScoreBrowseBackOwner(.challenge);
+    try std.testing.expectEqual(frontend_bridge.OuterOwner.challenge_setup_menu, challenge_owner.owner);
 }
 
 test "thanks screen message sequence matches the recovered owner timing" {
-    var controller = ThanksScreenController{};
+    var controller = frontend_thanks.Controller{};
     try std.testing.expectEqualStrings("Thanks For Playing!", controller.currentText().?);
     try std.testing.expect(!controller.allowsContinue());
 
     for (0..241) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.title_hidden, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.title_hidden, controller.stage);
     try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
 
     for (0..31) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.challenge_visible, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.challenge_visible, controller.stage);
     try std.testing.expectEqualStrings("Test your reflexes in Challenge Mode!", controller.currentText().?);
     try std.testing.expect(controller.allowsContinue());
 
     for (0..241) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.challenge_hidden, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.challenge_hidden, controller.stage);
     try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
 
     for (0..31) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.time_trial_visible, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.time_trial_visible, controller.stage);
     try std.testing.expectEqualStrings("Improve your skills in Time Trial!", controller.currentText().?);
 
     for (0..241) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.time_trial_hidden, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.time_trial_hidden, controller.stage);
     try std.testing.expectEqual(@as(?[]const u8, null), controller.currentText());
 
     for (0..31) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.continue_visible, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.continue_visible, controller.stage);
     try std.testing.expectEqualStrings("Click to Continue", controller.currentText().?);
 
     for (0..241) |_| controller.step();
-    try std.testing.expectEqual(ThanksScreenStage.continue_hold, controller.stage);
+    try std.testing.expectEqual(frontend_thanks.Stage.continue_hold, controller.stage);
     try std.testing.expectEqualStrings("Click to Continue", controller.currentText().?);
     try std.testing.expectEqual(@as(f32, 0.0), controller.progress_step);
 }
@@ -14527,7 +13960,7 @@ test "selected level record override follows recovered compact lanes" {
         .garbage_scalar = 0.32,
         .salt_scalar = 0.45,
     };
-    const record = SelectedLevelRecordOverride.fromHighScoreEntry(&entry) orelse return error.TestUnexpectedResult;
+    const record = frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(&entry) orelse return error.TestUnexpectedResult;
 
     try std.testing.expectEqual(FrontendLevelMode.time_trial, record.mode);
     try std.testing.expectEqual(@as(usize, 12), record.level_index);
@@ -14546,7 +13979,7 @@ test "selected level record override rejects unresolved mode ids" {
         .replay_level_index = 1,
         .replay_mode_id = 3,
     };
-    try std.testing.expect(SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
+    try std.testing.expect(frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(&entry) == null);
 }
 
 test "selected replay directive decodes compact lateral x and the secondary lane" {
@@ -14620,7 +14053,7 @@ test "selected replay results skip persistence and score-table awards" {
     try std.testing.expect(result.high_score_rank == null);
     try std.testing.expect(!result.time_trial_record_improved);
     try std.testing.expect(!result.unlocked_next_route);
-    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.high_scores_menu, result.return_target);
 }
 
 test "transient postal replay failure stays off the post-level high-score lane" {
@@ -14660,10 +14093,10 @@ test "transient postal replay failure stays off the post-level high-score lane" 
     try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
     try std.testing.expect(result.high_score_mode == null);
     try std.testing.expect(result.high_score_rank == null);
-    try std.testing.expectEqual(ResultReturnTarget.high_scores_menu, result.return_target);
+    try std.testing.expectEqual(frontend_bridge.ResultReturnTarget.high_scores_menu, result.return_target);
 
     state.pending_run_result = result;
-    try std.testing.expectEqual(@as(?PendingHighScoreEntry, null), state.pendingRunHighScoreContext());
+    try std.testing.expectEqual(@as(?frontend_high_score_screen.PendingEntry, null), state.pendingRunHighScoreContext());
     try std.testing.expectEqual(@as(?StandalonePostLevelHighScoreEntry, null), state.failedResultPostLevelHighScoreEntry());
 }
 
