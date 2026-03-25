@@ -7,6 +7,7 @@ const background = @import("background.zig");
 const config = @import("config.zig");
 const debug_levels = @import("debug_levels.zig");
 const frontend = @import("frontend.zig");
+const frontend_activation = @import("frontend/activation.zig");
 const frontend_bridge = @import("frontend/bridge.zig");
 const frontend_challenge_setup_menu = @import("frontend/challenge_setup_menu.zig");
 const frontend_completion_screen = @import("frontend/completion_screen.zig");
@@ -996,325 +997,6 @@ const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 const frontend_canvas_width: i32 = 640;
 const frontend_canvas_height: i32 = 480;
 
-const FrontendHoverTarget = enum(u8) {
-    main_menu_new_game,
-    main_menu_high_scores,
-    main_menu_options,
-    main_menu_credits,
-    main_menu_exit,
-    new_game_tutorial,
-    new_game_postal_mode,
-    new_game_time_trial,
-    new_game_challenge_mode,
-    new_game_help,
-    new_game_back,
-    challenge_setup_difficulty,
-    challenge_setup_difficulty_less,
-    challenge_setup_difficulty_more,
-    challenge_setup_speed,
-    challenge_setup_speed_less,
-    challenge_setup_speed_more,
-    challenge_setup_play,
-    challenge_setup_watch_replay,
-    challenge_setup_back,
-    options_fullscreen,
-    options_sound_volume,
-    options_sound_less,
-    options_sound_more,
-    options_music_volume,
-    options_music_less,
-    options_music_more,
-    options_back,
-    pause_menu_end_game,
-    pause_menu_options,
-    pause_menu_resume,
-    route_map_play,
-    route_map_watch_best_trial,
-    route_map_back,
-    help_back,
-    high_scores_back,
-    high_scores_switch_table,
-    high_scores_replay_0,
-    high_scores_replay_1,
-    high_scores_replay_2,
-    high_scores_replay_3,
-    high_scores_replay_4,
-    high_scores_replay_5,
-    high_scores_replay_6,
-    high_scores_replay_7,
-    high_scores_replay_8,
-    high_scores_replay_9,
-    post_level_high_scores_cancel,
-    post_level_high_scores_submit,
-    completion_continue,
-    exit_prompt_yes,
-    exit_prompt_no,
-};
-
-const FrontendQueuedAction = union(enum) {
-    main_menu: MainMenuItem,
-    new_game_menu: NewGameMenuItem,
-    challenge_setup_menu: frontend_challenge_setup_menu.Item,
-    options_menu: OptionsMenuItem,
-    pause_menu: PauseMenuItem,
-    route_map_menu: RouteMenuAction,
-    help_menu: frontend_help.Action,
-    high_scores_menu: frontend_high_score_screen.MenuAction,
-    high_score_replay: usize,
-    post_level_high_scores: frontend_high_score_screen.PostLevelAction,
-    completion_screen: frontend_completion_screen.Action,
-    exit_prompt: frontend_exit_prompt.Choice,
-};
-
-const FrontendQueuedActivation = struct {
-    action: FrontendQueuedAction,
-    target: FrontendHoverTarget,
-    requires_fade: bool,
-    progress: f32 = 0.0,
-};
-
-fn hoverTargetForMainMenu(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .main_menu_new_game,
-        1 => .main_menu_high_scores,
-        2 => .main_menu_options,
-        3 => .main_menu_credits,
-        4 => .main_menu_exit,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForNewGame(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .new_game_tutorial,
-        1 => .new_game_postal_mode,
-        2 => .new_game_time_trial,
-        3 => .new_game_challenge_mode,
-        4 => .new_game_help,
-        5 => .new_game_back,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForChallengeSetupItem(item: frontend_challenge_setup_menu.Item) FrontendHoverTarget {
-    return switch (item) {
-        .difficulty => .challenge_setup_difficulty,
-        .speed => .challenge_setup_speed,
-        .play => .challenge_setup_play,
-        .watch_replay => .challenge_setup_watch_replay,
-        .back => .challenge_setup_back,
-    };
-}
-
-fn hoverTargetForChallengeSetupSliderArrow(
-    item: frontend_challenge_setup_menu.Item,
-    direction: frontend_widget.SliderDirection,
-) FrontendHoverTarget {
-    return switch (item) {
-        .difficulty => switch (direction) {
-            .less => .challenge_setup_difficulty_less,
-            .more => .challenge_setup_difficulty_more,
-        },
-        .speed => switch (direction) {
-            .less => .challenge_setup_speed_less,
-            .more => .challenge_setup_speed_more,
-        },
-        .play, .watch_replay, .back => unreachable,
-    };
-}
-
-fn sliderHoverTargetBelongsToChallengeSetupRow(target: FrontendHoverTarget, item: frontend_challenge_setup_menu.Item) bool {
-    return switch (item) {
-        .difficulty => switch (target) {
-            .challenge_setup_difficulty,
-            .challenge_setup_difficulty_less,
-            .challenge_setup_difficulty_more,
-            => true,
-            else => false,
-        },
-        .speed => switch (target) {
-            .challenge_setup_speed,
-            .challenge_setup_speed_less,
-            .challenge_setup_speed_more,
-            => true,
-            else => false,
-        },
-        .play, .watch_replay, .back => false,
-    };
-}
-
-fn hoverTargetForOptions(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .options_fullscreen,
-        1 => .options_sound_volume,
-        2 => .options_music_volume,
-        3 => .options_back,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForOptionsSliderArrow(item: OptionsMenuItem, direction: frontend_widget.SliderDirection) FrontendHoverTarget {
-    return switch (item) {
-        .sound_volume => switch (direction) {
-            .less => .options_sound_less,
-            .more => .options_sound_more,
-        },
-        .music_volume => switch (direction) {
-            .less => .options_music_less,
-            .more => .options_music_more,
-        },
-        else => unreachable,
-    };
-}
-
-fn sliderHoverTargetBelongsToOptionsRow(target: FrontendHoverTarget, item: OptionsMenuItem) bool {
-    return switch (item) {
-        .sound_volume => switch (target) {
-            .options_sound_volume, .options_sound_less, .options_sound_more => true,
-            else => false,
-        },
-        .music_volume => switch (target) {
-            .options_music_volume, .options_music_less, .options_music_more => true,
-            else => false,
-        },
-        else => false,
-    };
-}
-
-fn hoverTargetForPauseMenu(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .pause_menu_end_game,
-        1 => .pause_menu_options,
-        2 => .pause_menu_resume,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForRouteMenuAction(action: RouteMenuAction) FrontendHoverTarget {
-    return switch (action) {
-        .play => .route_map_play,
-        .watch_best_trial => .route_map_watch_best_trial,
-        .back => .route_map_back,
-    };
-}
-
-fn newGameMenuItemForFrontendMode(mode: FrontendLevelMode) NewGameMenuItem {
-    return switch (mode) {
-        .tutorial => .tutorial,
-        .postal => .postal_mode,
-        .time_trial => .time_trial,
-        .challenge => .challenge_mode,
-    };
-}
-
-fn newGameMenuIndexForItem(target: NewGameMenuItem) usize {
-    for (new_game_menu_items, 0..) |item, index| {
-        if (item == target) return index;
-    }
-    return 0;
-}
-
-fn hoverTargetForHighScores(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .high_scores_back,
-        1 => .high_scores_switch_table,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForHighScoreReplay(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .high_scores_replay_0,
-        1 => .high_scores_replay_1,
-        2 => .high_scores_replay_2,
-        3 => .high_scores_replay_3,
-        4 => .high_scores_replay_4,
-        5 => .high_scores_replay_5,
-        6 => .high_scores_replay_6,
-        7 => .high_scores_replay_7,
-        8 => .high_scores_replay_8,
-        9 => .high_scores_replay_9,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForPostLevelHighScores(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .post_level_high_scores_cancel,
-        1 => .post_level_high_scores_submit,
-        else => unreachable,
-    };
-}
-
-fn hoverTargetForExitPrompt(index: usize) FrontendHoverTarget {
-    return switch (index) {
-        0 => .exit_prompt_yes,
-        1 => .exit_prompt_no,
-        else => unreachable,
-    };
-}
-
-fn queuedActivationTarget(action: FrontendQueuedAction) FrontendHoverTarget {
-    return switch (action) {
-        .main_menu => |item| switch (item) {
-            .new_game => .main_menu_new_game,
-            .high_scores => .main_menu_high_scores,
-            .options => .main_menu_options,
-            .credits => .main_menu_credits,
-            .exit => .main_menu_exit,
-        },
-        .new_game_menu => |item| switch (item) {
-            .tutorial => .new_game_tutorial,
-            .postal_mode => .new_game_postal_mode,
-            .time_trial => .new_game_time_trial,
-            .challenge_mode => .new_game_challenge_mode,
-            .help => .new_game_help,
-            .back => .new_game_back,
-        },
-        .challenge_setup_menu => |item| hoverTargetForChallengeSetupItem(item),
-        .options_menu => |item| switch (item) {
-            .fullscreen => .options_fullscreen,
-            .back => .options_back,
-            .sound_volume, .music_volume => unreachable,
-        },
-        .pause_menu => |item| switch (item) {
-            .end_game => .pause_menu_end_game,
-            .options => .pause_menu_options,
-            .@"resume" => .pause_menu_resume,
-        },
-        .route_map_menu => |item| switch (item) {
-            .play => .route_map_play,
-            .watch_best_trial => .route_map_watch_best_trial,
-            .back => .route_map_back,
-        },
-        .help_menu => .help_back,
-        .high_scores_menu => |item| switch (item) {
-            .back => .high_scores_back,
-            .switch_table => .high_scores_switch_table,
-        },
-        .high_score_replay => |index| hoverTargetForHighScoreReplay(index),
-        .post_level_high_scores => |item| switch (item) {
-            .cancel => .post_level_high_scores_cancel,
-            .submit => .post_level_high_scores_submit,
-        },
-        .completion_screen => .completion_continue,
-        .exit_prompt => |choice| switch (choice) {
-            .yes => .exit_prompt_yes,
-            .no => .exit_prompt_no,
-        },
-    };
-}
-
-fn queuedActivationRequiresFade(action: FrontendQueuedAction) bool {
-    return switch (action) {
-        .exit_prompt => |choice| switch (choice) {
-            .yes => true,
-            .no => false,
-        },
-        else => false,
-    };
-}
-
 const Mode = enum {
     textures,
     audio,
@@ -1547,9 +1229,9 @@ const AppState = struct {
     frontend_cursor_texture: ?assets.LoadedTexture = null,
     frontend_widget_art: FrontendWidgetArt = .{},
     frontend_sound_fx: FrontendSoundFx = .{},
-    hovered_frontend_target: ?FrontendHoverTarget = null,
+    hovered_frontend_target: ?frontend_activation.HoverTarget = null,
     keyboard_frontend_focus_visible: bool = false,
-    pending_frontend_activation: ?FrontendQueuedActivation = null,
+    pending_frontend_activation: ?frontend_activation.QueuedActivation = null,
     completion_continue_button_state: frontend_widget.TextButtonState = .{},
     completion_screen_reveal_progress: f32 = 0.0,
     thanks_screen_controller: frontend_thanks.Controller = .{},
@@ -2430,7 +2112,7 @@ const AppState = struct {
         return layout.unmapPoint(mouse_x, mouse_y);
     }
 
-    fn setFrontendHoverTarget(self: *AppState, target: ?FrontendHoverTarget) void {
+    fn setFrontendHoverTarget(self: *AppState, target: ?frontend_activation.HoverTarget) void {
         if (self.hovered_frontend_target == target) return;
         self.hovered_frontend_target = target;
         if (target != null) {
@@ -2443,35 +2125,35 @@ const AppState = struct {
         self.keyboard_frontend_focus_visible = true;
     }
 
-    fn activeFrontendButtonTarget(self: *const AppState) ?FrontendHoverTarget {
+    fn activeFrontendButtonTarget(self: *const AppState) ?frontend_activation.HoverTarget {
         if (self.pending_frontend_activation) |pending| {
             return pending.target;
         }
         return self.hovered_frontend_target;
     }
 
-    fn frontendButtonHot(self: *const AppState, target: FrontendHoverTarget, fallback_selected: bool) bool {
+    fn frontendButtonHot(self: *const AppState, target: frontend_activation.HoverTarget, fallback_selected: bool) bool {
         if (self.activeFrontendButtonTarget()) |active_target| {
             return active_target == target;
         }
         return self.keyboard_frontend_focus_visible and fallback_selected;
     }
 
-    fn queueFrontendActivation(self: *AppState, action: FrontendQueuedAction) void {
+    fn queueFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) void {
         if (self.pending_frontend_activation != null) return;
         self.playFrontendSelectSound();
-        const requires_fade = queuedActivationRequiresFade(action);
+        const requires_fade = frontend_activation.queuedActivationRequiresFade(action);
         if (requires_fade) {
             self.frontend_transition.beginOverlayFadeOut();
         }
         self.pending_frontend_activation = .{
             .action = action,
-            .target = queuedActivationTarget(action),
+            .target = frontend_activation.queuedActivationTarget(action),
             .requires_fade = requires_fade,
         };
     }
 
-    fn dispatchFrontendActivation(self: *AppState, action: FrontendQueuedAction) !void {
+    fn dispatchFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) !void {
         switch (action) {
             .main_menu => |item| try self.performMainMenuItem(item),
             .new_game_menu => |item| try self.performNewGameMenuItem(item),
@@ -2534,7 +2216,7 @@ const AppState = struct {
         return null;
     }
 
-    fn frontendShortcutActivationForCode(self: *const AppState, code: u8) ?FrontendQueuedAction {
+    fn frontendShortcutActivationForCode(self: *const AppState, code: u8) ?frontend_activation.QueuedAction {
         return switch (self.game_phase) {
             .pause_menu => switch (code) {
                 11 => .{ .pause_menu = .end_game },
@@ -2564,7 +2246,7 @@ const AppState = struct {
     fn updateFrontendWidgetAnimations(self: *AppState) void {
         const main_menu_active = self.game_phase == .main_menu and !self.frontend_transition.blocksInput();
         for (&self.main_menu_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, main_menu_active and self.frontendButtonHot(hoverTargetForMainMenu(index), self.menu_index == index));
+            state.stepFor(.menu_button, main_menu_active and self.frontendButtonHot(frontend_activation.hoverTargetForMainMenu(index), self.menu_index == index));
         }
 
         const new_game_active = self.game_phase == .new_game_menu and !self.frontend_transition.blocksInput();
@@ -2573,7 +2255,7 @@ const AppState = struct {
                 .menu_button,
                 new_game_active and
                     self.newGameMenuIndexVisible(index) and
-                    self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index),
+                    self.frontendButtonHot(frontend_activation.hoverTargetForNewGame(index), self.new_game_menu_index == index),
             );
         }
 
@@ -2585,15 +2267,15 @@ const AppState = struct {
                 .difficulty, .speed => blk: {
                     const active_target = self.activeFrontendButtonTarget();
                     break :blk challenge_setup_active and
-                        ((active_target != null and sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
+                        ((active_target != null and frontend_activation.sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
                             (self.keyboard_frontend_focus_visible and selected_challenge_item == item));
                 },
                 .watch_replay => challenge_setup_active and self.challengeSetupReplayAvailable() and self.frontendButtonHot(
-                    hoverTargetForChallengeSetupItem(item),
+                    frontend_activation.hoverTargetForChallengeSetupItem(item),
                     selected_challenge_item == item,
                 ),
                 .play, .back => challenge_setup_active and self.frontendButtonHot(
-                    hoverTargetForChallengeSetupItem(item),
+                    frontend_activation.hoverTargetForChallengeSetupItem(item),
                     selected_challenge_item == item,
                 ),
             };
@@ -2614,9 +2296,9 @@ const AppState = struct {
             const hot = switch (item) {
                 .sound_volume, .music_volume => blk: {
                     const active_target = self.activeFrontendButtonTarget();
-                    break :blk options_active and ((active_target != null and sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
+                    break :blk options_active and ((active_target != null and frontend_activation.sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
                 },
-                else => options_active and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index),
+                else => options_active and self.frontendButtonHot(frontend_activation.hoverTargetForOptions(index), self.options_menu_index == index),
             };
             state.stepFor(.menu_button, hot);
         }
@@ -2624,37 +2306,37 @@ const AppState = struct {
         self.options_music_display_value = stepOptionsSliderDisplay(self.options_music_display_value, self.runtime_config.musicVolume());
         const pause_menu_active = self.game_phase == .pause_menu and !self.frontend_transition.blocksInput();
         for (&self.pause_menu_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, pause_menu_active and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
+            state.stepFor(.menu_button, pause_menu_active and self.frontendButtonHot(frontend_activation.hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
         const route_map_active = self.game_phase == .route_map_menu and !self.frontend_transition.blocksInput();
         const route_map_card_open = self.routeMapCardIsOpen();
         self.route_map_button_states[frontend_route_map.primary_button_index].stepFor(
             .menu_button,
-            route_map_active and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+            route_map_active and route_map_card_open and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
         self.route_map_button_states[frontend_route_map.replay_button_index].stepFor(
             .route_map_secondary_action,
-            route_map_active and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+            route_map_active and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
         self.route_map_button_states[frontend_route_map.back_button_index].stepFor(
             .menu_button,
-            route_map_active and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
+            route_map_active and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
         );
         const help_active = self.game_phase == .help and !self.frontend_transition.blocksInput();
         self.help_button_states[0].stepFor(.menu_button, help_active and self.frontendButtonHot(.help_back, true));
 
         const high_scores_active = self.game_phase == .high_scores_menu and !self.frontend_transition.blocksInput();
         for (&self.high_score_button_states, 0..) |*state, index| {
-            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() == null and self.frontendButtonHot(frontend_activation.hoverTargetForHighScores(index), self.high_scores_action_index == index));
         }
         for (&self.high_score_replay_button_states, 0..) |*state, index| {
             state.stepFor(
                 .compact_score_row,
-                high_scores_active and self.postLevelHighScoreContext() == null and self.highScoreReplayAvailable(index) and self.frontendButtonHot(hoverTargetForHighScoreReplay(index), false),
+                high_scores_active and self.postLevelHighScoreContext() == null and self.highScoreReplayAvailable(index) and self.frontendButtonHot(frontend_activation.hoverTargetForHighScoreReplay(index), false),
             );
         }
         for (&self.post_level_high_score_button_states, 0..) |*state, index| {
-            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.frontendButtonHot(hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
+            state.stepFor(.footer_button, high_scores_active and self.postLevelHighScoreContext() != null and self.frontendButtonHot(frontend_activation.hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
         }
         const completion_active = self.completionScreenInteractive();
         self.completion_continue_button_state.stepFor(
@@ -2664,20 +2346,20 @@ const AppState = struct {
 
         const exit_prompt_active = self.game_phase == .exit_prompt and !self.frontend_transition.blocksInput();
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
-            state.stepFor(.menu_button, exit_prompt_active and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
+            state.stepFor(.menu_button, exit_prompt_active and self.frontendButtonHot(frontend_activation.hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
         }
     }
 
     fn snapFrontendWidgetStates(self: *AppState) void {
         for (&self.main_menu_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .main_menu and self.frontendButtonHot(hoverTargetForMainMenu(index), self.menu_index == index));
+            state.snapFor(.menu_button, self.game_phase == .main_menu and self.frontendButtonHot(frontend_activation.hoverTargetForMainMenu(index), self.menu_index == index));
         }
         for (&self.new_game_button_states, 0..) |*state, index| {
             state.snapFor(
                 .menu_button,
                 self.game_phase == .new_game_menu and
                     self.newGameMenuIndexVisible(index) and
-                    self.frontendButtonHot(hoverTargetForNewGame(index), self.new_game_menu_index == index),
+                    self.frontendButtonHot(frontend_activation.hoverTargetForNewGame(index), self.new_game_menu_index == index),
             );
         }
         const selected_challenge_item = self.currentChallengeSetupSelectedItem();
@@ -2687,15 +2369,15 @@ const AppState = struct {
                 .difficulty, .speed => blk: {
                     const active_target = self.activeFrontendButtonTarget();
                     break :blk self.game_phase == .challenge_setup_menu and
-                        ((active_target != null and sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
+                        ((active_target != null and frontend_activation.sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
                             (self.keyboard_frontend_focus_visible and selected_challenge_item == item));
                 },
                 .watch_replay => self.game_phase == .challenge_setup_menu and self.challengeSetupReplayAvailable() and self.frontendButtonHot(
-                    hoverTargetForChallengeSetupItem(item),
+                    frontend_activation.hoverTargetForChallengeSetupItem(item),
                     selected_challenge_item == item,
                 ),
                 .play, .back => self.game_phase == .challenge_setup_menu and self.frontendButtonHot(
-                    hoverTargetForChallengeSetupItem(item),
+                    frontend_activation.hoverTargetForChallengeSetupItem(item),
                     selected_challenge_item == item,
                 ),
             };
@@ -2706,47 +2388,47 @@ const AppState = struct {
             const hot = switch (item) {
                 .sound_volume, .music_volume => blk: {
                     const active_target = self.activeFrontendButtonTarget();
-                    break :blk self.game_phase == .options_menu and ((active_target != null and sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
+                    break :blk self.game_phase == .options_menu and ((active_target != null and frontend_activation.sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (self.keyboard_frontend_focus_visible and self.options_menu_index == index));
                 },
-                else => self.game_phase == .options_menu and self.frontendButtonHot(hoverTargetForOptions(index), self.options_menu_index == index),
+                else => self.game_phase == .options_menu and self.frontendButtonHot(frontend_activation.hoverTargetForOptions(index), self.options_menu_index == index),
             };
             state.snapFor(.menu_button, hot);
         }
         for (&self.pause_menu_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
+            state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(frontend_activation.hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
         const route_map_card_open = self.routeMapCardIsOpen();
         self.route_map_button_states[frontend_route_map.primary_button_index].snapFor(
             .menu_button,
-            self.game_phase == .route_map_menu and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
+            self.game_phase == .route_map_menu and route_map_card_open and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
         self.route_map_button_states[frontend_route_map.replay_button_index].snapFor(
             .route_map_secondary_action,
-            self.game_phase == .route_map_menu and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
+            self.game_phase == .route_map_menu and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
         self.route_map_button_states[frontend_route_map.back_button_index].snapFor(
             .menu_button,
-            self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
+            self.game_phase == .route_map_menu and self.frontendButtonHot(frontend_activation.hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
         );
         self.help_button_states[0].snapFor(.menu_button, self.game_phase == .help and self.frontendButtonHot(.help_back, true));
         for (&self.high_score_button_states, 0..) |*state, index| {
-            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.frontendButtonHot(hoverTargetForHighScores(index), self.high_scores_action_index == index));
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.frontendButtonHot(frontend_activation.hoverTargetForHighScores(index), self.high_scores_action_index == index));
         }
         for (&self.high_score_replay_button_states, 0..) |*state, index| {
             state.snapFor(
                 .compact_score_row,
-                self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.highScoreReplayAvailable(index) and self.frontendButtonHot(hoverTargetForHighScoreReplay(index), false),
+                self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() == null and self.highScoreReplayAvailable(index) and self.frontendButtonHot(frontend_activation.hoverTargetForHighScoreReplay(index), false),
             );
         }
         for (&self.post_level_high_score_button_states, 0..) |*state, index| {
-            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() != null and self.frontendButtonHot(hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
+            state.snapFor(.footer_button, self.game_phase == .high_scores_menu and self.postLevelHighScoreContext() != null and self.frontendButtonHot(frontend_activation.hoverTargetForPostLevelHighScores(index), self.post_level_high_score_action_index == index));
         }
         self.completion_continue_button_state.snapFor(
             .menu_button,
             self.completionScreenInteractive() and self.completionContinueVisible() and self.frontendButtonHot(.completion_continue, true),
         );
         for (&self.exit_prompt_button_states, 0..) |*state, index| {
-            state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.frontendButtonHot(hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
+            state.snapFor(.menu_button, self.game_phase == .exit_prompt and self.frontendButtonHot(frontend_activation.hoverTargetForExitPrompt(index), self.exit_prompt_choice_index == index));
         }
     }
 
@@ -2765,7 +2447,7 @@ const AppState = struct {
         }
 
         if (hovered_index) |index| {
-            self.setFrontendHoverTarget(hoverTargetForMainMenu(index));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForMainMenu(index));
             self.menu_index = index;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .main_menu = main_menu_items[index] });
@@ -2801,7 +2483,7 @@ const AppState = struct {
         }
 
         if (hovered_index) |index| {
-            self.setFrontendHoverTarget(hoverTargetForNewGame(index));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForNewGame(index));
             self.new_game_menu_index = index;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[index] });
@@ -2819,7 +2501,7 @@ const AppState = struct {
 
         const difficulty_slider = challengeSetupSliderLayout(self, .difficulty);
         if (difficulty_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
                 self.stepChallengeSetupMenuValue(.difficulty, -frontend_challenge_setup_menu.slider_adjust_step);
@@ -2827,7 +2509,7 @@ const AppState = struct {
             return;
         }
         if (difficulty_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
                 self.stepChallengeSetupMenuValue(.difficulty, frontend_challenge_setup_menu.slider_adjust_step);
@@ -2842,7 +2524,7 @@ const AppState = struct {
 
         const speed_slider = challengeSetupSliderLayout(self, .speed);
         if (speed_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.speed, .less));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .less));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
                 self.stepChallengeSetupMenuValue(.speed, -frontend_challenge_setup_menu.slider_adjust_step);
@@ -2850,7 +2532,7 @@ const AppState = struct {
             return;
         }
         if (speed_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForChallengeSetupSliderArrow(.speed, .more));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .more));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
                 self.stepChallengeSetupMenuValue(.speed, frontend_challenge_setup_menu.slider_adjust_step);
@@ -2876,7 +2558,7 @@ const AppState = struct {
                         .difficulty, .speed => unreachable,
                     };
                     if (frontend_widget.hitRect(text_rect, self.challenge_setup_button_states[button_index]).contains(local_mouse)) {
-                        self.setFrontendHoverTarget(hoverTargetForChallengeSetupItem(item));
+                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupItem(item));
                         self.challenge_setup_index = visible_index;
                         if (rl.isMouseButtonPressed(.left)) {
                             self.queueFrontendActivation(.{ .challenge_setup_menu = item });
@@ -2899,7 +2581,7 @@ const AppState = struct {
         const layout_state = self.optionsMenuLayoutState();
         const fullscreen_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .fullscreen);
         if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[frontend_options_menu.fullscreen_button_index]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptions(0));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(0));
             self.options_menu_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .options_menu = .fullscreen });
@@ -2909,7 +2591,7 @@ const AppState = struct {
 
         const sound_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .sound_volume);
         if (sound_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .less));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .less));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
                 try self.stepOptionsMenuValue(.sound_volume, -frontend_options_menu.slider_adjust_step);
@@ -2917,7 +2599,7 @@ const AppState = struct {
             return;
         }
         if (sound_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .more));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .more));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
                 try self.stepOptionsMenuValue(.sound_volume, frontend_options_menu.slider_adjust_step);
@@ -2925,14 +2607,14 @@ const AppState = struct {
             return;
         }
         if (sound_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptions(1));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(1));
             self.options_menu_index = 1;
             return;
         }
 
         const music_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .music_volume);
         if (music_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .less));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .less));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
                 try self.stepOptionsMenuValue(.music_volume, -frontend_options_menu.slider_adjust_step);
@@ -2940,7 +2622,7 @@ const AppState = struct {
             return;
         }
         if (music_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .more));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .more));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
                 try self.stepOptionsMenuValue(.music_volume, frontend_options_menu.slider_adjust_step);
@@ -2948,14 +2630,14 @@ const AppState = struct {
             return;
         }
         if (music_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptions(2));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(2));
             self.options_menu_index = 2;
             return;
         }
 
         const back_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .back);
         if (frontend_widget.hitRect(back_rect, self.options_button_states[frontend_options_menu.back_button_index]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForOptions(3));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(3));
             self.options_menu_index = 3;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .options_menu = .back });
@@ -2991,7 +2673,7 @@ const AppState = struct {
         }
 
         if (hovered_index) |index| {
-            self.setFrontendHoverTarget(hoverTargetForPauseMenu(index));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForPauseMenu(index));
             self.pause_menu_index = index;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .pause_menu = frontend_pause_menu.items[index] });
@@ -3019,7 +2701,7 @@ const AppState = struct {
         if (frontend_widget.hitRect(back_rect, self.route_map_button_states[frontend_route_map.back_button_index]).contains(local_mouse)) {
             self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
-            self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.back));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.back));
             if (self.routeMenuActionIndexForAction(.back)) |index| {
                 self.route_menu_action_index = index;
             }
@@ -3055,7 +2737,7 @@ const AppState = struct {
                 if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[frontend_route_map.primary_button_index]).contains(local_mouse)) {
                     self.route_map_hover_state = .card;
                     self.route_map_hovered_index = null;
-                    self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
+                    self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.play));
                     if (self.routeMenuActionIndexForAction(.play)) |index| {
                         self.route_menu_action_index = index;
                     }
@@ -3069,7 +2751,7 @@ const AppState = struct {
                     if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[frontend_route_map.replay_button_index]).contains(local_mouse)) {
                         self.route_map_hover_state = .card;
                         self.route_map_hovered_index = null;
-                        self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
+                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial));
                         if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
                             self.route_menu_action_index = index;
                         }
@@ -3142,7 +2824,7 @@ const AppState = struct {
         if (self.postLevelHighScoreContext() != null) {
             const cancel_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[0].label(), frontend_high_score_screen.entry_cancel_x);
             if (frontend_widget.hitRect(cancel_rect, self.post_level_high_score_button_states[0]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(0));
+                self.setFrontendHoverTarget(frontend_activation.hoverTargetForPostLevelHighScores(0));
                 self.post_level_high_score_action_index = 0;
                 if (rl.isMouseButtonPressed(.left)) {
                     self.queueFrontendActivation(.{ .post_level_high_scores = .cancel });
@@ -3152,7 +2834,7 @@ const AppState = struct {
 
             const submit_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[1].label(), frontend_high_score_screen.entry_submit_x);
             if (frontend_widget.hitRect(submit_rect, self.post_level_high_score_button_states[1]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(hoverTargetForPostLevelHighScores(1));
+                self.setFrontendHoverTarget(frontend_activation.hoverTargetForPostLevelHighScores(1));
                 self.post_level_high_score_action_index = 1;
                 if (rl.isMouseButtonPressed(.left)) {
                     self.queueFrontendActivation(.{ .post_level_high_scores = .submit });
@@ -3167,7 +2849,7 @@ const AppState = struct {
                     if (!entry.has_replay) continue;
                     const replay_rect = frontend_high_score_screen.replayTextRect(&self.ui_font, selected_mode, frontend_high_score_screen.row_start_y + @as(f32, @floatFromInt(entry_index)) * frontend_high_score_screen.row_pitch);
                     if (frontend_widget.hitRect(replay_rect, self.high_score_replay_button_states[entry_index]).contains(local_mouse)) {
-                        self.setFrontendHoverTarget(hoverTargetForHighScoreReplay(entry_index));
+                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScoreReplay(entry_index));
                         if (rl.isMouseButtonPressed(.left)) {
                             self.queueFrontendActivation(.{ .high_score_replay = entry_index });
                         }
@@ -3178,7 +2860,7 @@ const AppState = struct {
 
             const back_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, "Back", frontend_high_score_screen.back_x);
             if (frontend_widget.hitRect(back_rect, self.high_score_button_states[0]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(hoverTargetForHighScores(0));
+                self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScores(0));
                 self.high_scores_action_index = 0;
                 if (rl.isMouseButtonPressed(.left)) {
                     self.queueFrontendActivation(.{ .high_scores_menu = .back });
@@ -3189,7 +2871,7 @@ const AppState = struct {
             const toggle_label = frontend_high_score_screen.tableToggleLabel(self.activeHighScoreScreenMode());
             const toggle_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, toggle_label, frontend_high_score_screen.toggle_x);
             if (frontend_widget.hitRect(toggle_rect, self.high_score_button_states[1]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(hoverTargetForHighScores(1));
+                self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScores(1));
                 self.high_scores_action_index = 1;
                 if (rl.isMouseButtonPressed(.left)) {
                     self.queueFrontendActivation(.{ .high_scores_menu = .switch_table });
@@ -3233,7 +2915,7 @@ const AppState = struct {
 
         const yes_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
         if (frontend_widget.hitRect(yes_rect, self.exit_prompt_button_states[0]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForExitPrompt(0));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForExitPrompt(0));
             self.exit_prompt_choice_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .exit_prompt = .yes });
@@ -3243,7 +2925,7 @@ const AppState = struct {
 
         const no_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
         if (frontend_widget.hitRect(no_rect, self.exit_prompt_button_states[1]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(hoverTargetForExitPrompt(1));
+            self.setFrontendHoverTarget(frontend_activation.hoverTargetForExitPrompt(1));
             self.exit_prompt_choice_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
                 self.queueFrontendActivation(.{ .exit_prompt = .no });
@@ -4310,7 +3992,7 @@ const AppState = struct {
 
     fn normalizeNewGameMenuSelection(self: *AppState) void {
         if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
-        self.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
+        self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.tutorial);
     }
 
     fn stepNewGameMenuSelection(self: *AppState, delta: isize) void {
@@ -4319,7 +4001,7 @@ const AppState = struct {
             self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, delta);
             if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
         }
-        self.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
+        self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.tutorial);
     }
 
     fn challengeSetupReplayAvailable(self: *const AppState) bool {
@@ -4477,7 +4159,7 @@ const AppState = struct {
                     // challenge-setup controller respectively.
                     switch (owner.owner) {
                         .new_game_menu => {
-                            self.new_game_menu_index = newGameMenuIndexForItem(owner.new_game_menu_item);
+                            self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(owner.new_game_menu_item);
                             try self.enterGamePhase(.new_game_menu);
                         },
                         .challenge_setup_menu => try self.enterChallengeSetupMenu(),
@@ -4730,7 +4412,7 @@ const AppState = struct {
         switch (next_owner.owner) {
             .main_menu => try self.enterGamePhase(.main_menu),
             .new_game_menu => {
-                self.new_game_menu_index = newGameMenuIndexForItem(next_owner.new_game_menu_item);
+                self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(next_owner.new_game_menu_item);
                 try self.enterGamePhase(.new_game_menu);
             },
             .challenge_setup_menu => try self.enterChallengeSetupMenu(),
@@ -4917,11 +4599,11 @@ const AppState = struct {
     // the main menu.
     fn returnToNewGameMenu(self: *AppState, from_phase: GamePhase) !void {
         switch (from_phase) {
-            .help => self.new_game_menu_index = newGameMenuIndexForItem(.help),
-            .challenge_setup_menu => self.new_game_menu_index = newGameMenuIndexForItem(.challenge_mode),
+            .help => self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.help),
+            .challenge_setup_menu => self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.challenge_mode),
             .route_map_menu => {
                 if (self.frontend_route_mode) |mode| {
-                    self.new_game_menu_index = newGameMenuIndexForItem(newGameMenuItemForFrontendMode(mode));
+                    self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(frontend_activation.newGameMenuItemForFrontendMode(mode));
                 }
             },
             else => {},
@@ -11468,19 +11150,19 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
     state.game_phase = .pause_menu;
     state.pending_run_result = null;
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .pause_menu = .end_game },
+        frontend_activation.QueuedAction{ .pause_menu = .end_game },
         state.frontendShortcutActivationForCode(11).?,
     );
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .pause_menu = .options },
+        frontend_activation.QueuedAction{ .pause_menu = .options },
         state.frontendShortcutActivationForCode(111).?,
     );
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .pause_menu = .@"resume" },
+        frontend_activation.QueuedAction{ .pause_menu = .@"resume" },
         state.frontendShortcutActivationForCode(5).?,
     );
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .pause_menu = .@"resume" },
+        frontend_activation.QueuedAction{ .pause_menu = .@"resume" },
         state.frontendShortcutActivationForCode(6).?,
     );
 
@@ -11502,18 +11184,18 @@ test "frontend widget shortcut codes follow the recovered pause and post-score w
         .rank = 0,
     } };
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .post_level_high_scores = .cancel },
+        frontend_activation.QueuedAction{ .post_level_high_scores = .cancel },
         state.frontendShortcutActivationForCode(11).?,
     );
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .post_level_high_scores = .submit },
+        frontend_activation.QueuedAction{ .post_level_high_scores = .submit },
         state.frontendShortcutActivationForCode(5).?,
     );
     try std.testing.expectEqualDeep(
-        FrontendQueuedAction{ .post_level_high_scores = .submit },
+        frontend_activation.QueuedAction{ .post_level_high_scores = .submit },
         state.frontendShortcutActivationForCode(6).?,
     );
-    try std.testing.expectEqual(@as(?FrontendQueuedAction, null), state.frontendShortcutActivationForCode(111));
+    try std.testing.expectEqual(@as(?frontend_activation.QueuedAction, null), state.frontendShortcutActivationForCode(111));
 }
 
 test "level segment prompt dispatch keys from the runner row message owner" {
@@ -11724,13 +11406,13 @@ test "high score controller helpers stay screen-local" {
 }
 
 test "new game menu mapping matches frontend route modes" {
-    try std.testing.expectEqual(NewGameMenuItem.postal_mode, newGameMenuItemForFrontendMode(.postal));
-    try std.testing.expectEqual(NewGameMenuItem.time_trial, newGameMenuItemForFrontendMode(.time_trial));
-    try std.testing.expectEqual(NewGameMenuItem.challenge_mode, newGameMenuItemForFrontendMode(.challenge));
-    try std.testing.expectEqual(NewGameMenuItem.tutorial, newGameMenuItemForFrontendMode(.tutorial));
-    try std.testing.expectEqual(@as(usize, 1), newGameMenuIndexForItem(.postal_mode));
-    try std.testing.expectEqual(@as(usize, 2), newGameMenuIndexForItem(.time_trial));
-    try std.testing.expectEqual(@as(usize, 4), newGameMenuIndexForItem(.help));
+    try std.testing.expectEqual(NewGameMenuItem.postal_mode, frontend_activation.newGameMenuItemForFrontendMode(.postal));
+    try std.testing.expectEqual(NewGameMenuItem.time_trial, frontend_activation.newGameMenuItemForFrontendMode(.time_trial));
+    try std.testing.expectEqual(NewGameMenuItem.challenge_mode, frontend_activation.newGameMenuItemForFrontendMode(.challenge));
+    try std.testing.expectEqual(NewGameMenuItem.tutorial, frontend_activation.newGameMenuItemForFrontendMode(.tutorial));
+    try std.testing.expectEqual(@as(usize, 1), frontend_activation.newGameMenuIndexForItem(.postal_mode));
+    try std.testing.expectEqual(@as(usize, 2), frontend_activation.newGameMenuIndexForItem(.time_trial));
+    try std.testing.expectEqual(@as(usize, 4), frontend_activation.newGameMenuIndexForItem(.help));
 }
 
 test "new game tutorial gate hides the later mode rows until tutorial launch" {
@@ -11753,20 +11435,20 @@ test "new game tutorial gate hides the later mode rows until tutorial launch" {
 test "new game selection skips hidden rows while the tutorial gate is closed" {
     var state: AppState = undefined;
     state.runtime_config = config.Blob.initDefault();
-    state.new_game_menu_index = newGameMenuIndexForItem(.tutorial);
+    state.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.tutorial);
 
     state.stepNewGameMenuSelection(1);
-    try std.testing.expectEqual(newGameMenuIndexForItem(.help), state.new_game_menu_index);
+    try std.testing.expectEqual(frontend_activation.newGameMenuIndexForItem(.help), state.new_game_menu_index);
 
     state.stepNewGameMenuSelection(1);
-    try std.testing.expectEqual(newGameMenuIndexForItem(.back), state.new_game_menu_index);
+    try std.testing.expectEqual(frontend_activation.newGameMenuIndexForItem(.back), state.new_game_menu_index);
 
     state.stepNewGameMenuSelection(1);
-    try std.testing.expectEqual(newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
+    try std.testing.expectEqual(frontend_activation.newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
 
-    state.new_game_menu_index = newGameMenuIndexForItem(.challenge_mode);
+    state.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.challenge_mode);
     state.normalizeNewGameMenuSelection();
-    try std.testing.expectEqual(newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
+    try std.testing.expectEqual(frontend_activation.newGameMenuIndexForItem(.tutorial), state.new_game_menu_index);
 }
 
 test "postal unlock limit stops at the highest available route" {
