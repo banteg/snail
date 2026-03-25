@@ -90,8 +90,23 @@ Applied in the live BN database:
 - `finalize_path_template_record(PathTemplate* self)`
 - `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
+- most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
+- `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
+
+That family-wide constructor pass materially improves the first screenful of decompile for:
+
+- `initialize_looptheloop_path_template_pair`
+- `initialize_loopout_path_template_pair`
+- `initialize_detour_path_template_pair`
+- `initialize_supertramp_path_template_pair`
+- the other already-recovered path-template constructors that were still spelling the owner as `arg1`
 
 One caution remains:
 
 - the `thiscall` stack argument names on `initialize_kind42_path_template_pair` are still presentation-noisy in BN
 - keep the field model and array layout; do not over-trust the pretty parameter names there yet
+
+Two holdouts remain:
+
+- `initialize_sweep_path_template_pair` is still so weakly typed in BN that it currently decompiles as `int32_t()`
+- `initialize_sbend_path_template_pair` rejected the live `PathTemplate* self` rewrite during BN verification, so it should be revisited with a narrower type/prototype pass instead of brute forcing it
