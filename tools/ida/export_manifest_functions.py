@@ -86,6 +86,36 @@ def _artifact_path(out_dir: Path, *, address: int, name: str) -> Path:
     return out_dir / f"{address:08x}-{_safe_name(name)}.c"
 
 
+def _relativize_exported_entries(exported_entries: list[dict[str, object]]) -> list[dict[str, object]]:
+    normalized: list[dict[str, object]] = []
+    for entry in exported_entries:
+        if not isinstance(entry, dict):
+            normalized.append(entry)
+            continue
+        normalized_entry = dict(entry)
+        artifact = normalized_entry.get("artifact")
+        if isinstance(artifact, str):
+            artifact_path = Path(artifact)
+            try:
+                normalized_entry["artifact"] = str(artifact_path.resolve().relative_to(REPO_ROOT))
+            except ValueError:
+                normalized_entry["artifact"] = artifact
+        removed = normalized_entry.get("removed_stale_artifacts")
+        if isinstance(removed, list):
+            normalized_removed: list[str] = []
+            for item in removed:
+                if not isinstance(item, str):
+                    continue
+                item_path = Path(item)
+                try:
+                    normalized_removed.append(str(item_path.resolve().relative_to(REPO_ROOT)))
+                except ValueError:
+                    normalized_removed.append(item)
+            normalized_entry["removed_stale_artifacts"] = normalized_removed
+        normalized.append(normalized_entry)
+    return normalized
+
+
 def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str]:
     removed: list[str] = []
     if not out_dir.is_dir():
@@ -179,13 +209,14 @@ def main() -> int:
     exported_entries = payload.get("exported", [])
     if not isinstance(exported_entries, list):
         raise RuntimeError(f"unexpected exported payload shape: {payload!r}")
+    exported_entries = _relativize_exported_entries(exported_entries)
     expected_paths: set[Path] = set()
     for entry in exported_entries:
         if not isinstance(entry, dict):
             continue
         artifact = entry.get("artifact")
         if isinstance(artifact, str):
-            expected_paths.add(Path(artifact).resolve())
+            expected_paths.add((REPO_ROOT / artifact).resolve())
     removed = _prune_stale_artifacts(out_dir, expected_paths)
     mismatches = _build_mismatches(manifest, exported_entries)
 
