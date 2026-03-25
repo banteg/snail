@@ -35,4 +35,4 @@ The preferred tracked snapshot lane now lives under `analysis/decompile/`:
 - those indexes now also flag manifest-to-tool mismatches so selector drift shows up as tracked data instead of a silent export surprise
 - the top-level `analysis/decompile/index.json` rolls those counts up so a full refresh immediately shows whether either lane drifted
 
-The targeted IDA export path still writes to `artifacts/ida/functions/` by default, which remains useful for one-off second-opinion checks without refreshing the whole tracked snapshot.
+The targeted IDA export path still writes to `artifacts/ida/functions/` by default, which remains useful for one-off second-opinion checks without refreshing the whole tracked snapshot. It now also prunes stale same-address siblings automatically, so a rename does not leave duplicate artifact filenames behind in that tree.

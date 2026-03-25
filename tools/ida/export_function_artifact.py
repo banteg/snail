@@ -17,6 +17,17 @@ def _safe_name(name):
     return SAFE_NAME_RE.sub("_", name).strip("_") or "function"
 
 
+def _prune_same_address_artifacts(out_dir, start, keep_path):
+    removed = []
+    prefix = f"{start:08x}-"
+    for path in sorted(out_dir.glob(f"{prefix}*.c")):
+        if path == keep_path:
+            continue
+        path.unlink()
+        removed.append(str(path))
+    return removed
+
+
 def _resolve_selector(selector):
     try:
         address = int(selector, 0)
@@ -40,6 +51,7 @@ def _export_function(out_dir, selector):
         raise RuntimeError(f"failed to decompile {selector}: {exc}") from exc
 
     out_path = out_dir / f"{start:08x}-{_safe_name(name)}.c"
+    removed_stale_artifacts = _prune_same_address_artifacts(out_dir, start, out_path)
     out_path.write_text(
         (
             f"/* database: {idc.get_idb_path()} */\n"
@@ -54,6 +66,7 @@ def _export_function(out_dir, selector):
         "address": hex(start),
         "name": name,
         "artifact": str(out_path),
+        "removed_stale_artifacts": removed_stale_artifacts,
     }
 
 
