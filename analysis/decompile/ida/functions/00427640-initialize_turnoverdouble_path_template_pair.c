@@ -112,7 +112,7 @@ int32_t __thiscall initialize_turnoverdouble_path_template_pair(
   v7 = (double)v52;
   v54 = v7;
   arg2a = v7 * 0.079577468;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 0;
   arg3a = 0;
   v8 = 0;
@@ -377,6 +377,6 @@ int32_t __thiscall initialize_turnoverdouble_path_template_pair(
       while ( v63 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

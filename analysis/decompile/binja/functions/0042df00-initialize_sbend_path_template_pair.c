@@ -14,7 +14,7 @@
 0042df3f        self->width_or_scale = 1f
 0042df46        self->segment_count = eax_1 + 1
 0042df4d        self->segment_count_f = fconvert.s(float.t(eax_1 + 1))
-0042df50        allocate_path_nodes(self)
+0042df50        allocate_path_template_samples(self)
 0042df59        self->special_runtime_flag_9c = 0
 0042df62        if (arg5 == 0)
 0042df81        self->primary_samples->center_x = fconvert.s(float.t(self->width_cells) * fconvert.t(0.5f) - fconvert.t(4f))
@@ -225,4 +225,4 @@
 0042e6e7        do while (j s< self->width_cells)
 0042e6f0        i_2 += 1
 0042e6f3        do while (i_2 s< self->segment_count)
-0042e707        return finalize_path_template_record(self)
+0042e707        return finalize_path_template(self)

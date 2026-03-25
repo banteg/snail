@@ -97,7 +97,7 @@ int32_t __thiscall initialize_loopout_path_template_pair(
   v6 = (double)v42;
   v47 = v6;
   arg2a = v6 * 0.15915494;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 1;
   arg3a = 0;
   v7 = 0;
@@ -365,6 +365,6 @@ int32_t __thiscall initialize_loopout_path_template_pair(
       while ( v52 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

@@ -171,7 +171,7 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 | `BuildDip` | 0x425050 | `sub_425050` | `initialize_dip_path_template_pair` | NEW — 70 nodes, (1-Cos) height |
 | `BuildDetour` | 0x42e720 | `sub_42e720` | `initialize_detour_path_template_pair` | NEW — 22 nodes, Sin×-0.3 y-offset |
 | `CalcLengthZ` | 0x4217b0 | `sub_4217b0` | `calc_path_length_z` | NEW — node distance accumulation, Dot camber |
-| `GetNodes` | 0x41b0a0 | `sub_41b0a0` | `allocate_path_nodes` | NEW — malloc 0xa8×count, "Path Tile Nodes" |
+| `GetNodes` | 0x41b0a0 | `sub_41b0a0` | `allocate_path_template_samples` | NEW — allocates paired `0xa8`-stride sample arrays, "Path Tile Nodes" / "Path Ball nodes" |
 
 ---
 
@@ -203,7 +203,7 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 - **cRQuit (in-game menu button)**: Not a standalone class on Windows — the quit button sprite (0x7a) is initialized inline in `initialize_subgame` and handled inline in `update_subgame`.
 - **cRParcel::AI**: The 7-state parcel flight machine confirms the parcel delivery path described in the binary comparison report — parcels are physics-driven flight objects that home to the mailbox, not instant row-event pickups. The earlier `0x43f520` guess is rejected; that function is only a tiny phase helper under `update_slug_hazard_ai`.
 - **cRWall::AI**: Confirms the Wall2 ambient hazard fires a -0.1 velocity laser downward through the SubLazer manager, matching the `+0.02` damage path identified in the first report.
-- **Path builders**: The `BuildSBend`, `BuildScrew`, `BuildSlalom`, `BuildShimmy`, `BuildHalfPipe`, `BuildHalfPole`, `BuildDip`, and `BuildDetour` functions are all confirmed as separate path template initializers, extending the already-identified set. `CalcLengthZ` and `GetNodes` (allocate_path_nodes) are shared infrastructure used by all builders.
+- **Path builders**: The `BuildSBend`, `BuildScrew`, `BuildSlalom`, `BuildShimmy`, `BuildHalfPipe`, `BuildHalfPole`, `BuildDip`, and `BuildDetour` functions are all confirmed as separate path template initializers, extending the already-identified set. `CalcLengthZ` and `GetNodes` (`allocate_path_template_samples`) are shared infrastructure used by all builders.
 
 ---
 

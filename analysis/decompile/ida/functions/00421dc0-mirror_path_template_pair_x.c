@@ -41,7 +41,7 @@ int32_t __thiscall mirror_path_template_pair_x(PathTemplate *self, PathTemplate 
   self->segment_count_f = source->segment_count_f;
   self->width_or_scale = source->width_or_scale;
   self->width_cells = source->width_cells;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   strip_mesh = self->strip_mesh;
   self->special_runtime_flag_9c = source->special_runtime_flag_9c;
   strip_mesh->flags = source->strip_mesh->flags;
@@ -154,6 +154,6 @@ int32_t __thiscall mirror_path_template_pair_x(PathTemplate *self, PathTemplate 
       while ( v24 < 2 );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

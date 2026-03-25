@@ -86,7 +86,7 @@ int32_t __thiscall initialize_supertramp_path_template_pair(
   v7 = (double)v40;
   v46 = v7;
   arg2a = v7 * 0.95588547;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   segment_count = self->segment_count;
   self->special_runtime_flag_9c = 0;
   arg3a = 0;
@@ -312,6 +312,6 @@ LABEL_28:
     }
     while ( v51 < (signed int)self->width_cells );
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

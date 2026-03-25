@@ -12,7 +12,7 @@
 0042a565        self->width_or_scale = 1f
 0042a568        self->segment_count = 0x22
 0042a56f        self->segment_count_f = 34f
-0042a576        allocate_path_nodes(self)
+0042a576        allocate_path_template_samples(self)
 0042a57b        long double x87_r7 = float.t(self->width_cells)
 0042a57e        struct PathTemplateSample* primary_samples_5 = self->primary_samples
 0042a585        self->special_runtime_flag_9c = 0
@@ -265,4 +265,4 @@
 0042aeff        do while (j s< self->width_cells)
 0042af08        i_3 += 1
 0042af0b        do while (i_3 s< self->segment_count)
-0042af1f        return finalize_path_template_record(self)
+0042af1f        return finalize_path_template(self)

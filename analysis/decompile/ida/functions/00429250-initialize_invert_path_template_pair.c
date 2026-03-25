@@ -94,7 +94,7 @@ int32_t __thiscall initialize_invert_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = 34;
   self->segment_count_f = 34.0;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   width_cells = (double)(int)self->width_cells;
   primary_samples = self->primary_samples;
   self->special_runtime_flag_9c = 1;
@@ -339,6 +339,6 @@ int32_t __thiscall initialize_invert_path_template_pair(
       while ( v52 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

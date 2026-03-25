@@ -2,7 +2,7 @@
 /* target: 63967:1:3859193737586600258 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: finalize_path_template_record @ 0x42c600 */
+/* function: finalize_path_template @ 0x42c600 */
 
 0042c609        uint32_t segment_count = self->segment_count
 0042c60c        self->_pad_48 = 0

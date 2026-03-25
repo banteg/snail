@@ -31,7 +31,7 @@
 0044099a        int32_t j_1 = 8
 004409aa        int32_t j
 004409a1        destroy_wall2_ambient_hazard(edi)
-004409a6        edi = &edi[1]
+004409a6        edi += 0x54
 004409a9        j = j_1
 004409a9        j_1 -= 1
 004409aa        do while (j != 1)

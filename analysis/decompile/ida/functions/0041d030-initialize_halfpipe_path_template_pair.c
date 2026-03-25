@@ -110,7 +110,7 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
   v10 = (double)(int)v8;
   v50 = v10;
   arg2a = v10 * 0.095492966;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 0;
   arg4a = 0;
   for ( i = 0; i < 7; ++i )
@@ -387,6 +387,6 @@ int32_t __thiscall initialize_halfpipe_path_template_pair(
     }
     while ( v7 < (signed int)self->segment_count );
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

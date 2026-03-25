@@ -118,7 +118,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   v7 = (double)v72;
   v58 = v7;
   arg2a = v7 * 0.15915494;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 1;
   v48 = 0;
   v8 = 0;
@@ -415,6 +415,6 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
       v6 = 0;
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

@@ -112,7 +112,7 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
   arg2g = v49 + v5 + 26;
   self->segment_count = arg2g;
   self->segment_count_f = (float)arg2g;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 0;
   arg2a = 0;
   v6 = 0;
@@ -366,6 +366,6 @@ int32_t __thiscall initialize_toad_path_template_pair(PathTemplate *self, char a
       while ( v59 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

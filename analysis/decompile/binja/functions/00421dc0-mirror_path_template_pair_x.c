@@ -10,7 +10,7 @@
 00421dda        self->segment_count_f = source_1->segment_count_f
 00421de0        self->width_or_scale = source_1->width_or_scale
 00421de8        self->width_cells = source_1->width_cells
-00421deb        allocate_path_nodes(self)
+00421deb        allocate_path_template_samples(self)
 00421df6        struct PathTemplateStripMesh* strip_mesh = self->strip_mesh
 00421df9        self->special_runtime_flag_9c = source_1->special_runtime_flag_9c
 00421e05        strip_mesh->flags = source_1->strip_mesh->flags
@@ -129,4 +129,4 @@
 004221c5        cond:0_1 = var_8 + 1 s< self->segment_count
 004221c7        var_8 += 1
 004221cb        do while (cond:0_1)
-004221df        return finalize_path_template_record(self)
+004221df        return finalize_path_template(self)

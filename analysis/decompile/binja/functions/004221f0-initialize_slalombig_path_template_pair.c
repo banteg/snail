@@ -13,7 +13,7 @@
 0042221c        self->width_or_scale = 1f
 00422227        self->segment_count = ebx + 4
 0042222e        self->segment_count_f = fconvert.s(float.t(ebx + 4))
-00422231        allocate_path_nodes(self)
+00422231        allocate_path_template_samples(self)
 00422236        self->special_runtime_flag_9c = 0
 0042223d        arg3 = 0
 00422241        void* i = nullptr
@@ -270,4 +270,4 @@
 00422bd3        if (ebx_3 s>= self->segment_count)
 00422bd3        break
 004229d9        i_3 = 0
-00422be7        return finalize_path_template_record(self)
+00422be7        return finalize_path_template(self)

@@ -17,7 +17,7 @@
 0041da7d        self->segment_count_f = fconvert.s(float.t(ebp + 7))
 0041da80        long double x87_r7_3 = float.t(secondary_samples_4)
 0041da8e        arg2 = fconvert.s(x87_r7_3 * fconvert.t(0.0954929665f))
-0041da92        allocate_path_nodes(self)
+0041da92        allocate_path_template_samples(self)
 0041da97        self->special_runtime_flag_9c = 0
 0041da9d        arg4 = 0
 0041daa1        void* i = nullptr
@@ -267,4 +267,4 @@
 0041e406        do while (j s< self->width_cells)
 0041e40f        i_3 += 1
 0041e412        do while (i_3 s< self->segment_count)
-0041e426        return finalize_path_template_record(self)
+0041e426        return finalize_path_template(self)

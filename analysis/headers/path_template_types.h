@@ -185,8 +185,8 @@ typedef struct FollowState {
 } FollowState;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
-PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);
-int32_t __fastcall finalize_path_template_record(PathTemplate* self);
+void __fastcall allocate_path_template_samples(PathTemplate* self);
+int32_t __fastcall finalize_path_template(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
 int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
 int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);

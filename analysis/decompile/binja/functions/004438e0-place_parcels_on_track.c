@@ -311,12 +311,12 @@
 00444195        if (eax_59 - eax_58 s< 0)
 00444197        edi_39 = 0
 00444199        struct TrackRowCell* cell = esi_18[0x29]
-0044419f        struct PathTemplate* template_record = cell->template_record
-004441a6        if (template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
+0044419f        void* edx_49 = cell->__offset(0x38).d
+004441a6        if (*(edx_49 + 0x38) != 0x2a)
 00444201        int32_t eax_65 = get_track_cell_row_index(cell)
 00444212        get_path_position_at_node(*(esi_18[0x29] + 0x38), &esi_18[0x24], edi_39, eax_65, &esi_18[0x24])
 004441d9        struct TransformMatrix transform
-004441d9        x87control = compute_kind42_attachment_transform((&template_record->primary_samples->special_scalar)[edi_39 * 0x2a], esi_18[0x24], esi_18[0x25], &transform, &out_angle)
+004441d9        x87control = compute_kind42_attachment_transform(*(*(edx_49 + 0x58) + edi_39 * 0xa8 + 0xa0), esi_18[0x24], esi_18[0x25], &transform, &out_angle)
 004441e5        float y = transform.position.y
 004441ec        esi_18[0x24] = transform.position.x
 004441f2        esi_18[0x25] = y

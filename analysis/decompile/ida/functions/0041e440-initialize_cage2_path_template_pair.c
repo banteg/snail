@@ -104,7 +104,7 @@ int32_t __thiscall initialize_cage2_path_template_pair(
   v8 = (double)(int)v6;
   v49 = v8;
   arg2a = v8 * 0.047746483;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   primary_samples = self->primary_samples;
   self->special_runtime_flag_9c = 0;
   primary_samples->center_x = 0.0;
@@ -365,6 +365,6 @@ int32_t __thiscall initialize_cage2_path_template_pair(
       while ( v56 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

@@ -21,7 +21,7 @@
 0042bae7        long double x87_r7_3 = float.t(eax_1)
 0042baeb        float var_94 = fconvert.s(x87_r7_3)
 0042baf5        arg2 = fconvert.s(x87_r7_3 * fconvert.t(0.159154937f))
-0042bafc        allocate_path_nodes(self)
+0042bafc        allocate_path_template_samples(self)
 0042bb01        self->special_runtime_flag_9c = 1
 0042bb08        int32_t var_9c = 0
 0042bb0c        void* i = nullptr
@@ -303,4 +303,4 @@
 0042c5d4        if (edi_12 s>= self->segment_count)
 0042c5d4        break
 0042c3be        i_4 = 0
-0042c5eb        return finalize_path_template_record(self)
+0042c5eb        return finalize_path_template(self)

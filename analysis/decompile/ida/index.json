@@ -1371,11 +1371,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "allocate_path_nodes",
+      "selector": "allocate_path_template_samples",
       "address": "0x41b0a0",
-      "name": "allocate_path_nodes",
-      "artifact": "analysis/decompile/ida/functions/0041b0a0-allocate_path_nodes.c",
-      "removed_stale_artifacts": []
+      "name": "allocate_path_template_samples",
+      "artifact": "analysis/decompile/ida/functions/0041b0a0-allocate_path_template_samples.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/0041b0a0-allocate_path_nodes.c"
+      ]
     },
     {
       "selector": "initialize_looptheloop_path_template_pair",
@@ -1623,11 +1625,13 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "finalize_path_template_record",
+      "selector": "finalize_path_template",
       "address": "0x42c600",
-      "name": "finalize_path_template_record",
-      "artifact": "analysis/decompile/ida/functions/0042c600-finalize_path_template_record.c",
-      "removed_stale_artifacts": []
+      "name": "finalize_path_template",
+      "artifact": "analysis/decompile/ida/functions/0042c600-finalize_path_template.c",
+      "removed_stale_artifacts": [
+        "analysis/decompile/ida/functions/0042c600-finalize_path_template_record.c"
+      ]
     },
     {
       "selector": "try_enter_track_attachment_from_swept_motion",

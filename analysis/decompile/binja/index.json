@@ -93,7 +93,10 @@
       "observed_name": "sub_44fd90"
     }
   ],
-  "removed_stale_artifacts": [],
+  "removed_stale_artifacts": [
+    "analysis/decompile/binja/functions/0041b0a0-allocate_path_nodes.c",
+    "analysis/decompile/binja/functions/0042c600-finalize_path_template_record.c"
+  ],
   "exports": [
     {
       "address": "0x401000",
@@ -1072,8 +1075,8 @@
     },
     {
       "address": "0x41b0a0",
-      "name": "allocate_path_nodes",
-      "artifact": "analysis/decompile/binja/functions/0041b0a0-allocate_path_nodes.c"
+      "name": "allocate_path_template_samples",
+      "artifact": "analysis/decompile/binja/functions/0041b0a0-allocate_path_template_samples.c"
     },
     {
       "address": "0x41b0f0",
@@ -1252,8 +1255,8 @@
     },
     {
       "address": "0x42c600",
-      "name": "finalize_path_template_record",
-      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template_record.c"
+      "name": "finalize_path_template",
+      "artifact": "analysis/decompile/binja/functions/0042c600-finalize_path_template.c"
     },
     {
       "address": "0x42c770",

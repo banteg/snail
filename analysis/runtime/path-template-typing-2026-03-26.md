@@ -160,8 +160,8 @@ Applied in the live BN database:
 - `PathTemplateSample`
 - `PathTemplateStripMesh`
 - `ObjectFaceQuad`
-- `allocate_path_nodes(PathTemplate* self)`
-- `finalize_path_template_record(PathTemplate* self)`
+- `allocate_path_template_samples(PathTemplate* self)`
+- `finalize_path_template(PathTemplate* self)`
 - `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
 - `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
 - `request_object_facequads(PathTemplateStripMesh* mesh, ...)`
@@ -185,7 +185,7 @@ Applied in the live BN database:
 - `set_color_grayscale(Color4f* color, float intensity)`
 - `store_color4f(Color4f* color, float r, float g, float b, float a)`
 - `pack_color_rgba_u8(ColorBGRA8* out, Color4f* color)`
-- `allocate_path_nodes(PathTemplate* self)` now reads back as returning `PathTemplateSample*`, which matches its actual `secondary_samples` return
+- `allocate_path_template_samples(PathTemplate* self)` now reads back as a pure allocator for the primary and secondary sample arrays, which matches how the constructor family actually uses it
 - `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
 The same trusted slice now has a checked-in narrow IDA mirror as well:
@@ -218,6 +218,11 @@ One caution remains:
 - keep the field model and array layout; do not over-trust the pretty parameter names there yet
 
 Earlier notes that called out `initialize_sweep_path_template_pair` and `initialize_sbend_path_template_pair` as typing holdouts are now stale. Both functions now read back in BN with the expected `PathTemplate* self` constructor shape.
+
+The two shared lifecycle helpers are also now named more literally:
+
+- `allocate_path_template_samples` allocates the paired sample arrays and stores them on the template object
+- `finalize_path_template` is the common post-build pass used by the constructor family and by `mirror_path_template_pair_x`
 
 The remaining rough edges in this family are presentation-level, not structural:
 

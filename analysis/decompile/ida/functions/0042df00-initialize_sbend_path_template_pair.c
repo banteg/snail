@@ -96,7 +96,7 @@ int32_t __thiscall initialize_sbend_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = v9 + 1;
   self->segment_count_f = (float)(v9 + 1);
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 0;
   if ( arg5 )
     self->primary_samples->center_x = 0.0;
@@ -317,6 +317,6 @@ int32_t __thiscall initialize_sbend_path_template_pair(
       while ( v50 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

@@ -12,7 +12,7 @@
 00422c25        self->width_or_scale = 1f
 00422c28        self->segment_count = 0x1e
 00422c2f        self->segment_count_f = 30f
-00422c36        allocate_path_nodes(self)
+00422c36        allocate_path_template_samples(self)
 00422c3b        self->special_runtime_flag_9c = 0
 00422c41        texture_a = nullptr
 00422c45        int32_t i = 0
@@ -153,7 +153,7 @@
 00423220        if (width_cells s>= 0)
 00423233        struct PathTemplateSample* primary_samples = self->primary_samples
 0042323c        long double x87_r7_52 = float.t(texture_a) - float.t(width_cells_1) * fconvert.t(0.5f)
-0042323e        float* eax_59
+0042323e        int32_t* eax_59
 0042323e        float ecx_67
 0042323e        if (i_3 == self->segment_count)
 00423295        void* eax_60 = primary_samples + i_4
@@ -257,4 +257,4 @@
 0042354c        do while (j s< self->width_cells)
 00423555        i_4 += 1
 00423558        do while (i_4 s< self->segment_count)
-0042356c        return finalize_path_template_record(self)
+0042356c        return finalize_path_template(self)

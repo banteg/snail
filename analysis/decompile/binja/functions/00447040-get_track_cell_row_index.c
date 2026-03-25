@@ -6,7 +6,7 @@
 
 00447069        int32_t eax_4
 00447069        int32_t edx_2
-00447069        edx_2:eax_4 = muls.dp.d(0x30c30c31, cell - (cell->lane_bits & 7) * 0x54 - data_4df904 - 0x4340e0)
+00447069        edx_2:eax_4 = muls.dp.d(0x30c30c31, cell - (cell->__offset(0x40).d & 7) * 0x54 - data_4df904 - 0x4340e0)
 0044706d        int32_t eax_6 = edx_2 s>> 4
 00447077        int32_t eax_8
 00447077        int32_t edx_3

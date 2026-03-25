@@ -12,7 +12,7 @@
 00420194        self->width_or_scale = 4f
 0042019b        self->segment_count = 0x18
 0042019e        self->segment_count_f = 96f
-004201a5        allocate_path_nodes(self)
+004201a5        allocate_path_template_samples(self)
 004201aa        self->special_runtime_flag_9c = 0
 004201b1        int32_t var_80 = 0
 004201b5        void* i = nullptr
@@ -422,4 +422,4 @@
 00420c16        i_3 += 1
 00420c19        int32_t i_4 = i_3
 00420c1d        do while (i_3 s< self->segment_count)
-00420c34        return finalize_path_template_record(self)
+00420c34        return finalize_path_template(self)

@@ -11,7 +11,7 @@
 00429b4b        self->width_or_scale = 1f
 00429b4e        self->segment_count = 0x42
 00429b55        self->segment_count_f = 66f
-00429b5c        struct PathTemplateSample* secondary_samples = allocate_path_nodes(self)
+00429b5c        struct PathTemplateSample* secondary_samples = allocate_path_template_samples(self)
 00429b61        self->special_runtime_flag_9c = 0
 00429b68        int32_t var_9c = 0
 00429b6c        int32_t i = 0
@@ -264,4 +264,4 @@
 0042a50d        do while (j s< self->width_cells)
 0042a516        i_5 += 1
 0042a519        do while (i_5 s< self->segment_count)
-0042a530        return finalize_path_template_record(self)
+0042a530        return finalize_path_template(self)

@@ -5,7 +5,7 @@
 /* function: is_neighbor_cell_solid @ 0x434b60 */
 
 00434b6a        int32_t result = get_track_cell_row_index(arg2)
-00434b76        int32_t ecx_2 = arg2->lane_bits & 7
+00434b76        int32_t ecx_2 = arg2->__offset(0x40).d & 7
 00434b7f        if (ecx_2 + arg3 u< 8)
 00434b85        result += arg4
 00434b8e        if (result s>= 0 && result s< *(arg1 + 0x54))

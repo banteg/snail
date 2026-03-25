@@ -924,7 +924,8 @@
     },
     {
       "address": "0x41b0a0",
-      "name": "allocate_path_nodes"
+      "name": "allocate_path_template_samples",
+      "description": "Allocates the primary and secondary `PathTemplateSample` arrays for one path template and stores both pointers on the template object. Constructors treat it as a pure allocator; the old returned secondary-sample pointer is not meaningfully consumed."
     },
     {
       "address": "0x41b0f0",
@@ -1074,8 +1075,8 @@
     },
     {
       "address": "0x42c600",
-      "name": "finalize_path_template_record",
-      "description": "Finalizes one generated path-template record after constructor or mirror edits by recomputing derived per-sample lengths and updating the nested strip-mesh state."
+      "name": "finalize_path_template",
+      "description": "Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state."
     },
     {
       "address": "0x42c770",

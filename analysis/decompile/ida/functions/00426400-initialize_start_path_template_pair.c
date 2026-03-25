@@ -97,7 +97,7 @@ int32_t __thiscall initialize_start_path_template_pair(
   v5 = (double)v43;
   v45 = v5;
   arg2a = v5 * 0.31830987;
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   segment_count = self->segment_count;
   self->special_runtime_flag_9c = 0;
   v7 = arg2a + arg2a;
@@ -347,6 +347,6 @@ int32_t __thiscall initialize_start_path_template_pair(
       while ( v55 < (signed int)self->width_cells );
     }
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 

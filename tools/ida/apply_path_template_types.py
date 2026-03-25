@@ -15,12 +15,12 @@ TRUSTED_DECLARATIONS = [
         "TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);",
     ),
     (
-        "allocate_path_nodes",
-        "PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);",
+        "allocate_path_template_samples",
+        "void __fastcall allocate_path_template_samples(PathTemplate* self);",
     ),
     (
-        "finalize_path_template_record",
-        "int32_t __fastcall finalize_path_template_record(PathTemplate* self);",
+        "finalize_path_template",
+        "int32_t __fastcall finalize_path_template(PathTemplate* self);",
     ),
     (
         "mirror_path_template_pair_x",

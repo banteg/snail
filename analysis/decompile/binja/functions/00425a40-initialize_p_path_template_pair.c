@@ -20,7 +20,7 @@
 00425a9c        if ((eax_2:1.b & 1) != 0)
 00425a9e        x87_r7_3 = fneg(x87_r7_3)
 00425aa0        arg3 = fconvert.s(x87_r7_3)
-00425aa6        allocate_path_nodes(self)
+00425aa6        allocate_path_template_samples(self)
 00425aab        struct PathTemplateSample* primary_samples = self->primary_samples
 00425ab2        self->special_runtime_flag_9c = 0
 00425ab9        primary_samples->center_x = arg5
@@ -265,4 +265,4 @@
 004263c5        do while (j s< self->width_cells)
 004263ce        i_2 += 1
 004263d1        do while (i_2 s< self->segment_count)
-004263e5        return finalize_path_template_record(self)
+004263e5        return finalize_path_template(self)

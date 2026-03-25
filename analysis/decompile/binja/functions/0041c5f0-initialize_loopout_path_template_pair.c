@@ -16,7 +16,7 @@
 0041c63e        long double x87_r7_3 = float.t(eax_1)
 0041c642        float var_48 = fconvert.s(x87_r7_3)
 0041c64c        arg2 = fconvert.s(x87_r7_3 * fconvert.t(0.159154937f))
-0041c650        allocate_path_nodes(self)
+0041c650        allocate_path_template_samples(self)
 0041c655        self->special_runtime_flag_9c = 1
 0041c65c        arg3 = 0
 0041c660        void* i = nullptr
@@ -267,4 +267,4 @@
 0041cff8        do while (j s< self->width_cells)
 0041d003        i_4 += 1
 0041d006        do while (i_4 s< self->segment_count)
-0041d01a        return finalize_path_template_record(self)
+0041d01a        return finalize_path_template(self)

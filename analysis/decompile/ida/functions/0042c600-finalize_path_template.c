@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: finalize_path_template_record @ 0x42c600 */
-/* selector: finalize_path_template_record */
+/* function: finalize_path_template @ 0x42c600 */
+/* selector: finalize_path_template */
 
-// Finalizes one generated path-template record after constructor or mirror edits by recomputing derived per-sample lengths and updating the nested strip-mesh state.
+// Finalizes one built path template after constructor or mirror edits by recomputing derived per-sample lengths, inverting sample transforms, updating the derived sample scalar at `+0xa4`, and normalizing the nested strip-mesh state.
 int32_t __fastcall finalize_path_template_record(PathTemplate *self)
 {
   signed int segment_count; // ebx

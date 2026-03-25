@@ -103,7 +103,7 @@ int32_t __thiscall initialize_screw_path_template_pair(
   self->width_or_scale = 1.0;
   self->segment_count = arg2 + 8;
   self->segment_count_f = (float)(arg2 + 8);
-  allocate_path_nodes(self);
+  allocate_path_template_samples(self);
   self->special_runtime_flag_9c = 0;
   arg3a = 0;
   for ( i = 0; i < 3; ++i )
@@ -389,6 +389,6 @@ int32_t __thiscall initialize_screw_path_template_pair(
     }
     while ( v6 < (signed int)self->segment_count );
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template(self);
 }
 
