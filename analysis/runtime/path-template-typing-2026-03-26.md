@@ -110,3 +110,15 @@ Two holdouts remain:
 
 - `initialize_sweep_path_template_pair` is still so weakly typed in BN that it currently decompiles as `int32_t()`
 - `initialize_sbend_path_template_pair` rejected the live `PathTemplate* self` rewrite during BN verification, so it should be revisited with a narrower type/prototype pass instead of brute forcing it
+
+More precise current read on those holdouts:
+
+- `initialize_sweep_path_template_pair` raw disassembly still clearly shows the normal constructor shape:
+  - `mov esi, ecx` for `self`
+  - writes to `self + 0x38/0x3c/0x40/0x44/0x54/0x58/0x5c`
+  - a first stack argument loaded before register saves and copied into `self->width_cells`
+  - later stack-slot reads consistent with texture or helper arguments
+- despite that, BN currently rolls back any live prototype rewrite for `sweep`
+- `initialize_sbend_path_template_pair` behaves similarly: the decompile shape is constructor-like, but BN verification still refuses the `PathTemplate* self` signature
+
+So the right next step for either one is not another broad prototype shove. It is a narrower investigation into why BN's verifier disagrees with the obvious constructor shape.
