@@ -20,6 +20,7 @@ const frontend_thanks = @import("frontend/thanks.zig");
 const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
+const gameplay_audio_catalog = @import("gameplay_audio_catalog.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay_assets.zig");
 const gameplay_runtime_entities = @import("gameplay_runtime_entities.zig");
@@ -591,128 +592,6 @@ const GameplayEffectKind = enum {
     smoke,
 };
 
-const native_global_audio_bank_paths = [_][]const u8{
-    "SFX2/CHEERS.OGG",
-    "SFX2/PW1.OGG",
-    "SFX2/PW2.OGG",
-    "SFX2/PW3.OGG",
-    "SFX2/PW4.OGG",
-    "SFX2/PW5.OGG",
-    "SFX2/PW6.OGG",
-    "SFX2/PW7.OGG",
-    frontend_select_sound_path,
-    frontend_highlight_sound_path,
-    "VOICE/OW1.OGG",
-    "VOICE/OW2.OGG",
-    "VOICE/OW3.OGG",
-    "VOICE/OW4.OGG",
-    "SFX2/HEART.OGG",
-    "SFX2/ENEMYFIRE.OGG",
-    "SFX2/JETPACK.OGG",
-    "SFX2/TURBOFIRE1.OGG",
-    "SFX2/TURBOFIRE2.OGG",
-    "SFX2/LASER1.OGG",
-    "SFX2/LASER2.OGG",
-    "SFX2/LASER3.OGG",
-    "SFX2/ROCKET1.OGG",
-    "SFX2/ROCKET2.OGG",
-    "SFX2/ROCKET3.OGG",
-    "SFX2/SERVO1.OGG",
-    "SFX2/SERVO2.OGG",
-    "SFX2/PLACEPACKAGE.OGG",
-    "VOICE/SLUG-DEATH1.OGG",
-    "VOICE/SLUG-DEATH2.OGG",
-    "VOICE/SLUG-DESTROY.OGG",
-    "VOICE/SLUG-GOTHIM.OGG",
-    "VOICE/SLUG-HESTOOFAST.OGG",
-    "VOICE/SLUG-SNAILALERT.OGG",
-    "VOICE/SLUG-VICTORY.OGG",
-    "VOICE/SLUG-VICTORY2.OGG",
-    "VOICE/SLUG-HIT1.OGG",
-    "VOICE/SLUG-HIT2.OGG",
-    "VOICE/SLUG-HIT3.OGG",
-    "SFX2/ASTEROIDIMPACT1.OGG",
-    "SFX2/ASTEROIDIMPACT2.OGG",
-    "SFX2/BOING.OGG",
-    "SFX2/EXPLODERING.OGG",
-    "SFX2/SLOWRING.OGG",
-    "SFX2/EXTRALIFE.OGG",
-    "SFX2/PACKAGECOUNT.OGG",
-    "SFX2/SKIDSTOP.OGG",
-    "SFX2/WALLHIT.OGG",
-    "SFX2/INVINCIBLE.OGG",
-    "SFX2/PERFECT.OGG",
-    "SFX2/POSTALLOOP.OGG",
-};
-
-const native_global_voice_set_paths = .{
-    gameplay_assets.gameplay_native_voice_damage_paths[0..],
-    gameplay_assets.gameplay_native_voice_dying_paths[0..],
-    gameplay_assets.gameplay_native_voice_enemies_paths[0..],
-    gameplay_assets.gameplay_native_voice_fall_paths[0..],
-    gameplay_assets.gameplay_native_voice_misc_paths[0..],
-    gameplay_assets.gameplay_native_voice_powerup_paths[0..],
-    gameplay_assets.gameplay_native_voice_slow_paths[0..],
-    gameplay_assets.gameplay_native_voice_start_paths[0..],
-    gameplay_assets.gameplay_native_voice_victory_paths[0..],
-    gameplay_assets.gameplay_native_voice_ouch_paths[0..],
-    gameplay_assets.gameplay_native_voice_package_paths[0..],
-    gameplay_assets.gameplay_native_voice_slugged_paths[0..],
-    gameplay_assets.gameplay_native_voice_worm_tunnel_paths[0..],
-    gameplay_assets.gameplay_native_voice_tutorial_paths[0..],
-    gameplay_assets.gameplay_native_voice_postal_paths[0..],
-    gameplay_assets.gameplay_native_voice_supertramp_paths[0..],
-};
-
-fn nativeGlobalAudioSamplePath(sample_index: usize) ?[]const u8 {
-    if (sample_index < native_global_audio_bank_paths.len) {
-        return native_global_audio_bank_paths[sample_index];
-    }
-
-    var remaining = sample_index - native_global_audio_bank_paths.len;
-    inline for (native_global_voice_set_paths) |paths| {
-        if (remaining < paths.len) return paths[remaining];
-        remaining -= paths.len;
-    }
-    return null;
-}
-
-fn nativeGlobalAudioSampleIndexForPath(sample_path: []const u8) ?usize {
-    for (native_global_audio_bank_paths, 0..) |path, index| {
-        if (std.ascii.eqlIgnoreCase(path, sample_path)) return index;
-    }
-
-    var base_index = native_global_audio_bank_paths.len;
-    inline for (native_global_voice_set_paths) |paths| {
-        for (paths, 0..) |path, index| {
-            if (std.ascii.eqlIgnoreCase(path, sample_path)) return base_index + index;
-        }
-        base_index += paths.len;
-    }
-    return null;
-}
-
-fn nativeGameplayVoicePaths(set_id: gameplay_voice.NativeSet) []const []const u8 {
-    return switch (set_id) {
-        .damage => gameplay_assets.gameplay_native_voice_damage_paths[0..],
-        .dying => gameplay_assets.gameplay_native_voice_dying_paths[0..],
-        .enemies => gameplay_assets.gameplay_native_voice_enemies_paths[0..],
-        .fall => gameplay_assets.gameplay_native_voice_fall_paths[0..],
-        .misc => gameplay_assets.gameplay_native_voice_misc_paths[0..],
-        .package => gameplay_assets.gameplay_native_voice_package_paths[0..],
-        .postal => gameplay_assets.gameplay_native_voice_postal_paths[0..],
-        .powerup => gameplay_assets.gameplay_native_voice_powerup_paths[0..],
-        .slow => gameplay_assets.gameplay_native_voice_slow_paths[0..],
-        .slugged => gameplay_assets.gameplay_native_voice_slugged_paths[0..],
-        .start => gameplay_assets.gameplay_native_voice_start_paths[0..],
-        .supertramp => gameplay_assets.gameplay_native_voice_supertramp_paths[0..],
-        .tutorial => gameplay_assets.gameplay_native_voice_tutorial_paths[0..],
-        .ouch => gameplay_assets.gameplay_native_voice_ouch_paths[0..],
-        .victory => gameplay_assets.gameplay_native_voice_victory_paths[0..],
-        .worm_tunnel => gameplay_assets.gameplay_native_voice_worm_tunnel_paths[0..],
-    };
-}
-
 test "native gameplay voice manager enforces native mode gates" {
     var manager: gameplay_voice.NativeManager = .{};
 
@@ -750,16 +629,16 @@ test "native gameplay voice manager payload play preserves set rotation" {
 }
 
 test "native global audio sample ids resolve from shipped paths" {
-    try std.testing.expectEqual(@as(?usize, 16), nativeGlobalAudioSampleIndexForPath("SFX2/JETPACK.OGG"));
-    try std.testing.expectEqual(@as(?usize, 25), nativeGlobalAudioSampleIndexForPath("sfx2/servo1.ogg"));
-    try std.testing.expectEqual(@as(?usize, 26), nativeGlobalAudioSampleIndexForPath("SFX2/SERVO2.OGG"));
-    try std.testing.expectEqual(@as(?usize, 46), nativeGlobalAudioSampleIndexForPath("SFX2/SKIDSTOP.OGG"));
-    try std.testing.expectEqual(@as(?usize, 133), nativeGlobalAudioSampleIndexForPath("VOICE/TUT1.OGG"));
-    try std.testing.expectEqual(@as(?usize, 150), nativeGlobalAudioSampleIndexForPath("Voice/tut18.ogg"));
-    try std.testing.expectEqualStrings("VOICE/TUT1.OGG", nativeGlobalAudioSamplePath(133).?);
-    try std.testing.expectEqualStrings("SFX2/SERVO2.OGG", nativeGlobalAudioSamplePath(26).?);
-    try std.testing.expectEqual(@as(?[]const u8, null), nativeGlobalAudioSamplePath(999));
-    try std.testing.expectEqual(@as(?usize, null), nativeGlobalAudioSampleIndexForPath("VOICE/DOES-NOT-EXIST.OGG"));
+    try std.testing.expectEqual(@as(?usize, 16), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/JETPACK.OGG"));
+    try std.testing.expectEqual(@as(?usize, 25), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("sfx2/servo1.ogg"));
+    try std.testing.expectEqual(@as(?usize, 26), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/SERVO2.OGG"));
+    try std.testing.expectEqual(@as(?usize, 46), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("SFX2/SKIDSTOP.OGG"));
+    try std.testing.expectEqual(@as(?usize, 133), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/TUT1.OGG"));
+    try std.testing.expectEqual(@as(?usize, 150), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("Voice/tut18.ogg"));
+    try std.testing.expectEqualStrings("VOICE/TUT1.OGG", gameplay_audio_catalog.nativeGlobalAudioSamplePath(133).?);
+    try std.testing.expectEqualStrings("SFX2/SERVO2.OGG", gameplay_audio_catalog.nativeGlobalAudioSamplePath(26).?);
+    try std.testing.expectEqual(@as(?[]const u8, null), gameplay_audio_catalog.nativeGlobalAudioSamplePath(999));
+    try std.testing.expectEqual(@as(?usize, null), gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath("VOICE/DOES-NOT-EXIST.OGG"));
 }
 
 const max_announced_slug_voice_cells: usize = 64;
@@ -5857,7 +5736,7 @@ const AppState = struct {
     fn playLevelSegmentSample(self: *AppState, segment_entry: *const level.SegmentEntry) !void {
         const sample_path = segment_entry.sample orelse return;
         if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
-            if (nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
+            if (gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
                 _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
             } else {
                 try self.playVoiceByPath(sample_path);
@@ -6994,7 +6873,7 @@ const AppState = struct {
 
     fn tryPlayNativeGameplayVoiceSetPlayed(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !bool {
         if (!self.audio_ready) return false;
-        const paths = nativeGameplayVoicePaths(set_id);
+        const paths = gameplay_audio_catalog.nativeGameplayVoicePaths(set_id);
         if (paths.len == 0) return false;
 
         const sample_index = self.native_gameplay_voice_manager.requestPlay(
@@ -7016,7 +6895,7 @@ const AppState = struct {
             self.gameplayVoiceBusy(),
             payload_index,
         ) orelse return false;
-        const sample_path = nativeGlobalAudioSamplePath(sample_index) orelse return false;
+        const sample_path = gameplay_audio_catalog.nativeGlobalAudioSamplePath(sample_index) orelse return false;
         try self.playVoiceByPath(sample_path);
         return true;
     }
