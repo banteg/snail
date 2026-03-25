@@ -93,10 +93,7 @@
       "observed_name": "sub_44fd90"
     }
   ],
-  "removed_stale_artifacts": [
-    "analysis/decompile/binja/functions/0041b0a0-allocate_path_nodes.c",
-    "analysis/decompile/binja/functions/0042c600-finalize_path_template_record.c"
-  ],
+  "removed_stale_artifacts": [],
   "exports": [
     {
       "address": "0x401000",

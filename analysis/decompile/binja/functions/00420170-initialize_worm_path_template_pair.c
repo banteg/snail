@@ -357,7 +357,7 @@
 00420a9d        float var_64_1 = fconvert.s(unimplemented  {fstp dword [esp+0x2c], st0})
 00420a9d        unimplemented  {fstp dword [esp+0x2c], st0}
 00420ab7        while (true)
-00420ac0        int16_t* edi_4 = facequads + (edx_53 + ((self->width_cells * i_3 + j) << 1)) * 0x30
+00420ac0        int16_t* edi_4 = &facequads[edx_53 + ((self->width_cells * i_3 + j) << 1)]
 00420ac4        *edi_4 = 0
 00420ac9        if (edx_53 != 0)
 00420b15        int32_t ecx_85

@@ -107,9 +107,9 @@
 004221b7        bool cond:2_1
 00422137        int32_t i_2 = 0
 004221a7        while (i_2 s< 2)
-00422157        int32_t ecx_50 = (i_2 + ((self->width_cells * var_8 + source) << 1)) * 0x30
-0042215a        void* eax_35 = facequads + ecx_50
-00422165        __builtin_memcpy(eax_35, source_1->strip_mesh->facequads + ecx_50, 0x30)
+00422139        self->width_cells
+0042215a        void* eax_35 = &facequads[i_2 + ((self->:0x54.d * var_8 + source) << 1)]
+00422165        __builtin_memcpy(eax_35, &source_1->strip_mesh->facequads[i_2 + ((self->:0x54.d * var_8 + source) << 1)], 0x30)
 0042216d        int16_t ecx_51 = *(eax_35 + 2)
 00422171        *(eax_35 + 2) = *(eax_35 + 4)
 00422175        *(eax_35 + 4) = ecx_51

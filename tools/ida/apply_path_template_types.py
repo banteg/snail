@@ -127,6 +127,10 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_halfpipe_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
     ),
     (
+        "initialize_looptheloop_path_template_pair",
+        "int32_t __thiscall initialize_looptheloop_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+    ),
+    (
         "initialize_looptheloopw_path_template_pair",
         "int32_t __thiscall initialize_looptheloopw_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),

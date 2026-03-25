@@ -64,32 +64,32 @@
 00424d28        int32_t ebp = 0
 00424d2c        int32_t var_5c = 0
 00424d30        if (*(arg1 + 0x44) s> 0)
-00424d36        void* __offset(ObjectFaceQuad, 0x2) edi_2 = &facequads->flags + 2
+00424d36        uint16_t* edi_2 = &facequads->vertex_index_a
 00424d59        while (true)
-00424d59        (edi_2 - 2)->_pad_0a.d = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424d59        (edi_2 - 2)->texture_ref = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
 00424d5c        int16_t ebp_1 = (ebp << 2).w
-00424d5f        (edi_2 - 2)->flags:2.w = (ebp << 2).w + 4
-00424d6c        (edi_2 - 2)->vertex_index_a = ebp_1 + 5
-00424d70        (edi_2 - 2)->vertex_index_b = ebp_1 + 1
-00424d79        (edi_2 - 2)->vertex_index_c = ebp_1
-00424d82        (edi_2 - 2)->v2 = 0.5f
-00424d85        (edi_2 - 2)->u3 = 1f
-00424d88        (edi_2 - 2)->texture_ref = 0x3f000000
-00424d8b        (edi_2 - 2)->u0 = 1f
-00424d90        (edi_2 - 2)->v0 = 0.5f
-00424d93        (edi_2 - 2)->u1 = 0f
-00424d96        (edi_2 - 2)->v1 = 0.5f
-00424d9a        (edi_2 - 2)->u2 = 0f
+00424d5f        (edi_2 - 2)->vertex_index_a = (ebp << 2).w + 4
+00424d6c        (edi_2 - 2)->vertex_index_b = ebp_1 + 5
+00424d70        (edi_2 - 2)->vertex_index_c = ebp_1 + 1
+00424d79        (edi_2 - 2)->vertex_index_d = ebp_1
+00424d82        (edi_2 - 2)->u3 = 0.5f
+00424d85        (edi_2 - 2)->v3 = 1f
+00424d88        (edi_2 - 2)->u0 = 0.5f
+00424d8b        (edi_2 - 2)->v0 = 1f
+00424d90        (edi_2 - 2)->u1 = 0.5f
+00424d93        (edi_2 - 2)->v1 = 0f
+00424d96        (edi_2 - 2)->u2 = 0.5f
+00424d9a        (edi_2 - 2)->v2 = 0f
 00424da9        (edi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
-00424db2        (edi_2 - 2)->v3:2.w = ebp_1 + 7
+00424db2        (edi_2 - 2)->__offset(0x32).w = ebp_1 + 7
 00424db9        (edi_2 - 2)->__offset(0x34).w = ebp_1 + 6
 00424dc0        (edi_2 - 2)->__offset(0x36).w = ebp_1 + 2
 00424dc9        (edi_2 - 2)->__offset(0x38).w = ebp_1 + 3
 00424dd2        (edi_2 - 2)->__offset(0x5c).d = 0
 00424dd5        (edi_2 - 2)->__offset(0x40).d = 0x3f000000
 00424dd8        (edi_2 - 2)->__offset(0x44).d = 0
-00424de0        __builtin_memcpy(edi_2 + 0x46, "\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f", 0x14)
-00424df4        edi_2 += 0x60
+00424de0        __builtin_memcpy(&edi_2[0x23], "\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f", 0x14)
+00424df4        edi_2 = &edi_2[0x30]
 00424df7        bool cond:2_1 = var_5c + 1 s< *(arg1 + 0x44)
 00424df9        var_5c += 1
 00424dfd        if (not(cond:2_1))
@@ -120,27 +120,26 @@
 00424f3c        *(edi_3 + 0x18) = *(edi_3 + 0x3c)
 00424f46        *(edi_3 + 0x1c) = *(edi_3 + 0x40)
 00424f4c        *(edi_3 + 0x20) = *(edi_3 + 0x44)
-00424f62        *(&facequads->_pad_0a + *(arg1 + 0x44) * 0x60) = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
-00424f78        *(*(arg1 + 0x44) * 0x60 + facequads + 2) = (*(arg1 + 0x44) << 2) + 1
+00424f62        facequads[*(arg1 + 0x44) * 2].texture_ref = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424f78        facequads[*(arg1 + 0x44) * 2].vertex_index_a = (*(arg1 + 0x44) << 2) + 1
 00424f80        int32_t ecx_37
 00424f80        ecx_37.w = *(arg1 + 0x44)
 00424f87        ecx_37.w <<= 2
-00424f91        (&facequads->vertex_index_a)[*(arg1 + 0x44) * 0x30] = (ecx_37 + 3).w
+00424f91        facequads[*(arg1 + 0x44) * 2].vertex_index_b = (ecx_37 + 3).w
 00424f99        int32_t ecx_38
 00424f99        ecx_38.w = *(arg1 + 0x44)
 00424fa0        ecx_38.w <<= 2
-00424faa        (&facequads->vertex_index_b)[*(arg1 + 0x44) * 0x30] = (ecx_38 + 5).w
+00424faa        facequads[*(arg1 + 0x44) * 2].vertex_index_c = (ecx_38 + 5).w
 00424fb2        int32_t ecx_39
 00424fb2        ecx_39.w = *(arg1 + 0x44)
 00424fb9        ecx_39.w += 1
-00424fc1        (&facequads->vertex_index_c)[*(arg1 + 0x44) * 0x30] = (ecx_39 << 2).w
-00424fd6        (&facequads->texture_ref)[*(arg1 + 0x44) * 0x18] = 0x3f000000
-00424fe3        (&facequads->u0)[*(arg1 + 0x44) * 0x18] = 0
-00424ff0        (&facequads->v0)[*(arg1 + 0x44) * 0x18] = 0x3f000000
-00424ffd        (&facequads->u1)[*(arg1 + 0x44) * 0x18] = 0
-0042500a        (&facequads->v1)[*(arg1 + 0x44) * 0x18] = 0x3f000000
-0042501c        (&facequads->u2)[*(arg1 + 0x44) * 0x18] = 0x3f800000
-00425026        int32_t result = *(arg1 + 0x44) * 0x60
-0042502a        (&facequads->v2)[*(arg1 + 0x44) * 0x18] = 0x3f000000
-00425039        (&facequads->u3)[*(arg1 + 0x44) * 0x18] = 0x3f800000
-00425041        return result
+00424fc1        facequads[*(arg1 + 0x44) * 2].vertex_index_d = (ecx_39 << 2).w
+00424fd6        facequads[*(arg1 + 0x44) * 2].u0 = 0x3f000000
+00424fe3        facequads[*(arg1 + 0x44) * 2].v0 = 0
+00424ff0        facequads[*(arg1 + 0x44) * 2].u1 = 0x3f000000
+00424ffd        facequads[*(arg1 + 0x44) * 2].v1 = 0
+0042500a        facequads[*(arg1 + 0x44) * 2].u2 = 0x3f000000
+0042501c        facequads[*(arg1 + 0x44) * 2].v2 = 0x3f800000
+0042502a        facequads[*(arg1 + 0x44) * 2].u3 = 0x3f000000
+00425039        facequads[*(arg1 + 0x44) * 2].v3 = 0x3f800000
+00425041        return *(arg1 + 0x44) * 0x60

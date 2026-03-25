@@ -107,7 +107,14 @@ Recovered `TextureRef` / `TextureRefList` shape used by strip-mesh quads:
 - `TextureRef +0x00`: `flags`
 - `TextureRef +0x0c`: `texture_path`
 - `TextureRef +0x8c`: `slot_index`
-- `TextureRef +0x98` and `+0xa0`: still intentionally opaque in the checked-in header
+- `TextureRef +0x98`: `arg3_98`
+- `TextureRef +0xa0`: `one_a0`
+
+Those names stay intentionally offset-based:
+
+- `get_or_create_texture_ref` writes caller `arg3` into `arg3_98`
+- the same helper writes constant `1` into `one_a0`
+- we do not yet have a closed gameplay meaning for either lane
 
 That is the cleanup behind `get_or_create_texture_ref` returning:
 
@@ -127,6 +134,7 @@ Recovered `ObjectFaceQuad` shape:
 
 - size: `0x30`
 - `+0x00`: `flags`
+  - 16-bit storage field; keep `OBJECT_FACEQUAD_FLAG_*` as symbolic constants instead of using a C enum-backed member
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs

@@ -21,9 +21,9 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
   int v18; // ebx
   int v19; // eax
   int v20; // ebx
-  __int16 v21; // cx
-  int *v22; // eax
-  int v23; // edx
+  uint16_t v21; // cx
+  TextureRef *texture_ref; // eax
+  uint32_t flags; // edx
   char *v24; // eax
   int v25; // esi
   _BYTE *v26; // eax
@@ -34,8 +34,8 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
   char *v31; // eax
   char i; // cl
   _BYTE *v33; // eax
-  TextureRef *texture_ref; // eax
-  uint32_t flags; // ecx
+  TextureRef *v34; // eax
+  uint32_t v35; // ecx
   int v36; // ecx
   char *v37; // ebx
   int v38; // esi
@@ -152,7 +152,7 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     v41 = v10;
     do
     {
-      *(_WORD *)((char *)&mesh->facequads->flags + v17) = 0;
+      mesh->facequads[v17].flags = 0;
       v18 = sub_44E710(&v40);
       v50 = sub_44E710(&v40);
       v43 = sub_44E710(&v40);
@@ -166,31 +166,30 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
       else
       {
         v20 = 0;
-        *((_BYTE *)&mesh->facequads->flags + v17) |= 0x80u;
+        LOBYTE(mesh->facequads[v17].flags) |= 0x80u;
       }
-      *(float *)((char *)&mesh->facequads->v1 + v17) = *(float *)(v14 + 8 * v50);
-      *(float *)((char *)&mesh->facequads->u2 + v17) = *(float *)(v14 + 8 * v50 + 4);
-      *(float *)((char *)&mesh->facequads->v0 + v17) = *(float *)(v14 + 8 * v43);
-      *(float *)((char *)&mesh->facequads->u1 + v17) = *(float *)(v14 + 8 * v43 + 4);
-      *(TextureRef **)((char *)&mesh->facequads->texture_ref + v17) = *(TextureRef **)(v14 + 8 * v19);
-      *(float *)((char *)&mesh->facequads->u0 + v17) = *(float *)(v14 + 8 * v19 + 4);
-      *(float *)((char *)&mesh->facequads->v2 + v17) = *(float *)(v14 + 8 * v20);
-      *(float *)((char *)&mesh->facequads->u3 + v17) = *(float *)(v14 + 8 * v20 + 4);
-      v17 += 48;
-      *(_DWORD *)((char *)mesh->facequads + v17 - 36) = get_or_create_texture_ref(
-                                                          (TextureRefList *)dword_4B7790,
-                                                          aXSnailTurboTga,
-                                                          0,
-                                                          0);
+      mesh->facequads[v17].u2 = *(float *)(v14 + 8 * v50);
+      mesh->facequads[v17].v2 = *(float *)(v14 + 8 * v50 + 4);
+      mesh->facequads[v17].u1 = *(float *)(v14 + 8 * v43);
+      mesh->facequads[v17].v1 = *(float *)(v14 + 8 * v43 + 4);
+      mesh->facequads[v17].u0 = *(float *)(v14 + 8 * v19);
+      mesh->facequads[v17].v0 = *(float *)(v14 + 8 * v19 + 4);
+      mesh->facequads[v17].u3 = *(float *)(v14 + 8 * v20);
+      mesh->facequads[v17++].v3 = *(float *)(v14 + 8 * v20 + 4);
+      mesh->facequads[v17 - 1].texture_ref = get_or_create_texture_ref(
+                                               (TextureRefList *)dword_4B7790,
+                                               aXSnailTurboTga,
+                                               0,
+                                               0);
       v21 = v50;
-      v22 = *(int **)((char *)mesh->facequads + v17 - 36);
-      v23 = *v22;
-      BYTE1(v23) = BYTE1(*v22) | 0x10;
-      *v22 = v23;
-      *(_WORD *)((char *)mesh->facequads + v17 - 42) = v21;
-      *(_WORD *)((char *)mesh->facequads + v17 - 44) = v43;
-      *(_WORD *)((char *)mesh->facequads + v17 - 46) = (_WORD)v45;
-      *(_WORD *)((char *)mesh->facequads + v17 - 40) = v20;
+      texture_ref = mesh->facequads[v17 - 1].texture_ref;
+      flags = texture_ref->flags;
+      BYTE1(flags) = BYTE1(texture_ref->flags) | 0x10;
+      texture_ref->flags = flags;
+      mesh->facequads[v17 - 1].vertex_index_c = v21;
+      mesh->facequads[v17 - 1].vertex_index_b = v43;
+      mesh->facequads[v17 - 1].vertex_index_a = (unsigned __int16)v45;
+      mesh->facequads[v17 - 1].vertex_index_d = v20;
       --v41;
     }
     while ( v41 );
@@ -236,11 +235,11 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
         *v33++ = 103;
         *v33 = 97;
         v33[1] = 0;
-        texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v54, 0, 0);
-        *v29 = (int *)texture_ref;
-        flags = texture_ref->flags;
-        BYTE1(flags) = BYTE1(texture_ref->flags) | 0x10;
-        texture_ref->flags = flags;
+        v34 = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v54, 0, 0);
+        *v29 = (int *)v34;
+        v35 = v34->flags;
+        BYTE1(v35) = BYTE1(v34->flags) | 0x10;
+        v34->flags = v35;
         if ( (options_flags & 2) != 0 )
         {
           v36 = **v29;
@@ -267,9 +266,9 @@ int32_t __stdcall load_x_mesh(char *mesh_path, PathTemplateStripMesh *mesh, uint
     do
     {
       v39 = sub_44E710(&v42);
-      v38 += 48;
+      ++v38;
       --v37;
-      *(_DWORD *)((char *)mesh->facequads + v38 - 36) = *(_DWORD *)&v45[4 * v39];
+      mesh->facequads[v38 - 1].texture_ref = *(TextureRef **)&v45[4 * v39];
     }
     while ( v37 );
   }

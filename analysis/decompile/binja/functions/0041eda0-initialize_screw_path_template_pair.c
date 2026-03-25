@@ -210,7 +210,7 @@
 0041f59f        arg2 = fconvert.s(float.t(arg2) * fconvert.t(0.125f))
 0041f5ad        float var_50_1 = fconvert.s(float.t(j + 1) * fconvert.t(0.125f))
 0041f5bf        while (true)
-0041f5ce        int16_t* edi_7 = (ecx_68 + ((self->width_cells * i_3 + j) << 1)) * 0x30 + facequads
+0041f5ce        int16_t* edi_7 = &facequads[ecx_68 + ((self->width_cells * i_3 + j) << 1)]
 0041f5d1        *edi_7 = 0
 0041f5d6        int32_t edx_39
 0041f5d6        if (ecx_68 != 0)

@@ -122,14 +122,14 @@
 004059ac        *(esi_1 + facequads) |= 0x80
 0040599c        ebx_4 = sub_44e710(&var_234)
 0040599e        eax_24 = var_220_1
-004059c7        *(&mesh->facequads->v1 + esi_1) = eax_16[eax_22 * 2]
-004059d6        *(&mesh->facequads->u2 + esi_1) = eax_16[eax_22 * 2 + 1]
-004059e5        *(&mesh->facequads->v0 + esi_1) = eax_16[eax_23 * 2]
-004059f4        *(&mesh->facequads->u1 + esi_1) = eax_16[eax_23 * 2 + 1]
-004059ff        *(&mesh->facequads->texture_ref + esi_1) = eax_16[eax_24 * 2]
-00405a0a        *(&mesh->facequads->u0 + esi_1) = eax_16[eax_24 * 2 + 1]
-00405a15        *(&mesh->facequads->v2 + esi_1) = eax_16[ebx_4 * 2]
-00405a25        *(&mesh->facequads->u3 + esi_1) = eax_16[ebx_4 * 2 + 1]
+004059c7        *(&mesh->facequads->u2 + esi_1) = eax_16[eax_22 * 2]
+004059d6        *(&mesh->facequads->v2 + esi_1) = eax_16[eax_22 * 2 + 1]
+004059e5        *(&mesh->facequads->u1 + esi_1) = eax_16[eax_23 * 2]
+004059f4        *(&mesh->facequads->v1 + esi_1) = eax_16[eax_23 * 2 + 1]
+004059ff        *(&mesh->facequads->u0 + esi_1) = eax_16[eax_24 * 2]
+00405a0a        *(&mesh->facequads->v0 + esi_1) = eax_16[eax_24 * 2 + 1]
+00405a15        *(&mesh->facequads->u3 + esi_1) = eax_16[ebx_4 * 2]
+00405a25        *(&mesh->facequads->v3 + esi_1) = eax_16[ebx_4 * 2 + 1]
 00405a31        esi_1 = &esi_1[0x18]
 00405a34        *(esi_1 + mesh->facequads - 0x24) = get_or_create_texture_ref(&data_4b7790, "X/snail-turbo.tga", 0, 0)
 00405a3b        struct ObjectFaceQuad* ecx_14

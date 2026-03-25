@@ -19,8 +19,8 @@
 0044e881        texture_list->entries[count].slot_index = count
 0044e890        (&texture_list->entries)[texture_list->count][0].flags = 0
 0044e8a0        (&texture_list->entries)[texture_list->count][0].flags = 0x400
-0044e8b4        texture_list->entries[texture_list->count]._pad_90[8].d = arg3
-0044e8c3        texture_list->entries[texture_list->count]._pad_90[0x10].d = 1
+0044e8b4        texture_list->entries[texture_list->count].arg3_98 = arg3
+0044e8c3        texture_list->entries[texture_list->count].one_a0 = 1
 0044e8ce        int32_t count_1 = texture_list->count
 0044e8d7        texture_list->count = count_1 + 1
 0044e8e0        return &(&texture_list->entries)[count_1]

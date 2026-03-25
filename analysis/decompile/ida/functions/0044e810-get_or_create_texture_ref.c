@@ -22,8 +22,8 @@ LABEL_8:
     texture_list->entries[texture_list->count].slot_index = texture_list->count;
     texture_list->entries[texture_list->count].flags = 0;
     texture_list->entries[texture_list->count].flags = 1024;
-    *(_DWORD *)&texture_list->entries[texture_list->count]._pad_90[8] = arg3;
-    *(_DWORD *)&texture_list->entries[texture_list->count]._pad_90[16] = 1;
+    texture_list->entries[texture_list->count].arg3_98 = arg3;
+    texture_list->entries[texture_list->count].one_a0 = 1;
     v7 = texture_list->count++;
     return &texture_list->entries[v7];
   }

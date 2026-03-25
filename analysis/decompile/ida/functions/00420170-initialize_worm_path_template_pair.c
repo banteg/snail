@@ -35,7 +35,7 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
   int v57; // ebx
   int v58; // eax
   int v59; // edx
-  uint32_t v60; // edi
+  ObjectFaceQuad *v60; // edi
   int v61; // eax
   float v63; // ecx
   float v71; // [esp-Ch] [ebp-A0h]
@@ -590,23 +590,23 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
           }
           while ( 1 )
           {
-            v60 = (uint32_t)facequads + 96 * v57 + 96 * v3 * _ESI->width_cells + 48 * v59;
-            *(_WORD *)v60 = 0;
+            v60 = &facequads[2 * v57 + 2 * v3 * _ESI->width_cells + v59];
+            v60->flags = 0;
             if ( v59 )
             {
-              *(_WORD *)(v60 + 2) = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
-              *(_WORD *)(v60 + 4) = v57 + LOWORD(_ESI->width_cells) * v3;
-              *(_WORD *)(v60 + 6) = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
-              *(_WORD *)(v60 + 8) = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
+              v60->vertex_index_a = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
+              v60->vertex_index_b = v57 + LOWORD(_ESI->width_cells) * v3;
+              v60->vertex_index_c = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
+              v60->vertex_index_d = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
             }
             else
             {
-              *(_WORD *)(v60 + 2) = v57 + LOWORD(_ESI->width_cells) * v3;
-              *(_WORD *)(v60 + 4) = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
-              *(_WORD *)(v60 + 6) = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
-              *(_WORD *)(v60 + 8) = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
+              v60->vertex_index_a = v57 + LOWORD(_ESI->width_cells) * v3;
+              v60->vertex_index_b = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
+              v60->vertex_index_c = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
+              v60->vertex_index_d = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
             }
-            *(_DWORD *)(v60 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
+            v60->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
             v61 = v97;
             __asm { fild    dword ptr [esi+54h] }
             __asm
@@ -621,34 +621,34 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
             if ( v97 )
             {
               __asm { fstp    dword ptr [edi+10h] }
-              *(float *)(v60 + 16) = _ET1;
-              *(float *)(v60 + 20) = v82;
+              v60->u0 = _ET1;
+              v60->v0 = v82;
               __asm { fst     dword ptr [edi+18h] }
-              *(float *)(v60 + 24) = _ET1;
+              v60->u1 = _ET1;
               v63 = v91;
-              *(float *)(v60 + 28) = v82;
+              v60->v1 = v82;
               __asm { fstp    dword ptr [edi+20h] }
-              *(float *)(v60 + 32) = _ET1;
-              *(float *)(v60 + 36) = v91;
-              *(float *)(v60 + 40) = v102;
+              v60->u2 = _ET1;
+              v60->v2 = v91;
+              v60->u3 = v102;
             }
             else
             {
               __asm { fld     st(1) }
               __asm { fstp    dword ptr [edi+10h] }
-              *(float *)(v60 + 16) = _ET1;
-              *(float *)(v60 + 20) = v82;
+              v60->u0 = _ET1;
+              v60->v0 = v82;
               v63 = v91;
               __asm { fst     dword ptr [edi+18h] }
-              *(float *)(v60 + 24) = _ET1;
-              *(float *)(v60 + 28) = v82;
+              v60->u1 = _ET1;
+              v60->v1 = v82;
               __asm { fstp    dword ptr [edi+20h] }
-              *(float *)(v60 + 32) = _ET1;
-              *(float *)(v60 + 36) = v91;
+              v60->u2 = _ET1;
+              v60->v2 = v91;
               __asm { fstp    dword ptr [edi+28h] }
-              *(float *)(v60 + 40) = _ET1;
+              v60->u3 = _ET1;
             }
-            *(float *)(v60 + 44) = v63;
+            v60->v3 = v63;
             ++v97;
             if ( v61 + 1 >= 2 )
               break;

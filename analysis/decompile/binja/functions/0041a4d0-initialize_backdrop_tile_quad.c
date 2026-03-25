@@ -16,17 +16,17 @@
 0041a518        vertices->__offset(0x10).d = 0
 0041a51b        vertices->__offset(0x1c).d = 0
 0041a51e        vertices->__offset(0x28).d = 0
-0041a527        facequads->flags.w = 0
-0041a52a        facequads->flags:2.w = 0
-0041a52e        facequads->vertex_index_a = 1
-0041a534        facequads->vertex_index_b = 3
-0041a53a        facequads->vertex_index_c = 2
-0041a545        facequads->_pad_0a.d = get_or_create_texture_ref(&data_4b7790, arg6, 0, 0)
+0041a527        facequads->flags = 0
+0041a52a        facequads->vertex_index_a = 0
+0041a52e        facequads->vertex_index_b = 1
+0041a534        facequads->vertex_index_c = 3
+0041a53a        facequads->vertex_index_d = 2
+0041a545        facequads->texture_ref = get_or_create_texture_ref(&data_4b7790, arg6, 0, 0)
 0041a553        float result = arg3
-0041a564        __builtin_memcpy(&facequads->texture_ref, "\xcd\xcc\x4c\x3f\x00\x00\x80\x3f\xcd\xcc\x4c\x3e\x00\x00\x80\x3f\xcd\xcc\x4c\x3e", 0x14)
-0041a56d        facequads->u2 = 0f
-0041a570        facequads->v2 = 0.800000012f
-0041a573        facequads->u3 = 0f
+0041a564        __builtin_memcpy(&facequads->u0, "\xcd\xcc\x4c\x3f\x00\x00\x80\x3f\xcd\xcc\x4c\x3e\x00\x00\x80\x3f\xcd\xcc\x4c\x3e", 0x14)
+0041a56d        facequads->v2 = 0f
+0041a570        facequads->u3 = 0.800000012f
+0041a573        facequads->v3 = 0f
 0041a581        switch (result)
 0041a592        case 0
 0041a592        result = 0.899999976f

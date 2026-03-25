@@ -42,7 +42,10 @@ typedef struct TextureRef {
     uint8_t _pad_04[0x8];
     char texture_path[0x80];
     int32_t slot_index;
-    uint8_t _pad_90[0x14];
+    uint8_t _pad_90[0x8];
+    int32_t arg3_98;
+    uint8_t _pad_9c[0x4];
+    int32_t one_a0;
 } TextureRef;
 
 typedef struct TextureRefList {
@@ -88,7 +91,7 @@ typedef enum ObjectFaceQuadFlags {
 } ObjectFaceQuadFlags;
 
 typedef struct ObjectFaceQuad {
-    ObjectFaceQuadFlags flags;
+    uint16_t flags;
     uint16_t vertex_index_a;
     uint16_t vertex_index_b;
     uint16_t vertex_index_c;

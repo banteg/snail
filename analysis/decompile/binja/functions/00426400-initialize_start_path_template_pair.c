@@ -190,7 +190,7 @@
 00426b00        int32_t eax_72 = ecx_61 + ((self->width_cells * i_3 + j) << 1)
 00426b03        char* arg4
 00426b03        if (ecx_61 != 0)
-00426bc4        int16_t* ebp_2 = eax_72 * 0x30 + facequads
+00426bc4        int16_t* ebp_2 = &facequads[eax_72]
 00426bc7        *ebp_2 = 4
 00426bcd        ecx_61.w = self->width_cells.w
 00426bd1        ecx_61.w += 1

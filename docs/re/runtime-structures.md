@@ -625,6 +625,7 @@ kind:
 High-confidence `ObjectFaceQuad` fields:
 
 - `+0x00`: `flags`
+  - 16-bit storage field; do not model this as a C enum-backed struct member or the facequad record stops matching the recovered `0x30` allocation size
 - `+0x02/+0x04/+0x06/+0x08`: four vertex indices
 - `+0x0c`: `texture_ref`
 - `+0x10..+0x2c`: four `(u, v)` pairs
@@ -638,7 +639,9 @@ High-confidence `TextureRef` / `TextureRefList` surface used by facequads:
 - `TextureRef +0x00`: `flags`
 - `TextureRef +0x0c`: `texture_path`
 - `TextureRef +0x8c`: `slot_index`
-- `TextureRef +0x98` and `+0xa0` remain intentionally opaque in the checked-in type header for now
+- `TextureRef +0x98`: `arg3_98`
+- `TextureRef +0xa0`: `one_a0`
+  - both names stay intentionally offset-based: `get_or_create_texture_ref` writes caller `arg3` into `arg3_98` and constant `1` into `one_a0`, but their gameplay meaning is still open
 
 Binary Ninja typing note:
 
