@@ -7005,73 +7005,22 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     const pending_entry = state.postLevelHighScoreContext();
     const selected_mode = state.activeHighScoreScreenMode();
-    const art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    var title_state = frontend_widget.TextButtonState{};
-    title_state.snapFor(.footer_button, false);
-    const title_text = frontend_high_score_screen.title(state.high_score_screen_owner);
-    frontend_widget.drawTextButton(
-        layout,
-        art,
-        &state.ui_font,
-        .footer_button,
-        title_text,
-        frontend_widget.widgetTextRect(&state.ui_font, .footer_button, .center, title_text, frontend_high_score_screen.title_y, 0.0),
-        title_state,
-        false,
-    );
-
-    if (pending_entry) |context| {
-        var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
-        const draft_name = if (state.postLevelHighScoreDraft().len == 0)
+    var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
+    const pending_draft_name = if (pending_entry != null)
+        if (state.postLevelHighScoreDraft().len == 0)
             "_"
         else
-            try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()});
-        drawHighScoreTable(state, layout, context.rank, draft_name, true, selected_mode);
-        frontend_widget.drawTextButton(
-            layout,
-            art,
-            &state.ui_font,
-            .footer_button,
-            frontend_high_score_screen.post_level_actions[0].label(),
-            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.post_level_actions[0].label(), frontend_high_score_screen.entry_cancel_x),
-            state.post_level_high_score_button_states[0],
-            false,
-        );
-        frontend_widget.drawTextButton(
-            layout,
-            art,
-            &state.ui_font,
-            .footer_button,
-            frontend_high_score_screen.post_level_actions[1].label(),
-            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.post_level_actions[1].label(), frontend_high_score_screen.entry_submit_x),
-            state.post_level_high_score_button_states[1],
-            false,
-        );
-    } else {
-        drawHighScoreTable(state, layout, null, null, false, selected_mode);
-        frontend_widget.drawTextButton(
-            layout,
-            art,
-            &state.ui_font,
-            .footer_button,
-            "Back",
-            frontend_high_score_screen.footerTextRect(&state.ui_font, "Back", frontend_high_score_screen.back_x),
-            state.high_score_button_states[0],
-            false,
-        );
-        frontend_widget.drawTextButton(
-            layout,
-            art,
-            &state.ui_font,
-            .footer_button,
-            frontend_high_score_screen.tableToggleLabel(selected_mode),
-            frontend_high_score_screen.footerTextRect(&state.ui_font, frontend_high_score_screen.tableToggleLabel(selected_mode), frontend_high_score_screen.toggle_x),
-            state.high_score_button_states[1],
-            false,
-        );
-    }
+            try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()})
+    else
+        null;
+    try frontend_high_score_screen.drawMenuUi(
+        state,
+        layout,
+        state.high_score_screen_owner,
+        selected_mode,
+        pending_entry,
+        pending_draft_name,
+    );
 
     if (state.game_status_message) |message| {
         try drawFrontendStatusMessage(state, layout, message);
@@ -7101,105 +7050,6 @@ fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
         state.exit_prompt_button_states[1],
         false,
     );
-}
-
-fn drawHighScoreTable(
-    state: *const AppState,
-    layout: VirtualLayout,
-    highlight_index: ?usize,
-    editing_name: ?[]const u8,
-    hide_replay: bool,
-    mode: high_score.Mode,
-) void {
-    const entries = state.high_score_tables.visibleEntries(mode);
-    const art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    const row_background_text = frontend_high_score_screen.rowBackgroundText(mode);
-    const text_only_score_cell: frontend_widget.DrawOptions = .{
-        // PORT(verified): `initialize_high_score_screen` gives the rank, name,
-        // and numeric score cells flags `0x20400000`, so those type-22 widgets
-        // render as text-only entries on top of the shared row background.
-        .flags = 0x20400000,
-    };
-
-    for (entries, 0..) |table_entry, entry_index| {
-        const row_highlighted = highlight_index != null and highlight_index.? == entry_index;
-        if (!table_entry.isActive() and !row_highlighted) continue;
-
-        const row_y = frontend_high_score_screen.row_start_y + @as(f32, @floatFromInt(entry_index)) * frontend_high_score_screen.row_pitch;
-        var row_state = frontend_widget.TextButtonState{};
-        row_state.snapFor(.compact_score_row, row_highlighted);
-        frontend_widget.drawTextButton(
-            layout,
-            art,
-            &state.ui_font,
-            .compact_score_row,
-            row_background_text,
-            frontend_high_score_screen.rowBackgroundTextRect(&state.ui_font, mode, row_y),
-            row_state,
-            false,
-        );
-
-        var rank_buffer: [8]u8 = undefined;
-        const rank_text = std.fmt.bufPrint(&rank_buffer, "{d}", .{entry_index + 1}) catch "";
-        const display_name = if (row_highlighted and editing_name != null)
-            editing_name.?
-        else
-            frontend_high_score_screen.displayName(&table_entry);
-
-        frontend_widget.drawTextButtonWithOptions(
-            layout,
-            art,
-            &state.ui_font,
-            .compact_score_row,
-            rank_text,
-            frontend_high_score_screen.rankTextRect(&state.ui_font, row_y, rank_text),
-            row_state,
-            false,
-            text_only_score_cell,
-        );
-        frontend_widget.drawTextButtonWithOptions(
-            layout,
-            art,
-            &state.ui_font,
-            .compact_score_row,
-            display_name,
-            frontend_high_score_screen.nameTextRect(&state.ui_font, row_y, display_name),
-            row_state,
-            false,
-            text_only_score_cell,
-        );
-
-        var score_buffer: [32]u8 = undefined;
-        const score_text = if (table_entry.isActive())
-            (std.fmt.bufPrint(&score_buffer, "{d}", .{table_entry.score}) catch "0")
-        else
-            "";
-        frontend_widget.drawTextButtonWithOptions(
-            layout,
-            art,
-            &state.ui_font,
-            .compact_score_row,
-            score_text,
-            frontend_high_score_screen.scoreTextRect(&state.ui_font, mode, row_y, score_text),
-            row_state,
-            false,
-            text_only_score_cell,
-        );
-        if (frontend_high_score_screen.rowsShowReplay(mode, hide_replay) and table_entry.has_replay) {
-            frontend_widget.drawTextButton(
-                layout,
-                art,
-                &state.ui_font,
-                .compact_score_row,
-                "Replay",
-                frontend_high_score_screen.replayTextRect(&state.ui_font, mode, row_y),
-                state.high_score_replay_button_states[entry_index],
-                false,
-            );
-        }
-    }
 }
 
 fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
