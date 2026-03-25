@@ -52,6 +52,18 @@ Two byte-lane clarifications from the constructor-family audit:
 - `is_mirrored_x` is a byte flag, not a `uint32_t`
 - `special_runtime_flag_9c` is also a byte flag; keep the name conservative because its exact gameplay meaning is still open
 
+`kind` is now carried in the checked-in header as a conservative `PathTemplateKind`
+enum for the constructor values that are actually closed. A few values remain
+family-wide on purpose:
+
+- `0x00`: `PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY`
+- `0x10`: `PATH_TEMPLATE_KIND_HALFPIPE_FAMILY`
+- `0x27`: `PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY`
+
+Those are the values where the current constructor family still shares one native
+kind across more than one higher-level builder name. The enum deliberately avoids
+pretending those are fully split when the decompile still says otherwise.
+
 Recovered `PathTemplateSample` shape:
 
 - size: `0xa8`

@@ -45,6 +45,33 @@ typedef enum PathTemplateStripMeshFlags {
     PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,
 } PathTemplateStripMeshFlags;
 
+typedef enum PathTemplateKind {
+    PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,
+    PATH_TEMPLATE_KIND_LOOPTHELOOPW = 0x06,
+    PATH_TEMPLATE_KIND_DETOUR = 0x0f,
+    PATH_TEMPLATE_KIND_HALFPIPE_FAMILY = 0x10,
+    PATH_TEMPLATE_KIND_HALFPOLE = 0x11,
+    PATH_TEMPLATE_KIND_CAGE2 = 0x14,
+    PATH_TEMPLATE_KIND_SCREW = 0x15,
+    PATH_TEMPLATE_KIND_SLALOM = 0x16,
+    PATH_TEMPLATE_KIND_SLALOMBIG = 0x17,
+    PATH_TEMPLATE_KIND_WORM = 0x18,
+    PATH_TEMPLATE_KIND_LOOPOUT = 0x19,
+    PATH_TEMPLATE_KIND_SWEEP = 0x1c,
+    PATH_TEMPLATE_KIND_SNAKE = 0x1d,
+    PATH_TEMPLATE_KIND_SUPERTRAMP = 0x1f,
+    PATH_TEMPLATE_KIND_DIP = 0x20,
+    PATH_TEMPLATE_KIND_START = 0x24,
+    PATH_TEMPLATE_KIND_TURNOVER = 0x25,
+    PATH_TEMPLATE_KIND_TURNOVERDOUBLE = 0x26,
+    PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY = 0x27,
+    PATH_TEMPLATE_KIND_WIBBLE = 0x28,
+    PATH_TEMPLATE_KIND_INVERT = 0x29,
+    PATH_TEMPLATE_KIND_NONLINEAR_42 = 0x2a,
+    PATH_TEMPLATE_KIND_TWISTER = 0x2b,
+    PATH_TEMPLATE_KIND_TWISTER2 = 0x2d,
+} PathTemplateKind;
+
 typedef struct ObjectFaceQuad {
     uint16_t flags;
     uint16_t vertex_index_a;
@@ -104,7 +131,7 @@ typedef struct PathTemplate {
     uint8_t _pad_28[0x8];
     float header_30;
     float header_34;
-    uint32_t kind;
+    PathTemplateKind kind;
     uint8_t is_mirrored_x;
     uint8_t _pad_3d[0x3];
     uint32_t side_exit_mode;

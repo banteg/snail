@@ -606,6 +606,15 @@ One strip-mesh flag is now safely named from the constructor-family and mirror-h
 
 - `0x10000`: `PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS`
 
+`PathTemplate.kind` is now also carried as a conservative enum in the checked-in
+header. Most constructor values are uniquely named from their builders, while a
+few remain explicit family buckets where multiple builders still share one native
+kind:
+
+- `PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00`
+- `PATH_TEMPLATE_KIND_HALFPIPE_FAMILY = 0x10`
+- `PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY = 0x27`
+
 High-confidence `ObjectFaceQuad` fields:
 
 - `+0x00`: `flags`
