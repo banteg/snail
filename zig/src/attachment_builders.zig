@@ -563,23 +563,23 @@ pub fn samplePoseAtProgress(template: *const Template, progress: f32) Attachment
 pub fn worldPositionForTemplate(
     template: *const Template,
     progress: f32,
-    source_row: usize,
+    source_cell_row: usize,
     lateral_offset: f32,
     vertical_offset: f32,
 ) Vec3 {
-    return worldPoseForTemplate(template, progress, source_row, lateral_offset, vertical_offset).position;
+    return worldPoseForTemplate(template, progress, source_cell_row, lateral_offset, vertical_offset).position;
 }
 
 pub fn worldPoseForTemplate(
     template: *const Template,
     progress: f32,
-    source_row: usize,
+    source_cell_row: usize,
     lateral_offset: f32,
     vertical_offset: f32,
 ) WorldPose {
     const pose = samplePoseAtProgress(template, progress);
     const local_lateral = lateral_offset * pose.lateral_scale;
-    const base_row: f32 = @floatFromInt(source_row);
+    const base_row: f32 = @floatFromInt(source_cell_row);
     if (template.spec.family == .warp_halfpipe) {
         const local_transform = warpHalfpipeLocalTransform(pose.special_scalar, local_lateral, warp_halfpipe_rider_height + vertical_offset);
         return .{

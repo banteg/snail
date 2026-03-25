@@ -417,14 +417,14 @@ fn attachmentVertex(
 
 fn warpHalfpipeAttachmentVertex(
     template: *const attachment_builders.Template,
-    source_row: usize,
+    source_cell_row: usize,
     progress: f32,
     lateral_offset: f32,
 ) rl.Vector3 {
     const world = attachment_builders.worldPositionForTemplate(
         template,
         progress,
-        source_row,
+        source_cell_row,
         lateral_offset,
         -0.49,
     );
