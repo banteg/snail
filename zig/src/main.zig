@@ -7683,10 +7683,23 @@ fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
     drawSubgameViewport(state);
     const result = state.pending_run_result orelse return;
+    const summary = completionSummary(result);
     if (result.outcome == .completed) {
-        try drawCompletedRunScreenUi(state, layout, result);
+        try frontend_completion_screen.drawCompleted(
+            state,
+            layout,
+            summary,
+            state.completionBonusVisible(result),
+            state.completion_continue_button_state,
+            state.completionContinueVisible(),
+        );
     } else {
-        try drawFailedRunScreenUi(state, layout, result);
+        try frontend_completion_screen.drawFailed(
+            state,
+            layout,
+            summary,
+            state.completion_continue_button_state,
+        );
     }
 }
 
@@ -7707,198 +7720,6 @@ fn drawThanksScreenUi(state: *const AppState, layout: VirtualLayout) void {
         idle_state,
         false,
         .{ .flags = 0x20400002 },
-    );
-}
-
-fn drawCompletionParcelIcon(state: *const AppState, layout: VirtualLayout) void {
-    const loaded_texture = state.frontend_widget_art.parcel_icon orelse return;
-    drawTextureLocalRect(
-        layout,
-        loaded_texture,
-        frontend_completion_screen.parcel_icon_x,
-        frontend_completion_screen.parcel_icon_y,
-        frontend_completion_screen.parcel_icon_width,
-        frontend_completion_screen.parcel_icon_height,
-        .white,
-    );
-}
-
-fn drawCompletedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: PendingRunResult) !void {
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    var idle_state = frontend_widget.TextButtonState{};
-    idle_state.snapFor(.menu_button, false);
-    const completion_text_only: frontend_widget.DrawOptions = .{
-        // PORT(verified): `initialize_completion_screen` builds the title,
-        // package line, bonus line, and continue prompt with flags
-        // `0x20400002`, which suppress the pill background while keeping the
-        // type-20 shell-font metrics.
-        .flags = 0x20400002,
-    };
-
-    const summary = completionSummary(result);
-    const title_text = frontend_completion_screen.title(summary);
-    frontend_widget.drawTextButtonWithOptions(
-        layout,
-        widget_art,
-        &state.ui_font,
-        .menu_button,
-        title_text,
-        frontend_completion_screen.titleTextRect(&state.ui_font, title_text),
-        idle_state,
-        false,
-        completion_text_only,
-    );
-
-    var package_buffer: [64]u8 = undefined;
-    const package_text = switch (result.mode orelse .tutorial) {
-        .postal => try frontend_completion_screen.packageLine(&package_buffer, summary),
-        .time_trial, .challenge, .tutorial => result.level_name,
-    };
-    frontend_widget.drawTextButtonWithOptions(
-        layout,
-        widget_art,
-        &state.ui_font,
-        .menu_button,
-        package_text,
-        frontend_completion_screen.packageTextRect(&state.ui_font, package_text),
-        idle_state,
-        false,
-        completion_text_only,
-    );
-
-    if ((result.mode orelse .tutorial) == .postal) {
-        drawCompletionParcelIcon(state, layout);
-    }
-
-    if (state.completionBonusVisible(result)) {
-        if (try frontend_completion_screen.bonusLine(&package_buffer, summary)) |bonus_text| {
-            frontend_widget.drawTextButtonWithOptions(
-                layout,
-                widget_art,
-                &state.ui_font,
-                .menu_button,
-                bonus_text,
-                frontend_completion_screen.bonusTextRect(&state.ui_font, bonus_text),
-                idle_state,
-                false,
-                completion_text_only,
-            );
-        }
-    }
-
-    if (state.completionContinueVisible()) {
-        frontend_widget.drawTextButtonWithOptions(
-            layout,
-            widget_art,
-            &state.ui_font,
-            .menu_button,
-            "Click to Continue",
-            frontend_completion_screen.continueTextRect(&state.ui_font, summary),
-            state.completion_continue_button_state,
-            false,
-            completion_text_only,
-        );
-    }
-}
-
-fn drawFailedRunScreenUi(state: *const AppState, layout: VirtualLayout, result: PendingRunResult) !void {
-    const overlay_panel = layout.mapRect(120.0, 132.0, 400.0, 204.0);
-    const title_point = layout.mapPoint(144.0, 156.0);
-    const body_point = layout.mapPoint(144.0, 196.0);
-    const title_x: i32 = @intFromFloat(title_point.x);
-    const title_y: i32 = @intFromFloat(title_point.y);
-    const body_x: i32 = @intFromFloat(body_point.x);
-    const body_y: i32 = @intFromFloat(body_point.y);
-    const summary = completionSummary(result);
-    const title = frontend_completion_screen.title(summary);
-    var elapsed_buffer: [32]u8 = undefined;
-    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, result.elapsed_millis);
-
-    rl.drawRectangleRounded(overlay_panel, 0.08, 8, .{ .r = 0, .g = 0, .b = 0, .a = 214 });
-    drawAppText(state, title, title_x, title_y, layout.fontSize(28), .gold);
-
-    var summary_buffer: [256]u8 = undefined;
-    const summary_text = try std.fmt.bufPrint(
-        &summary_buffer,
-        "{s}>Time {s}>Packages {d}/{d}",
-        .{
-            if (result.outcome == .completed) result.level_name else "Run ended before route completion",
-            elapsed_text,
-            result.parcel_count,
-            result.parcel_target,
-        },
-    );
-    try drawWrappedText(
-        state,
-        summary_text,
-        body_x,
-        body_y,
-        layout.scaleInt(332),
-        layout.fontSize(20),
-        .ray_white,
-    );
-
-    const score_y = body_y + layout.scaleInt(70);
-    if (result.mode == .time_trial) {
-        var time_buffer: [128]u8 = undefined;
-        const time_text = try std.fmt.bufPrint(&time_buffer, "Route time {s}", .{elapsed_text});
-        drawAppText(state, time_text, body_x, score_y, layout.fontSize(18), .sky_blue);
-    } else {
-        var score_buffer: [128]u8 = undefined;
-        const score_text = try std.fmt.bufPrint(&score_buffer, "Score {d}{s}", .{
-            result.score,
-            if (result.score_is_partial) " (partial)" else "",
-        });
-        drawAppText(state, score_text, body_x, score_y, layout.fontSize(18), .sky_blue);
-
-        var breakdown_buffer: [224]u8 = undefined;
-        const breakdown_text = try std.fmt.bufPrint(
-            &breakdown_buffer,
-            "Rings {d}  Garbage {d}  Health {d}  Pickup {d}  Register {d}  Bonus {d}  Lives {d}  Damage {d:.2}",
-            .{
-                result.score_totals.ring_collect,
-                result.score_totals.garbage_collision,
-                result.score_totals.health_collect,
-                result.score_totals.parcel_pickup,
-                result.score_totals.parcel_register,
-                result.score_totals.completion_bonus,
-                result.visible_life_stock,
-                result.damage_gauge,
-            },
-        );
-        try drawWrappedText(
-            state,
-            breakdown_text,
-            body_x,
-            score_y + layout.scaleInt(22),
-            layout.scaleInt(332),
-            layout.fontSize(16),
-            .light_gray,
-        );
-    }
-
-    if (result.unlocked_next_route) {
-        drawAppText(state, "Unlocked the next delivery route.", body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
-    } else if (result.time_trial_record_improved) {
-        drawAppText(state, "Saved a new best route time.", body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
-    } else if (result.high_score_rank) |rank| {
-        var rank_buffer: [96]u8 = undefined;
-        const rank_text = try std.fmt.bufPrint(&rank_buffer, "New high score rank: {d}", .{rank + 1});
-        drawAppText(state, rank_text, body_x, score_y + layout.scaleInt(24), layout.fontSize(18), .gold);
-    }
-
-    frontend_widget.drawType20Button(
-        layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
-        "Click to Continue",
-        frontend_completion_screen.continueTextRect(&state.ui_font, summary),
-        state.completion_continue_button_state,
-        false,
     );
 }
 
