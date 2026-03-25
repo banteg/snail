@@ -13,6 +13,13 @@ typedef struct Vec3 {
     float z;
 } Vec3;
 
+typedef struct Vec4 {
+    float x;
+    float y;
+    float z;
+    float w;
+} Vec4;
+
 typedef struct Color4f {
     float r;
     float g;
@@ -62,15 +69,16 @@ typedef struct PathTemplateStripMesh {
     ObjectFaceQuad* facequads;
 } PathTemplateStripMesh;
 
+typedef struct PathTemplateTransform {
+    Vec4 basis_right;
+    Vec4 basis_up;
+    Vec4 basis_forward;
+    Vec4 position;
+} PathTemplateTransform;
+
 typedef struct PathTemplateSample {
-    Vec3 basis_right;
-    float _pad_0c;
-    Vec3 basis_up;
-    float _pad_1c;
-    Vec3 basis_forward;
-    float _pad_2c;
-    Vec3 position;
-    uint8_t _pad_3c[0x44];
+    PathTemplateTransform transform;
+    uint8_t _pad_40[0x40];
     Vec3 delta_dir_to_next;
     float delta_length;
     float center_x;
@@ -107,11 +115,15 @@ typedef struct PathTemplate {
 } PathTemplate;
 
 TextureRef* __thiscall get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
-void* __fastcall allocate_path_nodes(PathTemplate* self);
+PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);
 int32_t __fastcall finalize_path_template_record(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
-int32_t* __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
-int32_t* __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
+int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
+int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);
+double __fastcall normalize_vector(Vec3* vector);
+int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
+void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
+void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
 void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(

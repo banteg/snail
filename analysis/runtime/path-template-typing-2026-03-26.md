@@ -55,8 +55,12 @@ Two byte-lane clarifications from the constructor-family audit:
 Recovered `PathTemplateSample` shape:
 
 - size: `0xa8`
-- `+0x00..+0x2f`: three `0x10`-byte matrix rows
-- `+0x30`: `position`
+- `+0x00..+0x3f`: `PathTemplateTransform`
+  - `+0x00`: `basis_right`
+  - `+0x10`: `basis_up`
+  - `+0x20`: `basis_forward`
+  - `+0x30`: `position`
+- `+0x40..+0x7f`: still opaque
 - `+0x80`: `delta_dir_to_next`
 - `+0x8c`: `delta_length`
 - `+0x90`: `center_x`
@@ -67,9 +71,9 @@ Recovered `PathTemplateSample` shape:
 
 Important correction:
 
-- the first `0x30` bytes are not three packed `Vec3`s
-- they behave like a `3x4` matrix block with row starts at `+0x00`, `+0x10`, and `+0x20`
-- that is why the decompile kept bouncing between `+0x10`, `+0x20`, and `+0x30`
+- the leading `0x40` bytes are better modeled as a four-row transform block, not three packed `Vec3`s with ad hoc padding
+- `set_matrix_identity` and `set_matrix_rotation_identity` both operate on that transform block directly
+- that is why the decompile kept bouncing between `+0x10`, `+0x20`, and `+0x30` row starts
 
 Recovered `PathTemplateStripMesh` shape behind `PathTemplate + 0x24`:
 
@@ -135,11 +139,17 @@ Applied in the live BN database:
 - `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
 - `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
 - `request_object_facequads(PathTemplateStripMesh* mesh, ...)`
+- `set_matrix_identity(PathTemplateTransform* transform)`
+- `set_matrix_rotation_identity(PathTemplateTransform* transform)`
+- `normalize_vector(Vec3* vector)`
+- `cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs)`
 - `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
 - `get_or_create_texture_ref(int32_t* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
+- `allocate_path_nodes(PathTemplate* self)` now reads back as returning `PathTemplateSample*`, which matches its actual `secondary_samples` return
+- `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
 The same trusted slice now has a checked-in narrow IDA mirror as well:
 

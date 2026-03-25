@@ -578,10 +578,12 @@ Still unresolved from the current Windows package:
 
 High-confidence `PathTemplateSample` fields:
 
-- `+0x00`: `basis_right` row start
-- `+0x10`: `basis_up` row start
-- `+0x20`: `basis_forward` row start
-- `+0x30`: `position`
+- `+0x00..+0x3f`: `PathTemplateTransform`
+  - `+0x00`: `basis_right`
+  - `+0x10`: `basis_up`
+  - `+0x20`: `basis_forward`
+  - `+0x30`: `position`
+- `+0x40..+0x7f`: still opaque
 - `+0x80`: `delta_dir_to_next`
 - `+0x8c`: `delta_length`
 - `+0x90`: `center_x`
@@ -620,7 +622,7 @@ Binary Ninja typing note:
 
 - the repeated decompile pattern `*(_DWORD *)(this + 88)` / `*(_DWORD *)(this + 92)` is now confirmed as `primary_samples` / `secondary_samples`
 - these are struct pointers, not vtables
-- the first `0x30` bytes of each sample are a `3x4` matrix block, which is why the old raw output kept surfacing `+0x10` and `+0x20` row offsets
+- the first `0x40` bytes of each sample are a four-row transform block, which is why the old raw output kept surfacing `+0x10`, `+0x20`, and `+0x30` row offsets
 
 This matches the recovered follow-state update behavior:
 

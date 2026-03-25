@@ -16,7 +16,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "allocate_path_nodes",
-        "void* __fastcall allocate_path_nodes(PathTemplate* self);",
+        "PathTemplateSample* __fastcall allocate_path_nodes(PathTemplate* self);",
     ),
     (
         "finalize_path_template_record",
@@ -27,12 +27,28 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);",
     ),
     (
+        "set_matrix_identity",
+        "int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);",
+    ),
+    (
+        "set_matrix_rotation_identity",
+        "int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);",
+    ),
+    (
+        "normalize_vector",
+        "double __fastcall normalize_vector(Vec3* vector);",
+    ),
+    (
+        "cross_vectors",
+        "int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);",
+    ),
+    (
         "request_object_vertices",
-        "int32_t* __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);",
+        "void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);",
     ),
     (
         "request_object_vertex_colours",
-        "int32_t* __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);",
+        "void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);",
     ),
     (
         "request_object_facequads",
