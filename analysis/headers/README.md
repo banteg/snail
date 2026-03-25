@@ -45,3 +45,19 @@ Why this lives in-repo:
 - keeping the headers here makes them easy to extend as RE improves
 - the `crimson/third_party/headers` bundle is a useful same-era reference set, but
   these copies stay curated and much smaller for BN import
+
+## Narrow IDA Type Sync
+
+We do not have a general BN-to-IDA type mirror or BinSync lane checked in.
+
+For recovered struct surfaces where we want a durable second decompiler view,
+we keep a narrow handwritten header and a matching IDA import script instead.
+
+Current checked-in example:
+
+- `path_template_types.h`
+- `uv run python tools/ida/sync_path_template_types.py`
+
+That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
+their currently trusted helper prototypes into the tracked `.i64` database
+without pretending to solve global type sync.

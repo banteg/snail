@@ -628,3 +628,4 @@ One local tooling caveat remains:
 
 - the current `bn decompile` output does not always rewrite post-hoc struct-growth sites away from raw `__offset(...)` expressions, even after a manual analysis refresh
 - `bn types show Player`, `bn types show Game`, and `bn types show PathTemplate` are therefore the authoritative typed layouts for now
+- the recovered path-template surface now also has a narrow mirrored IDA lane through [`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h) and [`tools/ida/sync_path_template_types.py`](../../tools/ida/sync_path_template_types.py)

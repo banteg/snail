@@ -93,6 +93,15 @@ Applied in the live BN database:
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
 
+The same trusted slice now has a checked-in narrow IDA mirror as well:
+
+- header: [`analysis/headers/path_template_types.h`](../headers/path_template_types.h)
+- wrapper: [`tools/ida/sync_path_template_types.py`](../../tools/ida/sync_path_template_types.py)
+
+That lane is intentionally small. It mirrors the trusted `PathTemplate` /
+`PathTemplateSample` layouts and the constructor/helper subset we actually trust
+today. It is not a generic BN-to-IDA type-sync framework.
+
 That family-wide constructor pass materially improves the first screenful of decompile for:
 
 - `initialize_looptheloop_path_template_pair`
