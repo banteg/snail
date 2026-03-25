@@ -46,6 +46,7 @@ Keep these as separate families in notes and code:
   - `update_cameraman`
 - current read:
   - real camera carryover input while `attachment_exit_pending` is live
+  - `initialize_subgoldy_fall_state` seeds it from the cached follow carryover slot before the pending window starts
 
 ### `player + 0x430` / `post_follow_value_b`
 
@@ -55,19 +56,22 @@ Keep these as separate families in notes and code:
   - unresolved in stable runtime evidence
 - current read:
   - do not assign gameplay semantics yet
+  - bounded static RE on `initialize_subgoldy_fall_state` and `update_subgoldy` still does not show a direct post-handoff consumer outside the initial carryover write
 
 ### `player + 0x44c` / `attachment_exit_gate_a`
 
 - writers:
   - active update-side threshold logic
 - current read:
-  - marks progress into the longer pending window family
+  - `update_subgoldy` arms it once `attachment_exit_progress > 0.7`
+  - it marks progress into the longer pending window family and gates the first one-shot voice path
 
 ### `player + 0x44d` / `attachment_exit_gate_b`
 
 - writers:
   - fall-threshold side path
 - current read:
+  - `update_subgoldy` arms it once `world_y < -7.0` during the pending window
   - still consistent with the negative-`world_y` fall-side interpretation
 
 ## Clear-Site Table
@@ -75,11 +79,14 @@ Keep these as separate families in notes and code:
 - `0x43ce75`
   - confirmed jetpack-only late clear
 - `0x43bf6f`
-  - bounded static clear candidate for grounded snap or in-place retirement
+  - bounded grounded snap clear inside `update_subgoldy`
+  - requires no active follow, `world_y` in the narrow ground band, and a non-open cell family
 - `0x43c06d`
-  - bounded static clear candidate for grounded snap or in-place retirement
+  - bounded generic snap or in-place retirement inside `update_subgoldy`
+  - sits on the no-hidden-roof or forced-floor lane that also zeroes vertical speed and resets `world_y` to the ground band
 - `0x43c3ea`
-  - bounded static clear candidate for trampoline or landing retirement
+  - bounded trampoline landing retirement inside `update_subgoldy`
+  - tile family `22` bounce path; clears pending, seeds bounce vertical speed, and leaves the separate bounce marker armed
 
 ## Next Static RE Questions
 
@@ -89,6 +96,7 @@ Keep these as separate families in notes and code:
   - an unconsumed seed in the stable observed window
   - a rarer consumer outside the stable runtime profile
   - or a field that only matters in a still-unreached attachment family
+- determine whether any helper outside the bounded `initialize_subgoldy_fall_state` / `update_subgoldy` / `update_cameraman` set reads `post_follow_value_b` directly
 
 ## Hard Rule
 

@@ -1250,8 +1250,8 @@ pub const Runner = struct {
     launch: LaunchState = .{},
     attachment_exit_pending: bool = false,
     attachment_exit_anchor_z: f32 = 0.0,
-    attachment_exit_value_a: f32 = 0.0,
-    attachment_exit_value_b: f32 = 0.0,
+    post_follow_value_a: f32 = 0.0,
+    post_follow_value_b: f32 = 0.0,
     attachment_exit_seed_a: f32 = 0.0,
     attachment_exit_seed_b: f32 = 0.0,
     attachment_exit_progress: f32 = 0.0,
@@ -3294,7 +3294,7 @@ pub const Runner = struct {
             desired_transform = rotateCameraTransformWorldZ(desired_transform, self.attachment_camera_orientation_b);
         }
         if (self.attachment_exit_pending) {
-            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.attachment_exit_value_a);
+            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.post_follow_value_a);
         }
         desired_transform = rotateCameraTransformWorldZ(desired_transform, self.heading_roll);
 
@@ -4900,7 +4900,7 @@ pub const Runner = struct {
         if (!self.attachment_exit_gate_a and self.attachment_exit_progress > attachment_exit_gate_a_progress_threshold) {
             self.attachment_exit_gate_a = true;
         }
-        self.attachment_exit_value_a = normalizeRadians(self.attachment_exit_value_a + (self.attachment_exit_value_b * progress_step));
+        self.post_follow_value_a = normalizeRadians(self.post_follow_value_a + (self.post_follow_value_b * progress_step));
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -5639,25 +5639,25 @@ pub const Runner = struct {
                 .seed_b = self.attachment_exit_seed_b,
             };
         self.beginAttachmentExitState(anchor_z);
-        self.attachment_exit_value_a = exit_seeds.seed_a;
-        self.attachment_exit_value_b = exit_seeds.seed_b;
+        self.post_follow_value_a = exit_seeds.seed_a;
+        self.post_follow_value_b = exit_seeds.seed_b;
         self.attachment_exit_seed_a = exit_seeds.seed_a;
         self.attachment_exit_seed_b = exit_seeds.seed_b;
         self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
     }
 
     fn seedAttachmentExitStateFromCurrentExit(self: *Runner, anchor_z: f32) void {
-        const attachment_exit_value_a = self.attachment_exit_value_a;
-        const attachment_exit_value_b = self.attachment_exit_value_b;
+        const post_follow_value_a = self.post_follow_value_a;
+        const post_follow_value_b = self.post_follow_value_b;
         self.beginAttachmentExitState(anchor_z);
-        self.attachment_exit_value_a = attachment_exit_value_a;
-        self.attachment_exit_value_b = attachment_exit_value_b;
+        self.post_follow_value_a = post_follow_value_a;
+        self.post_follow_value_b = post_follow_value_b;
     }
 
     fn seedAttachmentExitStateZeroed(self: *Runner, anchor_z: f32) void {
         self.beginAttachmentExitState(anchor_z);
-        self.attachment_exit_value_a = 0.0;
-        self.attachment_exit_value_b = 0.0;
+        self.post_follow_value_a = 0.0;
+        self.post_follow_value_b = 0.0;
     }
 
     fn shouldRetireAttachmentDirectlyForCompletion(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -8273,14 +8273,14 @@ test "fall state keeps Z anchored and advances carried follow roll" {
 
     var runner = Runner.init(&fixture.preview);
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.attachment_exit_value_a = 0.25;
-    runner.attachment_exit_value_b = 0.5;
+    runner.post_follow_value_a = 0.25;
+    runner.post_follow_value_b = 0.5;
     const anchor_z = runner.attachment_exit_anchor_z;
 
     runner.updatePhaseController(&fixture.preview, 1.0 / 60.0);
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
-    try std.testing.expect(runner.attachment_exit_value_a > 0.25);
+    try std.testing.expect(runner.post_follow_value_a > 0.25);
 }
 
 test "active jetpack retires attachment exit before the late progress gates" {

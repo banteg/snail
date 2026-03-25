@@ -31,9 +31,9 @@ The current high-confidence `Player` fields are:
 - `+0x410`: `velocity`
 - `+0x41d`: `attachment_exit_pending`
 - `+0x424`: `attachment_exit_anchor_z`
-- `+0x42c`: `attachment_exit_value_a`
-  - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
-- `+0x430`: `attachment_exit_value_b`
+- `+0x42c`: `post_follow_value_a`
+  - runtime-confirmed camera carryover input during the pending post-follow window
+- `+0x430`: `post_follow_value_b`
   - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
@@ -202,7 +202,7 @@ The current high-confidence `Game` fields are:
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`
-- `+0xff25d8`: `selected_level_record_return_state`
+- `+0xff25d8`: `selected_level_record_saved_return_owner`
 - `+0xff25dc`: `runtime_track_index`
 
 Current practical read:
@@ -220,8 +220,8 @@ Current practical read:
   - `game + 0x58` = `game + 0x54 - final Last-block row count`
   - current best read: on non-random shipped levels, completion arms at the start of the final `Last:` block rather than on the last populated row
 - `initialize_subgoldy_fall_state` seeds the attachment-exit handoff:
-  - `attachment_exit_value_a` from `follow_state.orientation_b`
-  - `attachment_exit_value_b` from `follow_state.template_record->row_scalar_a` or zero
+  - `post_follow_value_a` from `follow_state.orientation_b`
+  - `post_follow_value_b` from `follow_state.template_record->row_scalar_a` or zero
   - `attachment_exit_pending = 1`
   - `attachment_exit_progress = 0`
   - `attachment_exit_gate_a = 0`
@@ -257,7 +257,7 @@ Current practical read:
     - otherwise copy the current outer owner into `app + 0x1bc` and set `app + 0x1b8 = 0x1b`
 - `update_subgoldy_resurrect` now has one stronger bridge-side read:
   - the respawn branch copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`, then writes `app + 0x1b8 = 0x1c`
-  - respawn therefore uses the same outer `26/27/28` rebuild slot as the other handoffs instead of a special gameplay-only reload lane
+  - respawn therefore uses a direct outer owner selector (`0x1c`) rather than the saved-owner `26/27/28` bridge family
   - the final-loss branch first writes `game + 0x1270fc8 = 2`, then calls `complete_subgame(game, 1)`
   - when `selected_level_record_persistent != 0`, that final-loss leg copies the current outer owner into `app + 0x1bc` and sets `app + 0x1b8 = 0x1a`
   - when `selected_level_record_persistent == 0`, the same leg still copies the current owner into `app + 0x1bc`, then:
@@ -293,12 +293,12 @@ Current practical read:
   - the current static launchers do not show a matching write to `selected_level_record_persistent`
   - the port now mirrors that split directly: challenge-setup `Watch Replay` launches stay on a transient selected-record source and rebuild back into the same challenge-setup owner on return
 - a second replay-launch lane now has stronger static shape on the app side:
-  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later replay-return state (`0x12` from high-score rows, `2` from the menu replay path)
+  - `update_high_score_screen` replay-row clicks and the New Game menu's random replay branch both seed `app + 0x1066bec` with a replay-bearing record pointer, set app bytes `+0x1066be8` / `+0x1066be9` to `1`, and populate `app + 0x1066bf0` with the later saved replay return owner (`0x12` from high-score rows, `2` from the menu replay path)
   - `update_frontend_state_machine` initializes subgame at `data_4df904 + 0x74618`, so those app offsets alias the subgame-local selected-record fields exactly:
     - `app + 0x1066be8` = `game + 0xff25d0` (`selected_level_record_active`)
     - `app + 0x1066be9` = `game + 0xff25d1` (`selected_level_record_persistent`)
     - `app + 0x1066bec` = `game + 0xff25d4` (`selected_level_record`)
-    - `app + 0x1066bf0` = `game + 0xff25d8` (`selected_level_record_return_state`) during that prelaunch window
+    - `app + 0x1066bf0` = `game + 0xff25d8` (`selected_level_record_saved_return_owner`) during that prelaunch window
   - `initialize_game_assets_and_world` clears app bytes `+0x1066be8` / `+0x1066be9` back to `0` during startup, so persistent replay-backed launches are not inheriting stale selected-record flags from an earlier app lifetime
   - high-score replay rows and the menu random replay path therefore arm the persistent selected-record lane directly, not through a later constructor-side copy helper
   - the menu replay branch is more specific than a generic replay picker:
@@ -366,11 +366,11 @@ Current practical read:
 - `runtime_track_index` is the per-tick cursor advanced by `update_subgoldy`
 - the same cursor also drives the replay-sample reads in that function
 - the dword at `+0xff25d8` remains separate from both `selected_level_record` and `runtime_track_index`
-  - current best read: it is the saved replay-return state seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
+  - current best read: it is the saved replay return owner seeded by persistent replay launchers (`0x12` from high-score replay rows, `2` from the menu replay path) and later restored by `update_completion_screen` state `3`
   - the Zig bridge now mirrors that lane more literally too: persistent selected-replay context stores the raw saved owner-state separately and only derives a higher-level target from it when it needs to rebuild an owner shell
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - the remaining New Game replay-attract gap is now narrower too:
-  - the persistent replay scratch, bank rotation, saved return-state writes, startup clear, and click-start suppressor are confirmed statically
+  - the persistent replay scratch, bank rotation, saved replay return-owner writes, startup clear, and click-start suppressor are confirmed statically
   - the unresolved pieces are the writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14` and the exact role of the secondary timer lane at `+0x8` / `+0xc`
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 

@@ -240,12 +240,12 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - `initialize_subgame`
   - `build_subgame_level`
   - `update_subgame`
-- Also break on the front-end owners that already proved they write active-state and launch-routing globals, even though they still do not expose the preserved-owner writer directly:
+- Also break on the front-end owners that already proved they write active-state and launch-routing globals, even though they still do not expose the saved-owner writer directly:
   - `update_new_game_menu`
   - `update_main_menu`
   - `update_high_score_screen`
   - `exit_high_score_screen`
-- Also watch the front-end bridge controller's active-state and preserved-owner slots while those breaks fire:
+- Also watch the front-end bridge controller's active-state and saved-owner slots while those breaks fire:
   - `update_frontend_state_machine` reads active state from `[controller + 0x94]`
   - `update_frontend_state_machine` reads the `26/27/28` bridge jump target from `[controller + 0x98]`
   - the earlier `0x40775c` candidate was a data false positive, not a real store
@@ -289,9 +289,9 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
 - Which one survives respawn rebuilds?
 - Which one distinguishes frontend shell from active gameplay rebuild?
 - Are any of them replay or route-mode flags rather than pure lifecycle state?
-- Which helpers besides the now-confirmed `update_subgame` startup handoff write the preserved-owner bridge slot consumed by `26/27/28`?
+- Which helpers besides the now-confirmed `update_subgame` startup handoff write the saved-owner bridge slot consumed by `26/27/28`?
 - Which helper first seeds `[controller + 0x98]` before non-startup `26/27/28` uses?
-- Do the replay launch scratch globals above collapse into that same preserved-owner write, or are they parallel owner-selection lanes?
+- Do the replay launch scratch globals above collapse into that same saved-owner write, or are they parallel owner-selection lanes?
 - Which function first turns the app-side replay scratch above into `game + 0xff25d1`?
 
 ### Done when

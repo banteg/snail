@@ -354,17 +354,17 @@ Implemented now:
 - postal completion no longer blindly inserts an arcade high score on every route clear
 - successful completion is now split into an early in-level completion overlay init and a later finalize transition into the full completion screen
 - lives are now consumed inside the runner's respawn branch before the app rebuild, matching the recovered `update_subgoldy_resurrect` ownership better than the old app-side decrement
-- respawn now runs through the shared outer-bridge request lane with native opcode `28` semantics: `update_subgoldy_resurrect` copies the current outer owner into the return slot, clears replay state, rebuilds subgame, then resumes that saved owner
+- respawn now stores the direct `0x1c` rebuild selector as authoritative bridge state and uses the shared rebuild effect endpoint only to restore the saved owner after the rebuild finishes
 - final postal completion no longer fakes a normal Star Map return; it now routes through the recovered `BACKGROUNDS/SPLASH.TXT` Thanks For Playing owner with the shipped three-message sequence before handing off into the credits crawl
 - the outer bridge opcodes are now narrowed more concretely:
-  - `26`: destroy subgame, then jump to the preserved frontend owner without reinitializing subgame
-  - `27`: destroy subgame, reinitialize subgame, then jump to the preserved frontend owner
-  - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the preserved frontend owner
+  - `26`: destroy subgame, then jump to the saved outer owner without reinitializing subgame
+  - `27`: destroy subgame, reinitialize subgame, then jump to the saved outer owner
+  - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the saved outer owner
   - `29/30`: Thanks For Playing owner init and update; `uninit_thanks_screen` then writes state `0x0e`, the credits-screen init lane
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`)
 - a whole-image BN instruction sweep, with the checked-in IDA export as a second opinion, now closes one writer the earlier shallow front-end scan missed: `update_subgame` state `2` copies `app + 0x1b8` into `app + 0x1bc` before forcing state `0x1a` for persistent selected-record startup or `0x1b` for transient startup
-- the older "preserved-owner writer unresolved" claim is now too broad; the remaining gap is narrower:
-  - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` still do not expose a direct preserved-owner store
+- the older "saved-owner writer unresolved" claim is now too broad; the remaining gap is narrower:
+  - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` still do not expose a direct saved-owner store
   - the open question is which other helper-driven producers, if any, seed different saved owners before `26/27/28` outside the now-confirmed gameplay-side writers
 - BN plus IDA now also sharpen the selected-record bridge inputs:
   - `update_galaxy` and `update_challenge_setup_screen` seed `selected_level_record_active = 1` and the selected-record pointer, but do not show a matching write to `selected_level_record_persistent`
@@ -394,7 +394,7 @@ Implemented now:
 
 Still missing or approximate:
 
-- the full outer subgame controller that owns rebuild/teardown/return beyond the current explicit request dispatch
+- the full outer subgame controller that owns rebuild/teardown/return beyond the current owner-driven transition state
 - the full set and exact semantics of the saved outer-owner writers behind the `26/27/28` bridge jump outside the now-confirmed selected-record startup, completion/failure, and respawn lanes
 - exact replay-sensitive failure routing beyond the currently recovered transient `0x1b` selected-record completion lane and persistent `0x1a` lane in `update_subgoldy` / `update_subgoldy_resurrect`
 - the remaining owner/controller details around the Windows completion overlay and post-overlay bridge

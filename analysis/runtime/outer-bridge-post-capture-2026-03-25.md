@@ -15,7 +15,7 @@ Do not widen Frida or CDB for this batch.
 - classification: `static-closable`
 - owner boundary: outer subgame or frontend bridge only
 - safe-to-code boundary: [zig/src/main.zig](../../zig/src/main.zig)
-- scaffold kill-list:
+- scaffold removed in this batch:
   - `OuterBridgeRequest`
   - `OuterBridgeTarget`
   - `preserved_frontend_owner`
@@ -29,7 +29,7 @@ These are the non-negotiable bridge facts for this batch:
 - ordinary respawn rebuild uses direct owner `0x1c`, not `0x1a/0x1b`
 - transient pause `End Game` uses completion state `2`
 - persistent high-score replay pause `End Game` uses completion state `3`
-- persistent high-score replay restores through saved return `0x12`
+- persistent high-score replay restores through saved replay return owner `0x12`
 - route-map Time Trial replay stays transient
 - `29/30` remain the Thanks/credits owner family
 
@@ -81,12 +81,16 @@ These are the non-negotiable bridge facts for this batch:
 - bounded writers:
   - `update_high_score_screen`
   - `update_new_game_menu`
+  - `exit_high_score_screen`
 - bounded consumers:
   - `initialize_click_start`
   - `update_pause_menu`
   - `update_completion_screen`
 - current read:
   - high-score replay rows are the only confirmed persistent replay family
+  - `update_high_score_screen` replay-row launch seeds persistent replay plus saved replay return owner `0x12`
+  - `update_new_game_menu` replay attract seeds persistent replay plus saved replay return owner `2`
+  - `exit_high_score_screen` itself does not write the saved replay return owner; it restores mode-owned exit state `2` for postal and `10` for challenge
 
 ### Persistent replay marker
 
@@ -146,3 +150,20 @@ After the bridge replacement lands, the next narrow static pass stays inside:
 Goal:
 - close the remaining frontend-side saved-owner producers
 - close the auto-exit restore path without widening runtime capture
+
+Fresh static narrowing from the bounded frontend set:
+- `update_high_score_screen`
+  - replay-row clicks seed the selected replay pointer
+  - arm the persistent replay byte
+  - store saved replay return owner `18`
+  - copy replay mode into the launch scratch consumed by subgame startup
+- `update_new_game_menu`
+  - only the replay-attract cursor families `0`, `1`, and `3` seed a replay launch
+  - successful replay-attract launch stores saved replay return owner `2`
+  - ordinary menu buttons still go through plain frontend-state `10` launch with no replay scratch
+- `exit_high_score_screen`
+  - postal browse exits through owner `2`
+  - challenge browse exits through owner `10`
+- `update_main_menu`
+  - `High Scores` enters owner `18`
+  - `New Game` enters owner `2`

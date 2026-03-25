@@ -2187,7 +2187,7 @@ const SelectedLevelRecordSource = union(enum) {
     completion: usize,
 };
 
-const SelectedReplayReturnState = enum(u32) {
+const SavedReplayReturnOwner = enum(u32) {
     new_game_menu = 2,
     high_scores_menu = 18,
 };
@@ -2749,7 +2749,7 @@ fn defaultSelectedLevelRecordLaunchReturnTarget(source: SelectedLevelRecordSourc
     };
 }
 
-fn selectedReplayReturnStateForLaunch(launch: SelectedLevelRecordLaunch) ?SelectedReplayReturnState {
+fn savedReplayReturnOwnerForLaunch(launch: SelectedLevelRecordLaunch) ?SavedReplayReturnOwner {
     if (!launch.persistent) return null;
     return switch (launch.return_target) {
         .new_game_menu => .new_game_menu,
@@ -2758,7 +2758,7 @@ fn selectedReplayReturnStateForLaunch(launch: SelectedLevelRecordLaunch) ?Select
     };
 }
 
-fn resultReturnTargetForSelectedReplayReturnState(state: SelectedReplayReturnState) ResultReturnTarget {
+fn resultReturnTargetForSavedReplayReturnOwner(state: SavedReplayReturnOwner) ResultReturnTarget {
     return switch (state) {
         .new_game_menu => .new_game_menu,
         .high_scores_menu => .high_scores_menu,
@@ -3157,7 +3157,7 @@ const AppState = struct {
     active_frontend_level_index: usize = 0,
     current_outer_owner: OuterOwnerState = outerOwnerStateMainMenu(),
     saved_outer_owner: OuterOwnerState = outerOwnerStateMainMenu(),
-    saved_replay_return_owner: ?SelectedReplayReturnState = null,
+    saved_replay_return_owner: ?SavedReplayReturnOwner = null,
     subgame_continuation_selector: u8 = 0,
     pending_respawn_bridge_state: ?RespawnBridgeState = null,
     high_score_screen_owner: HighScoreScreenOwner = .{ .main_menu_browse = .postal },
@@ -5782,6 +5782,12 @@ const AppState = struct {
         if (phase == .new_game_menu) {
             self.normalizeNewGameMenuSelection();
         }
+        switch (phase) {
+            .main_menu => self.current_outer_owner = outerOwnerStateMainMenu(),
+            .new_game_menu => self.current_outer_owner = outerOwnerStateNewGameMenu(new_game_menu_items[self.new_game_menu_index]),
+            .thanks_screen => self.current_outer_owner = outerOwnerStateThanksScreen(),
+            else => {},
+        }
         try self.syncGamePhaseResources();
         self.snapFrontendWidgetStates();
     }
@@ -5876,6 +5882,13 @@ const AppState = struct {
         return switch (self.high_score_screen_owner) {
             .main_menu_browse => |mode| mode,
             .post_level_entry => |context| context.mode,
+        };
+    }
+
+    fn highScoreBrowseBackOwner(mode: high_score.Mode) OuterOwnerState {
+        return switch (mode) {
+            .postal => outerOwnerStateNewGameMenu(.postal_mode),
+            .challenge => outerOwnerStateChallengeSetupMenu(),
         };
     }
 
@@ -6102,7 +6115,21 @@ const AppState = struct {
     fn performHighScoreMenuAction(self: *AppState, action: HighScoreMenuAction) !void {
         switch (action) {
             .back => switch (self.high_score_screen_owner) {
-                .main_menu_browse => try self.enterGamePhase(.main_menu),
+                .main_menu_browse => |mode| {
+                    const owner = highScoreBrowseBackOwner(mode);
+                    // PORT(verified): `exit_high_score_screen` restores owner `2` for postal
+                    // browse and owner `10` for challenge browse. In the port, those map to
+                    // the New Game controller with the Postal item selected and the literal
+                    // challenge-setup controller respectively.
+                    switch (owner.owner) {
+                        .new_game_menu => {
+                            self.new_game_menu_index = newGameMenuIndexForItem(owner.new_game_menu_item);
+                            try self.enterGamePhase(.new_game_menu);
+                        },
+                        .challenge_setup_menu => try self.enterChallengeSetupMenu(),
+                        else => unreachable,
+                    }
+                },
                 .post_level_entry => try self.cancelPostLevelHighScoreEntry(),
             },
             .switch_table => switch (self.high_score_screen_owner) {
@@ -7523,7 +7550,7 @@ const AppState = struct {
 
     fn selectedReplayLaunchReturnTarget(self: *const AppState) ?ResultReturnTarget {
         if (self.saved_replay_return_owner) |state| {
-            return resultReturnTargetForSelectedReplayReturnState(state);
+            return resultReturnTargetForSavedReplayReturnOwner(state);
         }
         if (self.selected_level_record_return_target) |target| return target;
         const source = self.selected_level_record_source orelse return null;
@@ -7617,11 +7644,11 @@ const AppState = struct {
         else
             false;
         self.saved_replay_return_owner = if (selected_level_record_launch) |launch|
-            selectedReplayReturnStateForLaunch(launch)
+            savedReplayReturnOwnerForLaunch(launch)
         else
             null;
         self.selected_level_record_return_target = if (selected_level_record_launch) |launch|
-            if (selectedReplayReturnStateForLaunch(launch) == null) launch.return_target else null
+            if (savedReplayReturnOwnerForLaunch(launch) == null) launch.return_target else null
         else
             null;
         self.selected_replay_fade_exit_pending = false;
@@ -14346,6 +14373,15 @@ test "high-score browse owner drives table toggles while post-level entry stays 
     } };
     try state.performHighScoreMenuAction(.switch_table);
     try std.testing.expectEqual(high_score.Mode.postal, state.activeHighScoreScreenMode());
+}
+
+test "parity: high-score browse back returns to the owning frontend controller" {
+    const postal_owner = AppState.highScoreBrowseBackOwner(.postal);
+    try std.testing.expectEqual(OuterOwner.new_game_menu, postal_owner.owner);
+    try std.testing.expectEqual(NewGameMenuItem.postal_mode, postal_owner.new_game_menu_item);
+
+    const challenge_owner = AppState.highScoreBrowseBackOwner(.challenge);
+    try std.testing.expectEqual(OuterOwner.challenge_setup_menu, challenge_owner.owner);
 }
 
 test "thanks screen message sequence matches the recovered owner timing" {
