@@ -1,6 +1,6 @@
-const frontend = @import("frontend.zig");
-const frontend_widget = @import("frontend_widget.zig");
-const game_font = @import("game_font.zig");
+const frontend = @import("../frontend.zig");
+const frontend_widget = @import("widget.zig");
+const game_font = @import("../game_font.zig");
 
 // PORT(verified): `cRSubPause::Init()` creates the centered pause stack with `End Game`
 // at `y = 145`, then chains `Options` and `Resume` below it with the shared shell-font

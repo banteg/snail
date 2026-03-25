@@ -1,8 +1,8 @@
 const rl = @import("raylib");
-const frontend_bridge = @import("frontend_bridge.zig");
-const frontend_widget = @import("frontend_widget.zig");
-const galaxy = @import("galaxy.zig");
-const game_font = @import("game_font.zig");
+const frontend_bridge = @import("bridge.zig");
+const frontend_widget = @import("widget.zig");
+const galaxy = @import("../galaxy.zig");
+const game_font = @import("../game_font.zig");
 
 // PORT(verified): `initialize_galaxy` places the Star Map title at `(15,15)` with shell-font
 // scale `0.83`, the bottom Back/Exit control at `(20,420)` with absolute alignment, and

@@ -1,6 +1,6 @@
 const std = @import("std");
-const frontend = @import("frontend.zig");
-const high_score = @import("high_score.zig");
+const frontend = @import("../frontend.zig");
+const high_score = @import("../high_score.zig");
 
 pub const ResultReturnTarget = enum {
     main_menu,

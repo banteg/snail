@@ -1,7 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app_ui = @import("app_ui.zig");
-const game_font = @import("game_font.zig");
+const app_ui = @import("../app_ui.zig");
+const game_font = @import("../game_font.zig");
 
 pub const WidgetType = enum(u8) {
     menu_button = 20,

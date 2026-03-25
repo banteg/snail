@@ -1,6 +1,6 @@
-const frontend = @import("frontend.zig");
-const frontend_widget = @import("frontend_widget.zig");
-const game_font = @import("game_font.zig");
+const frontend = @import("../frontend.zig");
+const frontend_widget = @import("widget.zig");
+const game_font = @import("../game_font.zig");
 const std = @import("std");
 
 // PORT(verified): `initialize_options` seeds the fullscreen row at `y = 75`, then nudges

@@ -1,5 +1,5 @@
-const frontend_widget = @import("frontend_widget.zig");
-const game_font = @import("game_font.zig");
+const frontend_widget = @import("widget.zig");
+const game_font = @import("../game_font.zig");
 
 pub const back_anchor_y: f32 = 420.0;
 

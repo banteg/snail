@@ -1,8 +1,8 @@
 const std = @import("std");
-const frontend = @import("frontend.zig");
-const frontend_widget = @import("frontend_widget.zig");
-const game_font = @import("game_font.zig");
-const gameplay = @import("gameplay.zig");
+const frontend = @import("../frontend.zig");
+const frontend_widget = @import("widget.zig");
+const game_font = @import("../game_font.zig");
+const gameplay = @import("../gameplay.zig");
 
 pub const title_y: f32 = 80.0;
 pub const package_y: f32 = 160.0;
