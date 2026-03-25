@@ -216,7 +216,7 @@ pub const Template = struct {
     mirror_or_variant: bool = false,
     width_cells: u16 = 0,
     sample_count: u16 = 0,
-    row_scalar_a: f32 = 0.0,
+    installed_heading_delta: f32 = 0.0,
     exit_tail_extra: f32 = 0.0,
     samples: []TemplateSample = &.{},
 
@@ -249,11 +249,11 @@ fn mirrorVectorX(v: Vec3) Vec3 {
 
 fn mirrorTemplateXInPlace(template: *Template) void {
     template.mirror_or_variant = !template.mirror_or_variant;
-    // PORT(partial): Windows begin copies `row_scalar_a` from the source row-cell record,
-    // not the static template header. Live traces still show mirrored `WORM` rows flipping
-    // that scalar's sign, so keep the built-template fallback aligned with the mirrored
+    // PORT(partial): Windows begin copies `installed_heading_delta` from the source row-cell
+    // record, not the static template header. Live traces still show mirrored `WORM` rows
+    // flipping that scalar's sign, so keep the built-template fallback aligned with the mirrored
     // source-row state until the runtime row-cell scalar is surfaced directly in preview data.
-    template.row_scalar_a = -template.row_scalar_a;
+    template.installed_heading_delta = -template.installed_heading_delta;
     for (template.samples) |*sample| {
         sample.position = mirrorVectorX(sample.position);
         sample.delta_dir_to_next = mirrorVectorX(sample.delta_dir_to_next);
@@ -324,7 +324,7 @@ const WaveParams = struct {
     vertical_amplitude: f32 = 0.0,
     vertical_cycles: f32 = 0.0,
     roll_cycles: f32 = 0.0,
-    row_scalar_a: f32 = 0.0,
+    installed_heading_delta: f32 = 0.0,
     start_z: f32 = 0.0,
     center_bias: f32 = 0.0,
 };
@@ -719,7 +719,7 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
             .lateral_cycles = 2.0,
             .vertical_amplitude = 1.75,
             .vertical_cycles = 2.0,
-            .row_scalar_a = 6.2831855,
+            .installed_heading_delta = 6.2831855,
         }),
         .sweep => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 28, .width_cells = 4, .sample_count = 30, .lateral_amplitude = 3.0, .lateral_cycles = 0.5 }),
         .snake => try buildWaveTemplate(allocator, spec, .{ .runtime_kind = 29, .width_cells = 4, .sample_count = 27, .lateral_amplitude = 2.25, .lateral_cycles = 1.5 }),
@@ -1274,7 +1274,7 @@ fn buildWaveTemplate(
         },
         .width_cells = params.width_cells,
         .sample_count = params.sample_count,
-        .row_scalar_a = params.row_scalar_a,
+        .installed_heading_delta = params.installed_heading_delta,
         .exit_tail_extra = 1.0,
         .samples = samples,
     };
@@ -1832,7 +1832,7 @@ test "collect scaffold mirrors row scalar a sign for mirrored worm source rows" 
 
     const built = scaffold.built_attachments[0];
     try std.testing.expect(built.template.mirror_or_variant);
-    try std.testing.expectApproxEqAbs(@as(f32, -6.2831855), built.template.row_scalar_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -6.2831855), built.template.installed_heading_delta, 0.0001);
 }
 
 test "start template interpolation follows recovered descent" {
@@ -2014,7 +2014,7 @@ test "worm template matches traced runtime metadata" {
     try std.testing.expectEqual(@as(u16, 24), template.sample_count);
     try std.testing.expectEqual(@as(u16, 4), template.width_cells);
     try std.testing.expectEqual(@as(u16, 16), template.spec.subdivision_count.?);
-    try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), template.row_scalar_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.2831855), template.installed_heading_delta, 0.0001);
 }
 
 test "snake template matches traced runtime metadata" {
