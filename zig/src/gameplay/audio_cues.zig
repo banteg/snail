@@ -1,8 +1,8 @@
 const std = @import("std");
 const rl = @import("raylib");
-const gameplay = @import("gameplay.zig");
-const gameplay_assets = @import("gameplay_assets.zig");
-const track = @import("track.zig");
+const gameplay = @import("../gameplay.zig");
+const gameplay_assets = @import("assets.zig");
+const track = @import("../track.zig");
 
 const native_runtime_tile_wall: u8 = 0x0e;
 

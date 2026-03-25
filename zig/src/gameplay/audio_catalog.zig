@@ -1,7 +1,7 @@
 const std = @import("std");
-const app = @import("app.zig");
-const gameplay_assets = @import("gameplay_assets.zig");
-const gameplay_voice = @import("gameplay_voice.zig");
+const app = @import("../app.zig");
+const gameplay_assets = @import("assets.zig");
+const gameplay_voice = @import("voice.zig");
 
 pub const native_global_audio_bank_paths = [_][]const u8{
     gameplay_assets.gameplay_cheers_sound_path,

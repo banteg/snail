@@ -1,5 +1,5 @@
-const app = @import("app.zig");
-const background = @import("background.zig");
+const app = @import("../app.zig");
+const background = @import("../background.zig");
 
 pub const default_model_path = app.default_model_path;
 pub const default_object_path = app.default_object_path;
