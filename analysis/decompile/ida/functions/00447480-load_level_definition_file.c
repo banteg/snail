@@ -226,7 +226,7 @@ _DWORD *__thiscall sub_447480(char *this, char *a2)
   else
   {
     report_errorf("No Fringe: in %s using white", Buffer);
-    sub_44DBB0((_DWORD *)this + 431667, 1065353216, 1065353216, 1065353216, 1065353216);
+    store_color4f((_DWORD *)this + 431667, 1065353216, 1065353216, 1065353216, 1065353216);
   }
   v27 = find_case_insensitive_substring(aTrack, unk_74EC78);
   v62 = v27;

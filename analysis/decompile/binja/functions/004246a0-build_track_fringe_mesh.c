@@ -5,14 +5,14 @@
 /* function: build_track_fringe_mesh @ 0x4246a0 */
 
 004246b7        set_bod_object(arg1 + 0x60, add_object_to_list(0x4b7648))
-004246cd        void var_10
-004246cd        int32_t* eax_1 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
+004246cd        float var_10
+004246cd        float* eax_1 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
 004246da        struct PathTemplateStripMesh* mesh = *(arg1 + 0x84)
 004246e0        *(arg1 + 0x88) = *eax_1
 004246e5        *(arg1 + 0x8c) = eax_1[1]
 004246eb        *(arg1 + 0x90) = eax_1[2]
 004246f1        *(arg1 + 0x94) = eax_1[3]
-004246f7        enum PathTemplateStripMeshFlags ebp_1 = mesh->flags | 0x100040
+004246f7        enum PathTemplateStripMeshFlags ebp_1 = mesh->flags | PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH | 0x40
 004246fd        mesh->_pad_14[0] = 5
 004246fd        mesh->_pad_14[1] = 0
 004246fd        mesh->_pad_14[2] = 0
@@ -122,19 +122,19 @@
 004249e0        int32_t i_2 = *(arg1 + 0x44)
 004249e3        int32_t i_3 = 0
 004249ed        if (i_2 s> 0)
-004249fc        uint16_t* esi_2 = &facequads->vertex_index_a
-00424a16        (esi_2 - 2)->texture_ref = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
-00424a1b        uint16_t ebp_6 = (i_3 << 2).w
-00424a31        (esi_2 - 2)->vertex_index_a = ebp_6 + 5
-00424a34        (esi_2 - 2)->vertex_index_b = (i_3 << 2).w + 4
-00424a3b        (esi_2 - 2)->vertex_index_c = ebp_6
-00424a3f        (esi_2 - 2)->vertex_index_d = ebp_6 + 1
-00424a48        (esi_2 - 2)->v3 = 0f
-00424a4b        (esi_2 - 2)->u0 = 0.5f
-00424a4e        (esi_2 - 2)->v0 = 0f
-00424a51        __builtin_memcpy(&esi_2[0xb], "\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f", 0x14)
+004249fc        void* __offset(ObjectFaceQuad, 0x2) esi_2 = &facequads->flags + 2
+00424a16        (esi_2 - 2)->_pad_0a.d = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
+00424a1b        int16_t ebp_6 = (i_3 << 2).w
+00424a31        (esi_2 - 2)->flags:2.w = ebp_6 + 5
+00424a34        (esi_2 - 2)->vertex_index_a = (i_3 << 2).w + 4
+00424a3b        (esi_2 - 2)->vertex_index_b = ebp_6
+00424a3f        (esi_2 - 2)->vertex_index_c = ebp_6 + 1
+00424a48        (esi_2 - 2)->u3 = 0f
+00424a4b        (esi_2 - 2)->texture_ref = 0x3f000000
+00424a4e        (esi_2 - 2)->u0 = 0f
+00424a51        __builtin_memcpy(esi_2 + 0x16, "\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f\x00\x00\x80\x3f\x00\x00\x00\x3f", 0x14)
 00424a6e        (esi_2 - 2)->__offset(0x3c).d = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
-00424a77        (esi_2 - 2)->__offset(0x32).w = ebp_6 + 6
+00424a77        (esi_2 - 2)->v3:2.w = ebp_6 + 6
 00424a7e        (esi_2 - 2)->__offset(0x34).w = ebp_6 + 7
 00424a85        (esi_2 - 2)->__offset(0x36).w = ebp_6 + 3
 00424a89        (esi_2 - 2)->__offset(0x38).w = ebp_6 + 2
@@ -147,7 +147,7 @@
 00424aa6        (esi_2 - 2)->__offset(0x50).d = 0x3f000000
 00424aa9        (esi_2 - 2)->__offset(0x54).d = 0
 00424ab3        i_2 = i_3 + 1
-00424ab4        esi_2 = &esi_2[0x30]
+00424ab4        esi_2 += 0x60
 00424ab9        i_3 = i_2
 00424abd        do while (i_2 s< *(arg1 + 0x44))
 00424aca        return i_2

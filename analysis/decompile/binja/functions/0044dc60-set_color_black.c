@@ -4,5 +4,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_color_black @ 0x44dc60 */
 
-0044dc67        int32_t* ecx
-0044dc67        return set_color_grayscale(ecx, 0)
+0044dc67        struct Color4f* color
+0044dc67        return set_color_grayscale(color, 0f)

@@ -8,8 +8,8 @@
 00445e99        return 
 00445eab        int32_t var_18_1 = 0
 00445ec7        arg1[1] = allocate_border(data_4df904 + 0xb4c)
-00445eca        void var_10
-00445eca        int32_t* eax_3 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3cf5c28f)
+00445eca        struct Color4f color
+00445eca        struct Color4f* eax_3 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 00445ee6        initialize_frontend_widget(arg1[1], &__dos_header.e_cblp, "Time's Up", 0x14, 0, 200f, eax_3, 2.80259693e-45f)
 00445eeb        arg1[2] = 0
 00445ef2        arg1[3] = 0x3bb60b61

@@ -6,9 +6,9 @@
 
 004466df        arg1[0x16].b = 0
 004466e3        float eax_1 = arg1[3] - 1
-004466fa        float* var_100
+004466fa        struct TransformMatrix* var_100
 004466fa        void transform
-004466fa        void transform_1
+004466fa        struct TransformMatrix transform_1
 004466fa        switch (eax_1)
 00446701        case 0
 00446701        void* ecx = *arg1
@@ -72,7 +72,7 @@
 00446bb9        void* ecx_35 = data_4df904
 00446bbf        int32_t eax_19 = *(ecx_35 + 0x74658)
 00446bc7        if (eax_19 == 0)
-00446bd2        float* eax_20 = *(arg1[1] + 0x4338)
+00446bd2        struct TransformMatrix* eax_20 = *(arg1[1] + 0x4338)
 00446bda        void* edx_13
 00446bda        edx_13.b = eax_20 == *(ecx_35 + 0x2247f8)
 00446bdd        int32_t var_dc
@@ -96,9 +96,11 @@
 00446c69        float eax_24 = arg1[0x14]
 00446caa        float var_e8_3 = fconvert.s((fconvert.t(*(eax_22 + 0x1888)) - fconvert.t(edx_16)) * fconvert.t(eax_24) + fconvert.t(edx_16))
 00446cba        float var_fc_26 = var_e8_3
-00446cd2        float var_4c_3 = fconvert.s(fconvert.t(edx_17) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_22 + 0x188c)) - fconvert.t(edx_17))) * fconvert.t(eax_24))))
-00446cea        float var_48_2 = fconvert.s(fconvert.t(ecx_40) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_22 + 0x1890)) - fconvert.t(ecx_40))) * fconvert.t(eax_24))))
-00446d14        float var_50_4 = fconvert.s(fconvert.t(var_e8_3) - sine(fconvert.s(fconvert.t(arg1[0x14]) * fconvert.t(3.14159274f))) * fconvert.t(0.5f))
+00446cbb        transform_1.position.x = var_e8_3
+00446cd2        transform_1.position.y = fconvert.s(fconvert.t(edx_17) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_22 + 0x188c)) - fconvert.t(edx_17))) * fconvert.t(eax_24))))
+00446cea        transform_1.position.z = fconvert.s(fconvert.t(ecx_40) + fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(*(eax_22 + 0x1890)) - fconvert.t(ecx_40))) * fconvert.t(eax_24))))
+00446cf9        long double x87_r7_49 = sine(fconvert.s(fconvert.t(arg1[0x14]) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)
+00446d14        transform_1.position.x = fconvert.s(fconvert.t(transform_1.position.x) - x87_r7_49)
 00446d1b        look_at_point(&transform_1, *arg1 + 0x68)
 00446d43        int32_t var_fc_29 = __builtin_memcpy(&transform, *(*arg1 + 0x100) + 0x200, 0x40)
 00446d4c        float var_fc_31 = fconvert.s(sine(fconvert.s(fconvert.t(arg1[0x14]) * fconvert.t(1.57079637f))))
@@ -193,17 +195,18 @@
 0044699c        arg1[2] = 0xffffffff
 0044699f        set_matrix_identity(&transform_1)
 004469b0        int32_t* edx_8 = *arg1 + 0x1888
-004469b6        float eax_11 = *edx_8
-004469bf        float ecx_20 = edx_8[1]
-004469c2        float var_fc_13 = ecx_20
-004469d0        int32_t var_48_1 = edx_8[2]
+004469b8        transform_1.position.x = *edx_8
+004469bf        int32_t ecx_20 = edx_8[1]
+004469c2        int32_t var_fc_13 = ecx_20
+004469c3        transform_1.position.y = ecx_20
+004469d0        transform_1.position.z = edx_8[2]
 004469d7        long double st0_4 = sine(fconvert.s(fconvert.t(arg1[0x14]) * fconvert.t(3.14159274f)))
-004469e8        float var_50_2 = fconvert.s(st0_4 + st0_4 + fconvert.t(eax_11))
-004469ef        long double x87_r7_29 = fconvert.t(ecx_20)
+004469e8        transform_1.position.x = fconvert.s(st0_4 + st0_4 + fconvert.t(transform_1.position.x))
+004469ef        long double x87_r7_29 = fconvert.t(transform_1.position.y)
 004469f6        long double temp1_1 = fconvert.t(0f)
 004469f6        x87_r7_29 - temp1_1
 00446a01        if ((((x87_r7_29 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_29, temp1_1) ? 1 : 0) << 0xa | (x87_r7_29 == temp1_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00446a03        int32_t var_4c_2 = 0
+00446a03        transform_1.position.y = 0
 00446a19        look_at_point(&transform_1, *arg1 + 0x68)
 00446a25        long double x87_r7_30 = fconvert.t(arg1[0x14])
 00446a41        int32_t var_fc_16 = __builtin_memcpy(&transform, *(*arg1 + 0x100) + 0x200, 0x40)

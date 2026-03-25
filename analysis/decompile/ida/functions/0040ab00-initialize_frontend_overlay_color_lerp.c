@@ -6,7 +6,7 @@
 int __thiscall sub_40AB00(_DWORD *this, int a2)
 {
   *this = a2;
-  sub_44DBB0(this + 1, 1065353216, 1065353216, 1065353216, 0);
-  return sub_44DBB0(this + 5, 1065353216, 1065353216, 1065353216, 0);
+  store_color4f(this + 1, 1065353216, 1065353216, 1065353216, 0);
+  return store_color4f(this + 5, 1065353216, 1065353216, 1065353216, 0);
 }
 

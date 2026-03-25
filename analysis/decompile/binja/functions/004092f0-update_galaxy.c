@@ -12,81 +12,123 @@
 00409327        i += 1
 00409328        ebx_1 += 0x2a0
 00409330        do while (i s<= data_4df9b8)
-00409351        int32_t var_10
+00409351        int32_t color_1
+00409351        int16_t top
 00409351        if (*(arg1 + 8) == 1 && ((*(*(arg1 + 0x10f8c) + 0x1a0)).w:1.b & 0x10) == 0)
-0040936f        sub_44dbb0(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f7fbe77)
+0040936f        store_color4f(&color_1, 1f, 1f, 1f, 0.999000013f)
 0040937a        void* edx_1 = *(arg1 + 0x10f8c)
-00409389        long double x87_r7_1 = fconvert.t(*(edx_1 + 0x4c))
+00409389        long double x87_r6_1 = fconvert.t(*(edx_1 + 0x4c))
 00409392        void* ecx_8 = *(arg1 + 0x10f80) * 0x2a0 + arg1
 00409394        long double temp0_1 = fconvert.t(*(ecx_8 + 0x1c))
-00409394        x87_r7_1 - temp0_1
+00409394        x87_r6_1 - temp0_1
 00409397        int32_t eax_5
-00409397        eax_5.w = (x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe
+00409397        eax_5.w = (x87_r6_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_1, temp0_1) ? 1 : 0) << 0xa | (x87_r6_1 == temp0_1 ? 1 : 0) << 0xe | 0x3800
 0040939c        float eax_6 = *(ecx_8 + 0x20)
 004093b2        float var_60_1
 004093b2        float var_5c_2
-004093b2        long double x87_r7_5
+004093b2        long double x87_r6_5
 004093b2        if ((eax_5:1.b & 0x41) != 0)
 004093d3        void* var_5c_3 = ecx_8
 004093da        var_5c_2 = fconvert.s(fconvert.t(*(edx_1 + 0x54)) + fconvert.t(*(edx_1 + 0x4c)) + fconvert.t(6f))
-004093e0        x87_r7_5 = fconvert.t(*(ecx_8 + 0x1c)) - fconvert.t(16f)
+004093e0        x87_r6_5 = fconvert.t(*(ecx_8 + 0x1c)) - fconvert.t(16f)
 004093e6        var_60_1 = eax_6
 004093bd        void* var_5c_1 = ecx_8
 004093be        var_5c_2 = fconvert.s(fconvert.t(*(edx_1 + 0x4c)) - fconvert.t(6f))
-004093c4        x87_r7_5 = fconvert.t(*(ecx_8 + 0x1c)) + fconvert.t(16f)
+004093c4        x87_r6_5 = fconvert.t(*(ecx_8 + 0x1c)) + fconvert.t(16f)
 004093ca        var_60_1 = eax_6
 004093e7        void* var_64_1 = ecx_8
-004093f2        draw_galaxy_line(0x99, fconvert.s(x87_r7_5), var_60_1, var_5c_2, eax_6, 4f, &var_10)
-004093fc        int32_t i_1 = 1
-00409400        float var_20
+004093ea        top = 0xffff
+004093f2        draw_galaxy_line(0x99, fconvert.s(x87_r6_5), var_60_1, var_5c_2, eax_6, 4f, &color_1)
+004093fc        float i_1 = 1.40129846e-45f
+00409400        struct Color4f color
 00409400        if (data_4df9b8 s>= 1)
-00409412        int32_t ecx_11 = i_1 * 0x2a0
-00409419        void* edi = ecx_11 + arg1
+00409412        int32_t ecx_11 = i_1 i* 0x2a0
 0040941f        int32_t edx_3 = *(ecx_11 + arg1 + 0x14) * 0xa0
-00409432        var_10 = *(edx_3 + arg1 + 0x109b4)
+00409432        color_1 = *(edx_3 + arg1 + 0x109b4)
 00409439        int32_t var_c_1 = *(edx_3 + arg1 + 0x109b8)
 0040943d        int32_t ecx_13 = *(edx_3 + arg1 + 0x109bc)
 00409440        int32_t var_8_1 = ecx_13
 00409444        int32_t edx_5 = *(edx_3 + arg1 + 0x109c0)
-00409447        var_10 = 0x3f800000
+00409447        color_1 = 0x3f800000
 0040944f        int32_t var_4_1 = edx_5
 00409453        int32_t var_c_2 = 0x3f800000
 0040945b        int32_t var_8_2 = 0x3f800000
 00409463        int32_t var_4_2 = 0x3f7d70a4
-0040946b        int32_t var_7c_1
+0040946b        float var_78_2
+0040946b        int32_t* var_68_1
+0040946b        float i_6
+0040946b        float i_7
+0040946b        float i_8
+0040946b        int16_t top_3
 0040946b        if (i_1 == 0)
+0040946d        i_8 = i_1
 0040946e        int32_t var_54_1 = 0xf
 00409470        int32_t var_58_2 = 0x3f800000
 00409475        int32_t var_5c_4 = 0x3f800000
+0040947a        i_7 = i_1
+0040947b        i_6 = i_1
 0040948c        int32_t* eax_13
-0040948c        eax_13, ecx_13 = set_color_rgba(&var_20, 0x3f800000, i_1, i_1, 0x3f7d70a4)
+0040948c        eax_13, ecx_13 = set_color_rgba(&color, 1f, i_1, i_1, 0.99000001f)
+00409491        unimplemented  {fld st0, dword [esi+0x20]}
+00409494        unimplemented  {fsub st0, dword [0x49737c]}
+0040949a        var_68_1 = eax_13
 0040949b        int32_t var_6c_2 = 0x1000000
 004094a0        int32_t var_70_2 = 0x42000000
 004094a5        int32_t var_74_1 = 0x42000000
 004094aa        int32_t var_78_1 = ecx_13
-004094fc        var_7c_1 = ecx_13
-00409505        queue_axis_aligned_textured_quad_uv(0x97, fconvert.s(fconvert.t(*(arg1 + 0x1c)) - fconvert.t(16f)), fconvert.s(fconvert.t(*(arg1 + 0x20)) - fconvert.t(16f)), 32f, 32f, 0x1000000, eax_13, i_1, i_1, 0x3f800000, 0x3f800000, 0xf, i_1)
+004094ab        var_78_2 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+004094ab        unimplemented  {fstp dword [esp], st0}
+004094ae        top_3 = top - 1
+004094ae        unimplemented  {fld st0, dword [esi+0x1c]}
+004094f6        label_4094f6:
+004094f6        unimplemented  {fsub st0, dword [0x49737c]}
+004094fc        int32_t var_7c_1 = ecx_13
+004094fd        float var_7c_2 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+004094fd        unimplemented  {fstp dword [esp], st0}
+004094fd        top = top_3 + 1
+00409505        queue_axis_aligned_textured_quad_uv(0x97, var_7c_2, var_78_2, 32f, 32f, 0x1000000, var_68_1, i_6, i_7, 0x3f800000, 0x3f800000, 0xf, i_8)
 004094be        if (*(arg1 + 4) != 1 || i_1 s<= *(arg1 + 0x10f80))
+004094c0        unimplemented  {fld st0, dword [edi+0x20]}
+004094c3        i_8 = 0f
 004094c5        int32_t var_54_2 = 0xf
+004094c7        unimplemented  {fsub st0, dword [0x49737c]}
 004094cd        int32_t var_58_3 = 0x3f800000
 004094d2        int32_t var_5c_5 = 0x3f800000
+004094d7        i_7 = 0f
+004094dd        i_6 = 0f
+004094df        var_68_1 = &color_1
 004094e0        int32_t var_6c_3 = 0x1000000
 004094e5        int32_t var_70_3 = 0x42000000
 004094ea        int32_t var_74_2 = 0x42000000
 004094ef        int32_t var_78_3 = ecx_13
-004094fc        var_7c_1 = ecx_13
-00409505        queue_axis_aligned_textured_quad_uv(0x97, fconvert.s(fconvert.t(*(edi + 0x1c)) - fconvert.t(16f)), fconvert.s(fconvert.t(*(edi + 0x20)) - fconvert.t(16f)), 32f, 32f, 0x1000000, &var_10, 0, 0, 0x3f800000, 0x3f800000, 0xf, 0)
-0040950d        long double x87_r7_16 = fconvert.t(*(edi + 0x28))
+004094f0        var_78_2 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+004094f0        unimplemented  {fstp dword [esp], st0}
+004094f3        top_3 = top - 1
+004094f3        unimplemented  {fld st0, dword [edi+0x1c]}
+004094f3        goto label_4094f6
+0040950d        unimplemented  {fld st0, dword [edi+0x28]}
 00409510        long double temp1_1 = fconvert.t(0f)
-00409510        x87_r7_16 - temp1_1
+00409510        unimplemented  {fcomp st0, dword [0x497234]} f- temp1_1
+00409510        bool c0_2 = unimplemented  {fcomp st0, dword [0x497234]} f< temp1_1
+00409510        bool c2_2 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497234]}, temp1_1)
+00409510        bool c3_2 = unimplemented  {fcomp st0, dword [0x497234]} f== temp1_1
+00409510        unimplemented  {fcomp st0, dword [0x497234]}
 00409516        void* eax_12
-00409516        eax_12.w = (x87_r7_16 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_16, temp1_1) ? 1 : 0) << 0xa | (x87_r7_16 == temp1_1 ? 1 : 0) << 0xe
+00409516        eax_12.w = (c0_2 ? 1 : 0) << 8 | (c2_2 ? 1 : 0) << 0xa | (c3_2 ? 1 : 0) << 0xe | (top & 7) << 0xb
 0040951b        if ((eax_12:1.b & 0x41) == 0)
-0040951d        int32_t ecx_15 = *(edi + 0x28)
+0040951d        int32_t ecx_15 = *(ecx_11 + arg1 + 0x28)
 00409534        int32_t var_4_3 = ecx_15
+00409538        unimplemented  {fld st0, dword [edi+0x20]}
+0040953b        unimplemented  {fsub st0, dword [0x49724c]}
 00409553        int32_t var_78_4 = ecx_15
+00409554        float var_78_5 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+00409554        unimplemented  {fstp dword [esp], st0}
+00409557        unimplemented  {fld st0, dword [edi+0x1c]}
+0040955a        unimplemented  {fsub st0, dword [0x49724c]}
 00409560        int32_t var_7c_3 = ecx_15
-00409569        queue_axis_aligned_textured_quad_uv(0x96, fconvert.s(fconvert.t(*(edi + 0x1c)) - fconvert.t(32f)), fconvert.s(fconvert.t(*(edi + 0x20)) - fconvert.t(32f)), 64f, 64f, 0x1000000, &var_10, 0, 0, 0x3f800000, 0x3f800000, 0xf, 0)
+00409561        float var_7c_4 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+00409561        unimplemented  {fstp dword [esp], st0}
+00409569        queue_axis_aligned_textured_quad_uv(0x96, var_7c_4, var_78_5, 64f, 64f, 0x1000000, &color_1, 0, 0, 0x3f800000, 0x3f800000, 0xf, 0)
 00409576        i_1 += 1
 00409579        do while (i_1 s<= data_4df9b8)
 00409583        set_color_white()
@@ -97,62 +139,92 @@
 004095a7        if (i_2 s< *(arg1 + 0x10f80))
 004095ad        int32_t var_4_5 = 0x3f4ccccd
 004095c1        int32_t var_54_3 = 0x40800000
-00409605        draw_galaxy_line(0x9a, edi_1[-0xa8], edi_1[-0xa7], *edi_1, edi_1[1], 4f, &var_10)
+00409605        draw_galaxy_line(0x9a, edi_1[-0xa8], edi_1[-0xa7], *edi_1, edi_1[1], 4f, &color_1)
 004095d5        if (*(arg1 + 4) != 1)
 004095db        int32_t var_4_6 = 0x3e4ccccd
 004095ef        int32_t var_54_4 = 0x40800000
-00409605        draw_galaxy_line(0x9a, edi_1[-0xa8], edi_1[-0xa7], *edi_1, edi_1[1], 4f, &var_10)
+00409605        draw_galaxy_line(0x9a, edi_1[-0xa8], edi_1[-0xa7], *edi_1, edi_1[1], 4f, &color_1)
 0040960f        i_2 += 1
 00409610        edi_1 = &edi_1[0xa8]
 00409618        do while (i_2 s< data_4df9b8)
 0040961e        set_color_white()
+0040961e        int16_t top_11 = top - 2
 00409623        int32_t i_3 = 0
-00409625        float* ebp = arg1 + 0x109c4
-0040965a        int32_t* var_78_6 = &var_10
-0040966d        int32_t* var_7c_5 = &var_10
-00409672        queue_axis_aligned_textured_quad_uv(i_3 + 0x8b, fconvert.s(fconvert.t(*ebp) - fconvert.t(128f)), fconvert.s(fconvert.t(ebp[1]) - fconvert.t(128f)), 256f, 256f, 0x1000000, &var_10, 0, 0, 0x3f800000, 0x3f800000, 0xf, 0)
+00409625        void* ebp = arg1 + 0x109c4
+0040962b        unimplemented  {fld st0, dword [ebp+0x4]}
+00409632        unimplemented  {fsub st0, dword [0x497224]}
+0040965a        int32_t* var_78_6 = &color_1
+00409661        float var_78_7 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+00409661        unimplemented  {fstp dword [esp], st0}
+00409664        unimplemented  {fld st0, dword [ebp]}
+00409667        unimplemented  {fsub st0, dword [0x497224]}
+0040966d        int32_t* var_7c_5 = &color_1
+0040966e        float var_7c_6 = fconvert.s(unimplemented  {fstp dword [esp], st0})
+0040966e        unimplemented  {fstp dword [esp], st0}
+00409672        queue_axis_aligned_textured_quad_uv(i_3 + 0x8b, var_7c_6, var_78_7, 256f, 256f, 0x1000000, &color_1, 0, 0, 0x3f800000, 0x3f800000, 0xf, 0)
 0040967a        i_3 += 1
-0040967b        ebp = &ebp[0x28]
+0040967b        ebp += 0xa0
 00409684        do while (i_3 s< 0xa)
 0040968b        float i_5 = 1.40129846e-45f
-00409690        float i_6 = nanf
+00409690        float i_9 = nanf
 00409693        void* eax_21 = *(data_4df904 + 0x28c)
 00409699        float ecx_20 = *(eax_21 + 0x60)
 0040969c        float edx_9 = *(eax_21 + 0x64)
 004096a6        bool cond:3 = *(arg1 + 8) != 1
 004096ac        *(arg1 + 0x10f84) = 0
 004096b6        if (not(cond:3))
-004096bc        void* ecx_21 = *(arg1 + 0x10f8c)
-004096c5        long double x87_r7_26 = fconvert.t(*(ecx_21 + 0x4c)) - fconvert.t(*(ecx_21 + 0x220))
+004096c2        unimplemented  {fld st0, dword [ecx+0x4c]}
+004096c5        unimplemented  {fsub st0, dword [ecx+0x220]}
 004096cb        long double temp2_1 = fconvert.t(ecx_20)
-004096cb        x87_r7_26 - temp2_1
+004096cb        unimplemented  {fcomp st0, dword [esp+0x14]} f- temp2_1
+004096cb        bool c0_3 = unimplemented  {fcomp st0, dword [esp+0x14]} f< temp2_1
+004096cb        bool c2_3 = is_unordered.t(unimplemented  {fcomp st0, dword [esp+0x14]}, temp2_1)
+004096cb        bool c3_3 = unimplemented  {fcomp st0, dword [esp+0x14]} f== temp2_1
+004096cb        unimplemented  {fcomp st0, dword [esp+0x14]}
 004096cf        int32_t eax_22
-004096cf        eax_22.w = (x87_r7_26 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp2_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp2_1 ? 1 : 0) << 0xe
+004096cf        eax_22.w = (c0_3 ? 1 : 0) << 8 | (c2_3 ? 1 : 0) << 0xa | (c3_3 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb
 004096d4        if ((eax_22:1.b & 1) != 0)
-004096e3        long double x87_r7_29 = fconvert.t(*(ecx_21 + 0x54)) + fconvert.t(*(ecx_21 + 0x220)) + fconvert.t(*(ecx_21 + 0x4c))
+004096da        unimplemented  {fld st0, dword [ecx+0x54]}
+004096dd        unimplemented  {fadd dword [ecx+0x220]}
+004096e3        unimplemented  {fadd dword [ecx+0x4c]}
 004096e6        long double temp3_1 = fconvert.t(ecx_20)
-004096e6        x87_r7_29 - temp3_1
-004096ea        eax_22.w = (x87_r7_29 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_29, temp3_1) ? 1 : 0) << 0xa | (x87_r7_29 == temp3_1 ? 1 : 0) << 0xe
+004096e6        unimplemented  {fcomp st0, dword [esp+0x14]} f- temp3_1
+004096e6        bool c0_4 = unimplemented  {fcomp st0, dword [esp+0x14]} f< temp3_1
+004096e6        bool c2_4 = is_unordered.t(unimplemented  {fcomp st0, dword [esp+0x14]}, temp3_1)
+004096e6        bool c3_4 = unimplemented  {fcomp st0, dword [esp+0x14]} f== temp3_1
+004096e6        unimplemented  {fcomp st0, dword [esp+0x14]}
+004096ea        eax_22.w = (c0_4 ? 1 : 0) << 8 | (c2_4 ? 1 : 0) << 0xa | (c3_4 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb
 004096ef        if ((eax_22:1.b & 0x41) == 0)
-004096f4        long double x87_r7_31 = fconvert.t(*(ecx_21 + 0x50)) - fconvert.t(*(ecx_21 + 0x220))
+004096f1        unimplemented  {fld st0, dword [ecx+0x50]}
+004096f4        unimplemented  {fsub st0, dword [ecx+0x220]}
 004096fa        long double temp4_1 = fconvert.t(edx_9)
-004096fa        x87_r7_31 - temp4_1
-004096fe        eax_22.w = (x87_r7_31 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_31, temp4_1) ? 1 : 0) << 0xa | (x87_r7_31 == temp4_1 ? 1 : 0) << 0xe
+004096fa        unimplemented  {fcomp st0, dword [esp+0x18]} f- temp4_1
+004096fa        bool c0_5 = unimplemented  {fcomp st0, dword [esp+0x18]} f< temp4_1
+004096fa        bool c2_5 = is_unordered.t(unimplemented  {fcomp st0, dword [esp+0x18]}, temp4_1)
+004096fa        bool c3_5 = unimplemented  {fcomp st0, dword [esp+0x18]} f== temp4_1
+004096fa        unimplemented  {fcomp st0, dword [esp+0x18]}
+004096fe        eax_22.w = (c0_5 ? 1 : 0) << 8 | (c2_5 ? 1 : 0) << 0xa | (c3_5 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb
 00409703        if ((eax_22:1.b & 1) != 0)
-0040970b        long double x87_r7_34 = fconvert.t(*(ecx_21 + 0x58)) + fconvert.t(*(ecx_21 + 0x50)) + fconvert.t(*(ecx_21 + 0x220))
+00409705        unimplemented  {fld st0, dword [ecx+0x58]}
+00409708        unimplemented  {fadd dword [ecx+0x50]}
+0040970b        unimplemented  {fadd dword [ecx+0x220]}
 00409711        long double temp6_1 = fconvert.t(edx_9)
-00409711        x87_r7_34 - temp6_1
-00409715        eax_22.w = (x87_r7_34 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_34, temp6_1) ? 1 : 0) << 0xa | (x87_r7_34 == temp6_1 ? 1 : 0) << 0xe
+00409711        unimplemented  {fcomp st0, dword [esp+0x18]} f- temp6_1
+00409711        bool c0_6 = unimplemented  {fcomp st0, dword [esp+0x18]} f< temp6_1
+00409711        bool c2_6 = is_unordered.t(unimplemented  {fcomp st0, dword [esp+0x18]}, temp6_1)
+00409711        bool c3_6 = unimplemented  {fcomp st0, dword [esp+0x18]} f== temp6_1
+00409711        unimplemented  {fcomp st0, dword [esp+0x18]}
+00409715        eax_22.w = (c0_6 ? 1 : 0) << 8 | (c2_6 ? 1 : 0) << 0xa | (c3_6 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb
 0040971a        if ((eax_22:1.b & 0x41) == 0)
 0040971c        *(arg1 + 0x10f84) = 1
 0040972a        int32_t i_4 = 1
 0040972c        if (data_4df9b8 s>= 1)
-0040972e        int32_t* ecx_23 = arg1 + 0x2cc
+0040972e        int32_t* ecx_22 = arg1 + 0x2cc
 0040973a        if (i_4 != *(arg1 + 0x10f80))
-00409744        *ecx_23 = 0
-0040973c        *ecx_23 = 0x3f800000
+00409744        *ecx_22 = 0
+0040973c        *ecx_22 = 0x3f800000
 00409750        i_4 += 1
-00409751        ecx_23 = &ecx_23[0xa8]
+00409751        ecx_22 = &ecx_22[0xa8]
 00409759        do while (i_4 s<= data_4df9b8)
 0040975e        int32_t eax_26
 0040975e        if (*(arg1 + 4) == 1)
@@ -160,36 +232,58 @@
 0040978a        if (*(arg1 + 0x10f84) == 0)
 00409793        struct Vec3 vector
 00409793        if (*(arg1 + 8) == 1)
-004097ab        int32_t ecx_27 = *(arg1 + 0x10f80) * 0x2a0
-004097ba        int32_t edx_11 = *(ecx_27 + arg1 + 0x24)
-004097bd        var_20 = fconvert.s(fconvert.t(*(ecx_27 + arg1 + 0x1c)) - fconvert.t(ecx_20))
-004097cc        int32_t var_18_1 = edx_11
-004097d0        vector.x = var_20
+004097ae        unimplemented  {fld st0, dword [ecx+esi+0x1c]}
+004097b2        unimplemented  {fsub st0, dword [esp+0x14]}
+004097ba        int32_t edx_11 = *(*(arg1 + 0x10f80) * 0x2a0 + arg1 + 0x24)
+004097bd        color.r = fconvert.s(unimplemented  {fstp dword [esp+0x2c], st0})
+004097bd        unimplemented  {fstp dword [esp+0x2c], st0}
+004097c1        unimplemented  {fld st0, dword [eax+0x4]}
+004097c4        unimplemented  {fsub st0, dword [esp+0x18]}
+004097cc        color.b = edx_11
+004097d0        vector.x = color.r
 004097d4        vector.z = edx_11
-004097e0        vector.y = fconvert.s(fconvert.t(*(ecx_27 + arg1 + 0x20)) - fconvert.t(edx_9))
-004097e8        long double st0_1
-004097e8        st0_1, eax_26 = normalize_vector(&vector)
+004097d8        color.g = fconvert.s(unimplemented  {fstp dword [esp+0x30], st0})
+004097d8        unimplemented  {fstp dword [esp+0x30], st0}
+004097e0        vector.y = color.g
+004097e8        normalize_vector(&vector)
+004097e8        unimplemented  {call 0x44cca0}
 004097ed        long double temp5_1 = fconvert.t(17f)
-004097ed        st0_1 - temp5_1
-004097f3        eax_26.w = (st0_1 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(st0_1, temp5_1) ? 1 : 0) << 0xa | (st0_1 == temp5_1 ? 1 : 0) << 0xe
+004097ed        unimplemented  {fcomp st0, dword [0x497378]} f- temp5_1
+004097ed        bool c0_7 = unimplemented  {fcomp st0, dword [0x497378]} f< temp5_1
+004097ed        bool c2_7 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497378]}, temp5_1)
+004097ed        bool c3_7 = unimplemented  {fcomp st0, dword [0x497378]} f== temp5_1
+004097ed        unimplemented  {fcomp st0, dword [0x497378]}
+004097f3        eax_26.w = (c0_7 ? 1 : 0) << 8 | (c2_7 ? 1 : 0) << 0xa | (c3_7 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb
 00409802        if ((eax_26:1.b & 1) != 0 && *(arg1 + 0x10f84) == 0)
-00409804        i_6 = *(arg1 + 0x10f80)
+00409804        i_9 = *(arg1 + 0x10f80)
 0040980a        *(arg1 + 0x10f84) = 2
-00409823        *(i_6 i* 0x2a0 + arg1 + 0x2c) = 0x3f800000
+00409823        *(i_9 i* 0x2a0 + arg1 + 0x2c) = 0x3f800000
 00409832        if (data_4df9b8 s>= 1)
 00409838        int32_t* edi_2 = arg1 + 0x2cc
-00409845        int32_t ecx_30 = edi_2[-2]
-00409848        int32_t var_18_2 = ecx_30
-0040984c        var_20 = fconvert.s(fconvert.t(edi_2[-4]) - fconvert.t(ecx_20))
-0040985b        vector.z = ecx_30
-00409863        vector.x = var_20
-0040986f        vector.y = fconvert.s(fconvert.t(edi_2[-3]) - fconvert.t(edx_9))
-00409873        long double st0_2 = normalize_vector(&vector)
+0040983e        unimplemented  {fld st0, dword [edi-0x10]}
+00409841        unimplemented  {fsub st0, dword [esp+0x14]}
+00409845        int32_t ecx_29 = edi_2[-2]
+00409848        color.b = ecx_29
+0040984c        color.r = fconvert.s(unimplemented  {fstp dword [esp+0x2c], st0})
+0040984c        unimplemented  {fstp dword [esp+0x2c], st0}
+00409850        unimplemented  {fld st0, dword [edi-0xc]}
+00409853        unimplemented  {fsub st0, dword [esp+0x18]}
+0040985b        vector.z = ecx_29
+00409863        vector.x = color.r
+00409867        color.g = fconvert.s(unimplemented  {fstp dword [esp+0x30], st0})
+00409867        unimplemented  {fstp dword [esp+0x30], st0}
+0040986f        vector.y = color.g
+00409873        normalize_vector(&vector)
+00409873        unimplemented  {call 0x44cca0}
 00409878        long double temp7_1 = fconvert.t(17f)
-00409878        st0_2 - temp7_1
-0040988d        if ((((st0_2 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp7_1) ? 1 : 0) << 0xa | (st0_2 == temp7_1 ? 1 : 0) << 0xe):1.b & 1) != 0 && *(arg1 + 0x10f84) == 0)
+00409878        unimplemented  {fcomp st0, dword [0x497378]} f- temp7_1
+00409878        bool c0_8 = unimplemented  {fcomp st0, dword [0x497378]} f< temp7_1
+00409878        bool c2_8 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497378]}, temp7_1)
+00409878        bool c3_8 = unimplemented  {fcomp st0, dword [0x497378]} f== temp7_1
+00409878        unimplemented  {fcomp st0, dword [0x497378]}
+0040988d        if ((((c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top_11 & 7) << 0xb):1.b & 1) != 0 && *(arg1 + 0x10f84) == 0)
 0040988f        *(arg1 + 0x10f84) = 2
-00409899        i_6 = i_5
+00409899        i_9 = i_5
 0040989b        *edi_2 = 0x3f800000
 004098af        if (*(arg1 + 8) != 1 || i_5 != *(arg1 + 0x10f80))
 004098b9        *edi_2 = 0
@@ -200,11 +294,11 @@
 004098d8        void* edi_3 = data_4df904
 004098de        eax_26.b = *(edi_3 + 0x440ec)
 004098e6        if (eax_26.b == 0)
-004098ec        void* ecx_32 = *(arg1 + 0x10f74)
-004098f2        int32_t eax_37 = *(ecx_32 + 0x1a0)
+004098ec        void* ecx_31 = *(arg1 + 0x10f74)
+004098f2        int32_t eax_37 = *(ecx_31 + 0x1a0)
 004098fa        if ((eax_37.b & 0x20) != 0)
 004098fc        eax_37.b &= 0xdf
-004098fe        *(ecx_32 + 0x1a0) = eax_37
+004098fe        *(ecx_31 + 0x1a0) = eax_37
 00409909        if (*(arg1 + 4) != 1)
 00409947        destroy_galaxy(arg1)
 00409958        return 3
@@ -215,13 +309,13 @@
 00409944        return 0
 00409959        int32_t edx_14 = *(arg1 + 8)
 0040995e        int32_t eax_43
-0040995e        void* ecx_35
+0040995e        void* ecx_34
 0040995e        if (edx_14 == 1)
-00409960        ecx_35 = *(arg1 + 0x10f9c)
-00409966        eax_43 = *(ecx_35 + 0x1a0)
+00409960        ecx_34 = *(arg1 + 0x10f9c)
+00409966        eax_43 = *(ecx_34 + 0x1a0)
 0040996e        if (edx_14 == 1 && (eax_43.b & 0x20) != 0)
 00409970        eax_43.b &= 0xdf
-00409972        *(ecx_35 + 0x1a0) = eax_43
+00409972        *(ecx_34 + 0x1a0) = eax_43
 0040997a        destroy_galaxy(arg1)
 0040998b        *(*(arg1 + 0x10f70) + 0x44) = *(arg1 + 0x10f80)
 0040998e        void* eax_45 = *(arg1 + 0x10f70)
@@ -230,11 +324,11 @@
 004099be        if (*(esi_1 + 0x40) == 0 && *(esi_1 + 0x1270fc8) == 1)
 004099d0        return 2
 00409a5a        return 1
-004099d1        void* ecx_39 = *(arg1 + 0x10fa0)
-004099d7        int32_t eax_48 = *(ecx_39 + 0x1a0)
+004099d1        void* ecx_38 = *(arg1 + 0x10fa0)
+004099d7        int32_t eax_48 = *(ecx_38 + 0x1a0)
 004099df        if ((eax_48.b & 0x20) != 0)
 004099e1        eax_48.b &= 0xdf
-004099e3        *(ecx_39 + 0x1a0) = eax_48
+004099e3        *(ecx_38 + 0x1a0) = eax_48
 004099eb        destroy_galaxy(arg1)
 004099fc        *(*(arg1 + 0x10f70) + 0x44) = *(arg1 + 0x10f80)
 004099ff        void* eax_50 = *(arg1 + 0x10f70)
@@ -250,12 +344,12 @@
 00409ad4        if (eax_54 == 0 && (*(*(edi_3 + 0x28c) + 0x3c) & 0x4000) != 0 && edx_14 == 1 && data_4df9b8 s> 1)
 00409ad8        close_galaxy_route(arg1)
 00409ae4        play_sound_effect(8)
-00409a90        if (i_6 != *(arg1 + 0x10f80))
+00409a90        if (i_9 != *(arg1 + 0x10f80))
 00409a95        if (edx_14 == 1)
 00409a99        close_galaxy_route(arg1)
-00409aa1        open_galaxy_route(arg1, i_6)
+00409aa1        open_galaxy_route(arg1, i_9)
 00409ae4        play_sound_effect(8)
 00409aaa        if (edx_14 == 0)
-00409aaf        open_galaxy_route(arg1, i_6)
+00409aaf        open_galaxy_route(arg1, i_9)
 00409ae4        play_sound_effect(8)
 00409af2        return 0

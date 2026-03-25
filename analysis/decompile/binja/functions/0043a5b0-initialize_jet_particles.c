@@ -26,16 +26,16 @@
 0043a62c        eax_5[1] = 0
 0043a62f        *eax_5 = 0
 0043a631        *esi
-0043a636        void var_10
-0043a636        int32_t* eax_7 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f7fbe77)
-0043a63f        int32_t* ecx_4 = &(*esi)[0xb]
+0043a636        struct Color4f color
+0043a636        struct Color4f* eax_7 = set_color_rgba(&color, 1f, 1f, 1f, 0.999000013f)
+0043a63f        float* ecx_4 = &(*esi)[0xb]
 0043a642        esi = &esi[4]
 0043a645        i = i_1
 0043a645        i_1 -= 1
-0043a646        *ecx_4 = *eax_7
-0043a64b        ecx_4[1] = eax_7[1]
-0043a651        ecx_4[2] = eax_7[2]
-0043a657        ecx_4[3] = eax_7[3]
+0043a646        *ecx_4 = eax_7->r
+0043a64b        ecx_4[1] = eax_7->g
+0043a651        ecx_4[2] = eax_7->b
+0043a657        ecx_4[3] = eax_7->a
 0043a65a        esi[-3] = 0
 0043a660        esi[-4][0xa] = 0
 0043a663        esi[-2] = 0

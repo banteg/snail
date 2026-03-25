@@ -117,7 +117,10 @@
 004187ee        var_708 = eax_56
 004187f4        if (eax_56 != 0)
 0041881e        var_708 = &find_case_insensitive_substring(":", eax_56)[1]
-00418836        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6c4) = fconvert.s(parse_next_float32(&var_708))
+00418822        parse_next_float32(&var_708)
+00418822        unimplemented  {call 0x431f20}
+00418836        *(arg1 + *(arg1 + 0x5a0) * 0x124 + 0x6c4) = fconvert.s(unimplemented  {fstp dword [esi+edx*4+0x6c4], st0})
+00418836        unimplemented  {fstp dword [esi+edx*4+0x6c4], st0}
 004187fd        char (* var_71c_20)[0x200] = &var_600
 00418803        report_errorf("Landscape. Cannot find Distort: in %s")
 00418843        char* var_71c_22 = ebx

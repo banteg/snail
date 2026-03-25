@@ -7,7 +7,7 @@ int32_t __stdcall compute_kind42_attachment_transform(
         float arg1,
         float arg2,
         float arg3,
-        PathTemplateTransform *transform,
+        TransformMatrix *transform,
         float *out_angle)
 {
   int32_t result; // eax

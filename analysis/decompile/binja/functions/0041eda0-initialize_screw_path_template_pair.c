@@ -37,7 +37,7 @@
 0041eead        int32_t ebp = arg2 + 3
 0041eeb0        arg3 = ebp
 0041eec0        int32_t edi_3 = ebp * 0xa8
-0041ef7a        struct PathTemplateTransform* transform
+0041ef7a        struct TransformMatrix* transform
 0041eecc        *(&self->primary_samples->center_x + edi_3) = 0xbf000000
 0041eeda        *(&self->primary_samples->rotation_scalar_98 + edi_3) = 0
 0041eee4        *(&self->primary_samples->rotation_scalar_94 + edi_3) = 0
@@ -62,7 +62,7 @@
 0041ef88        arg3 = 0
 0041ef8c        if (arg2 s> 0)
 0041ef96        void* edi_4 = 0x1f8
-0041efa7        struct PathTemplateTransform* transform_1 = transform
+0041efa7        struct TransformMatrix* transform_1 = transform
 0041efae        long double x87_r7_8 = float.t(arg3) * fconvert.t(6.28318548f) / fconvert.t(fconvert.s(float.t(arg2)))
 0041efb2        float var_4c_1 = fconvert.s(x87_r7_8)
 0041efd0        *(&self->primary_samples->center_x + edi_4) = fconvert.s(cosine(fconvert.s(x87_r7_8 * fconvert.t(0.5f))) * fconvert.t(0.5f))
@@ -210,7 +210,7 @@
 0041f59f        arg2 = fconvert.s(float.t(arg2) * fconvert.t(0.125f))
 0041f5ad        float var_50_1 = fconvert.s(float.t(j + 1) * fconvert.t(0.125f))
 0041f5bf        while (true)
-0041f5ce        int16_t* edi_7 = &facequads[ecx_68 + ((self->width_cells * i_3 + j) << 1)]
+0041f5ce        int16_t* edi_7 = (ecx_68 + ((self->width_cells * i_3 + j) << 1)) * 0x30 + facequads
 0041f5d1        *edi_7 = 0
 0041f5d6        int32_t edx_39
 0041f5d6        if (ecx_68 != 0)

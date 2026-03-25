@@ -20,13 +20,13 @@
 004437ab        *(result->sprite + 0x68) = 0
 004437bb        *(result->sprite + 0x6c) = 0
 004437c5        *(result->sprite + 0x78) = 0
-004437c8        void var_10
-004437c8        int32_t* eax_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-004437d2        int32_t* ecx_7 = result->sprite + 0x2c
-004437d5        *ecx_7 = *eax_4
-004437da        ecx_7[1] = eax_4[1]
-004437e0        ecx_7[2] = eax_4[2]
-004437e6        ecx_7[3] = eax_4[3]
+004437c8        struct Color4f color
+004437c8        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+004437d2        float* ecx_7 = result->sprite + 0x2c
+004437d5        *ecx_7 = eax_4->r
+004437da        ecx_7[1] = eax_4->g
+004437e0        ecx_7[2] = eax_4->b
+004437e6        ecx_7[3] = eax_4->a
 004437f1        *(result->sprite + 0x60) = 0x3f800000
 004437f7        *(result->sprite + 0x64) = 0x3f800000
 004437ff        int32_t* eax_7 = result->sprite + 0x48

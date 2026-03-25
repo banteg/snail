@@ -70,21 +70,29 @@
 00439f13        if ((lane_bits:1.b & 1) != 0)
 00439f24        return destroy_wall2_ambient_hazard(arg1)
 00439f2b        if (lane_bits.b == 0x1d || lane_bits.b == 0x1e)
+00439f73        int16_t top
 00439f73        if (arg1->template_record->kind == PATH_TEMPLATE_KIND_WORM)
 00439f8c        arg1->_pad_1c[4].d = fconvert.s(fconvert.t(arg1->_pad_1c[4].d) - fconvert.t(*(ecx + 0x74650)) * fconvert.t(0.0333333351f))
-00439f8f        set_color_alpha(&arg1->track_z_anchor, 0x3f4ccccd)
+00439f8f        set_color_alpha(&arg1->track_z_anchor, 0.800000012f)
+00439f8f        top = 0xffff
 00439f94        ecx = data_4df904
-00439fa6        int32_t* eax_7 = get_track_skirt_color(ecx + 0x74618, &var_10)
+00439fa6        float* eax_7 = get_track_skirt_color(ecx + 0x74618, &var_10)
 00439faf        int32_t eax_8 = get_track_cell_row_index(arg1)
-00439fc2        int32_t* ecx_13 = data_4df904 + eax_8 * 0xf4 + 0x6411b8
+00439fc2        float* ecx_13 = data_4df904 + eax_8 * 0xf4 + 0x6411b8
 00439fcb        *ecx_13 = *eax_7
 00439fd0        ecx_13[1] = eax_7[1]
 00439fd6        ecx_13[2] = eax_7[2]
 00439fdd        ecx_13[3] = eax_7[3]
-00439ff2        long double x87_r7_29 = fconvert.t(*(data_4df904 + 0x4326fc)) - (float.t(arg1->template_record->_pad_48) + fconvert.t(5f))
+00439fe9        unimplemented  {fild st0, dword [ecx+0x48]}
+00439fec        unimplemented  {fadd dword [0x497288]}
+00439ff2        unimplemented  {fsubr st0, dword [edx+0x4326fc]}
 00439ff8        long double temp5_1 = fconvert.t(arg1->world_z)
-00439ff8        x87_r7_29 - temp5_1
-00439ffb        lane_bits.w = (x87_r7_29 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_29, temp5_1) ? 1 : 0) << 0xa | (x87_r7_29 == temp5_1 ? 1 : 0) << 0xe
+00439ff8        unimplemented  {fcomp st0, dword [esi+0x18]} f- temp5_1
+00439ff8        bool c0_8 = unimplemented  {fcomp st0, dword [esi+0x18]} f< temp5_1
+00439ff8        bool c2_8 = is_unordered.t(unimplemented  {fcomp st0, dword [esi+0x18]}, temp5_1)
+00439ff8        bool c3_8 = unimplemented  {fcomp st0, dword [esi+0x18]} f== temp5_1
+00439ff8        unimplemented  {fcomp st0, dword [esi+0x18]}
+00439ffb        lane_bits.w = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top & 7) << 0xb
 0043a000        if ((lane_bits:1.b & 0x41) == 0)
 0043a004        return destroy_wall2_ambient_hazard(arg1)
 00439f2d        long double x87_r7_22 = fconvert.t(arg1->world_z)

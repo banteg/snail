@@ -22,12 +22,12 @@
 004169dc        *(arg1 + 0x18) = allocate_border(data_4df904 + 0xb4c)
 004169df        int32_t eax_6 = *(arg1 + 8)
 004169e5        float var_c4
-004169e5        void var_b0
-004169e5        void var_a0
+004169e5        struct Color4f color_1
+004169e5        struct Color4f color_2
 004169e5        void* eax_8
 004169e5        if (eax_6 == 0)
 00416a4a        int32_t __saved_ebx_2 = 0
-00416a66        int32_t* eax_11 = set_color_rgba(&var_b0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416a66        struct Color4f* eax_11 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00416a7f        initialize_frontend_widget(*(arg1 + 0x18), 0, "Postal High Scores", 0x17, 0, 64f, eax_11, 2.80259693e-45f)
 00416a84        eax_8 = data_4df904
 00416a8f        *(eax_8 + 0x6ffae0) = eax_8 + 0x6ffae8
@@ -35,7 +35,7 @@
 00416aa5        var_c4 = 27f
 004169e8        if (eax_6 == 1)
 004169ee        int32_t __saved_ebx_1 = 0
-00416a0a        int32_t* eax_9 = set_color_rgba(&var_a0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416a0a        struct Color4f* eax_9 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
 00416a23        initialize_frontend_widget(*(arg1 + 0x18), 0, "Challenge High Scores", 0x17, 0, 64f, eax_9, 2.80259693e-45f)
 00416a28        void* eax_10 = data_4df904
 00416a33        *(eax_10 + 0x6ffae0) = eax_10 + 0x85c128
@@ -50,8 +50,8 @@
 00416ad8        int32_t var_cc = 0
 00416adc        int32_t i_1 = 0
 00416ae0        int32_t* esi = arg1 + 0x7c
-00417043        void var_c0
-00417043        void var_90
+00417043        struct Color4f color
+00417043        struct Color4f color_3
 00416ae3        esi[0x14] = 0
 00416af1        int32_t ecx_17
 00416af1        ecx_17.b = ebx != *(arg1 + 0x14)
@@ -63,21 +63,21 @@
 00416d79        float var_d0_2 = fconvert.s(float.t(var_cc) * fconvert.t(var_c4) + fconvert.t(111f))
 00416d82        int32_t var_e4_10 = 0xc3640000
 00416da4        esi[-0x14] = allocate_border(ecx_20 + 0xb4c)
-00416da7        void var_60
-00416da7        int32_t* eax_38 = set_color_rgba(&var_60, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416da7        struct Color4f color_6
+00416da7        struct Color4f* eax_38 = set_color_rgba(&color_6, 1f, 1f, 1f, 1f)
 00416dc6        initialize_frontend_widget(esi[-0x14], ecx_19 | 0x20000000, "                                               ", 0x16, 0, var_d0_2, eax_38, 1.40129846e-45f)
 00416ddc        int32_t var_e4_11 = 0xc35e0000
 00416e00        esi[-0xa] = allocate_border(data_4df904 + 0xb4c)
 00416e03        int32_t ebx_4 = ecx_19 | 0x20400000
-00416e09        void var_20
-00416e09        int32_t* eax_42 = set_color_rgba(&var_20, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416e09        struct Color4f color_10
+00416e09        struct Color4f* eax_42 = set_color_rgba(&color_10, 1f, 1f, 1f, 1f)
 00416e21        initialize_frontend_widget(esi[-0xa], ebx_4, &data_4dfb08, 0x16, 0, var_d0_2, eax_42, 1.40129846e-45f)
 00416e2f        border_add_text_number(esi[-0xa], var_cc + 1)
 00416e37        layout_frontend_widget(esi[-0xa])
 00416e4d        int32_t var_e4_13 = 0xc3340000
 00416e6f        *esi = allocate_border(data_4df904 + 0xb4c)
-00416e71        void var_40
-00416e71        int32_t* eax_46 = set_color_rgba(&var_40, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416e71        struct Color4f color_8
+00416e71        struct Color4f* eax_46 = set_color_rgba(&color_8, 1f, 1f, 1f, 1f)
 00416e97        initialize_frontend_widget(*esi, ebx_4, *(data_4df904 + 0x6ffae0) + i_1 + 0x54, 0x16, 0, var_d0_2, eax_46, 1.40129846e-45f)
 00416ea5        if (var_cc == *(arg1 + 0x14))
 00416eb2        border_input_text_init(*esi, 0x10, &data_4df978, 0x10)
@@ -88,34 +88,34 @@
 00416eca        layout_frontend_widget(*esi)
 00416ee0        int32_t var_e4_14 = 0x43200000
 00416f02        esi[0xa] = allocate_border(data_4df904 + 0xb4c)
-00416f05        void var_70
-00416f05        int32_t* eax_52 = set_color_rgba(&var_70, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416f05        struct Color4f color_5
+00416f05        struct Color4f* eax_52 = set_color_rgba(&color_5, 1f, 1f, 1f, 1f)
 00416f1d        initialize_frontend_widget(esi[0xa], ebx_4, &data_4dfb08, 0x16, 0, var_d0_2, eax_52, 4.20389539e-45f)
 00416f3a        border_add_text_number(esi[0xa], *(*(data_4df904 + 0x6ffae0) + i_1 + 4))
 00416f42        layout_frontend_widget(esi[0xa])
 00416f58        int32_t var_e4_16 = 0x42fa0000
 00416f7a        esi[0x14] = allocate_border(data_4df904 + 0xb4c)
-00416f7d        void var_50
-00416f7d        int32_t* eax_56 = set_color_rgba(&var_50, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416f7d        struct Color4f color_7
+00416f7d        struct Color4f* eax_56 = set_color_rgba(&color_7, 1f, 1f, 1f, 1f)
 00416f9b        initialize_frontend_widget(esi[0x14], ecx_19 | 0x20000014, "Replay", 0x16, 0, var_d0_2, eax_56, 2.80259693e-45f)
 00416fa3        hide_border_init(esi[0x14])
 00416b1d        if (eax_14 == 1)
 00416b37        float var_d0_1 = fconvert.s(float.t(var_cc) * fconvert.t(var_c4) + fconvert.t(111f))
 00416b40        int32_t var_e4_3 = 0xc3640000
 00416b5f        esi[-0x14] = allocate_border(ecx_20 + 0xb4c)
-00416b62        int32_t* eax_18 = set_color_rgba(&var_b0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416b62        struct Color4f* eax_18 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00416b82        initialize_frontend_widget(esi[-0x14], ecx_19 | 0x20000000, "                                           ", 0x16, 0, var_d0_1, eax_18, 1.40129846e-45f)
 00416b98        int32_t var_e4_4 = 0xc35e0000
 00416bb9        esi[-0xa] = allocate_border(data_4df904 + 0xb4c)
 00416bbc        int32_t ebx_2 = ecx_19 | 0x20400000
-00416bc2        int32_t* eax_21 = set_color_rgba(&var_a0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416bc2        struct Color4f* eax_21 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
 00416bda        initialize_frontend_widget(esi[-0xa], ebx_2, &data_4dfb08, 0x16, 0, var_d0_1, eax_21, 1.40129846e-45f)
 00416be8        border_add_text_number(esi[-0xa], var_cc + 1)
 00416bf0        layout_frontend_widget(esi[-0xa])
 00416c06        int32_t var_e4_6 = 0xc3340000
 00416c28        *esi = allocate_border(data_4df904 + 0xb4c)
-00416c2a        void var_30
-00416c2a        int32_t* eax_24 = set_color_rgba(&var_30, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416c2a        struct Color4f color_9
+00416c2a        struct Color4f* eax_24 = set_color_rgba(&color_9, 1f, 1f, 1f, 1f)
 00416c51        initialize_frontend_widget(*esi, ebx_2, *(data_4df904 + 0x6ffae0) + i_1 + 0x54, 0x16, 0, var_d0_1, eax_24, 1.40129846e-45f)
 00416c5f        if (var_cc == *(arg1 + 0x14))
 00416c6c        border_input_text_init(*esi, 0x10, &data_4df978, 0x10)
@@ -126,32 +126,32 @@
 00416c84        layout_frontend_widget(*esi)
 00416c99        int32_t var_e4_7 = 0x42fa0000
 00416cb8        esi[0xa] = allocate_border(data_4df904 + 0xb4c)
-00416cbb        void var_80
-00416cbb        int32_t* eax_31 = set_color_rgba(&var_80, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416cbb        struct Color4f color_4
+00416cbb        struct Color4f* eax_31 = set_color_rgba(&color_4, 1f, 1f, 1f, 1f)
 00416cd3        initialize_frontend_widget(esi[0xa], ebx_2, &data_4dfb08, 0x16, 0, var_d0_1, eax_31, 4.20389539e-45f)
 00416cf0        border_add_text_number(esi[0xa], *(*(data_4df904 + 0x6ffae0) + i_1 + 4))
 00416cf8        layout_frontend_widget(esi[0xa])
 00416d0d        int32_t var_e4_9 = 0x432a0000
 00416d2f        esi[0x14] = allocate_border(data_4df904 + 0xb4c)
-00416d32        void var_10
-00416d32        int32_t* eax_35 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416d32        struct Color4f color_11
+00416d32        struct Color4f* eax_35 = set_color_rgba(&color_11, 1f, 1f, 1f, 1f)
 00416d50        initialize_frontend_widget(esi[0x14], ecx_19 | 0x20000014, "Replay", 0x16, 0, var_d0_1, eax_35, 2.80259693e-45f)
 00416d5a        if (*(arg1 + 0x10) != 0)
 00416fa3        hide_border_init(esi[0x14])
 00416fa8        ebx = var_cc
 00416faf        if ((ebx.b & 1) != 0)
-00416fc9        int32_t* eax_58 = set_color_rgba(&var_90, 0x3ea8a8a9, 0x3e3cbcbd, 0x3ed6d6d7, 0x3f333333)
-00416fd3        int32_t* ecx_83 = esi[-0x14] + 0x1bc
-00416fe8        *ecx_83 = *eax_58
-00416ff2        ecx_83[1] = eax_58[1]
-00416ff8        ecx_83[2] = eax_58[2]
-00416ffe        ecx_83[3] = eax_58[3]
-00417005        int32_t* eax_60 = set_color_rgba(&var_c0, 0x3ea8a8a9, 0x3e3cbcbd, 0x3ed6d6d7, 0x3f333333)
-0041700f        int32_t* ecx_86 = esi[0x14] + 0x1bc
-00417015        *ecx_86 = *eax_60
-0041701a        ecx_86[1] = eax_60[1]
-00417020        ecx_86[2] = eax_60[2]
-00417026        ecx_86[3] = eax_60[3]
+00416fc9        struct Color4f* eax_58 = set_color_rgba(&color_3, 0.329411775f, 0.184313729f, 0.419607848f, 0.699999988f)
+00416fd3        float* ecx_83 = esi[-0x14] + 0x1bc
+00416fe8        *ecx_83 = eax_58->r
+00416ff2        ecx_83[1] = eax_58->g
+00416ff8        ecx_83[2] = eax_58->b
+00416ffe        ecx_83[3] = eax_58->a
+00417005        struct Color4f* eax_60 = set_color_rgba(&color, 0.329411775f, 0.184313729f, 0.419607848f, 0.699999988f)
+0041700f        float* ecx_86 = esi[0x14] + 0x1bc
+00417015        *ecx_86 = eax_60->r
+0041701a        ecx_86[1] = eax_60->g
+00417020        ecx_86[2] = eax_60->b
+00417026        ecx_86[3] = eax_60->a
 0041702d        ebx += 1
 0041702e        i = i_1 + 0x1fac0
 00417033        esi = &esi[1]
@@ -163,27 +163,27 @@
 00417064        if (i.b != 0)
 0041707b        int32_t __saved_ebx_3 = 0xc2dc0000
 0041709a        *(arg1 + 0x24) = allocate_border(data_4df904 + 0xb4c)
-0041709d        int32_t* eax_64 = set_color_rgba(&var_c0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+0041709d        struct Color4f* eax_64 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004170b9        initialize_frontend_widget(*(arg1 + 0x24), 0x20000014, "Cancel", 0x17, 0, var_d0_3, eax_64, 2.80259693e-45f)
 004170c3        sub_402790(*(arg1 + 0x24), 0xb)
 004170d9        int32_t __saved_ebx_4 = 0x425c0000
 004170f8        *(arg1 + 0x28) = allocate_border(data_4df904 + 0xb4c)
-004170fb        int32_t* eax_66 = set_color_rgba(&var_c0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+004170fb        struct Color4f* eax_66 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417113        initialize_frontend_widget(*(arg1 + 0x28), 0x20000014, "Submit", 0x17, 0, var_d0_3, eax_66, 2.80259693e-45f)
 0041712a        return sub_402790(*(arg1 + 0x28), 5)
 0041713d        int32_t __saved_ebx_5 = 0xc3040000
 0041715c        *(arg1 + 0x1c) = allocate_border(data_4df904 + 0xb4c)
-0041715f        int32_t* eax_70 = set_color_rgba(&var_c0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+0041715f        struct Color4f* eax_70 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 0041717b        initialize_frontend_widget(*(arg1 + 0x1c), 0x20000014, "Back", 0x17, 0, var_d0_3, eax_70, 2.80259693e-45f)
 00417191        *(arg1 + 0x20) = allocate_border(data_4df904 + 0xb4c)
 00417194        int32_t eax_72 = *(arg1 + 8)
 0041719a        char* var_f4_1
 0041719a        float var_e8_3
-0041719a        int32_t* var_e4_20
+0041719a        struct Color4f* var_e4_20
 0041719a        if (eax_72 == 0)
 004171d0        int32_t __saved_ebx_7 = 0x42040000
 004171d5        int32_t __saved_edi_4 = 2
-004171f4        var_e4_20 = set_color_rgba(&var_90, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+004171f4        var_e4_20 = set_color_rgba(&color_3, 1f, 1f, 1f, 1f)
 004171f5        var_e8_3 = var_d0_3
 004171f6        int32_t var_ec_12 = 0
 004171f8        int32_t var_f0_12 = 0x17
@@ -192,7 +192,7 @@
 00417214        return eax_72 - 1
 0041719f        int32_t __saved_ebx_6 = 0x42040000
 004171a4        int32_t __saved_edi_3 = 2
-004171c3        var_e4_20 = set_color_rgba(&var_c0, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+004171c3        var_e4_20 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004171c4        var_e8_3 = var_d0_3
 004171c5        int32_t var_ec_11 = 0
 004171c7        int32_t var_f0_11 = 0x17

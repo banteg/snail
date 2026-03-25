@@ -2,13 +2,13 @@
 /* function: pack_color_rgba_u8 @ 0x44dbf0 */
 /* selector: pack_color_rgba_u8 */
 
-// Converts one four-float RGBA tuple in `[0,1]` into packed 8-bit color channels for the sprite draw path.
-_BYTE *__thiscall sub_44DBF0(_BYTE *this, float *a2)
+// Converts one four-float RGBA tuple in `[0,1]` into one packed BGRA8 color record for sprite and mesh draw paths.
+ColorBGRA8 *__thiscall pack_color_rgba_u8(ColorBGRA8 *out, Color4f *color)
 {
-  *(this + 2) = (__int64)(*a2 * 255.0);
-  *(this + 1) = (__int64)(a2[1] * 255.0);
-  *this = (__int64)(a2[2] * 255.0);
-  *(this + 3) = (__int64)(a2[3] * 255.0);
-  return this;
+  out->r = (__int64)(color->r * 255.0);
+  out->g = (__int64)(color->g * 255.0);
+  out->b = (__int64)(color->b * 255.0);
+  out->a = (__int64)(color->a * 255.0);
+  return out;
 }
 

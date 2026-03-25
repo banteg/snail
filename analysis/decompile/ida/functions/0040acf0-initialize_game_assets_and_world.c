@@ -339,7 +339,7 @@ char __thiscall sub_40ACF0(int this)
   int v334[16]; // [esp+FCh] [ebp-40h] BYREF
 
   Iostream_init::Iostream_init((#93 *)v332);
-  sub_44DBB0((_DWORD *)(this + 20), 1065353216, 1065353216, 1065353216, 1065353216);
+  store_color4f((_DWORD *)(this + 20), 1065353216, 1065353216, 1065353216, 1065353216);
   *(_DWORD *)(this + 16) = 1065353216;
   *(_DWORD *)(this + 8) = 1106247680;
   *(_DWORD *)(this + 12) = 1112014848;
@@ -703,7 +703,7 @@ char __thiscall sub_40ACF0(int this)
     BYTE1(v54) = BYTE1(*v53) | 4;
     *v53 = v54;
     v52[25] = this + 476696;
-    sub_44DBB0(v52 + 1, 1065353216, 1065353216, 1065353216, 1060320051);
+    store_color4f(v52 + 1, 1065353216, 1065353216, 1065353216, 1060320051);
     v55 = *v52;
     v52 += 44;
     v56 = v317 == 1;
@@ -720,7 +720,7 @@ char __thiscall sub_40ACF0(int this)
   {
     set_bod_object(v58 - 34, *(_DWORD *)(this + 298476));
     *v58 = this + 476696;
-    sub_44DBB0(v58 - 24, 1065353216, 1065353216, 1065353216, 1063675494);
+    store_color4f(v58 - 24, 1065353216, 1065353216, 1065353216, 1063675494);
     *(_DWORD *)(*(v58 - 25) + 20) = 12;
     set_matrix_identity(v58 - 20);
     v58 += 38;
@@ -2266,7 +2266,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17215976) = 0;
   *(_DWORD *)(this + 17215972) = 0;
   Iostream_init::Iostream_init((#93 *)v328);
-  sub_44DBB0(v328, 1065353216, 1065353216, 1065353216, 1058642330);
+  store_color4f(v328, 1065353216, 1065353216, 1065353216, 1058642330);
   v200 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17216028), (int)v200);
   initialize_looptheloop_path_template_pair(
@@ -2943,7 +2943,7 @@ char __thiscall sub_40ACF0(int this)
   set_bod_object((_DWORD *)(this + 17220060), (int)v294);
   load_object_definition(aObjectsBarrier, *(int **)(this + 17220096));
   initialize_distort((_DWORD *)(this + 17220076));
-  sub_44DBB0((_DWORD *)(this + 17220100), 1065353216, 1065353216, 1065353216, 1061997773);
+  store_color4f((_DWORD *)(this + 17220100), 1065353216, 1065353216, 1065353216, 1061997773);
   *(_DWORD *)(*(_DWORD *)(this + 17220096) + 20) = 7;
   initialize_track_render_cache_manager((_DWORD *)(this + 476788));
   v326 = 0;

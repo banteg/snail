@@ -13,7 +13,7 @@
 0040a4bd        return eax - 1
 0040a4be        sub_414650()
 0040a4c7        int32_t var_70 = 0
-0040a4cb        struct PathTemplateTransform transform
+0040a4cb        struct TransformMatrix transform
 0040a4cb        set_matrix_identity(&transform)
 0040a4d0        int32_t result_2 = 0
 0040a4d5        int32_t i_7
@@ -106,7 +106,7 @@
 0040a6dd        float var_9c_2
 0040a6dd        int32_t* var_98_2
 0040a6dd        char var_94_3
-0040a6dd        struct PathTemplateTransform* ecx_14
+0040a6dd        struct TransformMatrix* ecx_14
 0040a6dd        if (((*(i_2 + 4)).w:1.b & 4) == 0)
 0040a6fe        transform.position.x = *(i_2 + 0x10)
 0040a70a        transform.position.y = *(i_2 + 0x14)
@@ -225,7 +225,7 @@
 0040a9af        float var_9c_4
 0040a9af        int32_t* var_98_5
 0040a9af        char var_94_9
-0040a9af        struct PathTemplateTransform* eax_41
+0040a9af        struct TransformMatrix* eax_41
 0040a9af        void* esi_5
 0040a9af        if (((*(eax_38 + 4)).w:1.b & 4) == 0)
 0040a9cf        esi_5 = *edi_3

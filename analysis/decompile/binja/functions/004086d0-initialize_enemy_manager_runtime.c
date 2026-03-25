@@ -5,10 +5,12 @@
 /* function: initialize_enemy_manager_runtime @ 0x4086d0 */
 
 004086d6        initialize_renderable_bod(arg1)
+004086d6        int16_t top = 0xffff
 004086db        char** edi = &arg1[0x53]
 004086e1        int32_t i_2 = 0xa
 004086f4        int32_t i
 004086e8        initialize_renderable_bod(edi)
+004086e8        top -= 1
 004086ed        edi = &edi[0x20]
 004086f3        i = i_2
 004086f3        i_2 -= 1
@@ -23,10 +25,12 @@
 0040878d        initialize_array_with_constructor(&arg1[0x3d5], 0x80, 5, initialize_renderable_bod)
 00408792        arg1[0x381] = &data_49735c
 004087a0        initialize_renderable_bod(&arg1[0x478])
+004087a0        int16_t top_4 = top - 4
 004087bb        char** ebx = &arg1[0x4cc]
 004087c1        int32_t i_3 = 5
 004087d4        int32_t i_1
 004087c8        initialize_renderable_bod(ebx)
+004087c8        top_4 -= 1
 004087cd        ebx = &ebx[0x20]
 004087d3        i_1 = i_3
 004087d3        i_3 -= 1

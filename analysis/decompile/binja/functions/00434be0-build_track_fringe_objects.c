@@ -83,9 +83,9 @@
 00434d8c        *eax_17 = esi_1->world_x
 00434d91        eax_17[1] = esi_1->floor_height
 00434d97        eax_17[2] = esi_1->world_z
-00434dab        void var_40
-00434dab        int32_t* eax_18 = get_track_skirt_color(data_4df904 + 0x74618, &var_40)
-00434db5        int32_t* edx_9 = esi_1->_pad_44[0].d + 0x28
+00434dab        float var_40[0x4]
+00434dab        float* eax_18 = get_track_skirt_color(data_4df904 + 0x74618, &var_40)
+00434db5        float* edx_9 = esi_1->_pad_44[0].d + 0x28
 00434db8        ebp = var_50
 00434dbc        ebx = 0
 00434dbe        *edx_9 = *eax_18
@@ -123,9 +123,9 @@
 00434e90        *eax_34 = esi_1->world_x
 00434e95        eax_34[1] = esi_1->floor_height
 00434e9b        eax_34[2] = esi_1->world_z
-00434eaf        void var_30
-00434eaf        int32_t* eax_35 = get_track_skirt_color(data_4df904 + 0x74618, &var_30)
-00434eb9        int32_t* edx_17 = esi_1->_pad_44[4].d + 0x28
+00434eaf        float var_30[0x4]
+00434eaf        float* eax_35 = get_track_skirt_color(data_4df904 + 0x74618, &var_30)
+00434eb9        float* edx_17 = esi_1->_pad_44[4].d + 0x28
 00434ebc        ebp = var_50
 00434ec0        ebx = 0
 00434ec2        *edx_17 = *eax_35
@@ -163,9 +163,9 @@
 00434f94        *eax_51 = esi_1->world_x
 00434f99        eax_51[1] = esi_1->floor_height
 00434f9f        eax_51[2] = esi_1->world_z
-00434fb3        void var_20
-00434fb3        int32_t* eax_52 = get_track_skirt_color(data_4df904 + 0x74618, &var_20)
-00434fbd        int32_t* edx_25 = esi_1->_pad_44[8].d + 0x28
+00434fb3        float var_20[0x4]
+00434fb3        float* eax_52 = get_track_skirt_color(data_4df904 + 0x74618, &var_20)
+00434fbd        float* edx_25 = esi_1->_pad_44[8].d + 0x28
 00434fc0        ebp = var_50
 00434fc4        ebx = 0
 00434fc6        *edx_25 = *eax_52
@@ -199,9 +199,9 @@
 00435098        *eax_67 = esi_1->world_x
 0043509d        eax_67[1] = esi_1->floor_height
 004350a3        eax_67[2] = esi_1->world_z
-004350b7        void var_10
-004350b7        int32_t* eax_68 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
-004350c1        int32_t* edx_33 = esi_1->lane_flags_or_payload + 0x28
+004350b7        float var_10[0x4]
+004350b7        float* eax_68 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
+004350c1        float* edx_33 = esi_1->lane_flags_or_payload + 0x28
 004350c4        ebp = var_50
 004350c8        ebx = 0
 004350ca        *edx_33 = *eax_68

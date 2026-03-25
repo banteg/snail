@@ -47,38 +47,38 @@
 00404a2d        arg1[0x13] = *(data_4df904 + 0x430060) + arg2 * 0x64 + esi_2
 00404a41        int32_t var_24 = 0
 00404a5c        *arg1 = allocate_border(data_4df904 + 0xb4c)
-00404a5f        void var_10
-00404a5f        int32_t* eax_14 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404a5f        struct Color4f color
+00404a5f        struct Color4f* eax_14 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404a7a        initialize_frontend_widget(*arg1, 0x20400002, "Delivery Complete!", 0x14, 0, 80f, eax_14, 2.80259693e-45f)
 00404a90        int32_t var_24_1 = 0
 00404a91        arg1[1] = allocate_border(data_4df904 + 0xb4c)
 00404ab0        char* var_3c
-00404ab0        int32_t* var_2c_1
+00404ab0        struct Color4f* var_2c_1
 00404ab0        if (arg1[7] != 1)
-00404ad4        var_2c_1 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404ad4        var_2c_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404ad5        int32_t var_30_1 = 0x43200000
 00404ada        int32_t var_34_1 = 0
 00404adb        int32_t var_38_1 = 0x14
 00404add        var_3c = "00 Packages Delivered"
-00404abb        var_2c_1 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404abb        var_2c_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404abc        int32_t var_30 = 0x43200000
 00404ac1        int32_t var_34 = 0
 00404ac2        int32_t var_38 = 0x14
 00404ac4        var_3c = " 0 Package Delivered"
 00404aea        initialize_frontend_widget(arg1[1], 0x20400002, var_3c, 0x14, 0, 160f, var_2c_1, 2.80259693e-45f)
 00404b1a        arg1[3] = allocate_border(data_4df904 + 0xb4c)
-00404b1d        int32_t* eax_21 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404b1d        struct Color4f* eax_21 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404b37        initialize_frontend_sprite_button(arg1[3], 0x400800, 0x7a, 0x42c80000, 0x43120000, eax_21, 0f, 4)
 00404b3f        *(arg1[3] + 0x178) = 0
 00404b56        arg1[2] = allocate_border(data_4df904 + 0xb4c)
 00404b5e        int32_t eax_24 = *(data_4df904 + 0x74658)
 00404b66        if (eax_24 == 0)
 00404b68        int32_t var_24_2 = 0
-00404b83        int32_t* eax_25 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404b83        struct Color4f* eax_25 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404b9e        initialize_frontend_widget(arg1[2], 0x20400002, "PERFECT SCORE!>50,000 Bonus Points", 0x14, 0, 302f, eax_25, 2.80259693e-45f)
 00404bab        if (eax_24 == 1)
 00404bad        int32_t var_24_3 = 0
-00404bc8        int32_t* eax_26 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404bc8        struct Color4f* eax_26 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404be3        initialize_frontend_widget(arg1[2], 0x20400002, "LEVEL COMPLETE!>", 0x14, 0, 302f, eax_26, 2.80259693e-45f)
 00404bef        border_add_text_number(arg1[2], arg1[0x12])
 00404bf7        char* edi_1 = " Bonus Points"
@@ -108,11 +108,11 @@
 00404c4b        int32_t var_24_5 = 0
 00404c4c        arg1[4] = allocate_border(data_4df904 + 0xb4c)
 00404c6a        float var_30_2
-00404c6a        int32_t* var_2c_5
+00404c6a        struct Color4f* var_2c_5
 00404c6a        if (arg1[8] == 0)
-00404c86        var_2c_5 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404c86        var_2c_5 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404c87        var_30_2 = 320f
-00404c75        var_2c_5 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00404c75        var_2c_5 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00404c76        var_30_2 = 400f
 00404c9c        initialize_frontend_widget(arg1[4], 0x20400002, "Click to Continue", 0x14, 0, var_30_2, var_2c_5, 2.80259693e-45f)
 00404ca4        int32_t result = hide_border_init(arg1[4])

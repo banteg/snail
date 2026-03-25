@@ -78,10 +78,10 @@
 0042828f        *(&self->primary_samples->rotation_scalar_94 + ebx) = 0
 00428299        *(&self->primary_samples->special_scalar + ebx) = 0
 004282a5        *(&self->primary_samples->lateral_scale + ebx) = 0x3f800000
-004282af        struct PathTemplateTransform* transform = ebx + self->primary_samples
+004282af        struct TransformMatrix* transform = ebx + self->primary_samples
 004282b1        set_matrix_identity(transform)
 004282c0        struct PathTemplateSample* primary_samples_6 = self->primary_samples
-004282c3        struct PathTemplateTransform* transform_1 = transform
+004282c3        struct TransformMatrix* transform_1 = transform
 004282d0        float var_44_3 = fconvert.s(sine(fconvert.s(fconvert.t(var_4c_1) * fconvert.t(0.5f))))
 004282da        long double x87_r7_23 = sine(var_4c_1) * fconvert.t(var_44_3)
 004282f6        *(&self->primary_samples->transform.position + ebx) = fconvert.s(fconvert.t(*(&primary_samples_6->center_x + ebx)) - (x87_r7_23 + x87_r7_23))
@@ -205,7 +205,7 @@
 004287e0        while (true)
 004287e0        int32_t eax_79 = ecx_61 + ((self->width_cells * i_4 + j) << 1)
 004287e3        if (ecx_61 != 0)
-004288a9        int16_t* ebx_3 = &facequads[eax_79]
+004288a9        int16_t* ebx_3 = eax_79 * 0x30 + facequads
 004288ac        *ebx_3 = 0
 004288b1        ecx_61.w = self->width_cells.w
 004288b5        ecx_61.w += 1
@@ -230,7 +230,7 @@
 0042893d        *(ebx_3 + 0x24) = var_50_1
 00428942        *(ebx_3 + 0x28) = var_54_1
 00428945        *(ebx_3 + 0x2c) = var_50_1
-004287f7        int16_t* ebx_2 = &facequads[eax_79]
+004287f7        int16_t* ebx_2 = eax_79 * 0x30 + facequads
 004287fa        *ebx_2 = 0
 004287ff        eax_79.w = self->width_cells.w
 00428803        eax_79.w += 1

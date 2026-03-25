@@ -71,10 +71,10 @@
 0043de85        *(esi + 0x356479) = 0
 0043de8b        *(esi + 0x35647c) = 0
 0043de91        *(esi + 0x356480) = 0x3d088889
-0043de9b        long double x87_r7_6 = fconvert.t(cell->world_z)
+0043de9b        long double x87_r6_3 = fconvert.t(cell->world_z)
 0043de9e        long double temp1 = fconvert.t(game->__offset(0x1270fcc).d)
-0043de9e        x87_r7_6 - temp1
-0043dea4        eax_12.w = (x87_r7_6 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_6, temp1) ? 1 : 0) << 0xa | (x87_r7_6 == temp1 ? 1 : 0) << 0xe
+0043de9e        x87_r6_3 - temp1
+0043dea4        eax_12.w = (x87_r6_3 < temp1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_3, temp1) ? 1 : 0) << 0xa | (x87_r6_3 == temp1 ? 1 : 0) << 0xe | 0x3800
 0043dea9        if ((eax_12:1.b & 0x41) == 0)
 0043deab        *(esi + 0x356464) = 1
 0043dec1        game->__offset(0x1270fcc).d = fconvert.s(fconvert.t(game->__offset(0x1270fd0).d) + fconvert.t(game->__offset(0x1270fcc).d))

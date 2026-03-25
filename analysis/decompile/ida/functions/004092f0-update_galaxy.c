@@ -77,7 +77,7 @@ int __thiscall sub_4092F0(int this)
   }
   if ( *(_DWORD *)(this + 8) == 1 && (*(_DWORD *)(*(_DWORD *)(this + 69516) + 416) & 0x1000) == 0 )
   {
-    sub_44DBB0(v56, 1065353216, 1065353216, 1065353216, 1065336439);
+    store_color4f(v56, 1065353216, 1065353216, 1065353216, 1065336439);
     v4 = *(_DWORD *)(this + 69516);
     v5 = this + 672 * *(_DWORD *)(this + 69504);
     if ( *(float *)(v4 + 76) <= (double)*(float *)(v5 + 28) )

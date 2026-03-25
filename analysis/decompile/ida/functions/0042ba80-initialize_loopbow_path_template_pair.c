@@ -47,7 +47,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   double v41; // st6
   int v42; // edi
   int v43; // ecx
-  ObjectFaceQuad *v44; // ebx
+  uint32_t v44; // ebx
   float v46; // [esp+0h] [ebp-B0h]
   float v47; // [esp+0h] [ebp-B0h]
   int v48; // [esp+14h] [ebp-9Ch]
@@ -95,7 +95,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
   float v90; // [esp+60h] [ebp-50h]
   float v91; // [esp+64h] [ebp-4Ch]
   float v92; // [esp+68h] [ebp-48h]
-  PathTemplateTransform v93; // [esp+70h] [ebp-40h] BYREF
+  TransformMatrix v93; // [esp+70h] [ebp-40h] BYREF
   float arg2a; // [esp+B4h] [ebp+4h]
   char *v95; // [esp+C4h] [ebp+14h]
 
@@ -368,39 +368,39 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
           v53 = (double)(v6 + 1) * 0.125;
           while ( 1 )
           {
-            v44 = &facequads[2 * v6 + 2 * v42 * self->width_cells + v43];
-            v44->flags = 0;
+            v44 = (uint32_t)facequads + 96 * v6 + 96 * v42 * self->width_cells + 48 * v43;
+            *(_WORD *)v44 = 0;
             if ( v43 )
             {
-              v44->vertex_index_a = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->vertex_index_b = v6 + v42 * (LOWORD(self->width_cells) + 1);
-              v44->vertex_index_c = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
-              v44->vertex_index_d = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
-              v44->u0 = v53;
-              v44->v0 = v73;
-              v44->u1 = v71;
-              v44->v1 = v73;
-              v44->u2 = v71;
-              v44->v2 = v63;
-              v44->u3 = v53;
+              *(_WORD *)(v44 + 2) = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
+              *(_WORD *)(v44 + 4) = v6 + v42 * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v44 + 6) = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v44 + 8) = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
+              *(_DWORD *)(v44 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v95, 0, 0);
+              *(float *)(v44 + 16) = v53;
+              *(float *)(v44 + 20) = v73;
+              *(float *)(v44 + 24) = v71;
+              *(float *)(v44 + 28) = v73;
+              *(float *)(v44 + 32) = v71;
+              *(float *)(v44 + 36) = v63;
+              *(float *)(v44 + 40) = v53;
             }
             else
             {
-              v44->vertex_index_a = v6 + v42 * (LOWORD(self->width_cells) + 1);
-              v44->vertex_index_b = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->vertex_index_c = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
-              v44->vertex_index_d = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
-              v44->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
-              v44->u0 = v71;
-              v44->v0 = v73;
-              v44->u1 = v53;
-              v44->v1 = v73;
-              v44->u2 = v53;
-              v44->v2 = v63;
-              v44->u3 = v71;
+              *(_WORD *)(v44 + 2) = v6 + v42 * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v44 + 4) = v42 * (LOWORD(self->width_cells) + 1) + v6 + 1;
+              *(_WORD *)(v44 + 6) = (v42 + 1) * (LOWORD(self->width_cells) + 1) + v6 + 1;
+              *(_WORD *)(v44 + 8) = v6 + (v42 + 1) * (LOWORD(self->width_cells) + 1);
+              *(_DWORD *)(v44 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_b, 0, 0);
+              *(float *)(v44 + 16) = v71;
+              *(float *)(v44 + 20) = v73;
+              *(float *)(v44 + 24) = v53;
+              *(float *)(v44 + 28) = v73;
+              *(float *)(v44 + 32) = v53;
+              *(float *)(v44 + 36) = v63;
+              *(float *)(v44 + 40) = v71;
             }
-            v44->v3 = v63;
+            *(float *)(v44 + 44) = v63;
             if ( ++v60 >= 2 )
               break;
             v43 = v60;

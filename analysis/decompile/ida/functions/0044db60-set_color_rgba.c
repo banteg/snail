@@ -3,12 +3,12 @@
 /* selector: set_color_rgba */
 
 // Stores one four-float RGBA color tuple into the destination color/vector slot and returns the same destination pointer.
-_DWORD *__thiscall sub_44DB60(_DWORD *this, int a2, int a3, int a4, int a5)
+Color4f *__thiscall set_color_rgba(Color4f *color, float r, float g, float b, float a)
 {
-  *this = a2;
-  *(this + 1) = a3;
-  *(this + 2) = a4;
-  *(this + 3) = a5;
-  return this;
+  color->r = r;
+  color->g = g;
+  color->b = b;
+  color->a = a;
+  return color;
 }
 

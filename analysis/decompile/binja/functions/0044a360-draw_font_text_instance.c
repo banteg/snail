@@ -54,8 +54,8 @@
 0044a531        int32_t edi_2 = eax_13 * 0x828
 0044a54c        float var_34_1 = fconvert.s(float.t(*(edi_2 + &data_777b1c)))
 0044a550        int32_t ebx_2 = eax_13 * 0x20a
-0044a552        void var_10
-0044a552        int32_t* eax_14 = set_color_rgba(&var_10, 0, 0, 0, 0x3f4ccccd)
+0044a552        struct Color4f color
+0044a552        struct Color4f* eax_14 = set_color_rgba(&color, 0f, 0f, 0f, 0.800000012f)
 0044a57b        float var_68_1 = edx_6
 0044a57c        int32_t ecx_16 = ebx_2 + eax_4
 0044a590        int32_t var_6c_1 = ecx_16

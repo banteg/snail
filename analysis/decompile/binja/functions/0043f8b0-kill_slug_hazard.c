@@ -17,5 +17,5 @@
 0043f90b        *(arg1 + 0x84) = 2
 0043f8ff        *(arg1 + 0x84) = 1
 0043f921        add_subgoldy_score(*(arg1 + 0x88) + 0x3bb764, 1, 0)
-0043f928        explode_slug_hazard(arg1)
+0043f928        explode_slug_hazard()
 0043f92f        return

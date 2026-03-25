@@ -11,6 +11,7 @@
 0044e1ed        void* result
 0044e19b        void* ebp_1 = &arg1[i * 0xb4]
 0044e1a1        result = initialize_sprite(ebp_1 + 4)
+0044e1a1        int16_t top = top - 1
 0044e1a8        if (i == 0)
 0044e1aa        result = &arg1[0xb8]
 0044e1b0        *(arg1 + 0x14) = 0

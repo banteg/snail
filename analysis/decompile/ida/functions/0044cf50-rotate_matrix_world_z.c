@@ -2,7 +2,7 @@
 /* function: rotate_matrix_world_z @ 0x44cf50 */
 /* selector: rotate_matrix_world_z */
 
-int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform *transform, float angle)
+int32_t __thiscall rotate_matrix_world_z(TransformMatrix *transform, float angle)
 {
   int32_t result; // eax
   double v5; // st7

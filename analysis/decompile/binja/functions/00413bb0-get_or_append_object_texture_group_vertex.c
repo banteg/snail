@@ -67,7 +67,7 @@
 00413ced        *(esi_3 + data_5031c4 + 0x14) = fconvert.s(fconvert.t(1f) - fconvert.t(arg4))
 00413cf8        if ((*(arg1 + 0x10) & 0x10000) == 0)
 00413d25        *(esi_3 + data_5031c4 + 0xc) = 0xffffffff
-00413d0f        sub_44dbf0(esi_3 + data_5031c4 + 0xc, *(arg1 + 0x48) + (arg2 << 4))
+00413d0f        pack_color_rgba_u8(esi_3 + data_5031c4 + 0xc, *(arg1 + 0x48) + (arg2 << 4))
 00413d33        *(esi_3 + data_5031c4 + 0x18) = arg2
 00413d3c        int32_t eax_10 = data_5031bc + 1
 00413d3f        data_5031bc = eax_10

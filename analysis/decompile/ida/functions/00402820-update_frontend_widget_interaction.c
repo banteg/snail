@@ -329,13 +329,13 @@ LABEL_83:
     *(float *)&v54 = *(float *)(this + 528) * *(float *)(this + 468) + v32 * *(float *)(this + 452);
     *(float *)&v52 = *(float *)(this + 528) * *(float *)(this + 464) + v32 * *(float *)(this + 448);
     *(float *)&v50 = *(float *)(this + 528) * *(float *)(this + 460) + v32 * *(float *)(this + 444);
-    sub_44DBB0((_DWORD *)(this + 428), v50, v52, v54, v56);
+    store_color4f((_DWORD *)(this + 428), v50, v52, v54, v56);
     v33 = 1.0 - *(float *)(this + 528);
     *(float *)&v57 = *(float *)(this + 528) * *(float *)(this + 520) + v33 * *(float *)(this + 504);
     *(float *)&v55 = *(float *)(this + 528) * *(float *)(this + 516) + v33 * *(float *)(this + 500);
     *(float *)&v53 = *(float *)(this + 528) * *(float *)(this + 512) + v33 * *(float *)(this + 496);
     *(float *)&v51 = *(float *)(this + 528) * *(float *)(this + 508) + v33 * *(float *)(this + 492);
-    sub_44DBB0((_DWORD *)(this + 476), v51, v53, v55, v57);
+    store_color4f((_DWORD *)(this + 476), v51, v53, v55, v57);
     v34 = *(_DWORD *)(this + 416);
     if ( (v34 & 0x8000) != 0 )
     {

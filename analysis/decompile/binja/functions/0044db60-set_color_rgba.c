@@ -4,8 +4,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_color_rgba @ 0x44db60 */
 
-0044db6a        *arg1 = arg2
-0044db70        arg1[1] = arg3
-0044db77        arg1[2] = arg4
-0044db7a        arg1[3] = arg5
-0044db7d        return arg1
+0044db6a        color->r = r
+0044db70        color->g = g
+0044db77        color->b = b
+0044db7a        color->a = a
+0044db7d        return color

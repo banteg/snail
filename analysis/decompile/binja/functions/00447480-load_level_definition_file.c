@@ -137,7 +137,7 @@
 004478f0        arg1[0x69635] = fconvert.s(float.t(sub_44e710(&i_9)) * fconvert.t(0.00392156886f))
 0044785a        char (* var_724_16)[0x200] = &var_700
 00447860        report_errorf("No Fringe: in %s using white")
-00447882        sub_44dbb0(&arg1[0x69633], 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00447882        store_color4f(&arg1[0x69633], 1f, 1f, 1f, 1f)
 00447900        char* i_22 = find_case_insensitive_substring("Track:", 0x74ec78)
 0044790a        i_9 = i_22
 0044790e        if (i_22 != 0)
@@ -182,7 +182,10 @@
 00447a7c        i_9 = i_27
 00447a80        if (i_27 != 0)
 00447ab1        i_9 = &find_case_insensitive_substring(":", i_27)[1]
-00447aba        arg1[0x69657] = fconvert.s(parse_next_float32(&i_9))
+00447ab5        parse_next_float32(&i_9)
+00447ab5        unimplemented  {call 0x431f20}
+00447aba        arg1[0x69657] = fconvert.s(unimplemented  {fstp dword [esi+0x1a595c], st0})
+00447aba        unimplemented  {fstp dword [esi+0x1a595c], st0}
 00447a86        char (* var_724_24)[0x200] = &var_700
 00447a8c        report_errorf("Cannot find Speed: in Segment %s\n")
 00447a94        arg1[0x69657] = 0x42c80000
@@ -190,12 +193,18 @@
 00447acd        char* i_28 = find_case_insensitive_substring("Garbage:", 0x74ec78)
 00447ad7        i_9 = i_28
 00447adb        if (i_28 != 0)
-00447aef        arg1[0x69658] = fconvert.s(parse_next_float32(&i_9))
+00447aea        parse_next_float32(&i_9)
+00447aea        unimplemented  {call 0x431f20}
+00447aef        arg1[0x69658] = fconvert.s(unimplemented  {fstp dword [esi+0x1a5960], st0})
+00447aef        unimplemented  {fstp dword [esi+0x1a5960], st0}
 00447add        arg1[0x69658] = 0xbf800000
 00447b02        char* i_29 = find_case_insensitive_substring("Salt:", 0x74ec78)
 00447b0c        i_9 = i_29
 00447b10        if (i_29 != 0)
-00447b24        arg1[0x69659] = fconvert.s(parse_next_float32(&i_9))
+00447b1f        parse_next_float32(&i_9)
+00447b1f        unimplemented  {call 0x431f20}
+00447b24        arg1[0x69659] = fconvert.s(unimplemented  {fstp dword [esi+0x1a5964], st0})
+00447b24        unimplemented  {fstp dword [esi+0x1a5964], st0}
 00447b12        arg1[0x69659] = 0xbf800000
 00447b37        *arg1 = 0
 00447b39        char* i_30 = find_case_insensitive_substring("Segments Begin:", 0x74ec78)
@@ -246,7 +255,11 @@
 00447c62        if (eax_30 == 0)
 00447cb9        arg1[*arg1 * 0x1088 + 0x1006] = 0
 00447c73        var_70c = find_case_insensitive_substring("=", eax_30)
-00447c9f        arg1[*arg1 * 0x1088 + 0x1006] = fconvert.s(float.t(sub_44e710(&var_70c)) * fconvert.t(0.0174532924f))
+00447c7d        int32_t var_708_4 = sub_44e710(&var_70c)
+00447c83        unimplemented  {fild st0, dword [esp+0x24]}
+00447c8f        unimplemented  {fmul st0, dword [0x4973b8]}
+00447c9f        arg1[*arg1 * 0x1088 + 0x1006] = fconvert.s(unimplemented  {fstp dword [edx+esi+0x4018], st0})
+00447c9f        unimplemented  {fstp dword [edx+esi+0x4018], st0}
 00447cde        arg1[*arg1 * 0x1088 + 0x1007].b = 0
 00447ce6        char* eax_36 = find_case_insensitive_substring("Message=", &var_500)
 00447cf0        var_70c = eax_36
@@ -277,9 +290,12 @@
 00447d8d        char* eax_43 = var_70c
 00447d93        if (eax_43 != 0)
 00447da1        var_70c = &find_case_insensitive_substring("=", eax_43)[1]
-00447dc3        arg1[*arg1 * 0x1088 + 0x1087] = fconvert.s(parse_next_float32(&var_70c))
+00447daa        parse_next_float32(&var_70c)
+00447daa        unimplemented  {call 0x431f20}
+00447dc3        arg1[*arg1 * 0x1088 + 0x1087] = fconvert.s(unimplemented  {fstp dword [ecx+esi+0x421c], st0})
+00447dc3        unimplemented  {fstp dword [ecx+esi+0x421c], st0}
 00447ddc        var_70c = find_case_insensitive_substring("Sample=", &var_500)
-00447df5        arg1[(*arg1 + 1) * 0x1088] = 0xffffffff
+00447df5        *((*arg1 + 1) * 0x4220 + arg1) = 0xffffffff
 00447dfc        char* eax_50 = var_70c
 00447e02        if (eax_50 != 0)
 00447e13        char* eax_52 = &find_case_insensitive_substring("=", eax_50)[2]

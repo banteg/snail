@@ -105,7 +105,7 @@ int __thiscall sub_408CF0(int this)
     (int)v9,
     0,
     0.0);
-  sub_44DBB0((_DWORD *)(*(_DWORD *)(this + 69516) + 460), 1065353216, 1065353216, 1065353216, 1065353216);
+  store_color4f((_DWORD *)(*(_DWORD *)(this + 69516) + 460), 1065353216, 1065353216, 1065353216, 1065353216);
   hide_border_init(*(_DWORD **)(this + 69516));
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 72) = 152;
   *(_DWORD *)(*(_DWORD *)(this + 69516) + 76) = 1134559232;

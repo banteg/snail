@@ -184,7 +184,7 @@
 0042150e        ecx_70[2] = var_13c
 0042114d        out_position_1 = out_position
 0042115c        float* out_angle = &var_17c
-00421167        struct PathTemplateTransform* transform = &transform_1
+00421167        struct TransformMatrix* transform = &transform_1
 00421168        float var_19c_3 = 0.49000001f
 0042116d        float* var_1a0_1 = &transform_1
 0042116e        float var_1a0_2 = fconvert.s(fconvert.t(out_position_1->x) - fconvert.t(var_168))

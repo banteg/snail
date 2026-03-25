@@ -24,7 +24,7 @@
 004192e0        release_mouse_cursor(data_4df904 + 0x290)
 004192e5        char* esi_1 = eax_4
 004192e9        arg1[2] = 0
-004192f2        float var_16c = 0.200000003f
+004192f2        int32_t var_16c = 0x3e4ccccd
 004192fa        arg1[5] = 0
 004192fd        char* eax_7 = find_case_insensitive_substring("Text Start:", esi_1)
 00419308        char* var_178 = eax_7
@@ -36,8 +36,9 @@
 0041933a        int32_t* var_168_1 = &arg1[0x900f]
 0041933e        eax_10.b = *ecx_10
 00419340        char* edi_1 = nullptr
-00419344        float var_164_1 = 0f
+00419344        int32_t var_164_1 = 0
 00419348        char* esi_2 = ecx_10
+0041934a        int16_t top
 0041934a        if (eax_10.b == 0x2a)
 00419350        char* ecx_11 = &ecx_10[1]
 00419351        void var_100
@@ -57,8 +58,14 @@
 0041937f        eax_11[3] = 0x61
 00419382        eax_11[4] = 0
 00419389        var_178 = &ecx_11[1]
-00419393        float var_170_1 = fconvert.s(parse_next_float32(&var_178))
-004193a1        float var_174_1 = fconvert.s(parse_next_float32(&var_178))
+0041938e        parse_next_float32(&var_178)
+0041938e        unimplemented  {call 0x431f20}
+00419393        float var_170_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+00419393        unimplemented  {fstp dword [esp+0x1c], st0}
+0041939c        parse_next_float32(&var_178)
+0041939c        unimplemented  {call 0x431f20}
+004193a1        float var_174_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+004193a1        unimplemented  {fstp dword [esp+0x1c], st0}
 004193b3        void* var_194_1 = &var_100
 004193ba        void texture_path
 004193ba        sub_48b32c(&texture_path, "Intro/%s")
@@ -83,37 +90,53 @@
 00419472        set_matrix_identity(&arg1[arg1[5] * 0x24 + 0x14])
 00419477        int32_t eax_21 = arg1[5]
 00419491        int32_t var_148_1 = 0
+0041949c        unimplemented  {fld st0, dword [esp+0x14]}
+004194ab        unimplemented  {fmul st0, dword [0x497228]}
 004194b1        arg1[eax_21 * 0x24 + 0x20] = 0
 004194b7        arg1[eax_21 * 0x24 + 0x21] = 0xc0800000
-004194ba        float var_168_2 = fconvert.s(fconvert.t(var_174_1) * fconvert.t(0.5f))
+004194ba        float var_168_2 = fconvert.s(unimplemented  {fstp dword [esp+0x20], st0})
+004194ba        unimplemented  {fstp dword [esp+0x20], st0}
+004194be        unimplemented  {fld st0, dword [esp+0x1c]}
 004194c2        arg1[eax_21 * 0x24 + 0x22] = var_148_1
-004194c5        arg1[5]
-004194e0        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_168_2) + fconvert.t(arg1[arg1[5] * 0x24 + 0x22]))
+004194c8        unimplemented  {fsub st0, dword [esp+0x20]}
+004194d2        unimplemented  {fadd dword [eax+ebp+0x88]}
+004194e0        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(unimplemented  {fstp dword [eax], st0})
+004194e0        unimplemented  {fstp dword [eax], st0}
 004194ef        set_color_white()
-00419501        long double x87_r7_9 = fconvert.t(var_170_1) * fconvert.t(0.5f)
+004194f7        unimplemented  {fld st0, dword [esp+0x18]}
+00419501        unimplemented  {fmul st0, dword [0x497228]}
 00419507        arg1[arg1[5] * 0x24 + 0x13] = 0x3f7fbe77
 00419518        arg1[arg1[5] * 0x24 + 0x29].b = 0xff
-00419530        **(arg1[arg1[5] * 0x24 + 0xf] + 0x38) = fconvert.s(x87_r7_9)
-0041953f        long double x87_r6_2 = fconvert.t(var_170_1) * fconvert.t(-0.5f)
+00419530        **(arg1[arg1[5] * 0x24 + 0xf] + 0x38) = fconvert.s(unimplemented  {fst dword [eax], st0})
+00419535        unimplemented  {fld st0, dword [esp+0x18]}
+0041953f        unimplemented  {fmul st0, dword [0x497380]}
 00419550        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 8) = var_168_2
-00419563        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0xc) = fconvert.s(x87_r6_2)
+00419563        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0xc) = fconvert.s(unimplemented  {fst dword [ecx+0xc], st0})
 0041957a        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x14) = var_168_2
-0041958d        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x18) = fconvert.s(x87_r6_2)
-00419597        long double x87_r6_4 = fconvert.t(var_174_1) * fconvert.t(-0.5f)
-004195a7        float var_170_2 = fconvert.s(x87_r6_4)
-004195ae        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x20) = fconvert.s(x87_r6_4)
-004195c1        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x24) = fconvert.s(x87_r7_9)
+0041958d        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x18) = fconvert.s(unimplemented  {fstp dword [edx+0x18], st0})
+0041958d        unimplemented  {fstp dword [edx+0x18], st0}
+00419593        unimplemented  {fld st0, dword [esp+0x14]}
+00419597        unimplemented  {fmul st0, dword [0x497380]}
+004195a7        float var_170_2 = fconvert.s(unimplemented  {fst dword [esp+0x18], st0})
+004195ae        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x20) = fconvert.s(unimplemented  {fstp dword [edx+0x20], st0})
+004195ae        unimplemented  {fstp dword [edx+0x20], st0}
+004195c1        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x24) = fconvert.s(unimplemented  {fstp dword [edx+0x24], st0})
+004195c1        unimplemented  {fstp dword [edx+0x24], st0}
 004195d8        *(*(arg1[arg1[5] * 0x24 + 0xf] + 0x38) + 0x2c) = var_170_2
 004195db        int32_t eax_54 = arg1[5]
 004195eb        arg1[eax_54 * 0x24 + 0x28] = 0
 004195ee        arg1[eax_54 * 0x24 + 0x27] = 0
 004195f1        arg1[eax_54 * 0x24 + 0x26] = 0
 00419604        eax_10, edx_4 = (*arg1[arg1[5] * 0x24 + 6])()
+00419606        unimplemented  {fld st0, dword [esp+0x1c]}
 0041960a        ecx_10 = var_178
+00419614        unimplemented  {fsub st0, dword [esp+0x14]}
 00419618        var_168_1 = &var_168_1[0x24]
 00419620        arg1[5] += 1
 00419623        eax_10.b = *ecx_10
-00419625        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(var_174_1))
+00419625        float var_16c_1 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+00419625        unimplemented  {fstp dword [esp+0x1c], st0}
+00419625        top -= 1
 0041962b        if (eax_10.b != 0)
 00419633        while (eax_10.b != 0xd)
 00419639        ecx_10 = &ecx_10[1]
@@ -123,20 +146,26 @@
 00419642        break
 0041964b        if (eax_10.b != 0)
 00419653        while (eax_10.b != 0xd)
-00419666        long double x87_r7_13 = fconvert.t(var_164_1) + fconvert.t(*((font_slot_index_for_char(eax_10.b) << 2) + &data_7770e8))
+00419662        unimplemented  {fld st0, dword [esp+0x24]}
+00419666        unimplemented  {fadd dword [eax*4+0x7770e8]}
 0041966d        edi_1 = &edi_1[1]
 0041966e        ecx_10 = &var_178[1]
 0041966f        var_178 = ecx_10
 00419673        eax_10.b = *ecx_10
-00419675        var_164_1 = fconvert.s(x87_r7_13)
+00419675        float var_164_2 = fconvert.s(unimplemented  {fstp dword [esp+0x24], st0})
+00419675        unimplemented  {fstp dword [esp+0x24], st0}
 0041967b        if (eax_10.b == 0)
 0041967b        break
 0041967f        if (edi_1 s> 0)
+00419685        unimplemented  {fld st0, dword [esp+0x24]}
+00419689        unimplemented  {fmul st0, dword [0x497228]}
 0041968f        int32_t var_160_1 = 0
 00419697        int32_t var_15c_1 = 0xc0800000
 0041969f        int32_t var_158_1 = 0
 004196a7        char* var_170_3 = edi_1
-004196b1        float var_174_2 = fconvert.s(fconvert.t(var_164_1) * fconvert.t(0.5f) * fconvert.t(0.800000012f))
+004196ab        unimplemented  {fmul st0, dword [0x497250]}
+004196b1        float var_174_2 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
+004196b1        unimplemented  {fstp dword [esp+0x14], st0}
 00419849        bool cond:3_1
 004196b5        arg1[5]
 004196c9        int32_t eax_60
@@ -161,13 +190,17 @@
 00419743        set_bod_object(&arg1[arg1[5] * 0x24 + 6], *(eax_63 * 0x38 + &data_77550c))
 00419755        set_matrix_identity(&arg1[arg1[5] * 0x24 + 0x14])
 0041975a        int32_t eax_68 = arg1[5]
+00419761        unimplemented  {fld st0, dword [esp+0x14]}
 00419776        arg1[eax_68 * 0x24 + 0x20] = var_160_1
 0041977c        arg1[eax_68 * 0x24 + 0x21] = var_15c_1
 0041977f        arg1[eax_68 * 0x24 + 0x22] = var_158_1
-00419782        arg1[5]
-00419799        arg1[arg1[5] * 0x24 + 0x20] = fconvert.s(fconvert.t(var_174_2) + fconvert.t(arg1[arg1[5] * 0x24 + 0x20]))
-0041979b        arg1[5]
-004197b6        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(fconvert.t(var_16c) + fconvert.t(arg1[arg1[5] * 0x24 + 0x22]))
+0041978b        unimplemented  {fadd dword [edx+ebp+0x80]}
+00419799        arg1[arg1[5] * 0x24 + 0x20] = fconvert.s(unimplemented  {fstp dword [eax], st0})
+00419799        unimplemented  {fstp dword [eax], st0}
+0041979e        unimplemented  {fld st0, dword [esp+0x1c]}
+004197a8        unimplemented  {fadd dword [eax+ebp+0x88]}
+004197b6        arg1[arg1[5] * 0x24 + 0x22] = fconvert.s(unimplemented  {fstp dword [eax], st0})
+004197b6        unimplemented  {fstp dword [eax], st0}
 004197c5        set_color_white()
 004197d3        arg1[arg1[5] * 0x24 + 0x13] = 0x3f7fbe77
 004197db        int32_t eax_78 = arg1[5]
@@ -178,32 +211,47 @@
 004197f6        edx_41.b = *esi_2
 004197fe        arg1[arg1[5] * 0x24 + 0x29].b = edx_41.b
 00419816        (*arg1[arg1[5] * 0x24 + 6])()
-00419827        long double x87_r7_22 = fconvert.t(*((font_slot_index_for_char(*esi_2) << 2) + &data_7770e8)) * fconvert.t(0.800000012f)
+00419820        unimplemented  {fld st0, dword [eax*4+0x7770e8]}
+00419827        unimplemented  {fmul st0, dword [0x497250]}
 00419833        esi_2 = &esi_2[1]
+00419835        unimplemented  {fsubr st0, dword [esp+0x14]}
 00419839        arg1[5] += 1
-0041983c        var_174_2 = fconvert.s(fconvert.t(var_174_2) - x87_r7_22)
+0041983c        float var_174_3 = fconvert.s(unimplemented  {fstp dword [esp+0x14], st0})
+0041983c        unimplemented  {fstp dword [esp+0x14], st0}
+0041983c        top -= 1
 00419844        cond:3_1 = var_170_3 != 1
 00419845        var_170_3 -= 1
 00419849        do while (cond:3_1)
 0041984f        ecx_10 = var_178
 00419856        if (*ecx_10 == 0xd)
+00419858        unimplemented  {fld st0, dword [esp+0x1c]}
+0041985c        unimplemented  {fsub st0, dword [0x497220]}
 00419862        ecx_10 = &ecx_10[2]
 00419865        var_178 = ecx_10
-00419869        var_16c = fconvert.s(fconvert.t(var_16c) - fconvert.t(1f))
+00419869        float var_16c_2 = fconvert.s(unimplemented  {fstp dword [esp+0x1c], st0})
+00419869        unimplemented  {fstp dword [esp+0x1c], st0}
 00419871        do while (ecx_10 u< var_144)
 00419877        esi_1 = eax_4
-00419881        char* eax_89 = find_case_insensitive_substring("Duration:", esi_1)
-0041988c        var_178 = eax_89
-00419899        var_178 = find_case_insensitive_substring(":", eax_89)
-0041989e        long double st0_3 = parse_next_float32(&var_178)
-004198a3        arg1[4] = fconvert.s(st0_3)
+00419881        char* eax_88 = find_case_insensitive_substring("Duration:", esi_1)
+0041988c        var_178 = eax_88
+00419899        var_178 = find_case_insensitive_substring(":", eax_88)
+0041989e        parse_next_float32(&var_178)
+0041989e        unimplemented  {call 0x431f20}
+004198a3        arg1[4] = fconvert.s(unimplemented  {fst dword [ebp+0x10], st0})
+004198a6        unimplemented  {fmul st0, dword [0x497298]}
 004198b4        int32_t var_160_2 = 0
-004198d6        float var_158_2 = fconvert.s(fconvert.t(1f) / (st0_3 * fconvert.t(60f)) * (fconvert.t(3f) - fconvert.t(var_16c)))
+004198bc        unimplemented  {fdivr st0, dword [0x497220]}
+004198ca        unimplemented  {fld st0, dword [0x497218]}
+004198d0        unimplemented  {fsub st0, dword [esp+0x1c]}
+004198d4        unimplemented  {fmulp st1, st0}
+004198d4        unimplemented  {fmulp st1, st0}
+004198d6        float var_158_2 = fconvert.s(unimplemented  {fstp dword [esp+0x30], st0})
+004198d6        unimplemented  {fstp dword [esp+0x30], st0}
 004198da        if (arg1[5] s> 0)
-004198e0        int32_t* eax_92 = &arg1[0x26]
-004198ea        int32_t* edx_43 = eax_92
+004198e0        int32_t* eax_91 = &arg1[0x26]
+004198ea        int32_t* edx_43 = eax_91
 004198ec        i += 1
-004198ed        eax_92 = &eax_92[0x24]
+004198ed        eax_91 = &eax_91[0x24]
 004198f2        *edx_43 = var_160_2
 004198f8        edx_43[1] = 0
 004198fb        edx_43[2] = var_158_2

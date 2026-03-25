@@ -559,7 +559,7 @@ char __thiscall sub_435EB0(int this)
                   {
                     set_bod_object((_DWORD *)(v51 + 3930824), *((_DWORD *)MEMORY[0x4DF904] + 69943));
                     *(_DWORD *)(v51 + 3930828) |= 0x20u;
-                    sub_44DBB0(
+                    store_color4f(
                       (_DWORD *)(this + 84 * (v116 + 8 * v111 + 46796)),
                       1065353216,
                       1065353216,

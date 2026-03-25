@@ -4,8 +4,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: refresh_fringe_object_draw_list @ 0x439b00 */
 
-00439b17        void var_10
-00439b17        int32_t* eax = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
+00439b17        float var_10[0x4]
+00439b17        float* eax = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
 00439b21        long double x87_r7 = fconvert.t(*(arg1 + 0x18))
 00439b24        *(arg1 + 0x28) = *eax
 00439b29        *(arg1 + 0x2c) = eax[1]

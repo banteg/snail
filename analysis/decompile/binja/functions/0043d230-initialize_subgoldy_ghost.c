@@ -12,13 +12,13 @@
 0043d272        *(*(arg1 + 0x98) + 0x68) = 0
 0043d285        *(*(arg1 + 0x98) + 0x6c) = 0
 0043d292        *(*(arg1 + 0x98) + 0x78) = 0
-0043d295        void var_10
-0043d295        int32_t* eax_2 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-0043d2a2        int32_t* ecx_4 = *(arg1 + 0x98) + 0x2c
-0043d2ae        *ecx_4 = *eax_2
-0043d2b9        ecx_4[1] = eax_2[1]
-0043d2bf        ecx_4[2] = eax_2[2]
-0043d2c5        ecx_4[3] = eax_2[3]
+0043d295        struct Color4f color
+0043d295        struct Color4f* eax_2 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+0043d2a2        float* ecx_4 = *(arg1 + 0x98) + 0x2c
+0043d2ae        *ecx_4 = eax_2->r
+0043d2b9        ecx_4[1] = eax_2->g
+0043d2bf        ecx_4[2] = eax_2->b
+0043d2c5        ecx_4[3] = eax_2->a
 0043d2ce        *(*(arg1 + 0x98) + 0x60) = 0x3f000000
 0043d2d7        *(*(arg1 + 0x98) + 0x64) = 0x3f000000
 0043d2e0        *(*(arg1 + 0x98) + 0x48) = 0x40900000
@@ -32,12 +32,12 @@
 0043d32b        *(*(arg1 + 0x9c) + 0x68) = 0
 0043d339        *(*(arg1 + 0x9c) + 0x6c) = 0
 0043d346        *(*(arg1 + 0x9c) + 0x78) = 0
-0043d349        int32_t* eax_7 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-0043d356        int32_t* ecx_11 = *(arg1 + 0x9c) + 0x2c
-0043d359        *ecx_11 = *eax_7
-0043d35e        ecx_11[1] = eax_7[1]
-0043d364        ecx_11[2] = eax_7[2]
-0043d36a        ecx_11[3] = eax_7[3]
+0043d349        struct Color4f* eax_7 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+0043d356        float* ecx_11 = *(arg1 + 0x9c) + 0x2c
+0043d359        *ecx_11 = eax_7->r
+0043d35e        ecx_11[1] = eax_7->g
+0043d364        ecx_11[2] = eax_7->b
+0043d36a        ecx_11[3] = eax_7->a
 0043d373        *(*(arg1 + 0x9c) + 0x60) = 0x3f000000
 0043d37c        *(*(arg1 + 0x9c) + 0x64) = 0x3f000000
 0043d385        *(*(arg1 + 0x9c) + 0x48) = 0xc0900000

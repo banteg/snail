@@ -15,9 +15,9 @@
 00437e1e        merge_track_tile_runs(arg1)
 00437e25        mark_track_warning_zones(arg1)
 00437e2c        build_track_fringe_objects(arg1)
-00437e42        void var_10
-00437e42        int32_t* eax = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
-00437e4e        int32_t var_24 = *eax
+00437e42        float var_10[0x4]
+00437e42        float* eax = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
+00437e4e        float var_24 = *eax
 00437e53        int32_t var_20 = eax[1]
 00437e5c        int32_t var_1c = eax[2]
 00437e5f        int32_t var_18_1 = eax[3]

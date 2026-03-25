@@ -161,7 +161,7 @@
 0043ae37        *(arg3 + 0x2738) = 0
 0043ae3d        initialize_damage_gauge(arg3 + 0x3c4)
 0043ae4d        *(arg3 + 0x384) = 0
-0043ae53        struct PathTemplateTransform* transform = arg3 + 0x614
+0043ae53        struct TransformMatrix* transform = arg3 + 0x614
 0043ae59        int32_t i_1 = 0xc
 0043ae7e        int32_t i
 0043ae60        transform->__offset(0x80).d = 0

@@ -27,6 +27,13 @@ typedef struct Color4f {
     float a;
 } Color4f;
 
+typedef struct ColorBGRA8 {
+    uint8_t b;
+    uint8_t g;
+    uint8_t r;
+    uint8_t a;
+} ColorBGRA8;
+
 typedef struct TextureRef {
     uint32_t flags;
     uint8_t _pad_04[0x8];
@@ -43,6 +50,7 @@ typedef struct TextureRefList {
 
 typedef enum PathTemplateStripMeshFlags {
     PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,
+    PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH = 0x100000,
 } PathTemplateStripMeshFlags;
 
 typedef enum PathTemplateKind {
@@ -72,8 +80,12 @@ typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_TWISTER2 = 0x2d,
 } PathTemplateKind;
 
+typedef enum ObjectFaceQuadFlags {
+    OBJECT_FACEQUAD_FLAG_NON_QUAD = 0x80,
+} ObjectFaceQuadFlags;
+
 typedef struct ObjectFaceQuad {
-    uint16_t flags;
+    ObjectFaceQuadFlags flags;
     uint16_t vertex_index_a;
     uint16_t vertex_index_b;
     uint16_t vertex_index_c;
@@ -105,15 +117,17 @@ typedef struct PathTemplateStripMesh {
     ObjectFaceQuad* facequads;
 } PathTemplateStripMesh;
 
-typedef struct PathTemplateTransform {
+typedef struct TransformMatrix {
     Vec4 basis_right;
     Vec4 basis_up;
     Vec4 basis_forward;
     Vec4 position;
-} PathTemplateTransform;
+} TransformMatrix;
+
+typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
-    PathTemplateTransform transform;
+    TransformMatrix transform;
     uint8_t _pad_40[0x40];
     Vec3 delta_dir_to_next;
     float delta_length;
@@ -158,17 +172,26 @@ int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
 int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);
 int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);
 double __fastcall normalize_vector(Vec3* vector);
+double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
+int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
+int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);
 int32_t __stdcall compute_kind42_attachment_transform(
     float arg1,
     float arg2,
     float arg3,
-    PathTemplateTransform* transform,
+    TransformMatrix* transform,
     float* out_angle
 );
+int32_t __stdcall load_x_mesh(char* mesh_path, PathTemplateStripMesh* mesh, uint8_t options_flags);
 void __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
 void __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
 void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);
+Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);
+float __thiscall set_color_alpha(Color4f* color, float alpha);
+float __thiscall set_color_grayscale(Color4f* color, float intensity);
+float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
+ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(
     PathTemplate* self,

@@ -57,13 +57,13 @@
 0043458f        *(*(edi_1 + arg1[0xf] + 0x1c) + 0x68) = 0
 00434599        *(*(edi_1 + arg1[0xf] + 0x1c) + 0x6c) = 0
 004345a7        *(*(edi_1 + arg1[0xf] + 0x1c) + 0x78) = 0
-004345aa        void var_10
-004345aa        int32_t* eax_24 = set_color_rgba(&var_10, 0x3f4ccccd, 0x3f4ccccd, 0x3f800000, 0x3ecccccd)
-004345b8        int32_t* edx_13 = *(edi_1 + arg1[0xf] + 0x1c) + 0x2c
-004345bb        *edx_13 = *eax_24
-004345c0        edx_13[1] = eax_24[1]
-004345c6        edx_13[2] = eax_24[2]
-004345cc        edx_13[3] = eax_24[3]
+004345aa        struct Color4f color
+004345aa        struct Color4f* eax_24 = set_color_rgba(&color, 0.800000012f, 0.800000012f, 1f, 0.400000006f)
+004345b8        float* edx_13 = *(edi_1 + arg1[0xf] + 0x1c) + 0x2c
+004345bb        *edx_13 = eax_24->r
+004345c0        edx_13[1] = eax_24->g
+004345c6        edx_13[2] = eax_24->b
+004345cc        edx_13[3] = eax_24->a
 004345d6        *(*(edi_1 + arg1[0xf] + 0x1c) + 0x60) = 0x3f4ccccd
 004345e0        void* eax_27 = *(edi_1 + arg1[0xf] + 0x1c)
 004345e7        *(eax_27 + 0x64) = *(eax_27 + 0x60)

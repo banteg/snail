@@ -13,22 +13,24 @@
 00415cc0        eax_1[0x1c] = 0
 00415cc7        eax_1[0x1b] = fconvert.s(x87_r7_1)
 00415cd9        eax_1[0x1d] = fconvert.s(fconvert.t(*(*(arg1 + 0x270) + 0x38)) * fconvert.t(0.416666687f))
-00415cdc        float var_10
-00415cdc        int32_t* eax_3 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-00415ce6        eax_1[0xb] = *eax_3
-00415cec        eax_1[0xc] = eax_3[1]
-00415cf2        eax_1[0xd] = eax_3[2]
-00415cf5        int32_t eax_4 = eax_3[3]
+00415cdc        struct Color4f color
+00415cdc        struct Color4f* eax_3 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00415ce6        eax_1[0xb] = eax_3->r
+00415cec        eax_1[0xc] = eax_3->g
+00415cf2        eax_1[0xd] = eax_3->b
+00415cf5        float a = eax_3->a
 00415cf8        eax_1[0x18] = 0x3dcccccd
 00415cff        eax_1[0x19] = 0x3f000000
-00415d06        eax_1[0xe] = eax_4
-00415d1b        var_10 = fconvert.s(fconvert.t(*(arg1 + 0x24c)) * fconvert.t(0.400000006f))
-00415d2f        float var_c = fconvert.s(fconvert.t(*(arg1 + 0x250)) * fconvert.t(0.400000006f))
+00415d06        eax_1[0xe] = a
+00415d1b        color.r = fconvert.s(fconvert.t(*(arg1 + 0x24c)) * fconvert.t(0.400000006f))
+00415d2f        color.g = fconvert.s(fconvert.t(*(arg1 + 0x250)) * fconvert.t(0.400000006f))
 00415d39        long double x87_r7_9 = fconvert.t(*(arg1 + 0x254)) * fconvert.t(0.400000006f)
-00415d43        eax_1[0x15] = var_10
+00415d3f        float g = color.g
+00415d43        eax_1[0x15] = color.r
 00415d45        eax_1[0x1e] = 0
-00415d4d        eax_1[0x16] = var_c
-00415d5c        eax_1[0x17] = fconvert.s(x87_r7_9)
+00415d4d        eax_1[0x16] = g
+00415d54        color.b = fconvert.s(x87_r7_9)
+00415d5c        eax_1[0x17] = color.b
 00415d61        eax_1[0x12] = *arg2
 00415d66        eax_1[0x13] = arg2[1]
 00415d69        int32_t result = arg2[2]

@@ -2886,9 +2886,14 @@
       "description": "Stores one uniform grayscale RGB value into the destination color slot, forces alpha to `1.0`, and returns the grayscale input."
     },
     {
+      "address": "0x44dbb0",
+      "name": "store_color4f",
+      "description": "Stores one four-float tuple into the destination `Color4f` slot and returns the third component register value left live by the helper epilogue. Callers treat it as a write-only color helper."
+    },
+    {
       "address": "0x44dbf0",
       "name": "pack_color_rgba_u8",
-      "description": "Converts one four-float RGBA tuple in `[0,1]` into packed 8-bit color channels for the sprite draw path."
+      "description": "Converts one four-float RGBA tuple in `[0,1]` into one packed BGRA8 color record for sprite and mesh draw paths."
     },
     {
       "address": "0x44dc50",

@@ -20,10 +20,10 @@
 0040a312        int16_t eax
 0040a312        eax.b = *(arg1 + 0x2a4)
 0040a31a        if (eax.b == 0)
-0040a33e        void var_10
+0040a33e        struct Color4f color
 0040a33e        int32_t* eax_1
 0040a33e        int32_t ecx_4
-0040a33e        eax_1, ecx_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+0040a33e        eax_1, ecx_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 0040a35f        int32_t var_34_1 = ecx_4
 0040a36f        int32_t var_38_1 = ecx_4
 0040a375        queue_axis_aligned_textured_quad(0x16, fconvert.s(fconvert.t(*(arg1 + 0x29c)) - fconvert.t(8f)), fconvert.s(fconvert.t(*(arg1 + 0x2a0)) - fconvert.t(7f)), 64f, 64f, 0x1000000, eax_1, 7)

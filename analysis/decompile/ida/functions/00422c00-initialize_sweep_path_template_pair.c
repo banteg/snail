@@ -44,7 +44,7 @@ int32_t __thiscall initialize_sweep_path_template_pair(
   double v38; // st7
   int v39; // edi
   int v40; // ecx
-  ObjectFaceQuad *v41; // ebp
+  uint32_t v41; // ebp
   float v43; // [esp+10h] [ebp-54h]
   float v44; // [esp+14h] [ebp-50h]
   int k; // [esp+18h] [ebp-4Ch]
@@ -324,39 +324,39 @@ int32_t __thiscall initialize_sweep_path_template_pair(
           v44 = (double)(v39 + 1) * 0.125;
           while ( 1 )
           {
-            v41 = &facequads[2 * v39 + 2 * v5 * self->width_cells + v40];
-            v41->flags = 0;
+            v41 = (uint32_t)facequads + 96 * v39 + 96 * v5 * self->width_cells + 48 * v40;
+            *(_WORD *)v41 = 0;
             if ( v40 )
             {
-              v41->vertex_index_a = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->vertex_index_b = v39 + v5 * (LOWORD(self->width_cells) + 1);
-              v41->vertex_index_c = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v41->vertex_index_d = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v85, 0, 0);
-              v41->u0 = v44;
-              v41->v0 = v43;
-              v41->u1 = texture_af;
-              v41->v1 = v43;
-              v41->u2 = texture_af;
-              v41->v2 = v46;
-              v41->u3 = v44;
+              *(_WORD *)(v41 + 2) = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
+              *(_WORD *)(v41 + 4) = v39 + v5 * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v41 + 6) = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v41 + 8) = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
+              *(_DWORD *)(v41 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v85, 0, 0);
+              *(float *)(v41 + 16) = v44;
+              *(float *)(v41 + 20) = v43;
+              *(float *)(v41 + 24) = texture_af;
+              *(float *)(v41 + 28) = v43;
+              *(float *)(v41 + 32) = texture_af;
+              *(float *)(v41 + 36) = v46;
+              *(float *)(v41 + 40) = v44;
             }
             else
             {
-              v41->vertex_index_a = v39 + v5 * (LOWORD(self->width_cells) + 1);
-              v41->vertex_index_b = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->vertex_index_c = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
-              v41->vertex_index_d = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
-              v41->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v84, 0, 0);
-              v41->u0 = texture_af;
-              v41->v0 = v43;
-              v41->u1 = v44;
-              v41->v1 = v43;
-              v41->u2 = v44;
-              v41->v2 = v46;
-              v41->u3 = texture_af;
+              *(_WORD *)(v41 + 2) = v39 + v5 * (LOWORD(self->width_cells) + 1);
+              *(_WORD *)(v41 + 4) = v5 * (LOWORD(self->width_cells) + 1) + v39 + 1;
+              *(_WORD *)(v41 + 6) = (v5 + 1) * (LOWORD(self->width_cells) + 1) + v39 + 1;
+              *(_WORD *)(v41 + 8) = v39 + (v5 + 1) * (LOWORD(self->width_cells) + 1);
+              *(_DWORD *)(v41 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, v84, 0, 0);
+              *(float *)(v41 + 16) = texture_af;
+              *(float *)(v41 + 20) = v43;
+              *(float *)(v41 + 24) = v44;
+              *(float *)(v41 + 28) = v43;
+              *(float *)(v41 + 32) = v44;
+              *(float *)(v41 + 36) = v46;
+              *(float *)(v41 + 40) = texture_af;
             }
-            v41->v3 = v46;
+            *(float *)(v41 + 44) = v46;
             if ( ++v48 >= 2 )
               break;
             v40 = v48;

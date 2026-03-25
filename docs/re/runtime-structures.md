@@ -578,7 +578,7 @@ Still unresolved from the current Windows package:
 
 High-confidence `PathTemplateSample` fields:
 
-- `+0x00..+0x3f`: `PathTemplateTransform`
+- `+0x00..+0x3f`: `TransformMatrix`
   - `+0x00`: `basis_right`
   - `+0x10`: `basis_up`
   - `+0x20`: `basis_forward`

@@ -208,7 +208,7 @@
 0041e280        while (true)
 0041e280        int32_t eax_79 = ecx_69 + ((self->width_cells * i_3 + j) << 1)
 0041e283        if (ecx_69 != 0)
-0041e34a        int16_t* ebp_5 = &facequads[eax_79]
+0041e34a        int16_t* ebp_5 = eax_79 * 0x30 + facequads
 0041e34d        *ebp_5 = 0
 0041e353        ecx_69.w = self->width_cells.w
 0041e357        ecx_69.w += 1
@@ -233,7 +233,7 @@
 0041e3dc        *(ebp_5 + 0x24) = var_4c_1
 0041e3e1        *(ebp_5 + 0x28) = arg4
 0041e3e4        *(ebp_5 + 0x2c) = var_4c_1
-0041e297        int16_t* ebp_4 = &facequads[eax_79]
+0041e297        int16_t* ebp_4 = eax_79 * 0x30 + facequads
 0041e29a        *ebp_4 = 0
 0041e2a0        eax_79.w = self->width_cells.w
 0041e2a4        eax_79.w += 1

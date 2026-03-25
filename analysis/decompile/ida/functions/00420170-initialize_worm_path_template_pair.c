@@ -6,117 +6,84 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
 {
   signed int v3; // ebp
   int v4; // edi
-  double v5; // st7
-  int v6; // ebx
-  int v7; // edi
-  double v8; // st7
-  double v9; // st7
-  int v10; // ebx
-  int i; // edi
-  double v12; // st7
-  Vec4 *p_basis_up; // edx
-  PathTemplateSample *primary_samples; // ecx
-  float *p_x; // eax
-  double v16; // st7
-  Vec4 *v17; // ecx
-  PathTemplateSample *v18; // eax
-  double v19; // st7
-  double v20; // st7
-  signed int v21; // ebx
-  int v22; // edi
-  float *v23; // eax
-  double v24; // st7
-  double v25; // st7
-  PathTemplateSample *secondary_samples; // ecx
-  float *v27; // eax
-  double v28; // st7
-  Vec3 *p_delta_dir_to_next; // edx
-  Vec3 *v30; // eax
+  PathTemplateSample *primary_samples; // eax
+  PathTemplateSample *secondary_samples; // edx
+  int v9; // ebx
+  int v10; // edi
+  PathTemplateSample *v11; // eax
+  PathTemplateSample *v13; // edx
+  int v15; // ebx
+  PathTemplateSample *v17; // ecx
+  PathTemplateSample *v19; // eax
+  _DWORD *p_x; // edx
+  _DWORD *v24; // ecx
+  int v26; // ebx
+  PathTemplateSample *v29; // eax
+  PathTemplateSample *v33; // ecx
+  _DWORD *v35; // edx
+  _DWORD *v36; // eax
   PathTemplateStripMesh *strip_mesh; // eax
   PathTemplateStripMeshFlags flags; // edx
-  signed int v33; // edi
-  PathTemplateStripMesh *v34; // eax
-  Vec3 *vertices; // ebx
-  signed int width_cells; // ecx
-  double v37; // st7
-  PathTemplateSample *v38; // eax
-  double v39; // st7
-  double v40; // st7
-  PathTemplateSample *v41; // ecx
-  double v42; // st7
-  float *v43; // eax
-  _DWORD *v44; // eax
-  _DWORD *v45; // edx
-  float *p_y; // ecx
-  int v47; // ebx
-  int v48; // eax
-  int v49; // edx
-  ObjectFaceQuad *v50; // edi
-  int v51; // eax
-  double v52; // st7
-  double v53; // st6
-  float v54; // ecx
-  int v56; // [esp-Ch] [ebp-A0h]
-  int v57; // [esp-8h] [ebp-9Ch]
-  int v58; // [esp-4h] [ebp-98h]
-  float v59; // [esp+0h] [ebp-94h]
-  float v60; // [esp+0h] [ebp-94h]
-  float v61; // [esp+0h] [ebp-94h]
-  float v62; // [esp+0h] [ebp-94h]
-  int v63; // [esp+14h] [ebp-80h]
-  int v64; // [esp+14h] [ebp-80h]
-  float v65; // [esp+14h] [ebp-80h]
-  int v66; // [esp+14h] [ebp-80h]
-  float v67; // [esp+14h] [ebp-80h]
-  int v68; // [esp+18h] [ebp-7Ch]
-  signed int v69; // [esp+18h] [ebp-7Ch]
-  int v70; // [esp+1Ch] [ebp-78h]
-  float v71; // [esp+1Ch] [ebp-78h]
-  int v72; // [esp+1Ch] [ebp-78h]
-  float v73; // [esp+1Ch] [ebp-78h]
-  signed int segment_count; // [esp+20h] [ebp-74h]
-  int v75; // [esp+20h] [ebp-74h]
-  float v76; // [esp+20h] [ebp-74h]
-  float v77; // [esp+24h] [ebp-70h]
-  int v78; // [esp+24h] [ebp-70h]
-  float v79; // [esp+24h] [ebp-70h]
-  float v80; // [esp+24h] [ebp-70h]
+  int v39; // edi
+  PathTemplateStripMesh *v40; // eax
+  int width_cells; // ecx
+  float *v46; // eax
+  _DWORD *v47; // eax
+  _DWORD *v48; // edx
+  int v49; // eax
+  float *p_z; // eax
+  int v57; // ebx
+  int v58; // eax
+  int v59; // edx
+  uint32_t v60; // edi
+  int v61; // eax
+  float v63; // ecx
+  float v71; // [esp-Ch] [ebp-A0h]
+  float v72; // [esp-8h] [ebp-9Ch]
+  float v73; // [esp-4h] [ebp-98h]
+  float v74; // [esp+0h] [ebp-94h]
+  float v75; // [esp+0h] [ebp-94h]
+  float v76; // [esp+0h] [ebp-94h]
+  float v77; // [esp+0h] [ebp-94h]
+  int v78; // [esp+14h] [ebp-80h]
+  int v79; // [esp+14h] [ebp-80h]
+  signed int v81; // [esp+14h] [ebp-80h]
+  float v82; // [esp+14h] [ebp-80h]
+  int v83; // [esp+18h] [ebp-7Ch]
+  signed int v84; // [esp+18h] [ebp-7Ch]
+  signed int v85; // [esp+1Ch] [ebp-78h]
+  signed int v87; // [esp+1Ch] [ebp-78h]
+  int segment_count; // [esp+20h] [ebp-74h]
+  int v90; // [esp+20h] [ebp-74h]
+  float v91; // [esp+20h] [ebp-74h]
+  int v93; // [esp+24h] [ebp-70h]
   Color4f *vertex_colours; // [esp+24h] [ebp-70h]
-  int v82; // [esp+24h] [ebp-70h]
-  float v83; // [esp+28h] [ebp-6Ch]
-  float v84; // [esp+28h] [ebp-6Ch]
-  float v85; // [esp+28h] [ebp-6Ch]
+  int v97; // [esp+24h] [ebp-70h]
+  int v98; // [esp+28h] [ebp-6Ch]
+  int v100; // [esp+28h] [ebp-6Ch]
+  float v102; // [esp+28h] [ebp-6Ch]
   ObjectFaceQuad *facequads; // [esp+2Ch] [ebp-68h]
-  float v87; // [esp+30h] [ebp-64h]
-  float v88; // [esp+34h] [ebp-60h]
-  float v89; // [esp+40h] [ebp-54h]
-  float v90; // [esp+40h] [ebp-54h]
-  float v91; // [esp+44h] [ebp-50h]
-  float v92; // [esp+44h] [ebp-50h]
-  float v93; // [esp+48h] [ebp-4Ch]
-  float v94; // [esp+48h] [ebp-4Ch]
-  float v95; // [esp+4Ch] [ebp-48h]
-  float v96; // [esp+4Ch] [ebp-48h]
-  float v97; // [esp+50h] [ebp-44h]
-  float v98; // [esp+50h] [ebp-44h]
-  float v99; // [esp+54h] [ebp-40h]
-  float v100; // [esp+54h] [ebp-40h]
-  float v101; // [esp+58h] [ebp-3Ch]
-  float v102; // [esp+58h] [ebp-3Ch]
-  float v103; // [esp+58h] [ebp-3Ch]
-  float v104; // [esp+5Ch] [ebp-38h]
-  float v105; // [esp+5Ch] [ebp-38h]
-  float v106; // [esp+5Ch] [ebp-38h]
-  float v107; // [esp+60h] [ebp-34h]
-  float v108; // [esp+60h] [ebp-34h]
-  float v109; // [esp+60h] [ebp-34h]
-  float v110; // [esp+64h] [ebp-30h]
-  float v111; // [esp+68h] [ebp-2Ch]
-  float v112; // [esp+74h] [ebp-20h]
-  float v113; // [esp+78h] [ebp-1Ch]
-  float v114; // [esp+8Ch] [ebp-8h]
-  float v115; // [esp+90h] [ebp-4h]
+  float v105; // [esp+34h] [ebp-60h]
+  float v106; // [esp+40h] [ebp-54h]
+  float v108; // [esp+44h] [ebp-50h]
+  float v110; // [esp+48h] [ebp-4Ch]
+  float v112; // [esp+4Ch] [ebp-48h]
+  float v114; // [esp+50h] [ebp-44h]
+  float v116; // [esp+54h] [ebp-40h]
+  float v118; // [esp+58h] [ebp-3Ch]
+  float v119; // [esp+58h] [ebp-3Ch]
+  float v121; // [esp+5Ch] [ebp-38h]
+  float v122; // [esp+5Ch] [ebp-38h]
+  float v124; // [esp+60h] [ebp-34h]
+  float v125; // [esp+60h] [ebp-34h]
+  float v129; // [esp+74h] [ebp-20h]
+  float v130; // [esp+78h] [ebp-1Ch]
+  float v131; // [esp+80h] [ebp-14h]
+  float v132; // [esp+84h] [ebp-10h]
+  float v133; // [esp+8Ch] [ebp-8h]
+  float v134; // [esp+90h] [ebp-4h]
 
+  _ESI = self;
   v3 = 0;
   self->kind = PATH_TEMPLATE_KIND_WORM;
   self->is_mirrored_x = 0;
@@ -126,348 +93,577 @@ int32_t __thiscall initialize_worm_path_template_pair(PathTemplate *self, char *
   self->segment_count = 24;
   self->segment_count_f = 96.0;
   allocate_path_nodes(self);
-  self->special_runtime_flag_9c = 0;
-  v63 = 0;
+  _ESI->special_runtime_flag_9c = 0;
+  v78 = 0;
   v4 = 0;
   do
   {
-    self->primary_samples[v4].center_x = 0.0;
-    self->primary_samples[v4].rotation_scalar_98 = 0.0;
-    self->primary_samples[v4].rotation_scalar_94 = 0.0;
-    self->primary_samples[v4].special_scalar = 0.0;
-    self->primary_samples[v4].lateral_scale = 1.0;
-    set_matrix_identity(&self->primary_samples[v4].transform);
-    v5 = (double)v63;
-    v77 = v5;
-    self->primary_samples[v4].transform.position.x = self->primary_samples[v4].center_x;
-    self->primary_samples[v4].transform.position.y = 0.49000001;
-    self->primary_samples[v4].transform.position.z = v5 * self->width_or_scale;
-    set_matrix_identity(&self->secondary_samples[v4].transform);
-    self->secondary_samples[v4].transform.position.x = self->primary_samples[v4].center_x;
-    self->secondary_samples[v4++].transform.position.y = 0.49000001;
-    self->secondary_samples[v4 - 1].transform.position.z = v77 * self->width_or_scale;
-    ++v63;
+    _ESI->primary_samples[v4].center_x = 0.0;
+    _ESI->primary_samples[v4].rotation_scalar_98 = 0.0;
+    _ESI->primary_samples[v4].rotation_scalar_94 = 0.0;
+    _ESI->primary_samples[v4].special_scalar = 0.0;
+    _ESI->primary_samples[v4].lateral_scale = 1.0;
+    set_matrix_identity(&_ESI->primary_samples[v4].transform);
+    __asm { fild    [esp+90h+var_80] }
+    __asm { fst     [esp+90h+var_70] }
+    _ESI->primary_samples[v4].transform.position.x = _ESI->primary_samples[v4].center_x;
+    _ESI->primary_samples[v4].transform.position.y = 0.49000001;
+    primary_samples = _ESI->primary_samples;
+    __asm
+    {
+      fmul    dword ptr [esi+50h]
+      fstp    dword ptr [edi+eax+38h]
+    }
+    primary_samples[v4].transform.position.z = _ET1;
+    set_matrix_identity(&_ESI->secondary_samples[v4].transform);
+    __asm { fld     [esp+90h+var_70] }
+    _ESI->secondary_samples[v4].transform.position.x = _ESI->primary_samples[v4].center_x;
+    _ESI->secondary_samples[v4].transform.position.y = 0.49000001;
+    secondary_samples = _ESI->secondary_samples;
+    __asm { fmul    dword ptr [esi+50h] }
+    ++v4;
+    __asm { fstp    dword ptr [edx+edi-70h] }
+    secondary_samples[v4 - 1].transform.position.z = _ET1;
+    ++v78;
   }
   while ( v4 < 4 );
-  v6 = 20;
-  v7 = 20;
-  v78 = 20;
+  v9 = 20;
+  v10 = 20;
+  v93 = 20;
   do
   {
-    self->primary_samples[v7].center_x = 0.0;
-    self->primary_samples[v7].rotation_scalar_98 = 0.0;
-    self->primary_samples[v7].rotation_scalar_94 = 0.0;
-    self->primary_samples[v7].special_scalar = 0.0;
-    self->primary_samples[v7].lateral_scale = 1.0;
-    set_matrix_identity(&self->primary_samples[v7].transform);
-    v8 = (double)v78;
-    v79 = v8;
-    self->primary_samples[v7].transform.position.x = self->primary_samples[v7].center_x;
-    self->primary_samples[v7].transform.position.y = 0.49000001;
-    self->primary_samples[v7].transform.position.z = v8 * self->width_or_scale;
-    set_matrix_identity(&self->secondary_samples[v7].transform);
-    self->secondary_samples[v7].transform.position.x = self->primary_samples[v7].center_x;
-    self->secondary_samples[v7].transform.position.y = 0.49000001;
-    v9 = v79 * self->width_or_scale;
-    ++v7;
-    v78 = ++v6;
-    self->secondary_samples[v7 - 1].transform.position.z = v9;
-  }
-  while ( v6 - 20 < 4 );
-  v10 = 0;
-  for ( i = 4; i < 20; ++i )
-  {
-    self->primary_samples[i].center_x = 0.0;
-    self->primary_samples[i].rotation_scalar_98 = 0.0;
-    self->primary_samples[i].rotation_scalar_94 = 0.0;
-    self->primary_samples[i].special_scalar = 0.0;
-    self->primary_samples[i].lateral_scale = 1.0;
-    set_matrix_identity(&self->primary_samples[i].transform);
-    self->primary_samples[i].transform.position.x = self->primary_samples[i].center_x;
-    self->primary_samples[i].transform.position.y = 0.49000001;
-    v12 = (double)(v10 + 4);
-    v80 = v12;
-    self->primary_samples[i].transform.position.z = v12 * self->width_or_scale;
-    set_matrix_identity(&self->secondary_samples[i].transform);
-    self->secondary_samples[i].transform.position.x = self->primary_samples[i].center_x;
-    self->secondary_samples[i].transform.position.y = 0.49000001;
-    self->secondary_samples[i].transform.position.z = v80 * self->width_or_scale;
-    if ( i <= 4 )
+    _ESI->primary_samples[v10].center_x = 0.0;
+    _ESI->primary_samples[v10].rotation_scalar_98 = 0.0;
+    _ESI->primary_samples[v10].rotation_scalar_94 = 0.0;
+    _ESI->primary_samples[v10].special_scalar = 0.0;
+    _ESI->primary_samples[v10].lateral_scale = 1.0;
+    set_matrix_identity(&_ESI->primary_samples[v10].transform);
+    __asm { fild    [esp+90h+var_70] }
+    __asm { fst     [esp+90h+var_70] }
+    _ESI->primary_samples[v10].transform.position.x = _ESI->primary_samples[v10].center_x;
+    _ESI->primary_samples[v10].transform.position.y = 0.49000001;
+    v11 = _ESI->primary_samples;
+    __asm
     {
-      set_matrix_rotation_identity(&self->primary_samples[i - 1].transform);
-      set_matrix_rotation_identity(&self->secondary_samples[i - 1].transform);
+      fmul    dword ptr [esi+50h]
+      fstp    dword ptr [edi+eax+38h]
+    }
+    v11[v10].transform.position.z = _ET1;
+    set_matrix_identity(&_ESI->secondary_samples[v10].transform);
+    __asm { fld     [esp+90h+var_70] }
+    _ESI->secondary_samples[v10].transform.position.x = _ESI->primary_samples[v10].center_x;
+    _ESI->secondary_samples[v10].transform.position.y = 0.49000001;
+    v13 = _ESI->secondary_samples;
+    __asm { fmul    dword ptr [esi+50h] }
+    ++v10;
+    v93 = ++v9;
+    __asm { fstp    dword ptr [edx+edi-70h] }
+    v13[v10 - 1].transform.position.z = _ET1;
+  }
+  while ( v9 - 20 < 4 );
+  v15 = 0;
+  for ( _EDI = 4; _EDI < 20; ++_EDI )
+  {
+    _ESI->primary_samples[_EDI].center_x = 0.0;
+    _ESI->primary_samples[_EDI].rotation_scalar_98 = 0.0;
+    _ESI->primary_samples[_EDI].rotation_scalar_94 = 0.0;
+    _ESI->primary_samples[_EDI].special_scalar = 0.0;
+    _ESI->primary_samples[_EDI].lateral_scale = 1.0;
+    set_matrix_identity(&_ESI->primary_samples[_EDI].transform);
+    _ESI->primary_samples[_EDI].transform.position.x = _ESI->primary_samples[_EDI].center_x;
+    v98 = v15 + 4;
+    _ESI->primary_samples[_EDI].transform.position.y = 0.49000001;
+    __asm { fild    [esp+90h+var_6C] }
+    v17 = _ESI->primary_samples;
+    __asm
+    {
+      fst     [esp+90h+var_70]
+      fmul    dword ptr [esi+50h]
+      fstp    dword ptr [edi+ecx+38h]
+    }
+    v17[_EDI].transform.position.z = _ET1;
+    set_matrix_identity(&_ESI->secondary_samples[_EDI].transform);
+    __asm { fld     [esp+90h+var_70] }
+    _ESI->secondary_samples[_EDI].transform.position.x = _ESI->primary_samples[_EDI].center_x;
+    _ESI->secondary_samples[_EDI].transform.position.y = 0.49000001;
+    v19 = _ESI->secondary_samples;
+    __asm
+    {
+      fmul    dword ptr [esi+50h]
+      fstp    dword ptr [eax+edi+38h]
+    }
+    v19[_EDI].transform.position.z = _ET1;
+    if ( _EDI <= 4 )
+    {
+      set_matrix_rotation_identity(&_ESI->primary_samples[_EDI - 1].transform);
+      set_matrix_rotation_identity(&_ESI->secondary_samples[_EDI - 1].transform);
     }
     else
     {
-      p_basis_up = &self->primary_samples[i - 1].transform.basis_up;
-      p_basis_up->x = 0.0;
-      p_basis_up->y = 1.0;
-      p_basis_up->z = 0.0;
-      primary_samples = self->primary_samples;
-      p_x = &primary_samples[i - 1].transform.basis_forward.x;
-      v89 = primary_samples[i].transform.position.x - primary_samples[i - 1].transform.position.x;
-      v91 = p_x[47] - p_x[5];
-      v16 = p_x[48] - p_x[6];
-      *p_x = v89;
-      p_x[1] = v91;
-      v93 = v16;
-      p_x[2] = v93;
-      normalize_vector((Vec3 *)&self->primary_samples[i - 1].transform.basis_forward);
+      p_x = (_DWORD *)&_ESI->primary_samples[_EDI - 1].transform.basis_up.x;
+      *p_x = 0;
+      p_x[1] = 1065353216;
+      p_x[2] = 0;
+      _ECX = _ESI->primary_samples;
+      __asm
+      {
+        fld     dword ptr [edi+ecx+30h]
+        fsub    dword ptr [edi+ecx-78h]
+      }
+      _EAX = &_ECX[_EDI - 1].transform.basis_forward.x;
+      __asm
+      {
+        fstp    [esp+90h+var_54]
+        fld     dword ptr [eax+0BCh]
+        fsub    dword ptr [eax+14h]
+      }
+      __asm
+      {
+        fstp    [esp+90h+var_50]
+        fld     dword ptr [eax+0C0h]
+        fsub    dword ptr [eax+18h]
+      }
+      *_EAX = v106;
+      _EAX[1] = v108;
+      __asm { fstp    [esp+90h+var_4C] }
+      _EAX[2] = v110;
+      normalize_vector((Vec3 *)&_ESI->primary_samples[_EDI - 1].transform.basis_forward);
+      __asm { fstp    st }
       cross_vectors(
-        (Vec3 *)&self->primary_samples[i - 1],
-        (Vec3 *)&self->primary_samples[i - 1].transform.basis_up,
-        (Vec3 *)&self->primary_samples[i - 1].transform.basis_forward);
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1],
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1].transform.basis_up,
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1].transform.basis_forward);
       cross_vectors(
-        (Vec3 *)&self->primary_samples[i - 1].transform.basis_up,
-        (Vec3 *)&self->primary_samples[i - 1].transform.basis_forward,
-        (Vec3 *)&self->primary_samples[i - 1]);
-      v17 = &self->secondary_samples[i - 1].transform.basis_up;
-      v17->x = 0.0;
-      v17->y = 1.0;
-      v17->z = 0.0;
-      v18 = &self->secondary_samples[i];
-      v19 = v18->transform.position.x - v18[-1].transform.position.x;
-      v18 = (PathTemplateSample *)((char *)v18 - 136);
-      v101 = v19;
-      v104 = v18[1].transform.basis_up.y - v18->transform.basis_up.y;
-      v20 = v18[1].transform.basis_up.z - v18->transform.basis_up.z;
-      v18->transform.basis_right.x = v101;
-      v18->transform.basis_right.y = v104;
-      v107 = v20;
-      v18->transform.basis_right.z = v107;
-      normalize_vector((Vec3 *)&self->secondary_samples[i - 1].transform.basis_forward);
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1].transform.basis_up,
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1].transform.basis_forward,
+        (Vec3 *)&_ESI->primary_samples[_EDI - 1]);
+      v24 = (_DWORD *)&_ESI->secondary_samples[_EDI - 1].transform.basis_up.x;
+      *v24 = 0;
+      v24[1] = 1065353216;
+      v24[2] = 0;
+      _EAX = &_ESI->secondary_samples[_EDI].transform.basis_right.x;
+      __asm
+      {
+        fld     dword ptr [eax+30h]
+        fsub    dword ptr [eax-78h]
+      }
+      _EAX -= 34;
+      __asm
+      {
+        fstp    [esp+90h+var_3C]
+        fld     dword ptr [eax+0BCh]
+        fsub    dword ptr [eax+14h]
+      }
+      __asm
+      {
+        fstp    [esp+90h+var_38]
+        fld     dword ptr [eax+0C0h]
+        fsub    dword ptr [eax+18h]
+      }
+      *_EAX = v118;
+      _EAX[1] = v121;
+      __asm { fstp    [esp+90h+var_34] }
+      _EAX[2] = v124;
+      normalize_vector((Vec3 *)&_ESI->secondary_samples[_EDI - 1].transform.basis_forward);
+      __asm { fstp    st }
       cross_vectors(
-        (Vec3 *)&self->secondary_samples[i - 1],
-        (Vec3 *)&self->secondary_samples[i - 1].transform.basis_up,
-        (Vec3 *)&self->secondary_samples[i - 1].transform.basis_forward);
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1],
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1].transform.basis_up,
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1].transform.basis_forward);
       cross_vectors(
-        (Vec3 *)&self->secondary_samples[i - 1].transform.basis_up,
-        (Vec3 *)&self->secondary_samples[i - 1].transform.basis_forward,
-        (Vec3 *)&self->secondary_samples[i - 1]);
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1].transform.basis_up,
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1].transform.basis_forward,
+        (Vec3 *)&_ESI->secondary_samples[_EDI - 1]);
     }
-    ++v10;
+    ++v15;
   }
-  v21 = 0;
-  if ( (signed int)(self->segment_count - 1) > 0 )
+  v26 = 0;
+  if ( (signed int)(_ESI->segment_count - 1) > 0 )
   {
-    v22 = 0;
+    _EDI = 0;
     do
     {
-      v23 = &self->primary_samples[v22].transform.basis_right.x;
-      v24 = v23[54] - v23[12];
-      v23 += 32;
-      v102 = v24;
-      v105 = v23[23] - *(v23 - 19);
-      v25 = v23[24] - *(v23 - 18);
-      *v23 = v102;
-      v23[1] = v105;
-      v108 = v25;
-      v23[2] = v108;
-      self->primary_samples[v22].delta_length = normalize_vector(&self->primary_samples[v22].delta_dir_to_next);
-      secondary_samples = self->secondary_samples;
-      v27 = &secondary_samples[v22].delta_dir_to_next.x;
-      v95 = secondary_samples[v22 + 1].transform.position.x - secondary_samples[v22].transform.position.x;
-      v97 = secondary_samples[v22 + 1].transform.position.y - secondary_samples[v22].transform.position.y;
-      v28 = secondary_samples[v22 + 1].transform.position.z - secondary_samples[v22].transform.position.z;
-      *v27 = v95;
-      v27[1] = v97;
-      v99 = v28;
-      v27[2] = v99;
-      ++v21;
-      self->secondary_samples[v22].delta_length = normalize_vector(&self->secondary_samples[v22].delta_dir_to_next);
-      ++v22;
+      _EAX = &_ESI->primary_samples[_EDI].transform.basis_right.x;
+      __asm
+      {
+        fld     dword ptr [eax+0D8h]
+        fsub    dword ptr [eax+30h]
+      }
+      _EAX += 32;
+      __asm
+      {
+        fstp    [esp+90h+var_3C]
+        fld     dword ptr [eax+5Ch]
+        fsub    dword ptr [eax-4Ch]
+      }
+      __asm
+      {
+        fstp    [esp+90h+var_38]
+        fld     dword ptr [eax+60h]
+        fsub    dword ptr [eax-48h]
+      }
+      *_EAX = v119;
+      _EAX[1] = v122;
+      __asm { fstp    [esp+90h+var_34] }
+      _EAX[2] = v125;
+      normalize_vector(&_ESI->primary_samples[_EDI].delta_dir_to_next);
+      v29 = _ESI->primary_samples;
+      __asm { fstp    dword ptr [edi+eax+8Ch] }
+      v29[_EDI].delta_length = _ET1;
+      _ECX = _ESI->secondary_samples;
+      __asm
+      {
+        fld     dword ptr [edi+ecx+0D8h]
+        fsub    dword ptr [edi+ecx+30h]
+      }
+      _EAX = &_ECX[_EDI].delta_dir_to_next.x;
+      __asm
+      {
+        fstp    [esp+90h+var_48]
+        fld     dword ptr [eax+5Ch]
+        fsub    dword ptr [eax-4Ch]
+      }
+      __asm
+      {
+        fstp    [esp+90h+var_44]
+        fld     dword ptr [eax+60h]
+        fsub    dword ptr [eax-48h]
+      }
+      *_EAX = v112;
+      _EAX[1] = v114;
+      __asm { fstp    [esp+90h+var_40] }
+      _EAX[2] = v116;
+      normalize_vector(&_ESI->secondary_samples[_EDI].delta_dir_to_next);
+      v33 = _ESI->secondary_samples;
+      ++v26;
+      __asm { fstp    dword ptr [edi+ecx+8Ch] }
+      v33[_EDI++].delta_length = _ET1;
     }
-    while ( v21 < (signed int)(self->segment_count - 1) );
+    while ( v26 < (signed int)(_ESI->segment_count - 1) );
   }
-  p_delta_dir_to_next = &self->primary_samples[self->segment_count - 1].delta_dir_to_next;
-  p_delta_dir_to_next->x = 0.0;
-  p_delta_dir_to_next->y = 0.0;
-  p_delta_dir_to_next->z = 1.0;
-  self->primary_samples[self->segment_count - 1].delta_length = self->width_or_scale;
-  v30 = &self->secondary_samples[self->segment_count - 1].delta_dir_to_next;
-  v30->x = 0.0;
-  v30->y = 0.0;
-  v30->z = 1.0;
-  self->secondary_samples[self->segment_count - 1].delta_length = self->width_or_scale;
-  strip_mesh = self->strip_mesh;
+  v35 = (_DWORD *)&_ESI->primary_samples[_ESI->segment_count - 1].delta_dir_to_next.x;
+  *v35 = 0;
+  v35[1] = 0;
+  v35[2] = 1065353216;
+  _ESI->primary_samples[_ESI->segment_count - 1].delta_length = _ESI->width_or_scale;
+  v36 = (_DWORD *)&_ESI->secondary_samples[_ESI->segment_count - 1].delta_dir_to_next.x;
+  *v36 = 0;
+  v36[1] = 0;
+  v36[2] = 1065353216;
+  _ESI->secondary_samples[_ESI->segment_count - 1].delta_length = _ESI->width_or_scale;
+  strip_mesh = _ESI->strip_mesh;
   flags = strip_mesh->flags;
   LOBYTE(flags) = flags | 0x80;
   strip_mesh->flags = flags;
-  request_object_vertices(self->strip_mesh, self->width_cells * (self->segment_count + 1));
-  request_object_facequads(self->strip_mesh, 2 * self->segment_count * self->width_cells);
-  request_object_vertex_colours(self->strip_mesh);
-  v33 = 0;
-  v64 = 0;
-  self->strip_mesh->flags |= 0x10000u;
-  v34 = self->strip_mesh;
-  vertices = v34->vertices;
-  facequads = v34->facequads;
-  vertex_colours = v34->vertex_colours;
-  segment_count = self->segment_count;
+  request_object_vertices(_ESI->strip_mesh, _ESI->width_cells * (_ESI->segment_count + 1));
+  request_object_facequads(_ESI->strip_mesh, 2 * _ESI->segment_count * _ESI->width_cells);
+  request_object_vertex_colours(_ESI->strip_mesh);
+  v39 = 0;
+  v79 = 0;
+  _ESI->strip_mesh->flags |= 0x10000u;
+  v40 = _ESI->strip_mesh;
+  _EBX = v40->vertices;
+  facequads = v40->facequads;
+  vertex_colours = v40->vertex_colours;
+  segment_count = _ESI->segment_count;
   if ( segment_count >= 0 )
   {
-    v68 = 0;
+    v83 = 0;
     while ( 1 )
     {
-      width_cells = self->width_cells;
-      v70 = 0;
-      v37 = (double)v64 * 6.2831855 / (double)segment_count;
-      v75 = width_cells;
-      v83 = v37;
+      __asm { fild    [esp+90h+var_80] }
+      width_cells = _ESI->width_cells;
+      v85 = 0;
+      __asm
+      {
+        fmul    ds:flt_4972A0
+        fidiv   [esp+90h+var_74]
+      }
+      v90 = width_cells;
+      __asm { fstp    [esp+90h+var_6C] }
       if ( width_cells > 0 )
       {
         do
         {
-          if ( v33 >= (signed int)self->segment_count )
+          if ( v39 >= (signed int)_ESI->segment_count )
           {
-            v62 = 0.0;
-            v58 = 0;
-            v57 = 0;
-            v56 = 0;
-            v44 = (_DWORD *)&vertices[v3 + width_cells * (v33 - 1)].x;
-            v45 = (_DWORD *)&vertices[v3 + v33 * width_cells].x;
-            *v45 = *v44;
-            v45[1] = v44[1];
-            v45[2] = v44[2];
-            vertices[v3 + v33 * self->width_cells].z = vertices[v3 + v33 * self->width_cells].z + self->width_or_scale;
+            v77 = 0.0;
+            v73 = 0.0;
+            v72 = 0.0;
+            v71 = 0.0;
+            v47 = (_DWORD *)&_EBX[v3 + width_cells * (v39 - 1)].x;
+            v48 = (_DWORD *)&_EBX[v3 + v39 * width_cells].x;
+            *v48 = *v47;
+            v48[1] = v47[1];
+            v48[2] = v47[2];
+            v49 = v39 * _ESI->width_cells;
+            _ECX = 3 * (v3 + v49);
+            __asm
+            {
+              fld     dword ptr [ebx+ecx*4+8]
+              fadd    dword ptr [esi+50h]
+            }
+            p_z = &_EBX[v3 + v49].z;
+            __asm { fstp    dword ptr [eax] }
+            *p_z = _ET1;
           }
           else
           {
-            v38 = &self->primary_samples[v68];
-            v39 = v38->lateral_scale * 4.0;
-            v65 = v39;
-            v103 = v39 * v38->transform.basis_up.x;
-            v106 = v65 * v38->transform.basis_up.y;
-            v109 = v65 * v38->transform.basis_up.z;
-            v71 = (float)v70;
-            v59 = v71 / (double)v75 * 6.2831855;
-            v40 = cosine(v59);
-            v41 = self->primary_samples;
-            v90 = v103 * v40;
-            v92 = v106 * v40;
-            v94 = v109 * v40;
-            v96 = v65 * v41[v68].transform.basis_right.x;
-            v98 = v65 * v41[v68].transform.basis_right.y;
-            v100 = v65 * v41[v68].transform.basis_right.z;
-            v60 = v71 / (double)(int)self->width_cells * 6.2831855;
-            v42 = sine(v60);
-            v110 = v96 * v42;
-            v111 = v98 * v42;
-            v112 = v111 + self->primary_samples[v68].transform.position.y;
-            v113 = v42 * v100 + self->primary_samples[v68].transform.position.z;
-            v114 = v112 + v92;
-            v115 = v113 + v94;
-            v88 = v110 + self->primary_samples[v68].transform.position.x + v90;
-            v61 = v83 + v83;
-            v43 = &vertices[v3 + v33 * self->width_cells].x;
-            *v43 = v88;
-            v43[1] = v114;
-            v43[2] = v115;
-            v62 = 0.5 - cosine(v61) * 0.5;
-            v58 = 1065353216;
-            v57 = 1065353216;
-            v56 = 1065353216;
+            _EAX = &_ESI->primary_samples[v83];
+            __asm
+            {
+              fld     dword ptr [eax+9Ch]
+              fmul    ds:flt_497210
+              fst     [esp+94h+var_80]
+              fmul    dword ptr [eax+10h]
+              fstp    [esp+94h+var_3C]
+              fld     [esp+94h+var_80]
+              fmul    dword ptr [eax+14h]
+              fstp    [esp+94h+var_38]
+              fld     [esp+94h+var_80]
+              fmul    dword ptr [eax+18h]
+              fstp    [esp+94h+var_34]
+              fild    [esp+94h+var_78]
+              fstp    [esp+94h+var_78]
+              fild    [esp+94h+var_74]
+              fdivr   [esp+94h+var_78]
+              fmul    ds:flt_4972A0
+              fstp    [esp+94h+var_94]; float
+            }
+            cosine(v74);
+            __asm
+            {
+              fld     [esp+94h+var_3C]
+              fmul    st, st(1)
+            }
+            _EAX = &_ESI->primary_samples[v83];
+            __asm
+            {
+              fstp    [esp+94h+var_54]
+              fld     [esp+94h+var_38]
+              fmul    st, st(1)
+              fstp    [esp+94h+var_50]
+              fld     [esp+94h+var_34]
+              fmul    st, st(1)
+              fstp    [esp+94h+var_4C]
+              fstp    st
+              fld     [esp+94h+var_80]
+              fmul    dword ptr [eax]
+              fstp    [esp+94h+var_48]
+              fld     [esp+94h+var_80]
+              fmul    dword ptr [eax+4]
+              fstp    [esp+94h+var_44]
+              fld     [esp+94h+var_80]
+              fmul    dword ptr [eax+8]
+              fstp    [esp+94h+var_40]
+              fild    dword ptr [esi+54h]
+              fdivr   [esp+94h+var_78]
+              fmul    ds:flt_4972A0
+              fstp    [esp+94h+var_94]; float
+            }
+            sine(v75);
+            __asm
+            {
+              fld     [esp+94h+var_48]
+              fmul    st, st(1)
+            }
+            _EAX = (int)&_ESI->primary_samples[v83].transform.position;
+            __asm
+            {
+              fstp    [esp+94h+var_30]
+              fld     [esp+94h+var_44]
+              fmul    st, st(1)
+              fstp    [esp+94h+var_2C]
+              fmul    [esp+94h+var_40]
+              fld     [esp+94h+var_30]
+              fadd    dword ptr [eax]
+              fld     [esp+94h+var_2C]
+              fadd    dword ptr [eax+4]
+              fstp    [esp+94h+var_20]
+              fxch    st(1)
+              fadd    dword ptr [eax+8]
+            }
+            v131 = v129;
+            __asm { fstp    [esp+94h+var_1C] }
+            __asm
+            {
+              fadd    [esp+94h+var_54]
+              fld     [esp+94h+var_14]
+              fadd    [esp+94h+var_50]
+            }
+            v132 = v130;
+            __asm
+            {
+              fstp    [esp+94h+var_8]
+              fld     [esp+94h+var_10]
+              fadd    [esp+94h+var_4C]
+              fstp    [esp+94h+var_4]
+              fstp    [esp+94h+var_60]
+            }
+            __asm
+            {
+              fld     [esp+94h+var_6C]
+              fadd    st, st
+              fstp    [esp+94h+var_94]; float
+            }
+            v46 = &_EBX[v3 + v39 * _ESI->width_cells].x;
+            *v46 = v105;
+            v46[1] = v133;
+            v46[2] = v134;
+            cosine(v76);
+            __asm
+            {
+              fmul    ds:flt_497228
+              fsubr   ds:flt_497228
+              fstp    [esp+94h+var_94]
+            }
+            v73 = 1.0;
+            v72 = 1.0;
+            v71 = 1.0;
           }
-          sub_44DBB0(&vertex_colours[v3 + v33 * self->width_cells].r, v56, v57, v58, SLODWORD(v62));
-          p_y = &vertices[v3 + v33 * self->width_cells].y;
-          if ( *p_y < 0.0 )
-            *p_y = *p_y * 0.30000001;
-          width_cells = self->width_cells;
-          v70 = ++v3;
-          v75 = width_cells;
+          store_color4f(&vertex_colours[v3 + v39 * _ESI->width_cells], v71, v72, v73, v77);
+          _EAX = v3 + v39 * _ESI->width_cells;
+          _EDX = 3 * _EAX;
+          __asm
+          {
+            fld     dword ptr [ebx+edx*4+4]
+            fcomp   ds:flt_497234
+          }
+          _ECX = &_EBX[_EAX].y;
+          __asm { fnstsw  ax }
+          if ( (_EAX & 0x100) != 0 )
+          {
+            __asm
+            {
+              fld     dword ptr [ecx]
+              fmul    ds:flt_4973D8
+              fstp    dword ptr [ecx]
+            }
+            *_ECX = _ET1;
+          }
+          width_cells = _ESI->width_cells;
+          v85 = ++v3;
+          v90 = width_cells;
         }
         while ( v3 < width_cells );
       }
-      v64 = ++v33;
-      ++v68;
-      segment_count = self->segment_count;
-      if ( v33 > segment_count )
+      v79 = ++v39;
+      ++v83;
+      segment_count = _ESI->segment_count;
+      if ( v39 > segment_count )
         break;
       v3 = 0;
     }
     v3 = 0;
   }
-  v66 = 0;
-  if ( (int)self->segment_count > 0 )
+  v81 = 0;
+  if ( (int)_ESI->segment_count > 0 )
   {
     do
     {
-      v47 = 0;
-      v72 = 0;
-      if ( (int)self->width_cells > 0 )
+      v57 = 0;
+      v87 = 0;
+      if ( (int)_ESI->width_cells > 0 )
       {
-        v67 = (double)v66 * 0.125;
-        v76 = (double)(v3 + 1) * 0.125;
+        __asm { fild    [esp+90h+var_80] }
+        v100 = v3 + 1;
+        __asm
+        {
+          fmul    ds:flt_497428
+          fstp    [esp+90h+var_80]
+          fild    [esp+90h+var_6C]
+          fmul    ds:flt_497428
+          fstp    [esp+90h+var_74]
+        }
         do
         {
-          v48 = v47 + 1;
-          v49 = 0;
-          v69 = v47 + 1;
-          v82 = 0;
-          v73 = (float)v72;
+          __asm { fild    [esp+90h+var_78] }
+          v58 = v57 + 1;
+          v59 = 0;
+          v84 = v57 + 1;
+          v97 = 0;
+          __asm
+          {
+            fstp    [esp+90h+var_78]
+            fild    [esp+90h+var_7C]
+            fstp    [esp+90h+var_64]
+          }
           while ( 1 )
           {
-            v50 = &facequads[2 * v47 + 2 * v3 * self->width_cells + v49];
-            v50->flags = 0;
-            if ( v49 )
+            v60 = (uint32_t)facequads + 96 * v57 + 96 * v3 * _ESI->width_cells + 48 * v59;
+            *(_WORD *)v60 = 0;
+            if ( v59 )
             {
-              v50->vertex_index_a = LOWORD(self->width_cells) * v3 + v48 % (signed int)self->width_cells;
-              v50->vertex_index_b = v47 + LOWORD(self->width_cells) * v3;
-              v50->vertex_index_c = v47 + LOWORD(self->width_cells) * (v3 + 1);
-              v50->vertex_index_d = LOWORD(self->width_cells) * (v3 + 1) + v69 % (signed int)self->width_cells;
+              *(_WORD *)(v60 + 2) = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
+              *(_WORD *)(v60 + 4) = v57 + LOWORD(_ESI->width_cells) * v3;
+              *(_WORD *)(v60 + 6) = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
+              *(_WORD *)(v60 + 8) = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
             }
             else
             {
-              v50->vertex_index_a = v47 + LOWORD(self->width_cells) * v3;
-              v50->vertex_index_b = LOWORD(self->width_cells) * v3 + v48 % (signed int)self->width_cells;
-              v50->vertex_index_c = LOWORD(self->width_cells) * (v3 + 1) + v69 % (signed int)self->width_cells;
-              v50->vertex_index_d = v47 + LOWORD(self->width_cells) * (v3 + 1);
+              *(_WORD *)(v60 + 2) = v57 + LOWORD(_ESI->width_cells) * v3;
+              *(_WORD *)(v60 + 4) = LOWORD(_ESI->width_cells) * v3 + v58 % (signed int)_ESI->width_cells;
+              *(_WORD *)(v60 + 6) = LOWORD(_ESI->width_cells) * (v3 + 1) + v84 % (signed int)_ESI->width_cells;
+              *(_WORD *)(v60 + 8) = v57 + LOWORD(_ESI->width_cells) * (v3 + 1);
             }
-            v50->texture_ref = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
-            v51 = v82;
-            v84 = (float)(int)self->width_cells;
-            v52 = v73 / v84;
-            v87 = (float)(v47 + 1);
-            v53 = v87 / v84;
-            if ( v82 )
+            *(_DWORD *)(v60 + 12) = get_or_create_texture_ref((TextureRefList *)dword_4B7790, texture_path, 0, 0);
+            v61 = v97;
+            __asm { fild    dword ptr [esi+54h] }
+            __asm
             {
-              v50->u0 = v53;
-              v50->v0 = v67;
-              v50->u1 = v52;
-              v54 = (double)(v3 + 1) * 0.125;
-              v50->v1 = v67;
-              v50->u2 = v52;
-              v50->v2 = v76;
-              v85 = v53;
-              v50->u3 = v85;
+              fstp    [esp+90h+var_6C]
+              fld     [esp+90h+var_78]
+              fdiv    [esp+90h+var_6C]
+              fld     [esp+90h+var_64]
+              fdiv    [esp+90h+var_6C]
+              fst     [esp+90h+var_6C]
+            }
+            if ( v97 )
+            {
+              __asm { fstp    dword ptr [edi+10h] }
+              *(float *)(v60 + 16) = _ET1;
+              *(float *)(v60 + 20) = v82;
+              __asm { fst     dword ptr [edi+18h] }
+              *(float *)(v60 + 24) = _ET1;
+              v63 = v91;
+              *(float *)(v60 + 28) = v82;
+              __asm { fstp    dword ptr [edi+20h] }
+              *(float *)(v60 + 32) = _ET1;
+              *(float *)(v60 + 36) = v91;
+              *(float *)(v60 + 40) = v102;
             }
             else
             {
-              v50->u0 = v52;
-              v50->v0 = v67;
-              v54 = (double)(v3 + 1) * 0.125;
-              v50->u1 = v53;
-              v50->v1 = v67;
-              v50->u2 = v53;
-              v50->v2 = v76;
-              v50->u3 = v52;
+              __asm { fld     st(1) }
+              __asm { fstp    dword ptr [edi+10h] }
+              *(float *)(v60 + 16) = _ET1;
+              *(float *)(v60 + 20) = v82;
+              v63 = v91;
+              __asm { fst     dword ptr [edi+18h] }
+              *(float *)(v60 + 24) = _ET1;
+              *(float *)(v60 + 28) = v82;
+              __asm { fstp    dword ptr [edi+20h] }
+              *(float *)(v60 + 32) = _ET1;
+              *(float *)(v60 + 36) = v91;
+              __asm { fstp    dword ptr [edi+28h] }
+              *(float *)(v60 + 40) = _ET1;
             }
-            v50->v3 = v54;
-            ++v82;
-            if ( v51 + 1 >= 2 )
+            *(float *)(v60 + 44) = v63;
+            ++v97;
+            if ( v61 + 1 >= 2 )
               break;
-            v49 = v51 + 1;
-            v48 = v47 + 1;
+            v59 = v61 + 1;
+            v58 = v57 + 1;
           }
-          ++v47;
-          v72 = v69;
+          ++v57;
+          v87 = v84;
         }
-        while ( v69 < (signed int)self->width_cells );
+        while ( v84 < (signed int)_ESI->width_cells );
       }
-      v66 = ++v3;
+      v81 = ++v3;
     }
-    while ( v3 < (signed int)self->segment_count );
+    while ( v3 < (signed int)_ESI->segment_count );
   }
-  return finalize_path_template_record(self);
+  return finalize_path_template_record(_ESI);
 }
 

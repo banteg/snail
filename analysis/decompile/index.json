@@ -1,14 +1,14 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 652,
+  "function_count": 653,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 652,
-  "ida_exported": 652,
-  "bn_mismatch_count": 12,
+  "bn_exported": 653,
+  "ida_exported": 653,
+  "bn_mismatch_count": 11,
   "ida_mismatch_count": 2,
-  "total_mismatch_count": 14,
+  "total_mismatch_count": 13,
   "has_mismatches": true,
   "sync_ida_symbols": true
 }

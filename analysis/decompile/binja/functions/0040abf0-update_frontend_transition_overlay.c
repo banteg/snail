@@ -46,7 +46,7 @@
 0040ac8e        long double temp0_1 = fconvert.t(0.00999999978f)
 0040ac8e        x87_r7_7 - temp0_1
 0040ac94        result.w = (x87_r7_7 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp0_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp0_1 ? 1 : 0) << 0xe
-0040ac99        void var_10
+0040ac99        struct Color4f color
 0040ac99        if ((result:1.b & 0x41) == 0)
-0040acc7        return queue_axis_aligned_textured_quad(2, 0, 0, 640f, 480f, 0x1000000, set_color_rgba(&var_10, 0, 0, 0, fconvert.s(x87_r7_7)), 0xe)
+0040acc7        return queue_axis_aligned_textured_quad(2, 0, 0, 640f, 480f, 0x1000000, set_color_rgba(&color, 0f, 0f, 0f, fconvert.s(x87_r7_7)), 0xe)
 0040acd2        return result

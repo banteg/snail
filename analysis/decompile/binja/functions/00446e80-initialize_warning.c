@@ -5,8 +5,8 @@
 /* function: initialize_warning @ 0x446e80 */
 
 00446eb2        arg1[3] = allocate_border(data_4df904 + 0xb4c)
-00446eb5        void var_10
-00446eb5        int32_t* eax_1 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f7fbe77)
+00446eb5        struct Color4f color
+00446eb5        struct Color4f* eax_1 = set_color_rgba(&color, 1f, 1f, 1f, 0.999000013f)
 00446ecf        initialize_frontend_sprite_button(arg1[3], 0x400802, 0x5e, 0x43900000, 0x42800000, eax_1, 0f, 4)
 00446ed7        *(arg1[3] + 0x178) = 0
 00446ee4        int32_t result = hide_border_init(arg1[3])

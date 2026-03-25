@@ -64,6 +64,6 @@
 0042c750        ecx_11.b = strip_mesh->flags.b | 0x80
 0042c753        strip_mesh->flags = ecx_11
 0042c756        struct PathTemplateStripMesh* strip_mesh_1 = self->strip_mesh
-0042c75c        enum PathTemplateStripMeshFlags result = strip_mesh_1->flags & PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS | 0xffeeffff
+0042c75c        enum PathTemplateStripMeshFlags result = strip_mesh_1->flags & ~PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH
 0042c761        strip_mesh_1->flags = result
 0042c76a        return result

@@ -15,31 +15,31 @@
 00417c3b        *(data_4df904 + 0x56c) = 2
 00417c56        int32_t var_18_1 = 0
 00417c72        *(arg1 + 0x3c) = allocate_border(data_4df904 + 0xb4c)
-00417c75        void var_10
-00417c75        int32_t* eax_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417c75        struct Color4f color
+00417c75        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417c94        initialize_frontend_widget(*(arg1 + 0x3c), 0x40000014, "Tutorial", 0x14, 0x41a00000, 80f, eax_4, 2.80259693e-45f)
 00417ca9        int32_t var_18_2 = 0
 00417cc5        *(arg1 + 0x30) = allocate_border(data_4df904 + 0xb4c)
-00417cc8        int32_t* eax_7 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417cc8        struct Color4f* eax_7 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417ce7        initialize_frontend_widget(*(arg1 + 0x30), 0x40000014, "Postal Mode", 0x14, 0x41a00000, 20f, eax_7, 2.80259693e-45f)
 00417cf3        stack_widget_below(*(arg1 + 0x30), *(arg1 + 0x3c))
 00417d09        int32_t var_18_4 = 0
 00417d12        *(arg1 + 0x34) = allocate_border(data_4df904 + 0xb4c)
-00417d28        int32_t* eax_9 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417d28        struct Color4f* eax_9 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417d47        initialize_frontend_widget(*(arg1 + 0x34), 0x40000014, "Time Trial", 0x14, 0x41a00000, 20f, eax_9, 2.80259693e-45f)
 00417d53        stack_widget_below(*(arg1 + 0x34), *(arg1 + 0x30))
 00417d69        int32_t var_18_6 = 0
 00417d85        *(arg1 + 0x38) = allocate_border(data_4df904 + 0xb4c)
-00417d88        int32_t* eax_12 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417d88        struct Color4f* eax_12 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417da4        initialize_frontend_widget(*(arg1 + 0x38), 0x14, "Challenge Mode", 0x14, 0x41a00000, 20f, eax_12, 2.80259693e-45f)
 00417db0        stack_widget_below(*(arg1 + 0x38), *(arg1 + 0x34))
 00417dc5        int32_t var_18_8 = 0xc35c0000
 00417de4        *(arg1 + 0x40) = allocate_border(data_4df904 + 0xb4c)
-00417de7        int32_t* eax_15 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417de7        struct Color4f* eax_15 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417e03        initialize_frontend_widget(*(arg1 + 0x40), 0x40000014, "Help", 0x14, 0, 350f, eax_15, 2.80259693e-45f)
 00417e19        int32_t var_18_9 = 0
 00417e35        *(arg1 + 0x44) = allocate_border(data_4df904 + 0xb4c)
-00417e38        int32_t* eax_17 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00417e38        struct Color4f* eax_17 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00417e54        initialize_frontend_widget(*(arg1 + 0x44), 0x14, "Back", 0x14, 0x41a00000, 350f, eax_17, 2.80259693e-45f)
 00417e60        stack_widget_below(*(arg1 + 0x44), *(arg1 + 0x38))
 00417e65        float* result

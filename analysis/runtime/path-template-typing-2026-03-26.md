@@ -67,7 +67,7 @@ pretending those are fully split when the decompile still says otherwise.
 Recovered `PathTemplateSample` shape:
 
 - size: `0xa8`
-- `+0x00..+0x3f`: `PathTemplateTransform`
+- `+0x00..+0x3f`: `TransformMatrix`
   - `+0x00`: `basis_right`
   - `+0x10`: `basis_up`
   - `+0x20`: `basis_forward`
@@ -165,8 +165,8 @@ Applied in the live BN database:
 - `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
 - `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
 - `request_object_facequads(PathTemplateStripMesh* mesh, ...)`
-- `set_matrix_identity(PathTemplateTransform* transform)`
-- `set_matrix_rotation_identity(PathTemplateTransform* transform)`
+- `set_matrix_identity(TransformMatrix* transform)`
+- `set_matrix_rotation_identity(TransformMatrix* transform)`
 - `normalize_vector(Vec3* vector)`
 - `cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs)`
 - `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
@@ -174,8 +174,17 @@ Applied in the live BN database:
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
 - `get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
-- `rotate_matrix_world_z(PathTemplateTransform* transform, float angle)` as a typed `__thiscall` helper
-- `compute_kind42_attachment_transform(float arg1, float arg2, float arg3, PathTemplateTransform* transform, float* out_angle)`
+- `rotate_matrix_world_z(TransformMatrix* transform, float angle)` as a typed `__thiscall` helper
+- `normalize_vector_from_source(Vec3* out, Vec3* src)` as the copy-and-normalize helper under the matrix family
+- `orthogonalize_matrix(TransformMatrix* transform)` as the shared basis cleanup helper used by the twister family, cameraman, and matrix interpolation
+- `set_matrix_z_direction(TransformMatrix* transform, Vec3* direction)` as the generic look-at basis builder used outside the path-template family
+- `compute_kind42_attachment_transform(float arg1, float arg2, float arg3, TransformMatrix* transform, float* out_angle)`
+- `load_x_mesh(char* mesh_path, PathTemplateStripMesh* mesh, uint8_t options_flags)` as the shared X-mesh importer for strip meshes
+- `set_color_rgba(Color4f* color, float r, float g, float b, float a)`
+- `set_color_alpha(Color4f* color, float alpha)`
+- `set_color_grayscale(Color4f* color, float intensity)`
+- `store_color4f(Color4f* color, float r, float g, float b, float a)`
+- `pack_color_rgba_u8(ColorBGRA8* out, Color4f* color)`
 - `allocate_path_nodes(PathTemplate* self)` now reads back as returning `PathTemplateSample*`, which matches its actual `secondary_samples` return
 - `request_object_vertices(...)` and `request_object_vertex_colours(...)` now stay `void`, which matches all current callers and avoids pretending their tail-end allocation helpers are meaningful values
 
@@ -215,3 +224,8 @@ The remaining rough edges in this family are presentation-level, not structural:
 - some quad-emission locals still display as `int16_t*` aliases instead of clean `ObjectFaceQuad*` locals
 - some sample-array writes still show `*(&self->primary_samples->field + i)` style indexing
 - `initialize_kind42_path_template_pair` still has noisier-than-average stack argument naming
+
+The current helper split is intentionally broader than the path-template family:
+
+- `TransformMatrix`, `normalize_vector_from_source`, `set_matrix_z_direction`, and `orthogonalize_matrix` are now modeled as shared math helpers because their xrefs span cameraman, overlay, gameplay, and path code
+- the color-writer helpers are now explicitly typed on `Color4f` / `ColorBGRA8`, which cleans up frontend, hazard, galaxy, worm-path, and track-render callsites at once

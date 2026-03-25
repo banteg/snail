@@ -56,21 +56,21 @@
 004375d5        *(arg1 + 0x1272828) = 0
 004375ec        int32_t var_30_2 = 0x43960000
 0043760b        *(arg1 + 0x35bb88) = allocate_border(data_4df904 + 0xb4c)
-00437611        void var_18
-00437611        int32_t* eax_12 = set_color_rgba(&var_18, 0x3f800000, 0x3f800000, 0x3f800000, 0x3cf5c28f)
+00437611        struct Color4f color
+00437611        struct Color4f* eax_12 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 00437633        initialize_frontend_widget(*(arg1 + 0x35bb88), &__dos_header.e_cblp, "0", 0x14, 0x43c80000, 14f, eax_12, 4.20389539e-45f)
 00437643        *(*(arg1 + 0x35bb88) + 0x6f0) = 0x3fc00000
 00437653        *(*(arg1 + 0x35bb88) + 0x274) = 7
 0043765f        *(*(arg1 + 0x35bb88) + 0x2cc) = 0
 0043766a        if (*(arg1 + 0x40) == 0)
 0043769c        *(arg1 + 0x35bb90) = allocate_border(data_4df904 + 0xb4c)
-004376a2        int32_t* eax_16 = set_color_rgba(&var_18, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+004376a2        struct Color4f* eax_16 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004376bb        initialize_frontend_sprite_button(*(arg1 + 0x35bb90), 0x400800, 0x7a, 0, 0x42680000, eax_16, 0f, 4)
 004376c6        hide_border_init(*(arg1 + 0x35bb90))
 004376d1        *(*(arg1 + 0x35bb90) + 0x178) = 0
 004376e8        int32_t var_30_3 = 0
 00437702        *(arg1 + 0x35bb94) = allocate_border(data_4df904 + 0xb4c)
-00437708        int32_t* eax_19 = set_color_rgba(&var_18, 0x3f800000, 0x3f800000, 0x3f800000, 0x3cf5c28f)
+00437708        struct Color4f* eax_19 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 0043772a        initialize_frontend_widget(*(arg1 + 0x35bb94), &__dos_header.e_cblp, "0", 0x14, 0x423c0000, 80f, eax_19, 0f)
 00437735        hide_border_init(*(arg1 + 0x35bb94))
 00437740        int32_t i_1 = 0
@@ -78,9 +78,9 @@
 00437746        int32_t* esi_2 = &arg1[0x35bb98]
 0043774c        __builtin_strncpy(*(arg1 + 0x35bb94) + 0x6f0, "333?", 4)
 00437781        *esi_2 = allocate_border(data_4df904 + 0xb4c)
-00437783        int32_t* eax_22
+00437783        struct Color4f* eax_22
 00437783        int32_t ecx_23
-00437783        eax_22, ecx_23 = set_color_rgba(&var_18, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00437783        eax_22, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437792        int32_t var_40_1 = ecx_23
 004377ab        initialize_frontend_sprite_button(*esi_2, 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 0x43d70000, eax_22, 0f, 4)
 004377b2        *(*esi_2 + 0x178) = 0
@@ -94,7 +94,7 @@
 00437818        if (eax_23 != 4)
 00437830        border_add_text_number(*(arg1 + 0x35bb88), 0)
 0043781e        zero_timer_counters()
-004377f0        format_time_trial_string(&var_18)
+004377f0        format_time_trial_string(&color)
 00437802        sub_44e5b0(*(arg1 + 0x35bb88) + 0x2cc, 0x751478)
 004377e1        if (eax_23 != 4)
 00437830        border_add_text_number(*(arg1 + 0x35bb88), *(arg1 + 0xf93594))
@@ -102,7 +102,7 @@
 00437802        sub_44e5b0(*(arg1 + 0x35bb88) + 0x2cc, 0x751478)
 00437846        int32_t var_30_6 = 0xc28e0000
 00437865        *(arg1 + 0x35bb8c) = allocate_border(data_4df904 + 0xb4c)
-0043786b        int32_t* eax_27 = set_color_rgba(&var_18, 0x3f800000, 0x3f800000, 0x3f800000, 0x3cf5c28f)
+0043786b        struct Color4f* eax_27 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 0043788d        initialize_frontend_widget(*(arg1 + 0x35bb8c), &__dos_header.e_cblp, "0", 0x14, 0x42200000, 14f, eax_27, 4.20389539e-45f)
 00437898        *(*(arg1 + 0x35bb8c) + 0x6f0) = 0x3fc00000
 004378a8        *(*(arg1 + 0x35bb8c) + 0x274) = 7

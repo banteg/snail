@@ -66,7 +66,7 @@ void __thiscall sub_43F930(int this)
           else
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 118, 0);
           *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 0;
-          sub_44DBB0((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
+          store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
           if ( *(float *)(this + 228) >= 0.0 )
           {
             if ( *(float *)(this + 228) > 1.0 )
@@ -89,7 +89,7 @@ void __thiscall sub_43F930(int this)
           {
             *(_DWORD *)(*(_DWORD *)(this + 172) + 40) = 5;
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 120, 0);
-            sub_44DBB0((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 0, 0, 1065185444);
+            store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 0, 0, 1065185444);
           }
           else
           {
@@ -98,7 +98,7 @@ void __thiscall sub_43F930(int this)
             *(_DWORD *)(this + 228) = 1065353216;
             *(_DWORD *)(this + 232) = -1104500053;
             *(_DWORD *)(v4 + 40) = 0;
-            sub_44DBB0((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
+            store_color4f((_DWORD *)(*(_DWORD *)(this + 172) + 44), 1065353216, 1065353216, 1065353216, 1065353216);
             set_sprite_texture_ref(*(_DWORD **)(this + 172), 119, 0);
           }
         }

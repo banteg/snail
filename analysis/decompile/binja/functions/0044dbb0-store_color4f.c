@@ -2,8 +2,10 @@
 /* target: 63967:1:3859193737586600258 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: initialize_frontend_overlay_color_lerp @ 0x40ab00 */
+/* function: store_color4f @ 0x44dbb0 */
 
-0040ab1b        *arg1 = arg2
-0040ab1d        store_color4f(&arg1[1], 1f, 1f, 1f, 0f)
-0040ab3c        return store_color4f(&arg1[5], 1f, 1f, 1f, 0f)
+0044dbb8        color->r = r
+0044dbbe        color->g = g
+0044dbc5        color->b = b
+0044dbc8        color->a = a
+0044dbcb        return

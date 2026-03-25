@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "function_count": 652,
-  "mismatch_count": 12,
+  "function_count": 653,
+  "mismatch_count": 11,
   "mismatches": [
     {
       "reason": "name_mismatch",
@@ -70,13 +70,6 @@
       "manifest_name": "initialize_global_identity_matrix",
       "observed_address": "0x44c880",
       "observed_name": "sub_44c880"
-    },
-    {
-      "reason": "name_mismatch",
-      "manifest_address": "0x44dbf0",
-      "manifest_name": "pack_color_rgba_u8",
-      "observed_address": "0x44dbf0",
-      "observed_name": "sub_44dbf0"
     },
     {
       "reason": "name_mismatch",
@@ -3221,6 +3214,11 @@
       "address": "0x44db90",
       "name": "set_color_grayscale",
       "artifact": "analysis/decompile/binja/functions/0044db90-set_color_grayscale.c"
+    },
+    {
+      "address": "0x44dbb0",
+      "name": "store_color4f",
+      "artifact": "analysis/decompile/binja/functions/0044dbb0-store_color4f.c"
     },
     {
       "address": "0x44dbf0",

@@ -413,7 +413,7 @@ void __thiscall sub_401130(int this)
               Iostream_init::Iostream_init((#93 *)v57);
               set_color_white(v59);
               *(float *)&v39 = 1.0 - *((float *)MEMORY[0x4DF904] + 69692);
-              sub_44DBB0(v57, v59[0], v59[1], v59[2], v39);
+              store_color4f(v57, v59[0], v59[1], v59[2], v39);
               *(float *)&v56 = (*((float *)MEMORY[0x4DF904] + 69692) * 0.69999999 + 1.0) * v45;
               v16 = v56;
               *(float *)&v53 = *(float *)&v40 - *(float *)&v56;

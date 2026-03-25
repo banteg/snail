@@ -28,27 +28,43 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_matrix_identity",
-        "int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);",
+        "int32_t __fastcall set_matrix_identity(TransformMatrix* transform);",
     ),
     (
         "set_matrix_rotation_identity",
-        "int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);",
+        "int32_t __fastcall set_matrix_rotation_identity(TransformMatrix* transform);",
     ),
     (
         "rotate_matrix_world_z",
-        "int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);",
+        "int32_t __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
     ),
     (
         "normalize_vector",
         "double __fastcall normalize_vector(Vec3* vector);",
     ),
     (
+        "normalize_vector_from_source",
+        "double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);",
+    ),
+    (
         "cross_vectors",
         "int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);",
     ),
     (
+        "orthogonalize_matrix",
+        "int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);",
+    ),
+    (
+        "set_matrix_z_direction",
+        "int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);",
+    ),
+    (
         "compute_kind42_attachment_transform",
-        "int32_t __stdcall compute_kind42_attachment_transform(float arg1, float arg2, float arg3, PathTemplateTransform* transform, float* out_angle);",
+        "int32_t __stdcall compute_kind42_attachment_transform(float arg1, float arg2, float arg3, TransformMatrix* transform, float* out_angle);",
+    ),
+    (
+        "load_x_mesh",
+        "int32_t __stdcall load_x_mesh(char* mesh_path, PathTemplateStripMesh* mesh, uint8_t options_flags);",
     ),
     (
         "request_object_vertices",
@@ -61,6 +77,26 @@ TRUSTED_DECLARATIONS = [
     (
         "request_object_facequads",
         "void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);",
+    ),
+    (
+        "set_color_rgba",
+        "Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);",
+    ),
+    (
+        "set_color_alpha",
+        "float __thiscall set_color_alpha(Color4f* color, float alpha);",
+    ),
+    (
+        "set_color_grayscale",
+        "float __thiscall set_color_grayscale(Color4f* color, float intensity);",
+    ),
+    (
+        "store_color4f",
+        "float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);",
+    ),
+    (
+        "pack_color_rgba_u8",
+        "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
     ),
     (
         "initialize_loopout_path_template_pair",

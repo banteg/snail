@@ -2,17 +2,17 @@
 /* function: orthogonalize_matrix @ 0x44d3d0 */
 /* selector: orthogonalize_matrix */
 
-int __thiscall sub_44D3D0(float *this)
+int32_t __fastcall orthogonalize_matrix(TransformMatrix *transform)
 {
-  float *v2; // edi
-  float *v3; // ebx
+  Vec3 *p_basis_up; // edi
+  Vec3 *p_basis_forward; // ebx
 
-  v2 = this + 4;
-  v3 = this + 8;
-  normalize_vector(this);
-  normalize_vector(v2);
-  normalize_vector(v3);
-  cross_vectors(this, v2, v3);
-  return cross_vectors(v3, this, v2);
+  p_basis_up = (Vec3 *)&transform->basis_up;
+  p_basis_forward = (Vec3 *)&transform->basis_forward;
+  normalize_vector((Vec3 *)transform);
+  normalize_vector(p_basis_up);
+  normalize_vector(p_basis_forward);
+  cross_vectors((Vec3 *)transform, p_basis_up, p_basis_forward);
+  return cross_vectors(p_basis_forward, (Vec3 *)transform, p_basis_up);
 }
 

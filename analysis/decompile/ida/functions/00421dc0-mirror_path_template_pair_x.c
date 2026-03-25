@@ -136,8 +136,8 @@ int32_t __thiscall mirror_path_template_pair_x(PathTemplate *self, PathTemplate 
       {
         v25 = 48 * (v24 + 2 * ((_DWORD)sourceb + k * self->width_cells));
         v26 = (uint32_t)facequads + v25;
-        qmemcpy((char *)facequads + v25, (char *)source->strip_mesh->facequads + v25, sizeof(ObjectFaceQuad));
-        LOWORD(v25) = *(uint16_t *)((char *)&facequads->vertex_index_a + v25);
+        qmemcpy((char *)facequads + v25, (char *)source->strip_mesh->facequads + v25, 0x30u);
+        LOWORD(v25) = *(_WORD *)((char *)&facequads->flags + v25 + 2);
         *(_WORD *)(v26 + 2) = *(_WORD *)(v26 + 4);
         *(_WORD *)(v26 + 4) = v25;
         ++v24;

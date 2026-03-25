@@ -86,8 +86,10 @@
 00407f6d        esi = nullptr
 00407d99        void*** edi_1 = &esi[0x11]
 00407d9c        int32_t i_4 = 2
+00407db2        int16_t top
 00407db2        int32_t i
 00407da3        initialize_bod_base(edi_1)
+00407da3        top -= 1
 00407da8        *edi_1 = &data_4972f0
 00407dae        edi_1 = &edi_1[0x1c]
 00407db1        i = i_4
@@ -97,6 +99,7 @@
 00407dba        int32_t i_5 = 2
 00407dcd        int32_t i_1
 00407dc1        sub_408000(edi_2)
+00407dc1        top -= 2
 00407dc6        edi_2 = &edi_2[0x7e]
 00407dcc        i_1 = i_5
 00407dcc        i_5 -= 1
@@ -122,12 +125,14 @@
 00407e54        initialize_renderable_bod(&esi[0x298])
 00407e64        esi[0x298] = "P{@"
 00407e72        initialize_bod_base(&esi[0x2d3])
+00407e72        int16_t top_9 = top - 9
 00407e8d        initialize_array_with_constructor(&esi[0x474], 0x724, 0x96, sub_408410)
 00407e92        esi[0x2d3] = &data_4972e8
 00407e98        char** edi_9 = &esi[0x11040]
 00407e9e        int32_t i_7 = 0x160
 00407eae        int32_t i_3
 00407ea5        initialize_bod_base(edi_9)
+00407ea5        top_9 -= 1
 00407eaa        edi_9 = &edi_9[0xe]
 00407ead        i_3 = i_7
 00407ead        i_7 -= 1

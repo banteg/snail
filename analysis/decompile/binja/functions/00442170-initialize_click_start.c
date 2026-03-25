@@ -6,8 +6,8 @@
 
 0044218d        int32_t __saved_edi = 0
 004421a4        *(arg1 + 0x84) = allocate_border(data_4df904 + 0xb4c)
-004421aa        void var_10
-004421aa        int32_t* eax_1 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3cf5c28f)
+004421aa        struct Color4f color
+004421aa        struct Color4f* eax_1 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
 004421c8        initialize_frontend_widget(*(arg1 + 0x84), &__dos_header.e_cblp, "Click to Start", 0x14, 0, 200f, eax_1, 2.80259693e-45f)
 004421d3        hide_border_init(*(arg1 + 0x84))
 004421d8        int32_t eax_2 = *(arg1 + 4)

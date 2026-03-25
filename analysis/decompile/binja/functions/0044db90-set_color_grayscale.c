@@ -4,8 +4,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_color_grayscale @ 0x44db90 */
 
-0044db94        arg1[3] = 0x3f800000
-0044db9d        *arg1 = arg2
-0044db9f        arg1[1] = arg2
-0044dba2        arg1[2] = arg2
-0044dba5        return arg2
+0044db94        color->a = 1f
+0044db9d        color->r = intensity
+0044db9f        color->g = intensity
+0044dba2        color->b = intensity
+0044dba5        return

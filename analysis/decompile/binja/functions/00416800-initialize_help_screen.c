@@ -13,6 +13,6 @@
 0041685d        set_border_justify_centre(data_4df904 + 0xb4c, 0)
 00416872        int32_t var_18_1 = 0
 0041688e        *arg1 = allocate_border(data_4df904 + 0xb4c)
-00416890        void var_10
-00416890        int32_t* eax_5 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00416890        struct Color4f color
+00416890        struct Color4f* eax_5 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004168b4        return initialize_frontend_widget(*arg1, 0x40000014, "Back", 0x14, 0, 420f, eax_5, 2.80259693e-45f)

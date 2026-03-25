@@ -46,18 +46,18 @@
 00401bad        *(arg1 + 0x1d0) = arg6[1]
 00401bb3        *(arg1 + 0x1d4) = arg6[2]
 00401bbd        *(arg1 + 0x1d8) = arg6[3]
-00401bc0        void var_10
-00401bc0        int32_t* eax_7 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-00401bd7        *(arg1 + 0x1ec) = *eax_7
-00401be6        *(arg1 + 0x1f0) = eax_7[1]
-00401bec        *(arg1 + 0x1f4) = eax_7[2]
-00401bf2        *(arg1 + 0x1f8) = eax_7[3]
-00401bf9        int32_t* eax_9 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
-00401c06        *(arg1 + 0x1fc) = *eax_9
-00401c0f        *(arg1 + 0x200) = eax_9[1]
-00401c15        *(arg1 + 0x204) = eax_9[2]
-00401c1b        *(arg1 + 0x208) = eax_9[3]
-00401c1e        int32_t eax_10
+00401bc0        struct Color4f color
+00401bc0        struct Color4f* eax_7 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00401bd7        *(arg1 + 0x1ec) = eax_7->r
+00401be6        *(arg1 + 0x1f0) = eax_7->g
+00401bec        *(arg1 + 0x1f4) = eax_7->b
+00401bf2        *(arg1 + 0x1f8) = eax_7->a
+00401bf9        struct Color4f* eax_9 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00401c06        *(arg1 + 0x1fc) = eax_9->r
+00401c0f        *(arg1 + 0x200) = eax_9->g
+00401c15        *(arg1 + 0x204) = eax_9->b
+00401c1b        *(arg1 + 0x208) = eax_9->a
+00401c1e        float eax_10
 00401c1e        eax_10.b = *(arg1 + 0x1a0)
 00401c27        if ((eax_10.b & 2) == 0)
 00401c41        int32_t edx_10 = *(arg1 + 0x214)

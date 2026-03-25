@@ -27,7 +27,7 @@
 00411086        float var_78_2
 00411086        float var_74_2
 00411086        float var_70_2
-00411086        int32_t* var_60_1
+00411086        struct Color4f* var_60_1
 00411086        float var_5c_2
 00411086        float var_58_2
 00411086        float var_54_2
@@ -48,10 +48,10 @@
 004111f7        var_58_2 = fconvert.s(x87_r7_1 * fconvert.t(0.133928567f))
 00411204        void* var_5c_3 = arg1
 0041120f        var_5c_2 = fconvert.s(fconvert.t(0.800000012f) - fconvert.t(var_38) * fconvert.t(0.0892857164f))
-00411226        void var_10
-00411226        int32_t* eax_6
+00411226        struct Color4f color_1
+00411226        struct Color4f* eax_6
 00411226        int32_t ecx_4
-00411226        eax_6, ecx_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00411226        eax_6, ecx_4 = set_color_rgba(&color_1, 1f, 1f, 1f, 1f)
 00411235        var_60_1 = eax_6
 00411236        int32_t var_64_2 = 0x8000000
 0041123b        int32_t var_68_2 = 0
@@ -88,10 +88,10 @@
 004110e9        var_58_2 = fconvert.s(x87_r7_1 * fconvert.t(0.133928567f))
 004110f6        void* var_5c_1 = arg1
 004110fb        var_5c_2 = fconvert.s(fconvert.t(var_38) * fconvert.t(0.0892857164f))
-00411112        void var_20
-00411112        int32_t* eax_5
+00411112        struct Color4f color
+00411112        struct Color4f* eax_5
 00411112        int32_t ecx_1
-00411112        eax_5, ecx_1 = set_color_rgba(&var_20, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00411112        eax_5, ecx_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00411121        var_60_1 = eax_5
 00411122        int32_t var_64_1 = 0x8000000
 00411127        int32_t var_68_1 = 0

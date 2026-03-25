@@ -24,11 +24,11 @@
 00441d02        x87_r7_4 = fconvert.t(1f)
 00441ceb        x87_r7_4 = fconvert.t(0f)
 00441d08        *(esi + 0x8c) = fconvert.s(x87_r7_4)
-00441d16        set_color_alpha(esi + 0x28, 0x3f666666)
-00441d21        long double x87_r7_7 = fconvert.t(*(esi + 0x70))
+00441d16        set_color_alpha(esi + 0x28, 0.899999976f)
+00441d21        long double x87_r6_1 = fconvert.t(*(esi + 0x70))
 00441d24        long double temp4_1 = fconvert.t(*(*(esi + 0x88) + 0x3be0e4))
-00441d24        x87_r7_7 - temp4_1
-00441d2a        eax.w = (x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe
+00441d24        x87_r6_1 - temp4_1
+00441d2a        eax.w = (x87_r6_1 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r6_1, temp4_1) ? 1 : 0) << 0xa | (x87_r6_1 == temp4_1 ? 1 : 0) << 0xe | 0x3800
 00441d2f        if ((eax:1.b & 1) != 0)
 00441d31        *(esi + 0x80) = 2
 00441c32        if (ecx == 2)

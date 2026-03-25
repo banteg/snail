@@ -14,8 +14,8 @@
 0043403d        set_border_justify_centre(data_4df904 + 0xb4c, 0)
 00434053        int32_t var_18_1 = 0
 0043406f        *(arg1 + 4) = allocate_border(data_4df904 + 0xb4c)
-00434072        void var_10
-00434072        int32_t* eax_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00434072        struct Color4f color
+00434072        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 0043408e        float* result = initialize_frontend_widget(*(arg1 + 4), 0x20400002, "Thanks For Playing!", 0x14, 0, 435f, eax_4, 2.80259693e-45f)
 00434096        *(*(arg1 + 4) + 0x6f0) = 0x3f99999a
 004340a0        *(arg1 + 0xc) = 0

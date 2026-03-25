@@ -29,13 +29,13 @@
 0043e531        *esi = allocate_sprite(&data_790f30, *(*(arg1 + 0x84) + 0x380), 0x85, 0xffffffff, 0xffffffff)
 0043e533        *(arg1 + 0x1ec) = 0x86
 0043e53f        *(*esi + 0x28) = 0xd
-0043e5cc        void var_10
-0043e5cc        int32_t* eax_11 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f4ccccd)
-0043e5d5        int32_t* edx_6 = *esi + 0x2c
-0043e5d8        *edx_6 = *eax_11
-0043e5dd        edx_6[1] = eax_11[1]
-0043e5e3        edx_6[2] = eax_11[2]
-0043e5e9        edx_6[3] = eax_11[3]
+0043e5cc        struct Color4f color
+0043e5cc        struct Color4f* eax_11 = set_color_rgba(&color, 1f, 1f, 1f, 0.800000012f)
+0043e5d5        float* edx_6 = *esi + 0x2c
+0043e5d8        *edx_6 = eax_11->r
+0043e5dd        edx_6[1] = eax_11->g
+0043e5e3        edx_6[2] = eax_11->b
+0043e5e9        edx_6[3] = eax_11->a
 0043e5ec        void* eax_13 = *esi
 0043e5f1        int32_t ecx_9
 0043e5f1        ecx_9:1.b = (*(eax_13 + 4)):1.b | 8

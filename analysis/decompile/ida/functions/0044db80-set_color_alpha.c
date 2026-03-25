@@ -3,9 +3,11 @@
 /* selector: set_color_alpha */
 
 // Stores one float alpha value into the destination color slot's alpha lane and returns that same alpha value.
-int __thiscall sub_44DB80(_DWORD *this, int a2)
+float __thiscall set_color_alpha(Color4f *color, float alpha)
 {
-  *(this + 3) = a2;
-  return a2;
+  float result; // st7
+
+  color->a = alpha;
+  return result;
 }
 

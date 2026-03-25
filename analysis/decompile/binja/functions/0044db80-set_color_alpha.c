@@ -4,5 +4,5 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_color_alpha @ 0x44db80 */
 
-0044db84        *(arg1 + 0xc) = arg2
-0044db87        return arg2
+0044db84        color->a = alpha
+0044db87        return

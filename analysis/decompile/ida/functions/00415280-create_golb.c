@@ -404,7 +404,7 @@ LABEL_51:
         *((_DWORD *)this + 33) |= 0x200u;
       }
       reset_vapour((_DWORD *)this + 32, a3);
-      sub_44DBB0((_DWORD *)this + 42, 1065353216, 1065353216, 1065353216, 1065185444);
+      store_color4f((_DWORD *)this + 42, 1065353216, 1065353216, 1065353216, 1065185444);
       *((_DWORD *)this + 157) = a4;
       add_vapour_point((_DWORD *)this + 32, this + 452);
       (**v45)((int)(this + 128));

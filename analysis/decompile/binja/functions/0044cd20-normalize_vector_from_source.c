@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: normalize_vector_from_source @ 0x44cd20 */
 
-0044cd29        *arg1 = *arg2
-0044cd2e        arg1[1] = arg2[1]
-0044cd34        arg1[2] = arg2[2]
-0044cd3d        return normalize_vector(arg1)
+0044cd29        out->x = src->x
+0044cd2e        out->y = src->y
+0044cd34        out->z = src->z
+0044cd3d        return normalize_vector(out)

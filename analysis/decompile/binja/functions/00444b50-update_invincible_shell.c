@@ -49,6 +49,6 @@
 00444c90        change_snail_skin(data_4df904 + 0x434038, 2, 0f)
 00444c98        set_color_white()
 00444cae        *(arg1 + 0x34) = fconvert.s(fconvert.t(*(arg1 + 0x8c)) * fconvert.t(0.800000012f))
-00444cb7        long double x87_r7_11 = fconvert.t(*(arg1 + 0x84))
+00444cb7        long double x87_r6_2 = fconvert.t(*(arg1 + 0x84))
 00444cd0        int32_t var_10 = __builtin_memcpy(arg1 + 0x38, data_4df904 + 0x432738, 0x40)
-00444cde        return rotate_matrix_world_y(arg1 + 0x38, fconvert.s(x87_r7_11 * fconvert.t(6.28318548f)))
+00444cde        return rotate_matrix_world_y(arg1 + 0x38, fconvert.s(x87_r6_2 * fconvert.t(6.28318548f)))

@@ -13,15 +13,15 @@
 0043a06e        eax_1[0x1a] = 0
 0043a075        eax_1[0x1b] = 0x3d2aaaab
 0043a07c        eax_1[0x1e] = 0xb951b717
-0043a083        void var_10
-0043a083        int32_t* eax_2 = set_color_rgba(&var_10, 0x3f800000, 0x3f400000, 0x3f400000, 0x3f800000)
-0043a091        eax_1[0xb] = *eax_2
-0043a099        eax_1[0xc] = eax_2[1]
-0043a0a5        eax_1[0xd] = eax_2[2]
-0043a0a8        int32_t eax_3 = eax_2[3]
+0043a083        struct Color4f color
+0043a083        struct Color4f* eax_2 = set_color_rgba(&color, 1f, 0.75f, 0.75f, 1f)
+0043a091        eax_1[0xb] = eax_2->r
+0043a099        eax_1[0xc] = eax_2->g
+0043a0a5        eax_1[0xd] = eax_2->b
+0043a0a8        float a = eax_2->a
 0043a0ab        eax_1[0x18] = 0x3dcccccd
 0043a0b2        eax_1[0x19] = 0x3f000000
-0043a0b9        eax_1[0xe] = eax_3
+0043a0b9        eax_1[0xe] = a
 0043a0c5        int32_t* edx_5 = *(arg2 + 0x64) + 0x48
 0043a0c8        float var_30_1 = fconvert.s(float.t(i_1) * fconvert.t(0.785398185f))
 0043a0d2        eax_1[0x12] = *edx_5

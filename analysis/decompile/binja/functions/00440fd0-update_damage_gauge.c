@@ -109,7 +109,7 @@
 0044122c        long double temp8 = fconvert.t(0.899999976f)
 0044122c        x87_r7_23 - temp8
 00441232        eax.w = (x87_r7_23 < temp8 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_23, temp8) ? 1 : 0) << 0xa | (x87_r7_23 == temp8 ? 1 : 0) << 0xe
-0044123c        void var_10
+0044123c        struct Color4f color
 0044123c        if ((eax:1.b & 0x41) == 0 || controller->state != 0)
 00441242        long double x87_r7_24 = fconvert.t(controller->display_fill)
 00441245        long double temp10_1 = fconvert.t(0.899999976f)
@@ -128,13 +128,13 @@
 0044128b        var_18_1 = 1f
 00441266        var_18_1 = fconvert.s((fconvert.t(controller->display_fill) - fconvert.t(0.899999976f)) * fconvert.t(10f))
 0044129c        void* var_20_1 = ecx
-004412f0        int32_t* eax_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, fconvert.s(fconvert.t(var_18_1) - (sine(fconvert.s(fconvert.t(controller->_pad_04[0].d) * fconvert.t(6.28318548f))) + fconvert.t(1f)) * fconvert.t(0.5f) * fconvert.t(var_18_1) * fconvert.t(0.5f)))
+004412f0        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, fconvert.s(fconvert.t(var_18_1) - (sine(fconvert.s(fconvert.t(controller->_pad_04[0].d) * fconvert.t(6.28318548f))) + fconvert.t(1f)) * fconvert.t(0.5f) * fconvert.t(var_18_1) * fconvert.t(0.5f)))
 00441311        queue_axis_aligned_textured_quad_uv(0x5b, 0x440c0000, 0x428c0000, 64f, 396f, 0x1000000, eax_4, 0, 0, 0x3f800000, 0x3f460000, 3, 0)
 0044132b        float var_18_3 = fconvert.s(fconvert.t(var_14) * fconvert.t(0.001953125f))
-00441372        queue_axis_aligned_textured_quad_uv(0x59, 0x440c0000, 0x428c0000, 64f, var_14, 0x1000000, set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000), 0, 0, 0x3f800000, var_18_3, 3, 0)
+00441372        queue_axis_aligned_textured_quad_uv(0x59, 0x440c0000, 0x428c0000, 64f, var_14, 0x1000000, set_color_rgba(&color, 1f, 1f, 1f, 1f), 0, 0, 0x3f800000, var_18_3, 3, 0)
 004413a3        int32_t* eax_7
 004413a3        int32_t ecx_12
-004413a3        eax_7, ecx_12 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+004413a3        eax_7, ecx_12 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 004413b8        int32_t var_40_1 = ecx_12
 004413cb        int32_t var_48 = ecx_12
 004413e2        return queue_axis_aligned_textured_quad_uv(0x5a, 0x440c0000, fconvert.s(fconvert.t(var_14) + fconvert.t(70f)), 64f, fconvert.s(fconvert.t(396f) - fconvert.t(var_14)), 0x1000000, eax_7, 0, var_18_3, 0x3f800000, 0x3f460000, 3, 0)

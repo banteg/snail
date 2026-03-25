@@ -74,7 +74,7 @@
 004013e7        return queue_axis_aligned_textured_quad_uv(*(arg1 + 0x270), var_b8_6, var_b4_6, var_b0_6, var_ac_2, 0x1000000, arg1 + 0x1dc, 0, 0, 0x3f800000, 0x3f800000, ecx_6, 0)
 004013d0        return queue_axis_aligned_textured_quad_uv(*(arg1 + 0x60), var_b8_6, var_b4_6, var_b0_6, var_ac_2, 0x1000000, arg1 + 0x1dc, 0, 0, 0x3f800000, 0x3f800000, ecx_6, 0)
 004013e8        result = *(arg1 + 0x1a0)
-004013f1        void var_50
+004013f1        void color
 004013f1        if ((result:1.b & 8) != 0)
 004013f7        int32_t ecx_7 = *(arg1 + 0x274)
 00401405        long double x87_r7_29 = fconvert.t(*(arg1 + 0x258)) * fconvert.t(0.5f)
@@ -91,7 +91,7 @@
 004014a4        float var_54_1 = fconvert.s(fconvert.t(*(arg1 + 0x258)) * fconvert.t(0.5f))
 004014b7        int32_t* eax_7
 004014b7        int32_t ecx_9
-004014b7        eax_7, ecx_9 = set_color_rgba(&var_50, 0, 0, 0, 0x3f666666)
+004014b7        eax_7, ecx_9 = set_color_rgba(&color, 0f, 0f, 0f, 0.899999976f)
 004014ce        int32_t var_ac_5 = ecx_9
 004014de        int32_t var_b0_9 = ecx_9
 004014ee        int32_t var_b4_9 = ecx_9
@@ -158,20 +158,20 @@
 0040185e        result = data_4df904
 0040187a        if (result[0x1103b].b != 0 && arg1 == result[0x1103e])
 0040188d        set_color_white()
-004018ac        int32_t var_30
-004018ac        int32_t* var_8c_3 = &var_30
-004018bb        int32_t var_2c
-004018bb        int32_t var_28
-004018bb        sub_44dbb0(&var_50, var_30, var_2c, var_28, fconvert.s(fconvert.t(1f) - fconvert.t(*(data_4df904 + 0x440f0))))
+004018ac        float r
+004018ac        int32_t* var_8c_3 = &r
+004018bb        float g
+004018bb        float b
+004018bb        store_color4f(&color, r, g, b, fconvert.s(fconvert.t(1f) - fconvert.t(*(data_4df904 + 0x440f0))))
 004018ef        float var_54_3 = fconvert.s((fconvert.t(*(data_4df904 + 0x440f0)) * fconvert.t(0.699999988f) + fconvert.t(1f)) * fconvert.t(var_64_1))
 00401901        float var_58_2 = fconvert.s(fconvert.t(var_78_1) - fconvert.t(var_54_3))
 00401912        float var_5c_3 = fconvert.s(fconvert.t(var_74_1) - fconvert.t(var_54_3))
-0040191d        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_58_2, var_54_3, var_54_3, 0x1000000, &var_50, 0, 0, var_60_3, var_60_3, 3, 0)
-0040194a        queue_axis_aligned_textured_quad_uv(0x63, var_74_1, var_58_2, var_68_2, var_54_3, 0x1000000, &var_50, var_60_3, 0, ebx_2, var_60_3, 3, 0)
-00401973        queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_58_2, var_54_3, var_54_3, 0x1000000, &var_50, ebx_2, 0, 0x3f800000, var_60_3, 3, 0)
-004019a0        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_78_1, var_54_3, var_6c_2, 0x1000000, &var_50, 0, var_60_3, var_60_3, ebx_2, 3, 0)
-004019cc        queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_78_1, var_54_3, var_6c_2, 0x1000000, &var_50, ebx_2, var_60_3, 0x3f800000, ebx_2, 3, 0)
-004019f9        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_60_4, var_54_3, var_54_3, 0x1000000, &var_50, 0, ebx_2, var_60_3, 0x3f800000, 3, 0)
-00401a29        queue_axis_aligned_textured_quad_uv(0x63, var_74_1, var_60_4, var_68_2, var_54_3, 0x1000000, &var_50, var_60_3, ebx_2, ebx_2, 0x3f800000, 3, 0)
-00401a51        return queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_60_4, var_54_3, var_54_3, 0x1000000, &var_50, ebx_2, ebx_2, 0x3f800000, 0x3f800000, 3, 0)
+0040191d        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_58_2, var_54_3, var_54_3, 0x1000000, &color, 0, 0, var_60_3, var_60_3, 3, 0)
+0040194a        queue_axis_aligned_textured_quad_uv(0x63, var_74_1, var_58_2, var_68_2, var_54_3, 0x1000000, &color, var_60_3, 0, ebx_2, var_60_3, 3, 0)
+00401973        queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_58_2, var_54_3, var_54_3, 0x1000000, &color, ebx_2, 0, 0x3f800000, var_60_3, 3, 0)
+004019a0        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_78_1, var_54_3, var_6c_2, 0x1000000, &color, 0, var_60_3, var_60_3, ebx_2, 3, 0)
+004019cc        queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_78_1, var_54_3, var_6c_2, 0x1000000, &color, ebx_2, var_60_3, 0x3f800000, ebx_2, 3, 0)
+004019f9        queue_axis_aligned_textured_quad_uv(0x63, var_5c_3, var_60_4, var_54_3, var_54_3, 0x1000000, &color, 0, ebx_2, var_60_3, 0x3f800000, 3, 0)
+00401a29        queue_axis_aligned_textured_quad_uv(0x63, var_74_1, var_60_4, var_68_2, var_54_3, 0x1000000, &color, var_60_3, ebx_2, ebx_2, 0x3f800000, 3, 0)
+00401a51        return queue_axis_aligned_textured_quad_uv(0x63, var_5c_2, var_60_4, var_54_3, var_54_3, 0x1000000, &color, ebx_2, ebx_2, 0x3f800000, 0x3f800000, 3, 0)
 00401a60        return result

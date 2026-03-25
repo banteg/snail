@@ -13,6 +13,7 @@
 004028ad        *(arg1 + 0x18c) = fconvert.s(fconvert.t(*(arg1 + 0x24c)) * fconvert.t(0.5f) + fconvert.t(*(arg1 + 0x23c)) - fconvert.t(6f))
 004028d1        *(arg1 + 0x190) = fconvert.s(fconvert.t(*(arg1 + 0x24c)) * fconvert.t(0.5f) + fconvert.t(*(arg1 + 0x23c)) + fconvert.t(32f) - fconvert.t(6f))
 004028ef        *(arg1 + 0x180) = fconvert.s((fconvert.t(*(arg1 + 0x17c)) - fconvert.t(*(arg1 + 0x180))) * fconvert.t(0.800000012f) + fconvert.t(*(arg1 + 0x180)))
+004028ef        int16_t top = 0
 004028f5        int32_t eax_2 = *(arg1 + 0x1a0)
 004028fd        if (eax_2 == 0)
 00402909        int16_t eax_3 = (*(arg1 + 4)).w
@@ -51,6 +52,7 @@
 00402b11        long double x87_r7_25 = fconvert.t(*(edx_10 + 0x29c))
 00402b17        long double temp4_1 = fconvert.t(*(arg1 + 0x27c))
 00402b17        x87_r7_25 - temp4_1
+00402b17        top = 0
 00402b1d        int32_t eax_23
 00402b1d        eax_23.w = (x87_r7_25 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_25, temp4_1) ? 1 : 0) << 0xa | (x87_r7_25 == temp4_1 ? 1 : 0) << 0xe
 00402b22        if ((eax_23:1.b & 0x40) == 0)
@@ -58,6 +60,7 @@
 00402b24        long double x87_r7_26 = fconvert.t(*(edx_10 + 0x2a0))
 00402b2a        long double temp5_1 = fconvert.t(*(arg1 + 0x280))
 00402b2a        x87_r7_26 - temp5_1
+00402b2a        top = 0
 00402b30        eax_23.w = (x87_r7_26 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_26, temp5_1) ? 1 : 0) << 0xa | (x87_r7_26 == temp5_1 ? 1 : 0) << 0xe
 00402b35        if ((eax_23:1.b & 0x40) == 0)
 00402b3d        *(arg1 + 0x1a0) = ecx_7 | 0x4000000
@@ -128,6 +131,7 @@
 00402a2a        *(arg1 + 0x264) = fconvert.s(x87_r7_24)
 00402a30        long double temp1_1 = fconvert.t(1f)
 00402a30        x87_r7_24 - temp1_1
+00402a30        top = 0
 00402a36        eax_2.w = (x87_r7_24 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_24, temp1_1) ? 1 : 0) << 0xa | (x87_r7_24 == temp1_1 ? 1 : 0) << 0xe
 00402a3b        if ((eax_2:1.b & 0x41) != 0)
 00402d43        label_402d43:
@@ -149,6 +153,7 @@
 00402e0e        x87_r7_39 = fneg(x87_r7_39)
 00402e10        long double temp3_1 = fconvert.t(0.100000001f)
 00402e10        x87_r7_39 - temp3_1
+00402e10        top = 0
 00402e16        eax_41.w = (x87_r7_39 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_39, temp3_1) ? 1 : 0) << 0xa | (x87_r7_39 == temp3_1 ? 1 : 0) << 0xe
 00402e1b        if ((eax_41:1.b & 1) != 0)
 00402e23        *(arg1 + 0x228) = *(arg1 + 0x224)
@@ -172,13 +177,14 @@
 00402ee1        int32_t var_1c_4 = ecx_34
 00402efb        int32_t var_20_1 = ecx_34
 00402f15        int32_t var_24_1 = ecx_34
-00402f1d        sub_44dbb0(arg1 + 0x1ac, fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1cc)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1bc))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d0)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c0))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d4)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c4))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d8)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c8))))
-00402f28        long double x87_r7_45 = fconvert.t(1f) - fconvert.t(*(arg1 + 0x210))
-00402f42        int32_t* var_18_3 = arg1 + 0x1ac
-00402f62        int32_t* var_1c_6 = arg1 + 0x1ac
-00402f7c        int32_t* var_20_3 = arg1 + 0x1ac
-00402f96        int32_t* var_24_3 = arg1 + 0x1ac
-00402f9e        sub_44dbb0(arg1 + 0x1dc, fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1fc)) + x87_r7_45 * fconvert.t(*(arg1 + 0x1ec))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x200)) + x87_r7_45 * fconvert.t(*(arg1 + 0x1f0))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x204)) + x87_r7_45 * fconvert.t(*(arg1 + 0x1f4))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x208)) + x87_r7_45 * fconvert.t(*(arg1 + 0x1f8))))
+00402f1d        store_color4f(arg1 + 0x1ac, fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1cc)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1bc))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d0)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c0))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d4)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c4))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1d8)) + x87_r7_41 * fconvert.t(*(arg1 + 0x1c8))))
+00402f28        long double x87_r6_15 = fconvert.t(1f) - fconvert.t(*(arg1 + 0x210))
+00402f42        struct Color4f* var_18_3 = arg1 + 0x1ac
+00402f62        struct Color4f* var_1c_6 = arg1 + 0x1ac
+00402f7c        struct Color4f* var_20_3 = arg1 + 0x1ac
+00402f96        struct Color4f* var_24_3 = arg1 + 0x1ac
+00402f9e        store_color4f(arg1 + 0x1dc, fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x1fc)) + x87_r6_15 * fconvert.t(*(arg1 + 0x1ec))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x200)) + x87_r6_15 * fconvert.t(*(arg1 + 0x1f0))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x204)) + x87_r6_15 * fconvert.t(*(arg1 + 0x1f4))), fconvert.s(fconvert.t(*(arg1 + 0x210)) * fconvert.t(*(arg1 + 0x208)) + x87_r6_15 * fconvert.t(*(arg1 + 0x1f8))))
+00402f9e        top = 0xfffe
 00402fa3        int32_t eax_47 = *(arg1 + 0x1a0)
 00402fac        if ((eax_47:1.b & 0x80) != 0)
 00402fba        *(arg1 + 0x1dc) = fconvert.s(fconvert.t(*(arg1 + 0x1dc)) * fconvert.t(0.5f))
@@ -189,6 +195,7 @@
 0040300a        *(arg1 + 0x1b0) = fconvert.s(fconvert.t(*(arg1 + 0x1b0)) * fconvert.t(0.5f))
 0040301c        *(arg1 + 0x1b4) = fconvert.s(fconvert.t(*(arg1 + 0x1b4)) * fconvert.t(0.5f))
 0040302e        *(arg1 + 0x1b8) = fconvert.s(fconvert.t(*(arg1 + 0x1b8)) * fconvert.t(0.5f))
+0040302e        top = 0xfffe
 00403037        if ((eax_47:1.b & 8) == 0)
 00403052        if ((eax_47 & 0x10000) == 0)
 004030e0        layout_and_queue_wrapped_font_text(arg1 + 0x2cc, *(arg1 + 0x6ec), *(arg1 + 0x6f0), *(arg1 + 0x6f4), *(arg1 + 0x6f8), arg1 + 0x238, arg1 + 0x23c, arg1 + 0x248, arg1 + 0x24c, *(arg1 + 0x228), (data_4df934.d u>> 8).b & 1, *(arg1 + 0x25c), *(arg1 + 0x260), 0x1000000, arg1 + 0x1dc, 0, eax_45)
@@ -213,11 +220,16 @@
 00403148        if ((eax_57.b & 0x20) != 0)
 0040314a        eax_57.b &= 0xdf
 0040314c        *(ecx_47 + 0x1a0) = eax_57
-00403158        long double x87_r7_65 = fconvert.t(*(arg1 + 0x17c)) + fconvert.t(0.200000003f)
-0040315e        *(arg1 + 0x17c) = fconvert.s(x87_r7_65)
+00403152        unimplemented  {fld st0, dword [esi+0x17c]}
+00403158        unimplemented  {fadd dword [0x497270]}
+0040315e        *(arg1 + 0x17c) = fconvert.s(unimplemented  {fst dword [esi+0x17c], st0})
 00403164        long double temp6_1 = fconvert.t(0.899999976f)
-00403164        x87_r7_65 - temp6_1
-0040316a        eax_57.w = (x87_r7_65 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_65, temp6_1) ? 1 : 0) << 0xa | (x87_r7_65 == temp6_1 ? 1 : 0) << 0xe
+00403164        unimplemented  {fcomp st0, dword [0x49726c]} f- temp6_1
+00403164        bool c0_6 = unimplemented  {fcomp st0, dword [0x49726c]} f< temp6_1
+00403164        bool c2_6 = is_unordered.t(unimplemented  {fcomp st0, dword [0x49726c]}, temp6_1)
+00403164        bool c3_6 = unimplemented  {fcomp st0, dword [0x49726c]} f== temp6_1
+00403164        unimplemented  {fcomp st0, dword [0x49726c]}
+0040316a        eax_57.w = (c0_6 ? 1 : 0) << 8 | (c2_6 ? 1 : 0) << 0xa | (c3_6 ? 1 : 0) << 0xe | (top & 7) << 0xb
 0040316f        if ((eax_57:1.b & 1) == 0)
 00403171        *(arg1 + 0x17c) = 0x3f800000
 00403177        void* ecx_48 = *(arg1 + 0x718)
@@ -225,17 +237,26 @@
 00403185        if ((eax_58.b & 0x20) != 0)
 00403187        eax_58.b &= 0xdf
 00403189        *(ecx_48 + 0x1a0) = eax_58
-00403195        long double x87_r7_67 = fconvert.t(*(arg1 + 0x17c)) - fconvert.t(0.200000003f)
-0040319b        *(arg1 + 0x17c) = fconvert.s(x87_r7_67)
+0040318f        unimplemented  {fld st0, dword [esi+0x17c]}
+00403195        unimplemented  {fsub st0, dword [0x497270]}
+0040319b        *(arg1 + 0x17c) = fconvert.s(unimplemented  {fst dword [esi+0x17c], st0})
 004031a1        long double temp8_1 = fconvert.t(0.100000001f)
-004031a1        x87_r7_67 - temp8_1
-004031a7        eax_58.w = (x87_r7_67 < temp8_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_67, temp8_1) ? 1 : 0) << 0xa | (x87_r7_67 == temp8_1 ? 1 : 0) << 0xe
+004031a1        unimplemented  {fcomp st0, dword [0x497258]} f- temp8_1
+004031a1        bool c0_7 = unimplemented  {fcomp st0, dword [0x497258]} f< temp8_1
+004031a1        bool c2_7 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497258]}, temp8_1)
+004031a1        bool c3_7 = unimplemented  {fcomp st0, dword [0x497258]} f== temp8_1
+004031a1        unimplemented  {fcomp st0, dword [0x497258]}
+004031a7        eax_58.w = (c0_7 ? 1 : 0) << 8 | (c2_7 ? 1 : 0) << 0xa | (c3_7 ? 1 : 0) << 0xe | (top & 7) << 0xb
 004031ac        if ((eax_58:1.b & 0x41) != 0)
 004031ae        *(arg1 + 0x17c) = 0
-004031b8        long double x87_r7_68 = fconvert.t(*(arg1 + 0x17c))
+004031b8        unimplemented  {fld st0, dword [esi+0x17c]}
 004031be        long double temp7_1 = fconvert.t(0f)
-004031be        x87_r7_68 - temp7_1
-004031c9        eax_58.w = (x87_r7_68 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_68, temp7_1) ? 1 : 0) << 0xa | (x87_r7_68 == temp7_1 ? 1 : 0) << 0xe
+004031be        unimplemented  {fcomp st0, dword [0x497234]} f- temp7_1
+004031be        bool c0_8 = unimplemented  {fcomp st0, dword [0x497234]} f< temp7_1
+004031be        bool c2_8 = is_unordered.t(unimplemented  {fcomp st0, dword [0x497234]}, temp7_1)
+004031be        bool c3_8 = unimplemented  {fcomp st0, dword [0x497234]} f== temp7_1
+004031be        unimplemented  {fcomp st0, dword [0x497234]}
+004031c9        eax_58.w = (c0_8 ? 1 : 0) << 8 | (c2_8 ? 1 : 0) << 0xa | (c3_8 ? 1 : 0) << 0xe | (top & 7) << 0xb
 004031ce        void* eax_59 = *(arg1 + 0x718)
 004031d4        int32_t edx_28 = *(eax_59 + 0x1a0)
 004031da        if ((eax_58:1.b & 0x40) == 0)
@@ -255,7 +276,10 @@
 00403235        ecx_51[3] = *(arg1 + 0x1e8)
 00403244        *(*(arg1 + 0x720) + 0x20c) = *(arg1 + 0x20c)
 00403256        *(*(arg1 + 0x720) + 0x210) = *(arg1 + 0x210)
-00403279        int32_t var_18_6 = __ftol(x87control_1, fconvert.t(*(arg1 + 0x17c)) * fconvert.t(100f) + fconvert.t(0.100000001f))
+0040325c        unimplemented  {fld st0, dword [esi+0x17c]}
+00403262        unimplemented  {fmul st0, dword [0x497268]}
+00403268        unimplemented  {fadd dword [0x497258]}
+00403279        int32_t var_18_6 = __ftol(x87control_1)
 00403286        return sub_48b32c(*(arg1 + 0x720) + 0x2cc, "%02i%%")
 00402a46        ecx_5 = data_4df904 + 0x5a8
 00402a4c        int16_t eax_16 = (*(arg1 + 4)).w

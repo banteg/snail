@@ -19,16 +19,16 @@
 00437c71        x87_r7_1 = fconvert.t(0f)
 00437ccd        float var_1c = fconvert.s((fconvert.t(1f) - x87_r7_1) * fconvert.t(232f) + fconvert.t(12f))
 00437cdd        float var_18 = fconvert.s(fconvert.t(var_1c) + fconvert.t(150f))
-00437ce1        void var_10
-00437ce1        int32_t* eax_1
+00437ce1        struct Color4f color
+00437ce1        struct Color4f* eax_1
 00437ce1        int32_t ecx_1
-00437ce1        eax_1, ecx_1 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00437ce1        eax_1, ecx_1 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437d00        int32_t var_4c = ecx_1
 00437d0e        queue_axis_aligned_textured_quad_uv(0x9d, 0x41400000, fconvert.s(fconvert.t(var_18) - fconvert.t(39f)), 64f, 64f, 0x1000000, eax_1, 0, 0, 0x3f800000, 0x3f800000, 3, 0)
 00437d28        float var_14 = fconvert.s(fconvert.t(var_1c) * fconvert.t(0.00390625f))
-00437d72        queue_axis_aligned_textured_quad_uv(0x9b, 0x41500000, 0x43160000, 64f, var_1c, 0x1000000, set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000), 0, 0, 0x3f800000, var_14, 3, 0)
+00437d72        queue_axis_aligned_textured_quad_uv(0x9b, 0x41500000, 0x43160000, 64f, var_1c, 0x1000000, set_color_rgba(&color, 1f, 1f, 1f, 1f), 0, 0, 0x3f800000, var_14, 3, 0)
 00437da3        int32_t* eax_4
 00437da3        int32_t ecx_4
-00437da3        eax_4, ecx_4 = set_color_rgba(&var_10, 0x3f800000, 0x3f800000, 0x3f800000, 0x3f800000)
+00437da3        eax_4, ecx_4 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437db8        int32_t var_44_1 = ecx_4
 00437ddc        return queue_axis_aligned_textured_quad_uv(0x9c, 0x41500000, var_18, 64f, fconvert.s(fconvert.t(256f) - fconvert.t(var_1c)), 0x1000000, eax_4, 0, var_14, 0x3f800000, 0x3f800000, 3, 0)

@@ -23,10 +23,12 @@
 00408193        initialize_bod_base(arg1 + 0x355d5c)
 0040819e        initialize_track_speedup_runtime(arg1 + 0x355db0)
 004081a9        initialize_track_jetpack_pickup_runtime(arg1 + 0x355e64)
+004081a9        int16_t top = 0xfff2
 004081ae        char** edi_2 = arg1 + 0x356000
 004081b4        int32_t i_8 = 8
 004081c4        int32_t i
 004081bb        initialize_track_health_pickup_runtime(edi_2)
+004081bb        top -= 1
 004081c0        edi_2 = &edi_2[0x1d]
 004081c3        i = i_8
 004081c3        i_8 -= 1
@@ -35,6 +37,7 @@
 004081cc        int32_t i_9 = 8
 004081df        int32_t i_1
 004081d3        initialize_slug_hazard_runtime(edi_3)
+004081d3        top -= 1
 004081d8        edi_3 = &edi_3[0x3b]
 004081de        i_1 = i_9
 004081de        i_9 -= 1
@@ -45,6 +48,7 @@
 00408217        int32_t i_10 = 2
 0040822d        int32_t i_2
 0040821e        initialize_bod_base(edi_4)
+0040821e        top -= 1
 00408223        *edi_4 = &data_497304
 00408229        edi_4 = &edi_4[0x18]
 0040822c        i_2 = i_10
@@ -62,6 +66,7 @@
 00408250        int32_t i_12 = 2
 00408263        int32_t i_4
 00408257        initialize_track_ring_or_special_effect_runtime(edi_6)
+00408257        top -= 1
 0040825c        edi_6 = &edi_6[0x7e]
 00408262        i_4 = i_12
 00408262        i_12 -= 1
@@ -69,6 +74,7 @@
 00408278        initialize_array_with_constructor(arg1 + 0x35bbbc, 0x38, 0x1b58, initialize_fringe_object)
 00408285        initialize_renderable_bod(arg1 + 0x3bb764)
 00408290        sub_408670(arg1 + 0x3bb804)
+00408290        int16_t top_2 = top - 2
 004082be        initialize_array_with_constructor(arg1 + 0x3bbbb4, 0x2e8, 0xc, sub_408690)
 004082c9        initialize_enemy_manager_runtime(arg1 + 0x3be0e8)
 004082ce        *(arg1 + 0x3bb764) = &data_497300
@@ -76,6 +82,7 @@
 004082da        int32_t i_13 = 0x6400
 004082ea        int32_t i_5
 004082e1        initialize_bod(edi_8)
+004082e1        top_2 -= 1
 004082e6        edi_8 = &edi_8[0x15]
 004082e9        i_5 = i_13
 004082e9        i_13 -= 1
@@ -84,6 +91,7 @@
 004082f2        int32_t i_14 = 0xc80
 00408305        int32_t i_6
 004082f9        initialize_track_row_runtime(edi_9)
+004082f9        top_2 -= 2
 004082fe        edi_9 += 0xf4
 00408304        i_6 = i_14
 00408304        i_14 -= 1
@@ -92,6 +100,7 @@
 0040830d        int32_t i_15 = 0x7e
 00408320        int32_t i_7
 00408314        initialize_path_template_record_pair(edi_10)
+00408314        top_2 -= 2
 00408319        edi_10 = &edi_10[0x2a]
 0040831f        i_7 = i_15
 0040831f        i_15 -= 1

@@ -3,11 +3,9 @@
 /* selector: normalize_vector_from_source */
 
 // Copies a source vector and normalizes it in place. Android symbols match this helper to `tVector::Normalize(const tVector&)`.
-void __thiscall normalize_vector_from_source(int this, _DWORD *a2)
+double __thiscall normalize_vector_from_source(Vec3 *out, Vec3 *src)
 {
-  *(_DWORD *)this = *a2;
-  *(_DWORD *)(this + 4) = a2[1];
-  *(_DWORD *)(this + 8) = a2[2];
-  normalize_vector((float *)this);
+  *out = *src;
+  return normalize_vector(out);
 }
 

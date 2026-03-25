@@ -11,7 +11,7 @@ _DWORD *__thiscall sub_42F5F0(_DWORD *this)
   Iostream_init::Iostream_init((#93 *)(this + 10));
   *this = off_4974FC;
   *(this + 1) = 33554464;
-  sub_44DBB0(v2, 1065353216, 1065353216, 1065353216, 1065353216);
+  store_color4f(v2, 1065353216, 1065353216, 1065353216, 1065353216);
   ++MEMORY[0x50331C];
   *(this + 6) = 0;
   *(this + 5) = 0;
