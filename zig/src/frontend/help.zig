@@ -5,6 +5,7 @@ pub const Action = enum {
     back,
 };
 
+pub const button_count: usize = 1;
 pub const back_anchor_y: f32 = 420.0;
 
 pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {

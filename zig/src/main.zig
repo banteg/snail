@@ -991,22 +991,7 @@ const CompletionFlowOwner = enum {
     tutorial_failure,
 };
 
-const options_button_count = 4;
-const options_fullscreen_button_index: usize = 0;
-const options_sound_button_index: usize = 1;
-const options_music_button_index: usize = 2;
-const options_back_button_index: usize = 3;
-const options_slider_adjust_step: f32 = 0.2;
-const options_slider_display_lerp: f32 = 0.8;
-const high_score_button_count = 2;
-const high_score_replay_button_count = high_score.visible_entry_count;
-const help_button_count = 1;
-const route_map_button_count = 3;
-const route_map_primary_button_index: usize = 0;
-const route_map_replay_button_index: usize = 1;
-const route_map_back_button_index: usize = 2;
 const pause_menu_button_count = frontend_pause_menu.items.len;
-const exit_prompt_button_count = 2;
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 const frontend_canvas_width: i32 = 640;
 const frontend_canvas_height: i32 = 480;
@@ -1475,18 +1460,18 @@ const AppState = struct {
     challenge_setup_index: usize = 0,
     challenge_setup_button_states: [frontend_challenge_setup_menu.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_challenge_setup_menu.button_count,
     options_menu_index: usize = 0,
-    options_button_states: [options_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** options_button_count,
+    options_button_states: [frontend_options_menu.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_options_menu.button_count,
     pause_menu_index: usize = 0,
     pause_menu_button_states: [pause_menu_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** pause_menu_button_count,
     options_return_phase: GamePhase = .main_menu,
-    help_button_states: [help_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** help_button_count,
-    route_map_button_states: [route_map_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** route_map_button_count,
+    help_button_states: [frontend_help.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_help.button_count,
+    route_map_button_states: [frontend_route_map.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_route_map.button_count,
     high_scores_menu_index: usize = 0,
     high_scores_action_index: usize = 1,
-    high_score_button_states: [high_score_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** high_score_button_count,
-    high_score_replay_button_states: [high_score_replay_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** high_score_replay_button_count,
+    high_score_button_states: [frontend_high_score_screen.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_high_score_screen.button_count,
+    high_score_replay_button_states: [frontend_high_score_screen.replay_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_high_score_screen.replay_button_count,
     exit_prompt_choice_index: usize = 0,
-    exit_prompt_button_states: [exit_prompt_button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** exit_prompt_button_count,
+    exit_prompt_button_states: [frontend_exit_prompt.button_count]frontend_widget.TextButtonState = [_]frontend_widget.TextButtonState{.{}} ** frontend_exit_prompt.button_count,
     exit_prompt_return_phase: GamePhase = .main_menu,
     exit_prompt_mode: frontend_exit_prompt.Mode = .quit_app,
     post_level_high_score_action_index: usize = 1,
@@ -2643,15 +2628,15 @@ const AppState = struct {
         }
         const route_map_active = self.game_phase == .route_map_menu and !self.frontend_transition.blocksInput();
         const route_map_card_open = self.routeMapCardIsOpen();
-        self.route_map_button_states[route_map_primary_button_index].stepFor(
+        self.route_map_button_states[frontend_route_map.primary_button_index].stepFor(
             .menu_button,
             route_map_active and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
-        self.route_map_button_states[route_map_replay_button_index].stepFor(
+        self.route_map_button_states[frontend_route_map.replay_button_index].stepFor(
             .route_map_secondary_action,
             route_map_active and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
-        self.route_map_button_states[route_map_back_button_index].stepFor(
+        self.route_map_button_states[frontend_route_map.back_button_index].stepFor(
             .menu_button,
             route_map_active and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
         );
@@ -2731,15 +2716,15 @@ const AppState = struct {
             state.snapFor(.menu_button, self.game_phase == .pause_menu and self.frontendButtonHot(hoverTargetForPauseMenu(index), self.pause_menu_index == index));
         }
         const route_map_card_open = self.routeMapCardIsOpen();
-        self.route_map_button_states[route_map_primary_button_index].snapFor(
+        self.route_map_button_states[frontend_route_map.primary_button_index].snapFor(
             .menu_button,
             self.game_phase == .route_map_menu and route_map_card_open and self.frontendButtonHot(hoverTargetForRouteMenuAction(.play), self.activeRouteMenuHotAction() == .play),
         );
-        self.route_map_button_states[route_map_replay_button_index].snapFor(
+        self.route_map_button_states[frontend_route_map.replay_button_index].snapFor(
             .route_map_secondary_action,
             self.game_phase == .route_map_menu and route_map_card_open and self.routeMapShowsReplay() and self.frontendButtonHot(hoverTargetForRouteMenuAction(.watch_best_trial), self.activeRouteMenuHotAction() == .watch_best_trial),
         );
-        self.route_map_button_states[route_map_back_button_index].snapFor(
+        self.route_map_button_states[frontend_route_map.back_button_index].snapFor(
             .menu_button,
             self.game_phase == .route_map_menu and self.frontendButtonHot(hoverTargetForRouteMenuAction(.back), self.activeRouteMenuHotAction() == .back),
         );
@@ -2913,7 +2898,7 @@ const AppState = struct {
 
         const layout_state = self.optionsMenuLayoutState();
         const fullscreen_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .fullscreen);
-        if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[options_fullscreen_button_index]).contains(local_mouse)) {
+        if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[frontend_options_menu.fullscreen_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(0));
             self.options_menu_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
@@ -2927,7 +2912,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .less));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.sound_volume, -options_slider_adjust_step);
+                try self.stepOptionsMenuValue(.sound_volume, -frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -2935,7 +2920,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.sound_volume, .more));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.sound_volume, options_slider_adjust_step);
+                try self.stepOptionsMenuValue(.sound_volume, frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -2950,7 +2935,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .less));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.music_volume, -options_slider_adjust_step);
+                try self.stepOptionsMenuValue(.music_volume, -frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -2958,7 +2943,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(hoverTargetForOptionsSliderArrow(.music_volume, .more));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.music_volume, options_slider_adjust_step);
+                try self.stepOptionsMenuValue(.music_volume, frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -2969,7 +2954,7 @@ const AppState = struct {
         }
 
         const back_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .back);
-        if (frontend_widget.hitRect(back_rect, self.options_button_states[options_back_button_index]).contains(local_mouse)) {
+        if (frontend_widget.hitRect(back_rect, self.options_button_states[frontend_options_menu.back_button_index]).contains(local_mouse)) {
             self.setFrontendHoverTarget(hoverTargetForOptions(3));
             self.options_menu_index = 3;
             if (rl.isMouseButtonPressed(.left)) {
@@ -2986,8 +2971,8 @@ const AppState = struct {
             .fullscreen_enabled = self.runtime_config.fullscreenEnabled(),
             .sound_value = self.runtime_config.soundVolume(),
             .music_value = self.runtime_config.musicVolume(),
-            .sound_row_state = self.options_button_states[options_sound_button_index],
-            .music_row_state = self.options_button_states[options_music_button_index],
+            .sound_row_state = self.options_button_states[frontend_options_menu.sound_button_index],
+            .music_row_state = self.options_button_states[frontend_options_menu.music_button_index],
         };
     }
 
@@ -3031,7 +3016,7 @@ const AppState = struct {
         };
 
         const back_rect = frontend_route_map.backTextRect(&self.ui_font, self.route_map_screen_mode);
-        if (frontend_widget.hitRect(back_rect, self.route_map_button_states[route_map_back_button_index]).contains(local_mouse)) {
+        if (frontend_widget.hitRect(back_rect, self.route_map_button_states[frontend_route_map.back_button_index]).contains(local_mouse)) {
             self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.back));
@@ -3067,7 +3052,7 @@ const AppState = struct {
                     if (self.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null,
                 );
 
-                if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[route_map_primary_button_index]).contains(local_mouse)) {
+                if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[frontend_route_map.primary_button_index]).contains(local_mouse)) {
                     self.route_map_hover_state = .card;
                     self.route_map_hovered_index = null;
                     self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.play));
@@ -3081,7 +3066,7 @@ const AppState = struct {
                 }
 
                 if (card_layout.replay_text_rect) |replay_rect| {
-                    if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[route_map_replay_button_index]).contains(local_mouse)) {
+                    if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[frontend_route_map.replay_button_index]).contains(local_mouse)) {
                         self.route_map_hover_state = .card;
                         self.route_map_hovered_index = null;
                         self.setFrontendHoverTarget(hoverTargetForRouteMenuAction(.watch_best_trial));
@@ -3960,11 +3945,11 @@ const AppState = struct {
                 const selected = options_menu_items[self.options_menu_index];
                 if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
                     self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, -options_slider_adjust_step);
+                    try self.stepOptionsMenuValue(selected, -frontend_options_menu.slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
                     self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, options_slider_adjust_step);
+                    try self.stepOptionsMenuValue(selected, frontend_options_menu.slider_adjust_step);
                 }
                 if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
                     switch (selected) {
@@ -6728,7 +6713,7 @@ const AppState = struct {
     }
 
     fn stepOptionsSliderDisplay(current: f32, target: f32) f32 {
-        const next = current + (target - current) * options_slider_display_lerp;
+        const next = current + (target - current) * frontend_options_menu.slider_display_lerp;
         if (@abs(target - next) < 0.001) return target;
         return next;
     }
@@ -7706,7 +7691,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         &state.ui_font,
         frontend_options_menu.visibleLabel(menu_layout, .fullscreen),
         frontend_options_menu.textRect(&state.ui_font, menu_layout, .fullscreen),
-        state.options_button_states[options_fullscreen_button_index],
+        state.options_button_states[frontend_options_menu.fullscreen_button_index],
         false,
     );
     const active_target = state.activeFrontendButtonTarget();
@@ -7716,7 +7701,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         .sound_volume,
         state.runtime_config.soundVolume(),
         state.options_sound_display_value,
-        state.options_button_states[options_sound_button_index],
+        state.options_button_states[frontend_options_menu.sound_button_index],
         if (active_target) |target| target == .options_sound_less else false,
         if (active_target) |target| target == .options_sound_more else false,
     );
@@ -7726,7 +7711,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         .music_volume,
         state.runtime_config.musicVolume(),
         state.options_music_display_value,
-        state.options_button_states[options_music_button_index],
+        state.options_button_states[frontend_options_menu.music_button_index],
         if (active_target) |target| target == .options_music_less else false,
         if (active_target) |target| target == .options_music_more else false,
     );
@@ -7738,7 +7723,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         &state.ui_font,
         "Back",
         frontend_options_menu.textRect(&state.ui_font, menu_layout, .back),
-        state.options_button_states[options_back_button_index],
+        state.options_button_states[frontend_options_menu.back_button_index],
         false,
     );
 
@@ -7801,7 +7786,7 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
         &state.ui_font,
         frontend_route_map.backLabel(state.route_map_screen_mode),
         frontend_route_map.backTextRect(&state.ui_font, state.route_map_screen_mode),
-        state.route_map_button_states[route_map_back_button_index],
+        state.route_map_button_states[frontend_route_map.back_button_index],
         false,
     );
 
@@ -8492,7 +8477,7 @@ fn drawRouteMapCard(
         &state.ui_font,
         primary_action,
         card_layout.primary_text_rect,
-        state.route_map_button_states[route_map_primary_button_index],
+        state.route_map_button_states[frontend_route_map.primary_button_index],
         false,
     );
     if (replay_action) |label| {
@@ -8504,7 +8489,7 @@ fn drawRouteMapCard(
                 .route_map_secondary_action,
                 label,
                 replay_text_rect,
-                state.route_map_button_states[route_map_replay_button_index],
+                state.route_map_button_states[frontend_route_map.replay_button_index],
                 false,
             );
         }

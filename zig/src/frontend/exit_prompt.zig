@@ -23,6 +23,7 @@ pub const choices = [_]Choice{
     .yes,
     .no,
 };
+pub const button_count: usize = choices.len;
 
 // PORT(verified): the shared centered exit prompt path in `initialize_exit_prompt`
 // seeds the Yes/No buttons at `330`, but then stacks both beneath the title at

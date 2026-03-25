@@ -6,6 +6,13 @@ const std = @import("std");
 // PORT(verified): `initialize_options` seeds the fullscreen row at `y = 75`, then nudges
 // the widget down by `+8`, so the final authored-space anchor is `83`.
 pub const fullscreen_anchor_y: f32 = 83.0;
+pub const button_count: usize = 4;
+pub const fullscreen_button_index: usize = 0;
+pub const sound_button_index: usize = 1;
+pub const music_button_index: usize = 2;
+pub const back_button_index: usize = 3;
+pub const slider_adjust_step: f32 = 0.2;
+pub const slider_display_lerp: f32 = 0.8;
 // PORT(verified): `initialize_options` keeps the options rows on the centered shell-font path.
 // The constructor's `90.0` seed is only the left-measure start fed into `sub_44abe0`; the final
 // centered X comes from `arg13 + 320 - width*0.5`, and `arg13` stays `0.0` for this screen.

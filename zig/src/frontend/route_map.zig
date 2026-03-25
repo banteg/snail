@@ -19,6 +19,10 @@ pub const actions_with_replay = [_]frontend.RouteMenuAction{
 pub const actions_closed = [_]frontend.RouteMenuAction{
     .back,
 };
+pub const button_count: usize = 3;
+pub const primary_button_index: usize = 0;
+pub const replay_button_index: usize = 1;
+pub const back_button_index: usize = 2;
 
 pub const HoverState = enum(u8) {
     none = 0,

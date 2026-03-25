@@ -22,6 +22,8 @@ pub const entry_cancel_x: f32 = -110.0;
 pub const entry_submit_x: f32 = 55.0;
 pub const back_x: f32 = -132.0;
 pub const toggle_x: f32 = 33.0;
+pub const button_count: usize = 2;
+pub const replay_button_count: usize = high_score.visible_entry_count;
 
 pub const PendingEntry = struct {
     mode: high_score.Mode,
