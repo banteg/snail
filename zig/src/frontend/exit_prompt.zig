@@ -1,5 +1,8 @@
+const app_ui = @import("../app_ui.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
+
+const VirtualLayout = app_ui.VirtualLayout;
 
 pub const Mode = enum {
     quit_app,
@@ -48,5 +51,30 @@ pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x
         text,
         frontend_widget.stackBelow(title_rect),
         center_offset_x,
+    );
+}
+
+pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+    frontend_widget.drawType20Button(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        choices[0].label(),
+        textRect(&state.ui_font, choices[0].label(), yes_x),
+        state.exit_prompt_button_states[0],
+        false,
+    );
+    frontend_widget.drawType20Button(
+        layout,
+        .{
+            .border = state.frontend_widget_art.border.?.texture,
+        },
+        &state.ui_font,
+        choices[1].label(),
+        textRect(&state.ui_font, choices[1].label(), no_x),
+        state.exit_prompt_button_states[1],
+        false,
     );
 }

@@ -6853,28 +6853,8 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    const art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
     drawFrontendHeading(state, layout, 320.0, frontend_exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
-    frontend_widget.drawType20Button(
-        layout,
-        art,
-        &state.ui_font,
-        frontend_exit_prompt.choices[0].label(),
-        frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x),
-        state.exit_prompt_button_states[0],
-        false,
-    );
-    frontend_widget.drawType20Button(
-        layout,
-        art,
-        &state.ui_font,
-        frontend_exit_prompt.choices[1].label(),
-        frontend_exit_prompt.textRect(&state.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x),
-        state.exit_prompt_button_states[1],
-        false,
-    );
+    frontend_exit_prompt.drawMenuUi(state, layout);
 }
 
 fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
@@ -7337,23 +7317,7 @@ fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawThanksScreenUi(state: *const AppState, layout: VirtualLayout) void {
-    const text = state.thanks_screen_controller.currentText() orelse return;
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    var idle_state = frontend_widget.TextButtonState{};
-    idle_state.snapFor(.menu_button, false);
-    frontend_widget.drawTextButtonWithOptions(
-        layout,
-        widget_art,
-        &state.ui_font,
-        .menu_button,
-        text,
-        frontend_widget.type20TextRect(&state.ui_font, text, frontend_thanks.message_y, 0.0),
-        idle_state,
-        false,
-        .{ .flags = 0x20400002 },
-    );
+    frontend_thanks.drawMenuUi(state, layout);
 }
 
 fn drawSubgameViewport(state: *const AppState) void {

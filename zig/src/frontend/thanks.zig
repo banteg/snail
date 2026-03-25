@@ -1,3 +1,8 @@
+const app_ui = @import("../app_ui.zig");
+const frontend_widget = @import("widget.zig");
+
+const VirtualLayout = app_ui.VirtualLayout;
+
 pub const message_y: f32 = 435.0;
 
 const hold_step: f32 = 1.0 / 240.0;
@@ -79,3 +84,23 @@ pub const Controller = struct {
         };
     }
 };
+
+pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+    const text = state.thanks_screen_controller.currentText() orelse return;
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    var idle_state = frontend_widget.TextButtonState{};
+    idle_state.snapFor(.menu_button, false);
+    frontend_widget.drawTextButtonWithOptions(
+        layout,
+        widget_art,
+        &state.ui_font,
+        .menu_button,
+        text,
+        frontend_widget.type20TextRect(&state.ui_font, text, message_y, 0.0),
+        idle_state,
+        false,
+        .{ .flags = 0x20400002 },
+    );
+}
