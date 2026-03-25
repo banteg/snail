@@ -4,6 +4,9 @@ const app_ui = @import("../app_ui.zig");
 const background = @import("../background.zig");
 const debug_levels = @import("levels.zig");
 const object = @import("../object.zig");
+const track = @import("../track.zig");
+const track_render = @import("../track_render.zig");
+const x2 = @import("../x2.zig");
 const xanim = @import("../xanim.zig");
 
 pub const Mode = enum {
@@ -88,6 +91,162 @@ pub fn nextMode(mode: Mode) Mode {
     };
 }
 
+pub fn initialize(state: anytype) !void {
+    try state.high_score_tables.loadFromRuntimeRoot(state.allocator, state.runtime_root_path);
+    try reloadTexture(state);
+    try reloadModel(state);
+    try reloadObject(state);
+    try state.reloadLevel();
+    try reloadStandaloneSegment(state);
+}
+
+pub fn primeAudioPreview(state: anytype) !void {
+    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    try previewSound(state);
+    state.stopAudioPreview();
+    try previewMusic(state);
+}
+
+pub fn handleInput(state: anytype) !void {
+    if (rl.isKeyPressed(.tab)) {
+        try setMode(state, nextMode(state.mode));
+    }
+    if (rl.isKeyPressed(.one)) {
+        try setMode(state, .textures);
+    }
+    if (rl.isKeyPressed(.two)) {
+        try setMode(state, .audio);
+    }
+    if (rl.isKeyPressed(.three)) {
+        try setMode(state, .models);
+    }
+    if (rl.isKeyPressed(.four)) {
+        try setMode(state, .objects);
+    }
+    if (rl.isKeyPressed(.five)) {
+        try setMode(state, .levels);
+    }
+    if (rl.isKeyPressed(.six)) {
+        try setMode(state, .segments);
+    }
+    if (rl.isKeyPressed(.seven)) {
+        try setMode(state, .streaks);
+    }
+
+    if (state.mode == .levels) {
+        if (rl.isKeyPressed(.left)) {
+            state.level_index = wrappedIndex(state.catalog.level_entries.len, state.level_index, -1);
+            try state.reloadLevel();
+        }
+        if (rl.isKeyPressed(.right)) {
+            state.level_index = wrappedIndex(state.catalog.level_entries.len, state.level_index, 1);
+            try state.reloadLevel();
+        }
+        if (rl.isKeyPressed(.up)) {
+            try stepLevelSegment(state, -1);
+        }
+        if (rl.isKeyPressed(.down)) {
+            try stepLevelSegment(state, 1);
+        }
+        if (rl.isKeyPressed(.a)) {
+            state.pending_level_input.lane_delta -= 1;
+        }
+        if (rl.isKeyPressed(.d)) {
+            state.pending_level_input.lane_delta += 1;
+        }
+        if (rl.isKeyPressed(.w)) {
+            state.pending_level_input.speed_delta_rows_per_second += 2.0;
+        }
+        if (rl.isKeyPressed(.s)) {
+            state.pending_level_input.speed_delta_rows_per_second -= 2.0;
+        }
+        if (rl.isKeyPressed(.space)) {
+            state.pending_level_input.toggle_pause = true;
+        }
+        if (rl.isKeyPressed(.r)) {
+            state.pending_level_input.reset = true;
+        }
+    } else if (state.mode == .segments) {
+        if (rl.isKeyPressed(.left)) {
+            try stepSelection(state, -1);
+        }
+        if (rl.isKeyPressed(.right)) {
+            try stepSelection(state, 1);
+        }
+        if (rl.isKeyPressed(.up)) {
+            try stepSelection(state, -10);
+        }
+        if (rl.isKeyPressed(.down)) {
+            try stepSelection(state, 10);
+        }
+        if (rl.isKeyPressed(.v)) {
+            state.segment_render_mode = switch (state.segment_render_mode) {
+                .game => .raw,
+                .raw => .game,
+            };
+        }
+        if (rl.isKeyPressed(.o)) {
+            state.segment_show_overlay = !state.segment_show_overlay;
+        }
+        if (rl.isKeyPressed(.g)) {
+            state.segment_show_grid = !state.segment_show_grid;
+        }
+        if (rl.isKeyPressed(.a)) {
+            state.segment_show_attachments = !state.segment_show_attachments;
+        }
+        if (rl.isKeyPressed(.t)) {
+            state.segment_track_set_index = (state.segment_track_set_index + 1) % 4;
+            try reloadStandaloneSegmentScene(state);
+        }
+    } else if (state.mode == .streaks) {
+        handleLightStreakInput(&state.debug_light_streak_view);
+    } else {
+        if (rl.isKeyPressed(.left)) {
+            try stepSelection(state, -1);
+        }
+        if (rl.isKeyPressed(.right)) {
+            try stepSelection(state, 1);
+        }
+        if (rl.isKeyPressed(.up)) {
+            try stepSelection(state, -10);
+        }
+        if (rl.isKeyPressed(.down)) {
+            try stepSelection(state, 10);
+        }
+    }
+
+    if (state.mode == .audio and state.audio_ready) {
+        if (rl.isKeyPressed(.space)) {
+            try previewSound(state);
+        }
+        if (rl.isKeyPressed(.enter)) {
+            try previewMusic(state);
+        }
+        if (rl.isKeyPressed(.s)) {
+            state.stopAudioPreview();
+        }
+    }
+
+    if (state.mode == .models and rl.isKeyPressed(.f)) {
+        state.model_flip_v = !state.model_flip_v;
+        try reloadModel(state);
+    }
+    if (state.mode == .models and rl.isKeyPressed(.r)) {
+        if (state.current_animation) |*animation| {
+            try animation.restart();
+        }
+    }
+    if (state.mode == .models and rl.isKeyPressed(.p)) {
+        if (state.current_animation) |*animation| {
+            animation.togglePause();
+        }
+    }
+    if (state.mode == .objects and rl.isKeyPressed(.f)) {
+        state.object_flip_v = !state.object_flip_v;
+        try reloadObject(state);
+    }
+}
+
 pub fn handleLightStreakInput(view: *LightStreakView) void {
     if (rl.isKeyPressed(.space)) {
         view.paused = !view.paused;
@@ -143,6 +302,156 @@ pub fn handleLightStreakInput(view: *LightStreakView) void {
     if (rl.isKeyPressed(.g)) {
         view.camera_fov_degrees = std.math.clamp(view.camera_fov_degrees + 5.0, 30.0, 160.0);
     }
+}
+
+fn setMode(state: anytype, mode: Mode) !void {
+    if (state.mode == mode) return;
+    if (state.mode == .audio) {
+        state.stopAudioPreview();
+    }
+    state.mode = mode;
+}
+
+fn stepSelection(state: anytype, delta: isize) !void {
+    switch (state.mode) {
+        .textures => {
+            state.texture_index = wrappedIndex(state.catalog.texture_entries.len, state.texture_index, delta);
+            try reloadTexture(state);
+        },
+        .audio => {
+            state.stopAudioPreview();
+            state.audio_index = wrappedIndex(state.catalog.audio_entries.len, state.audio_index, delta);
+        },
+        .models => {
+            state.model_index = wrappedIndex(state.catalog.model_entries.len, state.model_index, delta);
+            try reloadModel(state);
+        },
+        .objects => {
+            state.object_index = wrappedIndex(state.catalog.object_entries.len, state.object_index, delta);
+            try reloadObject(state);
+        },
+        .levels => {},
+        .segments => {
+            state.segment_index = wrappedIndex(state.catalog.segment_entries.len, state.segment_index, delta);
+            try reloadStandaloneSegment(state);
+        },
+        .streaks => {},
+    }
+}
+
+fn stepLevelSegment(state: anytype, delta: isize) !void {
+    const loaded_level = state.current_level orelse return;
+    state.level_segment_index = wrappedIndex(loaded_level.segments.len, state.level_segment_index, delta);
+    try state.reloadLevelSegment();
+}
+
+fn previewSound(state: anytype) !void {
+    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    state.stopAudioPreview();
+    state.current_sound = try state.catalog.loadSound(state.allocator, state.catalog.audio_entries[state.audio_index]);
+    state.applyAudioConfigVolumes();
+    rl.playSound(state.current_sound.?.sound);
+}
+
+fn previewMusic(state: anytype) !void {
+    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    state.stopAudioPreview();
+    state.current_music = try state.catalog.loadMusic(state.allocator, state.catalog.audio_entries[state.audio_index]);
+    state.applyAudioConfigVolumes();
+    rl.playMusicStream(state.current_music.?.music);
+}
+
+fn reloadTexture(state: anytype) !void {
+    if (state.current_texture) |*texture| {
+        texture.unload();
+        state.current_texture = null;
+    }
+    state.current_texture = try state.catalog.loadTexture(state.allocator, state.catalog.texture_entries[state.texture_index]);
+}
+
+fn reloadModel(state: anytype) !void {
+    if (state.current_model) |*model| {
+        model.deinit();
+        state.current_model = null;
+    }
+    if (state.current_animation) |*animation| {
+        animation.deinit();
+        state.current_animation = null;
+    }
+
+    const entry = state.catalog.model_entries[state.model_index];
+    if (state.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
+        const clip = &state.animation_catalog.clips[clip_index];
+        if (clip.frames.len > 1) {
+            state.current_animation = try xanim.Player.load(
+                state.allocator,
+                &state.catalog,
+                clip,
+                state.model_flip_v,
+                xanim.frameNumberFromPath(entry.path),
+            );
+            return;
+        }
+    }
+
+    state.current_model = try x2.Uploaded.loadFromArchive(
+        state.allocator,
+        &state.catalog,
+        entry,
+        state.model_flip_v,
+    );
+}
+
+fn reloadObject(state: anytype) !void {
+    if (state.current_object) |*loaded_object| {
+        loaded_object.deinit();
+        state.current_object = null;
+    }
+    if (state.catalog.object_entries.len == 0) return;
+
+    const entry = state.catalog.object_entries[state.object_index];
+    state.current_object = try object.LoadedObject.loadFromArchive(
+        state.allocator,
+        &state.catalog,
+        entry,
+        state.object_flip_v,
+    );
+}
+
+fn reloadStandaloneSegment(state: anytype) !void {
+    if (state.current_standalone_segment_scene) |*scene| {
+        scene.deinit();
+        state.current_standalone_segment_scene = null;
+    }
+    if (state.current_standalone_segment_preview) |*loaded_track_preview| {
+        loaded_track_preview.deinit();
+        state.current_standalone_segment_preview = null;
+    }
+    if (state.catalog.segment_entries.len == 0) return;
+    if (state.segment_index >= state.catalog.segment_entries.len) {
+        state.segment_index = state.catalog.segment_entries.len - 1;
+    }
+
+    const entry = state.catalog.segment_entries[state.segment_index];
+    state.current_standalone_segment_preview = try track.LoadedLevelPreview.loadStandaloneSegment(
+        state.allocator,
+        &state.catalog,
+        entry,
+    );
+    try reloadStandaloneSegmentScene(state);
+}
+
+fn reloadStandaloneSegmentScene(state: anytype) !void {
+    if (state.current_standalone_segment_scene) |*scene| {
+        scene.deinit();
+        state.current_standalone_segment_scene = null;
+    }
+    _ = state.current_standalone_segment_preview orelse return;
+    state.current_standalone_segment_scene = try track_render.Scene.buildStandaloneSegmentScene(
+        state.allocator,
+        &state.catalog,
+        state.segment_track_set_index,
+    );
 }
 
 pub fn drawUi(state: anytype, archive_path: []const u8) !void {
@@ -623,6 +932,18 @@ fn modeLabel(mode: xanim.Mode) [:0]const u8 {
 
 fn screenWidth() i32 {
     return rl.getScreenWidth();
+}
+
+fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
+    if (count == 0) return 0;
+
+    const count_isize: isize = @intCast(count);
+    const current_isize: isize = @intCast(current);
+    var next = @mod(current_isize + delta, count_isize);
+    if (next < 0) {
+        next += count_isize;
+    }
+    return @intCast(next);
 }
 
 fn vectorLength(v: rl.Vector3) f32 {

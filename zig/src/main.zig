@@ -1310,12 +1310,7 @@ const AppState = struct {
 
         switch (options.command) {
             .debug, .smoke => {
-                try state.high_score_tables.loadFromRuntimeRoot(allocator, options.runtime_root_path);
-                try state.reloadTexture();
-                try state.reloadModel();
-                try state.reloadObject();
-                try state.reloadLevel();
-                try state.reloadStandaloneSegment();
+                try debug_browser.initialize(&state);
             },
             .game => if (options.start_phase) |start_phase|
                 try state.enterStartPhase(start_phase)
@@ -1452,9 +1447,7 @@ const AppState = struct {
             return;
         }
 
-        try self.previewSound();
-        self.stopAudioPreview();
-        try self.previewMusic();
+        try debug_browser.primeAudioPreview(self);
     }
 
     // PORT(partial): the original loading screen advances from real archive reads
@@ -1876,145 +1869,7 @@ const AppState = struct {
         switch (self.command) {
             .game => return self.handleGameInput(),
             .smoke => return,
-            .debug => {},
-        }
-
-        if (rl.isKeyPressed(.tab)) {
-            try self.setMode(debug_browser.nextMode(self.mode));
-        }
-        if (rl.isKeyPressed(.one)) {
-            try self.setMode(.textures);
-        }
-        if (rl.isKeyPressed(.two)) {
-            try self.setMode(.audio);
-        }
-        if (rl.isKeyPressed(.three)) {
-            try self.setMode(.models);
-        }
-        if (rl.isKeyPressed(.four)) {
-            try self.setMode(.objects);
-        }
-        if (rl.isKeyPressed(.five)) {
-            try self.setMode(.levels);
-        }
-        if (rl.isKeyPressed(.six)) {
-            try self.setMode(.segments);
-        }
-        if (rl.isKeyPressed(.seven)) {
-            try self.setMode(.streaks);
-        }
-
-        if (self.mode == .levels) {
-            if (rl.isKeyPressed(.left)) {
-                self.level_index = wrappedIndex(self.catalog.level_entries.len, self.level_index, -1);
-                try self.reloadLevel();
-            }
-            if (rl.isKeyPressed(.right)) {
-                self.level_index = wrappedIndex(self.catalog.level_entries.len, self.level_index, 1);
-                try self.reloadLevel();
-            }
-            if (rl.isKeyPressed(.up)) {
-                try self.stepLevelSegment(-1);
-            }
-            if (rl.isKeyPressed(.down)) {
-                try self.stepLevelSegment(1);
-            }
-            if (rl.isKeyPressed(.a)) {
-                self.pending_level_input.lane_delta -= 1;
-            }
-            if (rl.isKeyPressed(.d)) {
-                self.pending_level_input.lane_delta += 1;
-            }
-            if (rl.isKeyPressed(.w)) {
-                self.pending_level_input.speed_delta_rows_per_second += 2.0;
-            }
-            if (rl.isKeyPressed(.s)) {
-                self.pending_level_input.speed_delta_rows_per_second -= 2.0;
-            }
-            if (rl.isKeyPressed(.space)) {
-                self.pending_level_input.toggle_pause = true;
-            }
-            if (rl.isKeyPressed(.r)) {
-                self.pending_level_input.reset = true;
-            }
-        } else if (self.mode == .segments) {
-            if (rl.isKeyPressed(.left)) {
-                try self.stepSelection(-1);
-            }
-            if (rl.isKeyPressed(.right)) {
-                try self.stepSelection(1);
-            }
-            if (rl.isKeyPressed(.up)) {
-                try self.stepSelection(-10);
-            }
-            if (rl.isKeyPressed(.down)) {
-                try self.stepSelection(10);
-            }
-            if (rl.isKeyPressed(.v)) {
-                self.segment_render_mode = switch (self.segment_render_mode) {
-                    .game => .raw,
-                    .raw => .game,
-                };
-            }
-            if (rl.isKeyPressed(.o)) {
-                self.segment_show_overlay = !self.segment_show_overlay;
-            }
-            if (rl.isKeyPressed(.g)) {
-                self.segment_show_grid = !self.segment_show_grid;
-            }
-            if (rl.isKeyPressed(.a)) {
-                self.segment_show_attachments = !self.segment_show_attachments;
-            }
-            if (rl.isKeyPressed(.t)) {
-                self.segment_track_set_index = (self.segment_track_set_index + 1) % 4;
-                try self.reloadStandaloneSegmentScene();
-            }
-        } else if (self.mode == .streaks) {
-            debug_browser.handleLightStreakInput(&self.debug_light_streak_view);
-        } else {
-            if (rl.isKeyPressed(.left)) {
-                try self.stepSelection(-1);
-            }
-            if (rl.isKeyPressed(.right)) {
-                try self.stepSelection(1);
-            }
-            if (rl.isKeyPressed(.up)) {
-                try self.stepSelection(-10);
-            }
-            if (rl.isKeyPressed(.down)) {
-                try self.stepSelection(10);
-            }
-        }
-
-        if (self.mode == .audio and self.audio_ready) {
-            if (rl.isKeyPressed(.space)) {
-                try self.previewSound();
-            }
-            if (rl.isKeyPressed(.enter)) {
-                try self.previewMusic();
-            }
-            if (rl.isKeyPressed(.s)) {
-                self.stopAudioPreview();
-            }
-        }
-
-        if (self.mode == .models and rl.isKeyPressed(.f)) {
-            self.model_flip_v = !self.model_flip_v;
-            try self.reloadModel();
-        }
-        if (self.mode == .models and rl.isKeyPressed(.r)) {
-            if (self.current_animation) |*animation| {
-                try animation.restart();
-            }
-        }
-        if (self.mode == .models and rl.isKeyPressed(.p)) {
-            if (self.current_animation) |*animation| {
-                animation.togglePause();
-            }
-        }
-        if (self.mode == .objects and rl.isKeyPressed(.f)) {
-            self.object_flip_v = !self.object_flip_v;
-            try self.reloadObject();
+            .debug => return debug_browser.handleInput(self),
         }
     }
 
@@ -6206,7 +6061,7 @@ const AppState = struct {
         return script.durationTicks();
     }
 
-    fn applyAudioConfigVolumes(self: *AppState) void {
+    pub fn applyAudioConfigVolumes(self: *AppState) void {
         if (!self.audio_ready) return;
 
         const sound_volume = if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
@@ -6411,73 +6266,7 @@ const AppState = struct {
         self.game_status_ticks = status_message_duration_ticks;
     }
 
-    fn setMode(self: *AppState, mode: debug_browser.Mode) !void {
-        if (self.mode == mode) return;
-
-        if (self.mode == .audio) {
-            self.stopAudioPreview();
-        }
-        self.mode = mode;
-    }
-
-    fn stepSelection(self: *AppState, delta: isize) !void {
-        switch (self.mode) {
-            .textures => {
-                self.texture_index = wrappedIndex(self.catalog.texture_entries.len, self.texture_index, delta);
-                try self.reloadTexture();
-            },
-            .audio => {
-                self.stopAudioPreview();
-                self.audio_index = wrappedIndex(self.catalog.audio_entries.len, self.audio_index, delta);
-            },
-            .models => {
-                self.model_index = wrappedIndex(self.catalog.model_entries.len, self.model_index, delta);
-                try self.reloadModel();
-            },
-            .objects => {
-                self.object_index = wrappedIndex(self.catalog.object_entries.len, self.object_index, delta);
-                try self.reloadObject();
-            },
-            .levels => {},
-            .segments => {
-                self.segment_index = wrappedIndex(self.catalog.segment_entries.len, self.segment_index, delta);
-                try self.reloadStandaloneSegment();
-            },
-            .streaks => {},
-        }
-    }
-
-    fn stepLevelSegment(self: *AppState, delta: isize) !void {
-        const loaded_level = self.current_level orelse return;
-        self.level_segment_index = wrappedIndex(loaded_level.segments.len, self.level_segment_index, delta);
-        try self.reloadLevelSegment();
-    }
-
-    fn previewSound(self: *AppState) !void {
-        if (!self.audio_ready or self.catalog.audio_entries.len == 0) {
-            return;
-        }
-
-        self.stopAudioPreview();
-        const sound = try self.catalog.loadSound(self.allocator, self.catalog.audio_entries[self.audio_index]);
-        self.current_sound = sound;
-        self.applyAudioConfigVolumes();
-        rl.playSound(self.current_sound.?.sound);
-    }
-
-    fn previewMusic(self: *AppState) !void {
-        if (!self.audio_ready or self.catalog.audio_entries.len == 0) {
-            return;
-        }
-
-        self.stopAudioPreview();
-        const music = try self.catalog.loadMusic(self.allocator, self.catalog.audio_entries[self.audio_index]);
-        self.current_music = music;
-        self.applyAudioConfigVolumes();
-        rl.playMusicStream(self.current_music.?.music);
-    }
-
-    fn stopAudioPreview(self: *AppState) void {
+    pub fn stopAudioPreview(self: *AppState) void {
         if (self.current_sound) |*sound| {
             sound.unload();
             self.current_sound = null;
@@ -6495,67 +6284,7 @@ const AppState = struct {
         }
     }
 
-    fn reloadTexture(self: *AppState) !void {
-        if (self.current_texture) |*texture| {
-            texture.unload();
-            self.current_texture = null;
-        }
-
-        const texture = try self.catalog.loadTexture(self.allocator, self.catalog.texture_entries[self.texture_index]);
-        self.current_texture = texture;
-    }
-
-    fn reloadModel(self: *AppState) !void {
-        if (self.current_model) |*model| {
-            model.deinit();
-            self.current_model = null;
-        }
-        if (self.current_animation) |*animation| {
-            animation.deinit();
-            self.current_animation = null;
-        }
-
-        const entry = self.catalog.model_entries[self.model_index];
-        if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
-            const clip = &self.animation_catalog.clips[clip_index];
-            if (clip.frames.len > 1) {
-                const animation = try xanim.Player.load(
-                    self.allocator,
-                    &self.catalog,
-                    clip,
-                    self.model_flip_v,
-                    xanim.frameNumberFromPath(entry.path),
-                );
-                self.current_animation = animation;
-                return;
-            }
-        }
-
-        self.current_model = try x2.Uploaded.loadFromArchive(
-            self.allocator,
-            &self.catalog,
-            entry,
-            self.model_flip_v,
-        );
-    }
-
-    fn reloadObject(self: *AppState) !void {
-        if (self.current_object) |*loaded_object| {
-            loaded_object.deinit();
-            self.current_object = null;
-        }
-        if (self.catalog.object_entries.len == 0) return;
-
-        const entry = self.catalog.object_entries[self.object_index];
-        self.current_object = try object.LoadedObject.loadFromArchive(
-            self.allocator,
-            &self.catalog,
-            entry,
-            self.object_flip_v,
-        );
-    }
-
-    fn reloadLevel(self: *AppState) !void {
+    pub fn reloadLevel(self: *AppState) !void {
         const seed_intro_cutscene = self.command == .game and self.seed_level_intro_cutscene;
         self.seed_level_intro_cutscene = false;
         if (self.current_level) |*loaded_level| {
@@ -6693,7 +6422,7 @@ const AppState = struct {
         self.current_runtime_build_seed_mode = null;
     }
 
-    fn reloadLevelSegment(self: *AppState) !void {
+    pub fn reloadLevelSegment(self: *AppState) !void {
         if (self.current_segment) |*loaded_segment| {
             loaded_segment.deinit();
             self.current_segment = null;
@@ -6709,42 +6438,6 @@ const AppState = struct {
         const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{loaded_level.segments[self.level_segment_index].path});
         const entry = self.catalog.dat.entryByPath(archive_path) orelse return;
         self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
-    }
-
-    fn reloadStandaloneSegment(self: *AppState) !void {
-        if (self.current_standalone_segment_scene) |*scene| {
-            scene.deinit();
-            self.current_standalone_segment_scene = null;
-        }
-        if (self.current_standalone_segment_preview) |*loaded_track_preview| {
-            loaded_track_preview.deinit();
-            self.current_standalone_segment_preview = null;
-        }
-        if (self.catalog.segment_entries.len == 0) return;
-        if (self.segment_index >= self.catalog.segment_entries.len) {
-            self.segment_index = self.catalog.segment_entries.len - 1;
-        }
-
-        const entry = self.catalog.segment_entries[self.segment_index];
-        self.current_standalone_segment_preview = try track.LoadedLevelPreview.loadStandaloneSegment(
-            self.allocator,
-            &self.catalog,
-            entry,
-        );
-        try self.reloadStandaloneSegmentScene();
-    }
-
-    fn reloadStandaloneSegmentScene(self: *AppState) !void {
-        if (self.current_standalone_segment_scene) |*scene| {
-            scene.deinit();
-            self.current_standalone_segment_scene = null;
-        }
-        _ = self.current_standalone_segment_preview orelse return;
-        self.current_standalone_segment_scene = try track_render.Scene.buildStandaloneSegmentScene(
-            self.allocator,
-            &self.catalog,
-            self.segment_track_set_index,
-        );
     }
 
     pub fn activeModel(self: *const AppState) ?*const x2.Uploaded {
