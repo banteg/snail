@@ -34,6 +34,8 @@ That is still imperfect HLIL, but it is structurally the right object model:
 
 Recovered Windows `PathTemplate` fields that matter for the constructor/follow path:
 
+- `+0x24`: `strip_mesh`
+  - pointer to the generated strip-mesh object, not an inline blob
 - `+0x38`: `kind`
 - `+0x3c`: `is_mirrored_x`
 - `+0x40`: `side_exit_mode`
@@ -64,6 +66,30 @@ Important correction:
 - they behave like a `3x4` matrix block with row starts at `+0x00`, `+0x10`, and `+0x20`
 - that is why the decompile kept bouncing between `+0x10`, `+0x20`, and `+0x30`
 
+Recovered `PathTemplateStripMesh` shape behind `PathTemplate + 0x24`:
+
+- size: `0x60`
+- `+0x10`: `flags`
+- `+0x2c`: `vertex_count`
+- `+0x38`: `vertices`
+- `+0x48`: `vertex_colours`
+- `+0x54`: `facequad_count`
+- `+0x58`: `facequad_capacity`
+- `+0x5c`: `facequads`
+
+Recovered `ObjectFaceQuad` shape:
+
+- size: `0x30`
+- `+0x00`: `flags`
+- `+0x02/+0x04/+0x06/+0x08`: four vertex indices
+- `+0x0c`: `texture_ref`
+- `+0x10..+0x2c`: four `(u, v)` pairs
+
+This is the cleanup behind the old constructor locals like `ebp_4` / `ebp_5`:
+
+- they are not anonymous stack structs
+- they are individual `ObjectFaceQuad` records inside `strip_mesh->facequads`
+
 ### Cross-Port Check
 
 Android `cRPath::BuildHalfPipe` independently matches the same shape:
@@ -86,8 +112,13 @@ Applied in the live BN database:
 
 - `PathTemplate`
 - `PathTemplateSample`
+- `PathTemplateStripMesh`
+- `ObjectFaceQuad`
 - `allocate_path_nodes(PathTemplate* self)`
 - `finalize_path_template_record(PathTemplate* self)`
+- `request_object_vertices(PathTemplateStripMesh* mesh, ...)`
+- `request_object_vertex_colours(PathTemplateStripMesh* mesh)`
+- `request_object_facequads(PathTemplateStripMesh* mesh, ...)`
 - `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
 - `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`

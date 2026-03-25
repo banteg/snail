@@ -2,6 +2,7 @@
 #define PATH_TEMPLATE_TYPES_H
 
 typedef unsigned char uint8_t;
+typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
 typedef int int32_t;
 
@@ -10,6 +11,48 @@ typedef struct Vec3 {
     float y;
     float z;
 } Vec3;
+
+typedef struct Color4f {
+    float r;
+    float g;
+    float b;
+    float a;
+} Color4f;
+
+typedef struct TextureRef TextureRef;
+
+typedef struct ObjectFaceQuad {
+    uint16_t flags;
+    uint16_t vertex_index_a;
+    uint16_t vertex_index_b;
+    uint16_t vertex_index_c;
+    uint16_t vertex_index_d;
+    uint16_t _pad_0a;
+    TextureRef* texture_ref;
+    float u0;
+    float v0;
+    float u1;
+    float v1;
+    float u2;
+    float v2;
+    float u3;
+    float v3;
+} ObjectFaceQuad;
+
+typedef struct PathTemplateStripMesh {
+    uint8_t _pad_00[0x10];
+    uint32_t flags;
+    uint8_t _pad_14[0x18];
+    uint32_t vertex_count;
+    uint8_t _pad_30[0x8];
+    Vec3* vertices;
+    uint8_t _pad_3c[0xc];
+    Color4f* vertex_colours;
+    uint8_t _pad_4c[0x8];
+    uint32_t facequad_count;
+    uint32_t facequad_capacity;
+    ObjectFaceQuad* facequads;
+} PathTemplateStripMesh;
 
 typedef struct PathTemplateSample {
     Vec3 basis_right;
@@ -31,7 +74,9 @@ typedef struct PathTemplateSample {
 } PathTemplateSample;
 
 typedef struct PathTemplate {
-    uint8_t _pad_00[0x30];
+    uint8_t _pad_00[0x24];
+    PathTemplateStripMesh* strip_mesh;
+    uint8_t _pad_28[0x8];
     float header_30;
     float header_34;
     uint32_t kind;
@@ -54,6 +99,9 @@ typedef struct PathTemplate {
 void* __fastcall allocate_path_nodes(PathTemplate* self);
 int32_t __fastcall finalize_path_template_record(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
+int32_t* __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);
+int32_t* __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);
+void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);
 
 int32_t __thiscall initialize_looptheloop_path_template_pair(
     PathTemplate* self,

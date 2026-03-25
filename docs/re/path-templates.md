@@ -144,7 +144,8 @@ That dynamic shape is useful because it tells us the constructor output is stabl
 
 High-confidence fields on the `0xa8`-byte record:
 
-- `+0x24`: nested render or mesh strip object
+- `+0x24`: `strip_mesh`
+  - pointer to the generated strip-mesh object used by the constructor family
 - `+0x30/+0x34`: two leading header floats; these are live in the runtime record but do not yet have a stable semantic name
 - `+0x38`: attachment kind or constructor family id
 - `+0x3c`: mirror flag
@@ -168,6 +169,23 @@ Still unresolved from this package:
 
 - whether `+0xa0/+0xa4` belong to the template record at all in the special update path
 - the exact semantic names for the mirror-copied header scalars at `+0x30/+0x34`
+
+High-confidence fields on the pointed-to `strip_mesh` object:
+
+- `+0x10`: render or allocation flags
+- `+0x2c`: vertex count
+- `+0x38`: vertex array
+- `+0x48`: optional vertex-colour array
+- `+0x54`: live facequad count
+- `+0x58`: facequad capacity
+- `+0x5c`: `0x30`-byte `ObjectFaceQuad` array
+
+High-confidence facequad record shape:
+
+- `+0x00`: face flags
+- `+0x02/+0x04/+0x06/+0x08`: four vertex indices
+- `+0x0c`: texture reference pointer
+- `+0x10..+0x2c`: four `(u, v)` pairs
 
 High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c` arrays:
 

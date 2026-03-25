@@ -553,6 +553,8 @@ The path-template typing is now firm enough to name the sampled point records ex
 
 High-confidence `PathTemplate` fields:
 
+- `+0x24`: `strip_mesh`
+  - pointer to the generated strip-mesh object, not an inline nested blob
 - `+0x38`: `kind`
 - `+0x3c`: `is_mirrored_x`
 - `+0x40`: `side_exit_mode`
@@ -582,6 +584,23 @@ High-confidence `PathTemplateSample` fields:
 - `+0x98`: `rotation_scalar_98`
 - `+0x9c`: `lateral_scale`
 - `+0xa0`: `special_scalar`
+
+High-confidence `PathTemplateStripMesh` fields:
+
+- `+0x10`: `flags`
+- `+0x2c`: `vertex_count`
+- `+0x38`: `vertices`
+- `+0x48`: `vertex_colours`
+- `+0x54`: `facequad_count`
+- `+0x58`: `facequad_capacity`
+- `+0x5c`: `facequads`
+
+High-confidence `ObjectFaceQuad` fields:
+
+- `+0x00`: `flags`
+- `+0x02/+0x04/+0x06/+0x08`: four vertex indices
+- `+0x0c`: `texture_ref`
+- `+0x10..+0x2c`: four `(u, v)` pairs
 
 Binary Ninja typing note:
 

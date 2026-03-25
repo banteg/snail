@@ -23,6 +23,18 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);",
     ),
     (
+        "request_object_vertices",
+        "int32_t* __thiscall request_object_vertices(PathTemplateStripMesh* mesh, int32_t vertex_count);",
+    ),
+    (
+        "request_object_vertex_colours",
+        "int32_t* __fastcall request_object_vertex_colours(PathTemplateStripMesh* mesh);",
+    ),
+    (
+        "request_object_facequads",
+        "void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t facequad_count);",
+    ),
+    (
         "initialize_looptheloop_path_template_pair",
         "int32_t __thiscall initialize_looptheloop_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* arg4, char* arg5);",
     ),
