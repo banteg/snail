@@ -9,17 +9,17 @@ PathTemplate *__thiscall begin_track_attachment_follow_state(
         Vec3 *world_position,
         Player *player)
 {
-  PathTemplate *v5; // eax
+  PathTemplate *attachment_template_record; // eax
   double v6; // st7
   int v7; // edx
   PathTemplate *result; // eax
 
   follow_state->active = 1;
-  v5 = *((PathTemplate **)source_cell + 14);
+  attachment_template_record = source_cell->attachment_template_record;
   follow_state->source_cell = source_cell;
-  follow_state->template_record = v5;
+  follow_state->template_record = attachment_template_record;
   follow_state->sample_index = 0;
-  follow_state->progress = world_position->z - *((float *)source_cell + 6);
+  follow_state->progress = world_position->z - source_cell->anchor_position.z;
   v6 = world_position->y - 0.49000001;
   follow_state->player = player;
   follow_state->vertical_offset = v6;

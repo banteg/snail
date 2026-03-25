@@ -255,3 +255,14 @@ The checked-in header now also carries the stable `FollowState` slice used by th
 - `FollowState.player`
 
 The five orientation floats remain intentionally neutral as `orientation_a` through `orientation_e`. They are live and useful for decompile readability, but they are not semantically closed enough to overname yet.
+
+The same narrow typed lane now carries a minimal `TrackRowCell` prefix for the follow helpers:
+
+- `+0x10..+0x18`: `anchor_position`
+- `+0x38`: `attachment_template_record`
+
+That is intentionally the smallest useful slice:
+
+- `begin_track_attachment_follow_state` seeds follow progress from `world_z - source_cell->anchor_position.z`
+- both `begin_track_attachment_follow_state` and the swept-entry helper lift the selected template record from `source_cell->attachment_template_record`
+- the rest of the runtime row-cell object still stays opaque

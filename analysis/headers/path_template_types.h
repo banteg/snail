@@ -34,7 +34,6 @@ typedef struct ColorBGRA8 {
     uint8_t a;
 } ColorBGRA8;
 
-typedef struct TrackRowCell TrackRowCell;
 typedef struct Player Player;
 
 typedef struct TextureRef {
@@ -53,6 +52,13 @@ typedef struct TextureRefList {
     int32_t capacity;
     TextureRef entries[1];
 } TextureRefList;
+
+typedef struct TrackRowCell {
+    uint8_t _pad_00[0x10];
+    Vec3 anchor_position;
+    uint8_t _pad_1c[0x1c];
+    struct PathTemplate* attachment_template_record;
+} TrackRowCell;
 
 typedef enum PathTemplateStripMeshFlags {
     PATH_TEMPLATE_STRIP_MESH_FLAG_HAS_VERTEX_COLOURS = 0x10000,

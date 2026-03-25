@@ -28,22 +28,26 @@
 00439c6b        *(edx_1 + 0x5b0) = eax_2 + 0x641190
 00439c6e        *(eax_2 + 0x641194) &= 0xfffffdff
 00439c39        report_errorf("List remove NEXTBOD")
-00439c71        int16_t eax_4 = (arg1->__offset(0x4).d).w
+00439c71        int16_t eax_4 = (arg1->_pad_00[4].d).w
 00439c77        if ((eax_4:1.b & 2) != 0)
 00439c81        void* ecx_9 = data_4df904 + 0x5a8
 00439c87        if ((eax_4.b & 0x40) == 0)
-00439c98        void* eax_5 = arg1->__offset(0xc).d
+00439c98        void* eax_5 = arg1->_pad_00[0xc].d
 00439c9d        if (eax_5 != 0)
-00439ca2        *(eax_5 + 8) = arg1->__offset(0x8).d
-00439ca5        void* eax_6 = arg1->__offset(0x8).d
+00439ca2        *(eax_5 + 8) = arg1->_pad_00[8].d
+00439ca5        void* eax_6 = arg1->_pad_00[8].d
 00439caa        if (eax_6 == 0)
-00439cb7        *(ecx_9 + 4) = arg1->__offset(0xc).d
-00439caf        *(eax_6 + 0xc) = arg1->__offset(0xc).d
-00439cbd        arg1->__offset(0xc).d = *(ecx_9 + 8)
+00439cb7        *(ecx_9 + 4) = arg1->_pad_00[0xc].d
+00439caf        *(eax_6 + 0xc) = arg1->_pad_00[0xc].d
+00439cba        int32_t edx_6 = *(ecx_9 + 8)
+00439cbd        arg1->_pad_00[0xc] = edx_6.b
+00439cbd        arg1->_pad_00[0xd] = edx_6:1.b
+00439cbd        arg1->_pad_00[0xe] = edx_6:2.b
+00439cbd        arg1->_pad_00[0xf] = edx_6:3.b
 00439cc0        *(ecx_9 + 8) = arg1
-00439cc3        arg1->__offset(0x4).d &= 0xfffffdff
+00439cc3        arg1->_pad_00[4].d &= 0xfffffdff
 00439c8e        report_errorf("List remove NEXTBOD")
-00439cc6        int32_t* esi_1 = arg1 + 0x44
+00439cc6        int32_t* esi_1 = &arg1->_pad_00[0x44]
 00439cc9        int32_t i_1 = 4
 00439d45        void* result
 00439d45        int32_t i

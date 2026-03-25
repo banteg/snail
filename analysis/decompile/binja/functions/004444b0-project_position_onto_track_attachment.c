@@ -12,11 +12,11 @@
 004444db        *arg3 = 0
 004444e4        if ((*eax_1 & 0x40) != 0)
 004444ea        struct TrackRowCell* cell = *(eax_1 + 0xa4)
-004444f3        void* ebx_1 = cell->__offset(0x38).d
+004444f3        struct PathTemplate* attachment_template_record = cell->attachment_template_record
 004444f6        int32_t eax_2 = get_track_cell_row_index(cell)
 0044450f        int32_t ecx_5 = (__ftol(x87control_1, fconvert.t(arg2[2])) - eax_2) * 7
-0044451d        float* eax_6 = *(ebx_1 + 0x58) + ecx_5 * 0x18
-00444520        if (*(ebx_1 + 0x38) == 0x2a)
+0044451d        float* eax_6 = attachment_template_record->primary_samples + ecx_5 * 0x18
+00444520        if (attachment_template_record->kind == PATH_TEMPLATE_KIND_NONLINEAR_42)
 0044453f        struct TransformMatrix transform
 0044453f        int32_t eax_8 = compute_kind42_attachment_transform(eax_6[0x28], *arg2, arg2[1], &transform, arg3)
 00444548        float y = transform.position.y
@@ -26,9 +26,9 @@
 0044455a        long double x87_r7_2 = fconvert.t(arg2[1])
 0044456f        long double x87_r7_3 = x87_r7_2 * fconvert.t(eax_6[6])
 00444574        long double x87_r6_6 = fconvert.t(*arg2) - fconvert.t(eax_6[0x24])
-004445bc        long double x87_r6_8 = x87_r6_6 * fconvert.t(eax_6[2]) + fconvert.t(fconvert.s(fconvert.t(eax_6[0xe]) + fconvert.t(cell->__offset(0x18).d)))
-004445d0        long double x87_r5_13 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_6[0xd]) + fconvert.t(cell->__offset(0x14).d))) + fconvert.t(fconvert.s(x87_r6_6 * fconvert.t(eax_6[1]))))) + fconvert.t(fconvert.s(x87_r7_2 * fconvert.t(eax_6[5])))
-004445d4        eax_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_6[0xc]) + fconvert.t(cell->__offset(0x10).d) + fconvert.t(fconvert.s(x87_r6_6 * fconvert.t(*eax_6))))) + fconvert.t(fconvert.s(x87_r7_2 * fconvert.t(eax_6[4]))))
+004445bc        long double x87_r6_8 = x87_r6_6 * fconvert.t(eax_6[2]) + fconvert.t(fconvert.s(fconvert.t(eax_6[0xe]) + fconvert.t(cell->anchor_position.z)))
+004445d0        long double x87_r5_13 = fconvert.t(fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_6[0xd]) + fconvert.t(cell->anchor_position.y))) + fconvert.t(fconvert.s(x87_r6_6 * fconvert.t(eax_6[1]))))) + fconvert.t(fconvert.s(x87_r7_2 * fconvert.t(eax_6[5])))
+004445d4        eax_1 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(eax_6[0xc]) + fconvert.t(cell->anchor_position.x) + fconvert.t(fconvert.s(x87_r6_6 * fconvert.t(*eax_6))))) + fconvert.t(fconvert.s(x87_r7_2 * fconvert.t(eax_6[4]))))
 004445d8        *arg2 = eax_1
 004445e4        arg2[1] = fconvert.s(x87_r5_13)
 004445f1        arg2[2] = fconvert.s(x87_r6_8 + x87_r7_3)

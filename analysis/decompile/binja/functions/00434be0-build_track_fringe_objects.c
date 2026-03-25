@@ -64,10 +64,10 @@
 00434d70        set_bod_object(eax_14, *(data_4df904 + ((ebx + edi_1 * 0xc) * 3 + ebp_1) * 0x38 + 0x44dd4))
 00434d75        void* eax_15 = esi_1->__offset(0x44).d
 00434d81        *(eax_15 + 4) |= 0x20
-00434d89        int32_t* eax_17 = esi_1->__offset(0x44).d + 0x10
-00434d8c        *eax_17 = esi_1->__offset(0x10).d
-00434d91        eax_17[1] = esi_1->__offset(0x14).d
-00434d97        eax_17[2] = esi_1->__offset(0x18).d
+00434d89        float* eax_17 = esi_1->__offset(0x44).d + 0x10
+00434d8c        *eax_17 = esi_1->anchor_position.x
+00434d91        eax_17[1] = esi_1->anchor_position.y
+00434d97        eax_17[2] = esi_1->anchor_position.z
 00434dab        float var_40[0x4]
 00434dab        float* eax_18 = get_track_skirt_color(data_4df904 + 0x74618, &var_40)
 00434db5        float* edx_9 = esi_1->__offset(0x44).d + 0x28
@@ -99,9 +99,9 @@
 00434e79        void* eax_32 = esi_1->__offset(0x48).d
 00434e85        *(eax_32 + 4) |= 0x20
 00434e8d        int32_t* eax_34 = esi_1->__offset(0x48).d + 0x10
-00434e90        *eax_34 = esi_1->__offset(0x10).d
-00434e95        eax_34[1] = esi_1->__offset(0x14).d
-00434e9b        eax_34[2] = esi_1->__offset(0x18).d
+00434e90        *eax_34 = esi_1->anchor_position.x
+00434e95        eax_34[1] = esi_1->anchor_position.y
+00434e9b        eax_34[2] = esi_1->anchor_position.z
 00434eaf        float var_30[0x4]
 00434eaf        float* eax_35 = get_track_skirt_color(data_4df904 + 0x74618, &var_30)
 00434eb9        float* edx_17 = esi_1->__offset(0x48).d + 0x28
@@ -133,9 +133,9 @@
 00434f7d        void* eax_49 = esi_1->__offset(0x4c).d
 00434f89        *(eax_49 + 4) |= 0x20
 00434f91        int32_t* eax_51 = esi_1->__offset(0x4c).d + 0x10
-00434f94        *eax_51 = esi_1->__offset(0x10).d
-00434f99        eax_51[1] = esi_1->__offset(0x14).d
-00434f9f        eax_51[2] = esi_1->__offset(0x18).d
+00434f94        *eax_51 = esi_1->anchor_position.x
+00434f99        eax_51[1] = esi_1->anchor_position.y
+00434f9f        eax_51[2] = esi_1->anchor_position.z
 00434fb3        float var_20[0x4]
 00434fb3        float* eax_52 = get_track_skirt_color(data_4df904 + 0x74618, &var_20)
 00434fbd        float* edx_25 = esi_1->__offset(0x4c).d + 0x28
@@ -169,9 +169,9 @@
 00435081        void* eax_66 = esi_1->__offset(0x50).d
 0043508d        *(eax_66 + 4) |= 0x20
 00435095        int32_t* eax_68 = esi_1->__offset(0x50).d + 0x10
-00435098        *eax_68 = *(esi_1 + 0x10)
-0043509d        eax_68[1] = *(esi_1 + 0x14)
-004350a3        eax_68[2] = *(esi_1 + 0x18)
+00435098        *eax_68 = esi_1->anchor_position.x
+0043509d        eax_68[1] = esi_1->anchor_position.y
+004350a3        eax_68[2] = esi_1->anchor_position.z
 004350b7        float var_10[0x4]
 004350b7        float* eax_69 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
 004350c1        float* edx_33 = esi_1->__offset(0x50).d + 0x28
@@ -195,7 +195,7 @@
 00435118        void* eax_74 = esi_1->__offset(0x4c).d
 0043511d        if (eax_74 != 0)
 0043511f        *(eax_74 + 4) &= 0xffffffdf
-00435126        esi_1 += 0x54
+00435126        esi_1 = &esi_1->_pad_00[0x54]
 00435129        cond:1_1 = var_4c_1 != 1
 0043512a        var_4c_1 -= 1
 0043512e        do while (cond:1_1)

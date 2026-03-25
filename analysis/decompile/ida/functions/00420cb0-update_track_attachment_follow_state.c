@@ -36,7 +36,7 @@ int32_t __thiscall update_track_attachment_follow_state(
   PathTemplateSample *v29; // ecx
   double v30; // st5
   PathTemplateSample *v31; // eax
-  float *v32; // ecx
+  Vec3 *p_anchor_position; // ecx
   double v33; // st6
   double v34; // st5
   double v35; // st5
@@ -56,7 +56,7 @@ int32_t __thiscall update_track_attachment_follow_state(
   PathTemplateSample *v50; // ecx
   double v51; // st7
   float *v52; // esi
-  float *source_cell; // ecx
+  TrackRowCell *source_cell; // ecx
   double v54; // st7
   double v55; // st7
   double v56; // st6
@@ -155,7 +155,7 @@ LABEL_11:
       y = v86.position.y;
       v44 = follow_state->template_record->secondary_samples[follow_state->sample_index].delta_dir_to_next.z
           * follow_state->progress
-          + *((float *)follow_state->source_cell + 6)
+          + follow_state->source_cell->anchor_position.z
           + follow_state->template_record->secondary_samples[follow_state->sample_index].transform.position.z;
       v86.basis_right.x = v86.basis_right.x * v79;
       v86.basis_right.y = v86.basis_right.y * v79;
@@ -184,10 +184,10 @@ LABEL_11:
       v50 = v19->secondary_samples;
       v51 = *(float *)&v80 * v50[v21].delta_dir_to_next.x;
       v52 = &v50[v21].transform.basis_right.x;
-      source_cell = (float *)follow_state->source_cell;
-      v82 = v51 * v79 + source_cell[4] + v52[12];
-      v83 = *(float *)&v80 * v52[33] * v79 + source_cell[5] + v52[13];
-      v84 = *(float *)&v80 * v52[34] + source_cell[6] + v52[14];
+      source_cell = follow_state->source_cell;
+      v82 = v51 * v79 + source_cell->anchor_position.x + v52[12];
+      v83 = *(float *)&v80 * v52[33] * v79 + source_cell->anchor_position.y + v52[13];
+      v84 = *(float *)&v80 * v52[34] + source_cell->anchor_position.z + v52[14];
       if ( v18 == v20 )
       {
         set_matrix_identity(&v86);
@@ -352,32 +352,32 @@ LABEL_62:
         {
           v15 = *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                       + (_DWORD)MEMORY[0x4DF904]
-                                      + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                      + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                           + 56);
           *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                 + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                     + 36) = *(_DWORD *)(v15 + 164);
           *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                 + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                     + 52) = 1065353216;
         }
         else if ( v14 == (int)(3 * segment_count) / 7 )
         {
-          track_cell_row_index = get_track_cell_row_index((_DWORD *)follow_state->source_cell);
+          track_cell_row_index = get_track_cell_row_index(follow_state->source_cell->_pad_00);
           *(_DWORD *)(*(_DWORD *)((char *)&unk_641184 + (_DWORD)MEMORY[0x4DF904] + 244 * track_cell_row_index) + 4) |= 0x80u;
           v17 = *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                       + (_DWORD)MEMORY[0x4DF904]
-                                      + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                      + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                           + 56);
           *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                 + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                     + 36) = *(_DWORD *)(v17 + 160);
           *(_DWORD *)(*(_DWORD *)((char *)&unk_641184
                                 + (_DWORD)MEMORY[0x4DF904]
-                                + 244 * get_track_cell_row_index((_DWORD *)follow_state->source_cell))
+                                + 244 * get_track_cell_row_index(follow_state->source_cell->_pad_00))
                     + 52) = 1058642330;
         }
       }
@@ -408,13 +408,13 @@ LABEL_62:
       v29 = v25->secondary_samples;
       v30 = v28 * v29[v27 - 1].transform.basis_forward.x;
       v31 = &v29[v27];
-      v32 = (float *)((char *)follow_state->source_cell + 16);
+      p_anchor_position = &follow_state->source_cell->anchor_position;
       v90 = v30;
       v91 = v28 * v31[-1].transform.basis_forward.y;
       v33 = v28 * v31[-1].transform.basis_forward.z;
-      v34 = *v32 + v31[-1].transform.position.x;
-      v88 = v31[-1].transform.position.y + v32[1];
-      v89 = v31[-1].transform.position.z + v32[2];
+      v34 = p_anchor_position->x + v31[-1].transform.position.x;
+      v88 = v31[-1].transform.position.y + p_anchor_position->y;
+      v89 = v31[-1].transform.position.z + p_anchor_position->z;
       v82 = v34 + v90;
       v35 = v88 + v91;
       out_position->x = v82;
@@ -431,7 +431,7 @@ LABEL_62:
     else
     {
       out_position->z = v24->secondary_samples[v24->segment_count - 1].transform.position.z
-                      + *((float *)follow_state->source_cell + 6)
+                      + follow_state->source_cell->anchor_position.z
                       + v24->width_or_scale
                       + v78;
     }

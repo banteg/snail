@@ -579,17 +579,10 @@ Still unresolved from the current Windows package:
 High-confidence `PathTemplateSample` fields:
 
 - `+0x00..+0x3f`: `TransformMatrix`
-
-The shared checked-in reverse-engineering header at
-[`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h)
-now also mirrors the stable `FollowState` prefix used by the attachment-follow
-helpers. Treat that header as the current repo-owned typed source for the
-`PathTemplate` / strip-mesh / follow-state slice that we actively mirror into
-IDA.
-  - `+0x00`: `basis_right`
-  - `+0x10`: `basis_up`
-  - `+0x20`: `basis_forward`
-  - `+0x30`: `position`
+- `+0x00`: `basis_right`
+- `+0x10`: `basis_up`
+- `+0x20`: `basis_forward`
+- `+0x30`: `position`
 - `+0x40..+0x7f`: still opaque
 - `+0x80`: `delta_dir_to_next`
 - `+0x8c`: `delta_length`
@@ -598,6 +591,19 @@ IDA.
 - `+0x98`: `rotation_scalar_98`
 - `+0x9c`: `lateral_scale`
 - `+0xa0`: `special_scalar`
+
+The shared checked-in reverse-engineering header at
+[`analysis/headers/path_template_types.h`](../../analysis/headers/path_template_types.h)
+now also mirrors the stable `FollowState` prefix used by the attachment-follow
+helpers. Treat that header as the current repo-owned typed source for the
+`PathTemplate` / strip-mesh / follow-state slice that we actively mirror into
+IDA.
+
+The same narrow typed lane now also carries the minimal `TrackRowCell` slice
+used by the follow helpers:
+
+- `+0x10..+0x18`: `anchor_position`
+- `+0x38`: `attachment_template_record`
 
 High-confidence `PathTemplateStripMesh` fields:
 

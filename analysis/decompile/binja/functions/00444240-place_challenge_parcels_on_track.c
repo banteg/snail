@@ -79,12 +79,12 @@
 0044440b        if (eax_7 - eax_6 s< 0)
 0044440d        edi_4 = 0
 0044440f        struct TrackRowCell* cell = esi_1[0x29]
-00444415        void* eax_8 = cell->__offset(0x38).d
-0044441c        if (*(eax_8 + 0x38) != 0x2a)
-00444471        int32_t eax_14 = get_track_cell_row_index(cell)
-00444482        get_path_position_at_node(*(esi_1[0x29] + 0x38), &esi_1[0x24], edi_4, eax_14, &esi_1[0x24])
+00444415        struct PathTemplate* attachment_template_record = cell->attachment_template_record
+0044441c        if (attachment_template_record->kind != PATH_TEMPLATE_KIND_NONLINEAR_42)
+00444471        int32_t eax_13 = get_track_cell_row_index(cell)
+00444482        get_path_position_at_node(*(esi_1[0x29] + 0x38), &esi_1[0x24], edi_4, eax_13, &esi_1[0x24])
 0044444f        struct TransformMatrix transform
-0044444f        x87control_1 = compute_kind42_attachment_transform(*(*(eax_8 + 0x58) + edi_4 * 0xa8 + 0xa0), esi_1[0x24], esi_1[0x25], &transform, &out_angle)
+0044444f        x87control_1 = compute_kind42_attachment_transform((&attachment_template_record->primary_samples->special_scalar)[edi_4 * 0x2a], esi_1[0x24], esi_1[0x25], &transform, &out_angle)
 00444458        float y = transform.position.y
 0044445c        esi_1[0x24] = transform.position.x
 00444462        esi_1[0x25] = y

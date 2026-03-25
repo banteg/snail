@@ -14,49 +14,49 @@
 0043d8cd        void* esi = &game->_pad_00[edx * 0x19c]
 0043d8d0        *(esi + 0x355e9c) = 1
 0043d8da        *(esi + 0x355ea0) = player
-0043d8e9        float ecx = cell->__offset(0x10).d
-0043d8ec        int32_t edx_2 = cell->__offset(0x18).d
-0043d8fb        float var_c = ecx
-0043d8ff        float var_8 = fconvert.s(fconvert.t(cell->__offset(0x14).d) + fconvert.t(1.5f))
-0043d907        *(esi + 0x355e74) = ecx
+0043d8e9        float x = cell->anchor_position.x
+0043d8ec        float z = cell->anchor_position.z
+0043d8fb        float x_1 = x
+0043d8ff        float var_8 = fconvert.s(fconvert.t(cell->anchor_position.y) + fconvert.t(1.5f))
+0043d907        *(esi + 0x355e74) = x
 0043d90d        *(esi + 0x355e78) = var_8
-0043d910        *(esi + 0x355e7c) = edx_2
+0043d910        *(esi + 0x355e7c) = z
 0043d916        int32_t eax_8 = cell->__offset(0x40).d & 7
 0043d92b        if (eax_8 == 3 && cell->__offset(0xffffffffffffffe8).b == 0xe && cell->__offset(0xe4).b == 0xe)
 0043d951        *(esi + 0x355e74) = fconvert.s(fconvert.t(*(esi + 0x355e74)) + fconvert.t(0.5f))
 0043d947        if (eax_8 == 4 && cell->__offset(0xffffffffffffff94).b == 0xe && cell->__offset(0x90).b == 0xe)
 0043d951        *(esi + 0x355e74) = fconvert.s(fconvert.t(*(esi + 0x355e74)) - fconvert.t(0.5f))
 0043d962        if (((*(esi + 0x355e68)).w:1.b & 2) == 0)
-0043d973        void* edx_4 = data_4df904
-0043d97f        void* edx_5 = *(edx_4 + 0x5ac)
-0043d987        if (edx_5 != 0)
-0043d995        *(edx_5 + 8) = esi + 0x355e64
-0043d998        void* edx_6 = *(edx_4 + 0x5ac)
-0043d99d        *(*(edx_6 + 8) + 0xc) = edx_6
-0043d9a4        void* edx_8 = *(*(edx_4 + 0x5ac) + 8)
-0043d9a7        *(edx_4 + 0x5ac) = edx_8
-0043d9a9        *(edx_8 + 8) = 0
-0043d989        *(edx_4 + 0x5ac) = esi + 0x355e64
+0043d973        void* edx_3 = data_4df904
+0043d97f        void* edx_4 = *(edx_3 + 0x5ac)
+0043d987        if (edx_4 != 0)
+0043d995        *(edx_4 + 8) = esi + 0x355e64
+0043d998        void* edx_5 = *(edx_3 + 0x5ac)
+0043d99d        *(*(edx_5 + 8) + 0xc) = edx_5
+0043d9a4        void* edx_7 = *(*(edx_3 + 0x5ac) + 8)
+0043d9a7        *(edx_3 + 0x5ac) = edx_7
+0043d9a9        *(edx_7 + 8) = 0
+0043d989        *(edx_3 + 0x5ac) = esi + 0x355e64
 0043d98b        *(esi + 0x355e6c) = 0
-0043d990        *(*(edx_4 + 0x5ac) + 0xc) = 0
+0043d990        *(*(edx_3 + 0x5ac) + 0xc) = 0
 0043d9af        int32_t eax_12
 0043d9af        eax_12:1.b = (*(esi + 0x355e68)):1.b | 2
 0043d9b2        *(esi + 0x355e68) = eax_12
 0043d969        report_errorf("List ADD")
 0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->__offset(0x380).d, 0x7c, 0xffffffff, 0xffffffff)
 0043d9d0        *(esi + 0x355ec8) = eax_14
-0043d9d9        int32_t ecx_4
-0043d9d9        ecx_4:1.b = eax_14[1]:1.b | 8
-0043d9dc        eax_14[1] = ecx_4
+0043d9d9        int32_t ecx_3
+0043d9d9        ecx_3:1.b = eax_14[1]:1.b | 8
+0043d9dc        eax_14[1] = ecx_3
 0043d9e5        *(*(esi + 0x355ec8) + 0x78) = 0
 0043d9ee        *(*(esi + 0x355ec8) + 0x68) = 0
 0043d9fc        *(*(esi + 0x355ec8) + 0x6c) = 0
 0043da05        *(*(esi + 0x355ec8) + 0x60) = 0x3fc00000
 0043da0e        *(*(esi + 0x355ec8) + 0x64) = 0x3fc00000
-0043da19        float* edx_12 = *(esi + 0x355ec8) + 0x48
-0043da1c        *edx_12 = *(esi + 0x355e74)
-0043da21        edx_12[1] = *(esi + 0x355e78)
-0043da27        edx_12[2] = *(esi + 0x355e7c)
+0043da19        float* edx_11 = *(esi + 0x355ec8) + 0x48
+0043da1c        *edx_11 = *(esi + 0x355e74)
+0043da21        edx_11[1] = *(esi + 0x355e78)
+0043da27        edx_11[2] = *(esi + 0x355e7c)
 0043da2a        *(esi + 0x355ecc) = cell
 0043da30        *(esi + 0x355ed0) = 0
 0043da3c        int16_t x87control

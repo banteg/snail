@@ -18,4 +18,4 @@
 0043d56b        return ((fconvert.t(position->z) - x87_r7_3) * fconvert.t(0.400000006f) + fconvert.t(0.5f)).q
 0043d538        if (ecx != 0x16)
 0043d548        return (fconvert.t(-100f)).q
-0043d53e        return (fconvert.t(eax->__offset(0x14).d)).q
+0043d53e        return (fconvert.t(eax->anchor_position.y)).q
