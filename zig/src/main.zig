@@ -10872,14 +10872,6 @@ fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max
     return app_ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
-fn drawMenuItem(state: *const AppState, layout: VirtualLayout, index: usize, selected_index: usize, label: []const u8) void {
-    app_ui.drawMenuItem(uiContext(state), layout, index, selected_index, label);
-}
-
-fn drawRouteSelectionDots(state: *const AppState, layout: VirtualLayout, panels: MenuPanels, current_index: usize, max_index: usize) void {
-    app_ui.drawRouteSelectionDots(uiContext(state), layout, panels, current_index, max_index);
-}
-
 fn modeLabel(mode: xanim.Mode) [:0]const u8 {
     return switch (mode) {
         .loop => "loop",
