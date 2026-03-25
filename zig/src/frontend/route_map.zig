@@ -1,9 +1,14 @@
+const std = @import("std");
 const rl = @import("raylib");
+const app_ui = @import("../app_ui.zig");
+const assets = @import("../assets.zig");
 const frontend = @import("../frontend.zig");
 const frontend_bridge = @import("bridge.zig");
 const frontend_widget = @import("widget.zig");
 const galaxy = @import("../galaxy.zig");
 const game_font = @import("../game_font.zig");
+
+const VirtualLayout = app_ui.VirtualLayout;
 
 pub const actions_without_replay = [_]frontend.RouteMenuAction{
     .play,
@@ -257,6 +262,47 @@ pub fn cardLayout(
     }
 }
 
+pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+    const mode = state.frontend_route_mode orelse return;
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", title_x, title_y, title_scale, .ray_white);
+    drawLogo(state, layout);
+    drawStars(state, layout, mode);
+    if (state.currentRouteMapOpenIndex()) |route_index| {
+        const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontend.frontendRouteModeLabel(mode);
+        const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
+        const route_body = bodyText(if (state.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
+        const primary_label = frontend.routeMenuActionLabel(mode, .play);
+        const replay_label = if (state.routeMapShowsReplay()) frontend.routeMenuActionLabel(mode, .watch_best_trial) else null;
+        const maybe_names = if (state.galaxy_names) |*names| names else null;
+        if (pointForRouteIndex(maybe_names, route_index)) |route_point| {
+            const layout_state = cardLayout(
+                &state.ui_font,
+                route_point,
+                route_galaxy_name,
+                route_level_name,
+                route_body,
+                primary_label,
+                replay_label,
+            );
+            drawConnection(layout, layout_state.pointer_start, layout_state.pointer_end, state.route_map_art.line_star, 4.0, .white);
+            drawCard(state, layout, layout_state, route_galaxy_name, route_level_name, route_body, primary_label, replay_label);
+        }
+    }
+
+    frontend_widget.drawType20Button(
+        layout,
+        widget_art,
+        &state.ui_font,
+        backLabel(state.route_map_screen_mode),
+        backTextRect(&state.ui_font, state.route_map_screen_mode),
+        state.route_map_button_states[back_button_index],
+        false,
+    );
+}
+
 fn scaledUiFontSize(font: *const game_font.Loaded, text_scale: f32) f32 {
     return font.nominal_height * text_scale;
 }
@@ -278,4 +324,285 @@ fn uiFontTextRectAbsolute(font: *const game_font.Loaded, text: []const u8, left:
         .width = font.measureText(text, font_size),
         .height = multilineUiTextHeight(font, text, text_scale),
     };
+}
+
+fn drawUiFontTextAbsolute(
+    state: anytype,
+    layout: VirtualLayout,
+    text: []const u8,
+    left: f32,
+    top: f32,
+    text_scale: f32,
+    color: rl.Color,
+) void {
+    const point = layout.mapPoint(left, top);
+    state.ui_font.drawText(text, point.x, point.y, layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale)), color);
+}
+
+fn drawUiFontTextRect(
+    state: anytype,
+    layout: VirtualLayout,
+    text: []const u8,
+    rect: frontend_widget.Rect,
+    text_scale: f32,
+    color: rl.Color,
+) void {
+    drawUiFontTextAbsolute(state, layout, text, rect.left, rect.top, text_scale, color);
+}
+
+fn drawTextureLocalRectSource(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    source: rl.Rectangle,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    if (local_width <= 0.0 or local_height <= 0.0) return;
+    rl.drawTexturePro(
+        loaded_texture.texture,
+        source,
+        layout.mapRect(local_x, local_y, local_width, local_height),
+        .{ .x = 0.0, .y = 0.0 },
+        0.0,
+        tint,
+    );
+}
+
+fn drawTextureLocalRect(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    local_x: f32,
+    local_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    drawTextureLocalRectSource(
+        layout,
+        loaded_texture,
+        .{
+            .x = 0.0,
+            .y = 0.0,
+            .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
+            .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+        },
+        local_x,
+        local_y,
+        local_width,
+        local_height,
+        tint,
+    );
+}
+
+fn drawTextureCenteredLocal(
+    layout: VirtualLayout,
+    loaded_texture: assets.LoadedTexture,
+    center_x: f32,
+    center_y: f32,
+    local_width: f32,
+    local_height: f32,
+    tint: rl.Color,
+) void {
+    drawTextureLocalRect(
+        layout,
+        loaded_texture,
+        center_x - local_width * 0.5,
+        center_y - local_height * 0.5,
+        local_width,
+        local_height,
+        tint,
+    );
+}
+
+fn drawConnection(
+    layout: VirtualLayout,
+    start_point: galaxy.Point,
+    end_point: galaxy.Point,
+    line_texture: ?assets.LoadedTexture,
+    authored_width: f32,
+    tint: rl.Color,
+) void {
+    const start = layout.mapPoint(start_point.x, start_point.y);
+    const end = layout.mapPoint(end_point.x, end_point.y);
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const length = std.math.sqrt(dx * dx + dy * dy);
+    if (length <= 0.01) return;
+
+    if (line_texture) |loaded_texture| {
+        const scaled_width = layout.scaleFloat(authored_width);
+        rl.drawTexturePro(
+            loaded_texture.texture,
+            .{
+                .x = 0.0,
+                .y = 0.0,
+                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
+                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
+            },
+            .{
+                .x = start.x,
+                .y = start.y,
+                .width = length,
+                .height = scaled_width,
+            },
+            .{ .x = 0.0, .y = scaled_width * 0.5 },
+            @as(f32, @floatCast(std.math.atan2(dy, dx) * 180.0 / std.math.pi)),
+            tint,
+        );
+    } else {
+        rl.drawLineEx(start, end, layout.scaleFloat(authored_width), tint);
+    }
+}
+
+fn drawStars(state: anytype, layout: VirtualLayout, mode: frontend.FrontendLevelMode) void {
+    const available_limit = state.availableFrontendRouteLimit(mode);
+    const active_route_index = state.currentRouteMapOpenIndex() orelse state.frontend_route_index;
+    const selected_galaxy_index = if (state.galaxy_names) |names|
+        names.galaxyIndexForRouteIndex(state.frontend_route_index)
+    else
+        null;
+    for (0..galaxy.map_galaxy_count) |galaxy_index| {
+        const center = galaxy.galaxyCenter(galaxy_index);
+        if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
+            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, galaxy_size, galaxy_size, .white);
+        }
+    }
+
+    if (state.galaxy_names) |names| {
+        if (selected_galaxy_index) |galaxy_index| {
+            var route_cursor: usize = 0;
+            for (0..galaxy_index) |prior_index| {
+                route_cursor += names.starCountForGalaxyIndex(prior_index) orelse 0;
+            }
+            const star_count = names.starCountForGalaxyIndex(galaxy_index) orelse 0;
+            var visible_star_count = if (available_limit > route_cursor)
+                @min(star_count, available_limit - route_cursor)
+            else
+                0;
+            if (state.route_map_screen_mode == .post_completion_exit and active_route_index > route_cursor) {
+                visible_star_count = @min(visible_star_count, active_route_index - route_cursor);
+            }
+
+            if (visible_star_count >= 2) {
+                for (0..visible_star_count - 1) |local_index| {
+                    const start_route_index = route_cursor + local_index + 1;
+                    const end_route_index = start_route_index + 1;
+                    if (state.route_map_screen_mode == .post_completion_exit and start_route_index >= active_route_index) continue;
+                    const line_tint: rl.Color = if (start_route_index < active_route_index)
+                        .{ .r = 255, .g = 255, .b = 255, .a = 204 }
+                    else
+                        .{ .r = 255, .g = 255, .b = 255, .a = 51 };
+                    drawConnection(
+                        layout,
+                        names.routePointForRouteIndex(start_route_index).?,
+                        names.routePointForRouteIndex(end_route_index).?,
+                        state.route_map_art.line,
+                        path_line_width,
+                        line_tint,
+                    );
+                }
+            }
+
+            for (0..visible_star_count) |local_index| {
+                const route_index = route_cursor + local_index + 1;
+                const point = names.routePointForRouteIndex(route_index).?;
+                if (state.route_map_art.level_star) |loaded_texture| {
+                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, .white);
+                }
+            }
+        }
+    }
+
+    for (1..@min(available_limit, galaxy.map_route_count) + 1) |route_index| {
+        const highlight_alpha = state.route_map_route_highlight_alpha[route_index];
+        if (highlight_alpha <= 0.001) continue;
+        const maybe_names = if (state.galaxy_names) |*names| names else null;
+        if (pointForRouteIndex(maybe_names, route_index)) |selected_point| {
+            if (state.route_map_art.level_select) |loaded_texture| {
+                drawTextureCenteredLocal(
+                    layout,
+                    loaded_texture,
+                    selected_point.x,
+                    selected_point.y,
+                    64.0,
+                    64.0,
+                    .{
+                        .r = 255,
+                        .g = 255,
+                        .b = 255,
+                        .a = @intFromFloat(std.math.clamp(highlight_alpha * 255.0, 0.0, 255.0)),
+                    },
+                );
+            }
+        }
+    }
+}
+
+fn drawCard(
+    state: anytype,
+    layout: VirtualLayout,
+    layout_state: CardLayout,
+    route_galaxy_name: []const u8,
+    route_level_name: []const u8,
+    route_body: []const u8,
+    primary_action: []const u8,
+    replay_action: ?[]const u8,
+) void {
+    if (state.route_map_art.border) |loaded_texture| {
+        frontend_widget.drawNineSliceFrame(
+            layout,
+            loaded_texture.texture,
+            layout_state.card_rect,
+            card_frame_edge,
+            card_frame_edge / 128.0,
+            .white,
+        );
+    }
+
+    drawUiFontTextRect(state, layout, route_galaxy_name, layout_state.title_rect, card_title_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_level_name, layout_state.subtitle_rect, card_subtitle_scale, .ray_white);
+    drawUiFontTextRect(state, layout, route_body, layout_state.body_rect, card_body_scale, .ray_white);
+
+    const widget_art: frontend_widget.Art = .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+    frontend_widget.drawType20Button(
+        layout,
+        widget_art,
+        &state.ui_font,
+        primary_action,
+        layout_state.primary_text_rect,
+        state.route_map_button_states[primary_button_index],
+        false,
+    );
+    if (replay_action) |label| {
+        if (layout_state.replay_text_rect) |replay_text_rect| {
+            frontend_widget.drawTextButton(
+                layout,
+                widget_art,
+                &state.ui_font,
+                .route_map_secondary_action,
+                label,
+                replay_text_rect,
+                state.route_map_button_states[replay_button_index],
+                false,
+            );
+        }
+    }
+}
+
+fn drawLogo(state: anytype, layout: VirtualLayout) void {
+    const loaded_texture = state.route_map_art.logo orelse return;
+    drawTextureLocalRect(
+        layout,
+        loaded_texture,
+        logo_x,
+        logo_y,
+        logo_width,
+        logo_height,
+        .white,
+    );
 }

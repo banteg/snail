@@ -4448,12 +4448,12 @@ const AppState = struct {
         self.frontend_route_level = try level.loadFromArchive(self.allocator, &self.catalog, self.catalog.level_entries[level_index]);
     }
 
-    fn currentFrontendGalaxyName(self: *const AppState) ?[]const u8 {
+    pub fn currentFrontendGalaxyName(self: *const AppState) ?[]const u8 {
         const names = self.galaxy_names orelse return null;
         return names.nameForRouteIndex(self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
-    fn routeMapShowsReplay(self: *const AppState) bool {
+    pub fn routeMapShowsReplay(self: *const AppState) bool {
         // PORT(verified): `open_galaxy_route` only reveals "Watch Best Trial" when the Star
         // Map is in internal mode `2` and the route's completion slot has replay data.
         if (self.route_map_screen_mode != .replay) return false;
@@ -4468,7 +4468,7 @@ const AppState = struct {
     // PORT(verified): `open_galaxy_route` stores the active route index at `this + 69504`,
     // while `close_galaxy_route` clears that slot back to `-1`. Model the open-card route
     // separately instead of assuming the saved/default route is always the open one.
-    fn currentRouteMapOpenIndex(self: *const AppState) ?usize {
+    pub fn currentRouteMapOpenIndex(self: *const AppState) ?usize {
         return self.route_map_open_index;
     }
 
@@ -5555,7 +5555,7 @@ const AppState = struct {
         return std.math.clamp(saved_index, @as(usize, 1), available_limit);
     }
 
-    fn availableFrontendRouteLimit(self: *const AppState, mode: FrontendLevelMode) usize {
+    pub fn availableFrontendRouteLimit(self: *const AppState, mode: FrontendLevelMode) usize {
         const highest_available = self.highestAvailableFrontendRouteIndex(mode);
         if (highest_available == 0) return 0;
         const saved_limit: usize = @intCast(self.runtime_config.routeUnlockLimit());
@@ -6994,46 +6994,7 @@ fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
 }
 
 fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const mode = state.frontend_route_mode orelse return;
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    // PORT(verified): `initialize_galaxy` passes an explicit white color into the title
-    // widget constructor instead of reusing the orange menu-heading tint.
-    drawUiFontTextAbsolute(state, layout, "Intergalactic Delivery Route", frontend_route_map.title_x, frontend_route_map.title_y, frontend_route_map.title_scale, .ray_white);
-    drawRouteMapLogo(state, layout);
-    drawRouteMapStars(state, layout, mode);
-    if (state.currentRouteMapOpenIndex()) |route_index| {
-        const route_galaxy_name = state.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
-        const route_level_name = if (state.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-        const route_body = frontend_route_map.bodyText(if (state.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
-        const primary_label = routeMenuActionLabel(mode, .play);
-        const replay_label = if (state.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null;
-        const maybe_names = if (state.galaxy_names) |*names| names else null;
-        if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |route_point| {
-            const card_layout = frontend_route_map.cardLayout(
-                &state.ui_font,
-                route_point,
-                route_galaxy_name,
-                route_level_name,
-                route_body,
-                primary_label,
-                replay_label,
-            );
-            drawRouteMapConnection(layout, card_layout.pointer_start, card_layout.pointer_end, state.route_map_art.line_star, 4.0, .white);
-            drawRouteMapCard(state, layout, card_layout, route_galaxy_name, route_level_name, route_body, primary_label, replay_label);
-        }
-    }
-
-    frontend_widget.drawType20Button(
-        layout,
-        widget_art,
-        &state.ui_font,
-        frontend_route_map.backLabel(state.route_map_screen_mode),
-        frontend_route_map.backTextRect(&state.ui_font, state.route_map_screen_mode),
-        state.route_map_button_states[frontend_route_map.back_button_index],
-        false,
-    );
+    frontend_route_map.drawMenuUi(state, layout);
 
     if (state.game_status_message) |message| {
         try drawFrontendNoticeBlock(state, layout, 320.0, 438.0, message, .ray_white);
@@ -7485,203 +7446,6 @@ fn drawOptionsSliderRow(
         row_state,
         less_hovered,
         more_hovered,
-    );
-}
-
-fn drawRouteMapConnection(
-    layout: VirtualLayout,
-    start_point: galaxy.Point,
-    end_point: galaxy.Point,
-    line_texture: ?assets.LoadedTexture,
-    authored_width: f32,
-    tint: rl.Color,
-) void {
-    const start = layout.mapPoint(start_point.x, start_point.y);
-    const end = layout.mapPoint(end_point.x, end_point.y);
-    const dx = end.x - start.x;
-    const dy = end.y - start.y;
-    const length = std.math.sqrt(dx * dx + dy * dy);
-    if (length <= 0.01) return;
-
-    if (line_texture) |loaded_texture| {
-        const scaled_width = layout.scaleFloat(authored_width);
-        rl.drawTexturePro(
-            loaded_texture.texture,
-            .{
-                .x = 0.0,
-                .y = 0.0,
-                .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
-                .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
-            },
-            .{
-                .x = start.x,
-                .y = start.y,
-                .width = length,
-                .height = scaled_width,
-            },
-            .{ .x = 0.0, .y = scaled_width * 0.5 },
-            @as(f32, @floatCast(std.math.atan2(dy, dx) * 180.0 / std.math.pi)),
-            tint,
-        );
-    } else {
-        rl.drawLineEx(start, end, layout.scaleFloat(authored_width), tint);
-    }
-}
-
-fn drawRouteMapStars(state: *const AppState, layout: VirtualLayout, mode: FrontendLevelMode) void {
-    const available_limit = state.availableFrontendRouteLimit(mode);
-    const active_route_index = state.currentRouteMapOpenIndex() orelse state.frontend_route_index;
-    const selected_galaxy_index = if (state.galaxy_names) |names|
-        names.galaxyIndexForRouteIndex(state.frontend_route_index)
-    else
-        null;
-    for (0..galaxy.map_galaxy_count) |galaxy_index| {
-        const center = galaxy.galaxyCenter(galaxy_index);
-        if (state.route_map_art.galaxies[galaxy_index]) |loaded_texture| {
-            drawTextureCenteredLocal(layout, loaded_texture, center.x, center.y, frontend_route_map.galaxy_size, frontend_route_map.galaxy_size, .white);
-        }
-    }
-
-    if (state.galaxy_names) |names| {
-        if (selected_galaxy_index) |galaxy_index| {
-            var route_cursor: usize = 0;
-            for (0..galaxy_index) |prior_index| {
-                route_cursor += names.starCountForGalaxyIndex(prior_index) orelse 0;
-            }
-            const star_count = names.starCountForGalaxyIndex(galaxy_index) orelse 0;
-            var visible_star_count = if (available_limit > route_cursor)
-                @min(star_count, available_limit - route_cursor)
-            else
-                0;
-            // PORT(verified): the postal post-completion Star Map variant (`this + 4 == 1`)
-            // stops drawing future route stars once it reaches the current route. Only the
-            // normal/replay variants keep the remainder of the available route strip visible.
-            if (state.route_map_screen_mode == .post_completion_exit and active_route_index > route_cursor) {
-                visible_star_count = @min(visible_star_count, active_route_index - route_cursor);
-            }
-
-            if (visible_star_count >= 2) {
-                for (0..visible_star_count - 1) |local_index| {
-                    const start_route_index = route_cursor + local_index + 1;
-                    const end_route_index = start_route_index + 1;
-                    // PORT(verified): `update_galaxy` iterates route links only up to the
-                    // live available-route count in `dword_4DF9B8`, then shades them in two
-                    // authored bands: `0.8` before the current route and `0.2` afterwards.
-                    // The postal post-completion variant omits the later `0.2` links entirely.
-                    if (state.route_map_screen_mode == .post_completion_exit and start_route_index >= active_route_index) continue;
-                    const line_tint: rl.Color = if (start_route_index < active_route_index)
-                        .{ .r = 255, .g = 255, .b = 255, .a = 204 }
-                    else
-                        .{ .r = 255, .g = 255, .b = 255, .a = 51 };
-                    drawRouteMapConnection(
-                        layout,
-                        names.routePointForRouteIndex(start_route_index).?,
-                        names.routePointForRouteIndex(end_route_index).?,
-                        state.route_map_art.line,
-                        frontend_route_map.path_line_width,
-                        line_tint,
-                    );
-                }
-            }
-
-            for (0..visible_star_count) |local_index| {
-                const route_index = route_cursor + local_index + 1;
-                const point = names.routePointForRouteIndex(route_index).?;
-                if (state.route_map_art.level_star) |loaded_texture| {
-                    drawTextureCenteredLocal(layout, loaded_texture, point.x, point.y, 32.0, 32.0, .white);
-                }
-            }
-        }
-    }
-
-    for (1..@min(available_limit, galaxy.map_route_count) + 1) |route_index| {
-        const highlight_alpha = state.route_map_route_highlight_alpha[route_index];
-        if (highlight_alpha <= 0.001) continue;
-        const maybe_names = if (state.galaxy_names) |*names| names else null;
-        if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |selected_point| {
-            if (state.route_map_art.level_select) |loaded_texture| {
-                drawTextureCenteredLocal(
-                    layout,
-                    loaded_texture,
-                    selected_point.x,
-                    selected_point.y,
-                    64.0,
-                    64.0,
-                    .{
-                        .r = 255,
-                        .g = 255,
-                        .b = 255,
-                        .a = @intFromFloat(std.math.clamp(highlight_alpha * 255.0, 0.0, 255.0)),
-                    },
-                );
-            }
-        }
-    }
-}
-
-fn drawRouteMapCard(
-    state: *const AppState,
-    layout: VirtualLayout,
-    card_layout: frontend_route_map.CardLayout,
-    route_galaxy_name: []const u8,
-    route_level_name: []const u8,
-    route_body: []const u8,
-    primary_action: []const u8,
-    replay_action: ?[]const u8,
-) void {
-    if (state.route_map_art.border) |loaded_texture| {
-        frontend_widget.drawNineSliceFrame(
-            layout,
-            loaded_texture.texture,
-            card_layout.card_rect,
-            frontend_route_map.card_frame_edge,
-            frontend_route_map.card_frame_edge / 128.0,
-            .white,
-        );
-    }
-
-    drawUiFontTextRect(state, layout, route_galaxy_name, card_layout.title_rect, frontend_route_map.card_title_scale, .ray_white);
-    drawUiFontTextRect(state, layout, route_level_name, card_layout.subtitle_rect, frontend_route_map.card_subtitle_scale, .ray_white);
-    drawUiFontTextRect(state, layout, route_body, card_layout.body_rect, frontend_route_map.card_body_scale, .ray_white);
-
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
-    frontend_widget.drawType20Button(
-        layout,
-        widget_art,
-        &state.ui_font,
-        primary_action,
-        card_layout.primary_text_rect,
-        state.route_map_button_states[frontend_route_map.primary_button_index],
-        false,
-    );
-    if (replay_action) |label| {
-        if (card_layout.replay_text_rect) |replay_text_rect| {
-            frontend_widget.drawTextButton(
-                layout,
-                widget_art,
-                &state.ui_font,
-                .route_map_secondary_action,
-                label,
-                replay_text_rect,
-                state.route_map_button_states[frontend_route_map.replay_button_index],
-                false,
-            );
-        }
-    }
-}
-
-fn drawRouteMapLogo(state: *const AppState, layout: VirtualLayout) void {
-    const loaded_texture = state.route_map_art.logo orelse return;
-    drawTextureLocalRect(
-        layout,
-        loaded_texture,
-        frontend_route_map.logo_x,
-        frontend_route_map.logo_y,
-        frontend_route_map.logo_width,
-        frontend_route_map.logo_height,
-        .white,
     );
 }
 
