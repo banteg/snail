@@ -1,0 +1,251 @@
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
+/* function: merge_track_tile_runs @ 0x435180 */
+/* selector: merge_track_tile_runs */
+
+// Collapses repeated horizontal tile runs into longer strip variants where the renderer allows it.
+int __thiscall sub_435180(int *this)
+{
+  int *v1; // esi
+  int v2; // edx
+  int *v3; // eax
+  int v4; // ecx
+  int v5; // ebp
+  int result; // eax
+  int *v7; // ebx
+  int v8; // ebp
+  int *v9; // edi
+  int v10; // esi
+  int v11; // edx
+  _DWORD *v12; // ecx
+  char v13; // al
+  int v14; // eax
+  int v15; // esi
+  int v16; // eax
+  int v17; // ecx
+  int v18; // esi
+  int *v19; // edi
+  int v20; // eax
+  int v21; // esi
+  int v22; // eax
+  int v23; // ebp
+  int v24; // edx
+  char v25; // al
+  _BYTE *v26; // edx
+  int v27; // esi
+  int v28; // eax
+  int v29; // ecx
+  int v30; // edx
+  int v31; // ecx
+  int v32; // esi
+  int v33; // eax
+  int v34; // ecx
+  int v35; // eax
+  int v36; // [esp+8h] [ebp-10h]
+  int v38; // [esp+10h] [ebp-8h]
+  _DWORD *v39; // [esp+14h] [ebp-4h]
+
+  v1 = this;
+  v2 = 0;
+  if ( *(this + 21) > 0 )
+  {
+    v3 = this + 982722;
+    do
+    {
+      v4 = 8;
+      do
+      {
+        v5 = *v3;
+        v3 += 21;
+        --v4;
+        *(v3 - 21) = v5 | 0x6000;
+      }
+      while ( v4 );
+      ++v2;
+    }
+    while ( v2 < v1[21] );
+  }
+  result = v1[21];
+  v36 = 0;
+  if ( result > 0 )
+  {
+    v39 = (int *)((char *)&unk_5CCB7C + (_DWORD)v1);
+    v7 = v1 + 982722;
+    do
+    {
+      v8 = 0;
+      v38 = 0;
+      while ( 1 )
+      {
+        v9 = v7 - 16;
+        if ( !is_slide_cache_tile_family((_BYTE *)v7 - 64) || (BYTE1(*v7) & 0x80u) != 0 || (*v7 & 0x40) != 0 )
+        {
+          if ( !is_floor_cache_tile_family((_BYTE *)v7 - 64) || (BYTE1(*v7) & 0x80u) != 0 || (*v7 & 0x40) != 0 )
+          {
+            v25 = *((_BYTE *)v9 + 60);
+            v26 = v9 + 15;
+            if ( v25 == 14 )
+            {
+              v28 = *v7;
+              v27 = 0;
+              BYTE1(v28) = BYTE1(*v7) & 0xF0 | 1;
+              *v7 = v28;
+              v29 = v8;
+              do
+              {
+                if ( *v26 != 14 )
+                  break;
+                if ( (v28 & 0x4000) != 0x4000 )
+                  break;
+                v26 += 84;
+                BYTE1(v28) = BYTE1(v28) & 0xF0 | 1;
+                ++v27;
+                ++v29;
+                *v7 = v28;
+              }
+              while ( v29 < 8 );
+              if ( v27 > 1 )
+              {
+                set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v27 + 69999));
+                v30 = *v7;
+                BYTE1(v30) = BYTE1(*v7) & 0xF0;
+                v31 = v30 | ((v27 & 0xF) << 8);
+                v32 = v27 - 1;
+                *v7 = v31;
+                if ( v32 > 0 )
+                {
+                  v33 = (int)(this + 168 * v36 + 21 * v8 + 21 * v32 + 982722);
+                  do
+                  {
+                    v34 = *(_DWORD *)(v33 - 60);
+                    v33 -= 84;
+                    *(_DWORD *)(v33 + 24) = v34 & 0xFFFFFFDF;
+                    --v32;
+                    *(_DWORD *)(v33 + 84) &= 0xFFFF9FFF;
+                  }
+                  while ( v32 );
+                }
+              }
+            }
+            else if ( !v25 || v25 == 35 )
+            {
+              v35 = *v7;
+              BYTE1(v35) = BYTE1(*v7) & 0xDF;
+              *v7 = v35;
+              if ( v1[16] == 2 )
+              {
+                set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 69705));
+              }
+              else
+              {
+                BYTE1(v35) &= ~0x40u;
+                *v7 = v35;
+              }
+            }
+          }
+          else
+          {
+            v18 = 0;
+            v19 = v7;
+            do
+            {
+              if ( !is_floor_cache_tile_family((_BYTE *)v19 - 64) )
+                break;
+              v20 = *v19;
+              if ( (BYTE1(*v19) & 0x80u) != 0 )
+                break;
+              if ( (v20 & 0x4000) == 0 )
+                break;
+              if ( (v20 & 0x60) != 0 )
+                break;
+              ++v18;
+              v19 += 21;
+              ++v8;
+            }
+            while ( v8 < 8 );
+            if ( v18 > 1 )
+            {
+              set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v18 + 70335));
+              v21 = v18 - 1;
+              if ( v21 > 0 )
+              {
+                v22 = (int)(this + 168 * v36 + 21 * v38 + 21 * v21 + 982722);
+                do
+                {
+                  v23 = *(_DWORD *)(v22 - 60);
+                  v22 -= 84;
+                  *(_DWORD *)(v22 + 24) = v23 & 0xFFFFFFDF;
+                  --v21;
+                  *(_DWORD *)(v22 + 84) &= 0xFFFF9FFF;
+                }
+                while ( v21 );
+              }
+            }
+            v8 = v38;
+          }
+        }
+        else
+        {
+          v10 = 0;
+          v11 = v8;
+          v12 = v9 + 15;
+          do
+          {
+            v13 = *(_BYTE *)v12;
+            if ( *(_BYTE *)v12 != 1 && v13 != 21 && v13 != 27 && v13 != 33 && v13 != 34 )
+              break;
+            v14 = v12[1];
+            if ( (v14 & 0x8000) != 0 )
+              break;
+            if ( (v14 & 0x4000) == 0 )
+              break;
+            if ( (v14 & 0x60) != 0 )
+              break;
+            ++v10;
+            v12 += 21;
+            ++v11;
+          }
+          while ( v11 < 8 );
+          if ( v10 > 1 )
+          {
+            set_bod_object(v7 - 16, *((_DWORD *)MEMORY[0x4DF904] + 14 * v10 + 70111));
+            v15 = v10 - 1;
+            if ( v15 > 0 )
+            {
+              v16 = (int)(this + 168 * v36 + 21 * v8 + 21 * v15 + 982722);
+              do
+              {
+                v17 = *(_DWORD *)(v16 - 60);
+                v16 -= 84;
+                *(_DWORD *)(v16 + 24) = v17 & 0xFFFFFFDF;
+                --v15;
+                *(_DWORD *)(v16 + 84) &= 0xFFFF9FFF;
+              }
+              while ( v15 );
+            }
+          }
+        }
+        if ( (*(_BYTE *)(v39 - 45) & 4) != 0 )
+        {
+          *(v7 - 15) &= 0xFFFFFDDD;
+          v24 = *v7;
+          BYTE1(v24) = BYTE1(*v7) & 0xBF;
+          *v7 = v24;
+          *v39 &= ~0x20u;
+        }
+        ++v8;
+        v7 += 21;
+        v38 = v8;
+        if ( v8 >= 8 )
+          break;
+        v1 = this;
+      }
+      v1 = this;
+      v39 += 61;
+      result = *(this + 21);
+      ++v36;
+    }
+    while ( v36 < result );
+  }
+  return result;
+}
+

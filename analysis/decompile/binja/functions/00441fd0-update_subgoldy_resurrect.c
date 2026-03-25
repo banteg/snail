@@ -1,0 +1,51 @@
+/* tool: binary_ninja */
+/* target: 63967:1:3859193737586600258 */
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
+/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
+/* function: update_subgoldy_resurrect @ 0x441fd0 */
+
+00441fd3        *(arg1 + 0x418) = 0
+00441fe7        void* eax
+00441fe7        if (*(data_4df904 + 0x24) == 0)
+00441fef        long double x87_r7_2 = fconvert.t(*(arg1 + 0x90)) + fconvert.t(*(arg1 + 0x8c))
+00441ff5        *(arg1 + 0x8c) = fconvert.s(x87_r7_2)
+00441ffb        long double temp1_1 = fconvert.t(1f)
+00441ffb        x87_r7_2 - temp1_1
+00442001        eax.w = (x87_r7_2 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1_1 ? 1 : 0) << 0xe
+00442006        if ((eax:1.b & 0x41) == 0)
+0044200e        int32_t* ecx_2 = data_4df904 + 0x24
+00442014        if (*ecx_2 == 0)
+00442018        begin_frontend_fade_out(ecx_2, 0)
+0044201d        long double x87_r7_3 = fconvert.t(*(arg1 + 0x8c))
+00442023        long double temp0 = fconvert.t(1f)
+00442023        x87_r7_3 - temp0
+00442029        eax.w = (x87_r7_3 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0) ? 1 : 0) << 0xa | (x87_r7_3 == temp0 ? 1 : 0) << 0xe
+0044203e        if ((eax:1.b & 0x41) == 0 && *(data_4df904 + 0x24) == 4)
+0044204c        void* eax_2 = *(arg1 + 0x408)
+00442052        if (*(arg1 + 0x80) == 0)
+00442059        if (*(eax_2 + 0x40) == 0)
+0044205b        *(arg1 + 0x4340) -= 1
+00442061        void* eax_3 = data_4df904
+0044206d        *(eax_3 + 0x1bc) = *(eax_3 + 0x1b8)
+00442079        *(data_4df904 + 0x1b8) = 0x1c
+00442083        return eax_3
+00442084        *(eax_2 + 0x1270fc8) = 2
+00442096        complete_subgame(*(arg1 + 0x408), 1)
+004420a9        void* eax_5 = data_4df904
+004420ae        if (*(*(arg1 + 0x408) + 0xff25d1) != 0)
+004420b7        *(eax_5 + 0x1bc) = *(eax_5 + 0x1b8)
+004420bd        void* eax_6 = data_4df904
+004420c2        *(eax_6 + 0x1b8) = 0x1a
+004420cc        return eax_6
+004420d3        *(eax_5 + 0x1bc) = *(eax_5 + 0x1b8)
+004420e4        eax = data_4df904
+004420e9        if (*(*(arg1 + 0x408) + 0x40) == 0)
+004420eb        int32_t ecx_7
+004420eb        ecx_7.b = *(eax + 0x30d)
+004420f3        if (ecx_7.b == 0)
+004420f5        *(eax + 0x1b8) = 0x1a
+004420ff        void* eax_8 = data_4df904
+00442105        *(eax_8 + 0x1bc) = 2
+0044210f        return eax_8
+00442110        *(eax + 0x1b8) = 0x1b
+0044211b        return eax
