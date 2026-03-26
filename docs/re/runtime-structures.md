@@ -12,6 +12,7 @@ The current high-confidence `Player` fields are:
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
+- `+0x14c`: `row_event_cutscene_started`
 - `+0x150`: `nuke`
   - inline `NukeController`
 - `+0x1cc`: `movement_sound_variant_sample`
@@ -94,6 +95,10 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x04`: `control_flags_a`
   - `+0x0c`: `control_flags_b`
   - `+0x28`: `steering_x`
+  - the recovered shared bit on both flag dwords is `0x4000` (`PLAYER_CONTROL_FLAG_CONFIRM`)
+- `player + 0x2970` is now the current safe `steering_mode_selector`
+  - `update_subgoldy` uses it to index the uncaptured-cursor sensitivity table
+  - when the selector is `1`, the same block copies `control_source->steering_x` directly into the live `track_z_offset` lane instead of preserving the anchored delta
 - `player + 0x29a8` is separate from the hotspot bank and source matrices. It points at the live snail visual object, whose currently safe sub-slice is:
   - `+0x80`: `follow_lateral_response`
   - `+0x84`: `squidge_primary`
@@ -119,6 +124,9 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `handle_subgoldy_collisions` arms it through `initialize_nuke`
   - `update_subgoldy` either advances it through `update_nuke` or tears it down through `uninit_nuke`
   - the axis itself is still intentionally neutral; `initialize_nuke` seeds it from `owner_player->position` and `update_nuke` writes it back into the sprite slot transform, but the world-axis interpretation is not pinned down in this pass
+- `player + 0x14c` is the one-shot `row_event_cutscene_started` latch
+  - `initialize_subgoldy` clears it on run start
+  - `update_subgoldy` flips it the first time the row-event tip path dispatches the one-shot cutscene animation
 - `player + 0x1cc..+0x1e0` is a non-row-event movement and reaction slice
   - `+0x00`: `movement_sound_variant_sample`
     - `play_movement_state_sound` stores the sampled movement-sound variant here before deriving the emitted sound id

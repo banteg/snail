@@ -187,6 +187,10 @@ typedef struct SnailVisual {
     float squidge_secondary;
 } SnailVisual;
 
+enum {
+    PLAYER_CONTROL_FLAG_CONFIRM = 0x4000,
+};
+
 typedef struct PlayerControlSource {
     uint8_t _pad_00[0x4];
     uint32_t control_flags_a;
@@ -334,7 +338,9 @@ typedef struct Player {
     TrackRowCell* cached_track_pair_cell_b;
     uint8_t _pad_a0[0x80];
     int32_t movement_state;
-    uint8_t _pad_124[0x2c];
+    uint8_t _pad_124[0x28];
+    uint8_t row_event_cutscene_started;
+    uint8_t _pad_14d[0x3];
     NukeController nuke;
     int32_t movement_sound_variant_sample;
     uint8_t _pad_1d0[0x4];
@@ -394,7 +400,8 @@ typedef struct Player {
     uint8_t _pad_2744[0xc];
     JetpackGaugeController jetpack_gauge;
     Vec3 cached_camera_target_world;
-    uint8_t _pad_2970[0x10];
+    int32_t steering_mode_selector;
+    uint8_t _pad_2974[0xc];
     float interaction_max_z;
     uint8_t _pad_2984[0x24];
     SnailVisual* snail_visual;
@@ -473,6 +480,7 @@ int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controlle
 void __fastcall update_row_event_display(RowEventDisplayController* controller);
 int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
+int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
 int32_t __thiscall initialize_nuke(NukeController* nuke);
 int32_t __thiscall update_nuke(NukeController* nuke);

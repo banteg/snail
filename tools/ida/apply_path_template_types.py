@@ -175,6 +175,10 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall update_cameraman(CameramanState* cameraman);",
     ),
     (
+        "initialize_subgoldy",
+        "int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);",
+    ),
+    (
         "update_subgoldy",
         "int32_t __thiscall update_subgoldy(Player* player);",
     ),

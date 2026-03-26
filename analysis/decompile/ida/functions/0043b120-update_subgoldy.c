@@ -243,9 +243,9 @@ LABEL_60:
               player->row_event.tip_definition.dismiss_seconds = *((float *)player->game
                                                                  + 4232 * *((_DWORD *)v28 + 60)
                                                                  + 10780);
-              if ( !player->_pad_124[40] )
+              if ( !player->row_event_cutscene_started )
               {
-                player->_pad_124[40] = 1;
+                player->row_event_cutscene_started = 1;
                 if ( p_position->x <= 0.0 )
                   dispatch_cutscene_animation((int)player->_pad_2984, 3, 1, -1);
                 else
@@ -1050,7 +1050,7 @@ LABEL_365:
         }
         else
         {
-          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[*(_DWORD *)player->_pad_2970]);
+          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[player->steering_mode_selector]);
           v14 = player->control_source->steering_x - player->track_z_anchor + player->track_z_offset;
           player->track_z_offset = v14;
           if ( v16 )
@@ -1063,7 +1063,7 @@ LABEL_365:
           }
           player->track_z_offset = v14;
           player->track_z_anchor = player->control_source->steering_x;
-          if ( *(_DWORD *)player->_pad_2970 != 1 )
+          if ( player->steering_mode_selector != 1 )
             goto LABEL_40;
           track_z_offset = player->control_source->steering_x;
         }
