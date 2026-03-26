@@ -229,6 +229,10 @@ Current practical read:
 - `update_subgoldy` uses those exit-side latches as threshold gates inside fall handling, not as the final death selector:
   - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
   - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
+  - the bounded March 26 static sweep keeps `post_follow_value_b` unresolved but narrows where it is not used:
+    - `initialize_subgoldy_fall_state` is still only the carryover writer
+    - `update_subgoldy` does not directly read `player + 0x430` in the bounded retirement families
+    - `update_cameraman` only consumes `player + 0x42c`, not `player + 0x430`
   - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
   - newer field-xref narrowing rules out two earlier static guesses:
     - `try_enter_track_attachment_from_swept_motion` does not directly clear `attachment_exit_pending`
