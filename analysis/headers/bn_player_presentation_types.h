@@ -126,7 +126,7 @@ typedef struct PathTemplate {
 typedef struct TrackRowCell {
     uint8_t _pad_00[0x18];
     Vec3 anchor_position;
-    uint8_t _pad_1c[0x1c];
+    uint8_t _pad_24[0x14];
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
 } TrackRowCell;
@@ -298,11 +298,21 @@ typedef struct Player {
     Vec3 velocity;
     uint8_t _pad_41c[0x1];
     uint8_t attachment_exit_pending;
-    uint8_t _pad_41e[0xe];
+    uint8_t _pad_41e[0x2];
+    float attachment_exit_anchor_z;
+    uint8_t _pad_424[0x8];
     float post_follow_value_a;
-    uint8_t _pad_430[0xc];
+    float post_follow_value_b;
+    float attachment_exit_progress;
+    float attachment_exit_progress_step;
     struct PlayerControlSource* control_source;
-    uint8_t _pad_440[0x22f0];
+    int32_t completion_handoff_active;
+    float completion_handoff_timer;
+    float completion_handoff_timer_step;
+    uint8_t attachment_exit_gate_a;
+    uint8_t attachment_exit_gate_b;
+    uint8_t completion_handoff_voice_gate;
+    uint8_t _pad_44f[0x22e1];
     float movement_progress;
     float movement_rate_scalar;
     uint8_t _pad_2738[0x4];
