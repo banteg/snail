@@ -315,8 +315,8 @@ LABEL_62:
       v38->x = p_output_position->x;
       v38->y = p_output_position->y;
       v38->z = p_output_position->z;
-      *(float *)&follow_state->player->_pad_340[48] = follow_state->template_record->installed_heading_delta
-                                                    + *(float *)&follow_state->player->_pad_340[48];
+      follow_state->player->heading_roll = follow_state->template_record->installed_heading_delta
+                                         + follow_state->player->heading_roll;
       if ( v38->x >= -4.0 )
       {
         if ( v38->x <= 4.0 )
@@ -435,8 +435,8 @@ LABEL_62:
                       + v24->width_or_scale
                       + v78;
     }
-    *(float *)&follow_state->player->_pad_340[48] = follow_state->template_record->installed_heading_delta
-                                                  + *(float *)&follow_state->player->_pad_340[48];
+    follow_state->player->heading_roll = follow_state->template_record->installed_heading_delta
+                                       + follow_state->player->heading_roll;
     return 3;
   }
 }

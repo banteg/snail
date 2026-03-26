@@ -354,7 +354,14 @@ typedef struct Player {
     uint8_t _pad_30c[0x2c];
     uint32_t movement_flags;
     uint32_t previous_movement_flags;
-    uint8_t _pad_340[0x40];
+    uint8_t _pad_340[0x10];
+    int32_t lane_lean_state;
+    float lane_lean_amplitude;
+    float lane_lean_progress;
+    float lane_lean_progress_step;
+    uint8_t _pad_360[0x10];
+    float heading_roll;
+    uint8_t _pad_374[0xc];
     int32_t player_slot;
     FollowState follow_state;
     DamageGaugeController damage_gauge;

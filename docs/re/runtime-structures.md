@@ -144,6 +144,15 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `cutscene_pitch_cycle`
   - `cutscene_pitch_cycle_step`
   - `initialize_cutscene` advances them before rotating the player-owned cutscene frame around world X
+- `player + 0x350..+0x370` is now a typed camera-presentation slice
+  - `+0x00`: `lane_lean_state`
+  - `+0x04`: `lane_lean_amplitude`
+  - `+0x08`: `lane_lean_progress`
+  - `+0x0c`: `lane_lean_progress_step`
+  - `+0x20`: `heading_roll`
+  - `update_subgoldy` arms the `lane_lean_*` triplet on specific tile families, advances `lane_lean_progress` by `lane_lean_progress_step`, and clears the state once the progress lane exceeds `1.0`
+  - `update_cameraman` consumes `lane_lean_amplitude`, `lane_lean_progress`, and `heading_roll` directly when building the live camera roll
+  - `update_track_attachment_follow_state` also accumulates `installed_heading_delta` into `heading_roll`, matching the same live lane the port already mirrors
 
 Important caveat:
 

@@ -19,6 +19,11 @@ The current conservative `CameramanState` prefix is:
 The current conservative `Player` camera slice is:
 
 - `+0x68`: `position`
+- `+0x350`: `lane_lean_state`
+- `+0x354`: `lane_lean_amplitude`
+- `+0x358`: `lane_lean_progress`
+- `+0x35c`: `lane_lean_progress_step`
+- `+0x370`: `heading_roll`
 - `+0x384`: `follow_state`
 - `+0x41d`: `attachment_exit_pending`
 - `+0x42c`: `post_follow_value_a`
@@ -27,6 +32,9 @@ The current conservative `Player` camera slice is:
 These are the player-side camera inputs that `update_cameraman` now reads directly in the typed decompile:
 
 - `position.z`
+- `lane_lean_amplitude`
+- `lane_lean_progress`
+- `heading_roll`
 - `follow_state.active`
 - `follow_state.template_record`
 - `follow_state.source_cell`
@@ -59,6 +67,8 @@ The tracked IDA exports are materially clearer after the sync:
 - `update_cameraman` now uses `player->cached_camera_target_world.{x,y,z}` for the core camera anchor math instead of `*((float *)player + 2649..2651)`.
 - `update_cameraman` now shows the follow-attachment gates as `player->follow_state.active`, `player->follow_state.template_record`, `player->follow_state.source_cell`, and the two typed follow orientation floats instead of raw `player + 0x384..0x3a0` byte arithmetic.
 - `update_cameraman` now shows the post-follow carryover branch as `player->attachment_exit_pending` plus `player->post_follow_value_a` instead of `player + 0x41d` / `player + 0x42c`.
+- `update_cameraman` now reads the tile-family lean pulse and live heading lane as `player->lane_lean_amplitude`, `player->lane_lean_progress`, and `player->heading_roll` instead of `player + 0x354/+0x358/+0x370`.
+- `update_subgoldy` and `update_track_attachment_follow_state` now expose the same player-side `lane_lean_*` / `heading_roll` lanes that the Zig port already mirrors.
 - `look_at_point` now reads directly against `TransformMatrix.position`.
 - the world-axis rotation helpers now mutate `basis_right`, `basis_up`, and `basis_forward` explicitly.
 

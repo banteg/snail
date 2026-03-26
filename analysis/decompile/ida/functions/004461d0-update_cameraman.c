@@ -21,7 +21,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   double v15; // st7
   double v16; // st6
   double v17; // st7
-  float *pad_00; // esi
+  Player *v18; // esi
   Player *v19; // eax
   Player *v20; // eax
   PathTemplate *v21; // ecx
@@ -161,9 +161,10 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   {
     rotate_matrix_world_x(&cameraman->desired_matrix, -1.2214999);
   }
-  pad_00 = (float *)cameraman->player->_pad_00;
-  v30 = pad_00[214] * 3.1415927;
-  v31 = (0.5 - cosine(v30) * 0.5) * pad_00[213] * 6.2831855 + pad_00[2649] * -8.0 * 0.017449999 * 0.17;
+  v18 = cameraman->player;
+  v30 = v18->lane_lean_progress * 3.1415927;
+  v31 = (0.5 - cosine(v30) * 0.5) * v18->lane_lean_amplitude * 6.2831855
+      + v18->cached_camera_target_world.x * -8.0 * 0.017449999 * 0.17;
   rotate_matrix_world_z(&cameraman->desired_matrix, v31);
   if ( cameraman->player->follow_state.active == 1 )
   {
@@ -175,7 +176,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v19 = cameraman->player;
   if ( v19->attachment_exit_pending )
     rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_value_a);
-  rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_340[48]);
+  rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->heading_roll);
   v20 = cameraman->player;
   if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
   {

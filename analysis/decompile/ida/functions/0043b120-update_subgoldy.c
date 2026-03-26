@@ -603,7 +603,7 @@ LABEL_98:
                 initialize_subgoldy_fall_state((int)player);
             }
           }
-          if ( !*(_DWORD *)&player->_pad_340[16]
+          if ( !player->lane_lean_state
             && (get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 4
              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
@@ -616,19 +616,19 @@ LABEL_98:
             && !player->attachment_exit_pending
             && player->position.y <= 0.98000002 )
           {
-            *(float *)&player->_pad_340[28] = *((float *)player->game + 14) * 0.037037037;
+            player->lane_lean_progress_step = *((float *)player->game + 14) * 0.037037037;
             if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
               || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
               || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
               || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11 )
             {
-              *(_DWORD *)&player->_pad_340[16] = 1;
-              *(_DWORD *)&player->_pad_340[20] = 1065353216;
+              player->lane_lean_state = 1;
+              player->lane_lean_amplitude = 1.0;
             }
             else
             {
-              *(_DWORD *)&player->_pad_340[16] = 2;
-              *(_DWORD *)&player->_pad_340[20] = -1082130432;
+              player->lane_lean_state = 2;
+              player->lane_lean_amplitude = -1.0;
             }
           }
           if ( player->damage_retrigger_timer != 0.0 )
@@ -820,40 +820,40 @@ LABEL_287:
           if ( player->follow_state.active == 1 )
             p_position->x = v142;
           v82 = *((float *)player->game + 14) * 0.037037037;
-          *(float *)&player->_pad_340[28] = v82;
-          if ( *(_DWORD *)&player->_pad_340[16] )
+          player->lane_lean_progress_step = v82;
+          if ( player->lane_lean_state )
           {
-            v83 = v82 + *(float *)&player->_pad_340[24];
-            *(float *)&player->_pad_340[24] = v83;
+            v83 = v82 + player->lane_lean_progress;
+            player->lane_lean_progress = v83;
             if ( v83 > 1.0 )
             {
-              *(_DWORD *)&player->_pad_340[24] = 0;
-              *(_DWORD *)&player->_pad_340[16] = 0;
+              player->lane_lean_progress = 0.0;
+              player->lane_lean_state = 0;
             }
           }
-          if ( *(_DWORD *)&player->_pad_340[32] )
+          if ( *(_DWORD *)player->_pad_360 )
           {
-            v84 = *(float *)&player->_pad_340[44] + *(float *)&player->_pad_340[40];
-            *(float *)&player->_pad_340[40] = v84;
+            v84 = *(float *)&player->_pad_360[12] + *(float *)&player->_pad_360[8];
+            *(float *)&player->_pad_360[8] = v84;
             if ( v84 > 1.0 )
             {
-              *(_DWORD *)&player->_pad_340[40] = 0;
-              *(_DWORD *)&player->_pad_340[32] = 0;
+              *(_DWORD *)&player->_pad_360[8] = 0;
+              *(_DWORD *)player->_pad_360 = 0;
             }
           }
           v85 = *((float *)player->game + 14) * 0.022222223;
-          *(float *)&player->_pad_340[56] = v85;
-          if ( *(float *)&player->_pad_340[52] > 0.0 )
+          *(float *)&player->_pad_374[4] = v85;
+          if ( *(float *)player->_pad_374 > 0.0 )
           {
-            v86 = v85 + *(float *)&player->_pad_340[52];
-            *(float *)&player->_pad_340[52] = v86;
+            v86 = v85 + *(float *)player->_pad_374;
+            *(float *)player->_pad_374 = v86;
             if ( v86 <= 1.0 )
             {
               update_nuke(&player->nuke);
             }
             else
             {
-              *(_DWORD *)&player->_pad_340[52] = 0;
+              *(_DWORD *)player->_pad_374 = 0;
               uninit_nuke(&player->nuke);
             }
           }
