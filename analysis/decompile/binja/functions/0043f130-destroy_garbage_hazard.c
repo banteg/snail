@@ -32,19 +32,19 @@
 0043f168        report_errorf("List remove NEXTBOD")
 0043f1ac        kill_sprite(self->sprite)
 0043f1b1        struct Game* game = self->game
-0043f1b7        struct GarbageHazardRuntime* active_garbage_hazards = game->active_garbage_hazards
-0043f1bf        if (active_garbage_hazards == self)
+0043f1b7        void* eax_6 = game->__offset(0x359140).d
+0043f1bf        if (eax_6 == self)
 0043f1c1        struct GarbageHazardRuntime* next_active = self->next_active
-0043f1c8        game->active_garbage_hazards = next_active
+0043f1c8        game->__offset(0x359140).d = next_active
 0043f1ce        return next_active
-0043f1d1        if (active_garbage_hazards != 0)
+0043f1d1        if (eax_6 != 0)
 0043f1d3        while (true)
-0043f1d3        struct GarbageHazardRuntime* next_active_1 = active_garbage_hazards->next_active
-0043f1db        if (next_active_1 == self)
-0043f1eb        active_garbage_hazards->next_active = self->next_active
+0043f1d3        void* ecx_2 = *(eax_6 + 0x80)
+0043f1db        if (ecx_2 == self)
+0043f1eb        *(eax_6 + 0x80) = self->next_active
 0043f1f1        self->next_active = nullptr
 0043f1f1        break
-0043f1dd        active_garbage_hazards = next_active_1
-0043f1e1        if (active_garbage_hazards == 0)
-0043f1e4        return active_garbage_hazards
-0043f1fc        return active_garbage_hazards
+0043f1dd        eax_6 = ecx_2
+0043f1e1        if (eax_6 == 0)
+0043f1e4        return eax_6
+0043f1fc        return eax_6

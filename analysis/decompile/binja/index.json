@@ -12,6 +12,7 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
+  "selected_count": 653,
   "function_count": 653,
   "mismatch_count": 11,
   "mismatches": [

@@ -9,10 +9,10 @@
 00441400        if ((*(edx_1 + 0x4300b4) & 0x80) != 0)
 00441402        result.b = force
 00441408        if ((*(edx_1 + 0x4300b4) & 0x80) == 0 || result.b != 0)
-0044140e        uint32_t state = controller->state
+0044140e        int32_t state = controller->state
 00441413        if (state != 2)
 0044144c        label_44144c:
-0044144c        long double x87_r7_3 = fconvert.t(controller->hold_progress)
+0044144c        long double x87_r7_3 = fconvert.t(controller->hit_flash_progress)
 0044144f        long double temp1_1 = fconvert.t(0f)
 0044144f        x87_r7_3 - temp1_1
 00441455        result.w = (x87_r7_3 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp1_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp1_1 ? 1 : 0) << 0xe
@@ -24,9 +24,9 @@
 0044146f        if ((result:1.b & 0x41) == 0)
 0044147e        change_snail_skin(edx_1 + 0x434038, 1, 0.200000003f)
 00441495        if (play_voice_manager(0x751498, 0, 1, 0xffffffff).b != 0)
-004414ed        controller->hold_progress = controller->hold_step
+004414ed        controller->hit_flash_progress = controller->hit_flash_step
 004414a9        if (play_voice_manager(0x751498, 9, 0, 0xffffffff) != 0)
-004414ae        controller->hold_progress = controller->hold_step
+004414ae        controller->hit_flash_progress = controller->hit_flash_step
 004414b1        result = data_4df904
 004414be        if (*(result + 0x430054) == 0)
 004414cc        dispatch_cutscene_animation(result + 0x432700, 6, 1, 0xffffffff)

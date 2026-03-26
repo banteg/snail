@@ -143,6 +143,10 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall update_cameraman(CameramanState* cameraman);",
     ),
     (
+        "update_subgoldy",
+        "int32_t __thiscall update_subgoldy(Player* player);",
+    ),
+    (
         "begin_track_attachment_follow_state",
         "PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
     ),

@@ -51,9 +51,9 @@ int __thiscall sub_434BE0(_DWORD *this)
   v36 = 0;
   if ( (int)v1[21] > 0 )
   {
-    v3 = (char *)unk_5CCAC8 + (_DWORD)v1;
+    v3 = (char *)byte_5CCAC8 + (_DWORD)v1;
     v4 = v1 + 982706;
-    v37 = (char *)unk_5CCAC8 + (_DWORD)v1;
+    v37 = (char *)byte_5CCAC8 + (_DWORD)v1;
     do
     {
       v35 = 8;

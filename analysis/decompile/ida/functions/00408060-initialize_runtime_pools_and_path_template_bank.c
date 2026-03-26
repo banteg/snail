@@ -142,7 +142,7 @@ _DWORD *__thiscall sub_408060(_DWORD *this)
     --v14;
   }
   while ( v14 );
-  v15 = (int *)((char *)unk_5CCAC8 + (_DWORD)this);
+  v15 = (int *)((char *)byte_5CCAC8 + (_DWORD)this);
   v16 = 3200;
   do
   {

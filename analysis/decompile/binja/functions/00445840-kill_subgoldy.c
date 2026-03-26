@@ -5,5 +5,5 @@
 /* function: kill_subgoldy @ 0x445840 */
 
 00445843        initialize_subgoldy_fall_state(arg1)
-00445848        arg1->__offset(0x6c).d = 0xc1000000
+00445848        arg1->position.y = -8f
 00445850        return 0

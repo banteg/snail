@@ -27,7 +27,7 @@ char *__thiscall sub_4444B0(void *this, float *a2, float *a3)
   float v22; // [esp+34h] [ebp-48h]
   int v23[16]; // [esp+3Ch] [ebp-40h] BYREF
 
-  result = (char *)unk_5CCAC8 + (_DWORD)this + 244 * (__int64)a2[2];
+  result = (char *)byte_5CCAC8 + (_DWORD)this + 244 * (__int64)a2[2];
   *a3 = 0.0;
   if ( (*result & 0x40) != 0 )
   {

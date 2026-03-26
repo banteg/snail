@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_jetpack_gauge @ 0x43a390 */
 
-0043a399        uint32_t state = gauge->state
+0043a399        int32_t state = gauge->state
 0043a39c        int32_t state_1 = state
 0043a39e        if (state != 0)
 0043a3a4        int32_t state_2 = state_1
@@ -19,7 +19,7 @@
 0043a3c4        eax.w = (x87_r7_3 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp2_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp2_1 ? 1 : 0) << 0xe
 0043a3c9        if ((eax:1.b & 0x41) != 0)
 0043a3d5        void* warning_anchor = gauge->warning_anchor
-0043a3e2        long double x87_r7_4 = float.t(*(gauge->game + 0x58) - 5)
+0043a3e2        long double x87_r7_4 = float.t(gauge->game->__offset(0x58).d - 5)
 0043a3e6        long double temp4_1 = fconvert.t(*(warning_anchor + 0x70))
 0043a3e6        x87_r7_4 - temp4_1
 0043a3e9        int32_t eax_2

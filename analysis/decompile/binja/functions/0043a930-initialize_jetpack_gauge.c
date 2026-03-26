@@ -5,7 +5,7 @@
 /* function: initialize_jetpack_gauge @ 0x43a930 */
 
 0043a932        gauge->progress = 0
-0043a93a        void* edx_1 = data_4df904 + 0x74618
+0043a93a        struct Game* edx_1 = data_4df904 + 0x74618
 0043a940        gauge->cycle_phase = 0.00166666671f
 0043a947        gauge->game = edx_1
 0043a953        void* edx_3 = data_4df904 + 0x42fd7c

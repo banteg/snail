@@ -293,11 +293,11 @@ int __thiscall sub_4438E0(int *this)
           {
             v74 = *((_DWORD *)v34 - 1) + v78[4232 * unk_6489F0[v32] + 10782];
             v35 = &v78[61 * v74];
-            if ( (*((_BYTE *)unk_5CCAC8 + (_DWORD)v35) & 0x10) != 0 )
+            if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v35) & 0x10) != 0 )
               report_errorf("Duplicate Parcel Request in %s.", (const char *)v78 + 1769808);
             v36 = (float *)((char *)&unk_5CCB58 + (_DWORD)v35);
             v37 = (double)v74;
-            *(int *)((char *)unk_5CCAC8 + (_DWORD)v35) |= 0x11u;
+            *(int *)((char *)byte_5CCAC8 + (_DWORD)v35) |= 0x11u;
             v38 = *(_DWORD *)v34;
             v75 = v36;
             *(_DWORD *)v36 = v38;
@@ -305,7 +305,7 @@ int __thiscall sub_4438E0(int *this)
             v36[2] = v34[2];
             *((float *)v35 + 1520344) = v37 + *((float *)v35 + 1520344) + 0.5;
             *((float *)v35 + 1520343) = *((float *)v35 + 1520343) + 1.0;
-            if ( (*((_BYTE *)unk_5CCAC8 + (_DWORD)v35) & 0x20) != 0 )
+            if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v35) & 0x20) != 0 )
               *v75 = *v75 * -1.0;
             v34 += 4;
             ++v68;
@@ -399,16 +399,16 @@ int __thiscall sub_4438E0(int *this)
         v74 = (int)&MEMORY[0x53D190][131 * v48];
         v70 = *(_DWORD *)v74 + v78[4232 * v50 + 10782];
         v51 = &v78[61 * v70];
-        if ( (*((_BYTE *)unk_5CCAC8 + (_DWORD)v51) & 0x10) != 0 )
+        if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v51) & 0x10) != 0 )
           report_errorf("Duplicate Parcel Request in %s.", (const char *)v78 + 1769808);
-        *(int *)((char *)unk_5CCAC8 + (_DWORD)v51) |= 0x11u;
+        *(int *)((char *)byte_5CCAC8 + (_DWORD)v51) |= 0x11u;
         v52 = (_DWORD *)((char *)&unk_5CCB58 + (_DWORD)v51);
         *v52 = MEMORY[0x53D194][131 * v48];
         v52[1] = MEMORY[0x53D194][v49 + 1];
         v52[2] = MEMORY[0x53D194][v49 + 2];
         *((float *)v51 + 1520344) = (double)v70 + *((float *)v51 + 1520344) + 0.5;
         *((float *)v51 + 1520343) = *((float *)v51 + 1520343) + 1.0;
-        if ( (*((_BYTE *)unk_5CCAC8 + (_DWORD)v51) & 0x20) != 0 )
+        if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v51) & 0x20) != 0 )
           *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) = *(float *)((char *)&unk_5CCB58 + (_DWORD)v51) * -1.0;
         if ( v48 < (int)v75 )
         {
@@ -449,7 +449,7 @@ int __thiscall sub_4438E0(int *this)
     v71 = 0;
     if ( result > 0 )
     {
-      v59 = (float *)((char *)unk_5CCAC8 + (_DWORD)v56);
+      v59 = (float *)((char *)byte_5CCAC8 + (_DWORD)v56);
       do
       {
         if ( (*(_DWORD *)v59 & 1) != 0 && (*(_DWORD *)v59 & 0x40) != 0 )

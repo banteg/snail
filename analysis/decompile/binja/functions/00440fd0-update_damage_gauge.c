@@ -9,19 +9,19 @@
 00440fdc        eax.b = *(ecx + 0x74621)
 00440fe4        if (eax.b == 0)
 00440ff9        controller->display_fill = fconvert.s((fconvert.t(controller->fill) - fconvert.t(controller->display_fill)) * fconvert.t(0.200000003f) + fconvert.t(controller->display_fill))
-00440ffc        long double x87_r7_5 = fconvert.t(controller->hold_progress)
+00440ffc        long double x87_r7_5 = fconvert.t(controller->hit_flash_progress)
 00440fff        long double temp1_1 = fconvert.t(0f)
 00440fff        x87_r7_5 - temp1_1
 00441005        eax.w = (x87_r7_5 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_5, temp1_1) ? 1 : 0) << 0xa | (x87_r7_5 == temp1_1 ? 1 : 0) << 0xe
 0044100a        if ((eax:1.b & 0x41) == 0)
-0044100f        long double x87_r7_7 = fconvert.t(controller->hold_step) + fconvert.t(controller->hold_progress)
-00441012        controller->hold_progress = fconvert.s(x87_r7_7)
+0044100f        long double x87_r7_7 = fconvert.t(controller->hit_flash_step) + fconvert.t(controller->hit_flash_progress)
+00441012        controller->hit_flash_progress = fconvert.s(x87_r7_7)
 00441015        long double temp4_1 = fconvert.t(1f)
 00441015        x87_r7_7 - temp4_1
 0044101b        eax.w = (x87_r7_7 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_7, temp4_1) ? 1 : 0) << 0xa | (x87_r7_7 == temp4_1 ? 1 : 0) << 0xe
 00441020        if ((eax:1.b & 0x41) == 0)
-00441022        controller->hold_progress = 0f
-00441029        uint32_t state = controller->state
+00441022        controller->hit_flash_progress = 0f
+00441029        int32_t state = controller->state
 0044102e        if (state == 0)
 0044116c        if (controller->fill != 0x3f800000)
 004411ad        ecx = data_4df904
@@ -31,16 +31,16 @@
 0044117e        eax.b = *(ecx + 0x4301bc)
 00441186        if (eax.b == 0)
 00441188        controller->state = 1
-0044118e        controller->transition_progress = 0f
-00441195        controller->transition_step = 0.166666672f
+0044118e        controller->warning_transition_progress = 0f
+00441195        controller->warning_transition_step = 0.166666672f
 004411a8        start_warning(data_4df904 + 0x430170)
 004411ad        ecx = data_4df904
 00441035        if (state == 1)
 00441114        ecx.b = *(data_4df904 + 0x4301bc)
 0044111c        if (ecx.b != 0)
-0044111e        controller->transition_progress = 1f
-00441128        long double x87_r7_12 = fconvert.t(controller->transition_step) + fconvert.t(controller->transition_progress)
-0044112b        controller->transition_progress = fconvert.s(x87_r7_12)
+0044111e        controller->warning_transition_progress = 1f
+00441128        long double x87_r7_12 = fconvert.t(controller->warning_transition_step) + fconvert.t(controller->warning_transition_progress)
+0044112b        controller->warning_transition_progress = fconvert.s(x87_r7_12)
 0044112e        long double temp9_1 = fconvert.t(1f)
 0044112e        x87_r7_12 - temp9_1
 00441134        eax.w = (x87_r7_12 < temp9_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_12, temp9_1) ? 1 : 0) << 0xa | (x87_r7_12 == temp9_1 ? 1 : 0) << 0xe
@@ -55,7 +55,7 @@
 004411ad        ecx = data_4df904
 00441054        change_snail_skin(data_4df904 + 0x434038, 1, 0.200000003f)
 00441062        apply_damage_gauge_delta(controller, -0.00166666671f, 1)
-00441067        controller->transition_counter = 5
+00441067        controller->skin_hold_ticks = 5
 0044106e        ecx = data_4df904
 00441074        int16_t eax_3
 00441074        eax_3.b = *(ecx + 0x4301bc)
@@ -98,13 +98,13 @@
 004411c3        var_14 = 0f
 004411fa        eax.b = *(ecx + 0x74621)
 00441202        if (eax.b == 0)
-0044120a        controller->_pad_04[0].d = fconvert.s(fconvert.t(controller->_pad_04[4].d) + fconvert.t(controller->_pad_04[0].d))
-0044120d        long double x87_r7_20 = fconvert.t(controller->_pad_04[0].d)
+0044120a        controller->pulse_progress = fconvert.s(fconvert.t(controller->pulse_step) + fconvert.t(controller->pulse_progress))
+0044120d        long double x87_r7_20 = fconvert.t(controller->pulse_progress)
 00441210        long double temp6 = fconvert.t(1f)
 00441210        x87_r7_20 - temp6
 00441216        eax.w = (x87_r7_20 < temp6 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_20, temp6) ? 1 : 0) << 0xa | (x87_r7_20 == temp6 ? 1 : 0) << 0xe
 0044121b        if ((eax:1.b & 0x41) == 0)
-00441226        controller->_pad_04[0].d = fconvert.s(fconvert.t(controller->_pad_04[0].d) - fconvert.t(1f))
+00441226        controller->pulse_progress = fconvert.s(fconvert.t(controller->pulse_progress) - fconvert.t(1f))
 00441229        long double x87_r7_23 = fconvert.t(controller->display_fill)
 0044122c        long double temp8 = fconvert.t(0.899999976f)
 0044122c        x87_r7_23 - temp8
@@ -128,8 +128,7 @@
 0044128b        var_18_1 = 1f
 00441266        var_18_1 = fconvert.s((fconvert.t(controller->display_fill) - fconvert.t(0.899999976f)) * fconvert.t(10f))
 0044129c        void* var_20_1 = ecx
-004412f0        struct Color4f* eax_4 = set_color_rgba(&color, 1f, 1f, 1f, fconvert.s(fconvert.t(var_18_1) - (sine(fconvert.s(fconvert.t(controller->_pad_04[0].d) * fconvert.t(6.28318548f))) + fconvert.t(1f)) * fconvert.t(0.5f) * fconvert.t(var_18_1) * fconvert.t(0.5f)))
-00441311        queue_axis_aligned_textured_quad_uv(0x5b, 0x440c0000, 0x428c0000, 64f, 396f, 0x1000000, eax_4, 0, 0, 0x3f800000, 0x3f460000, 3, 0)
+00441311        queue_axis_aligned_textured_quad_uv(0x5b, 0x440c0000, 0x428c0000, 64f, 396f, 0x1000000, set_color_rgba(&color, 1f, 1f, 1f, fconvert.s(fconvert.t(var_18_1) - (sine(fconvert.s(fconvert.t(controller->pulse_progress) * fconvert.t(6.28318548f))) + fconvert.t(1f)) * fconvert.t(0.5f) * fconvert.t(var_18_1) * fconvert.t(0.5f))), 0, 0, 0x3f800000, 0x3f460000, 3, 0)
 0044132b        float var_18_3 = fconvert.s(fconvert.t(var_14) * fconvert.t(0.001953125f))
 00441372        queue_axis_aligned_textured_quad_uv(0x59, 0x440c0000, 0x428c0000, 64f, var_14, 0x1000000, set_color_rgba(&color, 1f, 1f, 1f, 1f), 0, 0, 0x3f800000, var_18_3, 3, 0)
 004413a3        int32_t* eax_7

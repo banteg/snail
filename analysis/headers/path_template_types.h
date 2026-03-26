@@ -150,6 +150,52 @@ typedef struct CameramanState {
     float smoothed_attachment_lift_envelope;
 } CameramanState;
 
+typedef struct DamageGaugeController {
+    int32_t state;
+    float pulse_progress;
+    float pulse_step;
+    uint8_t unresolved_byte_0c;
+    uint8_t _pad_0d[0x3];
+    float warning_transition_progress;
+    float warning_transition_step;
+    int32_t skin_hold_ticks;
+    float fill;
+    float display_fill;
+    float hit_flash_progress;
+    float hit_flash_step;
+} DamageGaugeController;
+
+typedef struct JetpackGaugeController {
+    float progress;
+    float cycle_phase;
+    float cycle_phase_step;
+    int32_t state;
+    void* warning_anchor;
+    float wobble_x;
+    float wobble_y;
+    float wobble_alpha;
+    uint8_t _pad_20[0x1e0];
+    Game* game;
+    uint8_t _pad_204[0xc];
+    float warning_intensity;
+} JetpackGaugeController;
+
+typedef struct SnailVisual {
+    uint8_t _pad_00[0x80];
+    float follow_lateral_response;
+    float squidge_primary;
+    float squidge_secondary;
+} SnailVisual;
+
+typedef struct PlayerControlSource {
+    uint8_t _pad_00[0x4];
+    uint32_t control_flags_a;
+    uint8_t _pad_08[0x4];
+    uint32_t control_flags_b;
+    uint8_t _pad_10[0x18];
+    float steering_scalar;
+} PlayerControlSource;
+
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -205,19 +251,60 @@ typedef struct FollowState {
     float orientation_e;
     Vec3 output_position;
     Player* player;
+    uint8_t _pad_3c[0x4];
 } FollowState;
 
 typedef struct Player {
     uint8_t _pad_00[0x68];
     Vec3 position;
-    uint8_t _pad_74[0x310];
+    uint8_t _pad_74[0x24];
+    TrackRowCell* cached_track_pair_cell_a;
+    TrackRowCell* cached_track_pair_cell_b;
+    uint8_t _pad_a0[0x80];
+    int32_t movement_state;
+    uint8_t _pad_124[0x1e4];
+    int32_t movement_flag_selector;
+    uint8_t _pad_30c[0x2c];
+    uint32_t movement_flags;
+    uint32_t previous_movement_flags;
+    uint8_t _pad_340[0x40];
+    int32_t player_slot;
     FollowState follow_state;
-    uint8_t _pad_3c0[0x5d];
+    DamageGaugeController damage_gauge;
+    uint8_t _pad_3f0[0x18];
+    Game* game;
+    int32_t movement_mode_selector;
+    Vec3 velocity;
+    uint8_t _pad_41c[0x1];
     uint8_t attachment_exit_pending;
-    uint8_t _pad_41e[0xe];
+    uint8_t _pad_41e[0x6];
+    float attachment_exit_anchor_z;
+    uint8_t _pad_428[0x4];
     float post_follow_value_a;
-    uint8_t _pad_430[0x2534];
+    float post_follow_value_b;
+    float attachment_exit_progress;
+    float attachment_exit_progress_step;
+    PlayerControlSource* control_source;
+    int32_t completion_handoff_active;
+    float completion_handoff_timer;
+    float completion_handoff_timer_step;
+    uint8_t attachment_exit_gate_a;
+    uint8_t attachment_exit_gate_b;
+    uint8_t completion_handoff_voice_gate;
+    uint8_t _pad_44f[0x22e1];
+    float movement_progress;
+    float movement_rate_scalar;
+    uint8_t _pad_2738[0x4];
+    float track_z_offset;
+    float track_z_anchor;
+    uint8_t _pad_2744[0xc];
+    JetpackGaugeController jetpack_gauge;
     Vec3 cached_camera_target_world;
+    uint8_t _pad_2970[0x10];
+    float interaction_max_z;
+    uint8_t _pad_2984[0x24];
+    SnailVisual* snail_visual;
+    uint8_t _pad_29ac[0xfa8];
 } Player;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);

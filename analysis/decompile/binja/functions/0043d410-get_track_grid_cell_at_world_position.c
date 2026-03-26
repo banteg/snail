@@ -18,4 +18,4 @@
 0043d446        eax_1 = 0
 0043d44f        if (eax_1 s> 0xc7f)
 0043d451        eax_1 = 0xc7f
-0043d46f        return &game->_pad_00[(esi + (eax_1 << 3)) * 0x54 + 0x3bfac8]
+0043d46f        return game + (esi + (eax_1 << 3)) * 0x54 + 0x3bfac8

@@ -72,11 +72,11 @@ int __thiscall sub_444240(int this)
       v23 = unk_6447E8[(_DWORD)v10];
       ++v8;
       v12 = (float *)(this + 244 * v23);
-      *(int *)((char *)unk_5CCAC8 + (_DWORD)v12) |= 0x11u;
+      *(int *)((char *)byte_5CCAC8 + (_DWORD)v12) |= 0x11u;
       v12[1520343] = v12[1520343] + 1.0;
-      if ( (*((_BYTE *)unk_5CCAC8 + (_DWORD)v12) & 0x20) != 0 )
+      if ( (*((_BYTE *)byte_5CCAC8 + (_DWORD)v12) & 0x20) != 0 )
         v12[1520342] = v12[1520342] * -1.0;
-      if ( (*(int *)((_BYTE *)unk_5CCAC8 + (_DWORD)v12) & 0x4000) != 0 )
+      if ( (*(int *)((_BYTE *)byte_5CCAC8 + (_DWORD)v12) & 0x4000) != 0 )
         v12[1520344] = (double)v23 + v12[1520344] + 0.5;
       if ( (int)v10 < v9 )
       {
@@ -102,7 +102,7 @@ int __thiscall sub_444240(int this)
   v22 = 0;
   if ( result > 0 )
   {
-    v15 = (float *)((char *)unk_5CCAC8 + this);
+    v15 = (float *)((char *)byte_5CCAC8 + this);
     do
     {
       if ( (*(_DWORD *)v15 & 1) != 0 && (*(_DWORD *)v15 & 0x40) != 0 )

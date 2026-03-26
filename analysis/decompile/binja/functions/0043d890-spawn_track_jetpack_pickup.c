@@ -4,14 +4,14 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_jetpack_pickup @ 0x43d890 */
 
-0043d893        uint32_t* eax = &game->jetpack_pickup.state
+0043d893        void* __offset(Game, 0x355e9c) eax = game + 0x355e9c
 0043d89d        int32_t edx = 0
-0043d8a1        while ((eax - 0x355e9c)->jetpack_pickup.state != 0)
+0043d8a1        while ((eax - 0x355e9c)->__offset(0x355e9c).d != 0)
 0043d8a3        edx += 1
-0043d8a4        eax = &eax[0x67]
+0043d8a4        eax += 0x19c
 0043d8ac        if (edx s>= 1)
 0043d8b3        return eax
-0043d8cd        void* esi = &game->_pad_00[edx * 0x19c]
+0043d8cd        void* esi = game + edx * 0x19c
 0043d8d0        *(esi + 0x355e9c) = 1
 0043d8da        *(esi + 0x355ea0) = player
 0043d8e9        float x = cell->anchor_position.x
@@ -43,7 +43,7 @@
 0043d9af        eax_12:1.b = (*(esi + 0x355e68)):1.b | 2
 0043d9b2        *(esi + 0x355e68) = eax_12
 0043d969        report_errorf("List ADD")
-0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->__offset(0x380).d, 0x7c, 0xffffffff, 0xffffffff)
+0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->player_slot, 0x7c, 0xffffffff, 0xffffffff)
 0043d9d0        *(esi + 0x355ec8) = eax_14
 0043d9d9        int32_t ecx_3
 0043d9d9        ecx_3:1.b = eax_14[1]:1.b | 8

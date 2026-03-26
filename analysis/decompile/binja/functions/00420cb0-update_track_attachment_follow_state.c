@@ -86,12 +86,16 @@
 00421005        out_position->y = fconvert.s(x87_r5_9)
 00421012        out_position->z = fconvert.s(fconvert.t(var_11c_1) + x87_r6_3)
 00421015        out_position->x = fconvert.s(x87_r7_15)
-0042102c        follow_state->player->__offset(0x2e0).d = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.0138888881f))
+0042102c        follow_state->player->_pad_124[0x1bc].d = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.0138888881f))
 00421032        struct Player* player = follow_state->player
-0042103b        player->__offset(0x2dc).d = player->__offset(0x2e0).d
+00421035        int32_t ecx_38 = player->_pad_124[0x1bc].d
+0042103b        player->_pad_124[0x1b8] = ecx_38.b
+0042103b        player->_pad_124[0x1b9] = ecx_38:1.b
+0042103b        player->_pad_124[0x1ba] = ecx_38:2.b
+0042103b        player->_pad_124[0x1bb] = ecx_38:3.b
 00421046        play_voice_manager(0x751498, var_19c_2, var_198_2, var_194_2)
 0042107d        struct Player* player_1 = follow_state->player
-00421090        player_1->__offset(0x370).d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_1->__offset(0x370).d))
+00421090        player_1->_pad_340[0x30].d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_1->_pad_340[0x30].d))
 004210a1        return 3
 00420e83        long double x87_r7_7 = fconvert.t(var_180) + fconvert.t(follow_state->progress)
 00420e88        uint32_t edx_15 = sample_index_2 * 0x15
@@ -278,7 +282,7 @@
 00421631        struct Player* player_3 = follow_state->player
 00421641        follow_state->orientation_b = fconvert.s((fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_78)) + float.t(sample_index_1)) * fconvert.t(template_record_5->installed_heading_delta) / float.t(template_record_5->segment_count))
 0042164b        struct PathTemplateSample* eax_70
-0042164b        if (player_3->__offset(0x275c).d != 1)
+0042164b        if (player_3->jetpack_gauge.state != 1)
 00421653        long double x87_r7_82 = fconvert.t(out_position_1->x) - fconvert.t(var_168)
 00421657        long double temp9_1 = fconvert.t(0f)
 00421657        x87_r7_82 - temp9_1
@@ -299,7 +303,7 @@
 004216a1        out_position_2[1] = esi_9->y
 004216a7        out_position_2[2] = esi_9->z
 004216ad        struct Player* player_2 = follow_state->player
-004216bc        player_2->__offset(0x370).d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_2->__offset(0x370).d))
+004216bc        player_2->_pad_340[0x30].d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_2->_pad_340[0x30].d))
 004216c2        long double x87_r7_87 = fconvert.t(out_position_1->x)
 004216c4        long double temp12 = fconvert.t(-4f)
 004216c4        x87_r7_87 - temp12

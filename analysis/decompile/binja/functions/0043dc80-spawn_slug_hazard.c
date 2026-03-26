@@ -5,13 +5,13 @@
 /* function: spawn_slug_hazard @ 0x43dc80 */
 
 0043dc83        int32_t eax = 0
-0043dc88        uint32_t* ecx = &game->slug_hazards[0].state
-0043dc91        while ((ecx - 0x356420)->slug_hazards[0].state != 0)
+0043dc88        void* __offset(Game, 0x356420) ecx = game + 0x356420
+0043dc91        while ((ecx - 0x356420)->__offset(0x356420).d != 0)
 0043dc93        eax += 1
-0043dc94        ecx = &ecx[0x3b]
+0043dc94        ecx += 0xec
 0043dc9d        if (eax s>= 8)
 0043dca3        return eax
-0043dcbc        void* esi = &game->_pad_00[eax * 0xec]
+0043dcbc        void* esi = game + eax * 0xec
 0043dcbf        *(esi + 0x356420) = 1
 0043dcc9        *(esi + 0x356460) = player
 0043dcd5        set_matrix_identity(esi + 0x3563d8)
@@ -24,14 +24,14 @@
 0043dd16        *(esi + 0x356410) = z
 0043dd1b        project_position_onto_track_attachment(game, esi + 0x356408, esi + 0x356438)
 0043dd23        long double x87_r6 = fconvert.t(0f)
-0043dd3f        long double x87_r7_3 = fconvert.t(game->track_center_x) * fconvert.t(-0.200000003f)
+0043dd3f        long double x87_r7_3 = fconvert.t(game->__offset(0x38).d) * fconvert.t(-0.200000003f)
 0043dd45        *(esi + 0x35642c) = fconvert.s(x87_r6)
 0043dd47        *(esi + 0x356430) = fconvert.s(x87_r6)
 0043dd58        *(esi + 0x356434) = fconvert.s(x87_r7_3)
 0043dd61        void* edx_5 = data_4df904 + 0x5a8
 0043dd71        if ((*(esi + 0x3563a5) & 2) == 0)
-0043dd82        *(esi + 0x3563ac) = &game->__offset(0x3bb764).d
-0043dd88        if (*(edx_5 + 4) != &game->__offset(0x3bb764).d)
+0043dd82        *(esi + 0x3563ac) = game + 0x3bb764
+0043dd88        if (*(edx_5 + 4) != game + 0x3bb764)
 0043dd9c        *(esi + 0x3563a8) = game->__offset(0x3bb76c).d
 0043dd9f        game->__offset(0x3bb76c).d = esi + 0x3563a0
 0043dda5        *(*(esi + 0x3563a8) + 0xc) = esi + 0x3563a0
@@ -42,7 +42,7 @@
 0043ddab        ecx_10:1.b = (*(esi + 0x3563a4)):1.b | 2
 0043ddae        *(esi + 0x3563a4) = ecx_10
 0043dd78        report_errorf("List ADDbefore")
-0043ddc7        int32_t* eax_7 = allocate_sprite(&data_790f30, player->__offset(0x380).d, 0x76, 0xffffffff, 0xffffffff)
+0043ddc7        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        *(esi + 0x35644c) = eax_7
 0043ddd5        int32_t ecx_11
 0043ddd5        ecx_11:1.b = eax_7[1]:1.b | 8

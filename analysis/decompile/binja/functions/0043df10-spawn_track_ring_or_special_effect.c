@@ -5,14 +5,14 @@
 /* function: spawn_track_ring_or_special_effect @ 0x43df10 */
 
 0043df13        int32_t eax = 0
-0043df1b        int32_t* ecx = &arg1->__offset(0x35b80c).d
+0043df1b        int32_t* ecx = arg1 + 0x35b80c
 0043df24        while (*ecx != 0)
 0043df26        eax += 1
 0043df27        ecx = &ecx[0x7e]
 0043df30        if (eax s>= 2)
 0043df39        return eax
-0043df5c        void* esi = &arg1->_pad_00[eax * 0x1f8]
-0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->_pad_48) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043df5c        void* esi = arg1 + eax * 0x1f8
+0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->__offset(0x48).d) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043df86        set_matrix_identity(esi + 0x35b7c4)
 0043df8b        int32_t ebp = arg3
 0043df8f        *(esi + 0x35b810) = arg4
@@ -27,7 +27,7 @@
 0043dfc3        long double st0_2 = random_float_below(1f)
 0043dfc8        long double temp2_1 = fconvert.t(0.5f)
 0043dfc8        st0_2 - temp2_1
-0043dfdb        if ((((st0_2 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp2_1) ? 1 : 0) << 0xa | (st0_2 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && arg1->level_mode == ebp)
+0043dfdb        if ((((st0_2 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp2_1) ? 1 : 0) << 0xa | (st0_2 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && arg1->__offset(0x40).d == ebp)
 0043dfdd        ebp = 3
 0043dfb7        goto label_43dfed
 0043dfe7        if (ebp u<= 8)
@@ -113,7 +113,7 @@
 0043e276        *(esi + 0x35b7f8) = var_8_6
 0043e279        *(esi + 0x35b7fc) = edx_10
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043e2c1        case 6
 0043e2c1        char* var_24_10 = "RR12"
 0043e2cf        int32_t ecx_19 = *(arg2 + 0x10)
@@ -124,7 +124,7 @@
 0043e2f1        *(esi + 0x35b7f8) = var_8_8
 0043e2f4        *(esi + 0x35b7fc) = edx_14
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043e303        case 7
 0043e303        char* var_24_11 = "RR13"
 0043e30b        long double x87_r7_61 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
@@ -135,7 +135,7 @@
 0043e32d        *(esi + 0x35b7f8) = fconvert.s(x87_r7_61)
 0043e330        *(esi + 0x35b7fc) = eax_23
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043e28b        case 8
 0043e28b        char* var_24_9 = "RR11"
 0043e293        long double x87_r7_57 = fconvert.t(*(arg2 + 0x14)) + fconvert.t(2.5f)
@@ -146,7 +146,7 @@
 0043e2b5        *(esi + 0x35b7f8) = fconvert.s(x87_r7_57)
 0043e2b8        *(esi + 0x35b7fc) = eax_18
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
-0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043e374        struct TrackRowCell* eax_26 = get_track_grid_cell_at_world_position(arg1, esi + 0x35b7f4)
 0043e37d        if (eax_26->__offset(0x3c).b == 0xe)
 0043e449        return eax_26

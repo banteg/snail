@@ -271,7 +271,7 @@ LABEL_62:
 LABEL_65:
         v17 = this + 244 * v16;
         v57 = v17;
-        if ( (*((_BYTE *)unk_5CCAC8 + v17) & 2) != 0 )
+        if ( (*((_BYTE *)byte_5CCAC8 + v17) & 2) != 0 )
         {
           v18 = (char *)&unk_5CCACC + v17;
           if ( (*(int *)((char *)&unk_5CCAD0 + v17) & 0x200) != 0 )
@@ -301,7 +301,7 @@ LABEL_65:
             *((_DWORD *)v18 + 1) = v22;
           }
         }
-        if ( (*((_BYTE *)unk_5CCAC8 + v17) & 0x10) != 0 && ((unsigned int)&unk_800000 & *(_DWORD *)(this + 76)) != 0 )
+        if ( (*((_BYTE *)byte_5CCAC8 + v17) & 0x10) != 0 && ((unsigned int)&unk_800000 & *(_DWORD *)(this + 76)) != 0 )
           spawn_track_parcel((int *)this, (float *)((char *)&unk_5CCB58 + v17), this + 3913572);
         v55 = 0;
         while ( 1 )
@@ -464,7 +464,7 @@ LABEL_158:
           {
             spawn_slug_hazard(this, v23 + 3930824, this + 3913572);
           }
-          v43 = *(int *)((char *)unk_5CCAC8 + v57);
+          v43 = *(int *)((char *)byte_5CCAC8 + v57);
           if ( (v43 & 0x200) != 0 )
             goto LABEL_209;
           v44 = *(_BYTE *)(v23 + 3930884);
@@ -536,7 +536,7 @@ LABEL_158:
               {
                 if ( random_float_below(1.0) <= 0.69999999
                   && *(_DWORD *)(this + 64) != 7
-                  && (*(int *)((char *)unk_5CCAC8 + v57) & 0x800) == 0 )
+                  && (*(int *)((char *)byte_5CCAC8 + v57) & 0x800) == 0 )
                 {
                   goto LABEL_209;
                 }

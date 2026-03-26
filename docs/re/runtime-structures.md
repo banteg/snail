@@ -37,7 +37,7 @@ The current high-confidence `Player` fields are:
   - neutral placeholder label; the native meaning of this exit-side lane is still unresolved
 - `+0x434`: `attachment_exit_progress`
 - `+0x438`: `attachment_exit_progress_step`
-- `+0x43c`: `current_cell`
+- `+0x43c`: `control_source`
 - `+0x440`: `completion_handoff_active`
 - `+0x444`: `completion_handoff_timer`
 - `+0x448`: `completion_handoff_timer_step`
@@ -54,6 +54,10 @@ The current high-confidence `Player` fields are:
 - `+0x2740`: `track_z_anchor`
 - `+0x2750`: `jetpack_gauge`
   - inline `JetpackGaugeController`
+- `+0x2980`: `interaction_max_z`
+  - per-player collision and pickup ceiling
+- `+0x29a8`: `snail_visual`
+  - live snail renderable or visual object
 - `+0x2964`: `cached_camera_target_world`
   - world-space camera anchor consumed by `update_cameraman`
 - `+0x4340`: `visible_life_stock`
@@ -75,6 +79,18 @@ Current practical read for the hotspot bank:
 - `update_cutscene` keeps reorienting the live intro camera around hotspot `18`, uses the `12 -> 18` lerp with the recovered sinusoidal x-offset in completion state `6`, and keeps the fixed completion/death look-at legs on hotspot `18`
 - hotspot `17` (`CameraSlugDeath`) is a real transformed hotspot, but no direct runtime consumer for it was recovered in this pass
 - the exact gameplay roles of the two source matrices, and the reason later cutscene legs keep reusing the authored `CameraIntroTalk` hotspot, are still unresolved
+
+Two `update_subgoldy` corrections from the latest static audit:
+
+- `player + 0x43c` is not the current runtime track cell. The live cell remains a transient local from `get_track_grid_cell_at_world_position(...)`; the persistent player field is a per-player `control_source` pointer used by the uncaptured-cursor and transition lanes.
+- the currently safe `control_source` sub-slice is:
+  - `+0x04`: `control_flags_a`
+  - `+0x0c`: `control_flags_b`
+  - `+0x28`: `steering_scalar`
+- `player + 0x29a8` is separate from the hotspot bank and source matrices. It points at the live snail visual object, whose currently safe sub-slice is:
+  - `+0x80`: `follow_lateral_response`
+  - `+0x84`: `squidge_primary`
+  - `+0x88`: `squidge_secondary`
 
 Important caveat:
 

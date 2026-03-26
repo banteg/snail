@@ -125,9 +125,9 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     cameraman->attachment_lift_envelope = 0.0;
   }
   v12 = cameraman->player;
-  if ( *(float *)&v12->_pad_74[616] > 0.0 )
+  if ( *(float *)&v12->_pad_124[440] > 0.0 )
   {
-    v29 = *(float *)&v12->_pad_74[616] * 4.712389 + 1.5707964;
+    v29 = *(float *)&v12->_pad_124[440] * 4.712389 + 1.5707964;
     cameraman->attachment_lift_envelope = (0.5 - cosine(v29) * 0.5) * 0.23999999 + cameraman->attachment_lift_envelope;
   }
   v13 = cameraman->player;
@@ -175,7 +175,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v19 = cameraman->player;
   if ( v19->attachment_exit_pending )
     rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_value_a);
-  rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_74[764]);
+  rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_340[48]);
   v20 = cameraman->player;
   if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
   {

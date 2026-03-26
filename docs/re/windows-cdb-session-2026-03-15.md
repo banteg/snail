@@ -383,7 +383,7 @@ Two hardware write watches were also armed against the currently stable live pla
 
 Observed immediately after arming:
 
-- `initialize_subgoldy` fired with `player=0x0d338d9c mode=0 lives=2 current_cell=0x0cf0909c`
+- `initialize_subgoldy` fired with `player=0x0d338d9c mode=0 lives=2 control_source=0x0cf0909c`
 - the player object remained stable across the current session, so absolute watchpoints are acceptable for this run
 - one existing completion transition hit `0x43c9af`, showing `complete_subgame_call_1` with:
   - `game=0x0cf7d638`
@@ -657,7 +657,7 @@ The final decrement replay was:
   - watchpoint confirmation immediately after:
     - `[visible_life_stock_nonseed_write] eip=0x442061 lives=0 mode=0`
 - post-restart confirmation:
-  - `[init_subgoldy] player=0x0d338d9c mode=0 lives=0 current_cell=0x0cf0909c`
+  - `[init_subgoldy] player=0x0d338d9c mode=0 lives=0 control_source=0x0cf0909c`
 
 With the counter now at zero, the next slug death finally took the other selector branch:
 

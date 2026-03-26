@@ -5,14 +5,14 @@
 /* function: spawn_track_health_pickup @ 0x43d6c0 */
 
 0043d6c8        int32_t ebx = 0
-0043d6ca        uint32_t* eax = &game->health_pickups[0].state
-0043d6d3        while ((eax - 0x356038)->health_pickups[0].state != 0)
+0043d6ca        void* __offset(Game, 0x356038) eax = game + 0x356038
+0043d6d3        while ((eax - 0x356038)->__offset(0x356038).d != 0)
 0043d6d5        ebx += 1
-0043d6d6        eax = &eax[0x1d]
+0043d6d6        eax += 0x74
 0043d6dc        if (ebx s>= 8)
 0043d6e2        return eax
 0043d6ef        struct TrackRowCell* cell_1 = cell
-0043d6fc        void* esi = &game->_pad_00[ebx * 0x74]
+0043d6fc        void* esi = game + ebx * 0x74
 0043d6ff        *(esi + 0x356038) = 1
 0043d709        *(esi + 0x35603c) = player
 0043d718        float x = cell_1->anchor_position.x
@@ -40,7 +40,7 @@
 0043d7a4        ecx_4:1.b = (*(esi + 0x356004)):1.b | 2
 0043d7a7        *(esi + 0x356004) = ecx_4
 0043d758        report_errorf("List ADD")
-0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->__offset(0x380).d, 0x39, 0xffffffff, 0xffffffff)
+0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x39, 0xffffffff, 0xffffffff)
 0043d7c5        *(esi + 0x356064) = eax_7
 0043d7ce        int32_t ecx_6
 0043d7ce        ecx_6:1.b = eax_7[1]:1.b | 8
