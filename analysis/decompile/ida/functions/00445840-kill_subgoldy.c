@@ -6,7 +6,7 @@ int __thiscall sub_445840(_DWORD *this)
 {
   int result; // eax
 
-  result = initialize_subgoldy_fall_state((int)this);
+  result = begin_post_follow_carryover((int)this);
   *(this + 27) = -1056964608;
   return result;
 }

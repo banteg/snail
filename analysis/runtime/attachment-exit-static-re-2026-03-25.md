@@ -46,7 +46,7 @@ Keep these as separate families in notes and code:
   - `update_cameraman`
 - current read:
   - real camera carryover input while `attachment_exit_pending` is live
-  - `initialize_subgoldy_fall_state` seeds it from the cached follow carryover slot before the pending window starts
+  - `begin_post_follow_carryover` seeds it from the cached follow carryover slot before the pending window starts
 
 ### `player + 0x430` / `post_follow_value_b`
 
@@ -56,9 +56,9 @@ Keep these as separate families in notes and code:
   - unresolved in stable runtime evidence
 - current read:
   - do not assign gameplay semantics yet
-  - bounded static RE on `initialize_subgoldy_fall_state`, `update_subgoldy`, and `update_cameraman` still does not show a direct post-handoff consumer outside the initial carryover write
+  - bounded static RE on `begin_post_follow_carryover`, `update_subgoldy`, and `update_cameraman` still does not show a direct post-handoff consumer outside the initial carryover write
   - the March 26 tracked-export sweep strengthens that negative result:
-    - `initialize_subgoldy_fall_state` writes `player + 0x430` from `player + 0x388 + 0x98` or zero
+    - `begin_post_follow_carryover` writes `player + 0x430` from `player + 0x388 + 0x98` or zero
     - `update_subgoldy` does not directly read `player + 0x430` in the bounded retirement families
     - `update_cameraman` reads `player + 0x42c` while `attachment_exit_pending` is live, but does not read `player + 0x430`
 
@@ -100,7 +100,7 @@ Keep these as separate families in notes and code:
   - an unconsumed seed in the stable observed window
   - a rarer consumer outside the stable runtime profile
   - or a field that only matters in a still-unreached attachment family
-- determine whether any helper outside the bounded `initialize_subgoldy_fall_state` / `update_subgoldy` / `update_cameraman` set reads `post_follow_value_b` directly
+- determine whether any helper outside the bounded `begin_post_follow_carryover` / `update_subgoldy` / `update_cameraman` set reads `post_follow_value_b` directly
 - if no such helper surfaces, treat `post_follow_value_b` as a rarer-family or dormant carryover lane rather than assuming the common pending-exit path consumes it
 
 ## Hard Rule

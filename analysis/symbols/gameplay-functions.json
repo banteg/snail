@@ -1698,8 +1698,8 @@
     },
     {
       "address": "0x43af60",
-      "name": "initialize_subgoldy_fall_state",
-      "description": "Seeds Goldy's post-follow fall state. If the active follow byte is still set, it copies the current attachment payload and cached carryover scalar into the post-follow slots at `+0x430` and `+0x42c`, clears `+0x384`, sets `+0x41d`, latches player z into `attachment_exit_anchor_z` at `+0x424`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path."
+      "name": "begin_post_follow_carryover",
+      "description": "Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` and the live attachment record's installed-heading scalar into `post_follow_value_a` and `post_follow_value_b`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path."
     },
     {
       "address": "0x43afd0",
@@ -1709,7 +1709,7 @@
     {
       "address": "0x43b120",
       "name": "update_subgoldy",
-      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `initialize_subgoldy_fall_state`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those fall-helper lanes are real, but at least one clean level-complete path bypasses all four of them. Newer field-xref narrowing also shows later retirement of `attachment_exit_pending` happens only through five clear sites inside this function, not through the swept-entry helper or a standalone progress-expiry store; one of those clear sites, `0x43bcb3`, now resolves to the non-follow floor-cache/slide motion branch for runtime tiles `0x0f`/`0x10`/`0x12`/`0x13` plus the `damage_gauge.state == 2` slide override. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
+      "description": "Main per-frame player or Goldy actor step. Updates attachment-follow state, samples current track cells, drives row events, dispatches pickups and completion handoff, emits movement flags and sounds, and advances the runtime track index. It contains four direct calls to `begin_post_follow_carryover`, plus the post-exit progress loop that advances `attachment_exit_progress` by `attachment_exit_progress_step` and trips the `gate_a` and `gate_b` thresholds. Windows `cdb` confirmed those carryover-arm lanes are real, but at least one clean level-complete path bypasses all four of them. Newer field-xref narrowing also shows later retirement of `attachment_exit_pending` happens only through five clear sites inside this function, not through the swept-entry helper or a standalone progress-expiry store; one of those clear sites, `0x43bcb3`, now resolves to the non-follow floor-cache/slide motion branch for runtime tiles `0x0f`/`0x10`/`0x12`/`0x13` plus the `damage_gauge.state == 2` slide override. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::AI()`."
     },
     {
       "address": "0x43d230",

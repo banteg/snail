@@ -94,7 +94,9 @@
       "observed_name": "sub_44fd90"
     }
   ],
-  "removed_stale_artifacts": [],
+  "removed_stale_artifacts": [
+    "analysis/decompile/binja/functions/0043af60-initialize_subgoldy_fall_state.c"
+  ],
   "exports": [
     {
       "address": "0x401000",
@@ -1933,8 +1935,8 @@
     },
     {
       "address": "0x43af60",
-      "name": "initialize_subgoldy_fall_state",
-      "artifact": "analysis/decompile/binja/functions/0043af60-initialize_subgoldy_fall_state.c"
+      "name": "begin_post_follow_carryover",
+      "artifact": "analysis/decompile/binja/functions/0043af60-begin_post_follow_carryover.c"
     },
     {
       "address": "0x43afd0",

@@ -18,7 +18,7 @@ This note preserves the Windows `cdb` session conclusions from `ARCADE007` in a 
   - height `0xbefae148` -> `-0.49f`
   - template `0x0df72e8c`
   - owner `0x0d33dcd0`
-- `initialize_subgoldy_fall_state` (`0x43af60`) produced multiple post-exit anchor samples:
+- `begin_post_follow_carryover` (`0x43af60`) produced multiple post-exit anchor samples:
   - `0x42bad90b` -> `93.42391f`
   - `0x425c6801` -> `55.10157f`
   - `0x440dc5e2` -> `567.0919f`
@@ -26,7 +26,7 @@ This note preserves the Windows `cdb` session conclusions from `ARCADE007` in a 
 
 ## Post-exit gates in `update_subgoldy`
 
-`update_subgoldy` consumes the fall-state fields seeded by `initialize_subgoldy_fall_state`:
+`update_subgoldy` consumes the carryover-window fields seeded by `begin_post_follow_carryover`:
 
 - `player + 0x434` is accumulated by `player + 0x438` each tick
 - `0x43ce9c` compares the accumulated progress against `0.7f`
@@ -50,7 +50,7 @@ Conservative interpretation:
 - the `gate_b` breakpoint is landing at the start of the deeper threshold block, before all gate writes complete
 - `gate_b` is real runtime behavior, but it is not mandatory for every clean-finish run
 
-## Direct `initialize_subgoldy_fall_state` callsites inside `update_subgoldy`
+## Direct `begin_post_follow_carryover` callsites inside `update_subgoldy`
 
 `bn callsites 0x43af60 --within update_subgoldy --caller-static` identified four direct callsites:
 
@@ -64,7 +64,7 @@ Current static read:
 ### `0x43b9b8`
 
 - reached from the `update_track_attachment_follow_state` switch when the helper returns cases `1` or `3`
-- only calls `initialize_subgoldy_fall_state` when `player + 0x384` is still `1`
+- only calls `begin_post_follow_carryover` when `player + 0x384` is still `1`
 - this is the most direct "attachment update requested fall handoff" path
 
 ### `0x43c008`
@@ -91,5 +91,5 @@ One full `ARCADE007` replay was run with exact probes on all four direct `update
 
 That means:
 
-- at least one ordinary level-complete path retires attachment-follow without going through `update_subgoldy -> initialize_subgoldy_fall_state`
+- at least one ordinary level-complete path retires attachment-follow without going through `update_subgoldy -> begin_post_follow_carryover`
 - the fall helper and its post-exit progress gates are real and important, but they are not the only attachment-retirement lane active during normal play

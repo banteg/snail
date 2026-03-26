@@ -49,7 +49,7 @@ High-confidence renamed functions in the tracked manifest and the current Binary
 - `update_garbage_hazard` at `0x43f200`
 - `spawn_track_garbage_hazard` at `0x43da80`
 - `update_subgoldy` at `0x43b120`
-- `initialize_subgoldy_fall_state` at `0x43af60`
+- `begin_post_follow_carryover` at `0x43af60`
 - `update_subgoldy_resurrect` at `0x441fd0`
 - `initialize_subgoldy_death` at `0x446e30`
 - `place_parcels_on_track` at `0x4438e0`

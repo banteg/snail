@@ -38,7 +38,7 @@ Capture one full live attachment lifecycle in the original game:
 1. `try_enter_track_attachment_from_swept_motion`
 2. `begin_track_attachment_follow_state`
 3. `update_track_attachment_follow_state`
-4. the exit helper currently named `initialize_subgoldy_fall_state`
+4. the exit helper currently named `begin_post_follow_carryover`
 
 This is the highest-value next runtime target because the rewrite is still blocked on:
 
@@ -54,7 +54,7 @@ This is the highest-value next runtime target because the rewrite is still block
   - current prototype: `void* __thiscall(char* arg1, void* arg2, void* arg3, int32_t arg4)`
 - `0x420cb0` `update_track_attachment_follow_state`
   - current prototype: `void __thiscall(char* arg1, float arg2, float* arg3, void* arg4)`
-- `0x43af60` `initialize_subgoldy_fall_state`
+- `0x43af60` `begin_post_follow_carryover`
   - current prototype: `int32_t __fastcall(void* arg1)`
   - behavior still matches the older attachment-exit notes better than the current name
 
@@ -241,7 +241,7 @@ Raw post-exit dump around `player + 0x420`:
 0d3391cc  00000000 00000000 3c888889 0cf0909c
 ```
 
-Static cross-check against `0x43af60` / `initialize_subgoldy_fall_state`:
+Static cross-check against `0x43af60` / `begin_post_follow_carryover`:
 
 - `player + 0x388` is the active attachment-template pointer, not the follow-state pointer
 - `player + 0x38c` is the owner attachment-runtime cell
@@ -304,7 +304,7 @@ The first stop inside the post-exit threshold block landed at `0x43cea9`:
 Interpretation:
 
 - the mid-follow `height = -0.49f` matches the static entry formula and shows the player is already riding the attachment floor offset rather than hovering at the earlier zero-height sample
-- on this replay, `initialize_subgoldy_fall_state` was entered with `active = 0`, so the active follow flag can already be clear by the time the helper runs
+- on this replay, `begin_post_follow_carryover` was entered with `active = 0`, so the active follow flag can already be clear by the time the helper runs
 - the helper still re-seeds the exit interpolation state even when entered with `active = 0`
 - by the time execution first stopped in the `0x43cea9` gate block, `gate_a` was already `1`, so that breakpoint catches the first sampled tick in the `>= 0.7f` path, not necessarily the exact write that flips `player + 0x44c`
 - `0.7166666f` is effectively `43/60`, which is consistent with the helper's `1/60` exit step and places the first observed gate just after forty-two ticks of post-exit progress accumulation
@@ -320,7 +320,7 @@ Conservative read:
 - `gate_b` can fire on some attachment-exit paths, but it is not a mandatory part of every clean level finish
 - the first captured `gate_b` sample happened while both byte gates still read zero in the stop payload, so this probe is landing at the start of the deeper threshold block rather than after all gate writes complete
 
-Finally, a replay armed with exact `update_subgoldy` callsite probes for all four direct callers of `initialize_subgoldy_fall_state`:
+Finally, a replay armed with exact `update_subgoldy` callsite probes for all four direct callers of `begin_post_follow_carryover`:
 
 - `0x43b9b8`
 - `0x43c008`
@@ -331,7 +331,7 @@ finished cleanly without hitting any of those four sites.
 
 Practical implication:
 
-- at least one clean-finish level-complete path is bypassing the `update_subgoldy -> initialize_subgoldy_fall_state` fall-helper lane entirely
+- at least one clean-finish level-complete path is bypassing the `update_subgoldy -> begin_post_follow_carryover` carryover-arm lane entirely
 - the helper and the post-exit progress gates are therefore real runtime behavior, but they are not the only way attachment-follow is retired during ordinary play
 
 ## `cdb` Breakpoint Pack Pivot: Completion And Death Handoff

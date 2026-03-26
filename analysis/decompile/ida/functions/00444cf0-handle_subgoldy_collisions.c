@@ -198,7 +198,7 @@ void __thiscall sub_444CF0(int this)
               *(float *)(this + 1044) = v69;
               v70 = v18 * -0.2;
               *(float *)(this + 1048) = v70;
-              initialize_subgoldy_fall_state(this);
+              begin_post_follow_carryover(this);
               v19 = *(_DWORD *)(this + 1032);
               *(_DWORD *)(this + 17128) = 10;
               *(_BYTE *)(m + v19 + 3499129) = 1;

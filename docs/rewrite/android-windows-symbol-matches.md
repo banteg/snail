@@ -180,7 +180,7 @@ Cross-reference of unstripped Android (`libsnailmail.so`) symbols against the st
 | `DeathInit` | 0x446e30 | `initialize_subgoldy_death` | — | EXISTS |
 | `RessurectInit` | 0x441fa0 | `initialize_subgoldy_resurrect` | — | EXISTS |
 | `RessurectAI` | 0x441fd0 | `update_subgoldy_resurrect` | — | EXISTS |
-| `FallingInit` | 0x43af60 | `initialize_subgoldy_fall_state` | — | EXISTS |
+| `FallingInit` | 0x43af60 | `begin_post_follow_carryover` | — | EXISTS |
 | `GhostInit` | 0x43d230 | `sub_43d230` | `initialize_subgoldy_ghost` | Creates 2 trail sprites, x-offsets ±4.5, scale 0.5 |
 | `HealthCollect` | 0x43a010 | `sub_43a010` | `health_collect_particles` | 8-sprite loop, Sin/Cos × 0.015 circular distribution, velocity × 3.0 |
 | `ScoreStatsInit` | 0x444960 | `sub_444960` | `initialize_score_stats` | Zeros 6–7 dword score counter block |

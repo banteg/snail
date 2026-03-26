@@ -2,7 +2,7 @@
 /* target: 63967:1:3859193737586600258 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: initialize_subgoldy_fall_state @ 0x43af60 */
+/* function: begin_post_follow_carryover @ 0x43af60 */
 
 0043af6a        if (player->follow_state.active == 0)
 0043af8c        player->post_follow_value_b = 0f

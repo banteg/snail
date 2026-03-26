@@ -164,7 +164,7 @@ Work this top-down unless a new runtime capture invalidates the order.
   - consequence: do not port that cue until live tracing or stronger type recovery explains the counter mismatch
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
   - newer static narrowing: `attachment_exit_pending` is no longer a generic open search
-  - BN field xrefs now show it is only written by `initialize_subgoldy_fall_state` plus five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`)
+  - BN field xrefs now show it is only written by `begin_post_follow_carryover` plus five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`)
   - the paired `attachment_exit_progress` lane is only written by the fall-state initializer and the single update store at `0x43ce96`, so there is no separate helper-side or plain progress-expiry clear in current static RE
   - stronger late-clear narrowing: `0x43ce75` sits behind `jetpack_gauge.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
   - stronger special-lane narrowing: `0x43bcb3` sits inside the non-follow floor-cache/slide motion block (runtime tiles `0x0f/0x10/0x12/0x13`, plus slide-family cells when `damage_gauge.state == 2`)

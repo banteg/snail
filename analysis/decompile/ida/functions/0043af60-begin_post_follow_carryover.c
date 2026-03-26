@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_subgoldy_fall_state @ 0x43af60 */
-/* selector: initialize_subgoldy_fall_state */
+/* function: begin_post_follow_carryover @ 0x43af60 */
+/* selector: begin_post_follow_carryover */
 
-// Seeds Goldy's post-follow fall state. If the active follow byte is still set, it copies the current attachment payload and cached carryover scalar into the post-follow slots at `+0x430` and `+0x42c`, clears `+0x384`, sets `+0x41d`, latches player z into `attachment_exit_anchor_z` at `+0x424`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.
+// Begins Goldy's pending post-follow carryover window. If the active follow byte is still set, it copies `follow_state.orientation_b` and the live attachment record's installed-heading scalar into `post_follow_value_a` and `post_follow_value_b`, clears `follow_state.active`, sets `attachment_exit_pending`, latches player z into `attachment_exit_anchor_z`, and zeroes the exit-progress and gate bytes. Windows `cdb` confirmed this helper can also run after the active follow byte has already been cleared, so it is one real exit lane but not the only attachment-retirement path.
 int __thiscall sub_43AF60(int this)
 {
   int result; // eax

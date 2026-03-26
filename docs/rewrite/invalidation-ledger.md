@@ -81,3 +81,9 @@ Template:
 - invalidated claim: `set_matrix_z_direction`, `look_at_point`, and `linear_interpolate_matrix` return meaningful values
 - replacement evidence: the Windows helpers are used as in-place matrix mutators in `update_cameraman` and `update_cutscene`; typing them as returning values produces fake assignments and decompiler noise, while `void` restores clean call sites
 - port consequence: keep the checked-in BN/IDA type lane on `void` returns for those helpers and avoid inferring return values from transient register/stack residue in x87-heavy camera callers
+
+## 2026-03-26 - Attachment exit carryover helper
+
+- invalidated claim: `0x43af60` is best described as `initialize_subgoldy_fall_state`
+- replacement evidence: the Windows helper only arms the pending post-follow carryover window by copying follow carryover into `post_follow_value_a/b`, clearing `follow_state.active`, setting `attachment_exit_pending`, latching `attachment_exit_anchor_z`, and zeroing progress and gate bytes; it is neither a universal attachment-end helper nor a full airborne fall initializer
+- port consequence: rename the tracked symbol and repo narrative around `begin_post_follow_carryover`, and keep actual fall/death state naming separate from attachment-exit carryover in Zig and RE notes

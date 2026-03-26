@@ -16,7 +16,7 @@ abstraction.
   - `initialize_subgame`
   - `build_subgame_level`
   - `update_subgame`
-  - `initialize_subgoldy_fall_state`
+  - `begin_post_follow_carryover`
   - `update_subgoldy`
 - Android-backed symbol matches already checked into:
   - `cRMainMenu::AI`
@@ -96,7 +96,7 @@ Practical consequence:
 Cross-port Android only points the relevant fixed-point and carryover helpers back
 into `cRSubGoldy::AI()`, and Windows still shows:
 
-- `initialize_subgoldy_fall_state` seeds the post-follow fall state inline
+- `begin_post_follow_carryover` seeds the pending post-follow carryover window inline
 - `update_subgoldy` owns the pending window, gate updates, and the clear sites
 - `cRPathFollowGoldy::Traverse` is effectively inline, not a separate exported owner
 

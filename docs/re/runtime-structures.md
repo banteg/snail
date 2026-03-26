@@ -379,7 +379,7 @@ Current practical read:
   - `game + 0x54` = generated runtime row count
   - `game + 0x58` = `game + 0x54 - final Last-block row count`
   - current best read: on non-random shipped levels, completion arms at the start of the final `Last:` block rather than on the last populated row
-- `initialize_subgoldy_fall_state` seeds the attachment-exit handoff:
+- `begin_post_follow_carryover` seeds the attachment-exit handoff:
   - `post_follow_value_a` from `follow_state.orientation_b`
   - `post_follow_value_b` from `follow_state.template_record->row_scalar_a` or zero
   - `attachment_exit_pending = 1`
@@ -390,14 +390,14 @@ Current practical read:
   - once `attachment_exit_progress > 0.7`, `attachment_exit_gate_a` gates a one-shot voice trigger and, when `player + 0x2d8 == 0`, a cutscene animation at `world_y < -6`
   - `attachment_exit_gate_b` gates a later one-shot voice trigger at `world_y < -7`
   - the bounded March 26 static sweep keeps `post_follow_value_b` unresolved but narrows where it is not used:
-    - `initialize_subgoldy_fall_state` is still only the carryover writer
+    - `begin_post_follow_carryover` is still only the carryover writer
     - `update_subgoldy` does not directly read `player + 0x430` in the bounded retirement families
     - `update_cameraman` only consumes `player + 0x42c`, not `player + 0x430`
   - the separate death handoff remains the older `world_y < -7 && death_active == 0` path that calls `initialize_subgoldy_death`
   - newer field-xref narrowing rules out two earlier static guesses:
     - `try_enter_track_attachment_from_swept_motion` does not directly clear `attachment_exit_pending`
     - `attachment_exit_progress` does not have its own separate progress-expiry clear
-  - current BN xrefs show `attachment_exit_progress` is only written by `initialize_subgoldy_fall_state` and the single `update_subgoldy` store at `0x43ce96`
+  - current BN xrefs show `attachment_exit_progress` is only written by `begin_post_follow_carryover` and the single `update_subgoldy` store at `0x43ce96`
   - the later retirement of `attachment_exit_pending` is instead limited to five clear sites inside `update_subgoldy`: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
     - the special `0x43bcb3` late clear is now statically tied to the non-follow floor-cache/slide motion block: the branch first checks runtime tiles `0x0f`, `0x10`, `0x12`, and `0x13`, then reaches the same block for slide-family cells only when `damage_gauge.state == 2`
     - the grounded snap branch at `0x43bf6f`, the trampoline landing branch at `0x43c3ea`, and one separate floor-snap branch at `0x43c06d` are also statically identifiable

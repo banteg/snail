@@ -50,11 +50,11 @@ Recovered installed-entry behavior from `try_enter_track_attachment_from_swept_m
 Static narrowing for the later retirement of `attachment_exit_pending`:
 
 - Binary Ninja field xrefs now show `player + 0x41d` is only written in two places:
-  - `initialize_subgoldy_fall_state` sets it to `1`
+  - `begin_post_follow_carryover` sets it to `1`
   - `update_subgoldy` clears it at five addresses: `0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, and `0x43ce75`
 - the swept helper itself is not one of those writers; raw BN plus the checked-in IDA export still show no direct helper-side clear before control returns to the caller's secondary-slot gate
 - Binary Ninja field xrefs also now show `attachment_exit_progress` (`player + 0x434`) is only written by:
-  - `initialize_subgoldy_fall_state`
+  - `begin_post_follow_carryover`
   - the single progress-update store at `update_subgoldy` `0x43ce96`
 - practical consequence: current static RE no longer supports a separate "helper clears the gate" story or a raw "progress >= 1.0 clears the gate" story
 

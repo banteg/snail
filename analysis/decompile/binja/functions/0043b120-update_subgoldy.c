@@ -632,7 +632,7 @@
 0043bffa        if ((eax_60:1.b & 0x41) == 0)
 0043bffc        eax_60.b = player_1->attachment_exit_pending
 0043c004        if (eax_60.b == 0)
-0043c008        initialize_subgoldy_fall_state(player_1)
+0043c008        begin_post_follow_carryover(player_1)
 0043c011        struct Game* game_21 = player_1->game
 0043c01b        if (game_21->__offset(0x40).d == 3)
 0043c01d        y = y_8
@@ -905,7 +905,7 @@
 0043c338        unimplemented  {fcomp st0, dword [0x497234]}
 0043c33e        eax_61.w = (c0_37 ? 1 : 0) << 8 | (c2_37 ? 1 : 0) << 0xa | (c3_37 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
 0043c343        if ((eax_61:1.b & 0x41) != 0)
-0043c34b        initialize_subgoldy_fall_state(player_1)
+0043c34b        begin_post_follow_carryover(player_1)
 0043b987        float z_2 = player_1->velocity.z
 0043b993        y = &player_1->velocity
 0043b9a6        switch (update_track_attachment_follow_state(&player_1->follow_state, z_2, y_8, y))
@@ -924,7 +924,7 @@
 0043b9cc        goto label_43b9f1
 0043b9b0        case 1, 3
 0043b9b0        if (player_1->follow_state.active == 1)
-0043b9b8        initialize_subgoldy_fall_state(player_1)
+0043b9b8        begin_post_follow_carryover(player_1)
 0043b9f1        case 2
 0043b9f1        label_43b9f1:
 0043b9f1        unimplemented  {fld st0, dword [ebx]}
@@ -1067,7 +1067,7 @@
 0043c4f5        player_1->_pad_30c[0x1f] = 0
 0043c4fb        game_7.b = player_1->attachment_exit_pending
 0043c503        if (game_7.b == 0)
-0043c507        initialize_subgoldy_fall_state(player_1)
+0043c507        begin_post_follow_carryover(player_1)
 0043c51c        if (player_1->_pad_340[0x10].d == 0)
 0043c522        struct Game* game_39 = player_1->game
 0043c528        y = y_8

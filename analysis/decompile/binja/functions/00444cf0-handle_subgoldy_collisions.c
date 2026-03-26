@@ -117,7 +117,7 @@
 004450fe        player->velocity.x = 0
 00445112        player->velocity.y = fconvert.s(x87_r7_41 * fconvert.t(0.200000003f))
 0044511d        player->velocity.z = fconvert.s(x87_r7_41 * fconvert.t(-0.200000003f))
-00445122        initialize_subgoldy_fall_state(player)
+00445122        begin_post_follow_carryover(player)
 00445127        struct Game* game_1 = player->game
 0044512d        player->_pad_29ac[0x193c] = 0xa
 0044512d        player->_pad_29ac[0x193d] = 0

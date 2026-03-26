@@ -4,6 +4,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: kill_subgoldy @ 0x445840 */
 
-00445843        initialize_subgoldy_fall_state(arg1)
+00445843        begin_post_follow_carryover(arg1)
 00445848        arg1->position.y = -8f
 00445850        return 0
