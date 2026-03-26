@@ -51,6 +51,12 @@ PLAYER_FIELD_UPDATES = (
 GAME_FIELD_UPDATES = (
     ("0x38", "track_center_x", "float"),
     ("0x50", "first_block_row_count", "int32_t"),
+    ("0xa854", "track_state_latch", "uint8_t"),
+    ("0xff25d0", "selected_level_record_active", "uint8_t"),
+    ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
+    ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
+    ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
+    ("0xff25dc", "runtime_track_index", "int32_t"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (

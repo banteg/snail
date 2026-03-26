@@ -181,9 +181,9 @@ int32_t __thiscall update_subgoldy(Player *player)
                                                                    + *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
                                                                               + 128);
   }
-  update_squidge((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7]);
-  *(_DWORD *)(*(_DWORD *)&player->presentation._pad_08[24] + 132) = *(_DWORD *)&player->presentation.cutscene_ai._pad_59[7];
-  *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 136) = player->squidge.y_velocity;
+  update_squidge((SquidgeState *)&player->visible_life_stock);
+  *(_DWORD *)(*(_DWORD *)&player->presentation._pad_08[24] + 132) = player->visible_life_stock;
+  *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 136) = player->squidge.y_phase;
   if ( !player->game->level_mode )
     show_subgoldy_lives(player);
   result = player->movement_mode_selector;
@@ -465,7 +465,7 @@ LABEL_101:
                   if ( player->velocity.y < -0.029999999 )
                   {
                     v117 = player->velocity.y - 0.029999999;
-                    start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], v117);
+                    start_squidge_y((SquidgeState *)&player->visible_life_stock, v117);
                   }
                   if ( player->velocity.y <= 0.0 )
                   {
@@ -495,7 +495,7 @@ LABEL_101:
                 if ( ((player->game->runtime_flags & 0x400) == 0 || (byte_4B2F40 & 2) != 0)
                   && player->live_matrix.position.y < 0.49000001 )
                 {
-                  start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], player->velocity.y);
+                  start_squidge_y((SquidgeState *)&player->visible_life_stock, player->velocity.y);
                   player->_pad_1e4[0] = 0;
                   player->velocity.y = 0.0;
                   player->attachment_exit_pending = 0;
@@ -522,7 +522,7 @@ LABEL_101:
                 && v53->anchor_position.y + 0.49000001 > player->live_matrix.position.y
                 && v53->anchor_position.y - 0.49000001 < player->live_matrix.position.y )
               {
-                start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], player->velocity.y);
+                start_squidge_y((SquidgeState *)&player->visible_life_stock, player->velocity.y);
                 player->velocity.y = player->game->track_center_x * 0.30000001;
                 player->live_matrix.position.y = v54->anchor_position.y + 0.49000001;
                 player->attachment_exit_pending = 0;
@@ -601,9 +601,9 @@ LABEL_98:
           {
             player->velocity.z = 0.0;
             player->live_matrix.position.z = (double)(int)(__int64)(player->live_matrix.position.z + 0.49000001) - 0.5;
-            if ( player->squidge.y_velocity == 0.0 )
+            if ( player->squidge.y_phase == 0.0 )
               play_sound_effect(47);
-            start_squidge_z((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], -0.33000001);
+            start_squidge_z((SquidgeState *)&player->visible_life_stock, -0.33000001);
             v57 = *(float *)&player->_pad_30c[32] + *(float *)&player->_pad_30c[28];
             *(float *)&player->_pad_30c[28] = v57;
             if ( v57 > 1.0 )
@@ -688,7 +688,7 @@ LABEL_98:
               player->velocity.z = v61;
               reset_voice_manager(unk_751498);
               end_jetpack_hover((float *)&player->_pad_2744[8]);
-              player->presentation.cutscene_ai.player = (Player *)5;
+              player->presentation.cutscene_ai.unresolved_08 = 5;
               play_sound_effect(0);
               player->_pad_41c[0] = 0;
             }
@@ -952,19 +952,19 @@ LABEL_287:
             || player->attachment_exit_pending
             || player->movement_state == 2 )
           {
-            player->squidge.z_velocity = 0.0;
+            player->squidge.z_phase = 0.0;
           }
           else
           {
-            v103 = player->squidge.z_phase + player->squidge.z_velocity;
-            player->squidge.z_velocity = v103;
+            v103 = *((float *)player + 4312) + player->squidge.z_phase;
+            player->squidge.z_phase = v103;
             if ( v103 > 1.0 )
             {
-              player->squidge.z_velocity = 0.0;
+              player->squidge.z_phase = 0.0;
               play_voice_manager((int)unk_751498, 6, 1u, -1);
             }
           }
-          handle_subgoldy_collisions((int)player);
+          handle_subgoldy_collisions(player);
           update_anim_manager((AnimationDispatchState *)&player->presentation.owner_player);
           update_anim_manager((AnimationDispatchState *)&player->presentation.jetpack_channel.selected_state);
           update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[0].selected_state);

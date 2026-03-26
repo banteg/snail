@@ -45,7 +45,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   player = cameraman->player;
   cameraman->unresolved_cc = 0;
   p_desired_matrix = &cameraman->desired_matrix;
-  v26 = player->cached_camera_target_world.x * 0.40000001;
+  v26 = player->jetpack_gauge.warning_intensity * 0.40000001;
   qmemcpy(
     &cameraman->desired_matrix,
     initialize_matrix_from_values(
@@ -70,14 +70,14 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   orthogonalize_matrix(&cameraman->desired_matrix);
   v4 = cameraman->player;
   first_block_row_count = (double)cameraman->game->first_block_row_count;
-  if ( first_block_row_count <= v4->cached_camera_target_world.z )
+  if ( first_block_row_count <= v4->cached_camera_target_world.y )
   {
-    cameraman->desired_matrix.position.y = v4->cached_camera_target_world.y * 0.34999999
+    cameraman->desired_matrix.position.y = v4->cached_camera_target_world.x * 0.34999999
                                          + cameraman->desired_matrix.position.y;
   }
   else
   {
-    v6 = v4->cached_camera_target_world.z / first_block_row_count * 1.4 - 0.40000001;
+    v6 = v4->cached_camera_target_world.y / first_block_row_count * 1.4 - 0.40000001;
     if ( v6 >= 0.0 )
     {
       if ( v6 > 1.0 )
@@ -88,9 +88,9 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
       v6 = 0.0;
     }
     v34 = 1.0 - v6;
-    v7 = (1.0 - v6) * v4->cached_camera_target_world.y * 1.15 + cameraman->desired_matrix.position.y;
+    v7 = (1.0 - v6) * v4->cached_camera_target_world.x * 1.15 + cameraman->desired_matrix.position.y;
     cameraman->desired_matrix.position.y = v7;
-    cameraman->desired_matrix.position.y = v6 * 0.34999999 * v4->cached_camera_target_world.y + v7;
+    cameraman->desired_matrix.position.y = v6 * 0.34999999 * v4->cached_camera_target_world.x + v7;
     v27 = v34 * 0.87249994;
     rotate_matrix_world_x(&cameraman->desired_matrix, v27);
   }
@@ -135,10 +135,10 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v14 = (cameraman->attachment_lift_envelope - cameraman->smoothed_attachment_lift_envelope) * 0.1
       + cameraman->smoothed_attachment_lift_envelope;
   cameraman->smoothed_attachment_lift_envelope = v14;
-  cameraman->desired_matrix.position.y = v14 * v13->cached_camera_target_world.y + cameraman->desired_matrix.position.y;
-  cameraman->desired_matrix.position.x = v13->cached_camera_target_world.x * 0.33333334
+  cameraman->desired_matrix.position.y = v14 * v13->cached_camera_target_world.x + cameraman->desired_matrix.position.y;
+  cameraman->desired_matrix.position.x = v13->jetpack_gauge.warning_intensity * 0.33333334
                                        + cameraman->desired_matrix.position.x;
-  v15 = v13->cached_camera_target_world.z + cameraman->desired_matrix.position.z + 0.40000001;
+  v15 = v13->cached_camera_target_world.y + cameraman->desired_matrix.position.z + 0.40000001;
   cameraman->desired_matrix.position.z = v15;
   v16 = v15 - cameraman->previous_desired_matrix.position.z;
   if ( v16 <= 3.0 )
@@ -150,7 +150,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   {
     cameraman->previous_desired_matrix.position.z = v15 - 3.0;
   }
-  v17 = (-2.0 - (v13->cached_camera_target_world.y - 0.49000001) * 5.0) * 0.017449999;
+  v17 = (-2.0 - (v13->cached_camera_target_world.x - 0.49000001) * 5.0) * 0.017449999;
   v35 = v17;
   if ( v17 >= -1.2214999 )
   {
@@ -165,7 +165,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v18 = cameraman->player;
   v30 = v18->lane_lean_progress * 3.1415927;
   v31 = (0.5 - cosine(v30) * 0.5) * v18->lane_lean_amplitude * 6.2831855
-      + v18->cached_camera_target_world.x * -8.0 * 0.017449999 * 0.17;
+      + v18->jetpack_gauge.warning_intensity * -8.0 * 0.017449999 * 0.17;
   rotate_matrix_world_z(&cameraman->desired_matrix, v31);
   if ( cameraman->player->follow_state.active == 1 )
   {

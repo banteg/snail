@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 4,
+  "function_count": 3,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 4,
-  "ida_exported": 4,
+  "bn_exported": 3,
+  "ida_exported": 3,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,24 +15,45 @@
   "strict": false,
   "selected_functions": [
     {
-      "name": "initialize_subgoldy",
-      "address": "0x43a9c0"
+      "name": "update_subgoldy",
+      "address": "0x43b120"
     },
     {
       "name": "initialize_cutscene",
       "address": "0x4428d0"
     },
     {
-      "name": "update_snail_skin_transition",
-      "address": "0x445f80"
-    },
-    {
-      "name": "update_cutscene",
-      "address": "0x4466d0"
+      "name": "update_cameraman",
+      "address": "0x4461d0"
     }
   ],
   "health_check_count": 4,
-  "health_failing_check_count": 0,
-  "health_passed": true,
-  "health_config": "analysis/decompile/health_checks.json"
+  "health_failing_check_count": 1,
+  "health_passed": false,
+  "health_config": "analysis/decompile/health_checks.json",
+  "failing_checks": [
+    {
+      "name": "bn_update_subgoldy_selected_replay_lane",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "exists": true,
+      "passed": false,
+      "failures": [
+        "missing required substring: selected_level_record_active",
+        "missing required substring: selected_level_record",
+        "missing required substring: replay_sample_count",
+        "missing required substring: replay_samples"
+      ],
+      "observed_counts": {
+        "_ET1": 0,
+        "__asm": 0,
+        "__offset(": 100,
+        "control_override_active": 7,
+        "replay_sample_count": 0,
+        "replay_samples": 0,
+        "selected_level_record": 0,
+        "selected_level_record_active": 0,
+        "unimplemented": 855
+      }
+    }
+  ]
 }
