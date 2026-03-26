@@ -2,9 +2,9 @@
 /* function: start_squidge_y @ 0x444980 */
 /* selector: start_squidge_y */
 
-void __thiscall sub_444980(int this, float a2)
+void __thiscall start_squidge_y(SquidgeState *squidge, float value)
 {
-  *(_DWORD *)(this + 8) = 0;
-  *(float *)(this + 4) = a2 * 0.5;
+  squidge->y_phase = 0.0;
+  squidge->y_velocity = value * 0.5;
 }
 

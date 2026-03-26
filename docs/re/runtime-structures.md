@@ -86,11 +86,18 @@ Two `update_subgoldy` corrections from the latest static audit:
 - the currently safe `control_source` sub-slice is:
   - `+0x04`: `control_flags_a`
   - `+0x0c`: `control_flags_b`
-  - `+0x28`: `steering_scalar`
+  - `+0x28`: `steering_x`
 - `player + 0x29a8` is separate from the hotspot bank and source matrices. It points at the live snail visual object, whose currently safe sub-slice is:
   - `+0x80`: `follow_lateral_response`
   - `+0x84`: `squidge_primary`
   - `+0x88`: `squidge_secondary`
+- `player + 0x4344` is a real inline `SquidgeState` consumed by `update_subgoldy` and copied into `snail_visual`
+  - `+0x00`: `y_output`
+  - `+0x04`: `y_velocity`
+  - `+0x08`: `y_phase`
+  - `+0x0c`: `z_output`
+  - `+0x10`: `z_velocity`
+  - `+0x14`: `z_phase`
 
 Important caveat:
 

@@ -20,9 +20,9 @@
 0043b1a2        eax_2 = segment_count - 1
 0043b1ac        struct SnailVisual* snail_visual_1 = player_1->snail_visual
 0043b1d9        snail_visual_1->follow_lateral_response = fconvert.s((fconvert.t((&template_record->primary_samples->_pad_a4)[eax_2 * 0x2a]) * fconvert.t(-3f) - fconvert.t(snail_visual_1->follow_lateral_response)) * fconvert.t(0.100000001f) + fconvert.t(snail_visual_1->follow_lateral_response))
-0043b209        update_squidge(&player_1->_pad_00[0x4344])
-0043b216        player_1->snail_visual->squidge_primary = player_1->__offset(0x4344).d
-0043b228        player_1->snail_visual->squidge_secondary = player_1->__offset(0x4350).d
+0043b209        update_squidge(&player_1->squidge)
+0043b216        player_1->snail_visual->squidge_primary = player_1->squidge.y_output
+0043b228        player_1->snail_visual->squidge_secondary = player_1->squidge.z_output
 0043b239        if (player_1->game->__offset(0x40).d == 0)
 0043b23d        show_subgoldy_lives(player_1)
 0043b242        int32_t movement_mode_selector = player_1->movement_mode_selector
@@ -56,7 +56,7 @@
 0043b392        if (game_2.b == 0)
 0043b402        y = (&data_4df950)[player_1->_pad_2970[0].d]
 0043b403        resolve_uncaptured_cursor_sensitivity_scale(y)
-0043b41c        long double x87_r7_21 = fconvert.t(player_1->control_source->steering_scalar) - fconvert.t(player_1->track_z_anchor) + fconvert.t(player_1->track_z_offset)
+0043b41c        long double x87_r7_21 = fconvert.t(player_1->control_source->steering_x) - fconvert.t(player_1->track_z_anchor) + fconvert.t(player_1->track_z_offset)
 0043b422        long double temp3_1 = fconvert.t(0f)
 0043b422        x87_r7_21 - temp3_1
 0043b428        player_1->track_z_offset = fconvert.s(x87_r7_21)
@@ -71,7 +71,7 @@
 0043b44e        x87_r7_21 = fconvert.t(639f)
 0043b437        x87_r7_21 = fconvert.t(0f)
 0043b454        player_1->track_z_offset = fconvert.s(x87_r7_21)
-0043b463        player_1->track_z_anchor = player_1->control_source->steering_scalar
+0043b463        player_1->track_z_anchor = player_1->control_source->steering_x
 0043b472        if (player_1->_pad_2970[0].d == 1)
 0043b47d        player_1->track_z_offset = fconvert.s(fconvert.t(player_1->control_source->__offset(0x28).d))
 0043b394        long double x87_r7_11 = fconvert.t(player_1->_pad_29ac[0x20].d)
@@ -578,7 +578,7 @@
 0043bf40        y = &player_1->_pad_00[0x38]
 0043bf47        y = fconvert.s(unimplemented  {fstp dword [esp], st0})
 0043bf47        unimplemented  {fstp dword [esp], st0}
-0043bf4a        start_squidge_y(&player_1->_pad_00[0x4344], y)
+0043bf4a        start_squidge_y(&player_1->squidge, y)
 0043bf4f        unimplemented  {fld st0, dword [ebp+0x414]}
 0043bf55        long double temp49_1 = fconvert.t(0f)
 0043bf55        unimplemented  {fcomp st0, dword [0x497234]} f- temp49_1
@@ -667,7 +667,7 @@
 0043c043        cell_1.w = (c0_28 ? 1 : 0) << 8 | (c2_28 ? 1 : 0) << 0xa | (c3_28 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb
 0043c048        if ((cell_1:1.b & 1) != 0)
 0043c050        y = player_1->velocity.y
-0043c057        start_squidge_y(&player_1->_pad_00[0x4344], y)
+0043c057        start_squidge_y(&player_1->squidge, y)
 0043c05c        player_1->_pad_124[0xc0] = 0
 0043c063        player_1->velocity.y = 0f
 0043c06d        player_1->attachment_exit_pending = 0
@@ -757,7 +757,7 @@
 0043c3a9        eax_63.w = (c0_39 ? 1 : 0) << 8 | (c2_39 ? 1 : 0) << 0xa | (c3_39 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
 0043c3ae        if ((eax_63:1.b & 1) != 0)
 0043c3b6        y = player_1->velocity.y
-0043c3bd        start_squidge_y(&player_1->_pad_00[0x4344], y)
+0043c3bd        start_squidge_y(&player_1->squidge, y)
 0043c3c8        y = 0x29
 0043c3cf        unimplemented  {fld st0, dword [edx+0x38]}
 0043c3d2        unimplemented  {fmul st0, dword [0x4973d8]}
@@ -1075,7 +1075,7 @@
 0043c4ba        y = 0x2f
 0043c4c1        play_sound_effect(y)
 0043c4c6        y = 0xbea8f5c3
-0043c4d1        start_squidge_z(&player_1->_pad_00[0x4344], y)
+0043c4d1        start_squidge_z(&player_1->squidge, y)
 0043c4d6        unimplemented  {fld st0, dword [ebp+0x32c]}
 0043c4dc        unimplemented  {fadd dword [ebp+0x328]}
 0043c4e2        player_1->_pad_30c[0x1c].d = fconvert.s(unimplemented  {fst dword [ebp+0x328], st0})
@@ -1298,7 +1298,10 @@
 0043c77c        reset_voice_manager(0x751498)
 0043c787        end_jetpack_hover(&player_1->jetpack_gauge)
 0043c791        y = nullptr
-0043c797        player_1->__offset(0x42e8).d = 5
+0043c797        player_1->_pad_29ac[0x193c] = 5
+0043c797        player_1->_pad_29ac[0x193d] = 0
+0043c797        player_1->_pad_29ac[0x193e] = 0
+0043c797        player_1->_pad_29ac[0x193f] = 0
 0043c79d        play_sound_effect(y)
 0043c7a2        player_1->_pad_41c = 0
 0043c7b0        player_1->completion_handoff_active.b = 1
@@ -1844,7 +1847,7 @@
 0043cff3        esp = &__saved_edi
 0043d004        handle_subgoldy_collisions(player_1)
 0043d00f        update_anim_manager(&player_1->_pad_29ac[0xdc])
-0043d01a        update_anim_manager(&player_1->_pad_00[0x3c6c])
+0043d01a        update_anim_manager(&player_1->_pad_29ac[0x12c0])
 0043d025        update_anim_manager(&player_1->_pad_29ac[0x72c])
 0043d030        update_anim_manager(&player_1->_pad_29ac[0xb08])
 0043d03b        update_anim_manager(&player_1->_pad_29ac[0xee4])

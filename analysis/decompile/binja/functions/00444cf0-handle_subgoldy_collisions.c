@@ -123,12 +123,18 @@
 0044511d        player->velocity.z = fconvert.s(x87_r7_41 * fconvert.t(-0.200000003f))
 00445122        initialize_subgoldy_fall_state(player)
 00445127        struct Game* game_1 = player->game
-0044512d        player->__offset(0x42e8).d = 0xa
+0044512d        player->_pad_29ac[0x193c] = 0xa
+0044512d        player->_pad_29ac[0x193d] = 0
+0044512d        player->_pad_29ac[0x193e] = 0
+0044512d        player->_pad_29ac[0x193f] = 0
 00445137        *(i_3 + game_1 + 0x356479) = 1
 00445152        int32_t eax_18 = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f))
 0044516c        x87control = play_slug_voice(i_3 + player->game + 0x3563a0, 0x22 - eax_18)
 00445175        long double x87_r7_46 = fconvert.t(fconvert.s(st0_4)) * fconvert.t(0.5f)
-0044517b        player->__offset(0x3f4c).d = 0
+0044517b        player->_pad_29ac[0x15a0] = 0
+0044517b        player->_pad_29ac[0x15a1] = 0
+0044517b        player->_pad_29ac[0x15a2] = 0
+0044517b        player->_pad_29ac[0x15a3] = 0
 0044519d        long double x87_r7_47 = x87_r7_46 * fconvert.t(vector.z)
 004451ab        vector_2.x = fconvert.s(fconvert.t(fconvert.s(x87_r7_46 * fconvert.t(vector.x))) + fconvert.t(player->cached_camera_target_world.x))
 004451b3        long double x87_r6_10 = fconvert.t(fconvert.s(fconvert.t(vector.y) * x87_r7_46)) + fconvert.t(player->cached_camera_target_world.y)
@@ -166,8 +172,11 @@
 004452fb        play_sound_effect(0x1b)
 00445306        *(i_4 + player->game + 0x125e4b8) = 4
 00445317        struct Game* game_2 = player->game
-0044531d        int32_t ebx_2 = player->__offset(0x4338).d + 1
-0044531e        player->__offset(0x4338).d = ebx_2
+0044531d        int32_t ebx_2 = player->_pad_29ac[0x198c].d + 1
+0044531e        player->_pad_29ac[0x198c] = ebx_2.b
+0044531e        player->_pad_29ac[0x198d] = ebx_2:1.b
+0044531e        player->_pad_29ac[0x198e] = ebx_2:2.b
+0044531e        player->_pad_29ac[0x198f] = ebx_2:3.b
 0044532b        if (game_2->__offset(0x40).d == 0)
 00445339        int32_t var_88_3 = game_2->__offset(0x1b01e0).d
 0044533a        int32_t var_8c_1 = ebx_2

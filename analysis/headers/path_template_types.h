@@ -193,8 +193,17 @@ typedef struct PlayerControlSource {
     uint8_t _pad_08[0x4];
     uint32_t control_flags_b;
     uint8_t _pad_10[0x18];
-    float steering_scalar;
+    float steering_x;
 } PlayerControlSource;
+
+typedef struct SquidgeState {
+    float y_output;
+    float y_velocity;
+    float y_phase;
+    float z_output;
+    float z_velocity;
+    float z_phase;
+} SquidgeState;
 
 typedef TransformMatrix PathTemplateTransform;
 
@@ -304,7 +313,9 @@ typedef struct Player {
     float interaction_max_z;
     uint8_t _pad_2984[0x24];
     SnailVisual* snail_visual;
-    uint8_t _pad_29ac[0xfa8];
+    uint8_t _pad_29ac[0x1994];
+    int32_t visible_life_stock;
+    SquidgeState squidge;
 } Player;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
@@ -365,6 +376,9 @@ void __thiscall request_object_facequads(PathTemplateStripMesh* mesh, int32_t fa
 Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);
 float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
+void __thiscall start_squidge_y(SquidgeState* squidge, float value);
+float __thiscall start_squidge_z(SquidgeState* squidge, float value);
+void __thiscall update_squidge(SquidgeState* squidge);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
 int32_t __thiscall initialize_cameraman(CameramanState* cameraman);

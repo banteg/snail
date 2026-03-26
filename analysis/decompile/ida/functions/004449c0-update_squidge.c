@@ -2,7 +2,7 @@
 /* function: update_squidge @ 0x4449c0 */
 /* selector: update_squidge */
 
-void __thiscall sub_4449C0(float *this)
+void __thiscall update_squidge(SquidgeState *squidge)
 {
   double v1; // st7
   double v2; // st7
@@ -15,14 +15,14 @@ void __thiscall sub_4449C0(float *this)
   float v11; // [esp+0h] [ebp-4h]
   float v12; // [esp+0h] [ebp-4h]
 
-  if ( *(this + 1) != 0.0 )
+  if ( squidge->y_velocity != 0.0 )
   {
-    v1 = *(this + 2) + *(this + 1);
-    *(this + 2) = v1;
-    v2 = (*(this + 1) - v1 * 0.15000001) * 0.81999999;
-    *(this + 1) = v2;
-    v11 = -*(this + 2);
-    *this = v11;
+    v1 = squidge->y_phase + squidge->y_velocity;
+    squidge->y_phase = v1;
+    v2 = (squidge->y_velocity - v1 * 0.15000001) * 0.81999999;
+    squidge->y_velocity = v2;
+    v11 = -squidge->y_phase;
+    squidge->y_output = v11;
     if ( v2 < 0.0 )
       v2 = -v2;
     if ( v2 < 0.001 )
@@ -32,19 +32,19 @@ void __thiscall sub_4449C0(float *this)
         v4 = -v4;
       if ( v4 < 0.001 )
       {
-        *(this + 1) = 0.0;
-        *this = 0.0;
+        squidge->y_velocity = 0.0;
+        squidge->y_output = 0.0;
       }
     }
   }
-  if ( *(this + 4) != 0.0 )
+  if ( squidge->z_velocity != 0.0 )
   {
-    v6 = *(this + 5) + *(this + 4);
-    *(this + 5) = v6;
-    v7 = (*(this + 4) - v6 * 0.15000001) * 0.81999999;
-    *(this + 4) = v7;
-    v12 = -*(this + 5);
-    *(this + 3) = v12;
+    v6 = squidge->z_phase + squidge->z_velocity;
+    squidge->z_phase = v6;
+    v7 = (squidge->z_velocity - v6 * 0.15000001) * 0.81999999;
+    squidge->z_velocity = v7;
+    v12 = -squidge->z_phase;
+    squidge->z_output = v12;
     if ( v7 < 0.0 )
       v7 = -v7;
     if ( v7 < 0.001 )
@@ -54,8 +54,8 @@ void __thiscall sub_4449C0(float *this)
         v9 = -v9;
       if ( v9 < 0.001 )
       {
-        *(this + 4) = 0.0;
-        *(this + 3) = 0.0;
+        squidge->z_velocity = 0.0;
+        squidge->z_output = 0.0;
       }
     }
   }

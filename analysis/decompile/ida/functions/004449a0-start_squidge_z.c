@@ -2,10 +2,13 @@
 /* function: start_squidge_z @ 0x4449a0 */
 /* selector: start_squidge_z */
 
-int __thiscall sub_4449A0(float *this, float a2)
+float __thiscall start_squidge_z(SquidgeState *squidge, float value)
 {
-  *(this + 5) = a2;
-  *(this + 4) = a2 * -0.003;
-  return LODWORD(a2);
+  double v2; // st7
+
+  v2 = value * -0.003;
+  squidge->z_phase = value;
+  squidge->z_velocity = v2;
+  return v2;
 }
 

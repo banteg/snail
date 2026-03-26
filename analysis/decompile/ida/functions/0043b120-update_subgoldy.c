@@ -1046,7 +1046,7 @@ LABEL_365:
         else
         {
           resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[*(_DWORD *)player->_pad_2970]);
-          v14 = player->control_source->steering_scalar - player->track_z_anchor + player->track_z_offset;
+          v14 = player->control_source->steering_x - player->track_z_anchor + player->track_z_offset;
           player->track_z_offset = v14;
           if ( v16 )
           {
@@ -1057,10 +1057,10 @@ LABEL_365:
             v14 = 639.0;
           }
           player->track_z_offset = v14;
-          player->track_z_anchor = player->control_source->steering_scalar;
+          player->track_z_anchor = player->control_source->steering_x;
           if ( *(_DWORD *)player->_pad_2970 != 1 )
             goto LABEL_40;
-          track_z_offset = player->control_source->steering_scalar;
+          track_z_offset = player->control_source->steering_x;
         }
         player->track_z_offset = track_z_offset;
       }
