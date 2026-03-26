@@ -2629,7 +2629,7 @@ pub const Runner = struct {
         _ = self;
         if (hazard.kind != .garbage or hazard.state != .active) return;
         hazard.state = .burst_setup;
-        hazard.burst_side = if (hazard.world_position.x >= player_position.x) 1 else -1;
+        hazard.collision_side = if (hazard.world_position.x >= player_position.x) 1 else -1;
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
@@ -3947,12 +3947,12 @@ pub const Runner = struct {
                     .y = (0.1 + (self.nextMathRandomFloat01() * 0.2)) * speed,
                     .z = self.nextMathRandomFloat01() * 0.3 * speed,
                 };
-                if (hazard.burst_side > 0) {
+                if (hazard.collision_side > 0) {
                     hazard.velocity.x = @abs(hazard.velocity.x);
-                } else if (hazard.burst_side < 0) {
+                } else if (hazard.collision_side < 0) {
                     hazard.velocity.x = -@abs(hazard.velocity.x);
                 }
-                hazard.velocity.x += @as(f32, @floatFromInt(hazard.burst_side)) * speed * garbage_burst_side_bias_scale;
+                hazard.velocity.x += @as(f32, @floatFromInt(hazard.collision_side)) * speed * garbage_burst_side_bias_scale;
             },
             .burst => {},
         }
@@ -4153,7 +4153,7 @@ pub const Runner = struct {
             .yaw_radians = runtimeHazardYawRadians(row, lane, kind),
             .arming_progress = 1.0,
             .arming_step = 0.0,
-            .burst_side = 0,
+            .collision_side = 0,
         };
         self.active_runtime_hazard_count += 1;
     }
@@ -4173,8 +4173,8 @@ pub const Runner = struct {
             .kind = kind,
             .world_position = world_position,
             .presentation_position = world_position,
-            .presentation_phase = initialRuntimePickupPresentationPhase(row, kind),
-            .presentation_phase_step = initialRuntimePickupPresentationPhaseStep(kind),
+            .bob_phase = initialRuntimePickupBobPhase(row, kind),
+            .bob_phase_step = initialRuntimePickupBobPhaseStep(kind),
         };
         self.active_runtime_pickup_count += 1;
     }
@@ -4274,14 +4274,14 @@ pub const Runner = struct {
         return preview.runtimeTileAt(row, lane_index) orelse 0;
     }
 
-    fn initialRuntimePickupPresentationPhase(row: usize, kind: RuntimePickupKind) f32 {
+    fn initialRuntimePickupBobPhase(row: usize, kind: RuntimePickupKind) f32 {
         return switch (kind) {
             .health => if ((row & 1) == 0) 0.5 else 0.0,
             .jetpack => 0.0,
         };
     }
 
-    fn initialRuntimePickupPresentationPhaseStep(kind: RuntimePickupKind) f32 {
+    fn initialRuntimePickupBobPhaseStep(kind: RuntimePickupKind) f32 {
         return switch (kind) {
             .health => runtime_pickup_phase_step,
             .jetpack => 0.0,
@@ -4294,9 +4294,9 @@ pub const Runner = struct {
             pickup.presentation_position = pickup.world_position;
             switch (pickup.kind) {
                 .health => {
-                    pickup.presentation_phase = @mod(pickup.presentation_phase + pickup.presentation_phase_step, 1.0);
+                    pickup.bob_phase = @mod(pickup.bob_phase + pickup.bob_phase_step, 1.0);
                     pickup.presentation_position.y = pickup.world_position.y +
-                        (@sin(pickup.presentation_phase * std.math.tau) + 1.0) * runtime_health_pickup_bob_height;
+                        (@sin(pickup.bob_phase * std.math.tau) + 1.0) * runtime_health_pickup_bob_height;
                 },
                 .jetpack => {},
             }
@@ -6554,7 +6554,7 @@ test "runtime health pickup keeps native bob phase and presentation lift" {
     const pickup = runner.activeRuntimePickups()[0];
     const expected_phase = @mod(initial_phase + runtime_pickup_phase_step, 1.0);
     const expected_y = base_position.y + (@sin(expected_phase * std.math.tau) + 1.0) * runtime_health_pickup_bob_height;
-    try std.testing.expectApproxEqAbs(expected_phase, pickup.presentation_phase, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_phase, pickup.bob_phase, 0.0001);
     try std.testing.expectApproxEqAbs(base_position.x, pickup.presentation_position.x, 0.0001);
     try std.testing.expectApproxEqAbs(expected_y, pickup.presentation_position.y, 0.0001);
     try std.testing.expectApproxEqAbs(base_position.z, pickup.presentation_position.z, 0.0001);

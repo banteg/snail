@@ -28,7 +28,7 @@ pub const Hazard = struct {
     yaw_radians: f32 = 0.0,
     arming_progress: f32 = 1.0,
     arming_step: f32 = 0.0,
-    burst_side: i8 = 0,
+    collision_side: i8 = 0,
 };
 
 pub const PickupKind = enum {
@@ -42,8 +42,8 @@ pub const Pickup = struct {
     kind: PickupKind,
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    presentation_phase: f32 = 0.0,
-    presentation_phase_step: f32 = 0.0,
+    bob_phase: f32 = 0.0,
+    bob_phase_step: f32 = 0.0,
 };
 
 pub const RingEffectState = enum(u8) {
