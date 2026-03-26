@@ -124,9 +124,9 @@ typedef struct PathTemplate {
 } PathTemplate;
 
 typedef struct TrackRowCell {
-    uint8_t _pad_00[0x18];
+    uint8_t _pad_00[0x10];
     Vec3 anchor_position;
-    uint8_t _pad_24[0x14];
+    uint8_t _pad_1c[0x1c];
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
 } TrackRowCell;

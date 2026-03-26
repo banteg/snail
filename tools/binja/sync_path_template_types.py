@@ -86,7 +86,7 @@ SNAIL_VISUAL_FIELD_UPDATES = (
 )
 
 TRACK_ROW_CELL_FIELD_UPDATES = (
-    ("0x18", "anchor_position", "Vec3"),
+    ("0x10", "anchor_position", "Vec3"),
     ("0x38", "attachment_template_record", "PathTemplate*"),
     ("0x3c", "tile_id", "uint8_t"),
 )
