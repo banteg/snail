@@ -57,6 +57,7 @@ GAME_FIELD_UPDATES = (
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
     ("0xff25dc", "runtime_track_index", "int32_t"),
+    ("0x12727d8", "row_event_display", "RowEventDisplayController"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (

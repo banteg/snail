@@ -3,28 +3,21 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 3,
-  "function_count": 3,
+  "selected_count": 2,
+  "function_count": 2,
   "exported": [
+    {
+      "selector": "update_row_event_display",
+      "address": "0x404cf0",
+      "name": "update_row_event_display",
+      "artifact": "analysis/decompile/ida/functions/00404cf0-update_row_event_display.c",
+      "removed_stale_artifacts": []
+    },
     {
       "selector": "update_subgoldy",
       "address": "0x43b120",
       "name": "update_subgoldy",
       "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "initialize_cutscene",
-      "address": "0x4428d0",
-      "name": "initialize_cutscene",
-      "artifact": "analysis/decompile/ida/functions/004428d0-initialize_cutscene.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "update_cameraman",
-      "address": "0x4461d0",
-      "name": "update_cameraman",
-      "artifact": "analysis/decompile/ida/functions/004461d0-update_cameraman.c",
       "removed_stale_artifacts": []
     }
   ],

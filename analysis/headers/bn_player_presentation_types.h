@@ -20,6 +20,7 @@ struct PathTemplate;
 struct TrackRowCell;
 struct PlayerControlSource;
 struct PlayerPresentationController;
+typedef struct RowEventDisplayController RowEventDisplayController;
 
 typedef struct Vec3 {
     float x;
@@ -66,6 +67,30 @@ typedef struct SelectedLevelRecord {
     SelectedLevelReplaySample replay_samples[1];
 } SelectedLevelRecord;
 
+typedef struct RowEventDisplayController {
+    void* widget_a;
+    void* widget_b;
+    void* widget_c;
+    void* widget_d;
+    void* widget_e;
+    int32_t state;
+    uint8_t gate_18;
+    uint8_t _pad_19[0x3];
+    int32_t parcel_target_count;
+    int32_t bonus_enabled;
+    int32_t staged_parcel_count;
+    int32_t delivered_parcel_count;
+    float progress;
+    float progress_step;
+    float widget_world_x;
+    float widget_world_y;
+    float widget_world_z;
+    float bonus_blink_progress;
+    float bonus_blink_step;
+    int32_t bonus_score;
+    int32_t display_token;
+} RowEventDisplayController;
+
 typedef struct Game {
     uint8_t _pad_00[0x38];
     float track_center_x;
@@ -80,6 +105,8 @@ typedef struct Game {
     SelectedLevelRecord* selected_level_record;
     int32_t selected_level_record_saved_return_owner;
     int32_t runtime_track_index;
+    uint8_t _pad_ff25e0[0x2801f8];
+    RowEventDisplayController row_event_display;
 } Game;
 
 typedef struct PathTemplate {
