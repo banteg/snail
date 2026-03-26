@@ -93,3 +93,9 @@ Template:
 - invalidated claim: `game + 0xff25d4` can be treated like the compact on-disk high-score record layout
 - replacement evidence: `serialize_compact_high_score_record` and `deserialize_compact_high_score_record` both prove `selected_level_record` points at the expanded in-memory high-score entry, and `update_subgoldy` consumes the expanded replay arrays at `record + 0x70 + i*6` directly
 - port consequence: keep the native type lane and docs centered on an expanded `SelectedLevelRecord` with inline `replay_samples`; do not harden any compact-record interpretation into Zig or RE notes
+
+## 2026-03-27 - Presentation tail boundary
+
+- invalidated claim: `PlayerPresentationController` has a standalone `weapon_release_active` byte at `+0x1938`, with `snail_skin_transition` starting at `+0x193c` and `cutscene_ai` at `+0x195c`
+- replacement evidence: raw Windows callsites show `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition` (`0x4428ef: lea ecx, [ebx+0x1938]`), and later passes `presentation + 0x1958` directly to `update_cutscene` (`0x442dec: lea ecx, [ebx+0x1958]`); the old extra byte was a mis-modeled boundary, not a real standalone field
+- port consequence: keep `snail_skin_transition` starting at `+0x1938` and `cutscene_ai` at `+0x1958`, and do not reintroduce a fake `weapon_release_active` field ahead of the transition state in BN/IDA headers or docs

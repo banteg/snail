@@ -46,7 +46,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
   result = (int32_t)MEMORY[0x4DF904];
   if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) )
   {
-    update_snail_skin_transition((SnailSkinTransitionState *)&presentation->weapon_release_active);
+    update_snail_skin_transition(&presentation->snail_skin_transition);
     owner_player = presentation->owner_player;
     if ( owner_player->cutscene_pitch_cycle <= 0.0 )
     {
@@ -181,9 +181,9 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->snail_hotspot_source_matrix_b.position.y = v24[1];
     presentation->snail_hotspot_source_matrix_b.position.z = v24[2];
     update_snail_skin(presentation);
-    if ( presentation->cutscene_ai.unresolved_08 )
+    if ( presentation->cutscene_ai.state )
     {
-      update_cutscene((CutsceneAI *)&presentation->snail_skin_transition.progress_step);
+      update_cutscene(&presentation->cutscene_ai);
     }
     else if ( !presentation->anim_manager.queued_animation_count && !presentation->owner_player->control_override_active )
     {

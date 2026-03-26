@@ -152,6 +152,7 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x18`: `progress`
     - `+0x1c`: `progress_step`
     - `initialize_snail_skin` seeds `owner_render_state` to the shared player render owner and clears the timed skin swap state
+    - raw code at `0x4428ef` confirms `initialize_cutscene` passes `presentation + 0x1938` directly to `update_snail_skin_transition`; there is no separate `weapon_release_active` byte ahead of this state
   - `+0x1958`: `cutscene_ai`
     - `+0x00`: `presentation`
     - `+0x04`: `player`

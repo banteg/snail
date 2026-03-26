@@ -128,8 +128,6 @@ typedef struct PlayerPresentationController {
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
     InvincibleShellController invincible_shell;
-    uint8_t weapon_release_active;
-    uint8_t _pad_1935[0x3];
     SnailSkinTransitionState snail_skin_transition;
     CutsceneAI cutscene_ai;
 } PlayerPresentationController;

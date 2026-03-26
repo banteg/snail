@@ -140,15 +140,16 @@ LABEL_3:
         if ( v36 == 1 )
           initialize_completion_screen(
             (int)MEMORY[0x4DF904] + 19820016,
-            LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step),
+            *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58,
             1u);
       }
       else
       {
         initialize_completion_screen(
           (int)MEMORY[0x4DF904] + 19820016,
-          LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step),
-          LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step) == *((_DWORD *)MEMORY[0x4DF904] + 561662));
+          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58,
+          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai.unresolved_58 == *((_DWORD *)MEMORY[0x4DF904]
+                                                                                     + 561662));
       }
       play_sound_effect(46);
       goto LABEL_25;

@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 7,
+  "function_count": 4,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 7,
-  "ida_exported": 7,
+  "bn_exported": 4,
+  "ida_exported": 4,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,28 +15,16 @@
   "strict": false,
   "selected_functions": [
     {
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
+    },
+    {
       "name": "initialize_cutscene",
       "address": "0x4428d0"
     },
     {
-      "name": "handle_subgoldy_collisions",
-      "address": "0x444cf0"
-    },
-    {
-      "name": "update_snail_skin",
-      "address": "0x445cd0"
-    },
-    {
-      "name": "initialize_snail_skin",
-      "address": "0x445f60"
-    },
-    {
       "name": "update_snail_skin_transition",
       "address": "0x445f80"
-    },
-    {
-      "name": "initialize_cutscene_ai",
-      "address": "0x446130"
     },
     {
       "name": "update_cutscene",

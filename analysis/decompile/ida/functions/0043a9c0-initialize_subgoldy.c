@@ -43,9 +43,9 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->movement_sound_variant_sample = 0;
   *(_DWORD *)player->presentation.invincible_shell._pad_90 = 0;
   *(_DWORD *)&player->presentation.invincible_shell._pad_90[4] = 1015580809;
-  player->squidge.z_velocity = 0.0;
-  player->squidge.z_phase = 0.016666668;
-  initialize_score_stats(&player->presentation.cutscene_ai._pad_59[7]);
+  player->squidge.z_phase = 0.0;
+  *((_DWORD *)player + 4312) = 1015580809;
+  initialize_score_stats(&player->visible_life_stock);
   initialize_invincible_shell((InvincibleShellController *)&player->presentation.snail_hotspots_world[18].z);
   *(_DWORD *)&player->_pad_30c[40] = 1029934648;
   *(_DWORD *)&player->_pad_30c[36] = 1029934648;
@@ -142,14 +142,14 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     player->presentation.weapon_channels[2].selected_state = 0;
   }
   initialize_snail_skin((SnailSkinTransitionState *)&player->presentation.invincible_shell._pad_90[12]);
-  initialize_cutscene_ai((CutsceneAI *)&player->presentation.snail_skin_transition.progress);
+  initialize_cutscene_ai((CutsceneAI *)&player->presentation.snail_skin_transition.progress_step);
   if ( !player->game->_pad_ff25e0[496] )
-    player->presentation.cutscene_ai.player = (Player *)1;
+    player->presentation.cutscene_ai.unresolved_08 = 1;
   *(_DWORD *)&player->presentation._pad_c0[60] = player;
   set_matrix_identity((TransformMatrix *)&player->presentation._pad_28[12]);
   set_matrix_identity((TransformMatrix *)&player->presentation.previous_live_matrix.position.w);
   set_matrix_identity((TransformMatrix *)&player->presentation._pad_78[4]);
-  player->presentation.cutscene_ai.progress_step = 0.0;
+  *(_DWORD *)&player->presentation.cutscene_ai.unresolved_58 = 0;
   initialize_click_start((int)player->_pad_a0, (int)player);
   initialize_cameraman((CameramanState *)player->_pad_200);
   initialize_subgoldy_ghost(player, player->player_slot);

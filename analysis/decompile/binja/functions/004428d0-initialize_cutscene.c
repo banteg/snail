@@ -9,7 +9,7 @@
 004428de        presentation.b = *(result + 0x74621)
 004428e6        if (presentation.b != 0)
 00442e38        return result
-004428f5        update_snail_skin_transition(&presentation_1->weapon_release_active)
+004428f5        update_snail_skin_transition(&presentation_1->snail_skin_transition)
 004428fa        struct Player* owner_player_2 = presentation_1->owner_player
 00442900        long double x87_r7_1 = fconvert.t(owner_player_2->__offset(0x2dc).d)
 00442906        long double temp0_1 = fconvert.t(0f)
@@ -140,8 +140,8 @@
 00442dcf        presentation_1->snail_hotspot_source_matrix_b.position.y = owner_player_1->__offset(0x2968).d
 00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z = owner_player_1->__offset(0x296c).d
 00442dda        update_snail_skin(presentation_1)
-00442dea        if (presentation_1->cutscene_ai.unresolved_08 != 0)
-00442df2        update_cutscene(&presentation_1->snail_skin_transition.progress_step)
+00442dea        if (presentation_1->cutscene_ai.state != 0)
+00442df2        update_cutscene(&presentation_1->cutscene_ai)
 00442e01        if (presentation_1->anim_manager.queued_animation_count == 0)
 00442e09        int32_t eax_15
 00442e09        eax_15.b = presentation_1->owner_player->__offset(0x2d8).b
