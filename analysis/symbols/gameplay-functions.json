@@ -766,7 +766,7 @@
     {
       "address": "0x417b50",
       "name": "exit_high_score_screen",
-      "description": "Leaves the high-score screen and resumes the front-end state that owns the postal or challenge table. Cross-port Android symbols match this helper to `cRHighScore::Exit()`."
+      "description": "Leaves the high-score screen, restores front-end state `2` for postal or `10` for challenge, and seeds rebuild selector `2` on both paths. Cross-port Android symbols match this helper to `cRHighScore::Exit()`."
     },
     {
       "address": "0x417bc0",
@@ -1487,7 +1487,7 @@
     {
       "address": "0x4342c0",
       "name": "open_star_field",
-      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes one sprite-based streak entry per requested slot."
+      "description": "Allocates the persistent star-field controller storage and, when the global star-pass flag is enabled, immediately initializes the live streak sprite pool for the requested slot count."
     },
     {
       "address": "0x434310",
@@ -1507,7 +1507,7 @@
     {
       "address": "0x4346f0",
       "name": "update_star_field",
-      "description": "Runs the star-field controller state machine, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update."
+      "description": "Runs the four-state star-field controller, fading the streak sprites in or out around the global star-pass flag and dispatching the per-frame camera-relative position update."
     },
     {
       "address": "0x434800",
