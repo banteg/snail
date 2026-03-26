@@ -215,14 +215,58 @@ typedef struct NukeController {
     void* sprite_slots[25];
 } NukeController;
 
+typedef struct TipMessageDefinition {
+    uint32_t flags;
+    float layout_y;
+    float text_scale;
+    float dismiss_seconds;
+    char* text;
+} TipMessageDefinition;
+
+typedef struct TipSlot {
+    int32_t active;
+    int32_t previous_outer_owner;
+    TipMessageDefinition* definition;
+    void* widget_main;
+    void* widget_ok;
+    void* widget_disable;
+    float dismiss_progress;
+    float dismiss_step;
+} TipSlot;
+
+typedef struct TipManager {
+    uint8_t _pad_00[0x38];
+    TipSlot slots[3];
+} TipManager;
+
 typedef struct PlayerRowEventState {
     int32_t id;
-    int32_t state;
-    float timer;
-    uint8_t _pad_0c[0x4];
-    int32_t data_a;
-    int32_t data_b;
+    TipMessageDefinition tip_definition;
 } PlayerRowEventState;
+
+typedef struct RowEventDisplayController {
+    void* widget_a;
+    void* widget_b;
+    void* widget_c;
+    void* widget_d;
+    void* widget_e;
+    int32_t state;
+    uint8_t gate_18;
+    uint8_t _pad_19[0x3];
+    int32_t parcel_target_count;
+    int32_t bonus_enabled;
+    int32_t staged_parcel_count;
+    int32_t delivered_parcel_count;
+    float progress;
+    float progress_step;
+    float widget_world_x;
+    float widget_world_y;
+    float widget_world_z;
+    float bonus_blink_progress;
+    float bonus_blink_step;
+    int32_t bonus_score;
+    int32_t display_token;
+} RowEventDisplayController;
 
 typedef TransformMatrix PathTemplateTransform;
 
@@ -415,6 +459,11 @@ void __thiscall start_squidge_z(SquidgeState* squidge, float value);
 void __thiscall update_squidge(SquidgeState* squidge);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
+TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_only_ok);
+int32_t __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_only_ok);
+int32_t __fastcall flush_row_event_display(RowEventDisplayController* controller);
+int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controller);
+void __fastcall update_row_event_display(RowEventDisplayController* controller);
 int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_subgoldy(Player* player);

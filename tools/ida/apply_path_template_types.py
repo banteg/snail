@@ -147,6 +147,26 @@ TRUSTED_DECLARATIONS = [
         "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
     ),
     (
+        "enqueue_tip_message",
+        "TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_only_ok);",
+    ),
+    (
+        "initialize_tip",
+        "int32_t __thiscall initialize_tip(TipSlot* slot, TipMessageDefinition* definition, int32_t show_only_ok);",
+    ),
+    (
+        "flush_row_event_display",
+        "int32_t __fastcall flush_row_event_display(RowEventDisplayController* controller);",
+    ),
+    (
+        "register_parcel_delivery",
+        "int32_t __fastcall register_parcel_delivery(RowEventDisplayController* controller);",
+    ),
+    (
+        "update_row_event_display",
+        "void __fastcall update_row_event_display(RowEventDisplayController* controller);",
+    ),
+    (
         "initialize_cameraman",
         "int32_t __thiscall initialize_cameraman(CameramanState* cameraman);",
     ),

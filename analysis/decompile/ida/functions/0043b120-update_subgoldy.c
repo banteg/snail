@@ -156,7 +156,7 @@ int32_t __thiscall update_subgoldy(Player *player)
       update_damage_gauge((int)&player->damage_gauge);
       update_progress_bar();
       update_warning((float *)&player->_pad_3f0[4]);
-      update_row_event_display((_DWORD **)player->game + 4835830);
+      update_row_event_display((RowEventDisplayController *)((char *)player->game + 19343320));
     }
     return result;
   }
@@ -236,11 +236,13 @@ LABEL_60:
             player->row_event.id = v29;
             if ( *((_BYTE *)player->game + 16928 * *((_DWORD *)v28 + 60) + 42608) )
             {
-              player->row_event.state = 2;
-              player->row_event.data_b = (int32_t)player->game + 16928 * *((_DWORD *)v28 + 60) + 42608;
-              player->row_event.timer = 0.0;
-              *(_DWORD *)player->row_event._pad_0c = 1106247680;
-              player->row_event.data_a = *((_DWORD *)player->game + 4232 * *((_DWORD *)v28 + 60) + 10780);
+              player->row_event.tip_definition.flags = 2;
+              player->row_event.tip_definition.text = (char *)player->game + 16928 * *((_DWORD *)v28 + 60) + 42608;
+              player->row_event.tip_definition.layout_y = 0.0;
+              player->row_event.tip_definition.text_scale = 30.0;
+              player->row_event.tip_definition.dismiss_seconds = *((float *)player->game
+                                                                 + 4232 * *((_DWORD *)v28 + 60)
+                                                                 + 10780);
               if ( !player->_pad_124[40] )
               {
                 player->_pad_124[40] = 1;
@@ -254,7 +256,10 @@ LABEL_60:
               v31 = player->game;
               if ( *((_DWORD *)v31 + 4232 * v30 + 10781) != -1 )
                 play_voice_manager((int)unk_751498, 13, 2u, *((_DWORD *)v31 + 4232 * v30 + 10781));
-              enqueue_tip_message((_DWORD *)MEMORY[0x4DF904] + 4955094, (int)&player->row_event.state, 1);
+              enqueue_tip_message(
+                (TipManager *)((char *)MEMORY[0x4DF904] + 19820376),
+                &player->row_event.tip_definition,
+                1);
             }
           }
           if ( !player->attachment_exit_pending )
@@ -729,7 +734,7 @@ LABEL_98:
               {
                 v69 = player->game;
                 if ( *((_DWORD *)v69 + 4835835) )
-                  flush_row_event_display((_DWORD *)v69 + 4835830);
+                  flush_row_event_display((RowEventDisplayController *)((char *)v69 + 19343320));
                 v70 = player->game;
                 if ( *((_DWORD *)v70 + 16) )
                 {
@@ -1009,7 +1014,7 @@ LABEL_364:
             }
           }
 LABEL_365:
-          update_row_event_display((_DWORD **)player->game + 4835830);
+          update_row_event_display((RowEventDisplayController *)((char *)player->game + 19343320));
           ++*((_DWORD *)player->game + 4147935);
           ++*((_DWORD *)player->game + 4180343);
           v107 = player->game;

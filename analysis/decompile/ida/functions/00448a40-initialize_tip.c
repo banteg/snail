@@ -3,84 +3,85 @@
 /* selector: initialize_tip */
 
 // Builds one gameplay tip slot, including the main border widget, optional OK or Disable buttons, and the timed auto-dismiss rate for transient tips.
-char __thiscall sub_448A40(_DWORD *this, int a2, int a3)
+int32_t __thiscall initialize_tip(TipSlot *slot, TipMessageDefinition *definition, int32_t show_only_ok)
 {
-  int v4; // edi
-  _DWORD *v5; // eax
-  int v6; // eax
-  _DWORD *v7; // eax
-  _DWORD *v8; // eax
-  _DWORD *v9; // eax
-  int v10; // ecx
-  char *v11; // ecx
-  char result; // al
+  TipMessageDefinition *v4; // edi
+  Color4f *v5; // eax
+  TipMessageDefinition *v6; // eax
+  Color4f *v7; // eax
+  Color4f *v8; // eax
+  Color4f *v9; // eax
+  void *widget_main; // ecx
+  TipMessageDefinition *v11; // ecx
+  int32_t result; // eax
   int v13; // [esp-8h] [ebp-24h]
-  float v14; // [esp-4h] [ebp-20h]
+  float layout_y; // [esp-4h] [ebp-20h]
   float v15; // [esp+0h] [ebp-1Ch]
   float v16; // [esp+0h] [ebp-1Ch]
   float v17; // [esp+0h] [ebp-1Ch]
-  _DWORD v18[4]; // [esp+Ch] [ebp-10h] BYREF
+  Color4f v18; // [esp+Ch] [ebp-10h] BYREF
 
-  *this = 1;
-  if ( a2 )
-    *(this + 2) = a2;
+  slot->active = 1;
+  if ( definition )
+    slot->definition = definition;
   else
-    *(this + 2) = &unk_4AC5C8;
-  *(this + 3) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-  v4 = *(this + 2);
-  v14 = *(float *)(v4 + 4);
-  v13 = (unsigned __int8)(~(unsigned __int8)*(_DWORD *)v4 & 4) >> 1;
-  v5 = set_color_rgba(v18, 1065353216, 1065353216, 1065353216, 1065353216);
+    slot->definition = (TipMessageDefinition *)&unk_4AC5C8;
+  slot->widget_main = (void *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+  v4 = slot->definition;
+  layout_y = v4->layout_y;
+  v13 = (unsigned __int8)(~(unsigned __int8)v4->flags & 4) >> 1;
+  v5 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
   initialize_frontend_widget(
-    *(this + 3),
+    (int)slot->widget_main,
     2,
-    *(char **)(v4 + 16),
+    v4->text,
     20,
-    *(_DWORD *)(v4 + 4),
-    *(float *)(v4 + 8),
+    LODWORD(v4->layout_y),
+    v4->text_scale,
     (int)v5,
     v13,
-    v14);
-  v6 = *(this + 2);
-  if ( (*(_BYTE *)v6 & 2) != 0 )
+    layout_y);
+  v6 = slot->definition;
+  if ( (v6->flags & 2) != 0 )
   {
-    *(this + 6) = 0;
-    *((float *)this + 7) = 1.0 / (*(float *)(v6 + 12) * 60.0);
+    slot->dismiss_progress = 0.0;
+    slot->dismiss_step = 1.0 / (v6->dismiss_seconds * 60.0);
   }
-  if ( (*(_BYTE *)v6 & 1) != 0 )
+  if ( (v6->flags & 1) != 0 )
   {
-    *(this + 4) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-    if ( a3 )
+    slot->widget_ok = (void *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+    if ( show_only_ok )
     {
-      v17 = *(float *)(*(this + 2) + 4);
-      v9 = set_color_rgba(v18, 1065353216, 1065353216, 1065353216, 1065353216);
-      initialize_frontend_widget(*(this + 4), 20, aOk, 20, 0, 0.0, (int)v9, 2, v17);
-      v10 = *(this + 3);
-      *(this + 5) = 0;
-      stack_widget_below(*(this + 4), v10);
+      v17 = slot->definition->layout_y;
+      v9 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
+      initialize_frontend_widget((int)slot->widget_ok, 20, aOk, 20, 0, 0.0, (int)v9, 2, v17);
+      widget_main = slot->widget_main;
+      slot->widget_disable = nullptr;
+      stack_widget_below((int)slot->widget_ok, (int)widget_main);
     }
     else
     {
-      v15 = *(float *)(*(this + 2) + 4) + 40.0;
-      v7 = set_color_rgba(v18, 1065353216, 1065353216, 1065353216, 1065353216);
-      initialize_frontend_widget(*(this + 4), 20, aOk, 20, 0, 0.0, (int)v7, 2, v15);
-      *(this + 5) = allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
-      v16 = *(float *)(*(this + 2) + 4) - 60.0;
-      v8 = set_color_rgba(v18, 1065353216, 1065353216, 1065353216, 1065353216);
-      initialize_frontend_widget(*(this + 5), 20, aDisable, 20, 0, 0.0, (int)v8, 2, v16);
-      stack_widget_below(*(this + 5), *(this + 3));
-      stack_widget_below(*(this + 4), *(this + 3));
+      v15 = slot->definition->layout_y + 40.0;
+      v7 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
+      initialize_frontend_widget((int)slot->widget_ok, 20, aOk, 20, 0, 0.0, (int)v7, 2, v15);
+      slot->widget_disable = (void *)allocate_border((_DWORD *)MEMORY[0x4DF904] + 723);
+      v16 = slot->definition->layout_y - 60.0;
+      v8 = set_color_rgba(&v18, 1.0, 1.0, 1.0, 1.0);
+      initialize_frontend_widget((int)slot->widget_disable, 20, aDisable, 20, 0, 0.0, (int)v8, 2, v16);
+      stack_widget_below((int)slot->widget_disable, (int)slot->widget_main);
+      stack_widget_below((int)slot->widget_ok, (int)slot->widget_main);
     }
   }
   else
   {
-    *(this + 4) = 0;
-    *(this + 5) = 0;
+    slot->widget_ok = nullptr;
+    slot->widget_disable = nullptr;
   }
-  v11 = (char *)*(this + 2);
-  *(this + 1) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-  result = *v11;
-  if ( (*v11 & 1) != 0 )
+  v11 = slot->definition;
+  result = *((_DWORD *)MEMORY[0x4DF904] + 110);
+  slot->previous_outer_owner = result;
+  LOBYTE(result) = v11->flags;
+  if ( (v11->flags & 1) != 0 )
     *((_DWORD *)MEMORY[0x4DF904] + 110) = 22;
   return result;
 }

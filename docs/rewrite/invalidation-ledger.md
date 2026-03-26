@@ -57,3 +57,9 @@ Template:
 - invalidated claim: `start_squidge_z` returns `float`
 - replacement evidence: the raw Windows helper only seeds `SquidgeState.z_phase` and `z_velocity`; on a fresh and current `.i64`, typing it as `void __thiscall start_squidge_z(SquidgeState*, float)` restores a clean high-level `update_subgoldy` decompile, while the float-return prototype alone forces Hex-Rays back into inline x87 asm
 - port consequence: keep the checked-in BN/IDA type lane and any future helper signatures on `void`; do not infer helper return types from transient x87 stack residue when the call sites ignore the result
+
+## 2026-03-26 - Player row-event tail
+
+- invalidated claim: `player + 0x1ec..+0x1fc` is a standalone row-event `state/timer/data` block
+- replacement evidence: `update_subgoldy` seeds that tail and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; `initialize_tip` then reads it as flags, layout, dismiss timing, and text payload
+- port consequence: keep only `row_event.id` as row-event-specific; model the tail as an inline tip-message definition and avoid hardening the old pure-row-event interpretation in Zig or docs

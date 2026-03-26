@@ -3,48 +3,48 @@
 /* selector: flush_row_event_display */
 
 // Fast-forwards the active gameplay row-event display by paying out any remaining row score awards, destroying its widget actors, and clearing the owning controller state.
-int __thiscall sub_404830(_DWORD *this)
+int32_t __fastcall flush_row_event_display(RowEventDisplayController *controller)
 {
-  int result; // eax
-  int v3; // eax
-  int v4; // ecx
-  int v5; // ecx
-  int v6; // eax
-  _DWORD *v7; // [esp-4h] [ebp-8h]
+  int32_t result; // eax
+  int32_t delivered_parcel_count; // eax
+  int32_t parcel_target_count; // ecx
+  int32_t v5; // ecx
+  int32_t v6; // eax
+  _DWORD *widget_a; // [esp-4h] [ebp-8h]
 
-  result = *(this + 5);
+  result = controller->state;
   if ( result )
   {
-    v3 = *(this + 10);
-    v4 = *(this + 7);
-    if ( v3 != v4 )
+    delivered_parcel_count = controller->delivered_parcel_count;
+    parcel_target_count = controller->parcel_target_count;
+    if ( delivered_parcel_count != parcel_target_count )
     {
-      if ( v3 < v4 )
+      if ( delivered_parcel_count < parcel_target_count )
       {
         do
         {
           add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 4, 0);
-          v5 = *(this + 7);
-          v6 = *(this + 10) + 1;
-          *(this + 10) = v6;
+          v5 = controller->parcel_target_count;
+          v6 = controller->delivered_parcel_count + 1;
+          controller->delivered_parcel_count = v6;
         }
         while ( v6 < v5 );
       }
-      if ( *(this + 8) )
-        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), *(this + 18), 0);
+      if ( controller->bonus_enabled )
+        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), controller->bonus_score, 0);
     }
-    v7 = (_DWORD *)*this;
-    ++*(this + 10);
-    kill_border(v7);
-    kill_border((_DWORD *)*(this + 1));
-    kill_border((_DWORD *)*(this + 3));
-    kill_border((_DWORD *)*(this + 2));
-    kill_border((_DWORD *)*(this + 4));
-    result = *(this + 19);
+    widget_a = controller->widget_a;
+    ++controller->delivered_parcel_count;
+    kill_border(widget_a);
+    kill_border((_DWORD *)controller->widget_b);
+    kill_border((_DWORD *)controller->widget_d);
+    kill_border((_DWORD *)controller->widget_c);
+    kill_border((_DWORD *)controller->widget_e);
+    result = controller->display_token;
     if ( *((_DWORD *)MEMORY[0x4DF904] + 1097752) != result )
       *((_DWORD *)MEMORY[0x4DF904] + 1097752) = result;
   }
-  *(this + 5) = 0;
+  controller->state = 0;
   return result;
 }
 

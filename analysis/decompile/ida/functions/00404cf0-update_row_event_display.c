@@ -3,21 +3,21 @@
 /* selector: update_row_event_display */
 
 // Runs the gameplay row-event display state machine, including staged score payout, widget show or hide transitions, and the final handoff into `flush_row_event_display`.
-void __thiscall sub_404CF0(_DWORD **this)
+void __fastcall update_row_event_display(RowEventDisplayController *controller)
 {
-  _DWORD *v2; // ecx
+  _DWORD *widget_b; // ecx
   double v3; // st7
-  int v4; // eax
+  int32_t staged_parcel_count; // eax
   char *v5; // eax
   int v6; // ecx
-  int v7; // eax
-  int v8; // ecx
+  int32_t parcel_target_count; // eax
+  int32_t v8; // ecx
   double v9; // st7
-  int v10; // eax
+  int32_t bonus_enabled; // eax
   float *v11; // eax
   double v12; // st7
-  _DWORD *v13; // ecx
-  int v14; // ecx
+  _DWORD *widget_c; // ecx
+  int32_t delivered_parcel_count; // ecx
   float v15; // [esp+8h] [ebp-3Ch]
   float v16; // [esp+Ch] [ebp-38h]
   float v17; // [esp+Ch] [ebp-38h]
@@ -32,36 +32,36 @@ void __thiscall sub_404CF0(_DWORD **this)
   float v26; // [esp+3Ch] [ebp-8h]
   float v27; // [esp+40h] [ebp-4h]
 
-  if ( *(this + 5) )
+  if ( controller->state )
   {
-    v2 = *(this + 1);
+    widget_b = controller->widget_b;
     if ( *((_BYTE *)MEMORY[0x4DF904] + 476705) )
     {
-      hide_border_init(v2);
-      hide_border_init(*this);
-      hide_border_init(*(this + 3));
-      hide_border_init(*(this + 2));
-      hide_border_init(*(this + 4));
+      hide_border_init(widget_b);
+      hide_border_init(controller->widget_a);
+      hide_border_init((_DWORD *)controller->widget_d);
+      hide_border_init((_DWORD *)controller->widget_c);
+      hide_border_init((_DWORD *)controller->widget_e);
     }
     else
     {
-      unhide_border_init(v2);
-      unhide_border_init(*this);
-      unhide_border_init(*(this + 3));
-      unhide_border_init(*(this + 4));
-      switch ( (unsigned int)*(this + 5) )
+      unhide_border_init(widget_b);
+      unhide_border_init(controller->widget_a);
+      unhide_border_init((_DWORD *)controller->widget_d);
+      unhide_border_init((_DWORD *)controller->widget_e);
+      switch ( controller->state )
       {
-        case 0u:
+        case 0:
           return;
-        case 1u:
-          v3 = *((float *)this + 12) + *((float *)this + 11);
-          *((float *)this + 11) = v3;
+        case 1:
+          v3 = controller->progress_step + controller->progress;
+          controller->progress = v3;
           if ( v3 > 1.0 )
           {
-            v4 = (int)*(this + 9);
-            if ( v4 < (int)*(this + 7) )
+            staged_parcel_count = controller->staged_parcel_count;
+            if ( staged_parcel_count < controller->parcel_target_count )
             {
-              *(this + 9) = (_DWORD *)(v4 + 1);
+              controller->staged_parcel_count = staged_parcel_count + 1;
               v5 = spawn_track_parcel(
                      (int *)MEMORY[0x4DF904] + 119174,
                      (float *)MEMORY[0x4DF904] + 1101773,
@@ -71,60 +71,60 @@ void __thiscall sub_404CF0(_DWORD **this)
               *(_DWORD *)(v6 + 100) = 0;
               *(_DWORD *)(*((_DWORD *)v5 + 21) + 96) = 0;
             }
-            v7 = (int)*(this + 7);
-            v8 = (int)*(this + 9);
-            *(this + 11) = nullptr;
-            if ( v8 == v7 )
+            parcel_target_count = controller->parcel_target_count;
+            v8 = controller->staged_parcel_count;
+            controller->progress = 0.0;
+            if ( v8 == parcel_target_count )
             {
-              if ( v7 )
+              if ( parcel_target_count )
               {
-                *(this + 5) = (_DWORD *)2;
+                controller->state = 2;
               }
               else
               {
-                *(this + 5) = (_DWORD *)6;
-                *(this + 11) = nullptr;
-                *(this + 12) = (_DWORD *)1007192201;
+                controller->state = 6;
+                controller->progress = 0.0;
+                controller->progress_step = 0.0083333338;
               }
             }
           }
           goto LABEL_27;
-        case 3u:
-          unhide_border_init(*(this + 4));
-          v10 = (int)*(this + 8);
-          *((_BYTE *)this + 24) = 0;
-          *(this + 5) = (_DWORD *)4;
-          if ( !v10 )
+        case 3:
+          unhide_border_init((_DWORD *)controller->widget_e);
+          bonus_enabled = controller->bonus_enabled;
+          controller->gate_18 = 0;
+          controller->state = 4;
+          if ( !bonus_enabled )
             goto LABEL_18;
-          unhide_border_init(*(this + 2));
-          if ( *(this + 7) )
+          unhide_border_init((_DWORD *)controller->widget_c);
+          if ( controller->parcel_target_count )
             goto LABEL_18;
           v11 = (float *)MEMORY[0x4DF904];
           if ( *((_DWORD *)MEMORY[0x4DF904] + 119190) == 1 )
           {
-            add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, (int)*(this + 18));
+            add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, controller->bonus_score);
             play_sound_effect(49);
 LABEL_18:
             v11 = (float *)MEMORY[0x4DF904];
           }
-          if ( *(this + 8) )
+          if ( controller->bonus_enabled )
           {
-            v12 = *((float *)this + 17) + *((float *)this + 16);
-            *((float *)this + 16) = v12;
+            v12 = controller->bonus_blink_step + controller->bonus_blink_progress;
+            controller->bonus_blink_progress = v12;
             if ( v12 > 1.0 )
             {
-              v13 = *(this + 2);
-              *(this + 16) = nullptr;
-              if ( (v13[104] & 0x1000) != 0 )
-                unhide_border_init(v13);
+              widget_c = controller->widget_c;
+              controller->bonus_blink_progress = 0.0;
+              if ( (widget_c[104] & 0x1000) != 0 )
+                unhide_border_init(widget_c);
               else
-                hide_border_init(v13);
+                hide_border_init(widget_c);
             }
             v11 = (float *)MEMORY[0x4DF904];
           }
           if ( (*(_DWORD *)(*((_DWORD *)v11 + 163) + 60) & 0x4000) != 0 )
           {
-            *(this + 5) = (_DWORD *)5;
+            controller->state = 5;
             play_sound_effect(8);
 LABEL_27:
             v11 = (float *)MEMORY[0x4DF904];
@@ -140,25 +140,25 @@ LABEL_27:
           v24 = v20 + v22;
           v25 = v21 + v23;
           v15 = v11[91] + v11[91] + v11[87] * 7.3000002 + v11[99] + v11[95] * 6.0;
-          *((float *)this + 13) = v15;
+          controller->widget_world_x = v15;
           v17 = v24 + v26;
-          *((float *)this + 14) = v17;
+          controller->widget_world_y = v17;
           v19 = v25 + v27;
-          *((float *)this + 15) = v19;
-          v14 = (int)*(this + 10);
-          if ( v14 >= 10 )
-            *((_BYTE *)*(this + 1) + 716) = v14 / 10 + 48;
+          controller->widget_world_z = v19;
+          delivered_parcel_count = controller->delivered_parcel_count;
+          if ( delivered_parcel_count >= 10 )
+            *((_BYTE *)controller->widget_b + 716) = delivered_parcel_count / 10 + 48;
           else
-            *((_BYTE *)*(this + 1) + 716) = 32;
-          *((_BYTE *)*(this + 1) + 717) = (int)*(this + 10) % 10 + 48;
+            *((_BYTE *)controller->widget_b + 716) = 32;
+          *((_BYTE *)controller->widget_b + 717) = controller->delivered_parcel_count % 10 + 48;
           break;
-        case 4u:
+        case 4:
           goto LABEL_18;
-        case 6u:
-          v9 = *((float *)this + 12) + *((float *)this + 11);
-          *((float *)this + 11) = v9;
+        case 6:
+          v9 = controller->progress_step + controller->progress;
+          controller->progress = v9;
           if ( v9 > 1.0 )
-            *(this + 5) = (_DWORD *)3;
+            controller->state = 3;
           goto LABEL_27;
         default:
           goto LABEL_27;

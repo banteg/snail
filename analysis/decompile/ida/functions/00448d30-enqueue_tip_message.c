@@ -3,14 +3,14 @@
 /* selector: enqueue_tip_message */
 
 // Allocates one of the three small gameplay tip-message slots, seeds it with the requested text payload, and warns if all slots are already occupied.
-_DWORD *__thiscall sub_448D30(_DWORD *this, int a2, int a3)
+TipSlot *__thiscall enqueue_tip_message(TipManager *manager, TipMessageDefinition *definition, int32_t show_only_ok)
 {
   int v3; // eax
-  _DWORD *i; // edx
-  _DWORD *v6; // esi
+  TipSlot *i; // edx
+  TipSlot *v6; // esi
 
   v3 = 0;
-  for ( i = this + 14; *i; i += 8 )
+  for ( i = manager->slots; i->active; ++i )
   {
     if ( ++v3 >= 3 )
     {
@@ -18,8 +18,8 @@ _DWORD *__thiscall sub_448D30(_DWORD *this, int a2, int a3)
       return nullptr;
     }
   }
-  v6 = this + 8 * v3 + 14;
-  initialize_tip(v6, a2, a3);
+  v6 = &manager->slots[v3];
+  initialize_tip(v6, definition, show_only_ok);
   return v6;
 }
 

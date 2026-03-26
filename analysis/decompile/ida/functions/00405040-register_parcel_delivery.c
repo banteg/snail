@@ -3,22 +3,28 @@
 /* selector: register_parcel_delivery */
 
 // Records one delivered parcel on the gameplay row-event display controller, awards the per-parcel score event, and dispatches the all-parcels-delivered bonus when the final parcel arrives.
-void __thiscall sub_405040(int *this)
+int32_t __fastcall register_parcel_delivery(RowEventDisplayController *controller)
 {
-  if ( *(this + 10) != *(this + 7) )
+  int32_t result; // eax
+
+  result = controller->delivered_parcel_count;
+  if ( result != controller->parcel_target_count )
   {
     add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 4, 0);
-    ++*(this + 10);
+    ++controller->delivered_parcel_count;
     play_sound_effect(45);
-    if ( *(this + 10) == *(this + 7) )
+    result = controller->parcel_target_count;
+    if ( controller->delivered_parcel_count == result )
     {
-      if ( *(this + 8) )
+      result = controller->bonus_enabled;
+      if ( result )
       {
-        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, *(this + 18));
+        add_subgoldy_score((int *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]), 5, controller->bonus_score);
         play_sound_effect(49);
       }
-      *(this + 5) = 3;
+      controller->state = 3;
     }
   }
+  return result;
 }
 

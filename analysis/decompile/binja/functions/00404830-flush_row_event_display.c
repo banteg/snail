@@ -4,7 +4,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: flush_row_event_display @ 0x404830 */
 
-00404833        uint32_t result = controller->state
+00404833        int32_t result = controller->state
 00404838        if (result != 0)
 0040483e        int32_t delivered_parcel_count = controller->delivered_parcel_count
 00404841        int32_t parcel_target_count = controller->parcel_target_count

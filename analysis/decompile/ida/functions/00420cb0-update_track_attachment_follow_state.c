@@ -424,8 +424,8 @@ LABEL_62:
       v84 = v36;
       out_position->z = v84;
       out_position->x = v26;
-      *(float *)&follow_state->player->_pad_124[444] = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
-      *(_DWORD *)&follow_state->player->_pad_124[440] = *(_DWORD *)&follow_state->player->_pad_124[444];
+      follow_state->player->cutscene_pitch_cycle_step = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
+      follow_state->player->cutscene_pitch_cycle = follow_state->player->cutscene_pitch_cycle_step;
       play_voice_manager((int)unk_751498, 15, 0, -1);
     }
     else

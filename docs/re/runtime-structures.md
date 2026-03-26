@@ -131,11 +131,12 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x04` and `+0x18` remain intentionally unresolved in this pass
 - `player + 0x1e8` is a real inline `PlayerRowEventState`
   - `+0x00`: `id`
-  - `+0x04`: `state`
-  - `+0x08`: `timer`
-  - `+0x0c`: unresolved `32.0f` lane seeded on the new-event path
-  - `+0x10`: `data_a`
-  - `+0x14`: `data_b`
+  - `+0x04`: inline `tip_definition.flags`
+  - `+0x08`: `tip_definition.layout_y`
+  - `+0x0c`: `tip_definition.text_scale`
+  - `+0x10`: `tip_definition.dismiss_seconds`
+  - `+0x14`: `tip_definition.text`
+  - `update_subgoldy` seeds that tail as a small tip payload and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; it is not a standalone row-event controller suffix
 - `player + 0x2d8` is a broader `control_override_active` gate than the earlier cutscene-only guess
   - it suppresses several normal control and attachment branches in `update_subgoldy`
   - `initialize_cutscene` also reads it to decide whether to auto-dispatch the default idle animation
@@ -484,7 +485,13 @@ The inline controller at `game + 0x12727d8` is now typed as `RowEventDisplayCont
 
 High-confidence current fields:
 
+- `+0x00`: `widget_a`
+- `+0x04`: `widget_b`
+- `+0x08`: `widget_c`
+- `+0x0c`: `widget_d`
+- `+0x10`: `widget_e`
 - `+0x14`: `state`
+- `+0x18`: `gate_18`
 - `+0x1c`: `parcel_target_count`
 - `+0x20`: `bonus_enabled`
 - `+0x24`: `staged_parcel_count`
@@ -504,7 +511,7 @@ Current practical read:
 - `update_row_event_display` drives the controller state machine and the staged parcel-widget reveal path
 - `register_parcel_delivery` increments `delivered_parcel_count`, awards the parcel score tier, applies the optional final bonus, and sets `state = 3`
 - `flush_row_event_display` fast-forwards the remaining parcel payout, destroys the owned widgets, copies `display_token` into the global presentation slot, and clears `state`
-- the byte at `+0x18` still contains the old `game + 0x12727f0` gate and should stay unnamed until its exact gameplay meaning is recovered
+- the byte at `+0x18` still contains the old `game + 0x12727f0` gate; it is now tracked as `gate_18` but should stay semantically unresolved until its exact gameplay meaning is recovered
 
 ## Track Parcel Runtime
 

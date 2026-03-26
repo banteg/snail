@@ -21,7 +21,7 @@
 00404d45        unhide_border_init(controller_1->widget_a)
 00404d4d        unhide_border_init(controller_1->widget_d)
 00404d55        unhide_border_init(controller_1->widget_e)
-00404d5a        uint32_t state = controller_1->state
+00404d5a        int32_t state = controller_1->state
 00404d60        if (state u> 6)
 00404d60        goto label_404ed7
 00404d66        int32_t bonus_score
@@ -59,7 +59,7 @@
 00404e26        case 3
 00404e26        unhide_border_init(controller_1->widget_e)
 00404e2b        int32_t bonus_enabled = controller_1->bonus_enabled
-00404e2e        controller_1->_pad18[0] = 0
+00404e2e        controller_1->gate_18 = 0
 00404e33        controller_1->state = 4
 00404e3a        if (bonus_enabled == 0)
 00404e3a        goto label_404e74

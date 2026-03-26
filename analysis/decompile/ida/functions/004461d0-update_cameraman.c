@@ -125,9 +125,9 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     cameraman->attachment_lift_envelope = 0.0;
   }
   v12 = cameraman->player;
-  if ( *(float *)&v12->_pad_124[440] > 0.0 )
+  if ( v12->cutscene_pitch_cycle > 0.0 )
   {
-    v29 = *(float *)&v12->_pad_124[440] * 4.712389 + 1.5707964;
+    v29 = v12->cutscene_pitch_cycle * 4.712389 + 1.5707964;
     cameraman->attachment_lift_envelope = (0.5 - cosine(v29) * 0.5) * 0.23999999 + cameraman->attachment_lift_envelope;
   }
   v13 = cameraman->player;
