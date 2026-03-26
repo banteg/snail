@@ -3,23 +3,23 @@
 /* selector: start_invincible_shell */
 
 // Arms the runner-owned invincible-shell controller when the native invincible bit becomes active, seeds its fade timers, raises the shared render bit, and plays `SFX2/INVINCIBLE.OGG`.
-void __thiscall sub_444AE0(_DWORD *this)
+void __thiscall start_invincible_shell(InvincibleShellController *shell)
 {
-  int v1; // eax
+  int32_t state; // eax
 
-  v1 = *(this + 32);
-  if ( v1 )
+  state = shell->state;
+  if ( state )
   {
-    if ( v1 == 3 )
-      *(this + 32) = 1;
+    if ( state == 3 )
+      shell->state = 1;
   }
   else
   {
-    *(this + 32) = 1;
-    *(this + 33) = 0;
-    *(this + 34) = 1023969417;
-    *(this + 35) = 0;
-    *(this + 36) = 1023969417;
+    shell->state = 1;
+    shell->spin_phase = 0.0;
+    shell->spin_phase_step = 0.033333335;
+    shell->fade_progress = 0.0;
+    shell->fade_step = 0.033333335;
     *((_DWORD *)MEMORY[0x4DF904] + 1101798) |= 0x20u;
     play_registered_sound_sample_scaled(48, 1.0);
   }

@@ -46,7 +46,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
   result = (int32_t)MEMORY[0x4DF904];
   if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) )
   {
-    update_snail_skin_transition(&presentation->snail_skin_transition);
+    update_snail_skin_transition((SnailSkinTransitionState *)&presentation->weapon_release_active);
     owner_player = presentation->owner_player;
     if ( owner_player->cutscene_pitch_cycle <= 0.0 )
     {
@@ -84,7 +84,11 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.y = pad_00[1];
     presentation->live_matrix.position.z = pad_00[2];
     qmemcpy(&v36, &presentation->live_matrix, sizeof(v36));
-    linear_interpolate_matrix(&presentation->live_matrix, &v36, (TransformMatrix *)presentation->_pad_c0, 0.69999999);
+    linear_interpolate_matrix(
+      &presentation->live_matrix,
+      &v36,
+      (const TransformMatrix *)presentation->_pad_c0,
+      0.69999999);
     y = presentation->live_matrix.basis_up.y;
     presentation->live_matrix.position.x = v36.position.x;
     presentation->live_matrix.position.y = v36.position.y;
@@ -94,17 +98,17 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
       v26 = (presentation->live_matrix.position.x - *(float *)&presentation->_pad_c0[48]) * 0.80000001;
       rotate_matrix_world_y(&presentation->live_matrix, v26);
     }
-    v11 = *(float *)&presentation->_pad_15bc[4] + *(float *)presentation->_pad_15bc;
-    *(float *)presentation->_pad_15bc = v11;
+    v11 = presentation->wobble.roll_phase_step + presentation->wobble.roll_phase;
+    presentation->wobble.roll_phase = v11;
     if ( !(v13 | v14) )
-      *(float *)presentation->_pad_15bc = v11 - 1.0;
-    v15 = *(float *)&presentation->_pad_15bc[12] + *(float *)&presentation->_pad_15bc[8];
-    *(float *)&presentation->_pad_15bc[8] = v15;
+      presentation->wobble.roll_phase = v11 - 1.0;
+    v15 = presentation->wobble.lift_phase_step + presentation->wobble.lift_phase;
+    presentation->wobble.lift_phase = v15;
     if ( !(v17 | v18) )
-      *(float *)&presentation->_pad_15bc[8] = v15 - 1.0;
+      presentation->wobble.lift_phase = v15 - 1.0;
     qmemcpy(&v40, v8, sizeof(v40));
     set_matrix_identity(&v38);
-    v27 = *(float *)presentation->_pad_15bc * 6.2831855;
+    v27 = presentation->wobble.roll_phase * 6.2831855;
     v28 = sine(v27) * 0.017449999;
     rotate_matrix_world_z(&v38, v28);
     invert_matrix_from_source(&v39, v19);
@@ -113,7 +117,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     multiply_matrix_in_place(&presentation->live_matrix, &v38);
     presentation->live_matrix.position.y = presentation->live_matrix.position.y - 1.3;
     multiply_matrix_in_place(&presentation->live_matrix, &v40);
-    v29 = *(float *)&presentation->_pad_15bc[8] * 6.2831855;
+    v29 = presentation->wobble.lift_phase * 6.2831855;
     v20 = sine(v29);
     v32 = v20 * presentation->live_matrix.basis_up.x;
     v33 = v20 * presentation->live_matrix.basis_up.y;
@@ -123,18 +127,18 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.x = v34 + presentation->live_matrix.position.x;
     presentation->live_matrix.position.y = v35 + presentation->live_matrix.position.y;
     presentation->live_matrix.position.z = v21 * 0.029999999 + presentation->live_matrix.position.z;
-    v22 = *(float *)&presentation->_pad_1894[152];
+    v22 = *(float *)&presentation->invincible_shell._pad_90[4];
     qmemcpy(presentation->_pad_c0, v8, sizeof(presentation->_pad_c0));
     if ( v22 > 0.0 )
     {
-      v30 = *(float *)&presentation->_pad_1894[152] * -2.0943952;
+      v30 = *(float *)&presentation->invincible_shell._pad_90[4] * -2.0943952;
       rotate_matrix_world_y(&presentation->live_matrix, v30);
-      v23 = *(float *)&presentation->_pad_1894[156] + *(float *)&presentation->_pad_1894[152];
-      *(float *)&presentation->_pad_1894[152] = v23;
+      v23 = *(float *)&presentation->invincible_shell._pad_90[8] + *(float *)&presentation->invincible_shell._pad_90[4];
+      *(float *)&presentation->invincible_shell._pad_90[4] = v23;
       if ( v23 > 1.0 )
-        *(_DWORD *)&presentation->_pad_1894[152] = 1065353216;
+        *(_DWORD *)&presentation->invincible_shell._pad_90[4] = 1065353216;
     }
-    if ( presentation->weapon_release_active )
+    if ( presentation->invincible_shell._pad_90[12] )
     {
       presentation->jetpack_channel.live_matrix.position.x = presentation->jetpack_channel.release_step.x
                                                            + presentation->jetpack_channel.live_matrix.position.x;
@@ -177,15 +181,15 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->snail_hotspot_source_matrix_b.position.y = v24[1];
     presentation->snail_hotspot_source_matrix_b.position.z = v24[2];
     update_snail_skin(presentation);
-    if ( presentation->cutscene_ai.state )
+    if ( presentation->cutscene_ai.unresolved_08 )
     {
-      update_cutscene(&presentation->cutscene_ai);
+      update_cutscene((CutsceneAI *)&presentation->snail_skin_transition.progress_step);
     }
     else if ( !presentation->anim_manager.queued_animation_count && !presentation->owner_player->control_override_active )
     {
       dispatch_cutscene_animation(presentation, 1, 0, -1);
     }
-    update_jet_particles((int)&presentation->owner_player->jetpack_gauge);
+    update_jet_particles((int)&presentation->owner_player->_pad_2744[8]);
   }
   return result;
 }

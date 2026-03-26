@@ -232,9 +232,9 @@
 0043b7a6        player_1->__offset(0x1f4).d = 0x41f00000
 0043b7d2        player_1->__offset(0x1f8).d = *(*(game_59 + (eax_26 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa870)
 0043b7d8        int32_t eax_32
-0043b7d8        eax_32.b = player_1->__offset(0x14c).b
+0043b7d8        eax_32.b = player_1->row_event_cutscene_started
 0043b7e0        if (eax_32.b == 0)
-0043b7e2        player_1->__offset(0x14c).b = 1
+0043b7e2        player_1->row_event_cutscene_started = 1
 0043b7e9        var_54 = 0xffffffff
 0043b7eb        unimplemented  {fld st0, dword [ebx]}
 0043b7ed        long double temp15_1 = fconvert.t(0f)
@@ -1061,7 +1061,7 @@
 0043c4fb        game_6.b = player_1->attachment_exit_pending
 0043c503        if (game_6.b == 0)
 0043c507        begin_post_follow_carryover(player_1)
-0043c51c        if (player_1->__offset(0x350).d == 0)
+0043c51c        if (player_1->lane_lean_state == 0)
 0043c522        struct Game* game_38 = player_1->game
 0043c528        var_54 = ebx_1
 0043c532        if (get_track_grid_cell_at_world_position(game_38, var_54)->tile_id == 2)
@@ -1080,28 +1080,28 @@
 0043c5f8        var_54 = ebx_1
 0043c5f9        unimplemented  {fld st0, dword [eax+0x38]}
 0043c5fc        unimplemented  {fmul st0, dword [0x4975b4]}
-0043c602        player_1->__offset(0x35c).d = fconvert.s(unimplemented  {fstp dword [ebp+0x35c], st0})
+0043c602        player_1->lane_lean_progress_step = fconvert.s(unimplemented  {fstp dword [ebp+0x35c], st0})
 0043c602        unimplemented  {fstp dword [ebp+0x35c], st0}
 0043c617        if (get_track_grid_cell_at_world_position(player_1->game, var_54)->tile_id == 2)
-0043c665        player_1->__offset(0x350).d = 1
-0043c66f        player_1->__offset(0x354).d = 0x3f800000
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c619        struct Game* game_47 = player_1->game
 0043c61f        var_54 = ebx_1
 0043c629        if (get_track_grid_cell_at_world_position(game_47, var_54)->tile_id == 5)
-0043c665        player_1->__offset(0x350).d = 1
-0043c66f        player_1->__offset(0x354).d = 0x3f800000
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c62b        struct Game* game_48 = player_1->game
 0043c631        var_54 = ebx_1
 0043c63b        if (get_track_grid_cell_at_world_position(game_48, var_54)->tile_id == 8)
-0043c665        player_1->__offset(0x350).d = 1
-0043c66f        player_1->__offset(0x354).d = 0x3f800000
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c63d        struct Game* game_49 = player_1->game
 0043c643        var_54 = ebx_1
 0043c64d        if (get_track_grid_cell_at_world_position(game_49, var_54)->tile_id == 0xb)
-0043c665        player_1->__offset(0x350).d = 1
-0043c66f        player_1->__offset(0x354).d = 0x3f800000
-0043c64f        player_1->__offset(0x350).d = 2
-0043c659        player_1->__offset(0x354).d = 0xbf800000
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
+0043c64f        player_1->lane_lean_state = 2
+0043c659        player_1->lane_lean_amplitude = -1f
 0043c538        struct Game* game_39 = player_1->game
 0043c53e        var_54 = ebx_1
 0043c548        if (get_track_grid_cell_at_world_position(game_39, var_54)->tile_id == 4)
@@ -1415,10 +1415,9 @@
 0043cb29        update_progress_bar()
 0043cb36        unimplemented  {fld st0, dword [ebp+0x276c]}
 0043cb40        unimplemented  {fld st0, st0}
-0043cb42        player_1->__offset(0x2964).d = ebx_1->x
-0043cb47        float z_2 = ebx_1->z
-0043cb4a        player_1->__offset(0x2968).d = ebx_1->y
-0043cb4d        player_1->__offset(0x296c).d = z_2
+0043cb42        player_1->cached_camera_target_world.x = ebx_1->x
+0043cb4a        player_1->cached_camera_target_world.y = ebx_1->y
+0043cb4d        player_1->cached_camera_target_world.z = ebx_1->z
 0043cb50        unimplemented  {fmul st0, dword [ebp+0x58]}
 0043cb53        float var_18_1 = fconvert.s(unimplemented  {fstp dword [esp+0x38], st0})
 0043cb53        unimplemented  {fstp dword [esp+0x38], st0}
@@ -1469,14 +1468,14 @@
 0043cbcb        unimplemented  {faddp st1, st0}
 0043cbcd        unimplemented  {fld st0, dword [esp+0x20]}
 0043cbd1        unimplemented  {fadd dword [eax]}
-0043cbd3        player_1->__offset(0x2964).d = fconvert.s(unimplemented  {fstp dword [eax], st0})
+0043cbd3        player_1->cached_camera_target_world.x = fconvert.s(unimplemented  {fstp dword [eax], st0})
 0043cbd3        unimplemented  {fstp dword [eax], st0}
 0043cbd5        unimplemented  {fld st0, dword [esp+0x24]}
 0043cbd9        unimplemented  {fadd dword [eax+0x4]}
-0043cbdc        player_1->__offset(0x2968).d = fconvert.s(unimplemented  {fstp dword [eax+0x4], st0})
+0043cbdc        player_1->cached_camera_target_world.y = fconvert.s(unimplemented  {fstp dword [eax+0x4], st0})
 0043cbdc        unimplemented  {fstp dword [eax+0x4], st0}
 0043cbdf        unimplemented  {fadd dword [eax+0x8]}
-0043cbe2        player_1->__offset(0x296c).d = fconvert.s(unimplemented  {fstp dword [eax+0x8], st0})
+0043cbe2        player_1->cached_camera_target_world.z = fconvert.s(unimplemented  {fstp dword [eax+0x8], st0})
 0043cbe2        unimplemented  {fstp dword [eax+0x8], st0}
 0043cbe5        float eax_82 = player_1->__offset(0x3dc).d
 0043cbed        if (eax_82 s> 0)
@@ -1485,15 +1484,15 @@
 0043cc03        ebx_1->x = x_2
 0043cc0b        unimplemented  {fld st0, dword [ecx+0x38]}
 0043cc0e        unimplemented  {fmul st0, dword [0x4975b4]}
-0043cc14        player_1->__offset(0x35c).d = fconvert.s(unimplemented  {fst dword [ebp+0x35c], st0})
+0043cc14        player_1->lane_lean_progress_step = fconvert.s(unimplemented  {fst dword [ebp+0x35c], st0})
 0043cc20        int16_t top_207
 0043cc20        int16_t top_191
-0043cc20        if (player_1->__offset(0x350).d == 0)
+0043cc20        if (player_1->lane_lean_state == 0)
 0043cc49        unimplemented  {fstp st0, st0}
 0043cc49        unimplemented  {fstp st0, st0}
 0043cc49        top_207 = top_191 + 4
 0043cc22        unimplemented  {fadd dword [ebp+0x358]}
-0043cc28        player_1->__offset(0x358).d = fconvert.s(unimplemented  {fst dword [ebp+0x358], st0})
+0043cc28        player_1->lane_lean_progress = fconvert.s(unimplemented  {fst dword [ebp+0x358], st0})
 0043cc2e        long double temp46_1 = fconvert.t(1f)
 0043cc2e        unimplemented  {fcomp st0, dword [0x497220]} f- temp46_1
 0043cc2e        bool c0_58 = unimplemented  {fcomp st0, dword [0x497220]} f< temp46_1
@@ -1503,8 +1502,8 @@
 0043cc2e        top_207 = top_191 + 4
 0043cc34        eax_82.w = (c0_58 ? 1 : 0) << 8 | (c2_58 ? 1 : 0) << 0xa | (c3_58 ? 1 : 0) << 0xe | (top_207 & 7) << 0xb
 0043cc39        if ((eax_82:1.b & 0x41) == 0)
-0043cc3b        player_1->__offset(0x358).d = 0
-0043cc41        player_1->__offset(0x350).d = 0
+0043cc3b        player_1->lane_lean_progress = 0f
+0043cc41        player_1->lane_lean_state = 0
 0043cc51        if (player_1->__offset(0x360).d != 0)
 0043cc53        unimplemented  {fld st0, dword [ebp+0x36c]}
 0043cc59        unimplemented  {fadd dword [ebp+0x368]}
@@ -1553,22 +1552,22 @@
 0043cceb        if (game_54->__offset(0x40).d == 4)
 0043cd07        void* eax_86 = game_54->__offset(0x44).d * 0x1fac0 + game_54
 0043cd10        if (*(eax_86 + 0x944150) == 1)
-0043cd16        int32_t edx_49
-0043cd16        edx_49.b = game_54->selected_level_record_active
-0043cd1e        if (edx_49.b == 0)
+0043cd16        int32_t edx_50
+0043cd16        edx_50.b = game_54->selected_level_record_active
+0043cd1e        if (edx_50.b == 0)
 0043cd24        int32_t runtime_track_index = game_54->runtime_track_index
 0043cd2a        int32_t runtime_track_index_1 = *(eax_86 + 0x9441bc)
 0043cd32        if (runtime_track_index s>= runtime_track_index_1)
 0043cd34        runtime_track_index = runtime_track_index_1
-0043cd36        int32_t edx_50 = player_1->__offset(0x304).d
+0043cd36        int32_t edx_51 = player_1->__offset(0x304).d
 0043cd3e        int32_t edi_7
 0043cd3e        int32_t runtime_track_index_2
-0043cd3e        if (edx_50 != 0)
-0043cd46        edi_7 = *(eax_86 + 0x944174) - edx_50
+0043cd3e        if (edx_51 != 0)
+0043cd46        edi_7 = *(eax_86 + 0x944174) - edx_51
 0043cd48        runtime_track_index_2 = runtime_track_index
 0043cd48        runtime_track_index += edi_7
 0043cd4a        int16_t top_213
-0043cd4a        if (edx_50 != 0 && runtime_track_index_2 != neg.d(edi_7))
+0043cd4a        if (edx_51 != 0 && runtime_track_index_2 != neg.d(edi_7))
 0043cd66        var_54 = 0x42000000
 0043cd6b        eax_86.w = *(eax_86 + runtime_track_index * 6 + 0x9441c2)
 0043cd74        top_213 = top_212 - 1
@@ -1628,7 +1627,7 @@
 0043ce1d        unimplemented  {fstp st0, st0}
 0043ce1f        unimplemented  {fld st0, dword [esp+0x10]}
 0043ce23        int32_t eax_91 = player_1->__offset(0x275c).d
-0043ce29        player_1->__offset(0x2980).d = fconvert.s(unimplemented  {fstp dword [ebp+0x2980], st0})
+0043ce29        player_1->interaction_max_z = fconvert.s(unimplemented  {fstp dword [ebp+0x2980], st0})
 0043ce29        unimplemented  {fstp dword [ebp+0x2980], st0}
 0043ce29        int16_t top_224 = top_222 + 1
 0043ce32        if (eax_91 == 1)
@@ -1786,7 +1785,7 @@
 0043d057        initialize_cutscene(&player_1->presentation)
 0043d05e        update_player_movement_flags(player_1)
 0043d06f        if (*(data_4df904 + 0x1066bf4) s< 0xa)
-0043d077        player_1->__offset(0x2730).d = player_1->movement_rate_scalar
+0043d077        player_1->movement_progress = player_1->movement_rate_scalar
 0043d07d        struct Game* game_55 = player_1->game
 0043d08a        if ((game_55->__offset(0x4c).d & &__dos_header) != 0)
 0043d090        void* eax_93
@@ -1826,14 +1825,14 @@
 0043d14b        update_movement_flag_emitters(var_54, entry_movement_source)
 0043d150        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d156        unimplemented  {fadd dword [0x4973d8]}
-0043d15c        player_1->__offset(0x2730).d = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
+0043d15c        player_1->movement_progress = fconvert.s(unimplemented  {fstp dword [ebp+0x2730], st0})
 0043d15c        unimplemented  {fstp dword [ebp+0x2730], st0}
 0043d130        if (selected_level_record_active == 0)
 0043d130        goto label_43d138
 0043d168        label_43d168:
 0043d17c        if ((game_55->selected_level_record->replay_samples[game_55->runtime_track_index].flags & 2) != 0)
 0043d198        label_43d198:
-0043d198        player_1->__offset(0x2730).d = player_1->movement_rate_scalar
+0043d198        player_1->movement_progress = player_1->movement_rate_scalar
 0043d19e        play_movement_state_sound(player_1)
 0043d1a3        var_54 = player_1
 0043d1a3        esp = &var_54
@@ -1842,7 +1841,7 @@
 0043d180        goto label_43d18b
 0043d0d2        unimplemented  {fld st0, dword [ebp+0x2734]}
 0043d0d8        unimplemented  {fadd dword [ebp+0x2730]}
-0043d0de        player_1->__offset(0x2730).d = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
+0043d0de        player_1->movement_progress = fconvert.s(unimplemented  {fst dword [ebp+0x2730], st0})
 0043d0e4        long double temp71_1 = fconvert.t(1f)
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]} f- temp71_1
 0043d0e4        bool c0_74 = unimplemented  {fcomp st0, dword [0x497220]} f< temp71_1
@@ -1851,7 +1850,7 @@
 0043d0e4        unimplemented  {fcomp st0, dword [0x497220]}
 0043d0ea        movement_state.w = (c0_74 ? 1 : 0) << 8 | (c2_74 ? 1 : 0) << 0xa | (c3_74 ? 1 : 0) << 0xe | (top_241 & 7) << 0xb
 0043d0ef        if ((movement_state:1.b & 0x41) == 0)
-0043d0f5        player_1->__offset(0x2730).d = 0
+0043d0f5        player_1->movement_progress = 0f
 0043d1b7        update_row_event_display(player_1->game + 0x12727d8)
 0043d1bc        struct Game* game_9 = player_1->game
 0043d1c9        game_9->__offset(0xfd2b7c).d += 1

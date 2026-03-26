@@ -1,14 +1,46 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 653,
+  "function_count": 6,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 653,
-  "ida_exported": 653,
-  "bn_mismatch_count": 11,
-  "ida_mismatch_count": 2,
-  "total_mismatch_count": 13,
-  "has_mismatches": true,
-  "sync_ida_symbols": true
+  "bn_exported": 6,
+  "ida_exported": 6,
+  "bn_mismatch_count": 0,
+  "ida_mismatch_count": 0,
+  "total_mismatch_count": 0,
+  "has_mismatches": false,
+  "sync_ida_symbols": false,
+  "health_check_ran": true,
+  "strict": true,
+  "selected_functions": [
+    {
+      "name": "initialize_subgoldy",
+      "address": "0x43a9c0"
+    },
+    {
+      "name": "update_subgoldy",
+      "address": "0x43b120"
+    },
+    {
+      "name": "initialize_cutscene",
+      "address": "0x4428d0"
+    },
+    {
+      "name": "initialize_invincible_shell",
+      "address": "0x444ac0"
+    },
+    {
+      "name": "start_invincible_shell",
+      "address": "0x444ae0"
+    },
+    {
+      "name": "update_invincible_shell",
+      "address": "0x444b50"
+    }
+  ],
+  "health_check_count": 4,
+  "health_failing_check_count": 0,
+  "health_passed": true,
+  "health_config": "analysis/decompile/health_checks.json"
 }

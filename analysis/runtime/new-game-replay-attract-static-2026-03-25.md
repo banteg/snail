@@ -19,8 +19,8 @@ The New Game menu object still has the same useful partial layout:
 
 - `+0x0`: replay-attract cursor
 - `+0x4`: likely hide latch
-- `+0x8/+0xc`: secondary suppressor accumulator / step
-- `+0x10/+0x14`: replay-attract accumulator / step
+- `+0x8/+0xc`: likely secondary suppressor accumulator / step
+- `+0x10/+0x14`: likely replay-attract accumulator / step
 - `+0x30..+0x44`: widget pointers for Postal / Time Trial / Challenge / Tutorial / Help / Back
 
 ## Findings

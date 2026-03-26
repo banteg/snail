@@ -1103,7 +1103,6 @@ const AppState = struct {
     seed_level_intro_cutscene: bool = false,
     subgame_camera: SubgameCameraState = .{},
     tutorial_reference_score: u32 = 0,
-    native_gameplay_slow_voice_progress: f32 = 0.0,
     gameplay_voice_manager: gameplay_voice.VoiceManager = .{},
     native_gameplay_voice_manager: gameplay_voice.NativeManager = .{},
     announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
@@ -2922,14 +2921,8 @@ const AppState = struct {
         if (native_voice_cues.damage_escalation) {
             self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
         }
-        if (gameplay_audio_cues.nativeGameplaySlowVoiceBandActive(previous, current)) {
-            self.native_gameplay_slow_voice_progress += gameplay_assets.native_gameplay_slow_voice_timer_step;
-            if (self.native_gameplay_slow_voice_progress > 1.0) {
-                self.native_gameplay_slow_voice_progress = 0.0;
-                self.tryPlayNativeGameplayVoiceSet(.slow, .wait_for_frequency) catch {};
-            }
-        } else {
-            self.native_gameplay_slow_voice_progress = 0.0;
+        if (native_voice_cues.slow) {
+            self.tryPlayNativeGameplayVoiceSet(.slow, .wait_for_frequency) catch {};
         }
         const death_cutscene_voice_cues = gameplay_audio_cues.nativeDeathCutsceneVoiceCues(previous, current);
         if (death_cutscene_voice_cues.entry) {
@@ -6319,7 +6312,6 @@ const AppState = struct {
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
         self.native_gameplay_voice_manager.clear();
-        self.native_gameplay_slow_voice_progress = 0.0;
         self.announced_slug_voice_cell_count = 0;
         self.level_runner = null;
         self.gameplay_click_start_active = false;

@@ -123,12 +123,25 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x108`: inline `anim_manager`
     - `+0x3d0`: `release_step`
   - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
+  - `+0x15bc`: `wobble`
+    - `+0x00`: `roll_phase`
+    - `+0x04`: `roll_phase_step`
+    - `+0x08`: `lift_phase`
+    - `+0x0c`: `lift_phase_step`
+    - `initialize_cutscene` seeds the two phase-step pairs before the intro wobble branches
   - `+0x1604`: `snail_hotspot_source_matrix_a`
   - `+0x1684`: `snail_hotspot_source_matrix_b`
   - `+0x16cc`: `snail_hotspots_local`
     - `19`-entry `Vec3` array
   - `+0x17b0`: `snail_hotspots_world`
     - `19`-entry `Vec3` array
+  - `+0x1894`: `invincible_shell`
+    - `+0x80`: `state`
+    - `+0x84`: `spin_phase`
+    - `+0x88`: `spin_phase_step`
+    - `+0x8c`: `fade_progress`
+    - `+0x90`: `fade_step`
+    - `initialize_invincible_shell`, `start_invincible_shell`, and `update_invincible_shell` all operate on this same embedded controller
   - `+0x1938`: `snail_skin_transition`
   - `+0x1958`: `cutscene_ai`
     - `+0x00`: `presentation`
@@ -136,8 +149,13 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x0c`: `state`
     - `+0x10`: `live_matrix`
     - `+0x50`: `progress`
-    - `+0x54`: `progress_step`
+  - `+0x54`: `progress_step`
   - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
+- `player + 0x435c/+0x4360` is the current safe slow-commentary timer pair
+  - `slow_commentary_timer`
+  - `slow_commentary_step`
+  - `initialize_subgoldy` seeds the step to `1/60`
+  - `update_subgoldy` resets the timer outside the narrow slow-movement band and triggers the native slow commentary once the timer exceeds `1.0`
 - the global jetpack presentation controller at `data_4df904 + 0x432700` reuses the same `PresentationAnimationChannel` shape
   - `+0x11e0`: `jetpack_channel`
   - `set_snail_jetpack` only mutates `jetpack_channel.selected_state` and routes the visible thrust lane through `set_weapon_animation(&controller->jetpack_channel, ...)`
@@ -196,6 +214,14 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `cutscene_pitch_cycle`
   - `cutscene_pitch_cycle_step`
   - `initialize_cutscene` advances them before rotating the player-owned cutscene frame around world X
+- `player + 0x328/+0x32c` is the current safe barrier-hold timer pair
+  - `barrier_hold_progress`
+  - `barrier_hold_step`
+  - `initialize_subgoldy` seeds the step to `1/60`
+- `player + 0x330/+0x334` is the current safe startup-voice timer pair
+  - `startup_voice_timer`
+  - `startup_voice_step`
+  - `initialize_subgoldy` seeds both lanes to `0.055555552`; the broader caller-side voice gating is still unresolved, so only the timer pair is named here
 - `player + 0x350..+0x370` is now a typed camera-presentation slice
   - `+0x00`: `lane_lean_state`
   - `+0x04`: `lane_lean_amplitude`

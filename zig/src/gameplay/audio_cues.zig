@@ -25,6 +25,7 @@ pub const NativeJetpackSoundCues = struct {
 
 pub const NativeGameplayVoiceCues = struct {
     start: bool = false,
+    slow: bool = false,
     package_pickup: bool = false,
     weapon_upgrade: bool = false,
     damage_entry: bool = false,
@@ -148,20 +149,6 @@ pub fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runne
     };
 }
 
-pub fn nativeGameplaySlowVoiceBandActive(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    if (current.phase != .active) return false;
-    if (current.movement_mode != .track) return false;
-    if (current.attachment_exit_pending) return false;
-
-    const configured_step = current.movement_rate_scalar;
-    if (configured_step <= 0.0001) return false;
-
-    const actual_forward_step = @max(0.0, current.row_position - previous.row_position);
-    const lower_bound = configured_step * 0.17;
-    const upper_bound = lower_bound + ((configured_step * 0.5) - lower_bound) * 0.1;
-    return actual_forward_step > lower_bound and actual_forward_step < upper_bound;
-}
-
 fn nativeGameplayWeaponUpgradeVoiceCue(
     previous: gameplay.Runner,
     current: gameplay.Runner,
@@ -183,6 +170,7 @@ pub fn nativeGameplayVoiceCues(
     return .{
         .start = previous.tick_count < gameplay_assets.native_gameplay_start_voice_tick and
             current.tick_count >= gameplay_assets.native_gameplay_start_voice_tick,
+        .slow = previous.slow_commentary_voice_token != current.slow_commentary_voice_token,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
         .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
         .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
@@ -400,32 +388,6 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
 }
 
-test "native slowdown voice band follows the recovered narrow forward-speed window" {
-    var previous = gameplay.Runner{};
-    var current = previous;
-    previous.row_position = 10.0;
-    current.row_position = 10.038;
-    current.movement_rate_scalar = 0.2;
-
-    try std.testing.expect(nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.03;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.05;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current.row_position = 10.038;
-    current.attachment_exit_pending = true;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-
-    current = previous;
-    current.row_position = 10.038;
-    current.movement_rate_scalar = 0.2;
-    current.movement_mode = .attachment;
-    try std.testing.expect(!nativeGameplaySlowVoiceBandActive(previous, current));
-}
-
 test "native gameplay voice cues fire on the recovered startup timer" {
     var previous = gameplay.Runner{};
     var current = previous;
@@ -437,6 +399,11 @@ test "native gameplay voice cues fire on the recovered startup timer" {
     previous = current;
     current.tick_count = gameplay_assets.native_gameplay_start_voice_tick;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).start);
+
+    previous = gameplay.Runner{};
+    current = previous;
+    current.slow_commentary_voice_token = 1;
+    try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).slow);
 
     previous = gameplay.Runner{};
     current = previous;

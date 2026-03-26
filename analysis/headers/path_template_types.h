@@ -249,6 +249,24 @@ typedef struct SnailSkinTransitionState {
     float progress_step;
 } SnailSkinTransitionState;
 
+typedef struct PresentationWobbleController {
+    float roll_phase;
+    float roll_phase_step;
+    float lift_phase;
+    float lift_phase_step;
+    uint8_t _pad_10[0x38];
+} PresentationWobbleController;
+
+typedef struct InvincibleShellController {
+    uint8_t _pad_00[0x80];
+    int32_t state;
+    float spin_phase;
+    float spin_phase_step;
+    float fade_progress;
+    float fade_step;
+    uint8_t _pad_90[0x10];
+} InvincibleShellController;
+
 typedef struct PlayerPresentationController {
     uint8_t _pad_00[0x4];
     uint32_t visual_flags;
@@ -264,14 +282,14 @@ typedef struct PlayerPresentationController {
     uint8_t _pad_14c[0x500];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
-    uint8_t _pad_15bc[0x48];
+    PresentationWobbleController wobble;
     TransformMatrix snail_hotspot_source_matrix_a;
     uint8_t _pad_1644[0x40];
     TransformMatrix snail_hotspot_source_matrix_b;
     uint8_t _pad_16c4[0x8];
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
-    uint8_t _pad_1894[0xa0];
+    InvincibleShellController invincible_shell;
     uint8_t weapon_release_active;
     uint8_t _pad_1935[0x3];
     SnailSkinTransitionState snail_skin_transition;
@@ -508,7 +526,10 @@ typedef struct Player {
     uint8_t _pad_30c[0x2c];
     uint32_t movement_flags;
     uint32_t previous_movement_flags;
-    uint8_t _pad_340[0x10];
+    float barrier_hold_progress;
+    float barrier_hold_step;
+    float startup_voice_timer;
+    float startup_voice_step;
     int32_t lane_lean_state;
     float lane_lean_amplitude;
     float lane_lean_progress;
@@ -539,7 +560,9 @@ typedef struct Player {
     uint8_t attachment_exit_gate_a;
     uint8_t attachment_exit_gate_b;
     uint8_t completion_handoff_voice_gate;
-    uint8_t _pad_44f[0x22e1];
+    uint8_t _pad_44f[0x22dd];
+    float slow_commentary_timer;
+    float slow_commentary_step;
     float movement_progress;
     float movement_rate_scalar;
     uint8_t _pad_2738[0x4];
@@ -617,6 +640,9 @@ float __thiscall set_color_grayscale(Color4f* color, float intensity);
 void __thiscall start_squidge_y(SquidgeState* squidge, float value);
 void __thiscall start_squidge_z(SquidgeState* squidge, float value);
 void __thiscall update_squidge(SquidgeState* squidge);
+void __thiscall initialize_invincible_shell(InvincibleShellController* shell);
+void __thiscall start_invincible_shell(InvincibleShellController* shell);
+void __thiscall update_invincible_shell(InvincibleShellController* shell);
 void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
 void __thiscall update_anim_manager(AnimationDispatchState* manager);
 int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);

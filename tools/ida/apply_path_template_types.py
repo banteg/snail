@@ -139,6 +139,18 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_squidge(SquidgeState* squidge);",
     ),
     (
+        "initialize_invincible_shell",
+        "void __thiscall initialize_invincible_shell(InvincibleShellController* shell);",
+    ),
+    (
+        "start_invincible_shell",
+        "void __thiscall start_invincible_shell(InvincibleShellController* shell);",
+    ),
+    (
+        "update_invincible_shell",
+        "void __thiscall update_invincible_shell(InvincibleShellController* shell);",
+    ),
+    (
         "initialize_anim_manager",
         "void __thiscall initialize_anim_manager(AnimationDispatchState* manager);",
     ),

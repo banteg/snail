@@ -75,6 +75,24 @@ typedef struct SnailSkinTransitionState {
     float progress_step;
 } SnailSkinTransitionState;
 
+typedef struct PresentationWobbleController {
+    float roll_phase;
+    float roll_phase_step;
+    float lift_phase;
+    float lift_phase_step;
+    uint8_t _pad_10[0x38];
+} PresentationWobbleController;
+
+typedef struct InvincibleShellController {
+    uint8_t _pad_00[0x80];
+    int32_t state;
+    float spin_phase;
+    float spin_phase_step;
+    float fade_progress;
+    float fade_step;
+    uint8_t _pad_90[0x10];
+} InvincibleShellController;
+
 typedef struct CutsceneAI {
     struct PlayerPresentationController* presentation;
     struct Player* player;
@@ -102,14 +120,14 @@ typedef struct PlayerPresentationController {
     uint8_t _pad_14c[0x500];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
-    uint8_t _pad_15bc[0x48];
+    PresentationWobbleController wobble;
     TransformMatrix snail_hotspot_source_matrix_a;
     uint8_t _pad_1644[0x40];
     TransformMatrix snail_hotspot_source_matrix_b;
     uint8_t _pad_16c4[0x8];
     Vec3 snail_hotspots_local[19];
     Vec3 snail_hotspots_world[19];
-    uint8_t _pad_1894[0xa0];
+    InvincibleShellController invincible_shell;
     uint8_t weapon_release_active;
     uint8_t _pad_1935[0x3];
     SnailSkinTransitionState snail_skin_transition;

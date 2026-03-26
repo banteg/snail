@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
+const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -1105,6 +1106,9 @@ const AttachmentCameraProgress = struct {
     template_progress: f32,
 };
 
+const native_barrier_hold_step: f32 = 1.0 / 60.0;
+const native_startup_voice_step: f32 = 0.055555552;
+
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
     base_subgame_rate: f32 = 1.1,
@@ -1191,8 +1195,15 @@ pub const Runner = struct {
     weapon_level: u8 = 0,
     movement_flag_selector: u8 = 0,
     movement_flags: u32 = 1,
+    barrier_hold_progress: f32 = 0.0,
+    barrier_hold_step: f32 = native_barrier_hold_step,
+    startup_voice_timer: f32 = native_startup_voice_step,
+    startup_voice_step: f32 = native_startup_voice_step,
     slow_ticks: u16 = 0,
     invincible_ticks: u16 = 0,
+    slow_commentary_timer: f32 = 0.0,
+    slow_commentary_step: f32 = gameplay_assets.native_gameplay_slow_voice_timer_step,
+    slow_commentary_voice_token: u32 = 0,
     movement_fire_cooldown: f32 = 0.0,
     movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
     shot_cooldown_ticks: u8 = 0,
@@ -1366,6 +1377,7 @@ pub const Runner = struct {
             self.updateJetpackGauge(preview);
             self.updateDamageWarning();
             self.stepTemporaryStates();
+            self.updateSlowCommentaryTimer();
         } else if (!self.paused) {
             self.updatePhaseController(preview, delta_seconds);
         }
@@ -1391,6 +1403,31 @@ pub const Runner = struct {
         }
         self.syncCurrentRowMessageSegment(preview, true);
         self.refreshCameraState(preview);
+    }
+
+    fn inNativeSlowCommentaryBand(self: *const Runner) bool {
+        if (self.phase != .active) return false;
+        if (self.movement_mode != .track) return false;
+        if (self.attachment_exit_pending) return false;
+        if (self.movement_rate_scalar <= 0.0001) return false;
+
+        const actual_forward_step = @max(0.0, self.row_position - self.previous_row_position);
+        const lower_bound = self.movement_rate_scalar * 0.17;
+        const upper_bound = lower_bound + ((self.movement_rate_scalar * 0.5) - lower_bound) * 0.1;
+        return actual_forward_step > lower_bound and actual_forward_step < upper_bound;
+    }
+
+    fn updateSlowCommentaryTimer(self: *Runner) void {
+        if (!self.inNativeSlowCommentaryBand()) {
+            self.slow_commentary_timer = 0.0;
+            return;
+        }
+
+        self.slow_commentary_timer += self.slow_commentary_step;
+        if (self.slow_commentary_timer > 1.0) {
+            self.slow_commentary_timer = 0.0;
+            self.slow_commentary_voice_token +%= 1;
+        }
     }
 
     pub fn worldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview, y: f32) rl.Vector3 {

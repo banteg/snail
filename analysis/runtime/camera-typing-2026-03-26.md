@@ -30,6 +30,20 @@ The current conservative `Player` camera slice is:
 - `+0x42c`: `post_follow_value_a`
 - `+0x2964`: `cached_camera_target_world`
 
+The current conservative `PlayerPresentationController` camera-adjacent slice is:
+
+- `+0x15bc`: `wobble`
+  - `roll_phase`
+  - `roll_phase_step`
+  - `lift_phase`
+  - `lift_phase_step`
+- `+0x1894`: `invincible_shell`
+  - `state`
+  - `spin_phase`
+  - `spin_phase_step`
+  - `fade_progress`
+  - `fade_step`
+
 These are the player-side camera inputs that `update_cameraman` now reads directly in the typed decompile:
 
 - `live_matrix.position.z`
@@ -44,6 +58,8 @@ These are the player-side camera inputs that `update_cameraman` now reads direct
 - `attachment_exit_pending`
 - `post_follow_value_a`
 - `cached_camera_target_world`
+
+And these presentation-side controller slices now read back with stable names in `initialize_cutscene`, `initialize_invincible_shell`, and `update_invincible_shell` instead of anonymous `+0x15bc` / `+0x1894` float blocks.
 
 ## Helper Typing
 

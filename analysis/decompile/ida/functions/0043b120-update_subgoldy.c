@@ -16,7 +16,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   Vec3 *p_position; // ebx
   Game *v11; // eax
   double v12; // st7
-  double track_z_offset; // st7
+  double steering_x; // st7
   double v14; // st7
   char v16; // c0
   double v17; // st7
@@ -76,12 +76,12 @@ int32_t __thiscall update_subgoldy(Player *player)
   Game *v71; // ebp
   bool v72; // zf
   double v73; // st7
-  double wobble_alpha; // st7
+  double wobble_y; // st7
   float v75; // edx
   double v76; // st7
-  double wobble_y; // st6
+  double wobble_x; // st6
   double v78; // st6
-  double wobble_x; // st5
+  double v79; // st5
   double v80; // st5
   int32_t skin_hold_ticks; // eax
   double v82; // st7
@@ -97,7 +97,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   double v92; // st7
   double v93; // st7
   double v94; // st7
-  int32_t state; // eax
+  float cycle_phase_step; // eax
   double v96; // st7
   double v97; // st6
   double v98; // st7
@@ -165,21 +165,25 @@ int32_t __thiscall update_subgoldy(Player *player)
     segment_count = template_record->segment_count;
     if ( v4 >= segment_count )
       v4 = segment_count - 1;
-    player->presentation.visual_root->follow_lateral_response = (*(float *)template_record->primary_samples[v4]._pad_a4
-                                                               * -3.0
-                                                               - player->presentation.visual_root->follow_lateral_response)
-                                                              * 0.1
-                                                              + player->presentation.visual_root->follow_lateral_response;
+    *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 128) = (*(float *)template_record->primary_samples[v4]._pad_a4
+                                                                    * -3.0
+                                                                    - *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
+                                                                               + 128))
+                                                                   * 0.1
+                                                                   + *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
+                                                                              + 128);
   }
   else
   {
-    player->presentation.visual_root->follow_lateral_response = -player->presentation.visual_root->follow_lateral_response
-                                                              * 0.1
-                                                              + player->presentation.visual_root->follow_lateral_response;
+    *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 128) = -*(float *)(*(_DWORD *)&player->presentation._pad_08[24]
+                                                                               + 128)
+                                                                   * 0.1
+                                                                   + *(float *)(*(_DWORD *)&player->presentation._pad_08[24]
+                                                                              + 128);
   }
-  update_squidge(&player->squidge);
-  player->presentation.visual_root->squidge_primary = player->squidge.y_output;
-  player->presentation.visual_root->squidge_secondary = player->squidge.z_output;
+  update_squidge((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7]);
+  *(_DWORD *)(*(_DWORD *)&player->presentation._pad_08[24] + 132) = *(_DWORD *)&player->presentation.cutscene_ai._pad_59[7];
+  *(float *)(*(_DWORD *)&player->presentation._pad_08[24] + 136) = player->squidge.y_velocity;
   if ( !player->game->level_mode )
     show_subgoldy_lives(player);
   result = player->movement_mode_selector;
@@ -250,10 +254,10 @@ LABEL_60:
               {
                 player->row_event_cutscene_started = 1;
                 if ( p_position->x <= 0.0 )
-                  dispatch_cutscene_animation(&player->presentation, 3, 1, -1);
+                  dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 3, 1u, -1);
                 else
-                  dispatch_cutscene_animation(&player->presentation, 4, 1, -1);
-                dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
+                  dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 4, 1u, -1);
+                dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 1, 0, -1);
               }
               v30 = *((_DWORD *)v28 + 60);
               v31 = player->game;
@@ -370,13 +374,13 @@ LABEL_101:
                 v38 = player->game->track_center_x * player->game->track_center_x * 0.0040000002;
                 player->velocity.z = v38 + v38 + player->velocity.z;
                 if ( (double)player->game->first_block_row_count <= player->live_matrix.position.z
-                  && player->live_matrix.position.z > (double)*(float *)player->_pad_2738 )
+                  && player->live_matrix.position.z > (double)player->movement_rate_scalar )
                 {
-                  *(float *)player->_pad_2738 = player->live_matrix.position.z + 1.0;
+                  player->movement_rate_scalar = player->live_matrix.position.z + 1.0;
                 }
               }
             }
-            if ( player->jetpack_gauge.state == 1 )
+            if ( LODWORD(player->jetpack_gauge.cycle_phase_step) == 1 )
             {
               v39 = player->game->track_center_x;
               player->velocity.z = v39 * v39 * 0.0040000002 + v39 * v39 * 0.0040000002 + player->velocity.z;
@@ -398,7 +402,7 @@ LABEL_101:
               {
                 v42 = player->game;
                 if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)v42 + 244 * get_track_cell_row_index(v41)] & 0x100) == 0
-                  && !player->jetpack_gauge.state
+                  && !LODWORD(player->jetpack_gauge.cycle_phase_step)
                   && !player->control_override_active )
                 {
                   player->velocity.z = (1.0 - v42->track_center_x * 0.2) * player->velocity.z;
@@ -461,7 +465,7 @@ LABEL_101:
                   if ( player->velocity.y < -0.029999999 )
                   {
                     v117 = player->velocity.y - 0.029999999;
-                    start_squidge_y(&player->squidge, v117);
+                    start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], v117);
                   }
                   if ( player->velocity.y <= 0.0 )
                   {
@@ -491,7 +495,7 @@ LABEL_101:
                 if ( ((player->game->runtime_flags & 0x400) == 0 || (byte_4B2F40 & 2) != 0)
                   && player->live_matrix.position.y < 0.49000001 )
                 {
-                  start_squidge_y(&player->squidge, player->velocity.y);
+                  start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], player->velocity.y);
                   player->_pad_1e4[0] = 0;
                   player->velocity.y = 0.0;
                   player->attachment_exit_pending = 0;
@@ -518,7 +522,7 @@ LABEL_101:
                 && v53->anchor_position.y + 0.49000001 > player->live_matrix.position.y
                 && v53->anchor_position.y - 0.49000001 < player->live_matrix.position.y )
               {
-                start_squidge_y(&player->squidge, player->velocity.y);
+                start_squidge_y((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], player->velocity.y);
                 player->velocity.y = player->game->track_center_x * 0.30000001;
                 player->live_matrix.position.y = v54->anchor_position.y + 0.49000001;
                 player->attachment_exit_pending = 0;
@@ -560,10 +564,10 @@ LABEL_101:
                   if ( !player->control_override_active )
                   {
                     if ( p_position->x <= 0.0 )
-                      dispatch_cutscene_animation(&player->presentation, 3, 1, -1);
+                      dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 3, 1u, -1);
                     else
-                      dispatch_cutscene_animation(&player->presentation, 4, 1, -1);
-                    dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
+                      dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 4, 1u, -1);
+                    dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 1, 0, -1);
                   }
                 }
                 else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id
@@ -597,9 +601,9 @@ LABEL_98:
           {
             player->velocity.z = 0.0;
             player->live_matrix.position.z = (double)(int)(__int64)(player->live_matrix.position.z + 0.49000001) - 0.5;
-            if ( player->squidge.z_output == 0.0 )
+            if ( player->squidge.y_velocity == 0.0 )
               play_sound_effect(47);
-            start_squidge_z(&player->squidge, -0.33000001);
+            start_squidge_z((SquidgeState *)&player->presentation.cutscene_ai._pad_59[7], -0.33000001);
             v57 = *(float *)&player->_pad_30c[32] + *(float *)&player->_pad_30c[28];
             *(float *)&player->_pad_30c[28] = v57;
             if ( v57 > 1.0 )
@@ -683,8 +687,8 @@ LABEL_98:
               }
               player->velocity.z = v61;
               reset_voice_manager(unk_751498);
-              end_jetpack_hover(&player->jetpack_gauge.progress);
-              player->presentation.cutscene_ai.state = 5;
+              end_jetpack_hover((float *)&player->_pad_2744[8]);
+              player->presentation.cutscene_ai.player = (Player *)5;
               play_sound_effect(0);
               player->_pad_41c[0] = 0;
             }
@@ -699,10 +703,10 @@ LABEL_98:
               if ( v63 < 0.0 )
                 player->velocity.z = 0.0;
             }
-            v64 = *(float *)&player->_pad_2744[4] + *(float *)player->_pad_2744;
-            *(float *)player->_pad_2744 = v64;
+            v64 = *(float *)player->_pad_2744 + player->track_z_anchor;
+            player->track_z_anchor = v64;
             if ( v64 > 1.0 )
-              *(_DWORD *)player->_pad_2744 = 0;
+              player->track_z_anchor = 0.0;
             v65 = player->game;
             player->completion_handoff_timer = player->completion_handoff_timer + player->completion_handoff_timer_step;
             *(_DWORD *)&v65->_pad_ff25e0[2616296] = 2;
@@ -790,7 +794,7 @@ LABEL_287:
             p_position->y = player->follow_state.output_position.y;
             p_position->z = player->follow_state.output_position.z;
           }
-          update_jetpack_gauge((int)&player->jetpack_gauge);
+          update_jetpack_gauge((int)&player->_pad_2744[8]);
           if ( LOBYTE(player->completion_handoff_active) )
           {
             qmemcpy((char *)MEMORY[0x4DF904] + 716, (char *)MEMORY[0x4DF904] + 348, 0x40u);
@@ -798,29 +802,29 @@ LABEL_287:
           }
           update_damage_gauge((int)&player->damage_gauge);
           update_progress_bar();
-          wobble_alpha = player->jetpack_gauge.wobble_alpha;
-          player->cached_camera_target_world.x = p_position->x;
-          v75 = p_position->z;
-          player->cached_camera_target_world.y = p_position->y;
-          player->cached_camera_target_world.z = v75;
-          v138 = wobble_alpha * player->live_matrix.basis_forward.x;
-          v139 = wobble_alpha * player->live_matrix.basis_forward.y;
-          v76 = wobble_alpha * player->live_matrix.basis_forward.z;
           wobble_y = player->jetpack_gauge.wobble_y;
-          v128 = wobble_y * player->live_matrix.basis_up.x;
-          v131 = wobble_y * player->live_matrix.basis_up.y;
-          v78 = wobble_y * player->live_matrix.basis_up.z;
+          player->jetpack_gauge.warning_intensity = p_position->x;
+          v75 = p_position->z;
+          player->cached_camera_target_world.x = p_position->y;
+          player->cached_camera_target_world.y = v75;
+          v138 = wobble_y * player->live_matrix.basis_forward.x;
+          v139 = wobble_y * player->live_matrix.basis_forward.y;
+          v76 = wobble_y * player->live_matrix.basis_forward.z;
           wobble_x = player->jetpack_gauge.wobble_x;
-          v135.x = wobble_x * player->live_matrix.basis_right.x;
-          v135.y = wobble_x * player->live_matrix.basis_right.y;
-          v80 = wobble_x * player->live_matrix.basis_right.z;
+          v128 = wobble_x * player->live_matrix.basis_up.x;
+          v131 = wobble_x * player->live_matrix.basis_up.y;
+          v78 = wobble_x * player->live_matrix.basis_up.z;
+          v79 = *(float *)&player->jetpack_gauge.warning_anchor;
+          v135.x = v79 * player->live_matrix.basis_right.x;
+          v135.y = v79 * player->live_matrix.basis_right.y;
+          v80 = v79 * player->live_matrix.basis_right.z;
           v136 = v135.x + v128;
           v137 = v135.y + v131;
           v135.x = v136 + v138;
           v135.y = v137 + v139;
-          player->cached_camera_target_world.x = v135.x + player->cached_camera_target_world.x;
-          player->cached_camera_target_world.y = v135.y + player->cached_camera_target_world.y;
-          player->cached_camera_target_world.z = v76 + v78 + v80 + player->cached_camera_target_world.z;
+          player->jetpack_gauge.warning_intensity = v135.x + player->jetpack_gauge.warning_intensity;
+          player->cached_camera_target_world.x = v135.y + player->cached_camera_target_world.x;
+          player->cached_camera_target_world.y = v76 + v78 + v80 + player->cached_camera_target_world.y;
           skin_hold_ticks = player->damage_gauge.skin_hold_ticks;
           if ( skin_hold_ticks > 0 )
             player->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
@@ -899,9 +903,9 @@ LABEL_287:
           v125 = player->live_matrix.position.z - 8.0;
           if ( v94 >= v125 )
             v94 = v125;
-          state = player->jetpack_gauge.state;
-          player->interaction_max_z = v94;
-          if ( state == 1 )
+          cycle_phase_step = player->jetpack_gauge.cycle_phase_step;
+          *(float *)&player->_pad_2974[8] = v94;
+          if ( LODWORD(cycle_phase_step) == 1 )
           {
             if ( player->live_matrix.position.y < 1.0 )
             {
@@ -922,7 +926,7 @@ LABEL_287:
               control_override_active = player->control_override_active;
               player->attachment_exit_gate_a = 1;
               if ( !control_override_active && player->live_matrix.position.y < -6.0 )
-                dispatch_cutscene_animation(&player->presentation, 5, 1, -1);
+                dispatch_cutscene_animation((PlayerPresentationController *)&player->interaction_max_z, 5, 1u, -1);
             }
             if ( player->live_matrix.position.y < -7.0 && !player->attachment_exit_gate_b )
             {
@@ -948,29 +952,29 @@ LABEL_287:
             || player->attachment_exit_pending
             || player->movement_state == 2 )
           {
-            *((_DWORD *)player + 4311) = 0;
+            player->squidge.z_velocity = 0.0;
           }
           else
           {
-            v103 = *((float *)player + 4312) + *((float *)player + 4311);
-            *((float *)player + 4311) = v103;
+            v103 = player->squidge.z_phase + player->squidge.z_velocity;
+            player->squidge.z_velocity = v103;
             if ( v103 > 1.0 )
             {
-              *((_DWORD *)player + 4311) = 0;
+              player->squidge.z_velocity = 0.0;
               play_voice_manager((int)unk_751498, 6, 1u, -1);
             }
           }
           handle_subgoldy_collisions((int)player);
-          update_anim_manager(&player->presentation.anim_manager);
-          update_anim_manager(&player->presentation.jetpack_channel.anim_manager);
-          update_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
-          update_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
-          update_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
+          update_anim_manager((AnimationDispatchState *)&player->presentation.owner_player);
+          update_anim_manager((AnimationDispatchState *)&player->presentation.jetpack_channel.selected_state);
+          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[0].selected_state);
+          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[1].selected_state);
+          update_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[2].selected_state);
           update_track_parcels(&player->game->_pad_ff25e0[2539680]);
-          initialize_cutscene(&player->presentation);
+          initialize_cutscene((PlayerPresentationController *)&player->interaction_max_z);
           update_player_movement_flags((int *)player);
           if ( *((int *)MEMORY[0x4DF904] + 4299517) < 10 )
-            player->movement_progress = player->movement_rate_scalar;
+            player->slow_commentary_step = player->movement_progress;
           v104 = player->game;
           if ( (v104->runtime_flags & 0x400000) == 0 )
             goto LABEL_365;
@@ -984,12 +988,12 @@ LABEL_287:
             if ( movement_state != 4 )
               goto LABEL_365;
           }
-          if ( player->movement_progress > 0.0 )
+          if ( player->slow_commentary_step > 0.0 )
           {
-            v106 = player->movement_rate_scalar + player->movement_progress;
-            player->movement_progress = v106;
+            v106 = player->movement_progress + player->slow_commentary_step;
+            player->slow_commentary_step = v106;
             if ( v106 > 1.0 )
-              player->movement_progress = 0.0;
+              player->slow_commentary_step = 0.0;
             goto LABEL_365;
           }
           if ( v104->track_state_latch )
@@ -1009,13 +1013,13 @@ LABEL_287:
 LABEL_359:
               play_movement_state_sound((int)player);
               update_movement_flag_emitters((char *)player, (int)player);
-              player->movement_progress = player->movement_rate_scalar + 0.30000001;
+              player->slow_commentary_step = player->movement_progress + 0.30000001;
               goto LABEL_365;
             }
             if ( (player->control_source->control_flags_b & 0x4000) != 0 )
             {
 LABEL_364:
-              player->movement_progress = player->movement_rate_scalar;
+              player->slow_commentary_step = player->movement_progress;
               play_movement_state_sound((int)player);
               update_movement_flag_emitters((char *)player, (int)player);
             }
@@ -1033,35 +1037,35 @@ LABEL_365:
       }
       if ( player->follow_state._pad_3c[0] && LOBYTE(player->completion_handoff_active) )
       {
+        *(_DWORD *)player->_pad_2738 = 1134559232;
         player->track_z_offset = 320.0;
-        player->track_z_anchor = 320.0;
       }
       else
       {
         if ( player->control_override_active )
         {
-          v12 = player->track_z_offset
-              - (player->presentation.live_matrix.basis_up.x
-               + player->presentation.live_matrix.basis_up.x);
+          v12 = *(float *)player->_pad_2738
+              - (player->presentation.live_matrix.basis_right.w
+               + player->presentation.live_matrix.basis_right.w);
+          *(float *)player->_pad_2738 = v12;
           player->track_z_offset = v12;
-          player->track_z_anchor = v12;
-          if ( player->track_z_offset >= 0.0 )
+          if ( *(float *)player->_pad_2738 >= 0.0 )
           {
-            if ( player->track_z_offset <= 639.0 )
-              track_z_offset = player->track_z_offset;
+            if ( *(float *)player->_pad_2738 <= 639.0 )
+              steering_x = *(float *)player->_pad_2738;
             else
-              track_z_offset = 639.0;
+              steering_x = 639.0;
           }
           else
           {
-            track_z_offset = 0.0;
+            steering_x = 0.0;
           }
         }
         else
         {
-          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[player->steering_mode_selector]);
-          v14 = player->control_source->steering_x - player->track_z_anchor + player->track_z_offset;
-          player->track_z_offset = v14;
+          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[LODWORD(player->cached_camera_target_world.z)]);
+          v14 = player->control_source->steering_x - player->track_z_offset + *(float *)player->_pad_2738;
+          *(float *)player->_pad_2738 = v14;
           if ( v16 )
           {
             v14 = 0.0;
@@ -1070,18 +1074,18 @@ LABEL_365:
           {
             v14 = 639.0;
           }
-          player->track_z_offset = v14;
-          player->track_z_anchor = player->control_source->steering_x;
-          if ( player->steering_mode_selector != 1 )
+          *(float *)player->_pad_2738 = v14;
+          player->track_z_offset = player->control_source->steering_x;
+          if ( LODWORD(player->cached_camera_target_world.z) != 1 )
             goto LABEL_40;
-          track_z_offset = player->control_source->steering_x;
+          steering_x = player->control_source->steering_x;
         }
-        player->track_z_offset = track_z_offset;
+        *(float *)player->_pad_2738 = steering_x;
       }
 LABEL_40:
       if ( !LOBYTE(player->completion_handoff_active) )
       {
-        v17 = (320.0 - player->track_z_offset) * 0.0125;
+        v17 = (320.0 - *(float *)player->_pad_2738) * 0.0125;
         if ( v17 >= -3.7 )
         {
           if ( v17 > 3.7 )

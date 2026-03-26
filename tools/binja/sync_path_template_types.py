@@ -21,6 +21,10 @@ PLAYER_FIELD_UPDATES = (
     ("0x308", "movement_flag_selector", "int32_t"),
     ("0x338", "movement_flags", "uint32_t"),
     ("0x33c", "previous_movement_flags", "uint32_t"),
+    ("0x328", "barrier_hold_progress", "float"),
+    ("0x32c", "barrier_hold_step", "float"),
+    ("0x330", "startup_voice_timer", "float"),
+    ("0x334", "startup_voice_step", "float"),
     ("0x350", "lane_lean_state", "int32_t"),
     ("0x354", "lane_lean_amplitude", "float"),
     ("0x358", "lane_lean_progress", "float"),
@@ -31,6 +35,8 @@ PLAYER_FIELD_UPDATES = (
     ("0x41d", "attachment_exit_pending", "uint8_t"),
     ("0x42c", "post_follow_value_a", "float"),
     ("0x43c", "control_source", "PlayerControlSource*"),
+    ("0x435c", "slow_commentary_timer", "float"),
+    ("0x4360", "slow_commentary_step", "float"),
     ("0x2730", "movement_progress", "float"),
     ("0x2734", "movement_rate_scalar", "float"),
     ("0x273c", "track_z_offset", "float"),
@@ -91,6 +97,18 @@ PROTO_UPDATES = (
     (
         "dispatch_cutscene_animation",
         "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+    ),
+    (
+        "initialize_invincible_shell",
+        "void __thiscall initialize_invincible_shell(InvincibleShellController* shell)",
+    ),
+    (
+        "start_invincible_shell",
+        "void __thiscall start_invincible_shell(InvincibleShellController* shell)",
+    ),
+    (
+        "update_invincible_shell",
+        "void __thiscall update_invincible_shell(InvincibleShellController* shell)",
     ),
 )
 
