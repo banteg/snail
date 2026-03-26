@@ -2,15 +2,15 @@
 /* function: look_at_point @ 0x44d4e0 */
 /* selector: look_at_point */
 
-TransformMatrix *__thiscall look_at_point(TransformMatrix *transform, Vec3 *target)
+void __thiscall look_at_point(TransformMatrix *transform, Vec3 *target)
 {
-  Vec3 v3; // [esp+Ch] [ebp-Ch] BYREF
-  Vec3 v4; // 0:^4.12
+  Vec3 v2; // [esp+Ch] [ebp-Ch] BYREF
+  Vec3 v3; // 0:^4.12
 
-  v4.x = target->x - transform->position.x;
-  v4.y = target->y - transform->position.y;
-  v4.z = target->z - transform->position.z;
-  v3 = v4;
-  return (TransformMatrix *)set_matrix_z_direction(transform, &v3);
+  v3.x = target->x - transform->position.x;
+  v3.y = target->y - transform->position.y;
+  v3.z = target->z - transform->position.z;
+  v2 = v3;
+  set_matrix_z_direction(transform, &v2);
 }
 

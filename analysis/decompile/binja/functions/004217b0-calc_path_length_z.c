@@ -82,14 +82,10 @@
 00421a5b        if (ebx != edi)
 00421a8b        out_angle = fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c)) * (fconvert.t(*(ecx_8 + 0x148)) - fconvert.t(*(ecx_8 + 0xa0))) + fconvert.t(*(ecx_8 + 0xa0)))
 00421a63        out_angle = *(ecx_8 + 0xa0)
-00421a93        float transform
-00421a93        float var_bc_1
-00421a93        float var_b8_1
+00421a93        struct TransformMatrix var_c0
 00421a93        int32_t* ecx_21
 00421a93        float* edx_18
 00421a93        float* esi_11
-00421a93        float var_bc
-00421a93        float var_b8
 00421a93        if (*(edx + 0x38) != 0x2a)
 00421b3c        int32_t ecx_22 = *(edx + 0x5c)
 00421b4c        void* esi_12 = eax_12 + ecx_22
@@ -98,66 +94,60 @@
 00421b74        float var_e0_2 = fconvert.s(fconvert.t(var_f0) * fconvert.t(*(esi_12 + 0x84)) * fconvert.t(var_f4) + fconvert.t(*(esi_12 + 0x34)) + fconvert.t(*(ecx_23 + 0x14)))
 00421b88        float var_dc_2 = fconvert.s(fconvert.t(var_f0) * fconvert.t(*(esi_12 + 0x88)) + fconvert.t(*(esi_12 + 0x38)) + fconvert.t(*(ecx_23 + 0x18)))
 00421b8c        if (ebx != edi)
-00421ba9        float var_40[0xc]
-00421ba9        __builtin_memcpy(&var_40, esi_12, 0x40)
-00421bcf        int32_t var_8_1 = 0
-00421bda        int32_t var_c_1 = 0
-00421be5        int32_t var_10_1 = 0
-00421bf0        int32_t var_48_1 = 0
-00421bfb        int32_t var_4c_1 = 0
-00421c06        int32_t var_50_1 = 0
-00421c14        float var_80[0xc]
-00421c14        int32_t var_108_2 = __builtin_memcpy(&var_80, *(edx + 0x5c) + (ebx + 1) * 0xa8, 0x40)
-00421c33        linear_interpolate_matrix(&transform, &var_40, &var_80, fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c))))
-00421b92        set_matrix_identity(&transform)
+00421ba9        struct TransformMatrix from
+00421ba9        __builtin_memcpy(&from, esi_12, 0x40)
+00421bcd        struct TransformMatrix to
+00421bcd        int32_t ecx_28 = __builtin_memcpy(&to, *(edx + 0x5c) + (ebx + 1) * 0xa8, 0x40)
+00421bcf        from.position.z = 0
+00421bda        from.position.y = 0
+00421be5        from.position.x = 0
+00421bf0        to.position.z = 0
+00421bfb        to.position.y = 0
+00421c06        to.position.x = 0
+00421c14        int32_t var_108_2 = ecx_28
+00421c33        linear_interpolate_matrix(&var_c0, &from, &to, fconvert.s(fconvert.t(var_f0) / fconvert.t(*(eax_12 + *(edx + 0x5c) + 0x8c))))
+00421b92        set_matrix_identity(&var_c0)
 00421c40        edx_18 = arg4
 00421c47        esi_11 = arg3
 00421c4e        ecx_21 = &arg1[0x18]
-00421c51        float* eax_37 = ecx_21
-00421c53        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_f4))
-00421c5f        var_bc_1 = fconvert.s(fconvert.t(var_bc) * fconvert.t(var_f4))
-00421c6b        var_b8_1 = fconvert.s(fconvert.t(var_b8) * fconvert.t(var_f4))
+00421c53        var_c0.basis_right.x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
+00421c5f        var_c0.basis_right.y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
+00421c6b        var_c0.basis_right.z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
 00421c75        *(arg1 + 0x14) = fconvert.s(fconvert.t(edx_18[1]) + fconvert.t(*(arg1 + 0x14)))
 00421c7a        long double x87_r7_50 = fconvert.t(*esi_11) - fconvert.t(var_e8)
-00421cae        *eax_37 = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(transform))) + fconvert.t(var_e4_2))
-00421cbc        eax_37[1] = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_bc_1) * x87_r7_50)) + fconvert.t(var_e0_2))
-00421cc7        eax_37[2] = fconvert.s(x87_r7_50 * fconvert.t(var_b8_1) + fconvert.t(var_dc_2))
+00421c92        long double x87_r7_51 = x87_r7_50 * fconvert.t(var_c0.basis_right.z)
+00421ca6        long double x87_r6_44 = fconvert.t(fconvert.s(fconvert.t(var_c0.basis_right.y) * x87_r7_50)) + fconvert.t(var_e0_2)
+00421cae        *ecx_21 = fconvert.s(fconvert.t(fconvert.s(x87_r7_50 * fconvert.t(var_c0.basis_right.x))) + fconvert.t(var_e4_2))
+00421cbc        ecx_21[1] = fconvert.s(x87_r6_44)
+00421cc7        ecx_21[2] = fconvert.s(x87_r7_51 + fconvert.t(var_dc_2))
 00421a99        esi_11 = arg3
-00421ab9        int32_t* var_114_1 = &transform
-00421ac0        compute_kind42_attachment_transform(out_angle, fconvert.s(fconvert.t(*esi_11) - fconvert.t(var_e8)), 0.49000001f, &transform, &out_angle)
+00421ab9        struct TransformMatrix* var_114_1 = &var_c0
+00421ac0        compute_kind42_attachment_transform(out_angle, fconvert.s(fconvert.t(*esi_11) - fconvert.t(var_e8)), 0.49000001f, &var_c0, &out_angle)
 00421ad4        int32_t ecx_19 = *(arg1 + 0xc) * 0x15
 00421ad7        int32_t eax_33 = *(*(arg1 + 4) + 0x5c)
 00421ada        edx_18 = arg4
 00421af4        ecx_21 = &arg1[0x18]
 00421af7        long double x87_r7_24 = fconvert.t(*(eax_33 + (ecx_19 << 3) + 0x88)) * fconvert.t(*(arg1 + 0x10)) + fconvert.t(*(*(arg1 + 8) + 0x18)) + fconvert.t(*(eax_33 + (ecx_19 << 3) + 0x38))
-00421b06        transform = fconvert.s(fconvert.t(transform) * fconvert.t(var_f4))
-00421b12        var_bc_1 = fconvert.s(fconvert.t(var_bc) * fconvert.t(var_f4))
-00421b1e        var_b8_1 = fconvert.s(fconvert.t(var_b8) * fconvert.t(var_f4))
+00421b06        var_c0.basis_right.x = fconvert.s(fconvert.t(var_c0.basis_right.x) * fconvert.t(var_f4))
+00421b12        var_c0.basis_right.y = fconvert.s(fconvert.t(var_c0.basis_right.y) * fconvert.t(var_f4))
+00421b1e        var_c0.basis_right.z = fconvert.s(fconvert.t(var_c0.basis_right.z) * fconvert.t(var_f4))
 00421b25        long double x87_r6_36 = fconvert.t(edx_18[1]) + fconvert.t(*(arg1 + 0x14))
-00421b28        int32_t var_90
-00421b28        *ecx_21 = var_90
-00421b2e        int32_t var_8c
-00421b2e        *(arg1 + 0x1c) = var_8c
+00421b28        *ecx_21 = var_c0.position.x
+00421b2e        *(arg1 + 0x1c) = var_c0.position.y
 00421b31        *(arg1 + 0x14) = fconvert.s(x87_r6_36)
 00421b34        *(arg1 + 0x20) = fconvert.s(x87_r7_24)
-00421cd1        int32_t* eax_39 = *(arg1 + 0x24) + 0x1c4
-00421cd6        *eax_39 = transform
-00421cdc        eax_39[1] = var_bc_1
-00421ce3        eax_39[2] = var_b8_1
-00421ced        int32_t* eax_41 = *(arg1 + 0x24) + 0x1d4
-00421cf2        int32_t var_b0
-00421cf2        *eax_41 = var_b0
-00421cf8        int32_t var_ac
-00421cf8        eax_41[1] = var_ac
-00421cff        int32_t var_a8
-00421cff        eax_41[2] = var_a8
-00421d09        int32_t* eax_43 = *(arg1 + 0x24) + 0x1e4
-00421d0e        int32_t var_a0
-00421d0e        *eax_43 = var_a0
-00421d14        int32_t var_9c
-00421d14        eax_43[1] = var_9c
-00421d1b        int32_t var_98
-00421d1b        eax_43[2] = var_98
+00421cd1        float* eax_39 = *(arg1 + 0x24) + 0x1c4
+00421cd6        *eax_39 = var_c0.basis_right.x
+00421cdc        eax_39[1] = var_c0.basis_right.y
+00421ce3        eax_39[2] = var_c0.basis_right.z
+00421ced        float* eax_41 = *(arg1 + 0x24) + 0x1d4
+00421cf2        *eax_41 = var_c0.basis_up.x
+00421cf8        eax_41[1] = var_c0.basis_up.y
+00421cff        eax_41[2] = var_c0.basis_up.z
+00421d09        float* eax_43 = *(arg1 + 0x24) + 0x1e4
+00421d0e        *eax_43 = var_c0.basis_forward.x
+00421d14        eax_43[1] = var_c0.basis_forward.y
+00421d1b        eax_43[2] = var_c0.basis_forward.z
 00421d1e        void* eax_44 = *(arg1 + 0x24)
 00421d2e        *(eax_44 + 0x24c) = *(eax_44 + 0x258)
 00421d33        *(eax_44 + 0x250) = *(eax_44 + 0x25c)

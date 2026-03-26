@@ -9,10 +9,10 @@ int32_t __fastcall initialize_cutscene_ai(CutsceneAI *cutscene_ai)
   char *v2; // edx
 
   result = (int32_t)MEMORY[0x4DF904] + 4400896;
-  cutscene_ai->shared_state = (char *)MEMORY[0x4DF904] + 4400896;
+  cutscene_ai->presentation = (char *)MEMORY[0x4DF904] + 4400896;
   v2 = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-  cutscene_ai->active = 0;
-  cutscene_ai->intro_talk_anchor = v2;
+  cutscene_ai->state = 0;
+  cutscene_ai->player = v2;
   return result;
 }
 

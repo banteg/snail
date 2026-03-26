@@ -80,11 +80,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_matrix_z_direction",
-        "int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);",
+        "void __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);",
     ),
     (
         "look_at_point",
-        "TransformMatrix* __thiscall look_at_point(TransformMatrix* transform, Vec3* target);",
+        "void __thiscall look_at_point(TransformMatrix* transform, Vec3* target);",
     ),
     (
         "interpolate_matrix_rotation",
@@ -92,7 +92,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "linear_interpolate_matrix",
-        "TransformMatrix* __thiscall linear_interpolate_matrix(TransformMatrix* out, TransformMatrix* from, TransformMatrix* to, float alpha);",
+        "void __thiscall linear_interpolate_matrix(TransformMatrix* out, TransformMatrix* from, TransformMatrix* to, float alpha);",
     ),
     (
         "compute_kind42_attachment_transform",

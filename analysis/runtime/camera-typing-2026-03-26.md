@@ -18,7 +18,8 @@ The current conservative `CameramanState` prefix is:
 
 The current conservative `Player` camera slice is:
 
-- `+0x68`: `position`
+- `+0x38`: `live_matrix`
+  - `+0x68`: `live_matrix.position`
 - `+0x350`: `lane_lean_state`
 - `+0x354`: `lane_lean_amplitude`
 - `+0x358`: `lane_lean_progress`
@@ -31,7 +32,7 @@ The current conservative `Player` camera slice is:
 
 These are the player-side camera inputs that `update_cameraman` now reads directly in the typed decompile:
 
-- `position.z`
+- `live_matrix.position.z`
 - `lane_lean_amplitude`
 - `lane_lean_progress`
 - `heading_roll`
@@ -58,6 +59,14 @@ The shared matrix helper family is now typed around `TransformMatrix`:
 - `premultiply_matrix_in_place`
 - `interpolate_matrix_rotation`
 - `linear_interpolate_matrix`
+
+The camera/cutscene helper returns are also now constrained to the safe in-place model:
+
+- `set_matrix_z_direction` is `void`
+- `look_at_point` is `void`
+- `linear_interpolate_matrix` is `void`
+
+Those helpers mutate the output matrix directly; treating them as value-returning helpers polluted both BN and IDA callers with fake temporary results.
 
 ## Readback Wins
 

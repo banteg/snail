@@ -25,13 +25,13 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->nuke.owner_player = player;
   player->nuke.state = 0;
   player->row_event_cutscene_started = 0;
-  *(_DWORD *)&player->_pad_74[24] = 0;
+  *(_DWORD *)&player->_pad_78[20] = 0;
   player->completion_handoff_timer = 0.0;
   player->movement_flags = 0;
   player->previous_movement_flags = -1;
   player->_pad_1e4[0] = 0;
   player->presentation.weapon_release_active = 0;
-  *((_DWORD *)player->game + 4835835) = 0;
+  *(_DWORD *)&player->game[1]._pad_5c[360] = 0;
   player->presentation.jetpack_channel.selected_state = 0;
   player->presentation.weapon_channels[0].selected_state = 0;
   player->presentation.weapon_channels[1].selected_state = 0;
@@ -41,12 +41,12 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   sub_41AA30(&player->presentation.visual_root->follow_lateral_response);
   player->interaction_max_z = -19.0;
   player->movement_sound_variant_sample = 0;
-  *(_DWORD *)&player->presentation._pad_15bc[880] = 0;
-  *(_DWORD *)&player->presentation._pad_15bc[884] = 1015580809;
+  *(_DWORD *)&player->presentation._pad_1894[152] = 0;
+  *(_DWORD *)&player->presentation._pad_1894[156] = 1015580809;
   *((_DWORD *)player + 4311) = 0;
   *((_DWORD *)player + 4312) = 1015580809;
   initialize_score_stats(&player->squidge.y_output);
-  initialize_invincible_shell(&player->presentation._pad_15bc[728]);
+  initialize_invincible_shell(player->presentation._pad_1894);
   *(_DWORD *)&player->_pad_30c[40] = 1029934648;
   *(_DWORD *)&player->_pad_30c[36] = 1029934648;
   player->attachment_exit_progress = 0.0;
@@ -143,23 +143,23 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   }
   initialize_snail_skin(&player->presentation.snail_skin_transition.selected_slot);
   initialize_cutscene_ai(&player->presentation.cutscene_ai);
-  if ( !*((_BYTE *)player->game + 16721360) )
-    player->presentation.cutscene_ai.active = 1;
+  if ( !player->game->_pad_ff25e0[496] )
+    player->presentation.cutscene_ai.state = 1;
   player->presentation.owner_player = player;
   set_matrix_identity(&player->presentation.live_matrix);
   set_matrix_identity((TransformMatrix *)player->presentation._pad_c0);
   set_matrix_identity(&player->presentation.previous_live_matrix);
-  *(_DWORD *)&player->presentation.cutscene_ai._pad_10[76] = 0;
+  *(_DWORD *)&player->presentation.cutscene_ai._pad_59[3] = 0;
   initialize_click_start((int)player->_pad_a0, (int)player);
   initialize_cameraman((CameramanState *)player->_pad_200);
   initialize_subgoldy_ghost(player, player->player_slot);
   player->damage_retrigger_step = 0.05050505;
   player->surface_reaction_step = 0.05050505;
-  player->position.x = 0.0;
-  player->position.y = 0.0;
+  player->live_matrix.position.x = 0.0;
+  player->live_matrix.position.y = 0.0;
   player->cached_camera_target_world.x = 0.0;
-  player->position.z = 4.0;
-  z = player->position.z;
+  player->live_matrix.position.z = 4.0;
+  z = player->live_matrix.position.z;
   *(_DWORD *)&player->_pad_374[8] = 0;
   player->cached_camera_target_world.y = 0.0;
   *(_DWORD *)&player->_pad_30c[28] = 0;
@@ -170,7 +170,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   *(_DWORD *)&player->presentation._pad_15bc[4] = 1002197604;
   *(_DWORD *)&player->presentation._pad_15bc[8] = 0;
   *(_DWORD *)&player->presentation._pad_15bc[12] = 1004405091;
-  player->_pad_74[16] = 0;
+  player->_pad_78[12] = 0;
   player->cached_camera_target_world.z = z;
   player->velocity.z = 0.0;
   player->velocity.y = 0.0;
@@ -227,7 +227,7 @@ LABEL_24:
   player->attachment_exit_pending = 0;
   player->_pad_41c[0] = 0;
   *(_DWORD *)&player->_pad_3f0[20] = 0;
-  *((_BYTE *)player->game + 1) = 1;
+  player->game->_pad_00[1] = 1;
   return result;
 }
 

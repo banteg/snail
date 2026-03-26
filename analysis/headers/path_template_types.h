@@ -36,6 +36,7 @@ typedef struct ColorBGRA8 {
 
 typedef struct Player Player;
 typedef struct Game Game;
+typedef struct PlayerPresentationController PlayerPresentationController;
 
 typedef struct TextureRef {
     uint32_t flags;
@@ -190,11 +191,15 @@ typedef struct SnailVisual {
 } SnailVisual;
 
 typedef struct CutsceneAI {
-    void* shared_state;
-    void* intro_talk_anchor;
-    uint8_t _pad_08[0x4];
-    int32_t active;
-    uint8_t _pad_10[0x54];
+    PlayerPresentationController* presentation;
+    Player* player;
+    int32_t unresolved_08;
+    int32_t state;
+    TransformMatrix live_matrix;
+    float progress;
+    float progress_step;
+    uint8_t unresolved_58;
+    uint8_t _pad_59[0xb];
 } CutsceneAI;
 
 typedef struct AnimationDispatchState {
@@ -250,7 +255,14 @@ typedef struct PlayerPresentationController {
     uint8_t _pad_14c[0x500];
     PresentationAnimationChannel weapon_channels[3];
     PresentationAnimationChannel jetpack_channel;
-    uint8_t _pad_15bc[0x378];
+    uint8_t _pad_15bc[0x48];
+    TransformMatrix snail_hotspot_source_matrix_a;
+    uint8_t _pad_1644[0x40];
+    TransformMatrix snail_hotspot_source_matrix_b;
+    uint8_t _pad_16c4[0x8];
+    Vec3 snail_hotspots_local[19];
+    Vec3 snail_hotspots_world[19];
+    uint8_t _pad_1894[0xa0];
     uint8_t weapon_release_active;
     uint8_t _pad_1935[0x3];
     SnailSkinTransitionState snail_skin_transition;
@@ -347,6 +359,33 @@ typedef struct RowEventDisplayController {
     int32_t display_token;
 } RowEventDisplayController;
 
+typedef struct Game {
+    uint8_t _pad_00[0x34];
+    float challenge_difficulty_scalar;
+    float track_center_x;
+    uint8_t _pad_3c[0x4];
+    int32_t level_mode;
+    int32_t level_mode_arg;
+    float base_subgame_rate;
+    uint32_t runtime_flags;
+    int32_t first_block_row_count;
+    int32_t runtime_row_count;
+    int32_t completion_row_start;
+    uint8_t _pad_5c[0xa7f8];
+    uint8_t track_state_latch;
+    uint8_t _pad_a855[0x1f];
+    int32_t level_segment_count;
+    uint8_t _pad_a878[0xfe7b58];
+    uint8_t selected_level_record_active;
+    uint8_t selected_level_record_persistent;
+    uint8_t _pad_ff25d2[0x2];
+    void* selected_level_record;
+    int32_t selected_level_record_saved_return_owner;
+    int32_t runtime_track_index;
+    uint8_t _pad_ff25e0[0x2801f8];
+    RowEventDisplayController row_event_display;
+} Game;
+
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -406,9 +445,9 @@ typedef struct FollowState {
 } FollowState;
 
 typedef struct Player {
-    uint8_t _pad_00[0x68];
-    Vec3 position;
-    uint8_t _pad_74[0x24];
+    uint8_t _pad_00[0x38];
+    TransformMatrix live_matrix;
+    uint8_t _pad_78[0x20];
     TrackRowCell* cached_track_pair_cell_a;
     TrackRowCell* cached_track_pair_cell_b;
     uint8_t _pad_a0[0x80];
@@ -518,10 +557,10 @@ int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
 TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);
 TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
-int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);
-TransformMatrix* __thiscall look_at_point(TransformMatrix* transform, Vec3* target);
+void __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);
+void __thiscall look_at_point(TransformMatrix* transform, Vec3* target);
 TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
-TransformMatrix* __thiscall linear_interpolate_matrix(
+void __thiscall linear_interpolate_matrix(
     TransformMatrix* out,
     TransformMatrix* from,
     TransformMatrix* to,

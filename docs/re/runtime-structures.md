@@ -8,7 +8,8 @@ The goal is not to freeze a final class hierarchy. It is to keep the recovered o
 
 The current high-confidence `Player` fields are:
 
-- `+0x68`: `position`
+- `+0x38`: `live_matrix`
+  - `+0x68`: `live_matrix.position`
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
@@ -52,10 +53,6 @@ The current high-confidence `Player` fields are:
 - `+0x44c`: `attachment_exit_gate_a`
 - `+0x44d`: `attachment_exit_gate_b`
 - `+0x44e`: `completion_handoff_voice_gate`
-- `+0x16cc`: `snail_hotspots_local`
-  - `19`-entry `Vec3` array
-- `+0x17b0`: `snail_hotspots_world`
-  - `19`-entry `Vec3` array
 - `+0x2730`: `movement_progress`
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
@@ -84,8 +81,8 @@ Current practical read for the hotspot bank:
   - index `17`: `X/CameraSlugDeath`
   - index `18`: `X/CameraIntroTalk`
 - `update_snail_skin` transforms that `19`-entry local bank into `snail_hotspots_world`
-  - slots `0..10` use the cached matrix at `player + 0x1684`
-  - slots `11..18` use the cached matrix at `player + 0x1604`
+  - slots `0..10` use `presentation + 0x1684` (`snail_hotspot_source_matrix_b`)
+  - slots `11..18` use `presentation + 0x1604` (`snail_hotspot_source_matrix_a`)
 - the earlier standalone cutscene-anchor reads at `+0x1840` and `+0x1888` are `snail_hotspots_world[12]` (`CameraSkidStop`) and `snail_hotspots_world[18]` (`CameraIntroTalk`)
 - `update_cutscene` keeps reorienting the live intro camera around hotspot `18`, uses the `12 -> 18` lerp with the recovered sinusoidal x-offset in completion state `6`, and keeps the fixed completion/death look-at legs on hotspot `18`
 - hotspot `17` (`CameraSlugDeath`) is a real transformed hotspot, but no direct runtime consumer for it was recovered in this pass
@@ -126,8 +123,20 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x108`: inline `anim_manager`
     - `+0x3d0`: `release_step`
   - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
+  - `+0x1604`: `snail_hotspot_source_matrix_a`
+  - `+0x1684`: `snail_hotspot_source_matrix_b`
+  - `+0x16cc`: `snail_hotspots_local`
+    - `19`-entry `Vec3` array
+  - `+0x17b0`: `snail_hotspots_world`
+    - `19`-entry `Vec3` array
   - `+0x1938`: `snail_skin_transition`
   - `+0x1958`: `cutscene_ai`
+    - `+0x00`: `presentation`
+    - `+0x04`: `player`
+    - `+0x0c`: `state`
+    - `+0x10`: `live_matrix`
+    - `+0x50`: `progress`
+    - `+0x54`: `progress_step`
   - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
 - the global jetpack presentation controller at `data_4df904 + 0x432700` reuses the same `PresentationAnimationChannel` shape
   - `+0x11e0`: `jetpack_channel`

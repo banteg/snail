@@ -8,7 +8,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   Player *player; // eax
   TransformMatrix *p_desired_matrix; // ebx
   Player *v4; // ecx
-  double v5; // st7
+  double first_block_row_count; // st7
   double v6; // st7
   double v7; // st6
   Player *v8; // ecx
@@ -69,15 +69,15 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     sizeof(cameraman->desired_matrix));
   orthogonalize_matrix(&cameraman->desired_matrix);
   v4 = cameraman->player;
-  v5 = (double)*((int *)cameraman->game + 20);
-  if ( v5 <= v4->cached_camera_target_world.z )
+  first_block_row_count = (double)cameraman->game->first_block_row_count;
+  if ( first_block_row_count <= v4->cached_camera_target_world.z )
   {
     cameraman->desired_matrix.position.y = v4->cached_camera_target_world.y * 0.34999999
                                          + cameraman->desired_matrix.position.y;
   }
   else
   {
-    v6 = v4->cached_camera_target_world.z / v5 * 1.4 - 0.40000001;
+    v6 = v4->cached_camera_target_world.z / first_block_row_count * 1.4 - 0.40000001;
     if ( v6 >= 0.0 )
     {
       if ( v6 > 1.0 )
@@ -107,7 +107,8 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
      || kind == PATH_TEMPLATE_KIND_START
      || kind == (PATH_TEMPLATE_KIND_LOOPTHELOOPW|0x8)) )
   {
-    v11 = (v8->position.z - v8->follow_state.source_cell->anchor_position.z) / template_record->segment_count_f;
+    v11 = (v8->live_matrix.position.z - v8->follow_state.source_cell->anchor_position.z)
+        / template_record->segment_count_f;
     if ( v11 >= 0.0 )
     {
       if ( v11 > 1.0 )
@@ -180,7 +181,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v20 = cameraman->player;
   if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
   {
-    v22 = (v20->position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
+    v22 = (v20->live_matrix.position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
     if ( v22 >= 0.0 )
     {
       if ( v22 > 1.0 )
@@ -201,12 +202,12 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   }
   game = cameraman->game;
   cameraman->fov_degrees = (v23 - cameraman->fov_degrees) * 0.30000001 + cameraman->fov_degrees;
-  v33 = *((float *)game + 14) * 0.30000001;
-  result = (int32_t)linear_interpolate_matrix(
-                      &cameraman->live_matrix,
-                      &cameraman->previous_desired_matrix,
-                      &cameraman->desired_matrix,
-                      v33);
+  v33 = game->track_center_x * 0.30000001;
+  linear_interpolate_matrix(
+    &cameraman->live_matrix,
+    &cameraman->previous_desired_matrix,
+    &cameraman->desired_matrix,
+    v33);
   qmemcpy(&cameraman->previous_desired_matrix, p_desired_matrix, sizeof(cameraman->previous_desired_matrix));
   return result;
 }

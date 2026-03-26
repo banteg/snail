@@ -1,3 +1,9 @@
+/* tool: binary_ninja */
+/* target: 63967:1:3859193737586600258 */
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
+/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
+/* function: update_subgoldy @ 0x43b120 */
+
 0043b125        struct Player* player_1 = player
 0043b128        int32_t __saved_edi
 0043b128        int32_t* esp = &__saved_edi
@@ -220,15 +226,12 @@
 0043b75b        int32_t ecx_38
 0043b75b        ecx_38.b = *(*(game_60 + (eax_25 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa670)
 0043b764        if (ecx_38.b != 0)
-0043b76a        player_1->row_event.state = 2
-0043b796        player_1->row_event.data_b = *(game_60 + (eax_25 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa670
-0043b79c        player_1->row_event.timer = 0f
-0043b7a6        player_1->row_event._pad_0c[0] = 0
-0043b7a6        player_1->row_event._pad_0c[1] = 0
-0043b7a6        player_1->row_event._pad_0c[2] = 0xf0
-0043b7a6        player_1->row_event._pad_0c[3] = 0x41
-0043b7d2        player_1->row_event.data_a = *(*(game_60 + (eax_25 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa870)
-0043b7d8        int32_t eax_31
+0043b76a        player_1->row_event.tip_definition.flags = 2
+0043b796        player_1->row_event.tip_definition.text = *(game_60 + (eax_25 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa670
+0043b79c        player_1->row_event.tip_definition.layout_y = 0f
+0043b7a6        player_1->row_event.tip_definition.text_scale = 30f
+0043b7d2        player_1->row_event.tip_definition.dismiss_seconds = *(*(game_60 + (eax_25 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa870)
+0043b7d8        float eax_31
 0043b7d8        eax_31.b = player_1->_pad_124[0x28]
 0043b7e0        if (eax_31.b == 0)
 0043b7e2        player_1->_pad_124[0x28] = 1
@@ -253,7 +256,7 @@
 0043b843        y = y_7
 0043b84d        play_voice_manager(0x751498, 0xd, 2, y)
 0043b858        y = 1
-0043b866        enqueue_tip_message(data_4df904 + 0x12e6f58, &player_1->row_event.state, y)
+0043b866        enqueue_tip_message(data_4df904 + 0x12e6f58, &player_1->row_event.tip_definition, y)
 0043b86b        eax_26.b = player_1->attachment_exit_pending
 0043b873        if (eax_26.b == 0)
 0043b879        eax_26.b = eax_23->__offset(0x3c).b

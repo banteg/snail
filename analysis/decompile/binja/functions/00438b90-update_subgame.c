@@ -17,7 +17,7 @@
 00438b97        char* game = arg1
 00438b99        int16_t x87control = calc_subgame_rate(arg1)
 00438b9e        int32_t eax = *(game + 0x3c)
-00438ba4        float eax_25
+00438ba4        int32_t eax_25
 00438ba4        if (eax u> 7)
 004398fa        label_4398fa:
 004398fa        eax_25 = update_subgame_camera(game)
@@ -505,7 +505,7 @@
 00439969        int32_t ecx_94 = *(game + 0x35bb8c)
 0043996f        *(esp_1 - 4) = *(game + 0x355d94)
 00439970        border_add_text_number(ecx_94)
-00439977        float eax_104 = update_subgame_camera(game)
+00439977        int32_t eax_104 = update_subgame_camera(game)
 0043997c        *esp_1
 0043997c        esp_1[1]
 0043997d        esp_1[2]
@@ -520,7 +520,7 @@
 004398ca        void* eax_99 = &game[*(game + 0x44) * 0x1fac0]
 004398d3        if (*(eax_99 + 0x944150) != 1)
 0043990d        hide_border_init(*(game + 0x35bb8c))
-00439914        float eax_101 = update_subgame_camera(game)
+00439914        int32_t eax_101 = update_subgame_camera(game)
 00439919        *esp_1
 00439919        esp_1[1]
 0043991a        esp_1[2]
@@ -536,7 +536,7 @@
 00439984        eax_23.b = game[0xff25d1]
 0043998c        if (eax_23.b == 0)
 004399b2        *(ecx_26 + 0x1bc) = *(ecx_26 + 0x1b8)
-004399bd        *(data_4df904 i+ 0x1b8) = 0x1b
+004399bd        *(data_4df904 + 0x1b8) = 0x1b
 00439994        *(ecx_26 + 0x1bc) = *(ecx_26 + 0x1b8)
 004399a0        *(data_4df904 + 0x1b8) = 0x1a
 004399c7        void* ecx_97 = data_4df904

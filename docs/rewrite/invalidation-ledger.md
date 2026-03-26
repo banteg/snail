@@ -75,3 +75,9 @@ Template:
 - invalidated claim: the presentation root stores a flat `active_keyframe` at `+0x110`, a flat `queued_animation_count` at `+0x140`, and each weapon lane stores an anim-manager root at `+0x104`
 - replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`, `initialize_subgoldy`, `initialize_cutscene`, and `set_snail_jetpack` all agree on the same nested model: the root has an inline animation-dispatch block at `player + 0x2a88`, each repeated weapon/jetpack lane has `selected_state` at `+0x104` and an inline animation-dispatch block at `+0x108`, and the shared visual flags live at channel/root offset `+0x04`
 - port consequence: keep the checked-in BN/IDA type lane centered on nested `AnimationDispatchState` and repeated `PresentationAnimationChannel` blocks; future Zig or RE naming should stop flattening those lanes into standalone root fields or treating `+0x104` as the anim-manager root inside the weapon channels
+
+## 2026-03-26 - Camera matrix helper prototypes
+
+- invalidated claim: `set_matrix_z_direction`, `look_at_point`, and `linear_interpolate_matrix` return meaningful values
+- replacement evidence: the Windows helpers are used as in-place matrix mutators in `update_cameraman` and `update_cutscene`; typing them as returning values produces fake assignments and decompiler noise, while `void` restores clean call sites
+- port consequence: keep the checked-in BN/IDA type lane on `void` returns for those helpers and avoid inferring return values from transient register/stack residue in x87-heavy camera callers

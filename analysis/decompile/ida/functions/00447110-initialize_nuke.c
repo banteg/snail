@@ -17,7 +17,7 @@ int32_t __thiscall initialize_nuke(NukeController *nuke)
   {
     sprite_slots = nuke->sprite_slots;
     v3 = 25;
-    nuke->orbit_axis = nuke->owner_player->position.z - 5.0;
+    nuke->orbit_axis = nuke->owner_player->live_matrix.position.z - 5.0;
     v4 = *((float *)MEMORY[0x4DF904] + 119188) + *((float *)MEMORY[0x4DF904] + 119188);
     nuke->phase = 0.0;
     nuke->phase_step = 0.10471976;

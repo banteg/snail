@@ -5,7 +5,8 @@
 /* function: look_at_point @ 0x44d4e0 */
 
 0044d508        struct Vec3 direction
-0044d508        direction.y = fconvert.s(fconvert.t(arg2[1]) - fconvert.t(arg1->position.y))
-0044d50c        direction.x = fconvert.s(fconvert.t(*arg2) - fconvert.t(arg1->position.x))
-0044d51d        direction.z = fconvert.s(fconvert.t(arg2[2]) - fconvert.t(arg1->position.z))
-0044d529        return set_matrix_z_direction(arg1, &direction)
+0044d508        direction.y = fconvert.s(fconvert.t(target->y) - fconvert.t(transform->position.y))
+0044d50c        direction.x = fconvert.s(fconvert.t(target->x) - fconvert.t(transform->position.x))
+0044d51d        direction.z = fconvert.s(fconvert.t(target->z) - fconvert.t(transform->position.z))
+0044d521        set_matrix_z_direction(transform, &direction)
+0044d529        return
