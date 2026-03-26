@@ -489,12 +489,12 @@ const GameplayJetpackVisualState = struct {
 const GameplayWeaponVisualState = struct {
     left_draw_ticks: u8 = 0,
     left_hide_ticks: u8 = 0,
-    left_draw_state: u8 = 0,
-    left_hide_state: u8 = 0,
+    left_draw_selected_state: u8 = 0,
+    left_hide_selected_state: u8 = 0,
     right_draw_ticks: u8 = 0,
     right_hide_ticks: u8 = 0,
-    right_draw_state: u8 = 0,
-    right_hide_state: u8 = 0,
+    right_draw_selected_state: u8 = 0,
+    right_hide_selected_state: u8 = 0,
     top_draw_ticks: u8 = 0,
     top_hide_ticks: u8 = 0,
     rocket_draw_ticks: u8 = 0,
@@ -525,15 +525,15 @@ const GameplayWeaponVisualState = struct {
         if (previous == current) return;
         const draw_ticks: *u8 = if (left_channel) &self.left_draw_ticks else &self.right_draw_ticks;
         const hide_ticks: *u8 = if (left_channel) &self.left_hide_ticks else &self.right_hide_ticks;
-        const draw_state: *u8 = if (left_channel) &self.left_draw_state else &self.right_draw_state;
-        const hide_state: *u8 = if (left_channel) &self.left_hide_state else &self.right_hide_state;
+        const draw_selected_state: *u8 = if (left_channel) &self.left_draw_selected_state else &self.right_draw_selected_state;
+        const hide_selected_state: *u8 = if (left_channel) &self.left_hide_selected_state else &self.right_hide_selected_state;
         if (previous != 0) {
             hide_ticks.* = sideWeaponDrawTickCount(previous);
-            hide_state.* = previous;
+            hide_selected_state.* = previous;
         }
         if (current != 0) {
             draw_ticks.* = sideWeaponDrawTickCount(current);
-            draw_state.* = current;
+            draw_selected_state.* = current;
         }
     }
 
@@ -564,14 +564,14 @@ const GameplayWeaponVisualState = struct {
         }
     }
 
-    fn sidePresentationState(self: *const GameplayWeaponVisualState, current_state: u8, left_channel: bool) u8 {
-        if (current_state != 0) return current_state;
+    fn sideSelectedState(self: *const GameplayWeaponVisualState, current_selected_state: u8, left_channel: bool) u8 {
+        if (current_selected_state != 0) return current_selected_state;
         const draw_ticks = if (left_channel) self.left_draw_ticks else self.right_draw_ticks;
         const hide_ticks = if (left_channel) self.left_hide_ticks else self.right_hide_ticks;
-        const draw_state = if (left_channel) self.left_draw_state else self.right_draw_state;
-        const hide_state = if (left_channel) self.left_hide_state else self.right_hide_state;
-        if (draw_ticks > 0 and draw_state != 0) return draw_state;
-        if (hide_ticks > 0 and hide_state != 0) return hide_state;
+        const draw_selected_state = if (left_channel) self.left_draw_selected_state else self.right_draw_selected_state;
+        const hide_selected_state = if (left_channel) self.left_hide_selected_state else self.right_hide_selected_state;
+        if (draw_ticks > 0 and draw_selected_state != 0) return draw_selected_state;
+        if (hide_ticks > 0 and hide_selected_state != 0) return hide_selected_state;
         return 0;
     }
 };
@@ -892,28 +892,28 @@ test "weapon visual state keeps native side blaster and laser families distinct"
     var visuals = GameplayWeaponVisualState{};
 
     visuals.noteWeaponChannelChange(0, 2);
-    try std.testing.expectEqual(@as(u8, 1), visuals.left_draw_state);
-    try std.testing.expectEqual(@as(u8, 1), visuals.right_draw_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.left_draw_selected_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.right_draw_selected_state);
     try std.testing.expectEqual(sideWeaponDrawTickCount(1), visuals.left_draw_ticks);
     try std.testing.expectEqual(sideWeaponDrawTickCount(1), visuals.right_draw_ticks);
-    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(1, true));
-    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(1, false));
+    try std.testing.expectEqual(@as(u8, 1), visuals.sideSelectedState(1, true));
+    try std.testing.expectEqual(@as(u8, 1), visuals.sideSelectedState(1, false));
 
     visuals = .{};
     visuals.noteWeaponChannelChange(0, 16);
-    try std.testing.expectEqual(@as(u8, 2), visuals.left_draw_state);
-    try std.testing.expectEqual(@as(u8, 2), visuals.right_draw_state);
+    try std.testing.expectEqual(@as(u8, 2), visuals.left_draw_selected_state);
+    try std.testing.expectEqual(@as(u8, 2), visuals.right_draw_selected_state);
     try std.testing.expectEqual(sideWeaponDrawTickCount(2), visuals.left_draw_ticks);
     try std.testing.expectEqual(sideWeaponDrawTickCount(2), visuals.right_draw_ticks);
-    try std.testing.expectEqual(@as(u8, 2), visuals.sidePresentationState(2, true));
-    try std.testing.expectEqual(@as(u8, 2), visuals.sidePresentationState(2, false));
+    try std.testing.expectEqual(@as(u8, 2), visuals.sideSelectedState(2, true));
+    try std.testing.expectEqual(@as(u8, 2), visuals.sideSelectedState(2, false));
 
     visuals = .{};
     visuals.noteWeaponChannelChange(2, 0);
-    try std.testing.expectEqual(@as(u8, 1), visuals.left_hide_state);
-    try std.testing.expectEqual(@as(u8, 1), visuals.right_hide_state);
-    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, true));
-    try std.testing.expectEqual(@as(u8, 1), visuals.sidePresentationState(0, false));
+    try std.testing.expectEqual(@as(u8, 1), visuals.left_hide_selected_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.right_hide_selected_state);
+    try std.testing.expectEqual(@as(u8, 1), visuals.sideSelectedState(0, true));
+    try std.testing.expectEqual(@as(u8, 1), visuals.sideSelectedState(0, false));
 }
 
 test "native jetpack visual presentation follows the recovered 0.94 shutoff edge" {
@@ -8023,8 +8023,8 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.left_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.left_hide_ticks > 0;
     if (left_active) {
-        const left_presentation_state = state.gameplay_weapon_visual_state.sidePresentationState(channel_states.left, true);
-        const left_model = switch (left_presentation_state) {
+        const left_selected_state = state.gameplay_weapon_visual_state.sideSelectedState(channel_states.left, true);
+        const left_model = switch (left_selected_state) {
             1 => state.current_gameplay_blaster_left_models.currentModel(
                 state.gameplay_weapon_visual_state.left_draw_ticks,
                 0,
@@ -8054,8 +8054,8 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.right_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.right_hide_ticks > 0;
     if (right_active) {
-        const right_presentation_state = state.gameplay_weapon_visual_state.sidePresentationState(channel_states.right, false);
-        const right_model = switch (right_presentation_state) {
+        const right_selected_state = state.gameplay_weapon_visual_state.sideSelectedState(channel_states.right, false);
+        const right_model = switch (right_selected_state) {
             1 => state.current_gameplay_blaster_right_models.currentModel(
                 state.gameplay_weapon_visual_state.right_draw_ticks,
                 0,
