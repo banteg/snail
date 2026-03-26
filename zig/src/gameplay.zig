@@ -740,11 +740,7 @@ const WorldFrame = struct {
     up: rl.Vector3,
 };
 
-const CachedCameraTargetState = struct {
-    world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-};
-
-const SnailHotspotState = struct {
+const CameraHotspotWorldState = struct {
     camera_skid_stop: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     camera_slug_death: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     camera_intro_talk: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
@@ -1169,8 +1165,8 @@ pub const Runner = struct {
     attachment_camera_orientation_b: f32 = 0.0,
     heading_roll: f32 = 0.0,
     previous_heading_roll_sample: f32 = 0.0,
-    snail_hotspots: SnailHotspotState = .{},
-    cached_camera_target: CachedCameraTargetState = .{},
+    camera_hotspots_world: CameraHotspotWorldState = .{},
+    cached_camera_target_world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
@@ -1625,7 +1621,7 @@ pub const Runner = struct {
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.refreshCachedCameraTarget(preview);
-        self.refreshSnailHotspots(preview);
+        self.refreshCameraHotspots(preview);
         self.refreshCameraRollState(preview);
         self.updateCameraman(preview);
         self.updateCutsceneCamera(preview);
@@ -1634,7 +1630,7 @@ pub const Runner = struct {
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         if (preview.total_rows == 0 or preview.runtime_active_row_start == 0) return 1.0;
         const intro_transition_rows = @as(f32, @floatFromInt(preview.runtime_active_row_start));
-        const cached_target_z = self.cached_camera_target.world.z;
+        const cached_target_z = self.cached_camera_target_world.z;
         return std.math.clamp(((cached_target_z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
     }
 
@@ -2836,7 +2832,7 @@ pub const Runner = struct {
 
     fn refreshCachedCameraTarget(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) {
-            self.cached_camera_target = .{};
+            self.cached_camera_target_world = .{ .x = 0.0, .y = 0.0, .z = 0.0 };
             return;
         }
 
@@ -2847,7 +2843,7 @@ pub const Runner = struct {
             .y = self.jetpack.wobble_y,
             .z = self.jetpack.wobble_alpha,
         };
-        self.cached_camera_target.world = .{
+        self.cached_camera_target_world = .{
             .x = base_position.x + (frame.right.x * local_offset.x) + (frame.up.x * local_offset.y) + (frame.forward.x * local_offset.z),
             .y = base_position.y + (frame.right.y * local_offset.x) + (frame.up.y * local_offset.y) + (frame.forward.y * local_offset.z),
             .z = base_position.z + (frame.right.z * local_offset.x) + (frame.up.z * local_offset.y) + (frame.forward.z * local_offset.z),
@@ -2954,13 +2950,13 @@ pub const Runner = struct {
         return self.worldPosition(preview, attachment_entry_rider_height);
     }
 
-    fn snailHotspotPrimarySourceFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
+    fn cameraHotspotSourceFrameA(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
         var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
         frame.position = self.worldPosition(preview, attachment_entry_rider_height);
         return frame;
     }
 
-    fn snailHotspotSecondarySourceFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
+    fn cameraHotspotSourceFrameB(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
         var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
         frame.position = self.playerWorldPosition(preview);
         return frame;
@@ -2974,34 +2970,34 @@ pub const Runner = struct {
         };
     }
 
-    fn refreshSnailHotspots(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    fn refreshCameraHotspots(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) {
-            self.snail_hotspots = .{};
+            self.camera_hotspots_world = .{};
             return;
         }
 
-        const primary_source_matrix = cameraMatrixFromTransform(self.snailHotspotPrimarySourceFrame(preview));
-        const secondary_source_matrix = cameraMatrixFromTransform(self.snailHotspotSecondarySourceFrame(preview));
+        const source_matrix_a = cameraMatrixFromTransform(self.cameraHotspotSourceFrameA(preview));
+        const source_matrix_b = cameraMatrixFromTransform(self.cameraHotspotSourceFrameB(preview));
 
         const hotspotSourceMatrix = struct {
-            fn select(primary: rl.Matrix, secondary: rl.Matrix, hotspot_index: u8) rl.Matrix {
+            fn select(source_a: rl.Matrix, source_b: rl.Matrix, hotspot_index: u8) rl.Matrix {
                 return switch (hotspot_index) {
-                    0...10 => secondary,
-                    else => primary,
+                    0...10 => source_b,
+                    else => source_a,
                 };
             }
         }.select;
 
-        self.snail_hotspots.camera_skid_stop = transformLocalPointByMatrix(
-            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_skid_stop_index),
+        self.camera_hotspots_world.camera_skid_stop = transformLocalPointByMatrix(
+            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_skid_stop_index),
             hotspot_camera_skid_stop_local,
         );
-        self.snail_hotspots.camera_slug_death = transformLocalPointByMatrix(
-            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_slug_death_index),
+        self.camera_hotspots_world.camera_slug_death = transformLocalPointByMatrix(
+            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_slug_death_index),
             hotspot_camera_slug_death_local,
         );
-        self.snail_hotspots.camera_intro_talk = transformLocalPointByMatrix(
-            hotspotSourceMatrix(primary_source_matrix, secondary_source_matrix, native_hotspot_camera_intro_talk_index),
+        self.camera_hotspots_world.camera_intro_talk = transformLocalPointByMatrix(
+            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_intro_talk_index),
             hotspot_camera_intro_talk_local,
         );
     }
@@ -3014,18 +3010,18 @@ pub const Runner = struct {
         return lookAtPoint(
             cameraMatrixWithPosition(cameraman_identity_matrix, position),
             self.cutsceneTargetPoint(preview),
-            self.snailHotspotPrimarySourceFrame(preview).up,
+            self.cameraHotspotSourceFrameA(preview).up,
         );
     }
 
     fn introCutsceneHoldMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk);
+        return self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk);
     }
 
     fn introCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
         const alpha = std.math.sin(progress * (std.math.pi / 2.0));
         return linearInterpolateCameraMatrices(
-            self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk),
+            self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk),
             self.cameraman.live_matrix,
             alpha,
         );
@@ -3033,8 +3029,8 @@ pub const Runner = struct {
 
     fn completionCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
         var position = lerpVector3(
-            self.snail_hotspots.camera_skid_stop,
-            self.snail_hotspots.camera_intro_talk,
+            self.camera_hotspots_world.camera_skid_stop,
+            self.camera_hotspots_world.camera_intro_talk,
             progress,
         );
         position.x -= std.math.sin(progress * std.math.pi) * completion_cutscene_x_offset;
@@ -3051,11 +3047,11 @@ pub const Runner = struct {
     }
 
     fn completionCutsceneFixedMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk);
+        return self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk);
     }
 
     fn deathCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
-        var position = self.snail_hotspots.camera_intro_talk;
+        var position = self.camera_hotspots_world.camera_intro_talk;
         position.x += std.math.sin(progress * std.math.pi) * death_cutscene_x_offset;
         position.y = @max(position.y, death_cutscene_y_floor);
         return position;
@@ -3174,9 +3170,9 @@ pub const Runner = struct {
         const desired_fov = self.cameramanDesiredFovDegrees(preview);
         self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * cameraman_fov_blend;
 
-        const anchor_x = self.cached_camera_target.world.x;
-        const anchor_y = self.cached_camera_target.world.y;
-        const anchor_z = self.cached_camera_target.world.z;
+        const anchor_x = self.cached_camera_target_world.x;
+        const anchor_y = self.cached_camera_target_world.y;
+        const anchor_z = self.cached_camera_target_world.z;
         const progress_blend = self.cameramanProgressBlend(preview);
         const vertical_lift = cameramanVerticalLiftFromCachedTarget(anchor_y, progress_blend);
         const anchor_pitch_radians = cameramanPitchRadiansFromCachedTarget(anchor_y);
@@ -8736,8 +8732,8 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
     const expected_blend = runner.completionCutsceneBlendMatrix(&fixture.preview, progress);
     const actual_blend = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
     const hotspot_lerp = lerpVector3(
-        runner.snail_hotspots.camera_skid_stop,
-        runner.snail_hotspots.camera_intro_talk,
+        runner.camera_hotspots_world.camera_skid_stop,
+        runner.camera_hotspots_world.camera_intro_talk,
         progress,
     );
 
@@ -8756,7 +8752,7 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
         runner.cutsceneCameraMatrix(),
         0.0001,
     );
-    try expectVector3ApproxEq(runner.snail_hotspots.camera_intro_talk, fixed.position, 0.0001);
+    try expectVector3ApproxEq(runner.camera_hotspots_world.camera_intro_talk, fixed.position, 0.0001);
 }
 
 test "postal completion handoff waits for the row event controller to complete" {
@@ -8991,7 +8987,7 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
     try std.testing.expectApproxEqAbs(expected_top_height, runner.worldPosition(&fixture.preview, 0.0).y, 0.001);
     try expectVector3ApproxEq(
         runner.playerWorldPosition(&fixture.preview),
-        runner.cached_camera_target.world,
+        runner.cached_camera_target_world,
         0.0001,
     );
 }
@@ -9069,7 +9065,7 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
 
     try std.testing.expectEqual(@as(u8, 11), runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
-    try std.testing.expect(actual_blend.position.x > runner.snail_hotspots.camera_intro_talk.x);
+    try std.testing.expect(actual_blend.position.x > runner.camera_hotspots_world.camera_intro_talk.x);
     try std.testing.expect(actual_blend.position.y >= death_cutscene_y_floor);
 
     runner.cutscene_camera.state = 12;
@@ -9085,8 +9081,8 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     );
     try std.testing.expect(fixed.position.y >= death_cutscene_y_floor);
     try std.testing.expect(
-        vector3DistanceSquared(fixed.position, runner.snail_hotspots.camera_intro_talk) <
-            vector3DistanceSquared(fixed.position, runner.snail_hotspots.camera_slug_death),
+        vector3DistanceSquared(fixed.position, runner.camera_hotspots_world.camera_intro_talk) <
+            vector3DistanceSquared(fixed.position, runner.camera_hotspots_world.camera_slug_death),
     );
 }
 
@@ -9834,7 +9830,7 @@ test "cached camera target defaults to the player world position without jetpack
 
     try expectVector3ApproxEq(
         runner.playerWorldPosition(&fixture.preview),
-        runner.cached_camera_target.world,
+        runner.cached_camera_target_world,
         0.0001,
     );
 }
@@ -9857,7 +9853,7 @@ test "cached camera target uses the jetpack local offset lanes" {
 
     runner.refreshCachedCameraTarget(&fixture.preview);
 
-    try expectVector3ApproxEq(expected, runner.cached_camera_target.world, 0.0001);
+    try expectVector3ApproxEq(expected, runner.cached_camera_target_world, 0.0001);
 }
 
 test "cameraman progress blend uses cached camera target z" {
@@ -9866,10 +9862,10 @@ test "cameraman progress blend uses cached camera target z" {
 
     var runner = Runner.init(&fixture.preview);
     runner.row_position = @as(f32, @floatFromInt(fixture.preview.runtime_active_row_start)) + 32.0;
-    runner.cached_camera_target.world.z = 0.0;
+    runner.cached_camera_target_world.z = 0.0;
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
 
-    runner.cached_camera_target.world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
+    runner.cached_camera_target_world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
 
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
 }
@@ -9891,13 +9887,13 @@ test "cameraman ignores speed when cached camera target is fixed" {
     defer fixture.deinit();
 
     var low_runner = Runner.init(&fixture.preview);
-    low_runner.cached_camera_target.world = .{ .x = 0.0, .y = 0.6, .z = 100.0 };
+    low_runner.cached_camera_target_world = .{ .x = 0.0, .y = 0.6, .z = 100.0 };
     low_runner.updateCameraman(&fixture.preview);
     const low_transform = cameraTransformFromMatrix(low_runner.cameramanMatrix());
 
     var speed_runner = Runner.init(&fixture.preview);
     speed_runner.speed_rows_per_second = 48.0;
-    speed_runner.cached_camera_target.world = low_runner.cached_camera_target.world;
+    speed_runner.cached_camera_target_world = low_runner.cached_camera_target_world;
     speed_runner.updateCameraman(&fixture.preview);
     const speed_transform = cameraTransformFromMatrix(speed_runner.cameramanMatrix());
 
