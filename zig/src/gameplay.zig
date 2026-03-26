@@ -701,7 +701,10 @@ const AttachmentFollowState = struct {
 };
 
 const AttachmentExitSeeds = struct {
+    // `seed_a` is the confirmed common carryover lane copied into `post_follow_value_a`.
     seed_a: f32 = 0.0,
+    // `seed_b` is still preserved because Windows writes `player + 0x430`, but bounded
+    // static RE has not yet closed a common consumer for it.
     seed_b: f32 = 0.0,
 };
 
@@ -4797,7 +4800,9 @@ pub const Runner = struct {
         if (!self.attachment_exit_gate_a and self.attachment_exit_progress > attachment_exit_gate_a_progress_threshold) {
             self.attachment_exit_gate_a = true;
         }
-        self.post_follow_value_a = normalizeRadians(self.post_follow_value_a + (self.post_follow_value_b * progress_step));
+        // The common pending-exit path only has a confirmed direct consumer for
+        // `post_follow_value_a`. Preserve the carryover angle here instead of synthesizing a
+        // shared `post_follow_value_b`-driven update that static RE has not closed yet.
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -5493,8 +5498,9 @@ pub const Runner = struct {
             // Native fall-state init copies `follow_state.orientation_b`, which is the
             // attachment phase lane rather than a sampled roll proxy.
             .seed_a = self.attachment_follow.camera_orientation_b,
-            // Native fall-state init copies the live follow record's install-time phase scalar
-            // into the exit-rate lane, including zero.
+            // Native fall-state init copies the live follow record's install-time scalar into
+            // `post_follow_value_b`, including zero. Keep that carryover value, but do not
+            // assign a common runtime consumer beyond the write itself until RE closes one.
             .seed_b = self.attachment_follow.installed_heading_delta,
         };
     }
@@ -8164,7 +8170,7 @@ test "lane input alone no longer arms cameraman roll on neutral tiles" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.lane_lean_progress, 0.0001);
 }
 
-test "fall state keeps Z anchored and advances carried follow roll" {
+test "fall state keeps Z anchored and preserves carried follow roll" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -8177,7 +8183,7 @@ test "fall state keeps Z anchored and advances carried follow roll" {
     runner.updatePhaseController(&fixture.preview, 1.0 / 60.0);
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
-    try std.testing.expect(runner.post_follow_value_a > 0.25);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.post_follow_value_a, 0.0001);
 }
 
 test "active jetpack retires attachment exit before the late progress gates" {
