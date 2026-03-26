@@ -12,8 +12,8 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   double v6; // st7
   double v7; // st6
   Player *v8; // ecx
-  int v9; // edx
-  int v10; // eax
+  PathTemplate *template_record; // edx
+  PathTemplateKind kind; // eax
   double v11; // st7
   Player *v12; // ecx
   Player *v13; // ecx
@@ -24,7 +24,7 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   float *pad_00; // esi
   Player *v19; // eax
   Player *v20; // eax
-  int v21; // ecx
+  PathTemplate *v21; // ecx
   double v22; // st7
   double v23; // st7
   Game *game; // eax
@@ -95,17 +95,19 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     rotate_matrix_world_x(&cameraman->desired_matrix, v27);
   }
   v8 = cameraman->player;
-  if ( v8->_pad_00[900] == 1
-    && ((v9 = *(_DWORD *)&v8->_pad_00[904], v10 = *(_DWORD *)(v9 + 56), v10 == 16)
-     || v10 == 8
-     || v10 == 9
-     || v10 == 10
-     || v10 == 43
-     || v10 == 45
-     || v10 == 36
-     || v10 == 14) )
+  if ( v8->follow_state.active == 1
+    && ((template_record = v8->follow_state.template_record,
+         kind = template_record->kind,
+         kind == PATH_TEMPLATE_KIND_FAMILY_10)
+     || kind == 8
+     || kind == 9
+     || kind == 10
+     || kind == PATH_TEMPLATE_KIND_TWISTER
+     || kind == PATH_TEMPLATE_KIND_TWISTER2
+     || kind == PATH_TEMPLATE_KIND_START
+     || kind == (PATH_TEMPLATE_KIND_LOOPTHELOOPW|0x8)) )
   {
-    v11 = (*(float *)&v8->_pad_00[112] - *(float *)(*(_DWORD *)&v8->_pad_00[908] + 24)) / *(float *)(v9 + 76);
+    v11 = (v8->position.z - v8->follow_state.source_cell->anchor_position.z) / template_record->segment_count_f;
     if ( v11 >= 0.0 )
     {
       if ( v11 > 1.0 )
@@ -123,9 +125,9 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
     cameraman->attachment_lift_envelope = 0.0;
   }
   v12 = cameraman->player;
-  if ( *(float *)&v12->_pad_00[732] > 0.0 )
+  if ( *(float *)&v12->_pad_74[616] > 0.0 )
   {
-    v29 = *(float *)&v12->_pad_00[732] * 4.712389 + 1.5707964;
+    v29 = *(float *)&v12->_pad_74[616] * 4.712389 + 1.5707964;
     cameraman->attachment_lift_envelope = (0.5 - cosine(v29) * 0.5) * 0.23999999 + cameraman->attachment_lift_envelope;
   }
   v13 = cameraman->player;
@@ -163,21 +165,21 @@ int32_t __thiscall update_cameraman(CameramanState *cameraman)
   v30 = pad_00[214] * 3.1415927;
   v31 = (0.5 - cosine(v30) * 0.5) * pad_00[213] * 6.2831855 + pad_00[2649] * -8.0 * 0.017449999 * 0.17;
   rotate_matrix_world_z(&cameraman->desired_matrix, v31);
-  if ( cameraman->player->_pad_00[900] == 1 )
+  if ( cameraman->player->follow_state.active == 1 )
   {
     set_matrix_identity(&v37);
-    rotate_matrix_world_z(&v37, *(float *)&cameraman->player->_pad_00[924]);
+    rotate_matrix_world_z(&v37, cameraman->player->follow_state.orientation_a);
     multiply_matrix_in_place(&cameraman->desired_matrix, &v37);
-    rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_00[928]);
+    rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b);
   }
   v19 = cameraman->player;
-  if ( v19->_pad_00[1053] )
-    rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&v19->_pad_00[1068]);
-  rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_00[880]);
+  if ( v19->attachment_exit_pending )
+    rotate_matrix_world_z(&cameraman->desired_matrix, v19->post_follow_value_a);
+  rotate_matrix_world_z(&cameraman->desired_matrix, *(float *)&cameraman->player->_pad_74[764]);
   v20 = cameraman->player;
-  if ( v20->_pad_00[900] == 1 && (v21 = *(_DWORD *)&v20->_pad_00[904], *(_DWORD *)(v21 + 56) == 24) )
+  if ( v20->follow_state.active == 1 && (v21 = v20->follow_state.template_record, v21->kind == PATH_TEMPLATE_KIND_WORM) )
   {
-    v22 = (*(float *)&v20->_pad_00[112] - *(float *)(*(_DWORD *)&v20->_pad_00[908] + 24)) / *(float *)(v21 + 76);
+    v22 = (v20->position.z - v20->follow_state.source_cell->anchor_position.z) / v21->segment_count_f;
     if ( v22 >= 0.0 )
     {
       if ( v22 > 1.0 )

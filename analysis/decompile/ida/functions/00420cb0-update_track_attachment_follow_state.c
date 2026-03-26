@@ -295,7 +295,7 @@ LABEL_11:
     follow_state->orientation_b = (v73 + (double)SLODWORD(progress))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( *(_DWORD *)&player->_pad_00[10076] == 1 )
+    if ( *(_DWORD *)&player->_pad_430[9004] == 1 )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )
@@ -315,8 +315,8 @@ LABEL_62:
       v38->x = p_output_position->x;
       v38->y = p_output_position->y;
       v38->z = p_output_position->z;
-      *(float *)&follow_state->player->_pad_00[880] = follow_state->template_record->installed_heading_delta
-                                                    + *(float *)&follow_state->player->_pad_00[880];
+      *(float *)&follow_state->player->_pad_74[764] = follow_state->template_record->installed_heading_delta
+                                                    + *(float *)&follow_state->player->_pad_74[764];
       if ( v38->x >= -4.0 )
       {
         if ( v38->x <= 4.0 )
@@ -424,8 +424,8 @@ LABEL_62:
       v84 = v36;
       out_position->z = v84;
       out_position->x = v26;
-      *(float *)&follow_state->player->_pad_00[736] = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
-      *(_DWORD *)&follow_state->player->_pad_00[732] = *(_DWORD *)&follow_state->player->_pad_00[736];
+      *(float *)&follow_state->player->_pad_74[620] = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
+      *(_DWORD *)&follow_state->player->_pad_74[616] = *(_DWORD *)&follow_state->player->_pad_74[620];
       play_voice_manager((int)unk_751498, 15, 0, -1);
     }
     else
@@ -435,8 +435,8 @@ LABEL_62:
                       + v24->width_or_scale
                       + v78;
     }
-    *(float *)&follow_state->player->_pad_00[880] = follow_state->template_record->installed_heading_delta
-                                                  + *(float *)&follow_state->player->_pad_00[880];
+    *(float *)&follow_state->player->_pad_74[764] = follow_state->template_record->installed_heading_delta
+                                                  + *(float *)&follow_state->player->_pad_74[764];
     return 3;
   }
 }

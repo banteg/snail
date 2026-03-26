@@ -34,10 +34,7 @@ typedef struct ColorBGRA8 {
     uint8_t a;
 } ColorBGRA8;
 
-typedef struct Player {
-    uint8_t _pad_00[0x2964];
-    Vec3 cached_camera_target_world;
-} Player;
+typedef struct Player Player;
 typedef struct Game Game;
 
 typedef struct TextureRef {
@@ -209,6 +206,19 @@ typedef struct FollowState {
     Vec3 output_position;
     Player* player;
 } FollowState;
+
+typedef struct Player {
+    uint8_t _pad_00[0x68];
+    Vec3 position;
+    uint8_t _pad_74[0x310];
+    FollowState follow_state;
+    uint8_t _pad_3c0[0x5d];
+    uint8_t attachment_exit_pending;
+    uint8_t _pad_41e[0xe];
+    float post_follow_value_a;
+    uint8_t _pad_430[0x2534];
+    Vec3 cached_camera_target_world;
+} Player;
 
 TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4);
 void __fastcall allocate_path_template_samples(PathTemplate* self);

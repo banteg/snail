@@ -18,9 +18,23 @@ The current conservative `CameramanState` prefix is:
 
 The current conservative `Player` camera slice is:
 
+- `+0x68`: `position`
+- `+0x384`: `follow_state`
+- `+0x41d`: `attachment_exit_pending`
+- `+0x42c`: `post_follow_value_a`
 - `+0x2964`: `cached_camera_target_world`
 
-This is the world-space point consumed by `update_cameraman` when it seeds the desired follow camera and applies the later pitch and lift offsets.
+These are the player-side camera inputs that `update_cameraman` now reads directly in the typed decompile:
+
+- `position.z`
+- `follow_state.active`
+- `follow_state.template_record`
+- `follow_state.source_cell`
+- `follow_state.orientation_a`
+- `follow_state.orientation_b`
+- `attachment_exit_pending`
+- `post_follow_value_a`
+- `cached_camera_target_world`
 
 ## Helper Typing
 
@@ -43,6 +57,8 @@ The tracked IDA exports are materially clearer after the sync:
 
 - `initialize_cameraman` now reads as explicit `live_matrix` / `desired_matrix` / `previous_desired_matrix` initialization rather than three anonymous `0x40` matrix blocks.
 - `update_cameraman` now uses `player->cached_camera_target_world.{x,y,z}` for the core camera anchor math instead of `*((float *)player + 2649..2651)`.
+- `update_cameraman` now shows the follow-attachment gates as `player->follow_state.active`, `player->follow_state.template_record`, `player->follow_state.source_cell`, and the two typed follow orientation floats instead of raw `player + 0x384..0x3a0` byte arithmetic.
+- `update_cameraman` now shows the post-follow carryover branch as `player->attachment_exit_pending` plus `player->post_follow_value_a` instead of `player + 0x41d` / `player + 0x42c`.
 - `look_at_point` now reads directly against `TransformMatrix.position`.
 - the world-axis rotation helpers now mutate `basis_right`, `basis_up`, and `basis_forward` explicitly.
 
