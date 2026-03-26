@@ -13,7 +13,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from snail.symbols import load_function_symbol_manifest  # noqa: E402
+from snail.symbols import build_function_symbol_manifest, load_function_symbol_manifest  # noqa: E402
 
 
 DEFAULT_MANIFEST_PATH = REPO_ROOT / "analysis/symbols/gameplay-functions.json"
@@ -57,6 +57,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Optional JSON index path to write after exporting.",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Optional function selector(s) to export. Matches manifest name or hex address.",
+    )
     return parser.parse_args()
 
 
@@ -84,6 +90,13 @@ def _extract_json_payload(log_text: str) -> dict[str, object]:
 
 def _artifact_path(out_dir: Path, *, address: int, name: str) -> Path:
     return out_dir / f"{address:08x}-{_safe_name(name)}.c"
+
+
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
 
 
 def _relativize_exported_entries(exported_entries: list[dict[str, object]]) -> list[dict[str, object]]:
@@ -175,6 +188,27 @@ def _build_mismatches(manifest, exported_entries: list[dict[str, object]]) -> li
     return mismatches
 
 
+def _select_functions(manifest_functions, selectors: list[str]):
+    if not selectors:
+        return manifest_functions
+    requested = {selector.lower() for selector in selectors}
+    selected = [
+        function
+        for function in manifest_functions
+        if function.name.lower() in requested or function.address_hex.lower() in requested
+    ]
+    selected_names = {function.name.lower() for function in selected}
+    selected_addresses = {function.address_hex.lower() for function in selected}
+    missing = sorted(
+        selector
+        for selector in selectors
+        if selector.lower() not in selected_names and selector.lower() not in selected_addresses
+    )
+    if missing:
+        raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")
+    return selected
+
+
 def main() -> int:
     args = parse_args()
     ida_bin = find_ida_binary(args.ida_bin)
@@ -190,7 +224,8 @@ def main() -> int:
         raise FileNotFoundError(f"IDAPython export script not found: {IDAPYTHON_SCRIPT_PATH}")
 
     manifest = load_function_symbol_manifest(manifest_path)
-    selectors = [function.name for function in manifest.functions]
+    selected_functions = _select_functions(manifest.functions, list(args.only))
+    selectors = [function.name for function in selected_functions]
     if not selectors:
         raise RuntimeError(f"no named functions found in manifest: {manifest_path}")
 
@@ -217,15 +252,17 @@ def main() -> int:
         artifact = entry.get("artifact")
         if isinstance(artifact, str):
             expected_paths.add((REPO_ROOT / artifact).resolve())
-    removed = _prune_stale_artifacts(out_dir, expected_paths)
-    mismatches = _build_mismatches(manifest, exported_entries)
+    removed = [] if args.only else _prune_stale_artifacts(out_dir, expected_paths)
+    selected_manifest = build_function_symbol_manifest(manifest, selected_functions)
+    mismatches = _build_mismatches(selected_manifest, exported_entries)
 
     summary = {
         "tool": "ida",
-        "manifest": str(manifest_path.relative_to(REPO_ROOT)),
-        "database": str(db_path.relative_to(REPO_ROOT)),
-        "out_dir": str(out_dir.relative_to(REPO_ROOT)),
-        "function_count": len(manifest.functions),
+        "manifest": _display_path(manifest_path),
+        "database": _display_path(db_path),
+        "out_dir": _display_path(out_dir),
+        "selected_count": len(selected_functions),
+        "function_count": len(exported_entries),
         "exported": exported_entries,
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
@@ -236,7 +273,7 @@ def main() -> int:
         index_path = args.index.resolve()
         index_path.parent.mkdir(parents=True, exist_ok=True)
         index_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
-        summary["index"] = str(index_path.relative_to(REPO_ROOT))
+        summary["index"] = _display_path(index_path)
     sys.stdout.write(json.dumps(summary, indent=2))
     return 0
 
