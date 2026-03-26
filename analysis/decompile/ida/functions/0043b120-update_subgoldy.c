@@ -167,19 +167,21 @@ int32_t __thiscall update_subgoldy(Player *player)
     segment_count = template_record->segment_count;
     if ( v4 >= segment_count )
       v4 = segment_count - 1;
-    player->snail_visual->follow_lateral_response = (*(float *)template_record->primary_samples[v4]._pad_a4 * -3.0
-                                                   - player->snail_visual->follow_lateral_response)
-                                                  * 0.1
-                                                  + player->snail_visual->follow_lateral_response;
+    player->presentation.visual_root->follow_lateral_response = (*(float *)template_record->primary_samples[v4]._pad_a4
+                                                               * -3.0
+                                                               - player->presentation.visual_root->follow_lateral_response)
+                                                              * 0.1
+                                                              + player->presentation.visual_root->follow_lateral_response;
   }
   else
   {
-    player->snail_visual->follow_lateral_response = -player->snail_visual->follow_lateral_response * 0.1
-                                                  + player->snail_visual->follow_lateral_response;
+    player->presentation.visual_root->follow_lateral_response = -player->presentation.visual_root->follow_lateral_response
+                                                              * 0.1
+                                                              + player->presentation.visual_root->follow_lateral_response;
   }
   update_squidge(&player->squidge);
-  player->snail_visual->squidge_primary = player->squidge.y_output;
-  player->snail_visual->squidge_secondary = player->squidge.z_output;
+  player->presentation.visual_root->squidge_primary = player->squidge.y_output;
+  player->presentation.visual_root->squidge_secondary = player->squidge.z_output;
   if ( !*((_DWORD *)player->game + 16) )
     show_subgoldy_lives(player);
   result = player->movement_mode_selector;
@@ -247,10 +249,10 @@ LABEL_60:
               {
                 player->row_event_cutscene_started = 1;
                 if ( p_position->x <= 0.0 )
-                  dispatch_cutscene_animation((int)player->_pad_2984, 3, 1, -1);
+                  dispatch_cutscene_animation(&player->presentation, 3, 1, -1);
                 else
-                  dispatch_cutscene_animation((int)player->_pad_2984, 4, 1, -1);
-                dispatch_cutscene_animation((int)player->_pad_2984, 1, 0, -1);
+                  dispatch_cutscene_animation(&player->presentation, 4, 1, -1);
+                dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
               }
               v30 = *((_DWORD *)v28 + 60);
               v31 = player->game;
@@ -554,10 +556,10 @@ LABEL_101:
                   if ( !player->control_override_active )
                   {
                     if ( p_position->x <= 0.0 )
-                      dispatch_cutscene_animation((int)player->_pad_2984, 3, 1, -1);
+                      dispatch_cutscene_animation(&player->presentation, 3, 1, -1);
                     else
-                      dispatch_cutscene_animation((int)player->_pad_2984, 4, 1, -1);
-                    dispatch_cutscene_animation((int)player->_pad_2984, 1, 0, -1);
+                      dispatch_cutscene_animation(&player->presentation, 4, 1, -1);
+                    dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
                   }
                 }
                 else if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60]
@@ -677,7 +679,7 @@ LABEL_98:
               player->velocity.z = v61;
               reset_voice_manager(unk_751498);
               end_jetpack_hover(&player->jetpack_gauge.progress);
-              *(_DWORD *)&player->_pad_29ac[6460] = 5;
+              player->presentation.cutscene_ai.active = 5;
               play_sound_effect(0);
               player->_pad_41c[0] = 0;
             }
@@ -915,7 +917,7 @@ LABEL_287:
               control_override_active = player->control_override_active;
               player->attachment_exit_gate_a = 1;
               if ( !control_override_active && player->position.y < -6.0 )
-                dispatch_cutscene_animation((int)player->_pad_2984, 5, 1, -1);
+                dispatch_cutscene_animation(&player->presentation, 5, 1, -1);
             }
             if ( player->position.y < -7.0 && !player->attachment_exit_gate_b )
             {
@@ -954,13 +956,13 @@ LABEL_287:
             }
           }
           handle_subgoldy_collisions((int)player);
-          update_anim_manager((char *)&player->_pad_29ac[220]);
-          update_anim_manager((char *)&player->_pad_29ac[4800]);
-          update_anim_manager((char *)&player->_pad_29ac[1836]);
-          update_anim_manager((char *)&player->_pad_29ac[2824]);
-          update_anim_manager((char *)&player->_pad_29ac[3812]);
+          update_anim_manager((char *)player->presentation._pad_104);
+          update_anim_manager((char *)&player->presentation._pad_144[4516]);
+          update_anim_manager((char *)&player->presentation._pad_144[1552]);
+          update_anim_manager((char *)&player->presentation._pad_144[2540]);
+          update_anim_manager((char *)&player->presentation._pad_144[3528]);
           update_track_parcels((_DWORD *)player->game + 4815136);
-          initialize_cutscene((int)player->_pad_2984);
+          initialize_cutscene(&player->presentation);
           update_player_movement_flags((int *)player);
           if ( *((int *)MEMORY[0x4DF904] + 4299517) < 10 )
             player->movement_progress = player->movement_rate_scalar;
@@ -1033,7 +1035,9 @@ LABEL_365:
       {
         if ( player->control_override_active )
         {
-          v12 = player->track_z_offset - (*(float *)&player->_pad_29ac[32] + *(float *)&player->_pad_29ac[32]);
+          v12 = player->track_z_offset
+              - (player->presentation.live_matrix.basis_up.x
+               + player->presentation.live_matrix.basis_up.x);
           player->track_z_offset = v12;
           player->track_z_anchor = v12;
           if ( player->track_z_offset >= 0.0 )

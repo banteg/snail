@@ -181,11 +181,37 @@ typedef struct JetpackGaugeController {
 } JetpackGaugeController;
 
 typedef struct SnailVisual {
-    uint8_t _pad_00[0x80];
+    uint8_t _pad_00[0x10];
+    uint32_t flags;
+    uint8_t _pad_14[0x6c];
     float follow_lateral_response;
     float squidge_primary;
     float squidge_secondary;
 } SnailVisual;
+
+typedef struct CutsceneAI {
+    void* shared_state;
+    void* intro_talk_anchor;
+    uint8_t _pad_08[0x4];
+    int32_t active;
+    uint8_t _pad_10[0x54];
+} CutsceneAI;
+
+typedef struct PlayerPresentationController {
+    uint8_t _pad_00[0x24];
+    SnailVisual* visual_root;
+    uint8_t _pad_28[0x10];
+    TransformMatrix live_matrix;
+    uint8_t _pad_78[0x48];
+    TransformMatrix previous_live_matrix;
+    Player* owner_player;
+    uint8_t _pad_104[0xc];
+    void* active_keyframe;
+    uint8_t _pad_114[0x2c];
+    int32_t queued_animation_count;
+    uint8_t _pad_144[0x1814];
+    CutsceneAI cutscene_ai;
+} PlayerPresentationController;
 
 enum {
     PLAYER_CONTROL_FLAG_CONFIRM = 0x4000,
@@ -403,9 +429,7 @@ typedef struct Player {
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];
     float interaction_max_z;
-    uint8_t _pad_2984[0x24];
-    SnailVisual* snail_visual;
-    uint8_t _pad_29ac[0x1994];
+    PlayerPresentationController presentation;
     int32_t visible_life_stock;
     SquidgeState squidge;
 } Player;
@@ -482,6 +506,11 @@ int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
+void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
+int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);
+int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, int32_t immediate, int32_t initial_frame);
+int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);
+int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);
 int32_t __thiscall initialize_nuke(NukeController* nuke);
 int32_t __thiscall update_nuke(NukeController* nuke);
 void __thiscall uninit_nuke(NukeController* nuke);

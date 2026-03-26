@@ -3,16 +3,16 @@
 /* selector: initialize_cutscene_ai */
 
 // Constructs the embedded player-side cutscene AI/controller at `player + 0x42dc`, seeding its shared pointers and clearing the live cutscene state before `initialize_subgoldy` selects the startup leg.
-char *__thiscall sub_446130(_DWORD *this)
+int32_t __fastcall initialize_cutscene_ai(CutsceneAI *cutscene_ai)
 {
-  char *result; // eax
+  int32_t result; // eax
   char *v2; // edx
 
-  result = (char *)MEMORY[0x4DF904] + 4400896;
-  *this = (char *)MEMORY[0x4DF904] + 4400896;
+  result = (int32_t)MEMORY[0x4DF904] + 4400896;
+  cutscene_ai->shared_state = (char *)MEMORY[0x4DF904] + 4400896;
   v2 = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-  *(this + 3) = 0;
-  *(this + 1) = v2;
+  cutscene_ai->active = 0;
+  cutscene_ai->intro_talk_anchor = v2;
   return result;
 }
 

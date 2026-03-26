@@ -63,3 +63,9 @@ Template:
 - invalidated claim: `player + 0x1ec..+0x1fc` is a standalone row-event `state/timer/data` block
 - replacement evidence: `update_subgoldy` seeds that tail and passes `&player->row_event.tip_definition` to `enqueue_tip_message`; `initialize_tip` then reads it as flags, layout, dismiss timing, and text payload
 - port consequence: keep only `row_event.id` as row-event-specific; model the tail as an inline tip-message definition and avoid hardening the old pure-row-event interpretation in Zig or docs
+
+## 2026-03-26 - Player presentation root
+
+- invalidated claim: `player + 0x29a8` is a standalone `snail_visual` sibling field and `player + 0x2984` is anonymous padding
+- replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on the inline root at `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the live visual object through that root as `presentation.visual_root`, and the embedded cutscene AI sits at `player + 0x42dc`
+- port consequence: keep the recovered type lane and docs centered on one inline `PlayerPresentationController`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object

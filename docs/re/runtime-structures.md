@@ -64,10 +64,13 @@ The current high-confidence `Player` fields are:
   - inline `JetpackGaugeController`
 - `+0x2980`: `interaction_max_z`
   - per-player collision and pickup ceiling
-- `+0x29a8`: `snail_visual`
-  - live snail renderable or visual object
+- `+0x2984`: `presentation`
+  - inline `PlayerPresentationController`
+- `+0x29a8`: `presentation.visual_root`
+  - current live snail visual root
 - `+0x2964`: `cached_camera_target_world`
   - world-space camera anchor consumed by `update_cameraman`
+- `+0x42dc`: `presentation.cutscene_ai`
 - `+0x4340`: `visible_life_stock`
   - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
   - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
@@ -99,11 +102,22 @@ Two `update_subgoldy` corrections from the latest static audit:
 - `player + 0x2970` is now the current safe `steering_mode_selector`
   - `update_subgoldy` uses it to index the uncaptured-cursor sensitivity table
   - when the selector is `1`, the same block copies `control_source->steering_x` directly into the live `track_z_offset` lane instead of preserving the anchored delta
-- `player + 0x29a8` is separate from the hotspot bank and source matrices. It points at the live snail visual object, whose currently safe sub-slice is:
-  - `+0x80`: `follow_lateral_response`
-  - `+0x84`: `squidge_primary`
-  - `+0x88`: `squidge_secondary`
-- `player + 0x4344` is a real inline `SquidgeState` consumed by `update_subgoldy` and copied into `snail_visual`
+- `player + 0x2984` is the inline `PlayerPresentationController`
+  - `+0x24`: `visual_root`
+  - `+0x38`: `live_matrix`
+  - `+0xc0`: `previous_live_matrix`
+  - `+0x100`: `owner_player`
+  - `+0x110`: `active_keyframe`
+  - `+0x140`: `queued_animation_count`
+  - `+0x1958`: `cutscene_ai`
+  - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
+- `player + 0x29a8` is `player->presentation.visual_root`, not a standalone sibling field
+  - the currently safe `SnailVisual` sub-slice is:
+    - `+0x10`: `flags`
+    - `+0x80`: `follow_lateral_response`
+    - `+0x84`: `squidge_primary`
+    - `+0x88`: `squidge_secondary`
+- `player + 0x4344` is a real inline `SquidgeState` consumed by `update_subgoldy` and copied into `player->presentation.visual_root`
 - `start_squidge_z` is a `void` helper, like `start_squidge_y`
   - the old float-return prototype was a decompiler artifact
   - forcing that float return into IDA was the direct cause of the `update_subgoldy` inline-asm regression; reverting it to `void` restores a normal high-level decompile
