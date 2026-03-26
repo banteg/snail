@@ -69,3 +69,9 @@ Template:
 - invalidated claim: `player + 0x29a8` is a standalone `snail_visual` sibling field and `player + 0x2984` is anonymous padding
 - replacement evidence: `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on the inline root at `player + 0x2984`; `initialize_subgoldy` and `update_subgoldy` both reach the live visual object through that root as `presentation.visual_root`, and the embedded cutscene AI sits at `player + 0x42dc`
 - port consequence: keep the recovered type lane and docs centered on one inline `PlayerPresentationController`; future Zig or RE naming should stop treating `+0x29a8` as a standalone sibling object
+
+## 2026-03-26 - Player presentation animation lanes
+
+- invalidated claim: the presentation root stores a flat `active_keyframe` at `+0x110`, a flat `queued_animation_count` at `+0x140`, and each weapon lane stores an anim-manager root at `+0x104`
+- replacement evidence: `dispatch_cutscene_animation`, `set_weapon_animation`, `initialize_subgoldy`, `initialize_cutscene`, and `set_snail_jetpack` all agree on the same nested model: the root has an inline animation-dispatch block at `player + 0x2a88`, each repeated weapon/jetpack lane has `selected_state` at `+0x104` and an inline animation-dispatch block at `+0x108`, and the shared visual flags live at channel/root offset `+0x04`
+- port consequence: keep the checked-in BN/IDA type lane centered on nested `AnimationDispatchState` and repeated `PresentationAnimationChannel` blocks; future Zig or RE naming should stop flattening those lanes into standalone root fields or treating `+0x104` as the anim-manager root inside the weapon channels

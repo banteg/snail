@@ -2,58 +2,62 @@
 /* function: set_weapon_animation @ 0x4446e0 */
 /* selector: set_weapon_animation */
 
-int __thiscall sub_4446E0(int this, int a2, char a3, int a4)
+int32_t __thiscall set_weapon_animation(
+        PresentationAnimationChannel *channel,
+        int32_t animation_id,
+        int32_t immediate,
+        int32_t initial_frame)
 {
   _WORD *v4; // eax
-  int v5; // edx
+  float *active_keyframe; // edx
   double v7; // st7
   char v8; // c0
   double v9; // st7
-  int v10; // edx
+  float *v10; // edx
   double v12; // st7
   char v13; // c0
-  int v14; // eax
-  int v15; // ecx
-  int result; // eax
+  SnailVisual *v14; // eax
+  _DWORD *self_ref; // ecx
+  int32_t result; // eax
 
-  if ( a3 )
+  if ( (_BYTE)immediate )
   {
-    v4 = *(_WORD **)(*(_DWORD *)((a2 << 7) + this + 372) + 188);
-    *(_DWORD *)(this + 276) = v4;
-    if ( a4 != -1 )
-      *v4 = a4;
-    v5 = *(_DWORD *)(this + 276);
-    if ( (*(_BYTE *)v5 & 8) != 0 )
+    v4 = *(_WORD **)(*(_DWORD *)&channel->animation_slot_table[128 * animation_id] + 188);
+    channel->anim_manager.active_keyframe = v4;
+    if ( initial_frame != -1 )
+      *v4 = initial_frame;
+    active_keyframe = (float *)channel->anim_manager.active_keyframe;
+    if ( (*(_BYTE *)active_keyframe & 8) != 0 )
     {
-      v7 = *(float *)(v5 + 16);
+      v7 = active_keyframe[4];
       if ( v8 )
         v7 = -v7;
       v9 = -v7;
-      *(float *)(this + 272) = v9;
-      *(float *)(this + 268) = v9 + 1.0;
+      channel->anim_manager.progress_step = v9;
+      channel->anim_manager.progress = v9 + 1.0;
     }
     else
     {
-      v10 = *(_DWORD *)(this + 276);
-      *(_DWORD *)(this + 268) = 0;
-      v12 = *(float *)(v10 + 16);
+      v10 = (float *)channel->anim_manager.active_keyframe;
+      channel->anim_manager.progress = 0.0;
+      v12 = v10[4];
       if ( v13 )
         v12 = -v12;
-      *(float *)(this + 272) = v12;
+      channel->anim_manager.progress_step = v12;
     }
-    v14 = *(_DWORD *)((a2 << 7) + this + 372);
-    *(_DWORD *)(this + 324) = 0;
-    *(_DWORD *)(this + 36) = v14;
-    v15 = *(_DWORD *)(this + 328);
-    result = *(_DWORD *)(v15 + 4);
+    v14 = *(SnailVisual **)&channel->animation_slot_table[128 * animation_id];
+    channel->anim_manager.queued_animation_count = 0;
+    channel->visual_root = v14;
+    self_ref = channel->anim_manager.self_ref;
+    result = self_ref[1];
     LOBYTE(result) = result | 0x20;
-    *(_DWORD *)(v15 + 4) = result;
+    self_ref[1] = result;
   }
   else
   {
-    *(_DWORD *)(this + 4 * *(_DWORD *)(this + 324) + 284) = a2;
-    result = *(_DWORD *)(this + 324) + 1;
-    *(_DWORD *)(this + 324) = result;
+    channel->anim_manager.queued_animation_ids[channel->anim_manager.queued_animation_count] = animation_id;
+    result = channel->anim_manager.queued_animation_count + 1;
+    channel->anim_manager.queued_animation_count = result;
   }
   return result;
 }

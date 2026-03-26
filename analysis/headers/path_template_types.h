@@ -197,19 +197,62 @@ typedef struct CutsceneAI {
     uint8_t _pad_10[0x54];
 } CutsceneAI;
 
+typedef struct AnimationDispatchState {
+    int32_t active;
+    float progress;
+    float progress_step;
+    void* active_keyframe;
+    uint8_t edge_latched;
+    uint8_t _pad_11[0x3];
+    int32_t queued_animation_ids[10];
+    int32_t queued_animation_count;
+    void* self_ref;
+    void* queue_sentinel;
+} AnimationDispatchState;
+
+typedef struct PresentationAnimationChannel {
+    uint8_t _pad_00[0x4];
+    uint32_t visual_flags;
+    uint8_t _pad_08[0x1c];
+    SnailVisual* visual_root;
+    uint8_t _pad_28[0xc];
+    TransformMatrix live_matrix;
+    void* active_anim_manager;
+    uint8_t _pad_78[0x8c];
+    int32_t selected_state;
+    AnimationDispatchState anim_manager;
+    uint8_t _pad_150[0x24];
+    uint8_t animation_slot_table[0x268];
+} PresentationAnimationChannel;
+
+typedef struct SnailSkinTransitionState {
+    int32_t selected_slot;
+    uint8_t _pad_04[0xc];
+    void* owner_render_state;
+    int32_t active;
+    float progress;
+    float progress_step;
+} SnailSkinTransitionState;
+
 typedef struct PlayerPresentationController {
-    uint8_t _pad_00[0x24];
+    uint8_t _pad_00[0x4];
+    uint32_t visual_flags;
+    uint8_t _pad_08[0x1c];
     SnailVisual* visual_root;
     uint8_t _pad_28[0x10];
     TransformMatrix live_matrix;
-    uint8_t _pad_78[0x48];
+    uint8_t _pad_78[0x8];
     TransformMatrix previous_live_matrix;
+    uint8_t _pad_c0[0x40];
     Player* owner_player;
-    uint8_t _pad_104[0xc];
-    void* active_keyframe;
-    uint8_t _pad_114[0x2c];
-    int32_t queued_animation_count;
-    uint8_t _pad_144[0x1814];
+    AnimationDispatchState anim_manager;
+    uint8_t _pad_14c[0x500];
+    PresentationAnimationChannel weapon_channels[3];
+    PresentationAnimationChannel jetpack_channel;
+    uint8_t _pad_15bc[0x378];
+    uint8_t weapon_release_active;
+    uint8_t _pad_1935[0x3];
+    SnailSkinTransitionState snail_skin_transition;
     CutsceneAI cutscene_ai;
 } PlayerPresentationController;
 
@@ -495,6 +538,10 @@ float __thiscall set_color_grayscale(Color4f* color, float intensity);
 void __thiscall start_squidge_y(SquidgeState* squidge, float value);
 void __thiscall start_squidge_z(SquidgeState* squidge, float value);
 void __thiscall update_squidge(SquidgeState* squidge);
+void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
+void __thiscall update_anim_manager(AnimationDispatchState* manager);
+int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, int32_t immediate, int32_t initial_frame);
+void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
 TipSlot* __thiscall enqueue_tip_message(TipManager* manager, TipMessageDefinition* definition, int32_t show_only_ok);

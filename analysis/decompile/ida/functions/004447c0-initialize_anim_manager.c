@@ -2,12 +2,11 @@
 /* function: initialize_anim_manager @ 0x4447c0 */
 /* selector: initialize_anim_manager */
 
-int __thiscall sub_4447C0(_DWORD *this)
+void __thiscall initialize_anim_manager(AnimationDispatchState *manager)
 {
-  *(this + 1) = 0;
-  *(this + 2) = 0;
-  *this = 0;
-  *((_BYTE *)this + 16) = 0;
-  return 0;
+  manager->progress = 0.0;
+  manager->progress_step = 0.0;
+  manager->active = 0;
+  manager->edge_latched = 0;
 }
 

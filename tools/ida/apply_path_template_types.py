@@ -139,6 +139,22 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_squidge(SquidgeState* squidge);",
     ),
     (
+        "initialize_anim_manager",
+        "void __thiscall initialize_anim_manager(AnimationDispatchState* manager);",
+    ),
+    (
+        "update_anim_manager",
+        "void __thiscall update_anim_manager(AnimationDispatchState* manager);",
+    ),
+    (
+        "set_weapon_animation",
+        "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, int32_t immediate, int32_t initial_frame);",
+    ),
+    (
+        "update_snail_skin_transition",
+        "void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);",
+    ),
+    (
         "store_color4f",
         "float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);",
     ),

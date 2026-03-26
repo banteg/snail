@@ -103,12 +103,29 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `update_subgoldy` uses it to index the uncaptured-cursor sensitivity table
   - when the selector is `1`, the same block copies `control_source->steering_x` directly into the live `track_z_offset` lane instead of preserving the anchored delta
 - `player + 0x2984` is the inline `PlayerPresentationController`
+  - `+0x04`: `visual_flags`
   - `+0x24`: `visual_root`
   - `+0x38`: `live_matrix`
-  - `+0xc0`: `previous_live_matrix`
+  - `+0x80`: `previous_live_matrix`
   - `+0x100`: `owner_player`
-  - `+0x110`: `active_keyframe`
-  - `+0x140`: `queued_animation_count`
+  - `+0x104`: inline `anim_manager`
+    - `+0x00`: `active`
+    - `+0x04`: `progress`
+    - `+0x08`: `progress_step`
+    - `+0x0c`: `active_keyframe`
+    - `+0x14`: `queued_animation_ids[10]`
+    - `+0x3c`: `queued_animation_count`
+    - `+0x40`: `self_ref`
+    - `+0x44`: `queue_sentinel`
+  - `+0x64c/+0xa28/+0xe04`: repeated `PresentationAnimationChannel` weapon lanes
+    - `+0x04`: `visual_flags`
+    - `+0x24`: `visual_root`
+    - `+0x34`: `live_matrix`
+    - `+0x74`: `active_anim_manager`
+    - `+0x104`: `selected_state`
+    - `+0x108`: inline `anim_manager`
+  - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
+  - `+0x1938`: `snail_skin_transition`
   - `+0x1958`: `cutscene_ai`
   - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
 - `player + 0x29a8` is `player->presentation.visual_root`, not a standalone sibling field

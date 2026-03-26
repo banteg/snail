@@ -46,7 +46,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
   result = (int32_t)MEMORY[0x4DF904];
   if ( !*((_BYTE *)MEMORY[0x4DF904] + 476705) )
   {
-    update_snail_skin_transition((float *)&presentation->_pad_144[6132]);
+    update_snail_skin_transition(&presentation->snail_skin_transition);
     owner_player = presentation->owner_player;
     if ( owner_player->cutscene_pitch_cycle <= 0.0 )
     {
@@ -84,27 +84,27 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.y = pad_00[1];
     presentation->live_matrix.position.z = pad_00[2];
     qmemcpy(&v36, &presentation->live_matrix, sizeof(v36));
-    linear_interpolate_matrix(&presentation->live_matrix, &v36, &presentation->previous_live_matrix, 0.69999999);
+    linear_interpolate_matrix(&presentation->live_matrix, &v36, (TransformMatrix *)presentation->_pad_c0, 0.69999999);
     y = presentation->live_matrix.basis_up.y;
     presentation->live_matrix.position.x = v36.position.x;
     presentation->live_matrix.position.y = v36.position.y;
     presentation->live_matrix.position.z = v36.position.z;
     if ( y > 0.0 )
     {
-      v26 = (presentation->live_matrix.position.x - presentation->previous_live_matrix.position.x) * 0.80000001;
+      v26 = (presentation->live_matrix.position.x - *(float *)&presentation->_pad_c0[48]) * 0.80000001;
       rotate_matrix_world_y(&presentation->live_matrix, v26);
     }
-    v11 = *(float *)&presentation->_pad_144[5244] + *(float *)&presentation->_pad_144[5240];
-    *(float *)&presentation->_pad_144[5240] = v11;
+    v11 = *(float *)&presentation->_pad_15bc[4] + *(float *)presentation->_pad_15bc;
+    *(float *)presentation->_pad_15bc = v11;
     if ( !(v13 | v14) )
-      *(float *)&presentation->_pad_144[5240] = v11 - 1.0;
-    v15 = *(float *)&presentation->_pad_144[5252] + *(float *)&presentation->_pad_144[5248];
-    *(float *)&presentation->_pad_144[5248] = v15;
+      *(float *)presentation->_pad_15bc = v11 - 1.0;
+    v15 = *(float *)&presentation->_pad_15bc[12] + *(float *)&presentation->_pad_15bc[8];
+    *(float *)&presentation->_pad_15bc[8] = v15;
     if ( !(v17 | v18) )
-      *(float *)&presentation->_pad_144[5248] = v15 - 1.0;
+      *(float *)&presentation->_pad_15bc[8] = v15 - 1.0;
     qmemcpy(&v40, p_live_matrix, sizeof(v40));
     set_matrix_identity(&v38);
-    v27 = *(float *)&presentation->_pad_144[5240] * 6.2831855;
+    v27 = *(float *)presentation->_pad_15bc * 6.2831855;
     v28 = sine(v27) * 0.017449999;
     rotate_matrix_world_z(&v38, v28);
     invert_matrix_from_source(&v39, v19);
@@ -113,7 +113,7 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     multiply_matrix_in_place(&presentation->live_matrix, &v38);
     presentation->live_matrix.position.y = presentation->live_matrix.position.y - 1.3;
     multiply_matrix_in_place(&presentation->live_matrix, &v40);
-    v29 = *(float *)&presentation->_pad_144[5248] * 6.2831855;
+    v29 = *(float *)&presentation->_pad_15bc[8] * 6.2831855;
     v20 = sine(v29);
     v32 = v20 * presentation->live_matrix.basis_up.x;
     v33 = v20 * presentation->live_matrix.basis_up.y;
@@ -123,65 +123,65 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     presentation->live_matrix.position.x = v34 + presentation->live_matrix.position.x;
     presentation->live_matrix.position.y = v35 + presentation->live_matrix.position.y;
     presentation->live_matrix.position.z = v21 * 0.029999999 + presentation->live_matrix.position.z;
-    v22 = *(float *)&presentation->_pad_144[6120];
-    qmemcpy(&presentation->previous_live_matrix, p_live_matrix, sizeof(presentation->previous_live_matrix));
+    v22 = *(float *)&presentation->_pad_15bc[880];
+    qmemcpy(presentation->_pad_c0, p_live_matrix, sizeof(presentation->_pad_c0));
     if ( v22 > 0.0 )
     {
-      v30 = *(float *)&presentation->_pad_144[6120] * -2.0943952;
+      v30 = *(float *)&presentation->_pad_15bc[880] * -2.0943952;
       rotate_matrix_world_y(&presentation->live_matrix, v30);
-      v23 = *(float *)&presentation->_pad_144[6124] + *(float *)&presentation->_pad_144[6120];
-      *(float *)&presentation->_pad_144[6120] = v23;
+      v23 = *(float *)&presentation->_pad_15bc[884] + *(float *)&presentation->_pad_15bc[880];
+      *(float *)&presentation->_pad_15bc[880] = v23;
       if ( v23 > 1.0 )
-        *(_DWORD *)&presentation->_pad_144[6120] = 1065353216;
+        *(_DWORD *)&presentation->_pad_15bc[880] = 1065353216;
     }
-    if ( presentation->_pad_144[6128] )
+    if ( presentation->weapon_release_active )
     {
-      *(float *)&presentation->_pad_144[4356] = *(float *)&presentation->_pad_144[5228]
-                                              + *(float *)&presentation->_pad_144[4356];
-      *(float *)&presentation->_pad_144[4360] = *(float *)&presentation->_pad_144[5232]
-                                              + *(float *)&presentation->_pad_144[4360];
-      *(float *)&presentation->_pad_144[4364] = *(float *)&presentation->_pad_144[5236]
-                                              + *(float *)&presentation->_pad_144[4364];
-      *(float *)&presentation->_pad_144[1392] = *(float *)&presentation->_pad_144[2264]
-                                              + *(float *)&presentation->_pad_144[1392];
-      *(float *)&presentation->_pad_144[1396] = *(float *)&presentation->_pad_144[2268]
-                                              + *(float *)&presentation->_pad_144[1396];
-      *(float *)&presentation->_pad_144[1400] = *(float *)&presentation->_pad_144[2272]
-                                              + *(float *)&presentation->_pad_144[1400];
-      *(float *)&presentation->_pad_144[3368] = *(float *)&presentation->_pad_144[4240]
-                                              + *(float *)&presentation->_pad_144[3368];
-      *(float *)&presentation->_pad_144[3372] = *(float *)&presentation->_pad_144[4244]
-                                              + *(float *)&presentation->_pad_144[3372];
-      *(float *)&presentation->_pad_144[3376] = *(float *)&presentation->_pad_144[4248]
-                                              + *(float *)&presentation->_pad_144[3376];
-      *(float *)&presentation->_pad_144[2380] = *(float *)&presentation->_pad_144[3252]
-                                              + *(float *)&presentation->_pad_144[2380];
-      *(float *)&presentation->_pad_144[2384] = *(float *)&presentation->_pad_144[3256]
-                                              + *(float *)&presentation->_pad_144[2384];
-      *(float *)&presentation->_pad_144[2388] = *(float *)&presentation->_pad_144[3260]
-                                              + *(float *)&presentation->_pad_144[2388];
+      presentation->jetpack_channel.live_matrix.position.y = *(float *)&presentation->jetpack_channel.animation_slot_table[604]
+                                                           + presentation->jetpack_channel.live_matrix.position.y;
+      presentation->jetpack_channel.live_matrix.position.z = *(float *)&presentation->jetpack_channel.animation_slot_table[608]
+                                                           + presentation->jetpack_channel.live_matrix.position.z;
+      presentation->jetpack_channel.live_matrix.position.w = *(float *)&presentation->jetpack_channel.animation_slot_table[612]
+                                                           + presentation->jetpack_channel.live_matrix.position.w;
+      presentation->weapon_channels[0].live_matrix.position.y = *(float *)&presentation->weapon_channels[0].animation_slot_table[604]
+                                                              + presentation->weapon_channels[0].live_matrix.position.y;
+      presentation->weapon_channels[0].live_matrix.position.z = *(float *)&presentation->weapon_channels[0].animation_slot_table[608]
+                                                              + presentation->weapon_channels[0].live_matrix.position.z;
+      presentation->weapon_channels[0].live_matrix.position.w = *(float *)&presentation->weapon_channels[0].animation_slot_table[612]
+                                                              + presentation->weapon_channels[0].live_matrix.position.w;
+      presentation->weapon_channels[2].live_matrix.position.y = *(float *)&presentation->weapon_channels[2].animation_slot_table[604]
+                                                              + presentation->weapon_channels[2].live_matrix.position.y;
+      presentation->weapon_channels[2].live_matrix.position.z = *(float *)&presentation->weapon_channels[2].animation_slot_table[608]
+                                                              + presentation->weapon_channels[2].live_matrix.position.z;
+      presentation->weapon_channels[2].live_matrix.position.w = *(float *)&presentation->weapon_channels[2].animation_slot_table[612]
+                                                              + presentation->weapon_channels[2].live_matrix.position.w;
+      presentation->weapon_channels[1].live_matrix.position.y = *(float *)&presentation->weapon_channels[1].animation_slot_table[604]
+                                                              + presentation->weapon_channels[1].live_matrix.position.y;
+      presentation->weapon_channels[1].live_matrix.position.z = *(float *)&presentation->weapon_channels[1].animation_slot_table[608]
+                                                              + presentation->weapon_channels[1].live_matrix.position.z;
+      presentation->weapon_channels[1].live_matrix.position.w = *(float *)&presentation->weapon_channels[1].animation_slot_table[612]
+                                                              + presentation->weapon_channels[1].live_matrix.position.w;
     }
     else
     {
-      qmemcpy(&presentation->_pad_144[4308], p_live_matrix, 0x40u);
-      qmemcpy(&presentation->_pad_144[1344], p_live_matrix, 0x40u);
-      qmemcpy(&presentation->_pad_144[3320], p_live_matrix, 0x40u);
-      qmemcpy(&presentation->_pad_144[2332], p_live_matrix, 0x40u);
+      qmemcpy(&presentation->jetpack_channel.live_matrix.basis_right.y, p_live_matrix, 0x40u);
+      qmemcpy(&presentation->weapon_channels[0].live_matrix.basis_right.y, p_live_matrix, 0x40u);
+      qmemcpy(&presentation->weapon_channels[2].live_matrix.basis_right.y, p_live_matrix, 0x40u);
+      qmemcpy(&presentation->weapon_channels[1].live_matrix.basis_right.y, p_live_matrix, 0x40u);
     }
     v24 = presentation->owner_player;
-    qmemcpy(&presentation->_pad_144[5312], p_live_matrix, 0x40u);
+    qmemcpy(&presentation->_pad_15bc[72], p_live_matrix, 0x40u);
     v25 = &v24->_pad_00[56];
     v24 = (Player *)((char *)v24 + 10596);
-    qmemcpy(&presentation->_pad_144[5440], v25, 0x40u);
-    *(_DWORD *)&presentation->_pad_144[5488] = *(_DWORD *)v24->_pad_00;
-    *(_DWORD *)&presentation->_pad_144[5492] = *(_DWORD *)&v24->_pad_00[4];
-    *(_DWORD *)&presentation->_pad_144[5496] = *(_DWORD *)&v24->_pad_00[8];
+    qmemcpy(&presentation->_pad_15bc[200], v25, 0x40u);
+    *(_DWORD *)&presentation->_pad_15bc[248] = *(_DWORD *)v24->_pad_00;
+    *(_DWORD *)&presentation->_pad_15bc[252] = *(_DWORD *)&v24->_pad_00[4];
+    *(_DWORD *)&presentation->_pad_15bc[256] = *(_DWORD *)&v24->_pad_00[8];
     update_snail_skin(presentation);
     if ( presentation->cutscene_ai.active )
     {
       update_cutscene(&presentation->cutscene_ai);
     }
-    else if ( !presentation->queued_animation_count && !presentation->owner_player->control_override_active )
+    else if ( !presentation->anim_manager.queued_animation_count && !presentation->owner_player->control_override_active )
     {
       dispatch_cutscene_animation(presentation, 1, 0, -1);
     }

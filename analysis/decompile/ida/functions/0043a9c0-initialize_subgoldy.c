@@ -5,11 +5,11 @@
 // Initializes the live Goldy actor for a new run: resets movement and follow state, seeds the animation managers and cutscene block, initializes the jetpack gauge, cameraman, and click-start prompt, and wires the actor back to the active Game. Cross-port Android and iOS symbols match this helper to `cRSubGoldy::Init(int)`.
 int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
 {
-  int v3; // eax
-  unsigned int v4; // ecx
-  unsigned int v5; // edx
-  int v6; // eax
-  unsigned int v7; // ecx
+  uint32_t visual_flags; // eax
+  uint32_t v4; // ecx
+  uint32_t v5; // edx
+  uint32_t v6; // eax
+  uint32_t v7; // ecx
   float z; // ecx
   PlayerControlSource *v9; // eax
   uint8_t *v10; // edi
@@ -30,125 +30,125 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   player->movement_flags = 0;
   player->previous_movement_flags = -1;
   player->_pad_1e4[0] = 0;
-  player->presentation._pad_144[6128] = 0;
+  player->presentation.weapon_release_active = 0;
   *((_DWORD *)player->game + 4835835) = 0;
-  *(_DWORD *)&player->presentation._pad_144[4512] = 0;
-  *(_DWORD *)&player->presentation._pad_144[1548] = 0;
-  *(_DWORD *)&player->presentation._pad_144[2536] = 0;
-  *(_DWORD *)&player->presentation._pad_144[3524] = 0;
+  player->presentation.jetpack_channel.selected_state = 0;
+  player->presentation.weapon_channels[0].selected_state = 0;
+  player->presentation.weapon_channels[1].selected_state = 0;
+  player->presentation.weapon_channels[2].selected_state = 0;
   player->cutscene_pitch_cycle = 0.0;
   player->cutscene_pitch_cycle_step = 0.0;
   sub_41AA30(&player->presentation.visual_root->follow_lateral_response);
   player->interaction_max_z = -19.0;
   player->movement_sound_variant_sample = 0;
-  *(_DWORD *)&player->presentation._pad_144[6120] = 0;
-  *(_DWORD *)&player->presentation._pad_144[6124] = 1015580809;
+  *(_DWORD *)&player->presentation._pad_15bc[880] = 0;
+  *(_DWORD *)&player->presentation._pad_15bc[884] = 1015580809;
   *((_DWORD *)player + 4311) = 0;
   *((_DWORD *)player + 4312) = 1015580809;
   initialize_score_stats(&player->squidge.y_output);
-  initialize_invincible_shell(&player->presentation._pad_144[5968]);
+  initialize_invincible_shell(&player->presentation._pad_15bc[728]);
   *(_DWORD *)&player->_pad_30c[40] = 1029934648;
   *(_DWORD *)&player->_pad_30c[36] = 1029934648;
   player->attachment_exit_progress = 0.0;
   player->attachment_exit_progress_step = 0.016666668;
   if ( (player->presentation.visual_root->flags & 0x200000) != 0 )
   {
-    v3 = *(_DWORD *)&player->presentation._pad_00[4];
-    BYTE1(v3) |= 8u;
-    *(_DWORD *)&player->presentation._pad_00[4] = v3;
-    *(_DWORD *)player->presentation._pad_78 = player->presentation._pad_104;
-    initialize_anim_manager(player->presentation._pad_104);
-    *(_DWORD *)player->presentation._pad_104 = 1;
-    *(_DWORD *)player->presentation._pad_144 = &player->presentation;
-    *(_DWORD *)&player->presentation._pad_144[4] = &player->presentation._pad_144[8];
-    player->presentation.queued_animation_count = 0;
+    visual_flags = player->presentation.visual_flags;
+    BYTE1(visual_flags) |= 8u;
+    player->presentation.visual_flags = visual_flags;
+    *(_DWORD *)player->presentation._pad_78 = &player->presentation.anim_manager;
+    initialize_anim_manager(&player->presentation.anim_manager);
+    player->presentation.anim_manager.active = 1;
+    player->presentation.anim_manager.self_ref = &player->presentation;
+    player->presentation.anim_manager.queue_sentinel = player->presentation._pad_14c;
+    player->presentation.anim_manager.queued_animation_count = 0;
   }
   else
   {
-    initialize_anim_manager(player->presentation._pad_104);
-    *(_DWORD *)player->presentation._pad_104 = 0;
+    initialize_anim_manager(&player->presentation.anim_manager);
+    player->presentation.anim_manager.active = 0;
   }
-  if ( (*(_DWORD *)(*(_DWORD *)&player->presentation._pad_144[4288] + 16) & 0x200000) != 0 )
+  if ( (player->presentation.jetpack_channel.visual_root->flags & 0x200000) != 0 )
   {
-    v4 = *(_DWORD *)&player->presentation._pad_144[4256] & 0xFFFFFFDF;
+    v4 = player->presentation.jetpack_channel.visual_flags & 0xFFFFFFDF;
     BYTE1(v4) |= 8u;
-    *(_DWORD *)&player->presentation._pad_144[4256] = v4;
-    *(_DWORD *)&player->presentation._pad_144[4512] = 0;
-    *(_DWORD *)&player->presentation._pad_144[4372] = &player->presentation._pad_144[4516];
-    initialize_anim_manager(&player->presentation._pad_144[4516]);
-    *(_DWORD *)&player->presentation._pad_144[4516] = 1;
-    *(_DWORD *)&player->presentation._pad_144[4580] = &player->presentation._pad_144[4252];
-    *(_DWORD *)&player->presentation._pad_144[4584] = &player->presentation._pad_144[4588];
-    *(_DWORD *)&player->presentation._pad_144[4576] = 0;
+    player->presentation.jetpack_channel.visual_flags = v4;
+    player->presentation.jetpack_channel.selected_state = 0;
+    *(_DWORD *)player->presentation.jetpack_channel._pad_78 = &player->presentation.jetpack_channel.anim_manager;
+    initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager);
+    player->presentation.jetpack_channel.anim_manager.active = 1;
+    player->presentation.jetpack_channel.anim_manager.self_ref = &player->presentation.jetpack_channel;
+    player->presentation.jetpack_channel.anim_manager.queue_sentinel = player->presentation.jetpack_channel._pad_150;
+    player->presentation.jetpack_channel.anim_manager.queued_animation_count = 0;
   }
   else
   {
-    initialize_anim_manager(&player->presentation._pad_144[4516]);
-    *(_DWORD *)&player->presentation._pad_144[4516] = 0;
+    initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager);
+    player->presentation.jetpack_channel.anim_manager.active = 0;
   }
-  if ( (*(_DWORD *)(*(_DWORD *)&player->presentation._pad_144[1324] + 16) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[0].visual_root->flags & 0x200000) != 0 )
   {
-    v5 = *(_DWORD *)&player->presentation._pad_144[1292] & 0xFFFFFFDF;
+    v5 = player->presentation.weapon_channels[0].visual_flags & 0xFFFFFFDF;
     BYTE1(v5) |= 8u;
-    *(_DWORD *)&player->presentation._pad_144[1292] = v5;
-    *(_DWORD *)&player->presentation._pad_144[1548] = 0;
-    *(_DWORD *)&player->presentation._pad_144[1408] = &player->presentation._pad_144[1552];
-    initialize_anim_manager(&player->presentation._pad_144[1552]);
-    *(_DWORD *)&player->presentation._pad_144[1552] = 1;
-    *(_DWORD *)&player->presentation._pad_144[1616] = &player->presentation._pad_144[1288];
-    *(_DWORD *)&player->presentation._pad_144[1620] = &player->presentation._pad_144[1624];
-    *(_DWORD *)&player->presentation._pad_144[1612] = 0;
+    player->presentation.weapon_channels[0].visual_flags = v5;
+    player->presentation.weapon_channels[0].selected_state = 0;
+    *(_DWORD *)player->presentation.weapon_channels[0]._pad_78 = &player->presentation.weapon_channels[0].anim_manager;
+    initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
+    player->presentation.weapon_channels[0].anim_manager.active = 1;
+    player->presentation.weapon_channels[0].anim_manager.self_ref = player->presentation.weapon_channels;
+    player->presentation.weapon_channels[0].anim_manager.queue_sentinel = player->presentation.weapon_channels[0]._pad_150;
+    player->presentation.weapon_channels[0].anim_manager.queued_animation_count = 0;
   }
   else
   {
-    initialize_anim_manager(&player->presentation._pad_144[1552]);
-    *(_DWORD *)&player->presentation._pad_144[1552] = 0;
+    initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
+    player->presentation.weapon_channels[0].anim_manager.active = 0;
   }
-  if ( (*(_DWORD *)(*(_DWORD *)&player->presentation._pad_144[2312] + 16) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[1].visual_root->flags & 0x200000) != 0 )
   {
-    v6 = *(_DWORD *)&player->presentation._pad_144[2280];
+    v6 = player->presentation.weapon_channels[1].visual_flags;
     LOBYTE(v6) = v6 & 0xDF;
     BYTE1(v6) |= 8u;
-    *(_DWORD *)&player->presentation._pad_144[2280] = v6;
-    *(_DWORD *)&player->presentation._pad_144[2536] = 0;
-    *(_DWORD *)&player->presentation._pad_144[2396] = &player->presentation._pad_144[2540];
-    initialize_anim_manager(&player->presentation._pad_144[2540]);
-    *(_DWORD *)&player->presentation._pad_144[2540] = 1;
-    *(_DWORD *)&player->presentation._pad_144[2604] = &player->presentation._pad_144[2276];
-    *(_DWORD *)&player->presentation._pad_144[2608] = &player->presentation._pad_144[2612];
-    *(_DWORD *)&player->presentation._pad_144[2600] = 0;
+    player->presentation.weapon_channels[1].visual_flags = v6;
+    player->presentation.weapon_channels[1].selected_state = 0;
+    *(_DWORD *)player->presentation.weapon_channels[1]._pad_78 = &player->presentation.weapon_channels[1].anim_manager;
+    initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
+    player->presentation.weapon_channels[1].anim_manager.active = 1;
+    player->presentation.weapon_channels[1].anim_manager.self_ref = &player->presentation.weapon_channels[1];
+    player->presentation.weapon_channels[1].anim_manager.queue_sentinel = player->presentation.weapon_channels[1]._pad_150;
+    player->presentation.weapon_channels[1].anim_manager.queued_animation_count = 0;
   }
   else
   {
-    initialize_anim_manager(&player->presentation._pad_144[2540]);
-    *(_DWORD *)&player->presentation._pad_144[2540] = 0;
+    initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
+    player->presentation.weapon_channels[1].anim_manager.active = 0;
   }
-  if ( (*(_DWORD *)(*(_DWORD *)&player->presentation._pad_144[3300] + 16) & 0x200000) != 0 )
+  if ( (player->presentation.weapon_channels[2].visual_root->flags & 0x200000) != 0 )
   {
-    v7 = *(_DWORD *)&player->presentation._pad_144[3268] & 0xFFFFFFDF;
+    v7 = player->presentation.weapon_channels[2].visual_flags & 0xFFFFFFDF;
     BYTE1(v7) |= 8u;
-    *(_DWORD *)&player->presentation._pad_144[3268] = v7;
-    *(_DWORD *)&player->presentation._pad_144[3524] = 0;
-    *(_DWORD *)&player->presentation._pad_144[3384] = &player->presentation._pad_144[3528];
-    initialize_anim_manager(&player->presentation._pad_144[3528]);
-    *(_DWORD *)&player->presentation._pad_144[3528] = 1;
-    *(_DWORD *)&player->presentation._pad_144[3592] = &player->presentation._pad_144[3264];
-    *(_DWORD *)&player->presentation._pad_144[3596] = &player->presentation._pad_144[3600];
-    *(_DWORD *)&player->presentation._pad_144[3588] = 0;
+    player->presentation.weapon_channels[2].visual_flags = v7;
+    player->presentation.weapon_channels[2].selected_state = 0;
+    *(_DWORD *)player->presentation.weapon_channels[2]._pad_78 = &player->presentation.weapon_channels[2].anim_manager;
+    initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
+    player->presentation.weapon_channels[2].anim_manager.active = 1;
+    player->presentation.weapon_channels[2].anim_manager.self_ref = &player->presentation.weapon_channels[2];
+    player->presentation.weapon_channels[2].anim_manager.queue_sentinel = player->presentation.weapon_channels[2]._pad_150;
+    player->presentation.weapon_channels[2].anim_manager.queued_animation_count = 0;
   }
   else
   {
-    initialize_anim_manager(&player->presentation._pad_144[3528]);
-    *(_DWORD *)&player->presentation._pad_144[3528] = 0;
+    initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
+    player->presentation.weapon_channels[2].anim_manager.active = 0;
   }
-  initialize_snail_skin(&player->presentation._pad_144[6132]);
+  initialize_snail_skin(&player->presentation.snail_skin_transition.selected_slot);
   initialize_cutscene_ai(&player->presentation.cutscene_ai);
   if ( !*((_BYTE *)player->game + 16721360) )
     player->presentation.cutscene_ai.active = 1;
   player->presentation.owner_player = player;
   set_matrix_identity(&player->presentation.live_matrix);
+  set_matrix_identity((TransformMatrix *)player->presentation._pad_c0);
   set_matrix_identity(&player->presentation.previous_live_matrix);
-  set_matrix_identity((TransformMatrix *)&player->presentation._pad_78[8]);
   *(_DWORD *)&player->presentation.cutscene_ai._pad_10[76] = 0;
   initialize_click_start((int)player->_pad_a0, (int)player);
   initialize_cameraman((CameramanState *)player->_pad_200);
@@ -166,10 +166,10 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
   *(_DWORD *)&player->_pad_30c[32] = 1015580809;
   player->damage_retrigger_timer = 0.0;
   player->surface_reaction_timer = 0.0;
-  *(_DWORD *)&player->presentation._pad_144[5240] = 0;
-  *(_DWORD *)&player->presentation._pad_144[5244] = 1002197604;
-  *(_DWORD *)&player->presentation._pad_144[5248] = 0;
-  *(_DWORD *)&player->presentation._pad_144[5252] = 1004405091;
+  *(_DWORD *)player->presentation._pad_15bc = 0;
+  *(_DWORD *)&player->presentation._pad_15bc[4] = 1002197604;
+  *(_DWORD *)&player->presentation._pad_15bc[8] = 0;
+  *(_DWORD *)&player->presentation._pad_15bc[12] = 1004405091;
   player->_pad_74[16] = 0;
   player->cached_camera_target_world.z = z;
   player->velocity.z = 0.0;

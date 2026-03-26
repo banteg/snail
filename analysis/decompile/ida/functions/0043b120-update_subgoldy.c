@@ -956,11 +956,11 @@ LABEL_287:
             }
           }
           handle_subgoldy_collisions((int)player);
-          update_anim_manager((char *)player->presentation._pad_104);
-          update_anim_manager((char *)&player->presentation._pad_144[4516]);
-          update_anim_manager((char *)&player->presentation._pad_144[1552]);
-          update_anim_manager((char *)&player->presentation._pad_144[2540]);
-          update_anim_manager((char *)&player->presentation._pad_144[3528]);
+          update_anim_manager(&player->presentation.anim_manager);
+          update_anim_manager(&player->presentation.jetpack_channel.anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
+          update_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
           update_track_parcels((_DWORD *)player->game + 4815136);
           initialize_cutscene(&player->presentation);
           update_player_movement_flags((int *)player);
