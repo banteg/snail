@@ -2938,17 +2938,17 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.slugged, .interrupt_current) catch {};
         }
 
-        const previous_attachment_runtime_kind = previous.currentAttachmentRuntimeKind(preview);
+        const previous_attachment_template_kind = previous.currentAttachmentTemplateKind(preview);
         if (!previous.attachment_follow.active and current.attachment_follow.active and
             current.movement_mode == .attachment)
         {
-            if (current.currentAttachmentRuntimeKind(preview)) |runtime_kind| {
-                if (runtime_kind == 24) {
+            if (current.currentAttachmentTemplateKind(preview)) |template_kind| {
+                if (template_kind == 24) {
                     self.tryPlayNativeGameplayVoiceSet(.worm_tunnel, .wait_for_idle) catch {};
                 }
             }
         }
-        if (gameplay_audio_cues.nativeGameplaySupertrampExitVoice(current, previous_attachment_runtime_kind)) {
+        if (gameplay_audio_cues.nativeGameplaySupertrampExitVoice(current, previous_attachment_template_kind)) {
             self.tryPlayNativeGameplayVoiceSet(.supertramp, .wait_for_idle) catch {};
         }
         if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {

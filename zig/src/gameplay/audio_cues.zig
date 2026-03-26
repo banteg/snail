@@ -194,8 +194,8 @@ pub fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: ga
     return previous.damage_warning_actor.sample_generation != current.damage_warning_actor.sample_generation;
 }
 
-pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_runtime_kind: ?u8) bool {
-    if (previous_attachment_runtime_kind != 31) return false;
+pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
+    if (previous_attachment_template_kind != 31) return false;
     if (current.movement_mode == .attachment or current.attachment_follow.active) return false;
     return current.launch.active and current.launch.vertical_velocity > 0.0;
 }

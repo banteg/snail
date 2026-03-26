@@ -1099,7 +1099,7 @@ fn clampedPreviousDesiredCameraZ(anchor_z: f32, previous_z: f32) f32 {
 }
 
 const AttachmentCameraProgress = struct {
-    runtime_kind: u8,
+    template_kind: u8,
     template_progress: f32,
 };
 
@@ -2844,7 +2844,7 @@ pub const Runner = struct {
         if (self.movement_mode != .attachment or !self.attachment_follow.active) return null;
 
         const built = self.currentAttachmentBuilt(preview) orelse return null;
-        const runtime_kind = built.template.spec.runtime_kind orelse return null;
+        const template_kind = built.template.spec.template_kind orelse return null;
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
         const template_progress = if (sample_count <= 0.0001)
             0.0
@@ -2856,7 +2856,7 @@ pub const Runner = struct {
             );
 
         return .{
-            .runtime_kind = runtime_kind,
+            .template_kind = template_kind,
             .template_progress = template_progress,
         };
     }
@@ -2869,8 +2869,8 @@ pub const Runner = struct {
         return 0.5 - (std.math.cos((std.math.clamp(progress, 0.0, 1.0) * 4.712389) + 1.5707964) * 0.5);
     }
 
-    fn attachmentCameraLiftRuntimeKindEnabled(runtime_kind: u8) bool {
-        return switch (runtime_kind) {
+    fn attachmentCameraLiftTemplateKindEnabled(template_kind: u8) bool {
+        return switch (template_kind) {
             8, 9, 10, 14, 16, 36, 43, 45 => true,
             else => false,
         };
@@ -2881,7 +2881,7 @@ pub const Runner = struct {
     fn cameramanLiftTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         var target: f32 = 0.0;
         if (self.currentAttachmentCameraProgress(preview)) |attachment_camera| {
-            if (attachmentCameraLiftRuntimeKindEnabled(attachment_camera.runtime_kind)) {
+            if (attachmentCameraLiftTemplateKindEnabled(attachment_camera.template_kind)) {
                 target += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
             }
         }
@@ -2893,7 +2893,7 @@ pub const Runner = struct {
 
     fn cameramanDesiredFovDegrees(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         const attachment_camera = self.currentAttachmentCameraProgress(preview) orelse return 110.0;
-        if (attachment_camera.runtime_kind != 24) return 110.0;
+        if (attachment_camera.template_kind != 24) return 110.0;
         return 110.0 + (attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_kind24_fov_bonus);
     }
 
@@ -4813,9 +4813,9 @@ pub const Runner = struct {
         return preview.builtAttachmentForSourceRow(self.attachment_follow.source_cell_row);
     }
 
-    pub fn currentAttachmentRuntimeKind(self: *const Runner, preview: *const track.LoadedLevelPreview) ?u8 {
+    pub fn currentAttachmentTemplateKind(self: *const Runner, preview: *const track.LoadedLevelPreview) ?u8 {
         const built = self.currentAttachmentBuilt(preview) orelse return null;
-        return built.template.spec.runtime_kind;
+        return built.template.spec.template_kind;
     }
 
     fn laneCenterFromWorldX(preview: *const track.LoadedLevelPreview, world_x: f32) f32 {
@@ -6400,7 +6400,7 @@ test "attachment camera lift uses overall attachment progress" {
     const expected_progress =
         (runner.playerWorldPosition(&fixture.preview).z - @as(f32, @floatFromInt(target.row))) /
         @as(f32, @floatFromInt(built.template.sample_count));
-    try std.testing.expectEqual(@as(u8, 36), attachment_camera.runtime_kind);
+    try std.testing.expectEqual(@as(u8, 36), attachment_camera.template_kind);
     try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.template_progress, 0.0001);
 }
 
