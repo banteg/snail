@@ -520,17 +520,19 @@ Current practical read:
     - only cursor values `0`, `1`, and `3` probe replay-bearing banks, so the loop skips the tutorial / back lanes instead of treating every menu item as a replay source
     - those three probe lanes map to postal (`app + 0x6ffae8`, `app + 0x74658 = 0`), challenge (`app + 0x85c128`, `app + 0x74658 = 1`), and completion / Time Trial (`app + 0x9b8768`, `app + 0x74658 = 4`)
     - each bank search reuses the same `0x1fac0` record stride and RNG-derived record index, and the branch gives up after `1000` attempts
-    - the launcher is gated by menu-local float fields at `+0x10` / `+0x14`: `update_new_game_menu` accumulates the step into the accumulator, enters the replay search only once that accumulator exceeds `1.0`, and clears the accumulator back to `0.0` before the bank probe loop
+    - the launcher is gated by menu-local float fields at `+0x10` / `+0x14`: `update_new_game_menu` adds the float at `+0x14` into the float at `+0x10`, enters the replay search only once that accumulator exceeds `1.0`, and clears `+0x10` back to `0.0` before the bank probe loop
     - the same menu-local object now has a firmer partial layout:
       - `+0x0`: rotating replay-bank cursor
       - `+0x4`: likely replay-attract hide latch; any input clears it after unhiding all six menu widgets, while a successful replay launch sets it to `1` immediately before `destroy_main_menu`
-      - `+0x8` / `+0xc`: secondary replay-attract suppressor accumulator / step, reset to `0` and `1/3600` on both successful replay launch and the `1000`-attempt give-up path
-      - `+0x10` / `+0x14`: replay-attract accumulator / step
+      - `+0x8`: likely post-launch hide-release accumulator; `update_subgame` later compares it against `1.0` before clearing the hide latch
+      - `+0xc`: unresolved companion reset value for the `+0x8` lane; still a candidate step, but no reader is recovered yet
+      - `+0x10`: replay-attract launch accumulator
+      - `+0x14`: likely replay-attract launch addend; its producer is still unresolved
     - when all `1000` attempts miss, the branch does not launch; it writes menu locals `+0x8 = 0` and `+0xc = 0x3991a2b4` (`0.00027777778f`) and returns
-    - the remaining unknown is not the launch scratch itself but the timer producers:
-      - static BN plus IDA still do not show who seeds the menu-local replay-attract step at `+0x14`
+    - the remaining unknown is not the launch scratch itself but the remaining lane producers:
+      - static BN plus IDA still do not show who seeds the menu-local replay-attract addend at `+0x14`
       - the tracked full-HLIL snapshot does not show any out-of-line absolute references to `data_4df904 + 0x4f2e8/+0x4f2ec/+0x4f2f0`, and outside `update_new_game_menu` the only confirmed global consumers are `initialize_subgame` reading the likely hide latch at `+0x4`, `update_subgame` reading `+0x4/+0x8`, and `update_completion_screen` tail-calling back into `update_new_game_menu`
-      - `update_subgame` later consumes `data_4df904 + 0x4f2e4` (`menu-local +0x8`) and clears the likely hide latch at `data_4df904 + 0x4f2e0` once that accumulator exceeds `1.0`, so the open question on `+0x8/+0xc` is now who advances or reseeds that suppressor lane rather than whether it participates in startup suppression
+      - `update_subgame` later consumes `data_4df904 + 0x4f2e4` (`menu-local +0x8`) and clears the likely hide latch at `data_4df904 + 0x4f2e0` once that accumulator exceeds `1.0`, so the open question on `+0x8/+0xc` is now whether anything advances or reseeds that hide-release lane beyond the known resets rather than whether it participates in startup suppression
       - if another producer exists, it is not surfacing as a normal out-of-line global-field writer in the current image; the remaining possibilities are a local helper path inside `update_new_game_menu`, a decompiler-blurred `this`-relative write, or a dormant build/data-controlled lane
   - those same launch helpers also update `app + 119190` from the selected record's mode or owner bank before jumping to frontend state `10`
   - `initialize_subgoldy` unconditionally calls `initialize_click_start`, and `initialize_click_start` hides its `Click to Start` widget when `app + 0x1066be8 != 0`, so the same app-side replay scratch also suppresses the normal click-start gate on persistent replay launches
@@ -583,7 +585,7 @@ Current practical read:
   - remaining gap: the full lifetime of that field after subgame init is still not traced end-to-end
 - the remaining New Game replay-attract gap is now narrower too:
   - the persistent replay scratch, bank rotation, saved replay return-owner writes, startup clear, and click-start suppressor are confirmed statically
-  - the unresolved pieces are the writer that seeds the menu-local float step at `data_4df904 + 0x4f2dc + 0x14` and the exact role of the secondary timer lane at `+0x8` / `+0xc`
+  - the unresolved pieces are the writer that seeds the menu-local float addend at `data_4df904 + 0x4f2dc + 0x14` and the exact maintenance/read path for the companion hide-release lane at `+0x8` / `+0xc`
 - one nearby single-slot pickup-like block around `game + 0x355e08` is still unresolved and should not be merged with `jetpack_pickup` yet
 
 ## Row Event Display Controller

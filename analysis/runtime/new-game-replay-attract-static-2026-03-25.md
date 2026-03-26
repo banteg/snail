@@ -19,8 +19,10 @@ The New Game menu object still has the same useful partial layout:
 
 - `+0x0`: replay-attract cursor
 - `+0x4`: likely hide latch
-- `+0x8/+0xc`: likely secondary suppressor accumulator / step
-- `+0x10/+0x14`: likely replay-attract accumulator / step
+- `+0x8`: likely post-launch hide-release accumulator
+- `+0xc`: unresolved companion reset value for that lane; still a candidate step, but no reader is recovered yet
+- `+0x10`: replay-attract launch accumulator
+- `+0x14`: likely replay-attract launch addend; producer still unresolved
 - `+0x30..+0x44`: widget pointers for Postal / Time Trial / Challenge / Tutorial / Help / Back
 
 ## Findings
@@ -131,7 +133,9 @@ The remaining launcher gap is now narrower than before:
   - `initialize_new_game_menu`
   - `destroy_main_menu`
 - no additional tracked absolute writer or consumer exists outside the menu/update-subgame family either
-- the `+0x8/+0xc` suppressor lane is also **not** initialized in those ordinary entry/exit paths
+- the `+0x8/+0xc` hide-release lane is also **not** initialized in those ordinary entry/exit paths
+- `+0x8` is the only member of that lane with a confirmed cross-function consumer outside `update_new_game_menu`
+- no tracked out-of-line absolute reader currently explains `+0xc`, `+0x10`, or `+0x14`
 
 So the next static targets are no longer generic menu setup code. They are more likely:
 
