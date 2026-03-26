@@ -132,7 +132,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "start_squidge_z",
-        "float __thiscall start_squidge_z(SquidgeState* squidge, float value);",
+        "void __thiscall start_squidge_z(SquidgeState* squidge, float value);",
     ),
     (
         "update_squidge",

@@ -51,3 +51,9 @@ Template:
 - invalidated claim: `player + 0x43c` is the persistent current track cell pointer
 - replacement evidence: `initialize_subgoldy` seeds `+0x43c` from the per-player control-source globals, while `update_subgoldy` still gets the live current cell from the transient `get_track_grid_cell_at_world_position(...)` local
 - port consequence: the shared `Player` typing and any Zig comments/docs must stop calling `+0x43c` `current_cell`; keep runtime-cell access transient and treat `+0x43c` as `control_source`
+
+## 2026-03-26 - Squidge helper prototype
+
+- invalidated claim: `start_squidge_z` returns `float`
+- replacement evidence: the raw Windows helper only seeds `SquidgeState.z_phase` and `z_velocity`; on a fresh and current `.i64`, typing it as `void __thiscall start_squidge_z(SquidgeState*, float)` restores a clean high-level `update_subgoldy` decompile, while the float-return prototype alone forces Hex-Rays back into inline x87 asm
+- port consequence: keep the checked-in BN/IDA type lane and any future helper signatures on `void`; do not infer helper return types from transient x87 stack residue when the call sites ignore the result

@@ -4,6 +4,6 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: start_squidge_z @ 0x4449a0 */
 
-004449ae        *(arg1 + 0x14) = arg2
-004449b1        *(arg1 + 0x10) = fconvert.s(fconvert.t(arg2) * fconvert.t(-0.00300000003f))
-004449b4        return arg2
+004449ae        squidge->z_phase = value
+004449b1        squidge->z_velocity = fconvert.s(fconvert.t(value) * fconvert.t(-0.00300000003f))
+004449b4        return

@@ -10,87 +10,144 @@ int32_t __thiscall update_subgoldy(Player *player)
   signed int v4; // eax
   signed int segment_count; // ecx
   Game *game; // eax
-  Game *v13; // eax
-  int v14; // ecx
-  int v15; // eax
+  Game *v7; // eax
+  int v8; // ecx
+  int v9; // eax
+  Vec3 *p_position; // ebx
+  Game *v11; // eax
+  double v12; // st7
+  double track_z_offset; // st7
+  double v14; // st7
+  char v16; // c0
   double v17; // st7
-  Game *v19; // eax
-  __int16 v34; // ax
-  Game *v36; // esi
-  Game *v37; // esi
-  Game *v38; // eax
+  __int16 v18; // ax
+  Game *v19; // esi
+  Game *v20; // esi
+  double v21; // st7
+  Game *v22; // eax
   PlayerControlSource *control_source; // eax
-  Game *v40; // eax
+  Game *v24; // eax
   char *track_grid_cell_at_world_position; // eax
-  Game *v44; // edi
-  int v45; // eax
-  char *v46; // esi
-  int v47; // eax
-  int v49; // esi
-  Game *v50; // edx
-  uint8_t v51; // al
-  char *v80; // eax
-  char *v96; // esi
+  Game *v26; // edi
+  int v27; // eax
+  char *v28; // esi
+  int32_t v29; // eax
+  int v30; // esi
+  Game *v31; // edx
+  uint8_t v32; // al
+  double v33; // st7
+  Game *v34; // ecx
+  Vec3 *p_velocity; // esi
+  double v36; // st7
+  char *v37; // eax
+  double v38; // st6
+  double v39; // st7
+  double v40; // st7
+  char *v41; // esi
+  Game *v42; // edi
   int track_cell_row_index; // eax
-  int v100; // eax
-  char v105; // al
-  char v108; // al
-  Game *v111; // ecx
-  float v138; // eax
-  char *v139; // ecx
-  Game *v163; // ecx
-  Game *v167; // eax
-  Game *v169; // ecx
-  int v172; // eax
-  Game *v173; // eax
-  int v174; // ecx
-  Game *v175; // ebp
-  bool v176; // zf
-  float v183; // edx
-  int skin_hold_ticks; // eax
-  Game *v199; // ecx
-  char *v200; // eax
-  int v201; // ecx
-  int v202; // edx
-  int v203; // ecx
+  int v44; // eax
+  char v45; // al
+  char v46; // al
+  double v47; // st7
+  double v48; // st6
+  Game *v49; // ecx
+  double v50; // st7
+  double v51; // st7
+  double v52; // st7
+  char *v53; // eax
+  char *v54; // esi
+  float v55; // eax
+  char *v56; // ecx
+  double v57; // st7
+  double v58; // st7
+  Game *v59; // ecx
+  Game *v60; // ecx
+  double v61; // st7
+  Game *v62; // ecx
+  double v63; // st7
+  double v64; // st7
+  Game *v65; // ecx
+  Game *v66; // eax
+  Game *v67; // ecx
+  int v68; // eax
+  Game *v69; // eax
+  Game *v70; // ecx
+  Game *v71; // ebp
+  bool v72; // zf
+  double v73; // st7
+  double wobble_alpha; // st7
+  float v75; // edx
+  double v76; // st7
+  double wobble_y; // st6
+  double v78; // st6
+  double wobble_x; // st5
+  double v80; // st5
+  int32_t skin_hold_ticks; // eax
+  double v82; // st7
+  double v83; // st7
+  double v84; // st7
+  double v85; // st7
+  double v86; // st7
+  Game *v87; // ecx
+  char *v88; // eax
+  int v89; // ecx
+  int v90; // edx
+  int v91; // ecx
+  double v92; // st7
+  double v93; // st7
+  double v94; // st7
   int32_t state; // eax
+  double v96; // st7
+  double v97; // st6
+  double v98; // st7
   uint8_t control_override_active; // al
-  Game *v226; // ecx
+  double v100; // st7
+  Game *v101; // eax
+  double v102; // st7
+  double v103; // st7
+  Game *v104; // ecx
   int32_t movement_state; // eax
-  Game *v232; // eax
+  double v106; // st7
+  Game *v107; // eax
   float x; // [esp-14h] [ebp-6Ch]
-  float v234; // [esp-14h] [ebp-6Ch]
+  float v109; // [esp-14h] [ebp-6Ch]
   float y; // [esp-10h] [ebp-68h]
-  float v236; // [esp-10h] [ebp-68h]
+  float v111; // [esp-10h] [ebp-68h]
   float z; // [esp-Ch] [ebp-64h]
-  float v238; // [esp-Ch] [ebp-64h]
-  float v239; // [esp+0h] [ebp-58h]
-  int v240; // [esp+4h] [ebp-54h]
-  int v241; // [esp+4h] [ebp-54h]
-  float v242; // [esp+4h] [ebp-54h]
-  float v243; // [esp+4h] [ebp-54h]
-  int v244; // [esp+4h] [ebp-54h]
-  float v245; // [esp+18h] [ebp-40h]
-  TrackRowCell *v246; // [esp+18h] [ebp-40h]
-  int v247; // [esp+18h] [ebp-40h]
-  int v248; // [esp+18h] [ebp-40h]
-  int v249; // [esp+18h] [ebp-40h]
-  int v251; // [esp+18h] [ebp-40h]
-  float v253; // [esp+1Ch] [ebp-3Ch]
-  float v254; // [esp+1Ch] [ebp-3Ch]
-  float v256; // [esp+20h] [ebp-38h]
-  float v257; // [esp+20h] [ebp-38h]
-  float v259; // [esp+24h] [ebp-34h]
-  float v260; // [esp+24h] [ebp-34h]
-  float v261; // [esp+24h] [ebp-34h]
-  float v262; // [esp+28h] [ebp-30h] BYREF
-  float v263; // [esp+2Ch] [ebp-2Ch]
-  float v264; // [esp+30h] [ebp-28h]
-  float v269; // [esp+4Ch] [ebp-Ch]
-  float v270; // [esp+50h] [ebp-8h]
-  float v271; // [esp+54h] [ebp-4h]
+  float v113; // [esp-Ch] [ebp-64h]
+  float v114; // [esp+0h] [ebp-58h]
+  int v115; // [esp+4h] [ebp-54h]
+  int v116; // [esp+4h] [ebp-54h]
+  float v117; // [esp+4h] [ebp-54h]
+  float v118; // [esp+4h] [ebp-54h]
+  int v119; // [esp+4h] [ebp-54h]
+  float v120; // [esp+18h] [ebp-40h]
+  TrackRowCell *v121; // [esp+18h] [ebp-40h]
+  float v122; // [esp+18h] [ebp-40h]
+  float v123; // [esp+18h] [ebp-40h]
+  int v124; // [esp+18h] [ebp-40h]
+  float v125; // [esp+18h] [ebp-40h]
+  float v126; // [esp+1Ch] [ebp-3Ch]
+  float v127; // [esp+1Ch] [ebp-3Ch]
+  float v128; // [esp+1Ch] [ebp-3Ch]
+  float v129; // [esp+20h] [ebp-38h]
+  float v130; // [esp+20h] [ebp-38h]
+  float v131; // [esp+20h] [ebp-38h]
+  float v132; // [esp+24h] [ebp-34h]
+  float v133; // [esp+24h] [ebp-34h]
+  float v134; // [esp+24h] [ebp-34h]
+  float v135; // [esp+28h] [ebp-30h] BYREF
+  float v136; // [esp+2Ch] [ebp-2Ch]
+  float v137; // [esp+30h] [ebp-28h]
+  float v138; // [esp+34h] [ebp-24h]
+  float v139; // [esp+38h] [ebp-20h]
+  float v140; // [esp+40h] [ebp-18h]
+  float v141; // [esp+44h] [ebp-14h]
+  float v142; // [esp+4Ch] [ebp-Ch]
+  float v143; // [esp+50h] [ebp-8h]
+  float v144; // [esp+54h] [ebp-4h]
 
-  _EBP = player;
   result = (int32_t)player->game;
   if ( *(_BYTE *)(result + 9) )
   {
@@ -98,8 +155,8 @@ int32_t __thiscall update_subgoldy(Player *player)
     {
       update_damage_gauge((int)&player->damage_gauge);
       update_progress_bar();
-      update_warning((float *)&_EBP->_pad_3f0[4]);
-      update_row_event_display((_DWORD **)_EBP->game + 4835830);
+      update_warning((float *)&player->_pad_3f0[4]);
+      update_row_event_display((_DWORD **)player->game + 4835830);
     }
     return result;
   }
@@ -110,61 +167,42 @@ int32_t __thiscall update_subgoldy(Player *player)
     segment_count = template_record->segment_count;
     if ( v4 >= segment_count )
       v4 = segment_count - 1;
-    _EDX = _EBP->snail_visual;
-    _EAX = 21 * v4;
-    _ECX = template_record->primary_samples;
-    __asm
-    {
-      fld     dword ptr [ecx+eax*8+0A4h]
-      fmul    ds:flt_497444
-      fsub    dword ptr [edx+80h]
-      fmul    ds:flt_497258
-      fadd    dword ptr [edx+80h]
-      fstp    dword ptr [edx+80h]
-    }
-    _EDX->follow_lateral_response = _ET1;
+    player->snail_visual->follow_lateral_response = (*(float *)template_record->primary_samples[v4]._pad_a4 * -3.0
+                                                   - player->snail_visual->follow_lateral_response)
+                                                  * 0.1
+                                                  + player->snail_visual->follow_lateral_response;
   }
   else
   {
-    _EAX = player->snail_visual;
-    __asm
-    {
-      fld     dword ptr [eax+80h]
-      fchs
-      fmul    ds:flt_497258
-      fadd    dword ptr [eax+80h]
-      fstp    dword ptr [eax+80h]
-    }
-    _EAX->follow_lateral_response = _ET1;
+    player->snail_visual->follow_lateral_response = -player->snail_visual->follow_lateral_response * 0.1
+                                                  + player->snail_visual->follow_lateral_response;
   }
-  update_squidge(&_EBP->squidge);
-  _EBP->snail_visual->squidge_primary = _EBP->squidge.y_output;
-  _EBP->snail_visual->squidge_secondary = _EBP->squidge.z_output;
-  if ( !*((_DWORD *)_EBP->game + 16) )
-    show_subgoldy_lives(_EBP);
-  result = _EBP->movement_mode_selector;
+  update_squidge(&player->squidge);
+  player->snail_visual->squidge_primary = player->squidge.y_output;
+  player->snail_visual->squidge_secondary = player->squidge.z_output;
+  if ( !*((_DWORD *)player->game + 16) )
+    show_subgoldy_lives(player);
+  result = player->movement_mode_selector;
   if ( result )
   {
     result -= 2;
     if ( result )
     {
-      game = _EBP->game;
+      game = player->game;
       if ( *((int *)game + 4180343) > 20 && !*((_BYTE *)game + 43092) )
         *((_BYTE *)game + 43092) = 1;
-      v13 = _EBP->game;
-      if ( *((_BYTE *)v13 + 16721360) )
+      v7 = player->game;
+      if ( *((_BYTE *)v7 + 16721360) )
       {
-        v14 = *((_DWORD *)v13 + 4180341);
-        v15 = *((_DWORD *)v13 + 4180343);
-        if ( v15 < *(_DWORD *)(v14 + 108) && _EBP->movement_state != 2 )
+        v8 = *((_DWORD *)v7 + 4180341);
+        v9 = *((_DWORD *)v7 + 4180343);
+        if ( v9 < *(_DWORD *)(v8 + 108) && player->movement_state != 2 )
         {
-          _EBX = &_EBP->position;
-          v17 = convert_math_type16_to_32(*(_WORD *)(v14 + 6 * v15 + 112), 16.0);
-          __asm { fstp    dword ptr [ebx] }
-          _EBX->x = _ET1;
-          v19 = _EBP->game;
-          *((_BYTE *)v19 + 43092) = (*(_BYTE *)(*((_DWORD *)v19 + 4180341) + 6 * *((_DWORD *)v19 + 4180343) + 116) & 4) != 0;
-          if ( (*(_BYTE *)(*((_DWORD *)_EBP->game + 4180341) + 6 * *((_DWORD *)_EBP->game + 4180343) + 116) & 8) != 0 )
+          p_position = &player->position;
+          player->position.x = convert_math_type16_to_32(*(_WORD *)(v8 + 6 * v9 + 112), 16.0);
+          v11 = player->game;
+          *((_BYTE *)v11 + 43092) = (*(_BYTE *)(*((_DWORD *)v11 + 4180341) + 6 * *((_DWORD *)v11 + 4180343) + 116) & 4) != 0;
+          if ( (*(_BYTE *)(*((_DWORD *)player->game + 4180341) + 6 * *((_DWORD *)player->game + 4180343) + 116) & 8) != 0 )
           {
             *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
             *((_DWORD *)MEMORY[0x4DF904] + 111) = 10;
@@ -172,261 +210,124 @@ int32_t __thiscall update_subgoldy(Player *player)
             begin_frontend_fade_in((_DWORD *)MEMORY[0x4DF904] + 9);
             return result;
           }
-LABEL_61:
-          __asm
+LABEL_60:
+          if ( p_position->x < -4.0 )
           {
-            fld     dword ptr [ebx]
-            fcomp   ds:flt_497420
-            fnstsw  ax
+            p_position->x = -4.0;
+            player->velocity.x = 0.0;
           }
-          if ( (_AX & 0x100) != 0 )
+          if ( p_position->x > 4.0 )
           {
-            _EBX->x = -4.0;
-            _EBP->velocity.x = 0.0;
+            p_position->x = 4.0;
+            player->velocity.x = 0.0;
           }
-          __asm
+          if ( player->_pad_74[16] )
+            update_subgoldy_resurrect((int)player);
+          track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
+                                                (char *)player->game,
+                                                &p_position->x);
+          v26 = player->game;
+          v121 = (TrackRowCell *)track_grid_cell_at_world_position;
+          v27 = 61 * get_track_cell_row_index(track_grid_cell_at_world_position);
+          v28 = &byte_5CCAC8[(_DWORD)v26 + 4 * v27];
+          v29 = *(int *)((char *)unk_5CCBB8 + (_DWORD)v26 + 4 * v27);
+          if ( v29 > 0 && v29 != player->row_event.id && v29 < *((_DWORD *)v26 + 10781) + 1 )
           {
-            fld     dword ptr [ebx]
-            fcomp   ds:flt_497210
-            fnstsw  ax
-          }
-          if ( (_AX & 0x4100) == 0 )
-          {
-            _EBX->x = 4.0;
-            _EBP->velocity.x = 0.0;
-          }
-          if ( _EBP->_pad_74[16] )
-            update_subgoldy_resurrect((int)_EBP);
-          track_grid_cell_at_world_position = get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x);
-          v44 = _EBP->game;
-          v246 = (TrackRowCell *)track_grid_cell_at_world_position;
-          v45 = 61 * get_track_cell_row_index(track_grid_cell_at_world_position);
-          v46 = &byte_5CCAC8[(_DWORD)v44 + 4 * v45];
-          v47 = *(int *)((char *)unk_5CCBB8 + (_DWORD)v44 + 4 * v45);
-          if ( v47 > 0 && v47 != _EBP->row_event.id && v47 < *((_DWORD *)v44 + 10781) + 1 )
-          {
-            _EBP->row_event.id = v47;
-            if ( *((_BYTE *)_EBP->game + 16928 * *((_DWORD *)v46 + 60) + 42608) )
+            player->row_event.id = v29;
+            if ( *((_BYTE *)player->game + 16928 * *((_DWORD *)v28 + 60) + 42608) )
             {
-              _EBP->row_event.state = 2;
-              _EBP->row_event.data_b = (int32_t)_EBP->game + 16928 * *((_DWORD *)v46 + 60) + 42608;
-              _EBP->row_event.timer = 0.0;
-              *(_DWORD *)_EBP->row_event._pad_0c = 1106247680;
-              _EBP->row_event.data_a = *((_DWORD *)_EBP->game + 4232 * *((_DWORD *)v46 + 60) + 10780);
-              if ( !_EBP->_pad_124[40] )
+              player->row_event.state = 2;
+              player->row_event.data_b = (int32_t)player->game + 16928 * *((_DWORD *)v28 + 60) + 42608;
+              player->row_event.timer = 0.0;
+              *(_DWORD *)player->row_event._pad_0c = 1106247680;
+              player->row_event.data_a = *((_DWORD *)player->game + 4232 * *((_DWORD *)v28 + 60) + 10780);
+              if ( !player->_pad_124[40] )
               {
-                _EBP->_pad_124[40] = 1;
-                __asm
-                {
-                  fld     dword ptr [ebx]
-                  fcomp   ds:flt_497234
-                }
-                __asm { fnstsw  ax }
-                if ( (_AX & 0x4100) != 0 )
-                  dispatch_cutscene_animation((int)_EBP->_pad_2984, 3, 1, -1);
+                player->_pad_124[40] = 1;
+                if ( p_position->x <= 0.0 )
+                  dispatch_cutscene_animation((int)player->_pad_2984, 3, 1, -1);
                 else
-                  dispatch_cutscene_animation((int)_EBP->_pad_2984, 4, 1, -1);
-                dispatch_cutscene_animation((int)_EBP->_pad_2984, 1, 0, -1);
+                  dispatch_cutscene_animation((int)player->_pad_2984, 4, 1, -1);
+                dispatch_cutscene_animation((int)player->_pad_2984, 1, 0, -1);
               }
-              v49 = *((_DWORD *)v46 + 60);
-              v50 = _EBP->game;
-              if ( *((_DWORD *)v50 + 4232 * v49 + 10781) != -1 )
-                play_voice_manager((int)unk_751498, 13, 2u, *((_DWORD *)v50 + 4232 * v49 + 10781));
-              enqueue_tip_message((_DWORD *)MEMORY[0x4DF904] + 4955094, (int)&_EBP->row_event.state, 1);
+              v30 = *((_DWORD *)v28 + 60);
+              v31 = player->game;
+              if ( *((_DWORD *)v31 + 4232 * v30 + 10781) != -1 )
+                play_voice_manager((int)unk_751498, 13, 2u, *((_DWORD *)v31 + 4232 * v30 + 10781));
+              enqueue_tip_message((_DWORD *)MEMORY[0x4DF904] + 4955094, (int)&player->row_event.state, 1);
             }
           }
-          if ( !_EBP->attachment_exit_pending )
+          if ( !player->attachment_exit_pending )
           {
-            v51 = v246[1]._pad_00[0];
-            if ( (v51 == 29 || v51 == 30) && !_EBP->follow_state.active )
+            v32 = v121[1]._pad_00[0];
+            if ( (v32 == 29 || v32 == 30) && !player->follow_state.active )
             {
-              begin_track_attachment_follow_state(&_EBP->follow_state, v246, _EBX, _EBP);
-              if ( _EBP->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
+              begin_track_attachment_follow_state(&player->follow_state, v121, p_position, player);
+              if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
                 play_voice_manager((int)unk_751498, 12, 0, -1);
             }
           }
-          if ( _EBP->control_override_active )
+          if ( player->control_override_active )
           {
-            __asm
+            if ( player->velocity.z < 0.0 )
             {
-              fld     dword ptr [ebp+418h]
-              fcomp   ds:flt_497234
-              fnstsw  ax
+              v33 = *((float *)player->game + 14);
+              player->velocity.z = v33 * v33 * 0.0040000002 * 0.25 + player->velocity.z;
             }
-            if ( (_AX & 0x100) != 0 )
-            {
-              _ECX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [ecx+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4973BC
-                fmul    ds:flt_49744C
-                fadd    dword ptr [ebp+418h]
-                fstp    dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-              __asm { fstp    st }
-            }
-            __asm
-            {
-              fld     dword ptr [ebp+418h]
-              fcomp   ds:flt_497234
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-LABEL_95:
-              _EBP->velocity.z = 0.0;
+            if ( player->velocity.z > 0.0 )
+LABEL_94:
+              player->velocity.z = 0.0;
           }
           else
           {
-            _ECX = _EBP->game;
-            __asm
-            {
-              fild    dword ptr [ecx+50h]
-              fcomp   dword ptr [ebp+70h]
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              __asm
-              {
-                fld     dword ptr [ecx+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4973BC
-                fadd    dword ptr [ebp+418h]
-                fstp    dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-              __asm { fstp    st }
-            }
-            __asm
-            {
-              fld     dword ptr [ebp+418h]
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-              _EBP->velocity.z = 1.0;
-            if ( _EBP->movement_state == 2 )
-              goto LABEL_95;
+            v34 = player->game;
+            if ( (double)*((int *)v34 + 20) > player->position.z )
+              player->velocity.z = *((float *)v34 + 14) * *((float *)v34 + 14) * 0.0040000002 + player->velocity.z;
+            if ( player->velocity.z > 1.0 )
+              player->velocity.z = 1.0;
+            if ( player->movement_state == 2 )
+              goto LABEL_94;
           }
-          if ( _EBP->follow_state.active == 1 )
+          if ( player->follow_state.active == 1 )
           {
-            _ESI = &_EBP->velocity.x;
-            switch ( update_track_attachment_follow_state(&_EBP->follow_state, _EBP->velocity.z, _EBX, &_EBP->velocity) )
+            p_velocity = &player->velocity;
+            switch ( update_track_attachment_follow_state(
+                       &player->follow_state,
+                       player->velocity.z,
+                       p_position,
+                       &player->velocity) )
             {
               case 0:
-                if ( _EBP->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR )
+                if ( player->follow_state.template_record->kind != PATH_TEMPLATE_KIND_DETOUR )
                 {
-                  _ECX = _EBP->game;
-                  __asm
-                  {
-                    fld     dword ptr [ecx+38h]
-                    fld     st
-                    fmul    st, st(1)
-                    fmul    ds:flt_4973BC
-                    fadd    st, st
-                    fadd    dword ptr [ebp+418h]
-                    fstp    dword ptr [ebp+418h]
-                  }
-                  _EBP->velocity.z = _ET1;
-                  __asm { fstp    st }
+                  v36 = *((float *)player->game + 14);
+                  player->velocity.z = v36 * v36 * 0.0040000002 + v36 * v36 * 0.0040000002 + player->velocity.z;
                 }
-                goto LABEL_102;
+                goto LABEL_101;
               case 1:
               case 3:
-                if ( _EBP->follow_state.active == 1 )
-                  goto LABEL_99;
+                if ( player->follow_state.active == 1 )
+                  goto LABEL_98;
                 break;
               case 2:
-LABEL_102:
-                __asm
+LABEL_101:
+                p_position->x = p_position->x + p_velocity->x;
+                p_position->y = player->velocity.y + p_position->y;
+                p_position->z = player->velocity.z + p_position->z;
+                player->velocity.z = (1.0 - *((float *)player->game + 14) * 0.003) * player->velocity.z;
+                player->velocity.y = (1.0 - *((float *)player->game + 14) * 0.003) * player->velocity.y;
+                p_velocity->x = (1.0 - *((float *)player->game + 14) * 0.1) * p_velocity->x;
+                player->velocity.y = *((float *)player->game + 14) * *((float *)player->game + 14) * -0.0099999998
+                                   + player->velocity.y;
+                if ( p_position->x < -4.0 )
                 {
-                  fld     dword ptr [ebx]; jumptable 0043B9A6 case 2
-                  fadd    dword ptr [esi]
-                  fstp    dword ptr [ebx]
+                  p_position->x = -4.0;
+                  p_velocity->x = 0.0;
                 }
-                _EBX->x = _ET1;
-                __asm
+                if ( p_position->x > 4.0 )
                 {
-                  fld     dword ptr [esi+4]
-                  fadd    dword ptr [ebx+4]
-                  fstp    dword ptr [ebx+4]
-                }
-                _EBX->y = _ET1;
-                __asm
-                {
-                  fld     dword ptr [esi+8]
-                  fadd    dword ptr [ebx+8]
-                  fstp    dword ptr [ebx+8]
-                }
-                _EBX->z = _ET1;
-                _EDX = _EBP->game;
-                __asm
-                {
-                  fld     dword ptr [edx+38h]
-                  fmul    ds:flt_4975D0
-                  fsubr   ds:flt_497220
-                  fmul    dword ptr [ebp+418h]
-                  fstp    dword ptr [ebp+418h]
-                }
-                _EBP->velocity.z = _ET1;
-                _EAX = _EBP->game;
-                __asm
-                {
-                  fld     dword ptr [eax+38h]
-                  fmul    ds:flt_4975D0
-                  fsubr   ds:flt_497220
-                  fmul    dword ptr [ebp+414h]
-                  fstp    dword ptr [ebp+414h]
-                }
-                _EBP->velocity.y = _ET1;
-                _ECX = _EBP->game;
-                __asm
-                {
-                  fld     dword ptr [ecx+38h]
-                  fmul    ds:flt_497258
-                  fsubr   ds:flt_497220
-                  fmul    dword ptr [esi]
-                  fstp    dword ptr [esi]
-                }
-                *_ESI = _ET1;
-                _EDX = _EBP->game;
-                __asm
-                {
-                  fld     dword ptr [edx+38h]
-                  fld     st
-                  fmul    st, st(1)
-                  fmul    ds:flt_4975CC
-                  fadd    dword ptr [ebp+414h]
-                  fstp    dword ptr [ebp+414h]
-                }
-                _EBP->velocity.y = _ET1;
-                __asm
-                {
-                  fstp    st
-                  fld     dword ptr [ebx]
-                  fcomp   ds:flt_497420
-                  fnstsw  ax
-                }
-                if ( (BYTE1(_EAX) & 1) != 0 )
-                {
-                  _EBX->x = -4.0;
-                  *_ESI = 0.0;
-                }
-                __asm
-                {
-                  fld     dword ptr [ebx]
-                  fcomp   ds:flt_497210
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) == 0 )
-                {
-                  _EBX->x = 4.0;
-                  *_ESI = 0.0;
+                  p_position->x = 4.0;
+                  p_velocity->x = 0.0;
                 }
                 break;
               default:
@@ -435,987 +336,430 @@ LABEL_102:
           }
           else
           {
-            __asm
+            p_position->x = player->velocity.x + p_position->x;
+            p_position->y = player->velocity.y + p_position->y;
+            p_position->z = player->velocity.z + p_position->z;
+            if ( p_position->x < -4.0 )
             {
-              fld     dword ptr [ebp+410h]
-              fadd    dword ptr [ebx]
-              fstp    dword ptr [ebx]
+              p_position->x = -4.0;
+              player->velocity.x = 0.0;
             }
-            _EBX->x = _ET1;
-            __asm
+            if ( p_position->x > 4.0 )
             {
-              fld     dword ptr [ebp+414h]
-              fadd    dword ptr [ebx+4]
-              fstp    dword ptr [ebx+4]
+              p_position->x = 4.0;
+              player->velocity.x = 0.0;
             }
-            _EBX->y = _ET1;
-            __asm
+            if ( !LOBYTE(player->completion_handoff_active) )
             {
-              fld     dword ptr [ebp+418h]
-              fadd    dword ptr [ebx+8]
-              fstp    dword ptr [ebx+8]
-            }
-            _EBX->z = _ET1;
-            __asm
-            {
-              fld     dword ptr [ebx]
-              fcomp   ds:flt_497420
-              fnstsw  ax
-            }
-            if ( (_AX & 0x100) != 0 )
-            {
-              _EBX->x = -4.0;
-              _EBP->velocity.x = 0.0;
-            }
-            __asm
-            {
-              fld     dword ptr [ebx]
-              fcomp   ds:flt_497210
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              _EBX->x = 4.0;
-              _EBP->velocity.x = 0.0;
-            }
-            if ( !LOBYTE(_EBP->completion_handoff_active) )
-            {
-              if ( get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 15
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 16
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 18
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 19
-                || _EBP->damage_gauge.state == 2
-                && (v80 = get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x),
-                    is_slide_cache_tile_family(v80)) )
+              if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 15
+                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 16
+                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 18
+                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 19
+                || player->damage_gauge.state == 2
+                && (v37 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x),
+                    is_slide_cache_tile_family(v37)) )
               {
-                _EAX = _EBP->game;
-                __asm
+                v38 = *((float *)player->game + 14) * *((float *)player->game + 14) * 0.0040000002;
+                player->velocity.z = v38 + v38 + player->velocity.z;
+                if ( (double)*((int *)player->game + 20) <= player->position.z
+                  && player->position.z > (double)*(float *)player->_pad_2738 )
                 {
-                  fld     dword ptr [eax+38h]
-                  fld     st
-                  fmul    st, st(1)
-                  fmul    ds:flt_4973BC
-                  fadd    st, st
-                  fadd    dword ptr [ebp+418h]
-                  fstp    dword ptr [ebp+418h]
-                }
-                _EBP->velocity.z = _ET1;
-                _ECX = _EBP->game;
-                __asm
-                {
-                  fstp    st
-                  fild    dword ptr [ecx+50h]
-                  fcomp   dword ptr [ebp+70h]
-                  fnstsw  ax
-                }
-                if ( (BYTE1(_EAX) & 0x41) != 0 )
-                {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+70h]
-                    fcomp   dword ptr [ebp+2738h]
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x4100) == 0 )
-                  {
-                    __asm
-                    {
-                      fld     dword ptr [ebp+70h]
-                      fadd    ds:flt_497220
-                      fstp    dword ptr [ebp+2738h]
-                    }
-                    *(float *)_EBP->_pad_2738 = _ET1;
-                  }
+                  *(float *)player->_pad_2738 = player->position.z + 1.0;
                 }
               }
             }
-            if ( _EBP->jetpack_gauge.state == 1 )
+            if ( player->jetpack_gauge.state == 1 )
             {
-              _EDX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [edx+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4973BC
-                fadd    st, st
-                fadd    dword ptr [ebp+418h]
-                fstp    dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-              __asm { fstp    st }
+              v39 = *((float *)player->game + 14);
+              player->velocity.z = v39 * v39 * 0.0040000002 + v39 * v39 * 0.0040000002 + player->velocity.z;
             }
-            if ( !_EBP->_pad_1e4[0] )
+            if ( !player->_pad_1e4[0] )
+              player->velocity.z = (1.0 - *((float *)player->game + 14) * 0.003) * player->velocity.z;
+            player->velocity.y = (1.0 - *((float *)player->game + 14) * 0.003) * player->velocity.y;
+            player->velocity.x = (1.0 - *((float *)player->game + 14) * 0.1) * player->velocity.x;
+            if ( player->_pad_41c[0] )
             {
-              _EAX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [eax+38h]
-                fmul    ds:flt_4975D0
-                fsubr   ds:flt_497220
-                fmul    dword ptr [ebp+418h]
-                fstp    dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-            }
-            _ECX = _EBP->game;
-            __asm
-            {
-              fld     dword ptr [ecx+38h]
-              fmul    ds:flt_4975D0
-              fsubr   ds:flt_497220
-              fmul    dword ptr [ebp+414h]
-              fstp    dword ptr [ebp+414h]
-            }
-            _EBP->velocity.y = _ET1;
-            _EDX = _EBP->game;
-            __asm
-            {
-              fld     dword ptr [edx+38h]
-              fmul    ds:flt_497258
-              fsubr   ds:flt_497220
-              fmul    dword ptr [ebp+410h]
-              fstp    dword ptr [ebp+410h]
-            }
-            _EBP->velocity.x = _ET1;
-            if ( _EBP->_pad_41c[0] )
-            {
-              _EAX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [eax+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4973BC
-                fadd    st, st
-                fadd    dword ptr [ebp+418h]
-                fstp    dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-              _EBP->attachment_exit_pending = 0;
-              __asm { fstp    st }
+              v40 = *((float *)player->game + 14);
+              player->velocity.z = v40 * v40 * 0.0040000002 + v40 * v40 * 0.0040000002 + player->velocity.z;
+              player->attachment_exit_pending = 0;
             }
             else
             {
-              v96 = get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x);
-              if ( _EBP->attachment_exit_pending )
+              v41 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x);
+              if ( player->attachment_exit_pending )
               {
-                _EDI = _EBP->game;
-                if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)_EDI + 244 * get_track_cell_row_index(v96)] & 0x100) == 0
-                  && !_EBP->jetpack_gauge.state
-                  && !_EBP->control_override_active )
+                v42 = player->game;
+                if ( (*(_DWORD *)&byte_5CCAC8[(_DWORD)v42 + 244 * get_track_cell_row_index(v41)] & 0x100) == 0
+                  && !player->jetpack_gauge.state
+                  && !player->control_override_active )
                 {
-                  __asm
-                  {
-                    fld     dword ptr [edi+38h]
-                    fmul    ds:flt_497270
-                    fsubr   ds:flt_497220
-                    fmul    dword ptr [ebp+418h]
-                    fstp    dword ptr [ebp+418h]
-                  }
-                  _EBP->velocity.z = _ET1;
+                  player->velocity.z = (1.0 - *((float *)v42 + 14) * 0.2) * player->velocity.z;
                 }
-                if ( (byte_5CCAC8[(unsigned int)_EBP->game + 244 * get_track_cell_row_index(v96)] & 0x40) != 0 )
+                if ( (byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] & 0x40) != 0 )
                 {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+410h]
-                    fmul    ds:flt_4975C8
-                  }
-                  __asm
-                  {
-                    fstp    [esp+50h+var_3C]
-                    fld     dword ptr [ebp+414h]
-                    fmul    ds:flt_4975C8
-                    fstp    [esp+50h+var_38]
-                    fld     dword ptr [ebp+418h]
-                    fmul    ds:flt_4975C8
-                    fstp    [esp+50h+var_34]
-                  }
-                  v240 = *(int *)((char *)unk_5CCB6C + (unsigned int)_EBP->game + 244 * get_track_cell_row_index(v96));
-                  x = _EBX->x;
-                  y = _EBX->y;
-                  z = _EBX->z;
-                  track_cell_row_index = get_track_cell_row_index(v96);
+                  v126 = player->velocity.x * 1.05;
+                  v129 = player->velocity.y * 1.05;
+                  v132 = player->velocity.z * 1.05;
+                  v115 = *(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * get_track_cell_row_index(v41));
+                  x = p_position->x;
+                  y = p_position->y;
+                  z = p_position->z;
+                  track_cell_row_index = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB6C + (unsigned int)_EBP->game + 244 * track_cell_row_index)
+                    *(_DWORD **)(*(int *)((char *)unk_5CCB6C + (unsigned int)player->game + 244 * track_cell_row_index)
                                + 56),
                     x,
                     y,
                     z,
-                    v253,
-                    v256,
-                    v259,
-                    v240);
+                    v126,
+                    v129,
+                    v132,
+                    v115);
                 }
-                if ( _EBP->attachment_exit_pending
-                  && byte_5CCAC8[(unsigned int)_EBP->game + 244 * get_track_cell_row_index(v96)] < 0 )
+                if ( player->attachment_exit_pending
+                  && byte_5CCAC8[(unsigned int)player->game + 244 * get_track_cell_row_index(v41)] < 0 )
                 {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+410h]
-                    fmul    ds:flt_4975C8
-                  }
-                  __asm
-                  {
-                    fstp    [esp+50h+var_3C]
-                    fld     dword ptr [ebp+414h]
-                    fmul    ds:flt_4975C8
-                    fstp    [esp+50h+var_38]
-                    fld     dword ptr [ebp+418h]
-                    fmul    ds:flt_4975C8
-                    fstp    [esp+50h+var_34]
-                  }
-                  v241 = *(int *)((char *)unk_5CCB70 + (unsigned int)_EBP->game + 244 * get_track_cell_row_index(v96));
-                  v234 = _EBX->x;
-                  v236 = _EBX->y;
-                  v238 = _EBX->z;
-                  v100 = get_track_cell_row_index(v96);
+                  v127 = player->velocity.x * 1.05;
+                  v130 = player->velocity.y * 1.05;
+                  v133 = player->velocity.z * 1.05;
+                  v116 = *(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * get_track_cell_row_index(v41));
+                  v109 = p_position->x;
+                  v111 = p_position->y;
+                  v113 = p_position->z;
+                  v44 = get_track_cell_row_index(v41);
                   try_enter_track_attachment_from_swept_motion(
-                    *(_DWORD **)(*(int *)((char *)unk_5CCB70 + (unsigned int)_EBP->game + 244 * v100) + 56),
-                    v234,
-                    v236,
-                    v238,
-                    v254,
-                    v257,
-                    v260,
-                    v241);
+                    *(_DWORD **)(*(int *)((char *)unk_5CCB70 + (unsigned int)player->game + 244 * v44) + 56),
+                    v109,
+                    v111,
+                    v113,
+                    v127,
+                    v130,
+                    v133,
+                    v116);
                 }
               }
-              if ( !_EBP->follow_state.active )
+              if ( !player->follow_state.active )
               {
-                __asm
+                if ( player->position.y < 0.49000001
+                  && player->position.y > -0.16333334
+                  && !is_open_neighbor_tile_family(v41)
+                  && v41[60] != 22 )
                 {
-                  fld     dword ptr [ebp+6Ch]
-                  fcomp   ds:flt_4973E8
+                  set_matrix_rotation_identity((TransformMatrix *)&player->_pad_00[56]);
+                  player->_pad_1e4[0] = 0;
+                  if ( player->velocity.y < -0.029999999 )
+                  {
+                    v117 = player->velocity.y - 0.029999999;
+                    start_squidge_y(&player->squidge, v117);
+                  }
+                  if ( player->velocity.y <= 0.0 )
+                  {
+                    player->position.y = 0.49000001;
+                    player->velocity.y = 0.0;
+                  }
+                  player->attachment_exit_pending = 0;
                 }
-                __asm { fnstsw  ax }
-                if ( (_AX & 0x100) != 0 )
+                v45 = v41[60];
+                if ( (!v45 || v45 == 35) && player->position.y < 0.49000001 && player->velocity.y <= 0.0 )
                 {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+6Ch]
-                    fcomp   ds:flt_4975C4
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x4100) == 0 && !is_open_neighbor_tile_family(v96) && v96[60] != 22 )
-                  {
-                    set_matrix_rotation_identity((TransformMatrix *)&_EBP->_pad_00[56]);
-                    _EBP->_pad_1e4[0] = 0;
-                    __asm
-                    {
-                      fld     dword ptr [ebp+414h]
-                      fcomp   ds:flt_4975C0
-                      fnstsw  ax
-                    }
-                    if ( (_AX & 0x100) != 0 )
-                    {
-                      __asm
-                      {
-                        fld     dword ptr [ebp+414h]
-                        fsub    ds:flt_497548
-                      }
-                      __asm { fstp    [esp+54h+var_54]; float }
-                      start_squidge_y(&_EBP->squidge, v242);
-                    }
-                    __asm
-                    {
-                      fld     dword ptr [ebp+414h]
-                      fcomp   ds:flt_497234
-                      fnstsw  ax
-                    }
-                    if ( (_AX & 0x4100) != 0 )
-                    {
-                      _EBP->position.y = 0.49000001;
-                      _EBP->velocity.y = 0.0;
-                    }
-                    _EBP->attachment_exit_pending = 0;
-                  }
+                  v46 = v41[61];
+                  v47 = player->position.z - (double)(int)(__int64)player->position.z;
+                  if ( (v46 & 2) != 0 )
+                    v48 = 0.80000001;
+                  else
+                    v48 = 1.0;
+                  v122 = 0.0;
+                  if ( (v46 & 1) != 0 )
+                    v122 = 0.2;
+                  if ( v47 < v48 && v47 > v122 && !player->attachment_exit_pending )
+                    initialize_subgoldy_fall_state((int)player);
                 }
-                v105 = v96[60];
-                if ( !v105 || v105 == 35 )
+                v49 = player->game;
+                if ( *((_DWORD *)v49 + 16) == 3 )
+                  get_track_grid_cell_at_world_position((char *)v49, &p_position->x);
+                if ( ((*((_DWORD *)player->game + 19) & 0x400) == 0 || (byte_4B2F40 & 2) != 0)
+                  && player->position.y < 0.49000001 )
                 {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+6Ch]
-                    fcomp   ds:flt_4973E8
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x100) != 0 )
-                  {
-                    __asm
-                    {
-                      fld     dword ptr [ebp+414h]
-                      fcomp   ds:flt_497234
-                      fnstsw  ax
-                    }
-                    if ( (_AX & 0x4100) != 0 )
-                    {
-                      __asm { fld     dword ptr [ebp+70h] }
-                      v247 = _ftol(v17);
-                      v108 = v96[61];
-                      __asm { fild    [esp+50h+var_40] }
-                      __asm { fsubr   dword ptr [ebp+70h] }
-                      if ( (v108 & 2) != 0 )
-                        __asm { fld     ds:flt_497250 }
-                      else
-                        __asm { fld     ds:flt_497220 }
-                      v248 = 0;
-                      if ( (v108 & 1) != 0 )
-                        v248 = 1045220557;
-                      __asm
-                      {
-                        fld     st(1)
-                        fcomp   st(1)
-                        fnstsw  ax
-                      }
-                      __asm { fstp    st }
-                      if ( (_AX & 0x100) != 0 )
-                      {
-                        __asm
-                        {
-                          fcomp   [esp+50h+var_40]
-                          fnstsw  ax
-                        }
-                        if ( (_AX & 0x4100) == 0 && !_EBP->attachment_exit_pending )
-                          initialize_subgoldy_fall_state((int)_EBP);
-                      }
-                      else
-                      {
-                        __asm { fstp    st }
-                      }
-                    }
-                  }
+                  start_squidge_y(&player->squidge, player->velocity.y);
+                  player->_pad_1e4[0] = 0;
+                  player->velocity.y = 0.0;
+                  player->attachment_exit_pending = 0;
+                  player->position.y = 0.49000001;
                 }
-                v111 = _EBP->game;
-                if ( *((_DWORD *)v111 + 16) == 3 )
-                  get_track_grid_cell_at_world_position((char *)v111, &_EBX->x);
-                if ( (*((_DWORD *)_EBP->game + 19) & 0x400) == 0 || (byte_4B2F40 & 2) != 0 )
-                {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+6Ch]
-                    fcomp   ds:flt_4973E8
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x100) != 0 )
-                  {
-                    start_squidge_y(&_EBP->squidge, _EBP->velocity.y);
-                    _EBP->_pad_1e4[0] = 0;
-                    _EBP->velocity.y = 0.0;
-                    _EBP->attachment_exit_pending = 0;
-                    _EBP->position.y = 0.49000001;
-                  }
-                }
-                __asm
-                {
-                  fld     dword ptr [ebp+6Ch]
-                  fcomp   ds:flt_4975BC
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x100) != 0 && !_EBP->_pad_74[16] )
-                  initialize_subgoldy_death(_EBP);
+                if ( player->position.y < -7.0 && !player->_pad_74[16] )
+                  initialize_subgoldy_death(player);
               }
             }
-            __asm
+            if ( player->surface_reaction_timer != 0.0 )
             {
-              fld     dword ptr [ebp+1DCh]
-              fcomp   ds:flt_497234
-              fnstsw  ax
+              v50 = player->surface_reaction_step + player->surface_reaction_timer;
+              player->surface_reaction_timer = v50;
+              if ( v50 > 1.0 )
+                player->surface_reaction_timer = 0.0;
             }
-            if ( (_AX & 0x4000) == 0 )
+            if ( player->attachment_exit_pending )
             {
-              __asm
+              player->velocity.y = *((float *)player->game + 14) * *((float *)player->game + 14) * -0.0099999998
+                                 + player->velocity.y;
+              v53 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x);
+              v54 = v53;
+              if ( v53[60] == 22
+                && *((float *)v53 + 5) + 0.49000001 > player->position.y
+                && *((float *)v53 + 5) - 0.49000001 < player->position.y )
               {
-                fld     dword ptr [ebp+1E0h]
-                fadd    dword ptr [ebp+1DCh]
-                fst     dword ptr [ebp+1DCh]
-              }
-              _EBP->surface_reaction_timer = _ET1;
-              __asm
-              {
-                fcomp   ds:flt_497220
-                fnstsw  ax
-              }
-              if ( (_AX & 0x4100) == 0 )
-                _EBP->surface_reaction_timer = 0.0;
-            }
-            if ( _EBP->attachment_exit_pending )
-            {
-              _EAX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [eax+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4975CC
-                fadd    dword ptr [ebp+414h]
-                fstp    dword ptr [ebp+414h]
-              }
-              _EBP->velocity.y = _ET1;
-              __asm { fstp    st }
-              _ESI = get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x);
-              if ( _ESI[60] == 22 )
-              {
-                __asm
-                {
-                  fld     dword ptr [esi+14h]
-                  fadd    ds:flt_4973E8
-                  fcomp   dword ptr [ebp+6Ch]
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) == 0 )
-                {
-                  __asm
-                  {
-                    fld     dword ptr [esi+14h]
-                    fsub    ds:flt_4973E8
-                    fcomp   dword ptr [ebp+6Ch]
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x100) != 0 )
-                  {
-                    start_squidge_y(&_EBP->squidge, _EBP->velocity.y);
-                    _EDX = _EBP->game;
-                    __asm
-                    {
-                      fld     dword ptr [edx+38h]
-                      fmul    ds:flt_4973D8
-                      fstp    dword ptr [ebp+414h]
-                    }
-                    _EBP->velocity.y = _ET1;
-                    __asm
-                    {
-                      fld     dword ptr [esi+14h]
-                      fadd    ds:flt_4973E8
-                      fstp    dword ptr [ebp+6Ch]
-                    }
-                    _EBP->position.y = _ET1;
-                    _EBP->attachment_exit_pending = 0;
-                    _EBP->_pad_1e4[0] = 1;
-                    play_sound_effect(41);
-                  }
-                }
+                start_squidge_y(&player->squidge, player->velocity.y);
+                player->velocity.y = *((float *)player->game + 14) * 0.30000001;
+                player->position.y = *((float *)v54 + 5) + 0.49000001;
+                player->attachment_exit_pending = 0;
+                player->_pad_1e4[0] = 1;
+                play_sound_effect(41);
               }
             }
             else
             {
-              v17 = sample_track_floor_height_at_position((char *)_EBP->game, &_EBX->x);
-              __asm
+              v51 = sample_track_floor_height_at_position((char *)player->game, &p_position->x) + 0.49000001;
+              if ( v51 <= player->position.y )
               {
-                fadd    ds:flt_4973E8
-                fcom    dword ptr [ebp+6Ch]
-                fnstsw  ax
-              }
-              if ( (_AX & 0x4100) != 0 )
-              {
-                _EDX = _EBP->game;
-                __asm
-                {
-                  fstp    st
-                  fld     dword ptr [edx+38h]
-                  fld     st
-                  fmul    st, st(1)
-                  fmul    ds:flt_4975CC
-                  fadd    dword ptr [ebp+414h]
-                  fstp    dword ptr [ebp+414h]
-                }
-                _EBP->velocity.y = _ET1;
-                __asm { fstp    st }
+                v52 = *((float *)player->game + 14);
+                player->velocity.y = v52 * v52 * -0.0099999998 + player->velocity.y;
               }
               else
               {
-                __asm
+                if ( player->velocity.y <= 0.0 )
+                  player->position.y = v51;
+                if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
+                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 9
+                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
+                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11
+                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 12
+                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 13 )
                 {
-                  fld     dword ptr [ebp+414h]
-                  fcomp   ds:flt_497234
-                  fnstsw  ax
+                  player->velocity.y = *((float *)player->game + 14) * 0.30000001;
                 }
-                if ( (_AX & 0x4100) != 0 )
+                else if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
+                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 3
+                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 4
+                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
+                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 6
+                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 7 )
                 {
-                  __asm { fstp    dword ptr [ebp+6Ch] }
-                  _EBP->position.y = _ET1;
-                }
-                else
-                {
-                  __asm { fstp    st }
-                }
-                if ( get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 8
-                  || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 9
-                  || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 10
-                  || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 11
-                  || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 12
-                  || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 13 )
-                {
-                  _ECX = _EBP->game;
-                  __asm
+                  if ( player->surface_reaction_timer == 0.0 )
+                    player->surface_reaction_timer = player->surface_reaction_step;
+                  player->velocity.y = *((float *)player->game + 14) * 0.2;
+                  if ( !player->control_override_active )
                   {
-                    fld     dword ptr [ecx+38h]
-                    fmul    ds:flt_4973D8
-                    fstp    dword ptr [ebp+414h]
-                  }
-                  _EBP->velocity.y = _ET1;
-                }
-                else if ( get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 2
-                       || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 3
-                       || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 4
-                       || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 5
-                       || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 6
-                       || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 7 )
-                {
-                  __asm
-                  {
-                    fld     dword ptr [ebp+1DCh]
-                    fcomp   ds:flt_497234
-                    fnstsw  ax
-                  }
-                  if ( (_AX & 0x4000) != 0 )
-                    _EBP->surface_reaction_timer = _EBP->surface_reaction_step;
-                  _EAX = _EBP->game;
-                  __asm
-                  {
-                    fld     dword ptr [eax+38h]
-                    fmul    ds:flt_497270
-                    fstp    dword ptr [ebp+414h]
-                  }
-                  _EBP->velocity.y = _ET1;
-                  if ( !_EBP->control_override_active )
-                  {
-                    __asm
-                    {
-                      fld     dword ptr [ebx]
-                      fcomp   ds:flt_497234
-                    }
-                    __asm { fnstsw  ax }
-                    if ( (_AX & 0x4100) != 0 )
-                      dispatch_cutscene_animation((int)_EBP->_pad_2984, 3, 1, -1);
+                    if ( p_position->x <= 0.0 )
+                      dispatch_cutscene_animation((int)player->_pad_2984, 3, 1, -1);
                     else
-                      dispatch_cutscene_animation((int)_EBP->_pad_2984, 4, 1, -1);
-                    dispatch_cutscene_animation((int)_EBP->_pad_2984, 1, 0, -1);
+                      dispatch_cutscene_animation((int)player->_pad_2984, 4, 1, -1);
+                    dispatch_cutscene_animation((int)player->_pad_2984, 1, 0, -1);
                   }
                 }
-                else if ( get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60]
-                       && get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] != 35
-                       && get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] != 22 )
+                else if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60]
+                       && get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] != 35
+                       && get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] != 22 )
                 {
-                  _EBP->_pad_1e4[0] = 0;
-                  _EBP->velocity.y = 0.0;
+                  player->_pad_1e4[0] = 0;
+                  player->velocity.y = 0.0;
                 }
               }
-              __asm
-              {
-                fld     dword ptr [ebp+6Ch]
-                fcomp   ds:flt_497234
-                fnstsw  ax
-              }
-              if ( (_AX & 0x100) != 0 )
-              {
-                __asm
-                {
-                  fld     dword ptr [ebp+414h]
-                  fcomp   ds:flt_497234
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) != 0 )
-LABEL_99:
-                  initialize_subgoldy_fall_state((int)_EBP);
-              }
+              if ( player->position.y < 0.0 && player->velocity.y <= 0.0 )
+LABEL_98:
+                initialize_subgoldy_fall_state((int)player);
             }
           }
-          update_warning((float *)&_EBP->_pad_3f0[4]);
-          if ( _EBP->_pad_41c[0] )
-            goto LABEL_218;
-          if ( _EBP->follow_state.active )
-            goto LABEL_218;
-          __asm
+          update_warning((float *)&player->_pad_3f0[4]);
+          if ( player->_pad_41c[0]
+            || player->follow_state.active
+            || (v55 = p_position->y,
+                v134 = p_position->z + 0.49000001,
+                v135 = p_position->x,
+                v137 = v134,
+                v56 = (char *)player->game,
+                v136 = v55,
+                get_track_grid_cell_at_world_position(v56, &v135)[60] != 14)
+            || player->position.y >= 6.5 )
           {
-            fld     dword ptr [ebx+8]
-            fadd    ds:flt_4973E8
-          }
-          v138 = _EBX->y;
-          __asm { fstp    [esp+50h+var_34] }
-          v262 = _EBX->x;
-          v264 = v261;
-          v139 = (char *)_EBP->game;
-          v263 = v138;
-          if ( get_track_grid_cell_at_world_position(v139, &v262)[60] != 14 )
-            goto LABEL_218;
-          __asm
-          {
-            fld     dword ptr [ebp+6Ch]
-            fcomp   ds:flt_4975B8
-            fnstsw  ax
-          }
-          if ( (_AX & 0x100) == 0 )
-          {
-LABEL_218:
-            *(_DWORD *)&_EBP->_pad_30c[28] = 0;
+            *(_DWORD *)&player->_pad_30c[28] = 0;
           }
           else
           {
-            _EBP->velocity.z = 0.0;
-            __asm
-            {
-              fld     dword ptr [ebp+70h]
-              fadd    ds:flt_4973E8
-            }
-            v249 = _ftol(v17);
-            __asm
-            {
-              fild    [esp+50h+var_40]
-              fsub    ds:flt_497228
-              fstp    dword ptr [ebp+70h]
-            }
-            _EBP->position.z = _ET1;
-            __asm
-            {
-              fld     dword ptr [ebp+4350h]
-              fcomp   ds:flt_497234
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4000) != 0 )
+            player->velocity.z = 0.0;
+            player->position.z = (double)(int)(__int64)(player->position.z + 0.49000001) - 0.5;
+            if ( player->squidge.z_output == 0.0 )
               play_sound_effect(47);
-            start_squidge_z(&_EBP->squidge, -0.33000001);
-            __asm
+            start_squidge_z(&player->squidge, -0.33000001);
+            v57 = *(float *)&player->_pad_30c[32] + *(float *)&player->_pad_30c[28];
+            *(float *)&player->_pad_30c[28] = v57;
+            if ( v57 > 1.0 )
             {
-              fld     dword ptr [ebp+32Ch]
-              fadd    dword ptr [ebp+328h]
-              fst     dword ptr [ebp+328h]
-            }
-            *(float *)&_EBP->_pad_30c[28] = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              *(_DWORD *)&_EBP->_pad_30c[28] = 0;
-              if ( !_EBP->attachment_exit_pending )
-                initialize_subgoldy_fall_state((int)_EBP);
+              *(_DWORD *)&player->_pad_30c[28] = 0;
+              if ( !player->attachment_exit_pending )
+                initialize_subgoldy_fall_state((int)player);
             }
           }
-          if ( !*(_DWORD *)&_EBP->_pad_340[16]
-            && (get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 2
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 4
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 5
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 7
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 10
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 8
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 10
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 11
-             || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 13)
-            && !_EBP->attachment_exit_pending )
+          if ( !*(_DWORD *)&player->_pad_340[16]
+            && (get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 4
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 7
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11
+             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 13)
+            && !player->attachment_exit_pending
+            && player->position.y <= 0.98000002 )
           {
-            __asm
+            *(float *)&player->_pad_340[28] = *((float *)player->game + 14) * 0.037037037;
+            if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
+              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
+              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
+              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11 )
             {
-              fld     dword ptr [ebp+6Ch]
-              fcomp   ds:flt_49756C
-              fnstsw  ax
+              *(_DWORD *)&player->_pad_340[16] = 1;
+              *(_DWORD *)&player->_pad_340[20] = 1065353216;
             }
-            if ( (_AX & 0x4100) != 0 )
+            else
             {
-              _EAX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [eax+38h]
-                fmul    ds:flt_4975B4
-                fstp    dword ptr [ebp+35Ch]
-              }
-              *(float *)&_EBP->_pad_340[28] = _ET1;
-              if ( get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 2
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 5
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 8
-                || get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] == 11 )
-              {
-                *(_DWORD *)&_EBP->_pad_340[16] = 1;
-                *(_DWORD *)&_EBP->_pad_340[20] = 1065353216;
-              }
-              else
-              {
-                *(_DWORD *)&_EBP->_pad_340[16] = 2;
-                *(_DWORD *)&_EBP->_pad_340[20] = -1082130432;
-              }
+              *(_DWORD *)&player->_pad_340[16] = 2;
+              *(_DWORD *)&player->_pad_340[20] = -1082130432;
             }
           }
-          __asm
+          if ( player->damage_retrigger_timer != 0.0 )
           {
-            fld     dword ptr [ebp+1D4h]
-            fcomp   ds:flt_497234
-            fnstsw  ax
+            v58 = player->damage_retrigger_step + player->damage_retrigger_timer;
+            player->damage_retrigger_timer = v58;
+            if ( v58 > 1.0 )
+              player->damage_retrigger_timer = 0.0;
           }
-          if ( (_AX & 0x4000) == 0 )
+          v59 = player->game;
+          v123 = (float)*((int *)v59 + 22);
+          if ( player->position.z < (double)v123 || player->attachment_exit_pending )
           {
-            __asm
+            if ( !player->_pad_41c[0] && !player->control_override_active )
             {
-              fld     dword ptr [ebp+1D8h]
-              fadd    dword ptr [ebp+1D4h]
-              fst     dword ptr [ebp+1D4h]
-            }
-            _EBP->damage_retrigger_timer = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-              _EBP->damage_retrigger_timer = 0.0;
-          }
-          _ECX = _EBP->game;
-          __asm
-          {
-            fild    dword ptr [ecx+58h]
-            fstp    [esp+50h+var_40]
-            fld     dword ptr [ebp+70h]
-            fcomp   [esp+50h+var_40]
-            fnstsw  ax
-          }
-          if ( (_AX & 0x100) != 0 || _EBP->attachment_exit_pending )
-          {
-            if ( !_EBP->_pad_41c[0] && !_EBP->control_override_active )
-            {
-              __asm
+              v73 = *((float *)v59 + 14) * 0.17;
+              if ( player->velocity.z >= v73 )
               {
-                fld     dword ptr [ecx+38h]
-                fmul    ds:flt_4975B0
-                fld     dword ptr [ebp+418h]
-                fcomp   st(1)
-                fnstsw  ax
+                v73 = *((float *)v59 + 14) * 0.5;
+                if ( player->velocity.z <= v73 )
+                  v73 = player->velocity.z;
               }
-              if ( (_AX & 0x100) == 0 )
-              {
-                __asm
-                {
-                  fstp    st
-                  fld     dword ptr [ecx+38h]
-                  fmul    ds:flt_497228
-                  fld     dword ptr [ebp+418h]
-                  fcomp   st(1)
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) != 0 )
-                {
-                  __asm
-                  {
-                    fstp    st
-                    fld     dword ptr [ebp+418h]
-                  }
-                }
-              }
-              __asm { fstp    dword ptr [ebp+418h] }
-              _EBP->velocity.z = _ET1;
+              player->velocity.z = v73;
             }
           }
           else
           {
-            if ( !LOBYTE(_EBP->completion_handoff_active) )
+            if ( !LOBYTE(player->completion_handoff_active) )
             {
-              if ( *((_DWORD *)_ECX + 16) == 4 )
+              if ( *((_DWORD *)v59 + 16) == 4 )
               {
-                __asm
-                {
-                  fld     dword ptr [ebp+70h]
-                  fsub    [esp+50h+var_40]
-                }
-                __asm
-                {
-                  fdiv    dword ptr [ebp+418h]
-                  fsubr   ds:flt_497220
-                  fmul    ds:flt_4972C8
-                  fstp    [esp+54h+var_54]; float
-                }
-                advance_timer_counters((float *)&_EBP->_pad_2e4[4], v243);
+                v118 = (1.0 - (player->position.z - v123) / player->velocity.z) * 0.016666668;
+                advance_timer_counters((float *)&player->_pad_2e4[4], v118);
               }
-              _ECX = _EBP->game;
-              _EBP->completion_handoff_timer = 0.0;
-              _EBP->completion_handoff_timer_step = 0.016666668;
-              _EBP->completion_handoff_voice_gate = 0;
-              __asm
+              v60 = player->game;
+              player->completion_handoff_timer = 0.0;
+              player->completion_handoff_timer_step = 0.016666668;
+              player->completion_handoff_voice_gate = 0;
+              v61 = *((float *)v60 + 14) * 0.17;
+              if ( player->velocity.z >= v61 )
               {
-                fld     dword ptr [ecx+38h]
-                fmul    ds:flt_4975B0
-                fld     dword ptr [ebp+418h]
-                fcomp   st(1)
-                fnstsw  ax
+                v61 = *((float *)v60 + 14) * 0.5;
+                if ( player->velocity.z <= v61 )
+                  v61 = player->velocity.z;
               }
-              if ( (_AX & 0x100) == 0 )
-              {
-                __asm
-                {
-                  fstp    st
-                  fld     dword ptr [ecx+38h]
-                  fmul    ds:flt_497228
-                  fld     dword ptr [ebp+418h]
-                  fcomp   st(1)
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) != 0 )
-                {
-                  __asm
-                  {
-                    fstp    st
-                    fld     dword ptr [ebp+418h]
-                  }
-                }
-              }
-              __asm { fstp    dword ptr [ebp+418h] }
-              _EBP->velocity.z = _ET1;
+              player->velocity.z = v61;
               reset_voice_manager(unk_751498);
-              end_jetpack_hover(&_EBP->jetpack_gauge.progress);
-              *(_DWORD *)&_EBP->_pad_29ac[6460] = 5;
+              end_jetpack_hover(&player->jetpack_gauge.progress);
+              *(_DWORD *)&player->_pad_29ac[6460] = 5;
               play_sound_effect(0);
-              _EBP->_pad_41c[0] = 0;
+              player->_pad_41c[0] = 0;
             }
-            LOBYTE(_EBP->completion_handoff_active) = 1;
-            _ECX = _EBP->game;
-            __asm
+            LOBYTE(player->completion_handoff_active) = 1;
+            v62 = player->game;
+            if ( (double)*((int *)v62 + 22) + 2.5 < player->position.z )
             {
-              fild    dword ptr [ecx+58h]
-              fadd    ds:flt_4973CC
-              fcomp   dword ptr [ebp+70h]
-              fnstsw  ax
+              v63 = player->velocity.z
+                  - (*((float *)v62 + 14) * *((float *)v62 + 14) * 0.0040000002
+                   + *((float *)v62 + 14) * *((float *)v62 + 14) * 0.0040000002);
+              player->velocity.z = v63;
+              if ( v63 < 0.0 )
+                player->velocity.z = 0.0;
             }
-            if ( (_AX & 0x100) != 0 )
+            v64 = *(float *)&player->_pad_2744[4] + *(float *)player->_pad_2744;
+            *(float *)player->_pad_2744 = v64;
+            if ( v64 > 1.0 )
+              *(_DWORD *)player->_pad_2744 = 0;
+            v65 = player->game;
+            player->completion_handoff_timer = player->completion_handoff_timer + player->completion_handoff_timer_step;
+            *((_DWORD *)v65 + 4834290) = 2;
+            if ( player->completion_handoff_timer > 2.0 && !player->completion_handoff_voice_gate )
             {
-              __asm
-              {
-                fld     dword ptr [ecx+38h]
-                fld     st
-                fmulp   st(1), st
-                fmul    ds:flt_4973BC
-                fadd    st, st
-                fsubr   dword ptr [ebp+418h]
-                fst     dword ptr [ebp+418h]
-              }
-              _EBP->velocity.z = _ET1;
-              __asm
-              {
-                fcomp   ds:flt_497234
-                fnstsw  ax
-              }
-              if ( (_AX & 0x100) != 0 )
-                _EBP->velocity.z = 0.0;
-            }
-            __asm
-            {
-              fld     dword ptr [ebp+2748h]
-              fadd    dword ptr [ebp+2744h]
-              fst     dword ptr [ebp+2744h]
-            }
-            *(float *)_EBP->_pad_2744 = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-              *(_DWORD *)_EBP->_pad_2744 = 0;
-            __asm
-            {
-              fld     dword ptr [ebp+444h]
-              fadd    dword ptr [ebp+448h]
-            }
-            v163 = _EBP->game;
-            __asm { fstp    dword ptr [ebp+444h] }
-            _EBP->completion_handoff_timer = _ET1;
-            *((_DWORD *)v163 + 4834290) = 2;
-            __asm
-            {
-              fld     dword ptr [ebp+444h]
-              fcomp   ds:flt_4974A4
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 && !_EBP->completion_handoff_voice_gate )
-            {
-              _EBP->completion_handoff_voice_gate = 1;
+              player->completion_handoff_voice_gate = 1;
               play_voice_manager((int)unk_751498, 8, 2u, -1);
             }
-            __asm
+            if ( player->completion_handoff_timer > 2.0 )
             {
-              fld     dword ptr [ebp+444h]
-              fcomp   ds:flt_4974A4
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              v167 = _EBP->game;
-              if ( *((_DWORD *)v167 + 16) <= 1u )
+              v66 = player->game;
+              if ( *((_DWORD *)v66 + 16) <= 1u )
               {
-                if ( *((_BYTE *)v167 + 19343344) == 1 && (_EBP->control_source->control_flags_a & 0x4000) != 0 )
-                  _EBP->completion_handoff_timer = 5.0999999;
-                if ( *((_DWORD *)v167 + 4835835) == 5 )
-                  _EBP->completion_handoff_timer = 5.0999999;
+                if ( *((_BYTE *)v66 + 19343344) == 1 && (player->control_source->control_flags_a & 0x4000) != 0 )
+                  player->completion_handoff_timer = 5.0999999;
+                if ( *((_DWORD *)v66 + 4835835) == 5 )
+                  player->completion_handoff_timer = 5.0999999;
               }
             }
-            __asm
+            if ( player->completion_handoff_timer > 5.0 )
             {
-              fld     dword ptr [ebp+444h]
-              fcomp   ds:flt_497288
-              fnstsw  ax
+              v67 = player->game;
+              if ( *((_DWORD *)v67 + 16) <= 1u && *((_DWORD *)v67 + 4835835) != 5 )
+                player->completion_handoff_timer = player->completion_handoff_timer
+                                                 - player->completion_handoff_timer_step;
             }
-            if ( (_AX & 0x4100) == 0 )
+            if ( player->completion_handoff_timer > 5.0 )
             {
-              v169 = _EBP->game;
-              if ( *((_DWORD *)v169 + 16) <= 1u && *((_DWORD *)v169 + 4835835) != 5 )
-              {
-                __asm
-                {
-                  fld     dword ptr [ebp+444h]
-                  fsub    dword ptr [ebp+448h]
-                  fstp    dword ptr [ebp+444h]
-                }
-                _EBP->completion_handoff_timer = _ET1;
-              }
-            }
-            __asm
-            {
-              fld     dword ptr [ebp+444h]
-              fcomp   ds:flt_497288
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              v172 = *((_DWORD *)MEMORY[0x4DF904] + 9);
-              if ( !v172 )
+              v68 = *((_DWORD *)MEMORY[0x4DF904] + 9);
+              if ( !v68 )
               {
                 begin_frontend_fade_out((_DWORD *)MEMORY[0x4DF904] + 9, 0);
-                goto LABEL_290;
+                goto LABEL_287;
               }
-              if ( v172 == 4 )
+              if ( v68 == 4 )
               {
-                v173 = _EBP->game;
-                if ( *((_DWORD *)v173 + 4835835) )
-                  flush_row_event_display((_DWORD *)v173 + 4835830);
-                v174 = (int)_EBP->game;
-                if ( *(_DWORD *)(v174 + 64) )
+                v69 = player->game;
+                if ( *((_DWORD *)v69 + 4835835) )
+                  flush_row_event_display((_DWORD *)v69 + 4835830);
+                v70 = player->game;
+                if ( *((_DWORD *)v70 + 16) )
                 {
-                  complete_subgame(v174, 1);
+                  complete_subgame((int)v70, 1);
                 }
                 else
                 {
-                  if ( *(_DWORD *)(v174 + 68) == *((_DWORD *)MEMORY[0x4DF904] + 4936081) - 1 )
+                  if ( *((_DWORD *)v70 + 17) == *((_DWORD *)MEMORY[0x4DF904] + 4936081) - 1 )
                   {
-                    complete_subgame(v174, 1);
+                    complete_subgame((int)v70, 1);
                     *((_DWORD *)MEMORY[0x4DF904] + 111) = 29;
                     *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
                     return result;
                   }
-                  complete_subgame(v174, 0);
-                  result = (int32_t)_EBP->game;
+                  complete_subgame((int)v70, 0);
+                  result = (int32_t)player->game;
                   *(_DWORD *)(result + 19337160) = 1;
                 }
-                v175 = _EBP->game;
-                if ( *((_DWORD *)v175 + 16) == 7 )
+                v71 = player->game;
+                if ( *((_DWORD *)v71 + 16) == 7 )
                 {
                   *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
                   *((_DWORD *)MEMORY[0x4DF904] + 111) = 2;
                 }
                 else
                 {
-                  v176 = *((_BYTE *)v175 + 16721361) == 0;
+                  v72 = *((_BYTE *)v71 + 16721361) == 0;
                   result = (int32_t)MEMORY[0x4DF904];
                   *((_DWORD *)MEMORY[0x4DF904] + 111) = *((_DWORD *)MEMORY[0x4DF904] + 110);
-                  if ( v176 )
+                  if ( v72 )
                     *((_DWORD *)MEMORY[0x4DF904] + 110) = 27;
                   else
                     *((_DWORD *)MEMORY[0x4DF904] + 110) = 26;
@@ -1424,700 +768,357 @@ LABEL_218:
               }
             }
           }
-LABEL_290:
-          v269 = _EBX->x;
-          v270 = _EBX->y;
-          v271 = _EBX->z;
-          if ( _EBP->follow_state.active == 1 )
+LABEL_287:
+          v142 = p_position->x;
+          v143 = p_position->y;
+          v144 = p_position->z;
+          if ( player->follow_state.active == 1 )
           {
-            _EBX->x = _EBP->follow_state.output_position.x;
-            _EBX->y = _EBP->follow_state.output_position.y;
-            _EBX->z = _EBP->follow_state.output_position.z;
+            p_position->x = player->follow_state.output_position.x;
+            p_position->y = player->follow_state.output_position.y;
+            p_position->z = player->follow_state.output_position.z;
           }
-          update_jetpack_gauge((int)&_EBP->jetpack_gauge);
-          if ( LOBYTE(_EBP->completion_handoff_active) )
+          update_jetpack_gauge((int)&player->jetpack_gauge);
+          if ( LOBYTE(player->completion_handoff_active) )
           {
             qmemcpy((char *)MEMORY[0x4DF904] + 716, (char *)MEMORY[0x4DF904] + 348, 0x40u);
-            _EAX = (float *)MEMORY[0x4DF904];
-            __asm
-            {
-              fld     dword ptr [eax+300h]
-              fsub    ds:flt_497220
-              fstp    dword ptr [eax+300h]
-            }
-            _EAX[192] = _ET1;
+            *((float *)MEMORY[0x4DF904] + 192) = *((float *)MEMORY[0x4DF904] + 192) - 1.0;
           }
-          update_damage_gauge((int)&_EBP->damage_gauge);
+          update_damage_gauge((int)&player->damage_gauge);
           update_progress_bar();
-          __asm { fld     dword ptr [ebp+276Ch] }
-          _ECX = &_EBP->cached_camera_target_world.x;
-          __asm { fld     st }
-          _EBP->cached_camera_target_world.x = _EBX->x;
-          v183 = _EBX->z;
-          _EBP->cached_camera_target_world.y = _EBX->y;
-          _EBP->cached_camera_target_world.z = v183;
-          __asm
-          {
-            fmul    dword ptr [ebp+58h]
-            fstp    [esp+50h+var_18]
-            fld     st
-            fmul    dword ptr [ebp+5Ch]
-            fstp    [esp+50h+var_14]
-            fmul    dword ptr [ebp+60h]
-            fld     dword ptr [ebp+2768h]
-            fld     st
-            fmul    dword ptr [ebp+48h]
-            fstp    [esp+50h+var_3C]
-            fld     st
-            fmul    dword ptr [ebp+4Ch]
-            fstp    [esp+50h+var_38]
-            fmul    dword ptr [ebp+50h]
-            fld     dword ptr [ebp+2764h]
-            fld     st
-            fmul    dword ptr [ebp+38h]
-            fstp    [esp+50h+var_30]
-            fld     st
-            fmul    dword ptr [ebp+3Ch]
-            fstp    [esp+50h+var_2C]
-            fmul    dword ptr [ebp+40h]
-            fld     [esp+50h+var_30]
-            fadd    [esp+50h+var_3C]
-            fstp    [esp+50h+var_24]
-            fld     [esp+50h+var_2C]
-            fadd    [esp+50h+var_38]
-            fstp    [esp+50h+var_20]
-            faddp   st(1), st
-            fld     [esp+50h+var_24]
-            fadd    [esp+50h+var_18]
-            fstp    [esp+50h+var_30]
-            fld     [esp+50h+var_20]
-            fadd    [esp+50h+var_14]
-            fstp    [esp+50h+var_2C]
-            faddp   st(1), st
-            fld     [esp+50h+var_30]
-            fadd    dword ptr [eax]
-            fstp    dword ptr [eax]
-          }
-          *_ECX = _ET1;
-          __asm
-          {
-            fld     [esp+50h+var_2C]
-            fadd    dword ptr [eax+4]
-            fstp    dword ptr [eax+4]
-          }
-          _ECX[1] = _ET1;
-          __asm
-          {
-            fadd    dword ptr [eax+8]
-            fstp    dword ptr [eax+8]
-          }
-          _ECX[2] = _ET1;
-          skin_hold_ticks = _EBP->damage_gauge.skin_hold_ticks;
+          wobble_alpha = player->jetpack_gauge.wobble_alpha;
+          player->cached_camera_target_world.x = p_position->x;
+          v75 = p_position->z;
+          player->cached_camera_target_world.y = p_position->y;
+          player->cached_camera_target_world.z = v75;
+          v140 = wobble_alpha * *(float *)&player->_pad_00[88];
+          v141 = wobble_alpha * *(float *)&player->_pad_00[92];
+          v76 = wobble_alpha * *(float *)&player->_pad_00[96];
+          wobble_y = player->jetpack_gauge.wobble_y;
+          v128 = wobble_y * *(float *)&player->_pad_00[72];
+          v131 = wobble_y * *(float *)&player->_pad_00[76];
+          v78 = wobble_y * *(float *)&player->_pad_00[80];
+          wobble_x = player->jetpack_gauge.wobble_x;
+          v135 = wobble_x * *(float *)&player->_pad_00[56];
+          v136 = wobble_x * *(float *)&player->_pad_00[60];
+          v80 = wobble_x * *(float *)&player->_pad_00[64];
+          v138 = v135 + v128;
+          v139 = v136 + v131;
+          v135 = v138 + v140;
+          v136 = v139 + v141;
+          player->cached_camera_target_world.x = v135 + player->cached_camera_target_world.x;
+          player->cached_camera_target_world.y = v136 + player->cached_camera_target_world.y;
+          player->cached_camera_target_world.z = v76 + v78 + v80 + player->cached_camera_target_world.z;
+          skin_hold_ticks = player->damage_gauge.skin_hold_ticks;
           if ( skin_hold_ticks > 0 )
-            _EBP->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
-          if ( _EBP->follow_state.active == 1 )
-            _EBX->x = v269;
-          _ECX = _EBP->game;
-          __asm
+            player->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
+          if ( player->follow_state.active == 1 )
+            p_position->x = v142;
+          v82 = *((float *)player->game + 14) * 0.037037037;
+          *(float *)&player->_pad_340[28] = v82;
+          if ( *(_DWORD *)&player->_pad_340[16] )
           {
-            fld     dword ptr [ecx+38h]
-            fmul    ds:flt_4975B4
-            fst     dword ptr [ebp+35Ch]
-          }
-          *(float *)&_EBP->_pad_340[28] = _ET1;
-          if ( *(_DWORD *)&_EBP->_pad_340[16] )
-          {
-            __asm
+            v83 = v82 + *(float *)&player->_pad_340[24];
+            *(float *)&player->_pad_340[24] = v83;
+            if ( v83 > 1.0 )
             {
-              fadd    dword ptr [ebp+358h]
-              fst     dword ptr [ebp+358h]
-            }
-            *(float *)&_EBP->_pad_340[24] = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              *(_DWORD *)&_EBP->_pad_340[24] = 0;
-              *(_DWORD *)&_EBP->_pad_340[16] = 0;
+              *(_DWORD *)&player->_pad_340[24] = 0;
+              *(_DWORD *)&player->_pad_340[16] = 0;
             }
           }
-          else
+          if ( *(_DWORD *)&player->_pad_340[32] )
           {
-            __asm { fstp    st }
-          }
-          if ( *(_DWORD *)&_EBP->_pad_340[32] )
-          {
-            __asm
+            v84 = *(float *)&player->_pad_340[44] + *(float *)&player->_pad_340[40];
+            *(float *)&player->_pad_340[40] = v84;
+            if ( v84 > 1.0 )
             {
-              fld     dword ptr [ebp+36Ch]
-              fadd    dword ptr [ebp+368h]
-              fst     dword ptr [ebp+368h]
-            }
-            *(float *)&_EBP->_pad_340[40] = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              *(_DWORD *)&_EBP->_pad_340[40] = 0;
-              *(_DWORD *)&_EBP->_pad_340[32] = 0;
+              *(_DWORD *)&player->_pad_340[40] = 0;
+              *(_DWORD *)&player->_pad_340[32] = 0;
             }
           }
-          _EDX = _EBP->game;
-          __asm
+          v85 = *((float *)player->game + 14) * 0.022222223;
+          *(float *)&player->_pad_340[56] = v85;
+          if ( *(float *)&player->_pad_340[52] > 0.0 )
           {
-            fld     dword ptr [edx+38h]
-            fmul    ds:flt_4975AC
-            fst     dword ptr [ebp+378h]
-          }
-          *(float *)&_EBP->_pad_340[56] = _ET1;
-          __asm
-          {
-            fld     dword ptr [ebp+374h]
-            fcomp   ds:flt_497234
-            fnstsw  ax
-          }
-          if ( (_AX & 0x4100) != 0 )
-          {
-            __asm { fstp    st }
-          }
-          else
-          {
-            __asm
+            v86 = v85 + *(float *)&player->_pad_340[52];
+            *(float *)&player->_pad_340[52] = v86;
+            if ( v86 <= 1.0 )
             {
-              fadd    dword ptr [ebp+374h]
-              fst     dword ptr [ebp+374h]
-            }
-            *(float *)&_EBP->_pad_340[52] = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) != 0 )
-            {
-              update_nuke(&_EBP->nuke);
+              update_nuke(&player->nuke);
             }
             else
             {
-              *(_DWORD *)&_EBP->_pad_340[52] = 0;
-              uninit_nuke(&_EBP->nuke);
+              *(_DWORD *)&player->_pad_340[52] = 0;
+              uninit_nuke(&player->nuke);
             }
           }
-          v199 = _EBP->game;
-          if ( *((_DWORD *)v199 + 16) == 4 )
+          v87 = player->game;
+          if ( *((_DWORD *)v87 + 16) == 4 )
           {
-            v200 = (char *)v199 + 129728 * *((_DWORD *)v199 + 17);
-            if ( *((_DWORD *)v200 + 2429012) == 1 && !*((_BYTE *)v199 + 16721360) )
+            v88 = (char *)v87 + 129728 * *((_DWORD *)v87 + 17);
+            if ( *((_DWORD *)v88 + 2429012) == 1 && !*((_BYTE *)v87 + 16721360) )
             {
-              v201 = *((_DWORD *)v199 + 4180343);
-              if ( v201 >= *((_DWORD *)v200 + 2429039) )
-                v201 = *((_DWORD *)v200 + 2429039);
-              v202 = *(_DWORD *)&_EBP->_pad_2e4[32];
-              if ( v202 && (v203 = *((_DWORD *)v200 + 2429021) - v202 + v201) != 0 )
+              v89 = *((_DWORD *)v87 + 4180343);
+              if ( v89 >= *((_DWORD *)v88 + 2429039) )
+                v89 = *((_DWORD *)v88 + 2429039);
+              v90 = *(_DWORD *)&player->_pad_2e4[32];
+              if ( v90 && (v91 = *((_DWORD *)v88 + 2429021) - v90 + v89) != 0 )
+                v92 = convert_math_type16_to_32(*(_WORD *)&v88[6 * v91 + 9716162], 32.0) + flt_643190;
+              else
+                v92 = convert_math_type16_to_32(*((_WORD *)v88 + 4858081), 32.0);
+              flt_643190 = v92;
+              if ( *((_BYTE *)player->game + 16721360) )
+                flt_643190 = player->position.z;
+              v93 = player->position.z + 20.0;
+              if ( flt_643190 >= v93 )
               {
-                convert_math_type16_to_32(*(_WORD *)&v200[6 * v203 + 9716162], 32.0);
-                __asm { fadd    flt_643190 }
+                *(float *)&v124 = v93;
+                mark_current_track_pair_with_payload(player, v124);
               }
               else
               {
-                convert_math_type16_to_32(*((_WORD *)v200 + 4858081), 32.0);
-              }
-              __asm { fstp    flt_643190 }
-              if ( *((_BYTE *)_EBP->game + 16721360) )
-                flt_643190 = _EBP->position.z;
-              __asm
-              {
-                fld     dword ptr [ebp+70h]
-                fadd    ds:flt_497448
-                fld     flt_643190
-                fcomp   st(1)
-                fnstsw  ax
-              }
-              if ( (_AX & 0x100) != 0 )
-              {
-                __asm { fstp    st }
-                mark_current_track_pair_with_payload(_EBP, SLODWORD(flt_643190));
-              }
-              else
-              {
-                __asm { fstp    [esp+50h+var_40] }
-                mark_current_track_pair_with_payload(_EBP, v251);
+                mark_current_track_pair_with_payload(player, SLODWORD(flt_643190));
               }
             }
           }
-          _EDX = _EBP->game;
-          __asm { fild    dword ptr [edx+54h] }
-          __asm
-          {
-            fdivr   dword ptr [ebp+70h]
-            fstp    [esp+54h+var_54]
-          }
-          set_backdrop_progress_fraction((_DWORD *)MEMORY[0x4DF904] + 80644, v244);
-          _ECX = _EBP->game;
-          __asm
-          {
-            fild    dword ptr [ecx+58h]
-            fsub    ds:flt_4972C0
-            fld     dword ptr [ebp+70h]
-            fsub    ds:flt_49720C
-            fstp    [esp+50h+var_40]
-            fcom    [esp+50h+var_40]
-            fnstsw  ax
-          }
-          if ( (_AX & 0x100) == 0 )
-          {
-            __asm
-            {
-              fstp    st
-              fld     [esp+50h+var_40]
-            }
-          }
-          state = _EBP->jetpack_gauge.state;
-          __asm { fstp    dword ptr [ebp+2980h] }
-          _EBP->interaction_max_z = _ET1;
+          *(float *)&v119 = player->position.z / (double)*((int *)player->game + 21);
+          set_backdrop_progress_fraction((_DWORD *)MEMORY[0x4DF904] + 80644, v119);
+          v94 = (double)*((int *)player->game + 22) - 30.0;
+          v125 = player->position.z - 8.0;
+          if ( v94 >= v125 )
+            v94 = v125;
+          state = player->jetpack_gauge.state;
+          player->interaction_max_z = v94;
           if ( state == 1 )
           {
-            __asm
+            if ( player->position.y < 1.0 )
             {
-              fld     dword ptr [ebp+6Ch]
-              fcomp   ds:flt_497220
-              fnstsw  ax
+              v96 = player->velocity.y * 0.89999998;
+              player->velocity.y = v96;
+              v97 = *((float *)player->game + 14);
+              player->velocity.y = v96 - v97 * v97 * -0.0099999998;
             }
-            if ( (_AX & 0x100) != 0 )
-            {
-              __asm
-              {
-                fld     dword ptr [ebp+414h]
-                fmul    ds:flt_49726C
-                fst     dword ptr [ebp+414h]
-              }
-              _EBP->velocity.y = _ET1;
-              _EDX = _EBP->game;
-              __asm
-              {
-                fld     dword ptr [edx+38h]
-                fld     st
-                fmul    st, st(1)
-                fmul    ds:flt_4975CC
-                fsubr   st, st(2)
-                fstp    dword ptr [ebp+414h]
-              }
-              _EBP->velocity.y = _ET1;
-              __asm
-              {
-                fstp    st
-                fstp    st
-              }
-            }
-            _EBP->attachment_exit_pending = 0;
+            player->attachment_exit_pending = 0;
           }
-          if ( _EBP->attachment_exit_pending )
+          if ( player->attachment_exit_pending )
           {
-            __asm
-            {
-              fld     dword ptr [ebp+438h]
-              fadd    dword ptr [ebp+434h]
-              fst     dword ptr [ebp+434h]
-            }
-            _EBP->attachment_exit_progress = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497200
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 && !_EBP->attachment_exit_gate_a )
+            v98 = player->attachment_exit_progress_step + player->attachment_exit_progress;
+            player->attachment_exit_progress = v98;
+            if ( v98 > 0.69999999 && !player->attachment_exit_gate_a )
             {
               play_voice_manager((int)unk_751498, 3, 0, -1);
-              control_override_active = _EBP->control_override_active;
-              _EBP->attachment_exit_gate_a = 1;
-              if ( !control_override_active )
-              {
-                __asm
-                {
-                  fld     dword ptr [ebp+6Ch]
-                  fcomp   ds:flt_4975A8
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x100) != 0 )
-                  dispatch_cutscene_animation((int)_EBP->_pad_2984, 5, 1, -1);
-              }
+              control_override_active = player->control_override_active;
+              player->attachment_exit_gate_a = 1;
+              if ( !control_override_active && player->position.y < -6.0 )
+                dispatch_cutscene_animation((int)player->_pad_2984, 5, 1, -1);
             }
-            __asm
-            {
-              fld     dword ptr [ebp+6Ch]
-              fcomp   ds:flt_4975BC
-              fnstsw  ax
-            }
-            if ( (_AX & 0x100) != 0 && !_EBP->attachment_exit_gate_b )
+            if ( player->position.y < -7.0 && !player->attachment_exit_gate_b )
             {
               play_voice_manager((int)unk_751498, 1, 2u, -1);
-              _EBP->attachment_exit_gate_b = 1;
-              _EBP->attachment_exit_gate_a = 1;
+              player->attachment_exit_gate_b = 1;
+              player->attachment_exit_gate_a = 1;
             }
           }
-          __asm
+          if ( *(float *)&player->_pad_30c[36] > 0.0 )
           {
-            fld     dword ptr [ebp+330h]
-            fcomp   ds:flt_497234
-            fnstsw  ax
-          }
-          if ( (_AX & 0x4100) == 0 )
-          {
-            __asm
-            {
-              fld     dword ptr [ebp+334h]
-              fadd    dword ptr [ebp+330h]
-              fst     dword ptr [ebp+330h]
-            }
-            *(float *)&_EBP->_pad_30c[36] = _ET1;
-            __asm
-            {
-              fcomp   ds:flt_497220
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
+            v100 = *(float *)&player->_pad_30c[40] + *(float *)&player->_pad_30c[36];
+            *(float *)&player->_pad_30c[36] = v100;
+            if ( v100 > 1.0 )
             {
               play_voice_manager((int)unk_751498, 7, 2u, -1);
-              *(_DWORD *)&_EBP->_pad_30c[36] = 0;
+              *(_DWORD *)&player->_pad_30c[36] = 0;
             }
           }
-          _EAX = _EBP->game;
-          __asm
+          v101 = player->game;
+          v102 = *((float *)v101 + 14) * 0.17;
+          if ( (*((float *)v101 + 14) * 0.5 - v102) * 0.1 + v102 <= player->velocity.z
+            || v102 >= player->velocity.z
+            || player->attachment_exit_pending
+            || player->movement_state == 2 )
           {
-            fld     dword ptr [eax+38h]
-            fmul    ds:flt_4975B0
-            fld     dword ptr [eax+38h]
-            fmul    ds:flt_497228
-            fsub    st, st(1)
-            fmul    ds:flt_497258
-            fadd    st, st(1)
-            fcomp   dword ptr [ebp+418h]
-            fnstsw  ax
-          }
-          if ( (BYTE1(_EAX) & 0x41) != 0 )
-          {
-            __asm { fstp    st }
+            *((_DWORD *)player + 4311) = 0;
           }
           else
           {
-            __asm
+            v103 = *((float *)player + 4312) + *((float *)player + 4311);
+            *((float *)player + 4311) = v103;
+            if ( v103 > 1.0 )
             {
-              fcomp   dword ptr [ebp+418h]
-              fnstsw  ax
-            }
-            if ( (_AX & 0x100) != 0 && !_EBP->attachment_exit_pending && _EBP->movement_state != 2 )
-            {
-              __asm
-              {
-                fld     dword ptr [ebp+4360h]
-                fadd    dword ptr [ebp+435Ch]
-                fst     dword ptr [ebp+435Ch]
-              }
-              *(float *)_EBP[1]._pad_00 = _ET1;
-              __asm
-              {
-                fcomp   ds:flt_497220
-                fnstsw  ax
-              }
-              if ( (_AX & 0x4100) == 0 )
-              {
-                *(_DWORD *)_EBP[1]._pad_00 = 0;
-                play_voice_manager((int)unk_751498, 6, 1u, -1);
-              }
-LABEL_350:
-              handle_subgoldy_collisions((int)_EBP);
-              update_anim_manager((char *)&_EBP->_pad_29ac[220]);
-              update_anim_manager((char *)&_EBP->_pad_29ac[4800]);
-              update_anim_manager((char *)&_EBP->_pad_29ac[1836]);
-              update_anim_manager((char *)&_EBP->_pad_29ac[2824]);
-              update_anim_manager((char *)&_EBP->_pad_29ac[3812]);
-              update_track_parcels((_DWORD *)_EBP->game + 4815136);
-              initialize_cutscene((int)_EBP->_pad_2984);
-              update_player_movement_flags((int *)_EBP);
-              if ( *((int *)MEMORY[0x4DF904] + 4299517) < 10 )
-                _EBP->movement_progress = _EBP->movement_rate_scalar;
-              v226 = _EBP->game;
-              if ( (*((_DWORD *)v226 + 19) & 0x400000) == 0 )
-                goto LABEL_371;
-              if ( LOBYTE(_EBP->completion_handoff_active) )
-                goto LABEL_371;
-              if ( _EBP->control_override_active )
-                goto LABEL_371;
-              movement_state = _EBP->movement_state;
-              if ( movement_state )
-              {
-                if ( movement_state != 4 )
-                  goto LABEL_371;
-              }
-              __asm
-              {
-                fld     dword ptr [ebp+2730h]
-                fcomp   ds:flt_497234
-                fnstsw  ax
-              }
-              if ( (_AX & 0x4100) == 0 )
-              {
-                __asm
-                {
-                  fld     dword ptr [ebp+2734h]
-                  fadd    dword ptr [ebp+2730h]
-                  fst     dword ptr [ebp+2730h]
-                }
-                _EBP->movement_progress = _ET1;
-                __asm
-                {
-                  fcomp   ds:flt_497220
-                  fnstsw  ax
-                }
-                if ( (_AX & 0x4100) == 0 )
-                  _EBP->movement_progress = 0.0;
-                goto LABEL_371;
-              }
-              if ( *((_BYTE *)v226 + 43092) )
-              {
-                if ( *((_BYTE *)v226 + 16721360) )
-                {
-                  if ( (*(_BYTE *)(*((_DWORD *)v226 + 4180341) + 6 * *((_DWORD *)v226 + 4180343) + 116) & 1) == 0 )
-                  {
-                    if ( (*(_BYTE *)(*((_DWORD *)v226 + 4180341) + 6 * *((_DWORD *)v226 + 4180343) + 116) & 2) == 0 )
-                      goto LABEL_371;
-                    goto LABEL_370;
-                  }
-                  goto LABEL_365;
-                }
-                if ( (_EBP->control_source->control_flags_a & 0x4000) != 0 )
-                {
-LABEL_365:
-                  play_movement_state_sound((int)_EBP);
-                  update_movement_flag_emitters((char *)_EBP, (int)_EBP);
-                  __asm
-                  {
-                    fld     dword ptr [ebp+2734h]
-                    fadd    ds:flt_4973D8
-                    fstp    dword ptr [ebp+2730h]
-                  }
-                  _EBP->movement_progress = _ET1;
-                  goto LABEL_371;
-                }
-                if ( (_EBP->control_source->control_flags_b & 0x4000) != 0 )
-                {
-LABEL_370:
-                  _EBP->movement_progress = _EBP->movement_rate_scalar;
-                  play_movement_state_sound((int)_EBP);
-                  update_movement_flag_emitters((char *)_EBP, (int)_EBP);
-                }
-              }
-LABEL_371:
-              update_row_event_display((_DWORD **)_EBP->game + 4835830);
-              ++*((_DWORD *)_EBP->game + 4147935);
-              ++*((_DWORD *)_EBP->game + 4180343);
-              v232 = _EBP->game;
-              if ( *((_DWORD *)v232 + 4180343) == 21000 )
-                show_times_up_message((int *)v232 + 4835850);
-              update_times_up((int)_EBP->game + 19343400);
-              return result;
+              *((_DWORD *)player + 4311) = 0;
+              play_voice_manager((int)unk_751498, 6, 1u, -1);
             }
           }
-          *(_DWORD *)_EBP[1]._pad_00 = 0;
-          goto LABEL_350;
+          handle_subgoldy_collisions((int)player);
+          update_anim_manager((char *)&player->_pad_29ac[220]);
+          update_anim_manager((char *)&player->_pad_29ac[4800]);
+          update_anim_manager((char *)&player->_pad_29ac[1836]);
+          update_anim_manager((char *)&player->_pad_29ac[2824]);
+          update_anim_manager((char *)&player->_pad_29ac[3812]);
+          update_track_parcels((_DWORD *)player->game + 4815136);
+          initialize_cutscene((int)player->_pad_2984);
+          update_player_movement_flags((int *)player);
+          if ( *((int *)MEMORY[0x4DF904] + 4299517) < 10 )
+            player->movement_progress = player->movement_rate_scalar;
+          v104 = player->game;
+          if ( (*((_DWORD *)v104 + 19) & 0x400000) == 0 )
+            goto LABEL_365;
+          if ( LOBYTE(player->completion_handoff_active) )
+            goto LABEL_365;
+          if ( player->control_override_active )
+            goto LABEL_365;
+          movement_state = player->movement_state;
+          if ( movement_state )
+          {
+            if ( movement_state != 4 )
+              goto LABEL_365;
+          }
+          if ( player->movement_progress > 0.0 )
+          {
+            v106 = player->movement_rate_scalar + player->movement_progress;
+            player->movement_progress = v106;
+            if ( v106 > 1.0 )
+              player->movement_progress = 0.0;
+            goto LABEL_365;
+          }
+          if ( *((_BYTE *)v104 + 43092) )
+          {
+            if ( *((_BYTE *)v104 + 16721360) )
+            {
+              if ( (*(_BYTE *)(*((_DWORD *)v104 + 4180341) + 6 * *((_DWORD *)v104 + 4180343) + 116) & 1) == 0 )
+              {
+                if ( (*(_BYTE *)(*((_DWORD *)v104 + 4180341) + 6 * *((_DWORD *)v104 + 4180343) + 116) & 2) == 0 )
+                  goto LABEL_365;
+                goto LABEL_364;
+              }
+              goto LABEL_359;
+            }
+            if ( (player->control_source->control_flags_a & 0x4000) != 0 )
+            {
+LABEL_359:
+              play_movement_state_sound((int)player);
+              update_movement_flag_emitters((char *)player, (int)player);
+              player->movement_progress = player->movement_rate_scalar + 0.30000001;
+              goto LABEL_365;
+            }
+            if ( (player->control_source->control_flags_b & 0x4000) != 0 )
+            {
+LABEL_364:
+              player->movement_progress = player->movement_rate_scalar;
+              play_movement_state_sound((int)player);
+              update_movement_flag_emitters((char *)player, (int)player);
+            }
+          }
+LABEL_365:
+          update_row_event_display((_DWORD **)player->game + 4835830);
+          ++*((_DWORD *)player->game + 4147935);
+          ++*((_DWORD *)player->game + 4180343);
+          v107 = player->game;
+          if ( *((_DWORD *)v107 + 4180343) == 21000 )
+            show_times_up_message((int *)v107 + 4835850);
+          update_times_up((int)player->game + 19343400);
+          return result;
         }
       }
-      if ( _EBP->follow_state._pad_3c[0] && LOBYTE(_EBP->completion_handoff_active) )
+      if ( player->follow_state._pad_3c[0] && LOBYTE(player->completion_handoff_active) )
       {
-        _EBP->track_z_offset = 320.0;
-        _EBP->track_z_anchor = 320.0;
+        player->track_z_offset = 320.0;
+        player->track_z_anchor = 320.0;
       }
       else
       {
-        if ( _EBP->control_override_active )
+        if ( player->control_override_active )
         {
-          __asm
+          v12 = player->track_z_offset - (*(float *)&player->_pad_29ac[32] + *(float *)&player->_pad_29ac[32]);
+          player->track_z_offset = v12;
+          player->track_z_anchor = v12;
+          if ( player->track_z_offset >= 0.0 )
           {
-            fld     dword ptr [ebp+29CCh]
-            fadd    st, st
-            fsubr   dword ptr [ebp+273Ch]
-            fst     dword ptr [ebp+273Ch]
-          }
-          _EBP->track_z_offset = _ET1;
-          __asm { fstp    dword ptr [ebp+2740h] }
-          _EBP->track_z_anchor = _ET1;
-          __asm
-          {
-            fld     dword ptr [ebp+273Ch]
-            fcomp   ds:flt_497234
-            fnstsw  ax
-          }
-          if ( (_AX & 0x100) != 0 )
-          {
-            __asm { fld     ds:flt_497234 }
+            if ( player->track_z_offset <= 639.0 )
+              track_z_offset = player->track_z_offset;
+            else
+              track_z_offset = 639.0;
           }
           else
           {
-            __asm
-            {
-              fld     dword ptr [ebp+273Ch]
-              fcomp   ds:flt_4975E0
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) != 0 )
-              __asm { fld     dword ptr [ebp+273Ch] }
-            else
-              __asm { fld     ds:flt_4975E0 }
+            track_z_offset = 0.0;
           }
         }
         else
         {
-          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[*(_DWORD *)_EBP->_pad_2970]);
-          _EAX = _EBP->control_source;
-          __asm
+          resolve_uncaptured_cursor_sensitivity_scale(flt_4DF950[*(_DWORD *)player->_pad_2970]);
+          v14 = player->control_source->steering_x - player->track_z_anchor + player->track_z_offset;
+          player->track_z_offset = v14;
+          if ( v16 )
           {
-            fstp    st
-            fld     dword ptr [eax+28h]
-            fsub    dword ptr [ebp+2740h]
-            fadd    dword ptr [ebp+273Ch]
-            fcom    ds:flt_497234
-            fst     dword ptr [ebp+273Ch]
+            v14 = 0.0;
           }
-          _EBP->track_z_offset = _ET1;
-          __asm { fnstsw  ax }
-          if ( (BYTE1(_EAX) & 1) != 0 )
+          else if ( v14 > 639.0 )
           {
-            __asm
-            {
-              fstp    st
-              fld     ds:flt_497234
-            }
+            v14 = 639.0;
           }
-          else
-          {
-            __asm
-            {
-              fcom    ds:flt_4975E0
-              fnstsw  ax
-            }
-            if ( (_AX & 0x4100) == 0 )
-            {
-              __asm
-              {
-                fstp    st
-                fld     ds:flt_4975E0
-              }
-            }
-          }
-          __asm { fstp    dword ptr [ebp+273Ch] }
-          _EBP->track_z_offset = _ET1;
-          _EBP->track_z_anchor = _EBP->control_source->steering_x;
-          if ( *(_DWORD *)_EBP->_pad_2970 != 1 )
+          player->track_z_offset = v14;
+          player->track_z_anchor = player->control_source->steering_x;
+          if ( *(_DWORD *)player->_pad_2970 != 1 )
             goto LABEL_40;
-          _EAX = _EBP->control_source;
-          __asm { fld     dword ptr [eax+28h] }
+          track_z_offset = player->control_source->steering_x;
         }
-        __asm { fstp    dword ptr [ebp+273Ch] }
-        _EBP->track_z_offset = _ET1;
+        player->track_z_offset = track_z_offset;
       }
 LABEL_40:
-      if ( !LOBYTE(_EBP->completion_handoff_active) )
+      if ( !LOBYTE(player->completion_handoff_active) )
       {
-        __asm
+        v17 = (320.0 - player->track_z_offset) * 0.0125;
+        if ( v17 >= -3.7 )
         {
-          fld     dword ptr [ebp+273Ch]
-          fsubr   ds:flt_497264
-          fmul    ds:flt_4975DC
-          fcom    ds:flt_4975D8
-          fnstsw  ax
-        }
-        if ( (_AX & 0x100) != 0 )
-        {
-          __asm
-          {
-            fstp    st
-            fld     ds:flt_4975D8
-          }
+          if ( v17 > 3.7 )
+            v17 = 3.7;
         }
         else
         {
-          __asm
-          {
-            fcom    ds:flt_4975D4
-            fnstsw  ax
-          }
-          if ( (_AX & 0x4100) == 0 )
-          {
-            __asm
-            {
-              fstp    st
-              fld     ds:flt_4975D4
-            }
-          }
+          v17 = -3.7;
         }
-        if ( _EBP->movement_state == 2 )
-        {
-          __asm { fstp    st }
-        }
-        else
-        {
-          _ECX = _EBP->game;
-          __asm
-          {
-            fld     dword ptr [ecx+38h]
-            fmul    ds:flt_497270
-            fxch    st(1)
-            fsub    dword ptr [ebp+68h]
-            fmulp   st(1), st
-            fadd    dword ptr [ebp+68h]
-            fstp    dword ptr [ebp+68h]
-          }
-          _EBP->position.x = _ET1;
-        }
+        if ( player->movement_state != 2 )
+          player->position.x = *((float *)player->game + 14) * 0.2 * (v17 - player->position.x) + player->position.x;
       }
-      _EBX = &_EBP->position;
-      v34 = convert_math_type32_to_16(_EBP->position.x, 16.0);
-      convert_math_type16_to_32(v34, 16.0);
-      __asm { fst     [esp+58h+var_40] }
-      __asm { fstp    dword ptr [ebx] }
-      _EBX->x = _ET1;
-      v36 = _EBP->game;
-      *((_WORD *)v36 + 3 * *((_DWORD *)v36 + 4180343) + 8295872) = convert_math_type32_to_16(v245, 16.0);
-      v37 = _EBP->game;
-      if ( *((_DWORD *)v37 + 4180343) )
+      p_position = &player->position;
+      v18 = convert_math_type32_to_16(player->position.x, 16.0);
+      v120 = convert_math_type16_to_32(v18, 16.0);
+      player->position.x = v120;
+      v19 = player->game;
+      *((_WORD *)v19 + 3 * *((_DWORD *)v19 + 4180343) + 8295872) = convert_math_type32_to_16(v120, 16.0);
+      v20 = player->game;
+      if ( *((_DWORD *)v20 + 4180343) )
       {
-        __asm
-        {
-          fld     dword ptr [ebp+70h]
-          fsub    dword ptr unk_643194
-        }
-        __asm { fstp    [esp+58h+var_58]; float }
-        *((_WORD *)v37 + 3 * *((_DWORD *)v37 + 4180343) + 8295873) = convert_math_type32_to_16(v239, 32.0);
-        v17 = convert_math_type16_to_32(*((_WORD *)_EBP->game + 3 * *((_DWORD *)_EBP->game + 4180343) + 8295873), 32.0);
-        __asm { fadd    dword ptr unk_643194 }
+        v114 = player->position.z - unk_643194;
+        *((_WORD *)v20 + 3 * *((_DWORD *)v20 + 4180343) + 8295873) = convert_math_type32_to_16(v114, 32.0);
+        v21 = convert_math_type16_to_32(
+                *((_WORD *)player->game + 3 * *((_DWORD *)player->game + 4180343) + 8295873),
+                32.0)
+            + unk_643194;
       }
       else
       {
-        *((_WORD *)v37 + 3 * *((_DWORD *)v37 + 4180343) + 8295873) = convert_math_type32_to_16(_EBP->position.z, 32.0);
-        v17 = convert_math_type16_to_32(*((_WORD *)_EBP->game + 3 * *((_DWORD *)_EBP->game + 4180343) + 8295873), 32.0);
+        *((_WORD *)v20 + 3 * *((_DWORD *)v20 + 4180343) + 8295873) = convert_math_type32_to_16(player->position.z, 32.0);
+        v21 = convert_math_type16_to_32(
+                *((_WORD *)player->game + 3 * *((_DWORD *)player->game + 4180343) + 8295873),
+                32.0);
       }
-      __asm { fstp    dword ptr unk_643194 }
-      v38 = _EBP->game;
-      if ( *((_BYTE *)v38 + 43092) )
+      unk_643194 = v21;
+      v22 = player->game;
+      if ( *((_BYTE *)v22 + 43092) )
       {
-        if ( (_EBP->control_source->control_flags_a & 0x4000) != 0 )
-          *((_BYTE *)v38 + 6 * *((_DWORD *)v38 + 4180343) + 16591748) |= 1u;
-        if ( (_EBP->control_source->control_flags_b & 0x4000) != 0 )
-          *((_BYTE *)_EBP->game + 6 * *((_DWORD *)_EBP->game + 4180343) + 16591748) |= 2u;
+        if ( (player->control_source->control_flags_a & 0x4000) != 0 )
+          *((_BYTE *)v22 + 6 * *((_DWORD *)v22 + 4180343) + 16591748) |= 1u;
+        if ( (player->control_source->control_flags_b & 0x4000) != 0 )
+          *((_BYTE *)player->game + 6 * *((_DWORD *)player->game + 4180343) + 16591748) |= 2u;
       }
-      control_source = _EBP->control_source;
+      control_source = player->control_source;
       if ( (control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0 )
-        *((_BYTE *)_EBP->game + 43092) = 1;
-      v40 = _EBP->game;
-      if ( *((_BYTE *)v40 + 43092) )
-        *((_BYTE *)v40 + 6 * *((_DWORD *)v40 + 4180343) + 16591748) |= 4u;
-      goto LABEL_61;
+        *((_BYTE *)player->game + 43092) = 1;
+      v24 = player->game;
+      if ( *((_BYTE *)v24 + 43092) )
+        *((_BYTE *)v24 + 6 * *((_DWORD *)v24 + 4180343) + 16591748) |= 4u;
+      goto LABEL_60;
     }
   }
   return result;

@@ -1,3 +1,9 @@
+/* tool: binary_ninja */
+/* target: 63967:1:3859193737586600258 */
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
+/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
+/* function: handle_subgoldy_collisions @ 0x444cf0 */
+
 00444d1d        struct Vec3 vector
 00444d1d        struct Vec3 vector_2
 00444d1d        if (player->attachment_exit_pending == 0 && player->_pad_41c == 0 && player->control_override_active == 0)

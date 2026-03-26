@@ -99,6 +99,9 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x84`: `squidge_primary`
   - `+0x88`: `squidge_secondary`
 - `player + 0x4344` is a real inline `SquidgeState` consumed by `update_subgoldy` and copied into `snail_visual`
+- `start_squidge_z` is a `void` helper, like `start_squidge_y`
+  - the old float-return prototype was a decompiler artifact
+  - forcing that float return into IDA was the direct cause of the `update_subgoldy` inline-asm regression; reverting it to `void` restores a normal high-level decompile
   - `+0x00`: `y_output`
   - `+0x04`: `y_velocity`
   - `+0x08`: `y_phase`

@@ -1,3 +1,9 @@
+/* tool: binary_ninja */
+/* target: 63967:1:3859193737586600258 */
+/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
+/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
+/* function: play_movement_state_sound @ 0x43afd0 */
+
 0043afd7        uint32_t movement_flags = player->movement_flags
 0043afdf        int32_t edi_1
 0043afdf        int16_t x87control

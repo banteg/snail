@@ -411,7 +411,7 @@ Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, fl
 float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
 void __thiscall start_squidge_y(SquidgeState* squidge, float value);
-float __thiscall start_squidge_z(SquidgeState* squidge, float value);
+void __thiscall start_squidge_z(SquidgeState* squidge, float value);
 void __thiscall update_squidge(SquidgeState* squidge);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
