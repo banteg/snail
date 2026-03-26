@@ -292,7 +292,13 @@ typedef struct Player {
     int32_t movement_state;
     uint8_t _pad_124[0x2c];
     NukeController nuke;
-    uint8_t _pad_1cc[0x1c];
+    int32_t movement_sound_variant_sample;
+    uint8_t _pad_1d0[0x4];
+    float damage_retrigger_timer;
+    float damage_retrigger_step;
+    float surface_reaction_timer;
+    float surface_reaction_step;
+    uint8_t _pad_1e4[0x4];
     PlayerRowEventState row_event;
     uint8_t _pad_200[0xd8];
     uint8_t control_override_active;

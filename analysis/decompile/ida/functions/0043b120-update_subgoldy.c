@@ -545,7 +545,7 @@ LABEL_102:
               _EBP->velocity.z = _ET1;
               __asm { fstp    st }
             }
-            if ( !_EBP->_pad_1cc[24] )
+            if ( !_EBP->_pad_1e4[0] )
             {
               _EAX = _EBP->game;
               __asm
@@ -701,7 +701,7 @@ LABEL_102:
                   if ( (_AX & 0x4100) == 0 && !is_open_neighbor_tile_family(v96) && v96[60] != 22 )
                   {
                     set_matrix_rotation_identity((TransformMatrix *)&_EBP->_pad_00[56]);
-                    _EBP->_pad_1cc[24] = 0;
+                    _EBP->_pad_1e4[0] = 0;
                     __asm
                     {
                       fld     dword ptr [ebp+414h]
@@ -801,7 +801,7 @@ LABEL_102:
                   if ( (_AX & 0x100) != 0 )
                   {
                     start_squidge_y(&_EBP->squidge, _EBP->velocity.y);
-                    _EBP->_pad_1cc[24] = 0;
+                    _EBP->_pad_1e4[0] = 0;
                     _EBP->velocity.y = 0.0;
                     _EBP->attachment_exit_pending = 0;
                     _EBP->position.y = 0.49000001;
@@ -831,14 +831,14 @@ LABEL_102:
                 fadd    dword ptr [ebp+1DCh]
                 fst     dword ptr [ebp+1DCh]
               }
-              *(float *)&_EBP->_pad_1cc[16] = _ET1;
+              _EBP->surface_reaction_timer = _ET1;
               __asm
               {
                 fcomp   ds:flt_497220
                 fnstsw  ax
               }
               if ( (_AX & 0x4100) == 0 )
-                *(_DWORD *)&_EBP->_pad_1cc[16] = 0;
+                _EBP->surface_reaction_timer = 0.0;
             }
             if ( _EBP->attachment_exit_pending )
             {
@@ -892,7 +892,7 @@ LABEL_102:
                     }
                     _EBP->position.y = _ET1;
                     _EBP->attachment_exit_pending = 0;
-                    _EBP->_pad_1cc[24] = 1;
+                    _EBP->_pad_1e4[0] = 1;
                     play_sound_effect(41);
                   }
                 }
@@ -970,7 +970,7 @@ LABEL_102:
                     fnstsw  ax
                   }
                   if ( (_AX & 0x4000) != 0 )
-                    *(_DWORD *)&_EBP->_pad_1cc[16] = *(_DWORD *)&_EBP->_pad_1cc[20];
+                    _EBP->surface_reaction_timer = _EBP->surface_reaction_step;
                   _EAX = _EBP->game;
                   __asm
                   {
@@ -998,7 +998,7 @@ LABEL_102:
                        && get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] != 35
                        && get_track_grid_cell_at_world_position((char *)_EBP->game, &_EBX->x)[60] != 22 )
                 {
-                  _EBP->_pad_1cc[24] = 0;
+                  _EBP->_pad_1e4[0] = 0;
                   _EBP->velocity.y = 0.0;
                 }
               }
@@ -1152,14 +1152,14 @@ LABEL_218:
               fadd    dword ptr [ebp+1D4h]
               fst     dword ptr [ebp+1D4h]
             }
-            *(float *)&_EBP->_pad_1cc[8] = _ET1;
+            _EBP->damage_retrigger_timer = _ET1;
             __asm
             {
               fcomp   ds:flt_497220
               fnstsw  ax
             }
             if ( (_AX & 0x4100) == 0 )
-              *(_DWORD *)&_EBP->_pad_1cc[8] = 0;
+              _EBP->damage_retrigger_timer = 0.0;
           }
           _ECX = _EBP->game;
           __asm

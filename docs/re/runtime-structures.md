@@ -14,6 +14,11 @@ The current high-confidence `Player` fields are:
 - `+0x120`: `movement_state`
 - `+0x150`: `nuke`
   - inline `NukeController`
+- `+0x1cc`: `movement_sound_variant_sample`
+- `+0x1d4`: `damage_retrigger_timer`
+- `+0x1d8`: `damage_retrigger_step`
+- `+0x1dc`: `surface_reaction_timer`
+- `+0x1e0`: `surface_reaction_step`
 - `+0x1e8`: `row_event`
   - inline `PlayerRowEventState`
 - `+0x2d8`: `control_override_active`
@@ -111,6 +116,16 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `handle_subgoldy_collisions` arms it through `initialize_nuke`
   - `update_subgoldy` either advances it through `update_nuke` or tears it down through `uninit_nuke`
   - the axis itself is still intentionally neutral; `initialize_nuke` seeds it from `owner_player->position` and `update_nuke` writes it back into the sprite slot transform, but the world-axis interpretation is not pinned down in this pass
+- `player + 0x1cc..+0x1e0` is a non-row-event movement and reaction slice
+  - `+0x00`: `movement_sound_variant_sample`
+    - `play_movement_state_sound` stores the sampled movement-sound variant here before deriving the emitted sound id
+  - `+0x08`: `damage_retrigger_timer`
+  - `+0x0c`: `damage_retrigger_step`
+    - `handle_subgoldy_collisions` seeds the timer from the step, and `update_subgoldy` advances and clears it past the terminal threshold
+  - `+0x10`: `surface_reaction_timer`
+  - `+0x14`: `surface_reaction_step`
+    - `update_subgoldy` uses this second pair for a separate terrain or surface reaction cadence
+  - `+0x04` and `+0x18` remain intentionally unresolved in this pass
 - `player + 0x1e8` is a real inline `PlayerRowEventState`
   - `+0x00`: `id`
   - `+0x04`: `state`

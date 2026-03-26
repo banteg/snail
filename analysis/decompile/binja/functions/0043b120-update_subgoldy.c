@@ -1,9 +1,3 @@
-/* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
-/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
-/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: update_subgoldy @ 0x43b120 */
-
 0043b125        struct Player* player_1 = player
 0043b128        int32_t __saved_edi
 0043b128        int32_t* esp = &__saved_edi
@@ -438,7 +432,7 @@
 0043bc13        unimplemented  {fstp dword [ebp+0x418], st0}
 0043bc19        unimplemented  {fstp st0, st0}
 0043bc19        unimplemented  {fstp st0, st0}
-0043bc1b        eax_26.b = player_1->_pad_1cc[0x18]
+0043bc1b        eax_26.b = player_1->_pad_1e4[0]
 0043bc23        if (eax_26.b == 0)
 0043bc25        player_1->game
 0043bc2b        unimplemented  {fld st0, dword [eax+0x38]}
@@ -547,7 +541,7 @@
 0043befa        cell_1.w = (c0_21 ? 1 : 0) << 8 | (c2_21 ? 1 : 0) << 0xa | (c3_21 ? 1 : 0) << 0xe | (top_82 & 7) << 0xb
 0043beff        if ((cell_1:1.b & 0x41) == 0 && is_open_neighbor_tile_family(cell).b == 0 && cell->__offset(0x3c).b != 0x16)
 0043bf15        set_matrix_rotation_identity(&player_1->_pad_00[0x38])
-0043bf1a        player_1->_pad_1cc[0x18] = 0
+0043bf1a        player_1->_pad_1e4[0] = 0
 0043bf21        unimplemented  {fld st0, dword [ebp+0x414]}
 0043bf27        long double temp44_1 = fconvert.t(-0.0299999993f)
 0043bf27        unimplemented  {fcomp st0, dword [0x4975c0]} f- temp44_1
@@ -652,7 +646,7 @@
 0043c048        if ((cell_1:1.b & 1) != 0)
 0043c050        y = player_1->velocity.y
 0043c057        start_squidge_y(&player_1->squidge, y)
-0043c05c        player_1->_pad_1cc[0x18] = 0
+0043c05c        player_1->_pad_1e4[0] = 0
 0043c063        player_1->velocity.y = 0f
 0043c06d        player_1->attachment_exit_pending = 0
 0043c074        player_1->position.y = 0.49000001f
@@ -692,7 +686,7 @@
 0043c0a9        if ((cell_1:1.b & 0x40) == 0)
 0043c0ab        unimplemented  {fld st0, dword [ebp+0x1e0]}
 0043c0b1        unimplemented  {fadd dword [ebp+0x1dc]}
-0043c0b7        player_1->_pad_1cc[0x10].d = fconvert.s(unimplemented  {fst dword [ebp+0x1dc], st0})
+0043c0b7        player_1->surface_reaction_timer = fconvert.s(unimplemented  {fst dword [ebp+0x1dc], st0})
 0043c0bd        long double temp31_1 = fconvert.t(1f)
 0043c0bd        unimplemented  {fcomp st0, dword [0x497220]} f- temp31_1
 0043c0bd        bool c0_31 = unimplemented  {fcomp st0, dword [0x497220]} f< temp31_1
@@ -701,10 +695,7 @@
 0043c0bd        unimplemented  {fcomp st0, dword [0x497220]}
 0043c0c3        cell_1.w = (c0_31 ? 1 : 0) << 8 | (c2_31 ? 1 : 0) << 0xa | (c3_31 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
 0043c0c8        if ((cell_1:1.b & 0x41) == 0)
-0043c0ca        player_1->_pad_1cc[0x10] = 0
-0043c0ca        player_1->_pad_1cc[0x11] = 0
-0043c0ca        player_1->_pad_1cc[0x12] = 0
-0043c0ca        player_1->_pad_1cc[0x13] = 0
+0043c0ca        player_1->surface_reaction_timer = 0f
 0043c0d4        cell_1.b = player_1->attachment_exit_pending
 0043c0dc        if (cell_1.b != 0)
 0043c35b        y = y_8
@@ -752,7 +743,7 @@
 0043c3e7        player_1->position.y = fconvert.s(unimplemented  {fstp dword [ebp+0x6c], st0})
 0043c3e7        unimplemented  {fstp dword [ebp+0x6c], st0}
 0043c3ea        player_1->attachment_exit_pending = 0
-0043c3f1        player_1->_pad_1cc[0x18] = 1
+0043c3f1        player_1->_pad_1e4[0] = 1
 0043c3f8        play_sound_effect(y)
 0043c0e2        struct Game* game_22 = player_1->game
 0043c0e8        y = y_8
@@ -837,11 +828,7 @@
 0043c27d        struct TrackRowCell* eax_62
 0043c27d        eax_62.w = (c0_34 ? 1 : 0) << 8 | (c2_34 ? 1 : 0) << 0xa | (c3_34 ? 1 : 0) << 0xe | (top_105 & 7) << 0xb
 0043c282        if ((eax_62:1.b & 0x40) != 0)
-0043c284        int32_t edx_33 = player_1->_pad_1cc[0x14].d
-0043c28a        player_1->_pad_1cc[0x10] = edx_33.b
-0043c28a        player_1->_pad_1cc[0x11] = edx_33:1.b
-0043c28a        player_1->_pad_1cc[0x12] = edx_33:2.b
-0043c28a        player_1->_pad_1cc[0x13] = edx_33:3.b
+0043c28a        player_1->surface_reaction_timer = player_1->surface_reaction_step
 0043c290        player_1->game
 0043c296        unimplemented  {fld st0, dword [eax+0x38]}
 0043c299        unimplemented  {fmul st0, dword [0x497270]}
@@ -894,7 +881,7 @@
 0043c245        struct Game* game_37 = player_1->game
 0043c24b        y = y_8
 0043c255        if (get_track_grid_cell_at_world_position(game_37, y)->__offset(0x3c).b != 0x16)
-0043c25b        player_1->_pad_1cc[0x18] = 0
+0043c25b        player_1->_pad_1e4[0] = 0
 0043c262        player_1->velocity.y = 0f
 0043c31e        unimplemented  {fld st0, dword [ebp+0x6c]}
 0043c321        long double temp42_1 = fconvert.t(0f)
@@ -1172,7 +1159,7 @@
 0043c68a        if ((game_7:1.b & 0x40) == 0)
 0043c68c        unimplemented  {fld st0, dword [ebp+0x1d8]}
 0043c692        unimplemented  {fadd dword [ebp+0x1d4]}
-0043c698        player_1->_pad_1cc[8].d = fconvert.s(unimplemented  {fst dword [ebp+0x1d4], st0})
+0043c698        player_1->damage_retrigger_timer = fconvert.s(unimplemented  {fst dword [ebp+0x1d4], st0})
 0043c69e        long double temp25_1 = fconvert.t(1f)
 0043c69e        unimplemented  {fcomp st0, dword [0x497220]} f- temp25_1
 0043c69e        bool c0_45 = unimplemented  {fcomp st0, dword [0x497220]} f< temp25_1
@@ -1181,10 +1168,7 @@
 0043c69e        unimplemented  {fcomp st0, dword [0x497220]}
 0043c6a4        game_7.w = (c0_45 ? 1 : 0) << 8 | (c2_45 ? 1 : 0) << 0xa | (c3_45 ? 1 : 0) << 0xe | (top_13 & 7) << 0xb
 0043c6a9        if ((game_7:1.b & 0x41) == 0)
-0043c6ab        player_1->_pad_1cc[8] = 0
-0043c6ab        player_1->_pad_1cc[9] = 0
-0043c6ab        player_1->_pad_1cc[0xa] = 0
-0043c6ab        player_1->_pad_1cc[0xb] = 0
+0043c6ab        player_1->damage_retrigger_timer = 0f
 0043c6b1        struct Game* game_51 = player_1->game
 0043c6b7        unimplemented  {fild st0, dword [ecx+0x58]}
 0043c6ba        float var_40_6 = fconvert.s(unimplemented  {fstp dword [esp+0x10], st0})

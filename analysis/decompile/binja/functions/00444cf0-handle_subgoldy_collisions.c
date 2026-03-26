@@ -1,9 +1,3 @@
-/* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
-/* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
-/* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: handle_subgoldy_collisions @ 0x444cf0 */
-
 00444d1d        struct Vec3 vector
 00444d1d        struct Vec3 vector_2
 00444d1d        if (player->attachment_exit_pending == 0 && player->_pad_41c == 0 && player->control_override_active == 0)
@@ -26,15 +20,11 @@
 00444db9        long double temp13_1 = fconvert.t(0.980000019f)
 00444db9        st0_1 - temp13_1
 00444dc4        if ((((st0_1 < temp13_1 ? 1 : 0) << 8 | (is_unordered.t(st0_1, temp13_1) ? 1 : 0) << 0xa | (st0_1 == temp13_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00444dc6        long double x87_r7_8 = fconvert.t(player->_pad_1cc[8].d)
+00444dc6        long double x87_r7_8 = fconvert.t(player->damage_retrigger_timer)
 00444dcc        long double temp17_1 = fconvert.t(0f)
 00444dcc        x87_r7_8 - temp17_1
 00444dd7        if ((((x87_r7_8 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp17_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp17_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
-00444dd9        int32_t ecx_2 = player->_pad_1cc[0xc].d
-00444ddf        player->_pad_1cc[8] = ecx_2.b
-00444ddf        player->_pad_1cc[9] = ecx_2:1.b
-00444ddf        player->_pad_1cc[0xa] = ecx_2:2.b
-00444ddf        player->_pad_1cc[0xb] = ecx_2:3.b
+00444ddf        player->damage_retrigger_timer = player->damage_retrigger_step
 00444df8        *(i + player->game + 0x357954) = 0
 00444e00        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.150000006f, 0)
 00444e05        i += 0x98

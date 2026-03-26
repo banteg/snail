@@ -133,7 +133,7 @@ pub fn nativeMovementStateAttachmentExitGain(
     return std.math.clamp(1.0 - (vectorLength(delta) * (1.0 / 60.0)), 0.0, 1.0);
 }
 
-pub fn nativeMovementStateVariantIndexForSample(sample: u32, comptime count: usize) usize {
+pub fn nativeMovementSoundVariantIndexForSample(sample: u32, comptime count: usize) usize {
     return @min(count - 1, @as(usize, @intCast((@as(u64, sample) * count) / 0x8000)));
 }
 
@@ -331,10 +331,10 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
         ).?,
         0.0001,
     );
-    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(0, 2));
-    try std.testing.expectEqual(@as(usize, 0), nativeMovementStateVariantIndexForSample(16383, 2));
-    try std.testing.expectEqual(@as(usize, 1), nativeMovementStateVariantIndexForSample(16384, 2));
-    try std.testing.expectEqual(@as(usize, 2), nativeMovementStateVariantIndexForSample(32767, 3));
+    try std.testing.expectEqual(@as(usize, 0), nativeMovementSoundVariantIndexForSample(0, 2));
+    try std.testing.expectEqual(@as(usize, 0), nativeMovementSoundVariantIndexForSample(16383, 2));
+    try std.testing.expectEqual(@as(usize, 1), nativeMovementSoundVariantIndexForSample(16384, 2));
+    try std.testing.expectEqual(@as(usize, 2), nativeMovementSoundVariantIndexForSample(32767, 3));
     previous = gameplay.Runner{};
     current = previous;
     current.movement_flags = 8;

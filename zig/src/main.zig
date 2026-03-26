@@ -2968,15 +2968,15 @@ const AppState = struct {
 
         if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
             const fired_sound = switch (gameplay_audio_cues.nativeMovementStateSoundFamily(current)) {
-                .turbo => self.pickNativeMovementStateSoundVariant(
+                .turbo => self.pickNativeMovementSoundVariant(
                     gameplay_assets.gameplay_turbo_fire_sound_paths.len,
                     self.current_gameplay_sound_fx.turbo_fire,
                 ),
-                .laser => self.pickNativeMovementStateSoundVariant(
+                .laser => self.pickNativeMovementSoundVariant(
                     gameplay_assets.gameplay_laser_sound_paths.len,
                     self.current_gameplay_sound_fx.laser,
                 ),
-                .rocket => self.pickNativeMovementStateSoundVariant(
+                .rocket => self.pickNativeMovementSoundVariant(
                     gameplay_assets.gameplay_rocket_sound_paths.len,
                     self.current_gameplay_sound_fx.rocket,
                 ),
@@ -5909,8 +5909,8 @@ const AppState = struct {
         return index;
     }
 
-    fn nextNativeMovementStateVariantIndex(self: *AppState, comptime count: usize) usize {
-        return gameplay_audio_cues.nativeMovementStateVariantIndexForSample(self.nextMathRandomInt15(), count);
+    fn nextNativeMovementSoundVariantIndex(self: *AppState, comptime count: usize) usize {
+        return gameplay_audio_cues.nativeMovementSoundVariantIndexForSample(self.nextMathRandomInt15(), count);
     }
 
     fn pickGameplaySoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
@@ -5923,8 +5923,8 @@ const AppState = struct {
         return null;
     }
 
-    fn pickNativeMovementStateSoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
-        var start = self.nextNativeMovementStateVariantIndex(count);
+    fn pickNativeMovementSoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
+        var start = self.nextNativeMovementSoundVariantIndex(count);
         var remaining = count;
         while (remaining > 0) : (remaining -= 1) {
             if (variants[start]) |loaded| return loaded;
