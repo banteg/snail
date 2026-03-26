@@ -532,7 +532,7 @@ const cameraman_matrix_blend_scale: f32 = 0.3;
 const cameraman_lift_blend: f32 = 0.1;
 const cameraman_attachment_lift_scale: f32 = 0.35;
 const cameraman_launch_lift_scale: f32 = 0.24;
-const cameraman_kind24_fov_bonus: f32 = 50.0;
+const cameraman_worm_fov_bonus: f32 = 50.0;
 const native_hotspot_camera_skid_stop_index: u8 = 12;
 const native_hotspot_camera_slug_death_index: u8 = 17;
 const native_hotspot_camera_intro_talk_index: u8 = 18;
@@ -2893,8 +2893,8 @@ pub const Runner = struct {
 
     fn cameramanDesiredFovDegrees(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         const attachment_camera = self.currentAttachmentCameraProgress(preview) orelse return 110.0;
-        if (attachment_camera.template_kind != 24) return 110.0;
-        return 110.0 + (attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_kind24_fov_bonus);
+        if (attachment_camera.template_kind != attachment_builders.template_kind_worm) return 110.0;
+        return 110.0 + (attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_worm_fov_bonus);
     }
 
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -6068,7 +6068,7 @@ test "cameraman deadzone clamps previous desired z around the anchor" {
     try std.testing.expectApproxEqAbs(@as(f32, 10.0), clampedPreviousDesiredCameraZ(12.0, 10.0), 0.0001);
 }
 
-test "template kind 24 alone boosts cameraman fov" {
+test "worm template kind alone boosts cameraman fov" {
     var worm_fixture = try TestFixture.loadSegment("SEGMENTS/WORM.TXT");
     defer worm_fixture.deinit();
 
@@ -6400,7 +6400,7 @@ test "attachment camera lift uses overall attachment progress" {
     const expected_progress =
         (runner.playerWorldPosition(&fixture.preview).z - @as(f32, @floatFromInt(target.row))) /
         @as(f32, @floatFromInt(built.template.sample_count));
-    try std.testing.expectEqual(@as(u8, 36), attachment_camera.template_kind);
+    try std.testing.expectEqual(attachment_builders.template_kind_start, attachment_camera.template_kind);
     try std.testing.expectApproxEqAbs(expected_progress, attachment_camera.template_progress, 0.0001);
 }
 

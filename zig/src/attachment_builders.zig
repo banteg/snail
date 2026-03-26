@@ -193,6 +193,13 @@ pub const TemplateSpec = struct {
     subdivision_count: ?u16 = null,
 };
 
+pub const template_kind_worm: u8 = 24;
+pub const template_kind_supertramp: u8 = 31;
+pub const template_kind_nonlinear_42: u8 = 42;
+pub const template_kind_start: u8 = 36;
+pub const template_kind_twister: u8 = 43;
+pub const template_kind_twister2: u8 = 45;
+
 // PORT(partial): this is the current Zig-side sampled template shape for the public
 // attachment builder scaffold. It is informed by the recovered Windows sample records,
 // but it is still not the exact installed runtime-bank layout.
@@ -711,7 +718,7 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .slalom => try buildWaveTemplate(allocator, spec, .{ .template_kind = 22, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 2.5, .lateral_cycles = 2.0 }),
         .slalombig => try buildWaveTemplate(allocator, spec, .{ .template_kind = 23, .width_cells = 4, .sample_count = 32, .lateral_amplitude = 3.5, .lateral_cycles = 2.0 }),
         .worm => try buildWaveTemplate(allocator, spec, .{
-            .template_kind = 24,
+            .template_kind = template_kind_worm,
             .width_cells = 4,
             .sample_count = 24,
             .subdivision_count = 16,
@@ -727,8 +734,8 @@ fn buildTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !?Template {
         .slalomdouble => try buildWaveTemplate(allocator, spec, .{ .template_kind = 32, .width_cells = 4, .sample_count = 70, .lateral_amplitude = 2.5, .lateral_cycles = 4.0 }),
         .wibble => try buildWaveTemplate(allocator, spec, .{ .template_kind = 40, .width_cells = 8, .sample_count = 32, .lateral_amplitude = 1.5, .lateral_cycles = 3.0, .vertical_amplitude = 0.75, .vertical_cycles = 2.0 }),
         .invert => try buildWaveTemplate(allocator, spec, .{ .template_kind = 41, .width_cells = 8, .sample_count = 34, .roll_cycles = 0.5 }),
-        .twistera, .twisterb => try buildWaveTemplate(allocator, spec, .{ .template_kind = 43, .width_cells = 3, .sample_count = 48, .roll_cycles = 1.5, .lateral_amplitude = 0.5 }),
-        .twister2a, .twister2b => try buildWaveTemplate(allocator, spec, .{ .template_kind = 45, .width_cells = 3, .sample_count = 52, .roll_cycles = 2.0, .lateral_amplitude = 0.75 }),
+        .twistera, .twisterb => try buildWaveTemplate(allocator, spec, .{ .template_kind = template_kind_twister, .width_cells = 3, .sample_count = 48, .roll_cycles = 1.5, .lateral_amplitude = 0.5 }),
+        .twister2a, .twister2b => try buildWaveTemplate(allocator, spec, .{ .template_kind = template_kind_twister2, .width_cells = 3, .sample_count = 52, .roll_cycles = 2.0, .lateral_amplitude = 0.75 }),
         .toad0, .toad1, .toadpair0, .toadpair1 => try buildWaveTemplate(allocator, spec, .{ .template_kind = 47, .width_cells = 3, .sample_count = 24, .vertical_amplitude = 1.5, .vertical_cycles = if (spec.public_path == .toadpair0 or spec.public_path == .toadpair1) 2.0 else 1.0 }),
     };
 }
@@ -1374,7 +1381,7 @@ fn buildSupertrampTemplate(allocator: std.mem.Allocator, spec: TemplateSpec) !Te
             .public_path = spec.public_path,
             .family = spec.family,
             .status = .partial,
-            .template_kind = 31,
+            .template_kind = template_kind_supertramp,
             .sample_count = @intCast(sample_count),
             .subdivision_count = width_cells,
         },
@@ -1418,7 +1425,7 @@ fn buildNonlinear42Template(allocator: std.mem.Allocator, spec: TemplateSpec) !T
             .public_path = spec.public_path,
             .family = spec.family,
             .status = .partial,
-            .template_kind = 42,
+            .template_kind = template_kind_nonlinear_42,
             .sample_count = 66,
             .subdivision_count = width_cells,
         },
@@ -1580,7 +1587,7 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         .screw => .{ .public_path = public_path, .family = .screw, .status = .partial, .template_kind = 21, .sample_count = 24, .subdivision_count = 3 },
         .slalom => .{ .public_path = public_path, .family = .slalom, .status = .partial, .template_kind = 22, .sample_count = 32, .subdivision_count = 4 },
         .slalombig => .{ .public_path = public_path, .family = .slalombig, .status = .partial, .template_kind = 23, .sample_count = 32, .subdivision_count = 4 },
-        .worm => .{ .public_path = public_path, .family = .worm, .status = .partial, .template_kind = 24, .sample_count = 24, .subdivision_count = 16 },
+        .worm => .{ .public_path = public_path, .family = .worm, .status = .partial, .template_kind = template_kind_worm, .sample_count = 24, .subdivision_count = 16 },
         .loopout, .loopout3, .loopoutbig => blk: {
             const params = loopoutParams(public_path);
             break :blk .{
@@ -1594,20 +1601,20 @@ pub fn specForPublicPath(public_path: PublicPath) TemplateSpec {
         },
         .sweep => .{ .public_path = public_path, .family = .sweep, .status = .partial, .template_kind = 28, .sample_count = 30, .subdivision_count = 4 },
         .snake => .{ .public_path = public_path, .family = .snake, .status = .partial, .template_kind = 29, .sample_count = 27, .subdivision_count = 4 },
-        .warp, .halfpipe => .{ .public_path = public_path, .family = .nonlinear_42, .status = .partial, .template_kind = 42, .sample_count = 66, .subdivision_count = 8 },
-        .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .template_kind = 31, .sample_count = 32, .subdivision_count = 2 },
+        .warp, .halfpipe => .{ .public_path = public_path, .family = .nonlinear_42, .status = .partial, .template_kind = template_kind_nonlinear_42, .sample_count = 66, .subdivision_count = 8 },
+        .supertramp => .{ .public_path = public_path, .family = .supertramp, .status = .partial, .template_kind = template_kind_supertramp, .sample_count = 32, .subdivision_count = 2 },
         .slalomdouble => .{ .public_path = public_path, .family = .slalomdouble, .status = .partial, .template_kind = 32, .sample_count = 70, .subdivision_count = 4 },
         .p0 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .template_kind = 33, .sample_count = 16, .subdivision_count = 3 },
         .p1 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .template_kind = 34, .sample_count = 16, .subdivision_count = 3 },
         .p2 => .{ .public_path = public_path, .family = .p_family, .status = .partial, .template_kind = 35, .sample_count = 16, .subdivision_count = 3 },
-        .start => .{ .public_path = public_path, .family = .start, .status = .ported, .template_kind = 36, .sample_count = 27, .subdivision_count = 8 },
+        .start => .{ .public_path = public_path, .family = .start, .status = .ported, .template_kind = template_kind_start, .sample_count = 27, .subdivision_count = 8 },
         .turnover => .{ .public_path = public_path, .family = .turnover, .status = .partial, .template_kind = 37, .sample_count = 45, .subdivision_count = 4 },
         .turnoverdouble => .{ .public_path = public_path, .family = .turnoverdouble, .status = .partial, .template_kind = 38, .sample_count = 64, .subdivision_count = 4 },
         .turnunder => .{ .public_path = public_path, .family = .turnunder, .status = .partial, .template_kind = 39, .sample_count = 45, .subdivision_count = 4 },
         .wibble => .{ .public_path = public_path, .family = .wibble, .status = .partial, .template_kind = 40, .sample_count = 32, .subdivision_count = 8 },
         .invert => .{ .public_path = public_path, .family = .invert, .status = .partial, .template_kind = 41, .sample_count = 34, .subdivision_count = 8 },
-        .twistera, .twisterb => .{ .public_path = public_path, .family = .twister, .status = .partial, .template_kind = 43, .sample_count = 48, .subdivision_count = 3 },
-        .twister2a, .twister2b => .{ .public_path = public_path, .family = .twister2, .status = .partial, .template_kind = 45, .sample_count = 52, .subdivision_count = 3 },
+        .twistera, .twisterb => .{ .public_path = public_path, .family = .twister, .status = .partial, .template_kind = template_kind_twister, .sample_count = 48, .subdivision_count = 3 },
+        .twister2a, .twister2b => .{ .public_path = public_path, .family = .twister2, .status = .partial, .template_kind = template_kind_twister2, .sample_count = 52, .subdivision_count = 3 },
         .toad0, .toad1, .toadpair0, .toadpair1 => .{ .public_path = public_path, .family = .toad, .status = .partial, .template_kind = 47, .sample_count = 24, .subdivision_count = 3 },
     };
 }
@@ -2010,7 +2017,7 @@ test "worm template matches traced runtime metadata" {
     var template = (try buildTemplate(std.testing.allocator, spec)).?;
     defer template.deinit(std.testing.allocator);
 
-    try std.testing.expectEqual(@as(u8, 24), template.spec.template_kind.?);
+    try std.testing.expectEqual(template_kind_worm, template.spec.template_kind.?);
     try std.testing.expectEqual(@as(u16, 24), template.sample_count);
     try std.testing.expectEqual(@as(u16, 4), template.width_cells);
     try std.testing.expectEqual(@as(u16, 16), template.spec.subdivision_count.?);

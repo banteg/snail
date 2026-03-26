@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const attachment_builders = @import("../attachment_builders.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_assets = @import("assets.zig");
 const track = @import("../track.zig");
@@ -195,7 +196,7 @@ pub fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: ga
 }
 
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
-    if (previous_attachment_template_kind != 31) return false;
+    if (previous_attachment_template_kind != attachment_builders.template_kind_supertramp) return false;
     if (current.movement_mode == .attachment or current.attachment_follow.active) return false;
     return current.launch.active and current.launch.vertical_velocity > 0.0;
 }

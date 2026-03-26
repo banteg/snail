@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
 const app_ui = @import("app_ui.zig");
+const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
@@ -2943,7 +2944,7 @@ const AppState = struct {
             current.movement_mode == .attachment)
         {
             if (current.currentAttachmentTemplateKind(preview)) |template_kind| {
-                if (template_kind == 24) {
+                if (template_kind == attachment_builders.template_kind_worm) {
                     self.tryPlayNativeGameplayVoiceSet(.worm_tunnel, .wait_for_idle) catch {};
                 }
             }
