@@ -1870,7 +1870,7 @@ test "build loopbow template from recovered ordinary family shape" {
     try std.testing.expect(mid.position.x < 3.0);
 }
 
-test "build halfpipe template with tapered warp-halfpipe radius" {
+test "build halfpipe template with tapered halfpipe radius" {
     const spec = specForPublicPath(.halfpipe);
     var template = (try buildTemplate(std.testing.allocator, spec)).?;
     defer template.deinit(std.testing.allocator);
