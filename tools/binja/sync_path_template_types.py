@@ -99,6 +99,18 @@ PATH_TEMPLATE_FIELD_UPDATES = (
 )
 
 PROTO_UPDATES = (
+    (
+        "initialize_matrix_from_values",
+        "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* out, float right_x, float right_y, float right_z, float up_x, float up_y, float up_z, float forward_x, float forward_y, float forward_z, float position_x, float position_y, float position_z, float position_w, float forward_w, float up_w, float right_w)",
+    ),
+    (
+        "invert_matrix_from_source",
+        "TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source)",
+    ),
+    (
+        "multiply_matrix_in_place",
+        "TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs)",
+    ),
     ("set_matrix_identity", "void __fastcall set_matrix_identity(TransformMatrix* transform)"),
     ("set_matrix_rotation_identity", "void __fastcall set_matrix_rotation_identity(TransformMatrix* transform)"),
     ("rotate_matrix_world_x", "void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle)"),

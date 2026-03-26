@@ -12,17 +12,12 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 1,
+  "function_count": 1,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
-    {
-      "address": "0x420cb0",
-      "name": "update_track_attachment_follow_state",
-      "artifact": "analysis/decompile/binja/functions/00420cb0-update_track_attachment_follow_state.c"
-    },
     {
       "address": "0x4461d0",
       "name": "update_cameraman",

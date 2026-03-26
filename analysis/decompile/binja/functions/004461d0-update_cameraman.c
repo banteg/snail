@@ -7,8 +7,8 @@
 004461de        struct Player* player = cameraman->player
 004461e4        cameraman->unresolved_cc = 0
 00446201        struct CameramanState* cameraman_1 = cameraman
-00446233        void transform
-00446233        int32_t* eax = initialize_matrix_from_values(&transform, 0x3f800000, 0, 0, 0, 0, 0x3f722d1f, 0x3ea5f890, 0, 0, 0xbea5f890, 0x3f722d1f, 0, fconvert.s(fconvert.t(player->cached_camera_target_world.x) * fconvert.t(0.400000006f)), 0x3fe66666, 0xbf000000, 0x3f800000)
+00446233        struct TransformMatrix var_40
+00446233        struct TransformMatrix* eax = initialize_matrix_from_values(&var_40, 1f, 0f, 0f, 0f, 0f, 0.946000993f, 0.324162006f, 0f, 0f, -0.324162006f, 0.946000993f, 0f, fconvert.s(fconvert.t(player->cached_camera_target_world.x) * fconvert.t(0.400000006f)), 1.79999995f, -0.5f, 1f)
 00446241        __builtin_memcpy(&cameraman->desired_matrix, eax, 0x40)
 00446245        orthogonalize_matrix(&cameraman->desired_matrix)
 00446250        struct Player* player_3 = cameraman->player
@@ -106,9 +106,9 @@
 00446535        long double x87_r7_62 = (fconvert.t(0.5f) - cosine(fconvert.s(fconvert.t(player_7->lane_lean_progress) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)) * fconvert.t(player_7->lane_lean_amplitude) * fconvert.t(6.28318548f)
 00446558        rotate_matrix_world_z(&cameraman->desired_matrix, fconvert.s(x87_r7_62 + fconvert.t(player_7->cached_camera_target_world.x) * fconvert.t(-8f) * fconvert.t(0.0174499992f) * fconvert.t(0.170000002f)))
 0044656a        if (cameraman->player->follow_state.active == 1)
-00446570        set_matrix_identity(&transform)
-00446586        rotate_matrix_world_z(&transform, cameraman->player->follow_state.orientation_a)
-00446592        multiply_matrix_in_place(&cameraman->desired_matrix, &transform)
+00446570        set_matrix_identity(&var_40)
+00446586        rotate_matrix_world_z(&var_40, cameraman->player->follow_state.orientation_a)
+00446592        multiply_matrix_in_place(&cameraman->desired_matrix, &var_40)
 004465a6        rotate_matrix_world_z(&cameraman->desired_matrix, cameraman->player->follow_state.orientation_b)
 004465ab        struct Player* player_1 = cameraman->player
 004465b9        if (player_1->attachment_exit_pending != 0)
@@ -118,7 +118,7 @@
 004465ea        if (player_2->follow_state.active == 1)
 004465f0        template_record = player_2->follow_state.template_record
 004465fa        long double x87_r7_75
-004465fa        if (player_2->follow_state.active != 1 || template_record->kind != 0x18)
+004465fa        if (player_2->follow_state.active != 1 || template_record->kind != PATH_TEMPLATE_KIND_WORM)
 00446679        x87_r7_75 = fconvert.t(110f)
 00446608        long double x87_r7_66 = (fconvert.t(player_2->live_matrix.position.z) - fconvert.t(player_2->follow_state.source_cell->anchor_position.z)) / fconvert.t(template_record->segment_count_f)
 0044660b        long double temp11_1 = fconvert.t(0f)
@@ -142,6 +142,8 @@
 00446685        struct Game* game = cameraman->game
 0044668b        struct PathTemplate* template_record_4 = template_record
 004466a0        cameraman->fov_degrees = fconvert.s((x87_r7_75 - fconvert.t(cameraman->fov_degrees)) * fconvert.t(0.300000012f) + fconvert.t(cameraman->fov_degrees))
-004466b4        int32_t result = linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->track_center_x) * fconvert.t(0.300000012f)))
-004466c0        __builtin_memcpy(&cameraman->previous_desired_matrix, &cameraman->desired_matrix, 0x40)
+004466b4        int32_t result
+004466b4        int32_t ebx_1
+004466b4        result, ebx_1 = linear_interpolate_matrix(cameraman, &cameraman->previous_desired_matrix, &cameraman->desired_matrix, fconvert.s(fconvert.t(game->track_center_x) * fconvert.t(0.300000012f)))
+004466c0        __builtin_memcpy(&cameraman->previous_desired_matrix, ebx_1, 0x40)
 004466c9        return result
