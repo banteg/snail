@@ -25,6 +25,7 @@ from snail.symbols import (  # noqa: E402
 DEFAULT_OUT_DIR = REPO_ROOT / "analysis/decompile/binja/functions"
 DEFAULT_INDEX_PATH = REPO_ROOT / "analysis/decompile/binja/index.json"
 SAFE_NAME_RE = re.compile(r"[^A-Za-z0-9_.-]+")
+SPILL_PATH_RE = re.compile(r"^path:\s+(?P<path>.+)$", re.MULTILINE)
 
 
 def _safe_name(name: str) -> str:
@@ -44,7 +45,33 @@ def _run_bn(*args: str) -> str:
             f"bn {' '.join(args)} failed with exit code {completed.returncode}:"
             f"\n{completed.stderr.strip()}"
         )
+    spill_match = SPILL_PATH_RE.search(completed.stdout)
+    if spill_match is not None:
+        spill_path = Path(spill_match.group("path")).expanduser()
+        if spill_path.is_file():
+            return spill_path.read_text(encoding="utf-8")
     return completed.stdout
+
+
+def _run_bn_text_to_file(*args: str) -> str:
+    with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as handle:
+        out_path = Path(handle.name)
+    try:
+        completed = subprocess.run(
+            ["bn", *args, "--out", str(out_path)],
+            cwd=REPO_ROOT,
+            check=False,
+            text=True,
+            capture_output=True,
+        )
+        if completed.returncode != 0:
+            raise RuntimeError(
+                f"bn {' '.join(args)} failed with exit code {completed.returncode}:"
+                f"\n{completed.stderr.strip()}"
+            )
+        return out_path.read_text(encoding="utf-8")
+    finally:
+        out_path.unlink(missing_ok=True)
 
 
 def _load_target_metadata(target_selector: str) -> dict[str, object]:
@@ -179,7 +206,41 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_INDEX_PATH,
         help="Index JSON path to write after exporting.",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Optional function selector(s) to export. Matches manifest name or hex address.",
+    )
     return parser.parse_args()
+
+
+def _select_functions(manifest_functions: list[FunctionSymbol], selectors: list[str]) -> list[FunctionSymbol]:
+    if not selectors:
+        return manifest_functions
+    requested = {selector.lower() for selector in selectors}
+    selected = [
+        function
+        for function in manifest_functions
+        if function.name.lower() in requested or function.address_hex.lower() in requested
+    ]
+    missing = sorted(
+        selector
+        for selector in selectors
+        if selector.lower()
+        not in {
+            function.name.lower()
+            for function in selected
+        }
+        and selector.lower()
+        not in {
+            function.address_hex.lower()
+            for function in selected
+        }
+    )
+    if missing:
+        raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")
+    return selected
 
 
 def main() -> int:
@@ -196,10 +257,12 @@ def main() -> int:
     target_selector = str(target_metadata.get("target_id") or args.target)
     live_functions = _load_live_function_map(target_selector)
 
+    selected_functions = _select_functions(manifest.functions, list(args.only))
+
     exported: list[dict[str, object]] = []
     mismatches: list[dict[str, object]] = []
     expected_paths: set[Path] = set()
-    for function in manifest.functions:
+    for function in selected_functions:
         live = live_functions.get(function.address)
         if live is None:
             mismatches.append(
@@ -221,7 +284,7 @@ def main() -> int:
                         "observed_name": observed_name,
                     }
                 )
-        decompile_text = _run_bn(
+        decompile_text = _run_bn_text_to_file(
             "decompile",
             "--target",
             target_selector,
@@ -238,13 +301,14 @@ def main() -> int:
         )
         expected_paths.add(_artifact_path(out_dir, function))
 
-    removed = _prune_stale_artifacts(out_dir, expected_paths)
+    removed = [] if args.only else _prune_stale_artifacts(out_dir, expected_paths)
 
     index = {
         "tool": "binary_ninja",
         "target": target_metadata,
         "manifest": str(manifest_path.relative_to(REPO_ROOT)),
         "out_dir": str(out_dir.relative_to(REPO_ROOT)),
+        "selected_count": len(selected_functions),
         "function_count": len(exported),
         "mismatch_count": len(mismatches),
         "mismatches": mismatches,
