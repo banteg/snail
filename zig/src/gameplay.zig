@@ -740,7 +740,7 @@ const WorldFrame = struct {
     up: rl.Vector3,
 };
 
-const CameraAnchorState = struct {
+const CachedCameraTargetState = struct {
     world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
@@ -758,13 +758,13 @@ const CutsceneCameraController = struct {
 };
 
 const CameramanState = struct {
-    out_matrix: rl.Matrix = cameraman_identity_matrix,
-    current_desired_matrix: rl.Matrix = cameraman_identity_matrix,
+    live_matrix: rl.Matrix = cameraman_identity_matrix,
+    desired_matrix: rl.Matrix = cameraman_identity_matrix,
     previous_desired_matrix: rl.Matrix = cameraman_identity_matrix,
     snap_next: bool = false,
     fov_degrees: f32 = 110.0,
-    lift_target: f32 = 0.0,
-    lift_current: f32 = 0.0,
+    attachment_lift_envelope: f32 = 0.0,
+    smoothed_attachment_lift_envelope: f32 = 0.0,
 };
 
 fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
@@ -1061,7 +1061,7 @@ fn attachmentSampleOrientationA(sample: *const attachment_builders.TemplateSampl
     );
 }
 
-fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, translation_z: f32, intro_pitch_radians: f32, speed_pitch_radians: f32) CameraTransform {
+fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, translation_z: f32, intro_pitch_radians: f32, anchor_pitch_radians: f32) CameraTransform {
     var transform: CameraTransform = .{
         .position = .{
             .x = translation_x,
@@ -1073,21 +1073,21 @@ fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, transla
         .forward = cameraman_base_forward,
     };
     transform = rotateCameraTransformWorldX(transform, intro_pitch_radians);
-    transform = rotateCameraTransformWorldX(transform, speed_pitch_radians);
+    transform = rotateCameraTransformWorldX(transform, anchor_pitch_radians);
     return transform;
 }
 
-fn cameramanVerticalLift(speed_rows_per_second: f32, progress_blend: f32) f32 {
+fn cameramanVerticalLiftFromCachedTarget(anchor_y: f32, progress_blend: f32) f32 {
     return std.math.lerp(
-        speed_rows_per_second * cameraman_vertical_lift_early_weight,
-        speed_rows_per_second * cameraman_vertical_lift_late_weight,
+        anchor_y * cameraman_vertical_lift_early_weight,
+        anchor_y * cameraman_vertical_lift_late_weight,
         progress_blend,
     );
 }
 
-fn cameramanPitchRadiansFromSpeed(speed_rows_per_second: f32) f32 {
+fn cameramanPitchRadiansFromCachedTarget(anchor_y: f32) f32 {
     return std.math.clamp(
-        (-2.0 - ((speed_rows_per_second - 0.49) * 5.0)) * 0.0174499992,
+        (-2.0 - ((anchor_y - 0.49) * 5.0)) * 0.0174499992,
         -1.22149992,
         1.22149992,
     );
@@ -1170,7 +1170,7 @@ pub const Runner = struct {
     heading_roll: f32 = 0.0,
     previous_heading_roll_sample: f32 = 0.0,
     snail_hotspots: SnailHotspotState = .{},
-    camera_anchor: CameraAnchorState = .{},
+    cached_camera_target: CachedCameraTargetState = .{},
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
@@ -1522,7 +1522,7 @@ pub const Runner = struct {
     }
 
     pub fn cameramanMatrix(self: *const Runner) rl.Matrix {
-        return self.cameraman.out_matrix;
+        return self.cameraman.live_matrix;
     }
 
     pub fn takeCameramanSnap(self: *Runner) bool {
@@ -1624,7 +1624,7 @@ pub const Runner = struct {
     }
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.refreshCameraAnchor(preview);
+        self.refreshCachedCameraTarget(preview);
         self.refreshSnailHotspots(preview);
         self.refreshCameraRollState(preview);
         self.updateCameraman(preview);
@@ -1634,8 +1634,8 @@ pub const Runner = struct {
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
         if (preview.total_rows == 0 or preview.runtime_active_row_start == 0) return 1.0;
         const intro_transition_rows = @as(f32, @floatFromInt(preview.runtime_active_row_start));
-        const player_z = self.playerWorldPosition(preview).z;
-        return std.math.clamp(((player_z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
+        const cached_target_z = self.cached_camera_target.world.z;
+        return std.math.clamp(((cached_target_z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
     }
 
     fn cameramanMatrixBlendFactor(self: *const Runner) f32 {
@@ -2834,9 +2834,9 @@ pub const Runner = struct {
         }
     }
 
-    fn refreshCameraAnchor(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    fn refreshCachedCameraTarget(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) {
-            self.camera_anchor = .{};
+            self.cached_camera_target = .{};
             return;
         }
 
@@ -2847,7 +2847,7 @@ pub const Runner = struct {
             .y = self.jetpack.wobble_y,
             .z = self.jetpack.wobble_alpha,
         };
-        self.camera_anchor.world = .{
+        self.cached_camera_target.world = .{
             .x = base_position.x + (frame.right.x * local_offset.x) + (frame.up.x * local_offset.y) + (frame.forward.x * local_offset.z),
             .y = base_position.y + (frame.right.y * local_offset.x) + (frame.up.y * local_offset.y) + (frame.forward.y * local_offset.z),
             .z = base_position.z + (frame.right.z * local_offset.x) + (frame.up.z * local_offset.y) + (frame.forward.z * local_offset.z),
@@ -2892,19 +2892,19 @@ pub const Runner = struct {
         };
     }
 
-    // PORT(partial): the native cameraman keeps one lift target/current pair and smooths the
-    // combined attachment and launch envelopes before multiplying by the live speed owner.
-    fn cameramanLiftTarget(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
-        var target: f32 = 0.0;
+    // PORT(partial): the native cameraman seeds one attachment/launch lift envelope and then
+    // smooths it before multiplying by cached camera target y.
+    fn cameramanAttachmentLiftEnvelope(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
+        var envelope: f32 = 0.0;
         if (self.currentAttachmentCameraProgress(preview)) |attachment_camera| {
             if (attachmentCameraLiftTemplateKindEnabled(attachment_camera.template_kind)) {
-                target += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
+                envelope += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
             }
         }
         if (self.launch.active and self.launch.camera_progress > 0.0) {
-            target += launchCameraEnvelope(self.launch.camera_progress) * cameraman_launch_lift_scale;
+            envelope += launchCameraEnvelope(self.launch.camera_progress) * cameraman_launch_lift_scale;
         }
-        return target;
+        return envelope;
     }
 
     fn cameramanDesiredFovDegrees(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
@@ -3026,7 +3026,7 @@ pub const Runner = struct {
         const alpha = std.math.sin(progress * (std.math.pi / 2.0));
         return linearInterpolateCameraMatrices(
             self.cutsceneLookAtMatrix(preview, self.snail_hotspots.camera_intro_talk),
-            self.cameraman.out_matrix,
+            self.cameraman.live_matrix,
             alpha,
         );
     }
@@ -3044,7 +3044,7 @@ pub const Runner = struct {
     fn completionCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
         const alpha = std.math.sin(progress * (std.math.pi / 2.0));
         return linearInterpolateCameraMatrices(
-            self.cameraman.out_matrix,
+            self.cameraman.live_matrix,
             self.cutsceneLookAtMatrix(preview, self.completionCutsceneBlendPosition(progress)),
             alpha,
         );
@@ -3064,7 +3064,7 @@ pub const Runner = struct {
     fn deathCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
         const alpha = std.math.sin(progress * (std.math.pi / 2.0));
         return linearInterpolateCameraMatrices(
-            self.cameraman.out_matrix,
+            self.cameraman.live_matrix,
             self.cutsceneLookAtMatrix(preview, self.deathCutsceneBlendPosition(progress)),
             alpha,
         );
@@ -3111,7 +3111,7 @@ pub const Runner = struct {
                     if (self.cutscene_camera.ticks == 0) {
                         // Native state 9 keeps the override lane alive for one terminal tick,
                         // but publishes the live cameraman matrix through it before clearing.
-                        self.cutscene_camera.matrix = self.cameraman.out_matrix;
+                        self.cutscene_camera.matrix = self.cameraman.live_matrix;
                         self.cutscene_camera.ticks = 1;
                     } else {
                         self.clearCutscene();
@@ -3174,31 +3174,31 @@ pub const Runner = struct {
         const desired_fov = self.cameramanDesiredFovDegrees(preview);
         self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * cameraman_fov_blend;
 
-        const anchor_x = self.camera_anchor.world.x;
-        const anchor_z = self.camera_anchor.world.z;
-        const effective_speed_rows_per_second = self.effectiveSpeedRowsPerSecond();
+        const anchor_x = self.cached_camera_target.world.x;
+        const anchor_y = self.cached_camera_target.world.y;
+        const anchor_z = self.cached_camera_target.world.z;
         const progress_blend = self.cameramanProgressBlend(preview);
-        const vertical_lift = cameramanVerticalLift(effective_speed_rows_per_second, progress_blend);
-        const speed_pitch_radians = cameramanPitchRadiansFromSpeed(effective_speed_rows_per_second);
+        const vertical_lift = cameramanVerticalLiftFromCachedTarget(anchor_y, progress_blend);
+        const anchor_pitch_radians = cameramanPitchRadiansFromCachedTarget(anchor_y);
         const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
         const lateral_roll_radians = anchor_x * (-8.0 * 0.0174499992 * 0.170000002);
         const lane_lean_roll_radians =
             (0.5 - (std.math.cos(self.lane_lean_progress * std.math.pi) * 0.5)) *
             self.lane_lean_amplitude *
             std.math.tau;
-        self.cameraman.lift_target = self.cameramanLiftTarget(preview);
-        self.cameraman.lift_current +=
-            (self.cameraman.lift_target - self.cameraman.lift_current) * cameraman_lift_blend;
+        self.cameraman.attachment_lift_envelope = self.cameramanAttachmentLiftEnvelope(preview);
+        self.cameraman.smoothed_attachment_lift_envelope +=
+            (self.cameraman.attachment_lift_envelope - self.cameraman.smoothed_attachment_lift_envelope) * cameraman_lift_blend;
 
         var desired_transform = buildNormalCameramanTransform(
             anchor_x * 0.40000001,
             cameraman_base_translation_y,
             cameraman_base_translation_z,
             intro_pitch_radians,
-            speed_pitch_radians,
+            anchor_pitch_radians,
         );
         desired_transform.position.x += anchor_x * 0.33333334;
-        desired_transform.position.y += vertical_lift + (self.cameraman.lift_current * effective_speed_rows_per_second);
+        desired_transform.position.y += vertical_lift + (self.cameraman.smoothed_attachment_lift_envelope * anchor_y);
         desired_transform.position.z += anchor_z + 0.4;
 
         desired_transform = rotateCameraTransformWorldZ(desired_transform, lane_lean_roll_radians + lateral_roll_radians);
@@ -3213,17 +3213,17 @@ pub const Runner = struct {
 
         const desired_matrix = cameraMatrixFromTransform(desired_transform);
 
-        if (self.cameraman.current_desired_matrix.m15 == 1.0 and
-            self.cameraman.current_desired_matrix.m0 == 1.0 and
-            self.cameraman.current_desired_matrix.m5 == 1.0 and
-            self.cameraman.current_desired_matrix.m10 == 1.0 and
-            self.cameraman.current_desired_matrix.m12 == 0.0 and
-            self.cameraman.current_desired_matrix.m13 == 0.0 and
-            self.cameraman.current_desired_matrix.m14 == 0.0 and
+        if (self.cameraman.desired_matrix.m15 == 1.0 and
+            self.cameraman.desired_matrix.m0 == 1.0 and
+            self.cameraman.desired_matrix.m5 == 1.0 and
+            self.cameraman.desired_matrix.m10 == 1.0 and
+            self.cameraman.desired_matrix.m12 == 0.0 and
+            self.cameraman.desired_matrix.m13 == 0.0 and
+            self.cameraman.desired_matrix.m14 == 0.0 and
             self.tick_count == 0)
         {
-            self.cameraman.out_matrix = desired_matrix;
-            self.cameraman.current_desired_matrix = desired_matrix;
+            self.cameraman.live_matrix = desired_matrix;
+            self.cameraman.desired_matrix = desired_matrix;
             self.cameraman.previous_desired_matrix = desired_matrix;
             return;
         }
@@ -3231,13 +3231,13 @@ pub const Runner = struct {
         var previous_desired_matrix = self.cameraman.previous_desired_matrix;
         previous_desired_matrix.m14 = clampedPreviousDesiredCameraZ(anchor_z, previous_desired_matrix.m14);
 
-        self.cameraman.out_matrix = linearInterpolateCameraMatrices(
+        self.cameraman.live_matrix = linearInterpolateCameraMatrices(
             previous_desired_matrix,
             desired_matrix,
             self.cameramanMatrixBlendFactor(),
         );
-        self.cameraman.current_desired_matrix = desired_matrix;
-        self.cameraman.previous_desired_matrix = self.cameraman.current_desired_matrix;
+        self.cameraman.desired_matrix = desired_matrix;
+        self.cameraman.previous_desired_matrix = self.cameraman.desired_matrix;
     }
 
     fn stepTemporaryStates(self: *Runner) void {
@@ -3881,7 +3881,7 @@ pub const Runner = struct {
     }
 
     fn updateRowEventWidgetWorld(self: *Runner) void {
-        const camera_transform = normalizeCameraTransform(cameraTransformFromMatrix(self.cameraman.out_matrix));
+        const camera_transform = normalizeCameraTransform(cameraTransformFromMatrix(self.cameraman.live_matrix));
         const widget_world = offsetPosition(
             camera_transform.position,
             camera_transform.right,
@@ -6154,15 +6154,15 @@ fn laneOutsideAttachmentWidth(
     return null;
 }
 
-test "cameraman vertical lift weights speed early and late" {
-    try std.testing.expectApproxEqAbs(@as(f32, 1.15), cameramanVerticalLift(1.0, 0.0), 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.35), cameramanVerticalLift(1.0, 1.0), 0.0001);
-    try std.testing.expect(cameramanVerticalLift(1.0, 0.0) > cameramanVerticalLift(1.0, 1.0));
+test "cameraman vertical lift weights cached target y early and late" {
+    try std.testing.expectApproxEqAbs(@as(f32, 1.15), cameramanVerticalLiftFromCachedTarget(1.0, 0.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.35), cameramanVerticalLiftFromCachedTarget(1.0, 1.0), 0.0001);
+    try std.testing.expect(cameramanVerticalLiftFromCachedTarget(1.0, 0.0) > cameramanVerticalLiftFromCachedTarget(1.0, 1.0));
 }
 
-test "cameraman speed pitch matches the recovered register formula" {
-    try std.testing.expectApproxEqAbs(@as(f32, -0.0348999984), cameramanPitchRadiansFromSpeed(0.49), 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, -1.22149992), cameramanPitchRadiansFromSpeed(48.0), 0.0001);
+test "cameraman cached-target pitch matches the recovered register formula" {
+    try std.testing.expectApproxEqAbs(@as(f32, -0.0348999984), cameramanPitchRadiansFromCachedTarget(0.49), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -1.22149992), cameramanPitchRadiansFromCachedTarget(48.0), 0.0001);
 }
 
 test "cameraman deadzone clamps previous desired z around the anchor" {
@@ -7833,7 +7833,7 @@ test "row event display updates the parcel widget world from the cameraman matri
     var runner = Runner.init(&fixture.preview);
     runner.refreshCameraState(&fixture.preview);
 
-    const transform = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.out_matrix));
+    const transform = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.live_matrix));
     const expected = offsetPosition(
         transform.position,
         transform.right,
@@ -8688,7 +8688,7 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     const actual = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
     const expected = runner.introCutsceneBlendMatrix(&fixture.preview, progress);
     const look_at = normalizeCameraTransform(cameraTransformFromMatrix(runner.introCutsceneHoldMatrix(&fixture.preview)));
-    const cameraman = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.out_matrix));
+    const cameraman = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.live_matrix));
 
     try std.testing.expectEqual(@as(u8, 8), runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(expected, runner.cutsceneCameraMatrix(), 0.0001);
@@ -8991,7 +8991,7 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
     try std.testing.expectApproxEqAbs(expected_top_height, runner.worldPosition(&fixture.preview, 0.0).y, 0.001);
     try expectVector3ApproxEq(
         runner.playerWorldPosition(&fixture.preview),
-        runner.camera_anchor.world,
+        runner.cached_camera_target.world,
         0.0001,
     );
 }
@@ -9825,21 +9825,21 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     try std.testing.expect(!runner.jetpack.active);
 }
 
-test "camera anchor defaults to the player world position without jetpack offsets" {
+test "cached camera target defaults to the player world position without jetpack offsets" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.refreshCameraAnchor(&fixture.preview);
+    runner.refreshCachedCameraTarget(&fixture.preview);
 
     try expectVector3ApproxEq(
         runner.playerWorldPosition(&fixture.preview),
-        runner.camera_anchor.world,
+        runner.cached_camera_target.world,
         0.0001,
     );
 }
 
-test "camera anchor uses the jetpack local offset lanes" {
+test "cached camera target uses the jetpack local offset lanes" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
@@ -9855,20 +9855,21 @@ test "camera anchor uses the jetpack local offset lanes" {
         .z = base_position.z - 0.125,
     };
 
-    runner.refreshCameraAnchor(&fixture.preview);
+    runner.refreshCachedCameraTarget(&fixture.preview);
 
-    try expectVector3ApproxEq(expected, runner.camera_anchor.world, 0.0001);
+    try expectVector3ApproxEq(expected, runner.cached_camera_target.world, 0.0001);
 }
 
-test "cameraman progress blend uses player z rather than the camera anchor" {
+test "cameraman progress blend uses cached camera target z" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.camera_anchor.world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
-    try std.testing.expect(runner.cameramanProgressBlend(&fixture.preview) < 1.0);
-
     runner.row_position = @as(f32, @floatFromInt(fixture.preview.runtime_active_row_start)) + 32.0;
+    runner.cached_camera_target.world.z = 0.0;
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
+
+    runner.cached_camera_target.world.z = @floatFromInt(fixture.preview.runtime_active_row_start);
 
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanProgressBlend(&fixture.preview), 0.0001);
 }
@@ -9885,31 +9886,22 @@ test "cameraman matrix blend factor follows the live subgame rate" {
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
 }
 
-test "cameraman height and pitch follow the effective speed register" {
+test "cameraman ignores speed when cached camera target is fixed" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
-    var slow_runner = Runner.init(&fixture.preview);
-    slow_runner.speed_rows_per_second = 12.0;
-    slow_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    const slow_transform = cameraTransformFromMatrix(slow_runner.cameramanMatrix());
+    var low_runner = Runner.init(&fixture.preview);
+    low_runner.cached_camera_target.world = .{ .x = 0.0, .y = 0.6, .z = 100.0 };
+    low_runner.updateCameraman(&fixture.preview);
+    const low_transform = cameraTransformFromMatrix(low_runner.cameramanMatrix());
 
-    var fast_runner = Runner.init(&fixture.preview);
-    fast_runner.speed_rows_per_second = 48.0;
-    fast_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    const fast_transform = cameraTransformFromMatrix(fast_runner.cameramanMatrix());
+    var speed_runner = Runner.init(&fixture.preview);
+    speed_runner.speed_rows_per_second = 48.0;
+    speed_runner.cached_camera_target.world = low_runner.cached_camera_target.world;
+    speed_runner.updateCameraman(&fixture.preview);
+    const speed_transform = cameraTransformFromMatrix(speed_runner.cameramanMatrix());
 
-    try std.testing.expect(fast_transform.position.y > slow_transform.position.y);
-    try std.testing.expect(fast_transform.forward.y < slow_transform.forward.y);
-
-    var slowed_runner = Runner.init(&fixture.preview);
-    slowed_runner.speed_rows_per_second = 18.0;
-    slowed_runner.slow_ticks = 2;
-    slowed_runner.step(&fixture.preview, .{}, 1.0 / 60.0);
-    const slowed_transform = cameraTransformFromMatrix(slowed_runner.cameramanMatrix());
-
-    try std.testing.expect(slowed_transform.position.y < slow_transform.position.y);
-    try std.testing.expect(slowed_transform.forward.y > slow_transform.forward.y);
+    try std.testing.expectApproxEqAbs(low_transform.forward.y, speed_transform.forward.y, 0.0001);
 }
 
 test "jetpack gauge ramps warning intensity during the startup tenth" {

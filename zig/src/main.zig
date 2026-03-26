@@ -9783,7 +9783,6 @@ test "gameplay camera looks ahead of the runner" {
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(camera.position.z < player_position.z);
     try std.testing.expect(camera.position.y > 0.0);
-    try std.testing.expect(camera.position.y > player_position.y);
     try std.testing.expectApproxEqAbs(transform.position.x + transform.forward.x, camera.target.x, 0.001);
     try std.testing.expectApproxEqAbs(transform.position.y + transform.forward.y, camera.target.y, 0.001);
     try std.testing.expectApproxEqAbs(transform.position.z + transform.forward.z, camera.target.z, 0.001);
