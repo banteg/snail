@@ -65,6 +65,12 @@ SNAIL_VISUAL_FIELD_UPDATES = (
     ("0x88", "squidge_secondary", "float"),
 )
 
+TRACK_ROW_CELL_FIELD_UPDATES = (
+    ("0x18", "anchor_position", "Vec3"),
+    ("0x38", "attachment_template_record", "PathTemplate*"),
+    ("0x3c", "tile_id", "uint8_t"),
+)
+
 PATH_TEMPLATE_FIELD_UPDATES = (
     ("0x38", "kind", "PathTemplateKind"),
     ("0x44", "segment_count", "uint32_t"),
@@ -181,6 +187,14 @@ def main() -> int:
             target=args.target,
             struct_name="SnailVisual",
             updates=SNAIL_VISUAL_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="TrackRowCell",
+            updates=TRACK_ROW_CELL_FIELD_UPDATES,
         )
     )
     operations.extend(

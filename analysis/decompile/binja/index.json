@@ -12,21 +12,26 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 3,
+  "function_count": 3,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
+    {
+      "address": "0x434be0",
+      "name": "build_track_fringe_objects",
+      "artifact": "analysis/decompile/binja/functions/00434be0-build_track_fringe_objects.c"
+    },
     {
       "address": "0x43b120",
       "name": "update_subgoldy",
       "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c"
     },
     {
-      "address": "0x4461d0",
-      "name": "update_cameraman",
-      "artifact": "analysis/decompile/binja/functions/004461d0-update_cameraman.c"
+      "address": "0x43d4d0",
+      "name": "sample_track_floor_height_at_position",
+      "artifact": "analysis/decompile/binja/functions/0043d4d0-sample_track_floor_height_at_position.c"
     }
   ]
 }
