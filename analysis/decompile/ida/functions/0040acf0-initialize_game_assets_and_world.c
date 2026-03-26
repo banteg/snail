@@ -1560,7 +1560,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17207908) = 0;
   v144 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204268), (int)v144);
-  initialize_halfpipe_path_template_pair(
+  initialize_hump_path_template_pair(
     this + 17204268,
     4.0,
     1.0,
@@ -1588,7 +1588,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17204548) = 0;
   v146 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204604), (int)v146);
-  initialize_halfpole_path_template_pair(
+  initialize_dump_path_template_pair(
     this + 17204604,
     4.0,
     1.0,
@@ -1616,7 +1616,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17204884) = 0;
   v148 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17204940), (int)v148);
-  initialize_halfpipe_path_template_pair(
+  initialize_hump_path_template_pair(
     this + 17204940,
     4.0,
     0.30000001,
@@ -1644,7 +1644,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17205220) = 0;
   v150 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17205276), (int)v150);
-  initialize_halfpole_path_template_pair(
+  initialize_dump_path_template_pair(
     this + 17205276,
     4.0,
     0.30000001,
@@ -1868,7 +1868,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17203204) = 0;
   v166 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17205612), (int)v166);
-  initialize_cage2_path_template_pair(
+  initialize_dip_path_template_pair(
     this + 17205612,
     4.0,
     2,
@@ -1976,7 +1976,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17206900) = 0;
   v174 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17209644), (int)v174);
-  initialize_dip_path_template_pair(
+  initialize_slalomdouble_path_template_pair(
     this + 17209644,
     32,
     4,
@@ -2050,7 +2050,7 @@ char __thiscall sub_40ACF0(int this)
   *(_DWORD *)(this + 17208580) = 0;
   v182 = add_object_to_list(unk_4B7648);
   set_bod_object((_DWORD *)(this + 17203932), (int)v182);
-  initialize_detour_path_template_pair(this + 17203932, 3, aObjectsWorld00_1, aObjectsWorld00_2, (int)aObjectsPathVer);
+  initialize_cage2_path_template_pair(this + 17203932, 3, aObjectsWorld00_1, aObjectsWorld00_2, (int)aObjectsPathVer);
   *(_DWORD *)(this + 17203956) = 0;
   *(_DWORD *)(this + 17203952) = 0;
   *(_DWORD *)(this + 17203948) = 0;

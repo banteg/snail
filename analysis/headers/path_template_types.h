@@ -69,8 +69,8 @@ typedef enum PathTemplateKind {
     PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00,
     PATH_TEMPLATE_KIND_LOOPTHELOOPW = 0x06,
     PATH_TEMPLATE_KIND_DETOUR = 0x0f,
-    PATH_TEMPLATE_KIND_HALFPIPE_FAMILY = 0x10,
-    PATH_TEMPLATE_KIND_HALFPOLE = 0x11,
+    PATH_TEMPLATE_KIND_FAMILY_10 = 0x10,
+    PATH_TEMPLATE_KIND_FAMILY_11 = 0x11,
     PATH_TEMPLATE_KIND_CAGE2 = 0x14,
     PATH_TEMPLATE_KIND_SCREW = 0x15,
     PATH_TEMPLATE_KIND_SLALOM = 0x16,
@@ -240,7 +240,7 @@ int32_t __thiscall initialize_loopout_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_detour_path_template_pair(
+int32_t __thiscall initialize_cage2_path_template_pair(
     PathTemplate* self,
     int32_t arg2,
     char* texture_a,
@@ -263,7 +263,7 @@ int32_t __thiscall initialize_kind42_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_halfpipe_path_template_pair(
+int32_t __thiscall initialize_hump_path_template_pair(
     PathTemplate* self,
     float arg2,
     float arg3,
@@ -280,7 +280,7 @@ int32_t __thiscall initialize_looptheloopw_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_halfpole_path_template_pair(
+int32_t __thiscall initialize_dump_path_template_pair(
     PathTemplate* self,
     float arg2,
     float arg3,
@@ -289,7 +289,7 @@ int32_t __thiscall initialize_halfpole_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_cage2_path_template_pair(
+int32_t __thiscall initialize_dip_path_template_pair(
     PathTemplate* self,
     float arg2,
     int32_t arg3,
@@ -340,7 +340,7 @@ int32_t __thiscall initialize_snake_path_template_pair(
     char* texture_b
 );
 
-int32_t __thiscall initialize_dip_path_template_pair(
+int32_t __thiscall initialize_slalomdouble_path_template_pair(
     PathTemplate* self,
     int32_t arg2,
     char* texture_a,

@@ -111,8 +111,8 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_loopout_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
-        "initialize_detour_path_template_pair",
-        "int32_t __thiscall initialize_detour_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "initialize_cage2_path_template_pair",
+        "int32_t __thiscall initialize_cage2_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_supertramp_path_template_pair",
@@ -123,8 +123,8 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_kind42_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
-        "initialize_halfpipe_path_template_pair",
-        "int32_t __thiscall initialize_halfpipe_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
+        "initialize_hump_path_template_pair",
+        "int32_t __thiscall initialize_hump_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_looptheloop_path_template_pair",
@@ -135,12 +135,12 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_looptheloopw_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
-        "initialize_halfpole_path_template_pair",
-        "int32_t __thiscall initialize_halfpole_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
+        "initialize_dump_path_template_pair",
+        "int32_t __thiscall initialize_dump_path_template_pair(PathTemplate* self, float arg2, float arg3, int32_t arg4, char* texture_a, char* texture_b);",
     ),
     (
-        "initialize_cage2_path_template_pair",
-        "int32_t __thiscall initialize_cage2_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
+        "initialize_dip_path_template_pair",
+        "int32_t __thiscall initialize_dip_path_template_pair(PathTemplate* self, float arg2, int32_t arg3, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_screw_path_template_pair",
@@ -167,8 +167,8 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall initialize_snake_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
-        "initialize_dip_path_template_pair",
-        "int32_t __thiscall initialize_dip_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
+        "initialize_slalomdouble_path_template_pair",
+        "int32_t __thiscall initialize_slalomdouble_path_template_pair(PathTemplate* self, int32_t arg2, char* texture_a, char* texture_b);",
     ),
     (
         "initialize_p_path_template_pair",

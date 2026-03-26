@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_detour_path_template_pair @ 0x42e720 */
-/* selector: initialize_detour_path_template_pair */
+/* function: initialize_cage2_path_template_pair @ 0x42e720 */
+/* selector: initialize_cage2_path_template_pair */
 
-int32_t __thiscall initialize_detour_path_template_pair(
+int32_t __thiscall initialize_cage2_path_template_pair(
         PathTemplate *self,
         int32_t arg2,
         char *texture_a,

@@ -157,7 +157,10 @@ Second cross-reference pass covering subsystems not covered in the first sweep: 
 
 ## cRPath Build Methods
 
-These Android `cRPath::Build*` methods map to the already-named Windows `initialize_*_path_template_pair` functions. New matches found:
+These Android `cRPath::Build*` methods are useful structural cross-port matches,
+but several of the older Windows names below were too literal. Where the March 26
+Windows caller-table audit overruled the borrowed Android public name, the table
+now prefers the Windows public-family constructor name instead.
 
 | Android Symbol | Windows Addr | Current Name | Proposed Name | Status |
 |---|---|---|---|---|
@@ -166,10 +169,10 @@ These Android `cRPath::Build*` methods map to the already-named Windows `initial
 | `BuildSlalom` | 0x41f760 | `initialize_slalom_path_template_pair` | — | EXISTS — Sin×5.0 displacement, RotLocalZ twist |
 | `BuildSlalomBig` | 0x4221f0 | `initialize_slalombig_path_template_pair` | — | EXISTS — Sin×4.44444466 displacement, sample_count=`arg2+8` |
 | `BuildWorm` | 0x420170 | `initialize_worm_path_template_pair` | — | EXISTS — 24 fixed nodes, width=96.0, 16-subdivision body |
-| `BuildHalfPipe` | 0x41d030 | `sub_41d030` | `initialize_halfpipe_path_template_pair` | NEW — 7+body+7 nodes, Cos radius |
-| `BuildHalfPole` | 0x41da30 | `sub_41da30` | `initialize_halfpole_path_template_pair` | NEW — negated HalfPipe variant |
-| `BuildDip` | 0x425050 | `sub_425050` | `initialize_dip_path_template_pair` | NEW — 70 nodes, (1-Cos) height |
-| `BuildDetour` | 0x42e720 | `sub_42e720` | `initialize_detour_path_template_pair` | NEW — 22 nodes, Sin×-0.3 y-offset |
+| `BuildHalfPipe` | 0x41d030 | `sub_41d030` | `initialize_hump_path_template_pair` | WINDOWS CORRECTED — Android structural match, but Windows caller table ties `0x41d030` to `HUMP` / `HUMPSMALL` |
+| `BuildHalfPole` | 0x41da30 | `sub_41da30` | `initialize_dump_path_template_pair` | WINDOWS CORRECTED — negated hump family, tied to `DUMP` / `DUMPSMALL` by the Windows caller table |
+| `BuildDip` | 0x425050 | `sub_425050` | `initialize_slalomdouble_path_template_pair` | WINDOWS CORRECTED — Android body resemblance remains useful, but the Windows caller table ties `0x425050` to `SLALOMDOUBLE` |
+| `BuildDetour` | 0x42e720 | `sub_42e720` | `initialize_cage2_path_template_pair` | WINDOWS CORRECTED — Android-side label was too literal; the Windows caller table ties `0x42e720` to `CAGE2` |
 | `CalcLengthZ` | 0x4217b0 | `sub_4217b0` | `calc_path_length_z` | NEW — node distance accumulation, Dot camber |
 | `GetNodes` | 0x41b0a0 | `sub_41b0a0` | `allocate_path_template_samples` | NEW — allocates paired `0xa8`-stride sample arrays, "Path Tile Nodes" / "Path Ball nodes" |
 

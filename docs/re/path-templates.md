@@ -195,7 +195,7 @@ High-confidence fields on each sampled point record inside the `+0x58` / `+0x5c`
 - `+0x80/+0x84/+0x88`: delta vector toward the next sample
 - `+0x8c`: delta length, which `update_track_attachment_follow_state` multiplies by the per-tick path factor
 - `+0x90`: `center_x`
-- `+0x94/+0x98`: family-specific rotation or carryover scalars; these are zeroed in the recovered halfpipe and kind-`42` constructors
+- `+0x94/+0x98`: family-specific rotation or carryover scalars; these are zeroed in the recovered hump and kind-`42` constructors
 - `+0x9c`: scalar used by the ordinary follow path
 - `+0xa0`: extra scalar copied verbatim by the mirror helper and consumed by the nonlinear kind-`42` branch
 

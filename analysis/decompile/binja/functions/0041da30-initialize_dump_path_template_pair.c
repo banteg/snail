@@ -2,10 +2,10 @@
 /* target: 63967:1:3859193737586600258 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: initialize_halfpole_path_template_pair @ 0x41da30 */
+/* function: initialize_dump_path_template_pair @ 0x41da30 */
 
 0041da46        int32_t i_3 = 0
-0041da49        self->kind = PATH_TEMPLATE_KIND_HALFPOLE
+0041da49        self->kind = PATH_TEMPLATE_KIND_FAMILY_11
 0041da50        self->is_mirrored_x = 0
 0041da54        self->side_exit_mode = 0
 0041da57        self->width_cells = arg4

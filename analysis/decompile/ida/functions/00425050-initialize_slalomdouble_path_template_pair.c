@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_dip_path_template_pair @ 0x425050 */
-/* selector: initialize_dip_path_template_pair */
+/* function: initialize_slalomdouble_path_template_pair @ 0x425050 */
+/* selector: initialize_slalomdouble_path_template_pair */
 
-int32_t __thiscall initialize_dip_path_template_pair(
+int32_t __thiscall initialize_slalomdouble_path_template_pair(
         PathTemplate *self,
         int32_t arg2,
         char *texture_a,

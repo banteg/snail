@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_cage2_path_template_pair @ 0x41e440 */
-/* selector: initialize_cage2_path_template_pair */
+/* function: initialize_dip_path_template_pair @ 0x41e440 */
+/* selector: initialize_dip_path_template_pair */
 
-int32_t __thiscall initialize_cage2_path_template_pair(
+int32_t __thiscall initialize_dip_path_template_pair(
         PathTemplate *self,
         float arg2,
         int32_t arg3,
@@ -83,8 +83,8 @@ int32_t __thiscall initialize_cage2_path_template_pair(
   float v78; // [esp+40h] [ebp-10h]
   float v79; // [esp+4Ch] [ebp-4h]
   float arg2a; // [esp+54h] [ebp+4h]
-  int arg2b; // [esp+54h] [ebp+4h]
-  int arg2c; // [esp+54h] [ebp+4h]
+  int32_t arg2b; // [esp+54h] [ebp+4h]
+  int32_t arg2c; // [esp+54h] [ebp+4h]
   float arg2d; // [esp+54h] [ebp+4h]
   int32_t arg3a; // [esp+58h] [ebp+8h]
   int32_t arg3b; // [esp+58h] [ebp+8h]

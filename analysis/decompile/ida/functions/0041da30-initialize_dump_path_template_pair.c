@@ -1,8 +1,8 @@
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/ida/SnailMail_unwrapped.exe.i64 */
-/* function: initialize_halfpole_path_template_pair @ 0x41da30 */
-/* selector: initialize_halfpole_path_template_pair */
+/* function: initialize_dump_path_template_pair @ 0x41da30 */
+/* selector: initialize_dump_path_template_pair */
 
-int32_t __thiscall initialize_halfpole_path_template_pair(
+int32_t __thiscall initialize_dump_path_template_pair(
         PathTemplate *self,
         float arg2,
         float arg3,
@@ -97,7 +97,7 @@ int32_t __thiscall initialize_halfpole_path_template_pair(
   char *v92; // [esp+78h] [ebp+18h]
 
   v7 = 0;
-  self->kind = PATH_TEMPLATE_KIND_HALFPOLE;
+  self->kind = PATH_TEMPLATE_KIND_FAMILY_11;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg4;

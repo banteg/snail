@@ -93,7 +93,7 @@ int32_t __thiscall initialize_hill_valley_path_template_pair(
   float arg5e; // [esp+5Ch] [ebp+10h]
 
   v8 = 0;
-  self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY;
+  self->kind = PATH_TEMPLATE_KIND_FAMILY_10;
   self->is_mirrored_x = 0;
   self->side_exit_mode = 0;
   self->width_cells = arg2;

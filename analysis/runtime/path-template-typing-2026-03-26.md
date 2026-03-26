@@ -57,12 +57,22 @@ enum for the constructor values that are actually closed. A few values remain
 family-wide on purpose:
 
 - `0x00`: `PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY`
-- `0x10`: `PATH_TEMPLATE_KIND_HALFPIPE_FAMILY`
+- `0x10`: `PATH_TEMPLATE_KIND_FAMILY_10`
+- `0x11`: `PATH_TEMPLATE_KIND_FAMILY_11`
 - `0x27`: `PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY`
 
 Those are the values where the current constructor family still shares one native
 kind across more than one higher-level builder name. The enum deliberately avoids
 pretending those are fully split when the decompile still says otherwise.
+
+One correction from the wider caller-table audit:
+
+- the Windows constructor symbols at `0x41d030` and `0x41da30` are better treated as the public `HUMP` / `HUMPSMALL` and `DUMP` / `DUMPSMALL` families, not as `HALFPIPE` / `HALFPOLE`
+- the same audit also corrected a small block of other public-family constructor names:
+  - `0x41e440`: `DIP`
+  - `0x425050`: `SLALOMDOUBLE`
+  - `0x42e720`: `CAGE2`
+- those public constructor names do not always match the runtime `PathTemplate.kind` bucket written into the record, so the checked-in enum stays deliberately more conservative than the function symbols
 
 Recovered `PathTemplateSample` shape:
 
@@ -178,7 +188,7 @@ Applied in the live BN database:
 - `normalize_vector(Vec3* vector)`
 - `cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs)`
 - `initialize_kind42_path_template_pair(PathTemplate* self, ...)`
-- `initialize_halfpipe_path_template_pair(PathTemplate* self, ...)`
+- `initialize_hump_path_template_pair(PathTemplate* self, ...)`
 - most of the remaining `initialize_*_path_template_pair` family now also uses `PathTemplate* self`
 - `mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source)`
 - `get_or_create_texture_ref(TextureRefList* texture_list, char* texture_path, int32_t arg3, int16_t arg4)`
@@ -209,7 +219,7 @@ That family-wide constructor pass materially improves the first screenful of dec
 
 - `initialize_looptheloop_path_template_pair`
 - `initialize_loopout_path_template_pair`
-- `initialize_detour_path_template_pair`
+- `initialize_cage2_path_template_pair`
 - `initialize_supertramp_path_template_pair`
 - the other already-recovered path-template constructors that were still spelling the owner as `arg1`
 

@@ -941,15 +941,15 @@
     },
     {
       "address": "0x41d030",
-      "name": "initialize_halfpipe_path_template_pair"
+      "name": "initialize_hump_path_template_pair"
     },
     {
       "address": "0x41da30",
-      "name": "initialize_halfpole_path_template_pair"
+      "name": "initialize_dump_path_template_pair"
     },
     {
       "address": "0x41e440",
-      "name": "initialize_cage2_path_template_pair"
+      "name": "initialize_dip_path_template_pair"
     },
     {
       "address": "0x41eda0",
@@ -1012,7 +1012,7 @@
     },
     {
       "address": "0x425050",
-      "name": "initialize_dip_path_template_pair"
+      "name": "initialize_slalomdouble_path_template_pair"
     },
     {
       "address": "0x425a40",
@@ -1101,7 +1101,7 @@
     },
     {
       "address": "0x42e720",
-      "name": "initialize_detour_path_template_pair"
+      "name": "initialize_cage2_path_template_pair"
     },
     {
       "address": "0x42f470",

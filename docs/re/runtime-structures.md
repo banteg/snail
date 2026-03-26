@@ -625,8 +625,16 @@ few remain explicit family buckets where multiple builders still share one nativ
 kind:
 
 - `PATH_TEMPLATE_KIND_LOOPTHELOOP_FAMILY = 0x00`
-- `PATH_TEMPLATE_KIND_HALFPIPE_FAMILY = 0x10`
+- `PATH_TEMPLATE_KIND_FAMILY_10 = 0x10`
+- `PATH_TEMPLATE_KIND_FAMILY_11 = 0x11`
 - `PATH_TEMPLATE_KIND_TURNUNDER_TOAD_FAMILY = 0x27`
+
+This is intentionally more conservative than the public constructor symbols.
+The current Windows caller-table audit supports public-family constructor names
+like `initialize_hump_path_template_pair`, `initialize_dump_path_template_pair`,
+`initialize_dip_path_template_pair`, `initialize_slalomdouble_path_template_pair`,
+and `initialize_cage2_path_template_pair`, but those constructors do not map
+1:1 to the runtime `PathTemplate.kind` buckets they write into the record.
 
 High-confidence `ObjectFaceQuad` fields:
 

@@ -5,7 +5,7 @@
 /* function: initialize_hill_valley_path_template_pair @ 0x42d570 */
 
 0042d580        int32_t i_2 = 0
-0042d583        self->kind = PATH_TEMPLATE_KIND_HALFPIPE_FAMILY
+0042d583        self->kind = PATH_TEMPLATE_KIND_FAMILY_10
 0042d58a        self->is_mirrored_x = 0
 0042d58e        self->side_exit_mode = 0
 0042d591        self->width_cells = arg2

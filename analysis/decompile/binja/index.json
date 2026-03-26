@@ -1092,18 +1092,18 @@
     },
     {
       "address": "0x41d030",
-      "name": "initialize_halfpipe_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/0041d030-initialize_halfpipe_path_template_pair.c"
+      "name": "initialize_hump_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/0041d030-initialize_hump_path_template_pair.c"
     },
     {
       "address": "0x41da30",
-      "name": "initialize_halfpole_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/0041da30-initialize_halfpole_path_template_pair.c"
+      "name": "initialize_dump_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/0041da30-initialize_dump_path_template_pair.c"
     },
     {
       "address": "0x41e440",
-      "name": "initialize_cage2_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/0041e440-initialize_cage2_path_template_pair.c"
+      "name": "initialize_dip_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/0041e440-initialize_dip_path_template_pair.c"
     },
     {
       "address": "0x41eda0",
@@ -1177,8 +1177,8 @@
     },
     {
       "address": "0x425050",
-      "name": "initialize_dip_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/00425050-initialize_dip_path_template_pair.c"
+      "name": "initialize_slalomdouble_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/00425050-initialize_slalomdouble_path_template_pair.c"
     },
     {
       "address": "0x425a40",
@@ -1282,8 +1282,8 @@
     },
     {
       "address": "0x42e720",
-      "name": "initialize_detour_path_template_pair",
-      "artifact": "analysis/decompile/binja/functions/0042e720-initialize_detour_path_template_pair.c"
+      "name": "initialize_cage2_path_template_pair",
+      "artifact": "analysis/decompile/binja/functions/0042e720-initialize_cage2_path_template_pair.c"
     },
     {
       "address": "0x42f470",
