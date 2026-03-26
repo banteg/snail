@@ -361,6 +361,16 @@ The current high-confidence `Game` fields are:
 - `+0xff25d0`: `selected_level_record_active`
 - `+0xff25d1`: `selected_level_record_persistent`
 - `+0xff25d4`: `selected_level_record`
+  - pointer to the expanded in-memory selected replay/high-score entry, not the compact on-disk `0x88 + 5*n` record
+  - closed gameplay slice:
+    - `+0x28`: `replay_level_index`
+    - `+0x38`: `runtime_build_flags`
+    - `+0x48`: `replay_speed_scalar`
+    - `+0x68`: `runtime_build_seed`
+    - `+0x6c`: `replay_sample_count`
+    - `+0x70 + i*6`: replay sample `lateral_x`
+    - `+0x72 + i*6`: replay sample `secondary_lane_raw`
+    - `+0x74 + i*6`: replay sample `flags`
 - `+0xff25d8`: `selected_level_record_saved_return_owner`
 - `+0xff25dc`: `runtime_track_index`
 
@@ -492,15 +502,15 @@ Current practical read:
     - when `selected_level_record_active != 0` and either the live click-start owner at `game + 0x3bbba0` raises flag `0x4000` while `game + 0xc == 0`, or the New Game replay-attract hide latch at `data_4df904 + 0x4f2e0` is still armed, it copies the current outer owner from `app + 0x1b8` into `app + 0x1bc`
     - it then sets `app + 0x1b8 = 0x1a` when `selected_level_record_persistent != 0`, otherwise `app + 0x1b8 = 0x1b`
     - the saved-owner slot is therefore no longer globally unresolved: selected-record startup uses the same "save current owner, then choose bridge opcode by persistent lane" pattern as the later completion and failure helpers
-  - `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
+- `update_pause_menu` uses `app + 0x1066be9` directly on the pause `End Game` branch: it copies the current owner into the completion-screen saved-owner slot, then picks completion state `3` when the persistent byte is `1` (`7` for tutorial mode, `2` otherwise)
   - `update_completion_screen` state `3` destroys subgame and restores the state saved at `app + 0x1066bf0`, so the persistent replay-backed abandon or overlay lane uses the same saved-owner destroy-return path as persistent result exits rather than frontend state `0x1c`
   - when that persistent byte is `0`, the same pause branch falls through to completion state `2`; `update_completion_screen` state `2` then calls `complete_subgame(game, 1)`, skips the app `+0x30d` score-entry branch because transient selected-record runs keep `selected_level_record_active != 0`, destroys subgame, and on `level_mode == 4` reinitializes subgame directly instead of using frontend state `0x1c`
   - `update_subgame` seeds `game + 0x1270fc8 = 2` on the route-map best-trial launch path, and `initialize_subgame` later uses that nonzero continuation selector plus `level_mode == 4` to rebuild the galaxy owner through `initialize_galaxy` / `reset_subgame`
   - transient route-map replay pause abandon therefore uses the non-clear rebuild lane (`0x1b` / opcode `27`-shaped semantics), not the respawn-only clear-replay lane (`0x1c` / opcode `28`)
-  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `runtime_track_index < record->sample_count`, and `movement_state != 2`:
-    - sample word `+0x70 + runtime_track_index * 6` becomes live replay `x`
-    - sample byte `+0x74 + runtime_track_index * 6` bit `0x4` feeds `track_state_latch`
-    - that same sample byte bit `0x8` writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and calls `begin_frontend_fade_in(app + 0x24)`
+  - `update_subgoldy` also consumes the selected-record replay payload directly while `selected_level_record_active != 0`, `runtime_track_index < record->replay_sample_count`, and `movement_state != 2`:
+    - `record->replay_samples[runtime_track_index].lateral_x` becomes live replay `x`
+    - `record->replay_samples[runtime_track_index].flags & 0x4` feeds `track_state_latch`
+    - that same `flags` byte bit `0x8` writes `app + 0x1b8 = 0x1a`, `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and calls `begin_frontend_fade_in(app + 0x24)`
   - selected replay marker bit `0x8` therefore loops back through frontend state `10 -> initialize_subgame -> update_subgame`, not directly to the route-map or high-score launch surface
   - `update_frontend_state_machine` state `0x1c` also clears app dword `+0x12e55e0` before the rebuild handoff
 - `set_subgame_features`, `populate_runtime_track_cells_from_segments`, and `build_subgame_level` all consume `selected_level_record_active` or `selected_level_record_persistent` to override the live course metadata from that record

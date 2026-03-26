@@ -87,3 +87,9 @@ Template:
 - invalidated claim: `0x43af60` is best described as `initialize_subgoldy_fall_state`
 - replacement evidence: the Windows helper only arms the pending post-follow carryover window by copying follow carryover into `post_follow_value_a/b`, clearing `follow_state.active`, setting `attachment_exit_pending`, latching `attachment_exit_anchor_z`, and zeroing progress and gate bytes; it is neither a universal attachment-end helper nor a full airborne fall initializer
 - port consequence: rename the tracked symbol and repo narrative around `begin_post_follow_carryover`, and keep actual fall/death state naming separate from attachment-exit carryover in Zig and RE notes
+
+## 2026-03-26 - Selected replay record pointer
+
+- invalidated claim: `game + 0xff25d4` can be treated like the compact on-disk high-score record layout
+- replacement evidence: `serialize_compact_high_score_record` and `deserialize_compact_high_score_record` both prove `selected_level_record` points at the expanded in-memory high-score entry, and `update_subgoldy` consumes the expanded replay arrays at `record + 0x70 + i*6` directly
+- port consequence: keep the native type lane and docs centered on an expanded `SelectedLevelRecord` with inline `replay_samples`; do not harden any compact-record interpretation into Zig or RE notes

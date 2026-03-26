@@ -62,11 +62,18 @@ Current checked-in Binary Ninja companion:
 
 - `bn_player_presentation_types.h`
 - `uv run python tools/binja/sync_path_template_types.py`
+- `bn_selected_level_record_types.h`
+- `uv run python tools/binja/sync_selected_level_record_types.py`
 
 That BN sync lane intentionally replays a narrow presentation/camera slice:
 - sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
 - the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
 - the small matrix and presentation helper prototypes that materially change caller readability in BN
+
+The selected-record BN lane is even narrower:
+- just the expanded in-memory selected replay/high-score entry
+- the `Game.selected_level_record*` control fields
+- the minimal `Player.game` / `Player.movement_state` overlays needed for replay consumers like `update_subgoldy`
 
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database

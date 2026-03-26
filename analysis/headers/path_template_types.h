@@ -368,6 +368,31 @@ typedef struct RowEventDisplayController {
     int32_t display_token;
 } RowEventDisplayController;
 
+typedef struct SelectedLevelReplaySample {
+    int16_t lateral_x;
+    int16_t secondary_lane_raw;
+    uint8_t flags;
+    uint8_t _pad_05;
+} SelectedLevelReplaySample;
+
+typedef struct SelectedLevelRecord {
+    uint32_t active;
+    uint32_t score;
+    uint8_t _pad_08[0x20];
+    uint32_t replay_level_index;
+    uint32_t replay_mode_id;
+    uint8_t _pad_30[0x08];
+    uint32_t runtime_build_flags;
+    uint8_t _pad_3c[0x0c];
+    float replay_speed_scalar;
+    uint32_t challenge_speed_value;
+    uint32_t challenge_difficulty_value;
+    char name[0x14];
+    uint32_t runtime_build_seed;
+    uint32_t replay_sample_count;
+    SelectedLevelReplaySample replay_samples[1];
+} SelectedLevelRecord;
+
 typedef struct Game {
     uint8_t _pad_00[0x34];
     float challenge_difficulty_scalar;
@@ -388,7 +413,7 @@ typedef struct Game {
     uint8_t selected_level_record_active;
     uint8_t selected_level_record_persistent;
     uint8_t _pad_ff25d2[0x2];
-    void* selected_level_record;
+    SelectedLevelRecord* selected_level_record;
     int32_t selected_level_record_saved_return_owner;
     int32_t runtime_track_index;
     uint8_t _pad_ff25e0[0x2801f8];

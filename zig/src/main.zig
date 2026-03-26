@@ -5458,6 +5458,9 @@ const AppState = struct {
             frontend_bridge.savedReplayReturnOuterOwnerForLaunch(launch)
         else
             null;
+        // PORT(verified): the native selected-record control lane keeps persistence and the
+        // saved return owner separate from the launch source. Only use the derived outer
+        // return target when there is no recovered saved replay return owner.
         self.selected_level_record_outer_return_target = if (selected_level_record_launch) |launch|
             if (frontend_bridge.savedReplayReturnOuterOwnerForLaunch(launch) == null) launch.outer_return_target else null
         else
