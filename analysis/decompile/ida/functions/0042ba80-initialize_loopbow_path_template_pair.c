@@ -230,7 +230,7 @@ int32_t __thiscall initialize_loopbow_path_template_pair(
       v17 = v54;
       v55 = sine(v54);
       v47 = sine(v17) * v55 * 0.52359879;
-      rotate_matrix_world_y(&v93.basis_right.x, v47);
+      rotate_matrix_world_y(&v93, v47);
       self->primary_samples[v12].transform.position.z = self->primary_samples[v12].transform.position.z - 7.0;
       self->secondary_samples[v12].transform.position.z = self->secondary_samples[v12].transform.position.z - 7.0;
       sub_44D1D0(&self->primary_samples[v12], &v93.basis_right.x);

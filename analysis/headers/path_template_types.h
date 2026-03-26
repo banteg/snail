@@ -34,7 +34,11 @@ typedef struct ColorBGRA8 {
     uint8_t a;
 } ColorBGRA8;
 
-typedef struct Player Player;
+typedef struct Player {
+    uint8_t _pad_00[0x2964];
+    Vec3 cached_camera_target_world;
+} Player;
+typedef struct Game Game;
 
 typedef struct TextureRef {
     uint32_t flags;
@@ -136,6 +140,19 @@ typedef struct TransformMatrix {
     Vec4 position;
 } TransformMatrix;
 
+typedef struct CameramanState {
+    TransformMatrix live_matrix;
+    TransformMatrix desired_matrix;
+    TransformMatrix previous_desired_matrix;
+    Player* player;
+    Game* game;
+    float fov_degrees;
+    uint8_t unresolved_cc;
+    uint8_t _pad_cd[0x3];
+    float attachment_lift_envelope;
+    float smoothed_attachment_lift_envelope;
+} CameramanState;
+
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -199,12 +216,44 @@ int32_t __fastcall finalize_path_template(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
 int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
 int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);
+TransformMatrix* __thiscall initialize_matrix_from_values(
+    TransformMatrix* transform,
+    float m00,
+    float m01,
+    float m02,
+    float m03,
+    float m10,
+    float m11,
+    float m12,
+    float m13,
+    float m20,
+    float m21,
+    float m22,
+    float m23,
+    float m30,
+    float m31,
+    float m32,
+    float m33
+);
+int32_t __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
+int32_t __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
 int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);
 double __fastcall normalize_vector(Vec3* vector);
 double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
 int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
+TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);
+TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
+TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);
+TransformMatrix* __thiscall look_at_point(TransformMatrix* transform, Vec3* target);
+TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
+TransformMatrix* __thiscall linear_interpolate_matrix(
+    TransformMatrix* out,
+    TransformMatrix* from,
+    TransformMatrix* to,
+    float alpha
+);
 int32_t __stdcall compute_kind42_attachment_transform(
     float arg1,
     float arg2,
@@ -221,6 +270,8 @@ float __thiscall set_color_alpha(Color4f* color, float alpha);
 float __thiscall set_color_grayscale(Color4f* color, float intensity);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
+int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
+int32_t __thiscall update_cameraman(CameramanState* cameraman);
 PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 

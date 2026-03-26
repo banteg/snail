@@ -3,21 +3,21 @@
 /* selector: initialize_cameraman */
 
 // Initializes the follow-camera controller, wiring its shared player and global pointers, clearing the cached matrices, and seeding the default zoom used by `update_subgame_camera`. Cross-port Android and iOS symbols match this helper to `cRCameraman::Init()`.
-int __thiscall sub_446160(int this)
+int32_t __thiscall initialize_cameraman(CameramanState *cameraman)
 {
-  char *v2; // ecx
-  int result; // eax
+  Game *v2; // ecx
+  int32_t result; // eax
 
-  *(_DWORD *)(this + 192) = (char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904];
-  v2 = (char *)MEMORY[0x4DF904] + 476696;
-  *(_BYTE *)(this + 204) = 0;
-  *(_DWORD *)(this + 196) = v2;
-  set_matrix_identity((_DWORD *)(this + 128));
-  set_matrix_identity((_DWORD *)(this + 64));
-  result = set_matrix_identity((_DWORD *)this);
-  *(_DWORD *)(this + 208) = 0;
-  *(_DWORD *)(this + 212) = 0;
-  *(_DWORD *)(this + 200) = 1121714176;
+  cameraman->player = (Player *)((char *)&loc_42FD7C + (_DWORD)MEMORY[0x4DF904]);
+  v2 = (Game *)((char *)MEMORY[0x4DF904] + 476696);
+  cameraman->unresolved_cc = 0;
+  cameraman->game = v2;
+  set_matrix_identity(&cameraman->previous_desired_matrix);
+  set_matrix_identity(&cameraman->desired_matrix);
+  result = set_matrix_identity(&cameraman->live_matrix);
+  cameraman->attachment_lift_envelope = 0.0;
+  cameraman->smoothed_attachment_lift_envelope = 0.0;
+  cameraman->fov_degrees = 110.0;
   return result;
 }
 

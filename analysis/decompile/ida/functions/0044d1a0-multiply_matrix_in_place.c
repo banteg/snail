@@ -2,11 +2,11 @@
 /* function: multiply_matrix_in_place @ 0x44d1a0 */
 /* selector: multiply_matrix_in_place */
 
-float *__thiscall sub_44D1A0(void *this, float *a2)
+TransformMatrix *__thiscall multiply_matrix_in_place(TransformMatrix *lhs, TransformMatrix *rhs)
 {
   float v3[16]; // [esp+8h] [ebp-40h] BYREF
 
-  qmemcpy(v3, this, sizeof(v3));
-  return multiply_matrices((float *)this, v3, a2);
+  qmemcpy(v3, lhs, sizeof(v3));
+  return (TransformMatrix *)multiply_matrices(&lhs->basis_right.x, v3, &rhs->basis_right.x);
 }
 

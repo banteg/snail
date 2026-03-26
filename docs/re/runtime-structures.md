@@ -54,6 +54,8 @@ The current high-confidence `Player` fields are:
 - `+0x2740`: `track_z_anchor`
 - `+0x2750`: `jetpack_gauge`
   - inline `JetpackGaugeController`
+- `+0x2964`: `cached_camera_target_world`
+  - world-space camera anchor consumed by `update_cameraman`
 - `+0x4340`: `visible_life_stock`
   - seeded to `3` by `populate_runtime_track_cells_from_segments` before `initialize_subgoldy`
   - incremented by `add_subgoldy_score` on each `50,000` score bucket, capped at `9`
@@ -81,6 +83,31 @@ Important caveat:
 - the Windows build keeps contact damage and jetpack countdown as two separate inline controllers:
   - `player + 0x3c4` is the contact or hazard accumulator
   - `player + 0x2750` is the jetpack warning or auto-shutoff controller
+
+## Cameraman State
+
+The current high-confidence `CameramanState` prefix is:
+
+- `+0x00`: `live_matrix`
+- `+0x40`: `desired_matrix`
+- `+0x80`: `previous_desired_matrix`
+- `+0xc0`: `player`
+- `+0xc4`: `game`
+- `+0xc8`: `fov_degrees`
+- `+0xcc`: unresolved byte flag
+- `+0xd0`: `attachment_lift_envelope`
+- `+0xd4`: `smoothed_attachment_lift_envelope`
+
+Current practical read:
+
+- `initialize_cameraman` wires the shared `player` and `game` pointers, clears the three live matrices, zeroes the attachment lift envelopes, and seeds `fov_degrees` to `110.0`
+- `update_cameraman` builds `desired_matrix` from `player->cached_camera_target_world`, attachment and movement-side lift inputs, then interpolates `live_matrix` between `previous_desired_matrix` and `desired_matrix`
+- the current tracked IDA camera slice is now typed from the checked-in header, so the decompile uses `live_matrix`, `desired_matrix`, and `cached_camera_target_world` directly instead of raw matrix blocks and `player + 0x2964` float indexing
+
+Important caveat:
+
+- the byte at `+0xcc` is still unresolved and intentionally unnamed beyond “unresolved byte flag”
+- several player-side attachment and presentation inputs consumed by `update_cameraman` are still only partially typed
 
 ## Damage Gauge Controller
 

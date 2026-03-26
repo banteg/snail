@@ -2,26 +2,28 @@
 /* function: rotate_matrix_world_x @ 0x44ce30 */
 /* selector: rotate_matrix_world_x */
 
-void __thiscall sub_44CE30(float *this, float a2)
+int32_t __thiscall rotate_matrix_world_x(TransformMatrix *transform, float angle)
 {
-  double v4; // st7
-  double v5; // st6
+  int32_t result; // eax
+  double v5; // st7
   double v6; // st6
   double v7; // st6
-  double v8; // st7
-  float v9; // [esp+Ch] [ebp+4h]
+  double v8; // st6
+  double v9; // st7
+  float anglea; // [esp+Ch] [ebp+4h]
 
-  v9 = cosine(a2);
-  v4 = sine(a2);
-  v5 = v4 * *(this + 8) + v9 * *(this + 4);
-  *(this + 8) = v9 * *(this + 8) - v4 * *(this + 4);
-  *(this + 4) = v5;
-  v6 = v4 * *(this + 9) + v9 * *(this + 5);
-  *(this + 9) = v9 * *(this + 9) - v4 * *(this + 5);
-  *(this + 5) = v6;
-  v7 = v9 * *(this + 10) - v4 * *(this + 6);
-  v8 = v4 * *(this + 10) + v9 * *(this + 6);
-  *(this + 10) = v7;
-  *(this + 6) = v8;
+  anglea = cosine(angle);
+  v5 = sine(angle);
+  v6 = v5 * transform->basis_forward.x + anglea * transform->basis_up.x;
+  transform->basis_forward.x = anglea * transform->basis_forward.x - v5 * transform->basis_up.x;
+  transform->basis_up.x = v6;
+  v7 = v5 * transform->basis_forward.y + anglea * transform->basis_up.y;
+  transform->basis_forward.y = anglea * transform->basis_forward.y - v5 * transform->basis_up.y;
+  transform->basis_up.y = v7;
+  v8 = anglea * transform->basis_forward.z - v5 * transform->basis_up.z;
+  v9 = v5 * transform->basis_forward.z + anglea * transform->basis_up.z;
+  transform->basis_forward.z = v8;
+  transform->basis_up.z = v9;
+  return result;
 }
 

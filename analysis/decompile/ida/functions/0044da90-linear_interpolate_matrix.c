@@ -3,38 +3,43 @@
 /* selector: linear_interpolate_matrix */
 
 // Interpolates one transform toward another by blending rotation in matrix space and linearly blending translation. Android symbols match this helper to `tMatrix::LinearInterpolate(const tMatrix&, const tMatrix&, float)`.
-int __thiscall sub_44DA90(float *this, float *a2, float *a3, float a4)
+TransformMatrix *__thiscall linear_interpolate_matrix(
+        TransformMatrix *out,
+        TransformMatrix *from,
+        TransformMatrix *to,
+        float alpha)
 {
-  float *v4; // esi
-  double v5; // st6
-  float v7; // [esp+Ch] [ebp-24h]
-  float v8; // [esp+10h] [ebp-20h]
-  float v9; // [esp+14h] [ebp-1Ch]
-  float v10; // [esp+18h] [ebp-18h]
-  float v11; // [esp+1Ch] [ebp-14h]
-  float v12; // [esp+20h] [ebp-10h]
-  float v13; // [esp+28h] [ebp-8h]
-  float v14; // [esp+2Ch] [ebp-4h]
+  TransformMatrix *v4; // edx
+  TransformMatrix *v5; // esi
+  double v6; // st6
+  float v8; // [esp+Ch] [ebp-24h]
+  float v9; // [esp+10h] [ebp-20h]
+  float v10; // [esp+14h] [ebp-1Ch]
+  float v11; // [esp+18h] [ebp-18h]
+  float v12; // [esp+1Ch] [ebp-14h]
+  float v13; // [esp+20h] [ebp-10h]
+  float v14; // [esp+28h] [ebp-8h]
+  float v15; // [esp+2Ch] [ebp-4h]
 
-  v4 = this;
-  invert_matrix_from_source(this, a2);
-  multiply_matrix_in_place(v4, a3);
-  interpolate_matrix_rotation(v4, a4);
-  premultiply_matrix_in_place(v4, a2);
-  orthogonalize_matrix(v4);
-  v4 += 12;
-  v13 = a4 * a3[13];
-  v14 = a4 * a3[14];
-  v5 = 1.0 - a4;
-  v7 = v5 * a2[12];
-  v8 = v5 * a2[13];
-  v9 = v5 * a2[14];
-  v10 = v7 + a4 * a3[12];
-  *v4 = v10;
-  v11 = v8 + v13;
-  v4[1] = v11;
+  v5 = out;
+  invert_matrix_from_source(out, v4);
+  multiply_matrix_in_place(v5, to);
+  interpolate_matrix_rotation(v5, alpha);
+  premultiply_matrix_in_place(v5, from);
+  orthogonalize_matrix(v5);
+  v5 = (TransformMatrix *)((char *)v5 + 48);
+  v14 = alpha * to->position.y;
+  v15 = alpha * to->position.z;
+  v6 = 1.0 - alpha;
+  v8 = v6 * from->position.x;
+  v9 = v6 * from->position.y;
+  v10 = v6 * from->position.z;
+  v11 = v8 + alpha * to->position.x;
+  v5->basis_right.x = v11;
   v12 = v9 + v14;
-  v4[2] = v12;
-  return LODWORD(v12);
+  v5->basis_right.y = v12;
+  v13 = v10 + v15;
+  v5->basis_right.z = v13;
+  return (TransformMatrix *)LODWORD(v13);
 }
 

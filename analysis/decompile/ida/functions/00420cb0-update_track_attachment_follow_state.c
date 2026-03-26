@@ -98,9 +98,9 @@ int32_t __thiscall update_track_attachment_follow_state(
   float v92; // [esp+94h] [ebp-10Ch]
   float v93; // [esp+98h] [ebp-108h]
   TransformMatrix v94; // [esp+A0h] [ebp-100h] BYREF
-  int v95[16]; // [esp+E0h] [ebp-C0h] BYREF
-  int v96[16]; // [esp+120h] [ebp-80h] BYREF
-  int v97[16]; // [esp+160h] [ebp-40h] BYREF
+  TransformMatrix v95; // [esp+E0h] [ebp-C0h] BYREF
+  TransformMatrix v96; // [esp+120h] [ebp-80h] BYREF
+  TransformMatrix v97; // [esp+160h] [ebp-40h] BYREF
 
   sample_index = follow_state->sample_index;
   template_record = follow_state->template_record;
@@ -143,12 +143,12 @@ LABEL_11:
         v40 = follow_state->sample_index;
         v94.position.y = v86.position.y;
         v94.position.z = v86.position.z;
-        qmemcpy(v97, &v86, sizeof(v97));
+        qmemcpy(&v97, &v86, sizeof(v97));
         if ( v40 )
           progress = 1.0 - follow_state->progress;
         else
           progress = follow_state->progress;
-        linear_interpolate_matrix(&v86.basis_right.x, &v94.basis_right.x, (float *)v97, progress);
+        linear_interpolate_matrix(&v86, &v94, &v97, progress);
       }
       p_output_position = &follow_state->output_position;
       p_y = &motion->y;
@@ -194,12 +194,12 @@ LABEL_11:
       }
       else
       {
-        qmemcpy(v95, v52, sizeof(v95));
-        qmemcpy(v96, &v19->secondary_samples[v18 + 1], sizeof(v96));
-        memset(&v95[12], 0, 12);
-        memset(&v96[12], 0, 12);
+        qmemcpy(&v95, v52, sizeof(v95));
+        qmemcpy(&v96, &v19->secondary_samples[v18 + 1], sizeof(v96));
+        memset(&v95.position, 0, 12);
+        memset(&v96.position, 0, 12);
         v77 = *(float *)&v80 / v19->secondary_samples[v21].delta_length;
-        linear_interpolate_matrix(&v86.basis_right.x, (float *)v95, (float *)v96, v77);
+        linear_interpolate_matrix(&v86, &v95, &v96, v77);
       }
       p_output_position = &follow_state->output_position;
       v38 = out_position;
@@ -295,7 +295,7 @@ LABEL_11:
     follow_state->orientation_b = (v73 + (double)SLODWORD(progress))
                                 * v64->installed_heading_delta
                                 / (double)(int)v64->segment_count;
-    if ( *((_DWORD *)player + 2519) == 1 )
+    if ( *(_DWORD *)&player->_pad_00[10076] == 1 )
       goto LABEL_62;
     v75 = v38->x - v85;
     if ( v75 < 0.0 )
@@ -315,8 +315,8 @@ LABEL_62:
       v38->x = p_output_position->x;
       v38->y = p_output_position->y;
       v38->z = p_output_position->z;
-      *((float *)follow_state->player + 220) = follow_state->template_record->installed_heading_delta
-                                             + *((float *)follow_state->player + 220);
+      *(float *)&follow_state->player->_pad_00[880] = follow_state->template_record->installed_heading_delta
+                                                    + *(float *)&follow_state->player->_pad_00[880];
       if ( v38->x >= -4.0 )
       {
         if ( v38->x <= 4.0 )
@@ -424,8 +424,8 @@ LABEL_62:
       v84 = v36;
       out_position->z = v84;
       out_position->x = v26;
-      *((float *)follow_state->player + 184) = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
-      *((_DWORD *)follow_state->player + 183) = *((_DWORD *)follow_state->player + 184);
+      *(float *)&follow_state->player->_pad_00[736] = *((float *)MEMORY[0x4DF904] + 119188) * 0.013888888;
+      *(_DWORD *)&follow_state->player->_pad_00[732] = *(_DWORD *)&follow_state->player->_pad_00[736];
       play_voice_manager((int)unk_751498, 15, 0, -1);
     }
     else
@@ -435,8 +435,8 @@ LABEL_62:
                       + v24->width_or_scale
                       + v78;
     }
-    *((float *)follow_state->player + 220) = follow_state->template_record->installed_heading_delta
-                                           + *((float *)follow_state->player + 220);
+    *(float *)&follow_state->player->_pad_00[880] = follow_state->template_record->installed_heading_delta
+                                                  + *(float *)&follow_state->player->_pad_00[880];
     return 3;
   }
 }

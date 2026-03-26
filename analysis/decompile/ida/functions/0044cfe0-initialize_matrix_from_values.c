@@ -2,41 +2,41 @@
 /* function: initialize_matrix_from_values @ 0x44cfe0 */
 /* selector: initialize_matrix_from_values */
 
-_DWORD *__thiscall sub_44CFE0(
-        _DWORD *this,
-        int a2,
-        int a3,
-        int a4,
-        int a5,
-        int a6,
-        int a7,
-        int a8,
-        int a9,
-        int a10,
-        int a11,
-        int a12,
-        int a13,
-        int a14,
-        int a15,
-        int a16,
-        int a17)
+TransformMatrix *__thiscall initialize_matrix_from_values(
+        TransformMatrix *transform,
+        float m00,
+        float m01,
+        float m02,
+        float m03,
+        float m10,
+        float m11,
+        float m12,
+        float m13,
+        float m20,
+        float m21,
+        float m22,
+        float m23,
+        float m30,
+        float m31,
+        float m32,
+        float m33)
 {
-  *this = a2;
-  *(this + 1) = a3;
-  *(this + 2) = a4;
-  *(this + 3) = a5;
-  *(this + 4) = a6;
-  *(this + 5) = a7;
-  *(this + 6) = a8;
-  *(this + 7) = a9;
-  *(this + 8) = a10;
-  *(this + 9) = a11;
-  *(this + 10) = a12;
-  *(this + 11) = a13;
-  *(this + 12) = a14;
-  *(this + 13) = a15;
-  *(this + 14) = a16;
-  *(this + 15) = a17;
-  return this;
+  transform->basis_right.x = m00;
+  transform->basis_right.y = m01;
+  transform->basis_right.z = m02;
+  transform->basis_right.w = m03;
+  transform->basis_up.x = m10;
+  transform->basis_up.y = m11;
+  transform->basis_up.z = m12;
+  transform->basis_up.w = m13;
+  transform->basis_forward.x = m20;
+  transform->basis_forward.y = m21;
+  transform->basis_forward.z = m22;
+  transform->basis_forward.w = m23;
+  transform->position.x = m30;
+  transform->position.y = m31;
+  transform->position.z = m32;
+  transform->position.w = m33;
+  return transform;
 }
 

@@ -35,6 +35,18 @@ TRUSTED_DECLARATIONS = [
         "int32_t __fastcall set_matrix_rotation_identity(TransformMatrix* transform);",
     ),
     (
+        "initialize_matrix_from_values",
+        "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33);",
+    ),
+    (
+        "rotate_matrix_world_x",
+        "int32_t __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);",
+    ),
+    (
+        "rotate_matrix_world_y",
+        "int32_t __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);",
+    ),
+    (
         "rotate_matrix_world_z",
         "int32_t __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
     ),
@@ -55,8 +67,32 @@ TRUSTED_DECLARATIONS = [
         "int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);",
     ),
     (
+        "invert_matrix_from_source",
+        "TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);",
+    ),
+    (
+        "multiply_matrix_in_place",
+        "TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);",
+    ),
+    (
+        "premultiply_matrix_in_place",
+        "TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);",
+    ),
+    (
         "set_matrix_z_direction",
         "int32_t __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);",
+    ),
+    (
+        "look_at_point",
+        "TransformMatrix* __thiscall look_at_point(TransformMatrix* transform, Vec3* target);",
+    ),
+    (
+        "interpolate_matrix_rotation",
+        "TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);",
+    ),
+    (
+        "linear_interpolate_matrix",
+        "TransformMatrix* __thiscall linear_interpolate_matrix(TransformMatrix* out, TransformMatrix* from, TransformMatrix* to, float alpha);",
     ),
     (
         "compute_kind42_attachment_transform",
@@ -97,6 +133,14 @@ TRUSTED_DECLARATIONS = [
     (
         "pack_color_rgba_u8",
         "ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);",
+    ),
+    (
+        "initialize_cameraman",
+        "int32_t __thiscall initialize_cameraman(CameramanState* cameraman);",
+    ),
+    (
+        "update_cameraman",
+        "int32_t __thiscall update_cameraman(CameramanState* cameraman);",
     ),
     (
         "begin_track_attachment_follow_state",
