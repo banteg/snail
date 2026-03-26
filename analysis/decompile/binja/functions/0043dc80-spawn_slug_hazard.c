@@ -24,7 +24,7 @@
 0043dd16        *(esi + 0x356410) = z
 0043dd1b        project_position_onto_track_attachment(game, esi + 0x356408, esi + 0x356438)
 0043dd23        long double x87_r6 = fconvert.t(0f)
-0043dd3f        long double x87_r7_3 = fconvert.t(game->__offset(0x38).d) * fconvert.t(-0.200000003f)
+0043dd3f        long double x87_r7_3 = fconvert.t(game->track_center_x) * fconvert.t(-0.200000003f)
 0043dd45        *(esi + 0x35642c) = fconvert.s(x87_r6)
 0043dd47        *(esi + 0x356430) = fconvert.s(x87_r6)
 0043dd58        *(esi + 0x356434) = fconvert.s(x87_r7_3)

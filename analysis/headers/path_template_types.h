@@ -535,8 +535,8 @@ TextureRef* __thiscall get_or_create_texture_ref(TextureRefList* texture_list, c
 void __fastcall allocate_path_template_samples(PathTemplate* self);
 int32_t __fastcall finalize_path_template(PathTemplate* self);
 int32_t __thiscall mirror_path_template_pair_x(PathTemplate* self, PathTemplate* source);
-int32_t __fastcall set_matrix_identity(PathTemplateTransform* transform);
-int32_t __fastcall set_matrix_rotation_identity(PathTemplateTransform* transform);
+void __fastcall set_matrix_identity(TransformMatrix* transform);
+void __fastcall set_matrix_rotation_identity(TransformMatrix* transform);
 TransformMatrix* __thiscall initialize_matrix_from_values(
     TransformMatrix* transform,
     float m00,
@@ -556,9 +556,9 @@ TransformMatrix* __thiscall initialize_matrix_from_values(
     float m32,
     float m33
 );
-int32_t __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
-int32_t __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
-int32_t __thiscall rotate_matrix_world_z(PathTemplateTransform* transform, float angle);
+void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
+void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
+void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);
 double __fastcall normalize_vector(Vec3* vector);
 double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);

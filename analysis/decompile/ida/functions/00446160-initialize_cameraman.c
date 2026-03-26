@@ -14,7 +14,7 @@ int32_t __thiscall initialize_cameraman(CameramanState *cameraman)
   cameraman->game = v2;
   set_matrix_identity(&cameraman->previous_desired_matrix);
   set_matrix_identity(&cameraman->desired_matrix);
-  result = set_matrix_identity(&cameraman->live_matrix);
+  set_matrix_identity(&cameraman->live_matrix);
   cameraman->attachment_lift_envelope = 0.0;
   cameraman->smoothed_attachment_lift_envelope = 0.0;
   cameraman->fov_degrees = 110.0;

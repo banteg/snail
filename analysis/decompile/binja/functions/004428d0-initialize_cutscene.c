@@ -36,12 +36,12 @@
 0044296d        __builtin_memcpy(&to, eax_2, 0x40)
 00442973        set_matrix_rotation_identity(&var_140)
 00442990        long double x87_r7_8 = (fconvert.t(-0.785398185f) - fconvert.t(*(*(ebx + 0x100) + 0x2dc)) * fconvert.t(6.28318548f)) * fconvert.t(1.39999998f)
-00442996        float var_15c_1 = fconvert.s(x87_r7_8)
+00442996        float angle = fconvert.s(x87_r7_8)
 0044299a        long double temp3_1 = fconvert.t(-6.28318548f)
 0044299a        x87_r7_8 - temp3_1
 004429a5        if ((((x87_r7_8 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp3_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp3_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-004429a7        var_15c_1 = -6.28318548f
-004429b8        rotate_matrix_world_x(&var_140, var_15c_1)
+004429a7        angle = -6.28318548f
+004429b8        rotate_matrix_world_x(&var_140, angle)
 00442a16        linear_interpolate_matrix(*(ebx + 0x100) + 0x38, &var_140, &to, 0.939999998f)
 00442a1b        void* eax_5 = *(ebx + 0x100)
 00442a33        __builtin_memcpy(ebx + 0x38, eax_5 + 0x38, 0x40)

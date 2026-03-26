@@ -17,4 +17,4 @@
 0044d274        transform->basis_right.w = 0f
 0044d277        transform->basis_right.z = 0f
 0044d27a        transform->basis_right.y = 0f
-0044d27d        return 0
+0044d27d        return

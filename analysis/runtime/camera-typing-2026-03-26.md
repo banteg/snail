@@ -62,6 +62,11 @@ The shared matrix helper family is now typed around `TransformMatrix`:
 
 The camera/cutscene helper returns are also now constrained to the safe in-place model:
 
+- `set_matrix_identity` is `void`
+- `set_matrix_rotation_identity` is `void`
+- `rotate_matrix_world_x` is `void`
+- `rotate_matrix_world_y` is `void`
+- `rotate_matrix_world_z` is `void`
 - `set_matrix_z_direction` is `void`
 - `look_at_point` is `void`
 - `linear_interpolate_matrix` is `void`
@@ -78,6 +83,7 @@ The tracked IDA exports are materially clearer after the sync:
 - `update_cameraman` now shows the post-follow carryover branch as `player->attachment_exit_pending` plus `player->post_follow_value_a` instead of `player + 0x41d` / `player + 0x42c`.
 - `update_cameraman` now reads the tile-family lean pulse and live heading lane as `player->lane_lean_amplitude`, `player->lane_lean_progress`, and `player->heading_roll` instead of `player + 0x354/+0x358/+0x370`.
 - `update_subgoldy` and `update_track_attachment_follow_state` now expose the same player-side `lane_lean_*` / `heading_roll` lanes that the Zig port already mirrors.
+- the live BN lane now also reads `game->first_block_row_count` and `game->track_center_x` directly in `update_cameraman` and nearby ring or hazard helpers instead of raw `game->__offset(0x50)` / `game->__offset(0x38)`.
 - `look_at_point` now reads directly against `TransformMatrix.position`.
 - the world-axis rotation helpers now mutate `basis_right`, `basis_up`, and `basis_forward` explicitly.
 
@@ -85,4 +91,5 @@ The tracked IDA exports are materially clearer after the sync:
 
 - the byte at `cameraman + 0xcc` is still unresolved and intentionally unnamed beyond `unresolved_cc`
 - most player-side attachment and presentation fields that `update_cameraman` touches are still only partially typed
-- the checked-in header is now ready for both BN and IDA, but this pass only refreshed the tracked IDA lane because the live BN bridge timed out on the mutation/decompile calls
+- the checked-in header now drives both the IDA sync lane and the live BN camera-mutator pass, but large whole-header imports still time out on the BN bridge; the stable workflow is to apply the camera-facing field and prototype mutations in smaller verified steps
+- even after the helper prototypes were corrected, BN still preserves two ghost return temporaries in `update_cameraman` around `rotate_matrix_world_x` / `rotate_matrix_world_z`; that appears to be HLIL presentation residue rather than a remaining type mismatch

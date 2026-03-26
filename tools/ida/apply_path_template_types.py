@@ -28,11 +28,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_matrix_identity",
-        "int32_t __fastcall set_matrix_identity(TransformMatrix* transform);",
+        "void __fastcall set_matrix_identity(TransformMatrix* transform);",
     ),
     (
         "set_matrix_rotation_identity",
-        "int32_t __fastcall set_matrix_rotation_identity(TransformMatrix* transform);",
+        "void __fastcall set_matrix_rotation_identity(TransformMatrix* transform);",
     ),
     (
         "initialize_matrix_from_values",
@@ -40,15 +40,15 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "rotate_matrix_world_x",
-        "int32_t __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);",
+        "void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);",
     ),
     (
         "rotate_matrix_world_y",
-        "int32_t __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);",
+        "void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);",
     ),
     (
         "rotate_matrix_world_z",
-        "int32_t __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
+        "void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);",
     ),
     (
         "normalize_vector",

@@ -91,7 +91,7 @@
 0042103b        player->cutscene_pitch_cycle = player->cutscene_pitch_cycle_step
 00421046        play_voice_manager(0x751498, var_19c_2, var_198_2, var_194_2)
 0042107d        struct Player* player_1 = follow_state->player
-00421090        player_1->_pad_340[0x30].d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_1->_pad_340[0x30].d))
+00421090        player_1->heading_roll = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_1->heading_roll))
 004210a1        return 3
 00420e83        long double x87_r7_7 = fconvert.t(var_180) + fconvert.t(follow_state->progress)
 00420e88        uint32_t edx_15 = sample_index_2 * 0x15
@@ -295,7 +295,7 @@
 004216a1        out_position_2[1] = esi_9->y
 004216a7        out_position_2[2] = esi_9->z
 004216ad        struct Player* player_2 = follow_state->player
-004216bc        player_2->_pad_340[0x30].d = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_2->_pad_340[0x30].d))
+004216bc        player_2->heading_roll = fconvert.s(fconvert.t(follow_state->template_record->installed_heading_delta) + fconvert.t(player_2->heading_roll))
 004216c2        long double x87_r7_87 = fconvert.t(out_position_1->x)
 004216c4        long double temp12 = fconvert.t(-4f)
 004216c4        x87_r7_87 - temp12

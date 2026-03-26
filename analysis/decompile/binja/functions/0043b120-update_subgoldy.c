@@ -112,7 +112,7 @@
 0043b4c5        x87_r7_26 = fconvert.t(3.70000005f)
 0043b4ae        x87_r7_26 = fconvert.t(-3.70000005f)
 0043b4d1        if (player_1->movement_state != 2)
-0043b4ec        player_1->position.x = fconvert.s(fconvert.t(player_1->game->__offset(0x38).d) * fconvert.t(0.200000003f) * (x87_r7_26 - fconvert.t(player_1->position.x)) + fconvert.t(player_1->position.x))
+0043b4ec        player_1->position.x = fconvert.s(fconvert.t(player_1->game->track_center_x) * fconvert.t(0.200000003f) * (x87_r7_26 - fconvert.t(player_1->position.x)) + fconvert.t(player_1->position.x))
 0043b4f3        float x_3 = player_1->position.x
 0043b4f6        y_8 = &player_1->position
 0043b4f9        y = 0x41800000
@@ -265,7 +265,7 @@
 0043b88c        if (eax_26.b == 0)
 0043b892        y = player_1
 0043b89b        begin_track_attachment_follow_state(&player_1->follow_state, eax_23, y_8, y)
-0043b8aa        if (player_1->follow_state.template_record->__offset(0x38).d == 0x18)
+0043b8aa        if (player_1->follow_state.template_record->track_center_x == 0x18)
 0043b8ac        y = 0xffffffff
 0043b8b7        play_voice_manager(0x751498, 0xc, 0, y)
 0043b8bc        eax_26.b = player_1->control_override_active
@@ -1068,7 +1068,7 @@
 0043c4fb        game_7.b = player_1->attachment_exit_pending
 0043c503        if (game_7.b == 0)
 0043c507        begin_post_follow_carryover(player_1)
-0043c51c        if (player_1->_pad_340[0x10].d == 0)
+0043c51c        if (player_1->lane_lean_state == 0)
 0043c522        struct Game* game_39 = player_1->game
 0043c528        y = y_8
 0043c532        if (get_track_grid_cell_at_world_position(game_39, y)->tile_id == 2)
@@ -1087,38 +1087,28 @@
 0043c5f8        y = y_8
 0043c5f9        unimplemented  {fld st0, dword [eax+0x38]}
 0043c5fc        unimplemented  {fmul st0, dword [0x4975b4]}
-0043c602        player_1->_pad_340[0x1c].d = fconvert.s(unimplemented  {fstp dword [ebp+0x35c], st0})
+0043c602        player_1->lane_lean_progress_step = fconvert.s(unimplemented  {fstp dword [ebp+0x35c], st0})
 0043c602        unimplemented  {fstp dword [ebp+0x35c], st0}
 0043c617        if (get_track_grid_cell_at_world_position(player_1->game, y)->tile_id == 2)
-0043c665        label_43c665:
-0043c665        player_1->_pad_340[0x10] = 1
-0043c665        player_1->_pad_340[0x11] = 0
-0043c665        player_1->_pad_340[0x12] = 0
-0043c665        player_1->_pad_340[0x13] = 0
-0043c66f        player_1->_pad_340[0x14] = 0
-0043c66f        player_1->_pad_340[0x15] = 0
-0043c66f        player_1->_pad_340[0x16] = 0x80
-0043c66f        player_1->_pad_340[0x17] = 0x3f
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c619        struct Game* game_48 = player_1->game
 0043c61f        y = y_8
 0043c629        if (get_track_grid_cell_at_world_position(game_48, y)->tile_id == 5)
-0043c629        goto label_43c665
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c62b        struct Game* game_49 = player_1->game
 0043c631        y = y_8
 0043c63b        if (get_track_grid_cell_at_world_position(game_49, y)->tile_id == 8)
-0043c63b        goto label_43c665
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
 0043c63d        struct Game* game_50 = player_1->game
 0043c643        y = y_8
 0043c64d        if (get_track_grid_cell_at_world_position(game_50, y)->tile_id == 0xb)
-0043c64d        goto label_43c665
-0043c64f        player_1->_pad_340[0x10] = 2
-0043c64f        player_1->_pad_340[0x11] = 0
-0043c64f        player_1->_pad_340[0x12] = 0
-0043c64f        player_1->_pad_340[0x13] = 0
-0043c659        player_1->_pad_340[0x14] = 0
-0043c659        player_1->_pad_340[0x15] = 0
-0043c659        player_1->_pad_340[0x16] = 0x80
-0043c659        player_1->_pad_340[0x17] = 0xbf
+0043c665        player_1->lane_lean_state = 1
+0043c66f        player_1->lane_lean_amplitude = 1f
+0043c64f        player_1->lane_lean_state = 2
+0043c659        player_1->lane_lean_amplitude = -1f
 0043c538        struct Game* game_40 = player_1->game
 0043c53e        y = y_8
 0043c548        if (get_track_grid_cell_at_world_position(game_40, y)->tile_id == 4)
@@ -1507,15 +1497,15 @@
 0043cc03        y_8->x = x_2
 0043cc0b        unimplemented  {fld st0, dword [ecx+0x38]}
 0043cc0e        unimplemented  {fmul st0, dword [0x4975b4]}
-0043cc14        player_1->_pad_340[0x1c].d = fconvert.s(unimplemented  {fst dword [ebp+0x35c], st0})
+0043cc14        player_1->lane_lean_progress_step = fconvert.s(unimplemented  {fst dword [ebp+0x35c], st0})
 0043cc20        int16_t top_207
 0043cc20        int16_t top_191
-0043cc20        if (player_1->_pad_340[0x10].d == 0)
+0043cc20        if (player_1->lane_lean_state == 0)
 0043cc49        unimplemented  {fstp st0, st0}
 0043cc49        unimplemented  {fstp st0, st0}
 0043cc49        top_207 = top_191 + 4
 0043cc22        unimplemented  {fadd dword [ebp+0x358]}
-0043cc28        player_1->_pad_340[0x18].d = fconvert.s(unimplemented  {fst dword [ebp+0x358], st0})
+0043cc28        player_1->lane_lean_progress = fconvert.s(unimplemented  {fst dword [ebp+0x358], st0})
 0043cc2e        long double temp46_1 = fconvert.t(1f)
 0043cc2e        unimplemented  {fcomp st0, dword [0x497220]} f- temp46_1
 0043cc2e        bool c0_58 = unimplemented  {fcomp st0, dword [0x497220]} f< temp46_1
@@ -1525,18 +1515,12 @@
 0043cc2e        top_207 = top_191 + 4
 0043cc34        skin_hold_ticks.w = (c0_58 ? 1 : 0) << 8 | (c2_58 ? 1 : 0) << 0xa | (c3_58 ? 1 : 0) << 0xe | (top_207 & 7) << 0xb
 0043cc39        if ((skin_hold_ticks:1.b & 0x41) == 0)
-0043cc3b        player_1->_pad_340[0x18] = 0
-0043cc3b        player_1->_pad_340[0x19] = 0
-0043cc3b        player_1->_pad_340[0x1a] = 0
-0043cc3b        player_1->_pad_340[0x1b] = 0
-0043cc41        player_1->_pad_340[0x10] = 0
-0043cc41        player_1->_pad_340[0x11] = 0
-0043cc41        player_1->_pad_340[0x12] = 0
-0043cc41        player_1->_pad_340[0x13] = 0
-0043cc51        if (player_1->_pad_340[0x20].d != 0)
+0043cc3b        player_1->lane_lean_progress = 0f
+0043cc41        player_1->lane_lean_state = 0
+0043cc51        if (player_1->__offset(0x360).d != 0)
 0043cc53        unimplemented  {fld st0, dword [ebp+0x36c]}
 0043cc59        unimplemented  {fadd dword [ebp+0x368]}
-0043cc5f        player_1->_pad_340[0x28].d = fconvert.s(unimplemented  {fst dword [ebp+0x368], st0})
+0043cc5f        player_1->__offset(0x368).d = fconvert.s(unimplemented  {fst dword [ebp+0x368], st0})
 0043cc65        long double temp53_1 = fconvert.t(1f)
 0043cc65        unimplemented  {fcomp st0, dword [0x497220]} f- temp53_1
 0043cc65        bool c0_59 = unimplemented  {fcomp st0, dword [0x497220]} f< temp53_1
@@ -1545,17 +1529,11 @@
 0043cc65        unimplemented  {fcomp st0, dword [0x497220]}
 0043cc6b        skin_hold_ticks.w = (c0_59 ? 1 : 0) << 8 | (c2_59 ? 1 : 0) << 0xa | (c3_59 ? 1 : 0) << 0xe | (top_207 & 7) << 0xb
 0043cc70        if ((skin_hold_ticks:1.b & 0x41) == 0)
-0043cc72        player_1->_pad_340[0x28] = 0
-0043cc72        player_1->_pad_340[0x29] = 0
-0043cc72        player_1->_pad_340[0x2a] = 0
-0043cc72        player_1->_pad_340[0x2b] = 0
-0043cc78        player_1->_pad_340[0x20] = 0
-0043cc78        player_1->_pad_340[0x21] = 0
-0043cc78        player_1->_pad_340[0x22] = 0
-0043cc78        player_1->_pad_340[0x23] = 0
+0043cc72        player_1->__offset(0x368).d = 0
+0043cc78        player_1->__offset(0x360).d = 0
 0043cc84        unimplemented  {fld st0, dword [edx+0x38]}
 0043cc87        unimplemented  {fmul st0, dword [0x4975ac]}
-0043cc8d        player_1->_pad_340[0x38].d = fconvert.s(unimplemented  {fst dword [ebp+0x378], st0})
+0043cc8d        player_1->__offset(0x378).d = fconvert.s(unimplemented  {fst dword [ebp+0x378], st0})
 0043cc93        unimplemented  {fld st0, dword [ebp+0x374]}
 0043cc99        long double temp52_1 = fconvert.t(0f)
 0043cc99        unimplemented  {fcomp st0, dword [0x497234]} f- temp52_1
@@ -1570,7 +1548,7 @@
 0043ccdf        unimplemented  {fstp st0, st0}
 0043ccdf        top_212 = top_207
 0043cca6        unimplemented  {fadd dword [ebp+0x374]}
-0043ccac        player_1->_pad_340[0x34].d = fconvert.s(unimplemented  {fst dword [ebp+0x374], st0})
+0043ccac        player_1->__offset(0x374).d = fconvert.s(unimplemented  {fst dword [ebp+0x374], st0})
 0043ccb2        long double temp55_1 = fconvert.t(1f)
 0043ccb2        unimplemented  {fcomp st0, dword [0x497220]} f- temp55_1
 0043ccb2        bool c0_61 = unimplemented  {fcomp st0, dword [0x497220]} f< temp55_1
@@ -1581,10 +1559,7 @@
 0043ccb8        skin_hold_ticks.w = (c0_61 ? 1 : 0) << 8 | (c2_61 ? 1 : 0) << 0xa | (c3_61 ? 1 : 0) << 0xe | (top_212 & 7) << 0xb
 0043ccbd        if ((skin_hold_ticks:1.b & 0x41) != 0)
 0043ccd8        update_nuke(&player_1->nuke)
-0043ccc5        player_1->_pad_340[0x34] = 0
-0043ccc5        player_1->_pad_340[0x35] = 0
-0043ccc5        player_1->_pad_340[0x36] = 0
-0043ccc5        player_1->_pad_340[0x37] = 0
+0043ccc5        player_1->__offset(0x374).d = 0
 0043cccb        uninit_nuke(&player_1->nuke)
 0043cce1        struct Game* game_55 = player_1->game
 0043cceb        if (game_55->__offset(0x40).d == 4)
