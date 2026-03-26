@@ -120,10 +120,11 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x64c/+0xa28/+0xe04`: repeated `PresentationAnimationChannel` weapon lanes
     - `+0x04`: `visual_flags`
     - `+0x24`: `visual_root`
-    - `+0x34`: `live_matrix`
-    - `+0x74`: `active_anim_manager`
+    - `+0x38`: `live_matrix`
+    - `+0x78`: `active_anim_manager`
     - `+0x104`: `selected_state`
     - `+0x108`: inline `anim_manager`
+    - `+0x3d0`: `release_step`
   - `+0x11e0`: repeated `PresentationAnimationChannel` jetpack lane
   - `+0x1938`: `snail_skin_transition`
   - `+0x1958`: `cutscene_ai`

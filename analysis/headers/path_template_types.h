@@ -215,14 +215,15 @@ typedef struct PresentationAnimationChannel {
     uint32_t visual_flags;
     uint8_t _pad_08[0x1c];
     SnailVisual* visual_root;
-    uint8_t _pad_28[0xc];
+    uint8_t _pad_28[0x10];
     TransformMatrix live_matrix;
     void* active_anim_manager;
-    uint8_t _pad_78[0x8c];
+    uint8_t _pad_7c[0x88];
     int32_t selected_state;
     AnimationDispatchState anim_manager;
     uint8_t _pad_150[0x24];
-    uint8_t animation_slot_table[0x268];
+    uint8_t animation_slot_table[0x25c];
+    Vec3 release_step;
 } PresentationAnimationChannel;
 
 typedef struct SnailSkinTransitionState {

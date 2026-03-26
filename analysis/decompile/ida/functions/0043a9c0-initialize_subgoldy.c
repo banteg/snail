@@ -74,7 +74,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     BYTE1(v4) |= 8u;
     player->presentation.jetpack_channel.visual_flags = v4;
     player->presentation.jetpack_channel.selected_state = 0;
-    *(_DWORD *)player->presentation.jetpack_channel._pad_78 = &player->presentation.jetpack_channel.anim_manager;
+    player->presentation.jetpack_channel.active_anim_manager = &player->presentation.jetpack_channel.anim_manager;
     initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager);
     player->presentation.jetpack_channel.anim_manager.active = 1;
     player->presentation.jetpack_channel.anim_manager.self_ref = &player->presentation.jetpack_channel;
@@ -92,7 +92,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     BYTE1(v5) |= 8u;
     player->presentation.weapon_channels[0].visual_flags = v5;
     player->presentation.weapon_channels[0].selected_state = 0;
-    *(_DWORD *)player->presentation.weapon_channels[0]._pad_78 = &player->presentation.weapon_channels[0].anim_manager;
+    player->presentation.weapon_channels[0].active_anim_manager = &player->presentation.weapon_channels[0].anim_manager;
     initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager);
     player->presentation.weapon_channels[0].anim_manager.active = 1;
     player->presentation.weapon_channels[0].anim_manager.self_ref = player->presentation.weapon_channels;
@@ -111,7 +111,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     BYTE1(v6) |= 8u;
     player->presentation.weapon_channels[1].visual_flags = v6;
     player->presentation.weapon_channels[1].selected_state = 0;
-    *(_DWORD *)player->presentation.weapon_channels[1]._pad_78 = &player->presentation.weapon_channels[1].anim_manager;
+    player->presentation.weapon_channels[1].active_anim_manager = &player->presentation.weapon_channels[1].anim_manager;
     initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager);
     player->presentation.weapon_channels[1].anim_manager.active = 1;
     player->presentation.weapon_channels[1].anim_manager.self_ref = &player->presentation.weapon_channels[1];
@@ -129,7 +129,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     BYTE1(v7) |= 8u;
     player->presentation.weapon_channels[2].visual_flags = v7;
     player->presentation.weapon_channels[2].selected_state = 0;
-    *(_DWORD *)player->presentation.weapon_channels[2]._pad_78 = &player->presentation.weapon_channels[2].anim_manager;
+    player->presentation.weapon_channels[2].active_anim_manager = &player->presentation.weapon_channels[2].anim_manager;
     initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager);
     player->presentation.weapon_channels[2].anim_manager.active = 1;
     player->presentation.weapon_channels[2].anim_manager.self_ref = &player->presentation.weapon_channels[2];

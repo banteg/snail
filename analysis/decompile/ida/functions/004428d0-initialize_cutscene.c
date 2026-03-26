@@ -136,37 +136,49 @@ int32_t __thiscall initialize_cutscene(PlayerPresentationController *presentatio
     }
     if ( presentation->weapon_release_active )
     {
-      presentation->jetpack_channel.live_matrix.position.y = *(float *)&presentation->jetpack_channel.animation_slot_table[604]
+      presentation->jetpack_channel.live_matrix.position.x = presentation->jetpack_channel.release_step.x
+                                                           + presentation->jetpack_channel.live_matrix.position.x;
+      presentation->jetpack_channel.live_matrix.position.y = presentation->jetpack_channel.release_step.y
                                                            + presentation->jetpack_channel.live_matrix.position.y;
-      presentation->jetpack_channel.live_matrix.position.z = *(float *)&presentation->jetpack_channel.animation_slot_table[608]
+      presentation->jetpack_channel.live_matrix.position.z = presentation->jetpack_channel.release_step.z
                                                            + presentation->jetpack_channel.live_matrix.position.z;
-      presentation->jetpack_channel.live_matrix.position.w = *(float *)&presentation->jetpack_channel.animation_slot_table[612]
-                                                           + presentation->jetpack_channel.live_matrix.position.w;
-      presentation->weapon_channels[0].live_matrix.position.y = *(float *)&presentation->weapon_channels[0].animation_slot_table[604]
+      presentation->weapon_channels[0].live_matrix.position.x = presentation->weapon_channels[0].release_step.x
+                                                              + presentation->weapon_channels[0].live_matrix.position.x;
+      presentation->weapon_channels[0].live_matrix.position.y = presentation->weapon_channels[0].release_step.y
                                                               + presentation->weapon_channels[0].live_matrix.position.y;
-      presentation->weapon_channels[0].live_matrix.position.z = *(float *)&presentation->weapon_channels[0].animation_slot_table[608]
+      presentation->weapon_channels[0].live_matrix.position.z = presentation->weapon_channels[0].release_step.z
                                                               + presentation->weapon_channels[0].live_matrix.position.z;
-      presentation->weapon_channels[0].live_matrix.position.w = *(float *)&presentation->weapon_channels[0].animation_slot_table[612]
-                                                              + presentation->weapon_channels[0].live_matrix.position.w;
-      presentation->weapon_channels[2].live_matrix.position.y = *(float *)&presentation->weapon_channels[2].animation_slot_table[604]
+      presentation->weapon_channels[2].live_matrix.position.x = presentation->weapon_channels[2].release_step.x
+                                                              + presentation->weapon_channels[2].live_matrix.position.x;
+      presentation->weapon_channels[2].live_matrix.position.y = presentation->weapon_channels[2].release_step.y
                                                               + presentation->weapon_channels[2].live_matrix.position.y;
-      presentation->weapon_channels[2].live_matrix.position.z = *(float *)&presentation->weapon_channels[2].animation_slot_table[608]
+      presentation->weapon_channels[2].live_matrix.position.z = presentation->weapon_channels[2].release_step.z
                                                               + presentation->weapon_channels[2].live_matrix.position.z;
-      presentation->weapon_channels[2].live_matrix.position.w = *(float *)&presentation->weapon_channels[2].animation_slot_table[612]
-                                                              + presentation->weapon_channels[2].live_matrix.position.w;
-      presentation->weapon_channels[1].live_matrix.position.y = *(float *)&presentation->weapon_channels[1].animation_slot_table[604]
+      presentation->weapon_channels[1].live_matrix.position.x = presentation->weapon_channels[1].release_step.x
+                                                              + presentation->weapon_channels[1].live_matrix.position.x;
+      presentation->weapon_channels[1].live_matrix.position.y = presentation->weapon_channels[1].release_step.y
                                                               + presentation->weapon_channels[1].live_matrix.position.y;
-      presentation->weapon_channels[1].live_matrix.position.z = *(float *)&presentation->weapon_channels[1].animation_slot_table[608]
+      presentation->weapon_channels[1].live_matrix.position.z = presentation->weapon_channels[1].release_step.z
                                                               + presentation->weapon_channels[1].live_matrix.position.z;
-      presentation->weapon_channels[1].live_matrix.position.w = *(float *)&presentation->weapon_channels[1].animation_slot_table[612]
-                                                              + presentation->weapon_channels[1].live_matrix.position.w;
     }
     else
     {
-      qmemcpy(&presentation->jetpack_channel.live_matrix.basis_right.y, p_live_matrix, 0x40u);
-      qmemcpy(&presentation->weapon_channels[0].live_matrix.basis_right.y, p_live_matrix, 0x40u);
-      qmemcpy(&presentation->weapon_channels[2].live_matrix.basis_right.y, p_live_matrix, 0x40u);
-      qmemcpy(&presentation->weapon_channels[1].live_matrix.basis_right.y, p_live_matrix, 0x40u);
+      qmemcpy(
+        &presentation->jetpack_channel.live_matrix,
+        p_live_matrix,
+        sizeof(presentation->jetpack_channel.live_matrix));
+      qmemcpy(
+        &presentation->weapon_channels[0].live_matrix,
+        p_live_matrix,
+        sizeof(presentation->weapon_channels[0].live_matrix));
+      qmemcpy(
+        &presentation->weapon_channels[2].live_matrix,
+        p_live_matrix,
+        sizeof(presentation->weapon_channels[2].live_matrix));
+      qmemcpy(
+        &presentation->weapon_channels[1].live_matrix,
+        p_live_matrix,
+        sizeof(presentation->weapon_channels[1].live_matrix));
     }
     v24 = presentation->owner_player;
     qmemcpy(&presentation->_pad_15bc[72], p_live_matrix, 0x40u);
