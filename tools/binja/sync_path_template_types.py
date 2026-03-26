@@ -32,6 +32,8 @@ PLAYER_FIELD_UPDATES = (
     ("0x370", "heading_roll", "float"),
     ("0x384", "follow_state", "FollowState"),
     ("0x408", "game", "Game*"),
+    ("0x40c", "movement_mode_selector", "int32_t"),
+    ("0x410", "velocity", "Vec3"),
     ("0x41d", "attachment_exit_pending", "uint8_t"),
     ("0x42c", "post_follow_value_a", "float"),
     ("0x43c", "control_source", "PlayerControlSource*"),
@@ -49,8 +51,15 @@ PLAYER_FIELD_UPDATES = (
 )
 
 GAME_FIELD_UPDATES = (
+    ("0x34", "challenge_difficulty_scalar", "float"),
     ("0x38", "track_center_x", "float"),
+    ("0x40", "level_mode", "int32_t"),
+    ("0x44", "level_mode_arg", "int32_t"),
+    ("0x48", "base_subgame_rate", "float"),
+    ("0x4c", "runtime_flags", "uint32_t"),
     ("0x50", "first_block_row_count", "int32_t"),
+    ("0x54", "runtime_row_count", "int32_t"),
+    ("0x58", "completion_row_start", "int32_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),

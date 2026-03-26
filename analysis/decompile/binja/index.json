@@ -12,17 +12,12 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 1,
+  "function_count": 1,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
-    {
-      "address": "0x404cf0",
-      "name": "update_row_event_display",
-      "artifact": "analysis/decompile/binja/functions/00404cf0-update_row_event_display.c"
-    },
     {
       "address": "0x43b120",
       "name": "update_subgoldy",

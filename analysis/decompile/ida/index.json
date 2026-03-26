@@ -3,16 +3,9 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 1,
+  "function_count": 1,
   "exported": [
-    {
-      "selector": "update_row_event_display",
-      "address": "0x404cf0",
-      "name": "update_row_event_display",
-      "artifact": "analysis/decompile/ida/functions/00404cf0-update_row_event_display.c",
-      "removed_stale_artifacts": []
-    },
     {
       "selector": "update_subgoldy",
       "address": "0x43b120",

@@ -92,10 +92,17 @@ typedef struct RowEventDisplayController {
 } RowEventDisplayController;
 
 typedef struct Game {
-    uint8_t _pad_00[0x38];
+    uint8_t _pad_00[0x34];
+    float challenge_difficulty_scalar;
     float track_center_x;
-    uint8_t _pad_3c[0x14];
+    uint8_t _pad_3c[0x4];
+    int32_t level_mode;
+    int32_t level_mode_arg;
+    float base_subgame_rate;
+    uint32_t runtime_flags;
     int32_t first_block_row_count;
+    int32_t runtime_row_count;
+    int32_t completion_row_start;
     uint8_t _pad_54[0xa800];
     uint8_t track_state_latch;
     uint8_t _pad_a855[0xfe7d7b];
@@ -287,7 +294,9 @@ typedef struct Player {
     FollowState follow_state;
     uint8_t _pad_3c4[0x44];
     struct Game* game;
-    uint8_t _pad_40c[0x11];
+    int32_t movement_mode_selector;
+    Vec3 velocity;
+    uint8_t _pad_41c[0x1];
     uint8_t attachment_exit_pending;
     uint8_t _pad_41e[0xe];
     float post_follow_value_a;
