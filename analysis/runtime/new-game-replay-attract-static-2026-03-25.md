@@ -94,6 +94,34 @@ The launch side remains as previously narrowed:
   - `this + 0x8 = 0`
   - `this + 0xc = 1/3600`
 
+### 5. The tracked whole-image decompile does not show any out-of-line timer writers
+
+The stronger March 26 follow-up is negative but useful:
+
+- the tracked full Binary Ninja HLIL snapshot only shows direct global references to this controller family in:
+  - `update_frontend_state_machine`
+  - `update_completion_screen`
+  - `initialize_subgame`
+  - `update_subgame`
+- among those consumers:
+  - `update_frontend_state_machine` only writes `cursor = 0` on ordinary state-`1` entry
+  - `update_completion_screen` only tail-calls `update_new_game_menu(...)` in the one New Game return branch
+  - `initialize_subgame` only reads the likely hide latch at `data_4df904 + 0x4f2e0`
+  - `update_subgame` only reads `data_4df904 + 0x4f2e0` and `data_4df904 + 0x4f2e4`, then clears the hide latch when that suppressor accumulator exceeds `1.0`
+- there are no additional tracked absolute references to:
+  - `data_4df904 + 0x4f2e8` (`+0xc`)
+  - `data_4df904 + 0x4f2ec` (`+0x10`)
+  - `data_4df904 + 0x4f2f0` (`+0x14`)
+
+Implication:
+
+- if another producer exists, it is not showing up as a normal out-of-line global-field writer in the current tracked decompile
+- the remaining unknown is therefore narrower than “some generic frontend helper”
+- the most likely residual possibilities are:
+  - mutation hidden behind an indirect/menu-local callback path
+  - a build- or data-dependent lane that is dormant in the current Windows image
+  - a decompiler-blurred write that only appears through the local `this` pointer inside `update_new_game_menu`
+
 ## New Conclusion
 
 The remaining launcher gap is now narrower than before:
@@ -102,13 +130,14 @@ The remaining launcher gap is now narrower than before:
   - `update_frontend_state_machine`
   - `initialize_new_game_menu`
   - `destroy_main_menu`
+- no additional tracked absolute writer or consumer exists outside the menu/update-subgame family either
 - the `+0x8/+0xc` suppressor lane is also **not** initialized in those ordinary entry/exit paths
 
-So the next static targets are not generic menu setup code. They are more likely:
+So the next static targets are no longer generic menu setup code. They are more likely:
 
-- a separate startup/bootstrap helper that touches the reused New Game controller object
-- a one-shot post-run or post-launch reseed path
-- a higher-level frontend helper that runs outside the ordinary `initialize_new_game_menu` / `destroy_main_menu` pair
+- a local helper reached from inside `update_new_game_menu`
+- a build/data-controlled dormant path that the current runtime never seeds
+- a decompiler-blurred store on the reused controller object rather than another named frontend controller family
 
 ## Porting Implication
 
@@ -118,6 +147,6 @@ The current evidence says that would add a producer the native code does not use
 
 ## Next Static Targets
 
-1. Recover writers to `data_4df904 + 0x4f2dc + 0x14` outside the four functions above.
-2. Recover any writers to `data_4df904 + 0x4f2dc + 0x8/+0xc` other than the success / give-up reset in `update_new_game_menu`.
-3. Re-check whether the relevant writer lives in a broader frontend bootstrap/helper family rather than a menu-local controller.
+1. Re-audit the local helper/call path inside `update_new_game_menu` for decompiler-blurred writes to `this + 0x8/+0xc/+0x10/+0x14`.
+2. Re-check the small set of New Game return paths (`update_completion_screen`, `update_frontend_state_machine`) for any path-sensitive seed that only appears in the non-default branch bodies.
+3. Treat the absent out-of-line writer as a real possibility: the current build may simply leave the random replay-attract lane dormant on ordinary idle New Game entry.
