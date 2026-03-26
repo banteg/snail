@@ -17,6 +17,7 @@ from snail.symbols import DEFAULT_FUNCTION_SYMBOL_MANIFEST_PATH, load_function_s
 
 
 DEFAULT_ROOT = REPO_ROOT / "analysis/decompile"
+MAX_SUMMARY_ITEMS = 10
 
 
 def _run_python(script: Path, *args: str) -> dict[str, object]:
@@ -83,7 +84,59 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Skip the tracked decompile hotspot health checks after refreshing exports.",
     )
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="Optional function selector(s) to refresh. Matches manifest name or hex address.",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Exit nonzero if mismatches or failing health checks are present.",
+    )
     return parser.parse_args()
+
+
+def _select_manifest_functions(manifest, selectors: list[str]):
+    if not selectors:
+        return manifest.functions
+    requested = {selector.lower() for selector in selectors}
+    selected = [
+        function
+        for function in manifest.functions
+        if function.name.lower() in requested or function.address_hex.lower() in requested
+    ]
+    missing = sorted(
+        selector
+        for selector in selectors
+        if selector.lower() not in {function.name.lower() for function in selected}
+        and selector.lower() not in {function.address_hex.lower() for function in selected}
+    )
+    if missing:
+        raise RuntimeError(f"manifest does not contain requested function selector(s): {', '.join(missing)}")
+    return selected
+
+
+def _truncate_list(value: object, *, limit: int = MAX_SUMMARY_ITEMS) -> list[object]:
+    if not isinstance(value, list):
+        return []
+    return value[:limit]
+
+
+def _failing_health_checks(health_result: dict[str, object] | None) -> list[dict[str, object]]:
+    if not isinstance(health_result, dict):
+        return []
+    checks = health_result.get("checks")
+    if not isinstance(checks, list):
+        return []
+    failing: list[dict[str, object]] = []
+    for check in checks:
+        if not isinstance(check, dict):
+            continue
+        if check.get("passed") is False:
+            failing.append(check)
+    return failing
 
 
 def main() -> int:
@@ -96,6 +149,7 @@ def main() -> int:
     ida_index = ida_root / "index.json"
 
     manifest = load_function_symbol_manifest(manifest_path)
+    selected_functions = _select_manifest_functions(manifest, list(args.only))
 
     if args.sync_ida_symbols:
         sync_args = ["--manifest", str(manifest_path)]
@@ -120,6 +174,7 @@ def main() -> int:
         str((bn_root / "functions").resolve()),
         "--index",
         str(bn_index),
+        *[item for selector in args.only for item in ("--only", selector)],
     )
 
     ida_args = [
@@ -137,6 +192,7 @@ def main() -> int:
     ida_result = _run_python(
         REPO_ROOT / "tools/ida/export_manifest_functions.py",
         *ida_args,
+        *[item for selector in args.only for item in ("--only", selector)],
     )
 
     health_result: dict[str, object] | None = None
@@ -145,10 +201,14 @@ def main() -> int:
             REPO_ROOT / "tools/check_decompile_health.py",
         )
 
+    bn_mismatches = _truncate_list(bn_result.get("mismatches"))
+    ida_mismatches = _truncate_list(ida_result.get("mismatches"))
+    failing_checks = _truncate_list(_failing_health_checks(health_result))
+
     summary = {
         "manifest": str(manifest_path.relative_to(REPO_ROOT)),
         "root": str(root.relative_to(REPO_ROOT)),
-        "function_count": len(manifest.functions),
+        "function_count": len(selected_functions),
         "bn_index": str(bn_index.relative_to(REPO_ROOT)),
         "ida_index": str(ida_index.relative_to(REPO_ROOT)),
         "bn_exported": len(bn_result.get("exports", [])),
@@ -159,14 +219,30 @@ def main() -> int:
         "has_mismatches": bool(bn_result.get("mismatch_count", 0) or ida_result.get("mismatch_count", 0)),
         "sync_ida_symbols": args.sync_ida_symbols,
         "health_check_ran": not args.skip_health_check,
+        "strict": args.strict,
     }
+    if args.only:
+        summary["selected_functions"] = [
+            {"name": function.name, "address": function.address_hex}
+            for function in selected_functions
+        ]
+    if bn_mismatches:
+        summary["bn_mismatches"] = bn_mismatches
+    if ida_mismatches:
+        summary["ida_mismatches"] = ida_mismatches
     if health_result is not None:
         summary["health_check_count"] = health_result.get("check_count", 0)
         summary["health_failing_check_count"] = health_result.get("failing_check_count", 0)
         summary["health_passed"] = health_result.get("passed", False)
         summary["health_config"] = health_result.get("config")
+        if failing_checks:
+            summary["failing_checks"] = failing_checks
     (root / "index.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
+    if args.strict and (
+        summary["has_mismatches"] or summary.get("health_passed") is False and not args.skip_health_check
+    ):
+        return 1
     return 0
 
 

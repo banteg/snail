@@ -32,6 +32,10 @@ The top-level `index.json` also records:
 - `health_check_count`
 - `health_failing_check_count`
 - `health_passed`
+- `bn_mismatches`
+- `ida_mismatches`
+- `failing_checks`
+- `selected_functions`
 
 Those entries flag cases where the tracked manifest does not line up with what the
 tool actually exported, for example:
@@ -43,6 +47,12 @@ Refresh the tracked snapshots with:
 
 ```bash
 uv run python tools/export_tracked_decompiles.py --sync-ida-symbols
+```
+
+Refresh only a narrow touched subset and fail fast on mismatch or health regressions with:
+
+```bash
+uv run python tools/export_tracked_decompiles.py --only update_subgoldy --only update_cameraman --strict
 ```
 
 Run just the hotspot health checks with:
@@ -58,3 +68,5 @@ Notes:
 - reruns prune stale `.c` files from the tracked output trees when a manifest name changes
 - inspect mismatch entries first when one tool appears to “miss” a function; they often indicate real database drift rather than an export failure
 - the health check is intentionally narrow and only guards a few high-value tracked exports where type/prototype regressions have caused real readability loss before
+- `--only` matches manifest names or hex addresses and is forwarded to both export lanes
+- `--strict` exits nonzero when either lane reports mismatches or any health check fails
