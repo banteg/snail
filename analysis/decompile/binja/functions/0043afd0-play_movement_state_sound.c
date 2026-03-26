@@ -10,25 +10,25 @@
 0043afdf        if ((movement_flags.b & 7) == 0)
 0043b006        if ((movement_flags.b & 0x18) != 0)
 0043b01b        movement_flags = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
-0043b020        player->_pad_124[0xa8] = movement_flags.b
-0043b020        player->_pad_124[0xa9] = movement_flags:1.b
-0043b020        player->_pad_124[0xaa] = movement_flags:2.b
-0043b020        player->_pad_124[0xab] = movement_flags:3.b
+0043b020        player->_pad_1cc[0] = movement_flags.b
+0043b020        player->_pad_1cc[1] = movement_flags:1.b
+0043b020        player->_pad_1cc[2] = movement_flags:2.b
+0043b020        player->_pad_1cc[3] = movement_flags:3.b
 0043b026        edi_1 = movement_flags + 0x13
 0043b029        goto label_43b054
 0043b02d        if ((movement_flags.b & 0x60) != 0)
 0043b046        movement_flags = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(9.15527344e-05f))
-0043b04b        player->_pad_124[0xa8] = movement_flags.b
-0043b04b        player->_pad_124[0xa9] = movement_flags:1.b
-0043b04b        player->_pad_124[0xaa] = movement_flags:2.b
-0043b04b        player->_pad_124[0xab] = movement_flags:3.b
+0043b04b        player->_pad_1cc[0] = movement_flags.b
+0043b04b        player->_pad_1cc[1] = movement_flags:1.b
+0043b04b        player->_pad_1cc[2] = movement_flags:2.b
+0043b04b        player->_pad_1cc[3] = movement_flags:3.b
 0043b051        edi_1 = movement_flags + 0x16
 0043b051        goto label_43b054
 0043aff4        movement_flags = __ftol(x87control, float.t(next_math_random_value()) * fconvert.t(6.10351562e-05f))
-0043aff9        player->_pad_124[0xa8] = movement_flags.b
-0043aff9        player->_pad_124[0xa9] = movement_flags:1.b
-0043aff9        player->_pad_124[0xaa] = movement_flags:2.b
-0043aff9        player->_pad_124[0xab] = movement_flags:3.b
+0043aff9        player->_pad_1cc[0] = movement_flags.b
+0043aff9        player->_pad_1cc[1] = movement_flags:1.b
+0043aff9        player->_pad_1cc[2] = movement_flags:2.b
+0043aff9        player->_pad_1cc[3] = movement_flags:3.b
 0043afff        edi_1 = movement_flags + 0x11
 0043b054        label_43b054:
 0043b057        if (edi_1 != 0xffffffff)

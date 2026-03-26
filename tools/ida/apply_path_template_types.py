@@ -159,6 +159,18 @@ TRUSTED_DECLARATIONS = [
         "int32_t __thiscall update_subgoldy(Player* player);",
     ),
     (
+        "initialize_nuke",
+        "int32_t __thiscall initialize_nuke(NukeController* nuke);",
+    ),
+    (
+        "update_nuke",
+        "int32_t __thiscall update_nuke(NukeController* nuke);",
+    ),
+    (
+        "uninit_nuke",
+        "void __thiscall uninit_nuke(NukeController* nuke);",
+    ),
+    (
         "begin_track_attachment_follow_state",
         "PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
     ),

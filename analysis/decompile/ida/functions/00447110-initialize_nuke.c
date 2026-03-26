@@ -3,51 +3,51 @@
 /* selector: initialize_nuke */
 
 // Spawns the 25-sprite ring effect used by ring/special-effect collision kinds `2` and `6`, seeds its orbit height and phase step from the owning player and global tick delta, and immediately dispatches the first update. Cross-port Android symbols match this helper to `cRNuke::Init()`.
-int __thiscall sub_447110(int this)
+int32_t __thiscall initialize_nuke(NukeController *nuke)
 {
-  _DWORD *v2; // esi
+  void **sprite_slots; // esi
   int v3; // ebp
   double v4; // st7
-  _DWORD *v5; // eax
+  void *sprite; // eax
   int v6; // edx
   _DWORD *v7; // eax
   _DWORD *v8; // eax
 
-  if ( !*(_DWORD *)this )
+  if ( !nuke->state )
   {
-    v2 = (_DWORD *)(this + 24);
+    sprite_slots = nuke->sprite_slots;
     v3 = 25;
-    *(float *)(this + 12) = *(float *)(*(_DWORD *)(this + 4) + 112) - 5.0;
+    nuke->orbit_axis = nuke->owner_player->position.z - 5.0;
     v4 = *((float *)MEMORY[0x4DF904] + 119188) + *((float *)MEMORY[0x4DF904] + 119188);
-    *(_DWORD *)(this + 16) = 0;
-    *(_DWORD *)(this + 20) = 1037465424;
-    *(_DWORD *)this = 1;
-    *(float *)(this + 8) = v4;
+    nuke->phase = 0.0;
+    nuke->phase_step = 0.10471976;
+    nuke->state = 1;
+    nuke->orbit_axis_step = v4;
     do
     {
-      v5 = allocate_sprite(unk_790F30, *(_DWORD *)(*(_DWORD *)(this + 4) + 896), 131, -1, -1);
-      *v2 = v5;
-      v6 = v5[1];
+      sprite = allocate_sprite(unk_790F30, nuke->owner_player->player_slot, 131, -1, -1);
+      *sprite_slots = sprite;
+      v6 = *((_DWORD *)sprite + 1);
       BYTE1(v6) |= 8u;
-      ++v2;
-      v5[1] = v6;
-      *(_DWORD *)(*(v2 - 1) + 104) = 0;
-      *(_DWORD *)(*(v2 - 1) + 108) = 0;
-      *(_DWORD *)(*(v2 - 1) + 96) = 1077936128;
-      *(_DWORD *)(*(v2 - 1) + 100) = 1077936128;
-      v7 = (_DWORD *)(*(v2 - 1) + 84);
+      ++sprite_slots;
+      *((_DWORD *)sprite + 1) = v6;
+      *((_DWORD *)*(sprite_slots - 1) + 26) = 0;
+      *((_DWORD *)*(sprite_slots - 1) + 27) = 0;
+      *((_DWORD *)*(sprite_slots - 1) + 24) = 1077936128;
+      *((_DWORD *)*(sprite_slots - 1) + 25) = 1077936128;
+      v7 = (char *)*(sprite_slots - 1) + 84;
       v7[2] = 0;
       v7[1] = 0;
       *v7 = 0;
-      v8 = (_DWORD *)(*(v2 - 1) + 72);
+      v8 = (char *)*(sprite_slots - 1) + 72;
       --v3;
       v8[2] = 0;
       v8[1] = 0;
       *v8 = 0;
-      *(_DWORD *)(*(v2 - 1) + 120) = 0;
+      *((_DWORD *)*(sprite_slots - 1) + 30) = 0;
     }
     while ( v3 );
   }
-  return update_nuke((float *)this);
+  return update_nuke(nuke);
 }
 

@@ -205,6 +205,25 @@ typedef struct SquidgeState {
     float z_phase;
 } SquidgeState;
 
+typedef struct NukeController {
+    int32_t state;
+    Player* owner_player;
+    float orbit_axis_step;
+    float orbit_axis;
+    float phase;
+    float phase_step;
+    void* sprite_slots[25];
+} NukeController;
+
+typedef struct PlayerRowEventState {
+    int32_t id;
+    int32_t state;
+    float timer;
+    uint8_t _pad_0c[0x4];
+    int32_t data_a;
+    int32_t data_b;
+} PlayerRowEventState;
+
 typedef TransformMatrix PathTemplateTransform;
 
 typedef struct PathTemplateSample {
@@ -271,7 +290,16 @@ typedef struct Player {
     TrackRowCell* cached_track_pair_cell_b;
     uint8_t _pad_a0[0x80];
     int32_t movement_state;
-    uint8_t _pad_124[0x1e4];
+    uint8_t _pad_124[0x2c];
+    NukeController nuke;
+    uint8_t _pad_1cc[0x1c];
+    PlayerRowEventState row_event;
+    uint8_t _pad_200[0xd8];
+    uint8_t control_override_active;
+    uint8_t _pad_2d9[0x3];
+    float cutscene_pitch_cycle;
+    float cutscene_pitch_cycle_step;
+    uint8_t _pad_2e4[0x24];
     int32_t movement_flag_selector;
     uint8_t _pad_30c[0x2c];
     uint32_t movement_flags;
@@ -383,6 +411,10 @@ float __thiscall store_color4f(Color4f* color, float r, float g, float b, float 
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
 int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
+int32_t __thiscall update_subgoldy(Player* player);
+int32_t __thiscall initialize_nuke(NukeController* nuke);
+int32_t __thiscall update_nuke(NukeController* nuke);
+void __thiscall uninit_nuke(NukeController* nuke);
 PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);
 int32_t __thiscall update_track_attachment_follow_state(FollowState* follow_state, float path_factor, Vec3* out_position, Vec3* motion);
 

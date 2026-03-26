@@ -6,7 +6,7 @@
 
 00444d1d        struct Vec3 vector
 00444d1d        struct Vec3 vector_2
-00444d1d        if (player->attachment_exit_pending == 0 && player->_pad_41c == 0 && player->_pad_124[0x1b4] == 0)
+00444d1d        if (player->attachment_exit_pending == 0 && player->_pad_41c == 0 && player->control_override_active == 0)
 00444d2d        int16_t x87control
 00444d2d        if ((0x80 & player->movement_flags.b) == 0)
 00444d33        int32_t i = 0
@@ -26,15 +26,15 @@
 00444db9        long double temp13_1 = fconvert.t(0.980000019f)
 00444db9        st0_1 - temp13_1
 00444dc4        if ((((st0_1 < temp13_1 ? 1 : 0) << 8 | (is_unordered.t(st0_1, temp13_1) ? 1 : 0) << 0xa | (st0_1 == temp13_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00444dc6        long double x87_r7_8 = fconvert.t(player->_pad_124[0xb0].d)
+00444dc6        long double x87_r7_8 = fconvert.t(player->_pad_1cc[8].d)
 00444dcc        long double temp17_1 = fconvert.t(0f)
 00444dcc        x87_r7_8 - temp17_1
 00444dd7        if ((((x87_r7_8 < temp17_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp17_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp17_1 ? 1 : 0) << 0xe):1.b & 0x40) != 0)
-00444dd9        int32_t ecx_2 = player->_pad_124[0xb4].d
-00444ddf        player->_pad_124[0xb0] = ecx_2.b
-00444ddf        player->_pad_124[0xb1] = ecx_2:1.b
-00444ddf        player->_pad_124[0xb2] = ecx_2:2.b
-00444ddf        player->_pad_124[0xb3] = ecx_2:3.b
+00444dd9        int32_t ecx_2 = player->_pad_1cc[0xc].d
+00444ddf        player->_pad_1cc[8] = ecx_2.b
+00444ddf        player->_pad_1cc[9] = ecx_2:1.b
+00444ddf        player->_pad_1cc[0xa] = ecx_2:2.b
+00444ddf        player->_pad_1cc[0xb] = ecx_2:3.b
 00444df8        *(i + player->game + 0x357954) = 0
 00444e00        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.150000006f, 0)
 00444e05        i += 0x98
@@ -109,13 +109,13 @@
 004450b9        if ((player->movement_flags.b & 0x80) != 0)
 0044523a        x87control = kill_slug_hazard(i_3 + player->game + 0x3563a0)
 004450bf        int16_t eax_15
-004450bf        eax_15.b = player->_pad_124[0x1b4]
+004450bf        eax_15.b = player->control_override_active
 004450c7        if (eax_15.b != 0)
 0044520b        long double x87_r7_49 = fconvert.t(player->game->__offset(0x38).d)
 0044521e        player->velocity.z = fconvert.s(x87_r7_49 * x87_r7_49 * fconvert.t(0.00400000019f) * fconvert.t(-8f))
 00445226        x87control = apply_damage_gauge_delta(&player->damage_gauge, 1f, 0)
 004450cd        struct Game* game = player->game
-004450d3        player->_pad_124[0x1b4] = 1
+004450d3        player->control_override_active = 1
 004450da        player->follow_state.active = 0
 004450e9        long double x87_r7_41 = fconvert.t(game->__offset(0x38).d)
 004450fe        player->velocity.x = 0
@@ -364,6 +364,6 @@
 00445798        player->_pad_340[0x35] = ecx_53:1.b
 00445798        player->_pad_340[0x36] = ecx_53:2.b
 00445798        player->_pad_340[0x37] = ecx_53:3.b
-004457a4        initialize_nuke(&player->_pad_124[0x2c])
+004457a4        initialize_nuke(&player->nuke)
 0044581d        i_6 += 0x1f8
 00445836        return

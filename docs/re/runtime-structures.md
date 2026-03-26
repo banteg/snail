@@ -12,11 +12,13 @@ The current high-confidence `Player` fields are:
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
-- `+0x1e8`: `row_event_id`
-- `+0x1ec`: `row_event_state`
-- `+0x1f0`: `row_event_timer`
-- `+0x1f8`: `row_event_data_a`
-- `+0x1fc`: `row_event_data_b`
+- `+0x150`: `nuke`
+  - inline `NukeController`
+- `+0x1e8`: `row_event`
+  - inline `PlayerRowEventState`
+- `+0x2d8`: `control_override_active`
+- `+0x2dc`: `cutscene_pitch_cycle`
+- `+0x2e0`: `cutscene_pitch_cycle_step`
 - `+0x308`: `movement_flag_selector`
 - `+0x338`: `movement_flags`
 - `+0x33c`: `previous_movement_flags`
@@ -98,6 +100,31 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x0c`: `z_output`
   - `+0x10`: `z_velocity`
   - `+0x14`: `z_phase`
+- `player + 0x150` is an inline `NukeController`
+  - `+0x00`: `state`
+  - `+0x04`: `owner_player`
+  - `+0x08`: `orbit_axis_step`
+  - `+0x0c`: `orbit_axis`
+  - `+0x10`: `phase`
+  - `+0x14`: `phase_step`
+  - `+0x18`: `sprite_slots[25]`
+  - `handle_subgoldy_collisions` arms it through `initialize_nuke`
+  - `update_subgoldy` either advances it through `update_nuke` or tears it down through `uninit_nuke`
+  - the axis itself is still intentionally neutral; `initialize_nuke` seeds it from `owner_player->position` and `update_nuke` writes it back into the sprite slot transform, but the world-axis interpretation is not pinned down in this pass
+- `player + 0x1e8` is a real inline `PlayerRowEventState`
+  - `+0x00`: `id`
+  - `+0x04`: `state`
+  - `+0x08`: `timer`
+  - `+0x0c`: unresolved `32.0f` lane seeded on the new-event path
+  - `+0x10`: `data_a`
+  - `+0x14`: `data_b`
+- `player + 0x2d8` is a broader `control_override_active` gate than the earlier cutscene-only guess
+  - it suppresses several normal control and attachment branches in `update_subgoldy`
+  - `initialize_cutscene` also reads it to decide whether to auto-dispatch the default idle animation
+- `player + 0x2dc/+0x2e0` form the current safe cutscene-side cycle pair
+  - `cutscene_pitch_cycle`
+  - `cutscene_pitch_cycle_step`
+  - `initialize_cutscene` advances them before rotating the player-owned cutscene frame around world X
 
 Important caveat:
 
