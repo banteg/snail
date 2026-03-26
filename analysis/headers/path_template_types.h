@@ -560,19 +560,19 @@ void __thiscall rotate_matrix_world_x(TransformMatrix* transform, float angle);
 void __thiscall rotate_matrix_world_y(TransformMatrix* transform, float angle);
 void __thiscall rotate_matrix_world_z(TransformMatrix* transform, float angle);
 double __fastcall normalize_vector(Vec3* vector);
-double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);
+float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);
 int32_t __thiscall cross_vectors(Vec3* out, Vec3* lhs, Vec3* rhs);
 int32_t __fastcall orthogonalize_matrix(TransformMatrix* transform);
 TransformMatrix* __fastcall invert_matrix_from_source(TransformMatrix* out, TransformMatrix* source);
 TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
 TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs);
-void __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);
-void __thiscall look_at_point(TransformMatrix* transform, Vec3* target);
+void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);
+void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);
 TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha);
 void __thiscall linear_interpolate_matrix(
     TransformMatrix* out,
-    TransformMatrix* from,
-    TransformMatrix* to,
+    const TransformMatrix* from,
+    const TransformMatrix* to,
     float alpha
 );
 int32_t __stdcall compute_kind42_attachment_transform(
@@ -594,7 +594,7 @@ void __thiscall start_squidge_z(SquidgeState* squidge, float value);
 void __thiscall update_squidge(SquidgeState* squidge);
 void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
 void __thiscall update_anim_manager(AnimationDispatchState* manager);
-int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, int32_t immediate, int32_t initial_frame);
+int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state);
 float __thiscall store_color4f(Color4f* color, float r, float g, float b, float a);
 ColorBGRA8* __thiscall pack_color_rgba_u8(ColorBGRA8* out, Color4f* color);
@@ -610,7 +610,7 @@ int32_t __thiscall update_subgoldy(Player* player);
 void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
 void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);
 int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);
-int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, int32_t immediate, int32_t initial_frame);
+int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
 int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);
 int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai);
 int32_t __thiscall initialize_nuke(NukeController* nuke);

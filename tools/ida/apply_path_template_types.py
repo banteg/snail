@@ -56,7 +56,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "normalize_vector_from_source",
-        "double __thiscall normalize_vector_from_source(Vec3* out, Vec3* src);",
+        "float __thiscall normalize_vector_from_source(Vec3* out, const Vec3* src);",
     ),
     (
         "cross_vectors",
@@ -80,11 +80,11 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_matrix_z_direction",
-        "void __thiscall set_matrix_z_direction(TransformMatrix* transform, Vec3* direction);",
+        "void __thiscall set_matrix_z_direction(TransformMatrix* transform, const Vec3* direction);",
     ),
     (
         "look_at_point",
-        "void __thiscall look_at_point(TransformMatrix* transform, Vec3* target);",
+        "void __thiscall look_at_point(TransformMatrix* transform, const Vec3* target);",
     ),
     (
         "interpolate_matrix_rotation",
@@ -92,7 +92,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "linear_interpolate_matrix",
-        "void __thiscall linear_interpolate_matrix(TransformMatrix* out, TransformMatrix* from, TransformMatrix* to, float alpha);",
+        "void __thiscall linear_interpolate_matrix(TransformMatrix* out, const TransformMatrix* from, const TransformMatrix* to, float alpha);",
     ),
     (
         "compute_kind42_attachment_transform",
@@ -148,7 +148,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "set_weapon_animation",
-        "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, int32_t immediate, int32_t initial_frame);",
+        "int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
     ),
     (
         "update_snail_skin_transition",
@@ -212,7 +212,7 @@ TRUSTED_DECLARATIONS = [
     ),
     (
         "dispatch_cutscene_animation",
-        "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, int32_t immediate, int32_t initial_frame);",
+        "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame);",
     ),
     (
         "initialize_cutscene_ai",

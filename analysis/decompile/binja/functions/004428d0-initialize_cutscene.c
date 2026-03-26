@@ -5,147 +5,145 @@
 /* function: initialize_cutscene @ 0x4428d0 */
 
 004428d0        void* result = data_4df904
-004428dc        void* ebx = arg1
-004428de        arg1.b = *(result + 0x74621)
-004428e6        if (arg1.b != 0)
+004428dc        struct PlayerPresentationController* presentation_1 = presentation
+004428de        presentation.b = *(result + 0x74621)
+004428e6        if (presentation.b != 0)
 00442e38        return result
-004428f5        update_snail_skin_transition(ebx + 0x1938)
-004428fa        void* ecx_1 = *(ebx + 0x100)
-00442900        long double x87_r7_1 = fconvert.t(*(ecx_1 + 0x2dc))
+004428f5        update_snail_skin_transition(&presentation_1->snail_skin_transition)
+004428fa        struct Player* owner_player_2 = presentation_1->owner_player
+00442900        long double x87_r7_1 = fconvert.t(owner_player_2->cutscene_pitch_cycle)
 00442906        long double temp0_1 = fconvert.t(0f)
 00442906        x87_r7_1 - temp0_1
 00442911        struct TransformMatrix var_140
 00442911        void to
 00442911        if ((((x87_r7_1 < temp0_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp0_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp0_1 ? 1 : 0) << 0xe):1.b & 0x41) != 0)
 004429ce        int16_t eax
-004429ce        eax.b = *(ecx_1 + 0x41d)
+004429ce        eax.b = owner_player_2->attachment_exit_pending
 004429d6        if (eax.b != 0)
-004429e6        __builtin_memcpy(&var_140, ecx_1 + 0x38, 0x40)
-004429f3        __builtin_memcpy(&to, ecx_1 + 0x38, 0x40)
+004429e6        __builtin_memcpy(&var_140, &owner_player_2->live_matrix, 0x40)
+004429f3        __builtin_memcpy(&to, &owner_player_2->live_matrix, 0x40)
 004429f9        set_matrix_rotation_identity(&var_140)
-00442a16        linear_interpolate_matrix(*(ebx + 0x100) + 0x38, &var_140, &to, 0.970000029f)
-00442923        *(ecx_1 + 0x2dc) = fconvert.s(fconvert.t(*(ecx_1 + 0x2e0)) + fconvert.t(*(ecx_1 + 0x2dc)))
-00442929        void* ecx_2 = *(ebx + 0x100)
-0044292f        long double x87_r7_4 = fconvert.t(*(ecx_2 + 0x2dc))
+00442a16        linear_interpolate_matrix(&presentation_1->owner_player->live_matrix, &var_140, &to, 0.970000029f)
+00442923        owner_player_2->cutscene_pitch_cycle = fconvert.s(fconvert.t(owner_player_2->cutscene_pitch_cycle_step) + fconvert.t(owner_player_2->cutscene_pitch_cycle))
+00442929        struct Player* owner_player_3 = presentation_1->owner_player
+0044292f        long double x87_r7_4 = fconvert.t(owner_player_3->cutscene_pitch_cycle)
 00442935        long double temp1_1 = fconvert.t(1f)
 00442935        x87_r7_4 - temp1_1
 00442940        if ((((x87_r7_4 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_4, temp1_1) ? 1 : 0) << 0xa | (x87_r7_4 == temp1_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00442942        *(ecx_2 + 0x2dc) = 0
-00442957        int32_t eax_2 = *(ebx + 0x100) + 0x38
+00442942        owner_player_3->cutscene_pitch_cycle = 0f
+00442957        struct TransformMatrix* eax_2 = &presentation_1->owner_player->live_matrix
 00442960        __builtin_memcpy(&var_140, eax_2, 0x40)
 0044296d        __builtin_memcpy(&to, eax_2, 0x40)
 00442973        set_matrix_rotation_identity(&var_140)
-00442990        long double x87_r7_8 = (fconvert.t(-0.785398185f) - fconvert.t(*(*(ebx + 0x100) + 0x2dc)) * fconvert.t(6.28318548f)) * fconvert.t(1.39999998f)
+00442990        long double x87_r7_8 = (fconvert.t(-0.785398185f) - fconvert.t(presentation_1->owner_player->cutscene_pitch_cycle) * fconvert.t(6.28318548f)) * fconvert.t(1.39999998f)
 00442996        float angle = fconvert.s(x87_r7_8)
 0044299a        long double temp3_1 = fconvert.t(-6.28318548f)
 0044299a        x87_r7_8 - temp3_1
 004429a5        if ((((x87_r7_8 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp3_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp3_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004429a7        angle = -6.28318548f
 004429b8        rotate_matrix_world_x(&var_140, angle)
-00442a16        linear_interpolate_matrix(*(ebx + 0x100) + 0x38, &var_140, &to, 0.939999998f)
-00442a1b        void* eax_5 = *(ebx + 0x100)
-00442a33        __builtin_memcpy(ebx + 0x38, eax_5 + 0x38, 0x40)
-00442a40        *(ebx + 0x68) = *(eax_5 + 0x2964)
-00442a42        int32_t edx_3 = *(eax_5 + 0x2968)
+00442a16        linear_interpolate_matrix(&presentation_1->owner_player->live_matrix, &var_140, &to, 0.939999998f)
+00442a1b        struct Player* owner_player = presentation_1->owner_player
+00442a33        __builtin_memcpy(&presentation_1->live_matrix, &owner_player->live_matrix, 0x40)
+00442a40        presentation_1->live_matrix.position.x = owner_player->cached_camera_target_world.x
 00442a45        float alpha
 00442a45        __builtin_strncpy(&alpha, "333?", 4)
-00442a4a        *(ebx + 0x6c) = edx_3
-00442a50        *(ebx + 0x70) = *(eax_5 + 0x296c)
-00442a58        __builtin_memcpy(&var_140, ebx + 0x38, 0x40)
-00442a68        linear_interpolate_matrix(ebx + 0x38, &var_140, ebx + 0xc0, alpha)
-00442a74        long double x87_r7_9 = fconvert.t(*(ebx + 0x4c))
+00442a4a        presentation_1->live_matrix.position.y = owner_player->cached_camera_target_world.y
+00442a50        presentation_1->live_matrix.position.z = owner_player->cached_camera_target_world.z
+00442a58        __builtin_memcpy(&var_140, &presentation_1->live_matrix, 0x40)
+00442a68        linear_interpolate_matrix(&presentation_1->live_matrix, &var_140, &presentation_1->_pad_c0, alpha)
+00442a74        long double x87_r7_9 = fconvert.t(presentation_1->live_matrix.basis_up.y)
 00442a77        long double temp2_1 = fconvert.t(0f)
 00442a77        x87_r7_9 - temp2_1
-00442a7f        *(ebx + 0x68) = var_140.position.x
-00442a85        *(ebx + 0x6c) = var_140.position.y
-00442a8c        *(ebx + 0x70) = var_140.position.z
-00442a8f        float eax_11
-00442a8f        eax_11.w = (x87_r7_9 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp2_1) ? 1 : 0) << 0xa | (x87_r7_9 == temp2_1 ? 1 : 0) << 0xe
-00442a94        if ((eax_11:1.b & 0x41) == 0)
-00442a9e        float* var_170_3 = ebx + 0x68
-00442aaa        rotate_matrix_world_y(ebx + 0x38, fconvert.s((fconvert.t(*(ebx + 0x68)) - fconvert.t(*(ebx + 0xf0))) * fconvert.t(0.800000012f)))
-00442ab5        long double x87_r7_14 = fconvert.t(*(ebx + 0x15c0)) + fconvert.t(*(ebx + 0x15bc))
+00442a7f        presentation_1->live_matrix.position.x = var_140.position.x
+00442a85        presentation_1->live_matrix.position.y = var_140.position.y
+00442a8c        presentation_1->live_matrix.position.z = var_140.position.z
+00442a8f        float eax_10
+00442a8f        eax_10.w = (x87_r7_9 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp2_1) ? 1 : 0) << 0xa | (x87_r7_9 == temp2_1 ? 1 : 0) << 0xe
+00442a94        if ((eax_10:1.b & 0x41) == 0)
+00442a9e        struct Vec4* var_170_3 = &presentation_1->live_matrix.position
+00442aaa        rotate_matrix_world_y(&presentation_1->live_matrix, fconvert.s((fconvert.t(presentation_1->live_matrix.position.x) - fconvert.t(presentation_1->_pad_c0[0x30].d)) * fconvert.t(0.800000012f)))
+00442ab5        long double x87_r7_14 = fconvert.t(presentation_1->_pad_15bc[4].d) + fconvert.t(presentation_1->_pad_15bc[0].d)
 00442abb        long double temp4_1 = fconvert.t(1f)
 00442abb        x87_r7_14 - temp4_1
-00442ac1        *(ebx + 0x15bc) = fconvert.s(x87_r7_14)
+00442ac1        presentation_1->_pad_15bc[0].d = fconvert.s(x87_r7_14)
 00442ac1        bool c1_1 = unimplemented  {fst dword [ebx+0x15bc], st0}
-00442ac7        eax_11.w = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe | 0x3800
-00442acc        if ((eax_11:1.b & 0x41) == 0)
-00442ad4        *(ebx + 0x15bc) = fconvert.s(x87_r7_14 - fconvert.t(1f))
-00442ae4        long double x87_r7_18 = fconvert.t(*(ebx + 0x15c8)) + fconvert.t(*(ebx + 0x15c4))
+00442ac7        eax_10.w = (x87_r7_14 < temp4_1 ? 1 : 0) << 8 | (c1_1 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_14, temp4_1) ? 1 : 0) << 0xa | (x87_r7_14 == temp4_1 ? 1 : 0) << 0xe | 0x3800
+00442acc        if ((eax_10:1.b & 0x41) == 0)
+00442ad4        presentation_1->_pad_15bc[0].d = fconvert.s(x87_r7_14 - fconvert.t(1f))
+00442ae4        long double x87_r7_18 = fconvert.t(presentation_1->_pad_15bc[0xc].d) + fconvert.t(presentation_1->_pad_15bc[8].d)
 00442aea        long double temp5_1 = fconvert.t(1f)
 00442aea        x87_r7_18 - temp5_1
-00442af0        *(ebx + 0x15c4) = fconvert.s(x87_r7_18)
+00442af0        presentation_1->_pad_15bc[8].d = fconvert.s(x87_r7_18)
 00442af0        bool c1_2 = unimplemented  {fst dword [ebx+0x15c4], st0}
-00442af6        eax_11.w = (x87_r7_18 < temp5_1 ? 1 : 0) << 8 | (c1_2 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_18, temp5_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp5_1 ? 1 : 0) << 0xe | 0x3800
-00442afb        if ((eax_11:1.b & 0x41) == 0)
-00442b03        *(ebx + 0x15c4) = fconvert.s(x87_r7_18 - fconvert.t(1f))
+00442af6        eax_10.w = (x87_r7_18 < temp5_1 ? 1 : 0) << 8 | (c1_2 ? 1 : 0) << 9 | (is_unordered.t(x87_r7_18, temp5_1) ? 1 : 0) << 0xa | (x87_r7_18 == temp5_1 ? 1 : 0) << 0xe | 0x3800
+00442afb        if ((eax_10:1.b & 0x41) == 0)
+00442b03        presentation_1->_pad_15bc[8].d = fconvert.s(x87_r7_18 - fconvert.t(1f))
 00442b1b        float var_40[0x10]
-00442b1b        __builtin_memcpy(&var_40, ebx + 0x38, 0x40)
+00442b1b        __builtin_memcpy(&var_40, &presentation_1->live_matrix, 0x40)
 00442b24        void transform
 00442b24        set_matrix_identity(&transform)
 00442b35        void* var_170_5 = &transform
-00442b4e        rotate_matrix_world_z(&transform, fconvert.s(sine(fconvert.s(fconvert.t(*(ebx + 0x15bc)) * fconvert.t(6.28318548f))) * fconvert.t(0.0174499992f)))
+00442b4e        rotate_matrix_world_z(&transform, fconvert.s(sine(fconvert.s(fconvert.t(presentation_1->_pad_15bc[0].d) * fconvert.t(6.28318548f))) * fconvert.t(0.0174499992f)))
 00442b5b        float var_80[0x10]
-00442b5b        invert_matrix_from_source(&var_80, ebx + 0x38)
-00442b6a        multiply_matrix_in_place(ebx + 0x38, &var_80)
-00442b81        float* var_170_10 = &transform
-00442b82        *(ebx + 0x6c) = fconvert.s(fconvert.t(*(ebx + 0x6c)) + fconvert.t(1.29999995f))
-00442b85        multiply_matrix_in_place(ebx + 0x38, var_170_10)
-00442b9c        float (* var_170_11)[0x10] = &var_40
-00442b9d        *(ebx + 0x6c) = fconvert.s(fconvert.t(*(ebx + 0x6c)) - fconvert.t(1.29999995f))
-00442ba0        multiply_matrix_in_place(ebx + 0x38, var_170_11)
-00442bb1        struct TransformMatrix* var_170_12 = ebx + 0x38
-00442bb5        long double st0_2 = sine(fconvert.s(fconvert.t(*(ebx + 0x15c4)) * fconvert.t(6.28318548f)))
-00442bf7        float var_148_1 = fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(*(ebx + 0x4c)))) * fconvert.t(0.0299999993f))
-00442bfb        long double x87_r7_33 = st0_2 * fconvert.t(*(ebx + 0x50)) * fconvert.t(0.0299999993f)
-00442c08        *(ebx + 0x68) = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(*(ebx + 0x48)))) * fconvert.t(0.0299999993f))) + fconvert.t(*(ebx + 0x68)))
-00442c12        *(ebx + 0x6c) = fconvert.s(fconvert.t(var_148_1) + fconvert.t(*(ebx + 0x6c)))
-00442c18        *(ebx + 0x70) = fconvert.s(x87_r7_33 + fconvert.t(*(ebx + 0x70)))
-00442c1b        long double x87_r7_35 = fconvert.t(*(ebx + 0x192c))
+00442b5b        invert_matrix_from_source(&var_80, &presentation_1->live_matrix)
+00442b6a        multiply_matrix_in_place(&presentation_1->live_matrix.basis_right.x, &var_80)
+00442b82        presentation_1->live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->live_matrix.position.y) + fconvert.t(1.29999995f))
+00442b85        multiply_matrix_in_place(&presentation_1->live_matrix, &transform)
+00442b9d        presentation_1->live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->live_matrix.position.y) - fconvert.t(1.29999995f))
+00442ba0        multiply_matrix_in_place(&presentation_1->live_matrix, &var_40)
+00442bb1        struct TransformMatrix* var_170_12 = &presentation_1->live_matrix
+00442bb5        long double st0_2 = sine(fconvert.s(fconvert.t(presentation_1->_pad_15bc[8].d) * fconvert.t(6.28318548f)))
+00442c08        presentation_1->live_matrix.position.x = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(presentation_1->live_matrix.basis_up.x))) * fconvert.t(0.0299999993f))) + fconvert.t(presentation_1->live_matrix.position.x))
+00442c12        presentation_1->live_matrix.position.y = fconvert.s(fconvert.t(fconvert.s(fconvert.t(fconvert.s(st0_2 * fconvert.t(presentation_1->live_matrix.basis_up.y))) * fconvert.t(0.0299999993f))) + fconvert.t(presentation_1->live_matrix.position.y))
+00442c18        presentation_1->live_matrix.position.z = fconvert.s(st0_2 * fconvert.t(presentation_1->live_matrix.basis_up.z) * fconvert.t(0.0299999993f) + fconvert.t(presentation_1->live_matrix.position.z))
+00442c1b        long double x87_r7_35 = fconvert.t(presentation_1->_pad_1894[0x98].d)
 00442c21        long double temp6_1 = fconvert.t(0f)
 00442c21        x87_r7_35 - temp6_1
-00442c27        int32_t ecx_19 = __builtin_memcpy(ebx + 0xc0, ebx + 0x38, 0x40)
+00442c27        int32_t ecx_17 = __builtin_memcpy(&presentation_1->_pad_c0, &presentation_1->live_matrix, 0x40)
 00442c2e        if ((((x87_r7_35 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_35, temp6_1) ? 1 : 0) << 0xa | (x87_r7_35 == temp6_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00442c3c        int32_t var_170_14 = ecx_19
-00442c42        rotate_matrix_world_y(ebx + 0x38, fconvert.s(fconvert.t(*(ebx + 0x192c)) * fconvert.t(-2.09439516f)))
-00442c4d        long double x87_r7_39 = fconvert.t(*(ebx + 0x1930)) + fconvert.t(*(ebx + 0x192c))
-00442c53        *(ebx + 0x192c) = fconvert.s(x87_r7_39)
+00442c3c        int32_t var_170_14 = ecx_17
+00442c42        rotate_matrix_world_y(&presentation_1->live_matrix, fconvert.s(fconvert.t(presentation_1->_pad_1894[0x98].d) * fconvert.t(-2.09439516f)))
+00442c4d        long double x87_r7_39 = fconvert.t(presentation_1->_pad_1894[0x9c].d) + fconvert.t(presentation_1->_pad_1894[0x98].d)
+00442c53        presentation_1->_pad_1894[0x98].d = fconvert.s(x87_r7_39)
 00442c59        long double temp7_1 = fconvert.t(1f)
 00442c59        x87_r7_39 - temp7_1
 00442c64        if ((((x87_r7_39 < temp7_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_39, temp7_1) ? 1 : 0) << 0xa | (x87_r7_39 == temp7_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0)
-00442c66        *(ebx + 0x192c) = 0x3f800000
-00442c70        int16_t eax_12
-00442c70        eax_12.b = *(ebx + 0x1934)
-00442c78        if (eax_12.b == 0)
-00442d65        __builtin_memcpy(ebx + 0x1218, ebx + 0x38, 0x40)
-00442d74        __builtin_memcpy(ebx + 0x684, ebx + 0x38, 0x40)
-00442d83        __builtin_memcpy(ebx + 0xe3c, ebx + 0x38, 0x40)
-00442d92        __builtin_memcpy(ebx + 0xa60, ebx + 0x38, 0x40)
-00442c8a        *(ebx + 0x1248) = fconvert.s(fconvert.t(*(ebx + 0x15b0)) + fconvert.t(*(ebx + 0x1248)))
-00442c9c        *(ebx + 0x124c) = fconvert.s(fconvert.t(*(ebx + 0x15b4)) + fconvert.t(*(ebx + 0x124c)))
-00442cae        *(ebx + 0x1250) = fconvert.s(fconvert.t(*(ebx + 0x15b8)) + fconvert.t(*(ebx + 0x1250)))
-00442cc0        *(ebx + 0x6b4) = fconvert.s(fconvert.t(*(ebx + 0xa1c)) + fconvert.t(*(ebx + 0x6b4)))
-00442cd2        *(ebx + 0x6b8) = fconvert.s(fconvert.t(*(ebx + 0xa20)) + fconvert.t(*(ebx + 0x6b8)))
-00442ce4        *(ebx + 0x6bc) = fconvert.s(fconvert.t(*(ebx + 0xa24)) + fconvert.t(*(ebx + 0x6bc)))
-00442cf6        *(ebx + 0xe6c) = fconvert.s(fconvert.t(*(ebx + 0x11d4)) + fconvert.t(*(ebx + 0xe6c)))
-00442d08        *(ebx + 0xe70) = fconvert.s(fconvert.t(*(ebx + 0x11d8)) + fconvert.t(*(ebx + 0xe70)))
-00442d1a        *(ebx + 0xe74) = fconvert.s(fconvert.t(*(ebx + 0x11dc)) + fconvert.t(*(ebx + 0xe74)))
-00442d2c        *(ebx + 0xa90) = fconvert.s(fconvert.t(*(ebx + 0xdf8)) + fconvert.t(*(ebx + 0xa90)))
-00442d3e        *(ebx + 0xa94) = fconvert.s(fconvert.t(*(ebx + 0xdfc)) + fconvert.t(*(ebx + 0xa94)))
-00442d50        *(ebx + 0xa98) = fconvert.s(fconvert.t(*(ebx + 0xe00)) + fconvert.t(*(ebx + 0xa98)))
-00442d94        void* eax_13 = *(ebx + 0x100)
-00442da7        __builtin_memcpy(ebx + 0x1604, ebx + 0x38, 0x40)
-00442dbc        __builtin_memcpy(ebx + 0x1684, eax_13 + 0x38, 0x40)
-00442dc6        *(ebx + 0x16b4) = *(eax_13 + 0x2964)
-00442dcf        *(ebx + 0x16b8) = *(eax_13 + 0x2968)
-00442dd5        *(ebx + 0x16bc) = *(eax_13 + 0x296c)
-00442dda        update_snail_skin(ebx)
-00442dea        if (*(ebx + 0x1964) != 0)
-00442df2        update_cutscene(ebx + 0x1958)
-00442e01        if (*(ebx + 0x140) == 0)
-00442e09        int32_t eax_17
-00442e09        eax_17.b = *(*(ebx + 0x100) + 0x2d8)
-00442e11        if (eax_17.b == 0)
-00442e1b        dispatch_cutscene_animation(ebx, 1, 0, 0xffffffff)
-00442e2c        return update_jet_particles(*(ebx + 0x100) + 0x2750)
+00442c66        presentation_1->_pad_1894[0x98] = 0
+00442c66        presentation_1->_pad_1894[0x99] = 0
+00442c66        presentation_1->_pad_1894[0x9a] = 0x80
+00442c66        presentation_1->_pad_1894[0x9b] = 0x3f
+00442c70        int16_t eax_11
+00442c70        eax_11.b = presentation_1->weapon_release_active
+00442c78        if (eax_11.b == 0)
+00442d65        __builtin_memcpy(&presentation_1->jetpack_channel.live_matrix, &presentation_1->live_matrix, 0x40)
+00442d74        __builtin_memcpy(&presentation_1->weapon_channels[0].live_matrix, &presentation_1->live_matrix, 0x40)
+00442d83        __builtin_memcpy(&presentation_1->weapon_channels[2].live_matrix, &presentation_1->live_matrix, 0x40)
+00442d92        __builtin_memcpy(&presentation_1->weapon_channels[1].live_matrix, &presentation_1->live_matrix, 0x40)
+00442c8a        presentation_1->jetpack_channel.live_matrix.position.x = fconvert.s(fconvert.t(presentation_1->jetpack_channel.release_step.x) + fconvert.t(presentation_1->jetpack_channel.live_matrix.position.x))
+00442c9c        presentation_1->jetpack_channel.live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->jetpack_channel.release_step.y) + fconvert.t(presentation_1->jetpack_channel.live_matrix.position.y))
+00442cae        presentation_1->jetpack_channel.live_matrix.position.z = fconvert.s(fconvert.t(presentation_1->jetpack_channel.release_step.z) + fconvert.t(presentation_1->jetpack_channel.live_matrix.position.z))
+00442cc0        presentation_1->weapon_channels[0].live_matrix.position.x = fconvert.s(fconvert.t(presentation_1->weapon_channels[0].release_step.x) + fconvert.t(presentation_1->weapon_channels[0].live_matrix.position.x))
+00442cd2        presentation_1->weapon_channels[0].live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->weapon_channels[0].release_step.y) + fconvert.t(presentation_1->weapon_channels[0].live_matrix.position.y))
+00442ce4        presentation_1->weapon_channels[0].live_matrix.position.z = fconvert.s(fconvert.t(presentation_1->weapon_channels[0].release_step.z) + fconvert.t(presentation_1->weapon_channels[0].live_matrix.position.z))
+00442cf6        presentation_1->weapon_channels[2].live_matrix.position.x = fconvert.s(fconvert.t(presentation_1->weapon_channels[2].release_step.x) + fconvert.t(presentation_1->weapon_channels[2].live_matrix.position.x))
+00442d08        presentation_1->weapon_channels[2].live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->weapon_channels[2].release_step.y) + fconvert.t(presentation_1->weapon_channels[2].live_matrix.position.y))
+00442d1a        presentation_1->weapon_channels[2].live_matrix.position.z = fconvert.s(fconvert.t(presentation_1->weapon_channels[2].release_step.z) + fconvert.t(presentation_1->weapon_channels[2].live_matrix.position.z))
+00442d2c        presentation_1->weapon_channels[1].live_matrix.position.x = fconvert.s(fconvert.t(presentation_1->weapon_channels[1].release_step.x) + fconvert.t(presentation_1->weapon_channels[1].live_matrix.position.x))
+00442d3e        presentation_1->weapon_channels[1].live_matrix.position.y = fconvert.s(fconvert.t(presentation_1->weapon_channels[1].release_step.y) + fconvert.t(presentation_1->weapon_channels[1].live_matrix.position.y))
+00442d50        presentation_1->weapon_channels[1].live_matrix.position.z = fconvert.s(fconvert.t(presentation_1->weapon_channels[1].release_step.z) + fconvert.t(presentation_1->weapon_channels[1].live_matrix.position.z))
+00442d94        struct Player* owner_player_1 = presentation_1->owner_player
+00442da7        __builtin_memcpy(&presentation_1->snail_hotspot_source_matrix_a, &presentation_1->live_matrix, 0x40)
+00442dbc        __builtin_memcpy(&presentation_1->snail_hotspot_source_matrix_b, &owner_player_1->live_matrix, 0x40)
+00442dc6        presentation_1->snail_hotspot_source_matrix_b.position.x = owner_player_1->cached_camera_target_world.x
+00442dcf        presentation_1->snail_hotspot_source_matrix_b.position.y = owner_player_1->cached_camera_target_world.y
+00442dd5        presentation_1->snail_hotspot_source_matrix_b.position.z = owner_player_1->cached_camera_target_world.z
+00442dda        update_snail_skin(presentation_1)
+00442dea        if (presentation_1->cutscene_ai.state != 0)
+00442df2        update_cutscene(&presentation_1->cutscene_ai)
+00442e01        if (presentation_1->anim_manager.queued_animation_count == 0)
+00442e09        int32_t eax_15
+00442e09        eax_15.b = presentation_1->owner_player->control_override_active
+00442e11        if (eax_15.b == 0)
+00442e1b        dispatch_cutscene_animation(presentation_1, 1, 0, 0xffffffff)
+00442e2c        return update_jet_particles(&presentation_1->owner_player->__offset(0x2750).d)

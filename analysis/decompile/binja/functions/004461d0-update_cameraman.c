@@ -42,7 +42,7 @@
 00446319        template_record_1 = player_4->follow_state.template_record
 0044631f        kind = template_record_1->kind
 00446348        if (player_4->follow_state.active == 1 && (kind == 0x10 || kind == 8 || kind == 9 || kind == 0xa || kind == 0x2b || kind == 0x2d || kind == 0x24 || kind == 0xe))
-00446356        long double x87_r7_18 = (fconvert.t(player_4->position.z) - fconvert.t(player_4->follow_state.source_cell->anchor_position.z)) / fconvert.t(template_record_1->segment_count_f)
+00446356        long double x87_r7_18 = (fconvert.t(player_4->live_matrix.position.z) - fconvert.t(player_4->follow_state.source_cell->anchor_position.z)) / fconvert.t(template_record_1->segment_count_f)
 00446359        long double temp5_1 = fconvert.t(0f)
 00446359        x87_r7_18 - temp5_1
 0044635f        struct TrackRowCell* eax_1
@@ -120,7 +120,7 @@
 004465fa        long double x87_r7_75
 004465fa        if (player_2->follow_state.active != 1 || template_record->kind != PATH_TEMPLATE_KIND_WORM)
 00446679        x87_r7_75 = fconvert.t(110f)
-00446608        long double x87_r7_66 = (fconvert.t(player_2->position.z) - fconvert.t(player_2->follow_state.source_cell->anchor_position.z)) / fconvert.t(template_record->segment_count_f)
+00446608        long double x87_r7_66 = (fconvert.t(player_2->live_matrix.position.z) - fconvert.t(player_2->follow_state.source_cell->anchor_position.z)) / fconvert.t(template_record->segment_count_f)
 0044660b        long double temp11_1 = fconvert.t(0f)
 0044660b        x87_r7_66 - temp11_1
 00446611        player_2.w = (x87_r7_66 < temp11_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_66, temp11_1) ? 1 : 0) << 0xa | (x87_r7_66 == temp11_1 ? 1 : 0) << 0xe | 0x3800

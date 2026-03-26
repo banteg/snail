@@ -41,7 +41,7 @@
 0043a2aa        if (movement_flags == player->previous_movement_flags)
 0043a2cc        player->previous_movement_flags = player->movement_flags
 0043a2d3        return movement_flags
-0043a2b3        set_snail_weapon(&player->_pad_2984, movement_flags)
+0043a2b3        set_snail_weapon(&player->presentation, movement_flags)
 0043a2b8        uint32_t movement_flags_1 = player->movement_flags
 0043a2be        player->previous_movement_flags = movement_flags_1
 0043a2c5        return movement_flags_1

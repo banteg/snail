@@ -58,6 +58,16 @@ Current checked-in example:
 - `path_template_types.h`
 - `uv run python tools/ida/sync_path_template_types.py`
 
+Current checked-in Binary Ninja companion:
+
+- `bn_player_presentation_types.h`
+- `uv run python tools/binja/sync_path_template_types.py`
+
+That BN sync lane intentionally replays a narrow presentation/camera slice:
+- sparse `Player` / `Game` field overlays that have already proven stable in `update_subgoldy` / `update_cameraman`
+- the dependent `SnailVisual` / `PathTemplate` fields that keep those callers from falling back to raw offsets again
+- the small matrix and presentation helper prototypes that materially change caller readability in BN
+
 That path mirrors the trusted `PathTemplate` / `PathTemplateSample` layouts and
 their currently trusted helper prototypes into the tracked `.i64` database
 without pretending to solve global type sync.
