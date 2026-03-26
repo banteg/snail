@@ -512,6 +512,7 @@ Current practical read:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
 - on hit, the slot does not die immediately: `handle_subgoldy_collisions` flips it into the shared post-hit lane, and the slot's `update_subgoldy_bullet` vtable advances the recovered `2 -> 3` follow/collapse animation before teardown
+- the post-hit `2 -> 3` follow and `4 -> 5` miss-expand lanes seed `effect_progress_step` from `Game.track_center_x * 0.0694444478`, not from the live subgame speed scalar
 - the same vtable also owns the missed-pickup `4 -> 5` expand-and-teardown lane keyed from `movement_flag_selector_snapshot`
 - the collision switch owns the ring-kind ladder:
   - `1` -> score + `PW1`
@@ -519,7 +520,7 @@ Current practical read:
   - `3/7` -> negative motion-lane impulse + `SLOWRING`
   - `4/5` -> optional voice + weapon-selector increment + `PW1..PW7`
   - `8` -> weapon-selector increment + `PW1..PW7`
-- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, and carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula
+- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, seeds the native presentation anchor for the ring slot, carries the recovered `base_subgame_rate` lane into the default-family `0/1/2/3/4` phase-step formula, and seeds the post-hit progress step from `track_center_x` instead of from runner speed
 - the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative because its writer is still unresolved
 
 ## Garbage Hazard Runtime

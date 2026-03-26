@@ -4387,7 +4387,7 @@ pub const Runner = struct {
             .collect_setup => {
                 effect.state = .collect_follow;
                 effect.effect_progress = 0.0;
-                effect.effect_progress_step = self.speed_rows_per_second * runtime_ring_effect_progress_scale;
+                effect.effect_progress_step = runtimeRingEffectProgressStep();
                 return true;
             },
             .collect_follow => {
@@ -4404,7 +4404,7 @@ pub const Runner = struct {
             .miss_setup => {
                 effect.state = .miss_expand;
                 effect.effect_progress = 0.0;
-                effect.effect_progress_step = self.speed_rows_per_second * runtime_ring_effect_progress_scale;
+                effect.effect_progress_step = runtimeRingEffectProgressStep();
                 return true;
             },
             .miss_expand => {
@@ -4469,6 +4469,10 @@ pub const Runner = struct {
             else => {},
         }
         return 0.0;
+    }
+
+    fn runtimeRingEffectProgressStep() f32 {
+        return native_track_center_x * runtime_ring_effect_progress_scale;
     }
 
     fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
@@ -7183,6 +7187,35 @@ test "runtime ring effect collision arms the native collect follow state" {
     const post_follow = runner.activeRuntimeRingEffects()[0];
     try std.testing.expect(post_follow.presentation_scale < 1.0);
     try std.testing.expect(post_follow.presentation_position.z > pre_follow_position.z);
+}
+
+test "runtime ring effect post-hit progress step follows native track center" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.speed_rows_per_second = 48.0;
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 51.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+    runner.processRuntimeRingEffectCollisions(&fixture.preview);
+
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectApproxEqAbs(
+        Runner.runtimeRingEffectProgressStep(),
+        runner.activeRuntimeRingEffects()[0].effect_progress_step,
+        0.0001,
+    );
+
+    runner.active_runtime_ring_effects[0].state = .miss_setup;
+    runner.active_runtime_ring_effects[0].effect_progress_step = 0.0;
+    runner.updateRuntimeRingEffects(&fixture.preview);
+    try std.testing.expectApproxEqAbs(
+        Runner.runtimeRingEffectProgressStep(),
+        runner.activeRuntimeRingEffects()[0].effect_progress_step,
+        0.0001,
+    );
 }
 
 test "runtime ring effect collect follow cleans itself up after native progress window" {
