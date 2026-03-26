@@ -37,7 +37,7 @@
 00441ac3        return deactivate_salt_hazard(esi)
 0044192c        struct TrackRowCell* eax_9 = get_track_grid_cell_at_world_position(data_4df904 + 0x74618, esi + 0x68)
 00441945        int32_t ebx_1 = get_track_runtime_cell_at_world_z(data_4df904 + 0x74618, esi + 0x68)
-00441947        eax.b = eax_9->__offset(0x3c).b
+00441947        eax.b = eax_9->tile_id
 0044194c        if (eax.b == 0xe)
 0044194e        long double x87_r7_11 = fconvert.t(*(esi + 0x6c))
 00441951        long double temp5_1 = fconvert.t(7f)

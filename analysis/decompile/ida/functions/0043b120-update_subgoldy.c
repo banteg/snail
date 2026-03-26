@@ -27,36 +27,36 @@ int32_t __thiscall update_subgoldy(Player *player)
   Game *v22; // eax
   PlayerControlSource *control_source; // eax
   Game *v24; // eax
-  char *track_grid_cell_at_world_position; // eax
+  TrackRowCell *track_grid_cell_at_world_position; // eax
   Game *v26; // edi
   int v27; // eax
   char *v28; // esi
   int32_t v29; // eax
   int v30; // esi
   Game *v31; // edx
-  uint8_t v32; // al
+  uint8_t tile_id; // al
   double track_center_x; // st7
   Game *v34; // ecx
   Vec3 *p_velocity; // esi
   double v36; // st7
-  char *v37; // eax
+  TrackRowCell *v37; // eax
   double v38; // st6
   double v39; // st7
   double v40; // st7
-  char *v41; // esi
+  TrackRowCell *v41; // esi
   Game *v42; // edi
   int track_cell_row_index; // eax
   int v44; // eax
-  char v45; // al
-  char v46; // al
+  uint8_t v45; // al
+  uint8_t v46; // al
   double v47; // st7
   double v48; // st6
   Game *v49; // ecx
   double v50; // st7
   double v51; // st7
   double v52; // st7
-  char *v53; // eax
-  char *v54; // esi
+  TrackRowCell *v53; // eax
+  TrackRowCell *v54; // esi
   float v55; // eax
   Game *v56; // ecx
   double v57; // st7
@@ -137,16 +137,14 @@ int32_t __thiscall update_subgoldy(Player *player)
   float v132; // [esp+24h] [ebp-34h]
   float v133; // [esp+24h] [ebp-34h]
   float v134; // [esp+24h] [ebp-34h]
-  float v135; // [esp+28h] [ebp-30h] BYREF
-  float v136; // [esp+2Ch] [ebp-2Ch]
-  float v137; // [esp+30h] [ebp-28h]
-  float v138; // [esp+34h] [ebp-24h]
-  float v139; // [esp+38h] [ebp-20h]
-  float v140; // [esp+40h] [ebp-18h]
-  float v141; // [esp+44h] [ebp-14h]
-  float v142; // [esp+4Ch] [ebp-Ch]
-  float v143; // [esp+50h] [ebp-8h]
-  float v144; // [esp+54h] [ebp-4h]
+  Vec3 v135; // [esp+28h] [ebp-30h] BYREF
+  float v136; // [esp+34h] [ebp-24h]
+  float v137; // [esp+38h] [ebp-20h]
+  float v138; // [esp+40h] [ebp-18h]
+  float v139; // [esp+44h] [ebp-14h]
+  float v140; // [esp+4Ch] [ebp-Ch]
+  float v141; // [esp+50h] [ebp-8h]
+  float v142; // [esp+54h] [ebp-4h]
 
   result = (int32_t)player->game;
   if ( *(_BYTE *)(result + 9) )
@@ -231,11 +229,9 @@ LABEL_60:
           }
           if ( player->_pad_78[12] )
             update_subgoldy_resurrect((int)player);
-          track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(
-                                                (char *)player->game,
-                                                &p_position->x);
+          track_grid_cell_at_world_position = get_track_grid_cell_at_world_position(player->game, p_position);
           v26 = player->game;
-          v121 = (TrackRowCell *)track_grid_cell_at_world_position;
+          v121 = track_grid_cell_at_world_position;
           v27 = 61 * get_track_cell_row_index(track_grid_cell_at_world_position);
           v28 = &byte_5CCAC8[(_DWORD)v26 + 4 * v27];
           v29 = *(int *)((char *)unk_5CCBB8 + (_DWORD)v26 + 4 * v27);
@@ -271,8 +267,8 @@ LABEL_60:
           }
           if ( !player->attachment_exit_pending )
           {
-            v32 = v121[1]._pad_00[0];
-            if ( (v32 == 29 || v32 == 30) && !player->follow_state.active )
+            tile_id = v121->tile_id;
+            if ( (tile_id == 29 || tile_id == 30) && !player->follow_state.active )
             {
               begin_track_attachment_follow_state(&player->follow_state, v121, p_position, player);
               if ( player->follow_state.template_record->kind == PATH_TEMPLATE_KIND_WORM )
@@ -363,12 +359,12 @@ LABEL_101:
             }
             if ( !LOBYTE(player->completion_handoff_active) )
             {
-              if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 15
-                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 16
-                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 18
-                || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 19
+              if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 15
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 16
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 18
+                || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 19
                 || player->damage_gauge.state == 2
-                && (v37 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x),
+                && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
                     is_slide_cache_tile_family(v37)) )
               {
                 v38 = player->game->track_center_x * player->game->track_center_x * 0.0040000002;
@@ -397,7 +393,7 @@ LABEL_101:
             }
             else
             {
-              v41 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x);
+              v41 = get_track_grid_cell_at_world_position(player->game, p_position);
               if ( player->attachment_exit_pending )
               {
                 v42 = player->game;
@@ -458,7 +454,7 @@ LABEL_101:
                 if ( player->live_matrix.position.y < 0.49000001
                   && player->live_matrix.position.y > -0.16333334
                   && !is_open_neighbor_tile_family(v41)
-                  && v41[60] != 22 )
+                  && v41->tile_id != 22 )
                 {
                   set_matrix_rotation_identity(&player->live_matrix);
                   player->_pad_1e4[0] = 0;
@@ -474,10 +470,10 @@ LABEL_101:
                   }
                   player->attachment_exit_pending = 0;
                 }
-                v45 = v41[60];
+                v45 = v41->tile_id;
                 if ( (!v45 || v45 == 35) && player->live_matrix.position.y < 0.49000001 && player->velocity.y <= 0.0 )
                 {
-                  v46 = v41[61];
+                  v46 = v41->_pad_3d[0];
                   v47 = player->live_matrix.position.z - (double)(int)(__int64)player->live_matrix.position.z;
                   if ( (v46 & 2) != 0 )
                     v48 = 0.80000001;
@@ -491,7 +487,7 @@ LABEL_101:
                 }
                 v49 = player->game;
                 if ( v49->level_mode == 3 )
-                  get_track_grid_cell_at_world_position((char *)v49, &p_position->x);
+                  get_track_grid_cell_at_world_position(v49, p_position);
                 if ( ((player->game->runtime_flags & 0x400) == 0 || (byte_4B2F40 & 2) != 0)
                   && player->live_matrix.position.y < 0.49000001 )
                 {
@@ -516,15 +512,15 @@ LABEL_101:
             {
               player->velocity.y = player->game->track_center_x * player->game->track_center_x * -0.0099999998
                                  + player->velocity.y;
-              v53 = get_track_grid_cell_at_world_position((char *)player->game, &p_position->x);
+              v53 = get_track_grid_cell_at_world_position(player->game, p_position);
               v54 = v53;
-              if ( v53[60] == 22
-                && *((float *)v53 + 5) + 0.49000001 > player->live_matrix.position.y
-                && *((float *)v53 + 5) - 0.49000001 < player->live_matrix.position.y )
+              if ( v53->tile_id == 22
+                && v53->anchor_position.y + 0.49000001 > player->live_matrix.position.y
+                && v53->anchor_position.y - 0.49000001 < player->live_matrix.position.y )
               {
                 start_squidge_y(&player->squidge, player->velocity.y);
                 player->velocity.y = player->game->track_center_x * 0.30000001;
-                player->live_matrix.position.y = *((float *)v54 + 5) + 0.49000001;
+                player->live_matrix.position.y = v54->anchor_position.y + 0.49000001;
                 player->attachment_exit_pending = 0;
                 player->_pad_1e4[0] = 1;
                 play_sound_effect(41);
@@ -532,7 +528,7 @@ LABEL_101:
             }
             else
             {
-              v51 = sample_track_floor_height_at_position((char *)player->game, &p_position->x) + 0.49000001;
+              v51 = sample_track_floor_height_at_position(player->game, p_position) + 0.49000001;
               if ( v51 <= player->live_matrix.position.y )
               {
                 v52 = player->game->track_center_x;
@@ -542,21 +538,21 @@ LABEL_101:
               {
                 if ( player->velocity.y <= 0.0 )
                   player->live_matrix.position.y = v51;
-                if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
-                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 9
-                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
-                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11
-                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 12
-                  || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 13 )
+                if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
+                  || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 9
+                  || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
+                  || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11
+                  || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 12
+                  || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 13 )
                 {
                   player->velocity.y = player->game->track_center_x * 0.30000001;
                 }
-                else if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
-                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 3
-                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 4
-                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
-                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 6
-                       || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 7 )
+                else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
+                       || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 3
+                       || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 4
+                       || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
+                       || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 6
+                       || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 7 )
                 {
                   if ( player->surface_reaction_timer == 0.0 )
                     player->surface_reaction_timer = player->surface_reaction_step;
@@ -570,9 +566,9 @@ LABEL_101:
                     dispatch_cutscene_animation(&player->presentation, 1, 0, -1);
                   }
                 }
-                else if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60]
-                       && get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] != 35
-                       && get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] != 22 )
+                else if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id
+                       && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != 35
+                       && get_track_grid_cell_at_world_position(player->game, p_position)->tile_id != 22 )
                 {
                   player->_pad_1e4[0] = 0;
                   player->velocity.y = 0.0;
@@ -588,11 +584,11 @@ LABEL_98:
             || player->follow_state.active
             || (v55 = p_position->y,
                 v134 = p_position->z + 0.49000001,
-                v135 = p_position->x,
-                v137 = v134,
+                v135.x = p_position->x,
+                v135.z = v134,
                 v56 = player->game,
-                v136 = v55,
-                get_track_grid_cell_at_world_position((char *)v56, &v135)[60] != 14)
+                v135.y = v55,
+                get_track_grid_cell_at_world_position(v56, &v135)->tile_id != 14)
             || player->live_matrix.position.y >= 6.5 )
           {
             *(_DWORD *)&player->_pad_30c[28] = 0;
@@ -614,23 +610,23 @@ LABEL_98:
             }
           }
           if ( !player->lane_lean_state
-            && (get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 4
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 7
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 10
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11
-             || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 13)
+            && (get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 4
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 7
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 10
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11
+             || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 13)
             && !player->attachment_exit_pending
             && player->live_matrix.position.y <= 0.98000002 )
           {
             player->lane_lean_progress_step = player->game->track_center_x * 0.037037037;
-            if ( get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 2
-              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 5
-              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 8
-              || get_track_grid_cell_at_world_position((char *)player->game, &p_position->x)[60] == 11 )
+            if ( get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 2
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 5
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 8
+              || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 11 )
             {
               player->lane_lean_state = 1;
               player->lane_lean_amplitude = 1.0;
@@ -785,9 +781,9 @@ LABEL_98:
             }
           }
 LABEL_287:
-          v142 = p_position->x;
-          v143 = p_position->y;
-          v144 = p_position->z;
+          v140 = p_position->x;
+          v141 = p_position->y;
+          v142 = p_position->z;
           if ( player->follow_state.active == 1 )
           {
             p_position->x = player->follow_state.output_position.x;
@@ -807,29 +803,29 @@ LABEL_287:
           v75 = p_position->z;
           player->cached_camera_target_world.y = p_position->y;
           player->cached_camera_target_world.z = v75;
-          v140 = wobble_alpha * player->live_matrix.basis_forward.x;
-          v141 = wobble_alpha * player->live_matrix.basis_forward.y;
+          v138 = wobble_alpha * player->live_matrix.basis_forward.x;
+          v139 = wobble_alpha * player->live_matrix.basis_forward.y;
           v76 = wobble_alpha * player->live_matrix.basis_forward.z;
           wobble_y = player->jetpack_gauge.wobble_y;
           v128 = wobble_y * player->live_matrix.basis_up.x;
           v131 = wobble_y * player->live_matrix.basis_up.y;
           v78 = wobble_y * player->live_matrix.basis_up.z;
           wobble_x = player->jetpack_gauge.wobble_x;
-          v135 = wobble_x * player->live_matrix.basis_right.x;
-          v136 = wobble_x * player->live_matrix.basis_right.y;
+          v135.x = wobble_x * player->live_matrix.basis_right.x;
+          v135.y = wobble_x * player->live_matrix.basis_right.y;
           v80 = wobble_x * player->live_matrix.basis_right.z;
-          v138 = v135 + v128;
-          v139 = v136 + v131;
-          v135 = v138 + v140;
-          v136 = v139 + v141;
-          player->cached_camera_target_world.x = v135 + player->cached_camera_target_world.x;
-          player->cached_camera_target_world.y = v136 + player->cached_camera_target_world.y;
+          v136 = v135.x + v128;
+          v137 = v135.y + v131;
+          v135.x = v136 + v138;
+          v135.y = v137 + v139;
+          player->cached_camera_target_world.x = v135.x + player->cached_camera_target_world.x;
+          player->cached_camera_target_world.y = v135.y + player->cached_camera_target_world.y;
           player->cached_camera_target_world.z = v76 + v78 + v80 + player->cached_camera_target_world.z;
           skin_hold_ticks = player->damage_gauge.skin_hold_ticks;
           if ( skin_hold_ticks > 0 )
             player->damage_gauge.skin_hold_ticks = skin_hold_ticks - 1;
           if ( player->follow_state.active == 1 )
-            p_position->x = v142;
+            p_position->x = v140;
           v82 = player->game->track_center_x * 0.037037037;
           player->lane_lean_progress_step = v82;
           if ( player->lane_lean_state )

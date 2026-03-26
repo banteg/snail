@@ -94,9 +94,7 @@
       "observed_name": "sub_44fd90"
     }
   ],
-  "removed_stale_artifacts": [
-    "analysis/decompile/binja/functions/0043af60-initialize_subgoldy_fall_state.c"
-  ],
+  "removed_stale_artifacts": [],
   "exports": [
     {
       "address": "0x401000",

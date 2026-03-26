@@ -148,7 +148,7 @@
 0043e346        *(esi + 0x35b96c) = fconvert.s(random_float_below(1f) * fconvert.t(6.28318548f))
 0043e365        *(esi + 0x35b970) = fconvert.s(fconvert.t(1f) / (fconvert.t(arg5) * fconvert.t(60f)) * fconvert.t(arg1->__offset(0x38).d) * fconvert.t(6.28318548f))
 0043e374        struct TrackRowCell* eax_26 = get_track_grid_cell_at_world_position(arg1, esi + 0x35b7f4)
-0043e37d        if (eax_26->__offset(0x3c).b == 0xe)
+0043e37d        if (eax_26->tile_id == 0xe)
 0043e449        return eax_26
 0043e387        *(esi + 0x35b814) = ebp
 0043e38d        void* var_24_13 = &data_4a4e18

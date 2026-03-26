@@ -9,7 +9,7 @@
 00439d62        void* ecx = data_4df904
 00439d68        result.b = *(ecx + 0x74621)
 00439d70        if (result.b == 0)
-00439d76        result.b = arg1->__offset(0x3c).b
+00439d76        result.b = arg1->tile_id
 00439d7b        float vector
 00439d7b        float var_10
 00439d7b        if (result.b == 0xe)

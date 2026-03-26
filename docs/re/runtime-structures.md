@@ -791,6 +791,7 @@ used by the follow helpers:
 
 - `+0x10..+0x18`: `anchor_position`
 - `+0x38`: `attachment_template_record`
+- `+0x3c`: `tile_id`
 
 High-confidence `PathTemplateStripMesh` fields:
 

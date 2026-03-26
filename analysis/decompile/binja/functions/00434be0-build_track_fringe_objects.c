@@ -28,7 +28,7 @@
 00434c52        if (ecx.b == 6)
 00434c54        edi_1 = 4
 00434c59        int32_t eax_1
-00434c59        eax_1.b = esi_1->__offset(0x3c).b
+00434c59        eax_1.b = esi_1->tile_id
 00434c66        if (eax_1.b == 2 || eax_1.b == 8 || eax_1.b == 5)
 00434c68        edi_1 = 5
 00434c83        if (eax_1.b == 3 || eax_1.b == 9 || eax_1.b == 0xb || eax_1.b == 0xc || eax_1.b == 0xd || eax_1.b == 6)

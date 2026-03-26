@@ -251,6 +251,9 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 - world `x` is quantized with `floor(x + 4.0)` and clamped to lane `0..7`
 - world `z` is quantized with `floor(z)` and clamped to row `0..0xc7f`
 - runtime track rows are stored at `game + 0x5ccac8 + row * 0xf4`
+  - the narrow checked-in type lane now treats that row as `TrackRuntimeRow`
+  - `+0x00`: `flags`
+  - `+0xe8`: `ring_speed`
 - gameplay grid cells are stored at `game + 0x3bfac8 + (lane + row * 8) * 0x54`
 - runtime row `+0xe8` carries the per-row `RingSpeed` float copied from segment metadata
 

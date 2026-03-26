@@ -2579,9 +2579,7 @@
       "address": "0x43af60",
       "name": "begin_post_follow_carryover",
       "artifact": "analysis/decompile/ida/functions/0043af60-begin_post_follow_carryover.c",
-      "removed_stale_artifacts": [
-        "analysis/decompile/ida/functions/0043af60-initialize_subgoldy_fall_state.c"
-      ]
+      "removed_stale_artifacts": []
     },
     {
       "selector": "play_movement_state_sound",

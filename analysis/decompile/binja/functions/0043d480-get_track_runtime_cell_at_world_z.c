@@ -5,9 +5,9 @@
 /* function: get_track_runtime_cell_at_world_z @ 0x43d480 */
 
 0043d48a        int16_t x87control
-0043d48a        int32_t eax = __ftol(x87control, fconvert.t(*(arg2 + 8)))
+0043d48a        int32_t eax = __ftol(x87control, fconvert.t(position->z))
 0043d491        if (eax s< 0)
-0043d4a6        return arg1 + 0x5ccac8
+0043d4a6        return game + 0x5ccac8
 0043d4ae        if (eax s> 0xc7f)
 0043d4b0        eax = 0xc7f
-0043d4c6        return arg1 + eax * 0xf4 + 0x5ccac8
+0043d4c6        return game + eax * 0xf4 + 0x5ccac8

@@ -3,15 +3,15 @@
 /* selector: get_track_runtime_cell_at_world_z */
 
 // Clamps world z into the generated row array and returns the current runtime cell.
-char *__thiscall sub_43D480(void *this, int a2)
+TrackRuntimeRow *__thiscall get_track_runtime_cell_at_world_z(Game *game, Vec3 *position)
 {
-  __int64 v2; // rax
+  __int64 z; // rax
 
-  v2 = (__int64)*(float *)(a2 + 8);
-  if ( (int)v2 < 0 )
-    return (char *)byte_5CCAC8 + (_DWORD)this;
-  if ( (int)v2 > 3199 )
-    LODWORD(v2) = 3199;
-  return (char *)byte_5CCAC8 + (_DWORD)this + 244 * v2;
+  z = (__int64)position->z;
+  if ( (int)z < 0 )
+    return (TrackRuntimeRow *)&byte_5CCAC8[(_DWORD)game];
+  if ( (int)z > 3199 )
+    LODWORD(z) = 3199;
+  return (TrackRuntimeRow *)&byte_5CCAC8[(_DWORD)((_DWORD)game + 244 * z)];
 }
 

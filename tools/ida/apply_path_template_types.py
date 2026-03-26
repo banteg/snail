@@ -235,6 +235,18 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall uninit_nuke(NukeController* nuke);",
     ),
     (
+        "get_track_grid_cell_at_world_position",
+        "TrackRowCell* __thiscall get_track_grid_cell_at_world_position(Game* game, Vec3* position);",
+    ),
+    (
+        "get_track_runtime_cell_at_world_z",
+        "TrackRuntimeRow* __thiscall get_track_runtime_cell_at_world_z(Game* game, Vec3* position);",
+    ),
+    (
+        "sample_track_floor_height_at_position",
+        "double __thiscall sample_track_floor_height_at_position(Game* game, Vec3* position);",
+    ),
+    (
         "begin_track_attachment_follow_state",
         "PathTemplate* __thiscall begin_track_attachment_follow_state(FollowState* follow_state, TrackRowCell* source_cell, Vec3* world_position, Player* player);",
     ),
