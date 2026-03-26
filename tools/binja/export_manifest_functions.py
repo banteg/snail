@@ -123,6 +123,13 @@ def _artifact_path(out_dir: Path, function: FunctionSymbol) -> Path:
     return out_dir / f"{function.address:08x}-{_safe_name(function.name)}.c"
 
 
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def _write_artifact(
     out_dir: Path,
     *,
@@ -146,7 +153,7 @@ def _write_artifact(
     return {
         "address": function.address_hex,
         "name": function.name,
-        "artifact": str(out_path.relative_to(REPO_ROOT)),
+        "artifact": _display_path(out_path),
     }
 
 
@@ -158,7 +165,7 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
         if path in expected_paths:
             continue
         path.unlink()
-        removed.append(str(path.relative_to(REPO_ROOT)))
+        removed.append(_display_path(path))
     return removed
 
 
@@ -306,8 +313,8 @@ def main() -> int:
     index = {
         "tool": "binary_ninja",
         "target": target_metadata,
-        "manifest": str(manifest_path.relative_to(REPO_ROOT)),
-        "out_dir": str(out_dir.relative_to(REPO_ROOT)),
+        "manifest": _display_path(manifest_path),
+        "out_dir": _display_path(out_dir),
         "selected_count": len(selected_functions),
         "function_count": len(exported),
         "mismatch_count": len(mismatches),

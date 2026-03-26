@@ -55,6 +55,16 @@ Refresh only a narrow touched subset and fail fast on mismatch or health regress
 uv run python tools/export_tracked_decompiles.py --only update_subgoldy --only update_cameraman --strict
 ```
 
+Probe a live subset into a scratch tree without touching the tracked exports with:
+
+```bash
+uv run python tools/export_tracked_decompiles.py \
+  --root /tmp/decompile_scratch \
+  --only update_subgoldy \
+  --only update_cameraman \
+  --strict
+```
+
 Run just the hotspot health checks with:
 
 ```bash
@@ -70,3 +80,4 @@ Notes:
 - the health check is intentionally narrow and only guards a few high-value tracked exports where type/prototype regressions have caused real readability loss before
 - `--only` matches manifest names or hex addresses and is forwarded to both export lanes
 - `--strict` exits nonzero when either lane reports mismatches or any health check fails
+- when `--root` points outside the repo, the summary and per-tool indexes keep absolute artifact paths instead of forcing repo-relative ones

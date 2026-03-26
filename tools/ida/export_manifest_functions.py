@@ -137,7 +137,7 @@ def _prune_stale_artifacts(out_dir: Path, expected_paths: set[Path]) -> list[str
         if path in expected_paths:
             continue
         path.unlink()
-        removed.append(str(path.relative_to(REPO_ROOT)))
+        removed.append(_display_path(path))
     return removed
 
 

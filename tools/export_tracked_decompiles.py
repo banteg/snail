@@ -44,6 +44,13 @@ def _run_python(script: Path, *args: str) -> dict[str, object]:
         ) from exc
 
 
+def _display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(path)
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Refresh tracked Binary Ninja and IDA decompile artifacts for all named functions in the manifest."
@@ -206,11 +213,11 @@ def main() -> int:
     failing_checks = _truncate_list(_failing_health_checks(health_result))
 
     summary = {
-        "manifest": str(manifest_path.relative_to(REPO_ROOT)),
-        "root": str(root.relative_to(REPO_ROOT)),
+        "manifest": _display_path(manifest_path),
+        "root": _display_path(root),
         "function_count": len(selected_functions),
-        "bn_index": str(bn_index.relative_to(REPO_ROOT)),
-        "ida_index": str(ida_index.relative_to(REPO_ROOT)),
+        "bn_index": _display_path(bn_index),
+        "ida_index": _display_path(ida_index),
         "bn_exported": len(bn_result.get("exports", [])),
         "ida_exported": len(ida_result.get("exported", [])),
         "bn_mismatch_count": bn_result.get("mismatch_count", 0),
