@@ -93,6 +93,15 @@ typedef struct TrackRowCell {
     Vec3 anchor_position;
 } TrackRowCell;
 
+typedef struct PlayerControlSource {
+    uint8_t _pad_00[0x4];
+    uint32_t control_flags_a;
+    uint8_t _pad_08[0x4];
+    uint32_t control_flags_b;
+    uint8_t _pad_10[0x18];
+    float steering_x;
+} PlayerControlSource;
+
 typedef struct AnimationDispatchState {
     int32_t active;
     float progress;

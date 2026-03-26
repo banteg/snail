@@ -118,7 +118,7 @@
 004465ea        if (player_2->follow_state.active == 1)
 004465f0        template_record = player_2->follow_state.template_record
 004465fa        long double x87_r7_75
-004465fa        if (player_2->follow_state.active != 1 || template_record->kind != 0x18)
+004465fa        if (player_2->follow_state.active != 1 || template_record->kind != PATH_TEMPLATE_KIND_WORM)
 00446679        x87_r7_75 = fconvert.t(110f)
 00446608        long double x87_r7_66 = (fconvert.t(player_2->live_matrix.position.z) - fconvert.t(player_2->follow_state.source_cell->anchor_position.x)) / fconvert.t(template_record->segment_count_f)
 0044660b        long double temp11_1 = fconvert.t(0f)

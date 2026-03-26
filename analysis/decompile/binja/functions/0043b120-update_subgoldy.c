@@ -56,7 +56,7 @@
 0043b392        if (eax_6.b == 0)
 0043b402        var_54 = (&data_4df950)[player_1->steering_mode_selector]
 0043b403        resolve_uncaptured_cursor_sensitivity_scale(var_54)
-0043b41c        long double x87_r7_21 = fconvert.t(player_1->control_source->__offset(0x28).d) - fconvert.t(player_1->track_z_anchor) + fconvert.t(player_1->track_z_offset)
+0043b41c        long double x87_r7_21 = fconvert.t(player_1->control_source->steering_x) - fconvert.t(player_1->track_z_anchor) + fconvert.t(player_1->track_z_offset)
 0043b422        long double temp3_1 = fconvert.t(0f)
 0043b422        x87_r7_21 - temp3_1
 0043b428        player_1->track_z_offset = fconvert.s(x87_r7_21)
@@ -71,7 +71,7 @@
 0043b44e        x87_r7_21 = fconvert.t(639f)
 0043b437        x87_r7_21 = fconvert.t(0f)
 0043b454        player_1->track_z_offset = fconvert.s(x87_r7_21)
-0043b463        player_1->track_z_anchor = player_1->control_source->__offset(0x28).d
+0043b463        player_1->track_z_anchor = player_1->control_source->steering_x
 0043b472        if (player_1->steering_mode_selector == 1)
 0043b47d        player_1->track_z_offset = fconvert.s(fconvert.t(player_1->control_source->_pad_00[0x28].d))
 0043b394        long double x87_r7_11 = fconvert.t(player_1->presentation.live_matrix.basis_up.x)
@@ -160,12 +160,12 @@
 0043b60c        if ((*(player_1->control_source + 4) & 0x4000) != 0)
 0043b614        int32_t edx_11 = game_4->runtime_track_index * 3
 0043b617        game_4->_pad_a855[0xfc832f + (edx_11 << 1)] |= 1
-0043b62f        if ((player_1->control_source->__offset(0xc).d & 0x4000) != 0)
+0043b62f        if ((player_1->control_source->control_flags_b & 0x4000) != 0)
 0043b631        struct Game* game_5 = player_1->game
 0043b63d        game_12 = game_5->runtime_track_index * 3
 0043b640        game_5->_pad_a855[0xfc832f + (game_12 << 1)] |= 2
 0043b64f        struct PlayerControlSource* control_source = player_1->control_source
-0043b65d        if ((control_source->__offset(0xc).d & 0x4000) == 0 && (control_source->__offset(0x4).d & 0x4000) == 0)
+0043b65d        if ((control_source->control_flags_b & 0x4000) == 0 && (control_source->control_flags_a & 0x4000) == 0)
 0043b665        player_1->game->track_state_latch = 1
 0043b66c        game_3 = player_1->game
 0043b672        game_12.b = game_3->track_state_latch
@@ -1406,7 +1406,7 @@
 0043c88c        game_6 = player_1->game
 0043c892        int32_t ecx_120 = game_6->__offset(0x40).d
 0043c89c        if (ecx_120 == 0 || ecx_120 == 1)
-0043c8b8        if (game_6->__offset(0x12727f0).b == 1 && (player_1->control_source->__offset(0x5).b & 0x40) != 0)
+0043c8b8        if (game_6->__offset(0x12727f0).b == 1 && (player_1->control_source->control_flags_a:1.b & 0x40) != 0)
 0043c8ba        player_1->_pad_440[4] = 0x33
 0043c8ba        player_1->_pad_440[5] = 0x33
 0043c8ba        player_1->_pad_440[6] = 0xa3
@@ -1906,12 +1906,12 @@
 0043d10e        uint8_t selected_level_record_active = game_54->selected_level_record_active
 0043d116        if (selected_level_record_active == 0)
 0043d138        label_43d138:
-0043d13f        if ((player_1->control_source->__offset(0x4).d & 0x4000) != 0)
+0043d13f        if ((player_1->control_source->control_flags_a & 0x4000) != 0)
 0043d13f        goto label_43d143
 0043d166        if (selected_level_record_active != 0)
 0043d166        goto label_43d168
 0043d18b        label_43d18b:
-0043d18e        if (((player_1->control_source->__offset(0xc).d).w:1.b & 0x40) != 0)
+0043d18e        if (((player_1->control_source->control_flags_b).w:1.b & 0x40) != 0)
 0043d18e        goto label_43d198
 0043d12c        struct Player* entry_movement_source
 0043d12c        if ((game_54->selected_level_record->replay_samples[game_54->runtime_track_index].flags & 1) != 0)

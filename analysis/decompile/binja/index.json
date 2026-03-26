@@ -12,8 +12,8 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 1,
-  "function_count": 1,
+  "selected_count": 2,
+  "function_count": 2,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
@@ -22,6 +22,11 @@
       "address": "0x43b120",
       "name": "update_subgoldy",
       "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c"
+    },
+    {
+      "address": "0x4461d0",
+      "name": "update_cameraman",
+      "artifact": "analysis/decompile/binja/functions/004461d0-update_cameraman.c"
     }
   ]
 }
