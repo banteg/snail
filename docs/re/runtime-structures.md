@@ -13,6 +13,8 @@ The current high-confidence `Player` fields are:
 - `+0x98`: `cached_track_pair_cell_a`
 - `+0x9c`: `cached_track_pair_cell_b`
 - `+0x120`: `movement_state`
+- `+0x124..+0x14b`: `unresolved_pre_row_event`
+  - kept as an explicit unresolved gap in the shared header; no safe controller-level name yet
 - `+0x14c`: `row_event_cutscene_started`
 - `+0x150`: `nuke`
   - inline `NukeController`
@@ -143,6 +145,13 @@ Two `update_subgoldy` corrections from the latest static audit:
     - `+0x90`: `fade_step`
     - `initialize_invincible_shell`, `start_invincible_shell`, and `update_invincible_shell` all operate on this same embedded controller
   - `+0x1938`: `snail_skin_transition`
+    - `+0x00`: `selected_slot`
+    - `+0x04`: `slot_ids[3]`
+    - `+0x10`: `owner_render_state`
+    - `+0x14`: `active`
+    - `+0x18`: `progress`
+    - `+0x1c`: `progress_step`
+    - `initialize_snail_skin` seeds `owner_render_state` to the shared player render owner and clears the timed skin swap state
   - `+0x1958`: `cutscene_ai`
     - `+0x00`: `presentation`
     - `+0x04`: `player`

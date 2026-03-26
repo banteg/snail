@@ -52,19 +52,19 @@ int32_t __thiscall update_cutscene(CutsceneAI *cutscene_ai)
   char v46; // c2
   bool v47; // c3
   Vec3 *v48; // edx
-  Vec3 *p_position; // [esp+0h] [ebp-FCh]
+  Vec4 *p_position; // [esp+0h] [ebp-FCh]
   float v50; // [esp+0h] [ebp-FCh]
-  Vec3 *v51; // [esp+0h] [ebp-FCh]
+  Vec4 *v51; // [esp+0h] [ebp-FCh]
   float v52; // [esp+0h] [ebp-FCh]
   float v53; // [esp+0h] [ebp-FCh]
   float v54; // [esp+0h] [ebp-FCh]
   float v55; // [esp+0h] [ebp-FCh]
   float v56; // [esp+0h] [ebp-FCh]
   float v57; // [esp+0h] [ebp-FCh]
-  Vec3 *v58; // [esp+0h] [ebp-FCh]
+  Vec4 *v58; // [esp+0h] [ebp-FCh]
   float v59; // [esp+0h] [ebp-FCh]
   float v60; // [esp+0h] [ebp-FCh]
-  Vec3 *v61; // [esp+0h] [ebp-FCh]
+  Vec4 *v61; // [esp+0h] [ebp-FCh]
   float v62; // [esp+14h] [ebp-E8h]
   float v63; // [esp+14h] [ebp-E8h]
   float v64; // [esp+18h] [ebp-E4h]
@@ -93,7 +93,7 @@ int32_t __thiscall update_cutscene(CutsceneAI *cutscene_ai)
       cutscene_ai->progress = 0.0;
       cutscene_ai->progress_step = 0.0083333338;
       cutscene_ai->unresolved_58 = 1;
-      dispatch_cutscene_animation(presentation, 9, 1, -1);
+      dispatch_cutscene_animation(presentation, 9, 1u, -1);
       dispatch_cutscene_animation(cutscene_ai->presentation, 9, 0, -1);
       dispatch_cutscene_animation(cutscene_ai->presentation, 1, 0, -1);
       goto LABEL_3;
@@ -102,11 +102,11 @@ LABEL_3:
       cutscene_ai->unresolved_08 = 1;
       set_matrix_identity(&cutscene_ai->live_matrix);
       v5 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      p_position = (Vec3 *)&cutscene_ai->presentation->live_matrix.position;
+      p_position = &cutscene_ai->presentation->live_matrix.position;
       cutscene_ai->live_matrix.position.x = v5->x;
       cutscene_ai->live_matrix.position.y = v5->y;
       cutscene_ai->live_matrix.position.z = v5->z;
-      look_at_point(&cutscene_ai->live_matrix, p_position);
+      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)p_position);
       v6 = cutscene_ai->progress + cutscene_ai->progress_step;
       cutscene_ai->progress = v6;
       v8 = v6 < 1.0;
@@ -124,15 +124,15 @@ LABEL_3:
       v34 = cutscene_ai->presentation;
       cutscene_ai->state = 7;
       cutscene_ai->unresolved_08 = -1;
-      dispatch_cutscene_animation(v34, 8, 1, -1);
+      dispatch_cutscene_animation(v34, 8, 1u, -1);
       dispatch_cutscene_animation(cutscene_ai->presentation, 9, 0, -1);
       dispatch_cutscene_animation(cutscene_ai->presentation, 9, 0, -1);
       v35 = cutscene_ai->presentation;
       cutscene_ai->state = 6;
       cutscene_ai->progress = 0.0;
       cutscene_ai->progress_step = 0.0083333338;
-      *(_DWORD *)&v35->_pad_1894[156] = 1015580809;
-      *(_DWORD *)&cutscene_ai->presentation->_pad_1894[152] = *(_DWORD *)&cutscene_ai->presentation->_pad_1894[156];
+      *(_DWORD *)&v35->invincible_shell._pad_90[8] = 1015580809;
+      *(_DWORD *)&cutscene_ai->presentation->invincible_shell._pad_90[4] = *(_DWORD *)&cutscene_ai->presentation->invincible_shell._pad_90[8];
       cutscene_ai->unresolved_58 = 1;
       v36 = *((_DWORD *)MEMORY[0x4DF904] + 119190);
       if ( v36 )
@@ -140,15 +140,15 @@ LABEL_3:
         if ( v36 == 1 )
           initialize_completion_screen(
             (int)MEMORY[0x4DF904] + 19820016,
-            *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3],
+            LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step),
             1u);
       }
       else
       {
         initialize_completion_screen(
           (int)MEMORY[0x4DF904] + 19820016,
-          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3],
-          *(_DWORD *)&cutscene_ai->player->presentation.cutscene_ai._pad_59[3] == *((_DWORD *)MEMORY[0x4DF904] + 561662));
+          LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step),
+          LODWORD(cutscene_ai->player->presentation.cutscene_ai.progress_step) == *((_DWORD *)MEMORY[0x4DF904] + 561662));
       }
       play_sound_effect(46);
       goto LABEL_25;
@@ -179,9 +179,9 @@ LABEL_25:
       v73.position.z = v68;
       v57 = v41;
       v42 = sine(v57);
-      v58 = (Vec3 *)&cutscene_ai->presentation->live_matrix.position;
+      v58 = &cutscene_ai->presentation->live_matrix.position;
       v73.position.x = v73.position.x - v42 * 0.5;
-      look_at_point(&v73, v58);
+      look_at_point(&v73, (const Vec3 *)v58);
       qmemcpy(&v72, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v72));
       v59 = cutscene_ai->progress * 1.5707964;
       v60 = sine(v59);
@@ -204,11 +204,11 @@ LABEL_25:
       cutscene_ai->unresolved_58 = 1;
       set_matrix_identity(&cutscene_ai->live_matrix);
       v48 = &cutscene_ai->presentation->snail_hotspots_world[18];
-      v61 = (Vec3 *)&cutscene_ai->presentation->live_matrix.position;
+      v61 = &cutscene_ai->presentation->live_matrix.position;
       cutscene_ai->live_matrix.position.x = v48->x;
       cutscene_ai->live_matrix.position.y = v48->y;
       cutscene_ai->live_matrix.position.z = v48->z;
-      look_at_point(&cutscene_ai->live_matrix, v61);
+      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)v61);
       result = cutscene_ai->presentation->anim_manager.queued_animation_count;
       if ( !result )
         result = dispatch_cutscene_animation(cutscene_ai->presentation, 9, 0, -1);
@@ -224,9 +224,9 @@ LABEL_25:
       v72.position.y = v12->y;
       v72.position.z = v12->z;
       v13 = sine(v50);
-      v51 = (Vec3 *)&cutscene_ai->presentation->live_matrix.position;
+      v51 = &cutscene_ai->presentation->live_matrix.position;
       v72.position.x = v13 + v13 + v72.position.x;
-      look_at_point(&v72, v51);
+      look_at_point(&v72, (const Vec3 *)v51);
       qmemcpy(&v73, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v73));
       v52 = cutscene_ai->progress * 1.5707964;
       v53 = sine(v52);
@@ -269,7 +269,7 @@ LABEL_25:
     case 9:
       v22 = cutscene_ai->presentation;
       cutscene_ai->unresolved_08 = -1;
-      dispatch_cutscene_animation(v22, 7, 1, -1);
+      dispatch_cutscene_animation(v22, 7, 1u, -1);
       cutscene_ai->state = 11;
       cutscene_ai->progress = 0.0;
       cutscene_ai->progress_step = 0.0083333338;
@@ -292,7 +292,7 @@ LABEL_11:
       v73.position.x = v25 + v25 + v73.position.x;
       if ( v73.position.y < 0.0 )
         v73.position.y = 0.0;
-      look_at_point(&v73, (Vec3 *)&cutscene_ai->presentation->live_matrix.position);
+      look_at_point(&v73, (const Vec3 *)&cutscene_ai->presentation->live_matrix.position);
       v26 = cutscene_ai->progress;
       qmemcpy(&v72, cutscene_ai->presentation->owner_player->_pad_200, sizeof(v72));
       v55 = v26 * 1.5707964;
@@ -321,7 +321,7 @@ LABEL_11:
       cutscene_ai->live_matrix.position.z = v32->snail_hotspots_world[18].z;
       if ( cutscene_ai->live_matrix.position.y < 0.0 )
         cutscene_ai->live_matrix.position.y = 0.0;
-      look_at_point(&cutscene_ai->live_matrix, (Vec3 *)&v32->live_matrix.position);
+      look_at_point(&cutscene_ai->live_matrix, (const Vec3 *)&v32->live_matrix.position);
       player = cutscene_ai->player;
       LOBYTE(result) = player->_pad_78[12];
       if ( (_BYTE)result

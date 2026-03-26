@@ -141,7 +141,7 @@ int32_t __thiscall initialize_subgoldy(Player *player, int32_t player_slot)
     initialize_anim_manager((AnimationDispatchState *)&player->presentation.weapon_channels[2].selected_state);
     player->presentation.weapon_channels[2].selected_state = 0;
   }
-  initialize_snail_skin(&player->presentation.invincible_shell._pad_90[12]);
+  initialize_snail_skin((SnailSkinTransitionState *)&player->presentation.invincible_shell._pad_90[12]);
   initialize_cutscene_ai((CutsceneAI *)&player->presentation.snail_skin_transition.progress);
   if ( !player->game->_pad_ff25e0[496] )
     player->presentation.cutscene_ai.player = (Player *)1;

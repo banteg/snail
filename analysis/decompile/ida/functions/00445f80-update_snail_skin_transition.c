@@ -8,7 +8,7 @@ void __thiscall update_snail_skin_transition(SnailSkinTransitionState *state)
   double v1; // st7
 
   *(_DWORD *)(*((_DWORD *)state->owner_render_state + 9) + 16) |= 8u;
-  *(_DWORD *)(*((_DWORD *)state->owner_render_state + 9) + 24) = *(_DWORD *)&state->_pad_04[4 * state->selected_slot];
+  *(_DWORD *)(*((_DWORD *)state->owner_render_state + 9) + 24) = state->slot_ids[state->selected_slot];
   if ( state->active == 1 )
   {
     v1 = state->progress_step + state->progress;

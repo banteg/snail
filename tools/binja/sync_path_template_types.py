@@ -95,8 +95,32 @@ PROTO_UPDATES = (
         "int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation)",
     ),
     (
+        "initialize_cutscene_ai",
+        "int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai)",
+    ),
+    (
+        "update_cutscene",
+        "int32_t __thiscall update_cutscene(CutsceneAI* cutscene_ai)",
+    ),
+    (
         "dispatch_cutscene_animation",
         "int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, uint8_t immediate, int32_t initial_frame)",
+    ),
+    (
+        "initialize_snail_skin",
+        "void __thiscall initialize_snail_skin(SnailSkinTransitionState* state)",
+    ),
+    (
+        "update_snail_skin_transition",
+        "void __thiscall update_snail_skin_transition(SnailSkinTransitionState* state)",
+    ),
+    (
+        "update_snail_skin",
+        "void __thiscall update_snail_skin(PlayerPresentationController* presentation)",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
     ),
     (
         "initialize_invincible_shell",
@@ -106,10 +130,7 @@ PROTO_UPDATES = (
         "start_invincible_shell",
         "void __thiscall start_invincible_shell(InvincibleShellController* shell)",
     ),
-    (
-        "update_invincible_shell",
-        "void __thiscall update_invincible_shell(InvincibleShellController* shell)",
-    ),
+    ("update_invincible_shell", "void __thiscall update_invincible_shell(InvincibleShellController* shell)"),
 )
 
 

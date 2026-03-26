@@ -242,7 +242,7 @@ typedef struct PresentationAnimationChannel {
 
 typedef struct SnailSkinTransitionState {
     int32_t selected_slot;
-    uint8_t _pad_04[0xc];
+    int32_t slot_ids[3];
     void* owner_render_state;
     int32_t active;
     float progress;
@@ -504,7 +504,7 @@ typedef struct Player {
     TrackRowCell* cached_track_pair_cell_b;
     uint8_t _pad_a0[0x80];
     int32_t movement_state;
-    uint8_t _pad_124[0x28];
+    uint8_t unresolved_pre_row_event[0x28];
     uint8_t row_event_cutscene_started;
     uint8_t _pad_14d[0x3];
     NukeController nuke;
@@ -643,6 +643,8 @@ void __thiscall update_squidge(SquidgeState* squidge);
 void __thiscall initialize_invincible_shell(InvincibleShellController* shell);
 void __thiscall start_invincible_shell(InvincibleShellController* shell);
 void __thiscall update_invincible_shell(InvincibleShellController* shell);
+void __thiscall initialize_snail_skin(SnailSkinTransitionState* state);
+void __thiscall update_snail_skin(PlayerPresentationController* presentation);
 void __thiscall initialize_anim_manager(AnimationDispatchState* manager);
 void __thiscall update_anim_manager(AnimationDispatchState* manager);
 int32_t __thiscall set_weapon_animation(PresentationAnimationChannel* channel, int32_t animation_id, uint8_t immediate, int32_t initial_frame);
@@ -658,6 +660,7 @@ int32_t __thiscall initialize_cameraman(CameramanState* cameraman);
 int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
+int32_t __thiscall handle_subgoldy_collisions(Player* player);
 void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
 void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);
 int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);

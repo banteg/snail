@@ -2,16 +2,13 @@
 /* function: initialize_snail_skin @ 0x445f60 */
 /* selector: initialize_snail_skin */
 
-char *__thiscall sub_445F60(_DWORD *this)
+void __thiscall initialize_snail_skin(SnailSkinTransitionState *state)
 {
   char *v1; // eax
-  char *result; // eax
 
   v1 = (char *)MEMORY[0x4DF904];
-  *this = 0;
-  result = v1 + 4400896;
-  *(this + 5) = 0;
-  *(this + 4) = result;
-  return result;
+  state->selected_slot = 0;
+  state->active = 0;
+  state->owner_render_state = v1 + 4400896;
 }
 

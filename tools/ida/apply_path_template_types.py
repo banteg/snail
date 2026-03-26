@@ -139,6 +139,14 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall update_squidge(SquidgeState* squidge);",
     ),
     (
+        "initialize_snail_skin",
+        "void __thiscall initialize_snail_skin(SnailSkinTransitionState* state);",
+    ),
+    (
+        "update_snail_skin",
+        "void __thiscall update_snail_skin(PlayerPresentationController* presentation);",
+    ),
+    (
         "initialize_invincible_shell",
         "void __thiscall initialize_invincible_shell(InvincibleShellController* shell);",
     ),
@@ -209,6 +217,10 @@ TRUSTED_DECLARATIONS = [
     (
         "update_subgoldy",
         "int32_t __thiscall update_subgoldy(Player* player);",
+    ),
+    (
+        "handle_subgoldy_collisions",
+        "int32_t __thiscall handle_subgoldy_collisions(Player* player);",
     ),
     (
         "set_snail_weapon",

@@ -68,7 +68,7 @@ typedef struct PresentationAnimationChannel {
 
 typedef struct SnailSkinTransitionState {
     int32_t selected_slot;
-    uint8_t _pad_04[0xc];
+    int32_t slot_ids[3];
     void* owner_render_state;
     int32_t active;
     float progress;

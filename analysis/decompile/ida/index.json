@@ -3,23 +3,9 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 6,
-  "function_count": 6,
+  "selected_count": 7,
+  "function_count": 7,
   "exported": [
-    {
-      "selector": "initialize_subgoldy",
-      "address": "0x43a9c0",
-      "name": "initialize_subgoldy",
-      "artifact": "analysis/decompile/ida/functions/0043a9c0-initialize_subgoldy.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "update_subgoldy",
-      "address": "0x43b120",
-      "name": "update_subgoldy",
-      "artifact": "analysis/decompile/ida/functions/0043b120-update_subgoldy.c",
-      "removed_stale_artifacts": []
-    },
     {
       "selector": "initialize_cutscene",
       "address": "0x4428d0",
@@ -28,24 +14,45 @@
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_invincible_shell",
-      "address": "0x444ac0",
-      "name": "initialize_invincible_shell",
-      "artifact": "analysis/decompile/ida/functions/00444ac0-initialize_invincible_shell.c",
+      "selector": "handle_subgoldy_collisions",
+      "address": "0x444cf0",
+      "name": "handle_subgoldy_collisions",
+      "artifact": "analysis/decompile/ida/functions/00444cf0-handle_subgoldy_collisions.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "start_invincible_shell",
-      "address": "0x444ae0",
-      "name": "start_invincible_shell",
-      "artifact": "analysis/decompile/ida/functions/00444ae0-start_invincible_shell.c",
+      "selector": "update_snail_skin",
+      "address": "0x445cd0",
+      "name": "update_snail_skin",
+      "artifact": "analysis/decompile/ida/functions/00445cd0-update_snail_skin.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_invincible_shell",
-      "address": "0x444b50",
-      "name": "update_invincible_shell",
-      "artifact": "analysis/decompile/ida/functions/00444b50-update_invincible_shell.c",
+      "selector": "initialize_snail_skin",
+      "address": "0x445f60",
+      "name": "initialize_snail_skin",
+      "artifact": "analysis/decompile/ida/functions/00445f60-initialize_snail_skin.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "update_snail_skin_transition",
+      "address": "0x445f80",
+      "name": "update_snail_skin_transition",
+      "artifact": "analysis/decompile/ida/functions/00445f80-update_snail_skin_transition.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "initialize_cutscene_ai",
+      "address": "0x446130",
+      "name": "initialize_cutscene_ai",
+      "artifact": "analysis/decompile/ida/functions/00446130-initialize_cutscene_ai.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "update_cutscene",
+      "address": "0x4466d0",
+      "name": "update_cutscene",
+      "artifact": "analysis/decompile/ida/functions/004466d0-update_cutscene.c",
       "removed_stale_artifacts": []
     }
   ],
