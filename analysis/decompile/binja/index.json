@@ -19,9 +19,9 @@
   "removed_stale_artifacts": [],
   "exports": [
     {
-      "address": "0x4461d0",
-      "name": "update_cameraman",
-      "artifact": "analysis/decompile/binja/functions/004461d0-update_cameraman.c"
+      "address": "0x43b120",
+      "name": "update_subgoldy",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c"
     }
   ]
 }

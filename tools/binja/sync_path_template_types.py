@@ -89,6 +89,7 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
     ("0x10", "anchor_position", "Vec3"),
     ("0x38", "attachment_template_record", "PathTemplate*"),
     ("0x3c", "tile_id", "uint8_t"),
+    ("0x3d", "tile_flags_3d", "uint8_t"),
 )
 
 PATH_TEMPLATE_FIELD_UPDATES = (

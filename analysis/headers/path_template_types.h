@@ -61,7 +61,8 @@ typedef struct TrackRowCell {
     uint8_t _pad_1c[0x1c];
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
-    uint8_t _pad_3d[0x17];
+    uint8_t tile_flags_3d;
+    uint8_t _pad_3e[0x16];
 } TrackRowCell;
 
 typedef struct TrackRuntimeRow {
