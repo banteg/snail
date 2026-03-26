@@ -39,3 +39,9 @@ Template:
 - invalidated claim: broader Windows capture is still the default next step for bridge and attachment work
 - replacement evidence: the stable March 24 packets closed the practical bridge handoff lanes, while broader probe sets caused host hangs
 - port consequence: outer bridge is unblocked for replacement from the locked capture baseline; attachment exit stays static-RE only until a narrower stable proof exists
+
+## 2026-03-26 - Ring runtime and Game fields
+
+- invalidated claim: `game + 0x48` is `bonus_score`
+- replacement evidence: `build_subgame_level` seeds `game + 0x48` from compact-record field `+0x48`, `calc_subgame_rate` uses it as the base gameplay rate, and `spawn_track_ring_or_special_effect` consumes it in the default ring `phase_step` formula
+- port consequence: explicit ring timing should be modeled from authored `RingSpeed`, while default ramp-ring timing should be modeled from `base_subgame_rate`; future Zig ring-animation work must stop treating `game + 0x48` as a score lane

@@ -22,6 +22,7 @@ Observed field offsets from the segment slot base in `load_segment_definitions`:
 - model offset: `+0x8a4`, `+0x8a8`, `+0x8ac`
 - velocity: `+0x8b0`, `+0x8b4`, `+0x8b8`
 - path index: `+0x8bc`
+- ring speed: `+0x8c0`
 
 Observed uses of the packed row-flags dword at `+0x88c`:
 
@@ -247,6 +248,7 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
 - world `z` is quantized with `floor(z)` and clamped to row `0..0xc7f`
 - runtime track rows are stored at `game + 0x5ccac8 + row * 0xf4`
 - gameplay grid cells are stored at `game + 0x3bfac8 + (lane + row * 8) * 0x54`
+- runtime row `+0xe8` carries the per-row `RingSpeed` float copied from segment metadata
 
 That is the sampling path used both by player movement and by the floor-height helper.
 

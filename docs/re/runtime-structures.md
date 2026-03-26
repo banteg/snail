@@ -176,9 +176,11 @@ Practical interpretation:
 
 The current high-confidence `Game` fields are:
 
+- `+0x34`: `challenge_difficulty_scalar`
 - `+0x38`: `track_center_x`
 - `+0x40`: `level_mode`
 - `+0x44`: `level_mode_arg`
+- `+0x48`: `base_subgame_rate`
 - `+0x4c`: `runtime_flags`
 - `+0xa854`: `track_state_latch`
 - `+0xa874`: `level_segment_count`
@@ -213,6 +215,7 @@ Current practical read:
   - `copy_segment_definition_to_level_slot` seeds each `0x4220` middle-segment slot from `game + 0xa878`, with the first slot's row count at `game + 0xa87c`
   - `populate_runtime_track_cells_from_segments` consumes those lanes so non-random courses sum first + middle + last block rows, while the mode-1 random branch keeps the `Length:` lane and subtracts the final `Last:` block row count into `game + 0x58`
   - current best read: the scalar at `game + 0x34` is the normalized challenge-difficulty lane, because `build_subgame_level` restores it from selected-record compact field `+0x50`, which matches the recovered `challenge_difficulty_value` offset in the compact high-score record
+  - `build_subgame_level` seeds `game + 0x48` from the live course mode or from selected-record compact field `+0x48`, and `calc_subgame_rate` uses that lane as the base rate before completion and damage modifiers
 - `build_subgame_level -> rebuild_track_runtime_from_segments -> populate_runtime_track_cells_from_segments` seeds `player + 0x4340` to `3` before `initialize_subgoldy` runs
 - the same course-build path also seeds the row bounds consumed by `update_subgoldy`:
   - `game + 0x50` = first-block row count
@@ -492,6 +495,10 @@ Current practical read:
 - `initialize_runtime_pools_and_path_template_bank` seeds both slots through `initialize_track_ring_or_special_effect_runtime`
 - `update_subgame` dispatches authored `0x23` ring rows plus the ramp families `0x02..0x0a` into `spawn_track_ring_or_special_effect`
 - `spawn_track_ring_or_special_effect` seeds the slot kind, owner selector snapshot, world position, and the child particle family (`ParticleRing`, `ParticleExplode`, `ParticleSlow`)
+  - explicit authored ring rows (`kind 5/6/7/8`) use `RingSpeed` from the runtime row record at `game + 0x5ccac8 + row * 0xf4 + 0xe8`:
+    - `phase_step = 1 / (ring_speed * 60) * track_center_x * tau`
+  - default ramp-generated kinds (`0/1/2/3/4`) use the shared base-rate path instead:
+    - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * movement_flag_selector * 0.125 * track_center_x * tau`
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
