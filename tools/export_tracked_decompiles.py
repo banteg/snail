@@ -78,6 +78,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Apply the tracked symbol manifest to the IDA database before exporting.",
     )
+    parser.add_argument(
+        "--skip-health-check",
+        action="store_true",
+        help="Skip the tracked decompile hotspot health checks after refreshing exports.",
+    )
     return parser.parse_args()
 
 
@@ -134,6 +139,12 @@ def main() -> int:
         *ida_args,
     )
 
+    health_result: dict[str, object] | None = None
+    if not args.skip_health_check:
+        health_result = _run_python(
+            REPO_ROOT / "tools/check_decompile_health.py",
+        )
+
     summary = {
         "manifest": str(manifest_path.relative_to(REPO_ROOT)),
         "root": str(root.relative_to(REPO_ROOT)),
@@ -147,7 +158,13 @@ def main() -> int:
         "total_mismatch_count": bn_result.get("mismatch_count", 0) + ida_result.get("mismatch_count", 0),
         "has_mismatches": bool(bn_result.get("mismatch_count", 0) or ida_result.get("mismatch_count", 0)),
         "sync_ida_symbols": args.sync_ida_symbols,
+        "health_check_ran": not args.skip_health_check,
     }
+    if health_result is not None:
+        summary["health_check_count"] = health_result.get("check_count", 0)
+        summary["health_failing_check_count"] = health_result.get("failing_check_count", 0)
+        summary["health_passed"] = health_result.get("passed", False)
+        summary["health_config"] = health_result.get("config")
     (root / "index.json").write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return 0

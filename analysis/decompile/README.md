@@ -28,6 +28,10 @@ The top-level `index.json` also records:
 - `ida_mismatch_count`
 - `total_mismatch_count`
 - `has_mismatches`
+- `health_check_ran`
+- `health_check_count`
+- `health_failing_check_count`
+- `health_passed`
 
 Those entries flag cases where the tracked manifest does not line up with what the
 tool actually exported, for example:
@@ -41,9 +45,16 @@ Refresh the tracked snapshots with:
 uv run python tools/export_tracked_decompiles.py --sync-ida-symbols
 ```
 
+Run just the hotspot health checks with:
+
+```bash
+uv run python tools/check_decompile_health.py --strict
+```
+
 Notes:
 
 - the Binary Ninja lane exports from the active target by default; pass `--bn-target` if needed
 - the IDA lane exports from the tracked `.i64` unless `--ida-db` is provided
 - reruns prune stale `.c` files from the tracked output trees when a manifest name changes
 - inspect mismatch entries first when one tool appears to “miss” a function; they often indicate real database drift rather than an export failure
+- the health check is intentionally narrow and only guards a few high-value tracked exports where type/prototype regressions have caused real readability loss before
