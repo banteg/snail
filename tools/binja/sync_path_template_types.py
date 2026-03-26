@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
-import re
-import subprocess
 import sys
 
+from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types.h"
-SPILL_PATH_RE = re.compile(r"^path:\s+(?P<path>.+)$", re.MULTILINE)
 
 PLAYER_FIELD_UPDATES = (
     ("0x38", "live_matrix", "TransformMatrix"),
@@ -117,39 +114,6 @@ def parse_args() -> argparse.Namespace:
         help="Path to the narrow Binary Ninja type-import header.",
     )
     return parser.parse_args()
-
-
-def run_bn(*args: str) -> object:
-    completed = subprocess.run(
-        ["bn", *args],
-        cwd=REPO_ROOT,
-        check=False,
-        text=True,
-        capture_output=True,
-    )
-    if completed.returncode != 0:
-        raise RuntimeError(
-            f"bn {' '.join(args)} failed with exit code {completed.returncode}:\n{completed.stderr.strip()}"
-        )
-
-    stdout = completed.stdout.strip()
-    stderr = completed.stderr.strip()
-    spill_match = SPILL_PATH_RE.search(stdout) or SPILL_PATH_RE.search(stderr)
-    if spill_match is not None:
-        spill_path = Path(spill_match.group("path")).expanduser()
-        return json.loads(spill_path.read_text(encoding="utf-8"))
-    if not stdout:
-        if not stderr:
-            return {}
-        return {"stderr": stderr}
-    if stdout[0] in "[{":
-        return json.loads(stdout)
-    result: dict[str, object] = {"stdout": stdout}
-    if stderr:
-        result["stderr"] = stderr
-    return result
-
-
 def main() -> int:
     args = parse_args()
     header_path = args.header.resolve()
@@ -157,131 +121,47 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
-    operations.append(
-        {
-            "op": "types_declare",
-            "result": run_bn("types", "declare", "--target", args.target, "--file", str(header_path)),
-        }
+    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="Game",
+            updates=GAME_FIELD_UPDATES,
+        )
     )
-
-    for offset, name, field_type in GAME_FIELD_UPDATES:
-        operations.append(
-            {
-                "op": "struct_field_set",
-                "struct_name": "Game",
-                "offset": offset,
-                "field_name": name,
-                "field_type": field_type,
-                "result": run_bn(
-                    "struct",
-                    "field",
-                    "set",
-                    "Game",
-                    offset,
-                    name,
-                    field_type,
-                    "--target",
-                    args.target,
-                ),
-            }
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="SnailVisual",
+            updates=SNAIL_VISUAL_FIELD_UPDATES,
         )
-
-    for offset, name, field_type in SNAIL_VISUAL_FIELD_UPDATES:
-        operations.append(
-            {
-                "op": "struct_field_set",
-                "struct_name": "SnailVisual",
-                "offset": offset,
-                "field_name": name,
-                "field_type": field_type,
-                "result": run_bn(
-                    "struct",
-                    "field",
-                    "set",
-                    "SnailVisual",
-                    offset,
-                    name,
-                    field_type,
-                    "--target",
-                    args.target,
-                ),
-            }
-        )
-
-    for offset, name, field_type in PATH_TEMPLATE_FIELD_UPDATES:
-        operations.append(
-            {
-                "op": "struct_field_set",
-                "struct_name": "PathTemplate",
-                "offset": offset,
-                "field_name": name,
-                "field_type": field_type,
-                "result": run_bn(
-                    "struct",
-                    "field",
-                    "set",
-                    "PathTemplate",
-                    offset,
-                    name,
-                    field_type,
-                    "--target",
-                    args.target,
-                ),
-            }
-        )
-
-    for offset, name, field_type in PLAYER_FIELD_UPDATES:
-        operations.append(
-            {
-                "op": "struct_field_set",
-                "struct_name": "Player",
-                "offset": offset,
-                "field_name": name,
-                "field_type": field_type,
-                "result": run_bn(
-                    "struct",
-                    "field",
-                    "set",
-                    "Player",
-                    offset,
-                    name,
-                    field_type,
-                    "--target",
-                    args.target,
-                ),
-            }
-        )
-
-    for identifier, prototype in PROTO_UPDATES:
-        operations.append(
-            {
-                "op": "proto_set",
-                "identifier": identifier,
-                "prototype": prototype,
-                "result": run_bn(
-                    "proto",
-                    "set",
-                    identifier,
-                    prototype,
-                    "--target",
-                    args.target,
-                ),
-            }
-        )
-
-    json.dump(
-        {
-            "tool": "binary_ninja",
-            "target": args.target,
-            "header": str(header_path.relative_to(REPO_ROOT)),
-            "operations": operations,
-        },
-        sys.stdout,
-        indent=2,
-        sort_keys=True,
     )
-    sys.stdout.write("\n")
-    return 0
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="PathTemplate",
+            updates=PATH_TEMPLATE_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_struct_field_updates(
+            REPO_ROOT,
+            target=args.target,
+            struct_name="Player",
+            updates=PLAYER_FIELD_UPDATES,
+        )
+    )
+    operations.extend(
+        apply_proto_updates(
+            REPO_ROOT,
+            target=args.target,
+            updates=PROTO_UPDATES,
+        )
+    )
+    return emit_summary(repo_root=REPO_ROOT, target=args.target, header_path=header_path, operations=operations)
 
 
 if __name__ == "__main__":
