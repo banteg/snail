@@ -2,49 +2,48 @@
 /* function: set_snail_jetpack @ 0x445860 */
 /* selector: set_snail_jetpack */
 
-void __thiscall sub_445860(_DWORD *this, int a2)
+void __thiscall set_snail_jetpack(GlobalJetpackPresentationController *controller, int32_t state)
 {
-  int v3; // ebx
-  int v4; // eax
-  char v5; // [esp+Ch] [ebp+4h]
+  int32_t v3; // ebx
+  int32_t selected_state; // eax
 
-  if ( a2 )
+  if ( state )
   {
-    if ( a2 == 1 )
+    if ( state == 1 )
       v3 = 4;
     else
-      v3 = a2;
+      v3 = state;
   }
   else
   {
     v3 = 0;
   }
-  v4 = *(this + 1209);
-  v5 = 1;
-  if ( v4 != v3 )
+  selected_state = controller->jetpack_channel.selected_state;
+  LOBYTE(state) = 1;
+  if ( selected_state != v3 )
   {
-    if ( v4 == 4 )
+    if ( selected_state == 4 )
     {
-      set_weapon_animation((int)(this + 1144), 1, 1, 8);
-      v5 = 0;
+      set_weapon_animation(&controller->jetpack_channel, 1, 1, 8);
+      LOBYTE(state) = 0;
       play_sound_effect(26);
     }
     if ( v3 )
     {
       if ( v3 == 4 )
       {
-        set_weapon_animation((int)(this + 1144), 1, v5, 4);
-        set_weapon_animation((int)(this + 1144), 0, 0, -1);
+        set_weapon_animation(&controller->jetpack_channel, 1, state, 4);
+        set_weapon_animation(&controller->jetpack_channel, 0, 0, -1);
         play_sound_effect(16);
-        *(this + 1209) = 4;
+        controller->jetpack_channel.selected_state = 4;
         return;
       }
     }
     else
     {
-      set_weapon_animation((int)(this + 1144), -1, 0, -1);
+      set_weapon_animation(&controller->jetpack_channel, -1, 0, -1);
     }
-    *(this + 1209) = v3;
+    controller->jetpack_channel.selected_state = v3;
   }
 }
 

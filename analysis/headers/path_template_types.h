@@ -257,6 +257,11 @@ typedef struct PlayerPresentationController {
     CutsceneAI cutscene_ai;
 } PlayerPresentationController;
 
+typedef struct GlobalJetpackPresentationController {
+    uint8_t _pad_00[0x11e0];
+    PresentationAnimationChannel jetpack_channel;
+} GlobalJetpackPresentationController;
+
 enum {
     PLAYER_CONTROL_FLAG_CONFIRM = 0x4000,
 };
@@ -555,6 +560,7 @@ int32_t __thiscall update_cameraman(CameramanState* cameraman);
 int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot);
 int32_t __thiscall update_subgoldy(Player* player);
 void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);
+void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);
 int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);
 int32_t __thiscall dispatch_cutscene_animation(PlayerPresentationController* presentation, int32_t animation_id, int32_t immediate, int32_t initial_frame);
 int32_t __fastcall initialize_cutscene_ai(CutsceneAI* cutscene_ai);

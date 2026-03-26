@@ -129,6 +129,9 @@ Two `update_subgoldy` corrections from the latest static audit:
   - `+0x1938`: `snail_skin_transition`
   - `+0x1958`: `cutscene_ai`
   - `set_snail_weapon`, `dispatch_cutscene_animation`, and `initialize_cutscene` all operate on this same embedded root
+- the global jetpack presentation controller at `data_4df904 + 0x432700` reuses the same `PresentationAnimationChannel` shape
+  - `+0x11e0`: `jetpack_channel`
+  - `set_snail_jetpack` only mutates `jetpack_channel.selected_state` and routes the visible thrust lane through `set_weapon_animation(&controller->jetpack_channel, ...)`
 - `player + 0x29a8` is `player->presentation.visual_root`, not a standalone sibling field
   - the currently safe `SnailVisual` sub-slice is:
     - `+0x10`: `flags`

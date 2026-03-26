@@ -203,6 +203,10 @@ TRUSTED_DECLARATIONS = [
         "void __thiscall set_snail_weapon(PlayerPresentationController* presentation, int32_t movement_flags);",
     ),
     (
+        "set_snail_jetpack",
+        "void __thiscall set_snail_jetpack(GlobalJetpackPresentationController* controller, int32_t state);",
+    ),
+    (
         "initialize_cutscene",
         "int32_t __thiscall initialize_cutscene(PlayerPresentationController* presentation);",
     ),
