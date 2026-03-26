@@ -245,7 +245,7 @@ typedef struct PlayerPresentationController {
     TransformMatrix live_matrix;
     uint8_t _pad_78[0x8];
     TransformMatrix previous_live_matrix;
-    uint8_t _pad_c0[0x40];
+    TransformMatrix cached_cutscene_matrix;
     struct Player* owner_player;
     AnimationDispatchState anim_manager;
     uint8_t _pad_14c[0x500];

@@ -102,7 +102,7 @@ PATH_TEMPLATE_FIELD_UPDATES = (
 PROTO_UPDATES = (
     (
         "initialize_matrix_from_values",
-        "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* out, float right_x, float right_y, float right_z, float up_x, float up_y, float up_z, float forward_x, float forward_y, float forward_z, float position_x, float position_y, float position_z, float position_w, float forward_w, float up_w, float right_w)",
+        "TransformMatrix* __thiscall initialize_matrix_from_values(TransformMatrix* transform, float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)",
     ),
     (
         "invert_matrix_from_source",
@@ -111,6 +111,10 @@ PROTO_UPDATES = (
     (
         "multiply_matrix_in_place",
         "TransformMatrix* __thiscall multiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs)",
+    ),
+    (
+        "premultiply_matrix_in_place",
+        "TransformMatrix* __thiscall premultiply_matrix_in_place(TransformMatrix* lhs, TransformMatrix* rhs)",
     ),
     ("set_matrix_identity", "void __fastcall set_matrix_identity(TransformMatrix* transform)"),
     ("set_matrix_rotation_identity", "void __fastcall set_matrix_rotation_identity(TransformMatrix* transform)"),
@@ -126,6 +130,10 @@ PROTO_UPDATES = (
     (
         "linear_interpolate_matrix",
         "void __thiscall linear_interpolate_matrix(TransformMatrix* out, const TransformMatrix* from, const TransformMatrix* to, float alpha)",
+    ),
+    (
+        "interpolate_matrix_rotation",
+        "TransformMatrix* __thiscall interpolate_matrix_rotation(TransformMatrix* transform, float alpha)",
     ),
     (
         "set_weapon_animation",
