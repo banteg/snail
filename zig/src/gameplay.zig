@@ -695,17 +695,17 @@ const AttachmentFollowState = struct {
     installed_heading_delta: f32 = 0.0,
     camera_orientation_a: f32 = 0.0,
     camera_orientation_b: f32 = 0.0,
-    exit_seed_a: f32 = 0.0,
-    exit_seed_b: f32 = 0.0,
+    exit_carryover_a: f32 = 0.0,
+    exit_carryover_b: f32 = 0.0,
     cached_output_position: attachment_builders.Vec3 = .{},
 };
 
-const AttachmentExitSeeds = struct {
-    // `seed_a` is the confirmed common carryover lane copied into `post_follow_value_a`.
-    seed_a: f32 = 0.0,
-    // `seed_b` is still preserved because Windows writes `player + 0x430`, but bounded
+const AttachmentExitCarryover = struct {
+    // `carryover_a` is the confirmed common carryover lane copied into `post_follow_value_a`.
+    carryover_a: f32 = 0.0,
+    // `carryover_b` is still preserved because Windows writes `player + 0x430`, but bounded
     // static RE has not yet closed a common consumer for it.
-    seed_b: f32 = 0.0,
+    carryover_b: f32 = 0.0,
 };
 
 const InstalledAttachmentEntry = struct {
@@ -1152,8 +1152,8 @@ pub const Runner = struct {
     attachment_exit_anchor_z: f32 = 0.0,
     post_follow_value_a: f32 = 0.0,
     post_follow_value_b: f32 = 0.0,
-    attachment_exit_seed_a: f32 = 0.0,
-    attachment_exit_seed_b: f32 = 0.0,
+    attachment_exit_carryover_a: f32 = 0.0,
+    attachment_exit_carryover_b: f32 = 0.0,
     attachment_exit_progress: f32 = 0.0,
     attachment_exit_progress_step: f32 = 0.0,
     attachment_exit_gate_a: bool = false,
@@ -2903,17 +2903,17 @@ pub const Runner = struct {
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.attachment_camera_orientation_a = 0.0;
         self.attachment_camera_orientation_b = 0.0;
-        self.attachment_follow.exit_seed_a = 0.0;
-        self.attachment_follow.exit_seed_b = 0.0;
+        self.attachment_follow.exit_carryover_a = 0.0;
+        self.attachment_follow.exit_carryover_b = 0.0;
 
         if (self.movement_mode == .attachment and self.attachment_follow.active) {
             self.attachment_camera_orientation_a = self.attachment_follow.camera_orientation_a;
             self.attachment_camera_orientation_b = self.attachment_follow.camera_orientation_b;
-            const exit_seeds = self.attachmentExitSeedsFromFollow(preview);
-            self.attachment_follow.exit_seed_a = exit_seeds.seed_a;
-            self.attachment_follow.exit_seed_b = exit_seeds.seed_b;
-            self.attachment_exit_seed_a = exit_seeds.seed_a;
-            self.attachment_exit_seed_b = exit_seeds.seed_b;
+            const exit_carryover = self.attachmentExitCarryoverFromFollow(preview);
+            self.attachment_follow.exit_carryover_a = exit_carryover.carryover_a;
+            self.attachment_follow.exit_carryover_b = exit_carryover.carryover_b;
+            self.attachment_exit_carryover_a = exit_carryover.carryover_a;
+            self.attachment_exit_carryover_b = exit_carryover.carryover_b;
             return;
         }
 
@@ -5486,41 +5486,41 @@ pub const Runner = struct {
             local_x;
     }
 
-    fn attachmentExitSeedsFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitSeeds {
+    fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
         _ = self.currentAttachmentBuilt(preview) orelse {
             return .{
-                .seed_a = self.attachment_camera_orientation_b,
-                .seed_b = 0.0,
+                .carryover_a = self.attachment_camera_orientation_b,
+                .carryover_b = 0.0,
             };
         };
 
         return .{
             // Native fall-state init copies `follow_state.orientation_b`, which is the
             // attachment phase lane rather than a sampled roll proxy.
-            .seed_a = self.attachment_follow.camera_orientation_b,
+            .carryover_a = self.attachment_follow.camera_orientation_b,
             // Native fall-state init copies the live follow record's install-time scalar into
             // `post_follow_value_b`, including zero. Keep that carryover value, but do not
             // assign a common runtime consumer beyond the write itself until RE closes one.
-            .seed_b = self.attachment_follow.installed_heading_delta,
+            .carryover_b = self.attachment_follow.installed_heading_delta,
         };
     }
 
-    fn currentAttachmentExitSeeds(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitSeeds {
+    fn currentAttachmentExitCarryover(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
         if (self.attachment_follow.active) {
-            if (self.attachment_follow.exit_seed_a != 0.0 or
-                self.attachment_follow.exit_seed_b != 0.0)
+            if (self.attachment_follow.exit_carryover_a != 0.0 or
+                self.attachment_follow.exit_carryover_b != 0.0)
             {
                 return .{
-                    .seed_a = self.attachment_follow.exit_seed_a,
-                    .seed_b = self.attachment_follow.exit_seed_b,
+                    .carryover_a = self.attachment_follow.exit_carryover_a,
+                    .carryover_b = self.attachment_follow.exit_carryover_b,
                 };
             }
-            return self.attachmentExitSeedsFromFollow(preview);
+            return self.attachmentExitCarryoverFromFollow(preview);
         }
 
         return .{
-            .seed_a = self.attachment_exit_seed_a,
-            .seed_b = self.attachment_exit_seed_b,
+            .carryover_a = self.attachment_exit_carryover_a,
+            .carryover_b = self.attachment_exit_carryover_b,
         };
     }
 
@@ -5534,18 +5534,18 @@ pub const Runner = struct {
     }
 
     fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
-        const exit_seeds = if (self.movement_mode == .attachment and self.attachment_follow.active)
-            self.currentAttachmentExitSeeds(preview)
+        const exit_carryover = if (self.movement_mode == .attachment and self.attachment_follow.active)
+            self.currentAttachmentExitCarryover(preview)
         else
-            AttachmentExitSeeds{
-                .seed_a = self.attachment_exit_seed_a,
-                .seed_b = self.attachment_exit_seed_b,
+            AttachmentExitCarryover{
+                .carryover_a = self.attachment_exit_carryover_a,
+                .carryover_b = self.attachment_exit_carryover_b,
             };
         self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = exit_seeds.seed_a;
-        self.post_follow_value_b = exit_seeds.seed_b;
-        self.attachment_exit_seed_a = exit_seeds.seed_a;
-        self.attachment_exit_seed_b = exit_seeds.seed_b;
+        self.post_follow_value_a = exit_carryover.carryover_a;
+        self.post_follow_value_b = exit_carryover.carryover_b;
+        self.attachment_exit_carryover_a = exit_carryover.carryover_a;
+        self.attachment_exit_carryover_b = exit_carryover.carryover_b;
         self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
     }
 
