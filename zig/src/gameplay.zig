@@ -1111,6 +1111,7 @@ const AttachmentCameraProgress = struct {
 
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
+    base_subgame_rate: f32 = 1.1,
     lane_index: usize = 0,
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
@@ -1244,8 +1245,10 @@ pub const Runner = struct {
             .bonus_score = self.row_event_display.bonus_score,
         };
         const session_mode = self.session_mode;
+        const base_subgame_rate = self.base_subgame_rate;
         self.* = .{
             .session_mode = session_mode,
+            .base_subgame_rate = base_subgame_rate,
             .speed_rows_per_second = 12.0,
             .row_event_display = .{
                 .parcel_target_count = row_event_config.parcel_target_count,
@@ -1740,6 +1743,10 @@ pub const Runner = struct {
 
     pub fn configureSessionMode(self: *Runner, session_mode: SessionMode) void {
         self.session_mode = session_mode;
+    }
+
+    pub fn configureBaseSubgameRate(self: *Runner, base_subgame_rate: f32) void {
+        self.base_subgame_rate = base_subgame_rate;
     }
 
     pub fn registeredParcelCount(self: *const Runner) u32 {
@@ -4220,7 +4227,7 @@ pub const Runner = struct {
             world_position.x = (self.nextMathRandomFloat01() - 0.5) * 2.0 * runtime_ring_spawn_random_x_amplitude;
         }
         const active_phase = self.nextMathRandomFloat01() * std.math.tau;
-        const seeded_phase_step = runtimeRingActivePhaseStep(preview, source_row, kind);
+        const seeded_phase_step = self.runtimeRingActivePhaseStep(preview, source_row, kind);
         const active_phase_step = if (self.nextMathRandomFloat01() > 0.5)
             -seeded_phase_step
         else
@@ -4442,7 +4449,7 @@ pub const Runner = struct {
         };
     }
 
-    fn runtimeRingActivePhaseStep(preview: *const track.LoadedLevelPreview, source_row: usize, kind: u8) f32 {
+    fn runtimeRingActivePhaseStep(self: *const Runner, preview: *const track.LoadedLevelPreview, source_row: usize, kind: u8) f32 {
         switch (kind) {
             5, 6, 7, 8 => {
                 const ring_speed = preview.runtimeRowRingSpeedAt(source_row);
@@ -4450,10 +4457,17 @@ pub const Runner = struct {
                     return (1.0 / (ring_speed * native_ticks_per_second)) * native_track_center_x * std.math.tau;
                 }
             },
+            0, 1, 2, 3, 4 => {
+                const cycle_seconds = (2.0 - (self.base_subgame_rate * 0.3)) * native_ticks_per_second;
+                if (cycle_seconds > 0.0) {
+                    return (1.0 / cycle_seconds) *
+                        (@as(f32, @floatFromInt(self.movement_flag_selector)) * 0.125) *
+                        native_track_center_x *
+                        std.math.tau;
+                }
+            },
             else => {},
         }
-        // PORT(partial): default ramp families `0..4` seed this from `base_subgame_rate`,
-        // which the runner still does not model separately from the higher-level speed lane.
         return 0.0;
     }
 
@@ -7100,6 +7114,46 @@ test "default ramp ring keeps proxy collision anchor while using native presenta
                 0.0001,
             );
             try std.testing.expect(effect.presentation_position.x != effect.collision_position.x);
+            return;
+        }
+    }
+
+    return error.ExpectedRuntimeRingEffect;
+}
+
+test "default ramp ring seeds native phase step from base subgame rate" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial11_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 11.TXT") orelse return error.EntryNotFound;
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial11_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.math_random_state = 0;
+    runner.configureBaseSubgameRate(0.56);
+    runner.movement_flag_selector = 4;
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 22.0;
+    runner.refreshLiveRuntimeRingEffects(&preview);
+
+    for (runner.activeRuntimeRingEffects()) |effect| {
+        if (effect.row == 39 and effect.lane == 1 and effect.kind == 2) {
+            const expected =
+                (1.0 / ((2.0 - (runner.base_subgame_rate * 0.3)) * native_ticks_per_second)) *
+                (@as(f32, @floatFromInt(runner.movement_flag_selector)) * 0.125) *
+                native_track_center_x *
+                std.math.tau;
+            try std.testing.expectApproxEqAbs(expected, @abs(effect.active_phase_step), 0.0001);
             return;
         }
     }

@@ -6369,6 +6369,7 @@ const AppState = struct {
                     completionBonusAppliesForMode(self.active_frontend_mode),
                 );
                 self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
+                self.level_runner.?.configureBaseSubgameRate(self.currentRunReplaySpeedScalar());
                 self.gameplay_click_start_active = seed_intro_cutscene and self.isTutorialFlow();
                 if (seed_intro_cutscene) {
                     self.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
