@@ -430,7 +430,7 @@ const max_active_jetpack_pickups: usize = 1;
 const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
 const max_active_track_parcels: usize = 50;
 const max_active_runtime_hazards: usize = 128;
-const max_active_runtime_ring_effects: usize = 128;
+const max_active_runtime_ring_effects: usize = 2;
 const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
 const max_collected_parcel_rows: usize = 1024;
@@ -7000,6 +7000,24 @@ test "runtime ring effect collect follow cleans itself up after native progress 
     }
 
     try std.testing.expectEqual(@as(usize, 0), runner.activeRuntimeRingEffects().len);
+}
+
+test "runtime ring effect bank stays native two-slot pool" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.addRuntimeRingEffect(&fixture.preview, 8, 0, 1);
+    runner.addRuntimeRingEffect(&fixture.preview, 9, 1, 2);
+    try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeRingEffects().len);
+
+    runner.active_runtime_ring_effects[0].state = .collect_follow;
+    runner.addRuntimeRingEffect(&fixture.preview, 10, 2, 3);
+
+    const active_effects = runner.activeRuntimeRingEffects();
+    try std.testing.expectEqual(@as(usize, 2), active_effects.len);
+    try std.testing.expectEqual(@as(usize, 8), active_effects[0].row);
+    try std.testing.expectEqual(@as(usize, 9), active_effects[1].row);
 }
 
 test "projectile fire defeats slug after powerup" {
