@@ -4879,9 +4879,9 @@ pub const Runner = struct {
 
     fn attachmentEntryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f32) f32 {
         return switch (family) {
-            // Windows seeds nonlinear warp/halfpipe follow height from the raw local rider offset.
+            // Windows seeds nonlinear kind-42 follow height from the raw local rider offset.
             // That path legitimately reaches `-0.49` once Goldy is riding the trough floor.
-            .warp_halfpipe => local_y,
+            .nonlinear_42 => local_y,
             else => @max(0.0, local_y - attachment_entry_rider_height),
         };
     }
@@ -5203,7 +5203,7 @@ pub const Runner = struct {
             self.attachment_follow.vertical_offset,
         );
         const position: attachment_builders.Vec3 = switch (built.template.spec.family) {
-            .warp_halfpipe => raw_position,
+            .nonlinear_42 => raw_position,
             else => .{
                 .x = raw_position.x,
                 .y = raw_position.y + attachment_entry_rider_height,
@@ -8831,9 +8831,9 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     );
 }
 
-test "warp-halfpipe entry height preserves the recovered raw local offset" {
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.warp_halfpipe, 0.0), 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, -0.49), Runner.attachmentEntryVerticalOffset(.warp_halfpipe, -0.49), 0.0001);
+test "nonlinear kind-42 entry height preserves the recovered raw local offset" {
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), Runner.attachmentEntryVerticalOffset(.nonlinear_42, 0.0), 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, -0.49), Runner.attachmentEntryVerticalOffset(.nonlinear_42, -0.49), 0.0001);
 }
 
 test "ordinary entry height still subtracts the rider baseline" {

@@ -333,7 +333,7 @@ fn drawAttachmentGeometry(scene: *const Scene, preview: *const track.LoadedLevel
     for (preview.attachment_scaffold.built_attachments) |*built| {
         if (built.row.segment_index != selected_segment_index) continue;
         switch (built.template.spec.family) {
-            .warp_halfpipe => drawWarpHalfpipeAttachment(scene, built),
+            .nonlinear_42 => drawNonlinear42Attachment(scene, built),
             else => drawOrdinaryAttachment(scene, built),
         }
     }
@@ -370,7 +370,7 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
     }
 }
 
-fn drawWarpHalfpipeAttachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
+fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_builders.BuiltAttachment) void {
     const template = &built.template;
     if (template.samples.len < 2) return;
 
@@ -392,10 +392,10 @@ fn drawWarpHalfpipeAttachment(scene: *const Scene, built: *const attachment_buil
             drawDoubleSidedTexturedQuad(
                 scene.textures.track.texture,
                 scene.textures.track.texture,
-                warpHalfpipeAttachmentVertex(template, built.row.global_row, front_progress, left_offset),
-                warpHalfpipeAttachmentVertex(template, built.row.global_row, back_progress, left_offset),
-                warpHalfpipeAttachmentVertex(template, built.row.global_row, back_progress, right_offset),
-                warpHalfpipeAttachmentVertex(template, built.row.global_row, front_progress, right_offset),
+                nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, left_offset),
+                nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
+                nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
+                nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, right_offset),
                 topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
@@ -415,7 +415,7 @@ fn attachmentVertex(
     };
 }
 
-fn warpHalfpipeAttachmentVertex(
+fn nonlinear42AttachmentVertex(
     template: *const attachment_builders.Template,
     source_cell_row: usize,
     progress: f32,
