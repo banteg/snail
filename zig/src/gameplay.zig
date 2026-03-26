@@ -425,6 +425,9 @@ const runtime_ring_effect_progress_scale: f32 = 0.069444448;
 const runtime_ring_effect_collect_lerp: f32 = 0.94;
 const runtime_ring_effect_collect_z_offset: f32 = 0.2;
 const runtime_ring_effect_miss_expand_scale: f32 = 1.1;
+const runtime_ring_spawn_y_offset_default: f32 = 2.5;
+const runtime_ring_spawn_y_offset_explode_ramp: f32 = 3.5;
+const runtime_ring_spawn_random_x_amplitude: f32 = 3.0;
 const max_active_health_pickups: usize = 8;
 const max_active_jetpack_pickups: usize = 1;
 const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
@@ -1210,7 +1213,7 @@ pub const Runner = struct {
     active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{.{ .row = 0, .lane = 0, .kind = .garbage }} ** max_active_runtime_hazards,
     active_runtime_hazard_count: usize = 0,
     last_runtime_hazard_scan_end: usize = 0,
-    active_runtime_ring_effects: [max_active_runtime_ring_effects]RuntimeRingEffect = [_]RuntimeRingEffect{.{ .row = 0, .lane = 0, .kind = 0 }} ** max_active_runtime_ring_effects,
+    active_runtime_ring_effects: [max_active_runtime_ring_effects]RuntimeRingEffect = [_]RuntimeRingEffect{.{ .source_row = 0, .row = 0, .lane = 0, .kind = 0 }} ** max_active_runtime_ring_effects,
     active_runtime_ring_effect_count: usize = 0,
     last_runtime_ring_scan_end: usize = 0,
     last_ring_spawn_z: f32 = -1000.0,
@@ -2559,8 +2562,11 @@ pub const Runner = struct {
     // runtime pool inside `handle_subgoldy_collisions`, not from row traversal. The runner
     // now mirrors that ownership, the recovered `delta_z < 1.0 && distance < 0.98`
     // collision gate, and the post-hit `state 2 -> 3` follow animation instead of removing
-    // the slot immediately. The remaining gap is the exact active-state anchor/layout from
-    // `spawn_track_ring_or_special_effect`, which still needs a better collision-frame read.
+    // the slot immediately. The current evidence-capped split is deliberate: presentation
+    // now follows the native slot spawn anchor from `spawn_track_ring_or_special_effect`,
+    // while collisions still use the earlier lower proxy anchor until the player-height
+    // parity gap closes. The remaining runtime gap is the writer for the active x-oscillation
+    // gate byte at slot `+0x1dc`.
     fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         var index: usize = 0;
@@ -2570,9 +2576,9 @@ pub const Runner = struct {
                 index += 1;
                 continue;
             }
-            const delta_x = effect.world_position.x - player_position.x;
-            const delta_y = effect.world_position.y - player_position.y;
-            const delta_z = effect.world_position.z - player_position.z;
+            const delta_x = effect.collision_position.x - player_position.x;
+            const delta_y = effect.collision_position.y - player_position.y;
+            const delta_z = effect.collision_position.z - player_position.z;
             if (delta_z >= runtime_hazard_collision_z_tolerance) {
                 index += 1;
                 continue;
@@ -4095,7 +4101,7 @@ pub const Runner = struct {
                     const requested_kind = requestedExplicitRuntimeRingKind(row_flags) orelse continue;
                     const target_row = global_row;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(preview, target_row, lane_index, self.spawnedRuntimeRingKind(requested_kind));
+                    self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, self.spawnedRuntimeRingKind(requested_kind));
                     self.last_ring_spawn_z = @floatFromInt(global_row);
                 },
                 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
@@ -4106,7 +4112,7 @@ pub const Runner = struct {
                     if (requestedRampSpecialRuntimeRingKind(row_flags)) |requested_kind| {
                         const target_row = global_row + track.ramp_special_ring_forward_row_offset;
                         if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                        self.addRuntimeRingEffect(preview, target_row, lane_index, requested_kind);
+                        self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, requested_kind);
                         self.last_ring_spawn_z = @floatFromInt(target_row);
                         continue;
                     }
@@ -4116,7 +4122,7 @@ pub const Runner = struct {
 
                     const target_row = global_row + track.ramp_default_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(preview, target_row, lane_index, self.spawnedRuntimeRingKind(4));
+                    self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, self.spawnedRuntimeRingKind(4));
                     self.last_ring_spawn_z = source_z;
                 },
                 0x08, 0x09, 0x0a => {
@@ -4129,7 +4135,7 @@ pub const Runner = struct {
 
                     const target_row = global_row + track.ramp_explode_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
-                    self.addRuntimeRingEffect(preview, target_row, lane_index, 2);
+                    self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, 2);
                     self.last_ring_spawn_z = source_z;
                 },
                 else => {},
@@ -4182,7 +4188,7 @@ pub const Runner = struct {
         self.active_runtime_pickup_count += 1;
     }
 
-    fn addRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) void {
+    fn addRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, source_row: usize, row: usize, lane: usize, kind: u8) void {
         if (kind == 0) return;
         for (0..self.active_runtime_ring_effect_count) |index| {
             const effect = self.active_runtime_ring_effects[index];
@@ -4190,16 +4196,48 @@ pub const Runner = struct {
         }
         if (self.active_runtime_ring_effect_count >= self.active_runtime_ring_effects.len) return;
 
-        self.active_runtime_ring_effects[self.active_runtime_ring_effect_count] = .{
+        self.active_runtime_ring_effects[self.active_runtime_ring_effect_count] = self.spawnRuntimeRingEffect(
+            preview,
+            source_row,
+            row,
+            lane,
+            kind,
+        );
+        self.active_runtime_ring_effect_count += 1;
+    }
+
+    fn spawnRuntimeRingEffect(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        source_row: usize,
+        row: usize,
+        lane: usize,
+        kind: u8,
+    ) RuntimeRingEffect {
+        const collision_position = collisionRuntimeRingEffectWorldPosition(preview, row, lane, kind);
+        var world_position = nativeRuntimeRingEffectWorldPosition(preview, row, lane, kind);
+        if (runtimeRingKindUsesRandomizedSpawnX(kind)) {
+            world_position.x = (self.nextMathRandomFloat01() - 0.5) * 2.0 * runtime_ring_spawn_random_x_amplitude;
+        }
+        const active_phase = self.nextMathRandomFloat01() * std.math.tau;
+        const seeded_phase_step = runtimeRingActivePhaseStep(preview, source_row, kind);
+        const active_phase_step = if (self.nextMathRandomFloat01() > 0.5)
+            -seeded_phase_step
+        else
+            seeded_phase_step;
+        return .{
+            .source_row = source_row,
             .row = row,
             .lane = lane,
             .kind = kind,
-            .world_position = initialRuntimeRingEffectWorldPosition(preview, row, lane, kind),
-            .presentation_position = initialRuntimeRingEffectWorldPosition(preview, row, lane, kind),
+            .collision_position = collision_position,
+            .world_position = world_position,
+            .presentation_position = world_position,
             .presentation_scale = 1.0,
             .movement_flag_selector_snapshot = self.movement_flag_selector,
+            .active_phase = active_phase,
+            .active_phase_step = active_phase_step,
         };
-        self.active_runtime_ring_effect_count += 1;
     }
 
     fn runtimeHazardPresentationScale(row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
@@ -4320,6 +4358,13 @@ pub const Runner = struct {
     fn updateRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, effect: *RuntimeRingEffect) bool {
         switch (effect.state) {
             .active => {
+                effect.child_update_cadence +%= 1;
+                if (effect.child_update_cadence == 3) effect.child_update_cadence = 0;
+                if (effect.active_x_oscillation_enabled) {
+                    effect.active_phase = @mod(effect.active_phase + effect.active_phase_step, std.math.tau);
+                    if (effect.active_phase < 0.0) effect.active_phase += std.math.tau;
+                    effect.world_position.x = @sin(effect.active_phase) * runtime_ring_spawn_random_x_amplitude;
+                }
                 effect.presentation_position = effect.world_position;
                 effect.presentation_scale = 1.0;
 
@@ -4364,11 +4409,15 @@ pub const Runner = struct {
         }
     }
 
-    fn initialRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
-        return runtimeCellWorldPosition(preview, row, lane, runtimeRingEffectYOffset(kind));
+    fn collisionRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
+        return runtimeCellWorldPosition(preview, row, lane, runtimeRingCollisionYOffset(kind));
     }
 
-    fn runtimeRingEffectYOffset(kind: u8) f32 {
+    fn nativeRuntimeRingEffectWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: u8) rl.Vector3 {
+        return runtimeCellWorldPosition(preview, row, lane, runtimeRingSpawnYOffset(kind));
+    }
+
+    fn runtimeRingCollisionYOffset(kind: u8) f32 {
         return switch (nativeRingEventLabel(kind) orelse .normal) {
             .normal => 0.72,
             .powerup => 0.64,
@@ -4376,6 +4425,36 @@ pub const Runner = struct {
             .slow => 0.5,
             .none => 0.72,
         };
+    }
+
+    fn runtimeRingSpawnYOffset(kind: u8) f32 {
+        return switch (kind) {
+            2 => runtime_ring_spawn_y_offset_explode_ramp,
+            0, 1, 3, 4, 5, 6, 7, 8 => runtime_ring_spawn_y_offset_default,
+            else => runtime_ring_spawn_y_offset_default,
+        };
+    }
+
+    fn runtimeRingKindUsesRandomizedSpawnX(kind: u8) bool {
+        return switch (kind) {
+            0, 1, 2, 3, 4 => true,
+            else => false,
+        };
+    }
+
+    fn runtimeRingActivePhaseStep(preview: *const track.LoadedLevelPreview, source_row: usize, kind: u8) f32 {
+        switch (kind) {
+            5, 6, 7, 8 => {
+                const ring_speed = preview.runtimeRowRingSpeedAt(source_row);
+                if (ring_speed > 0.0) {
+                    return (1.0 / (ring_speed * native_ticks_per_second)) * native_track_center_x * std.math.tau;
+                }
+            },
+            else => {},
+        }
+        // PORT(partial): default ramp families `0..4` seed this from `base_subgame_rate`,
+        // which the runner still does not model separately from the higher-level speed lane.
+        return 0.0;
     }
 
     fn runtimeHazardSeed(row: usize, lane: usize, kind: RuntimeHazardKind) u64 {
@@ -6959,6 +7038,75 @@ test "tutorial default ramp rings consume the native runtime event lane" {
     try std.testing.expect(found_collect_setup);
 }
 
+test "runtime ring effect keeps source row and native presentation anchor" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 51.0;
+    runner.refreshLiveRuntimeRingEffects(&fixture.preview);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
+    const effect = runner.activeRuntimeRingEffects()[0];
+    try std.testing.expectEqual(@as(usize, 51), effect.source_row);
+    try std.testing.expectEqual(@as(usize, 51), effect.row);
+    try std.testing.expectApproxEqAbs(
+        Runner.runtimeCellWorldPosition(&fixture.preview, 51, 1, runtime_ring_spawn_y_offset_default).y,
+        effect.presentation_position.y,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        Runner.runtimeCellWorldPosition(&fixture.preview, 51, 1, Runner.runtimeRingCollisionYOffset(effect.kind)).y,
+        effect.collision_position.y,
+        0.0001,
+    );
+}
+
+test "default ramp ring keeps proxy collision anchor while using native presentation spawn" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, "artifacts/bin/SnailMail.dat");
+    defer catalog.deinit();
+
+    const tutorial11_entry = catalog.dat.entryByPath("SEGMENTS/TUTORIAL 11.TXT") orelse return error.EntryNotFound;
+    var preview = try track.LoadedLevelPreview.loadStandaloneSegmentWithOptions(
+        std.testing.allocator,
+        &catalog,
+        tutorial11_entry,
+        .{
+            .load_models = false,
+            .runtime_build_flags = track.tutorialRuntimeBuildFlags,
+        },
+    );
+    defer preview.deinit();
+
+    var runner = Runner.init(&preview);
+    runner.math_random_state = 0;
+    runner.lane_index = 1;
+    runner.lane_center = 1.5;
+    runner.row_position = 22.0;
+    runner.refreshLiveRuntimeRingEffects(&preview);
+
+    for (runner.activeRuntimeRingEffects()) |effect| {
+        if (effect.row == 39 and effect.lane == 1 and effect.kind == 2) {
+            try std.testing.expectApproxEqAbs(
+                Runner.runtimeCellWorldPosition(&preview, 39, 1, runtime_ring_spawn_y_offset_explode_ramp).y,
+                effect.presentation_position.y,
+                0.0001,
+            );
+            try std.testing.expectApproxEqAbs(
+                Runner.runtimeCellWorldPosition(&preview, 39, 1, Runner.runtimeRingCollisionYOffset(effect.kind)).y,
+                effect.collision_position.y,
+                0.0001,
+            );
+            try std.testing.expect(effect.presentation_position.x != effect.collision_position.x);
+            return;
+        }
+    }
+
+    return error.ExpectedRuntimeRingEffect;
+}
+
 test "runtime ring effect collision arms the native collect follow state" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/TUTORIAL 6.TXT");
     defer fixture.deinit();
@@ -7007,12 +7155,12 @@ test "runtime ring effect bank stays native two-slot pool" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.addRuntimeRingEffect(&fixture.preview, 8, 0, 1);
-    runner.addRuntimeRingEffect(&fixture.preview, 9, 1, 2);
+    runner.addRuntimeRingEffect(&fixture.preview, 8, 8, 0, 1);
+    runner.addRuntimeRingEffect(&fixture.preview, 9, 9, 1, 2);
     try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeRingEffects().len);
 
     runner.active_runtime_ring_effects[0].state = .collect_follow;
-    runner.addRuntimeRingEffect(&fixture.preview, 10, 2, 3);
+    runner.addRuntimeRingEffect(&fixture.preview, 10, 10, 2, 3);
 
     const active_effects = runner.activeRuntimeRingEffects();
     try std.testing.expectEqual(@as(usize, 2), active_effects.len);

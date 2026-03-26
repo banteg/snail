@@ -53,6 +53,7 @@ pub const Row = struct {
     cells: []const u8,
     marked: bool = false,
     annotation: ?Annotation = null,
+    ring_speed: ?f32 = null,
 };
 
 pub const Definition = struct {
@@ -126,10 +127,15 @@ pub fn parseText(
                 }
                 suffix_slice = std.mem.trim(u8, suffix_slice, " \t\r");
             }
+            const metadata = if (suffix_slice.len > 0)
+                try parseRowMetadata(arena_allocator, suffix_slice)
+            else
+                RowMetadata{};
             try rows.append(arena_allocator, .{
                 .cells = cells,
                 .marked = marked,
-                .annotation = if (suffix_slice.len > 0) try parseAnnotation(arena_allocator, suffix_slice) else null,
+                .annotation = metadata.annotation,
+                .ring_speed = metadata.ring_speed,
             });
             continue;
         }
@@ -164,6 +170,24 @@ pub fn parseText(
 
 fn isSegmentDataFence(line: []const u8) bool {
     return line.len >= 3 and line[0] == '@' and line[1] == '@' and line[2] == '@';
+}
+
+const RowMetadata = struct {
+    annotation: ?Annotation = null,
+    ring_speed: ?f32 = null,
+};
+
+fn parseRowMetadata(allocator: std.mem.Allocator, raw: []const u8) !RowMetadata {
+    const trimmed = std.mem.trim(u8, raw, " \t");
+    if (trimmed.len == 0) return .{};
+    if (std.mem.indexOfScalar(u8, trimmed, '=')) |equals_index| {
+        const key = std.mem.trim(u8, trimmed[0..equals_index], " \t");
+        const value = std.mem.trim(u8, trimmed[equals_index + 1 ..], " \t");
+        if (std.ascii.eqlIgnoreCase(key, "RingSpeed")) {
+            return .{ .ring_speed = try std.fmt.parseFloat(f32, value) };
+        }
+    }
+    return .{ .annotation = try parseAnnotation(allocator, trimmed) };
 }
 
 fn parseAnnotation(allocator: std.mem.Allocator, raw: []const u8) !Annotation {
@@ -364,6 +388,12 @@ test "normalize explosive and jetpack annotations" {
     defer jetpack.deinit();
 
     try std.testing.expectEqual(Annotation.Tag.jetpack_off, jetpack.rows[0].annotation.?.tag());
+}
+
+test "parse ring speed row metadata" {
+    const metadata = try parseRowMetadata(std.testing.allocator, "RingSpeed=2.5");
+    try std.testing.expect(metadata.annotation == null);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), metadata.ring_speed.?, 0.0001);
 }
 
 test "parse shipped segment corpus" {

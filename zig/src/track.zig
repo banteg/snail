@@ -270,6 +270,7 @@ pub const LoadedLevelPreview = struct {
     parcel_target_count: usize,
     runtime_tiles: []u8,
     runtime_row_flags: []u32,
+    runtime_row_ring_speeds: []f32,
     runtime_ring_effect_kinds: []u8,
     runtime_warning_zone_grid: []bool,
     runtime_warn_surface_grid: []bool,
@@ -421,6 +422,13 @@ pub const LoadedLevelPreview = struct {
             total_rows,
         );
         errdefer allocator.free(runtime_row_flags);
+        const runtime_row_ring_speeds = try buildRuntimeRowRingSpeeds(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+        );
+        errdefer allocator.free(runtime_row_ring_speeds);
         const runtime_ring_effect_kinds = try buildRuntimeRingEffectGrid(
             allocator,
             runtime_tiles,
@@ -525,6 +533,7 @@ pub const LoadedLevelPreview = struct {
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
+            .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
             .runtime_warn_surface_grid = runtime_warn_surface_grid,
@@ -640,6 +649,13 @@ pub const LoadedLevelPreview = struct {
             total_rows,
         );
         errdefer allocator.free(runtime_row_flags);
+        const runtime_row_ring_speeds = try buildRuntimeRowRingSpeeds(
+            allocator,
+            segments,
+            row_offsets,
+            total_rows,
+        );
+        errdefer allocator.free(runtime_row_ring_speeds);
         const runtime_ring_effect_kinds = try buildRuntimeRingEffectGrid(
             allocator,
             runtime_tiles,
@@ -744,6 +760,7 @@ pub const LoadedLevelPreview = struct {
             .parcel_target_count = countActiveParcelAnnotations(segments),
             .runtime_tiles = runtime_tiles,
             .runtime_row_flags = runtime_row_flags,
+            .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
             .runtime_warn_surface_grid = runtime_warn_surface_grid,
@@ -769,6 +786,7 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.runtime_ring_effect_kinds);
         self.allocator.free(self.runtime_warning_zone_grid);
         self.allocator.free(self.runtime_row_flags);
+        self.allocator.free(self.runtime_row_ring_speeds);
         self.allocator.free(self.runtime_edge_masks);
         self.allocator.free(self.runtime_surface_swap_grid);
         self.allocator.free(self.runtime_warn_surface_grid);
@@ -1016,6 +1034,11 @@ pub const LoadedLevelPreview = struct {
     pub fn runtimeRowFlagsAt(self: *const LoadedLevelPreview, global_row: usize) u32 {
         if (global_row >= self.total_rows) return 0;
         return self.runtime_row_flags[global_row];
+    }
+
+    pub fn runtimeRowRingSpeedAt(self: *const LoadedLevelPreview, global_row: usize) f32 {
+        if (global_row >= self.total_rows) return 0.0;
+        return self.runtime_row_ring_speeds[global_row];
     }
 
     pub fn nativeRingEffectKindAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) u8 {
@@ -2029,6 +2052,25 @@ fn buildRuntimeRowFlags(
     }
 
     return row_flags;
+}
+
+fn buildRuntimeRowRingSpeeds(
+    allocator: std.mem.Allocator,
+    segments: []const segment.Definition,
+    row_offsets: []const usize,
+    total_rows: usize,
+) ![]f32 {
+    const ring_speeds = try allocator.alloc(f32, total_rows);
+    @memset(ring_speeds, 0.0);
+
+    for (segments, 0..) |loaded_segment, segment_index| {
+        const row_base = row_offsets[segment_index];
+        for (loaded_segment.rows, 0..) |row, row_index| {
+            ring_speeds[row_base + row_index] = row.ring_speed orelse 0.0;
+        }
+    }
+
+    return ring_speeds;
 }
 
 fn setRuntimeRingEffectKind(

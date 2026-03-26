@@ -55,14 +55,20 @@ pub const RingEffectState = enum(u8) {
 };
 
 pub const RingEffect = struct {
+    source_row: usize,
     row: usize,
     lane: usize,
     kind: u8,
     state: RingEffectState = .active,
+    collision_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     presentation_scale: f32 = 1.0,
     movement_flag_selector_snapshot: u8 = 0,
+    active_x_oscillation_enabled: bool = false,
+    child_update_cadence: u8 = 0,
+    active_phase: f32 = 0.0,
+    active_phase_step: f32 = 0.0,
     effect_progress: f32 = 0.0,
     effect_progress_step: f32 = 0.0,
 };

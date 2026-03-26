@@ -24,6 +24,10 @@ Observed field offsets from the segment slot base in `load_segment_definitions`:
 - path index: `+0x8bc`
 - ring speed: `+0x8c0`
 
+Current Zig port note:
+
+- the segment parser and preview pipeline now preserve per-row `RingSpeed` metadata as a first-class row/runtime field instead of dropping it during text import
+
 Observed uses of the packed row-flags dword at `+0x88c`:
 
 - low byte:

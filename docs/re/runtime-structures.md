@@ -482,13 +482,19 @@ The authored ring and special-effect pickups line up on a dedicated `2`-slot run
 
 High-confidence current fields:
 
-- `+0x10`: `world_position`
-- `+0x38`: `state`
-- `+0x3c`: `owner`
-- `+0x40`: `kind`
-- `+0x44`: `movement_flag_selector_snapshot`
-- `+0x19c`: `phase`
-- `+0x1a0`: `phase_step`
+- `+0x68`: `effect_position`
+- `+0x80`: `state`
+- `+0x84`: `owner`
+- `+0x88`: `kind`
+- `+0x8c`: `owner_snapshot`
+- `+0x90`: `halo_particles[10]`
+- `+0x1d4`: `effect_progress`
+- `+0x1d8`: `effect_progress_step`
+- `+0x1dc`: `active_x_oscillation_enabled`
+  - conservative gate name; the writer is still unresolved
+- `+0x1e0`: `active_phase`
+- `+0x1e4`: `active_phase_step`
+- `+0x1e8`: `child_update_cadence`
 
 Current practical read:
 
@@ -499,6 +505,9 @@ Current practical read:
     - `phase_step = 1 / (ring_speed * 60) * track_center_x * tau`
   - default ramp-generated kinds (`0/1/2/3/4`) use the shared base-rate path instead:
     - `phase_step = 1 / ((2 - base_subgame_rate * 0.3) * 60) * movement_flag_selector * 0.125 * track_center_x * tau`
+  - the active slot position is the mutable vector at `+0x68/+0x6c/+0x70`
+  - default ramp families `0/1/2/3/4` randomize `x` directly into that live slot vector at spawn
+  - child particles orbit around the same live slot vector instead of around an independent hidden anchor
 - `handle_subgoldy_collisions` reads the same runtime slots back with the shared ring gate:
   - `delta_z < 1.0`
   - normalized distance `< 0.98`
@@ -510,7 +519,8 @@ Current practical read:
   - `3/7` -> negative motion-lane impulse + `SLOWRING`
   - `4/5` -> optional voice + weapon-selector increment + `PW1..PW7`
   - `8` -> weapon-selector increment + `PW1..PW7`
-- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, but the exact original ring bod anchor/layout fields behind `spawn_track_ring_or_special_effect` are still only approximated from the runtime target row/lane
+- the current Zig runner now mirrors the live runtime-slot collision owner and that ring-kind ladder, preserves per-row `RingSpeed` metadata in the preview pipeline, and seeds the native presentation anchor for the ring slot
+- the remaining Zig gap is that collisions still use the older lower proxy anchor while the player-height parity gap remains open, and the active `+0x1dc` oscillation gate is still conservative
 
 ## Garbage Hazard Runtime
 
