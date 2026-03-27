@@ -255,6 +255,13 @@ Recovered from `get_track_grid_cell_at_world_position` and `get_track_runtime_ce
   - `+0x00`: `flags`
   - `+0xe8`: `ring_speed`
 - gameplay grid cells are stored at `game + 0x3bfac8 + (lane + row * 8) * 0x54`
+- the checked-in typed slice for one gameplay/render cell now also exposes:
+  - `anchor_position`
+  - `attachment_template_record`
+  - `tile_id`
+  - `tile_flags_3d`
+  - `render_flags`
+  - four fringe/cache object slots at `+0x44..+0x50`
 - runtime row `+0xe8` carries the per-row `RingSpeed` float copied from segment metadata
 
 That is the sampling path used both by player movement and by the floor-height helper.
@@ -315,3 +322,12 @@ The post-build renderer uses explicit cache buckets:
 - `Fringe`
 
 Those passes reuse runtime flags and helper families, so not every runtime bit should be interpreted as pure authored gameplay metadata.
+
+The checked-in render-cache owner slice now also exposes:
+
+- `TrackRenderCacheManager.max_vertex_counts[5]`
+- `TrackRenderCacheManager.max_index_counts[5]`
+- `TrackRenderCacheManager.shared_vertex_buffers[5]`
+- `TrackRenderCacheManager.shared_index_buffers[5]`
+- `TrackRenderCacheManager.track_render_grid`
+- the generic render-object texture-group tail at `+0xc0..+0xd4`

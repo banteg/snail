@@ -3,345 +3,346 @@
 /* selector: build_track_render_caches */
 
 // Builds the Floor, Slide, Warn, Ramp, and Fringe track render caches after runtime track normalization.
-int __thiscall sub_433220(int ArgList, float a2, int a3, int a4, int a5)
+int32_t __fastcall build_track_render_caches(TrackRenderCacheManager *manager)
 {
+  int v2; // ecx
+  int v3; // edi
+  int v4; // esi
+  uint8_t *v5; // eax
   int v6; // ecx
-  int v7; // edi
-  int v8; // esi
-  _DWORD *v9; // eax
-  int v10; // ecx
-  int v11; // ebp
-  int v12; // eax
-  int v13; // edx
-  int v14; // edx
-  int v15; // eax
-  int v16; // ecx
-  int v17; // eax
-  int v18; // edx
-  int v19; // ebp
-  int v20; // eax
-  int v21; // ebp
-  int v22; // eax
-  int *v23; // eax
-  int v24; // ecx
-  unsigned int *v25; // edi
-  int v26; // ebp
-  int v27; // eax
-  unsigned int v28; // eax
-  char *v29; // esi
-  char *v30; // edi
-  char *v31; // edi
-  char *v32; // esi
-  char v33; // cl
-  int v34; // eax
-  int v35; // ecx
-  int v36; // eax
-  int v37; // esi
-  int v38; // edx
-  int *v39; // eax
-  int v40; // esi
-  int v41; // edi
-  int v42; // ebp
-  int v43; // edx
-  int v44; // esi
-  int result; // eax
-  int v46; // [esp+18h] [ebp-64h]
-  int v47; // [esp+1Ch] [ebp-60h]
-  int v48; // [esp+30h] [ebp-4Ch]
-  int v49; // [esp+34h] [ebp-48h] BYREF
-  int v50; // [esp+38h] [ebp-44h]
-  int v51; // [esp+3Ch] [ebp-40h]
-  int v52; // [esp+40h] [ebp-3Ch]
-  int v53; // [esp+44h] [ebp-38h]
-  char *v54; // [esp+48h] [ebp-34h] BYREF
-  void *v55; // [esp+4Ch] [ebp-30h] BYREF
-  int v56; // [esp+50h] [ebp-2Ch]
-  int v57; // [esp+54h] [ebp-28h] BYREF
-  int v58; // [esp+58h] [ebp-24h] BYREF
-  int v59; // [esp+5Ch] [ebp-20h] BYREF
-  int v60; // [esp+60h] [ebp-1Ch] BYREF
-  int v61; // [esp+64h] [ebp-18h] BYREF
-  int v62; // [esp+68h] [ebp-14h] BYREF
-  int v63; // [esp+6Ch] [ebp-10h] BYREF
-  int v64; // [esp+70h] [ebp-Ch] BYREF
-  int v65; // [esp+74h] [ebp-8h] BYREF
-  int v66; // [esp+78h] [ebp-4h] BYREF
+  int v7; // ebp
+  TrackRenderGrid *track_render_grid; // eax
+  int v9; // edx
+  TrackRenderGrid *v10; // edx
+  uint8_t *v11; // eax
+  int v12; // ecx
+  RenderObjectTextureGroups *render_object; // eax
+  TrackRenderGrid *v14; // edx
+  int v15; // ebp
+  uint8_t *v16; // eax
+  int v17; // ebp
+  uint8_t *v18; // eax
+  uint8_t *v19; // eax
+  int v20; // ecx
+  int32_t *max_vertex_counts; // edi
+  RenderObjectTextureGroups **p_render_object; // ebp
+  int v23; // eax
+  unsigned int v24; // eax
+  char *v25; // esi
+  char *v26; // edi
+  char *v27; // edi
+  char *v28; // esi
+  char v29; // cl
+  int v30; // eax
+  int v31; // ecx
+  RenderObjectTextureGroups *v32; // eax
+  int v33; // esi
+  int v34; // edx
+  int32_t *texture_group_primcounts; // eax
+  int v36; // esi
+  int v37; // edi
+  int v38; // ebp
+  int v39; // edx
+  RenderObjectTextureGroups **v40; // esi
+  int32_t result; // eax
+  int v42; // [esp+18h] [ebp-64h]
+  int v43; // [esp+1Ch] [ebp-60h]
+  int v44; // [esp+30h] [ebp-4Ch]
+  int v45; // [esp+34h] [ebp-48h] BYREF
+  int v46; // [esp+38h] [ebp-44h]
+  int v47; // [esp+3Ch] [ebp-40h]
+  int v48; // [esp+40h] [ebp-3Ch]
+  int v49; // [esp+44h] [ebp-38h]
+  char *v50; // [esp+48h] [ebp-34h] BYREF
+  void *v51; // [esp+4Ch] [ebp-30h] BYREF
+  int v52; // [esp+50h] [ebp-2Ch]
+  int v53; // [esp+54h] [ebp-28h] BYREF
+  int v54; // [esp+58h] [ebp-24h] BYREF
+  int v55; // [esp+5Ch] [ebp-20h] BYREF
+  int v56; // [esp+60h] [ebp-1Ch] BYREF
+  int v57; // [esp+64h] [ebp-18h] BYREF
+  int v58; // [esp+68h] [ebp-14h] BYREF
+  int v59; // [esp+6Ch] [ebp-10h] BYREF
+  int v60; // [esp+70h] [ebp-Ch] BYREF
+  int v61; // [esp+74h] [ebp-8h] BYREF
+  int v62; // [esp+78h] [ebp-4h] BYREF
+  Color4f v63; // [esp+80h] [ebp+4h] BYREF
 
-  Iostream_init::Iostream_init((#93 *)&v49);
-  pack_color_rgba_u8((_BYTE *)ArgList, &a2);
-  v49 = -1;
-  noop_runtime_ai(ArgList);
-  v6 = 0;
-  v48 = 0;
-  if ( *(int *)(*(_DWORD *)(ArgList + 84) + 84) <= 0 )
+  Iostream_init::Iostream_init((#93 *)&v45);
+  pack_color_rgba_u8(&manager->clear_color, &v63);
+  v45 = -1;
+  noop_runtime_ai();
+  v2 = 0;
+  v44 = 0;
+  if ( manager->track_render_grid->cell_count <= 0 )
     goto LABEL_37;
-  v7 = 0;
+  v3 = 0;
   while ( 2 )
   {
-    v53 = v6 % 24;
-    if ( v6 % 24 )
+    v49 = v2 % 24;
+    if ( v2 % 24 )
     {
-      v8 = v51;
+      v4 = v47;
     }
     else
     {
-      v8 = v6 / 24;
-      v51 = v6 / 24;
-      v62 = 0;
-      v63 = 0;
-      v64 = 0;
-      v65 = 0;
-      v66 = 0;
-      v9 = (_DWORD *)(ArgList + 300 * (v6 / 24) + 144);
-      v57 = 0;
+      v4 = v2 / 24;
+      v47 = v2 / 24;
       v58 = 0;
-      *(float *)(ArgList + 42988) = (double)(v6 / 24) * 24.0;
       v59 = 0;
       v60 = 0;
       v61 = 0;
-      v10 = 5;
+      v62 = 0;
+      v5 = &manager->slots[5 * (v2 / 24)]._pad_2c[12];
+      v53 = 0;
+      v54 = 0;
+      *(float *)manager->_pad_a7bc = (double)(v2 / 24) * 24.0;
+      v55 = 0;
+      v56 = 0;
+      v57 = 0;
+      v6 = 5;
       do
       {
-        *v9 = *(_DWORD *)(ArgList + 42988);
-        v9 += 15;
-        --v10;
+        *(_DWORD *)v5 = *(_DWORD *)manager->_pad_a7bc;
+        v5 += 60;
+        --v6;
       }
-      while ( v10 );
+      while ( v6 );
     }
-    v52 = 8;
+    v48 = 8;
     do
     {
-      v11 = v7 + 3930892;
-      v50 = 4;
+      v7 = v3 + 3930892;
+      v46 = 4;
       do
       {
-        v12 = *(_DWORD *)(ArgList + 84);
-        v13 = *(_DWORD *)(v12 + v11);
-        if ( v13 )
+        track_render_grid = manager->track_render_grid;
+        v9 = *(_DWORD *)&track_render_grid->_pad_00[v7];
+        if ( v9 )
         {
           sub_433960(
-            (float *)ArgList,
-            v48,
-            *(_DWORD *)(v13 + 36),
-            (float *)(v7 + v12 + 3930840),
-            *(_DWORD *)(ArgList + 60),
-            &v61,
-            *(_DWORD *)(ArgList + 80),
-            &v66,
-            *(_DWORD *)(ArgList + 20),
-            *(_DWORD *)(ArgList + 40),
-            *(_DWORD *)ArgList,
+            (float *)&manager->clear_color,
+            v44,
+            *(_DWORD *)(v9 + 36),
+            (float *)((char *)&track_render_grid->cells[0].anchor_position.x + v3),
+            (int)manager->shared_vertex_buffers[4],
+            &v57,
+            (int)manager->shared_index_buffers[4],
+            &v62,
+            manager->max_vertex_counts[4],
+            manager->max_index_counts[4],
+            *(_DWORD *)&manager->clear_color,
             0);
-          **(_DWORD **)(*(_DWORD *)(ArgList + 300 * v8 + 364) + 208) = *(_DWORD *)(*(_DWORD *)(*(_DWORD *)(*(_DWORD *)(*(_DWORD *)(ArgList + 84) + v11) + 36)
-                                                                                             + 92)
-                                                                                 + 12);
-          *(_DWORD *)(*(_DWORD *)(ArgList + 84) + v11) = 0;
+          *manager->slots[5 * v4 + 4].render_object->texture_group_texture_refs = *(TextureRef **)(*(_DWORD *)(*(_DWORD *)(*(_DWORD *)&manager->track_render_grid->_pad_00[v7] + 36) + 92)
+                                                                                                 + 12);
+          *(_DWORD *)&manager->track_render_grid->_pad_00[v7] = 0;
         }
-        v11 += 4;
-        --v50;
+        v7 += 4;
+        --v46;
       }
-      while ( v50 );
-      v14 = *(_DWORD *)(ArgList + 84);
-      v15 = v7 + v14;
-      if ( (*(_DWORD *)(v7 + v14 + 3930888) & 0x20) != 0 && (*(_DWORD *)(v7 + v14 + 3930888) & 0x4000) == 0x4000 )
+      while ( v46 );
+      v10 = manager->track_render_grid;
+      v11 = &v10->_pad_00[v3];
+      if ( (*(_DWORD *)&v10->cells[0]._pad_3e[v3 + 2] & 0x20) != 0
+        && (*(_DWORD *)&v10->cells[0]._pad_3e[v3 + 2] & 0x4000) == 0x4000 )
       {
         sub_433960(
-          (float *)ArgList,
-          v48,
-          *(_DWORD *)(v15 + 3930860),
-          (float *)(v15 + 3930840),
-          *(_DWORD *)(ArgList + 52),
-          &v59,
-          *(_DWORD *)(ArgList + 72),
-          &v64,
-          *(_DWORD *)(ArgList + 12),
-          *(_DWORD *)(ArgList + 32),
-          v49,
+          (float *)&manager->clear_color,
+          v44,
+          *((_DWORD *)v11 + 982715),
+          (float *)v11 + 982710,
+          (int)manager->shared_vertex_buffers[2],
+          &v55,
+          (int)manager->shared_index_buffers[2],
+          &v60,
+          manager->max_vertex_counts[2],
+          manager->max_index_counts[2],
+          v45,
           1);
-        v16 = *(_DWORD *)(*(_DWORD *)(v7 + *(_DWORD *)(ArgList + 84) + 3930860) + 92);
-        v17 = *(_DWORD *)(ArgList + 300 * v8 + 244);
+        v12 = *(_DWORD *)(*(_DWORD *)&manager->track_render_grid->cells[0]._pad_1c[v3 + 8] + 92);
+        render_object = manager->slots[5 * v4 + 2].render_object;
         goto LABEL_28;
       }
-      if ( is_slide_cache_tile_family((_BYTE *)(v15 + 3930824)) )
+      if ( (unsigned __int8)is_slide_cache_tile_family((TrackRowCell *)(v11 + 3930824)) )
       {
-        v18 = *(_DWORD *)(ArgList + 84);
-        v19 = *(_DWORD *)(v7 + v18 + 3930888);
-        v20 = v7 + v18;
-        if ( (v19 & 0x4000) == 0x4000 )
+        v14 = manager->track_render_grid;
+        v15 = *(_DWORD *)&v14->cells[0]._pad_3e[v3 + 2];
+        v16 = &v14->_pad_00[v3];
+        if ( (v15 & 0x4000) == 0x4000 )
         {
-          v46 = v49;
-          if ( (v19 & 0x40) == 0x40 )
+          v42 = v45;
+          if ( (v15 & 0x40) == 0x40 )
             goto LABEL_20;
 LABEL_24:
           sub_433960(
-            (float *)ArgList,
-            v48,
-            *(_DWORD *)(v20 + 3930860),
-            (float *)(v20 + 3930840),
-            *(_DWORD *)(ArgList + 44),
-            &v57,
-            *(_DWORD *)(ArgList + 64),
-            &v62,
-            *(_DWORD *)(ArgList + 4),
-            *(_DWORD *)(ArgList + 24),
-            v46,
+            (float *)&manager->clear_color,
+            v44,
+            *((_DWORD *)v16 + 982715),
+            (float *)v16 + 982710,
+            (int)manager->shared_vertex_buffers[0],
+            &v53,
+            (int)manager->shared_index_buffers[0],
+            &v58,
+            manager->max_vertex_counts[0],
+            manager->max_index_counts[0],
+            v42,
             1);
-          v16 = *(_DWORD *)(*(_DWORD *)(v7 + *(_DWORD *)(ArgList + 84) + 3930860) + 92);
-          v17 = *(_DWORD *)(ArgList + 300 * v8 + 124);
+          v12 = *(_DWORD *)(*(_DWORD *)&manager->track_render_grid->cells[0]._pad_1c[v3 + 8] + 92);
+          render_object = manager->slots[5 * v4].render_object;
           goto LABEL_28;
         }
       }
-      if ( is_floor_cache_tile_family((_BYTE *)(v7 + *(_DWORD *)(ArgList + 84) + 3930824)) )
+      if ( (unsigned __int8)is_floor_cache_tile_family((TrackRowCell *)((char *)manager->track_render_grid->cells + v3)) )
       {
-        v20 = v7 + *(_DWORD *)(ArgList + 84);
-        v21 = *(_DWORD *)(v20 + 3930888);
-        if ( (v21 & 0x4000) == 0x4000 )
+        v16 = &manager->track_render_grid->_pad_00[v3];
+        v17 = *((_DWORD *)v16 + 982722);
+        if ( (v17 & 0x4000) == 0x4000 )
         {
-          v46 = v49;
-          if ( (v21 & 0x40) == 0x40 )
+          v42 = v45;
+          if ( (v17 & 0x40) == 0x40 )
             goto LABEL_24;
 LABEL_20:
           sub_433960(
-            (float *)ArgList,
-            v48,
-            *(_DWORD *)(v20 + 3930860),
-            (float *)(v20 + 3930840),
-            *(_DWORD *)(ArgList + 48),
-            &v58,
-            *(_DWORD *)(ArgList + 68),
-            &v63,
-            *(_DWORD *)(ArgList + 8),
-            *(_DWORD *)(ArgList + 28),
-            v46,
+            (float *)&manager->clear_color,
+            v44,
+            *((_DWORD *)v16 + 982715),
+            (float *)v16 + 982710,
+            (int)manager->shared_vertex_buffers[1],
+            &v54,
+            (int)manager->shared_index_buffers[1],
+            &v59,
+            manager->max_vertex_counts[1],
+            manager->max_index_counts[1],
+            v42,
             1);
-          v16 = *(_DWORD *)(*(_DWORD *)(v7 + *(_DWORD *)(ArgList + 84) + 3930860) + 92);
-          v17 = *(_DWORD *)(ArgList + 300 * v8 + 184);
+          v12 = *(_DWORD *)(*(_DWORD *)&manager->track_render_grid->cells[0]._pad_1c[v3 + 8] + 92);
+          render_object = manager->slots[5 * v4 + 1].render_object;
 LABEL_28:
-          **(_DWORD **)(v17 + 208) = *(_DWORD *)(v16 + 12);
-          v23 = (int *)(v7 + *(_DWORD *)(ArgList + 84) + 3930888);
-          v24 = *v23;
-          BYTE1(v24) = BYTE1(*v23) & 0xBF;
-          *v23 = v24;
+          *render_object->texture_group_texture_refs = *(TextureRef **)(v12 + 12);
+          v19 = &manager->track_render_grid->cells[0]._pad_3e[v3 + 2];
+          v20 = *(_DWORD *)v19;
+          BYTE1(v20) = BYTE1(*(_DWORD *)v19) & 0xBF;
+          *(_DWORD *)v19 = v20;
           goto LABEL_29;
         }
       }
-      if ( is_ramp_cache_tile_family((_BYTE *)(v7 + *(_DWORD *)(ArgList + 84) + 3930824)) )
+      if ( (unsigned __int8)is_ramp_cache_tile_family((TrackRowCell *)((char *)manager->track_render_grid->cells + v3)) )
       {
-        v22 = v7 + *(_DWORD *)(ArgList + 84);
-        if ( (*(_DWORD *)(v22 + 3930888) & 0x4000) == 0x4000 )
+        v18 = &manager->track_render_grid->_pad_00[v3];
+        if ( (*((_DWORD *)v18 + 982722) & 0x4000) == 0x4000 )
         {
           sub_433960(
-            (float *)ArgList,
-            v48,
-            *(_DWORD *)(v22 + 3930860),
-            (float *)(v22 + 3930840),
-            *(_DWORD *)(ArgList + 56),
-            &v60,
-            *(_DWORD *)(ArgList + 76),
-            &v65,
-            *(_DWORD *)(ArgList + 16),
-            *(_DWORD *)(ArgList + 36),
-            v49,
+            (float *)&manager->clear_color,
+            v44,
+            *((_DWORD *)v18 + 982715),
+            (float *)v18 + 982710,
+            (int)manager->shared_vertex_buffers[3],
+            &v56,
+            (int)manager->shared_index_buffers[3],
+            &v61,
+            manager->max_vertex_counts[3],
+            manager->max_index_counts[3],
+            v45,
             0);
-          v16 = *(_DWORD *)(*(_DWORD *)(v7 + *(_DWORD *)(ArgList + 84) + 3930860) + 92);
-          v17 = *(_DWORD *)(ArgList + 300 * v8 + 304);
+          v12 = *(_DWORD *)(*(_DWORD *)&manager->track_render_grid->cells[0]._pad_1c[v3 + 8] + 92);
+          render_object = manager->slots[5 * v4 + 3].render_object;
           goto LABEL_28;
         }
       }
 LABEL_29:
-      v7 += 84;
-      --v52;
+      v3 += 84;
+      --v48;
     }
-    while ( v52 );
-    v56 = v7;
-    if ( v53 == 23 || v48 == *(_DWORD *)(*(_DWORD *)(ArgList + 84) + 84) - 1 )
+    while ( v48 );
+    v52 = v3;
+    if ( v49 == 23 || v44 == manager->track_render_grid->cell_count - 1 )
     {
-      v25 = (unsigned int *)(ArgList + 4);
-      v50 = ArgList + 4;
-      v52 = 0;
-      v26 = ArgList + 300 * v8 + 124;
+      max_vertex_counts = manager->max_vertex_counts;
+      v46 = (int)manager->max_vertex_counts;
+      v48 = 0;
+      p_render_object = &manager->slots[5 * v4].render_object;
       while ( 1 )
       {
-        v27 = *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v26 + 192) + 8);
-        (*(void (__stdcall **)(int, _DWORD, unsigned int, char **, _DWORD))(*(_DWORD *)v27 + 44))(
-          v27,
+        v23 = *((_DWORD *)(*p_render_object)->vertex_buffer + 2);
+        (*(void (__stdcall **)(int, _DWORD, int, char **, _DWORD))(*(_DWORD *)v23 + 44))(
+          v23,
           0,
-          24 * *v25,
-          &v54,
+          24 * *max_vertex_counts,
+          &v50,
           0);
-        (*(void (__stdcall **)(_DWORD, _DWORD, unsigned int, void **, _DWORD))(***(_DWORD ***)(*(_DWORD *)v26 + 200) + 44))(
-          **(_DWORD **)(*(_DWORD *)v26 + 200),
+        (*(void (__stdcall **)(_DWORD, _DWORD, int, void **, _DWORD))(**(_DWORD **)(*p_render_object)->index_buffer + 44))(
+          *(_DWORD *)(*p_render_object)->index_buffer,
           0,
-          2 * v25[5],
-          &v55,
+          2 * max_vertex_counts[5],
+          &v51,
           0);
-        v28 = *v25;
-        v29 = (char *)v25[10];
-        v30 = v54;
-        v28 *= 24;
-        qmemcpy(v54, v29, 4 * (v28 >> 2));
-        v32 = &v29[4 * (v28 >> 2)];
-        v31 = &v30[4 * (v28 >> 2)];
-        v33 = v28;
-        v34 = v50;
-        qmemcpy(v31, v32, v33 & 3);
-        qmemcpy(v55, *(const void **)(v34 + 60), 2 * *(_DWORD *)(v34 + 20));
-        v47 = *(_DWORD *)(*(_DWORD *)(*(_DWORD *)v26 + 192) + 8);
-        (*(void (__stdcall **)(int))(*(_DWORD *)v47 + 48))(v47);
-        (*(void (__stdcall **)(_DWORD))(***(_DWORD ***)(*(_DWORD *)v26 + 200) + 48))(**(_DWORD **)(*(_DWORD *)v26 + 200));
-        v35 = v52;
-        v36 = *(_DWORD *)v26;
-        v37 = v50;
-        v26 += 60;
-        *(_DWORD *)(v36 + 196) = *(int *)((char *)&v57 + v52);
-        v38 = *(int *)((char *)&v62 + v35) / 3;
-        v39 = *(int **)(*(_DWORD *)(v26 - 60) + 212);
-        v50 = v37 + 4;
-        *v39 = v38;
-        *(_DWORD *)(*(_DWORD *)(v26 - 60) + 44) = *(int *)((char *)&v57 + v35);
-        v52 = v35 + 4;
-        if ( v35 + 4 >= 20 )
+        v24 = *max_vertex_counts;
+        v25 = (char *)max_vertex_counts[10];
+        v26 = v50;
+        v24 *= 24;
+        qmemcpy(v50, v25, 4 * (v24 >> 2));
+        v28 = &v25[4 * (v24 >> 2)];
+        v27 = &v26[4 * (v24 >> 2)];
+        v29 = v24;
+        v30 = v46;
+        qmemcpy(v27, v28, v29 & 3);
+        qmemcpy(v51, *(const void **)(v30 + 60), 2 * *(_DWORD *)(v30 + 20));
+        v43 = *((_DWORD *)(*p_render_object)->vertex_buffer + 2);
+        (*(void (__stdcall **)(int))(*(_DWORD *)v43 + 48))(v43);
+        (*(void (__stdcall **)(_DWORD))(**(_DWORD **)(*p_render_object)->index_buffer + 48))(*(_DWORD *)(*p_render_object)->index_buffer);
+        v31 = v48;
+        v32 = *p_render_object;
+        v33 = v46;
+        p_render_object += 15;
+        v32->vertex_count = *(int *)((char *)&v53 + v48);
+        v34 = *(int *)((char *)&v58 + v31) / 3;
+        texture_group_primcounts = (*(p_render_object - 15))->texture_group_primcounts;
+        v46 = v33 + 4;
+        *texture_group_primcounts = v34;
+        *(_DWORD *)&(*(p_render_object - 15))->_pad_00[44] = *(int *)((char *)&v53 + v31);
+        v48 = v31 + 4;
+        if ( v31 + 4 >= 20 )
           break;
-        v25 = (unsigned int *)v50;
+        max_vertex_counts = (int32_t *)v46;
       }
-      v7 = v56;
+      v3 = v52;
     }
-    if ( ++v48 < *(_DWORD *)(*(_DWORD *)(ArgList + 84) + 84) )
+    if ( ++v44 < manager->track_render_grid->cell_count )
     {
-      v6 = v48;
+      v2 = v44;
       continue;
     }
     break;
   }
 LABEL_37:
-  v40 = 0;
-  *(_DWORD *)(ArgList + 42992) = 0;
-  *(_DWORD *)(ArgList + 42996) = 0;
-  v52 = 0;
+  v36 = 0;
+  *(_DWORD *)&manager->_pad_a7bc[4] = 0;
+  *(_DWORD *)&manager->_pad_a7bc[8] = 0;
+  v48 = 0;
   do
   {
-    v41 = 0;
-    v42 = 0;
-    v43 = *(_DWORD *)(*(_DWORD *)(ArgList + 84) + 84) / 24;
-    if ( v43 > 0 )
+    v37 = 0;
+    v38 = 0;
+    v39 = manager->track_render_grid->cell_count / 24;
+    if ( v39 > 0 )
     {
-      v44 = ArgList + 60 * v40 + 124;
+      v40 = &manager->slots[v36].render_object;
       do
       {
-        if ( *(_DWORD *)(*(_DWORD *)v44 + 44) > v41 )
-          v41 = *(_DWORD *)(*(_DWORD *)v44 + 44);
-        if ( 4 * **(_DWORD **)(*(_DWORD *)v44 + 212) > v42 )
-          v42 = 4 * **(_DWORD **)(*(_DWORD *)v44 + 212);
-        v44 += 300;
-        --v43;
+        if ( *(_DWORD *)&(*v40)->_pad_00[44] > v37 )
+          v37 = *(_DWORD *)&(*v40)->_pad_00[44];
+        if ( 4 * *(*v40)->texture_group_primcounts > v38 )
+          v38 = 4 * *(*v40)->texture_group_primcounts;
+        v40 += 75;
+        --v39;
       }
-      while ( v43 );
-      v40 = v52;
+      while ( v39 );
+      v36 = v48;
     }
     result = sub_449C00();
-    v52 = ++v40;
+    v48 = ++v36;
   }
-  while ( v40 < 5 );
+  while ( v36 < 5 );
   return result;
 }
 

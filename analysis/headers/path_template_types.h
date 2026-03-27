@@ -158,7 +158,12 @@ typedef struct TrackRowCell {
     struct PathTemplate* attachment_template_record;
     uint8_t tile_id;
     uint8_t tile_flags_3d;
-    uint8_t _pad_3e[0x16];
+    uint8_t _pad_3e[0x2];
+    uint32_t render_flags;
+    void* fringe_object_0;
+    void* fringe_object_1;
+    void* fringe_object_2;
+    void* fringe_object_3;
 } TrackRowCell;
 
 typedef struct TrackRuntimeRow {
@@ -243,6 +248,44 @@ typedef struct TransformMatrix {
     Vec4 basis_forward;
     Vec4 position;
 } TransformMatrix;
+
+typedef struct RenderObjectTextureGroups {
+    uint8_t _pad_00[0xc0];
+    void* vertex_buffer;
+    int32_t vertex_count;
+    void* index_buffer;
+    int32_t* texture_group_ids;
+    TextureRef** texture_group_texture_refs;
+    int32_t* texture_group_primcounts;
+} RenderObjectTextureGroups;
+
+typedef struct TrackRenderGrid {
+    uint8_t _pad_00[0x54];
+    int32_t cell_count;
+    uint8_t _pad_58[0x3bfa70];
+    TrackRowCell cells[8];
+} TrackRenderGrid;
+
+typedef struct TrackRenderCacheSlot {
+    uint8_t _pad_00[0x24];
+    RenderObjectTextureGroups* render_object;
+    int32_t vertex_count;
+    uint8_t _pad_2c[0x10];
+} TrackRenderCacheSlot;
+
+typedef struct TrackRenderCacheManager {
+    ColorBGRA8 clear_color;
+    int32_t max_vertex_counts[5];
+    int32_t max_index_counts[5];
+    void* shared_vertex_buffers[5];
+    void* shared_index_buffers[5];
+    TrackRenderGrid* track_render_grid;
+    TrackRenderCacheSlot slots[0x2cb];
+    uint8_t _pad_a7bc[0x30];
+    float scratch_cell_base_offset;
+    int32_t scratch_max_vertices;
+    int32_t scratch_max_indices;
+} TrackRenderCacheManager;
 
 typedef struct CameramanState {
     TransformMatrix live_matrix;
@@ -1008,5 +1051,17 @@ int32_t __cdecl parse_next_int32(char** cursor);
 char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
 
 double __cdecl parse_next_float32(char** cursor);
+
+void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);
+
+int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);
+
+int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);
+
+int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);
+
+int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell);
+
+int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);
 
 #endif

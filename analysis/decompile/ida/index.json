@@ -3,63 +3,49 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 8,
-  "function_count": 8,
+  "selected_count": 6,
+  "function_count": 6,
   "exported": [
     {
-      "selector": "load_x_mesh",
-      "address": "0x405640",
-      "name": "load_x_mesh",
-      "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
+      "selector": "initialize_track_render_cache_manager",
+      "address": "0x433060",
+      "name": "initialize_track_render_cache_manager",
+      "artifact": "analysis/decompile/ida/functions/00433060-initialize_track_render_cache_manager.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "load_landscape_script_by_name",
-      "address": "0x4182f0",
-      "name": "load_landscape_script_by_name",
-      "artifact": "analysis/decompile/ida/functions/004182f0-load_landscape_script_by_name.c",
+      "selector": "build_track_render_caches",
+      "address": "0x433220",
+      "name": "build_track_render_caches",
+      "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_intro_screen",
-      "address": "0x4191e0",
-      "name": "initialize_intro_screen",
-      "artifact": "analysis/decompile/ida/functions/004191e0-initialize_intro_screen.c",
+      "selector": "remove_track_render_cache_bods",
+      "address": "0x433f20",
+      "name": "remove_track_render_cache_bods",
+      "artifact": "analysis/decompile/ida/functions/00433f20-remove_track_render_cache_bods.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "parse_next_space_delimited_token",
-      "address": "0x431e80",
-      "name": "parse_next_space_delimited_token",
-      "artifact": "analysis/decompile/ida/functions/00431e80-parse_next_space_delimited_token.c",
+      "selector": "is_slide_cache_tile_family",
+      "address": "0x439a40",
+      "name": "is_slide_cache_tile_family",
+      "artifact": "analysis/decompile/ida/functions/00439a40-is_slide_cache_tile_family.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "parse_next_int32",
-      "address": "0x431ec0",
-      "name": "parse_next_int32",
-      "artifact": "analysis/decompile/ida/functions/00431ec0-parse_next_int32.c",
+      "selector": "is_ramp_cache_tile_family",
+      "address": "0x439a70",
+      "name": "is_ramp_cache_tile_family",
+      "artifact": "analysis/decompile/ida/functions/00439a70-is_ramp_cache_tile_family.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "parse_next_float32",
-      "address": "0x431f20",
-      "name": "parse_next_float32",
-      "artifact": "analysis/decompile/ida/functions/00431f20-parse_next_float32.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "load_level_definition_file",
-      "address": "0x447480",
-      "name": "load_level_definition_file",
-      "artifact": "analysis/decompile/ida/functions/00447480-load_level_definition_file.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "load_segment_definitions",
-      "address": "0x448160",
-      "name": "load_segment_definitions",
-      "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
+      "selector": "is_floor_cache_tile_family",
+      "address": "0x439ad0",
+      "name": "is_floor_cache_tile_family",
+      "artifact": "analysis/decompile/ida/functions/00439ad0-is_floor_cache_tile_family.c",
       "removed_stale_artifacts": []
     }
   ],

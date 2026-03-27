@@ -131,6 +131,30 @@ TRUSTED_DECLARATIONS = [
         "double __cdecl parse_next_float32(char** cursor);",
     ),
     (
+        "initialize_track_render_cache_manager",
+        "void* __fastcall initialize_track_render_cache_manager(TrackRenderCacheManager* manager);",
+    ),
+    (
+        "build_track_render_caches",
+        "int32_t __fastcall build_track_render_caches(TrackRenderCacheManager* manager);",
+    ),
+    (
+        "remove_track_render_cache_bods",
+        "int32_t __fastcall remove_track_render_cache_bods(TrackRenderCacheManager* manager);",
+    ),
+    (
+        "is_slide_cache_tile_family",
+        "int32_t __fastcall is_slide_cache_tile_family(TrackRowCell* cell);",
+    ),
+    (
+        "is_floor_cache_tile_family",
+        "int32_t __fastcall is_floor_cache_tile_family(TrackRowCell* cell);",
+    ),
+    (
+        "is_ramp_cache_tile_family",
+        "int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell* cell);",
+    ),
+    (
         "set_color_alpha",
         "float __thiscall set_color_alpha(Color4f* color, float alpha);",
     ),

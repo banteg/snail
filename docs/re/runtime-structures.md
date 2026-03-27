@@ -928,12 +928,22 @@ helpers. Treat that header as the current repo-owned typed source for the
 `PathTemplate` / strip-mesh / follow-state slice that we actively mirror into
 IDA.
 
-The same narrow typed lane now also carries the minimal `TrackRowCell` slice
-used by the follow helpers:
+The same narrow typed lane now also carries the `TrackRowCell` slice used by
+the follow helpers and the render-cache builders:
 
 - `+0x10..+0x18`: `anchor_position`
 - `+0x38`: `attachment_template_record`
 - `+0x3c`: `tile_id`
+- `+0x3d`: `tile_flags_3d`
+- `+0x40`: `render_flags`
+- `+0x44..+0x50`: four fringe/cache object slots
+
+The checked-in header also now mirrors the narrow render-cache owner slice:
+
+- `TrackRenderCacheManager`
+- `TrackRenderCacheSlot`
+- `TrackRenderGrid`
+- the generic render-object texture-group tail at `+0xc0..+0xd4`
 
 High-confidence `PathTemplateStripMesh` fields:
 

@@ -2,22 +2,24 @@
 /* function: is_ramp_cache_tile_family @ 0x439a70 */
 /* selector: is_ramp_cache_tile_family */
 
-bool __thiscall sub_439A70(_BYTE *this)
+int32_t __fastcall is_ramp_cache_tile_family(TrackRowCell *cell)
 {
-  char v1; // al
+  uint8_t tile_id; // al
+  int32_t result; // eax
 
-  v1 = *(this + 60);
-  return v1 == 2
-      || v1 == 3
-      || v1 == 4
-      || v1 == 8
-      || v1 == 9
-      || v1 == 10
-      || v1 == 11
-      || v1 == 12
-      || v1 == 13
-      || v1 == 5
-      || v1 == 6
-      || v1 == 7;
+  tile_id = cell->tile_id;
+  LOBYTE(result) = tile_id == 2
+                || tile_id == 3
+                || tile_id == 4
+                || tile_id == 8
+                || tile_id == 9
+                || tile_id == 10
+                || tile_id == 11
+                || tile_id == 12
+                || tile_id == 13
+                || tile_id == 5
+                || tile_id == 6
+                || tile_id == 7;
+  return result;
 }
 
