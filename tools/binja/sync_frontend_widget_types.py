@@ -1,0 +1,113 @@
+from __future__ import annotations
+
+from pathlib import Path
+import sys
+
+from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare
+
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+HEADER_PATH = REPO_ROOT / "analysis/headers/bn_frontend_widget_types.h"
+TARGET = "active"
+
+FRONTEND_WIDGET_FIELDS = (
+    ("0x04", "list_flags", "uint32_t"),
+    ("0x08", "list_prev", "FrontendWidget*"),
+    ("0x0c", "list_next", "FrontendWidget*"),
+    ("0x4c", "authored_left", "float"),
+    ("0x50", "authored_top", "float"),
+    ("0x54", "authored_width", "float"),
+    ("0x58", "authored_height", "float"),
+    ("0x5c", "state_5c", "uint8_t"),
+    ("0x60", "background_texture_id", "int32_t"),
+    ("0x7c", "widget_type", "int32_t"),
+    ("0x17c", "slider_position_target", "float"),
+    ("0x180", "slider_position_current", "float"),
+    ("0x184", "slider_hit_left", "float"),
+    ("0x188", "slider_hit_right", "float"),
+    ("0x18c", "slider_hit_top", "float"),
+    ("0x190", "slider_hit_bottom", "float"),
+    ("0x194", "shortcut_key_code", "int32_t"),
+    ("0x1a0", "widget_flags", "uint32_t"),
+    ("0x1a4", "previous_widget_flags", "uint32_t"),
+    ("0x1ac", "current_fill_color", "Color4f"),
+    ("0x1bc", "idle_fill_color", "Color4f"),
+    ("0x1cc", "hot_fill_color", "Color4f"),
+    ("0x1dc", "current_text_color", "Color4f"),
+    ("0x1ec", "idle_text_color", "Color4f"),
+    ("0x1fc", "hot_text_color", "Color4f"),
+    ("0x20c", "hover_blend_target", "float"),
+    ("0x210", "hover_blend_current", "float"),
+    ("0x214", "idle_padding", "float"),
+    ("0x218", "hot_padding", "float"),
+    ("0x21c", "target_padding", "float"),
+    ("0x220", "current_padding", "float"),
+    ("0x224", "text_effect_target", "float"),
+    ("0x228", "text_effect_current", "float"),
+    ("0x22c", "render_inset_delta", "float"),
+    ("0x230", "render_inset_base", "float"),
+    ("0x234", "render_inset_dynamic", "uint8_t"),
+    ("0x238", "layout_left", "float"),
+    ("0x23c", "layout_top", "float"),
+    ("0x240", "clamped_left", "float"),
+    ("0x244", "clamped_top", "float"),
+    ("0x248", "layout_width", "float"),
+    ("0x24c", "layout_height", "float"),
+    ("0x250", "_pad_250", "uint8_t[0x8]"),
+    ("0x258", "border_edge", "float"),
+    ("0x25c", "text_alignment", "int32_t"),
+    ("0x260", "anchor_x", "float"),
+    ("0x264", "aux_progress", "float"),
+    ("0x268", "aux_step", "float"),
+    ("0x26c", "stack_gap", "float"),
+    ("0x270", "texture_id_270", "int32_t"),
+    ("0x274", "_pad_274", "uint8_t[0x4]"),
+    ("0x278", "mouse_settle_frames", "int32_t"),
+    ("0x27c", "previous_mouse_x", "float"),
+    ("0x280", "previous_mouse_y", "float"),
+    ("0x28c", "tooltip", "FrontendWidgetTooltip"),
+    ("0x2cc", "text_buffer", "FrontendWidgetTextBuffer"),
+    ("0x6ec", "font_id", "int32_t"),
+    ("0x6f0", "font_scale", "float"),
+    ("0x6f4", "layout_anchor_x", "float"),
+    ("0x6f8", "layout_anchor_y", "float"),
+    ("0x6fc", "_pad_6fc", "uint8_t[0x1c]"),
+    ("0x718", "slider_less_widget", "FrontendWidget*"),
+    ("0x71c", "slider_more_widget", "FrontendWidget*"),
+    ("0x720", "slider_value_widget", "FrontendWidget*"),
+)
+
+FRONTEND_WIDGET_TOOLTIP_FIELDS = (
+    ("0x04", "state", "int32_t"),
+    ("0x08", "mode_flags", "uint32_t"),
+    ("0x0c", "owner_widget", "FrontendWidget*"),
+    ("0x10", "delay_progress", "float"),
+    ("0x14", "delay_step", "float"),
+    ("0x18", "tooltip_widget", "FrontendWidget*"),
+    ("0x38", "owner_widget_38", "FrontendWidget*"),
+)
+
+PROTO_UPDATES = (
+    ("initialize_frontend_widget", "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x)"),
+    ("layout_frontend_widget", "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget)"),
+    ("0x402790", "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code)"),
+    ("unhighlight_border", "int32_t __thiscall unhighlight_border(FrontendWidget* widget)"),
+    ("highlight_border", "int32_t __thiscall highlight_border(FrontendWidget* widget)"),
+    ("update_frontend_widget_interaction", "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget)"),
+    ("reset_tooltip", "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip)"),
+    ("update_tooltip", "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip)"),
+)
+
+
+def main() -> int:
+    operations = [
+        types_declare(REPO_ROOT, target=TARGET, header_path=HEADER_PATH),
+        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidget", updates=FRONTEND_WIDGET_FIELDS),
+        *apply_struct_field_updates(REPO_ROOT, target=TARGET, struct_name="FrontendWidgetTooltip", updates=FRONTEND_WIDGET_TOOLTIP_FIELDS),
+        *apply_proto_updates(REPO_ROOT, target=TARGET, updates=PROTO_UPDATES),
+    ]
+    return emit_summary(repo_root=REPO_ROOT, target=TARGET, header_path=HEADER_PATH, operations=operations)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

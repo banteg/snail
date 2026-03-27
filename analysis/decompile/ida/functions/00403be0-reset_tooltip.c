@@ -2,15 +2,20 @@
 /* function: reset_tooltip @ 0x403be0 */
 /* selector: reset_tooltip */
 
-void __thiscall sub_403BE0(int this)
+int32_t __fastcall reset_tooltip(FrontendWidgetTooltip *tooltip)
 {
-  if ( *(_DWORD *)(this + 4) != 2 )
+  int32_t result; // eax
+
+  result = tooltip->state - 2;
+  if ( tooltip->state != 2 )
   {
-    if ( *(_DWORD *)(this + 4) != 3 )
-      return;
-    kill_border(*(_DWORD **)(this + 24));
-    *(_DWORD *)(this + 24) = 0;
+    result = tooltip->state - 3;
+    if ( tooltip->state != 3 )
+      return result;
+    kill_border(tooltip->tooltip_widget->_pad_00);
+    tooltip->tooltip_widget = nullptr;
   }
-  *(_DWORD *)(this + 4) = 1;
+  tooltip->state = 1;
+  return result;
 }
 

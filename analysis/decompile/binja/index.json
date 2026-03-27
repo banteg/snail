@@ -12,16 +12,36 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 1,
-  "function_count": 1,
+  "selected_count": 5,
+  "function_count": 5,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
     {
-      "address": "0x43b120",
-      "name": "update_subgoldy",
-      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c"
+      "address": "0x401d30",
+      "name": "initialize_frontend_widget",
+      "artifact": "analysis/decompile/binja/functions/00401d30-initialize_frontend_widget.c"
+    },
+    {
+      "address": "0x4024a0",
+      "name": "layout_frontend_widget",
+      "artifact": "analysis/decompile/binja/functions/004024a0-layout_frontend_widget.c"
+    },
+    {
+      "address": "0x402820",
+      "name": "update_frontend_widget_interaction",
+      "artifact": "analysis/decompile/binja/functions/00402820-update_frontend_widget_interaction.c"
+    },
+    {
+      "address": "0x403be0",
+      "name": "reset_tooltip",
+      "artifact": "analysis/decompile/binja/functions/00403be0-reset_tooltip.c"
+    },
+    {
+      "address": "0x403c20",
+      "name": "update_tooltip",
+      "artifact": "analysis/decompile/binja/functions/00403c20-update_tooltip.c"
     }
   ]
 }

@@ -1,22 +1,38 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 5,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 5,
+  "ida_exported": 5,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
   "has_mismatches": false,
   "sync_ida_symbols": false,
   "health_check_ran": true,
-  "strict": true,
+  "strict": false,
   "selected_functions": [
     {
-      "name": "update_subgoldy",
-      "address": "0x43b120"
+      "name": "initialize_frontend_widget",
+      "address": "0x401d30"
+    },
+    {
+      "name": "layout_frontend_widget",
+      "address": "0x4024a0"
+    },
+    {
+      "name": "update_frontend_widget_interaction",
+      "address": "0x402820"
+    },
+    {
+      "name": "reset_tooltip",
+      "address": "0x403be0"
+    },
+    {
+      "name": "update_tooltip",
+      "address": "0x403c20"
     }
   ],
   "health_check_count": 4,

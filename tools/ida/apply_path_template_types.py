@@ -203,6 +203,38 @@ TRUSTED_DECLARATIONS = [
         "void __fastcall update_row_event_display(RowEventDisplayController* controller);",
     ),
     (
+        "initialize_frontend_widget",
+        "int32_t __thiscall initialize_frontend_widget(FrontendWidget* widget, uint32_t widget_flags, char* text, int32_t widget_type, float x, float y, Color4f* color, int32_t text_alignment, float anchor_x);",
+    ),
+    (
+        "layout_frontend_widget",
+        "int32_t __thiscall layout_frontend_widget(FrontendWidget* widget);",
+    ),
+    (
+        "set_frontend_widget_shortcut_key",
+        "int32_t __thiscall set_frontend_widget_shortcut_key(FrontendWidget* widget, int32_t shortcut_key_code);",
+    ),
+    (
+        "unhighlight_border",
+        "int32_t __thiscall unhighlight_border(FrontendWidget* widget);",
+    ),
+    (
+        "highlight_border",
+        "int32_t __thiscall highlight_border(FrontendWidget* widget);",
+    ),
+    (
+        "update_frontend_widget_interaction",
+        "void __thiscall update_frontend_widget_interaction(FrontendWidget* widget);",
+    ),
+    (
+        "reset_tooltip",
+        "int32_t __fastcall reset_tooltip(FrontendWidgetTooltip* tooltip);",
+    ),
+    (
+        "update_tooltip",
+        "int32_t __thiscall update_tooltip(FrontendWidgetTooltip* tooltip);",
+    ),
+    (
         "initialize_cameraman",
         "int32_t __thiscall initialize_cameraman(CameramanState* cameraman);",
     ),

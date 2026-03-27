@@ -3,116 +3,116 @@
 /* selector: layout_frontend_widget */
 
 // Recomputes one front-end widget's authored-space position, measured text bounds, and any attached slider-child offsets before the current frame draw.
-float *__thiscall sub_4024A0(int this)
+int32_t __thiscall layout_frontend_widget(FrontendWidget *widget)
 {
-  float *result; // eax
-  int v3; // edx
-  _DWORD *v4; // ebx
-  float *v5; // edi
-  int v6; // eax
-  int v7; // ecx
+  int32_t result; // eax
+  float clamped_left; // edx
+  float *p_layout_top; // ebx
+  float *p_clamped_left; // edi
+  float authored_left; // eax
+  float authored_top; // ecx
   float v8; // edx
-  int v9; // ecx
+  uint32_t widget_flags; // ecx
   double v10; // st7
-  double v11; // st7
+  double clamped_top; // st7
   double v12; // st7
-  float v13; // [esp+10h] [ebp-4h]
+  float layout_width; // [esp+10h] [ebp-4h]
 
   while ( 1 )
   {
-    result = *(float **)(this + 416);
-    if ( (BYTE1(result) & 8) != 0 )
+    result = widget->widget_flags;
+    if ( (result & 0x800) != 0 )
     {
-      v3 = *(_DWORD *)(this + 572);
-      v4 = (_DWORD *)(this + 568);
-      v5 = (float *)(this + 572);
-      *(_DWORD *)(this + 1780) = *(_DWORD *)(this + 568);
-      *(_DWORD *)(this + 1784) = v3;
+      clamped_left = widget->clamped_left;
+      p_layout_top = &widget->layout_top;
+      p_clamped_left = &widget->clamped_left;
+      widget->layout_anchor_y = widget->layout_top;
+      *(float *)widget->_pad_6f8 = clamped_left;
     }
-    else if ( ((unsigned int)result & 0x10000) != 0 )
+    else if ( (result & 0x10000) != 0 )
     {
-      v6 = *(_DWORD *)(this + 76);
-      v7 = *(_DWORD *)(this + 80);
-      v4 = (_DWORD *)(this + 568);
-      v5 = (float *)(this + 572);
-      *(_DWORD *)(this + 584) = *(_DWORD *)(this + 84);
-      *(_DWORD *)(this + 568) = v6;
-      result = *(float **)(this + 88);
-      *(_DWORD *)(this + 572) = v7;
-      *(_DWORD *)(this + 588) = result;
+      authored_left = widget->authored_left;
+      authored_top = widget->authored_top;
+      p_layout_top = &widget->layout_top;
+      p_clamped_left = &widget->clamped_left;
+      widget->layout_height = widget->authored_width;
+      widget->layout_top = authored_left;
+      result = LODWORD(widget->authored_height);
+      widget->clamped_left = authored_top;
+      *(_DWORD *)widget->_pad_24c = result;
     }
     else
     {
-      v5 = (float *)(this + 572);
-      v4 = (_DWORD *)(this + 568);
-      result = layout_and_queue_wrapped_font_text(
-                 (char *)(this + 716),
-                 *(_DWORD *)(this + 1772),
-                 *(_DWORD *)(this + 1776),
-                 *(float *)(this + 1780),
-                 *(float *)(this + 1784),
-                 (float *)(this + 568),
-                 (float *)(this + 572),
-                 (float *)(this + 584),
-                 (float *)(this + 588),
-                 *(_DWORD *)(this + 552),
-                 BYTE1(byte_4DF934) & 1,
-                 *(_DWORD *)(this + 604),
-                 *(_DWORD *)(this + 608),
-                 0x1000000,
-                 this + 492,
-                 1,
-                 0);
+      p_clamped_left = &widget->clamped_left;
+      p_layout_top = &widget->layout_top;
+      result = (int32_t)layout_and_queue_wrapped_font_text(
+                          (char *)&widget->text_buffer.raw[4],
+                          LODWORD(widget->font_scale),
+                          LODWORD(widget->layout_anchor_x),
+                          widget->layout_anchor_y,
+                          *(float *)widget->_pad_6f8,
+                          &widget->layout_top,
+                          &widget->clamped_left,
+                          &widget->layout_height,
+                          (float *)widget->_pad_24c,
+                          LODWORD(widget->render_inset_delta),
+                          unk_4DF935 & 1,
+                          LODWORD(widget->anchor_x),
+                          LODWORD(widget->aux_progress),
+                          0x1000000,
+                          (int)&widget->idle_text_color.g,
+                          1,
+                          0);
     }
-    v8 = *v5;
-    *(_DWORD *)(this + 576) = *v4;
-    v9 = *(_DWORD *)(this + 416);
-    *(float *)(this + 580) = v8;
-    if ( (v9 & 0x20000000) != 0 )
+    v8 = *p_clamped_left;
+    widget->clamped_top = *p_layout_top;
+    widget_flags = widget->widget_flags;
+    widget->layout_width = v8;
+    if ( (widget_flags & 0x20000000) != 0 )
       break;
-    if ( *(float *)v4 + *(float *)(this + 536) + *(float *)(this + 584) <= 640.0 )
+    if ( *p_layout_top + widget->target_padding + widget->layout_height <= 640.0 )
     {
-      if ( *(float *)v4 - *(float *)(this + 536) < 0.0 )
-        *(_DWORD *)(this + 576) = *(_DWORD *)(this + 536);
+      if ( *p_layout_top - widget->target_padding < 0.0 )
+        widget->clamped_top = widget->target_padding;
     }
     else
     {
-      *(float *)(this + 576) = 640.0 - *(float *)(this + 536) - *(float *)(this + 584);
+      widget->clamped_top = 640.0 - widget->target_padding - widget->layout_height;
     }
-    if ( *(float *)(this + 536) + *v5 <= 480.0 )
+    if ( widget->target_padding + *p_clamped_left <= 480.0 )
     {
-      if ( *v5 - *(float *)(this + 536) < 0.0 )
-        *(_DWORD *)(this + 580) = *(_DWORD *)(this + 536);
+      if ( *p_clamped_left - widget->target_padding < 0.0 )
+        widget->layout_width = widget->target_padding;
     }
     else
     {
-      *(float *)(this + 580) = 480.0 - *(float *)(this + 536);
+      widget->layout_width = 480.0 - widget->target_padding;
     }
-    v10 = *(float *)(this + 576) - *(float *)v4;
-    result = (float *)(v9 & 0x100000);
-    *(float *)(this + 608) = v10 + *(float *)(this + 608);
-    *(float *)(this + 1780) = v10 + *(float *)(this + 1780);
-    *(float *)(this + 1784) = *(float *)(this + 580) - *v5 + *(float *)(this + 1784);
-    v11 = *(float *)(this + 576);
-    *(float *)v4 = *(float *)(this + 576);
-    v13 = *(float *)(this + 580);
-    *v5 = v13;
-    if ( (v9 & 0x100000) != 0 )
+    v10 = widget->clamped_top - *p_layout_top;
+    result = widget_flags & 0x100000;
+    widget->aux_progress = v10 + widget->aux_progress;
+    widget->layout_anchor_y = v10 + widget->layout_anchor_y;
+    *(float *)widget->_pad_6f8 = widget->layout_width - *p_clamped_left + *(float *)widget->_pad_6f8;
+    clamped_top = widget->clamped_top;
+    *p_layout_top = widget->clamped_top;
+    layout_width = widget->layout_width;
+    *p_clamped_left = layout_width;
+    if ( (widget_flags & 0x100000) != 0 )
     {
-      *(float *)(this + 388) = *(float *)(this + 584) * 0.1 + v11 + 4.0 - 12.0;
-      *(float *)(this + 392) = *(float *)(this + 584) * 0.80000001 + v11 - 4.0;
-      v12 = *(float *)(this + 588) * 0.5 + v13;
-      *(float *)(this + 396) = v12 - 6.0;
-      *(float *)(this + 400) = v12 + 32.0 - 6.0;
+      widget->slider_hit_left = widget->layout_height * 0.1 + clamped_top + 4.0 - 12.0;
+      widget->slider_hit_right = widget->layout_height * 0.80000001 + clamped_top - 4.0;
+      v12 = *(float *)widget->_pad_24c * 0.5 + layout_width;
+      widget->slider_hit_top = v12 - 6.0;
+      widget->slider_hit_bottom = v12 + 32.0 - 6.0;
     }
     if ( !result )
       break;
-    *(float *)(*(_DWORD *)(this + 1820) + 572) = *(float *)(this + 580) + 33.0;
-    layout_frontend_widget(*(_DWORD *)(this + 1820));
-    *(float *)(*(_DWORD *)(this + 1816) + 572) = *(float *)(this + 580) + 33.0;
-    layout_frontend_widget(*(_DWORD *)(this + 1816));
-    *(float *)(*(_DWORD *)(this + 1824) + 1784) = *(float *)(this + 580) + 49.0;
-    this = *(_DWORD *)(this + 1824);
+    widget->slider_more_widget->clamped_left = widget->layout_width + 33.0;
+    layout_frontend_widget(widget->slider_more_widget);
+    widget->slider_less_widget->clamped_left = widget->layout_width + 33.0;
+    layout_frontend_widget(widget->slider_less_widget);
+    *(float *)widget->slider_value_widget->_pad_6f8 = widget->layout_width + 49.0;
+    widget = widget->slider_value_widget;
   }
   return result;
 }

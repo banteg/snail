@@ -6,7 +6,7 @@ This pass intentionally parked the current `update_subgoldy` and `update_cameram
 
 ### 1. Frontend widget runtime slice
 
-Best next structural target.
+Completed in the follow-up widget typing pass.
 
 Why:
 - [`update_frontend_widget_interaction`](../decompile/binja/functions/00402820-update_frontend_widget_interaction.c) is still driving a large raw owner blob despite strong recovered semantics already present in the Zig port.
@@ -18,10 +18,10 @@ Why:
   - shortcut key code
   - secondary child widgets used by the slider-style path
 
-Expected payoff:
-- better readability across all front-end controller code
-- fewer repeated raw offsets in BN
-- a reusable checked-in type lane instead of one-off notes
+Observed payoff:
+- `initialize_frontend_widget` now exposes the shared widget flags, color banks, render-inset fields, font/layout anchors, and slider child widgets through a checked-in widget type lane
+- `update_tooltip` now cleanly reads against `FrontendWidgetTooltip*` with `state`, `mode_flags`, `delay_progress`, `delay_step`, `owner_widget`, and `tooltip_widget`
+- the tracked BN/IDA exports for the five widget helpers are refreshed and no longer depend on ephemeral GUI typing
 
 ### 2. `parse_next_float32` prototype drift
 
@@ -87,9 +87,4 @@ The frontier split is therefore:
 
 ## Recommendation
 
-Take the frontend widget runtime slice next.
-
-Reason:
-- it is the best non-parked target with both high payoff and repo-local evidence
-- unlike `parse_next_float32`, it does not appear blocked on a BN live-verification quirk
-- unlike the track fringe builders, it can directly reuse semantics already encoded in the Zig port
+Take the track fringe / render-cache owner slices next, with `parse_next_*` prototype cleanup as the helper-side follow-up.
