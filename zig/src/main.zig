@@ -7470,6 +7470,8 @@ fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
 }
 
 fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
+    const slug_billboard_height: f32 = 0.48;
+    const slug_billboard_width: f32 = 0.45;
     const base_phase = deterministicGameplayActorYaw(global_row, lane_index);
     const frame_index: usize = @intFromFloat(@mod(
         @floor((state.render_time_seconds * 8.0) + @as(f64, base_phase * 2.0)),
@@ -7487,8 +7489,8 @@ fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLev
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         position,
-        0.7,
-        0.7,
+        slug_billboard_width,
+        slug_billboard_height,
         camera,
         std.math.sin(bob_phase * 0.5) * 0.08,
         .white,
