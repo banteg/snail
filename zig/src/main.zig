@@ -7513,12 +7513,10 @@ fn drawGameplaySlugActor(
     const slug_sprite_half_extent: f32 = 2.0;
     const slug_sprite_world_size: f32 = slug_sprite_half_extent * 2.0;
     const slug_sprite_y_offset: f32 = 1.7;
-    const base_phase = deterministicGameplayActorYaw(global_row, lane_index);
-    const frame_index: usize = @intFromFloat(@mod(
-        @floor((state.render_time_seconds * 8.0) + @as(f64, base_phase * 2.0)),
-        @as(f64, @floatFromInt(gameplay_assets.gameplay_slug_sprite_paths.len)),
-    ));
-    const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
+    // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`), and
+    // `update_slug_hazard_ai` only switches to 119/120 during non-default state-machine branches.
+    // So authored live slugs should not free-run a local blink in the port.
+    const loaded_texture = state.current_gameplay_sprites.slug_frames[0] orelse return;
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
     drawGameplayBillboardTextureRect(
         loaded_texture.texture,
