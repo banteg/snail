@@ -9283,7 +9283,7 @@ test "swept installed re-entry stays on the current-row prime path and leaves ex
     runner.lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
     runner.resolved_lane_index = runner.lane_index;
     const grid_index = (setup.row * fixture.preview.max_width) + runner.lane_index;
-    fixture.preview.runtime_flag_b40_grid[grid_index] = true;
+    fixture.preview.render_cache.flag_b40_grid[grid_index] = true;
     fixture.preview.runtime_flag_b80_grid[grid_index] = false;
     runner.previous_row_position = setup.previous_row_position;
     runner.row_position = setup.row_position;
@@ -9309,7 +9309,7 @@ test "swept installed re-entry ignores rows without live attachment-owner flags"
     const setup = try findSweptInstalledEntrySetup(&runner, &fixture.preview, built);
     const lane_index = Runner.laneIndexForLaneCenter(&fixture.preview, setup.lane_center);
     const grid_index = (setup.row * fixture.preview.max_width) + lane_index;
-    fixture.preview.runtime_flag_b40_grid[grid_index] = false;
+    fixture.preview.render_cache.flag_b40_grid[grid_index] = false;
     fixture.preview.runtime_flag_b80_grid[grid_index] = false;
 
     runner.lane_center = setup.lane_center;
@@ -9350,7 +9350,7 @@ test "swept installed re-entry uses the live secondary owner slot only through B
     b40_runner.previous_row_position = setup.previous_row_position;
     b40_runner.row_position = setup.row_position;
     b40_runner.attachment_exit_pending = true;
-    fixture.preview.runtime_flag_b40_grid[grid_index] = true;
+    fixture.preview.render_cache.flag_b40_grid[grid_index] = true;
     fixture.preview.runtime_flag_b80_grid[grid_index] = false;
     b40_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
     try std.testing.expectEqual(MovementMode.track, b40_runner.movement_mode);
@@ -9364,7 +9364,7 @@ test "swept installed re-entry uses the live secondary owner slot only through B
     b80_runner.previous_row_position = setup.previous_row_position;
     b80_runner.row_position = setup.row_position;
     b80_runner.attachment_exit_pending = true;
-    fixture.preview.runtime_flag_b40_grid[grid_index] = false;
+    fixture.preview.render_cache.flag_b40_grid[grid_index] = false;
     fixture.preview.runtime_flag_b80_grid[grid_index] = true;
     b80_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
     try std.testing.expectEqual(MovementMode.attachment, b80_runner.movement_mode);

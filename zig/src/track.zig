@@ -251,6 +251,40 @@ fn appendLoadedLevelSegment(
     }
 }
 
+pub const LoadedLevelRenderCachePreview = struct {
+    warn_surface_grid: []bool,
+    surface_swap_grid: []bool,
+    flag_b40_grid: []bool,
+    edge_masks: []u8,
+
+    fn deinit(self: *LoadedLevelRenderCachePreview, allocator: std.mem.Allocator) void {
+        allocator.free(self.edge_masks);
+        allocator.free(self.flag_b40_grid);
+        allocator.free(self.surface_swap_grid);
+        allocator.free(self.warn_surface_grid);
+    }
+
+    fn warnSurfaceAt(self: *const LoadedLevelRenderCachePreview, total_rows: usize, max_width: usize, global_row: usize, lane_index: usize) bool {
+        if (global_row >= total_rows or max_width == 0 or lane_index >= max_width) return false;
+        return self.warn_surface_grid[runtimeTileIndex(max_width, global_row, lane_index)];
+    }
+
+    fn surfaceSwapAt(self: *const LoadedLevelRenderCachePreview, total_rows: usize, max_width: usize, global_row: usize, lane_index: usize) bool {
+        if (global_row >= total_rows or max_width == 0 or lane_index >= max_width) return false;
+        return self.surface_swap_grid[runtimeTileIndex(max_width, global_row, lane_index)];
+    }
+
+    fn flagB40At(self: *const LoadedLevelRenderCachePreview, total_rows: usize, max_width: usize, global_row: usize, lane_index: usize) bool {
+        if (global_row >= total_rows or max_width == 0 or lane_index >= max_width) return false;
+        return self.flag_b40_grid[runtimeTileIndex(max_width, global_row, lane_index)];
+    }
+
+    fn edgeMaskAt(self: *const LoadedLevelRenderCachePreview, total_rows: usize, max_width: usize, global_row: usize, lane_index: usize) ?u8 {
+        if (global_row >= total_rows or max_width == 0 or lane_index >= max_width) return null;
+        return self.edge_masks[runtimeTileIndex(max_width, global_row, lane_index)];
+    }
+};
+
 pub const LoadedLevelPreview = struct {
     allocator: std.mem.Allocator,
     segments: []segment.Definition,
@@ -273,12 +307,9 @@ pub const LoadedLevelPreview = struct {
     runtime_row_ring_speeds: []f32,
     runtime_ring_effect_kinds: []u8,
     runtime_warning_zone_grid: []bool,
-    render_cache_warn_surface_grid: []bool,
-    render_cache_surface_swap_grid: []bool,
+    render_cache: LoadedLevelRenderCachePreview,
     runtime_flag_b01_grid: []bool,
-    runtime_flag_b40_grid: []bool,
     runtime_flag_b80_grid: []bool,
-    runtime_edge_masks: []u8,
     runtime_spawn_hints: []u8,
     total_rows: usize,
     max_width: usize,
@@ -536,12 +567,14 @@ pub const LoadedLevelPreview = struct {
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
-            .render_cache_warn_surface_grid = render_cache_warn_surface_grid,
-            .render_cache_surface_swap_grid = render_cache_surface_swap_grid,
+            .render_cache = .{
+                .warn_surface_grid = render_cache_warn_surface_grid,
+                .surface_swap_grid = render_cache_surface_swap_grid,
+                .flag_b40_grid = runtime_flag_b40_grid,
+                .edge_masks = runtime_edge_masks,
+            },
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
-            .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
-            .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
             .max_width = max_width,
@@ -763,12 +796,14 @@ pub const LoadedLevelPreview = struct {
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
-            .render_cache_warn_surface_grid = render_cache_warn_surface_grid,
-            .render_cache_surface_swap_grid = render_cache_surface_swap_grid,
+            .render_cache = .{
+                .warn_surface_grid = render_cache_warn_surface_grid,
+                .surface_swap_grid = render_cache_surface_swap_grid,
+                .flag_b40_grid = runtime_flag_b40_grid,
+                .edge_masks = runtime_edge_masks,
+            },
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
-            .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
-            .runtime_edge_masks = runtime_edge_masks,
             .runtime_spawn_hints = runtime_spawn_hints,
             .total_rows = total_rows,
             .max_width = max_width,
@@ -787,12 +822,9 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.runtime_warning_zone_grid);
         self.allocator.free(self.runtime_row_flags);
         self.allocator.free(self.runtime_row_ring_speeds);
-        self.allocator.free(self.runtime_edge_masks);
-        self.allocator.free(self.render_cache_surface_swap_grid);
-        self.allocator.free(self.render_cache_warn_surface_grid);
+        self.render_cache.deinit(self.allocator);
         self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
-        self.allocator.free(self.runtime_flag_b40_grid);
         self.allocator.free(self.runtime_tiles);
         for (self.segments) |*loaded_segment| {
             loaded_segment.deinit();
@@ -1047,8 +1079,7 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn renderCacheWarnSurfaceAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
-        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
-        return self.render_cache_warn_surface_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache.warnSurfaceAt(self.total_rows, self.max_width, global_row, lane_index);
     }
 
     pub fn runtimeWarningZoneAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1057,13 +1088,11 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn renderCacheSurfaceSwapAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
-        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
-        return self.render_cache_surface_swap_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache.surfaceSwapAt(self.total_rows, self.max_width, global_row, lane_index);
     }
 
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
-        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
-        return self.runtime_flag_b40_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache.flagB40At(self.total_rows, self.max_width, global_row, lane_index);
     }
 
     pub fn runtimeFlagB01At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1077,8 +1106,7 @@ pub const LoadedLevelPreview = struct {
     }
 
     pub fn runtimeEdgeMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
-        if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return null;
-        return self.runtime_edge_masks[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache.edgeMaskAt(self.total_rows, self.max_width, global_row, lane_index);
     }
 
     pub fn runtimeSpawnHintMaskAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) ?u8 {
