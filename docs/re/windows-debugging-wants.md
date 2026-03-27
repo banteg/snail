@@ -276,7 +276,8 @@ are still unresolved. Bundle 14 only narrowed the startup cutscene condition eno
   - `+0x8` likely post-launch hide-release accumulator; `+0xc` is its unresolved companion reset value and still only a candidate step
   - `+0x10` float launch accumulator and `+0x14` likely float launch addend
   - current static read: only cursor values `0/1/3` should arm replay-bank probes there
-  - the remaining runtime questions are who seeds the `+0x14` addend before `update_new_game_menu` crosses the `> 1.0` launch threshold, and whether anything later advances or reads `+0xc` rather than just resetting it on the success / give-up paths
+  - current static negative result: `+0x14` is only recovered as a read operand in `update_new_game_menu`, and `+0xc` has reset stores but no recovered reader in the tracked artifacts
+  - the remaining runtime questions are therefore whether some pointer-relative holder seeds `+0x14` outside the normal idle-entry path, and whether anything later advances or reads `+0xc` rather than just resetting it on the success / give-up paths
 - Watch the three flag bytes or dwords above during:
   - fresh level start
   - respawn rebuild

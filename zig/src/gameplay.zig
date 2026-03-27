@@ -747,8 +747,22 @@ const CameraHotspotWorldState = struct {
     camera_intro_talk: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
 };
 
+const CutsceneCameraState = enum(u8) {
+    none = 0,
+    intro_arm = 1,
+    intro_hold = 2,
+    completion_arm = 5,
+    completion_blend = 6,
+    completion_hold = 7,
+    intro_blend = 8,
+    intro_release = 9,
+    death_arm = 10,
+    death_blend = 11,
+    death_hold = 12,
+};
+
 const CutsceneCameraController = struct {
-    state: u8 = 0,
+    state: CutsceneCameraState = .none,
     matrix: rl.Matrix = cameraman_identity_matrix,
     snap_next: bool = false,
     ticks: u16 = 0,
@@ -1565,7 +1579,7 @@ pub const Runner = struct {
     }
 
     pub fn cutsceneCameraActive(self: *const Runner) bool {
-        return self.cutscene_camera.state != 0;
+        return self.cutscene_camera.state != .none;
     }
 
     pub fn cutsceneCameraMatrix(self: *const Runner) rl.Matrix {
@@ -1834,10 +1848,10 @@ pub const Runner = struct {
         self.cutscene_camera.ticks = 0;
         self.cutscene_camera.snap_next = cutscene_id != cutscene_none_id;
         self.cutscene_camera.state = switch (cutscene_id) {
-            cutscene_intro_id => 1,
-            cutscene_completion_id => 5,
-            cutscene_death_id => 10,
-            else => 0,
+            cutscene_intro_id => .intro_arm,
+            cutscene_completion_id => .completion_arm,
+            cutscene_death_id => .death_arm,
+            else => .none,
         };
     }
 
@@ -3108,39 +3122,39 @@ pub const Runner = struct {
     }
 
     fn updateCutsceneCamera(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0 or self.cutscene_camera.state == 0) return;
+        if (preview.total_rows == 0 or self.cutscene_camera.state == .none) return;
 
         while (true) {
             switch (self.cutscene_camera.state) {
-                1 => {
+                .intro_arm => {
                     self.cutscene_camera.snap_next = true;
                     self.cutscene_camera.ticks = 0;
                     self.cutscene_ticks = 0;
-                    self.cutscene_camera.state = 2;
+                    self.cutscene_camera.state = .intro_hold;
                     continue;
                 },
-                2 => {
+                .intro_hold => {
                     self.cutscene_camera.matrix = self.introCutsceneHoldMatrix(preview);
                     self.cutscene_camera.ticks +|= 1;
                     self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
                     if (self.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
-                        self.cutscene_camera.state = 8;
+                        self.cutscene_camera.state = .intro_blend;
                         self.cutscene_camera.ticks = 0;
                     }
                     break;
                 },
-                8 => {
+                .intro_blend => {
                     const progress = progressForTicks(self.cutscene_camera.ticks, intro_cutscene_blend_ticks);
                     self.cutscene_camera.matrix = self.introCutsceneBlendMatrix(preview, progress);
                     self.cutscene_camera.ticks +|= 1;
                     self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
                     if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = 9;
+                        self.cutscene_camera.state = .intro_release;
                         self.cutscene_camera.ticks = 0;
                     }
                     break;
                 },
-                9 => {
+                .intro_release => {
                     if (self.cutscene_camera.ticks == 0) {
                         // Native state 9 keeps the override lane alive for one terminal tick,
                         // but publishes the live cameraman matrix through it before clearing.
@@ -3151,46 +3165,46 @@ pub const Runner = struct {
                     }
                     break;
                 },
-                5 => {
+                .completion_arm => {
                     self.cutscene_camera.snap_next = true;
                     self.cutscene_camera.ticks = 0;
-                    self.cutscene_camera.state = 6;
+                    self.cutscene_camera.state = .completion_blend;
                     continue;
                 },
-                6 => {
+                .completion_blend => {
                     const progress = progressForTicks(self.cutscene_camera.ticks, completion_cutscene_blend_ticks);
                     self.cutscene_camera.matrix = self.completionCutsceneBlendMatrix(preview, progress);
                     self.cutscene_camera.ticks +|= 1;
                     if (self.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = 7;
+                        self.cutscene_camera.state = .completion_hold;
                     }
                     break;
                 },
-                7 => {
+                .completion_hold => {
                     self.cutscene_camera.matrix = self.completionCutsceneFixedMatrix(preview);
                     break;
                 },
-                10 => {
+                .death_arm => {
                     self.cutscene_camera.snap_next = true;
                     self.cutscene_camera.ticks = 0;
-                    self.cutscene_camera.state = 11;
+                    self.cutscene_camera.state = .death_blend;
                     continue;
                 },
-                11 => {
+                .death_blend => {
                     const progress = progressForTicks(self.cutscene_camera.ticks, death_cutscene_blend_ticks);
                     self.cutscene_camera.matrix = self.deathCutsceneBlendMatrix(preview, progress);
                     self.cutscene_camera.ticks +|= 1;
                     if (self.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = 12;
+                        self.cutscene_camera.state = .death_hold;
                     }
                     break;
                 },
-                12 => {
+                .death_hold => {
                     self.cutscene_camera.matrix = self.deathCutsceneFixedMatrix(preview);
                     break;
                 },
                 else => {
-                    self.cutscene_camera.state = 0;
+                    self.cutscene_camera.state = .none;
                     break;
                 },
             }
@@ -4808,7 +4822,7 @@ pub const Runner = struct {
                     self.completion_handoff_voice_gate = true;
                 }
                 if (!self.completion_screen_init_sent and
-                    (self.cutscene_camera.state == 5 or self.cutscene_camera.state == 6) and
+                    (self.cutscene_camera.state == .completion_arm or self.cutscene_camera.state == .completion_blend) and
                     self.completion_handoff_timer >= completion_handoff_timer_step)
                 {
                     self.completion_screen_init_sent = true;
@@ -8661,7 +8675,7 @@ test "tutorial completion screen init handoff fires before the late finalize han
 
     try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
     try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_seconds);
-    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
 }
 
 test "tutorial completion finalize releases after the recovered timer" {
@@ -8706,14 +8720,14 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     runner.setCutscene(cutscene_intro_id);
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(@as(u8, 2), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_hold, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(
         runner.introCutsceneHoldMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),
         0.0001,
     );
 
-    runner.cutscene_camera.state = 8;
+    runner.cutscene_camera.state = .intro_blend;
     runner.cutscene_camera.ticks = intro_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
@@ -8723,7 +8737,7 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     const look_at = normalizeCameraTransform(cameraTransformFromMatrix(runner.introCutsceneHoldMatrix(&fixture.preview)));
     const cameraman = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.live_matrix));
 
-    try std.testing.expectEqual(@as(u8, 8), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_blend, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(expected, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(
         vector3DistanceSquared(actual.position, cameraman.position) <
@@ -8737,12 +8751,12 @@ test "intro cutscene keeps the override lane for one terminal live-camera tick" 
 
     var runner = Runner.init(&fixture.preview);
     runner.setCutscene(cutscene_intro_id);
-    runner.cutscene_camera.state = 9;
+    runner.cutscene_camera.state = .intro_release;
     runner.cutscene_camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     try std.testing.expect(runner.cutsceneCameraActive());
-    try std.testing.expectEqual(@as(u8, 9), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_release, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(runner.cameramanMatrix(), runner.cutsceneCameraMatrix(), 0.0001);
 
     runner.refreshCameraState(&fixture.preview);
@@ -8759,9 +8773,9 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
     runner.setCutscene(cutscene_completion_id);
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
 
-    runner.cutscene_camera.state = 6;
+    runner.cutscene_camera.state = .completion_blend;
     runner.cutscene_camera.ticks = completion_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
@@ -8774,16 +8788,16 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
         progress,
     );
 
-    try std.testing.expectEqual(@as(u8, 6), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(actual_blend.position.x < hotspot_lerp.x);
 
-    runner.cutscene_camera.state = 7;
+    runner.cutscene_camera.state = .completion_hold;
     runner.cutscene_camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
-    try std.testing.expectEqual(@as(u8, 7), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_hold, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(
         runner.completionCutsceneFixedMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),
@@ -8825,7 +8839,7 @@ test "challenge completion handoff waits for the row event controller to complet
     runner.row_event_display.state = .bonus_prompt;
     runner.beginCompletionCutscene();
     runner.completion_screen_init_sent = true;
-    runner.cutscene_camera.state = 7;
+    runner.cutscene_camera.state = .completion_hold;
     runner.completion_handoff_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
@@ -8847,7 +8861,7 @@ test "time-trial completion handoff does not wait for the row event controller" 
     runner.row_event_display.state = .bonus_prompt;
     runner.beginCompletionCutscene();
     runner.completion_screen_init_sent = true;
-    runner.cutscene_camera.state = 7;
+    runner.cutscene_camera.state = .completion_hold;
     runner.completion_handoff_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
@@ -9090,9 +9104,9 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     runner.phase.fall.world_y = -0.75;
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(@as(u8, 11), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene_camera.state);
 
-    runner.cutscene_camera.state = 11;
+    runner.cutscene_camera.state = .death_blend;
     runner.cutscene_camera.ticks = death_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
@@ -9100,17 +9114,17 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     const expected_blend = runner.deathCutsceneBlendMatrix(&fixture.preview, progress);
     const actual_blend = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
 
-    try std.testing.expectEqual(@as(u8, 11), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(actual_blend.position.x > runner.camera_hotspots_world.camera_intro_talk.x);
     try std.testing.expect(actual_blend.position.y >= death_cutscene_y_floor);
 
-    runner.cutscene_camera.state = 12;
+    runner.cutscene_camera.state = .death_hold;
     runner.cutscene_camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
-    try std.testing.expectEqual(@as(u8, 12), runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_hold, runner.cutscene_camera.state);
     try expectCameraMatrixApproxEq(
         runner.deathCutsceneFixedMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),

@@ -194,9 +194,9 @@ pub fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay
     if (!death_cutscene_active) return .{};
 
     return .{
-        .entry = previous.cutscene_camera.state != 11 and current.cutscene_camera.state == 11,
-        .fallback = previous.cutscene_camera.state != 12 and
-            current.cutscene_camera.state == 12 and
+        .entry = previous.cutscene_camera.state != .death_blend and current.cutscene_camera.state == .death_blend,
+        .fallback = previous.cutscene_camera.state != .death_hold and
+            current.cutscene_camera.state == .death_hold and
             !current.attachment_exit_gate_b,
     };
 }

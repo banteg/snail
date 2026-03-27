@@ -119,10 +119,10 @@ Implication:
 
 - if another producer exists, it is not showing up as a normal out-of-line global-field writer in the current tracked decompile
 - the remaining unknown is therefore narrower than “some generic frontend helper”
-- the most likely residual possibilities are:
-  - mutation hidden behind an indirect/menu-local callback path
+- the most likely residual possibilities are now narrower:
+  - a pointer-relative writer through another holder of the reused menu object
   - a build- or data-dependent lane that is dormant in the current Windows image
-  - a decompiler-blurred write that only appears through the local `this` pointer inside `update_new_game_menu`
+  - no live producer in the ordinary idle-entry path for this build
 
 ## New Conclusion
 
@@ -139,9 +139,9 @@ The remaining launcher gap is now narrower than before:
 
 So the next static targets are no longer generic menu setup code. They are more likely:
 
-- a local helper reached from inside `update_new_game_menu`
+- a pointer-relative write on the reused controller object through some other holder of `data_4df904 + 0x4f2dc`
 - a build/data-controlled dormant path that the current runtime never seeds
-- a decompiler-blurred store on the reused controller object rather than another named frontend controller family
+- or simply no producer on the ordinary idle New Game path in this Windows build
 
 ## Porting Implication
 
@@ -151,6 +151,6 @@ The current evidence says that would add a producer the native code does not use
 
 ## Next Static Targets
 
-1. Re-audit the local helper/call path inside `update_new_game_menu` for decompiler-blurred writes to `this + 0x8/+0xc/+0x10/+0x14`.
-2. Re-check the small set of New Game return paths (`update_completion_screen`, `update_frontend_state_machine`) for any path-sensitive seed that only appears in the non-default branch bodies.
-3. Treat the absent out-of-line writer as a real possibility: the current build may simply leave the random replay-attract lane dormant on ordinary idle New Game entry.
+1. Re-audit pointer-relative holders of the reused New Game controller object rather than ordinary local callees inside `update_new_game_menu`.
+2. Re-check the small set of New Game return paths (`update_completion_screen`, `update_frontend_state_machine`) only for path-sensitive state reuse, not ordinary entry seeding.
+3. Treat the absent writer as a real possibility: the current build may simply leave the random replay-attract lane dormant on ordinary idle New Game entry.
