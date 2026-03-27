@@ -7830,7 +7830,6 @@ fn drawGameplayBillboardTextureRectRolled(
         .bottom = (source.y + source.height) / @as(f32, @floatFromInt(texture.height)),
     };
     drawGameplayBillboardQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, shader, tint);
-    drawGameplayBillboardQuad(texture, top_right, bottom_right, bottom_left, top_left, uv, shader, tint);
 }
 
 fn drawGameplayBillboardTextureRect(
