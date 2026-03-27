@@ -7396,7 +7396,9 @@ fn drawGameplayRuntimeActors(
     const start_row = current_row -| 1;
     const end_row = @min(loaded_track_preview.total_rows, current_row + 72);
 
-    for (start_row..end_row) |global_row| {
+    var global_row = end_row;
+    while (global_row > start_row) {
+        global_row -= 1;
         if (!shouldRenderGameplayActorRow(runner, global_row)) continue;
         const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
         for (0..row_location.row.cells.len) |lane_index| {
@@ -7859,6 +7861,8 @@ fn drawGameplayBillboardQuad(
         rl.beginShaderMode(cutout_shader);
         defer rl.endShaderMode();
     }
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
     rl.gl.rlSetTexture(texture.id);
     defer rl.gl.rlSetTexture(0);
 
