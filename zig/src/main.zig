@@ -7375,7 +7375,7 @@ fn drawGameplayRuntimeActors(
         for (0..row_location.row.cells.len) |lane_index| {
             const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
             switch (sample.kind) {
-                .slug => drawGameplaySlugActor(state, loaded_track_preview, camera, global_row, lane_index),
+                .slug => drawGameplaySlugActor(state, loaded_track_preview, runner, camera, global_row, lane_index),
                 .ring => {
                     if (shouldRenderStaticGameplayRing(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
                         drawGameplayStaticRingActor(state, loaded_track_preview, camera, row_location, lane_index);
@@ -7469,30 +7469,35 @@ fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
     return (angle_fraction * std.math.tau) - std.math.pi;
 }
 
-fn drawGameplaySlugActor(state: *const AppState, preview: *const track.LoadedLevelPreview, camera: rl.Camera3D, global_row: usize, lane_index: usize) void {
-    const slug_billboard_height: f32 = 0.48;
-    const slug_billboard_width: f32 = 0.45;
+fn drawGameplaySlugActor(
+    state: *const AppState,
+    preview: *const track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    camera: rl.Camera3D,
+    global_row: usize,
+    lane_index: usize,
+) void {
+    if (runner.isSlugDefeated(global_row, lane_index)) return;
+
+    // Native slug hazards spawn a world sprite with size lanes +0x60/+0x64 both seeded to 2.0,
+    // and `draw_sprite_quad` treats that blended value as the quad half-extent.
+    const slug_sprite_half_extent: f32 = 2.0;
+    const slug_sprite_world_size: f32 = slug_sprite_half_extent * 2.0;
+    const slug_sprite_y_offset: f32 = 1.7;
     const base_phase = deterministicGameplayActorYaw(global_row, lane_index);
     const frame_index: usize = @intFromFloat(@mod(
         @floor((state.render_time_seconds * 8.0) + @as(f64, base_phase * 2.0)),
         @as(f64, @floatFromInt(gameplay_assets.gameplay_slug_sprite_paths.len)),
     ));
     const loaded_texture = state.current_gameplay_sprites.slug_frames[frame_index] orelse return;
-    const bob_phase = base_phase + @as(f32, @floatCast(state.render_time_seconds * 3.0));
-    const position = gameplayLaneWorldPosition(
-        preview,
-        global_row,
-        lane_index,
-        0.34 + (std.math.sin(bob_phase) * 0.04),
-    );
-    drawGameplayBillboardTextureRectRolled(
+    const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
+    drawGameplayBillboardTextureRect(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         position,
-        slug_billboard_width,
-        slug_billboard_height,
+        slug_sprite_world_size,
+        slug_sprite_world_size,
         camera,
-        std.math.sin(bob_phase * 0.5) * 0.08,
         .white,
     );
 }
