@@ -33,9 +33,21 @@ The canonical checked-in header now carries the owner model for:
 - [`build_track_render_caches`](../decompile/ida/functions/00433220-build_track_render_caches.c)
 - [`remove_track_render_cache_bods`](../decompile/ida/functions/00433f20-remove_track_render_cache_bods.c)
 
-The BN bridge timed out on live struct-field replay during this pass, so the
-tracked improvement is currently in the canonical header plus IDA lane rather
-than a new checked-in BN narrow-sync script.
+The BN lane now also replays the stable subset through
+[`sync_track_render_cache_types.py`](../../tools/binja/sync_track_render_cache_types.py),
+so the tracked BN exports also improved for:
+
+- [`initialize_track_render_cache_manager`](../decompile/binja/functions/00433060-initialize_track_render_cache_manager.c)
+- [`build_track_render_caches`](../decompile/binja/functions/00433220-build_track_render_caches.c)
+- [`remove_track_render_cache_bods`](../decompile/binja/functions/00433f20-remove_track_render_cache_bods.c)
+- [`is_slide_cache_tile_family`](../decompile/binja/functions/00439a40-is_slide_cache_tile_family.c)
+- [`is_floor_cache_tile_family`](../decompile/binja/functions/00439ad0-is_floor_cache_tile_family.c)
+- [`is_ramp_cache_tile_family`](../decompile/binja/functions/00439a70-is_ramp_cache_tile_family.c)
+
+The BN view is still a narrower mirror than the IDA/canonical lane. It now
+understands the manager header, grid pointer, slot array, and cache-family
+helper prototypes, but some inner object/list tails still read as `__offset(...)`
+in the cache-body cleanup path.
 
 ## Deliberate non-claims
 

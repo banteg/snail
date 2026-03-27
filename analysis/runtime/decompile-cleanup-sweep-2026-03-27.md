@@ -55,7 +55,7 @@ Why:
 Observed payoff:
 - the canonical checked-in header now carries a conservative owner model for the render-cache manager, render grid, cache slots, and generic render-object texture-group tail
 - the tracked IDA exports for the cache builders now read against those named owners instead of only raw header arithmetic
-- the tile-family helper family is now documented as part of the same render-cell slice even though the live BN mutation lane was timing out during this pass
+- the tracked BN exports now also carry the stable manager/grid/slot header slice plus typed cache-family helper predicates
 
 ### 4. Front-end controller wording that is already closed
 
