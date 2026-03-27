@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
+const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -443,13 +444,13 @@ const postal_completion_bonus_score: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
 const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
-pub const intro_cutscene_duration_ticks: u16 = 240;
-pub const completion_cutscene_duration_ticks: u16 = 72;
-pub const death_cutscene_duration_ticks: u16 = 72;
-const intro_cutscene_hold_ticks: u16 = intro_cutscene_duration_ticks / 2;
-const intro_cutscene_blend_ticks: u16 = intro_cutscene_duration_ticks - intro_cutscene_hold_ticks;
-const completion_cutscene_blend_ticks: u16 = completion_cutscene_duration_ticks / 2;
-const death_cutscene_blend_ticks: u16 = death_cutscene_duration_ticks / 2;
+pub const intro_cutscene_duration_ticks: u16 = gameplay_camera.intro_cutscene_duration_ticks;
+pub const completion_cutscene_duration_ticks: u16 = gameplay_camera.completion_cutscene_duration_ticks;
+pub const death_cutscene_duration_ticks: u16 = gameplay_camera.death_cutscene_duration_ticks;
+const intro_cutscene_hold_ticks: u16 = gameplay_camera.intro_cutscene_hold_ticks;
+const intro_cutscene_blend_ticks: u16 = gameplay_camera.intro_cutscene_blend_ticks;
+const completion_cutscene_blend_ticks: u16 = gameplay_camera.completion_cutscene_blend_ticks;
+const death_cutscene_blend_ticks: u16 = gameplay_camera.death_cutscene_blend_ticks;
 const fall_gravity: f32 = 10.0;
 // PORT(partial): bundle 14 only ties the recovered `-7` window to in-fall transition logic,
 // not to the final respawn/game-over rule. Keep this as a provisional handoff gate until the
@@ -460,7 +461,7 @@ const attachment_exit_gate_a_progress_threshold: f32 = 0.7;
 const attachment_side_exit_margin: f32 = 0.3;
 const attachment_entry_start_y_tolerance: f32 = -0.2;
 const attachment_entry_end_y_tolerance: f32 = 0.001;
-const attachment_entry_rider_height: f32 = 0.49;
+const attachment_entry_rider_height: f32 = gameplay_camera.attachment_entry_rider_height;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
@@ -477,9 +478,9 @@ const math_random_center: f32 = 16384.0;
 const math_random_inv_center: f32 = 1.0 / math_random_center;
 const track_parcel_delivery_random_y_scale: f32 = 1.5 * math_random_inv_center;
 const track_parcel_home_arc_height: f32 = 0.5;
-const completion_cutscene_x_offset: f32 = 0.5;
-const death_cutscene_x_offset: f32 = 2.0;
-const death_cutscene_y_floor: f32 = 0.0;
+const completion_cutscene_x_offset: f32 = gameplay_camera.completion_cutscene_x_offset;
+const death_cutscene_x_offset: f32 = gameplay_camera.death_cutscene_x_offset;
+const death_cutscene_y_floor: f32 = gameplay_camera.death_cutscene_y_floor;
 const base_fire_cooldown_ticks: u8 = 10;
 const projectile_speed_rows_per_second: f32 = 48.0;
 const turret_projectile_speed_rows_per_second: f32 = 20.0;
@@ -503,46 +504,31 @@ const invincible_duration_ticks: u16 = 480;
 const max_weapon_level: u8 = 2;
 const slug_projectile_kill_score: u32 = 100;
 const parcel_delivery_register_score: u32 = 10;
-const cameraman_base_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
-const cameraman_base_up = rl.Vector3{ .x = 0.0, .y = 0.946145, .z = 0.323752 };
-const cameraman_base_forward = rl.Vector3{ .x = 0.0, .y = -0.323752, .z = 0.946145 };
-const cameraman_identity_matrix = rl.Matrix{
-    .m0 = 1.0,
-    .m4 = 0.0,
-    .m8 = 0.0,
-    .m12 = 0.0,
-    .m1 = 0.0,
-    .m5 = 1.0,
-    .m9 = 0.0,
-    .m13 = 0.0,
-    .m2 = 0.0,
-    .m6 = 0.0,
-    .m10 = 1.0,
-    .m14 = 0.0,
-    .m3 = 0.0,
-    .m7 = 0.0,
-    .m11 = 0.0,
-    .m15 = 1.0,
-};
-const cameraman_base_translation_y: f32 = 1.8;
-const cameraman_base_translation_z: f32 = -0.5;
-const cameraman_forward_distance: f32 = 3.3;
-const cameraman_vertical_lift_early_weight: f32 = 1.15;
-const cameraman_vertical_lift_late_weight: f32 = 0.35;
-const cameraman_deadzone_min_z_delta: f32 = 1.70000005;
-const cameraman_deadzone_max_z_delta: f32 = 3.0;
-const cameraman_fov_blend: f32 = 0.3;
-const cameraman_matrix_blend_scale: f32 = 0.3;
-const cameraman_lift_blend: f32 = 0.1;
-const cameraman_attachment_lift_scale: f32 = 0.35;
-const cameraman_launch_lift_scale: f32 = 0.24;
-const cameraman_worm_fov_bonus: f32 = 50.0;
-const native_hotspot_camera_skid_stop_index: u8 = 12;
-const native_hotspot_camera_slug_death_index: u8 = 17;
-const native_hotspot_camera_intro_talk_index: u8 = 18;
-const hotspot_camera_skid_stop_local = rl.Vector3{ .x = -0.54505, .y = 0.0, .z = 1.8749 };
-const hotspot_camera_slug_death_local = rl.Vector3{ .x = -0.0088, .y = 0.7189, .z = -5.4915 };
-const hotspot_camera_intro_talk_local = rl.Vector3{ .x = 0.862, .y = -0.13765, .z = 1.87215 };
+const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
+const CameraHotspotWorldState = gameplay_camera.CameraHotspotWorldState;
+const CutsceneCameraState = gameplay_camera.CutsceneCameraState;
+const CutsceneCameraController = gameplay_camera.CutsceneCameraController;
+const CameramanState = gameplay_camera.CameramanState;
+const CameraTransform = gameplay_camera.CameraTransform;
+const lerpVector3 = gameplay_camera.lerpVector3;
+const crossVector3 = gameplay_camera.crossVector3;
+const dotVector3 = gameplay_camera.dotVector3;
+const normalizeVector3 = gameplay_camera.normalizeVector3;
+const cameraMatrixFromTransform = gameplay_camera.cameraMatrixFromTransform;
+const cameraTransformFromMatrix = gameplay_camera.cameraTransformFromMatrix;
+const normalizeCameraTransform = gameplay_camera.normalizeCameraTransform;
+const rotateCameraTransformLocalZ = gameplay_camera.rotateCameraTransformLocalZ;
+const rotateCameraTransformWorldZ = gameplay_camera.rotateCameraTransformWorldZ;
+const orthonormalFrameFromForwardUp = gameplay_camera.orthonormalFrameFromForwardUp;
+const lookAtPoint = gameplay_camera.lookAtPoint;
+pub const linearInterpolateCameraMatrices = gameplay_camera.linearInterpolateCameraMatrices;
+const rollRadiansFromForwardUp = gameplay_camera.rollRadiansFromForwardUp;
+const interpolateWrappedRadians = gameplay_camera.interpolateWrappedRadians;
+const attachmentSampleOrientationA = gameplay_camera.attachmentSampleOrientationA;
+const buildNormalCameramanTransform = gameplay_camera.buildNormalCameramanTransform;
+const cameramanVerticalLiftFromCachedTarget = gameplay_camera.cameramanVerticalLiftFromCachedTarget;
+const cameramanPitchRadiansFromCachedTarget = gameplay_camera.cameramanPitchRadiansFromCachedTarget;
+const clampedPreviousDesiredCameraZ = gameplay_camera.clampedPreviousDesiredCameraZ;
 
 fn movementFlagsForSelector(selector: u8) u32 {
     return switch (selector) {
@@ -741,76 +727,6 @@ const WorldFrame = struct {
     up: rl.Vector3,
 };
 
-const CameraHotspotWorldState = struct {
-    camera_skid_stop: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    camera_slug_death: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    camera_intro_talk: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-};
-
-const CutsceneCameraState = enum(u8) {
-    none = 0,
-    intro_arm = 1,
-    intro_hold = 2,
-    completion_arm = 5,
-    completion_blend = 6,
-    completion_hold = 7,
-    intro_blend = 8,
-    intro_release = 9,
-    death_arm = 10,
-    death_blend = 11,
-    death_hold = 12,
-};
-
-const CutsceneCameraController = struct {
-    state: CutsceneCameraState = .none,
-    matrix: rl.Matrix = cameraman_identity_matrix,
-    snap_next: bool = false,
-    ticks: u16 = 0,
-};
-
-const CameramanState = struct {
-    live_matrix: rl.Matrix = cameraman_identity_matrix,
-    desired_matrix: rl.Matrix = cameraman_identity_matrix,
-    previous_desired_matrix: rl.Matrix = cameraman_identity_matrix,
-    snap_next: bool = false,
-    fov_degrees: f32 = 110.0,
-    attachment_lift_envelope: f32 = 0.0,
-    smoothed_attachment_lift_envelope: f32 = 0.0,
-};
-
-fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
-    return .{
-        .x = std.math.lerp(a.x, b.x, t),
-        .y = std.math.lerp(a.y, b.y, t),
-        .z = std.math.lerp(a.z, b.z, t),
-    };
-}
-
-fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = (a.y * b.z) - (a.z * b.y),
-        .y = (a.z * b.x) - (a.x * b.z),
-        .z = (a.x * b.y) - (a.y * b.x),
-    };
-}
-
-fn dotVector3(a: rl.Vector3, b: rl.Vector3) f32 {
-    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
-}
-
-fn normalizeVector3(v: rl.Vector3) rl.Vector3 {
-    const length_squared = (v.x * v.x) + (v.y * v.y) + (v.z * v.z);
-    if (length_squared <= 0.000001) {
-        return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    }
-    const inv_length = @as(f32, 1.0) / @sqrt(length_squared);
-    return .{
-        .x = v.x * inv_length,
-        .y = v.y * inv_length,
-        .z = v.z * inv_length,
-    };
-}
-
 fn offsetPosition(
     origin: rl.Vector3,
     right: rl.Vector3,
@@ -825,294 +741,6 @@ fn offsetPosition(
         .y = origin.y + (right.y * local_x) + (up.y * local_y) + (forward.y * local_z),
         .z = origin.z + (right.z * local_x) + (up.z * local_y) + (forward.z * local_z),
     };
-}
-
-fn rotateVectorWorldX(v: rl.Vector3, radians: f32) rl.Vector3 {
-    const sin_theta = std.math.sin(radians);
-    const cos_theta = std.math.cos(radians);
-    return .{
-        .x = v.x,
-        .y = (v.y * cos_theta) + (v.z * sin_theta),
-        .z = (v.z * cos_theta) - (v.y * sin_theta),
-    };
-}
-
-fn rotateVectorWorldZ(v: rl.Vector3, radians: f32) rl.Vector3 {
-    const sin_theta = std.math.sin(radians);
-    const cos_theta = std.math.cos(radians);
-    return .{
-        .x = (v.x * cos_theta) - (v.y * sin_theta),
-        .y = (v.x * sin_theta) + (v.y * cos_theta),
-        .z = v.z,
-    };
-}
-
-const CameraTransform = struct {
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-};
-
-fn cameraMatrixFromTransform(transform: CameraTransform) rl.Matrix {
-    return .{
-        .m0 = transform.right.x,
-        .m4 = transform.up.x,
-        .m8 = transform.forward.x,
-        .m12 = transform.position.x,
-        .m1 = transform.right.y,
-        .m5 = transform.up.y,
-        .m9 = transform.forward.y,
-        .m13 = transform.position.y,
-        .m2 = transform.right.z,
-        .m6 = transform.up.z,
-        .m10 = transform.forward.z,
-        .m14 = transform.position.z,
-        .m3 = 0.0,
-        .m7 = 0.0,
-        .m11 = 0.0,
-        .m15 = 1.0,
-    };
-}
-
-fn cameraTransformFromMatrix(matrix: rl.Matrix) CameraTransform {
-    return .{
-        .position = .{ .x = matrix.m12, .y = matrix.m13, .z = matrix.m14 },
-        .right = .{ .x = matrix.m0, .y = matrix.m1, .z = matrix.m2 },
-        .up = .{ .x = matrix.m4, .y = matrix.m5, .z = matrix.m6 },
-        .forward = .{ .x = matrix.m8, .y = matrix.m9, .z = matrix.m10 },
-    };
-}
-
-fn normalizeCameraTransform(transform: CameraTransform) CameraTransform {
-    const forward = normalizeVector3(transform.forward);
-    var right = crossVector3(transform.up, forward);
-    if ((right.x * right.x) + (right.y * right.y) + (right.z * right.z) <= 0.000001) {
-        right = normalizeVector3(transform.right);
-    } else {
-        right = normalizeVector3(right);
-    }
-    const up = normalizeVector3(crossVector3(forward, right));
-    return .{
-        .position = transform.position,
-        .right = right,
-        .up = up,
-        .forward = forward,
-    };
-}
-
-fn rotateCameraTransformWorldX(transform: CameraTransform, radians: f32) CameraTransform {
-    return normalizeCameraTransform(.{
-        .position = transform.position,
-        .right = rotateVectorWorldX(transform.right, radians),
-        .up = rotateVectorWorldX(transform.up, radians),
-        .forward = rotateVectorWorldX(transform.forward, radians),
-    });
-}
-
-fn rotateCameraTransformWorldZ(transform: CameraTransform, radians: f32) CameraTransform {
-    return normalizeCameraTransform(.{
-        .position = transform.position,
-        .right = rotateVectorWorldZ(transform.right, radians),
-        .up = rotateVectorWorldZ(transform.up, radians),
-        .forward = rotateVectorWorldZ(transform.forward, radians),
-    });
-}
-
-fn rotateCameraTransformLocalZ(transform: CameraTransform, radians: f32) CameraTransform {
-    const sin_theta = std.math.sin(radians);
-    const cos_theta = std.math.cos(radians);
-    return normalizeCameraTransform(.{
-        .position = transform.position,
-        .right = .{
-            .x = (transform.right.x * cos_theta) + (transform.up.x * sin_theta),
-            .y = (transform.right.y * cos_theta) + (transform.up.y * sin_theta),
-            .z = (transform.right.z * cos_theta) + (transform.up.z * sin_theta),
-        },
-        .up = .{
-            .x = (transform.up.x * cos_theta) - (transform.right.x * sin_theta),
-            .y = (transform.up.y * cos_theta) - (transform.right.y * sin_theta),
-            .z = (transform.up.z * cos_theta) - (transform.right.z * sin_theta),
-        },
-        .forward = transform.forward,
-    });
-}
-
-fn blendCameraTransforms(lhs: CameraTransform, rhs: CameraTransform, t: f32) CameraTransform {
-    return normalizeCameraTransform(.{
-        .position = lerpVector3(lhs.position, rhs.position, t),
-        .right = lerpVector3(lhs.right, rhs.right, t),
-        .up = lerpVector3(lhs.up, rhs.up, t),
-        .forward = lerpVector3(lhs.forward, rhs.forward, t),
-    });
-}
-
-fn orthonormalFrameFromForwardUp(forward: rl.Vector3, up_hint: rl.Vector3) CameraTransform {
-    const normalized_forward = normalizeVector3(forward);
-    var right = crossVector3(up_hint, normalized_forward);
-    if ((right.x * right.x) + (right.y * right.y) + (right.z * right.z) <= 0.000001) {
-        right = cameraman_base_right;
-    } else {
-        right = normalizeVector3(right);
-    }
-    const up = normalizeVector3(crossVector3(normalized_forward, right));
-    return .{
-        .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-        .right = right,
-        .up = up,
-        .forward = normalized_forward,
-    };
-}
-
-fn pointCameraTransformAt(position: rl.Vector3, target: rl.Vector3, up_hint: rl.Vector3) CameraTransform {
-    var transform = orthonormalFrameFromForwardUp(.{
-        .x = target.x - position.x,
-        .y = target.y - position.y,
-        .z = target.z - position.z,
-    }, up_hint);
-    transform.position = position;
-    return transform;
-}
-
-fn cameraMatrixWithPosition(matrix: rl.Matrix, position: rl.Vector3) rl.Matrix {
-    var result = matrix;
-    result.m12 = position.x;
-    result.m13 = position.y;
-    result.m14 = position.z;
-    return result;
-}
-
-fn lookAtPoint(matrix: rl.Matrix, target: rl.Vector3, up_hint: rl.Vector3) rl.Matrix {
-    const position = rl.Vector3{
-        .x = matrix.m12,
-        .y = matrix.m13,
-        .z = matrix.m14,
-    };
-    return cameraMatrixFromTransform(pointCameraTransformAt(position, target, up_hint));
-}
-
-fn normalizeCameraMatrix(matrix: rl.Matrix) rl.Matrix {
-    const translation = rl.Vector3{
-        .x = matrix.m12,
-        .y = matrix.m13,
-        .z = matrix.m14,
-    };
-    var result = cameraMatrixFromTransform(normalizeCameraTransform(cameraTransformFromMatrix(matrix)));
-    result.m12 = translation.x;
-    result.m13 = translation.y;
-    result.m14 = translation.z;
-    return result;
-}
-
-fn interpolateCameraMatrixRotation(matrix: rl.Matrix, t: f32) rl.Matrix {
-    const amount = std.math.clamp(t, 0.0, 1.0);
-    var rotation = rl.math.quaternionNormalize(rl.math.quaternionFromMatrix(cameraMatrixWithPosition(matrix, .{
-        .x = 0.0,
-        .y = 0.0,
-        .z = 0.0,
-    })));
-    if (@abs(rotation.x) <= 0.00001) rotation.x = 0.0;
-    if (@abs(rotation.y) <= 0.00001) rotation.y = 0.0;
-    if (@abs(rotation.z) <= 0.00001) rotation.z = 0.0;
-    if (rotation.x == 0.0 and rotation.y == 0.0 and rotation.z == 0.0) {
-        return normalizeCameraMatrix(rl.math.quaternionToMatrix(rotation));
-    }
-
-    var axis: rl.Vector3 = undefined;
-    var angle: f32 = 0.0;
-    rl.math.quaternionToAxisAngle(rotation, &axis, &angle);
-    return normalizeCameraMatrix(rl.math.quaternionToMatrix(rl.math.quaternionFromAxisAngle(axis, angle * amount)));
-}
-
-pub fn linearInterpolateCameraMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
-    const amount = std.math.clamp(t, 0.0, 1.0);
-    const lhs_rotation = cameraMatrixWithPosition(lhs, .{ .x = 0.0, .y = 0.0, .z = 0.0 });
-    const rhs_rotation = cameraMatrixWithPosition(rhs, .{ .x = 0.0, .y = 0.0, .z = 0.0 });
-    const relative_rotation = rl.math.matrixMultiply(rl.math.matrixInvert(lhs_rotation), rhs_rotation);
-
-    var result = interpolateCameraMatrixRotation(relative_rotation, amount);
-    result = rl.math.matrixMultiply(lhs_rotation, result);
-    result = normalizeCameraMatrix(result);
-    result.m12 = std.math.lerp(lhs.m12, rhs.m12, amount);
-    result.m13 = std.math.lerp(lhs.m13, rhs.m13, amount);
-    result.m14 = std.math.lerp(lhs.m14, rhs.m14, amount);
-    return result;
-}
-
-fn normalizeRadians(radians: f32) f32 {
-    var angle = radians;
-    while (angle > std.math.pi) angle -= std.math.tau;
-    while (angle < -std.math.pi) angle += std.math.tau;
-    return angle;
-}
-
-fn rollRadiansFromForwardUp(forward: rl.Vector3, up: rl.Vector3) f32 {
-    const normalized_forward = normalizeVector3(forward);
-    var reference_right = crossVector3(.{ .x = 0.0, .y = 1.0, .z = 0.0 }, normalized_forward);
-    if (dotVector3(reference_right, reference_right) <= 0.000001) {
-        reference_right = crossVector3(.{ .x = 1.0, .y = 0.0, .z = 0.0 }, normalized_forward);
-    }
-    reference_right = normalizeVector3(reference_right);
-    const reference_up = normalizeVector3(crossVector3(normalized_forward, reference_right));
-    const normalized_up = normalizeVector3(up);
-    return std.math.atan2(
-        dotVector3(normalized_up, reference_right),
-        dotVector3(normalized_up, reference_up),
-    );
-}
-
-fn interpolateWrappedRadians(lhs: f32, rhs: f32, amount: f32) f32 {
-    return normalizeRadians(lhs + (normalizeRadians(rhs - lhs) * amount));
-}
-
-fn attachmentSampleOrientationA(sample: *const attachment_builders.TemplateSample) f32 {
-    return rollRadiansFromForwardUp(
-        attachmentVec3ToVector3(sample.basis_forward),
-        attachmentVec3ToVector3(sample.basis_up),
-    );
-}
-
-fn buildNormalCameramanTransform(translation_x: f32, translation_y: f32, translation_z: f32, intro_pitch_radians: f32, anchor_pitch_radians: f32) CameraTransform {
-    var transform: CameraTransform = .{
-        .position = .{
-            .x = translation_x,
-            .y = translation_y,
-            .z = translation_z,
-        },
-        .right = cameraman_base_right,
-        .up = cameraman_base_up,
-        .forward = cameraman_base_forward,
-    };
-    transform = rotateCameraTransformWorldX(transform, intro_pitch_radians);
-    transform = rotateCameraTransformWorldX(transform, anchor_pitch_radians);
-    return transform;
-}
-
-fn cameramanVerticalLiftFromCachedTarget(anchor_y: f32, progress_blend: f32) f32 {
-    return std.math.lerp(
-        anchor_y * cameraman_vertical_lift_early_weight,
-        anchor_y * cameraman_vertical_lift_late_weight,
-        progress_blend,
-    );
-}
-
-fn cameramanPitchRadiansFromCachedTarget(anchor_y: f32) f32 {
-    return std.math.clamp(
-        (-2.0 - ((anchor_y - 0.49) * 5.0)) * 0.0174499992,
-        -1.22149992,
-        1.22149992,
-    );
-}
-
-fn clampedPreviousDesiredCameraZ(anchor_z: f32, previous_z: f32) f32 {
-    const previous_delta_z = anchor_z - previous_z;
-    if (previous_delta_z > cameraman_deadzone_max_z_delta) {
-        return anchor_z - cameraman_deadzone_max_z_delta;
-    }
-    if (previous_delta_z < cameraman_deadzone_min_z_delta) {
-        return anchor_z - cameraman_deadzone_min_z_delta;
-    }
-    return previous_z;
 }
 
 const AttachmentCameraProgress = struct {
@@ -1671,22 +1299,15 @@ pub const Runner = struct {
     }
 
     pub fn refreshCameraState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.refreshCachedCameraTarget(preview);
-        self.refreshCameraHotspots(preview);
-        self.refreshCameraRollState(preview);
-        self.updateCameraman(preview);
-        self.updateCutsceneCamera(preview);
+        gameplay_camera.refreshRunnerCameraState(self, preview);
     }
 
     pub fn cameramanProgressBlend(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
-        if (preview.total_rows == 0 or preview.runtime_active_row_start == 0) return 1.0;
-        const intro_transition_rows = @as(f32, @floatFromInt(preview.runtime_active_row_start));
-        const cached_target_z = self.cached_camera_target_world.z;
-        return std.math.clamp(((cached_target_z / intro_transition_rows) * 1.4) - 0.4, 0.0, 1.0);
+        return gameplay_camera.cameramanProgressBlend(self, preview);
     }
 
     fn cameramanMatrixBlendFactor(self: *const Runner) f32 {
-        return std.math.clamp(self.movement_rate_scalar * cameraman_matrix_blend_scale, 0.0, 1.0);
+        return gameplay_camera.cameramanMatrixBlendFactor(self);
     }
 
     pub fn annotationLabel(self: *const Runner) ?[]const u8 {
@@ -2882,28 +2503,12 @@ pub const Runner = struct {
     }
 
     fn refreshCachedCameraTarget(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0) {
-            self.cached_camera_target_world = .{ .x = 0.0, .y = 0.0, .z = 0.0 };
-            return;
-        }
-
-        const base_position = self.playerWorldPosition(preview);
-        const frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        const local_offset = rl.Vector3{
-            .x = self.jetpack.wobble_x,
-            .y = self.jetpack.wobble_y,
-            .z = self.jetpack.wobble_alpha,
-        };
-        self.cached_camera_target_world = .{
-            .x = base_position.x + (frame.right.x * local_offset.x) + (frame.up.x * local_offset.y) + (frame.forward.x * local_offset.z),
-            .y = base_position.y + (frame.right.y * local_offset.x) + (frame.up.y * local_offset.y) + (frame.forward.y * local_offset.z),
-            .z = base_position.z + (frame.right.z * local_offset.x) + (frame.up.z * local_offset.y) + (frame.forward.z * local_offset.z),
-        };
+        gameplay_camera.refreshRunnerCachedCameraTarget(self, preview);
     }
 
     // PORT(partial): Windows drives the attachment-side camera lift/FOV envelopes from the
     // player's overall attachment progress, `((player.z - source_cell_row_z) / sample_count_f32)`.
-    fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
+    pub fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
         if (self.movement_mode != .attachment or !self.attachment_follow.active) return null;
 
         const built = self.currentAttachmentBuilt(preview) orelse return null;
@@ -2924,367 +2529,80 @@ pub const Runner = struct {
         };
     }
 
-    fn attachmentCameraEnvelope(progress: f32) f32 {
-        return 0.5 - (std.math.cos(std.math.clamp(progress, 0.0, 1.0) * std.math.tau) * 0.5);
-    }
-
-    fn launchCameraEnvelope(progress: f32) f32 {
-        return 0.5 - (std.math.cos((std.math.clamp(progress, 0.0, 1.0) * 4.712389) + 1.5707964) * 0.5);
-    }
-
-    fn attachmentCameraLiftTemplateKindEnabled(template_kind: u8) bool {
-        return switch (template_kind) {
-            8, 9, 10, 14, 16, 36, 43, 45 => true,
-            else => false,
-        };
-    }
-
-    // PORT(partial): the native cameraman seeds one attachment/launch lift envelope and then
-    // smooths it before multiplying by cached camera target y.
     fn cameramanAttachmentLiftEnvelope(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
-        var envelope: f32 = 0.0;
-        if (self.currentAttachmentCameraProgress(preview)) |attachment_camera| {
-            if (attachmentCameraLiftTemplateKindEnabled(attachment_camera.template_kind)) {
-                envelope += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
-            }
-        }
-        if (self.launch.active and self.launch.camera_progress > 0.0) {
-            envelope += launchCameraEnvelope(self.launch.camera_progress) * cameraman_launch_lift_scale;
-        }
-        return envelope;
+        return gameplay_camera.cameramanAttachmentLiftEnvelope(self, preview);
     }
 
     fn cameramanDesiredFovDegrees(self: *const Runner, preview: *const track.LoadedLevelPreview) f32 {
-        const attachment_camera = self.currentAttachmentCameraProgress(preview) orelse return 110.0;
-        if (attachment_camera.template_kind != attachment_builders.template_kind_worm) return 110.0;
-        return 110.0 + (attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_worm_fov_bonus);
+        return gameplay_camera.cameramanDesiredFovDegrees(self, preview);
     }
 
     fn refreshCameraRollState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.attachment_camera_orientation_a = 0.0;
-        self.attachment_camera_orientation_b = 0.0;
-        self.attachment_follow.exit_carryover_a = 0.0;
-        self.attachment_follow.exit_carryover_b = 0.0;
-
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.attachment_camera_orientation_a = self.attachment_follow.camera_orientation_a;
-            self.attachment_camera_orientation_b = self.attachment_follow.camera_orientation_b;
-            const exit_carryover = self.attachmentExitCarryoverFromFollow(preview);
-            self.attachment_follow.exit_carryover_a = exit_carryover.carryover_a;
-            self.attachment_follow.exit_carryover_b = exit_carryover.carryover_b;
-            self.attachment_exit_carryover_a = exit_carryover.carryover_a;
-            self.attachment_exit_carryover_b = exit_carryover.carryover_b;
-            return;
-        }
-
-        if (self.launch.active) {
-            self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-            return;
-        }
-
-        if (self.phase == .fall) return;
-        self.previous_heading_roll_sample = 0.0;
-    }
-
-    fn bodyFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
-        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        frame.position = self.worldPosition(preview, 0.0);
-        return frame;
+        gameplay_camera.refreshRunnerCameraRollState(self, preview);
     }
 
     fn playerWorldPosition(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        if (self.phase == .fall) return self.worldPosition(preview, 0.0);
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            return self.worldPosition(preview, 0.0);
-        }
-        if (self.launch.active) return self.worldPosition(preview, 0.0);
-        return self.worldPosition(preview, attachment_entry_rider_height);
+        return gameplay_camera.playerWorldPosition(self, preview);
     }
 
     fn cameraHotspotSourceFrameA(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
-        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        frame.position = self.worldPosition(preview, attachment_entry_rider_height);
-        return frame;
+        return gameplay_camera.cameraHotspotSourceFrameA(self, preview);
     }
 
     fn cameraHotspotSourceFrameB(self: *const Runner, preview: *const track.LoadedLevelPreview) CameraTransform {
-        var frame = orthonormalFrameFromForwardUp(self.worldForward(preview), self.worldUp(preview));
-        frame.position = self.playerWorldPosition(preview);
-        return frame;
-    }
-
-    fn transformLocalPointByMatrix(matrix: rl.Matrix, local: rl.Vector3) rl.Vector3 {
-        return .{
-            .x = matrix.m12 + (matrix.m0 * local.x) + (matrix.m4 * local.y) + (matrix.m8 * local.z),
-            .y = matrix.m13 + (matrix.m1 * local.x) + (matrix.m5 * local.y) + (matrix.m9 * local.z),
-            .z = matrix.m14 + (matrix.m2 * local.x) + (matrix.m6 * local.y) + (matrix.m10 * local.z),
-        };
+        return gameplay_camera.cameraHotspotSourceFrameB(self, preview);
     }
 
     fn refreshCameraHotspots(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0) {
-            self.camera_hotspots_world = .{};
-            return;
-        }
-
-        const source_matrix_a = cameraMatrixFromTransform(self.cameraHotspotSourceFrameA(preview));
-        const source_matrix_b = cameraMatrixFromTransform(self.cameraHotspotSourceFrameB(preview));
-
-        const hotspotSourceMatrix = struct {
-            fn select(source_a: rl.Matrix, source_b: rl.Matrix, hotspot_index: u8) rl.Matrix {
-                return switch (hotspot_index) {
-                    0...10 => source_b,
-                    else => source_a,
-                };
-            }
-        }.select;
-
-        self.camera_hotspots_world.camera_skid_stop = transformLocalPointByMatrix(
-            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_skid_stop_index),
-            hotspot_camera_skid_stop_local,
-        );
-        self.camera_hotspots_world.camera_slug_death = transformLocalPointByMatrix(
-            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_slug_death_index),
-            hotspot_camera_slug_death_local,
-        );
-        self.camera_hotspots_world.camera_intro_talk = transformLocalPointByMatrix(
-            hotspotSourceMatrix(source_matrix_a, source_matrix_b, native_hotspot_camera_intro_talk_index),
-            hotspot_camera_intro_talk_local,
-        );
+        gameplay_camera.refreshRunnerCameraHotspots(self, preview);
     }
 
     fn cutsceneTargetPoint(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Vector3 {
-        return self.playerWorldPosition(preview);
+        return gameplay_camera.cutsceneTargetPoint(self, preview);
     }
 
     fn cutsceneLookAtMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, position: rl.Vector3) rl.Matrix {
-        return lookAtPoint(
-            cameraMatrixWithPosition(cameraman_identity_matrix, position),
-            self.cutsceneTargetPoint(preview),
-            self.cameraHotspotSourceFrameA(preview).up,
-        );
+        return gameplay_camera.cutsceneLookAtMatrix(self, preview, position);
     }
 
     fn introCutsceneHoldMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk);
+        return gameplay_camera.introCutsceneHoldMatrix(self, preview);
     }
 
     fn introCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
-        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
-        return linearInterpolateCameraMatrices(
-            self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk),
-            self.cameraman.live_matrix,
-            alpha,
-        );
+        return gameplay_camera.introCutsceneBlendMatrix(self, preview, progress);
     }
 
     fn completionCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
-        var position = lerpVector3(
-            self.camera_hotspots_world.camera_skid_stop,
-            self.camera_hotspots_world.camera_intro_talk,
-            progress,
-        );
-        position.x -= std.math.sin(progress * std.math.pi) * completion_cutscene_x_offset;
-        return position;
+        return gameplay_camera.completionCutsceneBlendPosition(self, progress);
     }
 
     fn completionCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
-        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
-        return linearInterpolateCameraMatrices(
-            self.cameraman.live_matrix,
-            self.cutsceneLookAtMatrix(preview, self.completionCutsceneBlendPosition(progress)),
-            alpha,
-        );
+        return gameplay_camera.completionCutsceneBlendMatrix(self, preview, progress);
     }
 
     fn completionCutsceneFixedMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneLookAtMatrix(preview, self.camera_hotspots_world.camera_intro_talk);
+        return gameplay_camera.completionCutsceneFixedMatrix(self, preview);
     }
 
     fn deathCutsceneBlendPosition(self: *const Runner, progress: f32) rl.Vector3 {
-        var position = self.camera_hotspots_world.camera_intro_talk;
-        position.x += std.math.sin(progress * std.math.pi) * death_cutscene_x_offset;
-        position.y = @max(position.y, death_cutscene_y_floor);
-        return position;
+        return gameplay_camera.deathCutsceneBlendPosition(self, progress);
     }
 
     fn deathCutsceneBlendMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview, progress: f32) rl.Matrix {
-        const alpha = std.math.sin(progress * (std.math.pi / 2.0));
-        return linearInterpolateCameraMatrices(
-            self.cameraman.live_matrix,
-            self.cutsceneLookAtMatrix(preview, self.deathCutsceneBlendPosition(progress)),
-            alpha,
-        );
+        return gameplay_camera.deathCutsceneBlendMatrix(self, preview, progress);
     }
 
     fn deathCutsceneFixedMatrix(self: *const Runner, preview: *const track.LoadedLevelPreview) rl.Matrix {
-        return self.cutsceneLookAtMatrix(preview, self.deathCutsceneBlendPosition(0.0));
+        return gameplay_camera.deathCutsceneFixedMatrix(self, preview);
     }
 
     fn updateCutsceneCamera(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0 or self.cutscene_camera.state == .none) return;
-
-        while (true) {
-            switch (self.cutscene_camera.state) {
-                .intro_arm => {
-                    self.cutscene_camera.snap_next = true;
-                    self.cutscene_camera.ticks = 0;
-                    self.cutscene_ticks = 0;
-                    self.cutscene_camera.state = .intro_hold;
-                    continue;
-                },
-                .intro_hold => {
-                    self.cutscene_camera.matrix = self.introCutsceneHoldMatrix(preview);
-                    self.cutscene_camera.ticks +|= 1;
-                    self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                    if (self.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
-                        self.cutscene_camera.state = .intro_blend;
-                        self.cutscene_camera.ticks = 0;
-                    }
-                    break;
-                },
-                .intro_blend => {
-                    const progress = progressForTicks(self.cutscene_camera.ticks, intro_cutscene_blend_ticks);
-                    self.cutscene_camera.matrix = self.introCutsceneBlendMatrix(preview, progress);
-                    self.cutscene_camera.ticks +|= 1;
-                    self.cutscene_ticks = @min(self.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                    if (self.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = .intro_release;
-                        self.cutscene_camera.ticks = 0;
-                    }
-                    break;
-                },
-                .intro_release => {
-                    if (self.cutscene_camera.ticks == 0) {
-                        // Native state 9 keeps the override lane alive for one terminal tick,
-                        // but publishes the live cameraman matrix through it before clearing.
-                        self.cutscene_camera.matrix = self.cameraman.live_matrix;
-                        self.cutscene_camera.ticks = 1;
-                    } else {
-                        self.clearCutscene();
-                    }
-                    break;
-                },
-                .completion_arm => {
-                    self.cutscene_camera.snap_next = true;
-                    self.cutscene_camera.ticks = 0;
-                    self.cutscene_camera.state = .completion_blend;
-                    continue;
-                },
-                .completion_blend => {
-                    const progress = progressForTicks(self.cutscene_camera.ticks, completion_cutscene_blend_ticks);
-                    self.cutscene_camera.matrix = self.completionCutsceneBlendMatrix(preview, progress);
-                    self.cutscene_camera.ticks +|= 1;
-                    if (self.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = .completion_hold;
-                    }
-                    break;
-                },
-                .completion_hold => {
-                    self.cutscene_camera.matrix = self.completionCutsceneFixedMatrix(preview);
-                    break;
-                },
-                .death_arm => {
-                    self.cutscene_camera.snap_next = true;
-                    self.cutscene_camera.ticks = 0;
-                    self.cutscene_camera.state = .death_blend;
-                    continue;
-                },
-                .death_blend => {
-                    const progress = progressForTicks(self.cutscene_camera.ticks, death_cutscene_blend_ticks);
-                    self.cutscene_camera.matrix = self.deathCutsceneBlendMatrix(preview, progress);
-                    self.cutscene_camera.ticks +|= 1;
-                    if (self.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
-                        self.cutscene_camera.state = .death_hold;
-                    }
-                    break;
-                },
-                .death_hold => {
-                    self.cutscene_camera.matrix = self.deathCutsceneFixedMatrix(preview);
-                    break;
-                },
-                else => {
-                    self.cutscene_camera.state = .none;
-                    break;
-                },
-            }
-            break;
-        }
+        gameplay_camera.updateRunnerCutsceneCamera(self, preview);
     }
 
     fn updateCameraman(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0) {
-            self.cameraman = .{};
-            return;
-        }
-
-        const desired_fov = self.cameramanDesiredFovDegrees(preview);
-        self.cameraman.fov_degrees += (desired_fov - self.cameraman.fov_degrees) * cameraman_fov_blend;
-
-        const anchor_x = self.cached_camera_target_world.x;
-        const anchor_y = self.cached_camera_target_world.y;
-        const anchor_z = self.cached_camera_target_world.z;
-        const progress_blend = self.cameramanProgressBlend(preview);
-        const vertical_lift = cameramanVerticalLiftFromCachedTarget(anchor_y, progress_blend);
-        const anchor_pitch_radians = cameramanPitchRadiansFromCachedTarget(anchor_y);
-        const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
-        const lateral_roll_radians = anchor_x * (-8.0 * 0.0174499992 * 0.170000002);
-        const lane_lean_roll_radians =
-            (0.5 - (std.math.cos(self.lane_lean_progress * std.math.pi) * 0.5)) *
-            self.lane_lean_amplitude *
-            std.math.tau;
-        self.cameraman.attachment_lift_envelope = self.cameramanAttachmentLiftEnvelope(preview);
-        self.cameraman.smoothed_attachment_lift_envelope +=
-            (self.cameraman.attachment_lift_envelope - self.cameraman.smoothed_attachment_lift_envelope) * cameraman_lift_blend;
-
-        var desired_transform = buildNormalCameramanTransform(
-            anchor_x * 0.40000001,
-            cameraman_base_translation_y,
-            cameraman_base_translation_z,
-            intro_pitch_radians,
-            anchor_pitch_radians,
-        );
-        desired_transform.position.x += anchor_x * 0.33333334;
-        desired_transform.position.y += vertical_lift + (self.cameraman.smoothed_attachment_lift_envelope * anchor_y);
-        desired_transform.position.z += anchor_z + 0.4;
-
-        desired_transform = rotateCameraTransformWorldZ(desired_transform, lane_lean_roll_radians + lateral_roll_radians);
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            desired_transform = rotateCameraTransformLocalZ(desired_transform, self.attachment_camera_orientation_a);
-            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.attachment_camera_orientation_b);
-        }
-        if (self.attachment_exit_pending) {
-            desired_transform = rotateCameraTransformWorldZ(desired_transform, self.post_follow_value_a);
-        }
-        desired_transform = rotateCameraTransformWorldZ(desired_transform, self.heading_roll);
-
-        const desired_matrix = cameraMatrixFromTransform(desired_transform);
-
-        if (self.cameraman.desired_matrix.m15 == 1.0 and
-            self.cameraman.desired_matrix.m0 == 1.0 and
-            self.cameraman.desired_matrix.m5 == 1.0 and
-            self.cameraman.desired_matrix.m10 == 1.0 and
-            self.cameraman.desired_matrix.m12 == 0.0 and
-            self.cameraman.desired_matrix.m13 == 0.0 and
-            self.cameraman.desired_matrix.m14 == 0.0 and
-            self.tick_count == 0)
-        {
-            self.cameraman.live_matrix = desired_matrix;
-            self.cameraman.desired_matrix = desired_matrix;
-            self.cameraman.previous_desired_matrix = desired_matrix;
-            return;
-        }
-
-        var previous_desired_matrix = self.cameraman.previous_desired_matrix;
-        previous_desired_matrix.m14 = clampedPreviousDesiredCameraZ(anchor_z, previous_desired_matrix.m14);
-
-        self.cameraman.live_matrix = linearInterpolateCameraMatrices(
-            previous_desired_matrix,
-            desired_matrix,
-            self.cameramanMatrixBlendFactor(),
-        );
-        self.cameraman.desired_matrix = desired_matrix;
-        self.cameraman.previous_desired_matrix = self.cameraman.desired_matrix;
+        gameplay_camera.updateRunnerCameraman(self, preview);
     }
 
     fn stepTemporaryStates(self: *Runner) void {
@@ -5630,7 +4948,7 @@ pub const Runner = struct {
             local_x;
     }
 
-    fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
+    pub fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
         _ = self.currentAttachmentBuilt(preview) orelse {
             return .{
                 .carryover_a = self.attachment_camera_orientation_b,

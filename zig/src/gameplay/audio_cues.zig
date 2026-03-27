@@ -486,12 +486,12 @@ test "native death cutscene voice cues key from states 11 and 12" {
         .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
         .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
     } };
-    current.cutscene_camera.state = 11;
+    current.cutscene_camera.state = .death_blend;
     try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).entry);
     try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
 
     previous = current;
-    current.cutscene_camera.state = 12;
+    current.cutscene_camera.state = .death_hold;
     try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).fallback);
 
     current.attachment_exit_gate_b = true;
