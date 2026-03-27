@@ -1091,8 +1091,12 @@ pub const LoadedLevelPreview = struct {
         return self.render_cache.surfaceSwapAt(self.total_rows, self.max_width, global_row, lane_index);
     }
 
-    pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+    pub fn renderCacheHeadAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
         return self.render_cache.flagB40At(self.total_rows, self.max_width, global_row, lane_index);
+    }
+
+    pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+        return self.renderCacheHeadAt(global_row, lane_index);
     }
 
     pub fn runtimeFlagB01At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {

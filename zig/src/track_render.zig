@@ -44,14 +44,14 @@ pub const Scene = struct {
 
     pub fn draw(self: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
         drawBackPlane(self, preview);
-        drawRuntimeCells(self, preview);
+        drawRenderCacheCells(self, preview);
         drawAttachmentGeometry(self, preview, selected_segment_index);
         preview.drawPlacedModelsOnly();
         drawSegmentSelectionOutline(preview, selected_segment_index);
     }
 
     pub fn drawGameplay(self: *const Scene, preview: *const track.LoadedLevelPreview, selected_segment_index: usize) void {
-        drawRuntimeCells(self, preview);
+        drawRenderCacheCells(self, preview);
         drawAttachmentGeometry(self, preview, selected_segment_index);
         preview.drawPlacedModelsOnly();
     }
@@ -148,7 +148,7 @@ fn drawBackPlane(scene: *const Scene, preview: *const track.LoadedLevelPreview) 
     );
 }
 
-fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
+fn drawRenderCacheCells(scene: *const Scene, preview: *const track.LoadedLevelPreview) void {
     if (preview.max_width == 0) return;
     const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
 
@@ -162,7 +162,7 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
             const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
-            if (!preview.runtimeFlagB40At(global_row, lane_index)) continue;
+            if (!preview.renderCacheHeadAt(global_row, lane_index)) continue;
             const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
@@ -506,7 +506,7 @@ fn mergedRenderCacheRunLength(
     var run_length: usize = 1;
     var scan_lane = lane_index + 1;
     while (scan_lane <= max_lane_index) : (scan_lane += 1) {
-        if (preview.runtimeFlagB40At(global_row, scan_lane)) break;
+        if (preview.renderCacheHeadAt(global_row, scan_lane)) break;
         const next_family = renderCacheFamilyForRuntimeCell(preview, global_row, scan_lane) orelse break;
         if (next_family != family) break;
         run_length += 1;
