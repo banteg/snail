@@ -273,8 +273,8 @@ pub const LoadedLevelPreview = struct {
     runtime_row_ring_speeds: []f32,
     runtime_ring_effect_kinds: []u8,
     runtime_warning_zone_grid: []bool,
-    runtime_warn_surface_grid: []bool,
-    runtime_surface_swap_grid: []bool,
+    render_cache_warn_surface_grid: []bool,
+    render_cache_surface_swap_grid: []bool,
     runtime_flag_b01_grid: []bool,
     runtime_flag_b40_grid: []bool,
     runtime_flag_b80_grid: []bool,
@@ -445,25 +445,25 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer allocator.free(runtime_warning_zone_grid);
-        const runtime_warn_surface_grid = try buildRuntimeWarnSurfaceGrid(
+        const render_cache_warn_surface_grid = try buildRenderCacheWarnSurfaceGrid(
             allocator,
             runtime_tiles,
             total_rows,
             max_width,
         );
-        errdefer allocator.free(runtime_warn_surface_grid);
-        const runtime_surface_swap_grid = try buildRuntimeSurfaceSwapGrid(
+        errdefer allocator.free(render_cache_warn_surface_grid);
+        const render_cache_surface_swap_grid = try buildRenderCacheSurfaceSwapGrid(
             allocator,
             runtime_tiles,
-            runtime_warn_surface_grid,
+            render_cache_warn_surface_grid,
             total_rows,
             max_width,
         );
-        errdefer allocator.free(runtime_surface_swap_grid);
+        errdefer allocator.free(render_cache_surface_swap_grid);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
-            runtime_warn_surface_grid,
+            render_cache_warn_surface_grid,
             total_rows,
             max_width,
         );
@@ -536,8 +536,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
-            .runtime_warn_surface_grid = runtime_warn_surface_grid,
-            .runtime_surface_swap_grid = runtime_surface_swap_grid,
+            .render_cache_warn_surface_grid = render_cache_warn_surface_grid,
+            .render_cache_surface_swap_grid = render_cache_surface_swap_grid,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -672,25 +672,25 @@ pub const LoadedLevelPreview = struct {
             max_width,
         );
         errdefer allocator.free(runtime_warning_zone_grid);
-        const runtime_warn_surface_grid = try buildRuntimeWarnSurfaceGrid(
+        const render_cache_warn_surface_grid = try buildRenderCacheWarnSurfaceGrid(
             allocator,
             runtime_tiles,
             total_rows,
             max_width,
         );
-        errdefer allocator.free(runtime_warn_surface_grid);
-        const runtime_surface_swap_grid = try buildRuntimeSurfaceSwapGrid(
+        errdefer allocator.free(render_cache_warn_surface_grid);
+        const render_cache_surface_swap_grid = try buildRenderCacheSurfaceSwapGrid(
             allocator,
             runtime_tiles,
-            runtime_warn_surface_grid,
+            render_cache_warn_surface_grid,
             total_rows,
             max_width,
         );
-        errdefer allocator.free(runtime_surface_swap_grid);
+        errdefer allocator.free(render_cache_surface_swap_grid);
         const runtime_flag_b40_grid = try buildRuntimeFlagB40Grid(
             allocator,
             runtime_tiles,
-            runtime_warn_surface_grid,
+            render_cache_warn_surface_grid,
             total_rows,
             max_width,
         );
@@ -763,8 +763,8 @@ pub const LoadedLevelPreview = struct {
             .runtime_row_ring_speeds = runtime_row_ring_speeds,
             .runtime_ring_effect_kinds = runtime_ring_effect_kinds,
             .runtime_warning_zone_grid = runtime_warning_zone_grid,
-            .runtime_warn_surface_grid = runtime_warn_surface_grid,
-            .runtime_surface_swap_grid = runtime_surface_swap_grid,
+            .render_cache_warn_surface_grid = render_cache_warn_surface_grid,
+            .render_cache_surface_swap_grid = render_cache_surface_swap_grid,
             .runtime_flag_b01_grid = runtime_flag_b01_grid,
             .runtime_flag_b40_grid = runtime_flag_b40_grid,
             .runtime_flag_b80_grid = runtime_flag_b80_grid,
@@ -788,8 +788,8 @@ pub const LoadedLevelPreview = struct {
         self.allocator.free(self.runtime_row_flags);
         self.allocator.free(self.runtime_row_ring_speeds);
         self.allocator.free(self.runtime_edge_masks);
-        self.allocator.free(self.runtime_surface_swap_grid);
-        self.allocator.free(self.runtime_warn_surface_grid);
+        self.allocator.free(self.render_cache_surface_swap_grid);
+        self.allocator.free(self.render_cache_warn_surface_grid);
         self.allocator.free(self.runtime_flag_b01_grid);
         self.allocator.free(self.runtime_flag_b80_grid);
         self.allocator.free(self.runtime_flag_b40_grid);
@@ -1046,9 +1046,9 @@ pub const LoadedLevelPreview = struct {
         return self.runtime_ring_effect_kinds[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
-    pub fn runtimeWarnSurfaceAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+    pub fn renderCacheWarnSurfaceAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
-        return self.runtime_warn_surface_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache_warn_surface_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeWarningZoneAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -1056,9 +1056,9 @@ pub const LoadedLevelPreview = struct {
         return self.runtime_warning_zone_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
-    pub fn runtimeSurfaceSwapAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
+    pub fn renderCacheSurfaceSwapAt(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
         if (global_row >= self.total_rows or self.max_width == 0 or lane_index >= self.max_width) return false;
-        return self.runtime_surface_swap_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
+        return self.render_cache_surface_swap_grid[runtimeTileIndex(self.max_width, global_row, lane_index)];
     }
 
     pub fn runtimeFlagB40At(self: *const LoadedLevelPreview, global_row: usize, lane_index: usize) bool {
@@ -2179,11 +2179,11 @@ fn buildRuntimeWarningZoneGrid(
     return flag_grid;
 }
 
-fn runtimeWarnSurfaceEligibleTile(tile_type: u8) bool {
+fn renderCacheWarnSurfaceEligibleTile(tile_type: u8) bool {
     return isFloorCacheRuntimeTileFamily(tile_type) or isSlideRuntimeTileFamily(tile_type);
 }
 
-fn buildRuntimeWarnSurfaceGrid(
+fn buildRenderCacheWarnSurfaceGrid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
     total_rows: usize,
@@ -2206,7 +2206,7 @@ fn buildRuntimeWarnSurfaceGrid(
             const current_tile = runtime_tiles[current_index];
             const below_tile = runtime_tiles[below_index];
             flag_grid[current_index] =
-                runtimeWarnSurfaceEligibleTile(current_tile) and
+                renderCacheWarnSurfaceEligibleTile(current_tile) and
                 isOpenNeighborRuntimeTileFamily(below_tile);
         }
     }
@@ -2244,7 +2244,7 @@ fn maybeMarkRuntimeSurfaceSwap(
     }
 }
 
-fn buildRuntimeSurfaceSwapGrid(
+fn buildRenderCacheSurfaceSwapGrid(
     allocator: std.mem.Allocator,
     runtime_tiles: []const u8,
     warn_surface_grid: []const bool,
@@ -3054,12 +3054,12 @@ test "runtime flag b40 preserves non-condensed populated tiles" {
     try std.testing.expect(!flags[3]);
 }
 
-test "runtime warn surface grid promotes open-below floor and slide cells" {
+test "render cache warn surface grid promotes open-below floor and slide cells" {
     const runtime_tiles = [_]u8{
         0x0f, 0x01, 0x02, 0x00,
         0x00, 0x0e, 0x0f, 0x00,
     };
-    const flags = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 4);
+    const flags = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 4);
     defer std.testing.allocator.free(flags);
 
     try std.testing.expect(flags[0]);
@@ -3107,14 +3107,14 @@ test "runtime warning zone grid clamps the left edge and terminal row" {
     try std.testing.expect(!flags[runtimeTileIndex(4, 2, 0)]);
 }
 
-test "runtime surface swap grid follows recovered center seam rules" {
+test "render cache surface swap grid follows recovered center seam rules" {
     const runtime_tiles = [_]u8{
         0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f, 0x0f, 0x0f,
         0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x01, 0x0f, 0x0f,
     };
-    const warn_surface = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
+    const warn_surface = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
     defer std.testing.allocator.free(warn_surface);
-    const swaps = try buildRuntimeSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
+    const swaps = try buildRenderCacheSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
     defer std.testing.allocator.free(swaps);
 
     try std.testing.expect(swaps[runtimeTileIndex(8, 0, 3)]);
@@ -3123,14 +3123,14 @@ test "runtime surface swap grid follows recovered center seam rules" {
     try std.testing.expect(!swaps[runtimeTileIndex(8, 1, 4)]);
 }
 
-test "runtime surface swap grid preserves warn-promoted center seam cells" {
+test "render cache surface swap grid preserves warn-promoted center seam cells" {
     const runtime_tiles = [_]u8{
         0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f, 0x0f,
         0x0f, 0x0f, 0x0f, 0x00, 0x0f, 0x01, 0x0f, 0x0f,
     };
-    const warn_surface = try buildRuntimeWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
+    const warn_surface = try buildRenderCacheWarnSurfaceGrid(std.testing.allocator, &runtime_tiles, 2, 8);
     defer std.testing.allocator.free(warn_surface);
-    const swaps = try buildRuntimeSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
+    const swaps = try buildRenderCacheSurfaceSwapGrid(std.testing.allocator, &runtime_tiles, warn_surface, 2, 8);
     defer std.testing.allocator.free(swaps);
 
     try std.testing.expect(warn_surface[runtimeTileIndex(8, 0, 3)]);

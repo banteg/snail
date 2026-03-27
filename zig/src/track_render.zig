@@ -91,7 +91,7 @@ const Textures = struct {
     }
 };
 
-const SurfaceFamily = enum {
+const RenderCacheFamily = enum {
     floor,
     slide,
     warn,
@@ -161,9 +161,9 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
         var lane_index = lane_bounds.min;
         while (lane_index <= max_lane_index) : (lane_index += 1) {
             const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
-            const family = surfaceFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
+            const family = renderCacheFamilyForRuntimeCell(preview, global_row, lane_index) orelse continue;
             if (!preview.runtimeFlagB40At(global_row, lane_index)) continue;
-            const run_length = mergedSurfaceRunLength(preview, global_row, lane_index, max_lane_index, family);
+            const run_length = mergedRenderCacheRunLength(preview, global_row, lane_index, max_lane_index, family);
 
             const left = @as(f32, @floatFromInt(lane_index)) - width_offset;
             const right = left + @as(f32, @floatFromInt(run_length));
@@ -173,12 +173,12 @@ fn drawRuntimeCells(scene: *const Scene, preview: *const track.LoadedLevelPrevie
             const back_height = surfaceHeightAtTileFraction(tile_type, front, 0.999);
 
             drawTexturedQuad(
-                textureForFamily(scene, family),
+                textureForRenderCacheFamily(scene, family),
                 .{ .x = left, .y = front_height, .z = front },
                 .{ .x = left, .y = back_height, .z = back },
                 .{ .x = right, .y = back_height, .z = back },
                 .{ .x = right, .y = front_height, .z = front },
-                topSurfaceUv(family, left, right, front, back),
+                renderCacheSurfaceUv(family, left, right, front, back),
                 .white,
             );
 
@@ -364,7 +364,7 @@ fn drawOrdinaryAttachment(scene: *const Scene, built: *const attachment_builders
                 attachmentVertex(back_pose, left_offset, base_row),
                 attachmentVertex(back_pose, right_offset, base_row),
                 attachmentVertex(front_pose, right_offset, base_row),
-                topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
+                renderCacheSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
     }
@@ -396,7 +396,7 @@ fn drawNonlinear42Attachment(scene: *const Scene, built: *const attachment_build
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, left_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, back_progress, right_offset),
                 nonlinear42AttachmentVertex(template, built.row.global_row, front_progress, right_offset),
-                topSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
+                renderCacheSurfaceUv(.floor, left_offset, right_offset, front_world_z, back_world_z),
             );
         }
     }
@@ -435,7 +435,7 @@ fn nonlinear42AttachmentVertex(
     };
 }
 
-fn textureForFamily(scene: *const Scene, family: SurfaceFamily) rl.Texture2D {
+fn textureForRenderCacheFamily(scene: *const Scene, family: RenderCacheFamily) rl.Texture2D {
     return switch (family) {
         .floor => scene.textures.track.texture,
         .slide => scene.textures.slide.texture,
@@ -444,7 +444,7 @@ fn textureForFamily(scene: *const Scene, family: SurfaceFamily) rl.Texture2D {
     };
 }
 
-fn surfaceFamilyForTile(tile_type: u8) ?SurfaceFamily {
+fn renderCacheFamilyForTile(tile_type: u8) ?RenderCacheFamily {
     if (track.isFloorCacheRuntimeTileFamily(tile_type)) return .floor;
     if (track.isSlideRuntimeTileFamily(tile_type)) return .slide;
     if (track.isRampRuntimeTileFamily(tile_type)) return .ramp;
@@ -454,16 +454,16 @@ fn surfaceFamilyForTile(tile_type: u8) ?SurfaceFamily {
     };
 }
 
-fn surfaceFamilyForRuntimeCell(
+fn renderCacheFamilyForRuntimeCell(
     preview: *const track.LoadedLevelPreview,
     global_row: usize,
     lane_index: usize,
-) ?SurfaceFamily {
+) ?RenderCacheFamily {
     const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse return null;
-    if (preview.runtimeWarnSurfaceAt(global_row, lane_index)) return .warn;
+    if (preview.renderCacheWarnSurfaceAt(global_row, lane_index)) return .warn;
 
-    var family = surfaceFamilyForTile(tile_type) orelse return null;
-    if (preview.runtimeSurfaceSwapAt(global_row, lane_index)) {
+    var family = renderCacheFamilyForTile(tile_type) orelse return null;
+    if (preview.renderCacheSurfaceSwapAt(global_row, lane_index)) {
         family = switch (family) {
             .floor => .slide,
             .slide => .floor,
@@ -494,12 +494,12 @@ fn renderLaneBounds(cells: []const u8) ?LaneBounds {
     return .{ .min = min_index.?, .max = max_index };
 }
 
-fn mergedSurfaceRunLength(
+fn mergedRenderCacheRunLength(
     preview: *const track.LoadedLevelPreview,
     global_row: usize,
     lane_index: usize,
     max_lane_index: usize,
-    family: SurfaceFamily,
+    family: RenderCacheFamily,
 ) usize {
     if (family == .ramp or family == .warn) return 1;
 
@@ -507,7 +507,7 @@ fn mergedSurfaceRunLength(
     var scan_lane = lane_index + 1;
     while (scan_lane <= max_lane_index) : (scan_lane += 1) {
         if (preview.runtimeFlagB40At(global_row, scan_lane)) break;
-        const next_family = surfaceFamilyForRuntimeCell(preview, global_row, scan_lane) orelse break;
+        const next_family = renderCacheFamilyForRuntimeCell(preview, global_row, scan_lane) orelse break;
         if (next_family != family) break;
         run_length += 1;
     }
@@ -537,7 +537,7 @@ test "track skirt tint follows the recovered shared skirt alpha" {
     try std.testing.expectEqual(@as(u8, 102), track_skirt_tint.a);
 }
 
-fn topSurfaceUv(family: SurfaceFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
+fn renderCacheSurfaceUv(family: RenderCacheFamily, left: f32, right: f32, front: f32, back: f32) QuadUv {
     if (family == .ramp) {
         return .{ .left = 0.0, .right = 1.0, .top = 0.0, .bottom = 1.0 };
     }
@@ -600,14 +600,14 @@ test "resolve track set index rejects unresolved windows values" {
 }
 
 test "surface family maps recovered runtime tile families" {
-    try std.testing.expectEqual(@as(?SurfaceFamily, .floor), surfaceFamilyForTile(0x0f));
-    try std.testing.expectEqual(@as(?SurfaceFamily, .slide), surfaceFamilyForTile(0x15));
-    try std.testing.expectEqual(@as(?SurfaceFamily, .ramp), surfaceFamilyForTile(0x03));
-    try std.testing.expectEqual(@as(?SurfaceFamily, null), surfaceFamilyForTile(0x1d));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .floor), renderCacheFamilyForTile(0x0f));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .slide), renderCacheFamilyForTile(0x15));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, .ramp), renderCacheFamilyForTile(0x03));
+    try std.testing.expectEqual(@as(?RenderCacheFamily, null), renderCacheFamilyForTile(0x1d));
 }
 
 test "top surface uv follows recovered world mapping" {
-    const uv = topSurfaceUv(.floor, -4.0, -3.0, 0.0, 1.0);
+    const uv = renderCacheSurfaceUv(.floor, -4.0, -3.0, 0.0, 1.0);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.left, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.125), uv.right, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
@@ -615,13 +615,13 @@ test "top surface uv follows recovered world mapping" {
 }
 
 test "top surface uv resets on 24-row cache chunk boundaries" {
-    const uv = topSurfaceUv(.slide, -4.0, -3.0, 24.0, 25.0);
+    const uv = renderCacheSurfaceUv(.slide, -4.0, -3.0, 24.0, 25.0);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.top, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.875), uv.bottom, 0.0001);
 }
 
 test "ramp surface uv keeps per-cell mapping" {
-    const uv = topSurfaceUv(.ramp, -4.0, -3.0, 0.0, 1.0);
+    const uv = renderCacheSurfaceUv(.ramp, -4.0, -3.0, 0.0, 1.0);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.left, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), uv.right, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), uv.top, 0.0001);
