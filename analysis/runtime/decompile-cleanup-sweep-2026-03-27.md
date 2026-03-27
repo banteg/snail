@@ -23,19 +23,21 @@ Observed payoff:
 - `update_tooltip` now cleanly reads against `FrontendWidgetTooltip*` with `state`, `mode_flags`, `delay_progress`, `delay_step`, `owner_widget`, and `tooltip_widget`
 - the tracked BN/IDA exports for the five widget helpers are refreshed and no longer depend on ephemeral GUI typing
 
-### 2. `parse_next_float32` prototype drift
+### 2. Parser helper prototype drift
 
-Most interesting helper/prototype target.
+Closed in the follow-up parser-helper prototype pass.
 
 Evidence:
-- tracked BN currently reads [`parse_next_float32`](../decompile/binja/functions/00431f20-parse_next_float32.c) as `long double(char* arg1)`.
-- previewed BN prototype correction to `float __cdecl parse_next_float32(char** cursor)` verifies cleanly and improves the helper body naming.
-- live BN verification snaps back to the old signature, so this is not yet a safe committed mutation.
-- the drift likely affects callers such as [`initialize_intro_screen`](../decompile/binja/functions/004191e0-initialize_intro_screen.c), where `parse_next_float32(...)` is still followed by x87 spill noise.
+- tracked BN had drifted on the cursor-parsing helper family, especially [`parse_next_float32`](../decompile/binja/functions/00431f20-parse_next_float32.c).
+- the stable live-replay fix is:
+  - `int32_t __cdecl parse_next_int32(char** cursor)`
+  - `char** __cdecl parse_next_space_delimited_token(char** cursor, char* out)`
+  - `double __cdecl parse_next_float32(char** cursor)`
+- the `double` return is a Binary Ninja/x87 stability compromise, not a stronger semantic claim than the underlying native helper warrants.
 
 Current read:
-- this is a real cleanup opportunity
-- it needs a tool-aware fix, not just another repo-side header edit
+- the cursor side of the drift is now closed and persisted through narrow BN plus IDA sync lanes
+- parser-driven callers such as [`initialize_intro_screen`](../decompile/binja/functions/004191e0-initialize_intro_screen.c) and [`load_x_mesh`](../decompile/binja/functions/00405640-load_x_mesh.c) are still x87-heavy, but no longer rely on ephemeral GUI-only helper typing
 
 ### 3. Track fringe / render-cache owner typing
 

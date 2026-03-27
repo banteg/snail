@@ -1003,4 +1003,10 @@ int32_t __thiscall initialize_sbend_path_template_pair(
     char* texture_b
 );
 
+int32_t __cdecl parse_next_int32(char** cursor);
+
+char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);
+
+double __cdecl parse_next_float32(char** cursor);
+
 #endif

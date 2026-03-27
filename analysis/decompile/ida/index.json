@@ -3,42 +3,63 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 5,
-  "function_count": 5,
+  "selected_count": 8,
+  "function_count": 8,
   "exported": [
     {
-      "selector": "initialize_frontend_widget",
-      "address": "0x401d30",
-      "name": "initialize_frontend_widget",
-      "artifact": "analysis/decompile/ida/functions/00401d30-initialize_frontend_widget.c",
+      "selector": "load_x_mesh",
+      "address": "0x405640",
+      "name": "load_x_mesh",
+      "artifact": "analysis/decompile/ida/functions/00405640-load_x_mesh.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "layout_frontend_widget",
-      "address": "0x4024a0",
-      "name": "layout_frontend_widget",
-      "artifact": "analysis/decompile/ida/functions/004024a0-layout_frontend_widget.c",
+      "selector": "load_landscape_script_by_name",
+      "address": "0x4182f0",
+      "name": "load_landscape_script_by_name",
+      "artifact": "analysis/decompile/ida/functions/004182f0-load_landscape_script_by_name.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_frontend_widget_interaction",
-      "address": "0x402820",
-      "name": "update_frontend_widget_interaction",
-      "artifact": "analysis/decompile/ida/functions/00402820-update_frontend_widget_interaction.c",
+      "selector": "initialize_intro_screen",
+      "address": "0x4191e0",
+      "name": "initialize_intro_screen",
+      "artifact": "analysis/decompile/ida/functions/004191e0-initialize_intro_screen.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "reset_tooltip",
-      "address": "0x403be0",
-      "name": "reset_tooltip",
-      "artifact": "analysis/decompile/ida/functions/00403be0-reset_tooltip.c",
+      "selector": "parse_next_space_delimited_token",
+      "address": "0x431e80",
+      "name": "parse_next_space_delimited_token",
+      "artifact": "analysis/decompile/ida/functions/00431e80-parse_next_space_delimited_token.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "update_tooltip",
-      "address": "0x403c20",
-      "name": "update_tooltip",
-      "artifact": "analysis/decompile/ida/functions/00403c20-update_tooltip.c",
+      "selector": "parse_next_int32",
+      "address": "0x431ec0",
+      "name": "parse_next_int32",
+      "artifact": "analysis/decompile/ida/functions/00431ec0-parse_next_int32.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "parse_next_float32",
+      "address": "0x431f20",
+      "name": "parse_next_float32",
+      "artifact": "analysis/decompile/ida/functions/00431f20-parse_next_float32.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "load_level_definition_file",
+      "address": "0x447480",
+      "name": "load_level_definition_file",
+      "artifact": "analysis/decompile/ida/functions/00447480-load_level_definition_file.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "load_segment_definitions",
+      "address": "0x448160",
+      "name": "load_segment_definitions",
+      "artifact": "analysis/decompile/ida/functions/00448160-load_segment_definitions.c",
       "removed_stale_artifacts": []
     }
   ],

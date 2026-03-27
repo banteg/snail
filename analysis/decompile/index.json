@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 5,
+  "function_count": 8,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 5,
-  "ida_exported": 5,
+  "bn_exported": 8,
+  "ida_exported": 8,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,24 +15,36 @@
   "strict": false,
   "selected_functions": [
     {
-      "name": "initialize_frontend_widget",
-      "address": "0x401d30"
+      "name": "load_x_mesh",
+      "address": "0x405640"
     },
     {
-      "name": "layout_frontend_widget",
-      "address": "0x4024a0"
+      "name": "load_landscape_script_by_name",
+      "address": "0x4182f0"
     },
     {
-      "name": "update_frontend_widget_interaction",
-      "address": "0x402820"
+      "name": "initialize_intro_screen",
+      "address": "0x4191e0"
     },
     {
-      "name": "reset_tooltip",
-      "address": "0x403be0"
+      "name": "parse_next_space_delimited_token",
+      "address": "0x431e80"
     },
     {
-      "name": "update_tooltip",
-      "address": "0x403c20"
+      "name": "parse_next_int32",
+      "address": "0x431ec0"
+    },
+    {
+      "name": "parse_next_float32",
+      "address": "0x431f20"
+    },
+    {
+      "name": "load_level_definition_file",
+      "address": "0x447480"
+    },
+    {
+      "name": "load_segment_definitions",
+      "address": "0x448160"
     }
   ],
   "health_check_count": 4,

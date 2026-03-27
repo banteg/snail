@@ -3,7 +3,7 @@
 /* selector: parse_next_int32 */
 
 // Parses the next signed decimal integer from the caller-owned text cursor, skipping leading spaces and advancing the cursor past the consumed digits.
-int __cdecl sub_431EC0(char **a1)
+int32_t __cdecl parse_next_int32(char **cursor)
 {
   char *v1; // eax
   int v2; // edi
@@ -11,35 +11,35 @@ int __cdecl sub_431EC0(char **a1)
   char *v4; // esi
   char v5; // dl
 
-  if ( **a1 == 32 )
+  if ( **cursor == 32 )
   {
     do
     {
-      v1 = *a1 + 1;
-      *a1 = v1;
+      v1 = *cursor + 1;
+      *cursor = v1;
     }
     while ( *v1 == 32 );
   }
-  if ( **a1 == 45 )
+  if ( **cursor == 45 )
   {
     v2 = -1;
-    ++*a1;
+    ++*cursor;
   }
   else
   {
     v2 = 1;
   }
   v3 = 0;
-  if ( **a1 >= 48 )
+  if ( **cursor >= 48 )
   {
     do
     {
-      v4 = *a1;
-      v5 = **a1;
+      v4 = *cursor;
+      v5 = **cursor;
       if ( v5 > 57 )
         break;
       v3 = v5 + 10 * v3 - 48;
-      *a1 = v4 + 1;
+      *cursor = v4 + 1;
     }
     while ( v4[1] >= 48 );
   }

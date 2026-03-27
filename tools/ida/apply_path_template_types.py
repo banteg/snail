@@ -119,6 +119,18 @@ TRUSTED_DECLARATIONS = [
         "Color4f* __thiscall set_color_rgba(Color4f* color, float r, float g, float b, float a);",
     ),
     (
+        "parse_next_int32",
+        "int32_t __cdecl parse_next_int32(char** cursor);",
+    ),
+    (
+        "parse_next_space_delimited_token",
+        "char** __cdecl parse_next_space_delimited_token(char** cursor, char* out);",
+    ),
+    (
+        "parse_next_float32",
+        "double __cdecl parse_next_float32(char** cursor);",
+    ),
+    (
         "set_color_alpha",
         "float __thiscall set_color_alpha(Color4f* color, float alpha);",
     ),
