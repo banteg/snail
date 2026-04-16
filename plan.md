@@ -84,8 +84,8 @@ MVP slice unlocks plan §1 lanes 1 & 2 (0x43bcb3 slide/floor-cache + 0x43bf6f sw
 ## Phase 3 — Ambient hazard pools rename + port (E, medium-large)
 
 ### E.1 Rename + reassign
-- [ ] Docs: in `port-status.md`, `subsystem-status.md`, `remaining-work-checklist.md`, rename "Wall2 ambient pool" references to "SubLazer projectile pool" and clarify that Wall2 AI is the *emitter*, the slots are projectiles.
-- [ ] Docs: fix Pool-A label from "Wall2 pool" to "Salt hazard pool" (matches the 40-slot 0x98-stride `cRSalt` manager at `0x3578c0`).
+- [x] Docs: renamed "Wall2 ambient pool" references to "SubLazer projectile pool" across port-status, subsystem-status, and remaining-work-checklist. Clarified that Wall2 AI is the *emitter*, the slots are projectiles fired via `shoot_subgoldy`.
+- [x] Docs: labeled the `+0.15` damage pool as the Salt hazard pool (`cRSalt` @ 0x3578c0, 40 slots, stride 0x98).
 
 ### E.2 Salt hazard pool port
 - [ ] Replace the runner-local 8-row live strip's `.salt` branch with a dedicated `SaltHazardPool` struct (40 slots, each with `active`, `armed`, `position`, `velocity`, `transform`, `owner_attachment`).
@@ -157,11 +157,17 @@ Closed in rev 1:
 - All 7 collision sfx verified already wired.
 - All doc corrections.
 
-Reshape in rev 2:
-- Prior deferred items regrouped into 6 infrastructure phases with explicit dependency order.
-- Several "infrastructure" items revealed to be already-present or trivial:
-  - voice_manager already modeled; just needs a thin wrapper (small, Phase 0.A).
-  - jetpack 0.94 boundary is already wired via sound/mesh cues; TODO closes as no-op (trivial, Phase 0.F).
-  - snail-jetpack weapon visual already approximated via a parallel scaffold.
-- Major rename: "Wall2 ambient hazard pool" in docs is actually the SubLazer projectile pool (cRSubLazerManager); Pool-A is the Salt hazard pool (cRSalt). Docs need corrections in Phase 3.E.1.
-- Minimum viable attachment-exit retirement (lanes 1-2 only) requires just 5 floats + 1 bool on `Runner`, not the full physics port.
+Closed in rev 2:
+- Voice-manager (Phase 0.A): already-wired verification — `damage_entry` / `damage_escalation` / `package_pickup` / `weapon_upgrade` cues cover all 4 blocked sites via existing `tryPlayNativeGameplayVoiceSet` plumbing.
+- Jetpack 0.94 TODO (Phase 0.F): closed as verified no-op.
+- `change_snail_skin` (Phase 1.B): `SnailSkinTransition` struct + `tick()` + wiring at hit-flash, state-2 drain, invincible active, invincible expiry.
+- Ambient hazard pool rename (Phase 3.E.1): SubLazer / Salt rename landed across all three status docs plus the remaining-work-checklist entry.
+- `activeTrackAttachmentExitRetires` docstring: now cites all three native lanes (0x43bcb3 / 0x43bf6f / 0x43c3ea) and the predicates each requires; acknowledges the proxy stays until the motion model lands.
+
+Deferred to next session:
+- Phase 2 (player motion MVP): `position_y` / `velocity_y` fields + gravity/integration + grounded detection. Needed to tighten attachment-exit retirement from the broad proxy to the three native lanes. Scope grew beyond a quick landing because the runner's active-phase state has no continuous vertical coordinate today.
+- Phase 3.E.2–E.3 (actual Salt/SubLazer pool ports): medium-large work, separate from the rename.
+- Phase 4 (`dispatch_cutscene_animation`): medium work, needs the per-clip keyframe table loader.
+- Phase 5 (hit-flash side effects beyond snail-skin): depends on `dispatch_cutscene_animation` for the entry animation (id 6 → damaged).
+- Phase 6 (remaining attachment-exit lanes + slug velocity writes): depends on Phase 2.
+- Phase 7 polish items.
