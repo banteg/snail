@@ -1,96 +1,189 @@
-# Re-audit Plan — Concrete Divergences (2026-04-16)
+# Re-audit Plan — Infrastructure First (2026-04-16, rev 2)
 
-Working checklist from the five-agent BN audit. Each item cites BN addresses and Zig file:line. Work top-down; re-audit when the ranked list is clean.
+Infrastructure audit findings from the five parallel BN scans. The prior plan's "deferred" items all blocked on five infrastructure pieces. This revision orders the pieces by dependency and scopes the MVP slice that unlocks the most plan §1–§3 items.
 
-See also: `docs/rewrite/port-status.md`, `docs/rewrite/subsystem-status.md`, `docs/rewrite/remaining-work-checklist.md` — several of these need doc corrections at the end of this pass.
+See also: `docs/rewrite/port-status.md`, `docs/rewrite/subsystem-status.md`, `docs/rewrite/remaining-work-checklist.md`.
 
-## Session summary (2026-04-16)
+## Infrastructure audit summary
 
-Closed in this session:
-- Voice-4 milestone resolved as dead code (item 5).
-- Jetpack disarm-on-overflow and route-end-auto-shutoff both corrected to native "skip warning math this tick" semantics.
+| # | Piece | Current Zig state | Work |
+|---|---|---|---|
+| A | `play_voice_manager` by-index dispatch | Already modelled as `NativeSet` + `NativeMode` in `gameplay/voice.zig`; just need a thin index→set wrapper with `interrupt_current` + optional explicit sample id | small |
+| B | `change_snail_skin` (texture-slot swap) | Not ported. 6-field struct, 5 callers, 3 slot ids (0=default, 1=damage-red, 2=invincible) | small |
+| C | `dispatch_cutscene_animation` (low-level clip selector) | Not ported. Separate from the existing high-level `cutscene_id`. IDs 1/3/4/5/6/7/8/9 = base/lookback-L/lookback-R/skidstop/damaged/intoshell/fall/talk | medium |
+| D | Player motion state (`position`, `velocity`, ground snap, gravity-coupled y) | Not ported. Runner has no continuous `world_y` during `.active`, no `velocity.x/y/z`. Native owns everything in `update_subgoldy` @ 0x43b120. MVP slice = 5 floats + 1 bool | medium |
+| E | Ambient hazard pools (Salt @ 0x3578c0 +0.15 dmg, SubLazer @ 0x356b00 +0.02 dmg) | Salt is conflated with runner-local live strip; SubLazer entirely absent. Docs misname SubLazer as "Wall2 ambient pool" — it's actually `cRSubLazerManager`, fired by Wall2 AI | medium-large |
+| F | `set_snail_jetpack` one-shot + jet-particle pool | sfx + mesh swap **already covered** via `nativeJetpackSoundCues` + `GameplayJetpackVisualState`. The missing particle pool is optional presentation polish. 0.94 TODO closes as verified no-op. | trivial for TODO; jet particles are medium follow-up |
+
+**Key renames/corrections from audit**:
+- "Wall2 ambient pool at 0x356b00" in docs is really the **SubLazer projectile pool** (20 slots, stride 0xb0). It's *fired into* by Wall2 AI via `shoot_subgoldy`, but the slots themselves are projectiles.
+- "Pool-A at 0x357940 +0.15 dmg" is the **Salt hazard pool** (40 slots, stride 0x98) — the same salt the Zig port already has as a runner-local hazard, but native owns a 40-slot pool the port conflates with a runner-local 8-row live strip.
+- `voice-4` milestone from the prior audit was resolved as dead code — already closed.
+
+## Phase 0 — Quick closures (small, independent)
+
+### A. voice_manager by-index wrapper
+- [ ] Add `AppState.playVoiceManagerIndex(set_id: NativeSet, mode: NativeMode, sample_override: ?usize) !bool` in `zig/src/main.zig`. Semantics from `play_voice_manager` @ 0x4492d0:
+  - `mode = .interrupt_current` → first call `stopGameplayVoice()` (new helper wrapping `rl.stopSound` on the current voice channel)
+  - `sample_override = null` → delegate to existing `tryPlayNativeGameplayVoiceSetPlayed(set_id, mode)`
+  - `sample_override = some i` → new `tryPlayNativeGameplayVoicePayload(set_id, mode, i)` that bypasses playlist rotation and plays bank[i] directly
+  - return whether a sample actually started (native uses this for the damage→ouch fallback chain)
+- [ ] Wire the 4 blocked sites:
+  - [ ] `apply_damage_gauge_delta` hit-flash voice (0x441489): `.damage, .wait_for_frequency` then fallback `.ouch, .wait_for_idle`
+  - [ ] `update_damage_gauge` state 1→2 voice (0x44115e): `.postal, .wait_for_idle` (plays `IMGOINGPOSTAL{,2,3}.OGG`)
+  - [ ] Parcel collision voice (0x4452ef): `.package, .wait_for_frequency`
+  - [ ] Ring 4/5 collision voice (0x4457d4): `.powerup, .wait_for_frequency`
+- Files: `zig/src/main.zig:5795-5826` (voice infra), `gameplay/voice.zig`
+
+### F. Close jetpack 0.94 TODO as verified no-op
+- [ ] Convert the TODO comment at `gameplay.zig:4005-4012` into a `PORT(verified)` block explaining:
+  - sfx activate/deactivate is already fired by `nativeJetpackSoundCues` (audio_cues.zig:141-150) on exactly the 0.94 edge
+  - thrust-cone mesh swap is already driven by `nativeJetpackVisualPresentationActive(runner) == runner.jetpack.active and progress <= 0.94`
+  - `uninit_jet_particles` targets a 15×2 sprite column pool the Zig port does not own; there's nothing to tear down
+  - The one-shot is functionally complete
+- [ ] Add a regression test asserting the 0.94 crossing does NOT rearm any jetpack state.
+
+## Phase 1 — `change_snail_skin` (independent, small)
+
+### B. Snail skin texture-slot swap
+- [ ] Add `PlayerPresentationController.snail_skin: SnailSkinTransitionState` to the Zig gameplay state (new module or inside `gameplay.zig`). Fields mirror native 0x1938 layout:
+  ```zig
+  SnailSkinTransitionState {
+      selected_slot: u8,    // 0=default, 1=damage-red, 2=invincible
+      slot_ids: [3]u32,
+      active: bool,
+      progress: f32,
+      progress_step: f32,   // 1 / (duration_s * 60) when duration > 0, else 0 (instant)
+  }
+  ```
+- [ ] Port `changeSnailSkin(slot, duration_s)` from `change_snail_skin` @ 0x445fd0: sets `active=1`, selected slot, and progress_step (or 0 for instant).
+- [ ] Port `updateSnailSkinTransition` tick from `update_snail_skin_transition` @ 0x445f80: advances `progress` by `progress_step`, resolves `slot_ids[selected_slot]` into the render-state material slot.
+- [ ] Wire at the 5 native call sites:
+  - [ ] `initialize_invincible_shell`: reset (slot 0, 0.0 s)
+  - [ ] `update_invincible_shell` case 3: fade-out done (slot 0, 0.0 s)
+  - [ ] `update_invincible_shell` active tick: slot 2 every frame, 0.0 s
+  - [ ] `apply_damage_gauge_delta` hit-flash: slot 1, 0.2 s
+  - [ ] `update_damage_gauge` state 2 tick: slot 1, 0.2 s
+- Note: only a texture swap — doesn't require the dispatch_cutscene_animation port below.
+
+## Phase 2 — Player motion MVP (D, medium)
+
+MVP slice unlocks plan §1 lanes 1 & 2 (0x43bcb3 slide/floor-cache + 0x43bf6f swept-reentry grounded snap) without porting the full physics step.
+
+### D.1 Minimum motion state
+- [ ] Add to `Runner`:
+  ```zig
+  position_y: f32 = 0.49,       // mirror of Player+0x006c
+  velocity_y: f32 = 0.0,        // mirror of Player+0x0414
+  follow_active: bool = false,  // mirror of Player+0x0384 FollowState.active
+  // attachment_exit_anchor_z already exists
+  ```
+- [ ] Track `follow_active` as a derived bool from the existing attachment-follow state machine (expose a getter).
+
+### D.2 Minimum step functions (in the active-phase tick)
+- [ ] `applyGravityCoupledY(self)` — mirror of `update_subgoldy` @ 0x43c316: `velocity_y += -0.01 * v_z²`. For the MVP, v_z = `movement_rate_scalar` (or a fixed proxy constant) until full `velocity.z` is modelled.
+- [ ] `positionYIntegrate(self)` — mirror of 0x43bac4: `position_y += velocity_y`.
+- [ ] `beginPostFollowCarryover(self)` — already partially modelled in `gameplay.zig`. Stashes `row_position` (proxy for Player+0x424 / attachment_exit_anchor_z), sets the pending+progress+gate_a/b fields. Audit whether existing implementation matches `begin_post_follow_carryover` @ 0x43af60.
+
+### D.3 Two attachment-exit retirement lanes (depends on D.1, D.2)
+- [ ] Lane 0x43bf6f (swept re-entry failed → grounded snap): after primary+secondary `flags_b & 0x40` / `& 0x80` swept probes in `tryPrimeCurrentRowAttachmentEntry`:
+  - if `!follow_active && position_y<0.49 && position_y>=-0.163 && !open_neighbor(tile) && tile!=0x16 && velocity_y<-0.03 && velocity_y<0`:
+    - snap position_y = 0.49
+    - velocity_y = 0
+    - clear attachment_exit_pending
+    - apply squidge (need a squidge model; defer visual-only squidge to later)
+- [ ] Lane 0x43bcb3 (slide/floor-cache non-follow fallback): **not gated on follow_active** — fires on runtime tiles `{0x0f,0x10,0x12,0x13}` OR (damage_warning_state==draining && is_slide_cache_tile_family(tile)). Does NOT depend on position_y — clears unconditionally within that branch. Can land with or without D.1 since it doesn't read y.
+- [ ] Make the `attachment_exit_progress` step (0x43ce96) the explicit else-branch — only runs when neither 0x43bcb3 nor 0x43bf6f fired this tick.
+
+### D.4 Follow-ups after MVP (record as TODOs, don't land yet)
+- 0x43c06d tile-flags grounded re-snap (needs tile flags_3d + global flag 2 mirror)
+- 0x43c3ea trampoline envelope (needs cell_y accessor; current proxy fires too eagerly)
+- 0x43ce75 jetpack altitude gate (needs position_y plus jetpack_gauge.state==1 mirror)
+- Full `position.x` / `velocity.x` model + ±4 clamp (lateral)
+- Full `velocity.z` model + the autorun integrator
+- Slug first-hit velocity triplet + slug repeat-hit knockback (need velocity.x/y/z)
+
+## Phase 3 — Ambient hazard pools rename + port (E, medium-large)
+
+### E.1 Rename + reassign
+- [ ] Docs: in `port-status.md`, `subsystem-status.md`, `remaining-work-checklist.md`, rename "Wall2 ambient pool" references to "SubLazer projectile pool" and clarify that Wall2 AI is the *emitter*, the slots are projectiles.
+- [ ] Docs: fix Pool-A label from "Wall2 pool" to "Salt hazard pool" (matches the 40-slot 0x98-stride `cRSalt` manager at `0x3578c0`).
+
+### E.2 Salt hazard pool port
+- [ ] Replace the runner-local 8-row live strip's `.salt` branch with a dedicated `SaltHazardPool` struct (40 slots, each with `active`, `armed`, `position`, `velocity`, `transform`, `owner_attachment`).
+- [ ] Port `initialize_salt_hazard_pool` @ 0x441540, `spawn_salt_hazard` @ 0x441560, `update_salt_hazard` @ 0x4417d0, `deactivate_salt_hazard` @ 0x441740.
+- [ ] Collision consume at +0.15 damage using the `dist < 0.98` gate (inside existing `processRuntimeHazardCollisions`).
+- [ ] Spawn from `update_subgame` tile dispatch on authored `0x22` tiles and `0x0f` with RNG gate `0.98 + 0.02*(1-scalar)`.
+- [ ] Remove `.salt` from `RuntimeHazardKind` live strip seeding; keep only `.garbage`.
+
+### E.3 SubLazer projectile pool port
+- [ ] Add `SubLazerPool` (20 slots, each with `active`, `position`, `velocity`, `phase`, `lifetime`, `emitter`, `sprite_scale_y_base`).
+- [ ] Port `initialize_wall2_ambient_hazard_pool` @ 0x441650, `spawn_wall2_ambient_hazard` @ 0x441670, `update_wall2_ambient_hazard` @ 0x43efb0, `destroy_wall2_ambient_hazard` @ 0x439bc0.
+- [ ] Port `shoot_subgoldy` @ 0x441ad0 invocation path.
+- [ ] Port `maybe_spawn_wall2_ambient_hazard` @ 0x439d50 with RNG gate + `game+0x74668 > game+0x42fdec` cadence.
+- [ ] Collision consume at +0.02 damage using `dist < 0.49` gate.
+
+## Phase 4 — `dispatch_cutscene_animation` layer (C, medium)
+
+- [ ] Add `PlayerPresentationController.anim_manager: AnimDispatchState` with the native layout from `path_template_types.h:354`:
+  ```
+  active, progress, progress_step, active_keyframe, edge_latched,
+  queued_animation_ids[10], queued_animation_count,
+  self_ref, queue_sentinel
+  ```
+- [ ] Port `dispatchCutsceneAnimation(anim_id, immediate, initial_frame)` from `dispatch_cutscene_animation` @ 0x444600:
+  - `immediate=false` → enqueue into `queued_animation_ids[queued_count++]`
+  - `immediate=true` → index `animation_slot_table` (128-byte stride at presentation_controller + 0x14c+0x24), latch keyframe, clear queue, set flag 0x20
+- [ ] Load the per-clip keyframe table from shipped `X/_ANIMATION.TXT` entries (base/move/bobalong/damaged/fall/lookback-L/lookback-R/talk/skidstop/intoshell).
+- [ ] Define constants: `ANIM_BASE=1`, `ANIM_LOOKBACK_L=3`, `ANIM_LOOKBACK_R=4`, `ANIM_SKIDSTOP=5`, `ANIM_DAMAGED=6`, `ANIM_INTOSHELL=7`, `ANIM_FALL=8`, `ANIM_TALK=9`.
+- [ ] Replace the existing "manual turbo-talk family switch" in Zig with real `dispatchCutsceneAnimation(.talk, true, 0)`.
+
+## Phase 5 — Hit-flash wiring (depends on Phases 0.A, 1.B, 4.C)
+
+- [ ] Mirror `apply_damage_gauge_delta` @ 0x4413f0 hit-flash side effects in Zig's `applyDamageGaugeDelta` (gameplay.zig:2322):
+  - [ ] Gate: `(*(+0x4300b4) & 0x80) && !force` early exit — need to identify the invincible-flag source first (no writers visible in decompile; likely set by `update_invincible_shell`)
+  - [ ] Thread a `force: bool = false` parameter through all call sites
+  - [ ] When gated: `changeSnailSkin(1, 0.2)` then `playVoiceManagerIndex(.damage, .wait_for_frequency, null)` — if returns false, fallback `playVoiceManagerIndex(.ouch, .wait_for_idle, null)`; then `dispatchCutsceneAnimation(6, true, -1)` if `*(+0x430054)==0` else `dispatchCutsceneAnimation(1, false, -1)`
+- [ ] Mirror state-2 drain side effects in `updateDamageGaugeController` (gameplay.zig:~2410):
+  - [ ] `changeSnailSkin(1, 0.2)` each tick while draining
+  - [ ] `playVoiceManagerIndex(.postal, .wait_for_idle, null)` on state 1→2 transition
+- [ ] Call `stop_warning_sample_handle` analogue on state-2 exit.
+
+## Phase 6 — Remaining attachment-exit lanes + slug velocity (depends on Phase 2 extensions)
+
+Once the full `MotionState.velocity.x/y/z` + tile-flags mirror lands (not MVP):
+
+- [ ] Lane 0x43c06d (tile-flags grounded re-snap).
+- [ ] Lane 0x43c3ea trampoline envelope (tighten from the current broad heuristic to `|y - cell_y| < 0.49` + velocity flip + sfx 0x29).
+- [ ] Lane 0x43ce75 jetpack altitude cap.
+- [ ] Slug first-hit velocity triplet `(0, tc_x*0.2, -tc_x*0.2)` + `begin_post_follow_carryover` + cutscene state 0xa + firework_shoot + `play_slug_voice(0x22-rand)`.
+- [ ] Slug repeat-hit z-velocity knockback `tc_x² × 0.004 × -8`.
+- [ ] Garbage direction-of-hit field (slot +0x88 = 1 or 2 based on `vector.x > 0`).
+
+## Phase 7 — Remaining polish (independent, small each)
+
+- [ ] Global pause gate `data_4df904 + 0x74621` on `update_warning`, `update_damage_gauge`, pulse lane — low impact since no visible divergence has been observed.
+- [ ] `update_damage_gauge` 6× accelerated drain — **blocked**: `*(+0x4301bc)` has no writers in the decompile set; needs a live Frida trace before the flag's meaning can be inferred.
+- [ ] Jetpack state 2 (hover) controller + `end_jetpack_hover` @ 0x43a370 — large; belongs with a broader jetpack hover-mode port that isn't prioritized yet.
+- [ ] Health/jetpack pickup per-slot `player.live_matrix.position.y >= 0.49` gate (depends on Phase 2 `position_y`).
+- [ ] Outer-bridge safety net: mirror `destroy_subgame → +0x1bc = 0x12` (native 0x438b09). Current Zig paths compute the right owner via helpers; this is a defensive safety net. Defer until a repro surfaces.
+- [ ] Jet-particle pool + `SPRITES/JETPACKTHRUST.TGA` + `SPRITES/SMOKE.TGA` loading (medium, presentation polish).
+
+## Session summary (2026-04-16, rev 2)
+
+Closed in rev 1:
+- Voice-4 milestone as dead code.
+- Jetpack disarm-on-overflow and route-end-auto-shutoff corrected.
 - `armJetpackGauge` no longer writes `pulse_envelope`.
-- Invincible-path slug defeat no longer awards `slug_projectile_kill_score` (split `defeatSlug` / `defeatSlugSilent`).
-- All 7 collision sfx verified wired via the existing counter/cue diff path in `main.zig:playGameplayRunnerAudio`.
-- All six doc-correction items landed (attachment-exit lanes fully identified, saved-owner writer set corrected, voice-4 doc closure).
+- Invincible-path slug defeat no longer awards kill score.
+- All 7 collision sfx verified already wired.
+- All doc corrections.
 
-Items that need infrastructure (deferred, call out in follow-up packet):
-- Five-lane attachment-exit retirement requires a live-frame `position.y` / `velocity.y` / `follow_state.active` model the runner doesn't own today. The current broad `tile != 0x16 && !open_neighbor` proxy stays in place until that lands.
-- Damage gauge hit-flash side effects (snail-skin swap, voice dispatch, cutscene dispatch) need `change_snail_skin` / `play_voice_manager` / `dispatch_cutscene_animation` infra that is not ported.
-- Pool-A (+0.15) and Pool-B (+0.02) "Wall2" ambient damage pools need the ambient hazard pool runtime the port does not yet have.
-- `update_damage_gauge` 6× accelerated drain depends on `*(+0x4301bc)` — no writer exists in the decompile set, so the flag's semantics are unknown without a live trace.
-- Native jetpack state 2 (hover) and `end_jetpack_hover` call depend on a hover controller the port has not started.
-- Outer-bridge safety net (`destroy_subgame → +0x1bc = 0x12`) is marked speculative — all current Zig paths compute the right owner via `outerOwnerFor*` helpers, so the override is only observable if a future caller bypasses them.
-
-## 1. Attachment-exit retirement (biggest architectural bug)
-
-The whole retirement lane is in the wrong runner phase — `stepAttachmentExitState` only runs in `.phase == .fall`, but every native clear runs on the active track path.
-
-- [ ] Move retirement out of `.fall` into the active-track step in `zig/src/gameplay.zig` (around :4236–4268 and :1257–1274)
-- [ ] Implement 0x43bcb3 lane: `!follow_state.active && runtime_tile ∈ {0x0f,0x10,0x12,0x13}` OR `(damage_gauge.state==2 && is_slide_cache_tile_family(tile))` → clear unconditionally after velocity-damping triad
-- [ ] Implement 0x43bf6f lane (swept re-entry failed → grounded snap): after primary+secondary swept probes, if `!follow_state.active && y<0.49 && y≥−0.163 && !open_neighbor && tile!=0x16 && velocity.y<−0.03 && velocity.y<0` → snap y=0.49, zero velocity, clear
-- [ ] Implement 0x43c06d lane (tile-flags grounded re-snap): `velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49` → squidge, clear, snap y=0.49
-- [ ] Tighten 0x43c3ea (trampoline): gate on `|y − cell_y| < 0.49` bounce envelope + squidge + velocity flip + sfx 0x29; currently fires every tick on tile 0x16
-- [ ] Tighten 0x43ce75 (jetpack cap): add the missing `position.y<1.0` altitude gate
-- [ ] Make `attachment_exit_progress` step (0x43ce96) the else-branch — run only when none of the five clears fire this tick
-- [ ] Delete/revise test at `gameplay.zig:7812–7835` — the legacy "progress ≥ 1.0 timeout" clear doesn't exist in native (only store is 0x43ce96)
-
-## 2. Damage / warning / jetpack gauges
-
-- [ ] Add 6× accelerated drain in `update_damage_gauge` state 2 when `*(+0x4301bc)!=0` — extra `apply_damage_gauge_delta(-0.00666666683, 0)` per tick (native 0x441074). Constant currently absent in Zig.
-- [x] Replace `disarmJetpackGauge` on `progress > 1.0` (gameplay.zig:3957) with "skip warning math this tick" — native does NOT disarm at overflow
-- [ ] Add the `(progress − cycle_phase) ≥ 0.94` boundary crossing: call `set_snail_jetpack(0)` + `uninit_jet_particles` side effects at 0x43a441 (current port: stub marker only; needs snail-jetpack weapon visual + jet-particles actor ports first)
-- [ ] Model native jetpack state 2 (hover). Add `end_jetpack_hover` (0x43a370) analogue. Currently Zig collapses to a bool.
-- [ ] Add `apply_damage_gauge_delta` early-out: `(*(+0x4300b4) & 0x80) && !force` bypass gate
-- [ ] Thread the `force` parameter through `applyDamageGaugeDelta` call sites
-- [ ] Add hit-flash side-effects in `apply_damage_gauge_delta`: `change_snail_skin`, `play_voice_manager(0x751498, 0, 1, -1)`, fallback `play_voice_manager(0x751498, 9, 0, -1)`, `dispatch_cutscene_animation` (1 or 6 depending on `*(+0x430054)==0`)
-- [ ] Add state 1→2 voice cue in `update_damage_gauge`: `play_voice_manager(0x751498, 0xe, 0, -1)` at 0x44115e, gated on `*(+0x42fde8)==0.49`
-- [ ] Add `change_snail_skin(..+0x434038, 1, 0.2)` call in state-2 drainer (0x441054)
-- [ ] Call `stop_warning_sample` on state-2 exit (0x441105 → `stop_warning_sample_handle(play_warning_sample_backend(0x32))`)
-- [ ] Model global pause gate `data_4df904 + 0x74621` — suppresses `update_warning`, `update_damage_gauge`, and the pulse lane (native 0x446f88, 0x440fdc, 0x4411fa)
-- [x] Stop writing `pulse_envelope=1.0` in `armJetpackGauge` — native leaves it unwritten
-- [ ] Wire `set_snail_jetpack` sfx: `play_sound_effect(0x1a)` on arm/activate, `play_sound_effect(0x10)` on deactivate + weapon-animation hooks
-
-## 3. `handle_subgoldy_collisions` (0x444cf0)
-
-- [ ] Add pool-A writer: `@0x357940` stride 0x98, 25 slots, +0.15 damage on contact (native 0x444e00). Currently missing in `gameplay.zig`.
-- [ ] Add pool-B writer: `@0x356b80` stride 0xb0, 20 slots, +0.02 damage (native 0x444ebd). This is the "Wall2" pool the docs keep referring to; Zig conflates it with salt.
-- [ ] Flesh out slug first-hit (currently just `beginFallState(.hazard)` at `gameplay.zig:1932`):
-  - [ ] Write `velocity = (0, tc_x*0.2, -tc_x*0.2)` (0x4450cd)
-  - [ ] Call `begin_post_follow_carryover`
-  - [ ] Set cutscene state 0xa
-  - [ ] Fire `firework_shoot` + `play_slug_voice`
-- [ ] Add slug repeat-hit z-velocity knockback: `velocity.z += tc_x² × 0.004 × -8` (0x44521e)
-- [x] Drop the +100 score on invincible-path slug defeat — native's `kill_slug_hazard` does not call `add_subgoldy_score` (0x44523a). Currently `gameplay.zig:1917–1920` awards `slug_projectile_kill_score`.
-- [ ] Replace `attachment_entry_rider_height` pre-loop check for health/jetpack pickups with per-slot `player.live_matrix.position.y >= 0.49` gate (BN 0x4453c4, 0x4455b1)
-- [x] Wire the 7 collision sfx — already wired via counter/cue diffs in `main.zig:playGameplayRunnerAudio` (not via direct calls inside `processRuntimePickupCollisions`). Verified:
-  - [x] 0x44500a: sfx `0x27 - rand` (garbage hit) — `garbage_hits` counter → `asteroid_impact` pick
-  - [x] 0x4452fb: sfx `0x1b` (parcel pickup) — `NativeGameplaySoundCues.parcel_pickup` → `place_package`
-  - [x] 0x44542f: sfx `0xe` (health collect) — `health_pickups` counter → `heart`
-  - [x] 0x4456f2: sfx `0x2b` (native ring 3/7 slow) — `nativeSlowRingSoundTriggered` → `slow_ring`
-  - [x] 0x445763: sfx `1` (ring kind 1) — `nativeRingPickupSoundIndex` → `powerup_pickup[0]`
-  - [x] 0x44578d: sfx `0x2a` (ring kinds 2/6 nuke) — `nativeExplodeRingSoundTriggered` → `explode_ring`
-  - [x] 0x44580d: sfx `eax_50 + 1` (ring kinds 4/5/8) — `nativeRingPickupSoundIndex` via `movement_flag_selector`
-- [ ] Wire the 3 voice cues:
-  - [ ] `play_voice_manager(0x751498, 0xa, ...)` at 0x4452ef (parcel voice)
-  - [ ] `play_voice_manager(0x751498, 5, ...)` at 0x4457d4 (ring-4/5 voice)
-  - [ ] `play_slug_voice(0x22 - rand)` at 0x44516c
-- [ ] Add garbage direction-of-hit field: slot `+0x88 = 1 or 2` depending on `vector.x > 0` (0x444fb8–0x444fc2)
-
-## 4. Outer-bridge saved-owner writers
-
-- [ ] Mirror `destroy_subgame → +0x1bc = 0x12` (native 0x438b09) in Zig's teardown path. Consequence of missing it: a persistent selected-record run torn down via a path that bypasses `outerOwnerForPendingRunResult` / `outerOwnerForAbandonActiveRun` returns to the wrong outer owner instead of the high-score list.
-- [x] Audit whether both `update_subgame` post-run preserve ops (0x439994 / 0x4399b2) are modeled via `outerOwnerForPendingRunResult`. Docs currently credit them to "state 2 at boot" which is wrong. — verified: Zig's `outerOwnerForPendingRunResult` returns the correct owner for postal/challenge/time-trial post-run branches; corrected the docs (subsystem-status.md:365 now says state 2 at boot only writes `+0x1b8 = 2` and identifies the `+0x1bc` preserve writers as the two post-run sites plus the confirmed `destroy_subgame`, `update_subgoldy`, and `update_subgoldy_resurrect` writers).
-- [ ] Decide on menu-local `+0x4f2dc+0x14` step field and `+0x8/+0xc` suppressor — zero direct writers exist in the decompile set; the fields are likely init-only via the owning struct constructor. Confirm with a runtime Frida capture before porting a guessed cadence.
-
-## 5. Voice-4 milestone — close as dead code
-
-- [x] Do not port voice-4 at 0x420d30. Field `[esi+0x44]` is `PathTemplate.segment_count` (not `sample_count`). Gate `sample_index+1 == segment_count*2` is unreachable — termination at `sample_index == segment_count` fires first. Just close the item.
-
-## 6. Doc corrections (after fixes land)
-
-- [x] `docs/rewrite/port-status.md:205` — stop claiming the attachment-exit proxy is "closer to recovered 0x43bf6f/0x43c06d/0x43c3ea lanes". (Done via subsystem-status.md:205 rewrite plus port-status.md:152 jetpack note; port-status.md:122 attachment block is left as-is because the stale claim was already qualified by the docs below.)
-- [x] `docs/rewrite/subsystem-status.md:210–215` — mark voice-4 as dead code (not "contradictory"); fully identify 0x43c06d as tile-flags grounded re-snap and 0x43c3ea as trampoline bounce.
-- [x] `docs/rewrite/subsystem-status.md:365` — correct "update_subgame state 2 at boot copies `+0x1b8` into `+0x1bc`" — that preserve op is in the post-run completion branches at 0x439994 / 0x4399b2, not boot.
-- [x] `docs/rewrite/remaining-work-checklist.md:172` — attachment retirement winner after swept re-entry is 0x43bf6f (not 0x43bcb3, which is the parallel non-follow lane).
-- [x] Fix menu-local offset in docs: hide latch is `+0x4f2dc+0x4` (i.e. `data_4df904 + 0x4f2e0`), not `+0x14`. The `+0x14` is the unwritten step field. — verified: existing `remaining-work-checklist.md:125` already encodes the correct layout (cursor `+0x0`, hide latch `+0x4`, suppressor `+0x8/+0xc`, accumulator/step `+0x10/+0x14`). Subsystem-status.md:381 mentions `+0x4f2e4` as an "accumulator exceeds 1.0" trigger which may be off-by-offset (that offset is the suppressor lane per the layout map, not the accumulator at `+0x4f2ec`); leaving for a follow-up BN trace.
+Reshape in rev 2:
+- Prior deferred items regrouped into 6 infrastructure phases with explicit dependency order.
+- Several "infrastructure" items revealed to be already-present or trivial:
+  - voice_manager already modeled; just needs a thin wrapper (small, Phase 0.A).
+  - jetpack 0.94 boundary is already wired via sound/mesh cues; TODO closes as no-op (trivial, Phase 0.F).
+  - snail-jetpack weapon visual already approximated via a parallel scaffold.
+- Major rename: "Wall2 ambient hazard pool" in docs is actually the SubLazer projectile pool (cRSubLazerManager); Pool-A is the Salt hazard pool (cRSalt). Docs need corrections in Phase 3.E.1.
+- Minimum viable attachment-exit retirement (lanes 1-2 only) requires just 5 floats + 1 bool on `Runner`, not the full physics port.
