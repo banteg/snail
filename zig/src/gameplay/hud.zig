@@ -240,6 +240,12 @@ pub fn drawRowEventWidget(
     }
 }
 
+// PORT(invention): the native game has no HUD bar for the jetpack; it
+// communicates fuel state via snail-visual wobble plus the jetpack particle
+// trail (see `update_jetpack_gauge` 0x43a390, which only updates state and
+// emits particle effects, and `set_snail_jetpack` 0x445860). This gauge is a
+// port-side UX aid for headless playtesting; remove once snail visual feedback
+// is fully ported.
 pub fn drawJetpackGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
     if (!runner.jetpack.active) return;
 
