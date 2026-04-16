@@ -3,8 +3,8 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_subgoldy_resurrect @ 0x441fa0 */
 
-00441fa4        *(arg1 + 0x84) = 1
-00441fab        *(arg1 + 0x80) = arg2
-00441fb1        *(arg1 + 0x8c) = 0
-00441fbb        *(arg1 + 0x90) = 0x3c088889
-00441fc5        return arg2
+00441fa4        player->flag84.b = 1
+00441fab        player->resurrect_final_loss = final_loss
+00441fb1        player->resurrect_progress = 0f
+00441fbb        player->resurrect_progress_step = 0.00833333377f
+00441fc5        return final_loss

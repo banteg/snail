@@ -6,8 +6,8 @@
 00441fd3        player->velocity.z = 0f
 00441fe7        void* eax
 00441fe7        if (*(data_4df904 + 0x24) == 0)
-00441fef        long double x87_r7_2 = fconvert.t(player->_pad_78[0x18].d) + fconvert.t(player->_pad_78[0x14].d)
-00441ff5        player->_pad_78[0x14].d = fconvert.s(x87_r7_2)
+00441fef        long double x87_r7_2 = fconvert.t(player->resurrect_progress_step) + fconvert.t(player->resurrect_progress)
+00441ff5        player->resurrect_progress = fconvert.s(x87_r7_2)
 00441ffb        long double temp1_1 = fconvert.t(1f)
 00441ffb        x87_r7_2 - temp1_1
 00442001        eax.w = (x87_r7_2 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp1_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp1_1 ? 1 : 0) << 0xe
@@ -15,16 +15,16 @@
 0044200e        int32_t* ecx_2 = data_4df904 + 0x24
 00442014        if (*ecx_2 == 0)
 00442018        begin_frontend_fade_out(ecx_2, 0)
-0044201d        long double x87_r7_3 = fconvert.t(player->_pad_78[0x14].d)
+0044201d        long double x87_r7_3 = fconvert.t(player->resurrect_progress)
 00442023        long double temp0 = fconvert.t(1f)
 00442023        x87_r7_3 - temp0
 00442029        eax.w = (x87_r7_3 < temp0 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp0) ? 1 : 0) << 0xa | (x87_r7_3 == temp0 ? 1 : 0) << 0xe
 0044203e        if ((eax:1.b & 0x41) != 0 || *(data_4df904 + 0x24) != 4)
 0044203e        return 
 0044204c        struct Game* game = player->game
-00442052        if (player->_pad_78[8].d == 0)
+00442052        if (player->resurrect_final_loss == 0)
 00442059        if (game->level_mode == 0)
-0044205b        player->_pad_4340 -= 1
+0044205b        player->visible_life_stock -= 1
 00442061        void* eax_2 = data_4df904
 0044206d        *(eax_2 + 0x1bc) = *(eax_2 + 0x1b8)
 00442079        *(data_4df904 + 0x1b8) = 0x1c

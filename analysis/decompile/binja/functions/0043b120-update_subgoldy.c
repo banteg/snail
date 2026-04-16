@@ -211,7 +211,7 @@
 0043b6c0        if ((game_3:1.b & 0x41) == 0)
 0043b6c2        y_8->x = 0x40800000
 0043b6c8        player_1->velocity.x = 0
-0043b6d2        game_3.b = player_1->_pad_78[0xc]
+0043b6d2        game_3.b = player_1->flag84.b
 0043b6da        if (game_3.b != 0)
 0043b6de        update_subgoldy_resurrect(player_1)
 0043b6e3        struct Game* game_12 = player_1->game
@@ -681,7 +681,7 @@
 0043c07a        top_66 = top_82
 0043c080        cell_1.w = (c0_29 ? 1 : 0) << 8 | (c2_29 ? 1 : 0) << 0xa | (c3_29 ? 1 : 0) << 0xe | (top_66 & 7) << 0xb
 0043c085        if ((cell_1:1.b & 1) != 0)
-0043c087        cell_1.b = player_1->_pad_78[0xc]
+0043c087        cell_1.b = player_1->flag84.b
 0043c08f        if (cell_1.b == 0)
 0043c093        initialize_subgoldy_death(player_1)
 0043bc92        player_1->game

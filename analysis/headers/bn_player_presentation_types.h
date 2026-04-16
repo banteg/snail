@@ -266,7 +266,13 @@ typedef struct PlayerPresentationController {
 typedef struct Player {
     uint8_t _pad_00[0x38];
     TransformMatrix live_matrix;
-    uint8_t _pad_78[0xa8];
+    uint8_t _pad_78[0x8];
+    int32_t resurrect_final_loss;
+    int32_t flag84;
+    uint8_t _pad_88[0x4];
+    float resurrect_progress;
+    float resurrect_progress_step;
+    uint8_t _pad_94[0x8c];
     int32_t movement_state;
     uint8_t unresolved_pre_row_event[0x28];
     uint8_t row_event_cutscene_started;
@@ -325,7 +331,7 @@ typedef struct Player {
     uint8_t _pad_2974[0xc];
     float interaction_max_z;
     PlayerPresentationController presentation;
-    uint8_t _pad_4340[0x4];
+    int32_t visible_life_stock;
     SquidgeState squidge;
     float slow_commentary_timer;
     float slow_commentary_step;

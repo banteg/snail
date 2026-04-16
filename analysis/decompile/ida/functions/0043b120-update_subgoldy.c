@@ -48,7 +48,7 @@ int32_t __thiscall update_subgoldy(Player *player)
   int track_cell_row_index; // eax
   int v44; // eax
   uint8_t v45; // al
-  uint8_t v46; // al
+  uint8_t tile_flags_3d; // al
   double v47; // st7
   double v48; // st6
   Game *v49; // ecx
@@ -369,7 +369,7 @@ LABEL_101:
                 || get_track_grid_cell_at_world_position(player->game, p_position)->tile_id == 19
                 || player->damage_gauge.state == 2
                 && (v37 = get_track_grid_cell_at_world_position(player->game, p_position),
-                    is_slide_cache_tile_family(v37)) )
+                    (unsigned __int8)is_slide_cache_tile_family(v37)) )
               {
                 v38 = player->game->track_center_x * player->game->track_center_x * 0.0040000002;
                 player->velocity.z = v38 + v38 + player->velocity.z;
@@ -477,14 +477,14 @@ LABEL_101:
                 v45 = v41->tile_id;
                 if ( (!v45 || v45 == 35) && player->live_matrix.position.y < 0.49000001 && player->velocity.y <= 0.0 )
                 {
-                  v46 = v41->_pad_3d[0];
+                  tile_flags_3d = v41->tile_flags_3d;
                   v47 = player->live_matrix.position.z - (double)(int)(__int64)player->live_matrix.position.z;
-                  if ( (v46 & 2) != 0 )
+                  if ( (tile_flags_3d & 2) != 0 )
                     v48 = 0.80000001;
                   else
                     v48 = 1.0;
                   v122 = 0.0;
-                  if ( (v46 & 1) != 0 )
+                  if ( (tile_flags_3d & 1) != 0 )
                     v122 = 0.2;
                   if ( v47 < v48 && v47 > v122 && !player->attachment_exit_pending )
                     begin_post_follow_carryover((int)player);

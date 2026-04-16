@@ -139,6 +139,78 @@
         "__asm",
         "_ET1"
       ]
+    },
+    {
+      "name": "bn_visible_life_stock_named_in_death",
+      "artifact": "analysis/decompile/binja/functions/00446e30-initialize_subgoldy_death.c",
+      "required_substrings": [
+        "visible_life_stock"
+      ],
+      "forbidden_substrings": [
+        "_pad_4340",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_resurrect_fields_named",
+      "artifact": "analysis/decompile/binja/functions/00441fa0-initialize_subgoldy_resurrect.c",
+      "required_substrings": [
+        "flag84",
+        "resurrect_final_loss",
+        "resurrect_progress",
+        "resurrect_progress_step"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_resurrect_fields_named",
+      "artifact": "analysis/decompile/binja/functions/00441fd0-update_subgoldy_resurrect.c",
+      "required_substrings": [
+        "visible_life_stock",
+        "resurrect_progress",
+        "resurrect_progress_step",
+        "resurrect_final_loss"
+      ],
+      "forbidden_substrings": [
+        "_pad_4340",
+        "_pad_78[0x14]",
+        "_pad_78[0x18]",
+        "_pad_78[8]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_subgoldy_completion_handoff_named",
+      "artifact": "analysis/decompile/binja/functions/0043b120-update_subgoldy.c",
+      "required_substrings": [
+        "completion_handoff_active",
+        "completion_handoff_timer",
+        "completion_handoff_voice_gate",
+        "flag84"
+      ],
+      "forbidden_substrings": [
+        "_pad_78[0xc]",
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_update_cutscene_camera_helpers_named",
+      "artifact": "analysis/decompile/binja/functions/004466d0-update_cutscene.c",
+      "required_substrings": [
+        "look_at_point",
+        "linear_interpolate_matrix",
+        "snail_hotspots_world"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

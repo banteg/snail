@@ -13,6 +13,10 @@ DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types
 
 PLAYER_FIELD_UPDATES = (
     ("0x38", "live_matrix", "TransformMatrix"),
+    ("0x80", "resurrect_final_loss", "int32_t"),
+    ("0x84", "flag84", "int32_t"),
+    ("0x8c", "resurrect_progress", "float"),
+    ("0x90", "resurrect_progress_step", "float"),
     ("0x120", "movement_state", "int32_t"),
     ("0x14c", "row_event_cutscene_started", "uint8_t"),
     ("0x2d8", "control_override_active", "uint8_t"),
@@ -58,6 +62,7 @@ PLAYER_FIELD_UPDATES = (
     ("0x2970", "steering_mode_selector", "int32_t"),
     ("0x2980", "interaction_max_z", "float"),
     ("0x2984", "presentation", "PlayerPresentationController"),
+    ("0x4340", "visible_life_stock", "int32_t"),
     ("0x4344", "squidge", "SquidgeState"),
 )
 
@@ -197,6 +202,10 @@ PROTO_UPDATES = (
     (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
+    ),
+    (
+        "initialize_subgoldy_resurrect",
+        "int32_t __thiscall initialize_subgoldy_resurrect(Player* player, int32_t final_loss)",
     ),
     (
         "initialize_invincible_shell",

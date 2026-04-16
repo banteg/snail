@@ -3,49 +3,14 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 6,
-  "function_count": 6,
+  "selected_count": 1,
+  "function_count": 1,
   "exported": [
     {
-      "selector": "initialize_track_render_cache_manager",
-      "address": "0x433060",
-      "name": "initialize_track_render_cache_manager",
-      "artifact": "analysis/decompile/ida/functions/00433060-initialize_track_render_cache_manager.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "build_track_render_caches",
-      "address": "0x433220",
-      "name": "build_track_render_caches",
-      "artifact": "analysis/decompile/ida/functions/00433220-build_track_render_caches.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "remove_track_render_cache_bods",
-      "address": "0x433f20",
-      "name": "remove_track_render_cache_bods",
-      "artifact": "analysis/decompile/ida/functions/00433f20-remove_track_render_cache_bods.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "is_slide_cache_tile_family",
-      "address": "0x439a40",
-      "name": "is_slide_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439a40-is_slide_cache_tile_family.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "is_ramp_cache_tile_family",
-      "address": "0x439a70",
-      "name": "is_ramp_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439a70-is_ramp_cache_tile_family.c",
-      "removed_stale_artifacts": []
-    },
-    {
-      "selector": "is_floor_cache_tile_family",
-      "address": "0x439ad0",
-      "name": "is_floor_cache_tile_family",
-      "artifact": "analysis/decompile/ida/functions/00439ad0-is_floor_cache_tile_family.c",
+      "selector": "initialize_subgoldy_resurrect",
+      "address": "0x441fa0",
+      "name": "initialize_subgoldy_resurrect",
+      "artifact": "analysis/decompile/ida/functions/00441fa0-initialize_subgoldy_resurrect.c",
       "removed_stale_artifacts": []
     }
   ],
