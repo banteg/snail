@@ -4,6 +4,24 @@ Working checklist from the five-agent BN audit. Each item cites BN addresses and
 
 See also: `docs/rewrite/port-status.md`, `docs/rewrite/subsystem-status.md`, `docs/rewrite/remaining-work-checklist.md` — several of these need doc corrections at the end of this pass.
 
+## Session summary (2026-04-16)
+
+Closed in this session:
+- Voice-4 milestone resolved as dead code (item 5).
+- Jetpack disarm-on-overflow and route-end-auto-shutoff both corrected to native "skip warning math this tick" semantics.
+- `armJetpackGauge` no longer writes `pulse_envelope`.
+- Invincible-path slug defeat no longer awards `slug_projectile_kill_score` (split `defeatSlug` / `defeatSlugSilent`).
+- All 7 collision sfx verified wired via the existing counter/cue diff path in `main.zig:playGameplayRunnerAudio`.
+- All six doc-correction items landed (attachment-exit lanes fully identified, saved-owner writer set corrected, voice-4 doc closure).
+
+Items that need infrastructure (deferred, call out in follow-up packet):
+- Five-lane attachment-exit retirement requires a live-frame `position.y` / `velocity.y` / `follow_state.active` model the runner doesn't own today. The current broad `tile != 0x16 && !open_neighbor` proxy stays in place until that lands.
+- Damage gauge hit-flash side effects (snail-skin swap, voice dispatch, cutscene dispatch) need `change_snail_skin` / `play_voice_manager` / `dispatch_cutscene_animation` infra that is not ported.
+- Pool-A (+0.15) and Pool-B (+0.02) "Wall2" ambient damage pools need the ambient hazard pool runtime the port does not yet have.
+- `update_damage_gauge` 6× accelerated drain depends on `*(+0x4301bc)` — no writer exists in the decompile set, so the flag's semantics are unknown without a live trace.
+- Native jetpack state 2 (hover) and `end_jetpack_hover` call depend on a hover controller the port has not started.
+- Outer-bridge safety net (`destroy_subgame → +0x1bc = 0x12`) is marked speculative — all current Zig paths compute the right owner via `outerOwnerFor*` helpers, so the override is only observable if a future caller bypasses them.
+
 ## 1. Attachment-exit retirement (biggest architectural bug)
 
 The whole retirement lane is in the wrong runner phase — `stepAttachmentExitState` only runs in `.phase == .fall`, but every native clear runs on the active track path.
