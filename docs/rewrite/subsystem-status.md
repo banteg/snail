@@ -307,7 +307,7 @@ Still missing or approximate:
 
 - the original mode gates for ambient spawns and any remaining non-horizontal suppressor details
 - the recovered horizontal neighbor gate is now ported for generic garbage fallback spawns (`0x01/0x15` only spawn when immediate left/right runtime tiles stay inside the native allowed set `0x01/0x14/0x15/0x20`)
-- the `Wall2` `+0.02` ambient pool
+- the SubLazer projectile pool (`cRSubLazerManager` @ `game + 0x356b00`, 20 slots stride 0xb0, fired by Wall2 AI via `shoot_subgoldy` for the `+0.02` damage lane) — historically misnamed "Wall2 ambient pool" in these docs; the Wall2 tile is the *emitter*, the slots themselves are projectiles
 - the broader native forward-speed controller behind `Player.velocity.z` once negative-velocity rings or garbage hits hand control back, plus the still-unported attachment-follow consumers of that same velocity block
 - exact actor ownership, animation/state switching, turret-specific controller behavior, and any non-billboarded object/model presentation the original runtime uses
 - the remaining dedicated health-collect sprite-bod ownership and the surrounding `cRSubHover` behavior beyond the now-ported ramp-bias spawn lane and `JETPACKTHRUST` pre-warning visual channel
