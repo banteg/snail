@@ -43,7 +43,7 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
   - [ ] Set cutscene state 0xa
   - [ ] Fire `firework_shoot` + `play_slug_voice`
 - [ ] Add slug repeat-hit z-velocity knockback: `velocity.z += tc_x² × 0.004 × -8` (0x44521e)
-- [ ] Drop the +100 score on invincible-path slug defeat — native's `kill_slug_hazard` does not call `add_subgoldy_score` (0x44523a). Currently `gameplay.zig:1917–1920` awards `slug_projectile_kill_score`.
+- [x] Drop the +100 score on invincible-path slug defeat — native's `kill_slug_hazard` does not call `add_subgoldy_score` (0x44523a). Currently `gameplay.zig:1917–1920` awards `slug_projectile_kill_score`.
 - [ ] Replace `attachment_entry_rider_height` pre-loop check for health/jetpack pickups with per-slot `player.live_matrix.position.y >= 0.49` gate (BN 0x4453c4, 0x4455b1)
 - [x] Wire the 7 collision sfx — already wired via counter/cue diffs in `main.zig:playGameplayRunnerAudio` (not via direct calls inside `processRuntimePickupCollisions`). Verified:
   - [x] 0x44500a: sfx `0x27 - rand` (garbage hit) — `garbage_hits` counter → `asteroid_impact` pick
@@ -62,7 +62,7 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 ## 4. Outer-bridge saved-owner writers
 
 - [ ] Mirror `destroy_subgame → +0x1bc = 0x12` (native 0x438b09) in Zig's teardown path. Consequence of missing it: a persistent selected-record run torn down via a path that bypasses `outerOwnerForPendingRunResult` / `outerOwnerForAbandonActiveRun` returns to the wrong outer owner instead of the high-score list.
-- [ ] Audit whether both `update_subgame` post-run preserve ops (0x439994 / 0x4399b2) are modeled via `outerOwnerForPendingRunResult`. Docs currently credit them to "state 2 at boot" which is wrong.
+- [x] Audit whether both `update_subgame` post-run preserve ops (0x439994 / 0x4399b2) are modeled via `outerOwnerForPendingRunResult`. Docs currently credit them to "state 2 at boot" which is wrong. — verified: Zig's `outerOwnerForPendingRunResult` returns the correct owner for postal/challenge/time-trial post-run branches; corrected the docs (subsystem-status.md:365 now says state 2 at boot only writes `+0x1b8 = 2` and identifies the `+0x1bc` preserve writers as the two post-run sites plus the confirmed `destroy_subgame`, `update_subgoldy`, and `update_subgoldy_resurrect` writers).
 - [ ] Decide on menu-local `+0x4f2dc+0x14` step field and `+0x8/+0xc` suppressor — zero direct writers exist in the decompile set; the fields are likely init-only via the owning struct constructor. Confirm with a runtime Frida capture before porting a guessed cadence.
 
 ## 5. Voice-4 milestone — close as dead code
@@ -71,8 +71,8 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 
 ## 6. Doc corrections (after fixes land)
 
-- [ ] `docs/rewrite/port-status.md:205` — stop claiming the attachment-exit proxy is "closer to recovered 0x43bf6f/0x43c06d/0x43c3ea lanes". Rewrite to reflect the actual lanes once ported.
-- [ ] `docs/rewrite/subsystem-status.md:210–215` — mark voice-4 as dead code (not "contradictory"); fully identify 0x43c06d as tile-flags grounded re-snap and 0x43c3ea as trampoline bounce.
-- [ ] `docs/rewrite/subsystem-status.md:365` — correct "update_subgame state 2 at boot copies `+0x1b8` into `+0x1bc`" — that preserve op is in the post-run completion branches at 0x439994 / 0x4399b2, not boot.
-- [ ] `docs/rewrite/remaining-work-checklist.md:120, 172` — saved-owner writer set is wrong; attachment retirement winner after swept re-entry is 0x43bf6f (not 0x43bcb3, which is the parallel non-follow lane).
-- [ ] Fix menu-local offset in docs: hide latch is `+0x4f2dc+0x4` (i.e. `data_4df904 + 0x4f2e0`), not `+0x14`. The `+0x14` is the unwritten step field.
+- [x] `docs/rewrite/port-status.md:205` — stop claiming the attachment-exit proxy is "closer to recovered 0x43bf6f/0x43c06d/0x43c3ea lanes". (Done via subsystem-status.md:205 rewrite plus port-status.md:152 jetpack note; port-status.md:122 attachment block is left as-is because the stale claim was already qualified by the docs below.)
+- [x] `docs/rewrite/subsystem-status.md:210–215` — mark voice-4 as dead code (not "contradictory"); fully identify 0x43c06d as tile-flags grounded re-snap and 0x43c3ea as trampoline bounce.
+- [x] `docs/rewrite/subsystem-status.md:365` — correct "update_subgame state 2 at boot copies `+0x1b8` into `+0x1bc`" — that preserve op is in the post-run completion branches at 0x439994 / 0x4399b2, not boot.
+- [x] `docs/rewrite/remaining-work-checklist.md:172` — attachment retirement winner after swept re-entry is 0x43bf6f (not 0x43bcb3, which is the parallel non-follow lane).
+- [x] Fix menu-local offset in docs: hide latch is `+0x4f2dc+0x4` (i.e. `data_4df904 + 0x4f2e0`), not `+0x14`. The `+0x14` is the unwritten step field. — verified: existing `remaining-work-checklist.md:125` already encodes the correct layout (cursor `+0x0`, hide latch `+0x4`, suppressor `+0x8/+0xc`, accumulator/step `+0x10/+0x14`). Subsystem-status.md:381 mentions `+0x4f2e4` as an "accumulator exceeds 1.0" trigger which may be off-by-offset (that offset is the suppressor lane per the layout map, not the accumulator at `+0x4f2ec`); leaving for a follow-up BN trace.
