@@ -173,14 +173,14 @@ pub fn nativeGameplayVoiceCues(
         .slow = previous.slow_commentary_voice_token != current.slow_commentary_voice_token,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
         .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
-        .damage_entry = previous.damage_gauge <= 0.0 and current.damage_gauge > 0.0,
-        .damage_escalation = previous.damage_warning_state != .draining and
-            current.damage_warning_state == .draining,
+        .damage_entry = previous.damage.gauge <= 0.0 and current.damage.gauge > 0.0,
+        .damage_escalation = previous.damage.warning_state != .draining and
+            current.damage.warning_state == .draining,
     };
 }
 
 pub fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return previous.damage_warning_actor.sample_generation != current.damage_warning_actor.sample_generation;
+    return previous.damage.warning_actor.sample_generation != current.damage.warning_actor.sample_generation;
 }
 
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
@@ -425,12 +425,12 @@ test "native gameplay voice cues fire on the recovered startup timer" {
 
     previous = gameplay.Runner{};
     current = previous;
-    current.damage_gauge = 0.04;
+    current.damage.gauge = 0.04;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_entry);
 
-    previous = gameplay.Runner{ .damage_warning_state = .filling };
+    previous = gameplay.Runner{ .damage = .{ .warning_state = .filling } };
     current = previous;
-    current.damage_warning_state = .draining;
+    current.damage.warning_state = .draining;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).damage_escalation);
 
     previous = current;
@@ -442,7 +442,7 @@ test "native gameplay warning loop keys from the warning actor cadence" {
     var current = previous;
     try std.testing.expect(!nativeGameplayWarningLoopTriggered(previous, current));
 
-    current.damage_warning_actor.sample_generation = 1;
+    current.damage.warning_actor.sample_generation = 1;
     try std.testing.expect(nativeGameplayWarningLoopTriggered(previous, current));
 }
 

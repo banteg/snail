@@ -237,7 +237,7 @@ pub fn drawJetpackGauge(state: anytype, layout: VirtualLayout, runner: gameplay.
 pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
     const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
     const fill_ratio = runner.damageGaugeDisplayFill();
-    const pulse = (@sin(runner.damage_gauge_runtime.pulse_progress * std.math.tau) + 1.0) * 0.5;
+    const pulse = (@sin(runner.damage.runtime.pulse_progress * std.math.tau) + 1.0) * 0.5;
     const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
     const warning_actor_alpha = runner.damageWarningActorAlpha();
     const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
@@ -280,7 +280,7 @@ pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.R
     const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
     const active_fill_height = fill_height * fill_ratio;
     const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
-    const fill_color = damageGaugeColor(fill_ratio, runner.damage_warning_state, pulse);
+    const fill_color = damageGaugeColor(fill_ratio, runner.damage.warning_state, pulse);
     rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
     const inner = rl.Rectangle{
         .x = panel.x + fill_margin,

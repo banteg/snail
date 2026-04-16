@@ -9,10 +9,6 @@ const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
 const segment = @import("../segment.zig");
 
-pub const damage_gauge_pulse_step: f32 = 0.020833334;
-pub const damage_gauge_hit_flash_step: f32 = 0.033333335;
-pub const damage_warning_transition_step: f32 = 0.16666667;
-pub const damage_warning_actor_step: f32 = 0.083333336;
 pub const postal_completion_bonus_score: u32 = 50_000;
 
 pub const RunnerInput = struct {
@@ -274,44 +270,7 @@ pub const Stopwatch = struct {
     }
 };
 
-pub const DamageWarningState = enum {
-    idle,
-    filling,
-    draining,
-
-    pub fn label(self: DamageWarningState) []const u8 {
-        return switch (self) {
-            .idle => "idle",
-            .filling => "fill",
-            .draining => "drain",
-        };
-    }
-};
-
-pub const DamageWarningActorState = enum(u8) {
-    hidden = 0,
-    solid = 1,
-    fade_cycle = 2,
-};
-
-pub const DamageGaugeRuntime = struct {
-    display_fill: f32 = 0.0,
-    pulse_progress: f32 = 0.0,
-    pulse_step: f32 = damage_gauge_pulse_step,
-    hit_flash_progress: f32 = 0.0,
-    hit_flash_step: f32 = damage_gauge_hit_flash_step,
-    warning_transition_progress: f32 = 0.0,
-    warning_transition_step: f32 = damage_warning_transition_step,
-    skin_hold_ticks: u8 = 0,
-};
-
-pub const DamageWarningActor = struct {
-    state: DamageWarningActorState = .hidden,
-    progress: f32 = 0.0,
-    step: f32 = damage_warning_actor_step,
-    alpha: f32 = 0.0,
-    sample_generation: u8 = 0,
-};
+// Damage gauge / warning-actor types live in `gameplay/damage.zig`.
 
 // PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
 // and `update_snail_skin_transition` @ 0x445f80. Slots: 0 = default, 1 = damage-red,
