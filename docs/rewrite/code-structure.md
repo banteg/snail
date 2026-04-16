@@ -55,7 +55,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 
 One commit per phase; each ends green (zig build test + health checks + no user-visible behavior change).
 
-1. Phase A1 — gameplay state types → `gameplay/runner_state.zig` (pure data, easiest, ~600 lines moved).
+1. Phase A1 — **done**. `gameplay/runner_state.zig` now owns the pure data types plus their small inline methods: `RunnerInput`, `ReplayDirective`, `AttachmentHint`, `MovementMode`, `SessionMode`, `DeathCause`, cutscene-id constants, `RunnerHandoff`, `Projectile`, `RecentEvent`, `EncounterCounters`, `ScoreTotals`, `RowEventDisplayState`, `RowEventDisplayController` (+ `configureForRun` / `reconfigureCompletion`), `Stopwatch` (+ `advance` / `elapsedMillis`), damage-gauge / damage-warning-actor types, `SnailSkinTransition` (+ `change` / `tick`), `JetpackWarningBand`, `JetpackGauge` (+ `fuelRemaining`), `WeaponChannelStates` (+ `nativeWeaponChannelStates`), `FallState`, `RunnerPhase`, attachment-follow / launch / world-frame data. `gameplay.zig` size: ~9600 → ~9200 lines.
 2. Phase A2 — gameplay helpers that don't touch Runner → `gameplay/damage.zig`, `gameplay/jetpack.zig` (~300 lines each).
 3. Phase A3 — gameplay row event + parcel → `gameplay/row_event.zig` + `gameplay/parcel.zig` (~700 lines together).
 4. Phase A4 — gameplay hazards → `gameplay/hazards.zig` (~400 lines).
@@ -66,6 +66,18 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 9. Phase B3 — main.zig frontend flow.
 
 Each phase should shrink `gameplay.zig` / `main.zig` without changing any tracked decompile or Zig test output.
+
+## Executing Runner-method extraction (Phases A2+)
+
+The tricky part for every remaining gameplay phase is: most `Runner` methods call other `Runner` methods, share private constants in `gameplay.zig`, and touch many Runner fields at once. Moving each subsystem out takes this shape:
+
+1. Copy the subsystem's constants and helper free functions into the new module.
+2. Convert the Runner methods into free functions that take `*Runner` (or `*const Runner`) as the first arg.
+3. In `gameplay.zig`, replace each moved body with a one-line wrapper method that delegates to the sub-module. Tests + external call sites stay unchanged.
+4. Remove the now-duplicated constants from `gameplay.zig`.
+5. After the phase lands, consider collapsing the wrappers into a `usingnamespace` or importing them directly at the Runner struct level.
+
+Keep each phase to a single coherent subsystem so diff review stays tractable.
 
 ## Non-goals (for now)
 
