@@ -6,5 +6,5 @@
 0041b0bb        struct PathTemplateSample* eax_4 = allocate_tracked_memory(self->segment_count * 0xa8, "Path Tile Nodes")
 0041b0c0        uint32_t segment_count = self->segment_count
 0041b0c3        self->primary_samples = eax_4
-0041b0e3        self->__offset(0x5c).d = allocate_tracked_memory(segment_count * 0xa8, "Path Ball nodes")
+0041b0e3        self->secondary_samples = allocate_tracked_memory(segment_count * 0xa8, "Path Ball nodes")
 0041b0e7        return

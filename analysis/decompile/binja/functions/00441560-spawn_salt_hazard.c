@@ -14,9 +14,9 @@
 0044158c        *(esi + 0x80) = 1
 00441596        *(esi + 0x8c) = 0
 004415b8        *(esi + 0x90) = fconvert.s(fconvert.t(*(data_4df904 + 0x74650)) * fconvert.t(0.0333333351f))
-004415c0        *(esi + 0x68) = owner->_pad_00[0].d
-004415c5        *(esi + 0x6c) = owner->_pad_00[4].d
-004415cd        *(esi + 0x70) = owner->_pad_00[8].d
+004415c0        *(esi + 0x68) = owner->__offset(0x0).d
+004415c5        *(esi + 0x6c) = owner->__offset(0x4).d
+004415cd        *(esi + 0x70) = owner->__offset(0x8).d
 004415d0        set_matrix_rotation_identity(esi + 0x38)
 004415de        int32_t var_c = 0x1fff
 004415f4        rotate_matrix_world_y(esi + 0x38, fconvert.s((float.t(next_math_random_value()) - fconvert.t(16384f)) * fconvert.t(0.000191747604f)))

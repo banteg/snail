@@ -5,14 +5,14 @@
 
 00441ad5        int32_t i = 0
 00441ad8        int32_t var_1c = 0
-00441adc        int32_t* ecx = arg1 + 0x80
-00441ae5        if (*ecx == 0)
-00441b21        struct Vec3 origin
-00441b21        origin.x = *arg2
-00441b30        origin.y = fconvert.s(float.t(i) * fconvert.t(-0.00999999978f) + fconvert.t(arg2[1]))
-00441b38        origin.z = arg2[2]
-00441b51        spawn_sub_lazer_projectile(i * 0xb0 + arg1, &origin, arg3)
-00441b67        return play_sound_effect_at_position(0xf, arg2)
+00441adc        uint32_t* ecx = &pool->state
+00441ae5        if ((ecx - 0x80)->state == 0)
+00441b21        struct Vec3 origin_1
+00441b21        origin_1.x = direction->x
+00441b30        origin_1.y = fconvert.s(float.t(i) * fconvert.t(-0.00999999978f) + fconvert.t(direction->y))
+00441b38        origin_1.z = direction->z
+00441b51        spawn_sub_lazer_projectile(&pool[i], &origin_1, origin)
+00441b67        return play_sound_effect_at_position(0xf, direction)
 00441ae7        i += 1
 00441ae8        ecx = &ecx[0x2c]
 00441af1        do while (i s< 0x14)

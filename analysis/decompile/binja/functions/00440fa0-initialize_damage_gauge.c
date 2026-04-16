@@ -3,14 +3,14 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_damage_gauge @ 0x440fa0 */
 
-00440fa2        arg1[2] = 0x3caaaaab
-00440fa9        arg1[7] = 0
-00440fac        arg1[8] = 0
-00440faf        arg1[6] = 0
-00440fb2        *arg1 = 0
-00440fb4        arg1[4] = 0
-00440fb7        arg1[3].b = 0
-00440fba        arg1[1] = 0
-00440fbd        arg1[9] = 0
-00440fc0        arg1[0xa] = 0x3d088889
-00440fc7        return 0
+00440fa2        controller->pulse_step = 0.020833334f
+00440fa9        controller->fill = 0f
+00440fac        controller->display_fill = 0f
+00440faf        controller->skin_hold_ticks = 0
+00440fb2        controller->state = 0
+00440fb4        controller->warning_transition_progress = 0f
+00440fb7        controller->unresolved_byte_0c = 0
+00440fba        controller->pulse_progress = 0f
+00440fbd        controller->hit_flash_progress = 0f
+00440fc0        controller->hit_flash_step = 0.0333333351f
+00440fc7        return

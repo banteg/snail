@@ -6,7 +6,7 @@
 0043af6a        if (player->follow_state.active == 0)
 0043af8c        player->post_follow_value_b = 0f
 0043af92        player->post_follow_value_a = 0f
-0043af78        player->post_follow_value_b = player->follow_state.template_record->__offset(0x98).d
+0043af78        player->post_follow_value_b = player->follow_state.template_record->installed_heading_delta
 0043af84        player->post_follow_value_a = player->follow_state.orientation_b
 0043af98        float z = player->live_matrix.position.z
 0043af9b        player->follow_state.active = 0

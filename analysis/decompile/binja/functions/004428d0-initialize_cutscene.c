@@ -158,6 +158,6 @@
 00442e11        if (eax_15.b == 0)
 00442e1b        dispatch_cutscene_animation(presentation_1, 1, 0, 0xffffffff)
 00442e1b        esp = &var_164
-00442e2c        result = update_jet_particles(&presentation_1->owner_player->_pad_2744[0xc])
+00442e2c        result = update_jet_particles(&presentation_1->owner_player->jetpack_gauge.state)
 00442e31        *esp
 00442e38        return result

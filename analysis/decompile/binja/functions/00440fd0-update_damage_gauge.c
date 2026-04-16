@@ -4,7 +4,7 @@
 /* function: update_damage_gauge @ 0x440fd0 */
 
 00440fd6        void* ecx = data_4df904
-00440fdc        void* eax
+00440fdc        int32_t eax
 00440fdc        eax.b = *(ecx + 0x74621)
 00440fe4        if (eax.b == 0)
 00440ff9        controller->display_fill = fconvert.s((fconvert.t(controller->fill) - fconvert.t(controller->display_fill)) * fconvert.t(0.200000003f) + fconvert.t(controller->display_fill))

@@ -4,7 +4,7 @@
 /* function: update_salt_hazard @ 0x4417d0 */
 
 004417d6        struct SaltHazardSlot* slot_1 = slot
-004417df        slot.b = slot_1->owner_template->_pad_00[9]
+004417df        slot.b = slot_1->owner_template->__offset(0x9).b
 004417e4        if (slot.b != 0)
 004417e4        return 
 004417ea        uint32_t active = slot_1->active

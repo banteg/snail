@@ -14,5 +14,5 @@
 00420c77        follow_state->vertical_offset = fconvert.s(x87_r7_3)
 00420c7a        int32_t eax_1 = get_track_cell_row_index(source_cell)
 00420c8e        struct PathTemplate* template_record = follow_state->template_record
-00420c99        template_record->__offset(0x98).d = *(data_4df904 + eax_1 * 0xf4 + 0x64118c)
+00420c99        template_record->installed_heading_delta = *(data_4df904 + eax_1 * 0xf4 + 0x64118c)
 00420c9f        return template_record

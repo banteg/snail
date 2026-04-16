@@ -93,10 +93,22 @@ TRACK_ROW_CELL_FIELD_UPDATES = (
 )
 
 PATH_TEMPLATE_FIELD_UPDATES = (
+    ("0x24", "strip_mesh", "PathTemplateStripMesh*"),
+    ("0x30", "header_30", "float"),
+    ("0x34", "header_34", "float"),
     ("0x38", "kind", "PathTemplateKind"),
+    ("0x3c", "is_mirrored_x", "uint8_t"),
+    ("0x40", "side_exit_mode", "uint32_t"),
     ("0x44", "segment_count", "uint32_t"),
     ("0x4c", "segment_count_f", "float"),
+    ("0x50", "width_or_scale", "float"),
+    ("0x54", "width_cells", "uint32_t"),
     ("0x58", "primary_samples", "PathTemplateSample*"),
+    ("0x5c", "secondary_samples", "PathTemplateSample*"),
+    ("0x98", "installed_heading_delta", "float"),
+    ("0x9c", "special_runtime_flag_9c", "uint8_t"),
+    ("0xa0", "header_a0", "float"),
+    ("0xa4", "header_a4", "float"),
 )
 
 PROTO_UPDATES = (

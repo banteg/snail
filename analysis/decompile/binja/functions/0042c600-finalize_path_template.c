@@ -17,11 +17,11 @@
 0042c615        struct TransformMatrix* entry_source
 0042c615        if (segment_count s> 0)
 0042c61a        uint32_t ebp_1 = segment_count
-0042c61c        float* edi_2 = self->__offset(0x5c).d + 0x38
+0042c61c        float* edi_2 = &self->secondary_samples->transform.position.z
 0042c63b        uint32_t i
 0042c627        int32_t eax_1
 0042c627        int16_t x87control
-0042c627        eax_1, entry_source, x87control = __ftol(x87control, fconvert.t(*edi_2) + fconvert.t(1f))
+0042c627        eax_1, entry_source, x87control = __ftol(x87control, fconvert.t((edi_2 - 0x38)->transform.position.z) + fconvert.t(1f))
 0042c62f        if (eax_1 s> self->__offset(0x48).d)
 0042c631        self->__offset(0x48).d = eax_1
 0042c634        edi_2 = &edi_2[0x2a]
@@ -34,7 +34,7 @@
 0042c648        void* eax_3 = self->primary_samples + edi_3
 0042c64a        *(esp_1 - 4) = eax_3
 0042c64e        struct TransformMatrix* source = invert_matrix_from_source(eax_3 + 0x40, entry_source)
-0042c656        void* eax_4 = self->__offset(0x5c).d + edi_3
+0042c656        void* eax_4 = self->secondary_samples + edi_3
 0042c659        *(esp_1 - 8) = eax_4
 0042c659        esp_1 -= 8
 0042c65d        entry_source = invert_matrix_from_source(eax_4 + 0x40, source)
@@ -51,7 +51,7 @@
 0042c6a4        *(esp_1 - 4) = edi_4 + self->primary_samples
 0042c6ad        *(&self->primary_samples->_pad_a4 + edi_4) = fconvert.s(dot_vector(&esp_1[4]))
 0042c6b4        struct PathTemplateSample* eax_9
-0042c6b4        eax_9.b = self->__offset(0x3c).b
+0042c6b4        eax_9.b = self->is_mirrored_x
 0042c6b9        if (eax_9.b != 0)
 0042c6bb        struct PathTemplateSample* primary_samples = self->primary_samples
 0042c6d2        (&primary_samples->_pad_a4 + edi_4)->transform.basis_right.x = fconvert.s(fconvert.t(*(&primary_samples->_pad_a4 + edi_4)) * fconvert.t(-1f))
@@ -74,13 +74,13 @@
 0042c729        do while (i_2 s< self->segment_count - 1)
 0042c732        *esp_1
 0042c742        *(&self->primary_samples[self->segment_count] - 4) = 0
-0042c74a        void* eax_14 = self->_pad_00[0x24].d
-0042c750        int32_t ecx_11
-0042c750        ecx_11.b = (*(eax_14 + 0x10)).b | 0x80
-0042c753        *(eax_14 + 0x10) = ecx_11
-0042c756        void* esi_2 = self->_pad_00[0x24].d
-0042c75c        int32_t result = *(esi_2 + 0x10) & 0xffefffff
-0042c761        *(esi_2 + 0x10) = result
+0042c74a        struct PathTemplateStripMesh* strip_mesh = self->strip_mesh
+0042c750        enum PathTemplateStripMeshFlags ecx_11
+0042c750        ecx_11.b = strip_mesh->flags.b | 0x80
+0042c753        strip_mesh->flags = ecx_11
+0042c756        struct PathTemplateStripMesh* strip_mesh_1 = self->strip_mesh
+0042c75c        enum PathTemplateStripMeshFlags result = strip_mesh_1->flags & ~PATH_TEMPLATE_STRIP_MESH_FLAG_IMPORTED_X_MESH
+0042c761        strip_mesh_1->flags = result
 0042c732        esp_1[1]
 0042c764        esp_1[2]
 0042c765        esp_1[3]
