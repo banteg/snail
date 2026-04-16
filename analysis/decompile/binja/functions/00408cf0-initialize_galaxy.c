@@ -35,7 +35,7 @@
 00408e46        *(*(arg1 + 0x10f78) + 0x6f0) = 0x3f547ae1
 00408e7b        *(arg1 + 0x10f7c) = allocate_border(data_4df904 + 0xb4c)
 00408e81        struct Color4f* eax_8 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00408ea1        initialize_frontend_sprite_button(*(arg1 + 0x10f7c), 0x20400802, 0x8a, 0x43b90000, 0x41200000, eax_8, 0f, 4)
+00408ea1        initialize_frontend_sprite_button(*(arg1 + 0x10f7c), 0x20400802, 0x8a, 370f, 10f, eax_8, 0f, 4)
 00408eb8        *(arg1 + 0x10f74) = allocate_border(data_4df904 + 0xb4c)
 00408ed8        uint32_t widget_flags
 00408ed8        char* text

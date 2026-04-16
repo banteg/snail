@@ -28,7 +28,7 @@
 0041a12c        struct TextureRef* eax_1 = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
 0041a135        long double x87_r7_3 = fconvert.t(arg3) + fconvert.t(1f)
 0041a13b        facequads->texture_ref = eax_1
-0041a143        eax_1->__offset(0x0).d |= 2
+0041a143        eax_1->flags |= 2
 0041a14a        facequads->u1 = fconvert.s(x87_r7_3)
 0041a14d        facequads->u2 = fconvert.s(x87_r7_3)
 0041a150        facequads->u0 = 0f

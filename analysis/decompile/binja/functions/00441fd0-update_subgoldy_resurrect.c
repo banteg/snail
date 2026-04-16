@@ -29,7 +29,7 @@
 0044206d        *(eax_2 + 0x1bc) = *(eax_2 + 0x1b8)
 00442079        *(data_4df904 + 0x1b8) = 0x1c
 00442083        return 
-00442084        game->__offset(0x1270fc8).d = 2
+00442084        game->subgame_rebuild_selector = 2
 00442096        complete_subgame(player->game, 1)
 004420a9        void* eax_4 = data_4df904
 004420ae        if (player->game->selected_level_record_persistent != 0)

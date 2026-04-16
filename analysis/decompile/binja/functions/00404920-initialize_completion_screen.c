@@ -65,7 +65,7 @@
 00404aea        initialize_frontend_widget(arg1[1], 0x20400002, text, 0x14, 0f, 160f, color, 2, 0f)
 00404b1a        arg1[3] = allocate_border(data_4df904 + 0xb4c)
 00404b1d        struct Color4f* eax_20 = set_color_rgba(&color_2, 1f, 1f, 1f, 1f)
-00404b37        initialize_frontend_sprite_button(arg1[3], 0x400800, 0x7a, 0x42c80000, 0x43120000, eax_20, 0f, 4)
+00404b37        initialize_frontend_sprite_button(arg1[3], 0x400800, 0x7a, 100f, 146f, eax_20, 0f, 4)
 00404b3f        *(arg1[3] + 0x178) = 0
 00404b56        arg1[2] = allocate_border(data_4df904 + 0xb4c)
 00404b5e        int32_t eax_23 = *(data_4df904 + 0x74658)

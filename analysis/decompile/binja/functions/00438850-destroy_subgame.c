@@ -9,61 +9,75 @@
 0043887f        uninit_tutorial()
 0043888b        uninit_warning(&game->warning_actor)
 00438896        clear_active_landscape_entries(&game->__offset(0xff7c00).d)
-004388a1        uninit_times_up(&game->__offset(0x1272828).d)
+004388a1        uninit_times_up(&game->times_up)
 004388a8        remove_subgame_bods(game)
 004388b7        if (game->_pad_3c != 1)
 004388bd        int32_t level_mode = game->level_mode
 004388c6        if (level_mode == 0 || level_mode == 1)
 004388ce        flush_row_event_display(&game->row_event_display)
-004388d4        void* __offset(Game, 0x356b0c) esi_1 = &game->__offset(0x356b0c).d
+004388d4        uint8_t* esi_1 = &game->sub_lazer_pool[0]._pad_00[0xc]
 004388da        int32_t i_4 = 0x14
 00438952        int32_t i
-004388df        int32_t eax_3 = (esi_1 - 0x356b0c)->__offset(0x356b04).d
+004388df        int32_t eax_3 = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[4].d
 004388e4        if ((0x200 & eax_3) != 0)
 004388ec        void* ecx_7 = data_4df904 + 0x5a8
 004388f4        if ((0x200 & eax_3) == 0)
 004388fb        report_errorf("List remove")
 00438907        if ((eax_3.b & 0x40) == 0)
-00438918        void* eax_4 = (esi_1 - 0x356b0c)->__offset(0x356b0c).d
+00438918        void* eax_4 = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xc].d
 0043891c        if (eax_4 != 0)
-00438921        *(eax_4 + 8) = (esi_1 - 0x356b0c)->__offset(0x356b08).d
-00438924        void* eax_5 = (esi_1 - 0x356b0c)->__offset(0x356b08).d
+00438921        *(eax_4 + 8) = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[8].d
+00438924        void* eax_5 = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[8].d
 00438929        if (eax_5 == 0)
-00438934        *(ecx_7 + 4) = (esi_1 - 0x356b0c)->__offset(0x356b0c).d
-0043892d        *(eax_5 + 0xc) = (esi_1 - 0x356b0c)->__offset(0x356b0c).d
-0043893d        (esi_1 - 0x356b0c)->__offset(0x356b0c).d = *(ecx_7 + 8)
-0043893f        *(ecx_7 + 8) = esi_1 - 0xc
+00438934        *(ecx_7 + 4) = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xc].d
+0043892d        *(eax_5 + 0xc) = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xc].d
+00438937        int32_t edx_3 = *(ecx_7 + 8)
+0043893d        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xc] = edx_3.b
+0043893d        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xd] = edx_3:1.b
+0043893d        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xe] = edx_3:2.b
+0043893d        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[0xf] = edx_3:3.b
+0043893f        *(ecx_7 + 8) = &esi_1[0xfffffff4]
 00438945        int32_t eax_8
-00438945        eax_8:1.b = (esi_1 - 0x356b0c)->__offset(0x356b04).d:1.b & 0xfd
-00438948        (esi_1 - 0x356b0c)->__offset(0x356b04).d = eax_8
+00438945        eax_8:1.b = (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[4].d:1.b & 0xfd
+00438948        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[4] = eax_8.b
+00438948        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[5] = eax_8:1.b
+00438948        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[6] = eax_8:2.b
+00438948        (esi_1 - 0x356b0c)->sub_lazer_pool[0]._pad_00[7] = eax_8:3.b
 0043890e        report_errorf("List remove NEXTBOD")
-0043894b        esi_1 += 0xb0
+0043894b        esi_1 = &esi_1[0xb0]
 00438951        i = i_4
 00438951        i_4 -= 1
 00438952        do while (i != 1)
-00438954        void* __offset(Game, 0x3578cc) esi_2 = &game->__offset(0x3578cc).d
+00438954        uint8_t* esi_2 = &game->salt_pool[0]._pad_00[0xc]
 0043895a        int32_t i_5 = 0x28
 004389d2        int32_t i_1
-0043895f        int32_t eax_9 = (esi_2 - 0x3578cc)->__offset(0x3578c4).d
+0043895f        int32_t eax_9 = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[4].d
 00438964        if ((0x200 & eax_9) != 0)
 0043896c        void* ecx_9 = data_4df904 + 0x5a8
 00438974        if ((0x200 & eax_9) == 0)
 0043897b        report_errorf("List remove")
 00438987        if ((eax_9.b & 0x40) == 0)
-00438998        void* eax_10 = (esi_2 - 0x3578cc)->__offset(0x3578cc).d
+00438998        void* eax_10 = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xc].d
 0043899c        if (eax_10 != 0)
-004389a1        *(eax_10 + 8) = (esi_2 - 0x3578cc)->__offset(0x3578c8).d
-004389a4        void* eax_11 = (esi_2 - 0x3578cc)->__offset(0x3578c8).d
+004389a1        *(eax_10 + 8) = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[8].d
+004389a4        void* eax_11 = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[8].d
 004389a9        if (eax_11 == 0)
-004389b4        *(ecx_9 + 4) = (esi_2 - 0x3578cc)->__offset(0x3578cc).d
-004389ad        *(eax_11 + 0xc) = (esi_2 - 0x3578cc)->__offset(0x3578cc).d
-004389bd        (esi_2 - 0x3578cc)->__offset(0x3578cc).d = *(ecx_9 + 8)
-004389bf        *(ecx_9 + 8) = esi_2 - 0xc
+004389b4        *(ecx_9 + 4) = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xc].d
+004389ad        *(eax_11 + 0xc) = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xc].d
+004389b7        int32_t edx_6 = *(ecx_9 + 8)
+004389bd        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xc] = edx_6.b
+004389bd        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xd] = edx_6:1.b
+004389bd        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xe] = edx_6:2.b
+004389bd        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[0xf] = edx_6:3.b
+004389bf        *(ecx_9 + 8) = &esi_2[0xfffffff4]
 004389c5        int32_t eax_14
-004389c5        eax_14:1.b = (esi_2 - 0x3578cc)->__offset(0x3578c4).d:1.b & 0xfd
-004389c8        (esi_2 - 0x3578cc)->__offset(0x3578c4).d = eax_14
+004389c5        eax_14:1.b = (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[4].d:1.b & 0xfd
+004389c8        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[4] = eax_14.b
+004389c8        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[5] = eax_14:1.b
+004389c8        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[6] = eax_14:2.b
+004389c8        (esi_2 - 0x3578cc)->salt_pool[0]._pad_00[7] = eax_14:3.b
 0043898e        report_errorf("List remove NEXTBOD")
-004389cb        esi_2 += 0x98
+004389cb        esi_2 = &esi_2[0x98]
 004389d1        i_1 = i_5
 004389d1        i_5 -= 1
 004389d2        do while (i_1 != 1)

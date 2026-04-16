@@ -273,7 +273,7 @@
 00421631        struct Player* player_3 = follow_state->player
 00421641        follow_state->orientation_b = fconvert.s((fconvert.t(follow_state->progress) / fconvert.t(*(&template_record_5->secondary_samples->delta_length + ecx_76)) + float.t(sample_index_1)) * fconvert.t(template_record_5->installed_heading_delta) / float.t(template_record_5->segment_count))
 0042164b        struct PathTemplateSample* eax_69
-0042164b        if (player_3->jetpack_gauge.wobble_y != 1)
+0042164b        if (player_3->_pad_2744[0x18].d != 1)
 00421653        long double x87_r7_82 = fconvert.t(out_position_1->x) - fconvert.t(var_168)
 00421657        long double temp9_1 = fconvert.t(0f)
 00421657        x87_r7_82 - temp9_1

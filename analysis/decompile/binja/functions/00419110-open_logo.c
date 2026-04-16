@@ -25,10 +25,10 @@
 00419199        sub_48b32c(&texture_path, "Intro/%s")
 004191af        struct TextureRef* eax_4 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
 004191b6        edi += 0x80
-004191bc        int32_t ecx_2
-004191bc        ecx_2:1.b = eax_4->__offset(0x0).d:1.b | 4
+004191bc        uint32_t ecx_2
+004191bc        ecx_2:1.b = eax_4->flags:1.b | 4
 004191bf        esi_1 += 1
-004191c0        eax_4->__offset(0x0).d = ecx_2
+004191c0        eax_4->flags = ecx_2
 004191c2        result = __return_addr
 004191c8        do while (esi_1 s< result)
 004191d2        return result

@@ -145,6 +145,94 @@ typedef struct TextureRef {
     int32_t one_a0;
 } TextureRef;
 
+/*
+ * Warning actor controller. Native functions: initialize_warning @ 0x446e80,
+ * start_warning @ 0x446f30, stop_warning @ 0x446f50, update_warning @ 0x446f80,
+ * uninit_warning @ 0x446f10. State machine: 0 = idle, 1 = solid (phase=1s), 2 = fade.
+ */
+typedef struct WarningActor {
+    int32_t state;
+    float progress;
+    float progress_step;
+    FrontendWidget* border;
+} WarningActor;
+
+/*
+ * TimesUp countdown actor, lives on the Game struct at +0x1272828. Native
+ * functions: update_times_up @ 0x445e20, uninit_times_up @ 0x445e70.
+ */
+typedef struct TimesUpController {
+    int32_t state;
+    FrontendWidget* border;
+    float progress;
+    float progress_step;
+} TimesUpController;
+
+/*
+ * Voice manager bank. Holds 16 `cRVoiceSet` playlists (Damage, Dying, Enemies,
+ * Fall, Misc, PowerUp, Slow, Start, Victory, Ouch, Package, Slugged, WormTunnel,
+ * Tutorial, Postal, SuperTramp). Shared instance is the global at 0x751498.
+ * Native functions: initialize_voice_manager @ 0x448ee0, play_voice_manager
+ * @ 0x4492d0, initialize_voice_set @ 0x448df0, play_voice_set @ 0x449260.
+ */
+typedef struct VoiceSet {
+    uint32_t sample_count;
+    uint32_t next_index;
+    int32_t* playlist;
+    int32_t* bites;
+    float cooldown;
+    float cooldown_step;
+} VoiceSet;
+
+typedef struct VoiceManager {
+    VoiceSet sets[16];
+    float global_progress;
+    float global_frequency_seconds;
+} VoiceManager;
+
+/*
+ * Salt hazard runtime slot. Pool lives at `game + 0x3578c0` with 40 slots and
+ * stride 0x98. Each slot carries world position, velocity, owner attachment
+ * template, and an armed-substate flag that collision resolves to zero.
+ * Native functions: initialize_salt_hazard_pool @ 0x441540, spawn_salt_hazard
+ * @ 0x441560, deactivate_salt_hazard @ 0x441740, update_salt_hazard @ 0x4417d0.
+ */
+typedef struct SaltHazardSlot {
+    uint8_t _pad_00[0x68];
+    Vec3 world_position;
+    uint8_t _pad_74[0xc];
+    uint32_t active;
+    uint8_t _pad_84[0x4];
+    struct PathTemplate* owner_template;
+    float velocity_x;
+    float velocity_y;
+    uint32_t armed_substate;
+} SaltHazardSlot;
+
+/*
+ * SubLazer projectile runtime slot. Pool lives at `game + 0x356b00` with 20
+ * slots and stride 0xb0. Each slot is a live projectile fired by Wall2 tile
+ * emitters via `shoot_subgoldy`. Native functions: initialize_sub_lazer_pool
+ * @ 0x441650, spawn_sub_lazer_projectile @ 0x441670,
+ * update_sub_lazer_projectile @ 0x43efb0, destroy_sub_lazer_projectile
+ * @ 0x439bc0.
+ */
+typedef struct SubLazerSlot {
+    uint8_t _pad_00[0x14];
+    float base_y;
+    uint8_t _pad_18[0x4c];
+    void* sprite;
+    Vec3 world_position;
+    uint8_t _pad_74[0xc];
+    uint32_t state;
+    uint8_t _pad_84[0x4];
+    void* emitter;
+    Vec3 velocity;
+    float lifetime_driver;
+    float lifetime;
+    uint8_t _pad_a0[0x10];
+} SubLazerSlot;
+
 typedef struct TextureRefList {
     int32_t count;
     int32_t capacity;

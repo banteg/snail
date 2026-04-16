@@ -25,7 +25,11 @@
 0043317b        *(*(esi_1 + 0x7c) + 0xd0) = allocate_tracked_memory(4, "DX TextureGroupsTexture Ref")
 0043318f        *(*(esi_1 + 0x7c) + 0xd4) = allocate_tracked_memory(4, "DX TextureGroupsTexture Primcount")
 00433195        if (i == 4)
-0043319d        (var_4 - 0x16c)->slots[4].render_object->__offset(0x14).d = 5
+0043319b        struct RenderObjectTextureGroups* render_object = (var_4 - 0x16c)->slots[4].render_object
+0043319d        render_object->_pad_00[0x14] = 5
+0043319d        render_object->_pad_00[0x15] = 0
+0043319d        render_object->_pad_00[0x16] = 0
+0043319d        render_object->_pad_00[0x17] = 0
 004331a4        i += 1
 004331bf        cond:1_1 = var_8 + 5 s< 0x2cb
 004331c4        var_8 += 5

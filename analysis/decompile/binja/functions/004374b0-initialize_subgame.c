@@ -20,30 +20,30 @@
 004374de        i = i_3
 004374de        i_3 -= 1
 004374df        do while (i != 1)
-004374e1        int32_t eax_1 = game->__offset(0x1270fc8).d
-004374f1        if (eax_1 == 2 || eax_1 == 1)
+004374e1        int32_t subgame_rebuild_selector = game->subgame_rebuild_selector
+004374f1        if (subgame_rebuild_selector == 2 || subgame_rebuild_selector == 1)
 004374f3        void* var_30_1 = &data_4dfb08
 004374f8        int32_t var_34_1 = 0
 004374fe        cache_music_file("music/mainmenu.ogg")
-00437516        int32_t eax_3 = load_landscape_script_by_name(data_4df904 + 0x106c218, "Menubg.txt")
-00437522        void* eax_4 = data_4df904
-00437535        change_backdrop(eax_4 + 0x4ec10, eax_4 + eax_3 * 0x124 + 0x106c7bc, 0)
+00437516        int32_t eax_2 = load_landscape_script_by_name(data_4df904 + 0x106c218, "Menubg.txt")
+00437522        void* eax_3 = data_4df904
+00437535        change_backdrop(eax_3 + 0x4ec10, eax_3 + eax_2 * 0x124 + 0x106c7bc, 0)
 0043754b        set_border_justify_centre(data_4df904 + 0xb4c, 0x41c80000)
 00437550        int32_t level_mode = game->level_mode
-00437555        void* __offset(Game, 0x944150) eax_8
+00437555        void* __offset(Game, 0x944150) eax_7
 00437555        if (level_mode == 0)
-0043757e        eax_8 = &game->__offset(0x68b4d0).d
+0043757e        eax_7 = &game->__offset(0x68b4d0).d
 00437584        label_437584:
-00437584        game->__offset(0x68b4c8).d = eax_8
-0043758d        game->__offset(0x355d94).d = (eax_8 - 0x944150)->__offset(0x944154).d
-004375a1        __builtin_memcpy(&game->__offset(0x355d98).d, eax_8 + 8, 0x18)
+00437584        game->__offset(0x68b4c8).d = eax_7
+0043758d        game->__offset(0x355d94).d = (eax_7 - 0x944150)->__offset(0x944154).d
+004375a1        __builtin_memcpy(&game->__offset(0x355d98).d, eax_7 + 8, 0x18)
 00437558        if (level_mode == 1)
-00437567        eax_8 = &game->__offset(0x7e7b10).d
-0043756d        game->__offset(0x68b4c8).d = eax_8
-00437576        game->__offset(0x355d94).d = (eax_8 - 0x944150)->__offset(0x944154).d
-004375a1        __builtin_memcpy(&game->__offset(0x355d98).d, eax_8 + 8, 0x18)
+00437567        eax_7 = &game->__offset(0x7e7b10).d
+0043756d        game->__offset(0x68b4c8).d = eax_7
+00437576        game->__offset(0x355d94).d = (eax_7 - 0x944150)->__offset(0x944154).d
+004375a1        __builtin_memcpy(&game->__offset(0x355d98).d, eax_7 + 8, 0x18)
 0043755d        if (level_mode == 4)
-0043755f        eax_8 = &game->__offset(0x944150).d
+0043755f        eax_7 = &game->__offset(0x944150).d
 00437565        goto label_437584
 004375a9        if (game->selected_level_record_persistent != 0)
 004375b1        float replay_speed_scalar = game->selected_level_record->replay_speed_scalar
@@ -65,7 +65,7 @@
 004375d2        game->_pad_3c[1] = 0
 004375d2        game->_pad_3c[2] = 0
 004375d2        game->_pad_3c[3] = 0
-004375d5        game->__offset(0x1272828).d = 0
+004375d5        game->times_up.state = 0
 0043760b        game->__offset(0x35bb88).d = allocate_border(data_4df904 + 0xb4c)
 00437611        struct Color4f color
 00437611        struct Color4f* color_1 = set_color_rgba(&color, 1f, 1f, 1f, 0.0299999993f)
@@ -75,8 +75,8 @@
 0043765f        *(game->__offset(0x35bb88).d + 0x2cc) = 0
 0043766a        if (game->level_mode == 0)
 0043769c        game->__offset(0x35bb90).d = allocate_border(data_4df904 + 0xb4c)
-004376a2        struct Color4f* eax_13 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
-004376bb        initialize_frontend_sprite_button(game->__offset(0x35bb90).d, 0x400800, 0x7a, 0, 0x42680000, eax_13, 0f, 4)
+004376a2        struct Color4f* eax_12 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+004376bb        initialize_frontend_sprite_button(game->__offset(0x35bb90).d, 0x400800, 0x7a, 0f, 58f, eax_12, 0f, 4)
 004376c6        hide_border_init(game->__offset(0x35bb90).d)
 004376d1        *(game->__offset(0x35bb90).d + 0x178) = 0
 00437702        game->__offset(0x35bb94).d = allocate_border(data_4df904 + 0xb4c)
@@ -88,11 +88,11 @@
 00437746        void* __offset(Game, 0x35bb98) esi_2 = &game->__offset(0x35bb98).d
 0043774c        __builtin_strncpy(game->__offset(0x35bb94).d + 0x6f0, "333?", 4)
 00437781        (esi_2 - 0x35bb98)->__offset(0x35bb98).d = allocate_border(data_4df904 + 0xb4c)
-00437783        struct Color4f* eax_18
+00437783        struct Color4f* eax_17
 00437783        int32_t ecx_23
-00437783        eax_18, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
+00437783        eax_17, ecx_23 = set_color_rgba(&color, 1f, 1f, 1f, 1f)
 00437792        int32_t var_40_1 = ecx_23
-004377ab        initialize_frontend_sprite_button((esi_2 - 0x35bb98)->__offset(0x35bb98).d, 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 0x43d70000, eax_18, 0f, 4)
+004377ab        initialize_frontend_sprite_button((esi_2 - 0x35bb98)->__offset(0x35bb98).d, 0x400800, 0x7b, fconvert.s(float.t(i_2) * fconvert.t(24f) + fconvert.t(13f)), 430f, eax_17, 0f, 4)
 004377b2        *((esi_2 - 0x35bb98)->__offset(0x35bb98).d + 0x178) = 0
 004377ba        hide_border_init((esi_2 - 0x35bb98)->__offset(0x35bb98).d)
 004377bf        i_1 += 1
@@ -127,35 +127,35 @@
 004378fe        case 4
 004378fe        format_time_trial_string(&game->__offset(0x355d98).d)
 00437911        sub_44e5b0(game->__offset(0x35bb8c).d + 0x2cc, 0x751478)
-00437931        void* eax_25 = data_4df904
-00437941        if (*(eax_25 + 0x4f2e0) != 0 || game->level_mode == 7)
+00437931        void* eax_24 = data_4df904
+00437941        if (*(eax_24 + 0x4f2e0) != 0 || game->level_mode == 7)
 00437949        hide_border_init(game->__offset(0x35bb8c).d)
 00437954        hide_border_init(game->__offset(0x35bb88).d)
-00437959        eax_25 = data_4df904
-00437964        if (*(eax_25 + 0x30d) != 0)
+00437959        eax_24 = data_4df904
+00437964        if (*(eax_24 + 0x30d) != 0)
 00437964        return 
-0043796a        *(eax_25 + 0x30d) = 0
+0043796a        *(eax_24 + 0x30d) = 0
 00437980        *(data_4df904 + 0x310) = 0
 00437986        load_builtin_segment_definitions(&game->__offset(0x1b01ec).d, 0x4a63d0)
 00437991        set_matrix_identity(&game->__offset(0x3bb79c).d)
 004379a2        game->__offset(0x3bbb70).d = 0
 004379a8        game->__offset(0x3bbb6c).d = game
-004379ae        int32_t eax_27 = game->__offset(0x3bb7cc).d
+004379ae        int32_t eax_26 = game->__offset(0x3bb7cc).d
 004379b0        game->__offset(0x3bbb81).b = 0
-004379b6        game->__offset(0x3be0c8).d = eax_27
+004379b6        game->__offset(0x3be0c8).d = eax_26
 004379b8        game->__offset(0x3bbb80).b = 0
-004379be        int32_t eax_28 = game->__offset(0x3bb7d0).d
+004379be        int32_t eax_27 = game->__offset(0x3bb7d0).d
 004379c1        game->__offset(0x3bbb68).d = 0
-004379c7        game->__offset(0x3be0cc).d = eax_28
+004379c7        game->__offset(0x3be0cc).d = eax_27
 004379cd        game->__offset(0x3be0d0).d = game->__offset(0x3bb7d4).d
 004379df        game->__offset(0x3bb768).d &= 0xffffffdf
 004379e5        initialize_warning(&game->warning_actor)
-004379ea        int32_t eax_29 = game->__offset(0x1270fc8).d
-004379fb        if (eax_29 != 0 && eax_29 != 3)
+004379ea        int32_t subgame_rebuild_selector_1 = game->subgame_rebuild_selector
+004379fb        if (subgame_rebuild_selector_1 != 0 && subgame_rebuild_selector_1 != 3)
 00437a07        if (game->selected_level_record_persistent == 0)
 00437a18        switch (game->level_mode)
 00437a22        case 0
-00437a22        if (eax_29 == 1)
+00437a22        if (subgame_rebuild_selector_1 == 1)
 00437a27        int32_t edx_16 = game->level_mode_arg + 1
 00437a28        game->level_mode_arg = edx_16
 00437a35        if (edx_16 s> data_4df9b8)

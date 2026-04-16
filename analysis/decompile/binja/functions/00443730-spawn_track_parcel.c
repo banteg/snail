@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_parcel @ 0x443730 */
 
-0044373d        struct TrackParcelRuntime* result = allocate_track_parcel_slot(&game->__offset(0x125e480).d)
+0044373d        struct TrackParcelRuntime* result = allocate_track_parcel_slot(&game->parcel_pool)
 00443746        if (result == 0)
 00443851        return 0
 00443757        result->state = 1

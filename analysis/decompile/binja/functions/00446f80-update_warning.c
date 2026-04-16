@@ -11,7 +11,7 @@
 00446f9b        if (state == 0)
 00446f9b        return 
 00446fa2        if (state == 1)
-00447009        actor->border->__offset(0x208).d = 0x3f7fbe77
+00447009        actor->border->hot_text_color.a = 0.999000013f
 00447016        long double x87_r7_8 = fconvert.t(actor->progress_step) + fconvert.t(actor->progress)
 00447019        actor->progress = fconvert.s(x87_r7_8)
 0044701c        long double temp2_1 = fconvert.t(1f)
@@ -26,9 +26,9 @@
 00446fae        long double temp4_1 = fconvert.t(0.5f)
 00446fae        x87_r7_1 - temp4_1
 00446fb9        if ((((x87_r7_1 < temp4_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp4_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp4_1 ? 1 : 0) << 0xe):1.b & 1) == 0)
-00446fd4        actor->border->__offset(0x208).d = 0
+00446fd4        actor->border->hot_text_color.a = 0f
 00446fbb        long double x87_r7_2 = fconvert.t(actor->progress)
-00446fc9        actor->border->__offset(0x208).d = fconvert.s(fconvert.t(1f) - (x87_r7_2 + x87_r7_2))
+00446fc9        actor->border->hot_text_color.a = fconvert.s(fconvert.t(1f) - (x87_r7_2 + x87_r7_2))
 00446fdd        long double x87_r7_6 = fconvert.t(actor->progress_step) + fconvert.t(actor->progress)
 00446fe0        actor->progress = fconvert.s(x87_r7_6)
 00446fe3        long double temp5_1 = fconvert.t(1f)

@@ -104,18 +104,18 @@
 0044a240        *(eax_25 + 0x7772f8) = var_204
 0044a246        *(eax_25 + &data_777b1c) = arg2
 0044a252        struct TextureRef* eax_27
-0044a252        int32_t ecx_19
+0044a252        uint32_t ecx_19
 0044a252        if (*(eax + 0xc) != 0x800)
 0044a2c8        eax_27 = get_or_create_texture_ref(&data_4b7790, arg1, 0, 0)
 0044a2dd        *(data_777b20 * 0x828 + &data_7772fc) = eax_27
-0044a2e6        ecx_19:1.b = eax_27->__offset(0x0).d:1.b | 4
+0044a2e6        ecx_19:1.b = eax_27->flags:1.b | 4
 0044a25e        struct TextureRef* eax_26 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
 0044a277        *(data_777b20 * 0x828 + &data_7772fc) = eax_26
-0044a28b        eax_26->__offset(0x0).d |= 0x420
+0044a28b        eax_26->flags |= 0x420
 0044a295        eax_27 = get_or_create_texture_ref(&data_4b7790, &texture_path_1, 0, 0)
 0044a2aa        *(data_777b20 * 0x828 + &data_777300) = eax_27
-0044a2b3        ecx_19 = eax_27->__offset(0x0).d | 0x420
-0044a2e9        eax_27->__offset(0x0).d = ecx_19
+0044a2b3        ecx_19 = eax_27->flags | 0x420
+0044a2e9        eax_27->flags = ecx_19
 0044a310        int32_t eax_30 = data_777b20 * 0x828
 0044a313        *(eax_30 + 0x777b10) = 0x3f800000
 0044a31d        *(eax_30 + 0x777b14) = arg3

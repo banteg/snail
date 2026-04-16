@@ -19,12 +19,12 @@
 004332f3        esi_1 = var_40
 0043328c        esi_1 = ecx_3 s/ 0x18
 00433290        var_40 = esi_1
-004332bb        int32_t* eax_9 = manager + esi_1 * 0x12c + 0x90
+004332bb        int32_t* eax_9 = &manager->slots[0]._pad_2c[0xc + esi_1 * 0x12c]
 004332c4        __builtin_memset(&var_28, 0, 0x28)
-004332cc        manager->scratch_cell_base_offset = fconvert.s(float.t(var_40) * fconvert.t(24f))
+004332cc        manager->_pad_a7bc[0].d = fconvert.s(float.t(var_40) * fconvert.t(24f))
 004332de        int32_t i_3 = 5
 004332ef        int32_t i
-004332e9        *eax_9 = manager->scratch_cell_base_offset
+004332e9        *eax_9 = manager->_pad_a7bc[0].d
 004332eb        eax_9 = &eax_9[0xf]
 004332ee        i = i_3
 004332ee        i_3 -= 1
@@ -41,8 +41,8 @@
 00433319        int32_t var_60_1 = 0
 00433349        int32_t var_18
 00433349        int32_t var_4
-00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->__offset(0x0).d)
-00433373        **((&manager->slots[4].render_object)[esi_1 * 0x4b] + 0xd0) = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
+00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->clear_color.b.d)
+00433373        *(&manager->slots[4].render_object)[esi_1 * 0x4b]->texture_group_texture_refs = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
 00433378        *(manager->track_render_grid + ebp_1) = 0
 00433383        ebp_1 += 4
 00433386        cond:2_1 = var_44_1 != 1
@@ -161,8 +161,14 @@
 00433749        break
 00433265        ecx_3 = var_4c
 0043374f        int32_t i_1 = 0
-00433751        manager->scratch_max_vertices = 0
-00433757        manager->scratch_max_indices = 0
+00433751        manager->_pad_a7bc[4] = 0
+00433751        manager->_pad_a7bc[5] = 0
+00433751        manager->_pad_a7bc[6] = 0
+00433751        manager->_pad_a7bc[7] = 0
+00433757        manager->_pad_a7bc[8] = 0
+00433757        manager->_pad_a7bc[9] = 0
+00433757        manager->_pad_a7bc[0xa] = 0
+00433757        manager->_pad_a7bc[0xb] = 0
 0043375d        int32_t i_2 = 0
 00433769        int32_t edi_7 = 0
 0043376b        int32_t ebp_5 = 0

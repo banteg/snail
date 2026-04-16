@@ -70,13 +70,21 @@ GAME_FIELD_UPDATES = (
     ("0x50", "first_block_row_count", "int32_t"),
     ("0x54", "runtime_row_count", "int32_t"),
     ("0x58", "completion_row_start", "int32_t"),
+    ("0x74621", "pause_gate", "uint8_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
+    ("0x356b00", "sub_lazer_pool", "SubLazerSlot[0x14]"),
+    ("0x3578c0", "salt_pool", "SaltHazardSlot[0x28]"),
+    ("0x3bbb58", "warning_actor", "WarningActor"),
+    ("0x432700", "presentation", "PlayerPresentationController"),
     ("0xff25d0", "selected_level_record_active", "uint8_t"),
     ("0xff25d1", "selected_level_record_persistent", "uint8_t"),
     ("0xff25d4", "selected_level_record", "SelectedLevelRecord*"),
     ("0xff25d8", "selected_level_record_saved_return_owner", "int32_t"),
     ("0xff25dc", "runtime_track_index", "int32_t"),
+    ("0x125e480", "parcel_pool", "TrackParcelRuntime[0x32]"),
+    ("0x1270fc8", "subgame_rebuild_selector", "int32_t"),
     ("0x12727d8", "row_event_display", "RowEventDisplayController"),
+    ("0x1272828", "times_up", "TimesUpController"),
 )
 
 SNAIL_VISUAL_FIELD_UPDATES = (

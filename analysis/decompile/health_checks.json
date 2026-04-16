@@ -68,6 +68,77 @@
         "unimplemented",
         "__offset("
       ]
+    },
+    {
+      "name": "bn_frontend_widget_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/00401a70-initialize_frontend_sprite_button.c",
+      "required_substrings": [
+        "arg1->list_flags",
+        "arg1->list_prev",
+        "arg1->list_next",
+        "arg1->state_5c",
+        "arg1->tooltip.state",
+        "arg1->render_inset_delta",
+        "arg1->font_id",
+        "arg1->font_scale"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_path_template_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/0042c770-try_enter_track_attachment_from_swept_motion.c",
+      "required_substrings": [
+        "template_record->segment_count",
+        "template_record->secondary_samples",
+        "source_cell->anchor_position"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_voice_manager_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/004492d0-play_voice_manager.c",
+      "required_substrings": [
+        "manager->sets",
+        "manager->global_progress",
+        "manager->global_frequency_seconds"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_snail_skin_fields_intact",
+      "artifact": "analysis/decompile/binja/functions/00445fd0-change_snail_skin.c",
+      "required_substrings": [
+        "state->active",
+        "state->selected_slot",
+        "state->progress",
+        "state->progress_step"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
+    },
+    {
+      "name": "bn_game_warning_field_intact",
+      "artifact": "analysis/decompile/binja/functions/00438850-destroy_subgame.c",
+      "required_substrings": [
+        "game->warning_actor",
+        "game->level_mode",
+        "flush_row_event_display(&game->row_event_display)"
+      ],
+      "forbidden_substrings": [
+        "__asm",
+        "_ET1"
+      ]
     }
   ]
 }

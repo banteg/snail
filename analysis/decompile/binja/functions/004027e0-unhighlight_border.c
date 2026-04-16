@@ -3,7 +3,7 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: unhighlight_border @ 0x4027e0 */
 
-004027e0        int32_t result = widget->__offset(0x214).d
-004027e6        widget->__offset(0x20c).d = 0
-004027f0        widget->__offset(0x21c).d = result
-004027f6        return result
+004027e0        float idle_padding = widget->idle_padding
+004027e6        widget->hover_blend_target = 0f
+004027f0        widget->target_padding = idle_padding
+004027f6        return idle_padding

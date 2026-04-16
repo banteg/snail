@@ -34,8 +34,8 @@
 00444ddf        player->_pad_14d[0x88] = ecx_2:1.b
 00444ddf        player->_pad_14d[0x89] = ecx_2:2.b
 00444ddf        player->_pad_14d[0x8a] = ecx_2:3.b
-00444df8        player->game->_pad_00[i + 0x357954] = 0
-00444e00        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.150000006f, 0)
+00444df8        *(&player->game->salt_pool[0].armed_substate + i) = 0
+00444e00        x87control = apply_damage_gauge_delta(&player->_pad_3c4, 0.150000006f, 0)
 00444e05        i += 0x98
 00444e1e        int32_t i_1 = 0
 00444ece        while (i_1 s< 0xdc0)
@@ -54,8 +54,8 @@
 00444e92        long double temp12_1 = fconvert.t(0.49000001f)
 00444e92        st0_2 - temp12_1
 00444e9d        if ((((st0_2 < temp12_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp12_1) ? 1 : 0) << 0xa | (st0_2 == temp12_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
-00444eac        *(i_1 + player->game + 0x356b80) = 2
-00444ebd        x87control = apply_damage_gauge_delta(&player->damage_gauge, 0.0199999996f, 0)
+00444eac        *(&player->game->sub_lazer_pool[0].state + i_1) = 2
+00444ebd        x87control = apply_damage_gauge_delta(&player->_pad_3c4, 0.0199999996f, 0)
 00444ec2        i_1 += 0xb0
 00444eda        void* i_2 = player->game->__offset(0x359140).d
 00444ee2        while (i_2 != 0)
@@ -84,7 +84,7 @@
 00444fc2        *(i_2 + 0x88) = 1
 00444fba        *(i_2 + 0x88) = 2
 00444fce        add_subgoldy_score(player, 0, 0)
-0044500a        x87control = play_sound_effect(0x27 - __ftol(apply_damage_gauge_delta(&player->damage_gauge, 0.0399999991f, 0), float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f)))
+0044500a        x87control = play_sound_effect(0x27 - __ftol(apply_damage_gauge_delta(&player->_pad_3c4, 0.0399999991f, 0), float.t(next_math_random_value()) * fconvert.t(-6.10351562e-05f)))
 0044500f        i_2 = *(i_2 + 0x80)
 0044501d        void* i_3 = nullptr
 0044524b        while (i_3 s< 0x760)
@@ -112,7 +112,7 @@
 004450c7        if (eax_15.b != 0)
 0044520b        long double x87_r7_49 = fconvert.t(player->game->track_center_x)
 0044521e        player->velocity.z = fconvert.s(x87_r7_49 * x87_r7_49 * fconvert.t(0.00400000019f) * fconvert.t(-8f))
-00445226        x87control = apply_damage_gauge_delta(&player->damage_gauge, 1f, 0)
+00445226        x87control = apply_damage_gauge_delta(&player->_pad_3c4, 1f, 0)
 004450cd        struct Game* game = player->game
 004450d3        player->control_override_active = 1
 004450da        player->follow_state.active = 0
@@ -141,7 +141,7 @@
 0044535a        while (i_4 s< 0x1b58)
 00445253        struct Game* game_4 = player->game
 00445259        void* eax_23 = i_4 + game_4
-00445265        if (*(i_4 + game_4 + 0x125e4b8) == 1)
+00445265        if (*(&game_4->parcel_pool[0].state + i_4) == 1)
 00445277        vector_2.x = fconvert.s(fconvert.t(*(eax_23 + 0x125e490)) - fconvert.t(player->cached_camera_target_world.x))
 0044528b        vector_2.y = fconvert.s(fconvert.t(*(eax_23 + 0x125e494)) - fconvert.t(player->cached_camera_target_world.y))
 00445295        long double x87_r7_56 = fconvert.t(*(eax_23 + 0x125e498)) - fconvert.t(player->cached_camera_target_world.z)
@@ -162,7 +162,7 @@
 004452e0        add_subgoldy_score(player, 3, 0)
 004452ef        play_voice_manager(0x751498, 0xa, 1, 0xffffffff)
 004452fb        play_sound_effect(0x1b)
-00445306        *(i_4 + player->game + 0x125e4b8) = 4
+00445306        *(&player->game->parcel_pool[0].state + i_4) = 4
 00445317        struct Game* game_1 = player->game
 0044531d        int32_t ebx_2 = player->presentation.cutscene_ai._pad_59[3].d + 1
 0044531e        player->presentation.cutscene_ai._pad_59[3] = ebx_2.b
@@ -215,7 +215,7 @@
 0044542f        play_sound_effect(0xe)
 0044543a        *(i_5 + player->game + 0x356038) = 2
 00445455        health_collect_particles(player, i_5 + player->game + 0x356000)
-00445467        apply_damage_gauge_delta(&player->damage_gauge, -0.5f, 0)
+00445467        apply_damage_gauge_delta(&player->_pad_3c4, -0.5f, 0)
 0044546c        i_5 += 0x74
 0044547b        struct Game* game_2 = player->game
 00445487        if (game_2->__offset(0x355e30).d == 1)
@@ -277,7 +277,7 @@
 004455e0        st0_8 - temp15_1
 004455eb        if ((((st0_8 < temp15_1 ? 1 : 0) << 8 | (is_unordered.t(st0_8, temp15_1) ? 1 : 0) << 0xa | (st0_8 == temp15_1 ? 1 : 0) << 0xe):1.b & 1) != 0)
 004455f3        player->game->__offset(0x355e9c).d = 2
-00445603        arm_jetpack_gauge(&player->jetpack_gauge.state)
+00445603        arm_jetpack_gauge(&player->_pad_2744[0xc])
 00445829        void* result
 00445608        void* i_6 = nullptr
 00445829        while (i_6 s< 0x3f0)
@@ -316,10 +316,13 @@
 004456fd        result = *(i_6 + game_7 + 0x35b814)
 00445710        int32_t eax_41
 00445710        if (result == 4 || result == 5)
-004457ab        int32_t eax_42 = player->__offset(0x404).d
+004457ab        int32_t eax_42 = player->_pad_3c4[0x40].d
 004457b4        if (eax_42 s< 0xa)
 004457c0        if ((game_7->runtime_flags.b & 0x10) != 0 && game_7->level_mode != 3)
-004457c3        player->__offset(0x404).d = eax_42 + 1
+004457c3        player->_pad_3c4[0x40] = (eax_42 + 1).b
+004457c3        player->_pad_3c4[0x41] = (eax_42 + 1):1.b
+004457c3        player->_pad_3c4[0x42] = (eax_42 + 1):2.b
+004457c3        player->_pad_3c4[0x43] = (eax_42 + 1):3.b
 004457d4        play_voice_manager(0x751498, 5, 1, 0xffffffff)
 004457d9        int32_t movement_flag_selector_1 = player->movement_flag_selector
 004457e2        if (movement_flag_selector_1 s< 8)
