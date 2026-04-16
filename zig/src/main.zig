@@ -3999,10 +3999,11 @@ const AppState = struct {
             const owner = self.selectedReplayLaunchOwnerState() orelse frontend_bridge.outerOwnerStateMainMenu();
             // PORT(verified): when `app + 0x1066be9` is clear, BN `update_pause_menu` falls
             // through to completion state `2`. BN plus IDA then show `update_completion_screen`
-            // state `2` destroying subgame, and on the time-trial replay path (`level_mode == 4`)
-            // reinitializing subgame without using bridge state `0x1c`. `initialize_subgame`
-            // then rebuilds the route-map owner from the preserved nonzero continuation selector,
-            // so transient route-map replay abandon matches opcode `27`, not respawn-only `28`.
+            // state `2` destroying subgame, and on the Time Trial replay path
+            // (`level_mode == FrontendLevelMode.time_trial`) reinitializing subgame without
+            // using bridge state `0x1c`. `initialize_subgame` then rebuilds the route-map owner
+            // from the preserved nonzero continuation selector, so transient route-map replay
+            // abandon matches opcode `27`, not respawn-only `28`.
             opcode.* = .rebuild_return;
             return owner;
         }
@@ -7877,11 +7878,11 @@ fn drawGameplayBillboardQuad(
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const loaded_object = state.current_gameplay_barrier_object orelse return;
-    // Native barrier visibility follows `Game.level_mode == 7` (tutorial): native
-    // `initialize_tutorial` 0x448da0 sets `runtime_flags |= 0x600000` and
-    // `set_subgame_features` 0x435df0 maps mode 7 to runtime_flags 0xe4cfff which
-    // also includes those bits. NoFall segments additionally expose the barrier
-    // in non-tutorial modes via the per-row annotation.
+    // Native barrier visibility follows `Game.level_mode == FrontendLevelMode.tutorial`
+    // (= 7): `initialize_tutorial` (0x448da0) sets `runtime_flags |= 0x600000` and
+    // `set_subgame_features` (0x435df0) maps the tutorial mode to runtime_flags
+    // 0xe4cfff which also includes those bits. NoFall segments additionally expose
+    // the barrier in non-tutorial modes via the per-row annotation.
     const tutorial_active = runner.session_mode == .tutorial or state.isTutorialLevel();
     const barrier_active = tutorial_active or runner.current_annotation == .no_fall;
     if (!barrier_active) return;
