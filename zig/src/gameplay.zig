@@ -5,6 +5,7 @@ const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
+const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
 const track = @import("track.zig");
@@ -20,93 +21,21 @@ const TrackParcelRuntime = gameplay_runtime_entities.TrackParcel;
 const TrackParcelHomeAnchor = gameplay_runtime_entities.TrackParcelHomeAnchor;
 const TurretState = gameplay_runtime_entities.TurretState;
 
-pub const RunnerInput = struct {
-    lane_delta: i8 = 0,
-    target_lane_center: ?f32 = null,
-    speed_delta_rows_per_second: f32 = 0.0,
-    fire_pressed: bool = false,
-    fire_down: bool = false,
-    toggle_pause: bool = false,
-    reset: bool = false,
-};
+pub const RunnerInput = runner_state.RunnerInput;
 
-pub const ReplayDirective = struct {
-    active: bool = false,
-    lateral_world_x: ?f32 = null,
-    secondary_lane: ?i32 = null,
-    raw_flag_bits: u8 = 0,
-};
+pub const ReplayDirective = runner_state.ReplayDirective;
 
-pub const AttachmentHint = enum {
-    none,
-    probe,
-    entry,
+pub const AttachmentHint = runner_state.AttachmentHint;
 
-    pub fn label(self: AttachmentHint) []const u8 {
-        return switch (self) {
-            .none => "none",
-            .probe => "probe",
-            .entry => "entry",
-        };
-    }
-};
+pub const MovementMode = runner_state.MovementMode;
 
-pub const MovementMode = enum {
-    track,
-    attachment,
-
-    pub fn label(self: MovementMode) []const u8 {
-        return switch (self) {
-            .track => "track",
-            .attachment => "attachment",
-        };
-    }
-};
-
-pub const SessionMode = enum {
-    debug,
-    postal,
-    challenge,
-    time_trial,
-    tutorial,
-
-    pub fn label(self: SessionMode) []const u8 {
-        return switch (self) {
-            .debug => "debug",
-            .postal => "postal",
-            .challenge => "challenge",
-            .time_trial => "time_trial",
-            .tutorial => "tutorial",
-        };
-    }
-};
-
-pub const DeathCause = enum {
-    damage,
-    hazard,
-    fall,
-
-    pub fn label(self: DeathCause) []const u8 {
-        return switch (self) {
-            .damage => "damage",
-            .hazard => "hazard",
-            .fall => "fall",
-        };
-    }
-};
-
-pub const cutscene_none_id: u8 = 0;
-pub const cutscene_intro_id: u8 = 1;
-pub const cutscene_completion_id: u8 = 5;
-pub const cutscene_death_id: u8 = 10;
-
-pub const RunnerHandoff = union(enum) {
-    none,
-    completion_screen_init,
-    completion_finalize,
-    respawn: DeathCause,
-    final_loss: DeathCause,
-};
+pub const SessionMode = runner_state.SessionMode;
+pub const DeathCause = runner_state.DeathCause;
+pub const cutscene_none_id = runner_state.cutscene_none_id;
+pub const cutscene_intro_id = runner_state.cutscene_intro_id;
+pub const cutscene_completion_id = runner_state.cutscene_completion_id;
+pub const cutscene_death_id = runner_state.cutscene_death_id;
+pub const RunnerHandoff = runner_state.RunnerHandoff;
 
 const FallState = struct {
     cause: DeathCause,
@@ -118,24 +47,7 @@ const FallState = struct {
     basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
 };
 
-pub const Projectile = struct {
-    pub const Kind = enum {
-        turbo,
-        laser,
-        rocket,
-        enemy_laser,
-    };
-
-    active: bool = false,
-    kind: Kind = .turbo,
-    world_x: f32 = 0.0,
-    world_y: f32 = 0.0,
-    world_z: f32 = 0.0,
-    dir_x: f32 = 0.0,
-    dir_y: f32 = 0.0,
-    dir_z: f32 = 1.0,
-    speed_rows_per_second: f32 = 0.0,
-};
+pub const Projectile = runner_state.Projectile;
 
 const RunnerPhase = union(enum) {
     active,
