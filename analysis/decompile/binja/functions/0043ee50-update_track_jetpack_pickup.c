@@ -3,62 +3,72 @@
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_track_jetpack_pickup @ 0x43ee50 */
 
-0043ee56        void* result = *(arg1 + 0x8c)
-0043ee5f        if (*(result + 9) == 0)
-0043ee65        int32_t result_1 = *(arg1 + 0x80)
-0043ee6b        result = result_1
-0043ee6d        if (result_1 != 0)
-0043ee73        void* eax = result - 1
+0043ee5f        if (*(pickup->__offset(0x8c).d + 9) != 0)
+0043ee5f        return 
+0043ee65        int32_t eax_1 = pickup->__offset(0x80).d
+0043ee6d        if (eax_1 == 0)
+0043ee6d        return 
 0043ee74        void* ecx_1
-0043ee74        if (result == 1)
-0043eefa        long double x87_r7_1 = fconvert.t(*(arg1 + 0x70))
-0043eefd        long double temp2_1 = fconvert.t(*(*(arg1 + 0x84) + 0x2980))
+0043ee74        if (eax_1 == 1)
+0043eefa        long double x87_r7_1 = fconvert.t(pickup->_pad_70)
+0043eefd        long double temp2_1 = fconvert.t(*(pickup->__offset(0x84).d + 0x2980))
 0043eefd        x87_r7_1 - temp2_1
-0043ef03        result.w = (x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe
-0043ef08        if ((result:1.b & 1) != 0)
-0043ef0e        int16_t eax_6 = (*(arg1 + 4)).w
-0043ef11        *(arg1 + 0x80) = 0
+0043ef03        void* eax_8
+0043ef03        eax_8.w = (x87_r7_1 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp2_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp2_1 ? 1 : 0) << 0xe
+0043ef08        if ((eax_8:1.b & 1) != 0)
+0043ef0e        int16_t eax_9 = (pickup->_pad_00[4].d).w
+0043ef11        pickup->__offset(0x80).d = 0
 0043ef1d        ecx_1 = data_4df904 + 0x5a8
-0043ef26        if ((eax_6:1.b & 2) == 0)
+0043ef26        if ((eax_9:1.b & 2) == 0)
 0043ef2d        report_errorf("List remove")
-0043ef42        return kill_sprite(*(arg1 + 0xac))
-0043ef45        if ((eax_6.b & 0x40) != 0)
+0043ef3b        kill_sprite(pickup->__offset(0xac).d)
+0043ef42        return 
+0043ef45        if ((eax_9.b & 0x40) != 0)
 0043ef4c        report_errorf("List remove NEXTBOD")
-0043ef61        return kill_sprite(*(arg1 + 0xac))
-0043ef62        void* eax_9 = *(arg1 + 0xc)
-0043ef67        if (eax_9 != 0)
-0043ef6c        *(eax_9 + 8) = *(arg1 + 8)
-0043ef6f        void* eax_10 = *(arg1 + 8)
-0043ef74        if (eax_10 == 0)
+0043ef5a        kill_sprite(pickup->__offset(0xac).d)
+0043ef61        return 
+0043ef62        void* eax_10 = pickup->_pad_00[0xc].d
+0043ef67        if (eax_10 != 0)
+0043ef6c        *(eax_10 + 8) = pickup->_pad_00[8].d
+0043ef6f        void* eax_11 = pickup->_pad_00[8].d
+0043ef74        if (eax_11 == 0)
 0043ef81        label_43ef81:
-0043ef81        *(ecx_1 + 4) = *(arg1 + 0xc)
-0043ef81        goto label_43ef87
-0043ef79        *(eax_10 + 0xc) = *(arg1 + 0xc)
-0043ef87        label_43ef87:
-0043ef87        *(arg1 + 0xc) = *(ecx_1 + 8)
-0043ef8a        *(ecx_1 + 8) = arg1
-0043ef90        void* ecx_7 = *(arg1 + 0xac)
-0043ef96        int32_t eax_12
-0043ef96        eax_12:1.b = (*(arg1 + 4)):1.b & 0xfd
-0043ef99        *(arg1 + 4) = eax_12
-0043ef9c        return kill_sprite(ecx_7)
-0043ee76        result = eax - 1
-0043ee77        if (eax == 1)
-0043ee7d        int16_t eax_1 = (*(arg1 + 4)).w
-0043ee80        *(arg1 + 0x80) = 0
+0043ef81        *(ecx_1 + 4) = pickup->_pad_00[0xc].d
+0043ef81        goto label_43ef84
+0043ef79        *(eax_11 + 0xc) = pickup->_pad_00[0xc].d
+0043ef84        label_43ef84:
+0043ef84        int32_t edx_3 = *(ecx_1 + 8)
+0043ef87        pickup->_pad_00[0xc] = edx_3.b
+0043ef87        pickup->_pad_00[0xd] = edx_3:1.b
+0043ef87        pickup->_pad_00[0xe] = edx_3:2.b
+0043ef87        pickup->_pad_00[0xf] = edx_3:3.b
+0043ef8a        *(ecx_1 + 8) = pickup
+0043ef90        void* ecx_7 = pickup->__offset(0xac).d
+0043ef96        int32_t eax_13
+0043ef96        eax_13:1.b = pickup->_pad_00[4].d:1.b & 0xfd
+0043ef99        pickup->_pad_00[4] = eax_13.b
+0043ef99        pickup->_pad_00[5] = eax_13:1.b
+0043ef99        pickup->_pad_00[6] = eax_13:2.b
+0043ef99        pickup->_pad_00[7] = eax_13:3.b
+0043ef9c        kill_sprite(ecx_7)
+0043ee77        if (eax_1 == 2)
+0043ee7d        int16_t eax_5 = (pickup->_pad_00[4].d).w
+0043ee80        pickup->__offset(0x80).d = 0
 0043ee8c        ecx_1 = data_4df904 + 0x5a8
-0043ee95        if ((eax_1:1.b & 2) == 0)
+0043ee95        if ((eax_5:1.b & 2) == 0)
 0043ee9c        report_errorf("List remove")
-0043eeb1        return kill_sprite(*(arg1 + 0xac))
-0043eeb4        if ((eax_1.b & 0x40) != 0)
+0043eeaa        kill_sprite(pickup->__offset(0xac).d)
+0043eeb1        return 
+0043eeb4        if ((eax_5.b & 0x40) != 0)
 0043eebb        report_errorf("List remove NEXTBOD")
-0043eed0        return kill_sprite(*(arg1 + 0xac))
-0043eed1        void* eax_4 = *(arg1 + 0xc)
-0043eed6        if (eax_4 != 0)
-0043eedb        *(eax_4 + 8) = *(arg1 + 8)
-0043eede        void* eax_5 = *(arg1 + 8)
-0043eee3        if (eax_5 == 0)
+0043eec9        kill_sprite(pickup->__offset(0xac).d)
+0043eed0        return 
+0043eed1        void* eax_6 = pickup->_pad_00[0xc].d
+0043eed6        if (eax_6 != 0)
+0043eedb        *(eax_6 + 8) = pickup->_pad_00[8].d
+0043eede        void* eax_7 = pickup->_pad_00[8].d
+0043eee3        if (eax_7 == 0)
 0043eee3        goto label_43ef81
-0043eeec        *(eax_5 + 0xc) = *(arg1 + 0xc)
-0043eeef        goto label_43ef87
-0043efa3        return result
+0043eeec        *(eax_7 + 0xc) = pickup->_pad_00[0xc].d
+0043eeef        goto label_43ef84
+0043efa3        return

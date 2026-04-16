@@ -21,8 +21,8 @@
 00408188        initialize_bod_base(arg1 + 0x355d24)
 00408193        initialize_bod_base(arg1 + 0x355d5c)
 0040819e        initialize_track_speedup_runtime(arg1 + 0x355db0)
+0040819e        int16_t top = 0xfff5
 004081a9        initialize_track_jetpack_pickup_runtime(arg1 + 0x355e64)
-004081a9        int16_t top = 0xfff2
 004081ae        char** edi_2 = arg1 + 0x356000
 004081b4        int32_t i_8 = 8
 004081c4        int32_t i

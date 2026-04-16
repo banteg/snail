@@ -169,6 +169,20 @@ typedef struct TimesUpController {
 } TimesUpController;
 
 /*
+ * Stopwatch tick counter. Native advance_timer_counters @ 0x441b90 increments
+ * total_seconds and second_fraction by `delta_ticks * (1/60)`, rolling frames
+ * into minutes and publishing hundredths / thousandths for the HUD.
+ */
+typedef struct Stopwatch {
+    float total_seconds;
+    int32_t minutes;
+    int32_t frames_into_second;
+    int32_t display_hundredths;
+    int32_t display_thousandths;
+    float second_fraction;
+} Stopwatch;
+
+/*
  * Voice manager bank. Holds 16 `cRVoiceSet` playlists (Damage, Dying, Enemies,
  * Fall, Misc, PowerUp, Slow, Start, Victory, Ouch, Package, Slugged, WormTunnel,
  * Tutorial, Postal, SuperTramp). Shared instance is the global at 0x751498.

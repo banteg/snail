@@ -72,6 +72,7 @@ GAME_FIELD_UPDATES = (
     ("0x58", "completion_row_start", "int32_t"),
     ("0x74621", "pause_gate", "uint8_t"),
     ("0xa854", "track_state_latch", "uint8_t"),
+    ("0xa874", "level_segment_count", "int32_t"),
     ("0x356b00", "sub_lazer_pool", "SubLazerSlot[0x14]"),
     ("0x3578c0", "salt_pool", "SaltHazardSlot[0x28]"),
     ("0x3bbb58", "warning_actor", "WarningActor"),

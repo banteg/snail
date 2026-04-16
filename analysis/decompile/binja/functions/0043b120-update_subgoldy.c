@@ -220,7 +220,7 @@
 0043b6ef        struct Game* game_58 = player_1->game
 0043b706        int32_t eax_26 = get_track_cell_row_index(eax_24) * 0x3d
 0043b710        struct Game* eax_27 = *(game_58 + (eax_26 << 2) + 0x5ccbb8)
-0043b734        if (eax_27 s> 0 && eax_27 != player_1->_pad_14d[0x9b].d && eax_27 s< game_58->__offset(0xa874).d + 1)
+0043b734        if (eax_27 s> 0 && eax_27 != player_1->_pad_14d[0x9b].d && eax_27 s< game_58->level_segment_count + 1)
 0043b73a        player_1->_pad_14d[0x9b] = eax_27.b
 0043b73a        player_1->_pad_14d[0x9c] = eax_27:1.b
 0043b73a        player_1->_pad_14d[0x9d] = eax_27:2.b
@@ -269,7 +269,7 @@
 0043b80a        dispatch_cutscene_animation(&player_1->presentation, animation_id, 1, y)
 0043b80f        y = 0xffffffff
 0043b817        dispatch_cutscene_animation(&player_1->presentation, 1, 0, y)
-0043b837        struct Player* y_7 = *(*(game_58 + (eax_26 << 2) + 0x5ccbb8) * 0x4220 + player_1->game + 0xa874)
+0043b837        struct Player* y_7 = (&player_1->game->level_segment_count)[*(game_58 + (eax_26 << 2) + 0x5ccbb8) * 0x1088]
 0043b841        if (y_7 != 0xffffffff)
 0043b843        y = y_7
 0043b84d        play_voice_manager(0x751498, 0xd, 2, y)
