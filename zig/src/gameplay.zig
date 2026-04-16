@@ -1915,7 +1915,10 @@ pub const Runner = struct {
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
                 if (self.invincible_ticks > 0) {
-                    self.defeatSlug(global_row, sample.resolved_lane_index);
+                    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a
+                    // takes the invincible-path slug contact through `kill_slug_hazard`
+                    // without `add_subgoldy_score`.
+                    self.defeatSlugSilent(global_row, sample.resolved_lane_index);
                     return;
                 }
                 self.counters.slug_hits += 1;
@@ -2958,12 +2961,26 @@ pub const Runner = struct {
     }
 
     fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
+        self.markSlugDefeated(global_row, lane_index, true);
+    }
+
+    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a takes an invincible
+    // slug contact through `kill_slug_hazard` without calling `add_subgoldy_score`. The
+    // score-awarding `defeatSlug` is only used by projectile kills and explosive-ring
+    // shockwaves; the invincible contact lane marks the slug defeated without score.
+    fn defeatSlugSilent(self: *Runner, global_row: usize, lane_index: usize) void {
+        self.markSlugDefeated(global_row, lane_index, false);
+    }
+
+    fn markSlugDefeated(self: *Runner, global_row: usize, lane_index: usize, award_score: bool) void {
         if (self.isSlugDefeated(global_row, lane_index)) return;
         if (self.defeated_slug_cell_count < max_defeated_slug_cells) {
             self.defeated_slug_cells[self.defeated_slug_cell_count] = .{ .row = global_row, .lane = lane_index };
             self.defeated_slug_cell_count += 1;
         }
-        self.recordScore(&self.score.garbage_collision, slug_projectile_kill_score);
+        if (award_score) {
+            self.recordScore(&self.score.garbage_collision, slug_projectile_kill_score);
+        }
     }
 
     fn findTrackParcelSlotIndex(self: *const Runner, global_row: usize) ?usize {
@@ -7050,7 +7067,7 @@ test "runtime hazards preserve recovered presentation scalars" {
     try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
 }
 
-test "invincible slug contact defeats slug instead of entering death" {
+test "invincible slug contact defeats slug without score award" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -7062,7 +7079,10 @@ test "invincible slug contact defeats slug instead of entering death" {
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
-    try std.testing.expectEqual(@as(u32, slug_projectile_kill_score), runner.score.total);
+    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a goes through
+    // `kill_slug_hazard` without `add_subgoldy_score`; the score only applies when the
+    // slug is killed by a projectile or explosive-ring shockwave.
+    try std.testing.expectEqual(@as(u32, 0), runner.score.total);
 }
 
 test "warning actor follows the native solid and fade cadence" {

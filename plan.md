@@ -20,8 +20,8 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 ## 2. Damage / warning / jetpack gauges
 
 - [ ] Add 6× accelerated drain in `update_damage_gauge` state 2 when `*(+0x4301bc)!=0` — extra `apply_damage_gauge_delta(-0.00666666683, 0)` per tick (native 0x441074). Constant currently absent in Zig.
-- [ ] Replace `disarmJetpackGauge` on `progress > 1.0` (gameplay.zig:3957) with "skip warning math this tick" — native does NOT disarm at overflow
-- [ ] Add the `(progress − cycle_phase) ≥ 0.94` boundary crossing: call `set_snail_jetpack(0)` + `uninit_jet_particles` side effects at 0x43a441
+- [x] Replace `disarmJetpackGauge` on `progress > 1.0` (gameplay.zig:3957) with "skip warning math this tick" — native does NOT disarm at overflow
+- [ ] Add the `(progress − cycle_phase) ≥ 0.94` boundary crossing: call `set_snail_jetpack(0)` + `uninit_jet_particles` side effects at 0x43a441 (current port: stub marker only; needs snail-jetpack weapon visual + jet-particles actor ports first)
 - [ ] Model native jetpack state 2 (hover). Add `end_jetpack_hover` (0x43a370) analogue. Currently Zig collapses to a bool.
 - [ ] Add `apply_damage_gauge_delta` early-out: `(*(+0x4300b4) & 0x80) && !force` bypass gate
 - [ ] Thread the `force` parameter through `applyDamageGaugeDelta` call sites
@@ -30,7 +30,7 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 - [ ] Add `change_snail_skin(..+0x434038, 1, 0.2)` call in state-2 drainer (0x441054)
 - [ ] Call `stop_warning_sample` on state-2 exit (0x441105 → `stop_warning_sample_handle(play_warning_sample_backend(0x32))`)
 - [ ] Model global pause gate `data_4df904 + 0x74621` — suppresses `update_warning`, `update_damage_gauge`, and the pulse lane (native 0x446f88, 0x440fdc, 0x4411fa)
-- [ ] Stop writing `pulse_envelope=1.0` in `armJetpackGauge` — native leaves it unwritten
+- [x] Stop writing `pulse_envelope=1.0` in `armJetpackGauge` — native leaves it unwritten
 - [ ] Wire `set_snail_jetpack` sfx: `play_sound_effect(0x1a)` on arm/activate, `play_sound_effect(0x10)` on deactivate + weapon-animation hooks
 
 ## 3. `handle_subgoldy_collisions` (0x444cf0)
@@ -45,14 +45,14 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 - [ ] Add slug repeat-hit z-velocity knockback: `velocity.z += tc_x² × 0.004 × -8` (0x44521e)
 - [ ] Drop the +100 score on invincible-path slug defeat — native's `kill_slug_hazard` does not call `add_subgoldy_score` (0x44523a). Currently `gameplay.zig:1917–1920` awards `slug_projectile_kill_score`.
 - [ ] Replace `attachment_entry_rider_height` pre-loop check for health/jetpack pickups with per-slot `player.live_matrix.position.y >= 0.49` gate (BN 0x4453c4, 0x4455b1)
-- [ ] Wire the 7 collision sfx:
-  - [ ] 0x44500a: sfx `0x27 - rand` (garbage hit)
-  - [ ] 0x4452fb: sfx `0x1b` (parcel pickup)
-  - [ ] 0x44542f: sfx `0xe` (health collect)
-  - [ ] 0x4456f2: sfx `0x2b` (native ring 3/7 slow)
-  - [ ] 0x445763: sfx `1` (ring kind 1)
-  - [ ] 0x44578d: sfx `0x2a` (ring kinds 2/6 nuke)
-  - [ ] 0x44580d: sfx `eax_50 + 1` (ring kinds 4/5/8)
+- [x] Wire the 7 collision sfx — already wired via counter/cue diffs in `main.zig:playGameplayRunnerAudio` (not via direct calls inside `processRuntimePickupCollisions`). Verified:
+  - [x] 0x44500a: sfx `0x27 - rand` (garbage hit) — `garbage_hits` counter → `asteroid_impact` pick
+  - [x] 0x4452fb: sfx `0x1b` (parcel pickup) — `NativeGameplaySoundCues.parcel_pickup` → `place_package`
+  - [x] 0x44542f: sfx `0xe` (health collect) — `health_pickups` counter → `heart`
+  - [x] 0x4456f2: sfx `0x2b` (native ring 3/7 slow) — `nativeSlowRingSoundTriggered` → `slow_ring`
+  - [x] 0x445763: sfx `1` (ring kind 1) — `nativeRingPickupSoundIndex` → `powerup_pickup[0]`
+  - [x] 0x44578d: sfx `0x2a` (ring kinds 2/6 nuke) — `nativeExplodeRingSoundTriggered` → `explode_ring`
+  - [x] 0x44580d: sfx `eax_50 + 1` (ring kinds 4/5/8) — `nativeRingPickupSoundIndex` via `movement_flag_selector`
 - [ ] Wire the 3 voice cues:
   - [ ] `play_voice_manager(0x751498, 0xa, ...)` at 0x4452ef (parcel voice)
   - [ ] `play_voice_manager(0x751498, 5, ...)` at 0x4457d4 (ring-4/5 voice)
@@ -67,7 +67,7 @@ The whole retirement lane is in the wrong runner phase — `stepAttachmentExitSt
 
 ## 5. Voice-4 milestone — close as dead code
 
-- [ ] Do not port voice-4 at 0x420d30. Field `[esi+0x44]` is `PathTemplate.segment_count` (not `sample_count`). Gate `sample_index+1 == segment_count*2` is unreachable — termination at `sample_index == segment_count` fires first. Just close the item.
+- [x] Do not port voice-4 at 0x420d30. Field `[esi+0x44]` is `PathTemplate.segment_count` (not `sample_count`). Gate `sample_index+1 == segment_count*2` is unreachable — termination at `sample_index == segment_count` fires first. Just close the item.
 
 ## 6. Doc corrections (after fixes land)
 
