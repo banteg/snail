@@ -42,30 +42,63 @@ pub fn drawTutorialHud(state: anytype, layout: VirtualLayout, runner: gameplay.R
 }
 
 pub fn drawStandardHud(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) !void {
-    const parcel_target = currentParcelTarget(state);
-    const parcel_count = runner.counters.parcels;
+    // PORT(verified): `initialize_subgame` (0x4374b0) allocates five widget-backed
+    // HUD elements. Widget A (`game+0x35bb88`) is the top-right score, widget D
+    // (`game+0x35bb8c`) the top-left reference best, widgets B/C the Postal
+    // parcel icon + count, and widgets 0..9 the life row. See docs/re/hud-pipeline.md.
 
-    if (parcel_target > 0) {
-        var parcel_buffer: [32]u8 = undefined;
-        const parcel_text = try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target });
-        drawIconCounter(state, layout, .package, parcel_text, 12.0, 10.0, 22, .white);
-    }
-
+    // Widget A: current score, top-right.
     var score_buffer: [32]u8 = undefined;
     const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
-    drawCenteredHudTextShadowed(state, layout, 320.0, 10.0, score_text, 22, .white);
+    drawRightAlignedHudTextShadowed(state, layout, 628.0, 14.0, score_text, 22, .white);
 
-    var elapsed_buffer: [32]u8 = undefined;
-    const elapsed_text = try formatElapsedMillis(&elapsed_buffer, runner.stopwatch.elapsedMillis());
-    drawRightAlignedHudTextShadowed(state, layout, 628.0, 10.0, elapsed_text, 22, .white);
+    // Widget D: reference best score / best time (mode-dependent). The native
+    // widget lives at (40, 14) right-aligned with anchor -71; rendering as a
+    // left-aligned string at x=12 gives the same visual position without the
+    // widget's shell.
+    if (runner.session_mode == .postal or runner.session_mode == .challenge) {
+        if (state.tutorial_reference_score > 0) {
+            var best_buffer: [32]u8 = undefined;
+            const best_text = try formatScoreWithCommas(&best_buffer, state.tutorial_reference_score);
+            drawHudTextShadowed(state, layout, 12.0, 14.0, best_text, 22, .white);
+        }
+    } else if (runner.session_mode == .time_trial) {
+        // Time Trial: widget D holds the running elapsed time (the native
+        // `format_time_trial_string` output).
+        var elapsed_buffer: [32]u8 = undefined;
+        const elapsed_text = try formatElapsedMillis(&elapsed_buffer, runner.stopwatch.elapsedMillis());
+        drawHudTextShadowed(state, layout, 12.0, 14.0, elapsed_text, 22, .white);
+    }
+
+    // Widgets B + C: Postal parcel icon + count. Mode-gated to Postal.
+    if (runner.session_mode == .postal) {
+        const parcel_target = currentParcelTarget(state);
+        const parcel_count = runner.counters.parcels;
+        if (state.frontend_widget_art.parcel_icon) |loaded_texture| {
+            // PORT(verified): `initialize_subgame` 0x4376bb: sprite 0x7a at (0, 58).
+            drawTextureLocalRect(layout, loaded_texture, 0.0, 58.0, 32.0, 64.0, .white);
+        }
+        var parcel_buffer: [32]u8 = undefined;
+        const parcel_text = if (parcel_target > 0)
+            try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target })
+        else
+            try std.fmt.bufPrint(&parcel_buffer, "{d}", .{parcel_count});
+        // PORT(verified): widget C at (47, 80), absolute alignment.
+        drawHudTextShadowed(state, layout, 47.0, 80.0, parcel_text, 22, .white);
+    }
 }
 
 pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) void {
+    // PORT(verified): `update_progress_bar` (0x437c40) queues three quads on the
+    // left column at authored x=13 with `var_1c = (1 - progress) * 232 + 12`.
+    // Empty bar (0x9b `Progress-Bar.tga`) fills the top `var_1c` rows, lit bar
+    // (0x9c `Progress-Bar-lit.tga`) fills the remaining `256 - var_1c` below,
+    // and the cursor (0x9d) sits at y = var_1c + 111. See docs/re/hud-pipeline.md.
     const preview = state.current_track_preview orelse return;
     const total_rows = @max(preview.total_rows, 1);
     const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
     const remaining_height = (1.0 - progress) * 232.0 + 12.0;
-    if (state.current_gameplay_sprites.progress_bar_lit) |loaded_texture| {
+    if (state.current_gameplay_sprites.progress_bar) |loaded_texture| {
         drawTextureLocalRectSource(
             layout,
             loaded_texture,
@@ -82,7 +115,7 @@ pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.R
             .white,
         );
     }
-    if (state.current_gameplay_sprites.progress_bar) |loaded_texture| {
+    if (state.current_gameplay_sprites.progress_bar_lit) |loaded_texture| {
         drawTextureLocalRectSource(
             layout,
             loaded_texture,
@@ -105,14 +138,18 @@ pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.R
 }
 
 pub fn drawTutorialLives(state: anytype, layout: VirtualLayout, visible_life_stock: u32) void {
+    // PORT(verified): `initialize_subgame` (0x4377ab) allocates nine life slots via
+    // `initialize_frontend_sprite_button(..., sprite=0x7b /Sprites/Life.tga,
+    // x=13 + i*24, y=430, ...)` and `show_subgoldy_lives` (0x43af10) toggles the
+    // hidden bit on the first `visible_life_stock` slots. See docs/re/hud-pipeline.md.
     const count = @min(visible_life_stock, 9);
     const loaded_texture = state.current_gameplay_sprites.life orelse return;
     for (0..count) |slot_index| {
         drawTextureLocalRect(
             layout,
             loaded_texture,
-            12.0 + @as(f32, @floatFromInt(slot_index)) * 20.0,
-            438.0,
+            13.0 + @as(f32, @floatFromInt(slot_index)) * 24.0,
+            430.0,
             32.0,
             32.0,
             .white,
@@ -234,8 +271,18 @@ pub fn drawJetpackGauge(state: anytype, layout: VirtualLayout, runner: gameplay.
     rl.drawRectangleRoundedLinesEx(panel, 0.18, 8, layout.scaleFloat(2.0), .{ .r = 255, .g = 255, .b = 255, .a = outline_alpha });
 }
 
+// PORT(verified): `update_damage_gauge` (0x440fd0) queues three quads on the
+// right column at authored (560, 70, 64, 396). Bright overlay (0x5b) covers the
+// full area, empty (0x59 `DamageGuage.tga`) fills the top `var_14` rows, and
+// full (0x5a `DamageGuageFull.tga`) fills the remaining `396 - var_14` below.
+// See docs/re/hud-pipeline.md.
+const damage_gauge_x: f32 = 560.0;
+const damage_gauge_y: f32 = 70.0;
+const damage_gauge_w: f32 = 64.0;
+const damage_gauge_h: f32 = 396.0;
+
 pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
-    const panel = layout.mapRect(586.0, 108.0, 28.0, 224.0);
+    const panel = layout.mapRect(damage_gauge_x, damage_gauge_y, damage_gauge_w, damage_gauge_h);
     const fill_ratio = runner.damageGaugeDisplayFill();
     const pulse = (@sin(runner.damage.runtime.pulse_progress * std.math.tau) + 1.0) * 0.5;
     const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
@@ -243,38 +290,68 @@ pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.R
     const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
     const warning_alpha: u8 = @intFromFloat(std.math.clamp(warning_actor_alpha, 0.0, 1.0) * 255.0);
     const bright_alpha: u8 = @intFromFloat(std.math.clamp(bright_overlay_alpha, 0.0, 1.0) * 255.0);
+    // Native splits the gauge vertically: top `var_14` is the empty frame,
+    // bottom `396 - var_14` is the filled portion. Our `fill_ratio` grows with
+    // damage, so the filled portion grows from the top down as damage rises —
+    // match native by anchoring `var_14` to (1 - fill_ratio) * gauge height.
+    const empty_height = (1.0 - fill_ratio) * damage_gauge_h;
+    const full_height = damage_gauge_h - empty_height;
 
     if (show_label) {
         drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
     }
-    if (state.current_gameplay_sprites.damage_gauge_full) |loaded_texture| {
-        if (fill_ratio > 0.0) {
+
+    // The sprite-backed native path. If any of the three damage sprites fail to
+    // load we fall through to the programmatic fallback below.
+    const have_all_sprites =
+        state.current_gameplay_sprites.damage_gauge != null and
+        state.current_gameplay_sprites.damage_gauge_full != null and
+        state.current_gameplay_sprites.damage_gauge_bright != null;
+    if (have_all_sprites) {
+        if (bright_alpha > 0) {
+            drawTextureLocalRect(
+                layout,
+                state.current_gameplay_sprites.damage_gauge_bright.?,
+                damage_gauge_x,
+                damage_gauge_y,
+                damage_gauge_w,
+                damage_gauge_h,
+                .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha },
+            );
+        }
+        if (empty_height > 0.0) {
+            const loaded_texture = state.current_gameplay_sprites.damage_gauge.?;
             const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
             const source_width = @as(f32, @floatFromInt(loaded_texture.texture.width));
             const source = rl.Rectangle{
                 .x = 0.0,
-                .y = source_height * (1.0 - fill_ratio),
+                .y = 0.0,
                 .width = source_width,
-                .height = source_height * fill_ratio,
+                .height = source_height * (empty_height / damage_gauge_h),
             };
-            drawTextureLocalRectSource(layout, loaded_texture, source, 586.0, 108.0 + (224.0 * (1.0 - fill_ratio)), 28.0, 224.0 * fill_ratio, .white);
+            drawTextureLocalRectSource(layout, loaded_texture, source, damage_gauge_x, damage_gauge_y, damage_gauge_w, empty_height, .white);
         }
-    }
-    if (bright_alpha > 0) {
-        if (state.current_gameplay_sprites.damage_gauge_bright) |loaded_texture| {
-            drawTextureLocalRect(layout, loaded_texture, 586.0, 108.0, 28.0, 224.0, .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha });
+        if (full_height > 0.0) {
+            const loaded_texture = state.current_gameplay_sprites.damage_gauge_full.?;
+            const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
+            const source_width = @as(f32, @floatFromInt(loaded_texture.texture.width));
+            const source = rl.Rectangle{
+                .x = 0.0,
+                .y = source_height * (empty_height / damage_gauge_h),
+                .width = source_width,
+                .height = source_height * (full_height / damage_gauge_h),
+            };
+            drawTextureLocalRectSource(layout, loaded_texture, source, damage_gauge_x, damage_gauge_y + empty_height, damage_gauge_w, full_height, .white);
         }
-    }
-    if (warning_alpha > 0) {
-        if (state.current_gameplay_sprites.warning) |loaded_texture| {
-            drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
+        if (warning_alpha > 0) {
+            if (state.current_gameplay_sprites.warning) |loaded_texture| {
+                drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
+            }
         }
-    }
-    if (state.current_gameplay_sprites.damage_gauge) |loaded_texture| {
-        drawTextureLocalRect(layout, loaded_texture, 586.0, 108.0, 28.0, 224.0, .white);
         return;
     }
 
+    // Programmatic fallback when the sprite assets are unavailable.
     const fill_margin = layout.scaleFloat(4.0);
     const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
     const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
