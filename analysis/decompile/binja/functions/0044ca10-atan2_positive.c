@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: atan2_positive @ 0x44ca10 */
@@ -29,7 +29,10 @@
 0044ca66        x87_r7_1 - temp3
 0044ca71        long double result
 0044ca71        if ((((x87_r7_1 < temp3 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp3) ? 1 : 0) << 0xa | (x87_r7_1 == temp3 ? 1 : 0) << 0xe | 0x3800):1.b & 0x40) == 0)
-0044ca83        result = __fpatan(float.t(1), fconvert.t(arg1) / x87_r7_1)
+0044ca83        long double result_1
+0044ca83        bool c1_1
+0044ca83        result_1, c1_1 = __fpatan(float.t(1), fconvert.t(arg1) / x87_r7_1)
+0044ca83        result = result_1
 0044ca75        result = fconvert.t(1.57079637f)
 0044ca87        if (ecx == 0)
 0044caa3        return result

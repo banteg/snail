@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: initialize_backdrop_slice_quad @ 0x41a1c0 */
@@ -32,7 +32,7 @@
 0041a245        struct TextureRef* eax_1 = get_or_create_texture_ref(&data_4b7790, arg2, 0, 0)
 0041a254        facequads->texture_ref = eax_1
 0041a25c        long double x87_r7_4 = (fconvert.t(arg3) + fconvert.t(1f)) * fconvert.t(-0.125f)
-0041a262        eax_1->flags |= 2
+0041a262        eax_1->__offset(0x0).d |= 2
 0041a269        facequads->u1 = 0f
 0041a26c        facequads->u2 = 0f
 0041a26f        facequads->v2 = 0f

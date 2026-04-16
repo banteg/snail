@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: sample_track_floor_height_at_position @ 0x43d4d0 */
@@ -18,4 +18,4 @@
 0043d56b        return ((fconvert.t(position->z) - x87_r7_3) * fconvert.t(0.400000006f) + fconvert.t(0.5f)).q
 0043d538        if (tile_id != 0x16)
 0043d548        return (fconvert.t(-100f)).q
-0043d53e        return (fconvert.t(eax->_pad_00[0x14].d)).q
+0043d53e        return (fconvert.t(eax->anchor_position.y)).q

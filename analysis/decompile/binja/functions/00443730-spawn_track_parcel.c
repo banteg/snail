@@ -1,17 +1,17 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_parcel @ 0x443730 */
 
-0044373d        struct TrackParcelRuntime* result = allocate_track_parcel_slot(game + 0x125e480)
+0044373d        struct TrackParcelRuntime* result = allocate_track_parcel_slot(&game->__offset(0x125e480).d)
 00443746        if (result == 0)
 00443851        return 0
 00443757        result->state = 1
 00443766        result->world_position.x = world_position->x
 0044376d        result->world_position.y = world_position->y
 00443773        result->world_position.z = world_position->z
-0044377c        result->owner = game + 0x3bb764
+0044377c        result->owner = &game->__offset(0x3bb764).d
 0044378b        int32_t* eax_2 = allocate_sprite(&data_790f30, game->__offset(0x3bbae4).d, 0x79, 0xffffffff, 0xffffffff)
 00443790        result->sprite = eax_2
 00443796        int32_t ecx_3

@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: cosine @ 0x44c980 */
@@ -7,8 +7,9 @@
 0044c990        int16_t x87control
 0044c990        int32_t eax = __ftol(x87control, fconvert.t(arg1) * fconvert.t(0.159154937f) * fconvert.t(8192f))
 0044c999        long double st0
+0044c999        bool c1
 0044c999        bool c2
-0044c999        st0, c2 = __fcos(fconvert.t(arg1))
+0044c999        st0, c1, c2 = __fcos(fconvert.t(arg1))
 0044c99d        int32_t ecx_1 = eax & 0x1fff
 0044c9a3        long double x87_r7_4 = fconvert.t(*((ecx_1 << 2) + &data_777f3c)) - st0
 0044c9aa        long double temp0 = fconvert.t(0f)

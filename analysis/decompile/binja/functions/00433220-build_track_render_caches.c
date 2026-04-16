@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 29155:1:9132818862679905210 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_track_render_caches @ 0x433220 */
@@ -42,7 +42,7 @@
 00433319        int32_t var_60_1 = 0
 00433349        int32_t var_18
 00433349        int32_t var_4
-00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), edi_1 + track_render_grid + 0x3bfad8, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->__offset(0x0).d)
+00433349        sub_433960(manager, var_4c, *(edx_7 + 0x24), &track_render_grid->cells[0].anchor_position + edi_1, manager->shared_vertex_buffers[4], &var_18, manager->shared_index_buffers[4], &var_4, manager->max_vertex_counts[4], (manager->max_index_counts[4]).b, manager->__offset(0x0).d)
 00433373        **((&manager->slots[4].render_object)[esi_1 * 0x4b] + 0xd0) = *(*(*(*(manager->track_render_grid + ebp_1) + 0x24) + 0x5c) + 0xc)
 00433378        *(manager->track_render_grid + ebp_1) = 0
 00433383        ebp_1 += 4
@@ -50,7 +50,7 @@
 00433387        var_44_1 -= 1
 0043338b        do while (cond:2_1)
 0043338d        struct TrackRenderGrid* track_render_grid_2 = manager->track_render_grid
-00433390        int32_t ecx_15 = *(edi_1 + track_render_grid_2 + 0x3bfb08)
+00433390        int32_t ecx_15 = *(&track_render_grid_2->cells[1] + edi_1)
 00433397        void* eax_18 = edi_1 + track_render_grid_2
 004333ab        void* eax_23
 004333ab        void* ecx_23
@@ -60,7 +60,7 @@
 00433417        int32_t ebp_2
 00433417        if (eax_24 != 0)
 0043341d        struct TrackRenderGrid* track_render_grid_3 = manager->track_render_grid
-00433420        ebp_2 = *(edi_1 + track_render_grid_3 + 0x3bfb08)
+00433420        ebp_2 = *(&track_render_grid_3->cells[1] + edi_1)
 00433427        eax_25 = edi_1 + track_render_grid_3
 00433438        int32_t var_64_3
 00433438        if (eax_24 != 0 && (ebp_2 & 0x4000) == 0x4000)
@@ -69,17 +69,17 @@
 00433449        if ((ebp_2.b & 0x40) != 0x40)
 0043351b        label_43351b:
 0043351b        sub_433960(manager, var_4c, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[0], &var_28, manager->shared_index_buffers[0], &var_14, manager->max_vertex_counts[0], (manager->max_index_counts[0]).b, var_64_3)
-0043352a        ecx_23 = *(*(edi_1 + manager->track_render_grid + 0x3bfaec) + 0x5c)
+0043352a        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 00433536        eax_23 = (&manager->slots[0].render_object)[esi_1 * 0x4b]
 0043353a        goto label_4335d0
 0043347e        label_43347e:
 0043347e        int32_t var_24
 0043347e        int32_t var_10
 0043347e        sub_433960(manager, var_4c, *(eax_25 + 0x3bfaec), eax_25 + 0x3bfad8, manager->shared_vertex_buffers[1], &var_24, manager->shared_index_buffers[1], &var_10, manager->max_vertex_counts[1], (manager->max_index_counts[1]).b, var_64_3)
-0043348d        ecx_23 = *(*(edi_1 + manager->track_render_grid + 0x3bfaec) + 0x5c)
+0043348d        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 00433499        eax_23 = (&manager->slots[1].render_object)[esi_1 * 0x4b]
 004334a0        goto label_4335d0
-004334af        char eax_30 = is_floor_cache_tile_family(edi_1 + manager->track_render_grid + 0x3bfac8)
+004334af        char eax_30 = is_floor_cache_tile_family(&manager->track_render_grid->cells + edi_1)
 004334b6        int32_t ebp_3
 004334b6        if (eax_30 != 0)
 004334bf        eax_25 = manager->track_render_grid + edi_1
@@ -90,28 +90,28 @@
 004334e6        if ((ebp_3.b & 0x40) != 0x40)
 004334e6        goto label_43347e
 004334e6        goto label_43351b
-00433550        if (is_ramp_cache_tile_family(edi_1 + manager->track_render_grid + 0x3bfac8) != 0)
+00433550        if (is_ramp_cache_tile_family(&manager->track_render_grid->cells + edi_1) != 0)
 00433559        void* eax_38 = manager->track_render_grid + edi_1
 0043356d        if ((*(eax_38 + 0x3bfb08) & 0x4000) == 0x4000)
 00433576        int32_t var_60_5 = 0
 004335a5        int32_t var_1c
 004335a5        int32_t var_8
 004335a5        sub_433960(manager, var_4c, *(eax_38 + 0x3bfaec), eax_38 + 0x3bfad8, manager->shared_vertex_buffers[3], &var_1c, manager->shared_index_buffers[3], &var_8, manager->max_vertex_counts[3], (manager->max_index_counts[3]).b, var_48)
-004335ba        ecx_23 = *(*(edi_1 + manager->track_render_grid + 0x3bfaec) + 0x5c)
+004335ba        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 004335c0        eax_23 = (&manager->slots[3].render_object)[esi_1 * 0x4b]
 004335c0        goto label_4335d0
 004333b4        int32_t var_60_2 = 1
 004333e3        int32_t var_20
 004333e3        int32_t var_c
 004333e3        sub_433960(manager, var_4c, *(eax_18 + 0x3bfaec), eax_18 + 0x3bfad8, manager->shared_vertex_buffers[2], &var_20, manager->shared_index_buffers[2], &var_c, manager->max_vertex_counts[2], (manager->max_index_counts[2]).b, var_48)
-004333f2        ecx_23 = *(*(edi_1 + manager->track_render_grid + 0x3bfaec) + 0x5c)
+004333f2        ecx_23 = *(*(&manager->track_render_grid->cells[0]._pad_1c[8] + edi_1) + 0x5c)
 004333fe        eax_23 = (&manager->slots[2].render_object)[esi_1 * 0x4b]
 004335d0        label_4335d0:
 004335d0        **(eax_23 + 0xd0) = *(ecx_23 + 0xc)
 004335d2        struct TrackRenderGrid* track_render_grid_1 = manager->track_render_grid
 004335e3        int32_t ecx_49
-004335e3        ecx_49:1.b = (*(edi_1 + track_render_grid_1 + 0x3bfb08)):1.b & 0xbf
-004335e6        *(edi_1 + track_render_grid_1 + 0x3bfb08) = ecx_49
+004335e3        ecx_49:1.b = (*(&track_render_grid_1->cells[1] + edi_1)):1.b & 0xbf
+004335e6        *(&track_render_grid_1->cells[1] + edi_1) = ecx_49
 004335ec        edi_1 += 0x54
 004335ef        cond:4_1 = var_3c_1 != 1
 004335f0        var_3c_1 -= 1

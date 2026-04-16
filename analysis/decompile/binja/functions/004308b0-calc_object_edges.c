@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: calc_object_edges @ 0x4308b0 */
@@ -79,6 +79,6 @@
 00430a17        int32_t ecx_14 = data_503318 * 0x24
 00430a1f        int32_t esi_6
 00430a1f        int32_t edi_5
-00430a1f        edi_5, esi_6 = __builtin_memcpy(*(arg1 + 0x74), data_503300, ecx_14 u>> 2 << 2)
+00430a1f        edi_5, esi_6 = __builtin_memcpy(*(arg1 + 0x74), data_503300, ecx_14 & 0xfffffffc)
 00430a26        __builtin_memcpy(edi_5, esi_6, ecx_14 & 3)
 00430a2d        return

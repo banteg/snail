@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_subgame_camera @ 0x446020 */
@@ -9,7 +9,7 @@
 00446042        __builtin_memcpy(&from, data_4df904 + 0x15c, 0x40)
 00446047        *(arg1 + 1) = 0
 0044604b        struct TransformMatrix var_80
-0044604b        int32_t result
+0044604b        void* result
 0044604b        if (eax != 1)
 00446078        update_cameraman(arg1 + 0x3bb964)
 00446085        if (*(arg1 + 0x3bfa4c) == 0)

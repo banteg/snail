@@ -1,18 +1,18 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_ring_or_special_effect @ 0x43df10 */
 
 0043df13        int32_t eax = 0
-0043df1b        int32_t* ecx = &arg1[0xa3b7]
+0043df1b        int32_t* ecx = &arg1->__offset(0x35b80c).d
 0043df24        while (*ecx != 0)
 0043df26        eax += 1
 0043df27        ecx = &ecx[0x7e]
 0043df30        if (eax s>= 2)
 0043df39        return eax
-0043df5c        void* esi = &arg1[eax * 6]
-0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->__offset(0x48).d) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
+0043df5c        void* esi = &arg1->_pad_00[eax * 0x1f8]
+0043df82        float var_10 = fconvert.s(fconvert.t(1f) / ((fconvert.t(2f) - fconvert.t(arg1->base_subgame_rate) * fconvert.t(0.300000012f)) * fconvert.t(60f)) * float.t(*(arg4 + 0x308)) * fconvert.t(0.125f) * fconvert.t(arg1->track_center_x) * fconvert.t(6.28318548f))
 0043df86        set_matrix_identity(esi + 0x35b7c4)
 0043df8b        int32_t ebp = arg3
 0043df8f        *(esi + 0x35b810) = arg4
@@ -27,7 +27,7 @@
 0043dfc3        long double st0_2 = random_float_below(1f)
 0043dfc8        long double temp2_1 = fconvert.t(0.5f)
 0043dfc8        st0_2 - temp2_1
-0043dfdb        if ((((st0_2 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp2_1) ? 1 : 0) << 0xa | (st0_2 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && arg1->__offset(0x40).d == ebp)
+0043dfdb        if ((((st0_2 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(st0_2, temp2_1) ? 1 : 0) << 0xa | (st0_2 == temp2_1 ? 1 : 0) << 0xe):1.b & 0x41) == 0 && arg1->level_mode == ebp)
 0043dfdd        ebp = 3
 0043dfb7        goto label_43dfed
 0043dfe7        if (ebp u<= 8)

@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: calc_object_facequad_normals @ 0x42fcb0 */
@@ -7,7 +7,7 @@
 0042fcb9        request_object_facequad_normals(arg1)
 0042fcca        float* eax_2 = allocate_tracked_memory(*(arg1 + 0x2c) << 2, "Normal Tally")
 0042fcd4        int32_t ecx_1 = *(arg1 + 0x2c) << 2
-0042fcea        __builtin_memset(__builtin_memset(eax_2, 0, ecx_1 u>> 2 << 2), 0, ecx_1 & 3)
+0042fcea        __builtin_memset(__builtin_memset(eax_2, 0, ecx_1 & 0xfffffffc), 0, ecx_1 & 3)
 0042fcef        float* edi_2 = nullptr
 0042fcf3        int32_t var_68 = 0
 0042fcf7        if (*(arg1 + 0x54) s> 0)

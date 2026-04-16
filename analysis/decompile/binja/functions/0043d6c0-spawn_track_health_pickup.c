@@ -1,18 +1,18 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_health_pickup @ 0x43d6c0 */
 
 0043d6c8        int32_t ebx = 0
-0043d6ca        void* __offset(Game, 0x356038) eax = game + 0x356038
+0043d6ca        void* __offset(Game, 0x356038) eax = &game->__offset(0x356038).d
 0043d6d3        while ((eax - 0x356038)->__offset(0x356038).d != 0)
 0043d6d5        ebx += 1
 0043d6d6        eax += 0x74
 0043d6dc        if (ebx s>= 8)
 0043d6e2        return eax
 0043d6ef        struct TrackRowCell* cell_1 = cell
-0043d6fc        void* esi = game + ebx * 0x74
+0043d6fc        void* esi = &game->_pad_00[ebx * 0x74]
 0043d6ff        *(esi + 0x356038) = 1
 0043d709        *(esi + 0x35603c) = player
 0043d718        float x = cell_1->anchor_position.x
@@ -40,7 +40,7 @@
 0043d7a4        ecx_4:1.b = (*(esi + 0x356004)):1.b | 2
 0043d7a7        *(esi + 0x356004) = ecx_4
 0043d758        report_errorf("List ADD")
-0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x39, 0xffffffff, 0xffffffff)
+0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->_pad_374[0xc].d, 0x39, 0xffffffff, 0xffffffff)
 0043d7c5        *(esi + 0x356064) = eax_7
 0043d7ce        int32_t ecx_6
 0043d7ce        ecx_6:1.b = eax_7[1]:1.b | 8

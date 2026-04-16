@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_subgame @ 0x438b90 */
@@ -17,7 +17,7 @@
 00438b97        char* game = arg1
 00438b99        int16_t x87control = calc_subgame_rate(arg1)
 00438b9e        int32_t eax = *(game + 0x3c)
-00438ba4        int32_t eax_25
+00438ba4        void* eax_25
 00438ba4        if (eax u> 7)
 004398fa        label_4398fa:
 004398fa        eax_25 = update_subgame_camera(game)
@@ -372,11 +372,11 @@
 00439523        if ((eax_60:1.b & 1) != 0 && ebp s>= *(game + 0x50) && ebp s< *(game + 0x58))
 0043952b        *(esp_1 - 4) = edi_6 + 0x3bfad8
 00439532        eax_60, ecx_35 = spawn_salt_hazard(&game[0x3578c0])
-00439532        esp_1 = esp_1
+00439532        esp_1 = &esp_1[2]
 004394ba        if (ebp s>= *(game + 0x50) && ebp s< *(game + 0x58))
 004394c2        *(esp_1 - 4) = edi_6 + 0x3bfad8
 00439532        eax_60, ecx_35 = spawn_salt_hazard(&game[0x3578c0])
-00439532        esp_1 = esp_1
+00439532        esp_1 = &esp_1[2]
 0043954e        if ((game[0x4c] & 0x80) != 0 && *(edi_6 + 0x3bfb04) == 0x12 && ebp s>= *(game + 0x50) && ebp s< *(game + 0x58))
 0043955c        *(esp_1 - 4) = &game[0x3bb764]
 0043955d        *(esp_1 - 8) = edi_6 + 0x3bfac8
@@ -505,7 +505,7 @@
 00439969        int32_t ecx_94 = *(game + 0x35bb8c)
 0043996f        *(esp_1 - 4) = *(game + 0x355d94)
 00439970        border_add_text_number(ecx_94)
-00439977        int32_t eax_104 = update_subgame_camera(game)
+00439977        void* eax_104 = update_subgame_camera(game)
 0043997c        *esp_1
 0043997c        esp_1[1]
 0043997d        esp_1[2]
@@ -520,7 +520,7 @@
 004398ca        void* eax_99 = &game[*(game + 0x44) * 0x1fac0]
 004398d3        if (*(eax_99 + 0x944150) != 1)
 0043990d        hide_border_init(*(game + 0x35bb8c))
-00439914        int32_t eax_101 = update_subgame_camera(game)
+00439914        void* eax_101 = update_subgame_camera(game)
 00439919        *esp_1
 00439919        esp_1[1]
 0043991a        esp_1[2]

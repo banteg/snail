@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_snail_weapon @ 0x445920 */
@@ -106,7 +106,7 @@
 00445aef        if (selected_state_2 == presentation_3)
 00445bd9        if (presentation.b != 0)
 00445be2        play_sound_effect(0x19)
-00445bec        return
+00445bec        return 
 00445af6        if (selected_state_2 == 1)
 00445b05        int32_t var_18_12 = 8
 00445b07        int32_t var_1c_16 = 1
@@ -124,13 +124,13 @@
 00445b8d        set_weapon_animation(&presentation_2->weapon_channels[2], 0, 0, 0xffffffff)
 00445b99        presentation_2->weapon_channels[2].selected_state = presentation_3
 00445b9f        play_sound_effect(0x19)
-00445ba9        return
+00445ba9        return 
 00445b2c        if (presentation_3 == 3)
 00445b43        set_weapon_animation(&presentation_2->weapon_channels[2], 4, movement_flags.b, 4)
 00445b50        set_weapon_animation(&presentation_2->weapon_channels[2], 3, 0, 0xffffffff)
 00445b5c        presentation_2->weapon_channels[2].selected_state = presentation_3
 00445b62        play_sound_effect(0x19)
-00445b6c        return
+00445b6c        return 
 00445bc4        presentation_2->weapon_channels[2].selected_state = presentation_3
 00445bca        play_sound_effect(0x19)
 00445bd4        return

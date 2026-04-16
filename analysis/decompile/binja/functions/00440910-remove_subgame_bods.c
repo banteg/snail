@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: remove_subgame_bods @ 0x440910 */
@@ -30,7 +30,7 @@
 0044095d        report_errorf("List remove NEXTBOD")
 0044099a        int32_t j_1 = 8
 004409aa        int32_t j
-004409a1        destroy_wall2_ambient_hazard(edi)
+004409a1        destroy_sub_lazer_projectile(edi)
 004409a6        edi = &edi->_pad_00[0x54]
 004409a9        j = j_1
 004409a9        j_1 -= 1

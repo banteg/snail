@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_object_texture_group_buffers @ 0x413d50 */
@@ -166,7 +166,7 @@
 00414183        (*(*eax_49 + 0x2c))(eax_49, 0, esi_12, &var_4, 0)
 00414195        int32_t esi_14
 00414195        int32_t edi_9
-00414195        edi_9, esi_14 = __builtin_memcpy(var_4, var_8, esi_12 u>> 2 << 2)
+00414195        edi_9, esi_14 = __builtin_memcpy(var_4, var_8, esi_12 & 0xfffffffc)
 0041419c        __builtin_memcpy(edi_9, esi_14, esi_12 & 3)
 004141a4        int32_t* eax_51 = **(ebx + 0xc8)
 004141a9        (*(*eax_51 + 0x30))(eax_51)

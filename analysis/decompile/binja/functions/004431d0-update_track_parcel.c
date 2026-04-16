@@ -1,11 +1,11 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_track_parcel @ 0x4431d0 */
 
 004431da        struct Game* game_3 = parcel->game
-004431e0        if (game_3->__offset(0x9).b != 0)
+004431e0        if (game_3->_pad_00[9] != 0)
 004431e0        return 
 004431f2        float var_24
 004431f2        switch (parcel->state)
@@ -63,7 +63,7 @@
 0044336c        normalize_vector(&parcel->travel_dir_x)
 00443379        label_443379:
 00443379        long double x87_r7_35 = fconvert.t(1f) - fconvert.t(parcel->progress)
-00443382        void* __offset(Game, 0x3bf91c) eax_12 = parcel->game + 0x3bf91c
+00443382        void* __offset(Game, 0x3bf91c) eax_12 = &parcel->game->__offset(0x3bf91c).d
 0044338b        long double x87_r6_2 = x87_r7_35 * fconvert.t(parcel->target_distance)
 004433c3        parcel->world_position.x = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_x))) + fconvert.t((eax_12 - 0x3bf91c)->__offset(0x3bf91c).d))
 004433c5        parcel->world_position.y = fconvert.s(fconvert.t(fconvert.s(x87_r6_2 * fconvert.t(parcel->travel_dir_y))) + fconvert.t((eax_12 - 0x3bf91c)->__offset(0x3bf920).d))
@@ -74,7 +74,7 @@
 004433eb        *(sprite + 0x60) = ecx_8
 004433ee        int32_t var_38_4 = ecx_8
 00443400        long double x87_r7_41 = sine(fconvert.s(fconvert.t(parcel->progress) * fconvert.t(3.14159274f))) * fconvert.t(0.5f)
-0044340c        void* __offset(Game, 0x3be130) eax_16 = parcel->game + 0x3be130
+0044340c        void* __offset(Game, 0x3be130) eax_16 = &parcel->game->__offset(0x3be130).d
 00443411        int32_t* edx_9 = parcel->sprite + 0x48
 00443440        float var_14_4 = fconvert.s(fconvert.t(fconvert.s(x87_r7_41 * fconvert.t((eax_16 - 0x3be130)->__offset(0x3be134).d))) + fconvert.t(parcel->world_position.y))
 00443448        long double x87_r7_43 = x87_r7_41 * fconvert.t((eax_16 - 0x3be130)->__offset(0x3be138).d) + fconvert.t(parcel->world_position.z)
@@ -103,15 +103,15 @@
 004434dc        parcel->delivery_offset_y = fconvert.s((float.t(eax_20) - fconvert.t(16384f)) * fconvert.t(9.15527344e-05f) + fconvert.t(1f))
 004434e2        label_4434e2:
 004434e2        struct Game* game_2 = parcel->game
-00443505        float var_14_5 = fconvert.s(fconvert.t(game_2->__offset(0x1272810).d) - fconvert.t(game_2->__offset(0x3bf920).d))
-0044350f        long double x87_r7_58 = fconvert.t(game_2->__offset(0x1272814).d) - fconvert.t(game_2->__offset(0x3bf924).d)
-00443519        var_24 = fconvert.s(fconvert.t(game_2->__offset(0x127280c).d) - fconvert.t(game_2->__offset(0x3bf91c).d))
+00443505        float var_14_5 = fconvert.s(fconvert.t(game_2->row_event_display.widget_world_y) - fconvert.t(game_2->__offset(0x3bf920).d))
+0044350f        long double x87_r7_58 = fconvert.t(game_2->row_event_display.widget_world_z) - fconvert.t(game_2->__offset(0x3bf924).d)
+00443519        var_24 = fconvert.s(fconvert.t(game_2->row_event_display.widget_world_x) - fconvert.t(game_2->__offset(0x3bf91c).d))
 00443524        float var_10_5 = fconvert.s(x87_r7_58)
 0044353f        *(parcel->sprite + 0x64) = fconvert.s(fconvert.t(parcel->progress) * fconvert.t(0.600000024f) + fconvert.t(0.400000006f))
 00443542        void* sprite_1 = parcel->sprite
 00443548        *(sprite_1 + 0x60) = *(sprite_1 + 0x64)
 0044354e        long double x87_r7_62 = fconvert.t(parcel->progress)
-00443557        void* __offset(Game, 0x3bf91c) eax_23 = parcel->game + 0x3bf91c
+00443557        void* __offset(Game, 0x3bf91c) eax_23 = &parcel->game->__offset(0x3bf91c).d
 00443583        float var_14_6 = fconvert.s(fconvert.t(fconvert.s(fconvert.t(var_14_5) * x87_r7_62)) + fconvert.t((eax_23 - 0x3bf91c)->__offset(0x3bf920).d))
 00443591        float* eax_25 = parcel->sprite + 0x48
 00443594        float var_10_6 = fconvert.s(x87_r7_62 * fconvert.t(var_10_5) + fconvert.t((eax_23 - 0x3bf91c)->__offset(0x3bf924).d))
@@ -132,7 +132,7 @@
 004435fe        x87_r7_71 - temp2_1
 00443604        eax_27.w = (x87_r7_71 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_71, temp2_1) ? 1 : 0) << 0xa | (x87_r7_71 == temp2_1 ? 1 : 0) << 0xe
 00443609        if ((eax_27:1.b & 0x41) == 0)
-00443614        register_parcel_delivery(parcel->game + 0x12727d8)
+00443614        register_parcel_delivery(&parcel->game->row_event_display)
 00443619        void* sprite_3 = parcel->sprite
 0044361c        parcel->state = 0
 0044361f        kill_sprite(sprite_3)

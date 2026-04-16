@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: load_x_mesh @ 0x405640 */
@@ -191,9 +191,9 @@
 00405bfd        eax_39[4] = 0
 00405c09        struct TextureRef* eax_43 = get_or_create_texture_ref(&data_4b7790, &texture_path, 0, 0)
 00405c0e        *ebx_5 = eax_43
-00405c12        uint32_t ecx_21
-00405c12        ecx_21:1.b = eax_43->flags:1.b | 0x10
-00405c15        eax_43->flags = ecx_21
+00405c12        int32_t ecx_21
+00405c12        ecx_21:1.b = eax_43->__offset(0x0).d:1.b | 0x10
+00405c15        eax_43->__offset(0x0).d = ecx_21
 00405c17        eax_43.b = options_flags
 00405c20        if ((eax_43.b & 2) != 0)
 00405c22        int32_t* eax_44 = *ebx_5

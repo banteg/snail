@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: build_track_fringe_objects @ 0x434be0 */
@@ -17,7 +17,7 @@
 00434c1e        int32_t var_4c_1 = 8
 0043512e        bool cond:1_1
 00434c26        void* const ecx
-00434c26        ecx.b = esi_1->__offset(0x3d).b
+00434c26        ecx.b = esi_1->tile_flags_3d
 00434c29        int32_t edi_1 = 0
 00434c2e        if (ecx.b == 9)
 00434c30        edi_1 = 1
@@ -36,7 +36,7 @@
 00434c94        if (eax_1.b == 4 || eax_1.b == 0xa || eax_1.b == 7)
 00434c96        edi_1 = 7
 00434cbb        if ((*edx_1 & 4) != 0 || ecx.b == 0 || eax_1.b == 0x20 || (data_4df934 & 0x20) == 0)
-004350e0        esi_1->tile_id.d = 0
+004350e0        esi_1->__offset(0x44).d = 0
 004350e3        esi_1->__offset(0x48).d = 0
 004350e6        esi_1->__offset(0x4c).d = 0
 004350e9        esi_1->__offset(0x50).d = 0
@@ -44,7 +44,7 @@
 00434cc6        eax_2, ecx = is_neighbor_cell_solid(ebp, esi_1, 0, 0)
 00434ccd        if (eax_2 == 1)
 00434ce0        if (is_neighbor_cell_solid(ebp, esi_1, 0, 1) != 0)
-00434dd4        esi_1->tile_id.d = 0
+00434dd4        esi_1->__offset(0x44).d = 0
 00434cf4        if (is_neighbor_cell_solid(ebp, esi_1, 1, 1) != 1)
 00434d01        int32_t eax_5
 00434d01        eax_5.b = is_neighbor_cell_solid(ebp, esi_1, 1, 0).b - 1
@@ -60,17 +60,17 @@
 00434d35        ebp_1 = neg.d(sbb.d(eax_10, eax_10, temp2_1 != 0)) + 1
 00434d1c        ebp_1 = 0
 00434d43        void* eax_14 = allocate_fringe_object(data_4df904 + 0x3d01d4)
-00434d4b        esi_1->tile_id.d = eax_14
+00434d4b        esi_1->__offset(0x44).d = eax_14
 00434d70        set_bod_object(eax_14, *(data_4df904 + ((ebx + edi_1 * 0xc) * 3 + ebp_1) * 0x38 + 0x44dd4))
-00434d75        void* eax_15 = esi_1->tile_id.d
+00434d75        void* eax_15 = esi_1->__offset(0x44).d
 00434d81        *(eax_15 + 4) |= 0x20
-00434d89        int32_t* eax_17 = esi_1->tile_id.d + 0x10
-00434d8c        *eax_17 = esi_1->_pad_00[0x10].d
-00434d91        eax_17[1] = esi_1->_pad_00[0x14].d
-00434d97        eax_17[2] = esi_1->anchor_position.x
+00434d89        float* eax_17 = esi_1->__offset(0x44).d + 0x10
+00434d8c        *eax_17 = esi_1->anchor_position.x
+00434d91        eax_17[1] = esi_1->anchor_position.y
+00434d97        eax_17[2] = esi_1->anchor_position.z
 00434dab        float var_40[0x4]
 00434dab        float* eax_18 = get_track_skirt_color(data_4df904 + 0x74618, &var_40)
-00434db5        float* edx_9 = esi_1->tile_id.d + 0x28
+00434db5        float* edx_9 = esi_1->__offset(0x44).d + 0x28
 00434db8        ebp = var_50
 00434dbc        ebx = 0
 00434dbe        *edx_9 = *eax_18
@@ -99,9 +99,9 @@
 00434e79        void* eax_32 = esi_1->__offset(0x48).d
 00434e85        *(eax_32 + 4) |= 0x20
 00434e8d        int32_t* eax_34 = esi_1->__offset(0x48).d + 0x10
-00434e90        *eax_34 = esi_1->_pad_00[0x10].d
-00434e95        eax_34[1] = esi_1->_pad_00[0x14].d
-00434e9b        eax_34[2] = esi_1->anchor_position.x
+00434e90        *eax_34 = esi_1->anchor_position.x
+00434e95        eax_34[1] = esi_1->anchor_position.y
+00434e9b        eax_34[2] = esi_1->anchor_position.z
 00434eaf        float var_30[0x4]
 00434eaf        float* eax_35 = get_track_skirt_color(data_4df904 + 0x74618, &var_30)
 00434eb9        float* edx_17 = esi_1->__offset(0x48).d + 0x28
@@ -133,9 +133,9 @@
 00434f7d        void* eax_49 = esi_1->__offset(0x4c).d
 00434f89        *(eax_49 + 4) |= 0x20
 00434f91        int32_t* eax_51 = esi_1->__offset(0x4c).d + 0x10
-00434f94        *eax_51 = esi_1->_pad_00[0x10].d
-00434f99        eax_51[1] = esi_1->_pad_00[0x14].d
-00434f9f        eax_51[2] = esi_1->anchor_position.x
+00434f94        *eax_51 = esi_1->anchor_position.x
+00434f99        eax_51[1] = esi_1->anchor_position.y
+00434f9f        eax_51[2] = esi_1->anchor_position.z
 00434fb3        float var_20[0x4]
 00434fb3        float* eax_52 = get_track_skirt_color(data_4df904 + 0x74618, &var_20)
 00434fbd        float* edx_25 = esi_1->__offset(0x4c).d + 0x28
@@ -169,9 +169,9 @@
 00435081        void* eax_66 = esi_1->__offset(0x50).d
 0043508d        *(eax_66 + 4) |= 0x20
 00435095        int32_t* eax_68 = esi_1->__offset(0x50).d + 0x10
-00435098        *eax_68 = esi_1->_pad_00[0x10].d
-0043509d        eax_68[1] = esi_1->_pad_00[0x14].d
-004350a3        eax_68[2] = esi_1->anchor_position.x
+00435098        *eax_68 = esi_1->anchor_position.x
+0043509d        eax_68[1] = esi_1->anchor_position.y
+004350a3        eax_68[2] = esi_1->anchor_position.z
 004350b7        float var_10[0x4]
 004350b7        float* eax_69 = get_track_skirt_color(data_4df904 + 0x74618, &var_10)
 004350c1        float* edx_33 = esi_1->__offset(0x50).d + 0x28
@@ -183,7 +183,7 @@
 004350db        edx_33[3] = eax_69[3]
 004350ec        edx_1 = var_44_1
 004350f3        if ((*edx_1 & 4) != 0)
-004350f5        void* eax_71 = esi_1->tile_id.d
+004350f5        void* eax_71 = esi_1->__offset(0x44).d
 004350ff        if (eax_71 != 0)
 00435101        *(eax_71 + 4) &= 0xffffffdf
 00435104        void* eax_72 = esi_1->__offset(0x50).d

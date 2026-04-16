@@ -1,22 +1,22 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: spawn_track_garbage_hazard @ 0x43da80 */
 
 0043da83        int32_t eax = 0
-0043da88        void* __offset(Game, 0x3591c8) ecx = game + 0x3591c8
+0043da88        void* __offset(Game, 0x3591c8) ecx = &game->__offset(0x3591c8).d
 0043da91        while ((ecx - 0x3591c8)->__offset(0x3591c8).d != 0)
 0043da93        eax += 1
 0043da94        ecx += 0xc4
 0043da9d        if (eax s>= 0x32)
 0043daa4        report_warningf("Run Out of Garbage Slots")
 0043dab0        return 0
-0043dac4        void* esi = game + eax * 0xc4
+0043dac4        void* esi = &game->_pad_00[eax * 0xc4]
 0043dad0        char* var_24 = "Gadd"
 0043dad5        *(esi + 0x3591c4) = game->__offset(0x359140).d
 0043dae9        game->__offset(0x359140).d = esi + 0x359144
-0043daf4        float* ebx = game + (eax + 0x45f8) * 0xc4
+0043daf4        float* ebx = &game->_pad_00[(eax + 0x45f8) * 0xc4]
 0043daf7        *(esi + 0x359204) = player
 0043db1b        *ebx = fconvert.s((random_float_below(0.400000006f) + fconvert.t(1f)) * fconvert.t(0.600000024f))
 0043db1d        *(esi + 0x3591c8) = 1
@@ -31,8 +31,8 @@
 0043db69        int16_t x87control = project_position_onto_track_attachment(game, esi + 0x3591ac, esi + 0x3591e4)
 0043db81        void* eax_5 = data_4df904 + 0x5a8
 0043db88        if ((0x200 & *(esi + 0x359148)) == 0)
-0043db9b        *(esi + 0x359150) = game + 0x3bb764
-0043dba3        if (*(eax_5 + 4) != game + 0x3bb764)
+0043db9b        *(esi + 0x359150) = &game->__offset(0x3bb764).d
+0043dba3        if (*(eax_5 + 4) != &game->__offset(0x3bb764).d)
 0043dbb5        *(esi + 0x35914c) = game->__offset(0x3bb76c).d
 0043dbb8        game->__offset(0x3bb76c).d = esi + 0x359144
 0043dbc0        *(*(esi + 0x35914c) + 0xc) = esi + 0x359144

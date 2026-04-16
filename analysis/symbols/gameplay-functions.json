@@ -1633,13 +1633,13 @@
     },
     {
       "address": "0x439bc0",
-      "name": "destroy_wall2_ambient_hazard",
-      "description": "Unlinks one live `Wall2` ambient-hazard actor and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool."
+      "name": "destroy_sub_lazer_projectile",
+      "description": "Unlinks one live SubLazer projectile (`cRSubLazerManager` slot) and its attached body objects from the shared intrusive lists before the slot returns to the inactive pool. Historically labelled a `Wall2 ambient hazard`; the Wall2 tile is the emitter, the slot itself is a projectile."
     },
     {
       "address": "0x439d50",
-      "name": "maybe_spawn_wall2_ambient_hazard",
-      "description": "Runs the current best static `Wall2` ambient-hazard spawn gate from one runtime row cell: checks the row or tile conditions, rolls the random gate, derives a spawn point and velocity, and routes the request into the 20-slot pool at `game + 0x356b00`."
+      "name": "wall2_emitter_maybe_fire_sub_lazer",
+      "description": "Runs the Wall2-tile emitter gate from one runtime fringe object: checks the row/tile conditions, rolls the random gate (`< 4/100`) against the cadence timer `game+0x74668 > game+0x42fdec`, derives a spawn origin + normalized direction, and calls `shoot_subgoldy` which drops the projectile into the 20-slot SubLazer pool at `game + 0x356b00`."
     },
     {
       "address": "0x43a010",
@@ -1796,7 +1796,8 @@
     },
     {
       "address": "0x43efb0",
-      "name": "update_wall2_ambient_hazard"
+      "name": "update_sub_lazer_projectile",
+      "description": "Advances one live SubLazer projectile slot: integrates motion, handles state 1→2→cleanup via list-remove and `kill_sprite`, and modulates the sprite y by `sin(phase*2π)*0.3`. Historically labelled `update_wall2_ambient_hazard`; the Wall2 tile is the emitter, the slot itself is a projectile."
     },
     {
       "address": "0x43f130",
@@ -1925,13 +1926,13 @@
     },
     {
       "address": "0x441650",
-      "name": "initialize_wall2_ambient_hazard_pool",
-      "description": "Clears the 20-slot `Wall2` ambient-hazard pool by zeroing each slot state at +0x80 before a level build."
+      "name": "initialize_sub_lazer_pool",
+      "description": "Clears the 20-slot SubLazer projectile pool (`cRSubLazerManager`) at `game + 0x356b00` by zeroing each slot state at +0x80 before a level build. Historically labelled `initialize_wall2_ambient_hazard_pool`; the Wall2 tile is the emitter, the slots themselves are projectiles."
     },
     {
       "address": "0x441670",
-      "name": "spawn_wall2_ambient_hazard",
-      "description": "Activates one slot from the 20-slot `Wall2` ambient-hazard pool: stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object."
+      "name": "spawn_sub_lazer_projectile",
+      "description": "Activates one slot from the 20-slot SubLazer projectile pool (`cRSubLazerManager`): stores world position and velocity, seeds the arming step from `game->track_center_x`, links the slot into the shared intrusive-list machinery, and refreshes the nested render or body object. Historically labelled `spawn_wall2_ambient_hazard`."
     },
     {
       "address": "0x441740",
@@ -1946,7 +1947,7 @@
     {
       "address": "0x441ad0",
       "name": "shoot_subgoldy",
-      "description": "Finds a free slot in the shared 20-shot pool, routes the request through `spawn_wall2_ambient_hazard`, and plays the positional player-fire cue from the supplied world position."
+      "description": "Finds a free slot in the shared 20-shot SubLazer projectile pool, routes the request through `spawn_sub_lazer_projectile`, and plays the positional player-fire cue from the supplied world position."
     },
     {
       "address": "0x441b70",

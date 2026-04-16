@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: update_jetpack_gauge @ 0x43a390 */
@@ -19,7 +19,7 @@
 0043a3c4        eax.w = (x87_r7_3 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp2_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp2_1 ? 1 : 0) << 0xe
 0043a3c9        if ((eax:1.b & 0x41) != 0)
 0043a3d5        void* ecx = gauge->warning_anchor
-0043a3e2        long double x87_r7_4 = float.t(gauge->game->__offset(0x58).d - 5)
+0043a3e2        long double x87_r7_4 = float.t(gauge->game->completion_row_start - 5)
 0043a3e6        long double temp4_1 = fconvert.t(*(ecx + 0x70))
 0043a3e6        x87_r7_4 - temp4_1
 0043a3e9        int32_t eax_2

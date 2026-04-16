@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: merge_track_tile_runs @ 0x435180 */
@@ -36,8 +36,8 @@
 004352c9        int16_t eax_10
 004352c9        if (is_floor_cache_tile_family(&ebx_1[-0x10]).b == 0)
 004353e2        label_4353e2:
-004353e2        eax_10.b = ebx_1[-1].b
-004353e5        char* edx_5 = &ebx_1[-1]
+004353e2        eax_10.b = ebx_1[-0x10]:0x3c.b
+004353e5        uint8_t* edx_5 = &ebx_1[-1]
 004353ea        if (eax_10.b == 0xe)
 004353f2        int32_t esi_5 = 0
 004353f4        int32_t eax_20
@@ -46,7 +46,7 @@
 004353fd        *ebx_1 = eax_20
 004353ff        if (i_2 s< 8)
 00435401        int32_t i_7 = i_2
-00435406        while (*edx_5 == 0xe)
+00435406        while ((edx_5 - 0x3c)->tile_id == 0xe)
 00435416        if ((eax_20 & 0x4000) != 0x4000)
 00435416        break
 00435418        eax_20:1.b &= 0xf1

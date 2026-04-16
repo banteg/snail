@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: rebuild_game_archive_if_needed @ 0x405370 */
@@ -15,7 +15,7 @@
 004053d4        int32_t ecx_2 = *(eax_1 + 8)
 004053e1        int32_t esi_2
 004053e1        int32_t edi_2
-004053e1        edi_2, esi_2 = __builtin_memcpy(ebx_1, eax_1, ecx_2 u>> 2 << 2)
+004053e1        edi_2, esi_2 = __builtin_memcpy(ebx_1, eax_1, ecx_2 & 0xfffffffc)
 004053ed        __builtin_memcpy(edi_2, esi_2, ecx_2 & 3)
 004053f3        void* ebp_1 = *(ebx_1 + 8)
 004053f9        int32_t var_230 = 0
@@ -98,7 +98,7 @@
 0040543f        int32_t ecx_10 = *ebx_2
 00405451        int32_t esi_7
 00405451        int32_t edi_8
-00405451        edi_8, esi_7 = __builtin_memcpy(ebp_2, &eax_1[ebx_2[-1]], ecx_10 u>> 2 << 2)
+00405451        edi_8, esi_7 = __builtin_memcpy(ebp_2, &eax_1[ebx_2[-1]], ecx_10 & 0xfffffffc)
 0040545c        __builtin_memcpy(edi_8, esi_7, ecx_10 & 3)
 00405466        *var_22c_1 = ebp_2 - ebx_1
 00405468        int32_t eax_6 = *ebx_2

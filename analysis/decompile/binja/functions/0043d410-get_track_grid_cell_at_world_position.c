@@ -1,5 +1,5 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: get_track_grid_cell_at_world_position @ 0x43d410 */
@@ -18,4 +18,4 @@
 0043d446        eax_1 = 0
 0043d44f        if (eax_1 s> 0xc7f)
 0043d451        eax_1 = 0xc7f
-0043d46f        return game + (esi + (eax_1 << 3)) * 0x54 + 0x3bfac8
+0043d46f        return &game->_pad_00[(esi + (eax_1 << 3)) * 0x54 + 0x3bfac8]

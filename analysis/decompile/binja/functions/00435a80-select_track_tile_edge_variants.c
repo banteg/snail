@@ -1,10 +1,10 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: select_track_tile_edge_variants @ 0x435a80 */
 
-00435a83        void* result = *(arg1 + 0x54)
+00435a83        int32_t result = *(arg1 + 0x54)
 00435a87        int32_t i = 0
 00435a8f        int32_t i_1 = 0
 00435a93        if (result s> 0)
@@ -37,7 +37,7 @@
 00435b3d        eax_4 = is_open_neighbor_tile_family(&esi_1[0x264])
 00435b44        if (i s>= *(arg1 + 0x54) - 1 || eax_4 != 0)
 00435b46        esi_1[1] |= 2
-00435b4c        void* eax_5
+00435b4c        int32_t eax_5
 00435b4c        eax_5.b = esi_1[1]
 00435b55        int32_t edx_5
 00435b55        if (eax_5 - 5 u<= 5)

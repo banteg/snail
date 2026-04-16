@@ -1,11 +1,11 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: apply_damage_gauge_delta @ 0x4413f0 */
 
 004413f0        void* edx_1 = data_4df904
-00441400        void* result
+00441400        int32_t result
 00441400        if ((*(edx_1 + 0x4300b4) & 0x80) != 0)
 00441402        result.b = force
 00441408        if ((*(edx_1 + 0x4300b4) & 0x80) == 0 || result.b != 0)

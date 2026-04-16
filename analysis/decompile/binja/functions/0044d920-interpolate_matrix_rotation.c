@@ -1,11 +1,11 @@
 /* tool: binary_ninja */
-/* target: 63967:1:3859193737586600258 */
+/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: interpolate_matrix_rotation @ 0x44d920 */
 
 0044d93e        float var_60
-0044d93e        initialize_quaternion_from_matrix(&var_60, arg1)
+0044d93e        initialize_quaternion_from_matrix(&var_60, transform)
 0044d943        long double x87_r7 = fconvert.t(var_60)
 0044d94f        long double temp1 = fconvert.t(-0.00100000005f)
 0044d94f        x87_r7 - temp1
@@ -64,7 +64,7 @@
 0044da0d        eax_1.w = (x87_r7_8 < temp10_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_8, temp10_1) ? 1 : 0) << 0xa | (x87_r7_8 == temp10_1 ? 1 : 0) << 0xe
 0044da12        if ((eax_1:1.b & 0x40) != 0)
 0044da1d        float* eax_2 = initialize_matrix_from_quaternion(&var_40, &var_70)
-0044da2b        __builtin_memcpy(arg1, &var_40, 0x40)
+0044da2b        __builtin_memcpy(transform, &var_40, 0x40)
 0044da32        return eax_2
 0044da3e        float var_50
 0044da3e        initialize_axis_from_quaternion(&var_50, &var_70)
@@ -72,10 +72,11 @@
 0044da43        long double x87_r7_9 = fconvert.t(var_44)
 0044da47        long double temp8 = fconvert.t(0f)
 0044da47        x87_r7_9 - temp8
-0044da4d        int16_t eax_3 = (x87_r7_9 < temp8 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp8) ? 1 : 0) << 0xa | (x87_r7_9 == temp8 ? 1 : 0) << 0xe
+0044da4d        float* eax_3
+0044da4d        eax_3.w = (x87_r7_9 < temp8 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_9, temp8) ? 1 : 0) << 0xa | (x87_r7_9 == temp8 ? 1 : 0) << 0xe
 0044da52        if ((eax_3:1.b & 0x40) == 0)
-0044da65        float var_44_1 = fconvert.s(fconvert.t(var_44) * fconvert.t(arg2))
+0044da65        float var_44_1 = fconvert.s(fconvert.t(var_44) * fconvert.t(alpha))
 0044da69        initialize_quaternion_from_axis(&var_70, &var_50)
 0044da77        eax_3 = initialize_matrix_from_quaternion(&var_40, &var_70)
-0044da85        __builtin_memcpy(arg1, &var_40, 0x40)
+0044da85        __builtin_memcpy(transform, &var_40, 0x40)
 0044da8c        return eax_3
