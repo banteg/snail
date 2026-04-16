@@ -55,17 +55,33 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 
 One commit per phase; each ends green (zig build test + health checks + no user-visible behavior change).
 
-1. Phase A1 — **done**. `gameplay/runner_state.zig` now owns the pure data types plus their small inline methods: `RunnerInput`, `ReplayDirective`, `AttachmentHint`, `MovementMode`, `SessionMode`, `DeathCause`, cutscene-id constants, `RunnerHandoff`, `Projectile`, `RecentEvent`, `EncounterCounters`, `ScoreTotals`, `RowEventDisplayState`, `RowEventDisplayController` (+ `configureForRun` / `reconfigureCompletion`), `Stopwatch` (+ `advance` / `elapsedMillis`), damage-gauge / damage-warning-actor types, `SnailSkinTransition` (+ `change` / `tick`), `JetpackWarningBand`, `JetpackGauge` (+ `fuelRemaining`), `WeaponChannelStates` (+ `nativeWeaponChannelStates`), `FallState`, `RunnerPhase`, attachment-follow / launch / world-frame data. `gameplay.zig` size: ~9600 → ~9200 lines.
-2. Phase A2 — gameplay helpers that don't touch Runner → `gameplay/damage.zig`, `gameplay/jetpack.zig` (~300 lines each).
-3. Phase A3 — gameplay row event + parcel → `gameplay/row_event.zig` + `gameplay/parcel.zig` (~700 lines together).
-4. Phase A4 — gameplay hazards → `gameplay/hazards.zig` (~400 lines).
-5. Phase A5 — gameplay attachment + turret + motion (largest remaining, ~1500 lines combined).
-6. Phase A6 — gameplay phase + score + leftover glue.
-7. Phase B1 — main.zig frontend art + screenshots + audio (low-risk data / IO modules).
-8. Phase B2 — main.zig run result + outer bridge + level loader.
-9. Phase B3 — main.zig frontend flow.
+1. Phase A1 — **done**. `gameplay/runner_state.zig` owns the remaining cross-subsystem value types (`RunnerInput`, `ReplayDirective`, `AttachmentHint`, `MovementMode`, `SessionMode`, `DeathCause`, cutscene-id constants, `RunnerHandoff`, `Projectile`, `RecentEvent`, `EncounterCounters`, `ScoreTotals`, `RowEventDisplayState`, `RowEventDisplayController`, `Stopwatch`, `SnailSkinTransition`, `WeaponChannelStates`, `FallState`, `RunnerPhase`, attachment-follow / launch / world-frame data).
+2. Phase A2 — **done**. `gameplay/jetpack.zig` owns `Gauge` (previously `JetpackGauge`) with `arm()`/`disarm()`/`update()`/`fuelRemaining()`/`WarningBand`. Runner methods collapse to 3-line delegates.
+3. Phase A3 — **done**. `gameplay/damage.zig` owns a single `Controller` that consolidates 5 previous Runner fields (`damage_gauge`, `damage_gauge_runtime`, `damage_warning_state`, `damage_warning_actor`, `slug_hit_active`) plus `WarningState`, `WarningActorState`, `Runtime`, `WarningActor` types. `applyDelta`, `updateController`, `update`, `overlayAlpha`, `actorAlpha`, `displayFill`, `warningLabel` live on the controller; Runner delegates. External call sites now read `runner.damage.gauge` / `runner.damage.warning_state` etc.
+4. Phase A4 — **done**. `gameplay/hazards.zig` owns `Runtime { hazards, pickups, rings }` — three `HazardPool` / `PickupPool` / `RingPool` structs collapsing 10 previous flat Runner fields into one composed `runner.runtime` entry with `reset()` / `active()` / `contains` / `countOfKind` primitives. Cross-cutting collision logic stays on Runner for now; it reaches through the pools.
+5. Phase A5 — **done**. `gameplay/parcel.zig` owns `Pool { home_anchor, slots[50], last_scan_end, collected_rows[1024], collected_row_count }` with `findSlotIndex`, `allocateSlot`, `isCollected`, `markCollected`. Runner helpers delegate.
+6. Phase A6 — **done**. `gameplay/combat.zig` owns `Combat { projectiles: ProjectilePool, turrets: TurretPool }` grouping the 4 weapon-pool fields.
+7. Phase A7 — cutscene + handoff state (`cutscene_id`, `cutscene_ticks`, `cutscene_camera`, `pending_handoff`, `completion_handoff_*`, `completion_screen_init_sent`) → `gameplay/cutscene.zig`. Medium churn (external call sites in `gameplay/camera.zig`).
+8. Phase A8 — attachment state + entry + exit + carryover + camera orientations (~16 fields) → `gameplay/attachment.zig`. Big churn because `gameplay/camera.zig` reaches into `attachment_follow` / `launch` / orientations.
+9. Phase A9 — motion (lane lean, row advance, replay, sample, runtime tile hint) → `gameplay/motion.zig`.
+10. Phase A10 — presentation (snail_skin, weapon flags, movement timers, invincible/slow/shot cooldowns) → `gameplay/presentation.zig`.
+11. Phase A11 — score + counters + defeated slugs + visible lives + recent events (~10 fields, 80+ external call sites) → `gameplay/scoring.zig`. Highest external-churn; defer until the more self-contained subsystems are done.
+12. Phase B1 — main.zig frontend art + screenshots + audio helpers (low-risk data / IO modules).
+13. Phase B2 — main.zig run result + outer bridge + level loader.
+14. Phase B3 — main.zig frontend flow.
 
-Each phase should shrink `gameplay.zig` / `main.zig` without changing any tracked decompile or Zig test output.
+## Refactor pattern that worked
+
+For each subsystem:
+1. Create `gameplay/<subsystem>.zig` with a `Controller` or `Pool`/`Runtime` struct owning the subsystem's fields.
+2. Move subsystem-only methods onto the controller; inline-pass-through the few fields the Runner cross-reads (snail_skin, preview).
+3. Drop the 5–10 loose Runner fields and add a single composed field: `<subsystem>: <module>.Controller = .{}`.
+4. Bulk-rename internal accesses via a Python script: `self.damage_gauge → self.damage.gauge` etc.
+5. Rewrite the Runner wrappers (applyDamageGaugeDelta etc.) as 1–3 line delegates to the controller.
+6. Move constants into the module; keep `const X = <module>.X` at the top of `gameplay.zig` where the `Runner` struct still uses bare names.
+7. Run `zig build test` and fix external call sites (main.zig / gameplay/hud.zig / gameplay/audio_cues.zig / debug/).
+
+Each phase ended with zero behavior change (tests green) and meaningful structural clarity (pool + controller types live with their logic).
 
 ## Executing Runner-method extraction (Phases A2+)
 
