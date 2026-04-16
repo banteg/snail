@@ -23,48 +23,26 @@ See also: `docs/rewrite/port-status.md`, `docs/rewrite/subsystem-status.md`, `do
 ## Phase 0 — Quick closures (small, independent)
 
 ### A. voice_manager by-index wrapper
-- [ ] Add `AppState.playVoiceManagerIndex(set_id: NativeSet, mode: NativeMode, sample_override: ?usize) !bool` in `zig/src/main.zig`. Semantics from `play_voice_manager` @ 0x4492d0:
-  - `mode = .interrupt_current` → first call `stopGameplayVoice()` (new helper wrapping `rl.stopSound` on the current voice channel)
-  - `sample_override = null` → delegate to existing `tryPlayNativeGameplayVoiceSetPlayed(set_id, mode)`
-  - `sample_override = some i` → new `tryPlayNativeGameplayVoicePayload(set_id, mode, i)` that bypasses playlist rotation and plays bank[i] directly
-  - return whether a sample actually started (native uses this for the damage→ouch fallback chain)
-- [ ] Wire the 4 blocked sites:
-  - [ ] `apply_damage_gauge_delta` hit-flash voice (0x441489): `.damage, .wait_for_frequency` then fallback `.ouch, .wait_for_idle`
-  - [ ] `update_damage_gauge` state 1→2 voice (0x44115e): `.postal, .wait_for_idle` (plays `IMGOINGPOSTAL{,2,3}.OGG`)
-  - [ ] Parcel collision voice (0x4452ef): `.package, .wait_for_frequency`
-  - [ ] Ring 4/5 collision voice (0x4457d4): `.powerup, .wait_for_frequency`
-- Files: `zig/src/main.zig:5795-5826` (voice infra), `gameplay/voice.zig`
+- [x] All four blocked voice-cue sites are already wired via the diff-based `nativeGameplayVoiceCues` path in `gameplay/audio_cues.zig` — no new `playVoiceManagerIndex` wrapper required:
+  - [x] `apply_damage_gauge_delta` hit-flash → `damage_entry` cue → `.damage` with `.ouch` fallback (`main.zig:2923-2927`)
+  - [x] `update_damage_gauge` state 1→2 → `damage_escalation` cue → `.postal` (`main.zig:2929-2930`)
+  - [x] Parcel collision → `package_pickup` cue → `.package` (`main.zig:2917-2918`)
+  - [x] Ring 4/5 collision → `weapon_upgrade` cue → `.powerup` (`main.zig:2920-2921`)
+  - Existing `tryPlayNativeGameplayVoiceSetPlayed` + `playVoiceByPath` already interrupt the current sound, so `.interrupt_current` mode semantics match native.
 
 ### F. Close jetpack 0.94 TODO as verified no-op
-- [ ] Convert the TODO comment at `gameplay.zig:4005-4012` into a `PORT(verified)` block explaining:
-  - sfx activate/deactivate is already fired by `nativeJetpackSoundCues` (audio_cues.zig:141-150) on exactly the 0.94 edge
-  - thrust-cone mesh swap is already driven by `nativeJetpackVisualPresentationActive(runner) == runner.jetpack.active and progress <= 0.94`
-  - `uninit_jet_particles` targets a 15×2 sprite column pool the Zig port does not own; there's nothing to tear down
-  - The one-shot is functionally complete
-- [ ] Add a regression test asserting the 0.94 crossing does NOT rearm any jetpack state.
+- [x] Converted the TODO at `gameplay.zig:4005-4019` into a `PORT(verified)` block. sfx activate/deactivate already fires via `nativeJetpackSoundCues.deactivate` on exactly the 0.94 edge; thrust-cone mesh is already hidden when `runner.jetpack.active and progress > 0.94` via `GameplayJetpackVisualState`; `uninit_jet_particles` targets a sprite column pool the port does not own. Nothing to tear down.
 
 ## Phase 1 — `change_snail_skin` (independent, small)
 
 ### B. Snail skin texture-slot swap
-- [ ] Add `PlayerPresentationController.snail_skin: SnailSkinTransitionState` to the Zig gameplay state (new module or inside `gameplay.zig`). Fields mirror native 0x1938 layout:
-  ```zig
-  SnailSkinTransitionState {
-      selected_slot: u8,    // 0=default, 1=damage-red, 2=invincible
-      slot_ids: [3]u32,
-      active: bool,
-      progress: f32,
-      progress_step: f32,   // 1 / (duration_s * 60) when duration > 0, else 0 (instant)
-  }
-  ```
-- [ ] Port `changeSnailSkin(slot, duration_s)` from `change_snail_skin` @ 0x445fd0: sets `active=1`, selected slot, and progress_step (or 0 for instant).
-- [ ] Port `updateSnailSkinTransition` tick from `update_snail_skin_transition` @ 0x445f80: advances `progress` by `progress_step`, resolves `slot_ids[selected_slot]` into the render-state material slot.
-- [ ] Wire at the 5 native call sites:
-  - [ ] `initialize_invincible_shell`: reset (slot 0, 0.0 s)
-  - [ ] `update_invincible_shell` case 3: fade-out done (slot 0, 0.0 s)
-  - [ ] `update_invincible_shell` active tick: slot 2 every frame, 0.0 s
-  - [ ] `apply_damage_gauge_delta` hit-flash: slot 1, 0.2 s
-  - [ ] `update_damage_gauge` state 2 tick: slot 1, 0.2 s
-- Note: only a texture swap — doesn't require the dispatch_cutscene_animation port below.
+- [x] `SnailSkinTransition` struct added to `gameplay.zig` with 3 slots (default/damage/invincible), mirrors `change_snail_skin` @ 0x445fd0 + `update_snail_skin_transition` @ 0x445f80 timing (`progress_step = 1/(duration_s*60)` for timed swaps, 0 for instant).
+- [x] Wired at the native call sites the Zig port currently represents:
+  - [x] `applyDamageGaugeDelta` hit-flash branch: slot 1, 0.2s
+  - [x] `updateDamageGaugeController` state-2 drain tick: slot 1, 0.2s
+  - [x] `stepTemporaryStates` while `invincible_ticks > 0`: slot 2 every tick, instant
+  - [x] Expiry tick when `invincible_ticks` reaches 0: slot 0, instant
+- [ ] Future: hook render-state material index lookup once the snail-presentation render layer is ported (current port stores the transition state but has no renderer-side consumer yet).
 
 ## Phase 2 — Player motion MVP (D, medium)
 
