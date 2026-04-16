@@ -167,8 +167,7 @@ pub fn drawTutorialLives(state: anytype, layout: VirtualLayout, visible_life_sto
 }
 
 pub fn drawStatusWidgets(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) void {
-    drawJetpackGauge(state, layout, runner, false);
-    drawDamageGauge(state, layout, runner, false);
+    drawDamageGauge(state, layout, runner);
     if (runner.session_mode == .postal) {
         drawTutorialLives(state, layout, runner.visible_life_stock);
     }
@@ -240,52 +239,6 @@ pub fn drawRowEventWidget(
     }
 }
 
-// PORT(invention): the native game has no HUD bar for the jetpack; it
-// communicates fuel state via snail-visual wobble plus the jetpack particle
-// trail (see `update_jetpack_gauge` 0x43a390, which only updates state and
-// emits particle effects, and `set_snail_jetpack` 0x445860). This gauge is a
-// port-side UX aid for headless playtesting; remove once snail visual feedback
-// is fully ported.
-pub fn drawJetpackGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
-    if (!runner.jetpack.active) return;
-
-    const panel = layout.mapRect(548.0, 108.0, 28.0, 224.0);
-    const fill_margin = layout.scaleFloat(4.0);
-    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
-    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
-    const fill_ratio = runner.jetpackFuelRemaining();
-    const active_fill_height = fill_height * fill_ratio;
-    const pulse = if (runner.jetpack.warning_band == .near_empty) runner.jetpack.pulse_envelope else @as(f32, 0.0);
-    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
-    const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
-    const fill_color = jetpackGaugeColor(runner.jetpack.warning_band, pulse);
-
-    if (show_label) {
-        drawAppText(state, "Jet", @intFromFloat(panel.x + layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
-    }
-    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-
-    const inner = rl.Rectangle{
-        .x = panel.x + fill_margin,
-        .y = panel.y + fill_margin,
-        .width = fill_width,
-        .height = fill_height,
-    };
-    rl.drawRectangleRounded(inner, 0.12, 6, .{ .r = 255, .g = 255, .b = 255, .a = 20 });
-
-    if (active_fill_height > 0.0) {
-        const fill_rect = rl.Rectangle{
-            .x = inner.x,
-            .y = inner.y + (fill_height - active_fill_height),
-            .width = fill_width,
-            .height = active_fill_height,
-        };
-        rl.drawRectangleRounded(fill_rect, 0.12, 6, fill_color);
-    }
-
-    rl.drawRectangleRoundedLinesEx(panel, 0.18, 8, layout.scaleFloat(2.0), .{ .r = 255, .g = 255, .b = 255, .a = outline_alpha });
-}
-
 // PORT(verified): `update_damage_gauge` (0x440fd0) queues three quads on the
 // right column at authored (560, 70, 64, 396). Bright overlay (0x5b) covers the
 // full area, empty (0x59 `DamageGuage.tga`) fills the top `var_14` rows, and
@@ -296,101 +249,79 @@ const damage_gauge_y: f32 = 70.0;
 const damage_gauge_w: f32 = 64.0;
 const damage_gauge_h: f32 = 396.0;
 
-pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner, show_label: bool) void {
-    const panel = layout.mapRect(damage_gauge_x, damage_gauge_y, damage_gauge_w, damage_gauge_h);
+pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) void {
+    const empty_texture = state.current_gameplay_sprites.damage_gauge orelse return;
+    const full_texture = state.current_gameplay_sprites.damage_gauge_full orelse return;
+    const bright_texture = state.current_gameplay_sprites.damage_gauge_bright orelse return;
     const fill_ratio = runner.damageGaugeDisplayFill();
-    const pulse = (@sin(runner.damage.runtime.pulse_progress * std.math.tau) + 1.0) * 0.5;
     const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
     const warning_actor_alpha = runner.damageWarningActorAlpha();
-    const label_y: i32 = @intFromFloat(panel.y - layout.scaleFloat(20.0));
     const warning_alpha: u8 = @intFromFloat(std.math.clamp(warning_actor_alpha, 0.0, 1.0) * 255.0);
     const bright_alpha: u8 = @intFromFloat(std.math.clamp(bright_overlay_alpha, 0.0, 1.0) * 255.0);
     // Native splits the gauge vertically: top `var_14` is the empty frame,
-    // bottom `396 - var_14` is the filled portion. Our `fill_ratio` grows with
-    // damage, so the filled portion grows from the top down as damage rises —
-    // match native by anchoring `var_14` to (1 - fill_ratio) * gauge height.
+    // bottom `damage_gauge_h - var_14` is the filled portion. `fill_ratio`
+    // grows with damage, so the filled portion grows from the top down as
+    // damage rises — anchor `var_14` to `(1 - fill_ratio) * damage_gauge_h`.
     const empty_height = (1.0 - fill_ratio) * damage_gauge_h;
     const full_height = damage_gauge_h - empty_height;
 
-    if (show_label) {
-        drawAppText(state, "Damage", @intFromFloat(panel.x - layout.scaleFloat(2.0)), label_y, layout.fontSize(16), .light_gray);
+    if (bright_alpha > 0) {
+        drawTextureLocalRect(
+            layout,
+            bright_texture,
+            damage_gauge_x,
+            damage_gauge_y,
+            damage_gauge_w,
+            damage_gauge_h,
+            .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha },
+        );
     }
-
-    // The sprite-backed native path. If any of the three damage sprites fail to
-    // load we fall through to the programmatic fallback below.
-    const have_all_sprites =
-        state.current_gameplay_sprites.damage_gauge != null and
-        state.current_gameplay_sprites.damage_gauge_full != null and
-        state.current_gameplay_sprites.damage_gauge_bright != null;
-    if (have_all_sprites) {
-        if (bright_alpha > 0) {
-            drawTextureLocalRect(
-                layout,
-                state.current_gameplay_sprites.damage_gauge_bright.?,
-                damage_gauge_x,
-                damage_gauge_y,
-                damage_gauge_w,
-                damage_gauge_h,
-                .{ .r = 255, .g = 255, .b = 255, .a = bright_alpha },
-            );
-        }
-        if (empty_height > 0.0) {
-            const loaded_texture = state.current_gameplay_sprites.damage_gauge.?;
-            const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
-            const source_width = @as(f32, @floatFromInt(loaded_texture.texture.width));
-            const source = rl.Rectangle{
+    if (empty_height > 0.0) {
+        const source_height = @as(f32, @floatFromInt(empty_texture.texture.height));
+        const source_width = @as(f32, @floatFromInt(empty_texture.texture.width));
+        drawTextureLocalRectSource(
+            layout,
+            empty_texture,
+            .{
                 .x = 0.0,
                 .y = 0.0,
                 .width = source_width,
                 .height = source_height * (empty_height / damage_gauge_h),
-            };
-            drawTextureLocalRectSource(layout, loaded_texture, source, damage_gauge_x, damage_gauge_y, damage_gauge_w, empty_height, .white);
-        }
-        if (full_height > 0.0) {
-            const loaded_texture = state.current_gameplay_sprites.damage_gauge_full.?;
-            const source_height = @as(f32, @floatFromInt(loaded_texture.texture.height));
-            const source_width = @as(f32, @floatFromInt(loaded_texture.texture.width));
-            const source = rl.Rectangle{
+            },
+            damage_gauge_x,
+            damage_gauge_y,
+            damage_gauge_w,
+            empty_height,
+            .white,
+        );
+    }
+    if (full_height > 0.0) {
+        const source_height = @as(f32, @floatFromInt(full_texture.texture.height));
+        const source_width = @as(f32, @floatFromInt(full_texture.texture.width));
+        drawTextureLocalRectSource(
+            layout,
+            full_texture,
+            .{
                 .x = 0.0,
                 .y = source_height * (empty_height / damage_gauge_h),
                 .width = source_width,
                 .height = source_height * (full_height / damage_gauge_h),
-            };
-            drawTextureLocalRectSource(layout, loaded_texture, source, damage_gauge_x, damage_gauge_y + empty_height, damage_gauge_w, full_height, .white);
-        }
-        if (warning_alpha > 0) {
-            if (state.current_gameplay_sprites.warning) |loaded_texture| {
-                drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
-            }
-        }
-        return;
+            },
+            damage_gauge_x,
+            damage_gauge_y + empty_height,
+            damage_gauge_w,
+            full_height,
+            .white,
+        );
     }
-
-    // Programmatic fallback when the sprite assets are unavailable.
-    const fill_margin = layout.scaleFloat(4.0);
-    const fill_height = @max(panel.height - fill_margin * 2.0, 0.0);
-    const fill_width = @max(panel.width - fill_margin * 2.0, 0.0);
-    const active_fill_height = fill_height * fill_ratio;
-    const outline_alpha: u8 = @intFromFloat(160.0 + 64.0 * pulse);
-    const fill_color = damageGaugeColor(fill_ratio, runner.damage.warning_state, pulse);
-    rl.drawRectangleRounded(panel, 0.18, 8, .{ .r = 0, .g = 0, .b = 0, .a = 176 });
-    const inner = rl.Rectangle{
-        .x = panel.x + fill_margin,
-        .y = panel.y + fill_margin,
-        .width = fill_width,
-        .height = fill_height,
-    };
-    rl.drawRectangleRounded(inner, 0.12, 6, .{ .r = 255, .g = 255, .b = 255, .a = 20 });
-    if (active_fill_height > 0.0) {
-        const fill_rect = rl.Rectangle{
-            .x = inner.x,
-            .y = inner.y + (fill_height - active_fill_height),
-            .width = fill_width,
-            .height = active_fill_height,
-        };
-        rl.drawRectangleRounded(fill_rect, 0.12, 6, fill_color);
+    // PORT(verified): `initialize_warning` (0x446e8a) places sprite 0x5e
+    // `Sprites/Warning.tga` at authored (288, 64, 64, 64); `update_warning`
+    // (0x446f80) modulates alpha.
+    if (warning_alpha > 0) {
+        if (state.current_gameplay_sprites.warning) |loaded_texture| {
+            drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
+        }
     }
-    rl.drawRectangleRoundedLinesEx(panel, 0.18, 8, layout.scaleFloat(2.0), .{ .r = 255, .g = 255, .b = 255, .a = outline_alpha });
 }
 
 fn currentParcelTarget(state: anytype) usize {
@@ -498,25 +429,3 @@ fn drawTextureLocalRect(layout: VirtualLayout, loaded_texture: assets.LoadedText
     );
 }
 
-fn damageGaugeColor(fill_ratio: f32, warning_state: gameplay.DamageWarningState, pulse: f32) rl.Color {
-    if (warning_state != .idle) {
-        const green: u8 = @intFromFloat(160.0 + 72.0 * pulse);
-        return .{ .r = 255, .g = green, .b = 88, .a = 232 };
-    }
-    if (fill_ratio >= 0.75) return .{ .r = 232, .g = 78, .b = 72, .a = 224 };
-    if (fill_ratio >= 0.35) return .{ .r = 244, .g = 170, .b = 64, .a = 216 };
-    return .{ .r = 94, .g = 204, .b = 122, .a = 208 };
-}
-
-fn jetpackGaugeColor(warning_band: gameplay.JetpackWarningBand, pulse: f32) rl.Color {
-    return switch (warning_band) {
-        .idle => .{ .r = 94, .g = 204, .b = 122, .a = 0 },
-        .steady => .{ .r = 90, .g = 172, .b = 255, .a = 224 },
-        .near_empty => .{
-            .r = 255,
-            .g = @intFromFloat(164.0 + 72.0 * pulse),
-            .b = 84,
-            .a = 232,
-        },
-    };
-}

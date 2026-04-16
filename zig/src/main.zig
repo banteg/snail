@@ -7258,10 +7258,7 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, runner:
     try gameplay_hud.drawTutorialHud(state, layout, runner);
     gameplay_hud.drawProgressBar(state, layout, runner);
     gameplay_hud.drawTutorialLives(state, layout, runner.visible_life_stock);
-    gameplay_hud.drawDamageGauge(state, layout, runner, false);
-    if (runner.jetpack.active) {
-        gameplay_hud.drawJetpackGauge(state, layout, runner, false);
-    }
+    gameplay_hud.drawDamageGauge(state, layout, runner);
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
             gameplay_prompt_overlay.drawStaticWidget(state, layout, "Click to Start", true);
