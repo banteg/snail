@@ -5,6 +5,7 @@ const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
+const combat_module = @import("gameplay/combat.zig");
 const damage_module = @import("gameplay/damage.zig");
 const hazards_module = @import("gameplay/hazards.zig");
 const jetpack_module = @import("gameplay/jetpack.zig");
@@ -134,7 +135,7 @@ const max_active_runtime_pickups = hazards_module.max_active_runtime_pickups;
 const max_active_track_parcels = parcel_module.max_active_track_parcels;
 const max_active_runtime_hazards = hazards_module.max_active_runtime_hazards;
 const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_effects;
-const max_active_projectiles: usize = 16;
+const max_active_projectiles = combat_module.max_active_projectiles;
 const max_defeated_slug_cells: usize = 64;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const score_life_threshold: u32 = 50_000;
@@ -187,7 +188,7 @@ const turret_projectile_spawn_rows_ahead: usize = 24;
 const turret_projectile_hit_z_tolerance: f32 = 0.5;
 const turret_projectile_hit_x_tolerance: f32 = 0.6;
 const turret_flash_duration_ticks: u8 = 6;
-const max_active_turret_states: usize = 64;
+const max_active_turret_states = combat_module.max_active_turret_states;
 const native_ticks_per_second: f32 = 60.0;
 // Windows quantizes runtime gameplay world X with `floor(x + 4.0)` and clamps the player
 // between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
@@ -473,10 +474,7 @@ pub const Runner = struct {
     snail_skin: SnailSkinTransition = .{},
     last_processed_row: ?usize = null,
     runtime: hazards_module.Runtime = .{},
-    active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
-    active_projectile_count: usize = 0,
-    active_turret_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states,
-    active_turret_state_count: usize = 0,
+    combat: combat_module.Combat = .{},
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
     math_random_state: u32 = 0,
@@ -952,7 +950,7 @@ pub const Runner = struct {
     }
 
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
-        return self.active_projectiles[0..self.active_projectile_count];
+        return self.combat.projectiles.slots[0..self.combat.projectiles.count];
     }
 
     pub fn gameplayCellLabel(self: *const Runner) ?[]const u8 {
@@ -2305,13 +2303,13 @@ pub const Runner = struct {
     fn spawnProjectile(self: *Runner, kind: Projectile.Kind, world_x: f32, world_y: f32, world_z: f32, dir_x: f32, dir_y: f32, dir_z: f32) void {
         var slot_index: ?usize = null;
         for (0..max_active_projectiles) |index| {
-            if (!self.active_projectiles[index].active) {
+            if (!self.combat.projectiles.slots[index].active) {
                 slot_index = index;
                 break;
             }
         }
         const index = slot_index orelse return;
-        self.active_projectiles[index] = .{
+        self.combat.projectiles.slots[index] = .{
             .active = true,
             .kind = kind,
             .world_x = world_x,
@@ -2322,15 +2320,15 @@ pub const Runner = struct {
             .dir_z = dir_z,
             .speed_rows_per_second = projectileSpeedForKind(kind),
         };
-        if (index >= self.active_projectile_count) {
-            self.active_projectile_count = index + 1;
+        if (index >= self.combat.projectiles.count) {
+            self.combat.projectiles.count = index + 1;
         }
     }
 
     fn updateProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
         var write_index: usize = 0;
-        for (0..self.active_projectile_count) |read_index| {
-            var projectile = self.active_projectiles[read_index];
+        for (0..self.combat.projectiles.count) |read_index| {
+            var projectile = self.combat.projectiles.slots[read_index];
             if (!projectile.active) continue;
             projectile.world_x += projectile.dir_x * projectile.speed_rows_per_second * delta_seconds;
             projectile.world_y += projectile.dir_y * projectile.speed_rows_per_second * delta_seconds;
@@ -2339,12 +2337,12 @@ pub const Runner = struct {
             if (projectile.kind == .enemy_laser) {
                 if (projectile.world_z < self.row_position - 8.0) continue;
             } else if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
-            self.active_projectiles[write_index] = projectile;
+            self.combat.projectiles.slots[write_index] = projectile;
             write_index += 1;
         }
-        self.active_projectile_count = write_index;
+        self.combat.projectiles.count = write_index;
         for (write_index..max_active_projectiles) |index| {
-            self.active_projectiles[index].active = false;
+            self.combat.projectiles.slots[index].active = false;
         }
     }
 
@@ -2432,13 +2430,13 @@ pub const Runner = struct {
                 next_state_count += 1;
             }
         }
-        self.active_turret_states = next_states;
-        self.active_turret_state_count = next_state_count;
+        self.combat.turrets.slots = next_states;
+        self.combat.turrets.count = next_state_count;
     }
 
     fn findTurretState(self: *const Runner, row: usize, lane: usize) ?TurretState {
-        for (0..self.active_turret_state_count) |index| {
-            const state = self.active_turret_states[index];
+        for (0..self.combat.turrets.count) |index| {
+            const state = self.combat.turrets.slots[index];
             if (state.row == row and state.lane == lane) return state;
         }
         return null;
@@ -6147,64 +6145,64 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.movement_flags = 1;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 2;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[1].kind);
+    try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[1].kind);
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 4;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 3), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[0].kind);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[1].kind);
-    try std.testing.expectEqual(Projectile.Kind.turbo, runner.active_projectiles[2].kind);
-    try std.testing.expect(@abs(runner.active_projectiles[0].dir_x - runner.active_projectiles[1].dir_x) > 0.05);
+    try std.testing.expectEqual(@as(usize, 3), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[1].kind);
+    try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[2].kind);
+    try std.testing.expect(@abs(runner.combat.projectiles.slots[0].dir_x - runner.combat.projectiles.slots[1].dir_x) > 0.05);
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 8;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
     try std.testing.expectApproxEqAbs(
         projectile_speed_rows_per_second * 2.0,
-        runner.active_projectiles[0].speed_rows_per_second,
+        runner.combat.projectiles.slots[0].speed_rows_per_second,
         0.0001,
     );
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 16;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
-    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[1].kind);
+    try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[1].kind);
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 144;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[0].kind);
-    try std.testing.expectEqual(Projectile.Kind.laser, runner.active_projectiles[1].kind);
+    try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
+    try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[1].kind);
 
-    runner.active_projectile_count = 0;
-    for (&runner.active_projectiles) |*projectile| projectile.active = false;
+    runner.combat.projectiles.count = 0;
+    for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
     runner.movement_flags = 32;
     runner.spawnProjectiles(&fixture.preview);
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
-    try std.testing.expectEqual(Projectile.Kind.rocket, runner.active_projectiles[0].kind);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
+    try std.testing.expectEqual(Projectile.Kind.rocket, runner.combat.projectiles.slots[0].kind);
     try std.testing.expectApproxEqAbs(
         projectile_speed_rows_per_second * 0.48,
-        runner.active_projectiles[0].speed_rows_per_second,
+        runner.combat.projectiles.slots[0].speed_rows_per_second,
         0.0001,
     );
 }
@@ -6218,7 +6216,7 @@ test "movement fire cadence follows the native selector-owned cooldown lane" {
     runner.reset(&fixture.preview);
 
     runner.handleFireInput(&fixture.preview, .fresh);
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(@as(u8, 2), runner.shot_cooldown_ticks);
     try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_fire_cooldown, 0.0001);
 
@@ -6228,7 +6226,7 @@ test "movement fire cadence follows the native selector-owned cooldown lane" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
 
     runner.handleFireInput(&fixture.preview, .repeat);
-    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
 }
 
@@ -6256,7 +6254,7 @@ test "movement fire is suppressed while attachment exit is pending" {
     runner.attachment_exit_pending = true;
 
     runner.handleFireInput(&fixture.preview, .fresh);
-    try std.testing.expectEqual(@as(usize, 0), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
 }
 
@@ -6271,7 +6269,7 @@ test "movement fire respects the native runtime fire feature flag" {
     runner.reset(&fixture.preview);
 
     runner.handleFireInput(&fixture.preview, .fresh);
-    try std.testing.expectEqual(@as(usize, 0), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
 }
 
@@ -6293,7 +6291,7 @@ test "replay fire bits drive the native movement fire gate" {
         },
         1.0 / 60.0,
     );
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_fire_cooldown, 0.0001);
 
     while (runner.movement_fire_cooldown > 0.0) {
@@ -6309,7 +6307,7 @@ test "replay fire bits drive the native movement fire gate" {
         },
         1.0 / 60.0,
     );
-    try std.testing.expectEqual(@as(usize, 2), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
 }
 
@@ -6331,12 +6329,12 @@ test "movement fire stays suppressed for the first ten gameplay ticks" {
             },
             1.0 / 60.0,
         );
-        try std.testing.expectEqual(@as(usize, 0), runner.active_projectile_count);
+        try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
         try std.testing.expectApproxEqAbs(runner.movement_fire_cooldown_step, runner.movement_fire_cooldown, 0.0001);
     }
 
     var held_ticks: usize = 0;
-    while (runner.active_projectile_count == 0 and held_ticks < 32) : (held_ticks += 1) {
+    while (runner.combat.projectiles.count == 0 and held_ticks < 32) : (held_ticks += 1) {
         runner.step(
             &fixture.preview,
             .{
@@ -6346,7 +6344,7 @@ test "movement fire stays suppressed for the first ten gameplay ticks" {
         );
     }
     try std.testing.expect(held_ticks > 0);
-    try std.testing.expectEqual(@as(usize, 1), runner.active_projectile_count);
+    try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
 }
 
@@ -6451,9 +6449,9 @@ test "turret rows spawn enemy laser projectiles" {
     primeRunnerBeforeRow(&runner, &fixture.preview, turret);
     runner.updateTurretFire(&fixture.preview, turret_fire_interval_seconds);
 
-    try std.testing.expect(runner.active_projectile_count > 0);
-    try std.testing.expectEqual(Projectile.Kind.enemy_laser, runner.active_projectiles[0].kind);
-    try std.testing.expect(runner.active_turret_state_count > 0);
+    try std.testing.expect(runner.combat.projectiles.count > 0);
+    try std.testing.expectEqual(Projectile.Kind.enemy_laser, runner.combat.projectiles.slots[0].kind);
+    try std.testing.expect(runner.combat.turrets.count > 0);
     try std.testing.expect(runner.turretFlashTicksAt(turret.row, turret.lane) > 0);
 }
 
@@ -6468,15 +6466,15 @@ test "multiple visible turrets keep independent controller state" {
     runner.previous_lane_center = runner.lane_center;
 
     runner.updateTurretFire(&fixture.preview, 0.5);
-    try std.testing.expect(runner.active_turret_state_count >= 2);
-    for (0..runner.active_turret_state_count) |index| {
-        try std.testing.expectEqual(@as(u8, 0), runner.active_turret_states[index].flash_ticks);
+    try std.testing.expect(runner.combat.turrets.count >= 2);
+    for (0..runner.combat.turrets.count) |index| {
+        try std.testing.expectEqual(@as(u8, 0), runner.combat.turrets.slots[index].flash_ticks);
     }
 
     runner.updateTurretFire(&fixture.preview, 0.5);
     var flashing_count: usize = 0;
-    for (0..runner.active_turret_state_count) |index| {
-        if (runner.active_turret_states[index].flash_ticks > 0) flashing_count += 1;
+    for (0..runner.combat.turrets.count) |index| {
+        if (runner.combat.turrets.slots[index].flash_ticks > 0) flashing_count += 1;
     }
     try std.testing.expect(flashing_count >= 2);
 }
