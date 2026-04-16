@@ -1656,12 +1656,18 @@ const AppState = struct {
 
         const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
-        self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
+        var loaded = try object.LoadedObject.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
             true,
         );
+        errdefer loaded.deinit();
+        // BARRIER.TGA is uniformly opaque but uses RGB darkness to encode the
+        // intended fade-to-black edges. Rewrite alpha from luminance so plain
+        // alpha blending produces the native glow without additive double-draw.
+        try loaded.reloadAlbedoColorAsAlpha(&self.catalog);
+        self.current_gameplay_barrier_object = loaded;
     }
 
     fn reloadGameplayLazer(self: *AppState) !void {
@@ -7893,15 +7899,22 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     // world orientation, so the draw should follow the owner without inventing
     // an extra upright rotation.
     const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
+    // The barrier mesh is a pair of thin horizontal quads (y=±0.3) so both
+    // sides want to contribute — render with back-face culling off, alpha
+    // blending on (the reloaded albedo has luminance-derived alpha from
+    // `reloadAlbedoColorAsAlpha`), and depth-write disabled so the translucent
+    // pass doesn't stamp Z values onto later opaque draws.
+    rl.gl.rlDrawRenderBatchActive();
     rl.gl.rlDisableBackfaceCulling();
-    defer rl.gl.rlEnableBackfaceCulling();
-    // Additive blending: BARRIER.TGA goes from black edges to bright blue in
-    // the middle, so additive lights up as a glowing stripe against the track
-    // instead of punching a dark slab across the scene. Matches how the native
-    // game handles translucent/glow-style meshes.
-    rl.beginBlendMode(.additive);
+    rl.gl.rlDisableDepthMask();
+    defer {
+        rl.gl.rlDrawRenderBatchActive();
+        rl.gl.rlEnableBackfaceCulling();
+        rl.gl.rlEnableDepthMask();
+    }
+    rl.beginBlendMode(.alpha);
     defer rl.endBlendMode();
-    loaded_object.drawTintedEx(world_transform, .white);
+    loaded_object.drawEx(world_transform);
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {

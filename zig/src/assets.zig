@@ -146,6 +146,42 @@ pub const Catalog = struct {
         return self.loadTexture(allocator, entry);
     }
 
+    /// Load a texture and rewrite its alpha channel from the per-pixel colour
+    /// luminance (max(r, g, b)). Use for assets like `BARRIER.TGA` whose art
+    /// encodes transparency as RGB darkness while the TGA alpha channel is
+    /// uniformly opaque; normal alpha blending then produces the intended fade.
+    pub fn loadTextureColorAsAlpha(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedTexture {
+        const decoded = try self.readEntryAlloc(allocator, entry);
+        defer allocator.free(decoded);
+
+        const image = try rl.loadImageFromMemory(".tga", decoded);
+        defer rl.unloadImage(image);
+
+        const colors = try rl.loadImageColors(image);
+        defer rl.unloadImageColors(colors);
+
+        for (colors) |*color| {
+            const max_component = @max(@max(color.r, color.g), color.b);
+            color.a = max_component;
+        }
+
+        var recolored = std.mem.zeroes(rl.Image);
+        recolored.data = @ptrCast(colors.ptr);
+        recolored.width = image.width;
+        recolored.height = image.height;
+        recolored.mipmaps = 1;
+        recolored.format = .uncompressed_r8g8b8a8;
+
+        const texture = try rl.loadTextureFromImage(recolored);
+        rl.setTextureWrap(texture, .clamp);
+        rl.setTextureFilter(texture, .bilinear);
+
+        return .{
+            .path = entry.path,
+            .texture = texture,
+        };
+    }
+
     pub fn loadSound(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedSound {
         const decoded = try self.readEntryAlloc(allocator, entry);
         defer allocator.free(decoded);
