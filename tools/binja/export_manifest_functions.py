@@ -142,7 +142,6 @@ def _write_artifact(
     out_path.write_text(
         (
             f"/* tool: binary_ninja */\n"
-            f"/* target: {target_metadata.get('target_id', 'unknown')} */\n"
             f"/* database: {target_metadata.get('filename', 'unknown')} */\n"
             f"/* manifest: {manifest_path} */\n"
             f"/* function: {function.name} @ {function.address_hex} */\n\n"

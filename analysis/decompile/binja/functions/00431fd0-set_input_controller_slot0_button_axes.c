@@ -1,5 +1,4 @@
 /* tool: binary_ninja */
-/* target: 37628:1:6042901297493365194 */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
 /* function: set_input_controller_slot0_button_axes @ 0x431fd0 */
