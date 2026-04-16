@@ -1,0 +1,157 @@
+# Gameplay HUD Pipeline
+
+Native HUD element inventory for the `.level` phase, recovered from
+`initialize_subgame`, `update_subgoldy`, `update_damage_gauge`,
+`update_progress_bar`, and the sprite registry in
+`initialize_game_assets_and_world`.
+
+All coordinates are authored 640×480.
+
+## Widget-backed HUD (frontend widget system)
+
+Allocated once in `initialize_subgame` (0x4374b0). Shown/hidden per frame.
+Stored on `Game` at fixed offsets.
+
+| Storage | Ctor | Params | Mode gating | Semantics |
+|---|---|---|---|---|
+| `game+0x35bb88` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=400, y=14, align=right(3), anchor_x=300 | shown in modes 0/1/4, hidden in 2/3 | **Current score** text, top-right |
+| `game+0x35bb8c` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=40, y=14, align=right(3), anchor_x=-71 | shown in 0/1/4 with per-mode content, hidden in 2/3 | **Reference best score** (Postal best / Time Trial best / Challenge best) — top-left |
+| `game+0x35bb90` | `initialize_frontend_sprite_button` | sprite=0x7a (`Sprites/ParcelIcon.tga`), x=0, y=58 | created only if mode==0 (Postal), initially hidden | **Parcel icon** (32×64 sprite) |
+| `game+0x35bb94` | `initialize_frontend_widget` | widget_type=0x14, text="0", x=47, y=80, align=absolute(0) | created only if mode==0, initially hidden | **Parcel count** number |
+| `game+0x35bb98 … +0x35bbbc` (9 slots) | `initialize_frontend_sprite_button` | sprite=0x7b (`Sprites/Life.tga`), x=13+i·24, y=430 | shown up to `visible_life_stock`, driven by `show_subgoldy_lives` | **Life eggs** (32×32 each) |
+
+`widget_type=0x14` (20) is the menu_button shell. For Postal the score widget
+starts with `border_add_text_number(widget_A, 0)` (live score) and the
+reference widget starts with `border_add_text_number(widget_D, best_score)`.
+For Time Trial (mode 4), widget D is fed by `format_time_trial_string`.
+
+`show_subgoldy_lives` (0x43af10) iterates the 9 life slots at
+`game+0x35bb98..+0x35bbbc` and toggles the `0x10` hidden bit based on
+`player->visible_life_stock`. Gated to `level_mode == 0` at
+`update_subgoldy` 0x43b239.
+
+## Programmatic HUD (direct quad queue)
+
+Called each frame from `update_subgoldy` or nearby. These bypass the widget
+system and push `queue_axis_aligned_textured_quad_uv` directly.
+
+### Progress bar (`update_progress_bar` @ 0x437c40)
+
+Three quads on the left column at authored x=13:
+
+| Sprite | ID | Asset | Authored rect | UV | Role |
+|---|---|---|---|---|---|
+| cursor | 0x9d | `Sprites/Progress-Cursor.tga` (64×64) | x=12, y=`var_1c+111`, 64×64 | full | follows fill boundary |
+| empty bar | 0x9b | `Sprites/Progress-Bar.tga` (64×256) | x=13, y=150, 64×`var_1c` | top `var_1c/256` of source | top (not-yet-traversed) portion |
+| lit bar | 0x9c | `Sprites/Progress-Bar-lit.tga` (64×256) | x=13, y=150+`var_1c`, 64×(256−`var_1c`) | bottom (256−`var_1c`)/256 of source | bottom (traversed) portion |
+
+`var_1c = (1 − progress) · 232 + 12` where `progress = (current − min)/(max − min)`.
+
+**Port bug (gameplay/hud.zig:68-104):** The sprite assignment is swapped.
+Our code puts `progress_bar_lit` on top and `progress_bar` on bottom; the
+native draw puts the empty bar (`progress_bar`) on top and the lit bar
+(`progress_bar_lit`) on bottom.
+
+### Damage gauge (`update_damage_gauge` @ 0x440fd0)
+
+Three quads on the right column at authored x=560:
+
+| Sprite | ID | Asset | Authored rect | Role |
+|---|---|---|---|---|
+| bright overlay | 0x5b | `Sprites/DamageGuageBright.tga` (64×512) | x=560, y=70, 64×396 | full-area flash overlay |
+| empty | 0x59 | `Sprites/DamageGuage.tga` (64×512) | x=560, y=70, 64×`var_14` | top (not-yet-damaged) |
+| full | 0x5a | `Sprites/DamageGuageFull.tga` (64×512) | x=560, y=70+`var_14`, 64×(396−`var_14`) | bottom (damaged) |
+
+UV y offsets use `var_14 / 432` (factor `0x3f460000`=0.77345… suggests source
+scaling to 432 logical source pixels within the 512-tall texture).
+
+**Port bug (gameplay/hud.zig:237-302):** Draws at authored `(586, 108, 28, 224)`
+— wrong origin and **roughly 2× too narrow / 1.8× too short**.
+
+### Warning actor (`update_warning` @ 0x446f80)
+
+Fires `WARNING.TGA` flash when damage hits critical. Called from
+`update_subgoldy` at 0x43b165. Position TODO (need to decode).
+
+### Row event display (`update_row_event_display` @ 0x404cf0)
+
+Mid-track parcel counter widget. Called from `update_subgoldy` at
+0x43d1b7 and 0x43b182. Position TODO.
+
+### Times up (`update_times_up` @ 0x445e20)
+
+"Times Up" message triggered when `runtime_track_index == 0x5208`. Called
+from `update_subgoldy` at 0x43d20b.
+
+## Sprite registry entries (from `initialize_game_assets_and_world`)
+
+Relevant sprite IDs confirmed via disasm of the `register_sprite_texture`
+pushes near 0x40b150..0x40b700:
+
+| ID | Asset | Use |
+|---|---|---|
+| 0x59 | `Sprites/DamageGuage.tga` | damage empty |
+| 0x5a | `Sprites/DamageGuageFull.tga` | damage full |
+| 0x5b | `Sprites/DamageGuageBright.tga` | damage bright overlay |
+| 0x7a | `Sprites/ParcelIcon.tga` | parcel icon widget |
+| 0x7b | `Sprites/Life.tga` | life egg slots |
+| 0x9b | `Sprites/Progress-Bar.tga` | progress empty |
+| 0x9c | `Sprites/Progress-Bar-lit.tga` | progress lit |
+| 0x9d | `Sprites/Progress-Cursor.tga` | progress cursor |
+
+## Level mode encoding
+
+| `level_mode` | Mode |
+|---|---|
+| 0 | Postal |
+| 1 | Time Trial |
+| 2 | Challenge (variant A) |
+| 3 | Challenge (variant B) |
+| 4 | Route-map replay (watch-best / auto-attract) |
+| 7 | Tutorial |
+
+HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
+`update_subgoldy`:
+
+- Score (widget A) + reference (widget D): shown for mode 0/1/4, hidden for 2/3.
+- Parcel icon + count (widgets B/C): created only if mode==0.
+- Life eggs: `show_subgoldy_lives` gated to mode==0.
+- Stopwatch/elapsed text: only Time Trial (mode 1) and Challenge (mode 4).
+
+## Zig port divergence summary
+
+| # | Element | Native | Port | Action |
+|---|---|---|---|---|
+| 1 | Progress bar sprite assignment | empty top, lit bottom | swapped | swap in `drawProgressBar` |
+| 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | `(586, 108, 28, 224)` | fix origin + size |
+| 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom | missing full/bright split | implement three-layer draw |
+| 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | `x=12+i·20, y=438`, any postal | fix spacing + y |
+| 5 | Score position | widget-backed right-aligned near x=400 | centered at x=320 | right-align |
+| 6 | Reference best score (widget D) | top-left, mode-dependent content | missing | add |
+| 7 | Running timer | none in Postal; Time Trial only | shown in all modes at top-right | mode-gate, move to widget C |
+| 8 | Parcel icon | separate sprite 0x7a at (0, 58) + number at (47, 80) | unicode glyph + "N/M" at (12, 10) | use native sprite + separate count |
+| 9 | Jetpack gauge bar | does not exist (particles only) | custom vertical bar at (548, 108, 28, 224) | port invention — remove or relabel |
+| 10 | "Click to Start" prompt text | lightweight overlay | uses `menu_button` widget (text_scale 1.3) | use smaller widget type |
+| 11 | `update_row_event_display` | native draws mid-track counter | partial | verify |
+| 12 | `update_times_up` | at stop-track marker | not wired | wire |
+| 13 | `update_warning` | flash WARNING.TGA on crit | missing | add |
+
+## Replay HUD
+
+Replay playback (persistent high-score replay, Time Trial watch-best) uses
+the same HUD as normal gameplay. The key gates are `selected_level_record_persistent`
+(1 for high-score replay, 0 for transient) and `selected_level_record_active`.
+The score widget continues to tick from the captured replay stream; the
+reference widget shows the record being replayed. No extra HUD chrome is
+added for replay — no "REPLAY" banner or ghost indicator in the native HUD
+layer. Widget D's content is still driven by mode.
+
+## Next work
+
+1. Fix concrete divergences 1–4 (authored coords and sprite assignments) in
+   `gameplay/hud.zig`. Each fix cites this doc.
+2. Add widgets D, parcel-icon sprite, reference best-score, and mode-gated
+   running timer.
+3. Remove the port-invented jetpack gauge bar or relabel it as non-canonical.
+4. Decode remaining helpers (`update_warning`, `update_row_event_display`,
+   `update_times_up`) and port.
