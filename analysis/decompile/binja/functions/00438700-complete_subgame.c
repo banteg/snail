@@ -13,7 +13,7 @@
 0043874d        return 
 00438759        int32_t eax_3 = game->__offset(0x3bba64).d
 00438761        game->__offset(0xfd2b14).d = game->__offset(0x3bba48).d
-00438778        __builtin_memcpy(&game->__offset(0xfd2b18).d, &game->__offset(0x3bba4c).d, 0x18)
+00438778        __builtin_memcpy(&game->__offset(0xfd2b18).d, &game->stopwatch, 0x18)
 0043877a        float challenge_difficulty_scalar = game->challenge_difficulty_scalar
 0043877d        int32_t ecx_4 = game->_pad_00[0x28].d
 00438780        game->__offset(0xfd2b30).d = eax_3

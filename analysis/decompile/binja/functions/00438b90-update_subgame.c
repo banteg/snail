@@ -140,7 +140,7 @@
 00438e87        _pad_3c[0] = game->__offset(0x3bbba4).b
 00438e9c        if (_pad_3c[0] == 0 && game->__offset(0x3bb884).d != 2)
 00438e9e        int32_t var_50_10 = 0x3f800000
-00438ea9        x87control = advance_timer_counters(&game->__offset(0x3bba4c).d, 1f)
+00438ea9        x87control = advance_timer_counters(&game->stopwatch, 1f)
 00438ea9        esp_1 = &__saved_edi
 00438eb2        if (game->level_mode == 7)
 00438eba        x87control = update_tutorial(&game->__offset(0xa858).d)
@@ -558,7 +558,7 @@
 0043997e        esp_1[3]
 00439983        return 
 0043988a        &game->selected_level_record_saved_return_owner
-00439896        *(esp_1 - 4) = &game->__offset(0x3bba4c).d
+00439896        *(esp_1 - 4) = &game->stopwatch
 00439899        format_time_trial_string()
 0043989e        int32_t ecx_81 = game->__offset(0x35bb88).d
 004398a4        *(esp_1 - 4) = 0x751478

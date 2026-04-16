@@ -1244,7 +1244,7 @@
 0043c70c        unimplemented  {fmul st0, dword [0x4972c8]}
 0043c712        y = fconvert.s(unimplemented  {fstp dword [esp], st0})
 0043c712        unimplemented  {fstp dword [esp], st0}
-0043c715        advance_timer_counters(&player_1->_pad_2e4[4], y)
+0043c715        advance_timer_counters(&player_1->stopwatch, y)
 0043c720        player_1->completion_handoff_timer = 0f
 0043c726        player_1->completion_handoff_timer_step = 0.0166666675f
 0043c730        player_1->completion_handoff_voice_gate = 0
@@ -1602,7 +1602,7 @@
 0043cd2a        int32_t runtime_track_index_1 = *(eax_84 + 0x9441bc)
 0043cd32        if (runtime_track_index s>= runtime_track_index_1)
 0043cd34        runtime_track_index = runtime_track_index_1
-0043cd36        int32_t edx_51 = player_1->_pad_2e4[0x20].d
+0043cd36        int32_t edx_51 = player_1->__offset(0x304).d
 0043cd3e        int32_t edi_7
 0043cd3e        int32_t runtime_track_index_2
 0043cd3e        if (edx_51 != 0)
