@@ -5,6 +5,8 @@
 //! module. Moving pure types only.
 
 const std = @import("std");
+const rl = @import("raylib");
+const attachment_builders = @import("../attachment_builders.zig");
 const segment = @import("../segment.zig");
 
 pub const damage_gauge_pulse_step: f32 = 0.020833334;
@@ -395,3 +397,91 @@ pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
         else => .{ .center = 1 },
     };
 }
+
+pub const FallState = struct {
+    cause: DeathCause,
+    world_x: f32,
+    world_y: f32,
+    world_z: f32,
+    vertical_velocity: f32 = 0.0,
+    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+};
+
+pub const RunnerPhase = union(enum) {
+    active,
+    fall: FallState,
+    completion_handoff,
+};
+
+// PORT(partial): Windows attachment-follow is driven by installed runtime attachment
+// records plus sampled template geometry. The current port now uses built templates,
+// a preview-side installed-row map, and a first geometric entry test, but this state
+// is still a Zig-side implementation shape rather than the recovered Windows layout.
+pub const AttachmentFollowState = struct {
+    active: bool = false,
+    source_cell_row: usize = 0,
+    // Native follow state keeps a segment index plus a raw local-distance progress inside
+    // that segment. Keep both, then derive a builder-facing template progress for the
+    // shared Zig attachment helpers.
+    sample_index: usize = 0,
+    local_progress: f32 = 0.0,
+    // Mirrors the native local-distance lane, including raw negative/overflow seeds on entry.
+    progress: f32 = 0.0,
+    // Zig-side convenience cache in sample-index-plus-fraction space.
+    template_progress: f32 = 0.0,
+    exit_overshoot: f32 = 0.0,
+    lateral_offset: f32 = 0.0,
+    cached_output_lane_center: f32 = 0.5,
+    vertical_offset: f32 = 0.0,
+    // Native writes this from the source row-cell scalar during begin. The port still seeds
+    // it from the built template until that runtime row-cell scalar is surfaced in preview data.
+    installed_heading_delta: f32 = 0.0,
+    camera_orientation_a: f32 = 0.0,
+    camera_orientation_b: f32 = 0.0,
+    exit_carryover_a: f32 = 0.0,
+    exit_carryover_b: f32 = 0.0,
+    cached_output_position: attachment_builders.Vec3 = .{},
+};
+
+pub const AttachmentExitCarryover = struct {
+    // `carryover_a` is the confirmed common carryover lane copied into `post_follow_value_a`.
+    carryover_a: f32 = 0.0,
+    // `carryover_b` is still preserved because Windows writes `player + 0x430`, but bounded
+    // static RE has not yet closed a common consumer for it.
+    carryover_b: f32 = 0.0,
+};
+
+pub const InstalledAttachmentEntry = struct {
+    sample_index: usize,
+    local_progress: f32,
+    lateral_offset: f32,
+    vertical_offset: f32,
+};
+
+pub const InstalledAttachmentSlot = enum {
+    primary,
+    secondary,
+};
+
+pub const LaunchState = struct {
+    active: bool = false,
+    world_x: f32 = 0.0,
+    height: f32 = 0.0,
+    vertical_velocity: f32 = 0.0,
+    camera_progress: f32 = 0.0,
+    camera_progress_step: f32 = 0.0,
+    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
+    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
+};
+
+pub const WorldFrame = struct {
+    position: rl.Vector3,
+    forward: rl.Vector3,
+    up: rl.Vector3,
+};
+
+pub const AttachmentCameraProgress = struct {
+    template_kind: u8,
+    template_progress: f32,
+};

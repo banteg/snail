@@ -37,23 +37,11 @@ pub const cutscene_completion_id = runner_state.cutscene_completion_id;
 pub const cutscene_death_id = runner_state.cutscene_death_id;
 pub const RunnerHandoff = runner_state.RunnerHandoff;
 
-const FallState = struct {
-    cause: DeathCause,
-    world_x: f32,
-    world_y: f32,
-    world_z: f32,
-    vertical_velocity: f32 = 0.0,
-    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-};
+const FallState = runner_state.FallState;
 
 pub const Projectile = runner_state.Projectile;
 
-const RunnerPhase = union(enum) {
-    active,
-    fall: FallState,
-    completion_handoff,
-};
+const RunnerPhase = runner_state.RunnerPhase;
 
 const completion_handoff_timer_step: f32 = 1.0 / 60.0;
 const completion_handoff_voice_delay_seconds: f32 = 2.0;
@@ -351,72 +339,12 @@ fn runtimeRingDefaultKind4Eligible(tile_type: u8, runtime_build_flags: u32) bool
     return tile_type == 0x02 or tile_type == 0x03 or tile_type == 0x04;
 }
 
-// PORT(partial): Windows attachment-follow is driven by installed runtime attachment
-// records plus sampled template geometry. The current port now uses built templates,
-// a preview-side installed-row map, and a first geometric entry test, but this state
-// is still a Zig-side implementation shape rather than the recovered Windows layout.
-const AttachmentFollowState = struct {
-    active: bool = false,
-    source_cell_row: usize = 0,
-    // Native follow state keeps a segment index plus a raw local-distance progress inside
-    // that segment. Keep both, then derive a builder-facing template progress for the
-    // shared Zig attachment helpers.
-    sample_index: usize = 0,
-    local_progress: f32 = 0.0,
-    // Mirrors the native local-distance lane, including raw negative/overflow seeds on entry.
-    progress: f32 = 0.0,
-    // Zig-side convenience cache in sample-index-plus-fraction space.
-    template_progress: f32 = 0.0,
-    exit_overshoot: f32 = 0.0,
-    lateral_offset: f32 = 0.0,
-    cached_output_lane_center: f32 = 0.5,
-    vertical_offset: f32 = 0.0,
-    // Native writes this from the source row-cell scalar during begin. The port still seeds
-    // it from the built template until that runtime row-cell scalar is surfaced in preview data.
-    installed_heading_delta: f32 = 0.0,
-    camera_orientation_a: f32 = 0.0,
-    camera_orientation_b: f32 = 0.0,
-    exit_carryover_a: f32 = 0.0,
-    exit_carryover_b: f32 = 0.0,
-    cached_output_position: attachment_builders.Vec3 = .{},
-};
-
-const AttachmentExitCarryover = struct {
-    // `carryover_a` is the confirmed common carryover lane copied into `post_follow_value_a`.
-    carryover_a: f32 = 0.0,
-    // `carryover_b` is still preserved because Windows writes `player + 0x430`, but bounded
-    // static RE has not yet closed a common consumer for it.
-    carryover_b: f32 = 0.0,
-};
-
-const InstalledAttachmentEntry = struct {
-    sample_index: usize,
-    local_progress: f32,
-    lateral_offset: f32,
-    vertical_offset: f32,
-};
-
-const InstalledAttachmentSlot = enum {
-    primary,
-    secondary,
-};
-
-const LaunchState = struct {
-    active: bool = false,
-    world_x: f32 = 0.0,
-    height: f32 = 0.0,
-    vertical_velocity: f32 = 0.0,
-    camera_progress: f32 = 0.0,
-    camera_progress_step: f32 = 0.0,
-    basis_forward: attachment_builders.Vec3 = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-    basis_up: attachment_builders.Vec3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-};
-
-const WorldFrame = struct {
-    position: rl.Vector3,
-    forward: rl.Vector3,
-    up: rl.Vector3,
-};
+const AttachmentFollowState = runner_state.AttachmentFollowState;
+const AttachmentExitCarryover = runner_state.AttachmentExitCarryover;
+const InstalledAttachmentEntry = runner_state.InstalledAttachmentEntry;
+const InstalledAttachmentSlot = runner_state.InstalledAttachmentSlot;
+const LaunchState = runner_state.LaunchState;
+const WorldFrame = runner_state.WorldFrame;
 
 fn offsetPosition(
     origin: rl.Vector3,
@@ -434,10 +362,7 @@ fn offsetPosition(
     };
 }
 
-const AttachmentCameraProgress = struct {
-    template_kind: u8,
-    template_progress: f32,
-};
+const AttachmentCameraProgress = runner_state.AttachmentCameraProgress;
 
 const native_barrier_hold_step: f32 = 1.0 / 60.0;
 const native_startup_voice_step: f32 = 0.055555552;
