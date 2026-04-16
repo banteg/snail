@@ -202,17 +202,20 @@ Implemented now:
 - raw BN plus the checked-in IDA export now narrow one more gate detail: the primary swept helper path does not show a direct early clear of `attachment_exit_pending`, and the caller re-tests the same byte immediately before the `0x80` probe, so overlapping rows still leave that secondary callsite reachable in the same tick
 - the geometric installed-entry attempt now mirrors the recovered tail-to-head sample sweep and skips upside-down samples without falling back to a synthetic current-row sweep result
 - the attachment-exit seed/value lanes now keep neutral placeholder names in the port instead of overclaiming their native semantics
-- the port also no longer clears `attachment_exit_pending` from a fake `progress >= 1.0` timeout; active-phase retirement now only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy, which is closer to the recovered `0x43bf6f` / `0x43c06d` / `0x43c3ea` lanes than the old synthetic expiry
+- the port also no longer clears `attachment_exit_pending` from a fake `progress >= 1.0` timeout; active-phase retirement now uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy. The proxy currently fires whenever the current runtime tile is `0x16` (trampoline) or is not in the open-neighbor family (`{0x00, 0x0e, 0x1c, 0x1d, 0x23}`), which is broader than all three recovered grounded-snap lanes combined — the native `0x43bf6f`, `0x43c06d`, and `0x43c3ea` clears each gate on `!follow_state.active`, y-position, velocity.y, or tile envelope that the proxy ignores
 
 Still missing or approximate:
 
 - full Windows installed runtime bank and owner-record semantics
 - the later controller that finally retires `attachment_exit_pending` after swept re-entry
-  - newer static narrowing: field xrefs now limit that retirement to five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`), and `attachment_exit_progress` itself only has the one progress-update store at `0x43ce96`
-  - stronger late-clear narrowing: `0x43ce75` is only reached from the `jetpack_gauge.state == 1` branch at `0x43ce23`, so it is not the generic/common retirement lane
-  - stronger special-lane narrowing: `0x43bcb3` now sits in the non-follow floor-cache/slide motion block (runtime tiles `0x0f/0x10/0x12/0x13`, plus slide-family cells when `damage_gauge.state == 2`), so it is no longer a completely unlabeled later clear
-  - remaining gap: which late clear actually wins after swept re-entry, especially whether the common path goes through that special family block or the grounded/floor-snap lanes, and whether overlapping `0x40`/`0x80` probes can both succeed before one wins
-- the follow-milestone lane behind the static `voice 4` callsite; raw BN plus IDA now show a contradictory `sample_index + 1 == template->sample_count << 1` gate versus the same helper's `sample_index == template->sample_count` termination, so this should not be guessed into the port yet
+  - five clear sites inside `update_subgoldy` are now fully identified:
+    - `0x43bcb3` — non-follow floor-cache/slide block, fires on runtime tiles `0x0f/0x10/0x12/0x13` or slide-family cells when `damage_gauge.state == 2`, mutually exclusive with swept-reentry path (sibling of the `_pad_41c == 0` branch)
+    - `0x43bf6f` — **swept re-entry failed → grounded snap**, the common late retirement after swept re-entry: `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0`
+    - `0x43c06d` — tile-flags grounded re-snap: `velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`
+    - `0x43c3ea` — trampoline (tile `0x16`) bounce: `|y - cell_y| < 0.49` envelope, then squidge + velocity flip + `position.y = cell_y + 0.49` + `play_sound_effect(0x29)`
+    - `0x43ce75` — jetpack altitude cap: `jetpack_gauge.state == 1 && position.y < 1.0`
+  - `attachment_exit_progress` itself only has the one progress-update store at `0x43ce96`, which runs as the `else` of the five clear lanes (no progress-timeout clear exists in native)
+- the follow-milestone lane behind the static `voice 4` callsite is **dead code**: the field at `[esi+0x44]` is `PathTemplate::segment_count` (not `sample_count` — the HLIL `_pad_3c[8].d` is a char-pad byte index). The gate `sample_index+1 == segment_count * 2` at `0x420d1d` is unreachable because the helper terminates at `sample_index == segment_count` first, with `sample_index` starting at 0 and advancing by 1. Do not port.
 - exact family-specific entry/exit behavior for the nonlinear kind-`42` family
 - exact side-exit/natural-end return values and the native meaning of the attachment-exit seed/value lanes
 
@@ -362,7 +365,7 @@ Implemented now:
   - `28`: destroy subgame, clear `replay_active`, reinitialize subgame, then jump to the saved outer owner
   - `29/30`: Thanks For Playing owner init and update; `uninit_thanks_screen` then writes state `0x0e`, the credits-screen init lane
 - BN disassembly now confirms the bridge destination is a dedicated front-end controller slot (`update_frontend_state_machine` reads active state from `[controller + 0x94]` and the bridge jump target from `[controller + 0x98]`)
-- a whole-image BN instruction sweep, with the checked-in IDA export as a second opinion, now closes one writer the earlier shallow front-end scan missed: `update_subgame` state `2` copies `app + 0x1b8` into `app + 0x1bc` before forcing state `0x1a` for persistent selected-record startup or `0x1b` for transient startup
+- a whole-image BN instruction sweep plus a checked-in IDA export disambiguated the saved-owner (`+0x1bc`) writer set: the post-run branches at `update_subgame` `0x439994`/`0x4399b2` preserve `+0x1b8` into `+0x1bc` before forcing state `0x1a`/`0x1b`; `update_subgame` state `2` at boot only sets active state `+0x1b8 = 2` and does not touch `+0x1bc`. Known direct `+0x1bc` writers: `destroy_subgame` (→`0x12`), the two `update_subgame` post-run preserve ops, six sites in `update_subgoldy`, four in `update_subgoldy_resurrect`. `update_pause_menu`, `update_completion_screen`, `add_arcade_high_score`, `add_survival_high_score`, `update_high_score_screen`, and `exit_high_score_screen` write only `+0x1b8` (active state) plus their own local scratch
 - the older "saved-owner writer unresolved" claim is now too broad; the remaining gap is narrower:
   - `update_new_game_menu`, `update_main_menu`, `update_high_score_screen`, and `exit_high_score_screen` still do not expose a direct saved-owner store
   - the open question is which other helper-driven producers, if any, seed different saved owners before `26/27/28` outside the now-confirmed gameplay-side writers

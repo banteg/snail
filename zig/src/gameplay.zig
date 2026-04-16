@@ -3953,11 +3953,13 @@ pub const Runner = struct {
     fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.jetpack.active) return;
 
+        const previous_progress = self.jetpack.progress;
         self.jetpack.progress += jetpack_gauge_tick_step;
-        if (self.jetpack.progress > 1.0 or self.rowPositionNearRouteEnd(preview)) {
-            self.disarmJetpackGauge();
-            return;
-        }
+        // PORT(verified): native `update_jetpack_gauge` @ 0x43a3c9 skips the warning-band
+        // math when sum > 1.0 or when the player's world-z is within 5 rows of the course
+        // end (`game->+0x58 - 5 < warning_anchor->z`), but the state stays active — the
+        // gauge does not disarm here. Keep the gauge alive until a real disarm path fires.
+        if (self.jetpack.progress > 1.0 or self.rowPositionNearRouteEnd(preview)) return;
 
         const current_sample = self.currentRuntimeSample(preview);
         const forced_warning = if (current_sample) |sample|
@@ -3983,6 +3985,14 @@ pub const Runner = struct {
                 0.0,
                 1.0,
             );
+            // PORT(partial): native `update_jetpack_gauge` @ 0x43a441 fires a one-shot
+            // `set_snail_jetpack(0)` + `uninit_jet_particles` when previous progress was
+            // <= 0.94 and current progress is > 0.94 (i.e. we just crossed the near-empty
+            // boundary this frame). The Zig port does not yet own the snail-jetpack weapon
+            // visual or jet-particle actor, so the side effect only lives as a TODO marker.
+            if (previous_progress <= jetpack_warning_threshold) {
+                // TODO: set_snail_jetpack(..+0x432700, 0); uninit_jet_particles(gauge);
+            }
         }
 
         const warning_intensity = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
@@ -3994,10 +4004,13 @@ pub const Runner = struct {
     }
 
     fn armJetpackGauge(self: *Runner) void {
+        // PORT(verified): native `arm_jetpack_gauge` @ 0x43a980 sets state=1, zeroes
+        // progress and the three wobble fields, and calls `set_snail_jetpack(1)` plus
+        // `initialize_jet_particles`. The pulse envelope is not written here; native
+        // only populates it from `warning_intensity` during the first update tick.
         self.jetpack = .{
             .active = true,
             .warning_band = .steady,
-            .pulse_envelope = 1.0,
         };
     }
 
@@ -9168,7 +9181,7 @@ test "halfpipe attachment rides above the trough floor" {
     try std.testing.expect(world_position.y > floor_height + 0.35);
 }
 
-test "jetpack gauge enters near-empty warning and auto-shuts off near route end" {
+test "jetpack gauge enters near-empty warning and skips warning math near route end" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
@@ -9180,6 +9193,10 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     try std.testing.expect(runner.jetpack.pulse_envelope > 0.0);
     try std.testing.expect(runner.jetpack.wobble_y > 0.0);
 
+    // PORT(verified): native `update_jetpack_gauge` @ 0x43a3ee uses the 5-row
+    // end-of-course band only to skip warning-math presentation that tick; the gauge
+    // stays state 1. Assert the gauge remains active, wobbles are not updated, and
+    // the band stays at its pre-call default.
     runner.armJetpackGauge();
     fixture.preview.course_end_threshold = 40.0;
     runner.row_position = 35.1;
@@ -9187,7 +9204,9 @@ test "jetpack gauge enters near-empty warning and auto-shuts off near route end"
     runner.movement_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
-    try std.testing.expect(!runner.jetpack.active);
+    try std.testing.expect(runner.jetpack.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpack.wobble_x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.jetpack.wobble_y, 0.0001);
 }
 
 test "cached camera target defaults to the player world position without jetpack offsets" {

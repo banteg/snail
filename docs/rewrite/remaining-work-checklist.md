@@ -159,17 +159,17 @@ Work this top-down unless a new runtime capture invalidates the order.
 - [x] Finish the swept local-frame entry owner strongly enough to gate it behind the native `attachment_exit_pending` branch instead of the current broader gameplay trigger
   - current port shape: the live current-row prime path now owns both direct `29/30` begin and swept re-entry, so visited-row processing no longer opportunistically arms installed re-entry from older rows, the current row gates the swept probes through the recovered live owner bits (`0x40` first, then `0x80`), and raw BN plus IDA now show the first swept helper does not directly retire `attachment_exit_pending` before that `0x80` gate check
 - [ ] Recover the real consumers and semantics of `post_follow_value_a` / `post_follow_value_b`
-- [ ] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
-  - current narrowing: raw BN plus IDA now agree the `voice 4` call at `0x420d30` sits behind `sample_index + 1 == template->sample_count << 1`, while `begin_track_attachment_follow_state` seeds `sample_index = 0` and the same helper retires follow at `sample_index == template->sample_count`
-  - consequence: do not port that cue until live tracing or stronger type recovery explains the counter mismatch
+- [x] Recover milestone semantics in `update_track_attachment_follow_state`, especially the missing voice-4 milestone lane
+  - resolved as dead code: the field at `[esi+0x44]` is `PathTemplate::segment_count` (not `sample_count` — the HLIL `_pad_3c[8].d` rendering is a char-pad byte index into the 0x3c-aligned block). The gate `sample_index + 1 == segment_count * 2` at `0x420d1d` is unreachable because the helper terminates at `sample_index == segment_count` first, with `sample_index` starting at 0 and advancing by 1. There is no second increment path or field aliasing that could close the gap. Do not port.
 - [ ] Separate nonlinear kind-`42` behavior into real family semantics instead of one shared placeholder story
   - newer static narrowing: `attachment_exit_pending` is no longer a generic open search
   - BN field xrefs now show it is only written by `begin_post_follow_carryover` plus five clear sites inside `update_subgoldy` (`0x43bcb3`, `0x43bf6f`, `0x43c06d`, `0x43c3ea`, `0x43ce75`)
   - the paired `attachment_exit_progress` lane is only written by the fall-state initializer and the single update store at `0x43ce96`, so there is no separate helper-side or plain progress-expiry clear in current static RE
   - stronger late-clear narrowing: `0x43ce75` sits behind `jetpack_gauge.state == 1` at `0x43ce23`, so it is not the generic/common retirement lane
-  - stronger special-lane narrowing: `0x43bcb3` sits inside the non-follow floor-cache/slide motion block (runtime tiles `0x0f/0x10/0x12/0x13`, plus slide-family cells when `damage_gauge.state == 2`)
-  - current Zig consequence: the old `progress >= 1.0` timeout clear is gone; active-phase retirement now only uses the confirmed jetpack clear plus a conservative grounded/trampoline settle proxy until the missing carryover owner is recovered
-  - next narrowing: identify which later `update_subgoldy` clear wins after swept re-entry, especially whether it routes through `0x43bcb3` or the grounded/floor-snap lanes, then confirm with a live overlap whether two geometrically valid probes can overwrite each other in one tick
+  - stronger special-lane narrowing: `0x43bcb3` sits inside the non-follow floor-cache/slide motion block (runtime tiles `0x0f/0x10/0x12/0x13`, plus slide-family cells when `damage_gauge.state == 2`) — mutually exclusive with the swept-reentry path (sibling of the `_pad_41c == 0` branch) so it is **not** the retirement winner
+  - winner after swept re-entry: **`0x43bf6f`** grounded-snap lane with predicate `!follow_state.active && y<0.49 && y≥-0.163 && !is_open_neighbor(cell) && cell->tile_id != 0x16 && velocity.y<-0.03 && velocity.y<0` → position.y=0.49, zero velocity, clear
+  - remaining two lanes: `0x43c06d` tile-flags grounded re-snap (`velocity.y ≥ threshold(tile_flags_3d)` + `(runtime_flag & 4) != 0` + `(global & 2) == 0` + `y<0.49`), `0x43c3ea` trampoline bounce on tile `0x16` with `|y - cell_y| < 0.49` envelope, squidge, velocity flip, position.y=cell_y+0.49, play_sound_effect(0x29)
+  - current Zig consequence: the old `progress >= 1.0` timeout clear is gone; active-phase retirement uses the confirmed jetpack clear plus a broad trampoline-or-non-open-neighbor proxy that fires too eagerly compared to any of the three grounded-snap lanes
 
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
