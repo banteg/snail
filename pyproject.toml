@@ -16,7 +16,6 @@ dependencies = [
 
 [project.scripts]
 snail = "snail:main"
-snail-codex-loop = "snail.codex_loop:main"
 
 [dependency-groups]
 dev = [
