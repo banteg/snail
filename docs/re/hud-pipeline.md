@@ -120,21 +120,27 @@ HUD visibility rules observed in `initialize_subgame` 0x4378c2..0x4395c and
 
 ## Zig port divergence summary
 
-| # | Element | Native | Port | Action |
-|---|---|---|---|---|
-| 1 | Progress bar sprite assignment | empty top, lit bottom | swapped | swap in `drawProgressBar` |
-| 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | `(586, 108, 28, 224)` | fix origin + size |
-| 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom | missing full/bright split | implement three-layer draw |
-| 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | `x=12+i·20, y=438`, any postal | fix spacing + y |
-| 5 | Score position | widget-backed right-aligned near x=400 | centered at x=320 | right-align |
-| 6 | Reference best score (widget D) | top-left, mode-dependent content | missing | add |
-| 7 | Running timer | none in Postal; Time Trial only | shown in all modes at top-right | mode-gate, move to widget C |
-| 8 | Parcel icon | separate sprite 0x7a at (0, 58) + number at (47, 80) | unicode glyph + "N/M" at (12, 10) | use native sprite + separate count |
-| 9 | Jetpack gauge bar | does not exist (particles only) | custom vertical bar at (548, 108, 28, 224) | port invention — remove or relabel |
-| 10 | "Click to Start" prompt text | lightweight overlay | uses `menu_button` widget (text_scale 1.3) | use smaller widget type |
-| 11 | `update_row_event_display` | native draws mid-track counter | partial | verify |
-| 12 | `update_times_up` | at stop-track marker | not wired | wire |
-| 13 | `update_warning` | flash WARNING.TGA on crit | missing | add |
+| # | Element | Native | Port status |
+|---|---|---|---|
+| 1 | Progress bar sprite assignment | empty top, lit bottom | **FIXED** (fed52e9): drawProgressBar swaps lit/empty to match native 0x437d72 / 0x437ddc |
+| 2 | Damage gauge authored rect | `(560, 70, 64, 396)` | **FIXED** (fed52e9): authored rect moved to native coords |
+| 3 | Damage gauge sprite triple | bright overlay + empty top + full bottom | **FIXED** (fed52e9 + 8571a2d): three-layer draw implemented; programmatic fallback removed |
+| 4 | Life egg spacing | `x=13+i·24, y=430`, mode 0 only | **FIXED** (fed52e9) |
+| 5 | Score position | widget-backed right-aligned near x=400 | **FIXED** (fed52e9, a1158e7): right-aligned at x=628 |
+| 6 | Reference best score (widget D) | top-left, mode-dependent content | **FIXED** (fed52e9, a1158e7) |
+| 7 | Running timer | none in Postal; Time Trial only | **FIXED** (fed52e9): mode-gated to `.time_trial`, shown in widget D slot |
+| 8 | Parcel icon | separate sprite 0x7a at (0, 58) + number at (47, 80) | **FIXED** (fed52e9, a1158e7): native sprite path + separate count text |
+| 9 | Jetpack gauge bar | does not exist (particles only) | **REMOVED** (8571a2d): port invention deleted |
+| 10 | "Click to Start" prompt text | menu_button widget at (0, 200) centered | uses `menu_button` at anchor_y=116 (tutorial) / 330 (standard); anchor_y differs from native 200 (see gameplay/prompt_overlay.zig:8-10) |
+| 11 | `update_row_event_display` | native draws through 5 allocated borders per frame | port uses custom NineSliceFrame + icon + text (drawRowEventWidget); same data, different shell |
+| 12 | `update_times_up` | at stop-track marker | not wired |
+| 13 | `update_warning` | flash WARNING.TGA on crit | **FIXED** (8571a2d): drawn from inside drawDamageGauge with correct authored (288, 64, 64, 64) |
+
+### Remaining
+
+- (10) `drawStaticWidget` prompt anchor_y — re-check against native `initialize_click_start` (y=200).
+- (11) `drawRowEventWidget` could be ported to the native 5-widget allocated-border approach with `allocate_border` / `kill_border` lifecycle. Current implementation produces the same content but bypasses the widget system.
+- (12) `update_times_up` / `show_times_up_message` — wire "Time's Up" prompt for the stop-track marker (trigger: `runtime_track_index == 0x5208` per `update_subgoldy` 0x43d1f2).
 
 ## Replay HUD
 
