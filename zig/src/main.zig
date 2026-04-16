@@ -8655,8 +8655,8 @@ test "respawn bridge state preserves the active run across rebuilds" {
     state.level_runner.?.row_event_display.parcel_target_count = 7;
     state.level_runner.?.row_event_display.staged_parcel_count = 3;
     state.level_runner.?.row_event_display.delivered_parcel_count = 3;
-    state.level_runner.?.collected_parcel_rows[0] = 42;
-    state.level_runner.?.collected_parcel_row_count = 1;
+    state.level_runner.?.parcel.collected_rows[0] = 42;
+    state.level_runner.?.parcel.collected_row_count = 1;
 
     var respawn_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
     const respawn_owner = state.outerOwnerForRespawnActiveRun(&respawn_opcode);
@@ -8672,8 +8672,8 @@ test "respawn bridge state preserves the active run across rebuilds" {
     try std.testing.expectEqual(@as(u32, 12_345), bridge_state.runner.score.total);
     try std.testing.expectEqual(@as(u32, 2), bridge_state.runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 3), bridge_state.runner.counters.parcels);
-    try std.testing.expectEqual(@as(usize, 1), bridge_state.runner.collected_parcel_row_count);
-    try std.testing.expectEqual(@as(usize, 42), bridge_state.runner.collected_parcel_rows[0]);
+    try std.testing.expectEqual(@as(usize, 1), bridge_state.runner.parcel.collected_row_count);
+    try std.testing.expectEqual(@as(usize, 42), bridge_state.runner.parcel.collected_rows[0]);
 }
 
 test "final postal completion returns through the thanks screen" {

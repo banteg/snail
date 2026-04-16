@@ -8,6 +8,7 @@ const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const damage_module = @import("gameplay/damage.zig");
 const hazards_module = @import("gameplay/hazards.zig");
 const jetpack_module = @import("gameplay/jetpack.zig");
+const parcel_module = @import("gameplay/parcel.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -130,12 +131,12 @@ const runtime_ring_spawn_random_x_amplitude: f32 = 3.0;
 const max_active_health_pickups = hazards_module.max_active_health_pickups;
 const max_active_jetpack_pickups = hazards_module.max_active_jetpack_pickups;
 const max_active_runtime_pickups = hazards_module.max_active_runtime_pickups;
-const max_active_track_parcels: usize = 50;
+const max_active_track_parcels = parcel_module.max_active_track_parcels;
 const max_active_runtime_hazards = hazards_module.max_active_runtime_hazards;
 const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_effects;
 const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
-const max_collected_parcel_rows: usize = 1024;
+const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const score_life_threshold: u32 = 50_000;
 const postal_completion_bonus_score: u32 = 50_000;
 const starting_visible_life_stock: u32 = 3;
@@ -435,7 +436,7 @@ pub const Runner = struct {
     cameraman: CameramanState = .{},
     attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
-    track_parcel_home_anchor: TrackParcelHomeAnchor = .{},
+    parcel: parcel_module.Pool = .{},
     path_center_lane: ?f32 = null,
     previous_lane_center: f32 = 0.5,
     traversable_bounds: track.LaneBounds = .{ .min = 0, .max = 0 },
@@ -471,8 +472,6 @@ pub const Runner = struct {
     damage: DamageController = .{},
     snail_skin: SnailSkinTransition = .{},
     last_processed_row: ?usize = null,
-    active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
-    last_runtime_parcel_scan_end: usize = 0,
     runtime: hazards_module.Runtime = .{},
     active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
     active_projectile_count: usize = 0,
@@ -480,8 +479,6 @@ pub const Runner = struct {
     active_turret_state_count: usize = 0,
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
-    collected_parcel_rows: [max_collected_parcel_rows]usize = [_]usize{0} ** max_collected_parcel_rows,
-    collected_parcel_row_count: usize = 0,
     math_random_state: u32 = 0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
@@ -942,7 +939,7 @@ pub const Runner = struct {
     }
 
     pub fn activeTrackParcels(self: *const Runner) []const TrackParcelRuntime {
-        return self.active_track_parcels[0..];
+        return self.parcel.slots[0..];
     }
 
     fn nextMathRandomInt15(self: *Runner) u32 {
@@ -1632,7 +1629,7 @@ pub const Runner = struct {
     }
 
     pub fn flushPendingParcelDeliveries(self: *Runner) void {
-        for (&self.active_track_parcels) |*parcel| {
+        for (&self.parcel.slots) |*parcel| {
             if (!parcel.active() or parcel.state == 1) continue;
             parcel.state = 0;
         }
@@ -1645,7 +1642,7 @@ pub const Runner = struct {
         self.row_event_display.gate_18 = 0;
         self.row_event_display.display_token = 0;
         self.row_event_display.bonus_blink_progress = 0.0;
-        self.track_parcel_home_anchor = .{};
+        self.parcel.home_anchor = .{};
     }
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
@@ -1681,7 +1678,7 @@ pub const Runner = struct {
 
     fn processTrackParcelCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.trackParcelPlayerAnchor(preview);
-        for (&self.active_track_parcels) |*parcel| {
+        for (&self.parcel.slots) |*parcel| {
             if (parcel.state != 1) continue;
 
             const delta_x = parcel.world_position.x - player_position.x;
@@ -1700,7 +1697,7 @@ pub const Runner = struct {
             self.counters.parcels += 1;
             self.recordScore(&self.score.parcel_pickup, 100);
             self.recent_event = .{ .parcel = parcel.parcel_id };
-            self.track_parcel_home_anchor = .{
+            self.parcel.home_anchor = .{
                 .active = true,
                 .world_position = player_position,
             };
@@ -1714,7 +1711,7 @@ pub const Runner = struct {
     }
 
     fn hasActiveRowEventDeliveryParcel(self: *const Runner) bool {
-        for (self.active_track_parcels) |parcel| {
+        for (self.parcel.slots) |parcel| {
             if (parcel.state == 6 or parcel.state == 7) return true;
         }
         return false;
@@ -2466,24 +2463,16 @@ pub const Runner = struct {
     }
 
     pub fn isParcelCollected(self: *const Runner, global_row: usize) bool {
-        for (0..self.collected_parcel_row_count) |index| {
-            if (self.collected_parcel_rows[index] == global_row) return true;
-        }
-        return false;
+        return self.parcel.isCollected(global_row);
     }
 
     pub fn liveTrackParcelAt(self: *const Runner, global_row: usize) ?TrackParcelRuntime {
-        const index = self.findTrackParcelSlotIndex(global_row) orelse return null;
-        return self.active_track_parcels[index];
+        const index = self.parcel.findSlotIndex(global_row) orelse return null;
+        return self.parcel.slots[index];
     }
 
     fn collectParcelRow(self: *Runner, global_row: usize) bool {
-        if (self.isParcelCollected(global_row)) return false;
-        if (self.collected_parcel_row_count < max_collected_parcel_rows) {
-            self.collected_parcel_rows[self.collected_parcel_row_count] = global_row;
-            self.collected_parcel_row_count += 1;
-        }
-        return true;
+        return self.parcel.markCollected(global_row);
     }
 
     fn defeatSlug(self: *Runner, global_row: usize, lane_index: usize) void {
@@ -2510,23 +2499,16 @@ pub const Runner = struct {
     }
 
     fn findTrackParcelSlotIndex(self: *const Runner, global_row: usize) ?usize {
-        for (0..self.active_track_parcels.len) |index| {
-            const parcel = self.active_track_parcels[index];
-            if (parcel.active() and parcel.row == global_row) return index;
-        }
-        return null;
+        return self.parcel.findSlotIndex(global_row);
     }
 
     fn allocateTrackParcelSlot(self: *Runner) ?*TrackParcelRuntime {
-        for (&self.active_track_parcels) |*parcel| {
-            if (!parcel.active()) return parcel;
-        }
-        return null;
+        return self.parcel.allocateSlot();
     }
 
     fn collectLiveTrackParcel(self: *Runner, global_row: usize) void {
         const index = self.findTrackParcelSlotIndex(global_row) orelse return;
-        self.active_track_parcels[index].state = 0;
+        self.parcel.slots[index].state = 0;
     }
 
     fn refreshLiveTrackParcels(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2535,11 +2517,11 @@ pub const Runner = struct {
         const current_row = currentRowIndex(preview, self.row_position);
         const window_start = current_row;
         const window_end = @min(window_start + runtime_track_parcel_spawn_ahead_rows, preview.total_rows);
-        if (self.last_runtime_parcel_scan_end < window_start or self.last_runtime_parcel_scan_end > window_end) {
-            self.last_runtime_parcel_scan_end = window_start;
+        if (self.parcel.last_scan_end < window_start or self.parcel.last_scan_end > window_end) {
+            self.parcel.last_scan_end = window_start;
         }
 
-        for (self.last_runtime_parcel_scan_end..window_end) |global_row| {
+        for (self.parcel.last_scan_end..window_end) |global_row| {
             if (self.isParcelCollected(global_row)) continue;
             const row_location = preview.locateRow(global_row) orelse continue;
             const annotation = row_location.row.annotation orelse continue;
@@ -2548,7 +2530,7 @@ pub const Runner = struct {
                 else => {},
             }
         }
-        self.last_runtime_parcel_scan_end = window_end;
+        self.parcel.last_scan_end = window_end;
     }
 
     fn spawnLiveTrackParcel(
@@ -2572,7 +2554,7 @@ pub const Runner = struct {
     }
 
     fn updateTrackParcels(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        for (&self.active_track_parcels) |*parcel| {
+        for (&self.parcel.slots) |*parcel| {
             if (!parcel.active()) continue;
             switch (parcel.state) {
                 1 => {
@@ -2612,7 +2594,7 @@ pub const Runner = struct {
     }
 
     fn currentTrackParcelHomeAnchor(self: *const Runner) rl.Vector3 {
-        return self.track_parcel_home_anchor.world_position;
+        return self.parcel.home_anchor.world_position;
     }
 
     fn trackParcelDeliveryTarget(self: *const Runner) rl.Vector3 {
@@ -4576,8 +4558,8 @@ pub const Runner = struct {
         const stopwatch = self.stopwatch;
         const parcel_count = self.counters.parcels;
         const row_event_display = self.row_event_display;
-        const collected_parcel_rows = self.collected_parcel_rows;
-        const collected_parcel_row_count = self.collected_parcel_row_count;
+        const collected_parcel_rows = self.parcel.collected_rows;
+        const collected_parcel_row_count = self.parcel.collected_row_count;
         self.reset(preview);
         self.session_mode = session_mode;
         self.score = score;
@@ -4586,8 +4568,8 @@ pub const Runner = struct {
         self.stopwatch = stopwatch;
         self.counters.parcels = parcel_count;
         self.row_event_display = row_event_display;
-        self.collected_parcel_rows = collected_parcel_rows;
-        self.collected_parcel_row_count = collected_parcel_row_count;
+        self.parcel.collected_rows = collected_parcel_rows;
+        self.parcel.collected_row_count = collected_parcel_row_count;
     }
 
     fn rowPositionNearRouteEnd(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
@@ -6755,20 +6737,20 @@ test "parcel home flight advances on the pickup frame" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
-    runner.active_track_parcels[0] = .{
+    runner.parcel.slots[0] = .{
         .state = 4,
         .world_position = .{ .x = 5.0, .y = 2.0, .z = 9.0 },
     };
 
     runner.updateTrackParcels(&fixture.preview);
 
-    try std.testing.expectEqual(@as(u32, 5), runner.active_track_parcels[0].state);
-    try std.testing.expectApproxEqAbs(track_parcel_home_progress_step, runner.active_track_parcels[0].progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.active_track_parcels[0].presentationScale(), 0.0001);
+    try std.testing.expectEqual(@as(u32, 5), runner.parcel.slots[0].state);
+    try std.testing.expectApproxEqAbs(track_parcel_home_progress_step, runner.parcel.slots[0].progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.parcel.slots[0].presentationScale(), 0.0001);
 }
 
 test "parcel delivery advances on the staging frame" {
@@ -6779,22 +6761,22 @@ test "parcel delivery advances on the staging frame" {
     runner.row_event_display.widget_world_x = 9.0;
     runner.row_event_display.widget_world_y = 3.0;
     runner.row_event_display.widget_world_z = 14.0;
-    runner.active_track_parcels[0] = .{
+    runner.parcel.slots[0] = .{
         .state = 6,
     };
 
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
     runner.updateTrackParcels(&fixture.preview);
 
-    try std.testing.expectEqual(@as(u32, 7), runner.active_track_parcels[0].state);
-    try std.testing.expectApproxEqAbs(track_parcel_delivery_progress_step, runner.active_track_parcels[0].progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.active_track_parcels[0].world_position.x, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 2.0), runner.active_track_parcels[0].world_position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 3.0), runner.active_track_parcels[0].world_position.z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.active_track_parcels[0].presentationScale(), 0.0001);
+    try std.testing.expectEqual(@as(u32, 7), runner.parcel.slots[0].state);
+    try std.testing.expectApproxEqAbs(track_parcel_delivery_progress_step, runner.parcel.slots[0].progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.parcel.slots[0].world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.0), runner.parcel.slots[0].world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 3.0), runner.parcel.slots[0].world_position.z, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.4), runner.parcel.slots[0].presentationScale(), 0.0001);
 }
 
 test "parcel home flight retires the home-leg slot and arms row event staging" {
@@ -6804,14 +6786,14 @@ test "parcel home flight retires the home-leg slot and arms row event staging" {
     var runner = Runner.init(&fixture.preview);
     runner.counters.parcels = 1;
     runner.row_event_display.parcel_target_count = 2;
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
     };
 
     var parcel = TrackParcelRuntime{
         .state = 5,
-        .flight_anchor = runner.track_parcel_home_anchor.world_position,
+        .flight_anchor = runner.parcel.home_anchor.world_position,
         .progress = 1.0,
         .progress_step = 0.0,
     };
@@ -6828,7 +6810,7 @@ test "row event staging spawns a fresh delivery parcel slot" {
 
     var runner = Runner.init(&fixture.preview);
     runner.counters.parcels = 1;
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
     };
@@ -6840,11 +6822,11 @@ test "row event staging spawns a fresh delivery parcel slot" {
 
     try std.testing.expectEqual(@as(u32, 1), runner.row_event_display.staged_parcel_count);
     try std.testing.expectEqual(RowEventDisplayState.hold, runner.row_event_display.state);
-    try std.testing.expectEqual(@as(u32, 6), runner.active_track_parcels[0].state);
-    try std.testing.expectEqual(std.math.maxInt(usize), runner.active_track_parcels[0].row);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.0), runner.active_track_parcels[0].world_position.x, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.active_track_parcels[0].world_position.y, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 6.0), runner.active_track_parcels[0].world_position.z, 0.0001);
+    try std.testing.expectEqual(@as(u32, 6), runner.parcel.slots[0].state);
+    try std.testing.expectEqual(std.math.maxInt(usize), runner.parcel.slots[0].row);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.0), runner.parcel.slots[0].world_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.parcel.slots[0].world_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 6.0), runner.parcel.slots[0].world_position.z, 0.0001);
 }
 
 test "parcel home flight lifts presentation along the live basis up" {
@@ -6861,13 +6843,13 @@ test "parcel home flight lifts presentation along the live basis up" {
         .source_cell_row = target.row,
         .template_progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
     };
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
     };
     var parcel = TrackParcelRuntime{
         .state = 5,
-        .flight_anchor = runner.track_parcel_home_anchor.world_position,
+        .flight_anchor = runner.parcel.home_anchor.world_position,
         .progress = 0.25,
         .progress_step = 0.0,
         .target_distance = 4.0,
@@ -6895,20 +6877,20 @@ test "parcel delivery keeps linear world position and curved presentation separa
     runner.row_event_display.widget_world_x = 9.0;
     runner.row_event_display.widget_world_y = 3.0;
     runner.row_event_display.widget_world_z = 14.0;
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = 4.0, .y = 5.0, .z = 6.0 },
     };
 
     var parcel = TrackParcelRuntime{
         .state = 7,
-        .flight_anchor = runner.track_parcel_home_anchor.world_position,
+        .flight_anchor = runner.parcel.home_anchor.world_position,
         .progress = 0.5,
         .progress_step = 0.0,
         .delivery_offset = .{ .x = 1.0, .y = 2.0, .z = 3.0 },
     };
 
-    const expected = lerpVector3(runner.track_parcel_home_anchor.world_position, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
+    const expected = lerpVector3(runner.parcel.home_anchor.world_position, .{ .x = 9.0, .y = 3.0, .z = 14.0 }, 0.5);
 
     runner.stepTrackParcelDelivery(&fixture.preview, &parcel);
 
@@ -6926,7 +6908,7 @@ test "parcel delivery reuses the cached home anchor after the runner moves" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.track_parcel_home_anchor = .{
+    runner.parcel.home_anchor = .{
         .active = true,
         .world_position = .{ .x = -2.0, .y = 1.5, .z = 8.0 },
     };
@@ -6938,7 +6920,7 @@ test "parcel delivery reuses the cached home anchor after the runner moves" {
 
     var parcel = TrackParcelRuntime{
         .state = 7,
-        .flight_anchor = runner.track_parcel_home_anchor.world_position,
+        .flight_anchor = runner.parcel.home_anchor.world_position,
         .progress = 0.0,
         .progress_step = 0.0,
     };
@@ -7099,8 +7081,8 @@ test "flush pending parcel deliveries resets row event transient state" {
     runner.row_event_display.progress_step = 0.25;
     runner.row_event_display.gate_18 = 1;
     runner.row_event_display.display_token = 9;
-    runner.track_parcel_home_anchor.active = true;
-    runner.active_track_parcels[0].state = 5;
+    runner.parcel.home_anchor.active = true;
+    runner.parcel.slots[0].state = 5;
 
     runner.flushPendingParcelDeliveries();
 
@@ -7108,7 +7090,7 @@ test "flush pending parcel deliveries resets row event transient state" {
     try std.testing.expectEqual(@as(u8, 0), runner.row_event_display.gate_18);
     try std.testing.expectEqual(@as(u32, 0), runner.row_event_display.display_token);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.row_event_display.progress, 0.0001);
-    try std.testing.expect(!runner.track_parcel_home_anchor.active);
+    try std.testing.expect(!runner.parcel.home_anchor.active);
 }
 
 test "runner applies the completion bonus once" {
