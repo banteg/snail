@@ -6,6 +6,7 @@ const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const damage_module = @import("gameplay/damage.zig");
+const hazards_module = @import("gameplay/hazards.zig");
 const jetpack_module = @import("gameplay/jetpack.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
@@ -126,12 +127,12 @@ const runtime_ring_effect_miss_expand_scale: f32 = 1.1;
 const runtime_ring_spawn_y_offset_default: f32 = 2.5;
 const runtime_ring_spawn_y_offset_explode_ramp: f32 = 3.5;
 const runtime_ring_spawn_random_x_amplitude: f32 = 3.0;
-const max_active_health_pickups: usize = 8;
-const max_active_jetpack_pickups: usize = 1;
-const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
+const max_active_health_pickups = hazards_module.max_active_health_pickups;
+const max_active_jetpack_pickups = hazards_module.max_active_jetpack_pickups;
+const max_active_runtime_pickups = hazards_module.max_active_runtime_pickups;
 const max_active_track_parcels: usize = 50;
-const max_active_runtime_hazards: usize = 128;
-const max_active_runtime_ring_effects: usize = 2;
+const max_active_runtime_hazards = hazards_module.max_active_runtime_hazards;
+const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_effects;
 const max_active_projectiles: usize = 16;
 const max_defeated_slug_cells: usize = 64;
 const max_collected_parcel_rows: usize = 1024;
@@ -472,16 +473,7 @@ pub const Runner = struct {
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
-    active_runtime_pickups: [max_active_runtime_pickups]RuntimePickup = [_]RuntimePickup{.{ .row = 0, .lane = 0, .kind = .health }} ** max_active_runtime_pickups,
-    active_runtime_pickup_count: usize = 0,
-    last_runtime_pickup_scan_end: usize = 0,
-    active_runtime_hazards: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{.{ .row = 0, .lane = 0, .kind = .garbage }} ** max_active_runtime_hazards,
-    active_runtime_hazard_count: usize = 0,
-    last_runtime_hazard_scan_end: usize = 0,
-    active_runtime_ring_effects: [max_active_runtime_ring_effects]RuntimeRingEffect = [_]RuntimeRingEffect{.{ .source_row = 0, .row = 0, .lane = 0, .kind = 0 }} ** max_active_runtime_ring_effects,
-    active_runtime_ring_effect_count: usize = 0,
-    last_runtime_ring_scan_end: usize = 0,
-    last_ring_spawn_z: f32 = -1000.0,
+    runtime: hazards_module.Runtime = .{},
     active_projectiles: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,
     active_projectile_count: usize = 0,
     active_turret_states: [max_active_turret_states]TurretState = [_]TurretState{.{ .row = 0, .lane = 0 }} ** max_active_turret_states,
@@ -938,15 +930,15 @@ pub const Runner = struct {
     }
 
     pub fn activeRuntimeHazards(self: *const Runner) []const RuntimeHazard {
-        return self.active_runtime_hazards[0..self.active_runtime_hazard_count];
+        return self.runtime.hazards.slots[0..self.runtime.hazards.count];
     }
 
     pub fn activeRuntimePickups(self: *const Runner) []const RuntimePickup {
-        return self.active_runtime_pickups[0..self.active_runtime_pickup_count];
+        return self.runtime.pickups.slots[0..self.runtime.pickups.count];
     }
 
     pub fn activeRuntimeRingEffects(self: *const Runner) []const RuntimeRingEffect {
-        return self.active_runtime_ring_effects[0..self.active_runtime_ring_effect_count];
+        return self.runtime.rings.slots[0..self.runtime.rings.count];
     }
 
     pub fn activeTrackParcels(self: *const Runner) []const TrackParcelRuntime {
@@ -1757,8 +1749,8 @@ pub const Runner = struct {
     fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.worldPosition(preview, 0.4);
         var index: usize = 0;
-        while (index < self.active_runtime_hazard_count) {
-            const hazard = &self.active_runtime_hazards[index];
+        while (index < self.runtime.hazards.count) {
+            const hazard = &self.runtime.hazards.slots[index];
             if (hazard.state != .active) {
                 index += 1;
                 continue;
@@ -1813,8 +1805,8 @@ pub const Runner = struct {
         if (player_position.y < attachment_entry_rider_height) return;
 
         var index: usize = 0;
-        while (index < self.active_runtime_pickup_count) {
-            const pickup = self.active_runtime_pickups[index];
+        while (index < self.runtime.pickups.count) {
+            const pickup = self.runtime.pickups.slots[index];
             const delta_x = pickup.world_position.x - player_position.x;
             const delta_y = pickup.world_position.y - player_position.y;
             const delta_z = pickup.world_position.z - player_position.z;
@@ -1863,8 +1855,8 @@ pub const Runner = struct {
     fn processRuntimeRingEffectCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.playerWorldPosition(preview);
         var index: usize = 0;
-        while (index < self.active_runtime_ring_effect_count) {
-            const effect = self.active_runtime_ring_effects[index];
+        while (index < self.runtime.rings.count) {
+            const effect = self.runtime.rings.slots[index];
             if (effect.state != .active) {
                 index += 1;
                 continue;
@@ -1889,7 +1881,7 @@ pub const Runner = struct {
             }
 
             self.recordNativeRingEffect(preview, effect.kind);
-            self.active_runtime_ring_effects[index].state = .collect_setup;
+            self.runtime.rings.slots[index].state = .collect_setup;
             return;
         }
     }
@@ -2171,15 +2163,15 @@ pub const Runner = struct {
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         var write_index: usize = 0;
-        for (0..self.active_runtime_hazard_count) |read_index| {
-            const hazard = self.active_runtime_hazards[read_index];
+        for (0..self.runtime.hazards.count) |read_index| {
+            const hazard = self.runtime.hazards.slots[read_index];
             const row_delta = @abs(@as(i32, @intCast(hazard.row)) - @as(i32, @intCast(self.current_global_row)));
             const lane_delta = @abs(@as(i32, @intCast(hazard.lane)) - @as(i32, @intCast(self.resolved_lane_index)));
             if (hazard.kind == .garbage and row_delta <= 6 and lane_delta <= 2) continue;
-            self.active_runtime_hazards[write_index] = hazard;
+            self.runtime.hazards.slots[write_index] = hazard;
             write_index += 1;
         }
-        self.active_runtime_hazard_count = write_index;
+        self.runtime.hazards.count = write_index;
 
         const start_row = self.current_global_row -| 6;
         const end_row = @min(preview.total_rows, self.current_global_row + 7);
@@ -2820,14 +2812,14 @@ pub const Runner = struct {
 
         self.pruneRuntimeHazards(window_start, window_end);
 
-        var scan_start = @max(window_start, self.last_runtime_hazard_scan_end);
+        var scan_start = @max(window_start, self.runtime.hazards.last_scan_end);
         if (scan_start > window_end) scan_start = window_end;
 
         var global_row = scan_start;
         while (global_row < window_end) : (global_row += 1) {
             self.scanRuntimeHazardRow(preview, global_row);
         }
-        self.last_runtime_hazard_scan_end = window_end;
+        self.runtime.hazards.last_scan_end = window_end;
     }
 
     fn refreshLiveRuntimePickups(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2838,25 +2830,25 @@ pub const Runner = struct {
 
         self.pruneRuntimePickups(window_start, window_end);
 
-        var scan_start = @max(window_start, self.last_runtime_pickup_scan_end);
+        var scan_start = @max(window_start, self.runtime.pickups.last_scan_end);
         if (scan_start > window_end) scan_start = window_end;
 
         var global_row = scan_start;
         while (global_row < window_end) : (global_row += 1) {
             self.scanRuntimePickupRow(preview, global_row);
         }
-        self.last_runtime_pickup_scan_end = window_end;
+        self.runtime.pickups.last_scan_end = window_end;
     }
 
     fn updateRuntimeHazards(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         var write_index: usize = 0;
-        for (0..self.active_runtime_hazard_count) |read_index| {
-            var hazard = self.active_runtime_hazards[read_index];
+        for (0..self.runtime.hazards.count) |read_index| {
+            var hazard = self.runtime.hazards.slots[read_index];
             if (!self.stepRuntimeHazard(preview, &hazard)) continue;
-            self.active_runtime_hazards[write_index] = hazard;
+            self.runtime.hazards.slots[write_index] = hazard;
             write_index += 1;
         }
-        self.active_runtime_hazard_count = write_index;
+        self.runtime.hazards.count = write_index;
     }
 
     fn stepRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
@@ -2912,22 +2904,22 @@ pub const Runner = struct {
 
         self.pruneRuntimeRingEffects(window_start, window_end);
 
-        var scan_start = @max(window_start, self.last_runtime_ring_scan_end);
+        var scan_start = @max(window_start, self.runtime.rings.last_scan_end);
         if (scan_start > window_end) scan_start = window_end;
 
         var global_row = scan_start;
         while (global_row < window_end) : (global_row += 1) {
             self.scanRuntimeRingEffectRow(preview, global_row);
         }
-        self.last_runtime_ring_scan_end = window_end;
+        self.runtime.rings.last_scan_end = window_end;
     }
 
     fn pruneRuntimeHazards(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
         const min_z = @as(f32, @floatFromInt(window_start)) - 8.0;
         const max_z = @as(f32, @floatFromInt(window_end)) + 8.0;
-        for (0..self.active_runtime_hazard_count) |read_index| {
-            const hazard = self.active_runtime_hazards[read_index];
+        for (0..self.runtime.hazards.count) |read_index| {
+            const hazard = self.runtime.hazards.slots[read_index];
             switch (hazard.state) {
                 .active => {
                     if (hazard.row < window_start or hazard.row >= window_end) continue;
@@ -2937,29 +2929,29 @@ pub const Runner = struct {
                     if (hazard.world_position.z < min_z or hazard.world_position.z > max_z) continue;
                 },
             }
-            self.active_runtime_hazards[write_index] = hazard;
+            self.runtime.hazards.slots[write_index] = hazard;
             write_index += 1;
         }
-        self.active_runtime_hazard_count = write_index;
+        self.runtime.hazards.count = write_index;
     }
 
     fn pruneRuntimePickups(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
-        for (0..self.active_runtime_pickup_count) |read_index| {
-            const pickup = self.active_runtime_pickups[read_index];
+        for (0..self.runtime.pickups.count) |read_index| {
+            const pickup = self.runtime.pickups.slots[read_index];
             if (pickup.row < window_start or pickup.row >= window_end) continue;
-            self.active_runtime_pickups[write_index] = pickup;
+            self.runtime.pickups.slots[write_index] = pickup;
             write_index += 1;
         }
-        self.active_runtime_pickup_count = write_index;
+        self.runtime.pickups.count = write_index;
     }
 
     fn pruneRuntimeRingEffects(self: *Runner, window_start: usize, window_end: usize) void {
         var write_index: usize = 0;
         const min_z = @as(f32, @floatFromInt(window_start)) - 8.0;
         const max_z = @as(f32, @floatFromInt(window_end)) + 8.0;
-        for (0..self.active_runtime_ring_effect_count) |read_index| {
-            const effect = self.active_runtime_ring_effects[read_index];
+        for (0..self.runtime.rings.count) |read_index| {
+            const effect = self.runtime.rings.slots[read_index];
             switch (effect.state) {
                 .active => {
                     if (effect.row < window_start or effect.row >= window_end) continue;
@@ -2968,10 +2960,10 @@ pub const Runner = struct {
                     if (effect.presentation_position.z < min_z or effect.presentation_position.z > max_z) continue;
                 },
             }
-            self.active_runtime_ring_effects[write_index] = effect;
+            self.runtime.rings.slots[write_index] = effect;
             write_index += 1;
         }
-        self.active_runtime_ring_effect_count = write_index;
+        self.runtime.rings.count = write_index;
     }
 
     fn scanRuntimeHazardRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {
@@ -3025,18 +3017,18 @@ pub const Runner = struct {
                     const target_row = global_row;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
                     self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, self.spawnedRuntimeRingKind(requested_kind));
-                    self.last_ring_spawn_z = @floatFromInt(global_row);
+                    self.runtime.rings.last_spawn_z = @floatFromInt(global_row);
                 },
                 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
                     if (global_row >= preview.runtime_active_row_end) continue;
                     const source_z = @as(f32, @floatFromInt(global_row));
-                    if (self.last_ring_spawn_z + runtime_ring_spacing_rows >= source_z) continue;
+                    if (self.runtime.rings.last_spawn_z + runtime_ring_spacing_rows >= source_z) continue;
 
                     if (requestedRampSpecialRuntimeRingKind(row_flags)) |requested_kind| {
                         const target_row = global_row + track.ramp_special_ring_forward_row_offset;
                         if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
                         self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, requested_kind);
-                        self.last_ring_spawn_z = @floatFromInt(target_row);
+                        self.runtime.rings.last_spawn_z = @floatFromInt(target_row);
                         continue;
                     }
 
@@ -3046,12 +3038,12 @@ pub const Runner = struct {
                     const target_row = global_row + track.ramp_default_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
                     self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, self.spawnedRuntimeRingKind(4));
-                    self.last_ring_spawn_z = source_z;
+                    self.runtime.rings.last_spawn_z = source_z;
                 },
                 0x08, 0x09, 0x0a => {
                     if (global_row >= preview.runtime_active_row_end) continue;
                     const source_z = @as(f32, @floatFromInt(global_row));
-                    if (self.last_ring_spawn_z + runtime_ring_spacing_rows >= source_z) continue;
+                    if (self.runtime.rings.last_spawn_z + runtime_ring_spacing_rows >= source_z) continue;
                     if ((row_flags & track.runtime_row_flag_ring_explode) == 0 and !self.runtimeRingDefaultPassesGate(preview.runtime_build_flags)) {
                         continue;
                     }
@@ -3059,7 +3051,7 @@ pub const Runner = struct {
                     const target_row = global_row + track.ramp_explode_ring_forward_row_offset;
                     if (!self.runtimeRingEffectSpawnPositionAllowed(preview, target_row, lane_index)) continue;
                     self.addRuntimeRingEffect(preview, global_row, target_row, lane_index, 2);
-                    self.last_ring_spawn_z = source_z;
+                    self.runtime.rings.last_spawn_z = source_z;
                 },
                 else => {},
             }
@@ -3067,13 +3059,13 @@ pub const Runner = struct {
     }
 
     fn addRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind) void {
-        for (0..self.active_runtime_hazard_count) |index| {
-            const hazard = self.active_runtime_hazards[index];
+        for (0..self.runtime.hazards.count) |index| {
+            const hazard = self.runtime.hazards.slots[index];
             if (hazard.row == row and hazard.lane == lane and hazard.kind == kind) return;
         }
-        if (self.active_runtime_hazard_count >= self.active_runtime_hazards.len) return;
+        if (self.runtime.hazards.count >= self.runtime.hazards.slots.len) return;
 
-        self.active_runtime_hazards[self.active_runtime_hazard_count] = .{
+        self.runtime.hazards.slots[self.runtime.hazards.count] = .{
             .row = row,
             .lane = lane,
             .kind = kind,
@@ -3087,19 +3079,19 @@ pub const Runner = struct {
             .arming_step = 0.0,
             .collision_side = 0,
         };
-        self.active_runtime_hazard_count += 1;
+        self.runtime.hazards.count += 1;
     }
 
     fn addRuntimePickup(self: *Runner, preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimePickupKind) void {
-        for (0..self.active_runtime_pickup_count) |index| {
-            const pickup = self.active_runtime_pickups[index];
+        for (0..self.runtime.pickups.count) |index| {
+            const pickup = self.runtime.pickups.slots[index];
             if (pickup.row == row and pickup.lane == lane and pickup.kind == kind) return;
         }
-        if (self.active_runtime_pickup_count >= self.active_runtime_pickups.len) return;
+        if (self.runtime.pickups.count >= self.runtime.pickups.slots.len) return;
         if (self.activeRuntimePickupCountForKind(kind) >= runtimePickupCapacity(kind)) return;
         const world_position = initialRuntimePickupWorldPosition(preview, row, lane, kind);
 
-        self.active_runtime_pickups[self.active_runtime_pickup_count] = .{
+        self.runtime.pickups.slots[self.runtime.pickups.count] = .{
             .row = row,
             .lane = lane,
             .kind = kind,
@@ -3108,25 +3100,25 @@ pub const Runner = struct {
             .bob_phase = initialRuntimePickupBobPhase(row, kind),
             .bob_phase_step = initialRuntimePickupBobPhaseStep(kind),
         };
-        self.active_runtime_pickup_count += 1;
+        self.runtime.pickups.count += 1;
     }
 
     fn addRuntimeRingEffect(self: *Runner, preview: *const track.LoadedLevelPreview, source_row: usize, row: usize, lane: usize, kind: u8) void {
         if (kind == 0) return;
-        for (0..self.active_runtime_ring_effect_count) |index| {
-            const effect = self.active_runtime_ring_effects[index];
+        for (0..self.runtime.rings.count) |index| {
+            const effect = self.runtime.rings.slots[index];
             if (effect.row == row and effect.lane == lane) return;
         }
-        if (self.active_runtime_ring_effect_count >= self.active_runtime_ring_effects.len) return;
+        if (self.runtime.rings.count >= self.runtime.rings.slots.len) return;
 
-        self.active_runtime_ring_effects[self.active_runtime_ring_effect_count] = self.spawnRuntimeRingEffect(
+        self.runtime.rings.slots[self.runtime.rings.count] = self.spawnRuntimeRingEffect(
             preview,
             source_row,
             row,
             lane,
             kind,
         );
-        self.active_runtime_ring_effect_count += 1;
+        self.runtime.rings.count += 1;
     }
 
     fn spawnRuntimeRingEffect(
@@ -3253,8 +3245,8 @@ pub const Runner = struct {
     }
 
     fn updateRuntimePickups(self: *Runner) void {
-        for (0..self.active_runtime_pickup_count) |index| {
-            var pickup = &self.active_runtime_pickups[index];
+        for (0..self.runtime.pickups.count) |index| {
+            var pickup = &self.runtime.pickups.slots[index];
             pickup.presentation_position = pickup.world_position;
             switch (pickup.kind) {
                 .health => {
@@ -3269,8 +3261,8 @@ pub const Runner = struct {
 
     fn updateRuntimeRingEffects(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         var index: usize = 0;
-        while (index < self.active_runtime_ring_effect_count) {
-            if (!self.updateRuntimeRingEffect(preview, &self.active_runtime_ring_effects[index])) {
+        while (index < self.runtime.rings.count) {
+            if (!self.updateRuntimeRingEffect(preview, &self.runtime.rings.slots[index])) {
                 self.removeRuntimeRingEffectAt(index);
                 continue;
             }
@@ -3400,8 +3392,8 @@ pub const Runner = struct {
     }
 
     fn hasRuntimeHazard(self: *const Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
-        for (0..self.active_runtime_hazard_count) |index| {
-            const hazard = self.active_runtime_hazards[index];
+        for (0..self.runtime.hazards.count) |index| {
+            const hazard = self.runtime.hazards.slots[index];
             if (hazard.row == row and hazard.lane == lane and hazard.kind == kind) return true;
         }
         return false;
@@ -3409,23 +3401,23 @@ pub const Runner = struct {
 
     fn activeRuntimePickupCountForKind(self: *const Runner, kind: RuntimePickupKind) usize {
         var count: usize = 0;
-        for (0..self.active_runtime_pickup_count) |index| {
-            if (self.active_runtime_pickups[index].kind == kind) count += 1;
+        for (0..self.runtime.pickups.count) |index| {
+            if (self.runtime.pickups.slots[index].kind == kind) count += 1;
         }
         return count;
     }
 
     fn hasRuntimeRingEffect(self: *const Runner, row: usize, lane: usize) bool {
-        for (0..self.active_runtime_ring_effect_count) |index| {
-            const effect = self.active_runtime_ring_effects[index];
+        for (0..self.runtime.rings.count) |index| {
+            const effect = self.runtime.rings.slots[index];
             if (effect.row == row and effect.lane == lane) return true;
         }
         return false;
     }
 
     fn consumeRuntimeHazard(self: *Runner, row: usize, lane: usize, kind: RuntimeHazardKind) bool {
-        for (0..self.active_runtime_hazard_count) |index| {
-            const hazard = self.active_runtime_hazards[index];
+        for (0..self.runtime.hazards.count) |index| {
+            const hazard = self.runtime.hazards.slots[index];
             if (hazard.row != row or hazard.lane != lane or hazard.kind != kind) continue;
 
             self.removeRuntimeHazardAt(index);
@@ -3436,26 +3428,26 @@ pub const Runner = struct {
 
     fn removeRuntimeHazardAt(self: *Runner, index: usize) void {
         var shift_index = index;
-        while (shift_index + 1 < self.active_runtime_hazard_count) : (shift_index += 1) {
-            self.active_runtime_hazards[shift_index] = self.active_runtime_hazards[shift_index + 1];
+        while (shift_index + 1 < self.runtime.hazards.count) : (shift_index += 1) {
+            self.runtime.hazards.slots[shift_index] = self.runtime.hazards.slots[shift_index + 1];
         }
-        self.active_runtime_hazard_count -= 1;
+        self.runtime.hazards.count -= 1;
     }
 
     fn removeRuntimePickupAt(self: *Runner, index: usize) void {
         var shift_index = index;
-        while (shift_index + 1 < self.active_runtime_pickup_count) : (shift_index += 1) {
-            self.active_runtime_pickups[shift_index] = self.active_runtime_pickups[shift_index + 1];
+        while (shift_index + 1 < self.runtime.pickups.count) : (shift_index += 1) {
+            self.runtime.pickups.slots[shift_index] = self.runtime.pickups.slots[shift_index + 1];
         }
-        self.active_runtime_pickup_count -= 1;
+        self.runtime.pickups.count -= 1;
     }
 
     fn removeRuntimeRingEffectAt(self: *Runner, index: usize) void {
         var shift_index = index;
-        while (shift_index + 1 < self.active_runtime_ring_effect_count) : (shift_index += 1) {
-            self.active_runtime_ring_effects[shift_index] = self.active_runtime_ring_effects[shift_index + 1];
+        while (shift_index + 1 < self.runtime.rings.count) : (shift_index += 1) {
+            self.runtime.rings.slots[shift_index] = self.runtime.rings.slots[shift_index + 1];
         }
-        self.active_runtime_ring_effect_count -= 1;
+        self.runtime.rings.count -= 1;
     }
 
     fn runtimeRingDefaultPassesGate(self: *Runner, runtime_build_flags: u32) bool {
@@ -6087,8 +6079,8 @@ test "runtime ring effect post-hit progress step follows native track center" {
         0.0001,
     );
 
-    runner.active_runtime_ring_effects[0].state = .miss_setup;
-    runner.active_runtime_ring_effects[0].effect_progress_step = 0.0;
+    runner.runtime.rings.slots[0].state = .miss_setup;
+    runner.runtime.rings.slots[0].effect_progress_step = 0.0;
     runner.updateRuntimeRingEffects(&fixture.preview);
     try std.testing.expectApproxEqAbs(
         Runner.runtimeRingEffectProgressStep(),
@@ -6125,7 +6117,7 @@ test "runtime ring effect bank stays native two-slot pool" {
     runner.addRuntimeRingEffect(&fixture.preview, 9, 9, 1, 2);
     try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeRingEffects().len);
 
-    runner.active_runtime_ring_effects[0].state = .collect_follow;
+    runner.runtime.rings.slots[0].state = .collect_follow;
     runner.addRuntimeRingEffect(&fixture.preview, 10, 10, 2, 3);
 
     const active_effects = runner.activeRuntimeRingEffects();
