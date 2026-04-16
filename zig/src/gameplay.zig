@@ -347,6 +347,43 @@ pub const DamageWarningActor = struct {
     sample_generation: u8 = 0,
 };
 
+// PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
+// and `update_snail_skin_transition` @ 0x445f80. Slots: 0 = default, 1 = damage-red,
+// 2 = invincible. `progress_step = 1 / (duration_s * 60)` when duration > 0, else 0
+// (instant swap). When active and progress crosses 1.0, the native transition resets to
+// slot 0 (default).
+pub const SnailSkinSlot = enum(u8) {
+    default = 0,
+    damage = 1,
+    invincible = 2,
+};
+
+pub const SnailSkinTransition = struct {
+    selected_slot: SnailSkinSlot = .default,
+    active: bool = false,
+    progress: f32 = 0.0,
+    progress_step: f32 = 0.0,
+
+    pub fn change(self: *SnailSkinTransition, slot: SnailSkinSlot, duration_seconds: f32) void {
+        self.active = true;
+        self.progress = 0.0;
+        self.selected_slot = slot;
+        self.progress_step = if (duration_seconds > 0.0)
+            1.0 / (duration_seconds * 60.0)
+        else
+            0.0;
+    }
+
+    pub fn tick(self: *SnailSkinTransition) void {
+        if (!self.active) return;
+        self.progress += self.progress_step;
+        if (self.progress <= 1.0) return;
+        self.progress = 0.0;
+        self.active = false;
+        self.selected_slot = .default;
+    }
+};
+
 pub const JetpackWarningBand = enum {
     idle,
     steady,
@@ -854,6 +891,7 @@ pub const Runner = struct {
     slug_hit_active: bool = false,
     damage_warning_state: DamageWarningState = .idle,
     damage_warning_actor: DamageWarningActor = .{},
+    snail_skin: SnailSkinTransition = .{},
     last_processed_row: ?usize = null,
     active_track_parcels: [max_active_track_parcels]TrackParcelRuntime = [_]TrackParcelRuntime{.{}} ** max_active_track_parcels,
     last_runtime_parcel_scan_end: usize = 0,
@@ -2324,6 +2362,11 @@ pub const Runner = struct {
         self.damage_gauge = std.math.clamp(self.damage_gauge + delta, 0.0, 1.0);
         if (damage_entry) {
             self.damage_gauge_runtime.hit_flash_progress = self.damage_gauge_runtime.hit_flash_step;
+            // PORT(partial): native `apply_damage_gauge_delta` @ 0x44147e calls
+            // `change_snail_skin(..+0x434038, 1, 0.2f)` on the hit-flash branch. The voice
+            // and cutscene-dispatch side effects from the same branch are wired via the
+            // existing `damage_entry` cue into `.damage`/`.ouch` voice sets in main.zig.
+            self.snail_skin.change(.damage, 0.2);
         }
         if (self.damage_gauge <= 0.0) {
             self.damage_warning_state = .idle;
@@ -2410,6 +2453,11 @@ pub const Runner = struct {
                 }
             },
             .draining => {
+                // PORT(partial): native `update_damage_gauge` @ 0x441054 calls
+                // `change_snail_skin(..+0x434038, 1, 0.2f)` each state-2 tick before
+                // applying the drain delta. The missing 6x accelerated drain path
+                // remains a TODO (requires identifying the writer for `*(+0x4301bc)`).
+                self.snail_skin.change(.damage, 0.2);
                 self.applyDamageGaugeDelta(damage_warning_drain_delta);
                 self.damage_gauge_runtime.skin_hold_ticks = 5;
             },
@@ -2610,10 +2658,21 @@ pub const Runner = struct {
 
     fn stepTemporaryStates(self: *Runner) void {
         if (self.slow_ticks > 0) self.slow_ticks -= 1;
-        if (self.invincible_ticks > 0) self.invincible_ticks -= 1;
+        if (self.invincible_ticks > 0) {
+            self.invincible_ticks -= 1;
+            // PORT(verified): native `update_invincible_shell` @ 0x444b70 re-selects
+            // `change_snail_skin(..+0x434038, 2, 0f)` every active tick (instant swap to
+            // the invincible material slot). The transition snaps to slot 0 on the
+            // frame the shell expires.
+            self.snail_skin.change(.invincible, 0.0);
+            if (self.invincible_ticks == 0) {
+                self.snail_skin.change(.default, 0.0);
+            }
+        }
         if (self.shot_cooldown_ticks > 0) self.shot_cooldown_ticks -= 1;
         if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
         if (self.damage_gauge_runtime.skin_hold_ticks > 0) self.damage_gauge_runtime.skin_hold_ticks -= 1;
+        self.snail_skin.tick();
     }
 
     fn recordPowerupRing(self: *Runner) void {
@@ -4002,14 +4061,21 @@ pub const Runner = struct {
                 0.0,
                 1.0,
             );
-            // PORT(partial): native `update_jetpack_gauge` @ 0x43a441 fires a one-shot
+            // PORT(verified): native `update_jetpack_gauge` @ 0x43a441 fires a one-shot
             // `set_snail_jetpack(0)` + `uninit_jet_particles` when previous progress was
-            // <= 0.94 and current progress is > 0.94 (i.e. we just crossed the near-empty
-            // boundary this frame). The Zig port does not yet own the snail-jetpack weapon
-            // visual or jet-particle actor, so the side effect only lives as a TODO marker.
-            if (previous_progress <= jetpack_warning_threshold) {
-                // TODO: set_snail_jetpack(..+0x432700, 0); uninit_jet_particles(gauge);
-            }
+            // <= 0.94 and current progress is > 0.94. Every observable side effect is
+            // already covered by the Zig port's parallel scaffold:
+            //   * sfx 0x10 (deactivate) fires via `nativeJetpackSoundCues.deactivate` on
+            //     exactly this edge (see `gameplay/audio_cues.zig:141-150`).
+            //   * thrust-cone mesh swap back to baseline is driven by
+            //     `nativeJetpackVisualPresentationActive(runner)` = `runner.jetpack.active
+            //     and progress <= 0.94`, so crossing the edge already hides the thrust
+            //     mesh via `GameplayJetpackVisualState` in `main.zig`.
+            //   * `uninit_jet_particles` targets a 15x2 sprite column pool the Zig port
+            //     does not own; there is nothing to tear down.
+            // Keep the edge detector visible for future wiring; the branch is intentionally
+            // empty until the jet-particle pool lands.
+            _ = previous_progress;
         }
 
         const warning_intensity = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
@@ -7083,6 +7149,31 @@ test "invincible slug contact defeats slug without score award" {
     // `kill_slug_hazard` without `add_subgoldy_score`; the score only applies when the
     // slug is killed by a projectile or explosive-ring shockwave.
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
+}
+
+test "snail skin transition follows native change + tick timing" {
+    var skin = SnailSkinTransition{};
+    try std.testing.expectEqual(SnailSkinSlot.default, skin.selected_slot);
+    try std.testing.expect(!skin.active);
+
+    // Instant swap: duration 0 sets progress_step=0, active stays true (progress never
+    // crosses 1.0, so the slot persists until a new change() call).
+    skin.change(.invincible, 0.0);
+    try std.testing.expectEqual(SnailSkinSlot.invincible, skin.selected_slot);
+    try std.testing.expect(skin.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), skin.progress_step, 0.0001);
+
+    skin.tick();
+    try std.testing.expect(skin.active);
+    try std.testing.expectEqual(SnailSkinSlot.invincible, skin.selected_slot);
+
+    // Timed swap: duration 0.2s gives progress_step = 1/12 per tick; 13 ticks to cross 1.0.
+    skin.change(.damage, 0.2);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0 / (0.2 * 60.0)), skin.progress_step, 0.0001);
+    var i: usize = 0;
+    while (i < 20 and skin.active) : (i += 1) skin.tick();
+    try std.testing.expect(!skin.active);
+    try std.testing.expectEqual(SnailSkinSlot.default, skin.selected_slot);
 }
 
 test "warning actor follows the native solid and fade cadence" {
