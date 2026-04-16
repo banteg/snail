@@ -7889,10 +7889,13 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
     rl.gl.rlDisableBackfaceCulling();
     defer rl.gl.rlEnableBackfaceCulling();
-    // Android `ObjectProcBarrier` only modulates alpha on the authored object.
-    // Preserve the original material colours and just apply translucency here.
-    const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
-    loaded_object.drawTintedEx(world_transform, barrier_tint);
+    // Additive blending: BARRIER.TGA goes from black edges to bright blue in
+    // the middle, so additive lights up as a glowing stripe against the track
+    // instead of punching a dark slab across the scene. Matches how the native
+    // game handles translucent/glow-style meshes.
+    rl.beginBlendMode(.additive);
+    defer rl.endBlendMode();
+    loaded_object.drawTintedEx(world_transform, .white);
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
