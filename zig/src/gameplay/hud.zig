@@ -20,25 +20,34 @@ const row_event_widget_text_y: f32 = -9.0;
 const row_event_widget_bonus_y: f32 = 18.0;
 
 pub fn drawTutorialHud(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) !void {
+    // Tutorial keeps the Postal-mode HUD layout: widget A (score) top-right,
+    // widget D (tutorial reference score) top-left, widget B (parcel sprite)
+    // at (0, 58), widget C (parcel count) at (47, 80). See docs/re/hud-pipeline.md.
+
+    // Widget A: score, top-right.
+    var score_buffer: [32]u8 = undefined;
+    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
+    drawRightAlignedHudTextShadowed(state, layout, 628.0, 14.0, score_text, 22, .white);
+
+    // Widget D: tutorial reference score, top-left.
+    if (state.tutorial_reference_score > 0) {
+        var best_buffer: [32]u8 = undefined;
+        const best_text = try formatScoreWithCommas(&best_buffer, state.tutorial_reference_score);
+        drawHudTextShadowed(state, layout, 12.0, 14.0, best_text, 22, .white);
+    }
+
+    // Widgets B + C: parcel icon + count.
     const parcel_target = currentParcelTarget(state);
     const parcel_count = runner.counters.parcels;
-
+    if (state.frontend_widget_art.parcel_icon) |loaded_texture| {
+        drawTextureLocalRect(layout, loaded_texture, 0.0, 58.0, 32.0, 64.0, .white);
+    }
     var parcel_buffer: [32]u8 = undefined;
     const parcel_text = if (parcel_target > 0)
         try std.fmt.bufPrint(&parcel_buffer, "{d}/{d}", .{ parcel_count, parcel_target })
     else
         try std.fmt.bufPrint(&parcel_buffer, "{d}", .{parcel_count});
-    drawIconCounter(state, layout, .package, parcel_text, 12.0, 10.0, 22, .white);
-
-    if (state.tutorial_reference_score > 0) {
-        var best_buffer: [32]u8 = undefined;
-        const best_text = try formatScoreWithCommas(&best_buffer, state.tutorial_reference_score);
-        drawCenteredHudTextShadowed(state, layout, 320.0, 10.0, best_text, 22, .white);
-    }
-
-    var score_buffer: [32]u8 = undefined;
-    const score_text = try formatScoreWithCommas(&score_buffer, runner.score.total);
-    drawRightAlignedHudTextShadowed(state, layout, 628.0, 10.0, score_text, 22, .white);
+    drawHudTextShadowed(state, layout, 47.0, 80.0, parcel_text, 22, .white);
 }
 
 pub fn drawStandardHud(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) !void {
