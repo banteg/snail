@@ -197,8 +197,32 @@ pub const new_game_menu_items = [_]NewGameMenuItem{
     .back,
 };
 
-// PORT(partial): these mode ids match the recovered `sub_417eb0` launcher and `sub_443650` level-name switch.
-// We only port the initial level handoff here, not the original front-end's level-select or progression flow yet.
+// `Game.level_mode` (at +0x40) is the engine-wide scene/mode selector. Only the
+// four values below correspond to user-selectable modes; the gameplay engine
+// cycles `level_mode` through them as the player traverses galaxy → play →
+// complete → galaxy. See native `set_subgame_features` (0x435df0) for the
+// runtime_flags mask each mode applies, and `update_subgame` (0x438b90) for the
+// dispatch switch.
+//
+// Observed native values:
+//   0 = Postal          (galaxy level-select + postal play; `show_subgoldy_lives`
+//                       at 0x43b23d gates Postal life row on this value)
+//   1 = Challenge       (challenge setup screen is the pre-play state)
+//   4 = Time Trial      (galaxy with selector=2 = watch-best / attract replay)
+//   7 = Tutorial        (`update_subgame` 0x438eb2 calls `update_tutorial`;
+//                       `initialize_tutorial` 0x448da0 sets runtime_flags |=
+//                       0x600000, which gates the no-fall barrier rendering)
+//
+// set_subgame_features runtime_flags masks per mode (when no replay is active):
+//   modes 0/1    -> 0xf5cfff  (Postal / Challenge full gameplay)
+//   mode 4       -> 0x75cfff  (Time Trial — bit 0x800000 cleared)
+//   mode 7       -> 0xe4cfff  (Tutorial   — includes 0x600000 barrier bits)
+//   other modes  -> 0x600484  (engine startup default, unused in shipped flow)
+//
+// Values 2/3/5/6 appear in `update_subgame`'s switch as fall-through gameplay
+// phases, and 0x40ad2e writes `level_mode=2` at process init. They are
+// transitional engine states; the user never selects them directly. Mode 3
+// specifically gets a slightly different hourglass tint at 0x438e33.
 pub const FrontendLevelMode = enum(i32) {
     postal = 0,
     challenge = 1,

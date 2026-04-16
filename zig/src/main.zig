@@ -7877,15 +7877,20 @@ fn drawGameplayBillboardQuad(
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
     const loaded_object = state.current_gameplay_barrier_object orelse return;
-    const tutorial_level_active = state.isTutorialLevel();
-    const barrier_active = tutorial_level_active or runner.current_annotation == .no_fall;
+    // Native barrier visibility follows `Game.level_mode == 7` (tutorial): native
+    // `initialize_tutorial` 0x448da0 sets `runtime_flags |= 0x600000` and
+    // `set_subgame_features` 0x435df0 maps mode 7 to runtime_flags 0xe4cfff which
+    // also includes those bits. NoFall segments additionally expose the barrier
+    // in non-tutorial modes via the per-row annotation.
+    const tutorial_active = runner.session_mode == .tutorial or state.isTutorialLevel();
+    const barrier_active = tutorial_active or runner.current_annotation == .no_fall;
     if (!barrier_active) return;
 
     const runner_position = runner.worldPosition(loaded_track_preview, 0.4);
-    // Android `cRBarrier::AI()` only updates the object-space Y/Z slots:
-    // `y = 0.4`, `z = owner->+100`. The barrier mesh itself is already authored
-    // in the correct orientation, so gameplay should follow the owner without
-    // inventing an extra upright rotation.
+    // `update_barrier_ai` 0x440f80 updates only the object-space Y/Z slots:
+    // `y = 0.4`, `z = owner->+0x70` (player z). The barrier mesh is authored in
+    // world orientation, so the draw should follow the owner without inventing
+    // an extra upright rotation.
     const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
     rl.gl.rlDisableBackfaceCulling();
     defer rl.gl.rlEnableBackfaceCulling();
