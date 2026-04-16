@@ -5,6 +5,7 @@ const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
+const jetpack_module = @import("gameplay/jetpack.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -68,8 +69,8 @@ pub const DamageGaugeRuntime = runner_state.DamageGaugeRuntime;
 pub const DamageWarningActor = runner_state.DamageWarningActor;
 pub const SnailSkinSlot = runner_state.SnailSkinSlot;
 pub const SnailSkinTransition = runner_state.SnailSkinTransition;
-pub const JetpackWarningBand = runner_state.JetpackWarningBand;
-pub const JetpackGauge = runner_state.JetpackGauge;
+pub const JetpackWarningBand = jetpack_module.WarningBand;
+pub const JetpackGauge = jetpack_module.Gauge;
 
 // PORT(partial): Windows now confirms the contact-damage controller is the separate
 // player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
@@ -104,12 +105,11 @@ const damage_warning_actor_solid_alpha: f32 = 0.99900001;
 const damage_gauge_display_lerp: f32 = 0.2;
 const damage_gauge_pulse_step: f32 = 0.020833334;
 const damage_gauge_hit_flash_step: f32 = 0.033333335;
-const jetpack_gauge_tick_step: f32 = 0.0016666667;
-const jetpack_warning_threshold: f32 = 0.94;
-const jetpack_auto_shutoff_margin_rows: f32 = 5.0;
+const jetpack_warning_threshold = jetpack_module.warning_threshold;
+const jetpack_auto_shutoff_margin_rows = jetpack_module.auto_shutoff_margin_rows;
 const runtime_track_parcel_spawn_ahead_rows: usize = 46;
 const runtime_track_parcel_expiry_margin_rows: f32 = 10.0;
-const jetpack_warning_phase_scale: f32 = 16.666668;
+const jetpack_warning_phase_scale = jetpack_module.warning_phase_scale;
 const runtime_pickup_live_window_rows: usize = 72;
 const runtime_hazard_live_window_rows: usize = 8;
 const runtime_ring_live_window_rows: usize = 47;
@@ -3598,86 +3598,21 @@ pub const Runner = struct {
         );
     }
 
-    // PORT(partial): Windows `update_jetpack_gauge` at player +0x2750 is a separate
-    // timer/warning/shutoff controller from the contact-damage gauge. The runner mirrors
-    // the 1/600 countdown, the 0.94 near-empty band, the runtime-cell `flags_b & 0x80`
-    // warning snap seeded from `JetPack=Off`, the recovered warning-intensity fields, and
-    // the local camera-anchor offsets at `+0x14/+0x18/+0x1c`. The app now mirrors the
-    // `set_snail_jetpack` thrust presentation cutoff at `0.94`, but it still omits
-    // lift/fall suppression and the separate `cRSubHover::Jets` nozzle-particle owner.
     fn updateJetpackGauge(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (!self.jetpack.active) return;
-
-        const previous_progress = self.jetpack.progress;
-        self.jetpack.progress += jetpack_gauge_tick_step;
-        // PORT(verified): native `update_jetpack_gauge` @ 0x43a3c9 skips the warning-band
-        // math when sum > 1.0 or when the player's world-z is within 5 rows of the course
-        // end (`game->+0x58 - 5 < warning_anchor->z`), but the state stays active — the
-        // gauge does not disarm here. Keep the gauge alive until a real disarm path fires.
-        if (self.jetpack.progress > 1.0 or self.rowPositionNearRouteEnd(preview)) return;
-
-        const current_sample = self.currentRuntimeSample(preview);
-        const forced_warning = if (current_sample) |sample|
+        const forced_warning = if (self.currentRuntimeSample(preview)) |sample|
             preview.runtimeFlagB80At(sample.global_row, sample.resolved_lane_index)
         else
             false;
-
-        var warning_phase: f32 = 1.0;
-        self.jetpack.warning_band = .steady;
-
-        if (self.jetpack.progress < 0.1) {
-            warning_phase = self.jetpack.progress * 10.0;
-        } else if (self.jetpack.progress <= jetpack_warning_threshold) {
-            if (forced_warning) {
-                self.jetpack.progress = jetpack_warning_threshold;
-                self.jetpack.warning_band = .near_empty;
-            }
-            warning_phase = 1.0;
-        } else {
-            self.jetpack.warning_band = .near_empty;
-            warning_phase = std.math.clamp(
-                (1.0 - self.jetpack.progress) * jetpack_warning_phase_scale,
-                0.0,
-                1.0,
-            );
-            // PORT(verified): native `update_jetpack_gauge` @ 0x43a441 fires a one-shot
-            // `set_snail_jetpack(0)` + `uninit_jet_particles` when previous progress was
-            // <= 0.94 and current progress is > 0.94. Every observable side effect is
-            // already covered by the Zig port's parallel scaffold:
-            //   * sfx 0x10 (deactivate) fires via `nativeJetpackSoundCues.deactivate` on
-            //     exactly this edge (see `gameplay/audio_cues.zig:141-150`).
-            //   * thrust-cone mesh swap back to baseline is driven by
-            //     `nativeJetpackVisualPresentationActive(runner)` = `runner.jetpack.active
-            //     and progress <= 0.94`, so crossing the edge already hides the thrust
-            //     mesh via `GameplayJetpackVisualState` in `main.zig`.
-            //   * `uninit_jet_particles` targets a 15x2 sprite column pool the Zig port
-            //     does not own; there is nothing to tear down.
-            // Keep the edge detector visible for future wiring; the branch is intentionally
-            // empty until the jet-particle pool lands.
-            _ = previous_progress;
-        }
-
-        const warning_intensity = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
-        self.jetpack.warning_intensity = warning_intensity;
-        self.jetpack.pulse_envelope = warning_intensity;
-        self.jetpack.wobble_x = @sin(self.jetpack.progress * 25.1327419) * warning_intensity * 0.25;
-        self.jetpack.wobble_y = ((@sin(self.jetpack.progress * 37.6991119) * 0.25) + 1.0) * warning_intensity;
-        self.jetpack.wobble_alpha = 0.0;
+        self.jetpack.update(forced_warning, self.rowPositionNearRouteEnd(preview));
     }
 
     fn armJetpackGauge(self: *Runner) void {
-        // PORT(verified): native `arm_jetpack_gauge` @ 0x43a980 sets state=1, zeroes
-        // progress and the three wobble fields, and calls `set_snail_jetpack(1)` plus
-        // `initialize_jet_particles`. The pulse envelope is not written here; native
-        // only populates it from `warning_intensity` during the first update tick.
-        self.jetpack = .{
-            .active = true,
-            .warning_band = .steady,
-        };
+        self.jetpack.arm();
     }
 
     fn disarmJetpackGauge(self: *Runner) void {
-        self.jetpack = .{};
+        self.jetpack.disarm();
     }
 
     // PORT(partial): Windows enters the death selector once Goldy's world Y falls below -7.0.

@@ -350,35 +350,7 @@ pub const SnailSkinTransition = struct {
     }
 };
 
-pub const JetpackWarningBand = enum {
-    idle,
-    steady,
-    near_empty,
-
-    pub fn label(self: JetpackWarningBand) []const u8 {
-        return switch (self) {
-            .idle => "idle",
-            .steady => "steady",
-            .near_empty => "near_empty",
-        };
-    }
-};
-
-pub const JetpackGauge = struct {
-    active: bool = false,
-    progress: f32 = 0.0,
-    warning_intensity: f32 = 0.0,
-    pulse_envelope: f32 = 0.0,
-    warning_band: JetpackWarningBand = .idle,
-    wobble_x: f32 = 0.0,
-    wobble_y: f32 = 0.0,
-    wobble_alpha: f32 = 0.0,
-
-    pub fn fuelRemaining(self: JetpackGauge) f32 {
-        if (!self.active) return 0.0;
-        return std.math.clamp(1.0 - self.progress, 0.0, 1.0);
-    }
-};
+// `JetpackWarningBand` and `JetpackGauge` live in `gameplay/jetpack.zig`.
 
 pub const WeaponChannelStates = struct {
     left: u8 = 0,
