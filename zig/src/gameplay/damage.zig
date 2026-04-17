@@ -19,7 +19,12 @@ pub const gauge_hit_flash_step: f32 = 0.033333335;
 pub const warning_transition_step: f32 = 0.16666667;
 pub const warning_drain_delta: f32 = -0.0016666667;
 pub const warning_actor_step: f32 = 0.083333336;
-pub const warning_actor_solid_alpha: f32 = 0.99900001;
+// PORT(verified): native `update_warning` writes `*(widget + 520) = 1.1f` on the
+// solid-state branch (`artifacts/ida/functions/00446f80-update_warning.c:14`,
+// literal DWORD `0x3F8CCCCD`). Rendering later clamps to `[0,1]`, so any value
+// `>= 1.0` produces the same visible alpha, but align with the native constant
+// for audit-ability.
+pub const warning_actor_solid_alpha: f32 = 1.1;
 pub const gauge_display_lerp: f32 = 0.2;
 
 pub const WarningState = enum {
