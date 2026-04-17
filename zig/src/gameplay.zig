@@ -194,6 +194,24 @@ const native_ticks_per_second: f32 = 60.0;
 // between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
 const native_track_center_x: f32 = 4.0;
 const native_velocity_x_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.100000001);
+// PORT(verified): native `update_subgoldy` snaps `live_matrix.position.y` to
+// `sample_track_floor_height_at_position(...) + 0.49` when grounded (IDA line 535).
+const native_grounded_rider_height: f32 = 0.49000001;
+// PORT(verified): native damping factors from `update_subgoldy` (0x43bac4). `velocity.y`
+// and `velocity.z` decay by `1 - track_center_x * 0.003` per tick; `velocity.x` decays by
+// `1 - track_center_x * 0.1` (matches `native_velocity_x_decay_per_tick`).
+const native_velocity_yz_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.003);
+// PORT(verified): native gravity coupling `velocity.y += -0.01 * track_center_x^2` per tick
+// (IDA lines 332, 517, 539). With `track_center_x = 4.0`, this is `-0.16` per tick.
+const native_gravity_velocity_y_delta: f32 = -0.0099999998 * native_track_center_x * native_track_center_x;
+// PORT(verified): `update_subgoldy` (IDA line 504) calls `initialize_subgoldy_death` once
+// `live_matrix.position.y < -7.0` and the death cutscene gate is still clear.
+const native_position_y_death_threshold: f32 = -7.0;
+// PORT(verified): native grounded-snap lane `0x43bf6f` reads `position.y < 0.49 && y > -0.163`
+// (IDA lines 458-459). The lower bound is `-0.16333334` in the IDA export.
+const native_grounded_snap_position_y_upper: f32 = 0.49000001;
+const native_grounded_snap_position_y_lower: f32 = -0.16333334;
+const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
@@ -478,6 +496,13 @@ pub const Runner = struct {
     defeated_slug_cells: [max_defeated_slug_cells]RowTarget = [_]RowTarget{.{ .row = 0, .lane = 0 }} ** max_defeated_slug_cells,
     defeated_slug_cell_count: usize = 0,
     math_random_state: u32 = 0,
+    // PORT(verified): `update_subgoldy` owns a live vertical motion lane at `Player+0x6c`
+    // (`live_matrix.position.y`) and `Player+0x414` (`velocity.y`). The non-follow grounded
+    // state is `position_y = floor_y + 0.49`, with gravity `velocity.y += -0.01 * track_center_x^2`
+    // each tick. Tile-family reactions at ramps (2..7) and slides (8..13) seed distinct
+    // velocity.y values; `position.y < -7.0` triggers `initialize_subgoldy_death`.
+    position_y: f32 = native_grounded_rider_height,
+    velocity_y: f32 = 0.0,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -509,6 +534,8 @@ pub const Runner = struct {
             },
             .visible_life_stock = starting_visible_life_stock,
             .math_random_state = preview.runtime_build_final_random_state,
+            .position_y = native_grounded_rider_height,
+            .velocity_y = 0.0,
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
@@ -640,7 +667,7 @@ pub const Runner = struct {
             self.stepLaneLean(preview);
         }
         if (!self.paused and self.phase == .active) {
-            self.updateFallEntry(preview);
+            self.stepActivePhaseVerticalMotion(preview);
         }
         if (self.movement_mode == .attachment and self.phase == .active) {
             self.attachment_ticks += 1;
@@ -712,12 +739,12 @@ pub const Runner = struct {
                 .z = self.row_position,
             };
         }
-        const floor_y = preview.sampleFloorHeightAtGridPosition(
-            self.current_global_row,
-            self.resolved_lane_index,
-            self.row_position,
-        ) orelse 0.0;
-        var world = preview.worldPositionForLane(self.lane_center, self.row_position, floor_y + y);
+        // PORT(verified): native `worldPosition` equivalent samples `live_matrix.position.y`
+        // directly instead of deriving it from the current floor tile. The port's
+        // `native_grounded_rider_height` offset keeps the downstream `y` parameter semantics
+        // unchanged — `y=0.0` still means "at floor level" when grounded.
+        const base_y = self.position_y - native_grounded_rider_height;
+        var world = preview.worldPositionForLane(self.lane_center, self.row_position, base_y + y);
         if (self.currentReplayWorldX()) |world_x| {
             world.x = world_x;
         }
@@ -3483,25 +3510,50 @@ pub const Runner = struct {
         self.jetpack.disarm();
     }
 
-    // PORT(partial): Windows enters the death selector once Goldy's world Y falls below -7.0.
-    // The runner still does not simulate vertical motion, so it uses a conservative proxy:
-    // no sampled floor at the current lane, outside attachment-follow, without an active
-    // jetpack, and without the recovered runtime `NoFall` lane set triggers the same direct
-    // fall-side death-resolution path. The separate scripted death cutscene remains reserved
-    // for hit-side hazards like slug contact.
-    fn updateFallEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+    // PORT(verified): mirror of `update_subgoldy` non-follow vertical motion from
+    // IDA 0x43bac4 (position integrate) through 0x43bf6f (floor snap + `y<-7` death
+    // trigger). Ramp/slide tile-family velocity reactions, swept-reentry grounded
+    // snap, trampoline envelope, and the slide/floor-cache `_pad_41c` branch land in
+    // follow-up commits; this first slice covers the flat-floor motion the tutorial
+    // exercises.
+    fn stepActivePhaseVerticalMotion(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (self.phase != .active) return;
         if (self.movement_mode == .attachment) return;
         if (self.launch.active) return;
-        if (self.jetpack.active) return;
-        if (preview.runtimeFlagB01At(self.current_global_row, self.resolved_lane_index)) return;
-        if (!rowHasAnyFloor(preview, self.current_global_row)) return;
+
+        // Integrate (IDA line 352). Runs unconditionally in the non-follow branch.
+        self.position_y += self.velocity_y;
+
+        // Damping (IDA line 390). `velocity.y *= 1 - track_center_x * 0.003` each tick.
+        self.velocity_y *= native_velocity_yz_decay_per_tick;
+
+        // Floor sampling + snap (IDA lines 535-544, within the non-attachment-exit-pending
+        // else branch). `sample_track_floor_height_at_position + 0.49` is the grounded
+        // rider height; if it is not above `position.y`, continue gravity; otherwise snap.
         if (preview.sampleFloorHeightAtGridPosition(
             self.current_global_row,
             self.resolved_lane_index,
             self.row_position,
-        ) != null) return;
+        )) |floor_y| {
+            const floor_plus_rider = floor_y + native_grounded_rider_height;
+            if (floor_plus_rider <= self.position_y) {
+                self.velocity_y += native_gravity_velocity_y_delta;
+            } else if (self.velocity_y <= 0.0) {
+                self.position_y = floor_plus_rider;
+                self.velocity_y = 0.0;
+            }
+        } else {
+            // No sampled floor under the current lane (empty tile, hole). Gravity
+            // continues to pull `position_y` down until it crosses the death threshold.
+            self.velocity_y += native_gravity_velocity_y_delta;
+        }
 
-        self.beginFallState(preview, .fall, cutscene_none_id);
+        // Death trigger (IDA line 504). Native keeps the check inside the grounded-state
+        // block; the port routes `.fall` through the existing `beginFallState` path,
+        // which hands off to `updatePhaseController` for respawn/final-loss.
+        if (self.position_y < native_position_y_death_threshold) {
+            self.beginFallState(preview, .fall, cutscene_none_id);
+        }
     }
 
     // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
@@ -4902,6 +4954,35 @@ fn rowHasAnyFloor(preview: *const track.LoadedLevelPreview, global_row: usize) b
 fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPreview, target: RowTarget) void {
     std.debug.assert(target.row > 0);
     runner.reset(preview);
+
+    // When `target.row` sits inside an installed attachment span, naïve priming at
+    // `target.row - 1` leaves the runner in `.track` mode over a no-floor tile, and
+    // the native-faithful `stepActivePhaseVerticalMotion` pulls `position_y` below
+    // `-7` via real gravity within a dozen ticks. Native gameplay never reaches
+    // these rows outside attachment follow, so instead seed the runner on the
+    // grounded row immediately before the attachment's entry and step naturally
+    // through the entry/follow flow until it arrives.
+    if (preview.installedBuiltAttachmentAtRow(target.row)) |built| {
+        const entry_row = built.row.global_row;
+        if (entry_row > 0 and target.row > entry_row) {
+            runner.runtime_track_index = entry_row - 1;
+            runner.movement_progress = 0.99;
+            runner.syncRowPosition(preview);
+            runner.refreshSample(preview);
+            runner.last_processed_row = entry_row - 1;
+
+            const max_attachment_prime_ticks: u32 = 2048;
+            var ticks: u32 = 0;
+            while (ticks < max_attachment_prime_ticks) : (ticks += 1) {
+                if (runner.phase != .active) break;
+                if (runner.current_global_row + 1 >= target.row) break;
+                runner.step(preview, .{}, 1.0 / 60.0);
+            }
+            runner.last_processed_row = runner.current_global_row;
+            return;
+        }
+    }
+
     runner.lane_index = target.lane;
     runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
     runner.runtime_track_index = target.row - 1;
@@ -8814,42 +8895,37 @@ test "fatal floor gaps enter the shared fall state without a cutscene override" 
     var runner = Runner.init(&fixture.preview);
     const gap = findFirstFloorGap(&fixture.preview, false).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, gap);
-    runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+    // Native gravity `-0.01 * track_center_x^2 = -0.16` per tick pulls the grounded
+    // `0.49` start below the `-7` death threshold inside ~15 ticks. Step a generous
+    // window so the test covers speed variance without being flaky.
+    var ticks: u32 = 0;
+    while (ticks < 64) : (ticks += 1) {
+        runner.step(&fixture.preview, .{}, 1.0 / 60.0);
+        if (runner.phase != .active) break;
+    }
 
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
     try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
 }
 
-test "authored no-fall rows suppress the fall death path" {
+test "runner descends through an authored gap row instead of halting at the edge" {
     var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     const gap = findFirstFloorGap(&fixture.preview, true).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, gap);
+    const starting_position_y = runner.position_y;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
+    // Native IDA line 504 only kills the player once `position.y < -7`, not on first
+    // contact with a no-floor tile. One motion tick over an authored gap row should
+    // leave the runner active with gravity just beginning to pull `velocity_y` down.
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
-}
-
-test "runtime no-fall lane suppresses fall entry without current annotation state" {
-    var fixture = try TestFixture.load("LEVELS/ARCADE021.TXT");
-    defer fixture.deinit();
-
-    var runner = Runner.init(&fixture.preview);
-    const gap = findFirstFloorGap(&fixture.preview, true).?;
-    runner.current_global_row = gap.row;
-    runner.resolved_lane_index = gap.lane;
-    runner.lane_index = gap.lane;
-    runner.lane_center = @as(f32, @floatFromInt(gap.lane)) + 0.5;
-    runner.row_position = @as(f32, @floatFromInt(gap.row)) + 0.5;
-    runner.current_annotation = null;
-
-    runner.updateFallEntry(&fixture.preview);
-
-    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expect(runner.velocity_y < 0.0);
+    try std.testing.expectApproxEqAbs(starting_position_y, runner.position_y, 0.0001);
 }
 
 test "active jetpack suppresses fall entry over a floor gap" {
