@@ -309,6 +309,112 @@ pub const SnailSkinTransition = struct {
     }
 };
 
+// PORT(verified): native cutscene/presentation animation ids consumed by
+// `dispatch_cutscene_animation`
+// (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c`). Native
+// passes these as the `a2` argument and uses them to index the
+// presentation controller's 128-byte-stride `animation_slot_table` at
+// `presentation + 0x170`. The family keys map 1:1 to the shipped
+// `X/_ANIMATION.TXT` `Anim:turbo-*-000.x` entries.
+pub const AnimClipId = enum(u8) {
+    none = 0,
+    base = 1,
+    move = 2,
+    lookback_l = 3,
+    lookback_r = 4,
+    skidstop = 5,
+    damaged = 6,
+    intoshell = 7,
+    fall = 8,
+    talk = 9,
+
+    pub fn familyKey(self: AnimClipId) ?[]const u8 {
+        return switch (self) {
+            .none => null,
+            .base => "TURBO-BASE",
+            .move => "TURBO-MOVE",
+            .lookback_l => "TURBO-LOOKBACKLEFT",
+            .lookback_r => "TURBO-LOOKBACKRIGHT",
+            .skidstop => "TURBO-SKIDSTOP",
+            .damaged => "TURBO-DAMAGED",
+            .intoshell => "TURBO-INTOSHELL",
+            .fall => "TURBO-FALL",
+            .talk => "TURBO-TALK",
+        };
+    }
+
+    pub fn label(self: AnimClipId) []const u8 {
+        return switch (self) {
+            .none => "none",
+            .base => "base",
+            .move => "move",
+            .lookback_l => "lookback_l",
+            .lookback_r => "lookback_r",
+            .skidstop => "skidstop",
+            .damaged => "damaged",
+            .intoshell => "intoshell",
+            .fall => "fall",
+            .talk => "talk",
+        };
+    }
+};
+
+// PORT(verified): mirror of the per-player presentation controller slice that
+// `dispatch_cutscene_animation` writes (`+0x108` progress, `+0x10c`
+// progress_step, `+0x110` current slot pointer, `+0x118..0x13f` queued
+// animation ids, `+0x140` queued count). The port keeps just the logical
+// `AnimClipId` values the renderer needs to pick the right turbo clip; the
+// 128-byte animation-slot metadata lives in the shared xanim catalog.
+pub const max_queued_cutscene_animations: usize = 10;
+
+pub const AnimDispatchState = struct {
+    active: AnimClipId = .base,
+    initial_frame: ?u16 = null,
+    active_edge_latched: bool = false,
+    queued_ids: [max_queued_cutscene_animations]AnimClipId =
+        [_]AnimClipId{.none} ** max_queued_cutscene_animations,
+    queued_count: u8 = 0,
+    token: u32 = 0,
+
+    // Mirrors native `dispatch_cutscene_animation`
+    // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`):
+    // when `immediate` is true, clear the queue, latch the new id, and
+    // optionally seed the initial frame; otherwise append to the queue.
+    pub fn dispatch(
+        self: *AnimDispatchState,
+        anim_id: AnimClipId,
+        immediate: bool,
+        initial_frame: ?u16,
+    ) void {
+        if (immediate) {
+            self.active = anim_id;
+            self.initial_frame = initial_frame;
+            self.queued_count = 0;
+            self.token +%= 1;
+        } else if (self.queued_count < max_queued_cutscene_animations) {
+            self.queued_ids[self.queued_count] = anim_id;
+            self.queued_count += 1;
+        }
+    }
+
+    // Mirrors the queue-pop tail of native `update_anim_manager`
+    // (`artifacts/ida/functions/004447d0-update_anim_manager.c:84-116`): when
+    // the current clip finishes, pop the head of the queue and reseed the
+    // active slot.
+    pub fn onCurrentClipFinished(self: *AnimDispatchState) void {
+        if (self.queued_count == 0) return;
+        self.active = self.queued_ids[0];
+        self.initial_frame = null;
+        self.token +%= 1;
+        var i: usize = 1;
+        while (i < self.queued_count) : (i += 1) {
+            self.queued_ids[i - 1] = self.queued_ids[i];
+        }
+        self.queued_count -= 1;
+        self.queued_ids[self.queued_count] = .none;
+    }
+};
+
 // `JetpackWarningBand` and `JetpackGauge` live in `gameplay/jetpack.zig`.
 
 pub const WeaponChannelStates = struct {

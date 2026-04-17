@@ -74,6 +74,8 @@ pub const DamageWarningActor = damage_module.WarningActor;
 pub const DamageController = damage_module.Controller;
 pub const SnailSkinSlot = runner_state.SnailSkinSlot;
 pub const SnailSkinTransition = runner_state.SnailSkinTransition;
+pub const AnimClipId = runner_state.AnimClipId;
+pub const AnimDispatchState = runner_state.AnimDispatchState;
 pub const JetpackWarningBand = jetpack_module.WarningBand;
 pub const JetpackGauge = jetpack_module.Gauge;
 
@@ -514,6 +516,12 @@ pub const Runner = struct {
     // While `true`, native skips the `velocity.z` damping at line 388 to preserve
     // forward speed immediately after a bounce.
     post_trampoline_airborne: bool = false,
+    // PORT(verified): presentation-controller animation dispatch slot. Native
+    // keeps this on the player-side `PlayerPresentationController` that
+    // `dispatch_cutscene_animation` writes (`+0x108..+0x140`). The port folds
+    // the active id + queue onto the Runner so the renderer can pick the
+    // right turbo-* clip without reaching back through an app-side controller.
+    cutscene_anim: AnimDispatchState = .{},
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -548,6 +556,7 @@ pub const Runner = struct {
             .position_y = native_grounded_rider_height,
             .velocity_y = 0.0,
             .post_trampoline_airborne = false,
+            .cutscene_anim = .{},
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
@@ -999,6 +1008,24 @@ pub const Runner = struct {
 
     pub fn recentEventLabel(self: *const Runner) []const u8 {
         return self.recent_event.label();
+    }
+
+    // PORT(verified): mirror of `dispatch_cutscene_animation`
+    // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`).
+    // Native passes `(presentation, anim_id, immediate, initial_frame)`; the
+    // port folds the presentation-controller state onto the `Runner.cutscene_anim`
+    // slot and lets the renderer pick the active clip from `AnimClipId.familyKey`.
+    pub fn dispatchCutsceneAnimation(
+        self: *Runner,
+        anim_id: AnimClipId,
+        immediate: bool,
+        initial_frame: ?u16,
+    ) void {
+        self.cutscene_anim.dispatch(anim_id, immediate, initial_frame);
+    }
+
+    pub fn cutsceneAnimClipLabel(self: *const Runner) []const u8 {
+        return self.cutscene_anim.active.label();
     }
 
     pub fn activePathName(self: *const Runner) ?[]const u8 {
@@ -3655,7 +3682,7 @@ pub const Runner = struct {
                 if (self.velocity_y <= 0.0) {
                     self.position_y = floor_plus_rider;
                 }
-                self.applyTileFamilyFloorReaction(tile_at_position);
+                self.applyTileFamilyFloorReaction(preview, tile_at_position);
             }
         } else {
             // No sampled floor under the current lane (void, 'M', path/probe cells,
@@ -3696,7 +3723,11 @@ pub const Runner = struct {
     // - Any other tile that is not empty (`0x00`), open-neighbor (`0x23`), or
     //   trampoline (`0x16`) clears the post-trampoline-airborne flag and zeroes
     //   `velocity.y`, producing the stable grounded rest state on flat floor.
-    fn applyTileFamilyFloorReaction(self: *Runner, tile_opt: ?u8) void {
+    fn applyTileFamilyFloorReaction(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        tile_opt: ?u8,
+    ) void {
         const tile = tile_opt orelse return;
         switch (tile) {
             0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d => {
@@ -3704,6 +3735,16 @@ pub const Runner = struct {
             },
             0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
                 self.velocity_y = native_track_center_x * 0.2;
+                // PORT(verified): down-ramp reaction dispatches a lookback
+                // animation based on lateral sign, then queues the base clip
+                // (`0043b120-update_subgoldy.c:564-571`). Native tests
+                // `position.x <= 0` where x is in `[-4, 4]`; the port derives
+                // the same sign from `lane_center - max_width * 0.5`.
+                const lane_mid = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
+                const world_x_signed = self.lane_center - lane_mid;
+                const lookback: AnimClipId = if (world_x_signed <= 0.0) .lookback_l else .lookback_r;
+                self.cutscene_anim.dispatch(lookback, true, null);
+                self.cutscene_anim.dispatch(.base, false, null);
             },
             0x00, 0x23, 0x16 => {},
             else => {
