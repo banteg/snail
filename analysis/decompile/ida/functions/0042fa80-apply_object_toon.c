@@ -2,6 +2,7 @@
 /* function: apply_object_toon @ 0x42fa80 */
 /* selector: apply_object_toon */
 
+// Marks one object as toon-enabled and prepares its outline support buffers. Cross-port Android symbols match this helper to `cRObject::ApplyToon(int)`, but Android only flips the toon flags while Windows also allocates the support storage here.
 _BYTE *__thiscall sub_42FA80(_DWORD *this, int a2)
 {
   int v3; // eax

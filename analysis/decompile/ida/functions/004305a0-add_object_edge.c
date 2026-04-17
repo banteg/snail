@@ -2,6 +2,7 @@
 /* function: add_object_edge @ 0x4305a0 */
 /* selector: add_object_edge */
 
+// Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline.
 void __userpurge sub_4305A0(int a1@<ecx>, double a2@<st0>, int a3, int a4, int a5)
 {
   int v5; // ebp

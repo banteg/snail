@@ -1191,7 +1191,8 @@
     },
     {
       "address": "0x42f800",
-      "name": "request_object_facequad_normals"
+      "name": "request_object_facequad_normals",
+      "description": "Ensures one object's toon-normal storage exists by allocating the per-vertex accumulated normal list and the per-face quad-normal pairs consumed by the outline pass."
     },
     {
       "address": "0x42f850",
@@ -1215,7 +1216,8 @@
     },
     {
       "address": "0x42fa80",
-      "name": "apply_object_toon"
+      "name": "apply_object_toon",
+      "description": "Marks one object as toon-enabled and prepares its outline support buffers. Cross-port Android symbols match this helper to `cRObject::ApplyToon(int)`, but Android only flips the toon flags while Windows also allocates the support storage here."
     },
     {
       "address": "0x42fad0",
@@ -1227,11 +1229,13 @@
     },
     {
       "address": "0x42fcb0",
-      "name": "calc_object_facequad_normals"
+      "name": "calc_object_facequad_normals",
+      "description": "Builds one object's toon-normal data: face-pair normals per quad plus averaged inverted vertex normals for silhouette edge tests. Called from the object build path and again when animated geometry is refreshed."
     },
     {
       "address": "0x430230",
-      "name": "calc_object_facequad_normals_simple"
+      "name": "calc_object_facequad_normals_simple",
+      "description": "Recomputes only the per-face quad-normal pairs for the current vertex positions without rebuilding the full accumulated vertex-normal table. Used by the distort path before the toon edge pass reuses the updated face data."
     },
     {
       "address": "0x4303f0",
@@ -1244,15 +1248,18 @@
     },
     {
       "address": "0x430570",
-      "name": "request_object_edges"
+      "name": "request_object_edges",
+      "description": "Allocates the packed toon-edge records and companion selection buffer that `render_object_toon` consumes when it emits silhouette line segments."
     },
     {
       "address": "0x4305a0",
-      "name": "add_object_edge"
+      "name": "add_object_edge",
+      "description": "Adds or merges one candidate toon edge while tracking whether it is a boundary edge or shared by two faces, caching the edge direction, and discarding internal joins that should not outline."
     },
     {
       "address": "0x4308b0",
-      "name": "calc_object_edges"
+      "name": "calc_object_edges",
+      "description": "Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`."
     },
     {
       "address": "0x430a70",

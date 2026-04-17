@@ -2,6 +2,7 @@
 /* function: calc_object_edges @ 0x4308b0 */
 /* selector: calc_object_edges */
 
+// Builds the unique edge list for one toon-enabled object from its face quads, optionally removes boundary edges for closed meshes, and stores the packed records later filtered by `render_object_toon`.
 void __usercall sub_4308B0(int a1@<ecx>, double a2@<st0>)
 {
   int v3; // esi

@@ -2,6 +2,7 @@
 /* function: request_object_edges @ 0x430570 */
 /* selector: request_object_edges */
 
+// Allocates the packed toon-edge records and companion selection buffer that `render_object_toon` consumes when it emits silhouette line segments.
 _BYTE *__thiscall sub_430570(_DWORD *this, int a2)
 {
   _BYTE *result; // eax

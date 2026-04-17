@@ -3,21 +3,56 @@
   "manifest": "analysis/symbols/gameplay-functions.json",
   "database": "artifacts/ida/SnailMail_unwrapped.exe.i64",
   "out_dir": "analysis/decompile/ida/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 7,
+  "function_count": 7,
   "exported": [
     {
-      "selector": "render_game_frame",
-      "address": "0x40a490",
-      "name": "render_game_frame",
-      "artifact": "analysis/decompile/ida/functions/0040a490-render_game_frame.c",
+      "selector": "request_object_facequad_normals",
+      "address": "0x42f800",
+      "name": "request_object_facequad_normals",
+      "artifact": "analysis/decompile/ida/functions/0042f800-request_object_facequad_normals.c",
       "removed_stale_artifacts": []
     },
     {
-      "selector": "initialize_game_assets_and_world",
-      "address": "0x40acf0",
-      "name": "initialize_game_assets_and_world",
-      "artifact": "analysis/decompile/ida/functions/0040acf0-initialize_game_assets_and_world.c",
+      "selector": "apply_object_toon",
+      "address": "0x42fa80",
+      "name": "apply_object_toon",
+      "artifact": "analysis/decompile/ida/functions/0042fa80-apply_object_toon.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "calc_object_facequad_normals",
+      "address": "0x42fcb0",
+      "name": "calc_object_facequad_normals",
+      "artifact": "analysis/decompile/ida/functions/0042fcb0-calc_object_facequad_normals.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "calc_object_facequad_normals_simple",
+      "address": "0x430230",
+      "name": "calc_object_facequad_normals_simple",
+      "artifact": "analysis/decompile/ida/functions/00430230-calc_object_facequad_normals_simple.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "request_object_edges",
+      "address": "0x430570",
+      "name": "request_object_edges",
+      "artifact": "analysis/decompile/ida/functions/00430570-request_object_edges.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "add_object_edge",
+      "address": "0x4305a0",
+      "name": "add_object_edge",
+      "artifact": "analysis/decompile/ida/functions/004305a0-add_object_edge.c",
+      "removed_stale_artifacts": []
+    },
+    {
+      "selector": "calc_object_edges",
+      "address": "0x4308b0",
+      "name": "calc_object_edges",
+      "artifact": "analysis/decompile/ida/functions/004308b0-calc_object_edges.c",
       "removed_stale_artifacts": []
     }
   ],

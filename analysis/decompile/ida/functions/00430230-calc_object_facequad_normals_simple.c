@@ -2,6 +2,7 @@
 /* function: calc_object_facequad_normals_simple @ 0x430230 */
 /* selector: calc_object_facequad_normals_simple */
 
+// Recomputes only the per-face quad-normal pairs for the current vertex positions without rebuilding the full accumulated vertex-normal table. Used by the distort path before the toon edge pass reuses the updated face data.
 int __thiscall sub_430230(int *this)
 {
   int result; // eax

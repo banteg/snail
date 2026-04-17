@@ -12,21 +12,46 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 2,
-  "function_count": 2,
+  "selected_count": 7,
+  "function_count": 7,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
     {
-      "address": "0x40a490",
-      "name": "render_game_frame",
-      "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c"
+      "address": "0x42f800",
+      "name": "request_object_facequad_normals",
+      "artifact": "analysis/decompile/binja/functions/0042f800-request_object_facequad_normals.c"
     },
     {
-      "address": "0x40acf0",
-      "name": "initialize_game_assets_and_world",
-      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c"
+      "address": "0x42fa80",
+      "name": "apply_object_toon",
+      "artifact": "analysis/decompile/binja/functions/0042fa80-apply_object_toon.c"
+    },
+    {
+      "address": "0x42fcb0",
+      "name": "calc_object_facequad_normals",
+      "artifact": "analysis/decompile/binja/functions/0042fcb0-calc_object_facequad_normals.c"
+    },
+    {
+      "address": "0x430230",
+      "name": "calc_object_facequad_normals_simple",
+      "artifact": "analysis/decompile/binja/functions/00430230-calc_object_facequad_normals_simple.c"
+    },
+    {
+      "address": "0x430570",
+      "name": "request_object_edges",
+      "artifact": "analysis/decompile/binja/functions/00430570-request_object_edges.c"
+    },
+    {
+      "address": "0x4305a0",
+      "name": "add_object_edge",
+      "artifact": "analysis/decompile/binja/functions/004305a0-add_object_edge.c"
+    },
+    {
+      "address": "0x4308b0",
+      "name": "calc_object_edges",
+      "artifact": "analysis/decompile/binja/functions/004308b0-calc_object_edges.c"
     }
   ]
 }

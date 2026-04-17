@@ -2,6 +2,7 @@
 /* function: request_object_facequad_normals @ 0x42f800 */
 /* selector: request_object_facequad_normals */
 
+// Ensures one object's toon-normal storage exists by allocating the per-vertex accumulated normal list and the per-face quad-normal pairs consumed by the outline pass.
 _BYTE *__thiscall sub_42F800(_DWORD *this)
 {
   _BYTE *result; // eax

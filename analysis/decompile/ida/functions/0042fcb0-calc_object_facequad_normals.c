@@ -2,6 +2,7 @@
 /* function: calc_object_facequad_normals @ 0x42fcb0 */
 /* selector: calc_object_facequad_normals */
 
+// Builds one object's toon-normal data: face-pair normals per quad plus averaged inverted vertex normals for silhouette edge tests. Called from the object build path and again when animated geometry is refreshed.
 int __thiscall sub_42FCB0(int *this)
 {
   _BYTE *v2; // ebx
