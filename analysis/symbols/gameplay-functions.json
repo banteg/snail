@@ -610,9 +610,34 @@
       "description": "Shuts down the live DirectInput stack by releasing the enumerated controllers, keyboard input, mouse device, and shared DirectInput interface handles."
     },
     {
+      "address": "0x411fa0",
+      "name": "render_camera",
+      "description": "Configures one 3D scene viewport, projection, view transform, depth state, fog state, and the after-sprites lane before world objects render. Cross-port Android symbols match this helper to `G0RenderCamera`."
+    },
+    {
+      "address": "0x412250",
+      "name": "refresh_object_vertex_buffer",
+      "description": "Refreshes one built object's grouped vertex buffer from the current animated or distorted vertex source, preserving the authored UV lanes for the grouped draw path."
+    },
+    {
+      "address": "0x4123e0",
+      "name": "render_object_toon",
+      "description": "Draws one object's optional toon edge pass by selecting visible outline segments against the current camera and submitting them as line primitives. Cross-port Android symbols match this helper to `G0RenderToon(cRObject*, tMatrix*)`."
+    },
+    {
       "address": "0x4126c0",
-      "name": "submit_sprite_draw_batches",
-      "description": "Walks the active sprite-texture batches for one scene, binds each texture ref, and submits the prepared sprite primitive streams into the renderer."
+      "name": "render_object",
+      "description": "Renders one built object through the grouped Direct3D path: refreshes animated vertices, sets world transform and cull mode, binds each texture group, applies the blend preset and tint, submits indexed primitives, and optionally dispatches the toon edge pass. Cross-port Android symbols match this helper to `G0RenderObject(cRObject*, tMatrix*, float, float, tColourSmall*, bool)`."
+    },
+    {
+      "address": "0x4129f0",
+      "name": "set_cull_mode",
+      "description": "Programs the shared renderer cull state from the one-bit front-vs-back-face selection. Cross-port Android symbols match this helper to `G0SetCull(int)`."
+    },
+    {
+      "address": "0x412d00",
+      "name": "set_blend_mode",
+      "description": "Maps one render blend preset through the shared lookup table and programs the matching alpha-blend state. Cross-port Android symbols match this helper to `G0SetBlend(int)`."
     },
     {
       "address": "0x413030",
@@ -640,9 +665,19 @@
       "description": "Allocates one built object's texture-group tables, expands each grouped face run into triangle indices, and builds the matching Direct3D vertex and index buffers for grouped rendering."
     },
     {
+      "address": "0x4141d0",
+      "name": "set_object_color",
+      "description": "Packs one object RGBA tint and, when grouped vertex buffers exist, rewrites the per-vertex diffuse colour lane so the next object draw uses that colour. Cross-port Android symbols match this helper's role to `G0SetColour(tColourSmall*)`."
+    },
+    {
       "address": "0x414260",
       "name": "set_fullscreen_mode",
       "description": "Switches the renderer's display mode between windowed (`0`) and fullscreen (`1`) through the shared device wrapper, updates the saved window rectangle bookkeeping, and recenters the cursor after the mode change."
+    },
+    {
+      "address": "0x414500",
+      "name": "bind_texture_ref",
+      "description": "Binds one texture ref, skips redundant binds through the cached current-texture lane, and applies the texture-stage wrap-vs-clamp state from the ref flags. Cross-port Android symbols match this helper to `G0BindTexture(int)`."
     },
     {
       "address": "0x414670",

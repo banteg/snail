@@ -12,16 +12,21 @@
   },
   "manifest": "analysis/symbols/gameplay-functions.json",
   "out_dir": "analysis/decompile/binja/functions",
-  "selected_count": 1,
-  "function_count": 1,
+  "selected_count": 2,
+  "function_count": 2,
   "mismatch_count": 0,
   "mismatches": [],
   "removed_stale_artifacts": [],
   "exports": [
     {
-      "address": "0x441fa0",
-      "name": "initialize_subgoldy_resurrect",
-      "artifact": "analysis/decompile/binja/functions/00441fa0-initialize_subgoldy_resurrect.c"
+      "address": "0x40a490",
+      "name": "render_game_frame",
+      "artifact": "analysis/decompile/binja/functions/0040a490-render_game_frame.c"
+    },
+    {
+      "address": "0x40acf0",
+      "name": "initialize_game_assets_and_world",
+      "artifact": "analysis/decompile/binja/functions/0040acf0-initialize_game_assets_and_world.c"
     }
   ]
 }

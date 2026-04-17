@@ -84,7 +84,7 @@
 0040a5f6        int32_t* edx_5
 0040a5f6        edx_5.b = *(ebp_2 + 0x5d8)
 0040a609        int32_t* esi_1 = edi + ((ebx_1 * 5 + 0xb9) << 3)
-0040a637        int16_t x87control_1 = sub_411fa0(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_8 + 0xc0), eax_8 + 0x38, eax_8 + 0x80, edx_5.b, 0)
+0040a637        int16_t x87control_1 = render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_8 + 0xc0), eax_8 + 0x38, eax_8 + 0x80, edx_5.b, 0)
 0040a647        if ((*(ebp_2 + 0x5bc) & 2) == 0)
 0040a64d        void* i_2 = *(edi + 0x5ac)
 0040a653        i_10 = 0
@@ -120,7 +120,7 @@
 0040a6f1        var_9c_2 = *(i_2 + 0x20)
 0040a6f2        var_a0_2 = *(i_2 + 0x1c)
 0040a6f3        ecx_14 = i_2 + 0x38
-0040a736        x87control_1 = sub_4126c0(*(i_2 + 0x24), ecx_14, var_a0_2, var_9c_2, var_98_2, var_94_3)
+0040a736        x87control_1 = render_object(*(i_2 + 0x24), ecx_14, var_a0_2, var_9c_2, var_98_2, var_94_3)
 0040a73e        i_2 = *(i_2 + 0xc)
 0040a743        do while (i_2 != 0)
 0040a749        edi = var_78
@@ -212,7 +212,7 @@
 0040a921        sub_411de0()
 0040a939        if ((*(ebp_2 + 0x5bc) & 2) == 0 && i_10 != 0)
 0040a93f        void* eax_33 = *(ebp_2 + 0x5d4)
-0040a97c        sub_411fa0(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_33 + 0xc0), eax_33 + 0x38, eax_33 + 0x80, *(ebp_2 + 0x5d8), 1)
+0040a97c        render_camera(*(ebp_2 + 0x5c0), *(ebp_2 + 0x5c4), *esi_1, *(ebp_2 + 0x5cc), *(eax_33 + 0xc0), eax_33 + 0x38, eax_33 + 0x80, *(ebp_2 + 0x5d8), 1)
 0040a989        int32_t i_9 = i_10
 0040a990        int32_t* edi_3 = (i_10 << 2) + &data_4dfb10
 0040a997        i_10 = 0
@@ -242,7 +242,7 @@
 0040a9c5        var_9c_4 = *(esi_5 + 0x20)
 0040a9c6        var_a0_4 = *(esi_5 + 0x1c)
 0040a9c7        eax_41 = esi_5 + 0x38
-0040aa0b        sub_4126c0(*(esi_5 + 0x24), eax_41, var_a0_4, var_9c_4, var_98_5, var_94_9)
+0040aa0b        render_object(*(esi_5 + 0x24), eax_41, var_a0_4, var_9c_4, var_98_5, var_94_9)
 0040aa13        i_5 = i_9
 0040aa13        i_9 -= 1
 0040aa14        do while (i_5 != 1)

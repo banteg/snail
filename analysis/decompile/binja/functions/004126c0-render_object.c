@@ -1,13 +1,13 @@
 /* tool: binary_ninja */
 /* database: /Users/banteg/dev/banteg/snail-mail/artifacts/binary_ninja/SnailMail_unwrapped.exe.bndb */
 /* manifest: /Users/banteg/dev/banteg/snail-mail/analysis/symbols/gameplay-functions.json */
-/* function: submit_sprite_draw_batches @ 0x4126c0 */
+/* function: render_object @ 0x4126c0 */
 
 004126cb        int32_t result = *(arg1 i+ 0x10)
 004126de        if ((result & 0x80000) != 0 && (result & 0x40000) == 0)
 004126e4        result = *(arg1 i+ 0x2c)
 004126e9        if (result != 0)
-004126f0        sub_412250(arg1)
+004126f0        refresh_object_vertex_buffer(arg1)
 004126f9        int32_t* eax = data_502fec
 0041270e        void var_40
 0041270e        __builtin_memcpy(&var_40, arg2, 0x40)
@@ -16,7 +16,7 @@
 00412726        if ((*(arg1 i+ 0x10) & 0x100000) == 0)
 0041272c        var_54_3 = 1
 00412728        var_54_3 = 0
-0041272e        sub_4129f0(var_54_3)
+0041272e        set_cull_mode(var_54_3)
 00412739        int32_t i = 0
 0041273d        if (*(arg1 i+ 0x64) s> 0)
 00412743        int32_t ebx
@@ -32,7 +32,7 @@
 004127a4        if ((*(arg1 i+ 0x10) & 8) == 0)
 004127ac        var_54_4 = eax_5
 004127a9        var_54_4 = *(arg1 i+ 0x18)
-004127ad        sub_414500(var_54_4)
+004127ad        bind_texture_ref(var_54_4)
 004127ba        if ((*(arg1 i+ 0x10) & 0x80) == 0)
 00412801        int32_t* eax_9 = data_502fec
 0041280f        (*(*eax_9 + 0xfc))(eax_9, 0, 0x18, 0)
@@ -47,7 +47,7 @@
 0041282d        if (arg5[3] == 0x3f800000 || (**(*(arg1 i+ 0xd0) + (i << 2)) & 0x10000) == 0)
 0041286f        int32_t* eax_12 = data_502fec
 0041287b        (*(*eax_12 + 0xc8))(eax_12, 0x1b, 0)
-00412833        sub_412d00(*(arg1 i+ 0x14))
+00412833        set_blend_mode(*(arg1 i+ 0x14))
 00412838        int32_t eax_11 = *(arg1 i+ 0x10)
 00412840        if ((eax_11.b & 0x50) != 0)
 00412842        eax_11.b &= 0xbf
@@ -56,7 +56,7 @@
 00412856        int32_t var_5c_5 = arg5[1]
 0041285c        int32_t var_58_5 = arg5[2]
 00412862        int32_t var_54_9 = arg5[3]
-00412865        sub_4141d0(arg1)
+00412865        set_object_color(arg1)
 00412887        int32_t* eax_13 = data_502fec
 00412897        (*(*eax_13 + 0x14c))(eax_13, 0, *(*(arg1 i+ 0xc0) + 8), 0x18)
 0041289d        int32_t* eax_14 = data_502fec
@@ -73,5 +73,5 @@
 00412758        goto label_412795
 00412921        i += 1
 00412924        do while (i s< *(arg1 i+ 0x64))
-00412930        return sub_4123e0(arg1, arg2)
+00412930        return render_object_toon(arg1, arg2)
 0041293f        return result

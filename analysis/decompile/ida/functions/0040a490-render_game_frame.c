@@ -212,7 +212,7 @@ int __thiscall sub_40A490(int *this)
         v71[10] = v25;
         v28 = *((float *)v19 + 368);
         v80 = v22;
-        sub_411FA0(
+        render_camera(
           (int)v22,
           v28,
           v27,
@@ -276,7 +276,7 @@ int __thiscall sub_40A490(int *this)
                   v71[12] = v40;
                   v37 = v86;
                 }
-                submit_sprite_draw_batches(
+                render_object(
                   *(_DWORD *)(v29 + 36),
                   v37,
                   SLODWORD(v71[12]),
@@ -420,7 +420,7 @@ LABEL_64:
         if ( (v19[367] & 2) == 0 && v73 )
         {
           LOBYTE(v56) = *((_BYTE *)v19 + 1496);
-          sub_411FA0(
+          render_camera(
             v54,
             *((float *)v19 + 368),
             *((float *)v19 + 369),
@@ -468,7 +468,7 @@ LABEL_64:
               v71[12] = v69;
               v65 = v86;
             }
-            submit_sprite_draw_batches(
+            render_object(
               *(_DWORD *)(v61 + 36),
               v65,
               SLODWORD(v71[12]),

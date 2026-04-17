@@ -1,11 +1,11 @@
 {
   "manifest": "analysis/symbols/gameplay-functions.json",
   "root": "analysis/decompile",
-  "function_count": 1,
+  "function_count": 2,
   "bn_index": "analysis/decompile/binja/index.json",
   "ida_index": "analysis/decompile/ida/index.json",
-  "bn_exported": 1,
-  "ida_exported": 1,
+  "bn_exported": 2,
+  "ida_exported": 2,
   "bn_mismatch_count": 0,
   "ida_mismatch_count": 0,
   "total_mismatch_count": 0,
@@ -15,8 +15,12 @@
   "strict": false,
   "selected_functions": [
     {
-      "name": "initialize_subgoldy_resurrect",
-      "address": "0x441fa0"
+      "name": "render_game_frame",
+      "address": "0x40a490"
+    },
+    {
+      "name": "initialize_game_assets_and_world",
+      "address": "0x40acf0"
     }
   ]
 }
