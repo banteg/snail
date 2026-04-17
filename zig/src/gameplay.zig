@@ -1556,7 +1556,8 @@ pub const Runner = struct {
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
                 if (self.invincible_ticks > 0) {
-                    // PORT(verified): native `handle_subgoldy_collisions` @ 0x44523a
+                    // PORT(verified):
+                    // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:179-182`
                     // takes the invincible-path slug contact through `kill_slug_hazard`
                     // without `add_subgoldy_score`.
                     self.defeatSlugSilent(global_row, sample.resolved_lane_index);
@@ -1564,15 +1565,38 @@ pub const Runner = struct {
                 }
                 self.counters.slug_hits += 1;
                 self.recent_event = .slug_hit;
-                // PORT(partial): Windows first sends slug contact through a dedicated hit/fall
-                // branch that clears attachment-follow and enters the death cutscene state; the
-                // +1.0 damage-gauge delta appears only on repeated slug contact while already in
-                // that state. The runner mirrors that split locally: first hit arms the slug-hit
-                // latch and enters the scripted handoff, later contacts add the recovered damage.
                 if (self.damage.slug_hit_active) {
+                    // PORT(verified): repeat-hit branch at
+                    // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:183-188`.
+                    // Native writes `velocity.z = track_center_x^2 * 0.004 * -8` into the
+                    // player's `+0x418` lane (`-0.512` with the fixed `track_center_x = 4`)
+                    // and immediately calls `apply_damage_gauge_delta(+1.0, 0)`. The
+                    // port folds `velocity.z` into the one-shot
+                    // `native_velocity_z_override_per_tick` lane that the existing
+                    // ring-hit knockback already uses.
+                    self.native_velocity_z_override_per_tick =
+                        native_track_center_x * native_track_center_x * 0.0040000002 * -8.0;
                     self.applyDamageGaugeDelta(1.0);
                     return;
                 }
+                // PORT(verified): first-hit branch at
+                // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:190-221`.
+                // Native stamps the player velocity triplet before arming
+                // `begin_post_follow_carryover` and entering cutscene state `10`:
+                //   velocity.x = 0 (player + 0x410)
+                //   velocity.y = track_center_x * 0.2 (player + 0x414, = 0.8)
+                //   velocity.z = track_center_x * -0.2 (player + 0x418, = -0.8)
+                // and clears `follow_state.active`. `clearAttachmentFollow` inside
+                // `beginFallState` mirrors the follow clear; the velocity writes
+                // need to happen before that transition so the fall phase picks up
+                // a non-zero vertical velocity as its initial knockback impulse.
+                // Side effects not yet ported: the slug slot's `+0x85 = 1` flag, the
+                // randomized `play_slug_voice(34 - rand())` call, and the
+                // `firework_shoot(...)` burst land with the slug pool and
+                // firework/sfx ports.
+                self.native_velocity_x_per_tick = 0.0;
+                self.velocity_y = native_track_center_x * 0.2;
+                self.native_velocity_z_override_per_tick = native_track_center_x * -0.2;
                 self.damage.slug_hit_active = true;
                 self.beginFallState(preview, .hazard, cutscene_death_id);
             },
@@ -3765,7 +3789,17 @@ pub const Runner = struct {
     fn beginFallState(self: *Runner, preview: *const track.LoadedLevelPreview, cause: DeathCause, cutscene_id: u8) void {
         if (self.phase != .active or self.finished) return;
         const frame = self.captureWorldFrame(preview);
-        const initial_vertical_velocity = if (self.launch.active) self.launch.vertical_velocity else 0.0;
+        // PORT(verified): the slug first-hit path
+        // (`artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:197-200`)
+        // stamps `velocity.y = track_center_x * 0.2` before entering cutscene
+        // state 10. The port reads that same lane as the fall phase's initial
+        // vertical velocity so the rider's knockback arc picks up the hit
+        // impulse instead of starting from rest. The launch branch still wins
+        // when a launch is in progress.
+        const initial_vertical_velocity = if (self.launch.active)
+            self.launch.vertical_velocity
+        else
+            self.velocity_y;
         if (self.movement_mode == .attachment) {
             self.seedAttachmentExitStateFromCarryover(preview, frame.position.z);
         } else if (self.attachment_exit_pending) {
@@ -5888,6 +5922,44 @@ test "slug hit latches the shared fall path" {
     try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage.gauge, 0.0001);
     try std.testing.expect(runner.damage.slug_hit_active);
+    // PORT(verified): first-hit velocity triplet from
+    // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:197-200`.
+    // The fall state captures `velocity_y` before `beginFallState` clears it,
+    // so the initial knockback velocity should equal `track_center_x * 0.2`.
+    try std.testing.expectApproxEqAbs(
+        native_track_center_x * 0.2,
+        runner.phase.fall.vertical_velocity,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(
+        native_track_center_x * -0.2,
+        runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.native_velocity_x_per_tick, 0.0001);
+}
+
+test "repeat slug hit applies the native velocity.z knockback and damage delta" {
+    var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
+    // First hit transitions the runner to the fall phase; recover back into a
+    // simulated "already latched" state to exercise the repeat path that
+    // native takes when Goldy re-contacts a slug from inside the hit/fall
+    // block (`handle_subgoldy_collisions.c:183-188`).
+    primeRunnerBeforeRow(&runner, &fixture.preview, slug);
+    runner.damage.slug_hit_active = true;
+    runner.processRow(&fixture.preview, slug.row);
+
+    try std.testing.expectEqualStrings("active", runner.phaseLabel());
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.damage.gauge, 0.0001);
+    try std.testing.expectApproxEqAbs(
+        native_track_center_x * native_track_center_x * 0.0040000002 * -8.0,
+        runner.native_velocity_z_override_per_tick.?,
+        0.0001,
+    );
 }
 
 test "powerup rings upgrade weapon level then grant invincible state" {
