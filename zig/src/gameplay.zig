@@ -229,6 +229,12 @@ const native_position_y_death_threshold: f32 = -7.0;
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
+// PORT(verified): native jetpack late clear lane `0x43ce75` in
+// `artifacts/ida/functions/0043b120-update_subgoldy.c` only retires
+// `attachment_exit_pending` when `jetpack_gauge.state == 1 AND
+// live_matrix.position.y < 1.0` (IDA 0x43ce47). Above `1.0`, active jetpack
+// flight keeps the gate armed so the airborne progress/gate-A lanes run.
+const native_jetpack_altitude_cap: f32 = 1.0;
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
@@ -3985,12 +3991,15 @@ pub const Runner = struct {
     fn stepAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         _ = preview;
         if (!self.attachment_exit_pending) return;
-        if (self.phase == .active and self.jetpack.active) {
+        if (self.phase == .active and self.jetpack.active and self.position_y < native_jetpack_altitude_cap) {
             // PORT(verified): `artifacts/ida/functions/0043b120-update_subgoldy.c`
             // checks `player + 0x275c` (`jetpack_gauge.state`) at `0x43ce23` and
-            // routes that active-jetpack slice through the `0x43ce34/0x43ce75`
-            // late clear before the `attachment_exit_progress` / gate-A block at
-            // `0x43ce8a`.
+            // then gates the `0x43ce34/0x43ce75` late clear on
+            // `live_matrix.position.y < 1.0` at `0x43ce47`, so active-jetpack
+            // flight only retires pending once the rider has dropped below the
+            // altitude cap. Above that cap (post-launch, still airborne), the
+            // gate stays armed and the progress/gate-A book-keeping below takes
+            // over instead.
             self.attachment_exit_pending = false;
             return;
         }
