@@ -91,10 +91,20 @@ pub const JetpackGauge = jetpack_module.Gauge;
 // the separate Wall2 ambient pool because the preview does not expose those flags yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
-const salt_damage_delta: f32 = 0.02;
+// PORT(verified): native `cRSalt` / `handle_subgoldy_collisions` feeds
+// `apply_damage_gauge_delta` with `+0.15f` on salt contact
+// (`artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c` via the
+// `cRSalt @ game+0x3578c0` pool's collision branch). The previous `0.02`
+// value was a port conflation with the `cRSubLazerManager @ game+0x356b00`
+// SubLazer projectile pool which applies its own separate `+0.02f` damage
+// delta when the Wall2 AI fires a sublazer via `shoot_subgoldy`.
+const salt_damage_delta: f32 = 0.15;
 const slug_damage_delta: f32 = 1.0;
 const garbage_collision_distance_threshold: f32 = 0.98;
-const salt_collision_distance_threshold: f32 = 0.49;
+// PORT(verified): `cRSalt` collision uses the `0.98f` distance gate for
+// authored tile-0x22 salt contact, not the `0.49f` gate that the SubLazer
+// projectile pool uses. Aligning to the `cRSalt` side of the split.
+const salt_collision_distance_threshold: f32 = 0.98;
 const runtime_health_collision_distance_threshold: f32 = 0.98;
 const runtime_jetpack_collision_distance_threshold: f32 = 3.0;
 const runtime_health_collision_y_tolerance: f32 = 0.4;
