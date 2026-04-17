@@ -2022,7 +2022,7 @@ pub const Runner = struct {
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
-        self.damage.applyDelta(delta, &self.snail_skin, &self.cutscene_anim);
+        self.damage.applyDelta(delta, &self.snail_skin);
     }
 
     fn maybeAwardRowEventCompletionBonus(self: *Runner) void {
@@ -2046,11 +2046,11 @@ pub const Runner = struct {
     }
 
     fn updateDamageGaugeController(self: *Runner) void {
-        self.damage.updateController(&self.snail_skin, &self.cutscene_anim);
+        self.damage.updateController(&self.snail_skin);
     }
 
     fn updateDamageWarning(self: *Runner) void {
-        self.damage.update(&self.snail_skin, &self.cutscene_anim);
+        self.damage.update(&self.snail_skin);
     }
 
     pub fn damageGaugeWarningOverlayAlpha(self: *const Runner) f32 {

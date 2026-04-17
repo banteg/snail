@@ -2981,9 +2981,23 @@ const AppState = struct {
             self.tryPlayNativeGameplayVoiceSet(.powerup, .wait_for_frequency) catch {};
         }
         if (native_voice_cues.damage_entry) {
+            // PORT(verified): native `apply_damage_gauge_delta`
+            // (`artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c:17-29`)
+            // tries the `damage_entry` voice first; when it returns zero the
+            // ouch-fallback plays and the damaged cutscene animation
+            // dispatches unconditionally within the else branch (the
+            // `data_4df904 + 4390996` global anim gate is an additional
+            // gate that's still unresolved). Route the clip dispatch from
+            // the same branch so it fires only when the ouch fallback
+            // wins, matching the native voice-gated contract rather than
+            // dispatching on every damage entry.
             const played_damage = self.tryPlayNativeGameplayVoiceSetPlayed(.damage, .wait_for_frequency) catch false;
             if (!played_damage) {
                 self.tryPlayNativeGameplayVoiceSet(.ouch, .wait_for_idle) catch {};
+                if (self.level_runner) |*runner| {
+                    runner.dispatchCutsceneAnimation(.damaged, true, null);
+                    runner.dispatchCutsceneAnimation(.base, false, null);
+                }
             }
         }
         if (native_voice_cues.damage_escalation) {
