@@ -3531,11 +3531,39 @@ pub const Runner = struct {
         // Damping (IDA line 390). `velocity.y *= 1 - track_center_x * 0.003` each tick.
         self.velocity_y *= native_velocity_yz_decay_per_tick;
 
+        const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
+
+        // 0x43bf6f swept-reentry grounded-snap lane (IDA lines 458-476). Fires only
+        // when `!follow_state.active` (always true here because the attachment guard
+        // above already returned). If `position.y` has drifted into the
+        // `[-0.163, 0.49)` band over a tile that is neither open-neighbor family
+        // (`{0x00, 0x0e, 0x1c, 0x1d, 0x23}`) nor the trampoline tile (`0x16`), native
+        // snaps the rider back up to `0.49` when the velocity is non-positive, zeroes
+        // the post-trampoline-airborne flag, and clears `attachment_exit_pending`.
+        // The squidge burst at IDA line 468 lands when the squidge controller is
+        // ported (not in the active task set).
+        if (!self.attachment_follow.active and
+            self.position_y < native_grounded_snap_position_y_upper and
+            self.position_y > native_grounded_snap_position_y_lower)
+        {
+            const snap_tile_allows = if (tile_at_position) |tile|
+                !track.isOpenNeighborRuntimeTileFamily(tile) and tile != 0x16
+            else
+                false;
+            if (snap_tile_allows) {
+                self.post_trampoline_airborne = false;
+                if (self.velocity_y <= 0.0) {
+                    self.position_y = native_grounded_rider_height;
+                    self.velocity_y = 0.0;
+                }
+                self.attachment_exit_pending = false;
+            }
+        }
+
         // Floor sampling + snap (IDA lines 535-579, within the non-attachment-exit-pending
         // else branch). `sample_track_floor_height_at_position + 0.49` is the grounded
         // rider height; if it is not above `position.y`, continue gravity; otherwise snap
         // and let the tile-family reaction set the outgoing `velocity.y`.
-        const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
         const floor_y_opt = if (tile_at_position) |tile|
             track.sampleFloorHeightForRuntimeTile(tile, self.row_position, track.specialFloorHeightForShippedRuntimeTile(tile))
         else
