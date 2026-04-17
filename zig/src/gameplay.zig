@@ -3642,6 +3642,21 @@ pub const Runner = struct {
             // the rider down.
             self.velocity_y += native_gravity_velocity_y_delta;
         }
+
+        // Post-follow carryover arm at the tail of the else branch
+        // (`artifacts/ida/functions/0043b120-update_subgoldy.c:581-583`): once
+        // `position.y` has dipped below `0.0` with non-positive velocity, native
+        // calls `begin_post_follow_carryover` which arms `attachment_exit_pending`,
+        // latches `attachment_exit_anchor_z`, and resets the exit progress/gate
+        // bytes. The next tick then flows through the pending-branch gravity +
+        // trampoline envelope path above until the rider either dies at `y<-7`
+        // or lands on a trampoline.
+        if (!self.attachment_exit_pending and
+            self.position_y < 0.0 and
+            self.velocity_y <= 0.0)
+        {
+            self.seedAttachmentExitStateZeroed(self.row_position);
+        }
     }
 
     // PORT(verified): mirror of the tile-family velocity.y reactions at
