@@ -3879,51 +3879,27 @@ pub const Runner = struct {
         return self.cutscene_ticks >= duration_ticks;
     }
 
-    // PORT(fallback): the broad proxy fires whenever the current runtime tile is the
-    // trampoline (0x16) or is outside the "open-neighbor" family. Native `update_subgoldy`
-    // has three separate grounded-snap lanes that this proxy approximates with a superset:
-    //   - 0x43bcb3 (slide/floor-cache): fires when `!follow_state.active && tile ∈
-    //     {0x0f, 0x10, 0x12, 0x13}`, OR when `damage_warning_state == .draining &&
-    //     isSlideRuntimeTileFamily(tile)`. Unconditional clear within the branch.
-    //   - 0x43bf6f (swept re-entry failed → grounded snap): fires when `!follow_active &&
-    //     position.y < 0.49 && position.y >= -0.163 && !open_neighbor && tile != 0x16 &&
-    //     velocity.y < -0.03`. Snaps y=0.49, zeroes velocity.y.
-    //   - 0x43c3ea (trampoline bounce): fires when `tile == 0x16 &&
-    //     |position.y - cell_y| < 0.49`. Flips velocity.y and plays sfx 0x29.
-    // The tight lanes need live `position.y` / `velocity.y` tracking that the Runner does
-    // not own during the active phase today. The proxy stays until that motion model
-    // lands — see `plan.md §2` for the MVP slice.
-    fn activeTrackAttachmentExitRetires(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
-        if (self.phase != .active) return false;
-        if (self.movement_mode == .attachment or self.launch.active) return false;
-
-        const sample = self.currentRuntimeSample(preview) orelse return false;
-        const tile_type: u8 = sample.runtime_tile_hint orelse return false;
-
-        if (tile_type == 0x16) return true;
-        return !track.isOpenNeighborRuntimeTileFamily(tile_type);
-    }
-
     fn stepAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        _ = preview;
         if (!self.attachment_exit_pending) return;
         if (self.phase == .active and self.jetpack.active) {
-            // PORT(verified): BN `update_subgoldy` checks `player + 0x275c`
-            // (`jetpack_gauge.state`) at `0x43ce23` and routes that active-jetpack slice
-            // through the `0x43ce34/0x43ce75` late clear before the
-            // `attachment_exit_progress` / gate-A block at `0x43ce8a`.
+            // PORT(verified): `artifacts/ida/functions/0043b120-update_subgoldy.c`
+            // checks `player + 0x275c` (`jetpack_gauge.state`) at `0x43ce23` and
+            // routes that active-jetpack slice through the `0x43ce34/0x43ce75`
+            // late clear before the `attachment_exit_progress` / gate-A block at
+            // `0x43ce8a`.
             self.attachment_exit_pending = false;
             return;
         }
-        if (self.activeTrackAttachmentExitRetires(preview)) {
-            // PORT(partial): raw BN plus the checked-in IDA export now rule out the old
-            // `attachment_exit_progress >= 1.0` timeout story. The current port still lacks
-            // the full native airborne carryover after non-fall attachment exits, so retire
-            // the gate on the active-phase lanes we can actually represent today: the
-            // confirmed grounded snap clears (`0x43bf6f`, `0x43c06d`) and the confirmed
-            // trampoline landing clear (`0x43c3ea`).
-            self.attachment_exit_pending = false;
-            return;
-        }
+        // PORT(verified): `attachment_exit_progress` advances in frame-sized
+        // increments each pending tick at
+        // `artifacts/ida/functions/0043b120-update_subgoldy.c:43ce96` (the `else`
+        // of the five clear lanes). The grounded-snap (`0x43bf6f`) and trampoline
+        // (`0x43c3ea`) clears now fire from `stepActivePhaseVerticalMotion`
+        // directly, so this path only runs the progress/gate-A book-keeping;
+        // retirement lanes keyed on `_pad_41c[0]` (`0x43bcb3`) or the
+        // tile-flags re-snap (`0x43c06d`) land when their flag writers are
+        // surfaced in the port.
         const progress_step = self.attachment_exit_progress_step;
         self.attachment_exit_progress = std.math.clamp(
             self.attachment_exit_progress + progress_step,
