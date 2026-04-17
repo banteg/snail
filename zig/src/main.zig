@@ -7900,23 +7900,30 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     //     same vertices).
     //   - BARRIER.TGA is a 4x4 vertical gradient (dark blue → bright blue →
     //     dark blue) with alpha=255 everywhere.
-    //   - Device init at 0x4118bd enables alpha-test + specular + Z-test, no
-    //     explicit cull mode, lighting off, no preset blend mode.
-    //   - The 2D-quad blend helper `sub_412e50` supports alpha/premultiplied/
-    //     modulate modes but is only called from `draw_textured_quad_immediate`
-    //     (0x413056) — it is NOT on the 3D mesh draw path.
-    //   - The 3D render state the native barrier inherits when it draws is
-    //     therefore whatever was last set in the scene pass, which we have no
-    //     captures of. Possibilities: opaque textured (alpha=255 → solid blue
-    //     wall), modulated vertex-alpha, or additive.
+    //   - Windows barrier setup stores object tint `(1, 1, 1, 0.8)` and blend
+    //     preset `7` in `initialize_game_assets_and_world` (0x40acf0).
+    //   - Windows texture load `sub_412a70` tags 32-bit TGA textures with
+    //     `TextureRef.flags |= 0x10000`; `render_object` (0x4126c0) only enters
+    //     `set_blend_mode(...)` when object alpha != 1 and that flag is set.
+    //     BARRIER.TGA is 32-bit, so the barrier definitely takes the blended
+    //     grouped-object path.
+    //   - Windows `set_blend_mode(7)` resolves to additive blending
+    //     (`SRC=ONE`, `DEST=ONE`).
+    //   - Android barrier setup stores the same tint `(1, 1, 1, 0.8)` and
+    //     assigns blend preset `3`; `G0SetBlend(3)` is also additive and
+    //     explicitly disables depth writes for the draw.
+    //   - Native grouped-object draws keep back-face culling enabled unless the
+    //     object sets the `0x100000` opt-out flag. Barrier init does not set it.
     //
-    // Conservative fallback until we have a native tutorial-mode capture:
-    // 80 % alpha tint with back-face culling off. This matches the state the
-    // barrier shipped in before the additive experiment, was visually clear in
-    // our port (dark blue gradient strips at the track edges), and doesn't
-    // write corrupted Z values onto the scene the way additive did.
-    rl.gl.rlDisableBackfaceCulling();
-    defer rl.gl.rlEnableBackfaceCulling();
+    // Port choice:
+    // Use the recovered additive path and disable depth writes for the draw so
+    // the translucent barrier does not stamp the later scene. This matches the
+    // Android renderer directly, and it is the only way the Windows additive
+    // barrier can behave without the Z corruption we saw in the port.
+    rl.beginBlendMode(.additive);
+    defer rl.endBlendMode();
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
     const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
     loaded_object.drawTintedEx(world_transform, barrier_tint);
 }
