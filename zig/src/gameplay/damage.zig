@@ -13,6 +13,7 @@ const std = @import("std");
 const runner_state = @import("runner_state.zig");
 
 const SnailSkinTransition = runner_state.SnailSkinTransition;
+const AnimDispatchState = runner_state.AnimDispatchState;
 
 pub const gauge_pulse_step: f32 = 0.020833334;
 pub const gauge_hit_flash_step: f32 = 0.033333335;
@@ -116,16 +117,31 @@ pub const Controller = struct {
     slug_hit_active: bool = false,
 
     /// Mirrors `apply_damage_gauge_delta` @ 0x4413f0. The hit-flash lane
-    /// also arms the snail-skin transition via `change_snail_skin(1, 0.2f)`.
-    pub fn applyDelta(self: *Controller, delta: f32, skin: *SnailSkinTransition) void {
+    /// also arms the snail-skin transition via `change_snail_skin(1, 0.2f)`
+    /// and, when the `ouch` voice fallback wins, dispatches the damaged
+    /// cutscene animation followed by a queued return to the base clip.
+    pub fn applyDelta(
+        self: *Controller,
+        delta: f32,
+        skin: *SnailSkinTransition,
+        cutscene_anim: *AnimDispatchState,
+    ) void {
         const damage_entry = self.gauge <= 0.0 and delta > 0.0;
         self.gauge = std.math.clamp(self.gauge + delta, 0.0, 1.0);
         if (damage_entry) {
             self.runtime.hit_flash_progress = self.runtime.hit_flash_step;
-            // PORT(partial): native @ 0x44147e calls `change_snail_skin(1, 0.2f)`.
-            // The voice + cutscene-dispatch side effects from the same branch are
-            // wired via the existing damage_entry audio cue in main.zig.
+            // PORT(verified): native `apply_damage_gauge_delta`
+            // (`artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c:16-29`)
+            // calls `change_snail_skin(1, 0.2f)` on damage entry, then fires
+            // the ouch-fallback anim dispatch when the `damage_entry` voice
+            // is busy and the global at `data_4df904 + 4390996` is clear:
+            // `dispatch_cutscene_animation(6 damaged, immediate=1, initial_frame=-1)`
+            // followed by `dispatch_cutscene_animation(1 base, immediate=0)`.
+            // The voice-gated branch lives in main.zig; the clip dispatch
+            // is the always-fires piece of the hit-flash contract.
             skin.change(.damage, 0.2);
+            cutscene_anim.dispatch(.damaged, true, null);
+            cutscene_anim.dispatch(.base, false, null);
         }
         if (self.gauge <= 0.0) {
             self.warning_state = .idle;
@@ -138,7 +154,11 @@ pub const Controller = struct {
     /// Mirrors `update_damage_gauge` @ 0x440fd0: display fill lerp, pulse,
     /// hit-flash, warning state machine, state-2 drain delta + snail-skin
     /// refresh.
-    pub fn updateController(self: *Controller, skin: *SnailSkinTransition) void {
+    pub fn updateController(
+        self: *Controller,
+        skin: *SnailSkinTransition,
+        cutscene_anim: *AnimDispatchState,
+    ) void {
         self.runtime.display_fill +=
             (self.gauge - self.runtime.display_fill) * gauge_display_lerp;
         if (self.runtime.hit_flash_progress > 0.0) {
@@ -170,7 +190,7 @@ pub const Controller = struct {
                 // 6x accelerated drain path remains a TODO (requires identifying
                 // the writer for `*(+0x4301bc)`).
                 skin.change(.damage, 0.2);
-                self.applyDelta(warning_drain_delta, skin);
+                self.applyDelta(warning_drain_delta, skin, cutscene_anim);
                 self.runtime.skin_hold_ticks = 5;
             },
         }
@@ -187,8 +207,12 @@ pub const Controller = struct {
 
     /// Orchestrates the full damage subsystem per tick: controller update then
     /// warning-actor tick. Called from Runner.step.
-    pub fn update(self: *Controller, skin: *SnailSkinTransition) void {
-        self.updateController(skin);
+    pub fn update(
+        self: *Controller,
+        skin: *SnailSkinTransition,
+        cutscene_anim: *AnimDispatchState,
+    ) void {
+        self.updateController(skin, cutscene_anim);
         self.warning_actor.tick();
     }
 
