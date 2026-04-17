@@ -163,10 +163,12 @@ const intro_cutscene_blend_ticks: u16 = gameplay_camera.intro_cutscene_blend_tic
 const completion_cutscene_blend_ticks: u16 = gameplay_camera.completion_cutscene_blend_ticks;
 const death_cutscene_blend_ticks: u16 = gameplay_camera.death_cutscene_blend_ticks;
 const fall_gravity: f32 = 10.0;
-// PORT(partial): bundle 14 only ties the recovered `-7` window to in-fall transition logic,
-// not to the final respawn/game-over rule. Keep this as a provisional handoff gate until the
-// death/resurrect path is recovered more fully.
-const fall_world_y_threshold: f32 = -7.0;
+// PORT(verified): identical to `native_position_y_death_threshold` above. Native
+// `update_subgoldy` at `artifacts/ida/functions/0043b120-update_subgoldy.c:504`
+// calls `initialize_subgoldy_death` once `live_matrix.position.y < -7.0`; the
+// fall phase (used by the post-death cutscene camera) keeps the same threshold
+// for the `attachment_exit_gate_b` latch.
+const fall_world_y_threshold: f32 = native_position_y_death_threshold;
 const attachment_exit_progress_step_default: f32 = 1.0 / 60.0;
 const attachment_exit_gate_a_progress_threshold: f32 = 0.7;
 const attachment_side_exit_margin: f32 = 0.3;
