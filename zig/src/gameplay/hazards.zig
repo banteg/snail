@@ -23,6 +23,8 @@ const RuntimePickupKind = gameplay_runtime_entities.PickupKind;
 const RuntimeRingEffect = gameplay_runtime_entities.RingEffect;
 const SaltSlot = gameplay_runtime_entities.SaltSlot;
 const SaltSlotState = gameplay_runtime_entities.SaltSlotState;
+const SubLazerSlot = gameplay_runtime_entities.SubLazerSlot;
+const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 
 // PORT(verified): `spawn_salt_hazard`
 // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c:29`) seeds the
@@ -34,6 +36,20 @@ pub const native_salt_lifetime_step_factor: f32 = 0.033333335;
 // `spawn_salt_hazard` multiplies the centered value by `0.0001917476` to get
 // the initial Y-rotation angle (`0.0001917476 ≈ tau / 32768`).
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
+// PORT(verified): `spawn_wall2_ambient_hazard` seeds phase step as
+// `track_center_x * 0.0055555557`
+// (`artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c:29`). At
+// the port's fixed `track_center_x = 4.0`, this is `0.0222` per tick, so one
+// full sine cycle takes ~45 ticks (~0.75s).
+pub const native_sub_lazer_phase_step_factor: f32 = 0.0055555557;
+// PORT(verified): `update_wall2_ambient_hazard` reads sprite offset as
+// `sin(phase * 2*pi) * 0.3 + anchor_y`
+// (`artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c:97`).
+pub const native_sub_lazer_bob_amplitude: f32 = 0.30000001;
+// PORT(verified): `shoot_subgoldy` adjusts each successive slot's spawn Y by
+// `-0.01 * slot_index` so stacked lazers vertically separate
+// (`artifacts/ida/functions/00441ad0-shoot_subgoldy.c:22`).
+pub const native_sub_lazer_stack_y_step: f32 = -0.0099999998;
 
 pub const max_active_health_pickups: usize = 8;
 pub const max_active_jetpack_pickups: usize = 1;
@@ -44,6 +60,10 @@ pub const max_active_runtime_ring_effects: usize = 2;
 // 0x98 (152 bytes per slot) per
 // `artifacts/ida/functions/00441540-initialize_salt_hazard_pool.c`.
 pub const max_active_salt_slots: usize = 40;
+// PORT(verified): native `cRSubLazerManager @ game + 0x356b00` has 20 slots
+// with stride 0xb0 (176 bytes per slot) per
+// `artifacts/ida/functions/00441650-initialize_wall2_ambient_hazard_pool.c`.
+pub const max_active_sub_lazer_slots: usize = 20;
 
 pub const HazardPool = struct {
     slots: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{
@@ -246,11 +266,149 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
     return centered * native_salt_yaw_random_scale;
 }
 
+/// PORT(verified): 20-slot `cRSubLazerManager` projectile pool. Matches the
+/// layout at `game + 0x356b00` with per-slot phase + step (sprite bob),
+/// world position, velocity, and Y anchor for the oscillation.
+/// `initialize_wall2_ambient_hazard_pool`
+/// (`artifacts/ida/functions/00441650-initialize_wall2_ambient_hazard_pool.c`)
+/// zeros the state byte on every slot; `spawn_wall2_ambient_hazard` at
+/// `artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c` seeds
+/// position, velocity, phase_step = `track_center_x * 0.0055555557`, and
+/// the identity-matrix-plus-z-direction basis derived from the velocity.
+pub const SubLazerPool = struct {
+    slots: [max_active_sub_lazer_slots]SubLazerSlot =
+        [_]SubLazerSlot{.{}} ** max_active_sub_lazer_slots,
+
+    pub fn reset(self: *SubLazerPool) void {
+        self.* = .{};
+    }
+
+    pub fn active(self: *const SubLazerPool) []const SubLazerSlot {
+        return self.slots[0..];
+    }
+
+    pub fn allocateAt(self: *SubLazerPool) ?struct { slot: *SubLazerSlot, index: usize } {
+        for (&self.slots, 0..) |*slot, index| {
+            if (slot.state == .inactive) return .{ .slot = slot, .index = index };
+        }
+        return null;
+    }
+
+    pub fn countActive(self: *const SubLazerPool) usize {
+        var total: usize = 0;
+        for (self.slots) |slot| {
+            if (slot.state != .inactive) total += 1;
+        }
+        return total;
+    }
+
+    // PORT(verified): mirror of `spawn_wall2_ambient_hazard`
+    // (`artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c`).
+    // Allocates the first inactive slot, stores emitter cell back-ref,
+    // position, velocity, Y anchor (native reads this from matrix +0x14 —
+    // the port derives it from the incoming world position's y), and
+    // seeds the phase step from `track_center_x * 0.0055555557`. The Y
+    // oscillation starts at phase 0 so the slot begins at its anchor.
+    pub fn spawn(
+        self: *SubLazerPool,
+        emitter_row: usize,
+        emitter_lane: usize,
+        world_position: rl.Vector3,
+        velocity: rl.Vector3,
+        track_center_x: f32,
+    ) ?*SubLazerSlot {
+        const allocation = self.allocateAt() orelse return null;
+        allocation.slot.* = .{
+            .state = .active,
+            .emitter_row = emitter_row,
+            .emitter_lane = emitter_lane,
+            .world_position = world_position,
+            .velocity = velocity,
+            .anchor_y = world_position.y,
+            .phase = 0.0,
+            .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
+        };
+        return allocation.slot;
+    }
+
+    // PORT(verified): `shoot_subgoldy`
+    // (`artifacts/ida/functions/00441ad0-shoot_subgoldy.c`). Walks the pool
+    // for the first inactive slot, adjusts spawn Y by
+    // `-0.01 * slot_index` so stacked shots don't co-locate vertically,
+    // then delegates to `spawn`. Returns null when the pool is exhausted.
+    pub fn shoot(
+        self: *SubLazerPool,
+        emitter_row: usize,
+        emitter_lane: usize,
+        world_position: rl.Vector3,
+        velocity: rl.Vector3,
+        track_center_x: f32,
+    ) ?*SubLazerSlot {
+        const allocation = self.allocateAt() orelse return null;
+        const stacked_position: rl.Vector3 = .{
+            .x = world_position.x,
+            .y = world_position.y + @as(f32, @floatFromInt(allocation.index)) * native_sub_lazer_stack_y_step,
+            .z = world_position.z,
+        };
+        allocation.slot.* = .{
+            .state = .active,
+            .emitter_row = emitter_row,
+            .emitter_lane = emitter_lane,
+            .world_position = stacked_position,
+            .velocity = velocity,
+            .anchor_y = stacked_position.y,
+            .phase = 0.0,
+            .phase_step = track_center_x * native_sub_lazer_phase_step_factor,
+        };
+        return allocation.slot;
+    }
+
+    // PORT(verified): mirror of `update_wall2_ambient_hazard`
+    // (`artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`).
+    // Each active slot integrates position by velocity, advances phase,
+    // and samples a sine-wave Y offset around `anchor_y`. The emitter /
+    // route-end cleanup gates at native lines 45-91 live on the Runner
+    // side where the preview is available; this pool method only runs
+    // the per-slot physics + oscillation.
+    pub fn tickActiveSlots(self: *SubLazerPool) void {
+        for (&self.slots) |*slot| {
+            switch (slot.state) {
+                .inactive => {},
+                .active => {
+                    slot.phase += slot.phase_step;
+                    if (slot.phase > 1.0) slot.phase -= 1.0;
+                    slot.world_position.x += slot.velocity.x;
+                    slot.world_position.z += slot.velocity.z;
+                    slot.world_position.y = slot.anchor_y +
+                        std.math.sin(slot.phase * std.math.tau) * native_sub_lazer_bob_amplitude;
+                },
+                .removing => {
+                    // PORT(verified): native `destroy_wall2_ambient_hazard`
+                    // (`artifacts/ida/functions/00439bc0-destroy_wall2_ambient_hazard.c`)
+                    // unlinks the slot and its four nested body objects
+                    // from the shared intrusive-list machinery. The port's
+                    // plain-array pool just flips state back to inactive.
+                    slot.state = .inactive;
+                },
+            }
+        }
+    }
+
+    // PORT(verified): mirror of `destroy_wall2_ambient_hazard`. Called
+    // when the emitter cell passes behind the player or the slot
+    // collides. The port simplification drops the intrusive-list unlink
+    // and just flips the state byte.
+    pub fn destroy(_: *SubLazerPool, slot: *SubLazerSlot) void {
+        slot.state = .inactive;
+    }
+};
+
 /// All hazard-family pools grouped. Mirrors the native subgame memory layout:
-/// separate garbage, salt, pickup, and ring pools.
+/// separate garbage, salt, sub-lazer, pickup, and ring pools.
 pub const Runtime = struct {
     hazards: HazardPool = .{},
     salts: SaltHazardPool = .{},
+    sub_lazers: SubLazerPool = .{},
     pickups: PickupPool = .{},
     rings: RingPool = .{},
 

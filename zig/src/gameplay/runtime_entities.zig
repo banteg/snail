@@ -71,6 +71,42 @@ pub const SaltSlot = struct {
     yaw_radians: f32 = 0.0,
 };
 
+// PORT(verified): per-slot layout mirrors the `cRSubLazerManager` projectile
+// slot at `game + 0x356b00` in
+// `artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c` and
+// `artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`. The
+// 20-slot native pool's per-slot state layout is:
+//
+//   - `+0x80` state (0 inactive, 1 active, 2 queued for removal)
+//   - `+0x14` spawn-position Y anchor (the y-oscillation base)
+//   - `+0x68..+0x73` world position (Vec3)
+//   - `+0x8c..+0x97` velocity (Vec3)
+//   - `+0x6c` phase (accumulates toward the sine oscillation driver)
+//   - `+0x70` phase_step (seeded from `track_center_x * 0.0055555557`)
+//   - `+0x44` back-pointer to emitter cell
+//   - `+0x64` nested render/body object pointer (sprite)
+//
+// Native uses the Y-position as the sine-wave rest point; the sprite bobs
+// around `anchor_y + sin(phase*2*pi) * 0.3` each tick. The emitter cell
+// back-pointer gates the slot cleanup — once the emitter is past the
+// player, the slot is destroyed.
+pub const SubLazerSlotState = enum(u8) {
+    inactive = 0,
+    active = 1,
+    removing = 2,
+};
+
+pub const SubLazerSlot = struct {
+    state: SubLazerSlotState = .inactive,
+    emitter_row: usize = 0,
+    emitter_lane: usize = 0,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    anchor_y: f32 = 0.0,
+    phase: f32 = 0.0,
+    phase_step: f32 = 0.0,
+};
+
 pub const PickupKind = enum {
     health,
     jetpack,
