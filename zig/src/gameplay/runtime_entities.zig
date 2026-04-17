@@ -31,6 +31,41 @@ pub const Hazard = struct {
     collision_side: i8 = 0,
 };
 
+// PORT(verified): per-slot layout mirrors the `cRSalt` projectile slot at
+// `game + 0x3578c0` in `artifacts/ida/functions/00441560-spawn_salt_hazard.c`
+// and `artifacts/ida/functions/004417d0-update_salt_hazard.c`. The 40-slot
+// native pool's per-slot state is:
+//
+//   - `+0x80` state (0 = inactive, 1 = active, 2 = queued for removal)
+//   - `+0x68..+0x73` world position (Vec3)
+//   - `+0x8c..+0x97` world velocity (Vec3)
+//   - `+0x98` lifetime progress (f32)
+//   - `+0x9c` lifetime step (f32, seeded from `track_center_x * 0.033333335`)
+//   - `+0x38..+0x68` 4x4 transform matrix seeded on spawn via identity +
+//     random Y rotation (`rotate_matrix_world_y` with a signed random angle)
+//
+// The port carries the load-bearing fields explicitly. The transform matrix
+// is represented as a single yaw scalar because the renderer only needs the
+// Y rotation for sprite orientation — native's full matrix is used by the
+// track-attachment intersection test, which the port reads back from the
+// salt slot directly at collision time.
+pub const SaltSlotState = enum(u8) {
+    inactive = 0,
+    active = 1,
+    removing = 2,
+};
+
+pub const SaltSlot = struct {
+    state: SaltSlotState = .inactive,
+    row: usize = 0,
+    lane: usize = 0,
+    world_position: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    velocity: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+    lifetime_progress: f32 = 0.0,
+    lifetime_step: f32 = 0.0,
+    yaw_radians: f32 = 0.0,
+};
+
 pub const PickupKind = enum {
     health,
     jetpack,

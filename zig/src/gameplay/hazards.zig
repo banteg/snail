@@ -1,7 +1,8 @@
 //! Hazard / pickup / ring-effect runtime pools.
 //!
-//! Mirrors the three per-row windowed pools the native subgame maintains:
-//! - garbage/salt/slug hazards (ambient + authored) — 128 slots
+//! Mirrors the native pools the subgame maintains:
+//! - `cRGarbageHazardPool` @ `game + 0x359140` — 50 slots (garbage)
+//! - `cRSalt` @ `game + 0x3578c0` — 40 slots (authored/ambient salt)
 //! - health/jetpack pickups — 9 slots
 //! - ring effects (slow/explode/powerup bursts) — 2 slots
 //!
@@ -17,12 +18,18 @@ const RuntimeHazardKind = gameplay_runtime_entities.HazardKind;
 const RuntimePickup = gameplay_runtime_entities.Pickup;
 const RuntimePickupKind = gameplay_runtime_entities.PickupKind;
 const RuntimeRingEffect = gameplay_runtime_entities.RingEffect;
+const SaltSlot = gameplay_runtime_entities.SaltSlot;
+const SaltSlotState = gameplay_runtime_entities.SaltSlotState;
 
 pub const max_active_health_pickups: usize = 8;
 pub const max_active_jetpack_pickups: usize = 1;
 pub const max_active_runtime_pickups: usize = max_active_health_pickups + max_active_jetpack_pickups;
 pub const max_active_runtime_hazards: usize = 128;
 pub const max_active_runtime_ring_effects: usize = 2;
+// PORT(verified): native `cRSalt @ game + 0x3578c0` has 40 slots with stride
+// 0x98 (152 bytes per slot) per
+// `artifacts/ida/functions/00441540-initialize_salt_hazard_pool.c`.
+pub const max_active_salt_slots: usize = 40;
 
 pub const HazardPool = struct {
     slots: [max_active_runtime_hazards]RuntimeHazard = [_]RuntimeHazard{
@@ -92,10 +99,57 @@ pub const RingPool = struct {
     }
 };
 
-/// All three hazard-family pools grouped. Mirrors the tripartite pool layout
-/// in the native subgame memory.
+/// PORT(verified): 40-slot `cRSalt` projectile pool. Matches the layout at
+/// `game + 0x3578c0` with per-slot lifetime progress + step, world position,
+/// velocity, and yaw. `initialize_salt_hazard_pool` at
+/// `artifacts/ida/functions/00441540-initialize_salt_hazard_pool.c` zeros the
+/// state byte on every slot; `spawn_salt_hazard`
+/// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`) allocates the
+/// first inactive slot, seeds position, velocity, lifetime step from
+/// `track_center_x * 0.033333335`, and a randomized Y rotation.
+pub const SaltHazardPool = struct {
+    slots: [max_active_salt_slots]SaltSlot = [_]SaltSlot{.{}} ** max_active_salt_slots,
+    last_scan_end: usize = 0,
+
+    pub fn reset(self: *SaltHazardPool) void {
+        self.* = .{};
+    }
+
+    pub fn active(self: *const SaltHazardPool) []const SaltSlot {
+        // The native pool does not keep a contiguous live prefix — slots are
+        // reused in place. Callers should iterate all 40 and test state.
+        return self.slots[0..];
+    }
+
+    pub fn allocate(self: *SaltHazardPool) ?*SaltSlot {
+        for (&self.slots) |*slot| {
+            if (slot.state == .inactive) return slot;
+        }
+        return null;
+    }
+
+    pub fn contains(self: *const SaltHazardPool, row: usize, lane: usize) bool {
+        for (self.slots) |slot| {
+            if (slot.state == .inactive) continue;
+            if (slot.row == row and slot.lane == lane) return true;
+        }
+        return false;
+    }
+
+    pub fn countActive(self: *const SaltHazardPool) usize {
+        var total: usize = 0;
+        for (self.slots) |slot| {
+            if (slot.state != .inactive) total += 1;
+        }
+        return total;
+    }
+};
+
+/// All hazard-family pools grouped. Mirrors the native subgame memory layout:
+/// separate garbage, salt, pickup, and ring pools.
 pub const Runtime = struct {
     hazards: HazardPool = .{},
+    salts: SaltHazardPool = .{},
     pickups: PickupPool = .{},
     rings: RingPool = .{},
 
