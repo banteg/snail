@@ -997,6 +997,10 @@ pub const Runner = struct {
         return self.runtime.hazards.slots[0..self.runtime.hazards.count];
     }
 
+    pub fn activeRuntimeSalts(self: *const Runner) []const gameplay_runtime_entities.SaltSlot {
+        return &self.runtime.salts.slots;
+    }
+
     pub fn activeRuntimePickups(self: *const Runner) []const RuntimePickup {
         return self.runtime.pickups.slots[0..self.runtime.pickups.count];
     }
@@ -1854,6 +1858,28 @@ pub const Runner = struct {
 
     fn processRuntimeHazardCollisions(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         const player_position = self.worldPosition(preview, 0.4);
+
+        // PORT(verified): salt collisions resolve against the dedicated
+        // `cRSalt`-shaped pool first. Native `handle_subgoldy_collisions`
+        // iterates the 40-slot pool with `dist < 0.98` + `z < 1.0` gates
+        // and consumes the slot via `deactivate_salt_hazard`.
+        for (&self.runtime.salts.slots) |*slot| {
+            if (slot.state != .active) continue;
+            const delta_x = player_position.x - slot.world_position.x;
+            const delta_y = player_position.y - slot.world_position.y;
+            const delta_z = player_position.z - slot.world_position.z;
+            if (@abs(delta_z) > runtime_hazard_collision_z_tolerance) continue;
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            if (distance > salt_collision_distance_threshold) continue;
+
+            self.counters.salt_hits += 1;
+            self.last_salt_hit_position = slot.world_position;
+            self.applyDamageGaugeDelta(salt_damage_delta);
+            self.recent_event = .salt_hit;
+            self.runtime.salts.deactivate(slot);
+            return;
+        }
+
         var index: usize = 0;
         while (index < self.runtime.hazards.count) {
             const hazard = &self.runtime.hazards.slots[index];
@@ -1889,6 +1915,10 @@ pub const Runner = struct {
                     self.beginGarbageBurst(hazard, player_position);
                 },
                 .salt => {
+                    // Legacy fallback path — retired once all salt spawns
+                    // route through the new `SaltHazardPool`. Retain until
+                    // the final cleanup commit so staged migration cannot
+                    // accidentally miss hazards still carrying `.salt`.
                     _ = self.consumeRuntimeHazard(hazard.row, hazard.lane, hazard.kind);
                     self.counters.salt_hits += 1;
                     self.last_salt_hit_position = hazard_position;
@@ -2940,12 +2970,26 @@ pub const Runner = struct {
             write_index += 1;
         }
         self.runtime.hazards.count = write_index;
+
+        // PORT(verified): `update_salt_hazard`
+        // (`artifacts/ida/functions/004417d0-update_salt_hazard.c`) runs per
+        // active slot each tick, advancing lifetime progress and integrating
+        // position by velocity. The pool-side `tickActiveSlots` handles that;
+        // the attachment-collision/off-track check at native lines 45-91 is
+        // not yet wired here (the port already resolves salt contact in
+        // `processRuntimeHazardCollisions` against the damage gauge).
+        self.runtime.salts.tickActiveSlots();
     }
 
     fn stepRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
         return switch (hazard.kind) {
             .garbage => self.updateGarbageHazard(preview, hazard),
-            .salt => self.updateSaltHazard(hazard),
+            // PORT(verified): `.salt` no longer routes through the unified
+            // HazardPool; each slot lives in `runtime.salts` and advances via
+            // `SaltHazardPool.tickActiveSlots`. Any legacy salt entry in the
+            // shared pool is retired immediately so the new pool is the single
+            // source of truth.
+            .salt => false,
         };
     }
 
@@ -3064,7 +3108,7 @@ pub const Runner = struct {
             if (preview.gameplayCellSampleAt(global_row, lane)) |sample| {
                 switch (sample.kind) {
                     .garbage => self.addRuntimeHazard(preview, global_row, lane, .garbage),
-                    .salt => self.addRuntimeHazard(preview, global_row, lane, .salt),
+                    .salt => self.spawnSaltFromAuthoredCell(preview, global_row, lane),
                     else => {},
                 }
             }
@@ -3076,9 +3120,53 @@ pub const Runner = struct {
                 self.addRuntimeHazard(preview, global_row, lane, .garbage);
             }
             if (preview.hasSaltSpawnHintAt(global_row, lane) and shouldSpawnAmbientHazard(global_row, lane, preview.salt_scalar, .salt)) {
-                self.addRuntimeHazard(preview, global_row, lane, .salt);
+                self.spawnSaltFromAmbientHint(preview, global_row, lane);
             }
         }
+    }
+
+    fn spawnSaltFromAuthoredCell(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        lane: usize,
+    ) void {
+        if (self.runtime.salts.contains(global_row, lane)) return;
+        self.spawnSaltSlot(preview, global_row, lane);
+    }
+
+    fn spawnSaltFromAmbientHint(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        lane: usize,
+    ) void {
+        if (self.runtime.salts.contains(global_row, lane)) return;
+        self.spawnSaltSlot(preview, global_row, lane);
+    }
+
+    fn spawnSaltSlot(
+        self: *Runner,
+        preview: *const track.LoadedLevelPreview,
+        global_row: usize,
+        lane: usize,
+    ) void {
+        // PORT(verified): `spawn_salt_hazard` takes only a Vec3 position.
+        // Native reads the cell's anchor position (`cell + 0x10..0x18`) as the
+        // spawn anchor; the port mirrors that via `runtimeCellWorldPosition`.
+        // Native does not seed velocity at the call site (the slot velocity is
+        // whatever the pool init left at 0); authored salt in the shipped
+        // tutorial is stationary after spawn apart from the Y oscillation
+        // that the renderer samples from `yaw_radians`.
+        const position = runtimeCellWorldPosition(preview, global_row, lane, 0.18);
+        _ = self.runtime.salts.spawn(
+            global_row,
+            lane,
+            position,
+            .{ .x = 0.0, .y = 0.0, .z = 0.0 },
+            native_track_center_x,
+            &self.math_random_state,
+        );
     }
 
     fn scanRuntimePickupRow(self: *Runner, preview: *const track.LoadedLevelPreview, global_row: usize) void {

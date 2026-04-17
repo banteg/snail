@@ -7502,9 +7502,22 @@ fn drawGameplayRuntimeActors(
                 drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard);
             },
             .salt => {
+                // Legacy fallback: any leftover salt entry in the unified
+                // `HazardPool` still renders here until the final cleanup
+                // commit removes `.salt` from `HazardKind`. New salt spawns
+                // go straight to `runtime.salts`.
                 drawGameplaySaltActor(state, camera, hazard);
             },
         }
+    }
+
+    // PORT(verified): dedicated `cRSalt`-shaped pool render. Each active
+    // slot owns its own world position + yaw and is drawn with the shared
+    // `drawGameplaySaltSlotActor` helper that reads the same salt mesh path
+    // as the legacy branch.
+    for (runner.activeRuntimeSalts()) |slot| {
+        if (!shouldRenderGameplaySaltSlot(runner, slot)) continue;
+        drawGameplaySaltSlotActor(state, camera, slot);
     }
 
     for (runner.activeRuntimePickups()) |pickup| {
@@ -7630,15 +7643,32 @@ fn drawGameplaySaltActor(
     hazard: gameplay_runtime_entities.Hazard,
 ) void {
     if (hazard.state != .active) return;
+    drawGameplaySaltVisual(state, camera, hazard.world_position, hazard.yaw_radians);
+}
+
+fn drawGameplaySaltSlotActor(
+    state: *const AppState,
+    camera: rl.Camera3D,
+    slot: gameplay_runtime_entities.SaltSlot,
+) void {
+    if (slot.state != .active) return;
+    drawGameplaySaltVisual(state, camera, slot.world_position, slot.yaw_radians);
+}
+
+fn drawGameplaySaltVisual(
+    state: *const AppState,
+    camera: rl.Camera3D,
+    world_position: rl.Vector3,
+    yaw_radians: f32,
+) void {
     const presentation_alpha: u8 = 232;
     if (state.current_gameplay_salt_model) |*model| {
-        const yaw = hazard.yaw_radians;
-        const yaw_sin = std.math.sin(yaw);
-        const yaw_cos = std.math.cos(yaw);
+        const yaw_sin = std.math.sin(yaw_radians);
+        const yaw_cos = std.math.cos(yaw_radians);
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
         const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
         const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
-        const world_transform = modelTransformFromBasis(hazard.world_position, right, up, forward);
+        const world_transform = modelTransformFromBasis(world_position, right, up, forward);
         const local_offset = rl.Matrix.translate(
             -model.bounds.center.x,
             -model.bounds.center.y,
@@ -7653,22 +7683,31 @@ fn drawGameplaySaltActor(
         return;
     }
 
-    const slot = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
+    const icon = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
     drawGameplayBillboardTextureRect(
         state.ui_font.texture,
         .{
-            .x = slot.source_x,
-            .y = slot.source_y,
-            .width = slot.source_width,
-            .height = slot.source_height,
+            .x = icon.source_x,
+            .y = icon.source_y,
+            .width = icon.source_width,
+            .height = icon.source_height,
         },
-        hazard.world_position,
+        world_position,
         0.58,
         0.72,
         camera,
         state.gameplay_billboard_shader,
         .{ .r = 144, .g = 198, .b = 255, .a = presentation_alpha },
     );
+}
+
+fn shouldRenderGameplaySaltSlot(runner: gameplay.Runner, slot: gameplay_runtime_entities.SaltSlot) bool {
+    // Match the legacy salt trailing-rows window so visible behavior is
+    // unchanged when rendering migrates from the shared pool to the
+    // dedicated salt pool.
+    const trailing_rows: f32 = 48.0;
+    return slot.world_position.z + trailing_rows >= runner.row_position and
+        slot.world_position.z <= runner.row_position + 72.0;
 }
 
 fn drawGameplayTurretActor(
