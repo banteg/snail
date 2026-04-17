@@ -1653,14 +1653,49 @@ const AppState = struct {
     fn syncGameplayTurboAnimation(self: *AppState) !void {
         if (self.game_phase != .level) return;
         if (!self.isTutorialGameplay()) return;
-        const desired_model_path = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
-            gameplay_assets.gameplay_turbo_talk_model_path
-        else
-            default_model_path;
+
+        // PORT(verified): native `dispatch_cutscene_animation`
+        // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`)
+        // stores the active clip id on the player-side presentation
+        // controller. The Zig port folds that onto `Runner.cutscene_anim`,
+        // so the renderer maps the active `AnimClipId` to the shipped
+        // `X/TURBO-*-000.X2` first frame. The tutorial tip overlay still
+        // wins the dispatch implicitly: the tip prompt callsite dispatches
+        // `.talk` so the clip latches without the renderer keeping its
+        // own separate "is tip active" check.
+        const runner = self.currentRunnerConst() orelse return;
+        const desired_family = runner.cutscene_anim.active.familyKey() orelse return;
+        const desired_model_path = firstClipModelPathFromFamily(self, desired_family) orelse return;
+
         if (self.current_gameplay_turbo_model_path) |current_path| {
             if (std.ascii.eqlIgnoreCase(current_path, desired_model_path)) return;
         }
         try self.reloadGameplayTurboForPath(desired_model_path);
+    }
+
+    fn currentRunnerConst(self: *const AppState) ?*const gameplay.Runner {
+        if (self.level_runner) |*runner| return runner;
+        return null;
+    }
+
+    fn firstClipModelPathFromFamily(self: *const AppState, family_key: []const u8) ?[]const u8 {
+        for (self.animation_catalog.clips) |*clip| {
+            if (!std.ascii.eqlIgnoreCase(clip.family_key, family_key)) continue;
+            if (clip.frames.len == 0) continue;
+            const entry = self.catalog.model_entries[clip.frames[0].entry_index];
+            return entry.path;
+        }
+        return null;
+    }
+
+    fn syncCutsceneAnimFromPromptQueue(self: *AppState, runner: *gameplay.Runner) void {
+        if (!self.isTutorialGameplay()) return;
+        const desired: gameplay.AnimClipId = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
+            .talk
+        else
+            .bobalong;
+        if (runner.cutscene_anim.active == desired) return;
+        runner.dispatchCutsceneAnimation(desired, true, null);
     }
 
     fn reloadGameplayBarrier(self: *AppState) !void {
@@ -2769,13 +2804,22 @@ const AppState = struct {
         self.gameplay_voice_manager.tick();
         self.native_gameplay_voice_manager.tick();
         if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
-            if (self.level_runner) |runner| {
+            if (self.level_runner) |*runner| {
                 if (!runner.paused and !self.startupGameplayBlockActive()) {
                     self.level_prompt_queue.tick();
                 }
                 if (self.isTutorialGameplay() and runner.score.total > self.tutorial_reference_score) {
                     self.tutorial_reference_score = runner.score.total;
                 }
+                // PORT(verified): native `update_tip_manager` drives the active
+                // `turbo-talk` clip while a tip card is up; when the tip
+                // clears, the presentation controller falls back to its
+                // baseline clip. The port mirrors that by diffing the
+                // prompt-queue state and dispatching the correct
+                // `AnimClipId` through `dispatchCutsceneAnimation`, keeping
+                // the renderer's model-swap purely a consumer of the anim
+                // slot.
+                self.syncCutsceneAnimFromPromptQueue(runner);
             }
         }
 
