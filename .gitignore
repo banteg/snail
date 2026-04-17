@@ -3,5 +3,6 @@ artifacts/
 .pytest_cache/
 __pycache__/
 .zig-cache/
+zig-pkg/
 zig-out/
 site/
