@@ -195,20 +195,25 @@ const native_ticks_per_second: f32 = 60.0;
 const native_track_center_x: f32 = 4.0;
 const native_velocity_x_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.100000001);
 // PORT(verified): native `update_subgoldy` snaps `live_matrix.position.y` to
-// `sample_track_floor_height_at_position(...) + 0.49` when grounded (IDA line 535).
+// `sample_track_floor_height_at_position(...) + 0.49` when grounded
+// (`artifacts/ida/functions/0043b120-update_subgoldy.c:535`).
 const native_grounded_rider_height: f32 = 0.49000001;
 // PORT(verified): native damping factors from `update_subgoldy` (0x43bac4). `velocity.y`
 // and `velocity.z` decay by `1 - track_center_x * 0.003` per tick; `velocity.x` decays by
 // `1 - track_center_x * 0.1` (matches `native_velocity_x_decay_per_tick`).
 const native_velocity_yz_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.003);
 // PORT(verified): native gravity coupling `velocity.y += -0.01 * track_center_x^2` per tick
-// (IDA lines 332, 517, 539). With `track_center_x = 4.0`, this is `-0.16` per tick.
+// (`artifacts/ida/functions/0043b120-update_subgoldy.c:332,517,539`). With
+// `track_center_x = 4.0`, this is `-0.16` per tick.
 const native_gravity_velocity_y_delta: f32 = -0.0099999998 * native_track_center_x * native_track_center_x;
-// PORT(verified): `update_subgoldy` (IDA line 504) calls `initialize_subgoldy_death` once
-// `live_matrix.position.y < -7.0` and the death cutscene gate is still clear.
+// PORT(verified): `update_subgoldy` at
+// `artifacts/ida/functions/0043b120-update_subgoldy.c:504` calls
+// `initialize_subgoldy_death` once `live_matrix.position.y < -7.0` and the death
+// cutscene gate is still clear.
 const native_position_y_death_threshold: f32 = -7.0;
 // PORT(verified): native grounded-snap lane `0x43bf6f` reads `position.y < 0.49 && y > -0.163`
-// (IDA lines 458-459). The lower bound is `-0.16333334` in the IDA export.
+// (`artifacts/ida/functions/0043b120-update_subgoldy.c:458-459`). The lower bound
+// is `-0.16333334` in the IDA export.
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
@@ -504,9 +509,10 @@ pub const Runner = struct {
     position_y: f32 = native_grounded_rider_height,
     velocity_y: f32 = 0.0,
     // PORT(verified): mirror of `Player+0x1e4` (`_pad_1e4[0]`). Set to `1` on the trampoline
-    // landing lane (IDA line 529), cleared by the swept-reentry snap (line 464) and the
-    // tile-family "other" reaction (line 577). While `true`, native skips the `velocity.z`
-    // damping at line 388 to preserve forward speed immediately after a bounce.
+    // landing lane (`artifacts/ida/functions/0043b120-update_subgoldy.c:529`), cleared
+    // by the swept-reentry snap (line 464) and the tile-family "other" reaction (line 577).
+    // While `true`, native skips the `velocity.z` damping at line 388 to preserve
+    // forward speed immediately after a bounce.
     post_trampoline_airborne: bool = false,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
@@ -3517,31 +3523,34 @@ pub const Runner = struct {
     }
 
     // PORT(verified): mirror of `update_subgoldy` non-follow vertical motion from
-    // IDA 0x43bac4 (position integrate) through 0x43bf6f (floor snap + `y<-7` death
-    // trigger). Swept-reentry grounded snap, trampoline envelope, and the
-    // slide/floor-cache `_pad_41c` branch land in follow-up commits.
+    // `artifacts/ida/functions/0043b120-update_subgoldy.c:352` (position integrate)
+    // through line 584 (floor snap + `y<-7` death trigger + post-follow carryover
+    // arm). The slide/floor-cache `_pad_41c` branch and the swept re-entry probes
+    // land in follow-up commits.
     fn stepActivePhaseVerticalMotion(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) return;
         if (self.movement_mode == .attachment) return;
         if (self.launch.active) return;
 
-        // Integrate (IDA line 352). Runs unconditionally in the non-follow branch.
+        // Integrate (`0043b120-update_subgoldy.c:352`). Runs unconditionally in the
+        // non-follow branch.
         self.position_y += self.velocity_y;
 
-        // Damping (IDA line 390). `velocity.y *= 1 - track_center_x * 0.003` each tick.
+        // Damping (`0043b120-update_subgoldy.c:390`). `velocity.y *= 1 - track_center_x * 0.003`
+        // each tick.
         self.velocity_y *= native_velocity_yz_decay_per_tick;
 
         const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
 
-        // 0x43bf6f swept-reentry grounded-snap lane (IDA lines 458-476). Fires only
-        // when `!follow_state.active` (always true here because the attachment guard
+        // 0x43bf6f swept-reentry grounded-snap lane
+        // (`0043b120-update_subgoldy.c:458-476`). Fires only when
+        // `!follow_state.active` (always true here because the attachment guard
         // above already returned). If `position.y` has drifted into the
         // `[-0.163, 0.49)` band over a tile that is neither open-neighbor family
         // (`{0x00, 0x0e, 0x1c, 0x1d, 0x23}`) nor the trampoline tile (`0x16`), native
         // snaps the rider back up to `0.49` when the velocity is non-positive, zeroes
         // the post-trampoline-airborne flag, and clears `attachment_exit_pending`.
-        // The squidge burst at IDA line 468 lands when the squidge controller is
-        // ported (not in the active task set).
+        // The squidge burst at line 468 lands when the squidge controller is ported.
         if (!self.attachment_follow.active and
             self.position_y < native_grounded_snap_position_y_upper and
             self.position_y > native_grounded_snap_position_y_lower)
@@ -3560,20 +3569,21 @@ pub const Runner = struct {
             }
         }
 
-        // Death trigger (IDA line 504). Native keeps the check inside the grounded-state
-        // block; the port routes `.fall` through the existing `beginFallState` path,
-        // which hands off to `updatePhaseController` for respawn/final-loss.
+        // Death trigger (`0043b120-update_subgoldy.c:504`). Native keeps the check
+        // inside the grounded-state block; the port routes `.fall` through the
+        // existing `beginFallState` path, which hands off to `updatePhaseController`
+        // for respawn/final-loss.
         if (self.position_y < native_position_y_death_threshold) {
             self.beginFallState(preview, .fall, cutscene_none_id);
             return;
         }
 
         if (self.attachment_exit_pending) {
-            // Pending-exit airborne branch (IDA lines 515-532). Native applies
-            // gravity once each tick while pending, then lets the trampoline
-            // envelope bounce the rider off tile `0x16` when the absolute
-            // distance to the cell's custom floor is within `0.49`. Other
-            // tiles do not feed the floor-sample path while pending, so the
+            // Pending-exit airborne branch (`0043b120-update_subgoldy.c:515-532`).
+            // Native applies gravity once each tick while pending, then lets the
+            // trampoline envelope bounce the rider off tile `0x16` when the
+            // absolute distance to the cell's custom floor is within `0.49`.
+            // Other tiles do not feed the floor-sample path while pending, so the
             // rider keeps falling until either the grounded-snap lane above
             // clears the gate or `position.y < -7` triggers death.
             self.velocity_y += native_gravity_velocity_y_delta;
@@ -3589,9 +3599,9 @@ pub const Runner = struct {
                             self.attachment_exit_pending = false;
                             self.post_trampoline_airborne = true;
                             // Trampoline landing cue (`sfx 41`, `BOING`) and the
-                            // squidge burst at IDA line 525 land with the
-                            // surrounding sfx/squidge port; the motion snap is
-                            // the load-bearing piece of this lane.
+                            // squidge burst at `0043b120-update_subgoldy.c:525`
+                            // land with the surrounding sfx/squidge port; the
+                            // motion snap is the load-bearing piece of this lane.
                         }
                     }
                 }
@@ -3599,10 +3609,11 @@ pub const Runner = struct {
             return;
         }
 
-        // Floor sampling + snap (IDA lines 535-579, within the non-attachment-exit-pending
-        // else branch). `sample_track_floor_height_at_position + 0.49` is the grounded
-        // rider height; if it is not above `position.y`, continue gravity; otherwise snap
-        // and let the tile-family reaction set the outgoing `velocity.y`.
+        // Floor sampling + snap (`0043b120-update_subgoldy.c:535-579`, within the
+        // non-attachment-exit-pending else branch). `sample_track_floor_height_at_position + 0.49`
+        // is the grounded rider height; if it is not above `position.y`, continue
+        // gravity; otherwise snap and let the tile-family reaction set the
+        // outgoing `velocity.y`.
         const floor_y_opt = if (tile_at_position) |tile|
             track.sampleFloorHeightForRuntimeTile(tile, self.row_position, track.specialFloorHeightForShippedRuntimeTile(tile))
         else
@@ -3610,11 +3621,13 @@ pub const Runner = struct {
         if (floor_y_opt) |floor_y| {
             const floor_plus_rider = floor_y + native_grounded_rider_height;
             if (floor_plus_rider <= self.position_y) {
-                // Airborne above floor (IDA line 538-539): keep applying gravity.
+                // Airborne above floor (`0043b120-update_subgoldy.c:538-539`):
+                // keep applying gravity.
                 self.velocity_y += native_gravity_velocity_y_delta;
             } else {
-                // At or below floor (IDA line 541-579): snap when the velocity is
-                // non-positive, then apply the tile-family velocity.y reaction.
+                // At or below floor (`0043b120-update_subgoldy.c:541-579`): snap
+                // when the velocity is non-positive, then apply the tile-family
+                // velocity.y reaction.
                 if (self.velocity_y <= 0.0) {
                     self.position_y = floor_plus_rider;
                 }
@@ -3623,15 +3636,18 @@ pub const Runner = struct {
         } else {
             // No sampled floor under the current lane (void, 'M', path/probe cells,
             // or anything outside the native floor-sampler switch). Native returns
-            // `-100.0` in this case (IDA 0x43d4d0), so `v51 < position.y` stays true
-            // every tick and gravity keeps pulling the rider down.
+            // `-100.0` in this case
+            // (`artifacts/ida/functions/0043d4d0-sample_track_floor_height_at_position.c:36`),
+            // so `v51 < position.y` stays true every tick and gravity keeps pulling
+            // the rider down.
             self.velocity_y += native_gravity_velocity_y_delta;
         }
     }
 
-    // PORT(verified): mirror of the tile-family velocity.y reactions at IDA lines
-    // 545-579 of `update_subgoldy`. Fires only inside the "below floor" branch where
-    // `floor_y + 0.49 > position.y` just snapped the rider up to the floor.
+    // PORT(verified): mirror of the tile-family velocity.y reactions at
+    // `artifacts/ida/functions/0043b120-update_subgoldy.c:545-579`. Fires only
+    // inside the "below floor" branch where `floor_y + 0.49 > position.y` just
+    // snapped the rider up to the floor.
     //
     // - Tiles `0x08..0x0d` (up-slides and ramp-up mirrors) drive `velocity.y = 1.2`
     //   so the rider climbs the slope each tick.
@@ -9021,9 +9037,10 @@ test "runner descends through an authored gap row instead of halting at the edge
     const starting_position_y = runner.position_y;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
-    // Native IDA line 504 only kills the player once `position.y < -7`, not on first
-    // contact with a no-floor tile. One motion tick over an authored gap row should
-    // leave the runner active with gravity just beginning to pull `velocity_y` down.
+    // `0043b120-update_subgoldy.c:504` only kills the player once `position.y < -7`,
+    // not on first contact with a no-floor tile. One motion tick over an authored gap
+    // row should leave the runner active with gravity just beginning to pull
+    // `velocity_y` down.
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
     try std.testing.expectEqualStrings("no_fall", runner.recentEventLabel());
     try std.testing.expect(runner.velocity_y < 0.0);
