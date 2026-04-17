@@ -7920,10 +7920,17 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     // the translucent barrier does not stamp the later scene. This matches the
     // Android renderer directly, and it is the only way the Windows additive
     // barrier can behave without the Z corruption we saw in the port.
+    //
+    // We still disable back-face culling in the port. The authored barrier
+    // quads point outward from the track center (`+X` on the right strip,
+    // `-X` on the left strip), so our raylib/OpenGL mesh winding hides the
+    // interior faces when culling is left on.
     rl.beginBlendMode(.additive);
     defer rl.endBlendMode();
     rl.gl.rlDisableDepthMask();
     defer rl.gl.rlEnableDepthMask();
+    rl.gl.rlDisableBackfaceCulling();
+    defer rl.gl.rlEnableBackfaceCulling();
     const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
     loaded_object.drawTintedEx(world_transform, barrier_tint);
 }
