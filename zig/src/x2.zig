@@ -73,6 +73,38 @@ pub const Bounds = struct {
     radius: f32,
 };
 
+const ToonOutlineFace = struct {
+    vertex_indices: [3]u16,
+};
+
+const ToonOutlineEdge = struct {
+    vertex_indices: [2]u16,
+    face_a: usize,
+    face_b: ?usize = null,
+    is_boundary: bool = true,
+};
+
+const ToonOutlineData = struct {
+    faces: []ToonOutlineFace,
+    edges: []ToonOutlineEdge,
+
+    fn deinit(self: *ToonOutlineData, allocator: std.mem.Allocator) void {
+        allocator.free(self.faces);
+        allocator.free(self.edges);
+    }
+};
+
+const PendingToonOutlineEdge = struct {
+    vertex_indices: [2]u16,
+    face_a: usize,
+    face_b: ?usize = null,
+};
+
+const EdgeKey = struct {
+    low: u16,
+    high: u16,
+};
+
 pub const UploadOptions = struct {
     flip_v: bool = true,
 };
@@ -148,8 +180,13 @@ pub const Uploaded = struct {
     doc: Document,
     submeshes: []UploadedSubmesh,
     bounds: Bounds,
+    toon_outline: ?ToonOutlineData = null,
 
     pub fn deinit(self: *Uploaded) void {
+        if (self.toon_outline) |*toon_outline| {
+            toon_outline.deinit(self.allocator);
+            self.toon_outline = null;
+        }
         for (self.submeshes) |*submesh| submesh.unload();
         self.allocator.free(self.submeshes);
         self.doc.deinit();
@@ -189,6 +226,49 @@ pub const Uploaded = struct {
             .fovy = 45.0,
             .projection = .perspective,
         };
+    }
+
+    pub fn enableToonOutline(self: *Uploaded) !void {
+        if (self.toon_outline != null) return;
+        self.toon_outline = try buildToonOutlineData(self.allocator, &self.doc);
+    }
+
+    pub fn drawToonOutlineEx(
+        self: *const Uploaded,
+        transform: rl.Matrix,
+        camera: rl.Camera3D,
+        color: rl.Color,
+    ) void {
+        const toon_outline = self.toon_outline orelse return;
+        if (toon_outline.edges.len == 0) return;
+
+        const inverse_transform = rl.math.matrixInvert(transform);
+        const world_radius = transformedBoundsRadius(self.bounds.radius, transform);
+        const camera_local = vec3FromVector3(transformPointByMatrix(inverse_transform, camera.position));
+        const bias_distance = outlineDepthBiasDistance(world_radius);
+
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
+        rl.gl.rlDisableBackfaceCulling();
+        defer rl.gl.rlEnableBackfaceCulling();
+        rl.gl.rlSetTexture(0);
+        rl.gl.rlBegin(rl.gl.rl_triangles);
+        defer rl.gl.rlEnd();
+        rl.gl.rlColor4ub(color.r, color.g, color.b, color.a);
+
+        for (toon_outline.edges) |edge| {
+            if (!toonOutlineEdgeVisible(self.doc.vertices, toon_outline.faces, edge, camera_local)) continue;
+
+            const local_a = vertexAt(self.doc.vertices, edge.vertex_indices[0]) catch continue;
+            const local_b = vertexAt(self.doc.vertices, edge.vertex_indices[1]) catch continue;
+            var world_a = transformPointByMatrix(transform, vector3FromVec3(local_a));
+            var world_b = transformPointByMatrix(transform, vector3FromVec3(local_b));
+            world_a = applyCameraFacingBias(world_a, camera.position, bias_distance);
+            world_b = applyCameraFacingBias(world_b, camera.position, bias_distance);
+            const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
+            const half_width = outlineHalfWidth(world_radius, camera, midpoint);
+            emitOutlineEdgeStrip(world_a, world_b, camera.position, half_width);
+        }
     }
 
     pub fn applyBlend(
@@ -269,6 +349,7 @@ pub fn uploadParsed(
         .doc = doc,
         .submeshes = submeshes,
         .bounds = computeBounds(doc.vertices),
+        .toon_outline = null,
     };
 }
 
@@ -289,7 +370,118 @@ pub fn uploadParsedWithCatalog(
         .doc = doc,
         .submeshes = submeshes,
         .bounds = computeBounds(doc.vertices),
+        .toon_outline = null,
     };
+}
+
+fn buildToonOutlineData(allocator: std.mem.Allocator, doc: *const Document) !ToonOutlineData {
+    var faces: std.ArrayList(ToonOutlineFace) = .empty;
+    defer faces.deinit(allocator);
+
+    var pending_edges: std.ArrayList(PendingToonOutlineEdge) = .empty;
+    defer pending_edges.deinit(allocator);
+
+    var edge_map: std.AutoHashMapUnmanaged(EdgeKey, usize) = .empty;
+    defer edge_map.deinit(allocator);
+
+    for (doc.polygons) |polygon| {
+        if (polygon.indices.len < 3) continue;
+        for (0..polygon.indices.len - 2) |triangle_index| {
+            const face = ToonOutlineFace{
+                .vertex_indices = .{
+                    polygon.indices[0],
+                    polygon.indices[triangle_index + 1],
+                    polygon.indices[triangle_index + 2],
+                },
+            };
+            const face_index = faces.items.len;
+            try faces.append(allocator, face);
+
+            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[0], face.vertex_indices[1], face_index);
+            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[1], face.vertex_indices[2], face_index);
+            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[2], face.vertex_indices[0], face_index);
+        }
+    }
+
+    const owned_faces = try faces.toOwnedSlice(allocator);
+    errdefer allocator.free(owned_faces);
+
+    const bind_pose_normals = try allocator.alloc(Vec3, owned_faces.len);
+    defer allocator.free(bind_pose_normals);
+    for (owned_faces, bind_pose_normals) |face, *normal| {
+        normal.* = try faceNormalForIndices(doc.vertices, face.vertex_indices);
+    }
+
+    var final_edges: std.ArrayList(ToonOutlineEdge) = .empty;
+    defer final_edges.deinit(allocator);
+
+    for (pending_edges.items) |pending_edge| {
+        if (pending_edge.face_b) |face_b| {
+            if (outlineFacesNearlyCoplanar(bind_pose_normals[pending_edge.face_a], bind_pose_normals[face_b])) {
+                continue;
+            }
+        }
+        try final_edges.append(allocator, .{
+            .vertex_indices = pending_edge.vertex_indices,
+            .face_a = pending_edge.face_a,
+            .face_b = pending_edge.face_b,
+            .is_boundary = pending_edge.face_b == null,
+        });
+    }
+
+    return .{
+        .faces = owned_faces,
+        .edges = try final_edges.toOwnedSlice(allocator),
+    };
+}
+
+fn addPendingToonOutlineEdge(
+    allocator: std.mem.Allocator,
+    pending_edges: *std.ArrayList(PendingToonOutlineEdge),
+    edge_map: *std.AutoHashMapUnmanaged(EdgeKey, usize),
+    index_a: u16,
+    index_b: u16,
+    face_index: usize,
+) !void {
+    const key = EdgeKey{
+        .low = @min(index_a, index_b),
+        .high = @max(index_a, index_b),
+    };
+
+    if (edge_map.get(key)) |existing_index| {
+        if (pending_edges.items[existing_index].face_b == null) {
+            pending_edges.items[existing_index].face_b = face_index;
+        }
+        return;
+    }
+
+    const edge_index = pending_edges.items.len;
+    try pending_edges.append(allocator, .{
+        .vertex_indices = .{ index_a, index_b },
+        .face_a = face_index,
+        .face_b = null,
+    });
+    try edge_map.put(allocator, key, edge_index);
+}
+
+fn toonOutlineEdgeVisible(
+    vertices: []const Vec3,
+    faces: []const ToonOutlineFace,
+    edge: ToonOutlineEdge,
+    camera_local: Vec3,
+) bool {
+    if (edge.is_boundary or edge.face_b == null) return true;
+
+    const reference = vertexAt(vertices, edge.vertex_indices[0]) catch return false;
+    const normal_a = faceNormalForIndices(vertices, faces[edge.face_a].vertex_indices) catch return false;
+    const normal_b = faceNormalForIndices(vertices, faces[edge.face_b.?].vertex_indices) catch return false;
+    const view = subtractVec3(camera_local, reference);
+
+    return dotVec3(view, normal_a) * dotVec3(view, normal_b) < 0.01;
+}
+
+fn outlineFacesNearlyCoplanar(lhs: Vec3, rhs: Vec3) bool {
+    return @abs(dotVec3(lhs, rhs)) >= 0.99875;
 }
 
 pub fn parseAndUpload(
@@ -986,6 +1178,171 @@ fn faceNormal(a: Vec3, b: Vec3, c: Vec3) Vec3 {
         .y = cross.y / len,
         .z = cross.z / len,
     };
+}
+
+fn faceNormalForIndices(vertices: []const Vec3, indices: [3]u16) !Vec3 {
+    const a = try vertexAt(vertices, indices[0]);
+    const b = try vertexAt(vertices, indices[1]);
+    const c = try vertexAt(vertices, indices[2]);
+    return faceNormal(a, b, c);
+}
+
+fn dotVec3(lhs: Vec3, rhs: Vec3) f32 {
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+}
+
+fn subtractVec3(lhs: Vec3, rhs: Vec3) Vec3 {
+    return .{
+        .x = lhs.x - rhs.x,
+        .y = lhs.y - rhs.y,
+        .z = lhs.z - rhs.z,
+    };
+}
+
+fn vector3FromVec3(value: Vec3) rl.Vector3 {
+    return .{ .x = value.x, .y = value.y, .z = value.z };
+}
+
+fn vec3FromVector3(value: rl.Vector3) Vec3 {
+    return .{ .x = value.x, .y = value.y, .z = value.z };
+}
+
+fn transformPointByMatrix(matrix: rl.Matrix, point: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = matrix.m12 + (matrix.m0 * point.x) + (matrix.m4 * point.y) + (matrix.m8 * point.z),
+        .y = matrix.m13 + (matrix.m1 * point.x) + (matrix.m5 * point.y) + (matrix.m9 * point.z),
+        .z = matrix.m14 + (matrix.m2 * point.x) + (matrix.m6 * point.y) + (matrix.m10 * point.z),
+    };
+}
+
+fn vectorLength3(value: rl.Vector3) f32 {
+    return std.math.sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+}
+
+fn addVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.x + rhs.x,
+        .y = lhs.y + rhs.y,
+        .z = lhs.z + rhs.z,
+    };
+}
+
+fn subtractVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.x - rhs.x,
+        .y = lhs.y - rhs.y,
+        .z = lhs.z - rhs.z,
+    };
+}
+
+fn scaleVector3(value: rl.Vector3, scale: f32) rl.Vector3 {
+    return .{
+        .x = value.x * scale,
+        .y = value.y * scale,
+        .z = value.z * scale,
+    };
+}
+
+fn crossVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.y * rhs.z - lhs.z * rhs.y,
+        .y = lhs.z * rhs.x - lhs.x * rhs.z,
+        .z = lhs.x * rhs.y - lhs.y * rhs.x,
+    };
+}
+
+fn normalizeVector3Safe(value: rl.Vector3) rl.Vector3 {
+    const length = vectorLength3(value);
+    if (length <= 0.0001) return .{ .x = 0.0, .y = 0.0, .z = 0.0 };
+    return .{
+        .x = value.x / length,
+        .y = value.y / length,
+        .z = value.z / length,
+    };
+}
+
+fn applyCameraFacingBias(point: rl.Vector3, camera_position: rl.Vector3, bias_distance: f32) rl.Vector3 {
+    if (bias_distance <= 0.0) return point;
+    const toward_camera = normalizeVector3Safe(subtractVector3(camera_position, point));
+    return .{
+        .x = point.x + toward_camera.x * bias_distance,
+        .y = point.y + toward_camera.y * bias_distance,
+        .z = point.z + toward_camera.z * bias_distance,
+    };
+}
+
+fn transformedBoundsRadius(bounds_radius: f32, transform: rl.Matrix) f32 {
+    const scale_x = std.math.sqrt(transform.m0 * transform.m0 + transform.m1 * transform.m1 + transform.m2 * transform.m2);
+    const scale_y = std.math.sqrt(transform.m4 * transform.m4 + transform.m5 * transform.m5 + transform.m6 * transform.m6);
+    const scale_z = std.math.sqrt(transform.m8 * transform.m8 + transform.m9 * transform.m9 + transform.m10 * transform.m10);
+    return bounds_radius * @max(scale_x, @max(scale_y, scale_z));
+}
+
+fn outlineDepthBiasDistance(world_radius: f32) f32 {
+    return @max(world_radius * 0.004, 0.002);
+}
+
+fn outlineHalfWidth(world_radius: f32, camera: rl.Camera3D, world_midpoint: rl.Vector3) f32 {
+    const units_per_pixel = worldUnitsPerPixelAtPoint(camera, world_midpoint);
+    if (units_per_pixel <= 0.0) return @max(world_radius * 0.022, 0.0045);
+
+    const projected_radius_px = world_radius / units_per_pixel;
+    const width_pixels = std.math.clamp(projected_radius_px * 0.10, 2.75, 6.5);
+    return width_pixels * 0.5 * units_per_pixel;
+}
+
+fn worldUnitsPerPixelAtPoint(camera: rl.Camera3D, world_point: rl.Vector3) f32 {
+    const screen_height = @as(f32, @floatFromInt(rl.getScreenHeight()));
+    if (screen_height <= 0.0) return 0.0;
+
+    return switch (camera.projection) {
+        .perspective => blk: {
+            const forward = normalizeVector3Safe(subtractVector3(camera.target, camera.position));
+            const depth = dotVector3(subtractVector3(world_point, camera.position), forward);
+            if (depth <= 0.0001) break :blk 0.0;
+
+            const fovy_radians = std.math.degreesToRadians(camera.fovy);
+            const frustum_height = 2.0 * depth * std.math.tan(fovy_radians * 0.5);
+            break :blk frustum_height / screen_height;
+        },
+        .orthographic => camera.fovy / screen_height,
+    };
+}
+
+fn dotVector3(lhs: rl.Vector3, rhs: rl.Vector3) f32 {
+    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+}
+
+fn emitOutlineEdgeStrip(
+    start: rl.Vector3,
+    finish: rl.Vector3,
+    camera_position: rl.Vector3,
+    half_width: f32,
+) void {
+    const edge_direction = normalizeVector3Safe(subtractVector3(finish, start));
+    if (vectorLength3(edge_direction) <= 0.0001) return;
+
+    const midpoint = scaleVector3(addVector3(start, finish), 0.5);
+    const toward_camera = normalizeVector3Safe(subtractVector3(camera_position, midpoint));
+    var side = normalizeVector3Safe(crossVector3(toward_camera, edge_direction));
+    if (vectorLength3(side) <= 0.0001) {
+        side = normalizeVector3Safe(crossVector3(.{ .x = 0.0, .y = 1.0, .z = 0.0 }, edge_direction));
+        if (vectorLength3(side) <= 0.0001) return;
+    }
+
+    const offset = scaleVector3(side, half_width);
+    const start_left = addVector3(start, offset);
+    const start_right = subtractVector3(start, offset);
+    const finish_left = addVector3(finish, offset);
+    const finish_right = subtractVector3(finish, offset);
+
+    rl.gl.rlVertex3f(start_left.x, start_left.y, start_left.z);
+    rl.gl.rlVertex3f(start_right.x, start_right.y, start_right.z);
+    rl.gl.rlVertex3f(finish_right.x, finish_right.y, finish_right.z);
+
+    rl.gl.rlVertex3f(start_left.x, start_left.y, start_left.z);
+    rl.gl.rlVertex3f(finish_right.x, finish_right.y, finish_right.z);
+    rl.gl.rlVertex3f(finish_left.x, finish_left.y, finish_left.z);
 }
 
 fn writeVec3(buffer: []f32, at: *usize, v: Vec3) void {

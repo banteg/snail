@@ -1626,6 +1626,7 @@ const AppState = struct {
                     true,
                     xanim.frameNumberFromPath(entry.path),
                 );
+                try self.current_gameplay_turbo_animation.?.rendered.enableToonOutline();
                 return;
             }
         }
@@ -1636,6 +1637,7 @@ const AppState = struct {
             entry,
             true,
         );
+        try self.current_gameplay_turbo_model.?.enableToonOutline();
     }
 
     fn syncGameplayTurboAnimation(self: *AppState) !void {
@@ -1713,6 +1715,7 @@ const AppState = struct {
                 self.catalog.model_entries[entry_index],
                 true,
             );
+            try set.base.?.enableToonOutline();
         }
         set.draw_frame_count = @intCast(draw_paths.len);
         for (draw_paths, 0..) |path, index| {
@@ -1723,6 +1726,7 @@ const AppState = struct {
                     self.catalog.model_entries[entry_index],
                     true,
                 );
+                try set.draw_frames[index].?.enableToonOutline();
             }
         }
         if (fire_path) |path| {
@@ -1733,6 +1737,7 @@ const AppState = struct {
                     self.catalog.model_entries[entry_index],
                     true,
                 );
+                try set.fire.?.enableToonOutline();
             }
         }
     }
@@ -1792,6 +1797,7 @@ const AppState = struct {
                     self.catalog.model_entries[entry_index],
                     true,
                 );
+                try self.current_gameplay_jetpack_thrust_models.frames[index].?.enableToonOutline();
             }
         }
         if (self.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path)) |entry_index| {
@@ -7349,12 +7355,12 @@ fn drawSubgameViewport(state: *const AppState) void {
     }
     const live_runner = runner orelse return;
     if (state.gameplay_click_start_active) {
-        drawGameplayTurbo(state, &loaded_track_preview, live_runner);
+        drawGameplayTurbo(state, &loaded_track_preview, live_runner, camera);
         return;
     }
     drawGameplayRuntimeActors(state, &loaded_track_preview, live_runner, camera);
     drawGameplayBarrier(state, &loaded_track_preview, live_runner);
-    drawGameplayTurbo(state, &loaded_track_preview, live_runner);
+    drawGameplayTurbo(state, &loaded_track_preview, live_runner, camera);
 }
 const BillboardUv = struct {
     left: f32,
@@ -8056,7 +8062,12 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
     }
 }
 
-fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
+fn drawGameplayTurbo(
+    state: *const AppState,
+    loaded_track_preview: *const track.LoadedLevelPreview,
+    runner: gameplay.Runner,
+    camera: rl.Camera3D,
+) void {
     const model = state.activeGameplayTurbo() orelse return;
     const click_start_active = state.gameplay_click_start_active;
     const pose = if (click_start_active and state.tutorialClickStartCutsceneActive())
@@ -8064,9 +8075,10 @@ fn drawGameplayTurbo(state: *const AppState, loaded_track_preview: *const track.
     else
         gameplayTurboPose(model, loaded_track_preview, runner);
     model.drawEx(pose.transform);
+    model.drawToonOutlineEx(pose.transform, camera, .black);
 
     if (click_start_active) return;
-    drawGameplayTurboAttachments(state, pose.position, pose.right, pose.up, pose.forward, runner);
+    drawGameplayTurboAttachments(state, pose.position, pose.right, pose.up, pose.forward, runner, camera);
 }
 
 fn drawGameplayTurboAttachments(
@@ -8076,6 +8088,7 @@ fn drawGameplayTurboAttachments(
     up: rl.Vector3,
     forward: rl.Vector3,
     runner: gameplay.Runner,
+    camera: rl.Camera3D,
 ) void {
     const channel_states = gameplay.nativeWeaponChannelStates(runner.movement_flags);
 
@@ -8088,14 +8101,14 @@ fn drawGameplayTurboAttachments(
             state.gameplay_weapon_visual_state.top_fire_ticks,
             state.gameplay_weapon_visual_state.top_hide_ticks,
         )) |model| {
-            drawGameplayUploadedModel(
-                model.*,
+            drawGameplayUploadedModelWithToonOutline(
+                model,
                 offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
                 right,
                 up,
                 forward,
                 .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                null,
+                camera,
             );
         }
     }
@@ -8119,14 +8132,14 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (left_model) |model| {
-            drawGameplayUploadedModel(
-                model.*,
+            drawGameplayUploadedModelWithToonOutline(
+                model,
                 offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
                 right,
                 up,
                 forward,
                 .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                null,
+                camera,
             );
         }
     }
@@ -8150,14 +8163,14 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (right_model) |model| {
-            drawGameplayUploadedModel(
-                model.*,
+            drawGameplayUploadedModelWithToonOutline(
+                model,
                 offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
                 right,
                 up,
                 forward,
                 .{ .x = 0.22, .y = 0.22, .z = 0.22 },
-                null,
+                camera,
             );
         }
     }
@@ -8171,14 +8184,14 @@ fn drawGameplayTurboAttachments(
             0,
             state.gameplay_weapon_visual_state.rocket_hide_ticks,
         )) |model| {
-            drawGameplayUploadedModel(
-                model.*,
+            drawGameplayUploadedModelWithToonOutline(
+                model,
                 offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
                 right,
                 up,
                 forward,
                 .{ .x = 0.24, .y = 0.24, .z = 0.24 },
-                null,
+                camera,
             );
         }
     }
@@ -8194,14 +8207,14 @@ fn drawGameplayTurboAttachments(
             state.gameplay_jetpack_visual_state.hide_ticks,
             state.render_time_seconds,
         )) |model| {
-            drawGameplayUploadedModel(
-                model.*,
+            drawGameplayUploadedModelWithToonOutline(
+                model,
                 offsetPosition(position, right, up, forward, 0.0, 0.10, -0.18),
                 right,
                 up,
                 forward,
                 .{ .x = 0.24, .y = 0.24, .z = 0.24 },
-                null,
+                camera,
             );
         }
     }
@@ -8230,6 +8243,36 @@ fn drawGameplayUploadedModel(
     scale: rl.Vector3,
     tint: ?rl.Color,
 ) void {
+    const transform = gameplayUploadedModelTransform(&model, position, right, up, forward, scale);
+    if (tint) |tint_color| {
+        drawGameplayUploadedModelTinted(&model, transform, tint_color);
+    } else {
+        model.drawEx(transform);
+    }
+}
+
+fn drawGameplayUploadedModelWithToonOutline(
+    model: *const x2.Uploaded,
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    scale: rl.Vector3,
+    camera: rl.Camera3D,
+) void {
+    const transform = gameplayUploadedModelTransform(model, position, right, up, forward, scale);
+    model.drawEx(transform);
+    model.drawToonOutlineEx(transform, camera, .black);
+}
+
+fn gameplayUploadedModelTransform(
+    model: *const x2.Uploaded,
+    position: rl.Vector3,
+    right: rl.Vector3,
+    up: rl.Vector3,
+    forward: rl.Vector3,
+    scale: rl.Vector3,
+) rl.Matrix {
     const world_transform = modelTransformFromBasis(position, right, up, forward);
     const local_offset = rl.Matrix.translate(
         -model.bounds.center.x,
@@ -8237,12 +8280,7 @@ fn drawGameplayUploadedModel(
         -model.bounds.center.z,
     );
     const model_scale = rl.Matrix.scale(scale.x, scale.y, scale.z);
-    const transform = world_transform.multiply(local_offset).multiply(model_scale);
-    if (tint) |tint_color| {
-        drawGameplayUploadedModelTinted(&model, transform, tint_color);
-    } else {
-        model.drawEx(transform);
-    }
+    return world_transform.multiply(local_offset).multiply(model_scale);
 }
 
 fn drawGameplayUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
