@@ -60,19 +60,6 @@ pub const LoadedSubmesh = struct {
             self.archive_texture_path = null;
         }
     }
-
-    /// Reload the submesh's albedo texture with alpha derived from colour
-    /// luminance. See `assets.Catalog.loadTextureColorAsAlpha` for details.
-    pub fn reloadAlbedoColorAsAlpha(self: *LoadedSubmesh, catalog: *const assets.Catalog) !void {
-        const path = self.archive_texture_path orelse return;
-        const entry = catalog.dat.entryByPath(path) orelse return;
-        const new_texture = try catalog.loadTextureColorAsAlpha(self.allocator, entry);
-        if (self.texture) |*old_texture| {
-            old_texture.unload();
-        }
-        self.texture = new_texture;
-        rl.setMaterialTexture(&self.material, .albedo, new_texture.texture);
-    }
 };
 
 pub const LoadedObject = struct {
@@ -122,13 +109,6 @@ pub const LoadedObject = struct {
         }
         self.allocator.free(self.submeshes);
         self.parsed.deinit();
-    }
-
-    /// Reload every submesh's albedo with alpha derived from colour luminance.
-    pub fn reloadAlbedoColorAsAlpha(self: *LoadedObject, catalog: *const assets.Catalog) !void {
-        for (self.submeshes) |*submesh| {
-            try submesh.reloadAlbedoColorAsAlpha(catalog);
-        }
     }
 
     pub fn previewCamera(self: *const LoadedObject, time_seconds: f32) rl.Camera3D {
