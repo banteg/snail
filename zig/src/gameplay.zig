@@ -503,6 +503,11 @@ pub const Runner = struct {
     // velocity.y values; `position.y < -7.0` triggers `initialize_subgoldy_death`.
     position_y: f32 = native_grounded_rider_height,
     velocity_y: f32 = 0.0,
+    // PORT(verified): mirror of `Player+0x1e4` (`_pad_1e4[0]`). Set to `1` on the trampoline
+    // landing lane (IDA line 529), cleared by the swept-reentry snap (line 464) and the
+    // tile-family "other" reaction (line 577). While `true`, native skips the `velocity.z`
+    // damping at line 388 to preserve forward speed immediately after a bounce.
+    post_trampoline_airborne: bool = false,
 
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
@@ -536,6 +541,7 @@ pub const Runner = struct {
             .math_random_state = preview.runtime_build_final_random_state,
             .position_y = native_grounded_rider_height,
             .velocity_y = 0.0,
+            .post_trampoline_airborne = false,
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
@@ -3512,10 +3518,8 @@ pub const Runner = struct {
 
     // PORT(verified): mirror of `update_subgoldy` non-follow vertical motion from
     // IDA 0x43bac4 (position integrate) through 0x43bf6f (floor snap + `y<-7` death
-    // trigger). Ramp/slide tile-family velocity reactions, swept-reentry grounded
-    // snap, trampoline envelope, and the slide/floor-cache `_pad_41c` branch land in
-    // follow-up commits; this first slice covers the flat-floor motion the tutorial
-    // exercises.
+    // trigger). Swept-reentry grounded snap, trampoline envelope, and the
+    // slide/floor-cache `_pad_41c` branch land in follow-up commits.
     fn stepActivePhaseVerticalMotion(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) return;
         if (self.movement_mode == .attachment) return;
@@ -3527,24 +3531,33 @@ pub const Runner = struct {
         // Damping (IDA line 390). `velocity.y *= 1 - track_center_x * 0.003` each tick.
         self.velocity_y *= native_velocity_yz_decay_per_tick;
 
-        // Floor sampling + snap (IDA lines 535-544, within the non-attachment-exit-pending
+        // Floor sampling + snap (IDA lines 535-579, within the non-attachment-exit-pending
         // else branch). `sample_track_floor_height_at_position + 0.49` is the grounded
-        // rider height; if it is not above `position.y`, continue gravity; otherwise snap.
-        if (preview.sampleFloorHeightAtGridPosition(
-            self.current_global_row,
-            self.resolved_lane_index,
-            self.row_position,
-        )) |floor_y| {
+        // rider height; if it is not above `position.y`, continue gravity; otherwise snap
+        // and let the tile-family reaction set the outgoing `velocity.y`.
+        const tile_at_position = preview.runtimeTileAt(self.current_global_row, self.resolved_lane_index);
+        const floor_y_opt = if (tile_at_position) |tile|
+            track.sampleFloorHeightForRuntimeTile(tile, self.row_position, track.specialFloorHeightForShippedRuntimeTile(tile))
+        else
+            null;
+        if (floor_y_opt) |floor_y| {
             const floor_plus_rider = floor_y + native_grounded_rider_height;
             if (floor_plus_rider <= self.position_y) {
+                // Airborne above floor (IDA line 538-539): keep applying gravity.
                 self.velocity_y += native_gravity_velocity_y_delta;
-            } else if (self.velocity_y <= 0.0) {
-                self.position_y = floor_plus_rider;
-                self.velocity_y = 0.0;
+            } else {
+                // At or below floor (IDA line 541-579): snap when the velocity is
+                // non-positive, then apply the tile-family velocity.y reaction.
+                if (self.velocity_y <= 0.0) {
+                    self.position_y = floor_plus_rider;
+                }
+                self.applyTileFamilyFloorReaction(tile_at_position);
             }
         } else {
-            // No sampled floor under the current lane (empty tile, hole). Gravity
-            // continues to pull `position_y` down until it crosses the death threshold.
+            // No sampled floor under the current lane (void, 'M', path/probe cells,
+            // or anything outside the native floor-sampler switch). Native returns
+            // `-100.0` in this case (IDA 0x43d4d0), so `v51 < position.y` stays true
+            // every tick and gravity keeps pulling the rider down.
             self.velocity_y += native_gravity_velocity_y_delta;
         }
 
@@ -3553,6 +3566,35 @@ pub const Runner = struct {
         // which hands off to `updatePhaseController` for respawn/final-loss.
         if (self.position_y < native_position_y_death_threshold) {
             self.beginFallState(preview, .fall, cutscene_none_id);
+        }
+    }
+
+    // PORT(verified): mirror of the tile-family velocity.y reactions at IDA lines
+    // 545-579 of `update_subgoldy`. Fires only inside the "below floor" branch where
+    // `floor_y + 0.49 > position.y` just snapped the rider up to the floor.
+    //
+    // - Tiles `0x08..0x0d` (up-slides and ramp-up mirrors) drive `velocity.y = 1.2`
+    //   so the rider climbs the slope each tick.
+    // - Tiles `0x02..0x07` (down-ramps) set `velocity.y = 0.8` and seed the
+    //   surface-reaction animation lane; the `dispatch_cutscene_animation` calls
+    //   land when that clip-dispatch layer is ported (plan §4 / task #5).
+    // - Any other tile that is not empty (`0x00`), open-neighbor (`0x23`), or
+    //   trampoline (`0x16`) clears the post-trampoline-airborne flag and zeroes
+    //   `velocity.y`, producing the stable grounded rest state on flat floor.
+    fn applyTileFamilyFloorReaction(self: *Runner, tile_opt: ?u8) void {
+        const tile = tile_opt orelse return;
+        switch (tile) {
+            0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d => {
+                self.velocity_y = native_track_center_x * 0.30000001;
+            },
+            0x02, 0x03, 0x04, 0x05, 0x06, 0x07 => {
+                self.velocity_y = native_track_center_x * 0.2;
+            },
+            0x00, 0x23, 0x16 => {},
+            else => {
+                self.post_trampoline_airborne = false;
+                self.velocity_y = 0.0;
+            },
         }
     }
 
