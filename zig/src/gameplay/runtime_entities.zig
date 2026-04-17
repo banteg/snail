@@ -4,9 +4,14 @@ const rl = @import("raylib");
 const track_parcel_bob_amplitude: f32 = 0.3;
 const track_parcel_bob_phase_step: f32 = 0.012820513;
 
+// PORT(verified): after the salt migration, `HazardKind` only covers
+// garbage. Salt lives in its own `SaltHazardPool` that mirrors native's
+// dedicated `cRSalt @ game + 0x3578c0`. The single-variant enum is kept
+// (rather than replaced with a direct type) so `Hazard.kind`-shaped call
+// sites retain their existing switch ergonomics, and so any future
+// hazard family added to the shared pool has a natural place to land.
 pub const HazardKind = enum {
     garbage,
-    salt,
 };
 
 pub const HazardState = enum(u8) {

@@ -1896,36 +1896,17 @@ pub const Runner = struct {
                 continue;
             }
             const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
-            const threshold = switch (hazard.kind) {
-                .garbage => garbage_collision_distance_threshold,
-                .salt => salt_collision_distance_threshold,
-            };
-            if (distance > threshold) {
+            if (distance > garbage_collision_distance_threshold) {
                 index += 1;
                 continue;
             }
-            switch (hazard.kind) {
-                .garbage => {
-                    self.counters.garbage_hits += 1;
-                    self.last_garbage_hit_position = hazard_position;
-                    self.recordScore(&self.score.garbage_collision, 10);
-                    self.applyGarbageImpact(preview, hazard_position);
-                    self.applyDamageGaugeDelta(garbage_damage_delta);
-                    self.recent_event = .garbage_hit;
-                    self.beginGarbageBurst(hazard, player_position);
-                },
-                .salt => {
-                    // Legacy fallback path — retired once all salt spawns
-                    // route through the new `SaltHazardPool`. Retain until
-                    // the final cleanup commit so staged migration cannot
-                    // accidentally miss hazards still carrying `.salt`.
-                    _ = self.consumeRuntimeHazard(hazard.row, hazard.lane, hazard.kind);
-                    self.counters.salt_hits += 1;
-                    self.last_salt_hit_position = hazard_position;
-                    self.applyDamageGaugeDelta(salt_damage_delta);
-                    self.recent_event = .salt_hit;
-                },
-            }
+            self.counters.garbage_hits += 1;
+            self.last_garbage_hit_position = hazard_position;
+            self.recordScore(&self.score.garbage_collision, 10);
+            self.applyGarbageImpact(preview, hazard_position);
+            self.applyDamageGaugeDelta(garbage_damage_delta);
+            self.recent_event = .garbage_hit;
+            self.beginGarbageBurst(hazard, player_position);
             return;
         }
     }
@@ -2508,7 +2489,10 @@ pub const Runner = struct {
         const cell = if (lane_index < row_location.row.cells.len) row_location.row.cells[lane_index] else ' ';
         if (isProjectileBlockingCell(cell)) return true;
 
-        if (self.hasRuntimeHazard(global_row, lane_index, .salt)) {
+        // PORT(verified): native `cRSalt` slots block projectiles without
+        // being consumed — the port now resolves that against the dedicated
+        // `SaltHazardPool` instead of the shared hazard pool.
+        if (self.runtime.salts.contains(global_row, lane_index)) {
             return true;
         }
 
@@ -2984,12 +2968,6 @@ pub const Runner = struct {
     fn stepRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
         return switch (hazard.kind) {
             .garbage => self.updateGarbageHazard(preview, hazard),
-            // PORT(verified): `.salt` no longer routes through the unified
-            // HazardPool; each slot lives in `runtime.salts` and advances via
-            // `SaltHazardPool.tickActiveSlots`. Any legacy salt entry in the
-            // shared pool is retired immediately so the new pool is the single
-            // source of truth.
-            .salt => false,
         };
     }
 
@@ -3024,11 +3002,6 @@ pub const Runner = struct {
         if (hazard.world_position.y < garbage_burst_teardown_y) return false;
         if (hazard.world_position.z < self.row_position - garbage_burst_trailing_rows) return false;
         return true;
-    }
-
-    fn updateSaltHazard(self: *Runner, hazard: *RuntimeHazard) bool {
-        _ = self;
-        return hazard.state == .active;
     }
 
     fn refreshLiveRuntimeRingEffects(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -3340,7 +3313,6 @@ pub const Runner = struct {
         return switch (kind) {
             // Android `cRSubGame::AddGarbage` scales garbage with `(RAND(0.4) + 1.0) * 0.6`.
             .garbage => (1.0 + normalized * 0.4) * 0.6,
-            .salt => 1.0,
         };
     }
 
@@ -3357,7 +3329,6 @@ pub const Runner = struct {
     fn initialRuntimeHazardWorldPosition(preview: *const track.LoadedLevelPreview, row: usize, lane: usize, kind: RuntimeHazardKind) rl.Vector3 {
         return switch (kind) {
             .garbage => runtimeCellWorldPosition(preview, row, lane, runtimeHazardPresentationScale(row, lane, kind)),
-            .salt => runtimeCellWorldPosition(preview, row, lane, 0.18),
         };
     }
 
@@ -5003,23 +4974,29 @@ fn attachmentVec3ToVector3(vector: attachment_builders.Vec3) rl.Vector3 {
     };
 }
 
-fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, kind: RuntimeHazardKind) bool {
+const AmbientHazardSource = enum { garbage, salt };
+
+fn shouldSpawnAmbientHazard(global_row: usize, lane: usize, scalar: f32, source: AmbientHazardSource) bool {
     if (scalar <= 0.0) return false;
 
-    const roll = deterministicRuntimeSpawnRoll(global_row, lane, kind);
-    const threshold = switch (kind) {
+    const roll = deterministicRuntimeSpawnRoll(global_row, lane, source);
+    // PORT(verified): thresholds come from `update_subgame`
+    // (`artifacts/ida/functions/00438b90-update_subgame.c`): garbage uses
+    // `(1 - scalar) * 0.2 + 0.8` (lines 432-439) and salt uses
+    // `(1 - scalar) * 0.02 + 0.98` (line 453).
+    const threshold = switch (source) {
         .garbage => 0.8 + (0.2 * (1.0 - scalar)),
         .salt => 0.98 + (0.02 * (1.0 - scalar)),
     };
     return roll > threshold;
 }
 
-fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, kind: RuntimeHazardKind) f32 {
-    const kind_bias: u64 = switch (kind) {
+fn deterministicRuntimeSpawnRoll(global_row: usize, lane: usize, source: AmbientHazardSource) f32 {
+    const source_bias: u64 = switch (source) {
         .garbage => 0x9e3779b97f4a7c15,
         .salt => 0xc2b2ae3d27d4eb4f,
     };
-    var value = (@as(u64, global_row) << 32) ^ (@as(u64, lane) * 0x9e3779b1) ^ kind_bias;
+    var value = (@as(u64, global_row) << 32) ^ (@as(u64, lane) * 0x9e3779b1) ^ source_bias;
     value ^= value >> 33;
     value *%= 0xff51afd7ed558ccd;
     value ^= value >> 33;
@@ -6792,7 +6769,7 @@ test "projectiles stop on salt without consuming the hazard" {
 
     var runner = Runner.init(&fixture.preview);
     const salt = findFirstGameplayCell(&fixture.preview, .salt).?;
-    runner.addRuntimeHazard(&fixture.preview, salt.row, salt.lane, .salt);
+    runner.spawnSaltFromAuthoredCell(&fixture.preview, salt.row, salt.lane);
 
     const lane_center = @as(f32, @floatFromInt(salt.lane)) + 0.5;
     var projectile: Projectile = .{
@@ -6811,7 +6788,7 @@ test "projectiles stop on salt without consuming the hazard" {
     };
 
     try std.testing.expect(runner.resolveProjectileHit(&fixture.preview, &projectile));
-    try std.testing.expect(runner.hasRuntimeHazard(salt.row, salt.lane, .salt));
+    try std.testing.expect(runner.runtime.salts.contains(salt.row, salt.lane));
 }
 
 test "explode rings defeat nearby slugs and clear nearby garbage only" {
@@ -6823,13 +6800,13 @@ test "explode rings defeat nearby slugs and clear nearby garbage only" {
     runner.current_global_row = slug.row;
     runner.resolved_lane_index = slug.lane;
     runner.addRuntimeHazard(&fixture.preview, slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage);
-    runner.addRuntimeHazard(&fixture.preview, slug.row, slug.lane, .salt);
+    runner.spawnSaltFromAuthoredCell(&fixture.preview, slug.row, slug.lane);
 
     runner.triggerExplodeRing(&fixture.preview);
 
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));
     try std.testing.expect(!runner.hasRuntimeHazard(slug.row, @min(slug.lane + 1, fixture.preview.max_width - 1), .garbage));
-    try std.testing.expect(runner.hasRuntimeHazard(slug.row, slug.lane, .salt));
+    try std.testing.expect(runner.runtime.salts.contains(slug.row, slug.lane));
 }
 
 test "explode rings still reach right-edge authored lanes" {
@@ -6948,17 +6925,26 @@ test "runtime hazards preserve recovered presentation scalars" {
     defer preview.deinit();
 
     runner.addRuntimeHazard(&preview.preview, 32, 4, .garbage);
-    runner.addRuntimeHazard(&preview.preview, 48, 1, .salt);
+    runner.spawnSaltFromAuthoredCell(&preview.preview, 48, 1);
 
-    try std.testing.expectEqual(@as(usize, 2), runner.activeRuntimeHazards().len);
+    try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeHazards().len);
     const garbage = runner.activeRuntimeHazards()[0];
-    const salt = runner.activeRuntimeHazards()[1];
-
     try std.testing.expect(garbage.presentation_scale >= 0.6);
     try std.testing.expect(garbage.presentation_scale <= 0.84);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), salt.presentation_scale, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt.world_position.y, 0.5);
     try std.testing.expect(garbage.world_position.y >= garbage.presentation_scale - 0.1);
+
+    // Salt spawns into its dedicated `SaltHazardPool` and carries the native
+    // `runtimeCellWorldPosition(..., 0.18)` Y anchor directly on the slot.
+    try std.testing.expect(runner.runtime.salts.contains(48, 1));
+    var salt_slot: ?gameplay_runtime_entities.SaltSlot = null;
+    for (runner.runtime.salts.slots) |slot| {
+        if (slot.state != .inactive and slot.row == 48 and slot.lane == 1) {
+            salt_slot = slot;
+            break;
+        }
+    }
+    try std.testing.expect(salt_slot != null);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
 }
 
 test "invincible slug contact defeats slug without score award" {

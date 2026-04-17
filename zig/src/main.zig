@@ -7501,13 +7501,6 @@ fn drawGameplayRuntimeActors(
             .garbage => {
                 drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard);
             },
-            .salt => {
-                // Legacy fallback: any leftover salt entry in the unified
-                // `HazardPool` still renders here until the final cleanup
-                // commit removes `.salt` from `HazardKind`. New salt spawns
-                // go straight to `runtime.salts`.
-                drawGameplaySaltActor(state, camera, hazard);
-            },
         }
     }
 
@@ -7550,7 +7543,6 @@ fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay_runtime_
             .active => @as(f32, 0.25),
             else => @as(f32, 8.0),
         },
-        .salt => @as(f32, 48.0),
     };
     return hazard.world_position.z + trailing_rows >= runner.row_position and
         hazard.world_position.z <= runner.row_position + 72.0;
@@ -7635,15 +7627,6 @@ fn drawGameplayGarbageActor(
         hazard.presentation_phase + (@as(f32, @floatCast(state.render_time_seconds)) * 1.75),
         .{ .r = 255, .g = 255, .b = 255, .a = if (hazard.state == .active) 232 else 255 },
     );
-}
-
-fn drawGameplaySaltActor(
-    state: *const AppState,
-    camera: rl.Camera3D,
-    hazard: gameplay_runtime_entities.Hazard,
-) void {
-    if (hazard.state != .active) return;
-    drawGameplaySaltVisual(state, camera, hazard.world_position, hazard.yaw_radians);
 }
 
 fn drawGameplaySaltSlotActor(
