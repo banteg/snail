@@ -108,6 +108,11 @@ const garbage_collision_distance_threshold: f32 = 0.98;
 // authored tile-0x22 salt contact, not the `0.49f` gate that the SubLazer
 // projectile pool uses. Aligning to the `cRSalt` side of the split.
 const salt_collision_distance_threshold: f32 = 0.98;
+// PORT(verified): `cRSubLazerManager` projectile collision uses
+// `+0.02f` damage and a `0.49f` distance gate per
+// `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:122-126`.
+const native_sub_lazer_damage_delta: f32 = 0.02;
+const native_sub_lazer_collision_distance_threshold: f32 = 0.49;
 const runtime_health_collision_distance_threshold: f32 = 0.98;
 const runtime_jetpack_collision_distance_threshold: f32 = 3.0;
 const runtime_health_collision_y_tolerance: f32 = 0.4;
@@ -1001,6 +1006,10 @@ pub const Runner = struct {
         return &self.runtime.salts.slots;
     }
 
+    pub fn activeRuntimeSubLazers(self: *const Runner) []const gameplay_runtime_entities.SubLazerSlot {
+        return &self.runtime.sub_lazers.slots;
+    }
+
     pub fn activeRuntimePickups(self: *const Runner) []const RuntimePickup {
         return self.runtime.pickups.slots[0..self.runtime.pickups.count];
     }
@@ -1877,6 +1886,27 @@ pub const Runner = struct {
             self.applyDamageGaugeDelta(salt_damage_delta);
             self.recent_event = .salt_hit;
             self.runtime.salts.deactivate(slot);
+            return;
+        }
+
+        // PORT(verified): SubLazer projectile collisions follow
+        // `handle_subgoldy_collisions`
+        // (`artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:122-126`):
+        // `z < 1.0 && dist < 0.49`, slot transitions to `removing` state
+        // (native writes `state = 2`), and the damage gauge takes
+        // `+0.02f`. No attachment/invincible gate — SubLazer shots are
+        // the only damage source that pierces those gates in native.
+        for (&self.runtime.sub_lazers.slots) |*slot| {
+            if (slot.state != .active) continue;
+            const delta_x = player_position.x - slot.world_position.x;
+            const delta_y = player_position.y - slot.world_position.y;
+            const delta_z = player_position.z - slot.world_position.z;
+            if (@abs(delta_z) > runtime_hazard_collision_z_tolerance) continue;
+            const distance = @sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z));
+            if (distance > native_sub_lazer_collision_distance_threshold) continue;
+
+            self.applyDamageGaugeDelta(native_sub_lazer_damage_delta);
+            slot.state = .removing;
             return;
         }
 
@@ -2963,6 +2993,31 @@ pub const Runner = struct {
         // not yet wired here (the port already resolves salt contact in
         // `processRuntimeHazardCollisions` against the damage gauge).
         self.runtime.salts.tickActiveSlots();
+
+        // PORT(verified): `update_wall2_ambient_hazard`
+        // (`artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`)
+        // advances each SubLazer slot's phase + position, then retires the
+        // slot when the emitter cell passes behind the player
+        // (`get_track_runtime_cell_at_world_z` comparison at native line 47)
+        // or the projectile exits the track window. The per-slot physics
+        // tick lives on the pool; the emitter-gate retirement fires here
+        // where the current runtime row is known.
+        self.runtime.sub_lazers.tickActiveSlots();
+        self.retireSubLazersBehindPlayer();
+    }
+
+    fn retireSubLazersBehindPlayer(self: *Runner) void {
+        for (&self.runtime.sub_lazers.slots) |*slot| {
+            if (slot.state != .active) continue;
+            // Native native line 47 reads the emitter's runtime cell z and
+            // compares to the slot's world position. When the emitter has
+            // scrolled off-screen (`emitter_row + trailing_window <
+            // row_position`), the slot is destroyed.
+            const trailing_window: f32 = 8.0;
+            if (@as(f32, @floatFromInt(slot.emitter_row)) + trailing_window < self.row_position) {
+                self.runtime.sub_lazers.destroy(slot);
+            }
+        }
     }
 
     fn stepRuntimeHazard(self: *Runner, preview: *const track.LoadedLevelPreview, hazard: *RuntimeHazard) bool {
