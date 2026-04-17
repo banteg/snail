@@ -81,14 +81,17 @@ pub const JetpackGauge = jetpack_module.Gauge;
 
 // PORT(partial): Windows now confirms the contact-damage controller is the separate
 // player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
-// not the jetpack gauge at +0x2750. A separate +0.02 damage path from another pool
-// is still unresolved, so only the identified gameplay hazards are modeled here.
+// not the jetpack gauge at +0x2750. The separate `+0.02f` damage path belongs to
+// `cRSubLazerManager` @ `game + 0x356b00` (20-slot SubLazer projectile pool, fired
+// by Wall2 AI via `shoot_subgoldy`), which the port does not yet own. Salt contact
+// uses the `cRSalt`-native `+0.15f / dist < 0.98` gate.
 //
 // PORT(partial): Windows spawns garbage/salt from a forward row scan over an 8-row
 // live strip rather than treating matching runtime tiles as immediate contacts. The
 // runner now mirrors that with a spawned-hazard window and the recovered scalar-based
 // ambient thresholds, but still omits the original suppressor bits, mode gates, and
-// the separate Wall2 ambient pool because the preview does not expose those flags yet.
+// the separate SubLazer projectile pool because the preview does not expose those
+// flags yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 // PORT(verified): native `cRSalt` / `handle_subgoldy_collisions` feeds
