@@ -3,6 +3,8 @@ const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 
+const io = std.Options.debug_io;
+
 // Custom text X2 loader for the small legacy mesh subset used by Snail Mail.
 //
 // The shipped corpus uses:
@@ -330,7 +332,7 @@ pub fn parse(allocator: std.mem.Allocator, source: []const u8) !Document {
         .lexer = .{ .input = source },
     };
 
-    return parser.parse(arena);
+    return parser.parse(&arena);
 }
 
 pub fn uploadParsed(
@@ -726,7 +728,7 @@ const Parser = struct {
         triangle_count: usize = 0,
     };
 
-    fn parse(self: *Parser, arena_owner: std.heap.ArenaAllocator) !Document {
+    fn parse(self: *Parser, arena_owner: *std.heap.ArenaAllocator) !Document {
         var materials_buf: std.ArrayList(MaterialInfo) = .empty;
         var polygons_buf: std.ArrayList(Polygon) = .empty;
         errdefer materials_buf.deinit(self.arena);
@@ -763,7 +765,7 @@ const Parser = struct {
         }
 
         return .{
-            .arena = arena_owner,
+            .arena = arena_owner.*,
             .frame_name = scratch.frame_name,
             .mesh_name = scratch.mesh_name,
             .materials = scratch.materials,
@@ -1493,7 +1495,7 @@ test "topology matches across same mesh with different positions" {
 }
 
 test "parse signstop model" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/SIGNSTOP.X2", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/X/SIGNSTOP.X2", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var doc = try parse(std.testing.allocator, data);
@@ -1512,7 +1514,7 @@ test "parse signstop model" {
 }
 
 test "parse pillar model" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/PILLAR2.X2", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/X/PILLAR2.X2", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var doc = try parse(std.testing.allocator, data);
@@ -1530,9 +1532,9 @@ test "parse pillar model" {
 }
 
 test "animation topology matches across turbo bobalong frames" {
-    const first = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-000.X2", 1 << 20);
+    const first = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-000.X2", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(first);
-    const second = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-001.X2", 1 << 20);
+    const second = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/X/TURBO-BOBALONG-001.X2", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(second);
 
     var doc_a = try parse(std.testing.allocator, first);
@@ -1593,11 +1595,7 @@ test "only hotspot pseudo-textures are unresolved in shipped x2 corpus" {
 }
 
 test "turbo hotspot camera centers match the shipped hotspot asset" {
-    const data = try std.fs.cwd().readFileAlloc(
-        std.testing.allocator,
-        "artifacts/extracted/SnailMail.dat/X/TURBOHOTSPOTS.X2",
-        1 << 20,
-    );
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/X/TURBOHOTSPOTS.X2", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var doc = try parse(std.testing.allocator, data);

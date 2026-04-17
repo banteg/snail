@@ -3,6 +3,8 @@ const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 
+const io = std.Options.debug_io;
+
 pub const Vec2 = struct {
     x: f32,
     y: f32,
@@ -538,7 +540,7 @@ fn resolveTextureArchivePath(
 }
 
 test "parse font3d object definition" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT", 1 << 16);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/OBJECTS/FONT3D/_OBJECT.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(data);
 
     var parsed = try parseObject(std.testing.allocator, data, "OBJECTS/FONT3D/_OBJECT.TXT");
@@ -560,17 +562,17 @@ test "resolve object texture archive path" {
 }
 
 test "parse shipped object corpus" {
-    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/OBJECTS", .{ .iterate = true });
-    defer dir.close();
+    var dir = try std.Io.Dir.cwd().openDir(io, "artifacts/extracted/SnailMail.dat/OBJECTS", .{ .iterate = true });
+    defer dir.close(io);
 
     var object_dir_iterator = dir.iterate();
     var parsed_count: usize = 0;
-    while (try object_dir_iterator.next()) |entry| {
+    while (try object_dir_iterator.next(io)) |entry| {
         if (entry.kind != .directory) continue;
 
         var path_buffer: [512]u8 = undefined;
         const object_path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/OBJECTS/{s}/_OBJECT.TXT", .{entry.name});
-        const data = std.fs.cwd().readFileAlloc(std.testing.allocator, object_path, 1 << 20) catch |err| switch (err) {
+        const data = std.Io.Dir.cwd().readFileAlloc(io, object_path, std.testing.allocator, .limited(1 << 20)) catch |err| switch (err) {
             error.FileNotFound => continue,
             else => return err,
         };

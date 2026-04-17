@@ -2,6 +2,8 @@ const std = @import("std");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 
+const io = std.Options.debug_io;
+
 pub const Vec3 = struct {
     x: f32,
     y: f32,
@@ -101,7 +103,7 @@ pub fn parseText(
     var lines = std.mem.splitScalar(u8, data, '\n');
     while (lines.next()) |raw_line| {
         if (in_data) {
-            const line = std.mem.trimRight(u8, raw_line, "\r");
+            const line = trimRight(u8, raw_line, "\r");
             if (line.len == 0) continue;
             // Windows treats the full-@ guard rows as segment data fences, not as real rows.
             if (!saw_data_guard) {
@@ -302,7 +304,7 @@ fn parseAnnotationKey(key: []const u8) ?AnnotationKey {
 }
 
 test "parse start segment" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT", 1 << 16);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/START.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(data);
 
     var segment = try parseText(std.testing.allocator, data, "SEGMENTS/START.TXT");
@@ -321,7 +323,7 @@ test "parse start segment" {
 }
 
 test "parse big jump segment annotation" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/BIG JUMP.TXT", 1 << 16);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/BIG JUMP.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(data);
 
     var segment = try parseText(std.testing.allocator, data, "SEGMENTS/BIG JUMP.TXT");
@@ -335,7 +337,7 @@ test "parse big jump segment annotation" {
 }
 
 test "parse parcel, no fall, and row mark semantics" {
-    const hump_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/HUMP.TXT", 1 << 16);
+    const hump_data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/HUMP.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(hump_data);
 
     var hump = try parseText(std.testing.allocator, hump_data, "SEGMENTS/HUMP.TXT");
@@ -352,7 +354,7 @@ test "parse parcel, no fall, and row mark semantics" {
         else => return error.ExpectedParcelAnnotation,
     }
 
-    const supertramp_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/SUPERTRAMP2.TXT", 1 << 16);
+    const supertramp_data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/SUPERTRAMP2.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(supertramp_data);
 
     var supertramp = try parseText(std.testing.allocator, supertramp_data, "SEGMENTS/SUPERTRAMP2.TXT");
@@ -360,7 +362,7 @@ test "parse parcel, no fall, and row mark semantics" {
 
     try std.testing.expectEqual(Annotation.Tag.no_fall, supertramp.rows[10].annotation.?.tag());
 
-    const gap_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/EASY GAP.TXT", 1 << 16);
+    const gap_data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/EASY GAP.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(gap_data);
 
     var gap = try parseText(std.testing.allocator, gap_data, "SEGMENTS/EASY GAP.TXT");
@@ -370,7 +372,7 @@ test "parse parcel, no fall, and row mark semantics" {
 }
 
 test "normalize explosive and jetpack annotations" {
-    const tutorial_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL 11.TXT", 1 << 16);
+    const tutorial_data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/TUTORIAL 11.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(tutorial_data);
 
     var tutorial = try parseText(std.testing.allocator, tutorial_data, "SEGMENTS/TUTORIAL 11.TXT");
@@ -381,7 +383,7 @@ test "normalize explosive and jetpack annotations" {
         else => return error.ExpectedRingAnnotation,
     }
 
-    const jetpack_data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT", 1 << 16);
+    const jetpack_data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/SEGMENTS/JETPACKOFF.TXT", std.testing.allocator, .limited(1 << 16));
     defer std.testing.allocator.free(jetpack_data);
 
     var jetpack = try parseText(std.testing.allocator, jetpack_data, "SEGMENTS/JETPACKOFF.TXT");
@@ -397,18 +399,18 @@ test "parse ring speed row metadata" {
 }
 
 test "parse shipped segment corpus" {
-    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/SEGMENTS", .{ .iterate = true });
-    defer dir.close();
+    var dir = try std.Io.Dir.cwd().openDir(io, "artifacts/extracted/SnailMail.dat/SEGMENTS", .{ .iterate = true });
+    defer dir.close(io);
 
     var iterator = dir.iterate();
     var parsed_count: usize = 0;
-    while (try iterator.next()) |entry| {
+    while (try iterator.next(io)) |entry| {
         if (entry.kind != .file) continue;
         if (!std.ascii.endsWithIgnoreCase(entry.name, ".TXT")) continue;
 
         var path_buffer: [512]u8 = undefined;
         const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/SEGMENTS/{s}", .{entry.name});
-        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 16);
+        const data = try std.Io.Dir.cwd().readFileAlloc(io, path, std.testing.allocator, .limited(1 << 16));
         defer std.testing.allocator.free(data);
 
         var parsed = try parseText(std.testing.allocator, data, path);
@@ -421,4 +423,12 @@ test "parse shipped segment corpus" {
     }
 
     try std.testing.expectEqual(@as(usize, 133), parsed_count);
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }

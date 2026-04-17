@@ -1,6 +1,6 @@
-# Idiomatic Zig 0.15.2 cheatsheet
+# Idiomatic Zig 0.16.0 cheatsheet
 
-This targets **Zig 0.15.2**. In practice, “idiomatic Zig” means writing code that follows the language reference, style guide, and Zig Zen: make intent explicit, keep control flow visible, treat edge cases as first-class, and make ownership and lifetime obvious from the code and API surface. ([Zig Programming Language])
+This targets **Zig 0.16.0**. In practice, “idiomatic Zig” means writing code that follows the language reference, style guide, and Zig Zen: make intent explicit, keep control flow visible, treat edge cases as first-class, and make ownership and lifetime obvious from the code and API surface. ([Zig Programming Language])
 
 ## 1. The core mindset
 

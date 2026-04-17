@@ -67,7 +67,7 @@ pub const SelectedLevelRecordOverride = struct {
 
     pub fn fromHighScoreEntry(entry: *const high_score.Entry) ?SelectedLevelRecordOverride {
         const raw_mode = std.math.cast(i32, entry.replay_mode_id) orelse return null;
-        const mode = std.meta.intToEnum(frontend.FrontendLevelMode, raw_mode) catch return null;
+        const mode = std.enums.fromInt(frontend.FrontendLevelMode, raw_mode) orelse return null;
         return .{
             .mode = mode,
             .level_index = @intCast(entry.replay_level_index),

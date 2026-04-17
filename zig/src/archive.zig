@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const io = std.Options.debug_io;
+
 pub const probe_size = 0x7c;
 pub const entry_size = 12;
 
@@ -40,7 +42,7 @@ pub const Archive = struct {
         const source_path = try allocator.dupe(u8, path);
         errdefer allocator.free(source_path);
 
-        const file_bytes = try std.fs.cwd().readFileAlloc(allocator, path, std.math.maxInt(usize));
+        const file_bytes = try std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .limited(std.math.maxInt(usize)));
         errdefer allocator.free(file_bytes);
 
         if (file_bytes.len < 12) {

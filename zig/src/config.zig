@@ -1,6 +1,8 @@
 const std = @import("std");
 const runtime_state = @import("runtime_state.zig");
 
+const io = std.Options.debug_io;
+
 pub const byte_len: usize = 0xc4;
 
 const sound_volume_offset = 0x00;
@@ -69,7 +71,7 @@ pub const Blob = struct {
         var blob = Blob.initDefault();
         var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
         const path = try runtime_state.filePath(&path_buffer, root_path, .config);
-        const bytes = std.fs.cwd().readFileAlloc(allocator, path, byte_len) catch |err| switch (err) {
+        const bytes = std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .limited(byte_len + 1)) catch |err| switch (err) {
             error.FileNotFound => {
                 return .{
                     .blob = blob,
@@ -93,9 +95,9 @@ pub const Blob = struct {
 
         var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
         const path = try runtime_state.filePath(&path_buffer, root_path, .config);
-        var file = try std.fs.cwd().createFile(path, .{});
-        defer file.close();
-        try file.writeAll(&self.bytes);
+        var file = try std.Io.Dir.cwd().createFile(io, path, .{});
+        defer file.close(io);
+        try file.writeStreamingAll(io, &self.bytes);
     }
 
     pub fn soundVolume(self: *const Blob) f32 {
@@ -205,7 +207,7 @@ test "config blob load overlays saved bytes onto recovered defaults" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    try temp_dir.dir.makePath("runtime");
+    try temp_dir.dir.createDirPath(io, "runtime");
     const config_path = "runtime/SnailMail.cfg";
     var saved = Blob.initDefault();
     saved.setSoundVolume(0.25);
@@ -215,15 +217,15 @@ test "config blob load overlays saved bytes onto recovered defaults" {
     saved.setChallengeReplayDifficultyValue(60);
     saved.setRouteUnlockLimit(7);
 
-    var file = try temp_dir.dir.createFile(config_path, .{});
-    defer file.close();
-    try file.writeAll(&saved.bytes);
+    var file = try temp_dir.dir.createFile(io, config_path, .{});
+    defer file.close(io);
+    try file.writeStreamingAll(io, &saved.bytes);
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     const loaded = try Blob.loadFromRuntimeRoot(std.testing.allocator, "runtime");
     try std.testing.expect(loaded.loaded_from_file);
@@ -259,14 +261,14 @@ test "config blob save writes the exact raw bytes" {
     blob.setMusicVolume(0.9);
     blob.setFullscreenEnabled(false);
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     try blob.saveToRuntimeRoot("runtime");
-    const bytes = try std.fs.cwd().readFileAlloc(std.testing.allocator, "runtime/SnailMail.cfg", byte_len);
+    const bytes = try std.Io.Dir.cwd().readFileAlloc(io, "runtime/SnailMail.cfg", std.testing.allocator, .limited(byte_len + 1));
     defer std.testing.allocator.free(bytes);
 
     try std.testing.expectEqual(@as(usize, byte_len), bytes.len);

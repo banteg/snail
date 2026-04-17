@@ -1,5 +1,7 @@
 const std = @import("std");
 
+const io = std.Options.debug_io;
+
 pub const default_root_path = "artifacts/runtime";
 pub const config_file_name = "SnailMail.cfg";
 
@@ -11,7 +13,7 @@ pub const FileKind = enum {
 };
 
 pub fn ensureRootExists(root_path: []const u8) !void {
-    try std.fs.cwd().makePath(root_path);
+    try std.Io.Dir.cwd().createDirPath(io, root_path);
 }
 
 pub fn fileName(kind: FileKind) []const u8 {
@@ -24,9 +26,17 @@ pub fn fileName(kind: FileKind) []const u8 {
 }
 
 pub fn filePath(buffer: []u8, root_path: []const u8, kind: FileKind) ![]const u8 {
-    const normalized_root = std.mem.trimRight(u8, root_path, "/\\");
+    const normalized_root = trimRight(u8, root_path, "/\\");
     if (normalized_root.len == 0) return fileName(kind);
     return std.fmt.bufPrint(buffer, "{s}/{s}", .{ normalized_root, fileName(kind) });
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }
 
 test "runtime file paths default to artifacts runtime" {

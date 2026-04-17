@@ -46,6 +46,8 @@ const runtime_state = @import("runtime_state.zig");
 const x2 = @import("x2.zig");
 const xanim = @import("xanim.zig");
 
+const io = std.Options.debug_io;
+
 const default_archive_path = app.default_archive_path;
 const default_screenshot_dir = app.default_screenshot_dir;
 const intro_background_path = app.intro_background_path;
@@ -585,6 +587,14 @@ fn sideWeaponDrawTickCount(state_value: u8) u8 {
             @max(gameplay_assets.gameplay_laser_left_draw_model_paths.len, gameplay_assets.gameplay_laser_right_draw_model_paths.len),
         )),
     };
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }
 
 fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
@@ -5282,7 +5292,7 @@ const AppState = struct {
             return;
         };
 
-        entry.setName(std.mem.trimRight(u8, self.postLevelHighScoreDraft(), " "));
+        entry.setName(trimRight(u8, self.postLevelHighScoreDraft(), " "));
         try self.saveHighScoreTables();
         try self.finishPostLevelHighScoreReturn();
     }
@@ -6470,14 +6480,14 @@ const AppState = struct {
     }
 };
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+pub fn main(init: std.process.Init) !void {
+    var gpa: std.heap.DebugAllocator(.{}) = .init;
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
-    const options = try parseArgs(allocator);
+    const options = try parseArgs(allocator, init.minimal.args);
     try runtime_state.ensureRootExists(options.runtime_root_path);
-    try std.fs.cwd().makePath(options.screenshot_dir);
+    try std.Io.Dir.cwd().createDirPath(io, options.screenshot_dir);
     var runtime_config_result = try config.Blob.loadFromRuntimeRoot(allocator, options.runtime_root_path);
     if (options.fullscreen) {
         runtime_config_result.blob.setFullscreenEnabled(true);
@@ -6513,8 +6523,7 @@ pub fn main() !void {
     var state = try AppState.init(allocator, options, runtime_config_result, audio_ready);
     defer state.saveRuntimeConfig() catch |err| std.log.err("failed to save runtime config: {}", .{err});
     defer state.deinit();
-    var frame_timer = try std.time.Timer.start();
-    var runtime_timer = try std.time.Timer.start();
+    const runtime_start_seconds = rl.getTime();
 
     if (options.command == .smoke) {
         try state.warmupSmokeTest();
@@ -6525,12 +6534,12 @@ pub fn main() !void {
 
     while (!rl.windowShouldClose() and !state.should_exit and frames_left > 0) {
         if (options.timeout_seconds) |timeout_seconds| {
-            const timeout_ns = @as(u64, timeout_seconds) * std.time.ns_per_s;
-            if (runtime_timer.read() >= timeout_ns) {
+            const timeout_seconds_f64 = @as(f64, @floatFromInt(timeout_seconds));
+            if (rl.getTime() - runtime_start_seconds >= timeout_seconds_f64) {
                 return error.RunTimeout;
             }
         }
-        const frame_delta_seconds = @as(f64, @floatFromInt(frame_timer.lap())) / @as(f64, std.time.ns_per_s);
+        const frame_delta_seconds = @as(f64, rl.getFrameTime());
         if (options.command == .smoke) {
             frames_left -= 1;
         }
@@ -9087,13 +9096,13 @@ test "ordinary postal completion commits unlock progress without staging arcade 
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
@@ -9139,13 +9148,13 @@ test "final postal completion stages postal score entry before thanks return" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
     var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
     defer catalog.deinit();
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
@@ -9192,11 +9201,11 @@ test "postal failure only stages post-level score entry when the score qualifies
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
@@ -9245,11 +9254,11 @@ test "postal abandon can stage standalone post-level score entry" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
@@ -9317,11 +9326,11 @@ test "standalone postal abandon skips score entry when the score does not qualif
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
@@ -9365,11 +9374,11 @@ test "challenge abandon keeps post-level score entry on the challenge return lan
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;

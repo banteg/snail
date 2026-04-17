@@ -2,6 +2,8 @@ const std = @import("std");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
 
+const io = std.Options.debug_io;
+
 pub const Rgb = struct {
     r: i32,
     g: i32,
@@ -227,10 +229,10 @@ fn parseBracedBlock(
     while (lines.next()) |raw_line| {
         const line = try stripInlineComments(raw_line, &scratch);
         if (std.mem.eql(u8, line, "}")) break;
-        const trimmed_right = std.mem.trimRight(u8, raw_line, "\r");
+        const trimmed_right = trimRight(u8, raw_line, "\r");
         if (trimmed_right.len > 0) {
             if (block.items.len > 0) try block.append(allocator, '\n');
-            try block.appendSlice(allocator, std.mem.trimRight(u8, trimmed_right, " \t"));
+            try block.appendSlice(allocator, trimRight(u8, trimmed_right, " \t"));
         }
     }
 
@@ -431,7 +433,7 @@ fn parseSingleQuotedValue(allocator: std.mem.Allocator, line: []const u8) ![]con
 }
 
 test "parse arcade000 level" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var level = try parseText(std.testing.allocator, data, "LEVELS/ARCADE000.TXT");
@@ -459,7 +461,7 @@ test "normalize level runtime scalars" {
 }
 
 test "parse tutorial level metadata" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/LEVELS/TUTORIAL.TXT", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var level = try parseText(std.testing.allocator, data, "LEVELS/TUTORIAL.TXT");
@@ -474,7 +476,7 @@ test "parse tutorial level metadata" {
 }
 
 test "parse level segment angle and galaxy text" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE038.TXT", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE038.TXT", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var level = try parseText(std.testing.allocator, data, "LEVELS/ARCADE038.TXT");
@@ -487,7 +489,7 @@ test "parse level segment angle and galaxy text" {
 }
 
 test "parse challenge level random track" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/LEVELS/CHALLENGE000.TXT", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var level = try parseText(std.testing.allocator, data, "LEVELS/CHALLENGE000.TXT");
@@ -499,7 +501,7 @@ test "parse challenge level random track" {
 }
 
 test "default missing track to zero" {
-    const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT", 1 << 20);
+    const data = try std.Io.Dir.cwd().readFileAlloc(io, "artifacts/extracted/SnailMail.dat/LEVELS/ARCADE000.TXT", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(data);
 
     var level = try parseText(std.testing.allocator, data, "LEVELS/ARCADE000.TXT");
@@ -534,18 +536,18 @@ test "require level name and mode" {
 }
 
 test "parse shipped level corpus" {
-    var dir = try std.fs.cwd().openDir("artifacts/extracted/SnailMail.dat/LEVELS", .{ .iterate = true });
-    defer dir.close();
+    var dir = try std.Io.Dir.cwd().openDir(io, "artifacts/extracted/SnailMail.dat/LEVELS", .{ .iterate = true });
+    defer dir.close(io);
 
     var iterator = dir.iterate();
     var parsed_count: usize = 0;
-    while (try iterator.next()) |entry| {
+    while (try iterator.next(io)) |entry| {
         if (entry.kind != .file) continue;
         if (!std.ascii.endsWithIgnoreCase(entry.name, ".TXT")) continue;
 
         var path_buffer: [512]u8 = undefined;
         const path = try std.fmt.bufPrint(&path_buffer, "artifacts/extracted/SnailMail.dat/LEVELS/{s}", .{entry.name});
-        const data = try std.fs.cwd().readFileAlloc(std.testing.allocator, path, 1 << 20);
+        const data = try std.Io.Dir.cwd().readFileAlloc(io, path, std.testing.allocator, .limited(1 << 20));
         defer std.testing.allocator.free(data);
 
         var parsed = try parseText(std.testing.allocator, data, path);
@@ -559,4 +561,12 @@ test "parse shipped level corpus" {
     }
 
     try std.testing.expectEqual(@as(usize, 53), parsed_count);
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }

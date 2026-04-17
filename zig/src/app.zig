@@ -94,11 +94,11 @@ pub const WindowSize = struct {
     height: i32,
 };
 
-pub fn parseArgs(allocator: std.mem.Allocator) !Options {
+pub fn parseArgs(allocator: std.mem.Allocator, args_source: std.process.Args) !Options {
     var argv = std.ArrayList([]const u8).empty;
     defer argv.deinit(allocator);
 
-    var args = try std.process.argsWithAllocator(allocator);
+    var args = try args_source.iterateAllocator(allocator);
     defer args.deinit();
 
     _ = args.skip();

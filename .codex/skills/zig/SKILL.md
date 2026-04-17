@@ -1,11 +1,11 @@
 ---
 name: zig
-description: "Idiomatic Zig 0.15.2 guidance for writing, reviewing, debugging, refactoring, and explaining Zig code. Use when working on `.zig` files, Zig build or test flows, allocator ownership questions, error unions, optionals, slices, tests, or Zig API design."
+description: "Idiomatic Zig 0.16.0 guidance for writing, reviewing, debugging, refactoring, and explaining Zig code. Use when working on `.zig` files, Zig build or test flows, allocator ownership questions, error unions, optionals, slices, tests, or Zig API design."
 ---
 
 # Zig
 
-Use this skill to keep Zig code explicit about ownership, allocation, failure, and lifetimes. Format with `zig fmt`, use `zig test <path>` or the repo's normal build entrypoint for checks, and verify version-sensitive APIs if the project is not on Zig 0.15.2.
+Use this skill to keep Zig code explicit about ownership, allocation, failure, and lifetimes. Format with `zig fmt`, use `zig test <path>` or the repo's normal build entrypoint for checks, and verify version-sensitive APIs if the project is not on Zig 0.16.0.
 
 ## 1. The core mindset
 

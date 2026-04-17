@@ -2,6 +2,8 @@ const std = @import("std");
 const archive = @import("archive.zig");
 const runtime_state = @import("runtime_state.zig");
 
+const io = std.Options.debug_io;
+
 pub const visible_entry_count = 10;
 pub const bank_entry_count = 11;
 pub const completion_entry_count = 0x33;
@@ -325,7 +327,7 @@ fn blankCompletionEntries() [completion_entry_count]Entry {
 fn loadBankFile(allocator: std.mem.Allocator, root_path: []const u8, kind: runtime_state.FileKind, tables: *Tables) !void {
     var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
     const path = try runtime_state.filePath(&path_buffer, root_path, kind);
-    const bytes = std.fs.cwd().readFileAlloc(allocator, path, 1 << 20) catch |err| switch (err) {
+    const bytes = std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .limited(1 << 20)) catch |err| switch (err) {
         error.FileNotFound => return,
         else => return err,
     };
@@ -357,7 +359,7 @@ fn parseCompactRecord(tables: *Tables, allocator: std.mem.Allocator, record: []c
     const entry_index = readU32(record, compact_record_entry_index_offset);
     const replay_sample_count = readU32(record, compact_record_replay_sample_count_offset);
     const name_end = std.mem.indexOfScalar(u8, record[compact_record_name_offset .. compact_record_name_offset + compact_record_name_len], 0) orelse compact_record_name_len;
-    const name = std.mem.trimRight(u8, record[compact_record_name_offset .. compact_record_name_offset + name_end], " ");
+    const name = trimRight(u8, record[compact_record_name_offset .. compact_record_name_offset + name_end], " ");
 
     const entry = switch (bank_selector) {
         0 => if (entry_index < tables.postal.len) &tables.postal[entry_index] else return,
@@ -463,9 +465,9 @@ fn saveBankFile(
 
     var path_buffer: [std.fs.max_path_bytes]u8 = undefined;
     const path = try runtime_state.filePath(&path_buffer, root_path, kind);
-    var file = try std.fs.cwd().createFile(path, .{});
-    defer file.close();
-    try file.writeAll(encoded.items);
+    var file = try std.Io.Dir.cwd().createFile(io, path, .{});
+    defer file.close(io);
+    try file.writeStreamingAll(io, encoded.items);
 }
 
 fn readU32(buffer: []const u8, offset: usize) u32 {
@@ -474,6 +476,14 @@ fn readU32(buffer: []const u8, offset: usize) u32 {
 
 fn readI16(buffer: []const u8, offset: usize) i16 {
     return std.mem.readInt(i16, @as(*const [2]u8, @ptrCast(buffer[offset .. offset + 2].ptr)), .little);
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }
 
 test "default tables seed the recovered startup bank shape" {
@@ -762,11 +772,11 @@ test "save and load compact high-score tables roundtrip score and names" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     var tables = Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
@@ -851,11 +861,11 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     var temp_dir = std.testing.tmpDir(.{});
     defer temp_dir.cleanup();
 
-    var previous_dir = try std.fs.cwd().openDir(".", .{});
-    defer previous_dir.close();
+    var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
+    defer previous_dir.close(io);
 
-    try temp_dir.dir.setAsCwd();
-    defer previous_dir.setAsCwd() catch unreachable;
+    try std.process.setCurrentDir(io, temp_dir.dir);
+    defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
 
     const record_len = compact_record_header_size + 8;
     var payload: [record_len]u8 = [_]u8{0} ** record_len;
@@ -881,7 +891,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     var encoded = payload;
     archive.xorDecodeInPlace(&encoded, 0);
     try runtime_state.ensureRootExists("runtime");
-    try std.fs.cwd().writeFile(.{ .sub_path = "runtime/ScoreA.dat", .data = &encoded });
+    try std.Io.Dir.cwd().writeFile(io, .{ .sub_path = "runtime/ScoreA.dat", .data = &encoded });
 
     var tables = Tables.initDefault();
     defer tables.deinit(std.testing.allocator);
@@ -890,7 +900,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     tables.postal[0].setName("Turb0");
     try tables.saveToRuntimeRoot(std.testing.allocator, "runtime");
 
-    const saved_bytes = try std.fs.cwd().readFileAlloc(std.testing.allocator, "runtime/ScoreA.dat", 1 << 20);
+    const saved_bytes = try std.Io.Dir.cwd().readFileAlloc(io, "runtime/ScoreA.dat", std.testing.allocator, .limited(1 << 20));
     defer std.testing.allocator.free(saved_bytes);
     archive.xorDecodeInPlace(saved_bytes, 0);
 
@@ -909,7 +919,7 @@ test "saveback preserves unknown compact record tails for loaded entries" {
     try std.testing.expectEqual(@as(u32, @bitCast(@as(f32, 0.9))), readU32(saved_bytes, compact_record_salt_scalar_offset));
     try std.testing.expectEqual(@as(u32, (5000 *% 5000) ^ 0xdeadbabe), readU32(saved_bytes, compact_record_checksum_offset));
     try std.testing.expectEqual(@as(u32, 7), readU32(saved_bytes, compact_record_replay_sample_count_offset));
-    try std.testing.expectEqualStrings("Turb0", std.mem.trimRight(u8, saved_bytes[compact_record_name_offset .. compact_record_name_offset + 5], " "));
+    try std.testing.expectEqualStrings("Turb0", trimRight(u8, saved_bytes[compact_record_name_offset .. compact_record_name_offset + 5], " "));
     try std.testing.expectEqualSlices(u8, &[_]u8{ 1, 2, 3, 4, 5, 6, 7, 8 }, saved_bytes[compact_record_header_size..]);
 }
 

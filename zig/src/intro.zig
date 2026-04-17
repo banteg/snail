@@ -254,7 +254,7 @@ fn parseEntries(
 
     var lines = std.mem.splitScalar(u8, text_block, '\n');
     while (lines.next()) |raw_line| {
-        const line = std.mem.trimRight(u8, raw_line, "\r");
+        const line = trimRight(u8, raw_line, "\r");
         const stripped = std.mem.trim(u8, line, " \t");
         if (stripped.len > 0 and stripped[0] == '*') {
             try entries.append(allocator, .{ .image = try parseImageDirective(allocator, stripped, source_path) });
@@ -282,6 +282,14 @@ fn insertCreditsRemakeLines(
     try entries.insert(allocator, 1, .{ .text = blank_line });
     try entries.insert(allocator, 2, .{ .text = remake_line });
     try entries.insert(allocator, 3, .{ .text = author_line });
+}
+
+fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []const T {
+    var end = slice.len;
+    while (end > 0) : (end -= 1) {
+        if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
+    }
+    return slice[0..end];
 }
 
 fn parseImageDirective(
