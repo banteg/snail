@@ -5735,6 +5735,11 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     primeRunnerBeforeRow(&runner, &fixture.preview, salt);
     runner.step(&fixture.preview, .{}, step_seconds);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.salt_hits);
+    // Native-literal assertion: `cRSalt` collisions apply `+0.15f` to the
+    // contact-damage gauge (task #3). Self-referential checks against
+    // `salt_damage_delta` would silently pass if the constant drifts; anchor
+    // on the native value directly.
+    try std.testing.expectApproxEqAbs(@as(f32, 0.15), runner.damage.gauge, 0.0001);
     try std.testing.expectApproxEqAbs(salt_damage_delta, runner.damage.gauge, 0.0001);
     try std.testing.expectEqualStrings("salt_hit", runner.recentEventLabel());
 
