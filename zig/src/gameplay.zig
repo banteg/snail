@@ -3560,6 +3560,45 @@ pub const Runner = struct {
             }
         }
 
+        // Death trigger (IDA line 504). Native keeps the check inside the grounded-state
+        // block; the port routes `.fall` through the existing `beginFallState` path,
+        // which hands off to `updatePhaseController` for respawn/final-loss.
+        if (self.position_y < native_position_y_death_threshold) {
+            self.beginFallState(preview, .fall, cutscene_none_id);
+            return;
+        }
+
+        if (self.attachment_exit_pending) {
+            // Pending-exit airborne branch (IDA lines 515-532). Native applies
+            // gravity once each tick while pending, then lets the trampoline
+            // envelope bounce the rider off tile `0x16` when the absolute
+            // distance to the cell's custom floor is within `0.49`. Other
+            // tiles do not feed the floor-sample path while pending, so the
+            // rider keeps falling until either the grounded-snap lane above
+            // clears the gate or `position.y < -7` triggers death.
+            self.velocity_y += native_gravity_velocity_y_delta;
+            if (tile_at_position) |tile| {
+                if (tile == 0x16) {
+                    if (track.specialFloorHeightForShippedRuntimeTile(tile)) |cell_y| {
+                        const envelope = native_grounded_rider_height;
+                        if (cell_y + envelope > self.position_y and
+                            cell_y - envelope < self.position_y)
+                        {
+                            self.velocity_y = native_track_center_x * 0.30000001;
+                            self.position_y = cell_y + native_grounded_rider_height;
+                            self.attachment_exit_pending = false;
+                            self.post_trampoline_airborne = true;
+                            // Trampoline landing cue (`sfx 41`, `BOING`) and the
+                            // squidge burst at IDA line 525 land with the
+                            // surrounding sfx/squidge port; the motion snap is
+                            // the load-bearing piece of this lane.
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
         // Floor sampling + snap (IDA lines 535-579, within the non-attachment-exit-pending
         // else branch). `sample_track_floor_height_at_position + 0.49` is the grounded
         // rider height; if it is not above `position.y`, continue gravity; otherwise snap
@@ -3587,13 +3626,6 @@ pub const Runner = struct {
             // `-100.0` in this case (IDA 0x43d4d0), so `v51 < position.y` stays true
             // every tick and gravity keeps pulling the rider down.
             self.velocity_y += native_gravity_velocity_y_delta;
-        }
-
-        // Death trigger (IDA line 504). Native keeps the check inside the grounded-state
-        // block; the port routes `.fall` through the existing `beginFallState` path,
-        // which hands off to `updatePhaseController` for respawn/final-loss.
-        if (self.position_y < native_position_y_death_threshold) {
-            self.beginFallState(preview, .fall, cutscene_none_id);
         }
     }
 
