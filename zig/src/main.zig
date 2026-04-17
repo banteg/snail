@@ -1656,18 +1656,12 @@ const AppState = struct {
 
         const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
         const entry = self.catalog.object_entries[entry_index];
-        var loaded = try object.LoadedObject.loadFromArchive(
+        self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
             &self.catalog,
             entry,
             true,
         );
-        errdefer loaded.deinit();
-        // BARRIER.TGA is uniformly opaque but uses RGB darkness to encode the
-        // intended fade-to-black edges. Rewrite alpha from luminance so plain
-        // alpha blending produces the native glow without additive double-draw.
-        try loaded.reloadAlbedoColorAsAlpha(&self.catalog);
-        self.current_gameplay_barrier_object = loaded;
     }
 
     fn reloadGameplayLazer(self: *AppState) !void {
@@ -7899,22 +7893,32 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
     // world orientation, so the draw should follow the owner without inventing
     // an extra upright rotation.
     const world_transform = rl.Matrix.translate(0.0, 0.4, runner_position.z);
-    // The barrier mesh is a pair of thin horizontal quads (y=±0.3) so both
-    // sides want to contribute — render with back-face culling off, alpha
-    // blending on (the reloaded albedo has luminance-derived alpha from
-    // `reloadAlbedoColorAsAlpha`), and depth-write disabled so the translucent
-    // pass doesn't stamp Z values onto later opaque draws.
-    rl.gl.rlDrawRenderBatchActive();
+    // What we know from the native decompile:
+    //
+    //   - The mesh is two thin horizontal quads at x=±4.5, y=±0.3, z=-18..+40
+    //     (see OBJECTS/BARRIER/_OBJECT.TXT; the Wii and Android ports ship the
+    //     same vertices).
+    //   - BARRIER.TGA is a 4x4 vertical gradient (dark blue → bright blue →
+    //     dark blue) with alpha=255 everywhere.
+    //   - Device init at 0x4118bd enables alpha-test + specular + Z-test, no
+    //     explicit cull mode, lighting off, no preset blend mode.
+    //   - The 2D-quad blend helper `sub_412e50` supports alpha/premultiplied/
+    //     modulate modes but is only called from `draw_textured_quad_immediate`
+    //     (0x413056) — it is NOT on the 3D mesh draw path.
+    //   - The 3D render state the native barrier inherits when it draws is
+    //     therefore whatever was last set in the scene pass, which we have no
+    //     captures of. Possibilities: opaque textured (alpha=255 → solid blue
+    //     wall), modulated vertex-alpha, or additive.
+    //
+    // Conservative fallback until we have a native tutorial-mode capture:
+    // 80 % alpha tint with back-face culling off. This matches the state the
+    // barrier shipped in before the additive experiment, was visually clear in
+    // our port (dark blue gradient strips at the track edges), and doesn't
+    // write corrupted Z values onto the scene the way additive did.
     rl.gl.rlDisableBackfaceCulling();
-    rl.gl.rlDisableDepthMask();
-    defer {
-        rl.gl.rlDrawRenderBatchActive();
-        rl.gl.rlEnableBackfaceCulling();
-        rl.gl.rlEnableDepthMask();
-    }
-    rl.beginBlendMode(.alpha);
-    defer rl.endBlendMode();
-    loaded_object.drawEx(world_transform);
+    defer rl.gl.rlEnableBackfaceCulling();
+    const barrier_tint = rl.Color{ .r = 255, .g = 255, .b = 255, .a = 204 };
+    loaded_object.drawTintedEx(world_transform, barrier_tint);
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
