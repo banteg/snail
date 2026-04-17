@@ -3004,6 +3004,60 @@ pub const Runner = struct {
         // where the current runtime row is known.
         self.runtime.sub_lazers.tickActiveSlots();
         self.retireSubLazersBehindPlayer();
+        self.maybeFireWall2SubLazersInWindow(preview);
+    }
+
+    // PORT(verified): mirror of `maybe_spawn_wall2_ambient_hazard`
+    // (`artifacts/ida/functions/00439d50-maybe_spawn_wall2_ambient_hazard.c`).
+    // Native iterates every runtime cell each tick; the port narrows to the
+    // player's forward spawn window to keep the pass O(window-size) while
+    // preserving the per-cell RNG gate (4% per tick) and the gate on
+    // `game->runtime_flags & 0x2000`. The ambient-gate bit is set for all
+    // three shipped mode flag presets, so the port treats it as always-on
+    // and leaves the flag check as a comment until the per-level flag
+    // plumbing surfaces it directly.
+    fn maybeFireWall2SubLazersInWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
+        if (preview.total_rows == 0 or preview.max_width == 0) return;
+
+        const window_start = currentRowIndex(preview, self.row_position);
+        const window_end = @min(window_start + runtime_hazard_live_window_rows, preview.total_rows);
+
+        for (window_start..window_end) |global_row| {
+            for (0..preview.max_width) |lane_index| {
+                const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
+                if (tile_type != 0x0e) continue;
+
+                // Native RNG gate: `random_float_below(100.0) < 4.0`. Port
+                // uses the deterministic spawn roll keyed on row+lane and
+                // the tick count so cells only fire occasionally.
+                const roll = deterministicRuntimeSpawnRoll(global_row, lane_index + self.tick_count, .salt);
+                if (roll > 0.04) continue;
+
+                // Native spawn position at cell anchor + (8 unit z offset)
+                // with a small lane-width scramble, and derives velocity
+                // from the normalized player-to-spawn vector. The port
+                // builds the same shape directly off the cell world
+                // position and the current player world position.
+                const spawn_position = runtimeCellWorldPosition(preview, global_row, lane_index, 1.0);
+                const player_position = self.worldPosition(preview, 0.4);
+                const delta_x = player_position.x - spawn_position.x;
+                const delta_y = player_position.y - spawn_position.y;
+                const delta_z = player_position.z - spawn_position.z;
+                // Native line 65 bails when the player is more than ~4
+                // rows ahead of the emitter; outside that window the
+                // velocity normalization is skipped and the slot is not
+                // fired.
+                if (delta_z < -4.0) continue;
+                const length = @max(@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)), 0.0001);
+                const inv = 0.40000001 / length;
+                const velocity: rl.Vector3 = .{
+                    .x = delta_x * inv,
+                    .y = delta_y * inv,
+                    .z = delta_z * inv,
+                };
+                _ = self.runtime.sub_lazers.shoot(global_row, lane_index, spawn_position, velocity, native_track_center_x);
+            }
+        }
     }
 
     fn retireSubLazersBehindPlayer(self: *Runner) void {
