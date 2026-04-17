@@ -3841,6 +3841,24 @@ pub const Runner = struct {
             self.launch.vertical_velocity
         else
             self.velocity_y;
+
+        // PORT(verified): native `update_cutscene` drives the visual clip
+        // from the cutscene-state lane. Without the full state-machine port,
+        // dispatch the matching clip on phase transition so the renderer
+        // reflects the fall/hit immediately:
+        //   - `.fall` cause (y<-7 or floor gap) → `turbo-fall` clip.
+        //   - `.hazard` cause (slug contact) → `turbo-intoshell`; the
+        //     slug-hit path at
+        //     `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:203`
+        //     writes `cutscene_ai.state = 10` which drives the same clip
+        //     family in native.
+        //   - `.damage` cause (state-2 drain death) reuses the
+        //     `turbo-damaged` clip that the hit-flash already dispatched.
+        switch (cause) {
+            .fall => self.cutscene_anim.dispatch(.fall, true, null),
+            .hazard => self.cutscene_anim.dispatch(.intoshell, true, null),
+            .damage => {},
+        }
         if (self.movement_mode == .attachment) {
             self.seedAttachmentExitStateFromCarryover(preview, frame.position.z);
         } else if (self.attachment_exit_pending) {
