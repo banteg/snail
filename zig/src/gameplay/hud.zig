@@ -373,15 +373,25 @@ fn drawHudTextShadowed(state: anytype, layout: VirtualLayout, authored_x: f32, a
 }
 
 fn drawRightAlignedHudTextShadowed(state: anytype, layout: VirtualLayout, authored_right_x: f32, authored_y: f32, text: []const u8, authored_size: i32, color: rl.Color) void {
+    // `measureAppText` returns the text width in screen pixels (the font size
+    // passed in is already scaled), while `authored_right_x` is in authored
+    // 640x480 space. Divide the measured width by `layout.scale` so the
+    // subtraction stays in authored units and `drawHudTextShadowed` can map
+    // the final position through `mapPoint` without a scale mismatch.
     const font_size = layout.fontSize(authored_size);
-    const width = measureAppText(state, text, font_size);
-    drawHudTextShadowed(state, layout, authored_right_x - @as(f32, @floatFromInt(width)), authored_y, text, authored_size, color);
+    const scaled_width = measureAppText(state, text, font_size);
+    const authored_width = @as(f32, @floatFromInt(scaled_width)) / layout.scale;
+    drawHudTextShadowed(state, layout, authored_right_x - authored_width, authored_y, text, authored_size, color);
 }
 
 fn drawCenteredHudTextShadowed(state: anytype, layout: VirtualLayout, authored_center_x: f32, authored_y: f32, text: []const u8, authored_size: i32, color: rl.Color) void {
+    // Same scale-space reconciliation as `drawRightAlignedHudTextShadowed`:
+    // the measured text width comes back in screen pixels from a scaled font
+    // size, but the centering math needs authored units.
     const font_size = layout.fontSize(authored_size);
-    const width = measureAppText(state, text, font_size);
-    drawHudTextShadowed(state, layout, authored_center_x - @as(f32, @floatFromInt(width)) * 0.5, authored_y, text, authored_size, color);
+    const scaled_width = measureAppText(state, text, font_size);
+    const authored_width = @as(f32, @floatFromInt(scaled_width)) / layout.scale;
+    drawHudTextShadowed(state, layout, authored_center_x - authored_width * 0.5, authored_y, text, authored_size, color);
 }
 
 fn drawIconCounter(state: anytype, layout: VirtualLayout, glyph: game_font.IconGlyph, text: []const u8, authored_x: f32, authored_y: f32, authored_size: i32, color: rl.Color) void {
