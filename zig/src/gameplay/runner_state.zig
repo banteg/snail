@@ -319,7 +319,7 @@ pub const SnailSkinTransition = struct {
 pub const AnimClipId = enum(u8) {
     none = 0,
     base = 1,
-    move = 2,
+    bobalong = 2,
     lookback_l = 3,
     lookback_r = 4,
     skidstop = 5,
@@ -332,7 +332,7 @@ pub const AnimClipId = enum(u8) {
         return switch (self) {
             .none => null,
             .base => "TURBO-BASE",
-            .move => "TURBO-MOVE",
+            .bobalong => "TURBO-BOBALONG",
             .lookback_l => "TURBO-LOOKBACKLEFT",
             .lookback_r => "TURBO-LOOKBACKRIGHT",
             .skidstop => "TURBO-SKIDSTOP",
@@ -347,7 +347,7 @@ pub const AnimClipId = enum(u8) {
         return switch (self) {
             .none => "none",
             .base => "base",
-            .move => "move",
+            .bobalong => "bobalong",
             .lookback_l => "lookback_l",
             .lookback_r => "lookback_r",
             .skidstop => "skidstop",
@@ -368,7 +368,12 @@ pub const AnimClipId = enum(u8) {
 pub const max_queued_cutscene_animations: usize = 10;
 
 pub const AnimDispatchState = struct {
-    active: AnimClipId = .base,
+    // Initial active id mirrors the port's existing turbo-bobalong default in
+    // the gameplay viewport; native's `initialize_cutscene_ai` seeding path
+    // for the starting clip is still being traced, so this keeps the visible
+    // default intact until that RE is done. Once `initialize_subgoldy`
+    // selects its opening anim, this seed can flip to match.
+    active: AnimClipId = .bobalong,
     initial_frame: ?u16 = null,
     active_edge_latched: bool = false,
     queued_ids: [max_queued_cutscene_animations]AnimClipId =
