@@ -351,43 +351,24 @@ pub fn loadSoundFx(store: *resource_store.Store) !SoundFx {
 }
 
 pub fn loadWeaponModelSet(
-    allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     set: *WeaponModelSet,
     base_path: []const u8,
     draw_paths: []const []const u8,
     fire_path: ?[]const u8,
 ) !void {
-    if (catalog.findModelIndex(base_path)) |entry_index| {
-        set.base = try x2.Uploaded.loadFromArchive(
-            allocator,
-            catalog,
-            catalog.model_entries[entry_index],
-            true,
-        );
-        try set.base.?.enableToonOutline();
+    if (store.catalog.findModelIndex(base_path) != null) {
+        set.base = try store.model(base_path, .{ .toon_outline = true });
     }
     set.draw_frame_count = @intCast(draw_paths.len);
     for (draw_paths, 0..) |path, index| {
-        if (catalog.findModelIndex(path)) |entry_index| {
-            set.draw_frames[index] = try x2.Uploaded.loadFromArchive(
-                allocator,
-                catalog,
-                catalog.model_entries[entry_index],
-                true,
-            );
-            try set.draw_frames[index].?.enableToonOutline();
+        if (store.catalog.findModelIndex(path) != null) {
+            set.draw_frames[index] = try store.model(path, .{ .toon_outline = true });
         }
     }
     if (fire_path) |path| {
-        if (catalog.findModelIndex(path)) |entry_index| {
-            set.fire = try x2.Uploaded.loadFromArchive(
-                allocator,
-                catalog,
-                catalog.model_entries[entry_index],
-                true,
-            );
-            try set.fire.?.enableToonOutline();
+        if (store.catalog.findModelIndex(path) != null) {
+            set.fire = try store.model(path, .{ .toon_outline = true });
         }
     }
 }

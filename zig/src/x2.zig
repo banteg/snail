@@ -183,8 +183,16 @@ pub const Uploaded = struct {
     submeshes: []UploadedSubmesh,
     bounds: Bounds,
     toon_outline: ?ToonOutlineData = null,
+    owns_handle: bool = true,
+
+    pub fn borrowed(self: Uploaded) Uploaded {
+        var copy = self;
+        copy.owns_handle = false;
+        return copy;
+    }
 
     pub fn deinit(self: *Uploaded) void {
+        if (!self.owns_handle) return;
         if (self.toon_outline) |*toon_outline| {
             toon_outline.deinit(self.allocator);
             self.toon_outline = null;
@@ -192,6 +200,7 @@ pub const Uploaded = struct {
         for (self.submeshes) |*submesh| submesh.unload();
         self.allocator.free(self.submeshes);
         self.doc.deinit();
+        self.owns_handle = false;
     }
 
     pub fn draw(self: *const Uploaded) void {

@@ -919,13 +919,7 @@ const AppState = struct {
             }
         }
 
-        self.current_gameplay_turbo_model = try x2.Uploaded.loadFromArchive(
-            self.allocator,
-            &self.resources.catalog,
-            entry,
-            true,
-        );
-        try self.current_gameplay_turbo_model.?.enableToonOutline();
+        self.current_gameplay_turbo_model = try self.resources.model(entry.path, .{ .toon_outline = true });
     }
 
     fn syncGameplayTurboAnimation(self: *AppState) !void {
@@ -1014,102 +1008,71 @@ const AppState = struct {
     fn reloadGameplaySalt(self: *AppState) !void {
         self.unloadGameplaySalt();
 
-        const entry_index = self.resources.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) orelse return;
-        const entry = self.resources.catalog.model_entries[entry_index];
-        self.current_gameplay_salt_model = try x2.Uploaded.loadFromArchive(
-            self.allocator,
-            &self.resources.catalog,
-            entry,
-            true,
-        );
+        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) != null) {
+            self.current_gameplay_salt_model = try self.resources.model(gameplay_assets.gameplay_salt_model_path, .{});
+        }
     }
 
     fn reloadGameplayActorModels(self: *AppState) !void {
         self.unloadGameplayActorModels();
 
-        const turret_index = self.resources.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) orelse return;
-        self.current_gameplay_turret_model = try x2.Uploaded.loadFromArchive(
-            self.allocator,
-            &self.resources.catalog,
-            self.resources.catalog.model_entries[turret_index],
-            true,
-        );
+        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) != null) {
+            self.current_gameplay_turret_model = try self.resources.model(gameplay_assets.gameplay_turret_model_path, .{});
+        }
 
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_blaster_top_models,
             gameplay_assets.gameplay_blaster_top_model_path,
             &gameplay_assets.gameplay_blaster_top_draw_model_paths,
             gameplay_assets.gameplay_blaster_top_fire_model_path,
         );
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_blaster_left_models,
             gameplay_assets.gameplay_blaster_left_model_path,
             &gameplay_assets.gameplay_blaster_left_draw_model_paths,
             null,
         );
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_blaster_right_models,
             gameplay_assets.gameplay_blaster_right_model_path,
             &gameplay_assets.gameplay_blaster_right_draw_model_paths,
             null,
         );
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_laser_left_models,
             gameplay_assets.gameplay_laser_left_model_path,
             &gameplay_assets.gameplay_laser_left_draw_model_paths,
             null,
         );
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_laser_right_models,
             gameplay_assets.gameplay_laser_right_model_path,
             &gameplay_assets.gameplay_laser_right_draw_model_paths,
             null,
         );
         try gameplay_art.loadWeaponModelSet(
-            self.allocator,
-            &self.resources.catalog,
+            &self.resources,
             &self.current_gameplay_rocket_launcher_models,
             gameplay_assets.gameplay_rocket_launcher_model_path,
             &gameplay_assets.gameplay_rocket_launcher_draw_model_paths,
             null,
         );
         for (gameplay_assets.gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
-            if (self.resources.catalog.findModelIndex(path)) |entry_index| {
-                self.current_gameplay_jetpack_thrust_models.frames[index] = try x2.Uploaded.loadFromArchive(
-                    self.allocator,
-                    &self.resources.catalog,
-                    self.resources.catalog.model_entries[entry_index],
-                    true,
-                );
-                try self.current_gameplay_jetpack_thrust_models.frames[index].?.enableToonOutline();
+            if (self.resources.catalog.findModelIndex(path) != null) {
+                self.current_gameplay_jetpack_thrust_models.frames[index] = try self.resources.model(path, .{ .toon_outline = true });
             }
         }
-        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path)) |entry_index| {
-            self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
-                self.allocator,
-                &self.resources.catalog,
-                self.resources.catalog.model_entries[entry_index],
-                true,
-            );
+        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path) != null) {
+            self.current_gameplay_rocket_model = try self.resources.model(gameplay_assets.gameplay_rocket_model_path, .{});
         }
         for (gameplay_assets.gameplay_invincible_model_paths, 0..) |path, index| {
-            if (self.resources.catalog.findModelIndex(path)) |entry_index| {
-                self.current_gameplay_invincible_models.frames[index] = try x2.Uploaded.loadFromArchive(
-                    self.allocator,
-                    &self.resources.catalog,
-                    self.resources.catalog.model_entries[entry_index],
-                    true,
-                );
+            if (self.resources.catalog.findModelIndex(path) != null) {
+                self.current_gameplay_invincible_models.frames[index] = try self.resources.model(path, .{});
             }
         }
     }
