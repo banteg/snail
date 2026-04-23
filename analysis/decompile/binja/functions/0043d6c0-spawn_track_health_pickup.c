@@ -30,16 +30,22 @@
 0043d78c        *(*(edx_4 + 8) + 0xc) = edx_4
 0043d791        cell_1 = cell
 0043d795        void* edx_6 = *(*(edx_2 + 0x5ac) + 8)
-0043d798        *(edx_2 + 0x5ac) = edx_6
+0043d798        *(edx_2 + 0x5ac) = edx_6.b
+0043d798        *(edx_2 + 0x5ad) = edx_6:1.b
+0043d798        *(edx_2 + 0x5ae) = edx_6:2.b
+0043d798        *(edx_2 + 0x5af) = edx_6:3.b
 0043d79a        *(edx_6 + 8) = 0
-0043d778        *(edx_2 + 0x5ac) = esi + 0x356000
+0043d778        *(edx_2 + 0x5ac) = (esi + 0x356000).b
+0043d778        *(edx_2 + 0x5ad) = (esi + 0x356000):1.b
+0043d778        *(edx_2 + 0x5ae) = (esi + 0x356000):2.b
+0043d778        *(edx_2 + 0x5af) = (esi + 0x356000):3.b
 0043d77a        *(esi + 0x356008) = edx_3
 0043d77f        *(*(edx_2 + 0x5ac) + 0xc) = edx_3
 0043d7a4        int32_t ecx_4
 0043d7a4        ecx_4:1.b = (*(esi + 0x356004)):1.b | 2
 0043d7a7        *(esi + 0x356004) = ecx_4
 0043d758        report_errorf("List ADD")
-0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->_pad_374[0xc].d, 0x39, 0xffffffff, 0xffffffff)
+0043d7c0        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x39, 0xffffffff, 0xffffffff)
 0043d7c5        *(esi + 0x356064) = eax_7
 0043d7ce        int32_t ecx_6
 0043d7ce        ecx_6:1.b = eax_7[1]:1.b | 8
@@ -49,10 +55,14 @@
 0043d7f3        *(*(esi + 0x356064) + 0x6c) = 0
 0043d7fc        *(*(esi + 0x356064) + 0x60) = 0x3f19999a
 0043d805        *(*(esi + 0x356064) + 0x64) = 0x3f19999a
-0043d810        float* ecx_9 = *(esi + 0x356064) + 0x48
-0043d813        *ecx_9 = *(esi + 0x356010)
-0043d818        ecx_9[1] = *(esi + 0x356014)
-0043d81e        ecx_9[2] = *(esi + 0x356018)
+0043d80e        float edx_11 = *(esi + 0x356010)
+0043d810        char* ecx_9 = *(esi + 0x356064) + 0x48
+0043d813        *ecx_9 = edx_11.b
+0043d813        ecx_9[1] = edx_11:1.b
+0043d813        ecx_9[2] = edx_11:2.b
+0043d813        ecx_9[3] = edx_11:3.b
+0043d818        *(ecx_9 + 4) = *(esi + 0x356014)
+0043d81e        *(ecx_9 + 8) = *(esi + 0x356018)
 0043d821        *(esi + 0x356068) = cell_1
 0043d827        *(esi + 0x35606c) = 0
 0043d83a        int16_t x87control

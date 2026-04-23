@@ -5,6 +5,7 @@
 
 004413f0        void* edx_1 = data_4df904
 00441400        int32_t result
+00441400        char force
 00441400        if ((*(edx_1 + 0x4300b4) & 0x80) != 0)
 00441402        result.b = force
 00441408        if ((*(edx_1 + 0x4300b4) & 0x80) == 0 || result.b != 0)

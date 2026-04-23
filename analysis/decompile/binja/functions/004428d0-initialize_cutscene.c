@@ -52,7 +52,11 @@
 00442a16        presentation_2 = linear_interpolate_matrix(&presentation_2->owner_player->live_matrix, &var_140, &to, 0.939999998f)
 00442a1b        struct Player* owner_player = presentation_2->owner_player
 00442a33        __builtin_memcpy(&presentation_2->live_matrix, &owner_player->live_matrix, 0x40)
-00442a40        presentation_2->live_matrix.position.x = owner_player->cached_camera_target_world.x
+00442a35        float x = owner_player->cached_camera_target_world.x
+00442a40        presentation_2->live_matrix.position.x.b = x.b
+00442a40        presentation_2->live_matrix.position.x:1.b = x:1.b
+00442a40        presentation_2->live_matrix.position.x:2.b = x:2.b
+00442a40        presentation_2->live_matrix.position.x:3.b = x:3.b
 00442a45        float alpha
 00442a45        __builtin_strncpy(&alpha, "333?", 4)
 00442a4a        presentation_2->live_matrix.position.y = owner_player->cached_camera_target_world.y
@@ -158,6 +162,6 @@
 00442e11        if (eax_15.b == 0)
 00442e1b        dispatch_cutscene_animation(presentation_1, 1, 0, 0xffffffff)
 00442e1b        esp = &var_164
-00442e2c        result = update_jet_particles(&presentation_1->owner_player->_pad_2744[0xc])
+00442e2c        result = update_jet_particles(&presentation_1->owner_player->jetpack_gauge)
 00442e31        *esp
 00442e38        return result

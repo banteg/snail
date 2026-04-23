@@ -15,29 +15,33 @@
 0043f4ff        *(sprite + 0x7c) = fconvert.s(fconvert.t(result->__offset(0x3a0).d) + fconvert.t(*(sprite + 0x7c)))
 0043f228        switch (result)
 0043f23a        case 1
-0043f23a        float* ecx_1 = self->sprite + 0x48
-0043f23f        *ecx_1 = self->world_position.x
-0043f244        ecx_1[1] = self->world_position.y
-0043f24a        ecx_1[2] = self->world_position.z
+0043f23a        char* ecx_1 = self->sprite + 0x48
+0043f23d        float x = self->world_position.x
+0043f23f        *ecx_1 = x.b
+0043f23f        ecx_1[1] = x:1.b
+0043f23f        ecx_1[2] = x:2.b
+0043f23f        ecx_1[3] = x:3.b
+0043f244        *(ecx_1 + 4) = self->world_position.y
+0043f24a        *(ecx_1 + 8) = self->world_position.z
 0043f24d        struct Player* owner = self->owner
 0043f253        long double x87_r7_1 = fconvert.t(self->world_position.z)
 0043f256        long double temp1_1 = fconvert.t(owner->interaction_max_z)
 0043f256        x87_r7_1 - temp1_1
-0043f25c        float eax_1
-0043f25c        eax_1.w = (x87_r7_1 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp1_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp1_1 ? 1 : 0) << 0xe
-0043f261        if ((eax_1:1.b & 1) != 0)
+0043f25c        float eax
+0043f25c        eax.w = (x87_r7_1 < temp1_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_1, temp1_1) ? 1 : 0) << 0xa | (x87_r7_1 == temp1_1 ? 1 : 0) << 0xe
+0043f261        if ((eax:1.b & 1) != 0)
 0043f270        return destroy_garbage_hazard(self)
-0043f271        long double x87_r7_2 = fconvert.t(owner->_pad_374[0].d)
+0043f271        long double x87_r7_2 = fconvert.t(owner->nuke_effect_progress)
 0043f277        long double temp3_1 = fconvert.t(0f)
 0043f277        x87_r7_2 - temp3_1
-0043f27d        eax_1.w = (x87_r7_2 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp3_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp3_1 ? 1 : 0) << 0xe
-0043f282        if ((eax_1:1.b & 0x41) == 0)
+0043f27d        eax.w = (x87_r7_2 < temp3_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_2, temp3_1) ? 1 : 0) << 0xa | (x87_r7_2 == temp3_1 ? 1 : 0) << 0xe
+0043f282        if ((eax:1.b & 0x41) == 0)
 0043f284        long double x87_r7_3 = fconvert.t(self->world_position.x)
 0043f286        long double temp6_1 = fconvert.t(0f)
 0043f286        x87_r7_3 - temp6_1
 0043f291        self->state = 2
-0043f297        eax_1.w = (x87_r7_3 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp6_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp6_1 ? 1 : 0) << 0xe
-0043f29c        if ((eax_1:1.b & 0x41) != 0)
+0043f297        eax.w = (x87_r7_3 < temp6_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_3, temp6_1) ? 1 : 0) << 0xa | (x87_r7_3 == temp6_1 ? 1 : 0) << 0xe
+0043f29c        if ((eax:1.b & 0x41) != 0)
 0043f2aa        self->collision_side = 2
 0043f29e        self->collision_side = 1
 0043f2b2        add_subgoldy_score(owner, 0, 0)
@@ -102,32 +106,32 @@
 0043f41a        self->world_position.x = fconvert.s(fconvert.t(self->velocity.x) + fconvert.t(self->world_position.x))
 0043f422        self->world_position.y = fconvert.s(fconvert.t(self->velocity.y) + fconvert.t(self->world_position.y))
 0043f42b        self->world_position.z = fconvert.s(fconvert.t(self->velocity.z) + fconvert.t(self->world_position.z))
-0043f436        float* eax_6 = self->sprite + 0x48
-0043f439        *eax_6 = self->world_position.x
-0043f43e        eax_6[1] = self->world_position.y
-0043f445        eax_6[2] = self->world_position.z
+0043f436        float* eax_5 = self->sprite + 0x48
+0043f439        *eax_5 = self->world_position.x
+0043f43e        eax_5[1] = self->world_position.y
+0043f445        eax_5[2] = self->world_position.z
 0043f44e        long double x87_r7_30 = fconvert.t(self->game->track_center_x)
 0043f461        self->velocity.y = fconvert.s(x87_r7_30 * x87_r7_30 * fconvert.t(-0.00999999978f) + fconvert.t(self->velocity.y))
 0043f469        long double x87_r7_32 = fconvert.t(self->world_position.y)
 0043f46c        long double temp2_1 = fconvert.t(-10f)
 0043f46c        x87_r7_32 - temp2_1
-0043f472        struct Game* eax_7
-0043f472        eax_7.w = (x87_r7_32 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_32, temp2_1) ? 1 : 0) << 0xa | (x87_r7_32 == temp2_1 ? 1 : 0) << 0xe
-0043f477        if ((eax_7:1.b & 1) != 0)
+0043f472        struct Game* eax_6
+0043f472        eax_6.w = (x87_r7_32 < temp2_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_32, temp2_1) ? 1 : 0) << 0xa | (x87_r7_32 == temp2_1 ? 1 : 0) << 0xe
+0043f477        if ((eax_6:1.b & 1) != 0)
 0043f270        return destroy_garbage_hazard(self)
 0043f47d        struct Player* owner_1 = self->owner
 0043f483        long double x87_r7_33 = fconvert.t(self->world_position.z)
 0043f486        long double temp5_1 = fconvert.t(owner_1->interaction_max_z)
 0043f486        x87_r7_33 - temp5_1
-0043f48c        eax_7.w = (x87_r7_33 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_33, temp5_1) ? 1 : 0) << 0xa | (x87_r7_33 == temp5_1 ? 1 : 0) << 0xe
-0043f491        if ((eax_7:1.b & 1) != 0)
+0043f48c        eax_6.w = (x87_r7_33 < temp5_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_33, temp5_1) ? 1 : 0) << 0xa | (x87_r7_33 == temp5_1 ? 1 : 0) << 0xe
+0043f491        if ((eax_6:1.b & 1) != 0)
 0043f270        return destroy_garbage_hazard(self)
 0043f49d        long double x87_r7_35 = fconvert.t(self->smoke_timer_step) + fconvert.t(self->smoke_timer)
 0043f4a3        self->smoke_timer = fconvert.s(x87_r7_35)
 0043f4a9        long double temp9_1 = fconvert.t(1f)
 0043f4a9        x87_r7_35 - temp9_1
-0043f4af        eax_7.w = (x87_r7_35 < temp9_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_35, temp9_1) ? 1 : 0) << 0xa | (x87_r7_35 == temp9_1 ? 1 : 0) << 0xe
-0043f4b4        if ((eax_7:1.b & 0x41) == 0)
+0043f4af        eax_6.w = (x87_r7_35 < temp9_1 ? 1 : 0) << 8 | (is_unordered.t(x87_r7_35, temp9_1) ? 1 : 0) << 0xa | (x87_r7_35 == temp9_1 ? 1 : 0) << 0xe
+0043f4b4        if ((eax_6:1.b & 0x41) == 0)
 0043f4bb        self->smoke_timer = 0f
 0043f4c1        spawn_garbage_smoke_particle(self, &self->world_position.x, &self->velocity, owner_1)
 0043f4b4        goto label_43f4de

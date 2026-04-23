@@ -116,6 +116,19 @@ typedef struct Game {
     RowEventDisplayController row_event_display;
 } Game;
 
+typedef struct CameramanState {
+    TransformMatrix live_matrix;
+    TransformMatrix desired_matrix;
+    TransformMatrix previous_desired_matrix;
+    struct Player* player;
+    Game* game;
+    float fov_degrees;
+    uint8_t unresolved_cc;
+    uint8_t _pad_cd[0x3];
+    float attachment_lift_envelope;
+    float smoothed_attachment_lift_envelope;
+} CameramanState;
+
 typedef struct PathTemplate {
     uint8_t _pad_00[0x38];
     int32_t kind;
@@ -178,6 +191,66 @@ typedef struct SnailSkinTransitionState {
     float progress;
     float progress_step;
 } SnailSkinTransitionState;
+
+typedef struct DamageGaugeController {
+    int32_t state;
+    float pulse_progress;
+    float pulse_step;
+    uint8_t unresolved_byte_0c;
+    uint8_t _pad_0d[0x3];
+    float warning_transition_progress;
+    float warning_transition_step;
+    int32_t skin_hold_ticks;
+    float fill;
+    float display_fill;
+    float hit_flash_progress;
+    float hit_flash_step;
+} DamageGaugeController;
+
+typedef struct JetParticleSlot {
+    void* sprite;
+    uint8_t _pad_04[0x8];
+    float alpha_step;
+} JetParticleSlot;
+
+typedef struct JetpackGaugeController {
+    float progress;
+    float progress_step;
+    uint8_t _pad_08[0x4];
+    int32_t state;
+    struct Player* player;
+    float wobble_x;
+    float wobble_y;
+    float wobble_alpha;
+    JetParticleSlot particle_slots[30];
+    Game* game;
+    uint8_t _pad_204[0x8];
+    float warning_intensity_latch;
+    float warning_intensity;
+} JetpackGaugeController;
+
+typedef struct NukeController {
+    int32_t state;
+    struct Player* owner_player;
+    float orbit_axis_step;
+    float orbit_axis;
+    float phase;
+    float phase_step;
+    void* sprite_slots[25];
+} NukeController;
+
+typedef struct TipMessageDefinition {
+    uint32_t flags;
+    float layout_y;
+    float text_scale;
+    float dismiss_seconds;
+    char* text;
+} TipMessageDefinition;
+
+typedef struct PlayerRowEventState {
+    int32_t id;
+    TipMessageDefinition tip_definition;
+} PlayerRowEventState;
 
 typedef struct PresentationWobbleController {
     float roll_phase;
@@ -272,11 +345,24 @@ typedef struct Player {
     uint8_t _pad_88[0x4];
     float resurrect_progress;
     float resurrect_progress_step;
-    uint8_t _pad_94[0x8c];
+    uint8_t _pad_94[0x4];
+    TrackRowCell* cached_track_pair_cell_a;
+    TrackRowCell* cached_track_pair_cell_b;
+    uint8_t _pad_a0[0x80];
     int32_t movement_state;
     uint8_t unresolved_pre_row_event[0x28];
     uint8_t row_event_cutscene_started;
-    uint8_t _pad_14d[0x18b];
+    uint8_t _pad_14d[0x3];
+    NukeController nuke;
+    int32_t movement_sound_variant_sample;
+    uint8_t _pad_1d0[0x4];
+    float damage_retrigger_timer;
+    float damage_retrigger_step;
+    float surface_reaction_timer;
+    float surface_reaction_step;
+    uint8_t _pad_1e4[0x4];
+    PlayerRowEventState row_event;
+    CameramanState cameraman;
     uint8_t control_override_active;
     uint8_t _pad_2d9[0x3];
     float cutscene_pitch_cycle;
@@ -297,9 +383,13 @@ typedef struct Player {
     float lane_lean_progress_step;
     uint8_t _pad_360[0x10];
     float heading_roll;
-    uint8_t _pad_374[0x10];
+    float nuke_effect_progress;
+    float nuke_effect_progress_step;
+    uint8_t _pad_37c[0x4];
+    int32_t player_slot;
     FollowState follow_state;
-    uint8_t _pad_3c4[0x44];
+    DamageGaugeController damage_gauge;
+    uint8_t _pad_3f0[0x18];
     struct Game* game;
     int32_t movement_mode_selector;
     Vec3 velocity;
@@ -325,7 +415,10 @@ typedef struct Player {
     uint8_t _pad_2738[0x4];
     float track_z_offset;
     float track_z_anchor;
-    uint8_t _pad_2744[0x220];
+    float completion_handoff_cycle_progress;
+    float completion_handoff_cycle_step;
+    uint8_t _pad_274c[0x4];
+    JetpackGaugeController jetpack_gauge;
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;
     uint8_t _pad_2974[0xc];

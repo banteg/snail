@@ -17,14 +17,21 @@
 0043dce9        long double x87_r7_1 = fconvert.t(cell->anchor_position.y) + fconvert.t(1.70000005f)
 0043dcef        float x = cell->anchor_position.x
 0043dcf2        float z = cell->anchor_position.z
-0043dcf9        *(esi + 0x356408) = x
+0043dcf9        *(esi + 0x356408) = x.b
+0043dcf9        *(esi + 0x356409) = x:1.b
+0043dcf9        *(esi + 0x35640a) = x:2.b
+0043dcf9        *(esi + 0x35640b) = x:3.b
 0043dcfb        float x_1 = x
 0043dd0b        *(esi + 0x35640c) = fconvert.s(x87_r7_1)
 0043dd16        *(esi + 0x356410) = z
 0043dd1b        project_position_onto_track_attachment(game, esi + 0x356408, esi + 0x356438)
 0043dd23        long double x87_r6 = fconvert.t(0f)
+0043dd2f        float var_c = fconvert.s(x87_r6)
 0043dd3f        long double x87_r7_3 = fconvert.t(game->track_center_x) * fconvert.t(-0.200000003f)
-0043dd45        *(esi + 0x35642c) = fconvert.s(x87_r6)
+0043dd45        *(esi + 0x35642c) = var_c.b
+0043dd45        *(esi + 0x35642d) = var_c:1.b
+0043dd45        *(esi + 0x35642e) = var_c:2.b
+0043dd45        *(esi + 0x35642f) = var_c:3.b
 0043dd47        *(esi + 0x356430) = fconvert.s(x87_r6)
 0043dd58        *(esi + 0x356434) = fconvert.s(x87_r7_3)
 0043dd61        void* edx_5 = data_4df904 + 0x5a8
@@ -41,7 +48,7 @@
 0043ddab        ecx_10:1.b = (*(esi + 0x3563a4)):1.b | 2
 0043ddae        *(esi + 0x3563a4) = ecx_10
 0043dd78        report_errorf("List ADDbefore")
-0043ddc7        int32_t* eax_7 = allocate_sprite(&data_790f30, player->_pad_374[0xc].d, 0x76, 0xffffffff, 0xffffffff)
+0043ddc7        int32_t* eax_7 = allocate_sprite(&data_790f30, player->player_slot, 0x76, 0xffffffff, 0xffffffff)
 0043ddcc        *(esi + 0x35644c) = eax_7
 0043ddd5        int32_t ecx_11
 0043ddd5        ecx_11:1.b = eax_7[1]:1.b | 8
@@ -53,7 +60,7 @@
 0043de08        *(*(esi + 0x35644c) + 0x6c) = 0
 0043de11        *(*(esi + 0x35644c) + 0x60) = 0x40000000
 0043de1a        *(*(esi + 0x35644c) + 0x64) = 0x40000000
-0043de26        float* eax_10 = *(esi + 0x35644c) + 0x48
+0043de26        int32_t* eax_10 = *(esi + 0x35644c) + 0x48
 0043de29        *eax_10 = *(esi + 0x356408)
 0043de2e        eax_10[1] = *(esi + 0x35640c)
 0043de34        eax_10[2] = *(esi + 0x356410)

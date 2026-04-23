@@ -42,7 +42,7 @@
 0043d9af        eax_12:1.b = (*(esi + 0x355e68)):1.b | 2
 0043d9b2        *(esi + 0x355e68) = eax_12
 0043d969        report_errorf("List ADD")
-0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->_pad_374[0xc].d, 0x7c, 0xffffffff, 0xffffffff)
+0043d9cb        int32_t* eax_14 = allocate_sprite(&data_790f30, player->player_slot, 0x7c, 0xffffffff, 0xffffffff)
 0043d9d0        *(esi + 0x355ec8) = eax_14
 0043d9d9        int32_t ecx_3
 0043d9d9        ecx_3:1.b = eax_14[1]:1.b | 8

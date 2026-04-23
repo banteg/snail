@@ -417,18 +417,25 @@ typedef struct DamageGaugeController {
     float hit_flash_step;
 } DamageGaugeController;
 
+typedef struct JetParticleSlot {
+    void* sprite;
+    uint8_t _pad_04[0x8];
+    float alpha_step;
+} JetParticleSlot;
+
 typedef struct JetpackGaugeController {
     float progress;
-    float cycle_phase;
-    float cycle_phase_step;
+    float progress_step;
+    uint8_t _pad_08[0x4];
     int32_t state;
-    void* warning_anchor;
+    struct Player* player;
     float wobble_x;
     float wobble_y;
     float wobble_alpha;
-    uint8_t _pad_20[0x1e0];
+    JetParticleSlot particle_slots[30];
     Game* game;
-    uint8_t _pad_204[0xc];
+    uint8_t _pad_204[0x8];
+    float warning_intensity_latch;
     float warning_intensity;
 } JetpackGaugeController;
 
@@ -776,7 +783,9 @@ typedef struct Player {
     float lane_lean_progress_step;
     uint8_t _pad_360[0x10];
     float heading_roll;
-    uint8_t _pad_374[0xc];
+    float nuke_effect_progress;
+    float nuke_effect_progress_step;
+    uint8_t _pad_37c[0x4];
     int32_t player_slot;
     FollowState follow_state;
     DamageGaugeController damage_gauge;
@@ -808,7 +817,9 @@ typedef struct Player {
     uint8_t _pad_2738[0x4];
     float track_z_offset;
     float track_z_anchor;
-    uint8_t _pad_2744[0xc];
+    float completion_handoff_cycle_progress;
+    float completion_handoff_cycle_step;
+    uint8_t _pad_274c[0x4];
     JetpackGaugeController jetpack_gauge;
     Vec3 cached_camera_target_world;
     int32_t steering_mode_selector;

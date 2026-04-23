@@ -31,6 +31,8 @@ The current high-confidence `Player` fields are:
 - `+0x308`: `movement_flag_selector`
 - `+0x338`: `movement_flags`
 - `+0x33c`: `previous_movement_flags`
+- `+0x374`: `nuke_effect_progress`
+- `+0x378`: `nuke_effect_progress_step`
 - `+0x380`: `player_slot`
   - used as the player index passed to hit-effect dispatch in `handle_subgoldy_collisions`
   - not the visible life counter
@@ -59,6 +61,8 @@ The current high-confidence `Player` fields are:
 - `+0x2734`: `movement_rate_scalar`
 - `+0x273c`: `track_z_offset`
 - `+0x2740`: `track_z_anchor`
+- `+0x2744`: `completion_handoff_cycle_progress`
+- `+0x2748`: `completion_handoff_cycle_step`
 - `+0x2750`: `jetpack_gauge`
   - inline `JetpackGaugeController`
 - `+0x2980`: `interaction_max_z`
@@ -312,21 +316,24 @@ The inline controller at `player + 0x2750` is now typed as `JetpackGaugeControll
 High-confidence current fields:
 
 - `+0x00`: `progress`
-- `+0x04`: `cycle_phase`
-- `+0x08`: `cycle_phase_step`
+- `+0x04`: `progress_step`
+- `+0x08`: unresolved padding
 - `+0x0c`: `state`
-- `+0x10`: `warning_anchor`
+- `+0x10`: `player`
 - `+0x14`: `wobble_x`
 - `+0x18`: `wobble_y`
 - `+0x1c`: `wobble_alpha`
+- `+0x20`: `particle_slots[30]`
 - `+0x200`: `game`
+- `+0x20c`: `warning_intensity_latch`
 - `+0x210`: `warning_intensity`
 
 Current practical read:
 
-- `initialize_jetpack_gauge` zeros the controller, sets the cycle phase to `1/600`, and seeds the runtime and warning-anchor pointers
+- `initialize_jetpack_gauge` zeros the controller, sets the progress step to `1/600`, and seeds the runtime and owning-player pointers
 - `arm_jetpack_gauge` transitions `state` from idle to active and clears the wobble outputs
 - `update_jetpack_gauge` advances `progress`, emits the near-expiry warning curve around `0.94`, shuts off the `JETPACKTHRUST` visual lane once the warning band begins, and forces shutoff when the current runtime cell carries flag `0x80`
+- `initialize_jet_particles`, `update_jet_particles`, and `uninit_jet_particles` operate on the same controller; the `+0x20` block is a fixed `30`-entry sprite-slot bank used by the hover thrust particles
 - `update_subgoldy` also reads `state` from `player + 0x275c`; when that lane is `1`, the late `0x43ce23 -> 0x43ce75` branch retires `attachment_exit_pending` before the `attachment_exit_progress` / gate-A block
 - `update_subgoldy` consumes the wobble outputs and active state from this controller immediately after the per-frame update
 
