@@ -8,6 +8,7 @@ test {
     std.testing.refAllDecls(@import("level.zig"));
     std.testing.refAllDecls(@import("main.zig"));
     std.testing.refAllDecls(@import("object.zig"));
+    std.testing.refAllDecls(@import("resource_store.zig"));
     std.testing.refAllDecls(@import("sim.zig"));
     std.testing.refAllDecls(@import("segment.zig"));
     std.testing.refAllDecls(@import("track.zig"));

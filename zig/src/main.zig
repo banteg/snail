@@ -44,6 +44,7 @@ const track = @import("track.zig");
 const track_render = @import("track_render.zig");
 const loading_screen = @import("loading_screen.zig");
 const object = @import("object.zig");
+const resource_store = @import("resource_store.zig");
 const segment = @import("segment.zig");
 const level = @import("level.zig");
 const runtime_state = @import("runtime_state.zig");
@@ -323,7 +324,7 @@ const SubgameCameraSelection = struct {
 
 const AppState = struct {
     allocator: std.mem.Allocator,
-    resources: assets.ResourceStore,
+    resources: resource_store.Store,
     animation_catalog: xanim.Catalog,
     ui_font: game_font.Loaded,
     runtime_root_path: []const u8,
@@ -513,7 +514,7 @@ const AppState = struct {
     pending_level_input: gameplay.RunnerInput = .{},
 
     fn init(allocator: std.mem.Allocator, options: Options, runtime_config_result: config.LoadResult, audio_ready: bool) !AppState {
-        var resources = try assets.ResourceStore.init(allocator, options.archive_path, audio_ready);
+        var resources = try resource_store.Store.init(allocator, options.archive_path, audio_ready);
         errdefer resources.deinit();
         var animation_catalog = try xanim.Catalog.load(allocator, &resources.catalog);
         errdefer animation_catalog.deinit();
@@ -8157,7 +8158,7 @@ test "ordinary postal completion commits unlock progress without staging arcade 
 
     var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
     defer previous_dir.close(io);
-    const resources = try assets.ResourceStore.init(std.testing.allocator, default_archive_path, false);
+    const resources = try resource_store.Store.init(std.testing.allocator, default_archive_path, false);
 
     try std.process.setCurrentDir(io, temp_dir.dir);
     defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
@@ -8209,7 +8210,7 @@ test "final postal completion stages postal score entry before thanks return" {
 
     var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
     defer previous_dir.close(io);
-    const resources = try assets.ResourceStore.init(std.testing.allocator, default_archive_path, false);
+    const resources = try resource_store.Store.init(std.testing.allocator, default_archive_path, false);
 
     try std.process.setCurrentDir(io, temp_dir.dir);
     defer std.process.setCurrentDir(io, previous_dir) catch unreachable;

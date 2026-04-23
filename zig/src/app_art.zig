@@ -4,6 +4,7 @@ const app = @import("app.zig");
 const assets = @import("assets.zig");
 const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
+const resource_store = @import("resource_store.zig");
 
 pub const SliderArt = struct {
     less: ?assets.LoadedTexture = null,
@@ -132,7 +133,7 @@ pub const RouteMapArt = struct {
     }
 };
 
-pub fn loadFrontendWidgetArt(store: *assets.ResourceStore) !FrontendWidgetArt {
+pub fn loadFrontendWidgetArt(store: *resource_store.Store) !FrontendWidgetArt {
     var art = FrontendWidgetArt{};
     errdefer art.unload();
 
@@ -142,7 +143,7 @@ pub fn loadFrontendWidgetArt(store: *assets.ResourceStore) !FrontendWidgetArt {
     return art;
 }
 
-pub fn loadFrontendSoundFx(store: *assets.ResourceStore) !FrontendSoundFx {
+pub fn loadFrontendSoundFx(store: *resource_store.Store) !FrontendSoundFx {
     var sound_fx = FrontendSoundFx{};
     errdefer sound_fx.unload();
 
@@ -152,7 +153,7 @@ pub fn loadFrontendSoundFx(store: *assets.ResourceStore) !FrontendSoundFx {
     return sound_fx;
 }
 
-pub fn loadSliderArt(store: *assets.ResourceStore) !SliderArt {
+pub fn loadSliderArt(store: *resource_store.Store) !SliderArt {
     var art = SliderArt{};
     errdefer art.unload();
 
@@ -166,7 +167,7 @@ pub fn loadSliderArt(store: *assets.ResourceStore) !SliderArt {
     return art;
 }
 
-pub fn loadRouteMapArt(store: *assets.ResourceStore) !RouteMapArt {
+pub fn loadRouteMapArt(store: *resource_store.Store) !RouteMapArt {
     var art = RouteMapArt{};
     errdefer art.unload();
 

@@ -2,6 +2,7 @@ const std = @import("std");
 
 const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
+const resource_store = @import("resource_store.zig");
 const x2 = @import("x2.zig");
 
 pub const SpriteArt = struct {
@@ -273,7 +274,7 @@ pub const JetpackModelSet = struct {
     }
 };
 
-pub fn loadSpriteArt(store: *assets.ResourceStore) !SpriteArt {
+pub fn loadSpriteArt(store: *resource_store.Store) !SpriteArt {
     var art = SpriteArt{};
     errdefer art.unload();
 
@@ -308,7 +309,7 @@ pub fn loadSpriteArt(store: *assets.ResourceStore) !SpriteArt {
     return art;
 }
 
-pub fn loadSoundFx(store: *assets.ResourceStore) !SoundFx {
+pub fn loadSoundFx(store: *resource_store.Store) !SoundFx {
     var sound_fx = SoundFx{};
     errdefer sound_fx.unload();
 
