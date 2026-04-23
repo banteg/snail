@@ -4,7 +4,7 @@ The two files that have grown past a reasonable ceiling during iterative porting
 
 | File | Lines | Shape |
 | --- | --- | --- |
-| `zig/src/main.zig` | ~9700 | `AppState` god object plus gameplay art/sound/model holders, screenshot plumbing, render entry points, test fixtures, and several gameplay render helpers. |
+| `zig/src/main.zig` | ~9300 | `AppState` god object plus screenshot plumbing, render entry points, test fixtures, and several gameplay render helpers. |
 | `zig/src/gameplay.zig` | ~9600 | `Runner` god object (≈4500 lines, ~300 methods) plus state type zoo (RowEventDisplayController, DamageGaugeRuntime, JetpackGauge, SnailSkinTransition, Projectile, RunnerPhase, AttachmentFollowState, LaunchState, etc.), free helpers, and test fixtures. |
 
 Everything else is already sized sensibly (≤3700 lines each) or already split into subfolders (`zig/src/frontend/**`, `zig/src/gameplay/**`, `zig/src/debug/**`).
@@ -61,7 +61,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. `main.zig` keeps texture selection and billboard drawing because it owns loaded Raylib resources. |
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
 | `app_art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
-| `app/gameplay_art.zig` | Remaining gameplay art + sound-fx asset holders: `GameplaySpriteArt`, `GameplaySoundFx`, `GameplayWeaponModelSet`, `GameplayInvincibleModelSet`, `GameplayJetpackModelSet`, plus their load/unload helpers. |
+| `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
 | `app/screenshots.zig` | Screenshot request + capture path: `ScreenshotRequest`, `BillboardUv`, related capture bookkeeping. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `main.zig` (remaining) | `pub fn main`, CLI parsing, render loop, top-level init/teardown, `AppState` struct definition with field declarations plus a thin dispatch layer that delegates to the above modules. |
@@ -82,7 +82,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 10. Phase A10 — presentation (snail_skin, weapon flags, movement timers, invincible/slow/shot cooldowns) → `gameplay/presentation.zig`.
 11. Phase A11 — score + counters + defeated slugs + visible lives + recent events (~10 fields, 80+ external call sites) → `gameplay/scoring.zig`. Highest external-churn; defer until the more self-contained subsystems are done.
 12. Phase B0 — **done**. `gameplay/effects.zig` owns transient gameplay effect state and runner-driven effect emission. `AppState` now owns a `gameplay_effects.Controller`, and `main.zig` only renders the effect list with loaded sprite assets.
-13. Phase B1 — **partial**. `app_art.zig` owns frontend/route-map art and sound holders/loaders. Remaining B1 work: gameplay art/model/sound holders, screenshots, and audio helpers.
+13. Phase B1 — **partial**. `app_art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. Remaining B1 work: screenshots and audio helpers.
 14. Phase B2 — main.zig run result + outer bridge + level loader.
 15. Phase B3 — main.zig frontend flow.
 
