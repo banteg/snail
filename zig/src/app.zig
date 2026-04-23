@@ -52,7 +52,7 @@ pub const credits_script_path = "INTRO/CREDITS.TXT";
 pub const intro_music_path = "MUSIC/INTROTEXT.OGG";
 pub const default_texture_path = "OBJECTS/FONT/FONT-MENU-HOVER.TGA";
 pub const default_audio_path = "MUSIC/MAINMENU.OGG";
-pub const default_model_path = "X/TURBO-BOBALONG-000.X2";
+pub const default_model_path = "X/TURBO-MOVE-000.X2";
 pub const default_object_path = "OBJECTS/FONT3D/_OBJECT.TXT";
 pub const default_level_path = "LEVELS/TUTORIAL.TXT";
 

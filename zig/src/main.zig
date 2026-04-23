@@ -1693,7 +1693,7 @@ const AppState = struct {
         const desired: gameplay.AnimClipId = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
             .talk
         else
-            .bobalong;
+            .move;
         if (runner.cutscene_anim.active == desired) return;
         runner.dispatchCutsceneAnimation(desired, true, null);
     }

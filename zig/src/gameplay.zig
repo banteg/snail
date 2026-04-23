@@ -81,17 +81,15 @@ pub const JetpackGauge = jetpack_module.Gauge;
 
 // PORT(partial): Windows now confirms the contact-damage controller is the separate
 // player +0x3c4 block behind `apply_damage_gauge_delta` / `update_damage_gauge`,
-// not the jetpack gauge at +0x2750. The separate `+0.02f` damage path belongs to
-// `cRSubLazerManager` @ `game + 0x356b00` (20-slot SubLazer projectile pool, fired
-// by Wall2 AI via `shoot_subgoldy`), which the port does not yet own. Salt contact
-// uses the `cRSalt`-native `+0.15f / dist < 0.98` gate.
+// not the jetpack gauge at +0x2750. Salt contact uses the `cRSalt`-native
+// `+0.15f / dist < 0.98` gate; SubLazer projectiles use the separate
+// `cRSubLazerManager @ game + 0x356b00` `+0.02f / dist < 0.49` lane.
 //
 // PORT(partial): Windows spawns garbage/salt from a forward row scan over an 8-row
 // live strip rather than treating matching runtime tiles as immediate contacts. The
 // runner now mirrors that with a spawned-hazard window and the recovered scalar-based
-// ambient thresholds, but still omits the original suppressor bits, mode gates, and
-// the separate SubLazer projectile pool because the preview does not expose those
-// flags yet.
+// ambient thresholds, but still omits the original suppressor bits and some mode gates
+// because the preview does not expose those flags yet.
 const health_recover_delta: f32 = -0.5;
 const garbage_damage_delta: f32 = 0.04;
 // PORT(verified): native `cRSalt` / `handle_subgoldy_collisions` feeds
@@ -137,6 +135,7 @@ const runtime_track_parcel_expiry_margin_rows: f32 = 10.0;
 const jetpack_warning_phase_scale = jetpack_module.warning_phase_scale;
 const runtime_pickup_live_window_rows: usize = 72;
 const runtime_hazard_live_window_rows: usize = 8;
+const runtime_wall2_emitter_window_rows: usize = 32;
 const runtime_ring_live_window_rows: usize = 47;
 const runtime_ring_spacing_rows: f32 = 10.0;
 const runtime_ring_default_gate_threshold: f32 = 0.7;
@@ -215,6 +214,13 @@ const native_ticks_per_second: f32 = 60.0;
 // Windows quantizes runtime gameplay world X with `floor(x + 4.0)` and clamps the player
 // between `-4.0` and `4.0`, so the live `Game.track_center_x` lane is the fixed `4.0`.
 const native_track_center_x: f32 = 4.0;
+const native_wall2_tile_id: u8 = 0x0e;
+const native_wall2_spawn_gate_threshold: f32 = 4.0;
+const native_wall2_spawn_y_offset: f32 = 8.0;
+const native_wall2_target_z_offset: f32 = 8.0;
+const native_wall2_target_random_z_span: f32 = 3.0;
+const native_wall2_fire_delta_z_threshold: f32 = -4.0;
+const native_sub_lazer_speed: f32 = 0.40000001;
 const native_velocity_x_decay_per_tick: f32 = 1.0 - (native_track_center_x * 0.100000001);
 // PORT(verified): native `update_subgoldy` snaps `live_matrix.position.y` to
 // `sample_track_floor_height_at_position(...) + 0.49` when grounded
@@ -1029,6 +1035,14 @@ pub const Runner = struct {
 
     fn nextMathRandomFloat01(self: *Runner) f32 {
         return @as(f32, @floatFromInt(self.nextMathRandomInt15())) / 32767.0;
+    }
+
+    fn nextMathRandomFloatBelow(self: *Runner, upper_bound: f32) f32 {
+        return @as(f32, @floatFromInt(self.nextMathRandomInt15())) * upper_bound * 0.000030517578;
+    }
+
+    fn nextMathRandomSignedFloatBelow(self: *Runner, scale: f32) f32 {
+        return (@as(f32, @floatFromInt(self.nextMathRandomInt15())) - 16384.0) * scale * 0.000061035156;
     }
 
     pub fn activeProjectiles(self: *const Runner) []const Projectile {
@@ -3007,49 +3021,42 @@ pub const Runner = struct {
         self.maybeFireWall2SubLazersInWindow(preview);
     }
 
-    // PORT(verified): mirror of `maybe_spawn_wall2_ambient_hazard`
-    // (`artifacts/ida/functions/00439d50-maybe_spawn_wall2_ambient_hazard.c`).
-    // Native iterates every runtime cell each tick; the port narrows to the
-    // player's forward spawn window to keep the pass O(window-size) while
-    // preserving the per-cell RNG gate (4% per tick) and the gate on
-    // `game->runtime_flags & 0x2000`. The ambient-gate bit is set for all
-    // three shipped mode flag presets, so the port treats it as always-on
-    // and leaves the flag check as a comment until the per-level flag
-    // plumbing surfaces it directly.
+    // PORT(partial): mirrors the recovered Wall2 tile branch inside
+    // `wall2_emitter_maybe_fire_sub_lazer` @ 0x439d50. Native runs this from
+    // each live runtime row-cell object. The port still discovers candidate
+    // emitters from the preview window, but the gate, RNG source, origin,
+    // target-z scramble, `delta_z < -4`, and normalized `0.4` velocity now
+    // follow the decompile instead of the previous row/lane hash shortcut.
+    // The native `cell->flags & 0x2000` owner bit is not exposed in the preview;
+    // candidate `0x0e` Wall2 cells stand in for that object-local gate.
     fn maybeFireWall2SubLazersInWindow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or preview.max_width == 0) return;
 
         const window_start = currentRowIndex(preview, self.row_position);
-        const window_end = @min(window_start + runtime_hazard_live_window_rows, preview.total_rows);
+        const window_end = @min(window_start + runtime_wall2_emitter_window_rows, preview.total_rows);
 
         for (window_start..window_end) |global_row| {
             for (0..preview.max_width) |lane_index| {
                 const tile_type = preview.runtimeTileAt(global_row, lane_index) orelse continue;
-                if (tile_type != 0x0e) continue;
+                if (tile_type != native_wall2_tile_id) continue;
+                if (lane_index > 0 and (preview.runtimeTileAt(global_row, lane_index - 1) orelse 0) == native_wall2_tile_id) {
+                    continue;
+                }
 
-                // Native RNG gate: `random_float_below(100.0) < 4.0`. Port
-                // uses the deterministic spawn roll keyed on row+lane and
-                // the tick count so cells only fire occasionally.
-                const roll = deterministicRuntimeSpawnRoll(global_row, lane_index + self.tick_count, .salt);
-                if (roll > 0.04) continue;
+                if (self.nextMathRandomFloatBelow(100.0) >= native_wall2_spawn_gate_threshold) continue;
 
-                // Native spawn position at cell anchor + (8 unit z offset)
-                // with a small lane-width scramble, and derives velocity
-                // from the normalized player-to-spawn vector. The port
-                // builds the same shape directly off the cell world
-                // position and the current player world position.
-                const spawn_position = runtimeCellWorldPosition(preview, global_row, lane_index, 1.0);
+                const spawn_position = wall2EmitterSubLazerOrigin(preview, global_row, lane_index);
                 const player_position = self.worldPosition(preview, 0.4);
+                const target_z = player_position.z +
+                    native_wall2_target_z_offset +
+                    self.nextMathRandomSignedFloatBelow(native_wall2_target_random_z_span);
                 const delta_x = player_position.x - spawn_position.x;
                 const delta_y = player_position.y - spawn_position.y;
-                const delta_z = player_position.z - spawn_position.z;
-                // Native line 65 bails when the player is more than ~4
-                // rows ahead of the emitter; outside that window the
-                // velocity normalization is skipped and the slot is not
-                // fired.
-                if (delta_z < -4.0) continue;
+                const delta_z = target_z - spawn_position.z;
+                if (delta_z >= native_wall2_fire_delta_z_threshold) continue;
+
                 const length = @max(@sqrt((delta_x * delta_x) + (delta_y * delta_y) + (delta_z * delta_z)), 0.0001);
-                const inv = 0.40000001 / length;
+                const inv = native_sub_lazer_speed / length;
                 const velocity: rl.Vector3 = .{
                     .x = delta_x * inv,
                     .y = delta_y * inv,
@@ -3742,6 +3749,20 @@ pub const Runner = struct {
             @as(f32, @floatFromInt(lane_index)) + 0.5,
             @as(f32, @floatFromInt(global_row)),
             floor_height + y_offset,
+        );
+    }
+
+    fn wall2EmitterSubLazerOrigin(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize) rl.Vector3 {
+        var run_len: usize = 1;
+        while (lane_index + run_len < preview.max_width) : (run_len += 1) {
+            if ((preview.runtimeTileAt(global_row, lane_index + run_len) orelse 0) != native_wall2_tile_id) break;
+        }
+        const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
+        const lane_center = @as(f32, @floatFromInt(lane_index)) + (@as(f32, @floatFromInt(run_len)) * 0.5);
+        return preview.worldPositionForLane(
+            lane_center,
+            @as(f32, @floatFromInt(global_row)),
+            floor_height + native_wall2_spawn_y_offset,
         );
     }
 
@@ -5208,6 +5229,29 @@ fn findFirstGameplayCell(preview: *const track.LoadedLevelPreview, kind: track.G
                         .lane = lane,
                     };
                 }
+            }
+        }
+    }
+    return null;
+}
+
+fn findFirstRuntimeTile(preview: *const track.LoadedLevelPreview, tile_type: u8) ?RowTarget {
+    for (0..preview.total_rows) |global_row| {
+        for (0..preview.max_width) |lane| {
+            if ((preview.runtimeTileAt(global_row, lane) orelse 0) == tile_type) {
+                return .{ .row = global_row, .lane = lane };
+            }
+        }
+    }
+    return null;
+}
+
+fn findFirstRuntimeTileAtOrAfter(preview: *const track.LoadedLevelPreview, tile_type: u8, min_row: usize) ?RowTarget {
+    if (min_row >= preview.total_rows) return null;
+    for (min_row..preview.total_rows) |global_row| {
+        for (0..preview.max_width) |lane| {
+            if ((preview.runtimeTileAt(global_row, lane) orelse 0) == tile_type) {
+                return .{ .row = global_row, .lane = lane };
             }
         }
     }
@@ -7054,6 +7098,34 @@ test "runtime hazards preserve recovered presentation scalars" {
     }
     try std.testing.expect(salt_slot != null);
     try std.testing.expectApproxEqAbs(@as(f32, 0.18), salt_slot.?.world_position.y, 0.5);
+}
+
+test "steady gameplay animation id 2 resolves to shipped turbo move" {
+    try std.testing.expectEqual(@as(u8, 2), @intFromEnum(AnimClipId.move));
+    try std.testing.expectEqualStrings("TURBO-MOVE", AnimClipId.move.familyKey().?);
+
+    const dispatch_state = AnimDispatchState{};
+    try std.testing.expectEqual(AnimClipId.move, dispatch_state.active);
+}
+
+test "Wall2 emitter fires SubLazer with native player-relative z gate" {
+    var fixture = try TestFixture.loadSegment("SEGMENTS/CAGE.TXT");
+    defer fixture.deinit();
+
+    const wall = findFirstRuntimeTileAtOrAfter(&fixture.preview, native_wall2_tile_id, 20) orelse return error.TestUnexpectedResult;
+    var runner = Runner.init(&fixture.preview);
+    runner.row_position = if (wall.row > 20) @floatFromInt(wall.row - 20) else 0.0;
+    runner.math_random_state = 0;
+
+    runner.maybeFireWall2SubLazersInWindow(&fixture.preview);
+
+    try std.testing.expectEqual(@as(usize, 1), runner.runtime.sub_lazers.countActive());
+    const slot = runner.runtime.sub_lazers.slots[0];
+    try std.testing.expectEqual(gameplay_runtime_entities.SubLazerSlotState.active, slot.state);
+    try std.testing.expect(slot.velocity.z < 0.0);
+    const speed = @sqrt((slot.velocity.x * slot.velocity.x) + (slot.velocity.y * slot.velocity.y) + (slot.velocity.z * slot.velocity.z));
+    try std.testing.expectApproxEqAbs(native_sub_lazer_speed, speed, 0.0001);
+    try std.testing.expect(slot.world_position.y > 7.0);
 }
 
 test "invincible slug contact defeats slug without score award" {

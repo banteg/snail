@@ -315,11 +315,13 @@ pub const SnailSkinTransition = struct {
 // passes these as the `a2` argument and uses them to index the
 // presentation controller's 128-byte-stride `animation_slot_table` at
 // `presentation + 0x170`. The family keys map 1:1 to the shipped
-// `X/_ANIMATION.TXT` `Anim:turbo-*-000.x` entries.
+// `X/_ANIMATION.TXT` `Anim:turbo-*-000.x` entries. Native callsites recover
+// ids 1/3/4/5/6/7/8/9 directly; id 2 is conservative from the shipped load
+// and animation-file order (`turbo-move` before `turbo-bobalong`).
 pub const AnimClipId = enum(u8) {
     none = 0,
     base = 1,
-    bobalong = 2,
+    move = 2,
     lookback_l = 3,
     lookback_r = 4,
     skidstop = 5,
@@ -332,7 +334,7 @@ pub const AnimClipId = enum(u8) {
         return switch (self) {
             .none => null,
             .base => "TURBO-BASE",
-            .bobalong => "TURBO-BOBALONG",
+            .move => "TURBO-MOVE",
             .lookback_l => "TURBO-LOOKBACKLEFT",
             .lookback_r => "TURBO-LOOKBACKRIGHT",
             .skidstop => "TURBO-SKIDSTOP",
@@ -347,7 +349,7 @@ pub const AnimClipId = enum(u8) {
         return switch (self) {
             .none => "none",
             .base => "base",
-            .bobalong => "bobalong",
+            .move => "move",
             .lookback_l => "lookback_l",
             .lookback_r => "lookback_r",
             .skidstop => "skidstop",
@@ -368,12 +370,11 @@ pub const AnimClipId = enum(u8) {
 pub const max_queued_cutscene_animations: usize = 10;
 
 pub const AnimDispatchState = struct {
-    // Initial active id mirrors the port's existing turbo-bobalong default in
-    // the gameplay viewport; native's `initialize_cutscene_ai` seeding path
-    // for the starting clip is still being traced, so this keeps the visible
-    // default intact until that RE is done. Once `initialize_subgoldy`
-    // selects its opening anim, this seed can flip to match.
-    active: AnimClipId = .bobalong,
+    // Native's `initialize_cutscene_ai` queues base, while the live gameplay
+    // runner presents id 2 as the steady movement loop. Keep id 2 mapped to
+    // the shipped `turbo-move` family rather than the previously inferred
+    // `turbo-bobalong` family.
+    active: AnimClipId = .move,
     initial_frame: ?u16 = null,
     active_edge_latched: bool = false,
     queued_ids: [max_queued_cutscene_animations]AnimClipId =
