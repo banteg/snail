@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rlgl = rl.gl;
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const resource_store = @import("resource_store.zig");
 
 const original_screen_width: f32 = 640.0;
 const original_screen_height: f32 = 480.0;
@@ -99,25 +100,25 @@ pub const Loaded = struct {
 
     pub fn loadByPath(
         allocator: std.mem.Allocator,
-        catalog: *const assets.Catalog,
+        store: *resource_store.Store,
         script_path: []const u8,
     ) !Loaded {
-        const entry = catalog.dat.entryByPath(script_path) orelse return error.EntryNotFound;
-        return loadFromEntry(allocator, catalog, entry);
+        const entry = store.catalog.dat.entryByPath(script_path) orelse return error.EntryNotFound;
+        return loadFromEntry(allocator, store, entry);
     }
 
     pub fn loadFromEntry(
         allocator: std.mem.Allocator,
-        catalog: *const assets.Catalog,
+        store: *resource_store.Store,
         entry: archive.Entry,
     ) !Loaded {
-        const decoded = try catalog.readEntryAlloc(allocator, entry);
+        const decoded = try store.catalog.readEntryAlloc(allocator, entry);
         defer allocator.free(decoded);
 
         var definition = try parseText(allocator, decoded, entry.path);
         errdefer definition.deinit();
 
-        var textures = try loadTexturesForPicture(allocator, catalog, definition.source_path, definition.picture);
+        var textures = try loadTexturesForPicture(store, definition.source_path, definition.picture);
         errdefer textures.deinit();
 
         return .{
@@ -754,8 +755,7 @@ const Field = enum {
 };
 
 fn loadTexturesForPicture(
-    allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     source_path: []const u8,
     picture: []const u8,
 ) !LoadedTextures {
@@ -767,10 +767,10 @@ fn loadTexturesForPicture(
     const split_a_path = try std.fmt.bufPrint(&split_a_buffer, "{s}{s}_A.TGA", .{ directory, stem });
     const split_b_path = try std.fmt.bufPrint(&split_b_buffer, "{s}{s}_B.TGA", .{ directory, stem });
 
-    if (catalog.findTextureEntry(split_a_path) != null and catalog.findTextureEntry(split_b_path) != null) {
-        var primary_texture = try catalog.loadTextureByPath(allocator, split_a_path);
+    if (store.catalog.findTextureEntry(split_a_path) != null and store.catalog.findTextureEntry(split_b_path) != null) {
+        var primary_texture = try store.texture(split_a_path);
         errdefer primary_texture.unload();
-        const secondary_texture = try catalog.loadTextureByPath(allocator, split_b_path);
+        const secondary_texture = try store.texture(split_b_path);
         return .{
             .primary_texture = primary_texture,
             .secondary_texture = secondary_texture,
@@ -779,15 +779,15 @@ fn loadTexturesForPicture(
 
     var picture_buffer: [std.fs.max_path_bytes]u8 = undefined;
     const picture_path = try std.fmt.bufPrint(&picture_buffer, "{s}{s}", .{ directory, picture });
-    if (catalog.findTextureEntry(picture_path) != null) {
+    if (store.catalog.findTextureEntry(picture_path) != null) {
         return .{
-            .primary_texture = try catalog.loadTextureByPath(allocator, picture_path),
+            .primary_texture = try store.texture(picture_path),
         };
     }
 
-    if (catalog.findTextureEntry(split_a_path) != null) {
+    if (store.catalog.findTextureEntry(split_a_path) != null) {
         return .{
-            .primary_texture = try catalog.loadTextureByPath(allocator, split_a_path),
+            .primary_texture = try store.texture(split_a_path),
         };
     }
 

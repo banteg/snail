@@ -719,13 +719,13 @@ const AppState = struct {
             return error.InvalidLoadingScreenTexture;
         }
 
-        var loaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, intro_background_path);
+        var loaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources, intro_background_path);
         defer loaded_intro_background.deinit();
         if (loaded_intro_background.primary_texture.texture.width <= 0) {
             return error.InvalidIntroBackgroundTexture;
         }
 
-        var loaded_thanks_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, thanks_screen_background_path);
+        var loaded_thanks_background = try background.Loaded.loadByPath(self.allocator, &self.resources, thanks_screen_background_path);
         defer loaded_thanks_background.deinit();
         if (loaded_thanks_background.primary_texture.texture.width <= 0) {
             return error.InvalidThanksBackgroundTexture;
@@ -760,19 +760,19 @@ const AppState = struct {
             .load_high_scores => try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path),
             .load_intro_background => {
                 self.unloadPreloadedBackground(&self.preloaded_intro_background);
-                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, intro_background_path);
+                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources, intro_background_path);
             },
             .load_main_menu_background => {
                 self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
-                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, main_menu_background_path);
+                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.resources, main_menu_background_path);
             },
             .load_route_map_background => {
                 self.unloadPreloadedBackground(&self.preloaded_route_map_background);
-                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, route_map_background_path);
+                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.resources, route_map_background_path);
             },
             .load_help_background => {
                 self.unloadPreloadedBackground(&self.preloaded_help_background);
-                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, help_background_path);
+                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.resources, help_background_path);
             },
             .load_intro_script => {
                 self.unloadPreloadedTextScript(&self.preloaded_intro_script);
@@ -5009,7 +5009,7 @@ const AppState = struct {
         var loaded = if (self.takePreloadedBackground(script_path)) |loaded|
             loaded
         else
-            try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, script_path);
+            try background.Loaded.loadByPath(self.allocator, &self.resources, script_path);
         self.current_game_background_runtime = background.Runtime.init(&loaded);
         self.current_game_background = loaded;
     }
