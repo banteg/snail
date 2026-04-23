@@ -32,9 +32,11 @@ const SubLazerSlotState = gameplay_runtime_entities.SubLazerSlotState;
 // `track_center_x = 4.0` this gives `0.133333` per tick, matching the ~7.5
 // tick (~0.125s) lifetime ceiling native's `update_salt_hazard` expects.
 pub const native_salt_lifetime_step_factor: f32 = 0.033333335;
-// PORT(verified): `next_math_random_value` returns `[-16384, 16384]`;
-// `spawn_salt_hazard` multiplies the centered value by `0.0001917476` to get
-// the initial Y-rotation angle (`0.0001917476 ≈ tau / 32768`).
+// PORT(partial): native `spawn_salt_hazard` draws from shared
+// `next_math_random_value`, which returns `[-16384, 16384]`, then multiplies
+// by `0.0001917476` for the initial Y-rotation angle. The port keeps the same
+// scale but advances a runner-local RNG so salt spawn does not perturb the
+// broader gameplay random stream.
 pub const native_salt_yaw_random_scale: f32 = 0.0001917476;
 // PORT(verified): `spawn_wall2_ambient_hazard` seeds phase step as
 // `track_center_x * 0.0055555557`
@@ -133,14 +135,18 @@ pub const RingPool = struct {
     }
 };
 
-/// PORT(verified): 40-slot `cRSalt` projectile pool. Matches the layout at
-/// `game + 0x3578c0` with per-slot lifetime progress + step, world position,
-/// velocity, and yaw. `initialize_salt_hazard_pool` at
+/// PORT(partial): 40-slot `cRSalt` projectile pool. Matches the recovered slot
+/// count and runtime fields the port consumes (`game + 0x3578c0`: lifetime
+/// progress + step, world position, velocity, and yaw), but keeps those fields
+/// in a plain Zig slot instead of the native body/list object graph.
+/// `initialize_salt_hazard_pool` at
 /// `artifacts/ida/functions/00441540-initialize_salt_hazard_pool.c` zeros the
 /// state byte on every slot; `spawn_salt_hazard`
 /// (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`) allocates the
-/// first inactive slot, seeds position, velocity, lifetime step from
-/// `track_center_x * 0.033333335`, and a randomized Y rotation.
+/// first inactive slot, seeds position, lifetime step from
+/// `track_center_x * 0.033333335`, and a randomized Y rotation. Velocity is
+/// stored and integrated here, but the current caller supplies it because the
+/// native velocity writer is outside this recovered slice.
 pub const SaltHazardPool = struct {
     slots: [max_active_salt_slots]SaltSlot = [_]SaltSlot{.{}} ** max_active_salt_slots,
     last_scan_end: usize = 0,
@@ -178,12 +184,13 @@ pub const SaltHazardPool = struct {
         return total;
     }
 
-    // PORT(verified): mirror of `spawn_salt_hazard`
+    // PORT(partial): mirror of `spawn_salt_hazard`
     // (`artifacts/ida/functions/00441560-spawn_salt_hazard.c`). Allocates
-    // the first inactive slot, marks it active, seeds position + velocity
-    // from the caller's Vec3 inputs, initializes the lifetime step from
+    // the first inactive slot, marks it active, seeds position from the
+    // caller's Vec3 input, initializes the lifetime step from
     // `track_center_x * 0.033333335`, and rolls a random Y-rotation on the
-    // spawn frame.
+    // spawn frame. Velocity is caller-supplied until the native velocity
+    // ownership path is ported.
     pub fn spawn(
         self: *SaltHazardPool,
         row: usize,
@@ -254,11 +261,11 @@ pub const SaltHazardPool = struct {
 };
 
 // `next_math_random_value()` returns a signed value in `[-16384, 16384]`
-// (native `random()` shifted to zero-center). `spawn_salt_hazard` centers
-// the output by subtracting `16384.0` from the raw `0..32768` value, then
-// scales by `0.0001917476` (≈ `tau / 32768`) to get the Y-rotation angle.
-// The port keeps its own LCG state per-Runner, so the helper just wraps
-// `random_state` advancement + native-style centering + scale.
+// (native `random()` shifted to zero-center). `spawn_salt_hazard` centers the
+// output by subtracting `16384.0` from the raw `0..32768` value, then scales by
+// `0.0001917476` (≈ `tau / 32768`) to get the Y-rotation angle. The port keeps
+// its own LCG state per-Runner, so the helper wraps `random_state` advancement
+// plus native-scaled centering.
 fn nextSaltYawRadians(random_state: *u32) f32 {
     random_state.* = random_state.* *% 1103515245 +% 12345;
     const raw: u32 = (random_state.* >> 16) & 0x7FFF;
@@ -266,15 +273,16 @@ fn nextSaltYawRadians(random_state: *u32) f32 {
     return centered * native_salt_yaw_random_scale;
 }
 
-/// PORT(verified): 20-slot `cRSubLazerManager` projectile pool. Matches the
-/// layout at `game + 0x356b00` with per-slot phase + step (sprite bob),
-/// world position, velocity, and Y anchor for the oscillation.
+/// PORT(partial): 20-slot `cRSubLazerManager` projectile pool. Keeps the
+/// recovered slot count and the fields the port uses from `game + 0x356b00`
+/// (phase + step for sprite bob, world position, velocity, and Y anchor), but
+/// omits the native intrusive list, object-body, and sprite-owner subobjects.
 /// `initialize_wall2_ambient_hazard_pool`
 /// (`artifacts/ida/functions/00441650-initialize_wall2_ambient_hazard_pool.c`)
 /// zeros the state byte on every slot; `spawn_wall2_ambient_hazard` at
-/// `artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c` seeds
-/// position, velocity, phase_step = `track_center_x * 0.0055555557`, and
-/// the identity-matrix-plus-z-direction basis derived from the velocity.
+/// `artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c` seeds the
+/// position, velocity, phase step, and render basis that the port currently
+/// collapses to explicit slot fields.
 pub const SubLazerPool = struct {
     slots: [max_active_sub_lazer_slots]SubLazerSlot =
         [_]SubLazerSlot{.{}} ** max_active_sub_lazer_slots,
@@ -302,7 +310,7 @@ pub const SubLazerPool = struct {
         return total;
     }
 
-    // PORT(verified): mirror of `spawn_wall2_ambient_hazard`
+    // PORT(partial): mirror of `spawn_wall2_ambient_hazard`
     // (`artifacts/ida/functions/00441670-spawn_wall2_ambient_hazard.c`).
     // Allocates the first inactive slot, stores emitter cell back-ref,
     // position, velocity, Y anchor (native reads this from matrix +0x14 —
@@ -363,7 +371,7 @@ pub const SubLazerPool = struct {
         return allocation.slot;
     }
 
-    // PORT(verified): mirror of `update_wall2_ambient_hazard`
+    // PORT(partial): mirror of `update_wall2_ambient_hazard`
     // (`artifacts/ida/functions/0043efb0-update_wall2_ambient_hazard.c`).
     // Each active slot integrates position by velocity, advances phase,
     // and samples a sine-wave Y offset around `anchor_y`. The emitter /

@@ -182,7 +182,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 5. Tighten gameplay runtime ownership
 
 - [ ] Port the remaining ambient hazard mode gates and any non-horizontal suppressor details
-- [ ] Port the SubLazer projectile pool (`cRSubLazerManager` @ `game + 0x356b00`, 20 slots, stride 0xb0, +0.02 damage). Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by Wall2 AI via `shoot_subgoldy`. Reference: `maybe_spawn_wall2_ambient_hazard` @ 0x439d50, `update_wall2_ambient_hazard` @ 0x43efb0, `spawn_wall2_ambient_hazard` @ 0x441670. Also port the separate Salt hazard pool (`cRSalt` @ `game + 0x3578c0`, 40 slots, stride 0x98, +0.15 damage) instead of the current runner-local 8-row live-strip conflation.
+- [ ] Finish literal SubLazer and Salt pool ownership. The port now has plain-array `cRSubLazerManager` and `cRSalt` equivalents for the recovered damage lanes, but still needs the native intrusive lists, object/body owners, sprite ownership, suppression/mode gates, and any remaining non-horizontal suppressor details. Historically misnamed "Wall2 ambient pool" in these docs — the Wall2 tile is the *emitter*, the slots themselves are projectiles fired by Wall2 AI via `shoot_subgoldy`. Reference: `maybe_spawn_wall2_ambient_hazard` @ 0x439d50, `update_wall2_ambient_hazard` @ 0x43efb0, `spawn_wall2_ambient_hazard` @ 0x441670, `cRSalt` @ `game + 0x3578c0`.
 - [ ] Recover the exact `gate_18` input/controller source
 - [ ] Recover parcel-flight and row-event widget timing details that still rely on app-side or inferred helpers
 - [ ] Port the missing score events tied to replay, jetpack, slug kills, and the remaining unresolved branches

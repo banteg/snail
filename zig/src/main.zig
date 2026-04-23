@@ -1115,6 +1115,10 @@ const AppState = struct {
     tutorial_reference_score: u32 = 0,
     gameplay_voice_manager: gameplay_voice.VoiceManager = .{},
     native_gameplay_voice_manager: gameplay_voice.NativeManager = .{},
+    // Mirrors native byte `game + 0x430054` checked by
+    // `apply_damage_gauge_delta` before dispatching animation id 6. No writer
+    // has been recovered yet; the clear default matches normal damage entry.
+    native_damage_entry_animation_blocked: bool = false,
     announced_slug_voice_cells: [max_announced_slug_voice_cells]gameplay.RowTarget = [_]gameplay.RowTarget{.{ .row = 0, .lane = 0 }} ** max_announced_slug_voice_cells,
     announced_slug_voice_cell_count: usize = 0,
     active_level_segment_index: ?usize = null,
@@ -2984,18 +2988,16 @@ const AppState = struct {
             // PORT(verified): native `apply_damage_gauge_delta`
             // (`artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c:17-29`)
             // tries the `damage_entry` voice first; when it returns zero the
-            // ouch-fallback plays and the damaged cutscene animation
-            // dispatches unconditionally within the else branch (the
-            // `data_4df904 + 4390996` global anim gate is an additional
-            // gate that's still unresolved). Route the clip dispatch from
-            // the same branch so it fires only when the ouch fallback
-            // wins, matching the native voice-gated contract rather than
-            // dispatching on every damage entry.
+            // ouch-fallback plays. The damaged animation id 6 is still gated
+            // by native byte `game + 0x430054`; the base animation is queued
+            // from the same fallback branch either way.
             const played_damage = self.tryPlayNativeGameplayVoiceSetPlayed(.damage, .wait_for_frequency) catch false;
             if (!played_damage) {
                 self.tryPlayNativeGameplayVoiceSet(.ouch, .wait_for_idle) catch {};
                 if (self.level_runner) |*runner| {
-                    runner.dispatchCutsceneAnimation(.damaged, true, null);
+                    if (!self.native_damage_entry_animation_blocked) {
+                        runner.dispatchCutsceneAnimation(.damaged, true, null);
+                    }
                     runner.dispatchCutsceneAnimation(.base, false, null);
                 }
             }
