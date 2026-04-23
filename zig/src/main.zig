@@ -1115,11 +1115,6 @@ const AppState = struct {
         self.current_gameplay_sprites = try gameplay_art.loadSpriteArt(self.allocator, &self.catalog);
     }
 
-    fn reloadGameplaySoundFx(self: *AppState) !void {
-        self.unloadGameplaySoundFx();
-        self.current_gameplay_sound_fx = try gameplay_art.loadSoundFx(self.allocator, &self.catalog, self.audio_ready);
-    }
-
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
         if (self.current_gameplay_turbo_animation) |*animation| {
             return &animation.rendered;
@@ -5391,7 +5386,6 @@ const AppState = struct {
         self.unloadGameplaySalt();
         self.unloadGameplayActorModels();
         self.unloadGameplaySprites();
-        self.unloadGameplaySoundFx();
         self.gameplay_effects.clear();
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
@@ -5439,7 +5433,6 @@ const AppState = struct {
                     try self.reloadGameplaySalt();
                     try self.reloadGameplayActorModels();
                     try self.reloadGameplaySprites();
-                    try self.reloadGameplaySoundFx();
                     self.applyAudioConfigVolumes();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
