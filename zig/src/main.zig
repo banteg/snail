@@ -598,7 +598,7 @@ fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []c
 }
 
 fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
-    return runner.jetpack.active and runner.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold;
+    return runner.jetpack.thrust_visual_active;
 }
 
 const GameplayEffectKind = enum {
@@ -930,18 +930,18 @@ test "native jetpack visual presentation follows the recovered 0.94 shutoff edge
     var runner = gameplay.Runner{};
     try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
 
-    runner.jetpack.active = true;
+    runner.jetpack.arm();
     runner.jetpack.progress = 0.25;
     try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
 
     runner.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
     try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
 
-    runner.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01;
+    runner.jetpack.update(false, false);
     try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+    try std.testing.expect(runner.jetpack.active);
 
-    runner.jetpack.active = false;
-    runner.jetpack.progress = 0.0;
+    runner.jetpack.disarm();
     try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
 }
 
@@ -3255,6 +3255,9 @@ const AppState = struct {
         if (current.counters.health_pickups > previous.counters.health_pickups) {
             self.spawnGameplayHealthPickupEffects(previous, current, preview);
         }
+        if (current.jetpack.jet_particles_active) {
+            self.spawnGameplayJetParticleEffects(current, preview);
+        }
         if (current.counters.garbage_hits > previous.counters.garbage_hits or current.counters.salt_hits > previous.counters.salt_hits or current.counters.turret_hits > previous.counters.turret_hits) {
             const impact_origin = current.last_garbage_hit_position orelse current.last_salt_hit_position orelse current.worldPosition(preview, 0.44);
             self.spawnGameplayEffect(
@@ -3336,6 +3339,48 @@ const AppState = struct {
                     .white,
                 );
             }
+        }
+    }
+
+    // PORT(partial): native `update_jet_particles` drives a 15x2 persistent SMOKE.TGA
+    // sprite bank from the player's live matrix while the jet particle owner is armed.
+    // The port feeds the same lifecycle into the generic smoke effect system until the
+    // dedicated nozzle sprite owner is represented directly.
+    fn spawnGameplayJetParticleEffects(
+        self: *AppState,
+        current: gameplay.Runner,
+        preview: *const track.LoadedLevelPreview,
+    ) void {
+        const forward = normalizeVector3(current.worldForward(preview));
+        const up = normalizeVector3(current.worldUp(preview));
+        var right = crossVector3(up, forward);
+        if (vectorLength(right) <= 0.0001) {
+            right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
+        } else {
+            right = normalizeVector3(right);
+        }
+
+        const origin = current.worldPosition(preview, 0.18);
+        const alpha = std.math.clamp(current.jetpack.warning_intensity, 0.0, 1.0);
+        const size = std.math.lerp(@as(f32, 0.16), @as(f32, 0.42), alpha);
+        const tint_alpha: u8 = @intFromFloat(std.math.lerp(@as(f32, 96.0), @as(f32, 224.0), alpha));
+        const backward = -0.10 - (0.18 * alpha);
+        const upward = 0.03 + (0.05 * alpha);
+
+        for ([_]f32{ -0.16, 0.16 }) |side| {
+            self.spawnGameplayEffectWithVelocity(
+                .smoke,
+                offsetPosition(origin, right, up, forward, side, -0.03, -0.24),
+                .{
+                    .x = (forward.x * backward) + (up.x * upward) + (right.x * side * 0.04),
+                    .y = (forward.y * backward) + (up.y * upward) + (right.y * side * 0.04),
+                    .z = (forward.z * backward) + (up.z * upward) + (right.z * side * 0.04),
+                },
+                size,
+                size,
+                10,
+                .{ .r = 255, .g = 255, .b = 255, .a = tint_alpha },
+            );
         }
     }
 
@@ -9901,6 +9946,46 @@ test "health pickup burst uses the recovered smoke packet and downward drift" {
     try std.testing.expectApproxEqAbs(effect.velocity.x, updated.velocity.x, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.y - 0.0002, updated.velocity.y, 0.0001);
     try std.testing.expectApproxEqAbs(effect.velocity.z, updated.velocity.z, 0.0001);
+}
+
+test "jetpack particles use recovered armed lifecycle smoke packets" {
+    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
+    defer catalog.deinit();
+
+    const entry = catalog.dat.entryByPath(default_level_path) orelse return error.EntryNotFound;
+    var loaded_level = try level.loadFromArchive(std.testing.allocator, &catalog, entry);
+    defer loaded_level.deinit();
+
+    var loaded_track_preview = try track.LoadedLevelPreview.loadWithOptions(
+        std.testing.allocator,
+        &catalog,
+        &loaded_level,
+        .{ .load_models = false },
+    );
+    defer loaded_track_preview.deinit();
+
+    var runner = gameplay.Runner.init(&loaded_track_preview);
+    runner.jetpack.arm();
+    runner.jetpack.warning_intensity = 0.5;
+
+    var state: AppState = undefined;
+    state.active_gameplay_effects = [_]GameplayEffect{.{}} ** max_active_gameplay_effects;
+    state.active_gameplay_effect_count = 0;
+
+    state.spawnGameplayJetParticleEffects(runner, &loaded_track_preview);
+
+    try std.testing.expectEqual(@as(usize, 2), state.active_gameplay_effect_count);
+    const left = state.active_gameplay_effects[0];
+    const right = state.active_gameplay_effects[1];
+
+    try std.testing.expectEqual(GameplayEffectKind.smoke, left.kind);
+    try std.testing.expectEqual(GameplayEffectKind.smoke, right.kind);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.29), left.width, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.29), left.height, 0.0001);
+    try std.testing.expectEqual(@as(u16, 10), left.ticks_remaining);
+    try std.testing.expectEqual(@as(u8, 160), left.tint.a);
+    try std.testing.expect(left.position.x != right.position.x or left.position.z != right.position.z);
+    try std.testing.expect(left.velocity.x != right.velocity.x or left.velocity.z != right.velocity.z);
 }
 
 test "selected level record override drives live run tuning lanes" {

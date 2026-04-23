@@ -140,12 +140,8 @@ pub fn nativeMovementSoundVariantIndexForSample(sample: u32, comptime count: usi
 
 pub fn nativeJetpackSoundCues(previous: gameplay.Runner, current: gameplay.Runner) NativeJetpackSoundCues {
     return .{
-        .activate = !previous.jetpack.active and current.jetpack.active,
-        .deactivate = (previous.jetpack.active and current.jetpack.active and
-            previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold and
-            current.jetpack.progress > gameplay_assets.native_jetpack_visual_shutoff_threshold) or
-            (previous.jetpack.active and !current.jetpack.active and
-                previous.jetpack.progress <= gameplay_assets.native_jetpack_visual_shutoff_threshold),
+        .activate = !previous.jetpack.thrust_visual_active and current.jetpack.thrust_visual_active,
+        .deactivate = previous.jetpack.thrust_visual_active and !current.jetpack.thrust_visual_active,
     };
 }
 
@@ -357,34 +353,29 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     current = previous;
     try std.testing.expectEqual(NativeJetpackSoundCues{}, nativeJetpackSoundCues(previous, current));
 
-    current.jetpack.active = true;
+    current.jetpack.arm();
     try std.testing.expect(nativeJetpackSoundCues(previous, current).activate);
     try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
 
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold,
-    } };
+    previous = gameplay.Runner{};
+    previous.jetpack.arm();
+    previous.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
     current = previous;
-    current.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01;
+    current.jetpack.update(false, false);
     try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
 
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = 0.25,
-    } };
+    previous = gameplay.Runner{};
+    previous.jetpack.arm();
     current = previous;
-    current.jetpack.active = false;
-    current.jetpack.progress = 0.0;
+    current.jetpack.disarm();
     try std.testing.expect(nativeJetpackSoundCues(previous, current).deactivate);
 
-    previous = gameplay.Runner{ .jetpack = .{
-        .active = true,
-        .progress = gameplay_assets.native_jetpack_visual_shutoff_threshold + 0.01,
-    } };
+    previous = gameplay.Runner{};
+    previous.jetpack.arm();
+    previous.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
+    previous.jetpack.update(false, false);
     current = previous;
-    current.jetpack.active = false;
-    current.jetpack.progress = 0.0;
+    current.jetpack.disarm();
     try std.testing.expect(!nativeJetpackSoundCues(previous, current).deactivate);
 }
 

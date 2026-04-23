@@ -9303,6 +9303,7 @@ test "jetpack gauge enters near-empty warning and skips warning math near route 
     // end-of-course band only to skip warning-math presentation that tick; the gauge
     // stays state 1. Assert the gauge remains active, wobbles are not updated, and
     // the band stays at its pre-call default.
+    runner.jetpack.disarm();
     runner.armJetpackGauge();
     fixture.preview.course_end_threshold = 40.0;
     runner.row_position = 35.1;

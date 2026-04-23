@@ -31,6 +31,10 @@ pub const WarningBand = enum {
 pub const Gauge = struct {
     active: bool = false,
     progress: f32 = 0.0,
+    thrust_visual_active: bool = false,
+    jet_particles_active: bool = false,
+    jet_particle_generation: u32 = 0,
+    jet_particle_shutdown_generation: u32 = 0,
     warning_intensity: f32 = 0.0,
     pulse_envelope: f32 = 0.0,
     warning_band: WarningBand = .idle,
@@ -39,18 +43,32 @@ pub const Gauge = struct {
     wobble_alpha: f32 = 0.0,
 
     pub fn arm(self: *Gauge) void {
-        // PORT(verified): native `arm_jetpack_gauge` @ 0x43a980 sets state=1, zeroes
-        // progress and the three wobble fields, and calls `set_snail_jetpack(1)` plus
-        // `initialize_jet_particles`. The pulse envelope is not written here; native
-        // only populates it from `warning_intensity` during the first update tick.
+        // PORT(verified): native `arm_jetpack_gauge` @ 0x43a980 returns immediately
+        // unless state is idle, then sets state=1, zeroes progress and the three
+        // wobble fields, and calls `set_snail_jetpack(1)` plus `initialize_jet_particles`.
+        if (self.active) return;
+
+        const particle_generation = self.jet_particle_generation +% 1;
+        const particle_shutdown_generation = self.jet_particle_shutdown_generation;
         self.* = .{
             .active = true,
+            .thrust_visual_active = true,
+            .jet_particles_active = true,
+            .jet_particle_generation = particle_generation,
+            .jet_particle_shutdown_generation = particle_shutdown_generation,
             .warning_band = .steady,
         };
     }
 
     pub fn disarm(self: *Gauge) void {
+        const particle_generation = self.jet_particle_generation;
+        const particle_shutdown_generation = if (self.jet_particles_active)
+            self.jet_particle_shutdown_generation +% 1
+        else
+            self.jet_particle_shutdown_generation;
         self.* = .{};
+        self.jet_particle_generation = particle_generation;
+        self.jet_particle_shutdown_generation = particle_shutdown_generation;
     }
 
     /// Mirrors `update_jetpack_gauge` @ 0x43a390 state 1. `forced_warning` is the
@@ -60,6 +78,7 @@ pub const Gauge = struct {
     pub fn update(self: *Gauge, forced_warning: bool, row_near_end: bool) void {
         if (!self.active) return;
 
+        const previous_progress = self.progress;
         self.progress += tick_step;
         // PORT(verified): native @ 0x43a3c9 skips the warning-band math when sum > 1.0
         // or when the player's world-z is within 5 rows of the course end, but the
@@ -84,17 +103,17 @@ pub const Gauge = struct {
                 0.0,
                 1.0,
             );
-            // PORT(verified): native @ 0x43a441 fires a one-shot
-            // `set_snail_jetpack(0)` + `uninit_jet_particles` when previous progress
-            // was <= 0.94 and current progress is > 0.94. Every observable side
-            // effect is already covered by the Zig port's parallel scaffold:
-            //   * sfx 0x10 (deactivate) fires via `nativeJetpackSoundCues.deactivate`
-            //     on exactly this edge (see `gameplay/audio_cues.zig:141-150`).
-            //   * thrust-cone mesh swap back to baseline is driven by
-            //     `nativeJetpackVisualPresentationActive(runner)`, so crossing the
-            //     edge already hides the thrust mesh via `GameplayJetpackVisualState`.
-            //   * `uninit_jet_particles` targets a 15x2 sprite column pool the port
-            //     does not own; there is nothing to tear down.
+            // PORT(verified): native @ 0x43a441 fires this one-shot side effect only
+            // on the 0.94 crossing. Gauge state stays live, but `set_snail_jetpack(0)`
+            // hides the thrust channel and `uninit_jet_particles` kills the 15x2
+            // sprite bank.
+            if (previous_progress <= warning_threshold and self.progress > warning_threshold) {
+                self.thrust_visual_active = false;
+                if (self.jet_particles_active) {
+                    self.jet_particles_active = false;
+                    self.jet_particle_shutdown_generation +%= 1;
+                }
+            }
         }
 
         const warning_intensity = 1.0 - ((@cos(warning_phase * std.math.pi) + 1.0) * 0.5);
@@ -110,3 +129,32 @@ pub const Gauge = struct {
         return std.math.clamp(1.0 - self.progress, 0.0, 1.0);
     }
 };
+
+test "arm starts jet particles once and does not refill while active" {
+    var gauge = Gauge{};
+
+    gauge.arm();
+    try std.testing.expect(gauge.active);
+    try std.testing.expect(gauge.thrust_visual_active);
+    try std.testing.expect(gauge.jet_particles_active);
+    try std.testing.expectEqual(@as(u32, 1), gauge.jet_particle_generation);
+
+    gauge.progress = 0.5;
+    gauge.arm();
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), gauge.progress, 0.0001);
+    try std.testing.expectEqual(@as(u32, 1), gauge.jet_particle_generation);
+}
+
+test "near empty edge shuts down thrust particles without disarming gauge" {
+    var gauge = Gauge{};
+    gauge.arm();
+    gauge.progress = warning_threshold;
+
+    gauge.update(false, false);
+
+    try std.testing.expect(gauge.active);
+    try std.testing.expect(!gauge.thrust_visual_active);
+    try std.testing.expect(!gauge.jet_particles_active);
+    try std.testing.expectEqual(@as(u32, 1), gauge.jet_particle_shutdown_generation);
+    try std.testing.expectEqual(WarningBand.near_empty, gauge.warning_band);
+}
