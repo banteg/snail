@@ -977,7 +977,7 @@ const AppState = struct {
         runner.dispatchCutsceneAnimation(desired, true, null);
     }
 
-    fn reloadGameplayBarrier(self: *AppState) !void {
+    fn loadGameplayBarrier(self: *AppState) !void {
         self.unloadGameplayBarrier();
 
         if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) != null) {
@@ -985,7 +985,7 @@ const AppState = struct {
         }
     }
 
-    fn reloadGameplayLazer(self: *AppState) !void {
+    fn loadGameplayLazer(self: *AppState) !void {
         self.unloadGameplayLazer();
 
         if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) != null) {
@@ -997,7 +997,7 @@ const AppState = struct {
         }
     }
 
-    fn reloadGameplaySalt(self: *AppState) !void {
+    fn loadGameplaySalt(self: *AppState) !void {
         self.unloadGameplaySalt();
 
         if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) != null) {
@@ -1005,7 +1005,7 @@ const AppState = struct {
         }
     }
 
-    fn reloadGameplayActorModels(self: *AppState) !void {
+    fn loadGameplayActorModels(self: *AppState) !void {
         self.unloadGameplayActorModels();
 
         if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) != null) {
@@ -1070,10 +1070,10 @@ const AppState = struct {
     }
 
     fn loadGameplayStaticResources(self: *AppState) !void {
-        try self.reloadGameplayBarrier();
-        try self.reloadGameplayLazer();
-        try self.reloadGameplaySalt();
-        try self.reloadGameplayActorModels();
+        try self.loadGameplayBarrier();
+        try self.loadGameplayLazer();
+        try self.loadGameplaySalt();
+        try self.loadGameplayActorModels();
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
