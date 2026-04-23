@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
+const resource_store = @import("resource_store.zig");
 
 pub const texture_path = "SPRITES/LOADING.TGA";
 pub const bar_texture_path = "SPRITES/LOADINGBARON.TGA";
@@ -33,10 +34,10 @@ pub const Loaded = struct {
     background_texture: assets.LoadedTexture,
     bar_texture: assets.LoadedTexture,
 
-    pub fn load(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !Loaded {
+    pub fn load(store: *resource_store.Store) !Loaded {
         return .{
-            .background_texture = try catalog.loadTextureByPath(allocator, texture_path),
-            .bar_texture = try catalog.loadTextureByPath(allocator, bar_texture_path),
+            .background_texture = try store.texture(texture_path),
+            .bar_texture = try store.texture(bar_texture_path),
         };
     }
 

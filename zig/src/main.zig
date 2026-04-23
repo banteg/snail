@@ -713,7 +713,7 @@ const AppState = struct {
     }
 
     fn warmupSmokeTest(self: *AppState) !void {
-        var loaded_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.resources.catalog);
+        var loaded_loading_screen = try loading_screen.Loaded.load(&self.resources);
         defer loaded_loading_screen.deinit();
         if (loaded_loading_screen.background_texture.texture.width <= 0 or loaded_loading_screen.bar_texture.texture.width <= 0) {
             return error.InvalidLoadingScreenTexture;
@@ -5016,7 +5016,7 @@ const AppState = struct {
 
     fn loadLoadingScreen(self: *AppState) !void {
         self.unloadLoadingScreen();
-        self.current_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.resources.catalog);
+        self.current_loading_screen = try loading_screen.Loaded.load(&self.resources);
     }
 
     fn loadTextScript(self: *AppState, path: []const u8) !void {
