@@ -1,11 +1,11 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_activation = @import("activation.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 const std = @import("std");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 // PORT(verified): `initialize_options_menu` seeds the fullscreen row at `y = 75`, then nudges
 // the widget down by `+8`, so the final authored-space anchor is `83`.

@@ -1,12 +1,12 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const assets = @import("../assets.zig");
 const frontend_widget = @import("../frontend/widget.zig");
 const game_font = @import("../game_font.zig");
 const gameplay = @import("../gameplay.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 const row_event_widget_frame_width: f32 = 88.0;
 const row_event_widget_frame_height: f32 = 30.0;
@@ -402,11 +402,11 @@ fn drawIconCounter(state: anytype, layout: VirtualLayout, glyph: game_font.IconG
 }
 
 fn drawAppText(state: anytype, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    app_ui.drawText(.{ .font = &state.ui_font }, text, x, y, font_size, color);
+    ui.drawText(.{ .font = &state.ui_font }, text, x, y, font_size, color);
 }
 
 fn measureAppText(state: anytype, text: []const u8, font_size: i32) i32 {
-    return app_ui.measureText(.{ .font = &state.ui_font }, text, font_size);
+    return ui.measureText(.{ .font = &state.ui_font }, text, font_size);
 }
 
 fn drawTextureLocalRectSource(layout: VirtualLayout, loaded_texture: assets.LoadedTexture, source: rl.Rectangle, local_x: f32, local_y: f32, local_width: f32, local_height: f32, tint: rl.Color) void {
@@ -438,4 +438,3 @@ fn drawTextureLocalRect(layout: VirtualLayout, loaded_texture: assets.LoadedText
         tint,
     );
 }
-

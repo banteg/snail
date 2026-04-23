@@ -1,7 +1,7 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_widget = @import("widget.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 pub const message_y: f32 = 435.0;
 

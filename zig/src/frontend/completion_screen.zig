@@ -1,13 +1,13 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const assets = @import("../assets.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 const gameplay = @import("../gameplay.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 pub const title_y: f32 = 80.0;
 pub const package_y: f32 = 160.0;
@@ -340,11 +340,11 @@ fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
 }
 
 fn drawAppText(state: anytype, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    app_ui.drawText(.{ .font = &state.ui_font }, text, x, y, font_size, color);
+    ui.drawText(.{ .font = &state.ui_font }, text, x, y, font_size, color);
 }
 
 fn drawWrappedText(state: anytype, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    return app_ui.drawWrappedText(.{ .font = &state.ui_font }, text, x, y, max_width, line_height, color);
+    return ui.drawWrappedText(.{ .font = &state.ui_font }, text, x, y, max_width, line_height, color);
 }
 
 fn drawTextureLocalRectSource(

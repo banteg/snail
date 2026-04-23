@@ -1,9 +1,9 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 // PORT(verified): `initialize_main_menu` seeds the first button at `y = 90`, then chains
 // High Scores, Options, Credits, and Exit with `sub_4027B0`. Windows seeds Exit with

@@ -26,7 +26,7 @@ The architecture is serviceable for port discovery but suboptimal for continued 
 - Rendering/resource ownership and simulation ownership are not consistently separated. The good boundary is: simulation modules emit plain state or transient effects; `main.zig` maps those to loaded textures/models/sounds.
 - `resource_store.zig` now owns the archive catalog plus cached texture, sound, model, and object handles. App/global art should use `store.texture(...)`, `store.sound(...)`, `store.model(...)`, or `store.object(...)`; direct catalog loaders should be limited to stateful streams, active animations, parsers, and generated track-preview internals.
 - Archive member bytes and catalogs are already resident for the full app lifetime, so small global resource sets should follow that shape too. Gameplay sound effects, gameplay sprites, and static gameplay models/objects are app-global resources, not per-level state.
-- `app_audio.zig` now owns app audio dispatch, music/preview slots, gameplay sound cues, native/gameplay voice routing, and config-volume application. `main.zig` should call that module directly instead of growing new `AppState` audio methods.
+- `app/audio.zig` now owns app audio dispatch, music/preview slots, gameplay sound cues, native/gameplay voice routing, and config-volume application. `main.zig` should call that module directly instead of growing new `AppState` audio methods.
 - Existing focused modules (`frontend/**`, `gameplay/jetpack.zig`, `gameplay/damage.zig`, `gameplay/hazards.zig`, `gameplay/parcel.zig`, `gameplay/combat.zig`, `gameplay/effects.zig`, `gameplay/presentation.zig`) are the better shape: small controller/pool types with tests near the behavior.
 
 Treat future refactors as opportunistic architecture repair, not broad churn. When touching a subsystem, extract the data/controller boundary that the native code already implies, then land the port behavior through that boundary.
@@ -60,10 +60,10 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/outer_bridge.zig` | Outer bridge transition / saved-owner machinery: `applyOuterBridgeTeardown`, `runOuterBridgeTransition`, `outerOwnerFor*` helpers, `outerBridgeTransitionClearsSelectedReplayContext`, `savedOuterOwnerForLevelLaunch`, `resumeActiveRunAfterRespawnBridge`, `beginRespawnRun`, `abandonActiveRun`, `beginFailedRun`. |
 | `app/run_result.zig` | Pending run result accounting: `PendingRunResult`, `RespawnBridgeState`, `StandalonePostLevelHighScoreEntry`, `commitRunResultIfNeeded`, `applySelectedReplayResultOverrides`, `pendingRunHighScoreContext`, `standalonePostLevelHighScoreEntry`, `currentFailedRunResult`, `beginCompletedRunOverlay`, `finalizeCompletedRunScreen`, `cancelPostLevelHighScoreEntry`, `clearPostLevelHighScoreEntry`, `failedResultPostLevelHighScoreEntry`. |
 | `app/level_loader.zig` | Level + segment loaders: `loadGameLevel`, `reloadLevel`, `reloadLevelSegment`, `syncActiveLevelSegment`, related catalog helpers. |
-| `app_audio.zig` | Audio helpers: `playMusicByPath`, `playGameplayEffect`, `stopAudioPreview`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `playLevelSegmentSample`, `updateGameplayAmbientVoices`, plus private native/gameplay voice routing helpers. |
+| `app/audio.zig` | Audio helpers: `playMusicByPath`, `playGameplayEffect`, `stopAudioPreview`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `playLevelSegmentSample`, `updateGameplayAmbientVoices`, plus private native/gameplay voice routing helpers. |
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. `main.zig` keeps texture selection and billboard drawing because it owns loaded Raylib resources. |
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
-| `app_art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
+| `frontend/art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
 | `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
 | `app/screenshots.zig` | Screenshot request + capture path: `ScreenshotRequest`, `BillboardUv`, related capture bookkeeping. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
@@ -85,7 +85,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 10. Phase A10 — presentation (snail_skin, weapon flags, movement timers, invincible/slow/shot cooldowns) → `gameplay/presentation.zig`.
 11. Phase A11 — score + counters + defeated slugs + visible lives + recent events (~10 fields, 80+ external call sites) → `gameplay/scoring.zig`. Highest external-churn; defer until the more self-contained subsystems are done.
 12. Phase B0 — **done**. `gameplay/effects.zig` owns transient gameplay effect state and runner-driven effect emission. `AppState` now owns a `gameplay_effects.Controller`, and `main.zig` only renders the effect list with loaded sprite assets.
-13. Phase B1 — **partial**. `app_art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. Remaining B1 work: screenshots and audio helpers.
+13. Phase B1 — **partial**. `frontend/art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. `gameplay/resources.zig` owns static gameplay resource lifetimes. Remaining B1 work: screenshots.
 14. Phase B2 — main.zig run result + outer bridge + level loader.
 15. Phase B3 — main.zig frontend flow.
 

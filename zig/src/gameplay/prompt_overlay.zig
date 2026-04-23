@@ -1,9 +1,9 @@
 const rl = @import("raylib");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_widget = @import("../frontend/widget.zig");
 const level_prompt = @import("../level_prompt.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 const gameplay_prompt_anchor_y: f32 = 330.0;
 const tutorial_prompt_anchor_y: f32 = 116.0;

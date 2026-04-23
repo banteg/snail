@@ -1,9 +1,9 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend = @import("../frontend.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 // PORT(verified): `initialize_new_game_menu` seeds Tutorial at `y = 80`, chains Postal,
 // Time Trial, and Challenge Mode with `stack_widget_below`, places Help explicitly at

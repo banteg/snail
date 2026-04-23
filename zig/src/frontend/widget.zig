@@ -1,6 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const game_font = @import("../game_font.zig");
 
 pub const WidgetType = enum(u8) {
@@ -285,7 +285,7 @@ pub fn colorsForState(state: TextButtonState, disabled: bool) ButtonColors {
 }
 
 pub fn drawMenuButton(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     art: Art,
     font: *const game_font.Loaded,
     text: []const u8,
@@ -297,7 +297,7 @@ pub fn drawMenuButton(
 }
 
 pub fn drawTextButton(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     art: Art,
     font: *const game_font.Loaded,
     widget_type: WidgetType,
@@ -310,7 +310,7 @@ pub fn drawTextButton(
 }
 
 pub fn drawTextButtonWithOptions(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     art: Art,
     font: *const game_font.Loaded,
     widget_type: WidgetType,
@@ -463,7 +463,7 @@ pub fn sliderStackBelowLayout(layout: SliderLayout) f32 {
 }
 
 pub fn drawSliderMenuRow(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     art: Art,
     slider_textures: SliderTextures,
     font: *const game_font.Loaded,
@@ -560,7 +560,7 @@ pub fn drawSliderMenuRow(
 }
 
 pub fn drawNineSliceFrame(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     texture: rl.Texture2D,
     rect: Rect,
     edge: f32,
@@ -580,7 +580,7 @@ fn expandRect(rect: Rect, padding: f32) Rect {
 }
 
 fn drawNineSlice(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     texture: rl.Texture2D,
     rect: Rect,
     edge: f32,
@@ -622,7 +622,7 @@ fn drawNineSlice(
 }
 
 fn drawSlice(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     texture: rl.Texture2D,
     source: rl.Rectangle,
     local_x: f32,
@@ -643,7 +643,7 @@ fn drawSlice(
 }
 
 fn drawTextureLocalRectSource(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     texture: rl.Texture2D,
     source: rl.Rectangle,
     local_x: f32,
@@ -664,7 +664,7 @@ fn drawTextureLocalRectSource(
 }
 
 fn drawTextureLocalRect(
-    layout: app_ui.VirtualLayout,
+    layout: ui.VirtualLayout,
     texture: rl.Texture2D,
     local_x: f32,
     local_y: f32,

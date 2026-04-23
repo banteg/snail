@@ -1,7 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app_audio = @import("../app_audio.zig");
-const app_ui = @import("../app_ui.zig");
+const audio = @import("../app/audio.zig");
+const ui = @import("../ui.zig");
 const background = @import("../background.zig");
 const debug_levels = @import("levels.zig");
 const object = @import("../object.zig");
@@ -104,7 +104,7 @@ pub fn initialize(state: anytype) !void {
 pub fn primeAudioPreview(state: anytype) !void {
     if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     try previewSound(state);
-    app_audio.stopAudioPreview(state);
+    audio.stopAudioPreview(state);
     try previewMusic(state);
 }
 
@@ -224,7 +224,7 @@ pub fn handleInput(state: anytype) !void {
             try previewMusic(state);
         }
         if (rl.isKeyPressed(.s)) {
-            app_audio.stopAudioPreview(state);
+            audio.stopAudioPreview(state);
         }
     }
 
@@ -308,7 +308,7 @@ pub fn handleLightStreakInput(view: *LightStreakView) void {
 fn setMode(state: anytype, mode: Mode) !void {
     if (state.mode == mode) return;
     if (state.mode == .audio) {
-        app_audio.stopAudioPreview(state);
+        audio.stopAudioPreview(state);
     }
     state.mode = mode;
 }
@@ -320,7 +320,7 @@ fn stepSelection(state: anytype, delta: isize) !void {
             try reloadTexture(state);
         },
         .audio => {
-            app_audio.stopAudioPreview(state);
+            audio.stopAudioPreview(state);
             state.audio_index = wrappedIndex(state.resources.catalog.audio_entries.len, state.audio_index, delta);
         },
         .models => {
@@ -356,15 +356,15 @@ fn previewSound(state: anytype) !void {
         &state.resources,
         state.resources.catalog.audio_entries[state.audio_index].path,
     )) orelse return;
-    app_audio.applyAudioConfigVolumes(state);
+    audio.applyAudioConfigVolumes(state);
     rl.playSound(sound.sound);
 }
 
 fn previewMusic(state: anytype) !void {
     if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
-    app_audio.stopAudioPreview(state);
+    audio.stopAudioPreview(state);
     state.current_music = try state.resources.catalog.loadMusic(state.allocator, state.resources.catalog.audio_entries[state.audio_index]);
-    app_audio.applyAudioConfigVolumes(state);
+    audio.applyAudioConfigVolumes(state);
     rl.playMusicStream(state.current_music.?.music);
 }
 
@@ -903,12 +903,12 @@ fn drawObjectViewport(state: anytype) void {
     loaded_object.draw();
 }
 
-fn uiContext(state: anytype) app_ui.Context {
+fn uiContext(state: anytype) ui.Context {
     return .{ .font = &state.ui_font };
 }
 
 fn drawAppText(state: anytype, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    app_ui.drawText(uiContext(state), text, x, y, font_size, color);
+    ui.drawText(uiContext(state), text, x, y, font_size, color);
 }
 
 fn triangleCountForObject(loaded_object: object.LoadedObject) usize {

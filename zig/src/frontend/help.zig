@@ -1,8 +1,8 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 pub const Action = enum {
     back,

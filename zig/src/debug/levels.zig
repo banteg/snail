@@ -1,7 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const gameplay = @import("../gameplay.zig");
 const level = @import("../level.zig");
 const segment = @import("../segment.zig");
@@ -378,16 +378,16 @@ pub fn drawSegmentViewport(state: anytype) void {
     }
 }
 
-fn uiContext(state: anytype) app_ui.Context {
+fn uiContext(state: anytype) ui.Context {
     return .{ .font = &state.ui_font };
 }
 
 fn drawText(state: anytype, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    app_ui.drawText(uiContext(state), text, x, y, font_size, color);
+    ui.drawText(uiContext(state), text, x, y, font_size, color);
 }
 
 fn drawWrappedText(state: anytype, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    return app_ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
+    return ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
 fn countAnnotatedRows(rows: []const segment.Row) usize {

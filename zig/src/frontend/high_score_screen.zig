@@ -1,11 +1,11 @@
 const std = @import("std");
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 const frontend_bridge = @import("bridge.zig");
 const high_score = @import("../high_score.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 // PORT(verified): `initialize_high_score_screen` uses title `y = 64`, row start `111`,
 // row pitch `27`, and footer row `111 + 10*27 = 381`. Each visible row is a separate

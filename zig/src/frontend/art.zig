@@ -1,10 +1,10 @@
 const std = @import("std");
 
-const app = @import("app.zig");
-const assets = @import("assets.zig");
-const frontend_widget = @import("frontend/widget.zig");
-const galaxy = @import("galaxy.zig");
-const resource_store = @import("resource_store.zig");
+const app = @import("../app.zig");
+const assets = @import("../assets.zig");
+const frontend_widget = @import("widget.zig");
+const galaxy = @import("../galaxy.zig");
+const resource_store = @import("../resource_store.zig");
 
 pub const SliderArt = struct {
     less: ?assets.LoadedTexture = null,

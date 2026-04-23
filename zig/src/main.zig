@@ -1,9 +1,10 @@
 const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
-const app_audio = @import("app_audio.zig");
-const app_art = @import("app_art.zig");
-const app_ui = @import("app_ui.zig");
+const audio = @import("app/audio.zig");
+const frontend_art = @import("frontend/art.zig");
+const gameplay_resources = @import("gameplay/resources.zig");
+const ui = @import("ui.zig");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
@@ -97,12 +98,12 @@ const routeMenuActionLabel = frontend.routeMenuActionLabel;
 const routeMenuHint = frontend.routeMenuHint;
 const frontendLevelPath = frontend.frontendLevelPath;
 
-const MenuPanels = app_ui.MenuPanels;
-const VirtualLayout = app_ui.VirtualLayout;
-const FrontendSoundFx = app_art.FrontendSoundFx;
-const FrontendWidgetArt = app_art.FrontendWidgetArt;
-const RouteMapArt = app_art.RouteMapArt;
-const SliderArt = app_art.SliderArt;
+const MenuPanels = ui.MenuPanels;
+const VirtualLayout = ui.VirtualLayout;
+const FrontendSoundFx = frontend_art.FrontendSoundFx;
+const FrontendWidgetArt = frontend_art.FrontendWidgetArt;
+const RouteMapArt = frontend_art.RouteMapArt;
+const SliderArt = frontend_art.SliderArt;
 const GameplayInvincibleModelSet = gameplay_art.InvincibleModelSet;
 const GameplayJetpackModelSet = gameplay_art.JetpackModelSet;
 const GameplaySoundFx = gameplay_art.SoundFx;
@@ -528,17 +529,17 @@ const AppState = struct {
         errdefer if (frontend_canvas) |canvas| canvas.unload();
         var frontend_cursor_texture = try resources.texture(frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
-        var frontend_widget_art = try app_art.loadFrontendWidgetArt(&resources);
+        var frontend_widget_art = try frontend_art.loadFrontendWidgetArt(&resources);
         errdefer frontend_widget_art.unload();
-        var frontend_sound_fx = try app_art.loadFrontendSoundFx(&resources);
+        var frontend_sound_fx = try frontend_art.loadFrontendSoundFx(&resources);
         errdefer frontend_sound_fx.unload();
         var gameplay_sound_fx = try gameplay_art.loadSoundFx(&resources);
         errdefer gameplay_sound_fx.unload();
         var gameplay_sprites = try gameplay_art.loadSpriteArt(&resources);
         errdefer gameplay_sprites.unload();
-        var slider_art = try app_art.loadSliderArt(&resources);
+        var slider_art = try frontend_art.loadSliderArt(&resources);
         errdefer slider_art.unload();
-        var route_map_art = try app_art.loadRouteMapArt(&resources);
+        var route_map_art = try frontend_art.loadRouteMapArt(&resources);
         errdefer route_map_art.unload();
         var background_light_streak_texture = try resources.texture(gameplay_assets.background_light_streak_sprite_path);
         rl.setTextureFilter(background_light_streak_texture.texture, .point);
@@ -598,9 +599,9 @@ const AppState = struct {
         };
         errdefer state.deinit();
         galaxy_names = null;
-        app_audio.applyAudioConfigVolumes(&state);
+        audio.applyAudioConfigVolumes(&state);
         if (options.command == .game) {
-            try state.loadGameplayStaticResources();
+            try gameplay_resources.loadStaticResources(&state);
         }
 
         switch (options.command) {
@@ -616,7 +617,7 @@ const AppState = struct {
     }
 
     fn deinit(self: *AppState) void {
-        app_audio.stopAudioPreview(self);
+        audio.stopAudioPreview(self);
         self.unloadLoadingScreen();
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
@@ -662,13 +663,13 @@ const AppState = struct {
             scene.deinit();
             self.current_game_track_scene = null;
         }
-        self.unloadGameplayTurbo();
-        self.unloadGameplayBarrier();
-        self.unloadGameplayLazer();
-        self.unloadGameplaySalt();
-        self.unloadGameplayActorModels();
-        self.unloadGameplaySprites();
-        self.unloadGameplaySoundFx();
+        gameplay_resources.unloadTurbo(self);
+        gameplay_resources.unloadBarrier(self);
+        gameplay_resources.unloadLazer(self);
+        gameplay_resources.unloadSalt(self);
+        gameplay_resources.unloadActorModels(self);
+        gameplay_resources.unloadSprites(self);
+        gameplay_resources.unloadSoundFx(self);
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -682,7 +683,7 @@ const AppState = struct {
             self.current_text_script = null;
         }
 
-        app_audio.stopVoicePlayback(self);
+        audio.stopVoicePlayback(self);
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
@@ -829,262 +830,6 @@ const AppState = struct {
         }
     }
 
-    fn unloadGameplayTurbo(self: *AppState) void {
-        if (self.current_gameplay_turbo_animation) |*animation| {
-            animation.deinit();
-            self.current_gameplay_turbo_animation = null;
-        }
-        if (self.current_gameplay_turbo_model) |*model| {
-            model.deinit();
-            self.current_gameplay_turbo_model = null;
-        }
-        self.current_gameplay_turbo_model_path = null;
-    }
-
-    fn unloadGameplayBarrier(self: *AppState) void {
-        if (self.current_gameplay_barrier_object) |*loaded_object| {
-            loaded_object.deinit();
-            self.current_gameplay_barrier_object = null;
-        }
-    }
-
-    fn unloadGameplayLazer(self: *AppState) void {
-        if (self.current_gameplay_lazer_object) |*loaded_object| {
-            loaded_object.deinit();
-            self.current_gameplay_lazer_object = null;
-        }
-        if (self.current_gameplay_vapour_lazer_object) |*loaded_object| {
-            loaded_object.deinit();
-            self.current_gameplay_vapour_lazer_object = null;
-        }
-    }
-
-    fn unloadGameplaySalt(self: *AppState) void {
-        if (self.current_gameplay_salt_model) |*model| {
-            model.deinit();
-            self.current_gameplay_salt_model = null;
-        }
-    }
-
-    fn unloadGameplayActorModels(self: *AppState) void {
-        if (self.current_gameplay_turret_model) |*model| {
-            model.deinit();
-            self.current_gameplay_turret_model = null;
-        }
-        self.current_gameplay_blaster_top_models.unload();
-        self.current_gameplay_blaster_left_models.unload();
-        self.current_gameplay_blaster_right_models.unload();
-        self.current_gameplay_laser_left_models.unload();
-        self.current_gameplay_laser_right_models.unload();
-        self.current_gameplay_rocket_launcher_models.unload();
-        self.current_gameplay_jetpack_thrust_models.unload();
-        if (self.current_gameplay_rocket_model) |*model| {
-            model.deinit();
-            self.current_gameplay_rocket_model = null;
-        }
-        self.current_gameplay_invincible_models.unload();
-        self.resetGameplayPresentationState();
-    }
-
-    fn resetGameplayPresentationState(self: *AppState) void {
-        self.gameplay_jetpack_visual_state = .{};
-        self.gameplay_weapon_visual_state = .{};
-    }
-
-    fn unloadGameplaySprites(self: *AppState) void {
-        self.current_gameplay_sprites.unload();
-    }
-
-    fn unloadGameplaySoundFx(self: *AppState) void {
-        self.current_gameplay_sound_fx.unload();
-    }
-
-    fn reloadGameplayTurbo(self: *AppState) !void {
-        try self.reloadGameplayTurboForPath(default_model_path);
-    }
-
-    fn reloadGameplayTurboForPath(self: *AppState, model_path: []const u8) !void {
-        self.unloadGameplayTurbo();
-
-        const entry_index = self.resources.catalog.findModelIndex(model_path) orelse return;
-        const entry = self.resources.catalog.model_entries[entry_index];
-        self.current_gameplay_turbo_model_path = entry.path;
-
-        if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
-            const clip = &self.animation_catalog.clips[clip_index];
-            if (clip.frames.len > 1) {
-                self.current_gameplay_turbo_animation = try xanim.Player.load(
-                    self.allocator,
-                    &self.resources.catalog,
-                    clip,
-                    true,
-                    xanim.frameNumberFromPath(entry.path),
-                );
-                try self.current_gameplay_turbo_animation.?.rendered.enableToonOutline();
-                return;
-            }
-        }
-
-        self.current_gameplay_turbo_model = try self.resources.model(entry.path, .{ .toon_outline = true });
-    }
-
-    fn syncGameplayTurboAnimation(self: *AppState) !void {
-        if (self.game_phase != .level) return;
-        if (!self.isTutorialGameplay()) return;
-
-        // PORT(verified): native `dispatch_cutscene_animation`
-        // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`)
-        // stores the active clip id on the player-side presentation
-        // controller. The Zig port folds that onto `Runner.cutscene_anim`,
-        // so the renderer maps the active `AnimClipId` to the shipped
-        // `X/TURBO-*-000.X2` first frame. The tutorial tip overlay still
-        // wins the dispatch implicitly: the tip prompt callsite dispatches
-        // `.talk` so the clip latches without the renderer keeping its
-        // own separate "is tip active" check.
-        const runner = self.currentRunnerConst() orelse return;
-        const desired_family = runner.cutscene_anim.active.familyKey() orelse return;
-        const desired_model_path = firstClipModelPathFromFamily(self, desired_family) orelse return;
-
-        if (self.current_gameplay_turbo_model_path) |current_path| {
-            if (std.ascii.eqlIgnoreCase(current_path, desired_model_path)) return;
-        }
-        try self.reloadGameplayTurboForPath(desired_model_path);
-    }
-
-    fn currentRunnerConst(self: *const AppState) ?*const gameplay.Runner {
-        if (self.level_runner) |*runner| return runner;
-        return null;
-    }
-
-    fn firstClipModelPathFromFamily(self: *const AppState, family_key: []const u8) ?[]const u8 {
-        for (self.animation_catalog.clips) |*clip| {
-            if (!std.ascii.eqlIgnoreCase(clip.family_key, family_key)) continue;
-            if (clip.frames.len == 0) continue;
-            const entry = self.resources.catalog.model_entries[clip.frames[0].entry_index];
-            return entry.path;
-        }
-        return null;
-    }
-
-    fn syncCutsceneAnimFromPromptQueue(self: *AppState, runner: *gameplay.Runner) void {
-        if (!self.isTutorialGameplay()) return;
-        const desired: gameplay.AnimClipId = if (self.level_prompt_queue.active() != null and !self.gameplay_click_start_active)
-            .talk
-        else
-            .move;
-        if (runner.cutscene_anim.active == desired) return;
-        runner.dispatchCutsceneAnimation(desired, true, null);
-    }
-
-    fn loadGameplayBarrier(self: *AppState) !void {
-        self.unloadGameplayBarrier();
-
-        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) != null) {
-            self.current_gameplay_barrier_object = try self.resources.object(gameplay_assets.gameplay_barrier_object_path, .{});
-        }
-    }
-
-    fn loadGameplayLazer(self: *AppState) !void {
-        self.unloadGameplayLazer();
-
-        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) != null) {
-            self.current_gameplay_lazer_object = try self.resources.object(gameplay_assets.gameplay_lazer_object_path, .{});
-        }
-
-        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path) != null) {
-            self.current_gameplay_vapour_lazer_object = try self.resources.object(gameplay_assets.gameplay_vapour_lazer_object_path, .{});
-        }
-    }
-
-    fn loadGameplaySalt(self: *AppState) !void {
-        self.unloadGameplaySalt();
-
-        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) != null) {
-            self.current_gameplay_salt_model = try self.resources.model(gameplay_assets.gameplay_salt_model_path, .{});
-        }
-    }
-
-    fn loadGameplayActorModels(self: *AppState) !void {
-        self.unloadGameplayActorModels();
-
-        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) != null) {
-            self.current_gameplay_turret_model = try self.resources.model(gameplay_assets.gameplay_turret_model_path, .{});
-        }
-
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_blaster_top_models,
-            gameplay_assets.gameplay_blaster_top_model_path,
-            &gameplay_assets.gameplay_blaster_top_draw_model_paths,
-            gameplay_assets.gameplay_blaster_top_fire_model_path,
-        );
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_blaster_left_models,
-            gameplay_assets.gameplay_blaster_left_model_path,
-            &gameplay_assets.gameplay_blaster_left_draw_model_paths,
-            null,
-        );
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_blaster_right_models,
-            gameplay_assets.gameplay_blaster_right_model_path,
-            &gameplay_assets.gameplay_blaster_right_draw_model_paths,
-            null,
-        );
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_laser_left_models,
-            gameplay_assets.gameplay_laser_left_model_path,
-            &gameplay_assets.gameplay_laser_left_draw_model_paths,
-            null,
-        );
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_laser_right_models,
-            gameplay_assets.gameplay_laser_right_model_path,
-            &gameplay_assets.gameplay_laser_right_draw_model_paths,
-            null,
-        );
-        try gameplay_art.loadWeaponModelSet(
-            &self.resources,
-            &self.current_gameplay_rocket_launcher_models,
-            gameplay_assets.gameplay_rocket_launcher_model_path,
-            &gameplay_assets.gameplay_rocket_launcher_draw_model_paths,
-            null,
-        );
-        for (gameplay_assets.gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
-            if (self.resources.catalog.findModelIndex(path) != null) {
-                self.current_gameplay_jetpack_thrust_models.frames[index] = try self.resources.model(path, .{ .toon_outline = true });
-            }
-        }
-        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path) != null) {
-            self.current_gameplay_rocket_model = try self.resources.model(gameplay_assets.gameplay_rocket_model_path, .{});
-        }
-        for (gameplay_assets.gameplay_invincible_model_paths, 0..) |path, index| {
-            if (self.resources.catalog.findModelIndex(path) != null) {
-                self.current_gameplay_invincible_models.frames[index] = try self.resources.model(path, .{});
-            }
-        }
-    }
-
-    fn loadGameplayStaticResources(self: *AppState) !void {
-        try self.loadGameplayBarrier();
-        try self.loadGameplayLazer();
-        try self.loadGameplaySalt();
-        try self.loadGameplayActorModels();
-    }
-
-    fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
-        if (self.current_gameplay_turbo_animation) |*animation| {
-            return &animation.rendered;
-        }
-        if (self.current_gameplay_turbo_model) |*model| {
-            return model;
-        }
-        return null;
-    }
-
     fn saveRuntimeConfig(self: *const AppState) !void {
         try self.runtime_config.saveToRuntimeRoot(self.runtime_root_path);
     }
@@ -1135,7 +880,7 @@ const AppState = struct {
 
     fn currentUiLayout(self: *const AppState) VirtualLayout {
         _ = self;
-        return app_ui.virtualLayout(.{
+        return ui.virtualLayout(.{
             .x = 0.0,
             .y = 0.0,
             .width = @floatFromInt(screenWidth()),
@@ -1163,7 +908,7 @@ const AppState = struct {
         self.hovered_frontend_target = target;
         if (target != null) {
             self.keyboard_frontend_focus_visible = false;
-            app_audio.playFrontendHoverSound(self);
+            audio.playFrontendHoverSound(self);
         }
     }
 
@@ -1187,7 +932,7 @@ const AppState = struct {
 
     fn queueFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) void {
         if (self.pending_frontend_activation != null) return;
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         const requires_fade = frontend_activation.queuedActivationRequiresFade(action);
         if (requires_fade) {
             self.frontend_transition.beginOverlayFadeOut();
@@ -1805,14 +1550,14 @@ const AppState = struct {
             self.setFrontendHoverTarget(null);
             if (rl.isMouseButtonPressed(.left) and self.currentRouteMapOpenIndex() != route_index) {
                 try self.openFrontendRouteCard(route_index);
-                app_audio.playFrontendSelectSound(self);
+                audio.playFrontendSelectSound(self);
             }
             return;
         }
 
         if (self.routeMapCanCloseCard() and rl.isMouseButtonPressed(.left)) {
             self.closeFrontendRouteCard();
-            app_audio.playFrontendSelectSound(self);
+            audio.playFrontendSelectSound(self);
             self.setFrontendHoverTarget(null);
             return;
         }
@@ -2003,7 +1748,7 @@ const AppState = struct {
                 // `AnimClipId` through `dispatchCutsceneAnimation`, keeping
                 // the renderer's model-swap purely a consumer of the anim
                 // slot.
-                self.syncCutsceneAnimFromPromptQueue(runner);
+                gameplay_resources.syncCutsceneAnimFromPromptQueue(self, runner);
             }
         }
 
@@ -2041,7 +1786,7 @@ const AppState = struct {
 
         if (self.game_phase == .level) {
             if (try self.handleSelectedReplayFadeExit()) return;
-            try self.syncGameplayTurboAnimation();
+            try gameplay_resources.syncTurboAnimation(self);
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
@@ -2062,8 +1807,8 @@ const AppState = struct {
                             return;
                         }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
-                        app_audio.playGameplayRunnerAudio(self, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
-                        app_audio.updateGameplayAmbientVoices(self, runner.*, loaded_track_preview);
+                        audio.playGameplayRunnerAudio(self, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
+                        audio.updateGameplayAmbientVoices(self, runner.*, loaded_track_preview);
                         self.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
                         self.refreshRunnerForStartupBlock(
@@ -2089,7 +1834,7 @@ const AppState = struct {
                 switch (runner.consumeHandoff()) {
                     .none => {},
                     .completion_screen_init => {
-                        app_audio.playGameplayEffect(self, self.current_gameplay_sound_fx.completion_init);
+                        audio.playGameplayEffect(self, self.current_gameplay_sound_fx.completion_init);
                         try self.beginCompletedRunOverlay();
                         return;
                     },
@@ -2526,7 +2271,7 @@ const AppState = struct {
     }
 
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performMainMenuItem(item);
     }
 
@@ -2580,7 +2325,7 @@ const AppState = struct {
     }
 
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performNewGameMenuItem(item);
     }
 
@@ -2677,7 +2422,7 @@ const AppState = struct {
     }
 
     fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performOptionsMenuItem(item);
     }
 
@@ -2717,7 +2462,7 @@ const AppState = struct {
     }
 
     fn activateExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performExitPromptChoice(choice);
     }
 
@@ -2750,7 +2495,7 @@ const AppState = struct {
     }
 
     fn activatePostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performPostLevelHighScoreAction(action);
     }
 
@@ -2789,7 +2534,7 @@ const AppState = struct {
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         try self.performHighScoreMenuAction(action);
     }
 
@@ -3500,7 +3245,7 @@ const AppState = struct {
             self.queueLevelSegmentPrompt(segment_entry);
         }
         if (segment_changed or token_changed or replay_sample_on_match) {
-            try app_audio.playLevelSegmentSample(self, segment_entry);
+            try audio.playLevelSegmentSample(self, segment_entry);
         }
     }
 
@@ -3838,7 +3583,7 @@ const AppState = struct {
         // PORT(verified): `update_thanks_for_playing_screen` plays `sfx 8`, starts the
         // front-end fade, and `uninit_thanks_screen` then writes state `0xe`, which the
         // frontend state machine immediately routes into `initialize_intro_screen(...Credits)`.
-        app_audio.playFrontendSelectSound(self);
+        audio.playFrontendSelectSound(self);
         self.frontend_transition.beginFadeOut(.credits);
     }
 
@@ -4405,11 +4150,11 @@ const AppState = struct {
     fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .level, .pause_menu => {},
-            else => app_audio.stopVoicePlayback(self),
+            else => audio.stopVoicePlayback(self),
         }
         switch (self.game_phase) {
             .boot => {
-                app_audio.stopAudioPreview(self);
+                audio.stopAudioPreview(self);
                 self.active_level_segment_index = null;
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
@@ -4425,7 +4170,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try app_audio.playMusicByPath(self, intro_music_path);
+                try audio.playMusicByPath(self, intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
             .main_menu, .new_game_menu, .high_scores_menu => {
@@ -4435,7 +4180,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try app_audio.playMusicByPath(self, default_audio_path);
+                try audio.playMusicByPath(self, default_audio_path);
             },
             .challenge_setup_menu => {
                 self.active_level_segment_index = null;
@@ -4446,7 +4191,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try app_audio.playMusicByPath(self, default_audio_path);
+                try audio.playMusicByPath(self, default_audio_path);
             },
             .options_menu => {
                 self.options_sound_display_value = self.runtime_config.soundVolume();
@@ -4460,7 +4205,7 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try app_audio.playMusicByPath(self, default_audio_path);
+                    try audio.playMusicByPath(self, default_audio_path);
                 }
             },
             .pause_menu => {
@@ -4475,7 +4220,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(route_map_background_path);
-                try app_audio.playMusicByPath(self, default_audio_path);
+                try audio.playMusicByPath(self, default_audio_path);
             },
             .credits => {
                 self.active_level_segment_index = null;
@@ -4483,7 +4228,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try app_audio.playMusicByPath(self, intro_music_path);
+                try audio.playMusicByPath(self, intro_music_path);
                 try self.loadTextScript(credits_script_path);
             },
             .help => {
@@ -4493,7 +4238,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
-                try app_audio.playMusicByPath(self, default_audio_path);
+                try audio.playMusicByPath(self, default_audio_path);
             },
             .exit_prompt => {
                 self.unloadTextScript();
@@ -4505,13 +4250,13 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(route_map_background_path);
-                    try app_audio.playMusicByPath(self, default_audio_path);
+                    try audio.playMusicByPath(self, default_audio_path);
                 } else {
                     self.active_level_segment_index = null;
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try app_audio.playMusicByPath(self, default_audio_path);
+                    try audio.playMusicByPath(self, default_audio_path);
                 }
             },
             .completion_screen => {
@@ -4534,10 +4279,10 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(thanks_screen_background_path);
-                try app_audio.playMusicByPath(self, intro_music_path);
+                try audio.playMusicByPath(self, intro_music_path);
             },
             .level => {
-                app_audio.stopAudioPreview(self);
+                audio.stopAudioPreview(self);
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
@@ -4696,24 +4441,24 @@ const AppState = struct {
         switch (item) {
             .fullscreen => {
                 if (delta != 0.0) {
-                    app_audio.playFrontendSelectSound(self);
+                    audio.playFrontendSelectSound(self);
                     self.toggleFullscreenPreference();
                 }
             },
             .sound_volume => {
                 const previous = self.runtime_config.soundVolume();
                 self.runtime_config.setSoundVolume(self.runtime_config.soundVolume() + delta);
-                app_audio.applyAudioConfigVolumes(self);
+                audio.applyAudioConfigVolumes(self);
                 if (self.runtime_config.soundVolume() != previous) {
-                    app_audio.playFrontendSelectSound(self);
+                    audio.playFrontendSelectSound(self);
                 }
             },
             .music_volume => {
                 self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
-                app_audio.applyAudioConfigVolumes(self);
+                audio.applyAudioConfigVolumes(self);
             },
             .back => if (delta != 0.0) {
-                app_audio.playFrontendSelectSound(self);
+                audio.playFrontendSelectSound(self);
                 try self.leaveOptionsMenu();
             },
         }
@@ -4732,7 +4477,7 @@ const AppState = struct {
                 );
                 self.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
                 if (self.runtime_config.challengeReplayDifficultyValue() != previous) {
-                    app_audio.playFrontendSelectSound(self);
+                    audio.playFrontendSelectSound(self);
                 }
             },
             .speed => {
@@ -4744,7 +4489,7 @@ const AppState = struct {
                 );
                 self.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
                 if (self.runtime_config.challengeReplaySpeedValue() != previous) {
-                    app_audio.playFrontendSelectSound(self);
+                    audio.playFrontendSelectSound(self);
                 }
             },
             .play, .watch_replay, .back => {},
@@ -4860,10 +4605,10 @@ const AppState = struct {
             scene.deinit();
             self.current_game_track_scene = null;
         }
-        self.unloadGameplayTurbo();
-        self.resetGameplayPresentationState();
+        gameplay_resources.unloadTurbo(self);
+        gameplay_resources.resetPresentationState(self);
         self.gameplay_effects.clear();
-        app_audio.stopVoicePlayback(self);
+        audio.stopVoicePlayback(self);
         self.gameplay_voice_manager.clear();
         self.native_gameplay_voice_manager.clear();
         self.announced_slug_voice_cell_count = 0;
@@ -4903,8 +4648,8 @@ const AppState = struct {
                     );
                 }
                 if (self.command == .game) {
-                    try self.reloadGameplayTurbo();
-                    app_audio.applyAudioConfigVolumes(self);
+                    try gameplay_resources.reloadTurbo(self);
+                    audio.applyAudioConfigVolumes(self);
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
@@ -5205,7 +4950,7 @@ fn drawGameUi(state: *const AppState) !void {
         .width = @floatFromInt(screenWidth()),
         .height = @floatFromInt(screenHeight()),
     };
-    const ui_layout = app_ui.virtualLayout(full_bounds);
+    const ui_layout = ui.virtualLayout(full_bounds);
 
     if (state.game_phase == .boot) {
         if (state.current_loading_screen) |loaded_screen| {
@@ -5221,10 +4966,10 @@ fn drawGameUi(state: *const AppState) !void {
             const authored_bounds: rl.Rectangle = .{
                 .x = 0.0,
                 .y = 0.0,
-                .width = app_ui.authored_width,
-                .height = app_ui.authored_height,
+                .width = ui.authored_width,
+                .height = ui.authored_height,
             };
-            const authored_layout = app_ui.virtualLayout(authored_bounds);
+            const authored_layout = ui.virtualLayout(authored_bounds);
 
             {
                 canvas.begin();
@@ -5618,7 +5363,7 @@ fn drawTextureCenteredLocal(
 }
 
 fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
-    try drawFrontendNoticeBlock(state, layout, app_ui.authored_width * 0.5, 438.0, message, .ray_white);
+    try drawFrontendNoticeBlock(state, layout, ui.authored_width * 0.5, 438.0, message, .ray_white);
 }
 
 fn drawFrontendNoticeBlock(
@@ -6616,7 +6361,7 @@ fn drawGameplayTurbo(
     runner: gameplay.Runner,
     camera: rl.Camera3D,
 ) void {
-    const model = state.activeGameplayTurbo() orelse return;
+    const model = gameplay_resources.activeTurbo(state) orelse return;
     const click_start_active = state.gameplay_click_start_active;
     const pose = if (click_start_active and state.tutorialClickStartCutsceneActive())
         tutorialClickStartTurboPose(model, loaded_track_preview, runner)
@@ -7138,20 +6883,20 @@ fn laneCenterTargetForMouseX(
     );
 }
 
-fn uiContext(state: *const AppState) app_ui.Context {
+fn uiContext(state: *const AppState) ui.Context {
     return .{ .font = &state.ui_font };
 }
 
 fn drawAppText(state: *const AppState, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    app_ui.drawText(uiContext(state), text, x, y, font_size, color);
+    ui.drawText(uiContext(state), text, x, y, font_size, color);
 }
 
 fn measureAppText(state: *const AppState, text: []const u8, font_size: i32) i32 {
-    return app_ui.measureText(uiContext(state), text, font_size);
+    return ui.measureText(uiContext(state), text, font_size);
 }
 
 fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    return app_ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
+    return ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
 fn takeOptional(comptime T: type, slot: *?T) ?T {

@@ -1,10 +1,10 @@
-const app_ui = @import("../app_ui.zig");
+const ui = @import("../ui.zig");
 const frontend_activation = @import("activation.zig");
 const frontend_options_menu = @import("options_menu.zig");
 const frontend_widget = @import("widget.zig");
 const game_font = @import("../game_font.zig");
 
-const VirtualLayout = app_ui.VirtualLayout;
+const VirtualLayout = ui.VirtualLayout;
 
 pub const Item = enum {
     difficulty,
