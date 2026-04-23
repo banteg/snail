@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
+const app_art = @import("app_art.zig");
 const app_ui = @import("app_ui.zig");
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
@@ -57,25 +58,7 @@ const main_menu_background_path = app.main_menu_background_path;
 const help_background_path = app.help_background_path;
 const route_map_background_path = app.route_map_background_path;
 const thanks_screen_background_path = app.thanks_screen_background_path;
-const route_map_logo_texture_path = app.route_map_logo_texture_path;
-const route_map_border_texture_path = app.route_map_border_texture_path;
-const route_map_galaxy_select_texture_path = app.route_map_galaxy_select_texture_path;
-const route_map_level_select_texture_path = app.route_map_level_select_texture_path;
-const route_map_level_star_texture_path = app.route_map_level_star_texture_path;
-const route_map_line_texture_path = app.route_map_line_texture_path;
-const route_map_line_star_texture_path = app.route_map_line_star_texture_path;
-const route_map_galaxy_texture_paths = app.route_map_galaxy_texture_paths;
 const frontend_cursor_texture_path = app.frontend_cursor_texture_path;
-const widget_border_texture_path = app.widget_border_texture_path;
-const completion_parcel_icon_texture_path = app.completion_parcel_icon_texture_path;
-const frontend_highlight_sound_path = app.frontend_highlight_sound_path;
-const frontend_select_sound_path = app.frontend_select_sound_path;
-const slider_less_texture_path = app.slider_less_texture_path;
-const slider_less_hover_texture_path = app.slider_less_hover_texture_path;
-const slider_more_texture_path = app.slider_more_texture_path;
-const slider_more_hover_texture_path = app.slider_more_hover_texture_path;
-const slider_bar_texture_path = app.slider_bar_texture_path;
-const slider_bar_full_texture_path = app.slider_bar_full_texture_path;
 const galaxy_names_path = app.galaxy_names_path;
 const intro_script_path = app.intro_script_path;
 const credits_script_path = app.credits_script_path;
@@ -115,6 +98,10 @@ const frontendLevelPath = frontend.frontendLevelPath;
 
 const MenuPanels = app_ui.MenuPanels;
 const VirtualLayout = app_ui.VirtualLayout;
+const FrontendSoundFx = app_art.FrontendSoundFx;
+const FrontendWidgetArt = app_art.FrontendWidgetArt;
+const RouteMapArt = app_art.RouteMapArt;
+const SliderArt = app_art.SliderArt;
 
 const ScreenshotRequest = struct {
     relative_path_z: [:0]u8,
@@ -122,85 +109,6 @@ const ScreenshotRequest = struct {
 
     fn deinit(self: *ScreenshotRequest, allocator: std.mem.Allocator) void {
         allocator.free(self.relative_path_z);
-    }
-};
-
-const SliderArt = struct {
-    less: ?assets.LoadedTexture = null,
-    less_hover: ?assets.LoadedTexture = null,
-    more: ?assets.LoadedTexture = null,
-    more_hover: ?assets.LoadedTexture = null,
-    bar: ?assets.LoadedTexture = null,
-    bar_full: ?assets.LoadedTexture = null,
-
-    fn unload(self: *SliderArt) void {
-        if (self.less) |*texture| {
-            texture.unload();
-            self.less = null;
-        }
-        if (self.less_hover) |*texture| {
-            texture.unload();
-            self.less_hover = null;
-        }
-        if (self.more) |*texture| {
-            texture.unload();
-            self.more = null;
-        }
-        if (self.more_hover) |*texture| {
-            texture.unload();
-            self.more_hover = null;
-        }
-        if (self.bar) |*texture| {
-            texture.unload();
-            self.bar = null;
-        }
-        if (self.bar_full) |*texture| {
-            texture.unload();
-            self.bar_full = null;
-        }
-    }
-
-    fn textures(self: SliderArt) frontend_widget.SliderTextures {
-        return .{
-            .less = if (self.less) |texture| texture.texture else null,
-            .less_hover = if (self.less_hover) |texture| texture.texture else null,
-            .more = if (self.more) |texture| texture.texture else null,
-            .more_hover = if (self.more_hover) |texture| texture.texture else null,
-            .bar = if (self.bar) |texture| texture.texture else null,
-            .bar_full = if (self.bar_full) |texture| texture.texture else null,
-        };
-    }
-};
-
-const FrontendWidgetArt = struct {
-    border: ?assets.LoadedTexture = null,
-    parcel_icon: ?assets.LoadedTexture = null,
-
-    fn unload(self: *FrontendWidgetArt) void {
-        if (self.border) |*texture| {
-            texture.unload();
-            self.border = null;
-        }
-        if (self.parcel_icon) |*texture| {
-            texture.unload();
-            self.parcel_icon = null;
-        }
-    }
-};
-
-const FrontendSoundFx = struct {
-    highlight: ?assets.LoadedSound = null,
-    select: ?assets.LoadedSound = null,
-
-    fn unload(self: *FrontendSoundFx) void {
-        if (self.highlight) |*sound| {
-            sound.unload();
-            self.highlight = null;
-        }
-        if (self.select) |*sound| {
-            sound.unload();
-            self.select = null;
-        }
     }
 };
 
@@ -538,108 +446,6 @@ test "native global audio sample ids resolve from shipped paths" {
 }
 
 const max_announced_slug_voice_cells: usize = 64;
-
-const RouteMapArt = struct {
-    logo: ?assets.LoadedTexture = null,
-    border: ?assets.LoadedTexture = null,
-    galaxy_select: ?assets.LoadedTexture = null,
-    level_select: ?assets.LoadedTexture = null,
-    level_star: ?assets.LoadedTexture = null,
-    line: ?assets.LoadedTexture = null,
-    line_star: ?assets.LoadedTexture = null,
-    galaxies: [galaxy.map_galaxy_count]?assets.LoadedTexture = [_]?assets.LoadedTexture{null} ** galaxy.map_galaxy_count,
-
-    fn unload(self: *RouteMapArt) void {
-        if (self.logo) |*texture| {
-            texture.unload();
-            self.logo = null;
-        }
-        if (self.border) |*texture| {
-            texture.unload();
-            self.border = null;
-        }
-        if (self.galaxy_select) |*texture| {
-            texture.unload();
-            self.galaxy_select = null;
-        }
-        if (self.level_select) |*texture| {
-            texture.unload();
-            self.level_select = null;
-        }
-        if (self.level_star) |*texture| {
-            texture.unload();
-            self.level_star = null;
-        }
-        if (self.line) |*texture| {
-            texture.unload();
-            self.line = null;
-        }
-        if (self.line_star) |*texture| {
-            texture.unload();
-            self.line_star = null;
-        }
-        for (&self.galaxies) |*texture| {
-            if (texture.*) |*loaded| {
-                loaded.unload();
-                texture.* = null;
-            }
-        }
-    }
-};
-
-fn loadFrontendWidgetArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !FrontendWidgetArt {
-    var art = FrontendWidgetArt{};
-    errdefer art.unload();
-
-    art.border = try catalog.loadTextureByPath(allocator, widget_border_texture_path);
-    art.parcel_icon = try catalog.loadTextureByPath(allocator, completion_parcel_icon_texture_path);
-
-    return art;
-}
-
-fn loadFrontendSoundFx(allocator: std.mem.Allocator, catalog: *const assets.Catalog, audio_ready: bool) !FrontendSoundFx {
-    if (!audio_ready) return .{};
-
-    var sound_fx = FrontendSoundFx{};
-    errdefer sound_fx.unload();
-
-    sound_fx.highlight = try catalog.loadSoundByPath(allocator, frontend_highlight_sound_path);
-    sound_fx.select = try catalog.loadSoundByPath(allocator, frontend_select_sound_path);
-
-    return sound_fx;
-}
-
-fn loadSliderArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !SliderArt {
-    var art = SliderArt{};
-    errdefer art.unload();
-
-    art.less = try catalog.loadTextureByPath(allocator, slider_less_texture_path);
-    art.less_hover = try catalog.loadTextureByPath(allocator, slider_less_hover_texture_path);
-    art.more = try catalog.loadTextureByPath(allocator, slider_more_texture_path);
-    art.more_hover = try catalog.loadTextureByPath(allocator, slider_more_hover_texture_path);
-    art.bar = try catalog.loadTextureByPath(allocator, slider_bar_texture_path);
-    art.bar_full = try catalog.loadTextureByPath(allocator, slider_bar_full_texture_path);
-
-    return art;
-}
-
-fn loadRouteMapArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !RouteMapArt {
-    var art = RouteMapArt{};
-    errdefer art.unload();
-
-    art.logo = try catalog.loadTextureByPath(allocator, route_map_logo_texture_path);
-    art.border = try catalog.loadTextureByPath(allocator, route_map_border_texture_path);
-    art.galaxy_select = try catalog.loadTextureByPath(allocator, route_map_galaxy_select_texture_path);
-    art.level_select = try catalog.loadTextureByPath(allocator, route_map_level_select_texture_path);
-    art.level_star = try catalog.loadTextureByPath(allocator, route_map_level_star_texture_path);
-    art.line = try catalog.loadTextureByPath(allocator, route_map_line_texture_path);
-    art.line_star = try catalog.loadTextureByPath(allocator, route_map_line_star_texture_path);
-    for (route_map_galaxy_texture_paths, 0..) |path, index| {
-        art.galaxies[index] = try catalog.loadTextureByPath(allocator, path);
-    }
-
-    return art;
-}
 
 fn loadGameplaySpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !GameplaySpriteArt {
     var art = GameplaySpriteArt{};
@@ -1063,15 +869,15 @@ const AppState = struct {
         errdefer if (frontend_canvas) |canvas| canvas.unload();
         var frontend_cursor_texture = try catalog.loadTextureByPath(allocator, frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
-        var frontend_widget_art = try loadFrontendWidgetArt(allocator, &catalog);
+        var frontend_widget_art = try app_art.loadFrontendWidgetArt(allocator, &catalog);
         errdefer frontend_widget_art.unload();
-        var frontend_sound_fx = try loadFrontendSoundFx(allocator, &catalog, audio_ready);
+        var frontend_sound_fx = try app_art.loadFrontendSoundFx(allocator, &catalog, audio_ready);
         errdefer frontend_sound_fx.unload();
         var gameplay_sound_fx = try loadGameplaySoundFx(allocator, &catalog, audio_ready);
         errdefer gameplay_sound_fx.unload();
-        var slider_art = try loadSliderArt(allocator, &catalog);
+        var slider_art = try app_art.loadSliderArt(allocator, &catalog);
         errdefer slider_art.unload();
-        var route_map_art = try loadRouteMapArt(allocator, &catalog);
+        var route_map_art = try app_art.loadRouteMapArt(allocator, &catalog);
         errdefer route_map_art.unload();
         var background_light_streak_texture = try catalog.loadTextureByPath(allocator, gameplay_assets.background_light_streak_sprite_path);
         rl.setTextureFilter(background_light_streak_texture.texture, .point);
