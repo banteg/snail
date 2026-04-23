@@ -600,6 +600,9 @@ const AppState = struct {
         errdefer state.deinit();
         galaxy_names = null;
         state.applyAudioConfigVolumes();
+        if (options.command == .game) {
+            try state.loadGameplayStaticResources();
+        }
 
         switch (options.command) {
             .debug, .smoke => {
@@ -881,6 +884,10 @@ const AppState = struct {
             self.current_gameplay_rocket_model = null;
         }
         self.current_gameplay_invincible_models.unload();
+        self.resetGameplayPresentationState();
+    }
+
+    fn resetGameplayPresentationState(self: *AppState) void {
         self.gameplay_jetpack_visual_state = .{};
         self.gameplay_weapon_visual_state = .{};
     }
@@ -1060,6 +1067,13 @@ const AppState = struct {
                 self.current_gameplay_invincible_models.frames[index] = try self.resources.model(path, .{});
             }
         }
+    }
+
+    fn loadGameplayStaticResources(self: *AppState) !void {
+        try self.reloadGameplayBarrier();
+        try self.reloadGameplayLazer();
+        try self.reloadGameplaySalt();
+        try self.reloadGameplayActorModels();
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
@@ -5317,10 +5331,7 @@ const AppState = struct {
             self.current_game_track_scene = null;
         }
         self.unloadGameplayTurbo();
-        self.unloadGameplayBarrier();
-        self.unloadGameplayLazer();
-        self.unloadGameplaySalt();
-        self.unloadGameplayActorModels();
+        self.resetGameplayPresentationState();
         self.gameplay_effects.clear();
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
@@ -5363,10 +5374,6 @@ const AppState = struct {
                 }
                 if (self.command == .game) {
                     try self.reloadGameplayTurbo();
-                    try self.reloadGameplayBarrier();
-                    try self.reloadGameplayLazer();
-                    try self.reloadGameplaySalt();
-                    try self.reloadGameplayActorModels();
                     self.applyAudioConfigVolumes();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
