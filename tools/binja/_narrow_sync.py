@@ -9,6 +9,9 @@ from typing import Iterable
 
 
 SPILL_PATH_RE = re.compile(r"^path:\s+(?P<path>.+)$", re.MULTILINE)
+STRUCT_FIELD_RE = re.compile(
+    r"^(?P<offset>0x[0-9a-fA-F]+):\s+(?P<type>.+?)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)$"
+)
 
 FieldUpdate = tuple[str, str, str]
 ProtoUpdate = tuple[str, str]
@@ -52,6 +55,68 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
     }
 
 
+def normalize_type_name(type_name: str) -> str:
+    return re.sub(r"\b(?:struct|enum)\s+", "", type_name).replace(" ", "")
+
+
+def normalize_prototype(prototype: str, *, identifier: str) -> str:
+    normalized = re.sub(r"\s+", " ", prototype).strip()
+    normalized = normalized.replace(f" {identifier}(", "(")
+    return normalize_type_name(normalized)
+
+
+def offset_to_int(offset: str) -> int:
+    return int(offset, 0)
+
+
+def current_struct_fields(repo_root: Path, *, target: str, struct_name: str) -> dict[int, tuple[str, str]]:
+    result = run_bn(
+        repo_root,
+        "struct",
+        "show",
+        struct_name,
+        "--target",
+        target,
+        "--format",
+        "json",
+    )
+    if not isinstance(result, dict):
+        return {}
+
+    layout = result.get("layout")
+    if not isinstance(layout, str):
+        return {}
+
+    fields: dict[int, tuple[str, str]] = {}
+    for line in layout.splitlines():
+        match = STRUCT_FIELD_RE.match(line)
+        if match is None:
+            continue
+        fields[offset_to_int(match.group("offset"))] = (
+            match.group("name"),
+            normalize_type_name(match.group("type")),
+        )
+    return fields
+
+
+def current_prototype(repo_root: Path, *, target: str, identifier: str) -> str | None:
+    result = run_bn(
+        repo_root,
+        "proto",
+        "get",
+        identifier,
+        "--target",
+        target,
+        "--format",
+        "json",
+    )
+    if isinstance(result, dict):
+        prototype = result.get("prototype")
+        if isinstance(prototype, str):
+            return prototype
+    return None
+
+
 def apply_struct_field_updates(
     repo_root: Path,
     *,
@@ -60,7 +125,23 @@ def apply_struct_field_updates(
     updates: Iterable[FieldUpdate],
 ) -> list[dict[str, object]]:
     operations: list[dict[str, object]] = []
+    fields = current_struct_fields(repo_root, target=target, struct_name=struct_name)
     for offset, name, field_type in updates:
+        existing = fields.get(offset_to_int(offset))
+        if existing == (name, normalize_type_name(field_type)):
+            operations.append(
+                {
+                    "op": "struct_field_set",
+                    "status": "skipped",
+                    "reason": "already current",
+                    "struct_name": struct_name,
+                    "offset": offset,
+                    "field_name": name,
+                    "field_type": field_type,
+                }
+            )
+            continue
+
         operations.append(
             {
                 "op": "struct_field_set",
@@ -93,6 +174,23 @@ def apply_proto_updates(
 ) -> list[dict[str, object]]:
     operations: list[dict[str, object]] = []
     for identifier, prototype in updates:
+        existing = current_prototype(repo_root, target=target, identifier=identifier)
+        existing_normalized = (
+            normalize_prototype(existing, identifier=identifier) if existing is not None else None
+        )
+        requested_normalized = normalize_prototype(prototype, identifier=identifier)
+        if existing_normalized == requested_normalized:
+            operations.append(
+                {
+                    "op": "proto_set",
+                    "status": "skipped",
+                    "reason": "already current",
+                    "identifier": identifier,
+                    "prototype": prototype,
+                }
+            )
+            continue
+
         operations.append(
             {
                 "op": "proto_set",
