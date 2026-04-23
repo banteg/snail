@@ -4843,7 +4843,7 @@ const AppState = struct {
 
     fn playSoundByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
-        const sound = try self.current_sound.loadPath(self.allocator, &self.resources.catalog, path);
+        const sound = (try self.current_sound.loadPath(&self.resources, path)) orelse return;
         self.applyAudioConfigVolumes();
         rl.playSound(sound.sound);
     }
@@ -4851,7 +4851,7 @@ const AppState = struct {
     fn playVoiceByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
         self.stopVoicePlayback();
-        const sound = try self.current_voice_sound.loadPath(self.allocator, &self.resources.catalog, path);
+        const sound = (try self.current_voice_sound.loadPath(&self.resources, path)) orelse return;
         self.applyAudioConfigVolumes();
         rl.playSound(sound.sound);
     }

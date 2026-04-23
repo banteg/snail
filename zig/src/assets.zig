@@ -306,16 +306,15 @@ pub const SoundSlot = struct {
 
     pub fn loadPath(
         self: *SoundSlot,
-        allocator: std.mem.Allocator,
-        catalog: *const Catalog,
+        store: *ResourceStore,
         path: []const u8,
-    ) !*LoadedSound {
+    ) !?*LoadedSound {
         if (self.current) |*sound| {
             if (std.ascii.eqlIgnoreCase(sound.path, path)) return sound;
         }
 
         self.unload();
-        self.current = try catalog.loadSoundByPath(allocator, path);
+        self.current = (try store.sound(path)) orelse return null;
         return &self.current.?;
     }
 };

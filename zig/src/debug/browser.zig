@@ -351,11 +351,10 @@ fn previewSound(state: anytype) !void {
         music.unload();
         state.current_music = null;
     }
-    const sound = try state.current_sound.loadPath(
-        state.allocator,
-        &state.resources.catalog,
+    const sound = (try state.current_sound.loadPath(
+        &state.resources,
         state.resources.catalog.audio_entries[state.audio_index].path,
-    );
+    )) orelse return;
     state.applyAudioConfigVolumes();
     rl.playSound(sound.sound);
 }
