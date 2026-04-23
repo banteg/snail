@@ -534,6 +534,8 @@ const AppState = struct {
         errdefer frontend_sound_fx.unload();
         var gameplay_sound_fx = try gameplay_art.loadSoundFx(&resources);
         errdefer gameplay_sound_fx.unload();
+        var gameplay_sprites = try gameplay_art.loadSpriteArt(&resources);
+        errdefer gameplay_sprites.unload();
         var slider_art = try app_art.loadSliderArt(&resources);
         errdefer slider_art.unload();
         var route_map_art = try app_art.loadRouteMapArt(&resources);
@@ -587,6 +589,7 @@ const AppState = struct {
             .frontend_widget_art = frontend_widget_art,
             .frontend_sound_fx = frontend_sound_fx,
             .current_gameplay_sound_fx = gameplay_sound_fx,
+            .current_gameplay_sprites = gameplay_sprites,
             .slider_art = slider_art,
             .route_map_art = route_map_art,
             .current_background_light_streak_texture = background_light_streak_texture,
@@ -1108,11 +1111,6 @@ const AppState = struct {
                 );
             }
         }
-    }
-
-    fn reloadGameplaySprites(self: *AppState) !void {
-        self.unloadGameplaySprites();
-        self.current_gameplay_sprites = try gameplay_art.loadSpriteArt(&self.resources);
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
@@ -5374,7 +5372,6 @@ const AppState = struct {
         self.unloadGameplayLazer();
         self.unloadGameplaySalt();
         self.unloadGameplayActorModels();
-        self.unloadGameplaySprites();
         self.gameplay_effects.clear();
         self.stopVoicePlayback();
         self.gameplay_voice_manager.clear();
@@ -5421,7 +5418,6 @@ const AppState = struct {
                     try self.reloadGameplayLazer();
                     try self.reloadGameplaySalt();
                     try self.reloadGameplayActorModels();
-                    try self.reloadGameplaySprites();
                     self.applyAudioConfigVolumes();
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
