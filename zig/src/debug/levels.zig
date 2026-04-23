@@ -8,7 +8,7 @@ const segment = @import("../segment.zig");
 const track = @import("../track.zig");
 
 pub fn drawLevelPanel(state: anytype) !void {
-    const level_entry = state.catalog.level_entries[state.level_index];
+    const level_entry = state.resources.catalog.level_entries[state.level_index];
     const loaded_level = state.current_level orelse return;
     const loaded_track_preview = state.current_track_preview orelse return;
     const screen_width = rl.getScreenWidth();
@@ -39,7 +39,7 @@ pub fn drawLevelPanel(state: anytype) !void {
         "Level {d}/{d}  {s}",
         .{
             state.level_index + 1,
-            state.catalog.level_entries.len,
+            state.resources.catalog.level_entries.len,
             loaded_level.name,
         },
     );
@@ -241,8 +241,8 @@ pub fn drawLevelViewport(state: anytype) void {
 }
 
 pub fn drawSegmentPanel(state: anytype) !void {
-    if (state.catalog.segment_entries.len == 0) return;
-    const entry = state.catalog.segment_entries[state.segment_index];
+    if (state.resources.catalog.segment_entries.len == 0) return;
+    const entry = state.resources.catalog.segment_entries[state.segment_index];
     const preview = state.current_standalone_segment_preview orelse return;
     const loaded_segment = preview.activeSegment(0) orelse return;
     const screen_width = rl.getScreenWidth();
@@ -264,7 +264,7 @@ pub fn drawSegmentPanel(state: anytype) !void {
         "Segment {d}/{d}  {s}",
         .{
             state.segment_index + 1,
-            state.catalog.segment_entries.len,
+            state.resources.catalog.segment_entries.len,
             loaded_segment.name,
         },
     );
@@ -352,7 +352,7 @@ pub fn drawSegmentPanel(state: anytype) !void {
 }
 
 pub fn drawSegmentViewport(state: anytype) void {
-    if (state.catalog.segment_entries.len == 0) return;
+    if (state.resources.catalog.segment_entries.len == 0) return;
     const preview = state.current_standalone_segment_preview orelse return;
     const camera = preview.previewCamera(@floatCast(state.render_time_seconds), 0);
     camera.begin();

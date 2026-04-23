@@ -132,55 +132,53 @@ pub const RouteMapArt = struct {
     }
 };
 
-pub fn loadFrontendWidgetArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !FrontendWidgetArt {
+pub fn loadFrontendWidgetArt(store: *assets.ResourceStore) !FrontendWidgetArt {
     var art = FrontendWidgetArt{};
     errdefer art.unload();
 
-    art.border = try catalog.loadTextureByPath(allocator, app.widget_border_texture_path);
-    art.parcel_icon = try catalog.loadTextureByPath(allocator, app.completion_parcel_icon_texture_path);
+    art.border = try store.texture(app.widget_border_texture_path);
+    art.parcel_icon = try store.texture(app.completion_parcel_icon_texture_path);
 
     return art;
 }
 
-pub fn loadFrontendSoundFx(allocator: std.mem.Allocator, catalog: *const assets.Catalog, audio_ready: bool) !FrontendSoundFx {
-    if (!audio_ready) return .{};
-
+pub fn loadFrontendSoundFx(store: *assets.ResourceStore) !FrontendSoundFx {
     var sound_fx = FrontendSoundFx{};
     errdefer sound_fx.unload();
 
-    sound_fx.highlight = try catalog.loadSoundByPath(allocator, app.frontend_highlight_sound_path);
-    sound_fx.select = try catalog.loadSoundByPath(allocator, app.frontend_select_sound_path);
+    sound_fx.highlight = try store.sound(app.frontend_highlight_sound_path);
+    sound_fx.select = try store.sound(app.frontend_select_sound_path);
 
     return sound_fx;
 }
 
-pub fn loadSliderArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !SliderArt {
+pub fn loadSliderArt(store: *assets.ResourceStore) !SliderArt {
     var art = SliderArt{};
     errdefer art.unload();
 
-    art.less = try catalog.loadTextureByPath(allocator, app.slider_less_texture_path);
-    art.less_hover = try catalog.loadTextureByPath(allocator, app.slider_less_hover_texture_path);
-    art.more = try catalog.loadTextureByPath(allocator, app.slider_more_texture_path);
-    art.more_hover = try catalog.loadTextureByPath(allocator, app.slider_more_hover_texture_path);
-    art.bar = try catalog.loadTextureByPath(allocator, app.slider_bar_texture_path);
-    art.bar_full = try catalog.loadTextureByPath(allocator, app.slider_bar_full_texture_path);
+    art.less = try store.texture(app.slider_less_texture_path);
+    art.less_hover = try store.texture(app.slider_less_hover_texture_path);
+    art.more = try store.texture(app.slider_more_texture_path);
+    art.more_hover = try store.texture(app.slider_more_hover_texture_path);
+    art.bar = try store.texture(app.slider_bar_texture_path);
+    art.bar_full = try store.texture(app.slider_bar_full_texture_path);
 
     return art;
 }
 
-pub fn loadRouteMapArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !RouteMapArt {
+pub fn loadRouteMapArt(store: *assets.ResourceStore) !RouteMapArt {
     var art = RouteMapArt{};
     errdefer art.unload();
 
-    art.logo = try catalog.loadTextureByPath(allocator, app.route_map_logo_texture_path);
-    art.border = try catalog.loadTextureByPath(allocator, app.route_map_border_texture_path);
-    art.galaxy_select = try catalog.loadTextureByPath(allocator, app.route_map_galaxy_select_texture_path);
-    art.level_select = try catalog.loadTextureByPath(allocator, app.route_map_level_select_texture_path);
-    art.level_star = try catalog.loadTextureByPath(allocator, app.route_map_level_star_texture_path);
-    art.line = try catalog.loadTextureByPath(allocator, app.route_map_line_texture_path);
-    art.line_star = try catalog.loadTextureByPath(allocator, app.route_map_line_star_texture_path);
+    art.logo = try store.texture(app.route_map_logo_texture_path);
+    art.border = try store.texture(app.route_map_border_texture_path);
+    art.galaxy_select = try store.texture(app.route_map_galaxy_select_texture_path);
+    art.level_select = try store.texture(app.route_map_level_select_texture_path);
+    art.level_star = try store.texture(app.route_map_level_star_texture_path);
+    art.line = try store.texture(app.route_map_line_texture_path);
+    art.line_star = try store.texture(app.route_map_line_star_texture_path);
     for (app.route_map_galaxy_texture_paths, 0..) |path, index| {
-        art.galaxies[index] = try catalog.loadTextureByPath(allocator, path);
+        art.galaxies[index] = try store.texture(path);
     }
 
     return art;

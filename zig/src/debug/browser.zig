@@ -101,7 +101,7 @@ pub fn initialize(state: anytype) !void {
 }
 
 pub fn primeAudioPreview(state: anytype) !void {
-    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     try previewSound(state);
     state.stopAudioPreview();
     try previewMusic(state);
@@ -135,11 +135,11 @@ pub fn handleInput(state: anytype) !void {
 
     if (state.mode == .levels) {
         if (rl.isKeyPressed(.left)) {
-            state.level_index = wrappedIndex(state.catalog.level_entries.len, state.level_index, -1);
+            state.level_index = wrappedIndex(state.resources.catalog.level_entries.len, state.level_index, -1);
             try state.reloadLevel();
         }
         if (rl.isKeyPressed(.right)) {
-            state.level_index = wrappedIndex(state.catalog.level_entries.len, state.level_index, 1);
+            state.level_index = wrappedIndex(state.resources.catalog.level_entries.len, state.level_index, 1);
             try state.reloadLevel();
         }
         if (rl.isKeyPressed(.up)) {
@@ -315,24 +315,24 @@ fn setMode(state: anytype, mode: Mode) !void {
 fn stepSelection(state: anytype, delta: isize) !void {
     switch (state.mode) {
         .textures => {
-            state.texture_index = wrappedIndex(state.catalog.texture_entries.len, state.texture_index, delta);
+            state.texture_index = wrappedIndex(state.resources.catalog.texture_entries.len, state.texture_index, delta);
             try reloadTexture(state);
         },
         .audio => {
             state.stopAudioPreview();
-            state.audio_index = wrappedIndex(state.catalog.audio_entries.len, state.audio_index, delta);
+            state.audio_index = wrappedIndex(state.resources.catalog.audio_entries.len, state.audio_index, delta);
         },
         .models => {
-            state.model_index = wrappedIndex(state.catalog.model_entries.len, state.model_index, delta);
+            state.model_index = wrappedIndex(state.resources.catalog.model_entries.len, state.model_index, delta);
             try reloadModel(state);
         },
         .objects => {
-            state.object_index = wrappedIndex(state.catalog.object_entries.len, state.object_index, delta);
+            state.object_index = wrappedIndex(state.resources.catalog.object_entries.len, state.object_index, delta);
             try reloadObject(state);
         },
         .levels => {},
         .segments => {
-            state.segment_index = wrappedIndex(state.catalog.segment_entries.len, state.segment_index, delta);
+            state.segment_index = wrappedIndex(state.resources.catalog.segment_entries.len, state.segment_index, delta);
             try reloadStandaloneSegment(state);
         },
         .streaks => {},
@@ -346,24 +346,24 @@ fn stepLevelSegment(state: anytype, delta: isize) !void {
 }
 
 fn previewSound(state: anytype) !void {
-    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     if (state.current_music) |*music| {
         music.unload();
         state.current_music = null;
     }
     const sound = try state.current_sound.loadPath(
         state.allocator,
-        &state.catalog,
-        state.catalog.audio_entries[state.audio_index].path,
+        &state.resources.catalog,
+        state.resources.catalog.audio_entries[state.audio_index].path,
     );
     state.applyAudioConfigVolumes();
     rl.playSound(sound.sound);
 }
 
 fn previewMusic(state: anytype) !void {
-    if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
+    if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     state.stopAudioPreview();
-    state.current_music = try state.catalog.loadMusic(state.allocator, state.catalog.audio_entries[state.audio_index]);
+    state.current_music = try state.resources.catalog.loadMusic(state.allocator, state.resources.catalog.audio_entries[state.audio_index]);
     state.applyAudioConfigVolumes();
     rl.playMusicStream(state.current_music.?.music);
 }
@@ -373,7 +373,7 @@ fn reloadTexture(state: anytype) !void {
         texture.unload();
         state.current_texture = null;
     }
-    state.current_texture = try state.catalog.loadTexture(state.allocator, state.catalog.texture_entries[state.texture_index]);
+    state.current_texture = try state.resources.catalog.loadTexture(state.allocator, state.resources.catalog.texture_entries[state.texture_index]);
 }
 
 fn reloadModel(state: anytype) !void {
@@ -386,13 +386,13 @@ fn reloadModel(state: anytype) !void {
         state.current_animation = null;
     }
 
-    const entry = state.catalog.model_entries[state.model_index];
+    const entry = state.resources.catalog.model_entries[state.model_index];
     if (state.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
         const clip = &state.animation_catalog.clips[clip_index];
         if (clip.frames.len > 1) {
             state.current_animation = try xanim.Player.load(
                 state.allocator,
-                &state.catalog,
+                &state.resources.catalog,
                 clip,
                 state.model_flip_v,
                 xanim.frameNumberFromPath(entry.path),
@@ -403,7 +403,7 @@ fn reloadModel(state: anytype) !void {
 
     state.current_model = try x2.Uploaded.loadFromArchive(
         state.allocator,
-        &state.catalog,
+        &state.resources.catalog,
         entry,
         state.model_flip_v,
     );
@@ -414,12 +414,12 @@ fn reloadObject(state: anytype) !void {
         loaded_object.deinit();
         state.current_object = null;
     }
-    if (state.catalog.object_entries.len == 0) return;
+    if (state.resources.catalog.object_entries.len == 0) return;
 
-    const entry = state.catalog.object_entries[state.object_index];
+    const entry = state.resources.catalog.object_entries[state.object_index];
     state.current_object = try object.LoadedObject.loadFromArchive(
         state.allocator,
-        &state.catalog,
+        &state.resources.catalog,
         entry,
         state.object_flip_v,
     );
@@ -434,15 +434,15 @@ fn reloadStandaloneSegment(state: anytype) !void {
         loaded_track_preview.deinit();
         state.current_standalone_segment_preview = null;
     }
-    if (state.catalog.segment_entries.len == 0) return;
-    if (state.segment_index >= state.catalog.segment_entries.len) {
-        state.segment_index = state.catalog.segment_entries.len - 1;
+    if (state.resources.catalog.segment_entries.len == 0) return;
+    if (state.segment_index >= state.resources.catalog.segment_entries.len) {
+        state.segment_index = state.resources.catalog.segment_entries.len - 1;
     }
 
-    const entry = state.catalog.segment_entries[state.segment_index];
+    const entry = state.resources.catalog.segment_entries[state.segment_index];
     state.current_standalone_segment_preview = try track.LoadedLevelPreview.loadStandaloneSegment(
         state.allocator,
-        &state.catalog,
+        &state.resources.catalog,
         entry,
     );
     try reloadStandaloneSegmentScene(state);
@@ -456,7 +456,7 @@ fn reloadStandaloneSegmentScene(state: anytype) !void {
     _ = state.current_standalone_segment_preview orelse return;
     state.current_standalone_segment_scene = try track_render.Scene.buildStandaloneSegmentScene(
         state.allocator,
-        &state.catalog,
+        &state.resources.catalog,
         state.segment_track_set_index,
     );
 }
@@ -517,7 +517,7 @@ fn drawModeBadge(state: anytype, mode: Mode, active_mode: Mode, text: [:0]const 
 
 fn drawTexturePanel(state: anytype) void {
     const current = state.current_texture orelse return;
-    const entry = state.catalog.texture_entries[state.texture_index];
+    const entry = state.resources.catalog.texture_entries[state.texture_index];
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = std.fmt.bufPrintZ(
@@ -525,7 +525,7 @@ fn drawTexturePanel(state: anytype) void {
         "Texture {d}/{d}  {d}x{d}",
         .{
             state.texture_index + 1,
-            state.catalog.texture_entries.len,
+            state.resources.catalog.texture_entries.len,
             current.texture.width,
             current.texture.height,
         },
@@ -551,13 +551,13 @@ fn drawTexturePanel(state: anytype) void {
 }
 
 fn drawAudioPanel(state: anytype) !void {
-    const entry = state.catalog.audio_entries[state.audio_index];
+    const entry = state.resources.catalog.audio_entries[state.audio_index];
 
     var summary_buffer: [256]u8 = undefined;
     const summary_text = try std.fmt.bufPrintZ(
         &summary_buffer,
         "Audio {d}/{d}",
-        .{ state.audio_index + 1, state.catalog.audio_entries.len },
+        .{ state.audio_index + 1, state.resources.catalog.audio_entries.len },
     );
     drawAppText(state, summary_text, 32, 194, 24, .ray_white);
 
@@ -730,7 +730,7 @@ fn drawLightStreakDebugStats(state: anytype, bounds: rl.Rectangle, stats: backgr
 }
 
 fn drawModelPanel(state: anytype) !void {
-    const entry = state.catalog.model_entries[state.model_index];
+    const entry = state.resources.catalog.model_entries[state.model_index];
     const model = state.activeModel() orelse return;
     const parsed = &model.doc;
 
@@ -740,7 +740,7 @@ fn drawModelPanel(state: anytype) !void {
         "X2 {d}/{d}  submeshes {d}  vertices {d}  faces {d}  triangles {d}",
         .{
             state.model_index + 1,
-            state.catalog.model_entries.len,
+            state.resources.catalog.model_entries.len,
             model.submeshes.len,
             parsed.vertices.len,
             parsed.polygons.len,
@@ -838,7 +838,7 @@ fn drawModelViewport(state: anytype) void {
 }
 
 fn drawObjectPanel(state: anytype) !void {
-    const entry = state.catalog.object_entries[state.object_index];
+    const entry = state.resources.catalog.object_entries[state.object_index];
     const loaded_object = state.current_object orelse return;
 
     var summary_buffer: [256]u8 = undefined;
@@ -847,7 +847,7 @@ fn drawObjectPanel(state: anytype) !void {
         "Object {d}/{d}  vertices {d}  faces {d}  textures {d}",
         .{
             state.object_index + 1,
-            state.catalog.object_entries.len,
+            state.resources.catalog.object_entries.len,
             loaded_object.parsed.vertices.len,
             loaded_object.parsed.faces.len,
             loaded_object.parsed.texture_names.len,

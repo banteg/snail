@@ -273,80 +273,78 @@ pub const JetpackModelSet = struct {
     }
 };
 
-pub fn loadSpriteArt(allocator: std.mem.Allocator, catalog: *const assets.Catalog) !SpriteArt {
+pub fn loadSpriteArt(store: *assets.ResourceStore) !SpriteArt {
     var art = SpriteArt{};
     errdefer art.unload();
 
     for (gameplay_assets.gameplay_slug_sprite_paths, 0..) |path, index| {
-        art.slug_frames[index] = try catalog.loadTextureByPath(allocator, path);
+        art.slug_frames[index] = try store.texture(path);
     }
     for (gameplay_assets.gameplay_garbage_sprite_paths, 0..) |path, index| {
-        art.garbage_variants[index] = try catalog.loadTextureByPath(allocator, path);
+        art.garbage_variants[index] = try store.texture(path);
     }
-    art.health = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_health_sprite_path);
-    art.life = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_life_sprite_path);
+    art.health = try store.texture(gameplay_assets.gameplay_health_sprite_path);
+    art.life = try store.texture(gameplay_assets.gameplay_life_sprite_path);
     for (gameplay_assets.gameplay_jetpack_sprite_paths, 0..) |path, index| {
-        art.jetpack_frames[index] = try catalog.loadTextureByPath(allocator, path);
+        art.jetpack_frames[index] = try store.texture(path);
     }
-    art.parcel = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_parcel_sprite_path);
-    art.ring = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_ring_sprite_path);
-    art.ring_big = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_ring_big_sprite_path);
-    art.slow_ring = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_slow_ring_sprite_path);
-    art.powerup = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_powerup_sprite_path);
-    art.progress_bar = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_bar_sprite_path);
-    art.progress_bar_lit = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_bar_lit_sprite_path);
-    art.progress_cursor = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_progress_cursor_sprite_path);
-    art.damage_gauge = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_sprite_path);
-    art.damage_gauge_full = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_full_sprite_path);
-    art.damage_gauge_bright = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_damage_gauge_bright_sprite_path);
-    art.warning = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_warning_sprite_path);
-    art.explode_big = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_explode_big_sprite_path);
-    art.explode_small = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_explode_small_sprite_path);
-    art.slug_goo = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_slug_goo_sprite_path);
-    art.smoke = try catalog.loadTextureByPath(allocator, gameplay_assets.gameplay_smoke_sprite_path);
+    art.parcel = try store.texture(gameplay_assets.gameplay_parcel_sprite_path);
+    art.ring = try store.texture(gameplay_assets.gameplay_ring_sprite_path);
+    art.ring_big = try store.texture(gameplay_assets.gameplay_ring_big_sprite_path);
+    art.slow_ring = try store.texture(gameplay_assets.gameplay_slow_ring_sprite_path);
+    art.powerup = try store.texture(gameplay_assets.gameplay_powerup_sprite_path);
+    art.progress_bar = try store.texture(gameplay_assets.gameplay_progress_bar_sprite_path);
+    art.progress_bar_lit = try store.texture(gameplay_assets.gameplay_progress_bar_lit_sprite_path);
+    art.progress_cursor = try store.texture(gameplay_assets.gameplay_progress_cursor_sprite_path);
+    art.damage_gauge = try store.texture(gameplay_assets.gameplay_damage_gauge_sprite_path);
+    art.damage_gauge_full = try store.texture(gameplay_assets.gameplay_damage_gauge_full_sprite_path);
+    art.damage_gauge_bright = try store.texture(gameplay_assets.gameplay_damage_gauge_bright_sprite_path);
+    art.warning = try store.texture(gameplay_assets.gameplay_warning_sprite_path);
+    art.explode_big = try store.texture(gameplay_assets.gameplay_explode_big_sprite_path);
+    art.explode_small = try store.texture(gameplay_assets.gameplay_explode_small_sprite_path);
+    art.slug_goo = try store.texture(gameplay_assets.gameplay_slug_goo_sprite_path);
+    art.smoke = try store.texture(gameplay_assets.gameplay_smoke_sprite_path);
 
     return art;
 }
 
-pub fn loadSoundFx(allocator: std.mem.Allocator, catalog: *const assets.Catalog, audio_ready: bool) !SoundFx {
-    if (!audio_ready) return .{};
-
+pub fn loadSoundFx(store: *assets.ResourceStore) !SoundFx {
     var sound_fx = SoundFx{};
     errdefer sound_fx.unload();
 
     for (gameplay_assets.gameplay_turbo_fire_sound_paths, 0..) |path, index| {
-        sound_fx.turbo_fire[index] = try catalog.loadSoundByPath(allocator, path);
+        sound_fx.turbo_fire[index] = try store.sound(path);
     }
     for (gameplay_assets.gameplay_laser_sound_paths, 0..) |path, index| {
-        sound_fx.laser[index] = try catalog.loadSoundByPath(allocator, path);
+        sound_fx.laser[index] = try store.sound(path);
     }
     for (gameplay_assets.gameplay_rocket_sound_paths, 0..) |path, index| {
-        sound_fx.rocket[index] = try catalog.loadSoundByPath(allocator, path);
+        sound_fx.rocket[index] = try store.sound(path);
     }
-    sound_fx.cheers = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_cheers_sound_path);
-    sound_fx.extra_life = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_extra_life_sound_path);
-    sound_fx.weapon_change = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_weapon_change_sound_path);
-    sound_fx.heart = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_heart_sound_path);
-    sound_fx.jetpack = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_jetpack_sound_path);
-    sound_fx.jetpack_shutoff = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_jetpack_shutoff_sound_path);
-    sound_fx.slow_ring = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_slow_ring_sound_path);
-    sound_fx.invincible = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_invincible_sound_path);
-    sound_fx.explode_ring = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_explode_ring_sound_path);
-    sound_fx.enemy_fire = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_enemy_fire_sound_path);
-    sound_fx.boing = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_boing_sound_path);
-    sound_fx.completion_init = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_completion_init_sound_path);
-    sound_fx.row_event_confirm = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_row_event_confirm_sound_path);
-    sound_fx.place_package = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_place_package_sound_path);
-    sound_fx.package_count = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_package_count_sound_path);
-    sound_fx.perfect = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_perfect_sound_path);
+    sound_fx.cheers = try store.sound(gameplay_assets.gameplay_cheers_sound_path);
+    sound_fx.extra_life = try store.sound(gameplay_assets.gameplay_extra_life_sound_path);
+    sound_fx.weapon_change = try store.sound(gameplay_assets.gameplay_weapon_change_sound_path);
+    sound_fx.heart = try store.sound(gameplay_assets.gameplay_heart_sound_path);
+    sound_fx.jetpack = try store.sound(gameplay_assets.gameplay_jetpack_sound_path);
+    sound_fx.jetpack_shutoff = try store.sound(gameplay_assets.gameplay_jetpack_shutoff_sound_path);
+    sound_fx.slow_ring = try store.sound(gameplay_assets.gameplay_slow_ring_sound_path);
+    sound_fx.invincible = try store.sound(gameplay_assets.gameplay_invincible_sound_path);
+    sound_fx.explode_ring = try store.sound(gameplay_assets.gameplay_explode_ring_sound_path);
+    sound_fx.enemy_fire = try store.sound(gameplay_assets.gameplay_enemy_fire_sound_path);
+    sound_fx.boing = try store.sound(gameplay_assets.gameplay_boing_sound_path);
+    sound_fx.completion_init = try store.sound(gameplay_assets.gameplay_completion_init_sound_path);
+    sound_fx.row_event_confirm = try store.sound(gameplay_assets.gameplay_row_event_confirm_sound_path);
+    sound_fx.place_package = try store.sound(gameplay_assets.gameplay_place_package_sound_path);
+    sound_fx.package_count = try store.sound(gameplay_assets.gameplay_package_count_sound_path);
+    sound_fx.perfect = try store.sound(gameplay_assets.gameplay_perfect_sound_path);
     for (gameplay_assets.gameplay_powerup_pickup_sound_paths, 0..) |path, index| {
-        sound_fx.powerup_pickup[index] = try catalog.loadSoundByPath(allocator, path);
+        sound_fx.powerup_pickup[index] = try store.sound(path);
     }
     for (gameplay_assets.gameplay_asteroid_impact_sound_paths, 0..) |path, index| {
-        sound_fx.asteroid_impact[index] = try catalog.loadSoundByPath(allocator, path);
+        sound_fx.asteroid_impact[index] = try store.sound(path);
     }
-    sound_fx.wall_hit = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_wall_hit_sound_path);
-    sound_fx.postal_warning = try catalog.loadSoundByPath(allocator, gameplay_assets.gameplay_postal_warning_sound_path);
+    sound_fx.wall_hit = try store.sound(gameplay_assets.gameplay_wall_hit_sound_path);
+    sound_fx.postal_warning = try store.sound(gameplay_assets.gameplay_postal_warning_sound_path);
 
     return sound_fx;
 }

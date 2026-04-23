@@ -323,7 +323,7 @@ const SubgameCameraSelection = struct {
 
 const AppState = struct {
     allocator: std.mem.Allocator,
-    catalog: assets.Catalog,
+    resources: assets.ResourceStore,
     animation_catalog: xanim.Catalog,
     ui_font: game_font.Loaded,
     runtime_root_path: []const u8,
@@ -513,11 +513,11 @@ const AppState = struct {
     pending_level_input: gameplay.RunnerInput = .{},
 
     fn init(allocator: std.mem.Allocator, options: Options, runtime_config_result: config.LoadResult, audio_ready: bool) !AppState {
-        var catalog = try assets.Catalog.init(allocator, options.archive_path);
-        errdefer catalog.deinit();
-        var animation_catalog = try xanim.Catalog.load(allocator, &catalog);
+        var resources = try assets.ResourceStore.init(allocator, options.archive_path, audio_ready);
+        errdefer resources.deinit();
+        var animation_catalog = try xanim.Catalog.load(allocator, &resources.catalog);
         errdefer animation_catalog.deinit();
-        var ui_font = try game_font.Loaded.load(allocator, &catalog);
+        var ui_font = try game_font.Loaded.load(allocator, &resources.catalog);
         errdefer ui_font.deinit();
         const frontend_canvas = if (options.command == .game) blk: {
             const canvas = try rl.loadRenderTexture(frontend_canvas_width, frontend_canvas_height);
@@ -526,36 +526,36 @@ const AppState = struct {
             break :blk canvas;
         } else null;
         errdefer if (frontend_canvas) |canvas| canvas.unload();
-        var frontend_cursor_texture = try catalog.loadTextureByPath(allocator, frontend_cursor_texture_path);
+        var frontend_cursor_texture = try resources.texture(frontend_cursor_texture_path);
         errdefer frontend_cursor_texture.unload();
-        var frontend_widget_art = try app_art.loadFrontendWidgetArt(allocator, &catalog);
+        var frontend_widget_art = try app_art.loadFrontendWidgetArt(&resources);
         errdefer frontend_widget_art.unload();
-        var frontend_sound_fx = try app_art.loadFrontendSoundFx(allocator, &catalog, audio_ready);
+        var frontend_sound_fx = try app_art.loadFrontendSoundFx(&resources);
         errdefer frontend_sound_fx.unload();
-        var gameplay_sound_fx = try gameplay_art.loadSoundFx(allocator, &catalog, audio_ready);
+        var gameplay_sound_fx = try gameplay_art.loadSoundFx(&resources);
         errdefer gameplay_sound_fx.unload();
-        var slider_art = try app_art.loadSliderArt(allocator, &catalog);
+        var slider_art = try app_art.loadSliderArt(&resources);
         errdefer slider_art.unload();
-        var route_map_art = try app_art.loadRouteMapArt(allocator, &catalog);
+        var route_map_art = try app_art.loadRouteMapArt(&resources);
         errdefer route_map_art.unload();
-        var background_light_streak_texture = try catalog.loadTextureByPath(allocator, gameplay_assets.background_light_streak_sprite_path);
+        var background_light_streak_texture = try resources.texture(gameplay_assets.background_light_streak_sprite_path);
         rl.setTextureFilter(background_light_streak_texture.texture, .point);
         errdefer background_light_streak_texture.unload();
         const gameplay_billboard_shader = try loadGameplayBillboardCutoutShader();
         errdefer rl.unloadShader(gameplay_billboard_shader);
-        var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &catalog, galaxy_names_path);
+        var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &resources.catalog, galaxy_names_path);
         errdefer if (galaxy_names) |*names| names.deinit();
 
-        const texture_index = catalog.findTextureIndex(default_texture_path) orelse 0;
-        const audio_index = catalog.findAudioIndex(default_audio_path) orelse 0;
-        const model_index = catalog.findModelIndex(default_model_path) orelse 0;
-        const object_index = catalog.findObjectIndex(default_object_path) orelse 0;
-        const level_index = catalog.findLevelIndex(default_level_path) orelse 0;
+        const texture_index = resources.catalog.findTextureIndex(default_texture_path) orelse 0;
+        const audio_index = resources.catalog.findAudioIndex(default_audio_path) orelse 0;
+        const model_index = resources.catalog.findModelIndex(default_model_path) orelse 0;
+        const object_index = resources.catalog.findObjectIndex(default_object_path) orelse 0;
+        const level_index = resources.catalog.findLevelIndex(default_level_path) orelse 0;
         const segment_index: usize = 0;
 
         var state = AppState{
             .allocator = allocator,
-            .catalog = catalog,
+            .resources = resources,
             .animation_catalog = animation_catalog,
             .ui_font = ui_font,
             .runtime_root_path = options.runtime_root_path,
@@ -701,24 +701,24 @@ const AppState = struct {
 
         self.ui_font.deinit();
         self.animation_catalog.deinit();
-        self.catalog.deinit();
+        self.resources.deinit();
         self.high_score_tables.deinit(self.allocator);
     }
 
     fn warmupSmokeTest(self: *AppState) !void {
-        var loaded_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.catalog);
+        var loaded_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.resources.catalog);
         defer loaded_loading_screen.deinit();
         if (loaded_loading_screen.background_texture.texture.width <= 0 or loaded_loading_screen.bar_texture.texture.width <= 0) {
             return error.InvalidLoadingScreenTexture;
         }
 
-        var loaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, intro_background_path);
+        var loaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, intro_background_path);
         defer loaded_intro_background.deinit();
         if (loaded_intro_background.primary_texture.texture.width <= 0) {
             return error.InvalidIntroBackgroundTexture;
         }
 
-        var loaded_thanks_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, thanks_screen_background_path);
+        var loaded_thanks_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, thanks_screen_background_path);
         defer loaded_thanks_background.deinit();
         if (loaded_thanks_background.primary_texture.texture.width <= 0) {
             return error.InvalidThanksBackgroundTexture;
@@ -736,7 +736,7 @@ const AppState = struct {
             return error.EmptyCreditsScript;
         }
 
-        if (!self.audio_ready or self.catalog.audio_entries.len == 0) {
+        if (!self.audio_ready or self.resources.catalog.audio_entries.len == 0) {
             return;
         }
 
@@ -753,19 +753,19 @@ const AppState = struct {
             .load_high_scores => try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path),
             .load_intro_background => {
                 self.unloadPreloadedBackground(&self.preloaded_intro_background);
-                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, intro_background_path);
+                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, intro_background_path);
             },
             .load_main_menu_background => {
                 self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
-                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, main_menu_background_path);
+                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, main_menu_background_path);
             },
             .load_route_map_background => {
                 self.unloadPreloadedBackground(&self.preloaded_route_map_background);
-                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, route_map_background_path);
+                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, route_map_background_path);
             },
             .load_help_background => {
                 self.unloadPreloadedBackground(&self.preloaded_help_background);
-                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.catalog, help_background_path);
+                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, help_background_path);
             },
             .load_intro_script => {
                 self.unloadPreloadedTextScript(&self.preloaded_intro_script);
@@ -777,11 +777,11 @@ const AppState = struct {
             },
             .load_intro_music => {
                 self.unloadPreloadedMusic(&self.preloaded_intro_music);
-                self.preloaded_intro_music = try self.catalog.loadMusicByPath(self.allocator, intro_music_path);
+                self.preloaded_intro_music = try self.resources.catalog.loadMusicByPath(self.allocator, intro_music_path);
             },
             .load_menu_music => {
                 self.unloadPreloadedMusic(&self.preloaded_menu_music);
-                self.preloaded_menu_music = try self.catalog.loadMusicByPath(self.allocator, default_audio_path);
+                self.preloaded_menu_music = try self.resources.catalog.loadMusicByPath(self.allocator, default_audio_path);
             },
         }
 
@@ -896,8 +896,8 @@ const AppState = struct {
     fn reloadGameplayTurboForPath(self: *AppState, model_path: []const u8) !void {
         self.unloadGameplayTurbo();
 
-        const entry_index = self.catalog.findModelIndex(model_path) orelse return;
-        const entry = self.catalog.model_entries[entry_index];
+        const entry_index = self.resources.catalog.findModelIndex(model_path) orelse return;
+        const entry = self.resources.catalog.model_entries[entry_index];
         self.current_gameplay_turbo_model_path = entry.path;
 
         if (self.animation_catalog.findClipIndexForModelPath(entry.path)) |clip_index| {
@@ -905,7 +905,7 @@ const AppState = struct {
             if (clip.frames.len > 1) {
                 self.current_gameplay_turbo_animation = try xanim.Player.load(
                     self.allocator,
-                    &self.catalog,
+                    &self.resources.catalog,
                     clip,
                     true,
                     xanim.frameNumberFromPath(entry.path),
@@ -917,7 +917,7 @@ const AppState = struct {
 
         self.current_gameplay_turbo_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             entry,
             true,
         );
@@ -956,7 +956,7 @@ const AppState = struct {
         for (self.animation_catalog.clips) |*clip| {
             if (!std.ascii.eqlIgnoreCase(clip.family_key, family_key)) continue;
             if (clip.frames.len == 0) continue;
-            const entry = self.catalog.model_entries[clip.frames[0].entry_index];
+            const entry = self.resources.catalog.model_entries[clip.frames[0].entry_index];
             return entry.path;
         }
         return null;
@@ -975,11 +975,11 @@ const AppState = struct {
     fn reloadGameplayBarrier(self: *AppState) !void {
         self.unloadGameplayBarrier();
 
-        const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
-        const entry = self.catalog.object_entries[entry_index];
+        const entry_index = self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
+        const entry = self.resources.catalog.object_entries[entry_index];
         self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             entry,
             true,
         );
@@ -988,20 +988,20 @@ const AppState = struct {
     fn reloadGameplayLazer(self: *AppState) !void {
         self.unloadGameplayLazer();
 
-        const entry_index = self.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) orelse return;
-        const entry = self.catalog.object_entries[entry_index];
+        const entry_index = self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) orelse return;
+        const entry = self.resources.catalog.object_entries[entry_index];
         self.current_gameplay_lazer_object = try object.LoadedObject.loadFromArchive(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             entry,
             true,
         );
 
-        if (self.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path)) |vapour_index| {
+        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path)) |vapour_index| {
             self.current_gameplay_vapour_lazer_object = try object.LoadedObject.loadFromArchive(
                 self.allocator,
-                &self.catalog,
-                self.catalog.object_entries[vapour_index],
+                &self.resources.catalog,
+                self.resources.catalog.object_entries[vapour_index],
                 true,
             );
         }
@@ -1010,11 +1010,11 @@ const AppState = struct {
     fn reloadGameplaySalt(self: *AppState) !void {
         self.unloadGameplaySalt();
 
-        const entry_index = self.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) orelse return;
-        const entry = self.catalog.model_entries[entry_index];
+        const entry_index = self.resources.catalog.findModelIndex(gameplay_assets.gameplay_salt_model_path) orelse return;
+        const entry = self.resources.catalog.model_entries[entry_index];
         self.current_gameplay_salt_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             entry,
             true,
         );
@@ -1023,17 +1023,17 @@ const AppState = struct {
     fn reloadGameplayActorModels(self: *AppState) !void {
         self.unloadGameplayActorModels();
 
-        const turret_index = self.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) orelse return;
+        const turret_index = self.resources.catalog.findModelIndex(gameplay_assets.gameplay_turret_model_path) orelse return;
         self.current_gameplay_turret_model = try x2.Uploaded.loadFromArchive(
             self.allocator,
-            &self.catalog,
-            self.catalog.model_entries[turret_index],
+            &self.resources.catalog,
+            self.resources.catalog.model_entries[turret_index],
             true,
         );
 
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_blaster_top_models,
             gameplay_assets.gameplay_blaster_top_model_path,
             &gameplay_assets.gameplay_blaster_top_draw_model_paths,
@@ -1041,7 +1041,7 @@ const AppState = struct {
         );
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_blaster_left_models,
             gameplay_assets.gameplay_blaster_left_model_path,
             &gameplay_assets.gameplay_blaster_left_draw_model_paths,
@@ -1049,7 +1049,7 @@ const AppState = struct {
         );
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_blaster_right_models,
             gameplay_assets.gameplay_blaster_right_model_path,
             &gameplay_assets.gameplay_blaster_right_draw_model_paths,
@@ -1057,7 +1057,7 @@ const AppState = struct {
         );
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_laser_left_models,
             gameplay_assets.gameplay_laser_left_model_path,
             &gameplay_assets.gameplay_laser_left_draw_model_paths,
@@ -1065,7 +1065,7 @@ const AppState = struct {
         );
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_laser_right_models,
             gameplay_assets.gameplay_laser_right_model_path,
             &gameplay_assets.gameplay_laser_right_draw_model_paths,
@@ -1073,37 +1073,37 @@ const AppState = struct {
         );
         try gameplay_art.loadWeaponModelSet(
             self.allocator,
-            &self.catalog,
+            &self.resources.catalog,
             &self.current_gameplay_rocket_launcher_models,
             gameplay_assets.gameplay_rocket_launcher_model_path,
             &gameplay_assets.gameplay_rocket_launcher_draw_model_paths,
             null,
         );
         for (gameplay_assets.gameplay_jetpack_thrust_model_paths, 0..) |path, index| {
-            if (self.catalog.findModelIndex(path)) |entry_index| {
+            if (self.resources.catalog.findModelIndex(path)) |entry_index| {
                 self.current_gameplay_jetpack_thrust_models.frames[index] = try x2.Uploaded.loadFromArchive(
                     self.allocator,
-                    &self.catalog,
-                    self.catalog.model_entries[entry_index],
+                    &self.resources.catalog,
+                    self.resources.catalog.model_entries[entry_index],
                     true,
                 );
                 try self.current_gameplay_jetpack_thrust_models.frames[index].?.enableToonOutline();
             }
         }
-        if (self.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path)) |entry_index| {
+        if (self.resources.catalog.findModelIndex(gameplay_assets.gameplay_rocket_model_path)) |entry_index| {
             self.current_gameplay_rocket_model = try x2.Uploaded.loadFromArchive(
                 self.allocator,
-                &self.catalog,
-                self.catalog.model_entries[entry_index],
+                &self.resources.catalog,
+                self.resources.catalog.model_entries[entry_index],
                 true,
             );
         }
         for (gameplay_assets.gameplay_invincible_model_paths, 0..) |path, index| {
-            if (self.catalog.findModelIndex(path)) |entry_index| {
+            if (self.resources.catalog.findModelIndex(path)) |entry_index| {
                 self.current_gameplay_invincible_models.frames[index] = try x2.Uploaded.loadFromArchive(
                     self.allocator,
-                    &self.catalog,
-                    self.catalog.model_entries[entry_index],
+                    &self.resources.catalog,
+                    self.resources.catalog.model_entries[entry_index],
                     true,
                 );
             }
@@ -1112,7 +1112,7 @@ const AppState = struct {
 
     fn reloadGameplaySprites(self: *AppState) !void {
         self.unloadGameplaySprites();
-        self.current_gameplay_sprites = try gameplay_art.loadSpriteArt(self.allocator, &self.catalog);
+        self.current_gameplay_sprites = try gameplay_art.loadSpriteArt(&self.resources);
     }
 
     fn activeGameplayTurbo(self: *const AppState) ?*const x2.Uploaded {
@@ -3518,8 +3518,8 @@ const AppState = struct {
         const mode = self.frontend_route_mode orelse return;
         var path_buffer: [64]u8 = undefined;
         const level_path = frontendLevelPath(mode, self.frontend_route_index, &path_buffer) catch return;
-        const level_index = self.catalog.findLevelIndex(level_path) orelse return;
-        self.frontend_route_level = try level.loadFromArchive(self.allocator, &self.catalog, self.catalog.level_entries[level_index]);
+        const level_index = self.resources.catalog.findLevelIndex(level_path) orelse return;
+        self.frontend_route_level = try level.loadFromArchive(self.allocator, &self.resources.catalog, self.resources.catalog.level_entries[level_index]);
     }
 
     pub fn currentFrontendGalaxyName(self: *const AppState) ?[]const u8 {
@@ -4642,7 +4642,7 @@ const AppState = struct {
     fn highestAvailableFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
         switch (mode) {
             .postal => {
-                if (self.catalog.findLevelIndex("LEVELS/ARCADEEXTRA000.TXT") != null) return 0x33;
+                if (self.resources.catalog.findLevelIndex("LEVELS/ARCADEEXTRA000.TXT") != null) return 0x33;
                 return 0x32;
             },
             .time_trial => {
@@ -4651,7 +4651,7 @@ const AppState = struct {
                 var extra_index: usize = 0x33;
                 while (extra_index < 0x80) : (extra_index += 1) {
                     const path = frontendLevelPath(.time_trial, extra_index, &scratch) catch break;
-                    if (self.catalog.findLevelIndex(path) == null) break;
+                    if (self.resources.catalog.findLevelIndex(path) == null) break;
                     last_index = extra_index;
                 }
                 return last_index;
@@ -4817,7 +4817,7 @@ const AppState = struct {
     }
 
     fn loadGameLevel(self: *AppState, level_path: []const u8) !void {
-        self.level_index = self.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
+        self.level_index = self.resources.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
         self.invalidateTrackBuildSeed();
         try self.reloadLevel();
     }
@@ -4838,14 +4838,14 @@ const AppState = struct {
         self.current_music = if (self.takePreloadedMusic(path)) |music|
             music
         else
-            try self.catalog.loadMusicByPath(self.allocator, path);
+            try self.resources.catalog.loadMusicByPath(self.allocator, path);
         self.applyAudioConfigVolumes();
         rl.playMusicStream(self.current_music.?.music);
     }
 
     fn playSoundByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
-        const sound = try self.current_sound.loadPath(self.allocator, &self.catalog, path);
+        const sound = try self.current_sound.loadPath(self.allocator, &self.resources.catalog, path);
         self.applyAudioConfigVolumes();
         rl.playSound(sound.sound);
     }
@@ -4853,7 +4853,7 @@ const AppState = struct {
     fn playVoiceByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
         self.stopVoicePlayback();
-        const sound = try self.current_voice_sound.loadPath(self.allocator, &self.catalog, path);
+        const sound = try self.current_voice_sound.loadPath(self.allocator, &self.resources.catalog, path);
         self.applyAudioConfigVolumes();
         rl.playSound(sound.sound);
     }
@@ -5048,14 +5048,14 @@ const AppState = struct {
         var loaded = if (self.takePreloadedBackground(script_path)) |loaded|
             loaded
         else
-            try background.Loaded.loadByPath(self.allocator, &self.catalog, script_path);
+            try background.Loaded.loadByPath(self.allocator, &self.resources.catalog, script_path);
         self.current_game_background_runtime = background.Runtime.init(&loaded);
         self.current_game_background = loaded;
     }
 
     fn loadLoadingScreen(self: *AppState) !void {
         self.unloadLoadingScreen();
-        self.current_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.catalog);
+        self.current_loading_screen = try loading_screen.Loaded.load(self.allocator, &self.resources.catalog);
     }
 
     fn loadTextScript(self: *AppState, path: []const u8) !void {
@@ -5070,12 +5070,12 @@ const AppState = struct {
         if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
             return try intro.loadByPathWithOptions(
                 self.allocator,
-                &self.catalog,
+                &self.resources.catalog,
                 path,
                 .{ .add_remake_credit = self.credits_with_remake },
             );
         }
-        return try intro.loadByPath(self.allocator, &self.catalog, path);
+        return try intro.loadByPath(self.allocator, &self.resources.catalog, path);
     }
 
     fn unloadTextScript(self: *AppState) void {
@@ -5384,15 +5384,15 @@ const AppState = struct {
         self.gameplay_click_start_active = false;
         self.resetSubgameCamera();
         self.tutorial_reference_score = 0;
-        if (self.catalog.level_entries.len == 0) return;
+        if (self.resources.catalog.level_entries.len == 0) return;
 
-        const entry = self.catalog.level_entries[self.level_index];
-        self.current_level = try level.loadFromArchive(self.allocator, &self.catalog, entry);
+        const entry = self.resources.catalog.level_entries[self.level_index];
+        self.current_level = try level.loadFromArchive(self.allocator, &self.resources.catalog, entry);
         if (self.current_level) |*loaded_level| {
             const runtime_build_seed = self.trackBuildSeedForCurrentLoad();
             self.current_track_preview = try track.LoadedLevelPreview.loadWithOptions(
                 self.allocator,
-                &self.catalog,
+                &self.resources.catalog,
                 loaded_level,
                 .{
                     .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
@@ -5411,7 +5411,7 @@ const AppState = struct {
                 if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
                     self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
                         self.allocator,
-                        &self.catalog,
+                        &self.resources.catalog,
                         track_set_index,
                     );
                 }
@@ -5500,8 +5500,8 @@ const AppState = struct {
 
         var path_buffer: [512]u8 = undefined;
         const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{loaded_level.segments[self.level_segment_index].path});
-        const entry = self.catalog.dat.entryByPath(archive_path) orelse return;
-        self.current_segment = try segment.loadFromArchive(self.allocator, &self.catalog, entry);
+        const entry = self.resources.catalog.dat.entryByPath(archive_path) orelse return;
+        self.current_segment = try segment.loadFromArchive(self.allocator, &self.resources.catalog, entry);
     }
 
     pub fn activeModel(self: *const AppState) ?*const x2.Uploaded {
@@ -8161,8 +8161,7 @@ test "ordinary postal completion commits unlock progress without staging arcade 
 
     var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
     defer previous_dir.close(io);
-    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
-    defer catalog.deinit();
+    const resources = try assets.ResourceStore.init(std.testing.allocator, default_archive_path, false);
 
     try std.process.setCurrentDir(io, temp_dir.dir);
     defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
@@ -8170,7 +8169,8 @@ test "ordinary postal completion commits unlock progress without staging arcade 
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
     state.runtime_root_path = "runtime";
-    state.catalog = catalog;
+    state.resources = resources;
+    defer state.resources.deinit();
     state.high_score_tables = high_score.Tables.initDefault();
     defer state.high_score_tables.deinit(std.testing.allocator);
     state.runtime_config = config.Blob.initDefault();
@@ -8213,8 +8213,7 @@ test "final postal completion stages postal score entry before thanks return" {
 
     var previous_dir = try std.Io.Dir.cwd().openDir(io, ".", .{});
     defer previous_dir.close(io);
-    var catalog = try assets.Catalog.init(std.testing.allocator, default_archive_path);
-    defer catalog.deinit();
+    const resources = try assets.ResourceStore.init(std.testing.allocator, default_archive_path, false);
 
     try std.process.setCurrentDir(io, temp_dir.dir);
     defer std.process.setCurrentDir(io, previous_dir) catch unreachable;
@@ -8222,7 +8221,8 @@ test "final postal completion stages postal score entry before thanks return" {
     var state: AppState = undefined;
     state.allocator = std.testing.allocator;
     state.runtime_root_path = "runtime";
-    state.catalog = catalog;
+    state.resources = resources;
+    defer state.resources.deinit();
     state.high_score_tables = high_score.Tables.initDefault();
     defer state.high_score_tables.deinit(std.testing.allocator);
     state.runtime_config = config.Blob.initDefault();
