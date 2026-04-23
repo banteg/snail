@@ -11,175 +11,236 @@
 0043a9c6        int32_t var_c = esi
 0043a9cb        int32_t edi
 0043a9cb        int32_t var_10 = edi
-0043a9cc        *(arg3 + 0x380) = arg4
-0043a9de        *(arg3 + 0x408) = data_4df904 + 0x74618
-0043a9e4        *(arg3 + 0x370) = 0
-0043a9ea        *(arg3 + 0x1e8) = 0
-0043a9f0        *(arg3 + 0x2d8) = 0
-0043a9f6        *(arg3 + 0x154) = arg3
-0043a9fc        *(arg3 + 0x150) = 0
-0043aa02        *(arg3 + 0x14c) = 0
-0043aa08        *(arg3 + 0x8c) = 0
-0043aa0e        *(arg3 + 0x444) = 0
-0043aa14        *(arg3 + 0x338) = 0
-0043aa1a        *(arg3 + 0x33c) = 0xffffffff
-0043aa24        *(arg3 + 0x1e4) = 0
-0043aa2a        *(arg3 + 0x42b8) = 0
-0043aa36        *(*(arg3 + 0x408) + 0x12727ec) = 0
-0043aa3c        *(arg3 + 0x3c68) = 0
-0043aa42        *(arg3 + 0x30d4) = 0
-0043aa48        *(arg3 + 0x34b0) = 0
-0043aa4e        *(arg3 + 0x388c) = 0
-0043aa54        *(arg3 + 0x2dc) = 0
-0043aa5a        *(arg3 + 0x2e0) = 0
-0043aa60        *(arg3 + 0x29a8)
+0043a9cc        player->_pad_374[0xc] = player_slot.b
+0043a9cc        player->_pad_374[0xd] = player_slot:1.b
+0043a9cc        player->_pad_374[0xe] = player_slot:2.b
+0043a9cc        player->_pad_374[0xf] = player_slot:3.b
+0043a9de        player->game = data_4df904 + 0x74618
+0043a9e4        player->heading_roll = 0f
+0043a9ea        player->_pad_14d[0x9b] = 0
+0043a9ea        player->_pad_14d[0x9c] = 0
+0043a9ea        player->_pad_14d[0x9d] = 0
+0043a9ea        player->_pad_14d[0x9e] = 0
+0043a9f0        player->control_override_active = 0
+0043a9f6        player->_pad_14d[7] = player.b
+0043a9f6        player->_pad_14d[8] = player:1.b
+0043a9f6        player->_pad_14d[9] = player:2.b
+0043a9f6        player->_pad_14d[0xa] = player:3.b
+0043a9fc        player->_pad_14d[3] = 0
+0043a9fc        player->_pad_14d[4] = 0
+0043a9fc        player->_pad_14d[5] = 0
+0043a9fc        player->_pad_14d[6] = 0
+0043aa02        player->row_event_cutscene_started = 0
+0043aa08        player->resurrect_progress = 0f
+0043aa0e        player->completion_handoff_timer = 0f
+0043aa14        player->movement_flags = 0
+0043aa1a        player->previous_movement_flags = 0xffffffff
+0043aa24        player->_pad_14d[0x97] = 0
+0043aa2a        player->presentation.invincible_shell._pad_90[0xc] = 0
+0043aa36        player->game->row_event_display.state = 0
+0043aa3c        player->presentation.jetpack_channel.selected_state = 0
+0043aa42        player->presentation.weapon_channels[0].selected_state = 0
+0043aa48        player->presentation.weapon_channels[1].selected_state = 0
+0043aa4e        player->presentation.weapon_channels[2].selected_state = 0
+0043aa54        player->cutscene_pitch_cycle = 0f
+0043aa5a        player->cutscene_pitch_cycle_step = 0f
+0043aa60        player->presentation
 0043aa6c        sub_41aa30()
-0043aa71        *(arg3 + 0x2980) = 0xc1980000
-0043aa7b        *(arg3 + 0x1cc) = 0
-0043aa86        *(arg3 + 0x42b0) = 0
-0043aa8c        *(arg3 + 0x42b4) = 0x3c888889
-0043aa92        *(arg3 + 0x435c) = 0
-0043aa9e        *(arg3 + 0x4360) = 0x3c888889
+0043aa71        player->interaction_max_z = -19f
+0043aa7b        player->_pad_14d[0x7f] = 0
+0043aa7b        player->_pad_14d[0x80] = 0
+0043aa7b        player->_pad_14d[0x81] = 0
+0043aa7b        player->_pad_14d[0x82] = 0
+0043aa86        player->presentation.invincible_shell._pad_90[4] = 0
+0043aa86        player->presentation.invincible_shell._pad_90[5] = 0
+0043aa86        player->presentation.invincible_shell._pad_90[6] = 0
+0043aa86        player->presentation.invincible_shell._pad_90[7] = 0
+0043aa8c        player->presentation.invincible_shell._pad_90[8] = 0x89
+0043aa8c        player->presentation.invincible_shell._pad_90[9] = 0x88
+0043aa8c        player->presentation.invincible_shell._pad_90[0xa] = 0x88
+0043aa8c        player->presentation.invincible_shell._pad_90[0xb] = 0x3c
+0043aa92        player->slow_commentary_timer = 0f
+0043aa9e        player->slow_commentary_step = 0.0166666675f
 0043aaa4        initialize_score_stats()
-0043aaaf        initialize_invincible_shell(arg3 + 0x4218)
-0043aabe        *(arg3 + 0x334) = 0x3d638e38
-0043aac4        *(arg3 + 0x330) = 0x3d638e38
-0043aaca        *(arg3 + 0x434) = 0
-0043aad0        *(arg3 + 0x438) = 0x3c888889
-0043aadf        if ((*(*(arg3 + 0x29a8) + 0x10) & 0x200000) == 0)
-0043ab31        initialize_anim_manager(arg3 + 0x2a88)
-0043ab36        *(arg3 + 0x2a88) = 0
-0043aaed        int32_t eax_1
-0043aaed        eax_1:1.b = (*(arg3 + 0x2988)):1.b | 8
-0043aaf2        *(arg3 + 0x2988) = eax_1
-0043aaf8        *(arg3 + 0x29fc) = arg3 + 0x2a88
-0043aafe        initialize_anim_manager(arg3 + 0x2a88)
-0043ab09        *(arg3 + 0x2a88) = 1
-0043ab15        *(arg3 + 0x2ac8) = arg3 + 0x2984
-0043ab1b        *(arg3 + 0x2acc) = arg3 + 0x2ad0
-0043ab21        *(arg3 + 0x2ac4) = 0
-0043ab41        if ((*(*(arg3 + 0x3b88) + 0x10) & 0x200000) == 0)
-0043ab9c        initialize_anim_manager(arg3 + 0x3c6c)
-0043aba1        *(arg3 + 0x3c6c) = 0
-0043ab52        int32_t ecx_10
-0043ab52        ecx_10:1.b = (*(arg3 + 0x3b68) & 0xffffffdf):1.b | 8
-0043ab55        *(arg3 + 0x3b68) = ecx_10
-0043ab5b        *(arg3 + 0x3c68) = 0
-0043ab63        *(arg3 + 0x3bdc) = arg3 + 0x3c6c
-0043ab69        initialize_anim_manager(arg3 + 0x3c6c)
-0043ab74        *(arg3 + 0x3c6c) = 1
-0043ab80        *(arg3 + 0x3cac) = arg3 + 0x3b64
-0043ab86        *(arg3 + 0x3cb0) = arg3 + 0x3cb4
-0043ab8c        *(arg3 + 0x3ca8) = 0
-0043abac        if ((*(*(arg3 + 0x2ff4) + 0x10) & 0x200000) == 0)
-0043ac07        initialize_anim_manager(arg3 + 0x30d8)
-0043ac0c        *(arg3 + 0x30d8) = 0
-0043abbf        int32_t edx_4
-0043abbf        edx_4:1.b = (*(arg3 + 0x2fd4) & 0xffffffdf):1.b | 8
-0043abc2        *(arg3 + 0x2fd4) = edx_4
-0043abc8        *(arg3 + 0x30d4) = 0
-0043abce        *(arg3 + 0x3048) = arg3 + 0x30d8
-0043abd4        initialize_anim_manager(arg3 + 0x30d8)
-0043abdf        *(arg3 + 0x30d8) = 1
-0043abeb        *(arg3 + 0x3118) = arg3 + 0x2fd0
-0043abf1        *(arg3 + 0x311c) = arg3 + 0x3120
-0043abf7        *(arg3 + 0x3114) = 0
-0043ac17        if ((*(*(arg3 + 0x33d0) + 0x10) & 0x200000) == 0)
-0043ac71        initialize_anim_manager(arg3 + 0x34b4)
-0043ac76        *(arg3 + 0x34b4) = 0
-0043ac25        int32_t eax_5
-0043ac25        eax_5.b = (*(arg3 + 0x33b0)).b & 0xdf
+0043aaaf        initialize_invincible_shell(&player->presentation.invincible_shell)
+0043aabe        player->startup_voice_step = 0.0555555522f
+0043aac4        player->startup_voice_timer = 0.0555555522f
+0043aaca        player->attachment_exit_progress = 0f
+0043aad0        player->attachment_exit_progress_step = 0.0166666675f
+0043aadf        if ((player->presentation.visual_root->__offset(0x10).d & 0x200000) == 0)
+0043ab31        initialize_anim_manager(&player->presentation.anim_manager)
+0043ab36        player->presentation.anim_manager.active = 0
+0043aaed        uint32_t eax_1
+0043aaed        eax_1:1.b = player->presentation.visual_flags:1.b | 8
+0043aaf2        player->presentation.visual_flags = eax_1
+0043aaf8        player->presentation._pad_78[0] = (&player->presentation.anim_manager).b
+0043aaf8        player->presentation._pad_78[1] = (&player->presentation.anim_manager):1.b
+0043aaf8        player->presentation._pad_78[2] = (&player->presentation.anim_manager):2.b
+0043aaf8        player->presentation._pad_78[3] = (&player->presentation.anim_manager):3.b
+0043aafe        initialize_anim_manager(&player->presentation.anim_manager)
+0043ab09        player->presentation.anim_manager.active = 1
+0043ab15        player->presentation.anim_manager.self_ref = &player->presentation
+0043ab1b        player->presentation.anim_manager.queue_sentinel = &player->presentation._pad_14c
+0043ab21        player->presentation.anim_manager.queued_animation_count = 0
+0043ab41        if ((player->presentation.jetpack_channel.visual_root->__offset(0x10).d & 0x200000) == 0)
+0043ab9c        initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager)
+0043aba1        player->presentation.jetpack_channel.anim_manager.active = 0
+0043ab52        uint32_t ecx_10
+0043ab52        ecx_10:1.b = (player->presentation.jetpack_channel.visual_flags & 0xffffffdf):1.b | 8
+0043ab55        player->presentation.jetpack_channel.visual_flags = ecx_10
+0043ab5b        player->presentation.jetpack_channel.selected_state = 0
+0043ab63        player->presentation.jetpack_channel.active_anim_manager = &player->presentation.jetpack_channel.anim_manager
+0043ab69        initialize_anim_manager(&player->presentation.jetpack_channel.anim_manager)
+0043ab74        player->presentation.jetpack_channel.anim_manager.active = 1
+0043ab80        player->presentation.jetpack_channel.anim_manager.self_ref = &player->presentation.jetpack_channel
+0043ab86        player->presentation.jetpack_channel.anim_manager.queue_sentinel = &player->presentation.jetpack_channel._pad_150
+0043ab8c        player->presentation.jetpack_channel.anim_manager.queued_animation_count = 0
+0043abac        if ((player->presentation.weapon_channels[0].visual_root->__offset(0x10).d & 0x200000) == 0)
+0043ac07        initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager)
+0043ac0c        player->presentation.weapon_channels[0].anim_manager.active = 0
+0043abbf        uint32_t edx_4
+0043abbf        edx_4:1.b = (player->presentation.weapon_channels[0].visual_flags & 0xffffffdf):1.b | 8
+0043abc2        player->presentation.weapon_channels[0].visual_flags = edx_4
+0043abc8        player->presentation.weapon_channels[0].selected_state = 0
+0043abce        player->presentation.weapon_channels[0].active_anim_manager = &player->presentation.weapon_channels[0].anim_manager
+0043abd4        initialize_anim_manager(&player->presentation.weapon_channels[0].anim_manager)
+0043abdf        player->presentation.weapon_channels[0].anim_manager.active = 1
+0043abeb        player->presentation.weapon_channels[0].anim_manager.self_ref = &player->presentation.weapon_channels
+0043abf1        player->presentation.weapon_channels[0].anim_manager.queue_sentinel = &player->presentation.weapon_channels[0]._pad_150
+0043abf7        player->presentation.weapon_channels[0].anim_manager.queued_animation_count = 0
+0043ac17        if ((player->presentation.weapon_channels[1].visual_root->__offset(0x10).d & 0x200000) == 0)
+0043ac71        initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager)
+0043ac76        player->presentation.weapon_channels[1].anim_manager.active = 0
+0043ac25        uint32_t eax_5
+0043ac25        eax_5.b = player->presentation.weapon_channels[1].visual_flags.b & 0xdf
 0043ac27        eax_5:1.b |= 8
-0043ac2a        *(arg3 + 0x33b0) = eax_5
-0043ac30        *(arg3 + 0x34b0) = 0
-0043ac38        *(arg3 + 0x3424) = arg3 + 0x34b4
-0043ac3e        initialize_anim_manager(arg3 + 0x34b4)
-0043ac49        *(arg3 + 0x34b4) = 1
-0043ac55        *(arg3 + 0x34f4) = arg3 + 0x33ac
-0043ac5b        *(arg3 + 0x34f8) = arg3 + 0x34fc
-0043ac61        *(arg3 + 0x34f0) = 0
-0043ac81        if ((*(*(arg3 + 0x37ac) + 0x10) & 0x200000) == 0)
-0043acdc        initialize_anim_manager(arg3 + 0x3890)
-0043ace1        *(arg3 + 0x3890) = 0
-0043ac92        int32_t ecx_21
-0043ac92        ecx_21:1.b = (*(arg3 + 0x378c) & 0xffffffdf):1.b | 8
-0043ac95        *(arg3 + 0x378c) = ecx_21
-0043ac9b        *(arg3 + 0x388c) = 0
-0043aca3        *(arg3 + 0x3800) = arg3 + 0x3890
-0043aca9        initialize_anim_manager(arg3 + 0x3890)
-0043acb4        *(arg3 + 0x3890) = 1
-0043acc0        *(arg3 + 0x38d0) = arg3 + 0x3788
-0043acc6        *(arg3 + 0x38d4) = arg3 + 0x38d8
-0043accc        *(arg3 + 0x38cc) = 0
-0043ace9        initialize_snail_skin(arg3 + 0x42bc)
-0043acf4        initialize_cutscene_ai(arg3 + 0x42dc)
-0043ad05        if (*(*(arg3 + 0x408) + 0xff25d0) == 0)
-0043ad07        *(arg3 + 0x42e8) = 1
-0043ad17        *(arg3 + 0x2a84) = arg3
-0043ad1d        set_matrix_identity(arg3 + 0x29bc)
-0043ad28        set_matrix_identity(arg3 + 0x2a44)
-0043ad33        set_matrix_identity(arg3 + 0x2a04)
-0043ad3f        *(arg3 + 0x4338) = 0
-0043ad45        initialize_click_start(arg3 + 0xa0, arg3)
-0043ad50        initialize_cameraman(arg3 + 0x200)
-0043ad5e        initialize_subgoldy_ghost(arg3, *(arg3 + 0x380))
-0043ad6a        *(arg3 + 0x1d8) = 0x3d4ede62
-0043ad70        *(arg3 + 0x1e0) = 0x3d4ede62
-0043ad7e        *(arg3 + 0x68) = 0
-0043ad81        *(arg3 + 0x6c) = 0
-0043ad84        *(arg3 + 0x2964) = 0
-0043ad86        *(arg3 + 0x70) = 0x40800000
-0043ad8d        int32_t ecx_33 = *(arg3 + 0x70)
-0043ad90        *(arg3 + 0x37c) = 0
-0043ad96        *(arg3 + 0x2968) = 0
-0043ad99        *(arg3 + 0x328) = 0
-0043ad9f        *(arg3 + 0x32c) = 0x3c888889
-0043ada9        *(arg3 + 0x1d4) = 0
-0043adaf        *(arg3 + 0x1dc) = 0
-0043adb5        *(arg3 + 0x3f40) = 0
-0043adbb        *(arg3 + 0x3f44) = 0x3bbc5264
-0043adc5        *(arg3 + 0x3f48) = 0
-0043adcb        *(arg3 + 0x3f4c) = 0x3bde0163
-0043add5        *(arg3 + 0x84) = 0
-0043addb        *(arg3 + 0x296c) = ecx_33
-0043adde        *(arg3 + 0x418) = 0
-0043ade4        *(arg3 + 0x414) = 0
-0043adea        *(arg3 + 0x410) = 0
-0043adf9        int32_t eax_10 = data_4df904
-0043adfe        int32_t eax_11
-0043adfe        if (*(arg3 + 0x380) != 1)
+0043ac2a        player->presentation.weapon_channels[1].visual_flags = eax_5
+0043ac30        player->presentation.weapon_channels[1].selected_state = 0
+0043ac38        player->presentation.weapon_channels[1].active_anim_manager = &player->presentation.weapon_channels[1].anim_manager
+0043ac3e        initialize_anim_manager(&player->presentation.weapon_channels[1].anim_manager)
+0043ac49        player->presentation.weapon_channels[1].anim_manager.active = 1
+0043ac55        player->presentation.weapon_channels[1].anim_manager.self_ref = &player->presentation.weapon_channels[1]
+0043ac5b        player->presentation.weapon_channels[1].anim_manager.queue_sentinel = &player->presentation.weapon_channels[1]._pad_150
+0043ac61        player->presentation.weapon_channels[1].anim_manager.queued_animation_count = 0
+0043ac81        if ((player->presentation.weapon_channels[2].visual_root->__offset(0x10).d & 0x200000) == 0)
+0043acdc        initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager)
+0043ace1        player->presentation.weapon_channels[2].anim_manager.active = 0
+0043ac92        uint32_t ecx_21
+0043ac92        ecx_21:1.b = (player->presentation.weapon_channels[2].visual_flags & 0xffffffdf):1.b | 8
+0043ac95        player->presentation.weapon_channels[2].visual_flags = ecx_21
+0043ac9b        player->presentation.weapon_channels[2].selected_state = 0
+0043aca3        player->presentation.weapon_channels[2].active_anim_manager = &player->presentation.weapon_channels[2].anim_manager
+0043aca9        initialize_anim_manager(&player->presentation.weapon_channels[2].anim_manager)
+0043acb4        player->presentation.weapon_channels[2].anim_manager.active = 1
+0043acc0        player->presentation.weapon_channels[2].anim_manager.self_ref = &player->presentation.weapon_channels[2]
+0043acc6        player->presentation.weapon_channels[2].anim_manager.queue_sentinel = &player->presentation.weapon_channels[2]._pad_150
+0043accc        player->presentation.weapon_channels[2].anim_manager.queued_animation_count = 0
+0043ace9        initialize_snail_skin(&player->presentation.snail_skin_transition)
+0043acf4        initialize_cutscene_ai(&player->presentation.cutscene_ai)
+0043ad05        if (player->game->selected_level_record_active == 0)
+0043ad07        player->presentation.cutscene_ai.state = 1
+0043ad17        player->presentation.owner_player = player
+0043ad1d        set_matrix_identity(&player->presentation.live_matrix)
+0043ad28        set_matrix_identity(&player->presentation.cached_cutscene_matrix)
+0043ad33        set_matrix_identity(&player->presentation.previous_live_matrix)
+0043ad3f        player->presentation.cutscene_ai._pad_59[3] = 0
+0043ad3f        player->presentation.cutscene_ai._pad_59[4] = 0
+0043ad3f        player->presentation.cutscene_ai._pad_59[5] = 0
+0043ad3f        player->presentation.cutscene_ai._pad_59[6] = 0
+0043ad45        initialize_click_start(&player->_pad_94[0xc], player)
+0043ad50        initialize_cameraman(&player->_pad_14d[0xb3])
+0043ad5e        initialize_subgoldy_ghost(player, player->_pad_374[0xc].d)
+0043ad6a        player->_pad_14d[0x8b] = 0x62
+0043ad6a        player->_pad_14d[0x8c] = 0xde
+0043ad6a        player->_pad_14d[0x8d] = 0x4e
+0043ad6a        player->_pad_14d[0x8e] = 0x3d
+0043ad70        player->_pad_14d[0x93] = 0x62
+0043ad70        player->_pad_14d[0x94] = 0xde
+0043ad70        player->_pad_14d[0x95] = 0x4e
+0043ad70        player->_pad_14d[0x96] = 0x3d
+0043ad7e        player->live_matrix.position.x = 0
+0043ad81        player->live_matrix.position.y = 0f
+0043ad84        player->cached_camera_target_world.x = 0
+0043ad86        player->live_matrix.position.z = 4f
+0043ad8d        float z = player->live_matrix.position.z
+0043ad90        player->_pad_374[8] = 0
+0043ad90        player->_pad_374[9] = 0
+0043ad90        player->_pad_374[0xa] = 0
+0043ad90        player->_pad_374[0xb] = 0
+0043ad96        player->cached_camera_target_world.y = 0f
+0043ad99        player->barrier_hold_progress = 0f
+0043ad9f        player->barrier_hold_step = 0.0166666675f
+0043ada9        player->_pad_14d[0x87] = 0
+0043ada9        player->_pad_14d[0x88] = 0
+0043ada9        player->_pad_14d[0x89] = 0
+0043ada9        player->_pad_14d[0x8a] = 0
+0043adaf        player->_pad_14d[0x8f] = 0
+0043adaf        player->_pad_14d[0x90] = 0
+0043adaf        player->_pad_14d[0x91] = 0
+0043adaf        player->_pad_14d[0x92] = 0
+0043adb5        player->presentation.wobble.roll_phase = 0
+0043adbb        player->presentation.wobble.roll_phase_step = 0.00574712642f
+0043adc5        player->presentation.wobble.lift_phase = 0f
+0043adcb        player->presentation.wobble.lift_phase_step = 0.00677506765f
+0043add5        player->flag84.b = 0
+0043addb        player->cached_camera_target_world.z = z
+0043adde        player->velocity.z = 0f
+0043ade4        player->velocity.y = 0f
+0043adea        player->velocity.x = 0
+0043adf9        void* eax_10 = data_4df904
+0043adfe        struct PlayerControlSource* eax_11
+0043adfe        if (player->_pad_374[0xc].d != 1)
 0043ae14        if (eax_10 == 0xffffff4c)
-0043ae1d        eax_11 = 0
+0043ae1d        eax_11 = nullptr
 0043ae16        eax_11 = eax_10 + 0xec
 0043ae05        if (eax_10 == 0xffffffbc)
-0043ae1d        eax_11 = 0
+0043ae1d        eax_11 = nullptr
 0043ae07        eax_11 = eax_10 + 0x7c
-0043ae25        *(arg3 + 0x43c) = eax_11
-0043ae2b        *(arg3 + 0x2730) = 0
-0043ae31        *(arg3 + 0x440) = 0
-0043ae37        *(arg3 + 0x2738) = 0
-0043ae3d        initialize_damage_gauge(arg3 + 0x3c4)
-0043ae4d        *(arg3 + 0x384) = 0
-0043ae53        struct TransformMatrix* transform = arg3 + 0x614
+0043ae25        player->control_source = eax_11
+0043ae2b        player->movement_progress = 0f
+0043ae31        player->completion_handoff_active.b = 0
+0043ae37        player->_pad_2738[0] = 0
+0043ae37        player->_pad_2738[1] = 0
+0043ae37        player->_pad_2738[2] = 0
+0043ae37        player->_pad_2738[3] = 0
+0043ae3d        initialize_damage_gauge(&player->_pad_3c4)
+0043ae4d        player->follow_state.active = 0
+0043ae53        struct TransformMatrix* transform = &player->_pad_44f[0x1c5]
 0043ae59        int32_t i_1 = 0xc
 0043ae7e        int32_t i
 0043ae60        transform->__offset(0x80).d = 0
 0043ae66        set_matrix_identity(transform)
-0043ae71        transform->__offset(0xac).d = *(arg3 + 0x408)
+0043ae71        transform->__offset(0xac).d = player->game
 0043ae77        transform += 0x2e8
 0043ae7d        i = i_1
 0043ae7d        i_1 -= 1
 0043ae7e        do while (i != 1)
-0043ae8c        int32_t var_14_2 = *(arg3 + 0x380)
-0043ae93        *(arg3 + 4) |= 0x20
-0043ae96        *(arg3 + 0x2744) = 0
-0043ae9c        __builtin_strncpy(arg3 + 0x2748, "VUU>", 8)
-0043aeac        initialize_jetpack_gauge(arg3 + 0x2750)
-0043aeb1        __builtin_memset(arg3 + 0x350, 0, 0x20)
-0043aee1        *(arg3 + 0x374) = 0
-0043aee7        *(arg3 + 0x378) = 0
-0043aeed        *(arg3 + 0x41d) = 0
-0043aef3        *(arg3 + 0x41c) = 0
-0043aef9        *(arg3 + 0x404) = 0
-0043af08        *(*(arg3 + 0x408) + 1) = 1
+0043ae89        int32_t edx_12 = player->_pad_00[4].d | 0x20
+0043ae8c        int32_t var_14_2 = player->_pad_374[0xc].d
+0043ae93        player->_pad_00[4] = edx_12.b
+0043ae93        player->_pad_00[5] = edx_12:1.b
+0043ae93        player->_pad_00[6] = edx_12:2.b
+0043ae93        player->_pad_00[7] = edx_12:3.b
+0043ae96        player->_pad_2744[0] = 0
+0043ae96        player->_pad_2744[1] = 0
+0043ae96        player->_pad_2744[2] = 0
+0043ae96        player->_pad_2744[3] = 0
+0043ae9c        __builtin_strncpy(&player->_pad_2744[4], "VUU>", 8)
+0043aeac        initialize_jetpack_gauge(&player->_pad_2744[0xc])
+0043aeb1        __builtin_memset(&player->lane_lean_state, 0, 0x20)
+0043aee1        player->_pad_374[0] = 0
+0043aee1        player->_pad_374[1] = 0
+0043aee1        player->_pad_374[2] = 0
+0043aee1        player->_pad_374[3] = 0
+0043aee7        player->_pad_374[4] = 0
+0043aee7        player->_pad_374[5] = 0
+0043aee7        player->_pad_374[6] = 0
+0043aee7        player->_pad_374[7] = 0
+0043aeed        player->attachment_exit_pending = 0
+0043aef3        player->_pad_41c = 0
+0043aef9        player->_pad_3c4[0x40] = 0
+0043aef9        player->_pad_3c4[0x41] = 0
+0043aef9        player->_pad_3c4[0x42] = 0
+0043aef9        player->_pad_3c4[0x43] = 0
+0043af08        player->game->_pad_00[1] = 1
 0043af0d        return 0

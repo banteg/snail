@@ -200,6 +200,10 @@ PROTO_UPDATES = (
         "void __thiscall update_snail_skin(PlayerPresentationController* presentation)",
     ),
     (
+        "initialize_subgoldy",
+        "int32_t __thiscall initialize_subgoldy(Player* player, int32_t player_slot)",
+    ),
+    (
         "handle_subgoldy_collisions",
         "int32_t __thiscall handle_subgoldy_collisions(Player* player)",
     ),
