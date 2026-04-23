@@ -24,7 +24,7 @@ The architecture is serviceable for port discovery but suboptimal for continued 
 - `main.zig` still mixes application lifecycle, frontend ownership, asset IO, gameplay presentation, and render helpers. This makes behavior fixes look like app changes and encourages unrelated coupling through `AppState`.
 - `gameplay.zig` still mixes the runner orchestrator with subsystem internals. Completed controller splits have helped, but attachment, cutscene/handoff, motion, presentation, and scoring still have cross-field access that makes native dataflow harder to audit.
 - Rendering/resource ownership and simulation ownership are not consistently separated. The good boundary is: simulation modules emit plain state or transient effects; `main.zig` maps those to loaded textures/models/sounds.
-- Existing focused modules (`frontend/**`, `gameplay/jetpack.zig`, `gameplay/damage.zig`, `gameplay/hazards.zig`, `gameplay/parcel.zig`, `gameplay/combat.zig`, `gameplay/effects.zig`) are the better shape: small controller/pool types with tests near the behavior.
+- Existing focused modules (`frontend/**`, `gameplay/jetpack.zig`, `gameplay/damage.zig`, `gameplay/hazards.zig`, `gameplay/parcel.zig`, `gameplay/combat.zig`, `gameplay/effects.zig`, `gameplay/presentation.zig`) are the better shape: small controller/pool types with tests near the behavior.
 
 Treat future refactors as opportunistic architecture repair, not broad churn. When touching a subsystem, extract the data/controller boundary that the native code already implies, then land the port behavior through that boundary.
 
@@ -59,7 +59,8 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/level_loader.zig` | Level + segment loaders: `loadGameLevel`, `reloadLevel`, `reloadLevelSegment`, `syncActiveLevelSegment`, related catalog helpers. |
 | `app/audio.zig` | Audio helpers: `playSoundByPath`, `playVoiceByPath`, `playGameplayEffect`, `tryPlayNativeGameplayVoiceSet/Played/Payload`, `tryPlayGameplayVoiceVariant`, `gameplayVoiceBusy`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `updateGameplayAmbientVoices`. |
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. `main.zig` keeps texture selection and billboard drawing because it owns loaded Raylib resources. |
-| `app/frontend_art.zig` | Art + sound-fx asset holders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `GameplaySpriteArt`, `GameplaySoundFx`, `GameplayWeaponModelSet`, `GameplayInvincibleModelSet`, `GameplayJetpackModelSet`, `GameplayJetpackVisualState`, `GameplayWeaponVisualState`, `RouteMapArt`, plus their load/unload helpers. |
+| `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
+| `app/frontend_art.zig` | Art + sound-fx asset holders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `GameplaySpriteArt`, `GameplaySoundFx`, `GameplayWeaponModelSet`, `GameplayInvincibleModelSet`, `GameplayJetpackModelSet`, `RouteMapArt`, plus their load/unload helpers. |
 | `app/screenshots.zig` | Screenshot request + capture path: `ScreenshotRequest`, `BillboardUv`, related capture bookkeeping. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `main.zig` (remaining) | `pub fn main`, CLI parsing, render loop, top-level init/teardown, `AppState` struct definition with field declarations plus a thin dispatch layer that delegates to the above modules. |
