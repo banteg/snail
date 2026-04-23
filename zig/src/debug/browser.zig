@@ -400,12 +400,7 @@ fn reloadModel(state: anytype) !void {
         }
     }
 
-    state.current_model = try x2.Uploaded.loadFromArchive(
-        state.allocator,
-        &state.resources.catalog,
-        entry,
-        state.model_flip_v,
-    );
+    state.current_model = try state.resources.model(entry.path, .{ .flip_v = state.model_flip_v });
 }
 
 fn reloadObject(state: anytype) !void {
@@ -416,12 +411,7 @@ fn reloadObject(state: anytype) !void {
     if (state.resources.catalog.object_entries.len == 0) return;
 
     const entry = state.resources.catalog.object_entries[state.object_index];
-    state.current_object = try object.LoadedObject.loadFromArchive(
-        state.allocator,
-        &state.resources.catalog,
-        entry,
-        state.object_flip_v,
-    );
+    state.current_object = try state.resources.object(entry.path, .{ .flip_v = state.object_flip_v });
 }
 
 fn reloadStandaloneSegment(state: anytype) !void {
@@ -455,7 +445,7 @@ fn reloadStandaloneSegmentScene(state: anytype) !void {
     _ = state.current_standalone_segment_preview orelse return;
     state.current_standalone_segment_scene = try track_render.Scene.buildStandaloneSegmentScene(
         state.allocator,
-        &state.resources.catalog,
+        &state.resources,
         state.segment_track_set_index,
     );
 }

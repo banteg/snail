@@ -5368,7 +5368,7 @@ const AppState = struct {
                 if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
                     self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
                         self.allocator,
-                        &self.resources.catalog,
+                        &self.resources,
                         track_set_index,
                     );
                 }

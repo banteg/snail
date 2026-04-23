@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const rlgl = rl.gl;
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
+const resource_store = @import("resource_store.zig");
 const track = @import("track.zig");
 
 const track_texture_path_fmt = "OBJECTS/WORLD00/TRACK{d}.TGA";
@@ -24,11 +25,11 @@ pub const Scene = struct {
 
     pub fn buildStandaloneSegmentScene(
         allocator: std.mem.Allocator,
-        catalog: *const assets.Catalog,
+        store: *resource_store.Store,
         track_set_index: u8,
     ) !Scene {
         const resolved_track_set = try resolveTrackSetIndex(track_set_index);
-        var textures = try Textures.load(allocator, catalog, resolved_track_set);
+        var textures = try Textures.load(store, resolved_track_set);
         errdefer textures.unload();
 
         return .{
@@ -65,17 +66,17 @@ const Textures = struct {
     fringe: assets.LoadedTexture,
     back: assets.LoadedTexture,
 
-    fn load(allocator: std.mem.Allocator, catalog: *const assets.Catalog, track_set_index: u8) !Textures {
+    fn load(store: *resource_store.Store, track_set_index: u8) !Textures {
         var track_path_buffer: [64]u8 = undefined;
         var slide_path_buffer: [64]u8 = undefined;
 
         var textures = Textures{
-            .track = try catalog.loadTextureByPath(allocator, try std.fmt.bufPrint(&track_path_buffer, track_texture_path_fmt, .{track_set_index})),
-            .slide = try catalog.loadTextureByPath(allocator, try std.fmt.bufPrint(&slide_path_buffer, slide_texture_path_fmt, .{track_set_index})),
-            .warn = try catalog.loadTextureByPath(allocator, warn_texture_path),
-            .ramp = try catalog.loadTextureByPath(allocator, ramp_texture_path),
-            .fringe = try catalog.loadTextureByPath(allocator, fringe_texture_path),
-            .back = try catalog.loadTextureByPath(allocator, back_texture_path),
+            .track = try store.texture(try std.fmt.bufPrint(&track_path_buffer, track_texture_path_fmt, .{track_set_index})),
+            .slide = try store.texture(try std.fmt.bufPrint(&slide_path_buffer, slide_texture_path_fmt, .{track_set_index})),
+            .warn = try store.texture(warn_texture_path),
+            .ramp = try store.texture(ramp_texture_path),
+            .fringe = try store.texture(fringe_texture_path),
+            .back = try store.texture(back_texture_path),
         };
         setSceneTextureWrap(&textures);
         return textures;
