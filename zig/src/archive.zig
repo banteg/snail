@@ -137,9 +137,13 @@ pub const Archive = struct {
         return self.readEntryAtAlloc(allocator, entry);
     }
 
-    pub fn readEntryAtAlloc(self: *const Archive, allocator: std.mem.Allocator, entry: Entry) ![]u8 {
+    pub fn readEntryBytes(self: *const Archive, entry: Entry) ![]const u8 {
         const entry_index = self.path_index.get(entry.path) orelse return error.EntryNotFound;
-        return allocator.dupe(u8, self.entry_bytes[entry_index]);
+        return self.entry_bytes[entry_index];
+    }
+
+    pub fn readEntryAtAlloc(self: *const Archive, allocator: std.mem.Allocator, entry: Entry) ![]u8 {
+        return allocator.dupe(u8, try self.readEntryBytes(entry));
     }
 };
 

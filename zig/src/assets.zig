@@ -124,9 +124,13 @@ pub const Catalog = struct {
         return self.dat.readEntryAtAlloc(allocator, entry);
     }
 
+    pub fn readEntryBytes(self: *const Catalog, entry: archive.Entry) ![]const u8 {
+        return self.dat.readEntryBytes(entry);
+    }
+
     pub fn loadTexture(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedTexture {
-        const decoded = try self.readEntryAlloc(allocator, entry);
-        defer allocator.free(decoded);
+        _ = allocator;
+        const decoded = try self.readEntryBytes(entry);
 
         const image = try rl.loadImageFromMemory(".tga", decoded);
         defer rl.unloadImage(image);
@@ -147,8 +151,8 @@ pub const Catalog = struct {
     }
 
     pub fn loadSound(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedSound {
-        const decoded = try self.readEntryAlloc(allocator, entry);
-        defer allocator.free(decoded);
+        _ = allocator;
+        const decoded = try self.readEntryBytes(entry);
 
         const wave = try rl.loadWaveFromMemory(".ogg", decoded);
         defer rl.unloadWave(wave);
@@ -170,14 +174,12 @@ pub const Catalog = struct {
     }
 
     pub fn loadMusic(self: *const Catalog, allocator: std.mem.Allocator, entry: archive.Entry) !LoadedMusic {
-        const decoded = try self.readEntryAlloc(allocator, entry);
-        errdefer allocator.free(decoded);
+        _ = allocator;
+        const decoded = try self.readEntryBytes(entry);
 
         const music = try rl.loadMusicStreamFromMemory(".ogg", decoded);
         return .{
-            .allocator = allocator,
             .path = entry.path,
-            .bytes = decoded,
             .music = music,
         };
     }
@@ -236,9 +238,7 @@ pub const SoundSlot = struct {
 };
 
 pub const LoadedMusic = struct {
-    allocator: std.mem.Allocator,
     path: []const u8,
-    bytes: []u8,
     music: rl.Music,
 
     pub fn unload(self: *LoadedMusic) void {
@@ -246,7 +246,6 @@ pub const LoadedMusic = struct {
             rl.stopMusicStream(self.music);
         }
         rl.unloadMusicStream(self.music);
-        self.allocator.free(self.bytes);
     }
 };
 
