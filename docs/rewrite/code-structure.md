@@ -4,14 +4,14 @@ The two files that have grown past a reasonable ceiling during iterative porting
 
 | File | Lines | Shape |
 | --- | --- | --- |
-| `zig/src/main.zig` | ~9300 | `AppState` god object plus screenshot plumbing, render entry points, test fixtures, and several gameplay render helpers. |
+| `zig/src/main.zig` | ~8800 | `AppState` god object plus screenshot plumbing, render entry points, test fixtures, and several gameplay render helpers. |
 | `zig/src/gameplay.zig` | ~9600 | `Runner` god object (≈4500 lines, ~300 methods) plus state type zoo (RowEventDisplayController, DamageGaugeRuntime, JetpackGauge, SnailSkinTransition, Projectile, RunnerPhase, AttachmentFollowState, LaunchState, etc.), free helpers, and test fixtures. |
 
 Everything else is already sized sensibly (≤3700 lines each) or already split into subfolders (`zig/src/frontend/**`, `zig/src/gameplay/**`, `zig/src/debug/**`).
 
 ## Principles for the split
 
-- **Preserve existing Runner / AppState method-call sites.** Extract helpers as free functions in sub-modules that take `*Runner` / `*AppState` as the first argument; keep thin wrapper methods on the type when there are many external call sites, or re-export pure helpers from the module.
+- **Make subsystem ownership explicit at call sites.** Extract helpers as free functions in sub-modules that take `*Runner` / `*AppState` as the first argument; keep thin wrapper methods only when external call sites need a gradual migration.
 - **Move pure data types first.** Enum and struct decls without Runner/AppState references are risk-free to relocate behind `pub const X = @import("sub.zig").X;` re-exports.
 - **Keep behavior changes out of the refactor.** Each phase is move-only; no semantic edits. Tests and health checks gate every commit.
 - **Prefer one-file-per-subsystem over many-mini-files.** Group by subsystem, not by function count.
@@ -26,6 +26,7 @@ The architecture is serviceable for port discovery but suboptimal for continued 
 - Rendering/resource ownership and simulation ownership are not consistently separated. The good boundary is: simulation modules emit plain state or transient effects; `main.zig` maps those to loaded textures/models/sounds.
 - `resource_store.zig` now owns the archive catalog plus cached texture, sound, model, and object handles. App/global art should use `store.texture(...)`, `store.sound(...)`, `store.model(...)`, or `store.object(...)`; direct catalog loaders should be limited to stateful streams, active animations, parsers, and generated track-preview internals.
 - Archive member bytes and catalogs are already resident for the full app lifetime, so small global resource sets should follow that shape too. Gameplay sound effects, gameplay sprites, and static gameplay models/objects are app-global resources, not per-level state.
+- `app_audio.zig` now owns app audio dispatch, music/preview slots, gameplay sound cues, native/gameplay voice routing, and config-volume application. `main.zig` should call that module directly instead of growing new `AppState` audio methods.
 - Existing focused modules (`frontend/**`, `gameplay/jetpack.zig`, `gameplay/damage.zig`, `gameplay/hazards.zig`, `gameplay/parcel.zig`, `gameplay/combat.zig`, `gameplay/effects.zig`, `gameplay/presentation.zig`) are the better shape: small controller/pool types with tests near the behavior.
 
 Treat future refactors as opportunistic architecture repair, not broad churn. When touching a subsystem, extract the data/controller boundary that the native code already implies, then land the port behavior through that boundary.
@@ -59,7 +60,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/outer_bridge.zig` | Outer bridge transition / saved-owner machinery: `applyOuterBridgeTeardown`, `runOuterBridgeTransition`, `outerOwnerFor*` helpers, `outerBridgeTransitionClearsSelectedReplayContext`, `savedOuterOwnerForLevelLaunch`, `resumeActiveRunAfterRespawnBridge`, `beginRespawnRun`, `abandonActiveRun`, `beginFailedRun`. |
 | `app/run_result.zig` | Pending run result accounting: `PendingRunResult`, `RespawnBridgeState`, `StandalonePostLevelHighScoreEntry`, `commitRunResultIfNeeded`, `applySelectedReplayResultOverrides`, `pendingRunHighScoreContext`, `standalonePostLevelHighScoreEntry`, `currentFailedRunResult`, `beginCompletedRunOverlay`, `finalizeCompletedRunScreen`, `cancelPostLevelHighScoreEntry`, `clearPostLevelHighScoreEntry`, `failedResultPostLevelHighScoreEntry`. |
 | `app/level_loader.zig` | Level + segment loaders: `loadGameLevel`, `reloadLevel`, `reloadLevelSegment`, `syncActiveLevelSegment`, related catalog helpers. |
-| `app/audio.zig` | Audio helpers: `playSoundByPath`, `playVoiceByPath`, `playGameplayEffect`, `tryPlayNativeGameplayVoiceSet/Played/Payload`, `tryPlayGameplayVoiceVariant`, `gameplayVoiceBusy`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `updateGameplayAmbientVoices`. |
+| `app_audio.zig` | Audio helpers: `playMusicByPath`, `playGameplayEffect`, `stopAudioPreview`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `playLevelSegmentSample`, `updateGameplayAmbientVoices`, plus private native/gameplay voice routing helpers. |
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. `main.zig` keeps texture selection and billboard drawing because it owns loaded Raylib resources. |
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
 | `app_art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |

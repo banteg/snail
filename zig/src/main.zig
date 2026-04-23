@@ -1,9 +1,9 @@
 const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
+const app_audio = @import("app_audio.zig");
 const app_art = @import("app_art.zig");
 const app_ui = @import("app_ui.zig");
-const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const background = @import("background.zig");
 const config = @import("config.zig");
@@ -27,7 +27,6 @@ const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay_art = @import("gameplay_art.zig");
 const gameplay_audio_catalog = @import("gameplay/audio_catalog.zig");
-const gameplay_audio_cues = @import("gameplay/audio_cues.zig");
 const gameplay_effects = @import("gameplay/effects.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
@@ -599,7 +598,7 @@ const AppState = struct {
         };
         errdefer state.deinit();
         galaxy_names = null;
-        state.applyAudioConfigVolumes();
+        app_audio.applyAudioConfigVolumes(&state);
         if (options.command == .game) {
             try state.loadGameplayStaticResources();
         }
@@ -617,7 +616,7 @@ const AppState = struct {
     }
 
     fn deinit(self: *AppState) void {
-        self.stopAudioPreview();
+        app_audio.stopAudioPreview(self);
         self.unloadLoadingScreen();
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
@@ -683,7 +682,7 @@ const AppState = struct {
             self.current_text_script = null;
         }
 
-        self.stopVoicePlayback();
+        app_audio.stopVoicePlayback(self);
         if (self.current_texture) |*texture| {
             texture.unload();
             self.current_texture = null;
@@ -1164,7 +1163,7 @@ const AppState = struct {
         self.hovered_frontend_target = target;
         if (target != null) {
             self.keyboard_frontend_focus_visible = false;
-            self.playFrontendHoverSound();
+            app_audio.playFrontendHoverSound(self);
         }
     }
 
@@ -1188,7 +1187,7 @@ const AppState = struct {
 
     fn queueFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) void {
         if (self.pending_frontend_activation != null) return;
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         const requires_fade = frontend_activation.queuedActivationRequiresFade(action);
         if (requires_fade) {
             self.frontend_transition.beginOverlayFadeOut();
@@ -1233,22 +1232,6 @@ const AppState = struct {
             }
         }
         return false;
-    }
-
-    fn playFrontendHoverSound(self: *AppState) void {
-        if (!self.audio_ready) return;
-        if (self.frontend_sound_fx.highlight) |sound| {
-            rl.stopSound(sound.sound);
-            rl.playSound(sound.sound);
-        }
-    }
-
-    fn playFrontendSelectSound(self: *AppState) void {
-        if (!self.audio_ready) return;
-        if (self.frontend_sound_fx.select) |sound| {
-            rl.stopSound(sound.sound);
-            rl.playSound(sound.sound);
-        }
     }
 
     fn readPressedFrontendWidgetShortcutCode(_: *const AppState) ?u8 {
@@ -1822,14 +1805,14 @@ const AppState = struct {
             self.setFrontendHoverTarget(null);
             if (rl.isMouseButtonPressed(.left) and self.currentRouteMapOpenIndex() != route_index) {
                 try self.openFrontendRouteCard(route_index);
-                self.playFrontendSelectSound();
+                app_audio.playFrontendSelectSound(self);
             }
             return;
         }
 
         if (self.routeMapCanCloseCard() and rl.isMouseButtonPressed(.left)) {
             self.closeFrontendRouteCard();
-            self.playFrontendSelectSound();
+            app_audio.playFrontendSelectSound(self);
             self.setFrontendHoverTarget(null);
             return;
         }
@@ -2079,8 +2062,8 @@ const AppState = struct {
                             return;
                         }
                         self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
-                        self.playGameplayRunnerAudio(previous_runner, runner.*, loaded_track_preview, effective_runner_input);
-                        self.updateGameplayAmbientVoices(runner.*, loaded_track_preview);
+                        app_audio.playGameplayRunnerAudio(self, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
+                        app_audio.updateGameplayAmbientVoices(self, runner.*, loaded_track_preview);
                         self.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
                     } else {
                         self.refreshRunnerForStartupBlock(
@@ -2106,7 +2089,7 @@ const AppState = struct {
                 switch (runner.consumeHandoff()) {
                     .none => {},
                     .completion_screen_init => {
-                        self.playGameplayEffect(self.current_gameplay_sound_fx.completion_init);
+                        app_audio.playGameplayEffect(self, self.current_gameplay_sound_fx.completion_init);
                         try self.beginCompletedRunOverlay();
                         return;
                     },
@@ -2125,203 +2108,6 @@ const AppState = struct {
                 }
             }
         }
-    }
-
-    fn playGameplayRunnerAudio(
-        self: *AppState,
-        previous: gameplay.Runner,
-        current: gameplay.Runner,
-        preview: *const track.LoadedLevelPreview,
-        _: gameplay.RunnerInput,
-    ) void {
-        if (!self.audio_ready) return;
-        const native_sound_cues = gameplay_audio_cues.nativeGameplaySoundCues(previous, current);
-        const native_jetpack_sound_cues = gameplay_audio_cues.nativeJetpackSoundCues(previous, current);
-        const native_voice_cues = gameplay_audio_cues.nativeGameplayVoiceCues(previous, current, preview.runtime_build_flags);
-
-        if (native_sound_cues.completion_arm_cheers) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.cheers);
-        }
-        if (native_sound_cues.extra_life) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.extra_life);
-        }
-        if (native_sound_cues.trampoline_bounce) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.boing);
-        }
-        if (native_sound_cues.wall_barrier_hit) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.wall_hit);
-        }
-        if (native_sound_cues.parcel_pickup) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.place_package);
-        }
-        if (native_sound_cues.parcel_delivery) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.package_count);
-        }
-        if (native_sound_cues.parcel_bonus) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.perfect);
-        }
-        if (native_sound_cues.row_event_confirm) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.row_event_confirm);
-        }
-        if (native_jetpack_sound_cues.activate) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack);
-        }
-        if (native_jetpack_sound_cues.deactivate) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.jetpack_shutoff);
-        }
-        if (gameplay_audio_cues.nativeRingPickupSoundIndex(previous, current)) |sound_index| {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.powerup_pickup[sound_index]);
-        }
-        if (native_voice_cues.start) {
-            self.tryPlayNativeGameplayVoiceSet(.start, .interrupt_current) catch {};
-        }
-        if (native_voice_cues.package_pickup) {
-            self.tryPlayNativeGameplayVoiceSet(.package, .wait_for_frequency) catch {};
-        }
-        if (native_voice_cues.weapon_upgrade) {
-            self.tryPlayNativeGameplayVoiceSet(.powerup, .wait_for_frequency) catch {};
-        }
-        if (native_voice_cues.damage_entry) {
-            // PORT(verified): native `apply_damage_gauge_delta`
-            // (`artifacts/ida/functions/004413f0-apply_damage_gauge_delta.c:17-29`)
-            // tries the `damage_entry` voice first; when it returns zero the
-            // ouch-fallback plays. The damaged animation id 6 is still gated
-            // by native byte `game + 0x430054`; the base animation is queued
-            // from the same fallback branch either way.
-            const played_damage = self.tryPlayNativeGameplayVoiceSetPlayed(.damage, .wait_for_frequency) catch false;
-            if (!played_damage) {
-                self.tryPlayNativeGameplayVoiceSet(.ouch, .wait_for_idle) catch {};
-                if (self.level_runner) |*runner| {
-                    if (!self.native_damage_entry_animation_blocked) {
-                        runner.dispatchCutsceneAnimation(.damaged, true, null);
-                    }
-                    runner.dispatchCutsceneAnimation(.base, false, null);
-                }
-            }
-        }
-        if (native_voice_cues.damage_escalation) {
-            self.tryPlayNativeGameplayVoiceSet(.postal, .wait_for_idle) catch {};
-        }
-        if (native_voice_cues.slow) {
-            self.tryPlayNativeGameplayVoiceSet(.slow, .wait_for_frequency) catch {};
-        }
-        const death_cutscene_voice_cues = gameplay_audio_cues.nativeDeathCutsceneVoiceCues(previous, current);
-        if (death_cutscene_voice_cues.entry) {
-            self.tryPlayNativeGameplayVoiceSet(.fall, .interrupt_current) catch {};
-        }
-        if (death_cutscene_voice_cues.fallback) {
-            self.tryPlayNativeGameplayVoiceSet(.slugged, .interrupt_current) catch {};
-        }
-
-        const previous_attachment_template_kind = previous.currentAttachmentTemplateKind(preview);
-        if (!previous.attachment_follow.active and current.attachment_follow.active and
-            current.movement_mode == .attachment)
-        {
-            if (current.currentAttachmentTemplateKind(preview)) |template_kind| {
-                if (template_kind == attachment_builders.template_kind_worm) {
-                    self.tryPlayNativeGameplayVoiceSet(.worm_tunnel, .wait_for_idle) catch {};
-                }
-            }
-        }
-        if (gameplay_audio_cues.nativeGameplaySupertrampExitVoice(current, previous_attachment_template_kind)) {
-            self.tryPlayNativeGameplayVoiceSet(.supertramp, .wait_for_idle) catch {};
-        }
-        if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {
-            self.tryPlayNativeGameplayVoiceSet(.victory, .interrupt_current) catch {};
-        }
-        if (!previous.attachment_exit_gate_a and current.attachment_exit_gate_a) {
-            self.tryPlayNativeGameplayVoiceSet(.fall, .wait_for_idle) catch {};
-        }
-        if (!previous.attachment_exit_gate_b and current.attachment_exit_gate_b) {
-            self.tryPlayNativeGameplayVoiceSet(.dying, .interrupt_current) catch {};
-        }
-
-        if (gameplay_audio_cues.nativeGameplayWarningLoopTriggered(previous, current)) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.postal_warning);
-        }
-
-        if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-            const fired_sound = switch (gameplay_audio_cues.nativeMovementStateSoundFamily(current)) {
-                .turbo => self.pickNativeMovementSoundVariant(
-                    gameplay_assets.gameplay_turbo_fire_sound_paths.len,
-                    self.current_gameplay_sound_fx.turbo_fire,
-                ),
-                .laser => self.pickNativeMovementSoundVariant(
-                    gameplay_assets.gameplay_laser_sound_paths.len,
-                    self.current_gameplay_sound_fx.laser,
-                ),
-                .rocket => self.pickNativeMovementSoundVariant(
-                    gameplay_assets.gameplay_rocket_sound_paths.len,
-                    self.current_gameplay_sound_fx.rocket,
-                ),
-            };
-            if (gameplay_audio_cues.nativeMovementStateAttachmentExitGain(
-                cameraWorldTransformFromMatrix(self.subgame_camera.shared_matrix).position,
-                current.worldPosition(preview, 0.0),
-                current.attachment_exit_pending,
-            )) |gain| {
-                self.playGameplayEffectScaled(fired_sound, gain);
-            } else {
-                self.playGameplayEffect(fired_sound);
-            }
-        }
-        if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.enemy_fire);
-        }
-        if (gameplay_audio_cues.nativeWeaponPresentationChanged(previous, current)) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.weapon_change);
-        }
-        if (current.counters.health_pickups > previous.counters.health_pickups) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.heart);
-        }
-        if (current.invincible_ticks > previous.invincible_ticks) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.invincible);
-        }
-        if (gameplay_audio_cues.nativeSlowRingSoundTriggered(previous, current)) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.slow_ring);
-        }
-        if (gameplay_audio_cues.nativeExplodeRingSoundTriggered(previous, current)) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.explode_ring);
-        }
-        if (current.counters.garbage_hits > previous.counters.garbage_hits) {
-            self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-                self.current_gameplay_sound_fx.asteroid_impact,
-            ));
-        }
-        if (current.counters.salt_hits > previous.counters.salt_hits) {
-            self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-                self.current_gameplay_sound_fx.asteroid_impact,
-            ));
-        }
-        if (current.counters.turret_hits > previous.counters.turret_hits) {
-            self.playGameplayEffect(self.current_gameplay_sound_fx.wall_hit);
-        }
-        if (current.counters.slug_hits > previous.counters.slug_hits) {
-            self.tryPlayGameplayVoiceVariant(
-                gameplay_assets.gameplay_slug_hit_voice_paths.len,
-                gameplay_assets.gameplay_slug_hit_voice_paths,
-            ) catch {};
-        }
-        if (current.defeated_slug_cell_count > previous.defeated_slug_cell_count) {
-            self.playGameplayEffect(self.pickGameplaySoundVariant(
-                gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-                self.current_gameplay_sound_fx.asteroid_impact,
-            ));
-            self.tryPlayGameplayVoiceVariant(
-                gameplay_assets.gameplay_slug_death_voice_paths.len,
-                gameplay_assets.gameplay_slug_death_voice_paths,
-            ) catch {};
-        }
-    }
-
-    fn countGameplayProjectiles(runner: gameplay.Runner, kind: gameplay.Projectile.Kind) usize {
-        var count: usize = 0;
-        for (runner.activeProjectiles()) |projectile| {
-            if (projectile.kind == kind) count += 1;
-        }
-        return count;
     }
 
     fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, _: gameplay.RunnerInput) void {
@@ -2740,7 +2526,7 @@ const AppState = struct {
     }
 
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performMainMenuItem(item);
     }
 
@@ -2794,7 +2580,7 @@ const AppState = struct {
     }
 
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performNewGameMenuItem(item);
     }
 
@@ -2891,7 +2677,7 @@ const AppState = struct {
     }
 
     fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performOptionsMenuItem(item);
     }
 
@@ -2931,7 +2717,7 @@ const AppState = struct {
     }
 
     fn activateExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performExitPromptChoice(choice);
     }
 
@@ -2964,7 +2750,7 @@ const AppState = struct {
     }
 
     fn activatePostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performPostLevelHighScoreAction(action);
     }
 
@@ -3003,7 +2789,7 @@ const AppState = struct {
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         try self.performHighScoreMenuAction(action);
     }
 
@@ -3691,19 +3477,6 @@ const AppState = struct {
         return logical_segment_index;
     }
 
-    fn playLevelSegmentSample(self: *AppState, segment_entry: *const level.SegmentEntry) !void {
-        const sample_path = segment_entry.sample orelse return;
-        if (std.ascii.startsWithIgnoreCase(sample_path, "VOICE/")) {
-            if (gameplay_audio_catalog.nativeGlobalAudioSampleIndexForPath(sample_path)) |payload_index| {
-                _ = try self.tryPlayNativeGameplayVoicePayload(.tutorial, .interrupt_current, payload_index);
-            } else {
-                try self.playVoiceByPath(sample_path);
-            }
-        } else {
-            try self.playSoundByPath(sample_path);
-        }
-    }
-
     fn dispatchCurrentRunnerRowMessage(
         self: *AppState,
         previous_segment_index: ?usize,
@@ -3727,7 +3500,7 @@ const AppState = struct {
             self.queueLevelSegmentPrompt(segment_entry);
         }
         if (segment_changed or token_changed or replay_sample_on_match) {
-            try self.playLevelSegmentSample(segment_entry);
+            try app_audio.playLevelSegmentSample(self, segment_entry);
         }
     }
 
@@ -4065,7 +3838,7 @@ const AppState = struct {
         // PORT(verified): `update_thanks_for_playing_screen` plays `sfx 8`, starts the
         // front-end fade, and `uninit_thanks_screen` then writes state `0xe`, which the
         // frontend state machine immediately routes into `initialize_intro_screen(...Credits)`.
-        self.playFrontendSelectSound();
+        app_audio.playFrontendSelectSound(self);
         self.frontend_transition.beginFadeOut(.credits);
     }
 
@@ -4632,11 +4405,11 @@ const AppState = struct {
     fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .level, .pause_menu => {},
-            else => self.stopVoicePlayback(),
+            else => app_audio.stopVoicePlayback(self),
         }
         switch (self.game_phase) {
             .boot => {
-                self.stopAudioPreview();
+                app_audio.stopAudioPreview(self);
                 self.active_level_segment_index = null;
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
@@ -4652,7 +4425,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try self.playMusicByPath(intro_music_path);
+                try app_audio.playMusicByPath(self, intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
             .main_menu, .new_game_menu, .high_scores_menu => {
@@ -4662,7 +4435,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try self.playMusicByPath(default_audio_path);
+                try app_audio.playMusicByPath(self, default_audio_path);
             },
             .challenge_setup_menu => {
                 self.active_level_segment_index = null;
@@ -4673,7 +4446,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try self.playMusicByPath(default_audio_path);
+                try app_audio.playMusicByPath(self, default_audio_path);
             },
             .options_menu => {
                 self.options_sound_display_value = self.runtime_config.soundVolume();
@@ -4687,7 +4460,7 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try self.playMusicByPath(default_audio_path);
+                    try app_audio.playMusicByPath(self, default_audio_path);
                 }
             },
             .pause_menu => {
@@ -4702,7 +4475,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(route_map_background_path);
-                try self.playMusicByPath(default_audio_path);
+                try app_audio.playMusicByPath(self, default_audio_path);
             },
             .credits => {
                 self.active_level_segment_index = null;
@@ -4710,7 +4483,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try self.playMusicByPath(intro_music_path);
+                try app_audio.playMusicByPath(self, intro_music_path);
                 try self.loadTextScript(credits_script_path);
             },
             .help => {
@@ -4720,7 +4493,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
-                try self.playMusicByPath(default_audio_path);
+                try app_audio.playMusicByPath(self, default_audio_path);
             },
             .exit_prompt => {
                 self.unloadTextScript();
@@ -4732,13 +4505,13 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(route_map_background_path);
-                    try self.playMusicByPath(default_audio_path);
+                    try app_audio.playMusicByPath(self, default_audio_path);
                 } else {
                     self.active_level_segment_index = null;
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try self.playMusicByPath(default_audio_path);
+                    try app_audio.playMusicByPath(self, default_audio_path);
                 }
             },
             .completion_screen => {
@@ -4761,10 +4534,10 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(thanks_screen_background_path);
-                try self.playMusicByPath(intro_music_path);
+                try app_audio.playMusicByPath(self, intro_music_path);
             },
             .level => {
-                self.stopAudioPreview();
+                app_audio.stopAudioPreview(self);
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();
@@ -4781,187 +4554,6 @@ const AppState = struct {
         self.level_index = self.resources.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
         self.invalidateTrackBuildSeed();
         try self.reloadLevel();
-    }
-
-    fn playMusicByPath(self: *AppState, path: []const u8) !void {
-        if (!self.audio_ready) return;
-        if (self.current_music) |music| {
-            if (std.ascii.eqlIgnoreCase(music.path, path)) {
-                self.applyAudioConfigVolumes();
-                if (!rl.isMusicStreamPlaying(music.music)) {
-                    rl.playMusicStream(music.music);
-                }
-                return;
-            }
-        }
-
-        self.stopAudioPreview();
-        self.current_music = if (self.takePreloadedMusic(path)) |music|
-            music
-        else
-            try self.resources.catalog.loadMusicByPath(self.allocator, path);
-        self.applyAudioConfigVolumes();
-        rl.playMusicStream(self.current_music.?.music);
-    }
-
-    fn playSoundByPath(self: *AppState, path: []const u8) !void {
-        if (!self.audio_ready) return;
-        const sound = (try self.current_sound.loadPath(&self.resources, path)) orelse return;
-        self.applyAudioConfigVolumes();
-        rl.playSound(sound.sound);
-    }
-
-    fn playVoiceByPath(self: *AppState, path: []const u8) !void {
-        if (!self.audio_ready) return;
-        self.stopVoicePlayback();
-        const sound = (try self.current_voice_sound.loadPath(&self.resources, path)) orelse return;
-        self.applyAudioConfigVolumes();
-        rl.playSound(sound.sound);
-    }
-
-    fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !void {
-        _ = try self.tryPlayNativeGameplayVoiceSetPlayed(set_id, mode);
-    }
-
-    fn tryPlayNativeGameplayVoiceSetPlayed(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !bool {
-        if (!self.audio_ready) return false;
-        const paths = gameplay_audio_catalog.nativeGameplayVoicePaths(set_id);
-        if (paths.len == 0) return false;
-
-        const sample_index = self.native_gameplay_voice_manager.requestPlay(
-            set_id,
-            mode,
-            self.gameplayVoiceBusy(),
-            paths.len,
-        ) orelse return false;
-        try self.playVoiceByPath(paths[sample_index]);
-        return true;
-    }
-
-    fn tryPlayNativeGameplayVoicePayload(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode, payload_index: usize) !bool {
-        if (!self.audio_ready) return false;
-
-        const sample_index = self.native_gameplay_voice_manager.requestPayloadPlay(
-            set_id,
-            mode,
-            self.gameplayVoiceBusy(),
-            payload_index,
-        ) orelse return false;
-        const sample_path = gameplay_audio_catalog.nativeGlobalAudioSamplePath(sample_index) orelse return false;
-        try self.playVoiceByPath(sample_path);
-        return true;
-    }
-
-    fn gameplayVoiceBusy(self: *const AppState) bool {
-        if (self.current_voice_sound.current) |sound| {
-            return rl.isSoundPlaying(sound.sound);
-        }
-        return false;
-    }
-
-    fn tryPlayGameplayVoiceVariant(self: *AppState, comptime count: usize, variants: [count][]const u8) !void {
-        if (!self.audio_ready) return;
-        if (self.gameplay_click_start_active) return;
-        if (self.level_prompt_queue.active() != null) return;
-        if (self.gameplay_voice_manager.active) return;
-        if (self.gameplayVoiceBusy()) return;
-
-        const index = self.nextGameplaySoundVariantIndex(count);
-        try self.playVoiceByPath(variants[index]);
-        self.gameplay_voice_manager.arm();
-    }
-
-    fn gameplaySlugVoiceCellAnnounced(self: *const AppState, row: usize, lane: usize) bool {
-        for (0..self.announced_slug_voice_cell_count) |index| {
-            const announced = self.announced_slug_voice_cells[index];
-            if (announced.row == row and announced.lane == lane) return true;
-        }
-        return false;
-    }
-
-    fn noteGameplaySlugVoiceCell(self: *AppState, row: usize, lane: usize) void {
-        if (self.gameplaySlugVoiceCellAnnounced(row, lane)) return;
-        if (self.announced_slug_voice_cell_count >= self.announced_slug_voice_cells.len) return;
-        self.announced_slug_voice_cells[self.announced_slug_voice_cell_count] = .{ .row = row, .lane = lane };
-        self.announced_slug_voice_cell_count += 1;
-    }
-
-    fn updateGameplayAmbientVoices(self: *AppState, runner: gameplay.Runner, preview: *const track.LoadedLevelPreview) void {
-        if (!self.isTutorialGameplay()) return;
-        if (runner.paused or self.gameplay_click_start_active) return;
-        if (self.level_prompt_queue.active() != null) return;
-        if (self.gameplay_voice_manager.active or self.gameplayVoiceBusy()) return;
-
-        const current_row_floor = @as(usize, @intFromFloat(@floor(runner.row_position)));
-        const bark_row_limit = @min(preview.total_rows, current_row_floor + 2);
-        var row = current_row_floor;
-        while (row < bark_row_limit) : (row += 1) {
-            for (0..preview.max_width) |lane| {
-                if (runner.isSlugDefeated(row, lane)) continue;
-                const sample = preview.gameplayCellSampleAt(row, lane) orelse continue;
-                if (sample.kind != .slug) continue;
-                if (self.gameplaySlugVoiceCellAnnounced(row, lane)) continue;
-
-                self.noteGameplaySlugVoiceCell(row, lane);
-                if (deterministicGameplayAmbientSlugRoll(row, lane) > 0.6) {
-                    self.tryPlayGameplayVoiceVariant(
-                        gameplay_assets.gameplay_slug_ambient_voice_paths.len,
-                        gameplay_assets.gameplay_slug_ambient_voice_paths,
-                    ) catch {};
-                }
-                return;
-            }
-        }
-    }
-
-    fn playGameplayEffect(self: *AppState, sound: ?assets.LoadedSound) void {
-        if (!self.audio_ready) return;
-        const loaded = sound orelse return;
-        rl.playSound(loaded.sound);
-    }
-
-    fn gameplaySoundBaseVolume(self: *const AppState) f32 {
-        return if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
-    }
-
-    fn playGameplayEffectScaled(self: *AppState, sound: ?assets.LoadedSound, gain: f32) void {
-        if (!self.audio_ready) return;
-        const loaded = sound orelse return;
-        const base_volume = self.gameplaySoundBaseVolume();
-        const scaled_volume = std.math.clamp(base_volume * gain, 0.0, 1.0);
-        rl.setSoundVolume(loaded.sound, scaled_volume);
-        rl.playSound(loaded.sound);
-        rl.setSoundVolume(loaded.sound, base_volume);
-    }
-
-    fn nextGameplaySoundVariantIndex(self: *AppState, comptime count: usize) usize {
-        const index = @as(usize, @intCast(self.gameplay_audio_variant_counter % count));
-        self.gameplay_audio_variant_counter +%= 1;
-        return index;
-    }
-
-    fn nextNativeMovementSoundVariantIndex(self: *AppState, comptime count: usize) usize {
-        return gameplay_audio_cues.nativeMovementSoundVariantIndexForSample(self.nextMathRandomInt15(), count);
-    }
-
-    fn pickGameplaySoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
-        var start = self.nextGameplaySoundVariantIndex(count);
-        var remaining = count;
-        while (remaining > 0) : (remaining -= 1) {
-            if (variants[start]) |loaded| return loaded;
-            start = (start + 1) % count;
-        }
-        return null;
-    }
-
-    fn pickNativeMovementSoundVariant(self: *AppState, comptime count: usize, variants: [count]?assets.LoadedSound) ?assets.LoadedSound {
-        var start = self.nextNativeMovementSoundVariantIndex(count);
-        var remaining = count;
-        while (remaining > 0) : (remaining -= 1) {
-            if (variants[start]) |loaded| return loaded;
-            start = (start + 1) % count;
-        }
-        return null;
     }
 
     fn syncActiveLevelSegment(self: *AppState) !void {
@@ -5079,59 +4671,9 @@ const AppState = struct {
         return null;
     }
 
-    fn takePreloadedMusic(self: *AppState, path: []const u8) ?assets.LoadedMusic {
-        if (std.ascii.eqlIgnoreCase(path, intro_music_path)) {
-            return takeOptional(assets.LoadedMusic, &self.preloaded_intro_music);
-        }
-        if (std.ascii.eqlIgnoreCase(path, default_audio_path)) {
-            return takeOptional(assets.LoadedMusic, &self.preloaded_menu_music);
-        }
-        return null;
-    }
-
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
         const script = self.current_text_script orelse return null;
         return script.durationTicks();
-    }
-
-    pub fn applyAudioConfigVolumes(self: *AppState) void {
-        if (!self.audio_ready) return;
-
-        const sound_volume = if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
-        const music_volume = if (self.audio_muted) 0.0 else self.runtime_config.musicVolume();
-
-        if (self.current_sound.current) |sound| {
-            rl.setSoundVolume(sound.sound, sound_volume);
-        }
-        if (self.current_voice_sound.current) |sound| {
-            rl.setSoundVolume(sound.sound, sound_volume);
-        }
-        if (self.frontend_sound_fx.highlight) |sound| {
-            rl.setSoundVolume(sound.sound, sound_volume);
-        }
-        if (self.frontend_sound_fx.select) |sound| {
-            rl.setSoundVolume(sound.sound, sound_volume);
-        }
-        inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
-            const field = &@field(self.current_gameplay_sound_fx, field_name);
-            switch (@typeInfo(@TypeOf(field.*))) {
-                .array => {
-                    for (field) |entry| {
-                        if (entry) |sound| {
-                            rl.setSoundVolume(sound.sound, sound_volume);
-                        }
-                    }
-                },
-                else => {
-                    if (field.*) |sound| {
-                        rl.setSoundVolume(sound.sound, sound_volume);
-                    }
-                },
-            }
-        }
-        if (self.current_music) |music| {
-            rl.setMusicVolume(music.music, music_volume);
-        }
     }
 
     fn toggleFullscreenPreference(self: *AppState) void {
@@ -5154,24 +4696,24 @@ const AppState = struct {
         switch (item) {
             .fullscreen => {
                 if (delta != 0.0) {
-                    self.playFrontendSelectSound();
+                    app_audio.playFrontendSelectSound(self);
                     self.toggleFullscreenPreference();
                 }
             },
             .sound_volume => {
                 const previous = self.runtime_config.soundVolume();
                 self.runtime_config.setSoundVolume(self.runtime_config.soundVolume() + delta);
-                self.applyAudioConfigVolumes();
+                app_audio.applyAudioConfigVolumes(self);
                 if (self.runtime_config.soundVolume() != previous) {
-                    self.playFrontendSelectSound();
+                    app_audio.playFrontendSelectSound(self);
                 }
             },
             .music_volume => {
                 self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
-                self.applyAudioConfigVolumes();
+                app_audio.applyAudioConfigVolumes(self);
             },
             .back => if (delta != 0.0) {
-                self.playFrontendSelectSound();
+                app_audio.playFrontendSelectSound(self);
                 try self.leaveOptionsMenu();
             },
         }
@@ -5190,7 +4732,7 @@ const AppState = struct {
                 );
                 self.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
                 if (self.runtime_config.challengeReplayDifficultyValue() != previous) {
-                    self.playFrontendSelectSound();
+                    app_audio.playFrontendSelectSound(self);
                 }
             },
             .speed => {
@@ -5202,7 +4744,7 @@ const AppState = struct {
                 );
                 self.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
                 if (self.runtime_config.challengeReplaySpeedValue() != previous) {
-                    self.playFrontendSelectSound();
+                    app_audio.playFrontendSelectSound(self);
                 }
             },
             .play, .watch_replay, .back => {},
@@ -5299,18 +4841,6 @@ const AppState = struct {
         self.game_status_ticks = status_message_duration_ticks;
     }
 
-    pub fn stopAudioPreview(self: *AppState) void {
-        self.current_sound.unload();
-        if (self.current_music) |*music| {
-            music.unload();
-            self.current_music = null;
-        }
-    }
-
-    fn stopVoicePlayback(self: *AppState) void {
-        self.current_voice_sound.unload();
-    }
-
     pub fn reloadLevel(self: *AppState) !void {
         const seed_intro_cutscene = self.command == .game and self.seed_level_intro_cutscene;
         self.seed_level_intro_cutscene = false;
@@ -5333,7 +4863,7 @@ const AppState = struct {
         self.unloadGameplayTurbo();
         self.resetGameplayPresentationState();
         self.gameplay_effects.clear();
-        self.stopVoicePlayback();
+        app_audio.stopVoicePlayback(self);
         self.gameplay_voice_manager.clear();
         self.native_gameplay_voice_manager.clear();
         self.announced_slug_voice_cell_count = 0;
@@ -5374,7 +4904,7 @@ const AppState = struct {
                 }
                 if (self.command == .game) {
                     try self.reloadGameplayTurbo();
-                    self.applyAudioConfigVolumes();
+                    app_audio.applyAudioConfigVolumes(self);
                 }
                 self.level_runner = gameplay.Runner.init(loaded_track_preview);
                 self.level_runner.?.configureCompletionBonus(
@@ -6275,12 +5805,6 @@ fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, runner:
         return;
     }
     try gameplay_prompt_overlay.drawTutorialStack(state, layout, &state.level_prompt_queue);
-}
-
-fn deterministicGameplayAmbientSlugRoll(row: usize, lane: usize) f32 {
-    const mixed = (@as(u64, row) *% 0x9e3779b97f4a7c15) ^ (@as(u64, lane) *% 0xc2b2ae3d27d4eb4f);
-    const normalized = @as(f64, @floatFromInt(mixed & 0xffff)) / 65535.0;
-    return @floatCast(normalized);
 }
 
 fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {

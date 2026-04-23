@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const app_audio = @import("../app_audio.zig");
 const app_ui = @import("../app_ui.zig");
 const background = @import("../background.zig");
 const debug_levels = @import("levels.zig");
@@ -103,7 +104,7 @@ pub fn initialize(state: anytype) !void {
 pub fn primeAudioPreview(state: anytype) !void {
     if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     try previewSound(state);
-    state.stopAudioPreview();
+    app_audio.stopAudioPreview(state);
     try previewMusic(state);
 }
 
@@ -223,7 +224,7 @@ pub fn handleInput(state: anytype) !void {
             try previewMusic(state);
         }
         if (rl.isKeyPressed(.s)) {
-            state.stopAudioPreview();
+            app_audio.stopAudioPreview(state);
         }
     }
 
@@ -307,7 +308,7 @@ pub fn handleLightStreakInput(view: *LightStreakView) void {
 fn setMode(state: anytype, mode: Mode) !void {
     if (state.mode == mode) return;
     if (state.mode == .audio) {
-        state.stopAudioPreview();
+        app_audio.stopAudioPreview(state);
     }
     state.mode = mode;
 }
@@ -319,7 +320,7 @@ fn stepSelection(state: anytype, delta: isize) !void {
             try reloadTexture(state);
         },
         .audio => {
-            state.stopAudioPreview();
+            app_audio.stopAudioPreview(state);
             state.audio_index = wrappedIndex(state.resources.catalog.audio_entries.len, state.audio_index, delta);
         },
         .models => {
@@ -355,15 +356,15 @@ fn previewSound(state: anytype) !void {
         &state.resources,
         state.resources.catalog.audio_entries[state.audio_index].path,
     )) orelse return;
-    state.applyAudioConfigVolumes();
+    app_audio.applyAudioConfigVolumes(state);
     rl.playSound(sound.sound);
 }
 
 fn previewMusic(state: anytype) !void {
     if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
-    state.stopAudioPreview();
+    app_audio.stopAudioPreview(state);
     state.current_music = try state.resources.catalog.loadMusic(state.allocator, state.resources.catalog.audio_entries[state.audio_index]);
-    state.applyAudioConfigVolumes();
+    app_audio.applyAudioConfigVolumes(state);
     rl.playMusicStream(state.current_music.?.music);
 }
 
