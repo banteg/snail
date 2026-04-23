@@ -33,9 +33,9 @@ pub fn CaseInsensitiveStringHashMap(comptime V: type) type {
 pub const Archive = struct {
     allocator: std.mem.Allocator,
     source_path: []const u8,
-    file_bytes: []const u8,
     index_blob: []u8,
     entries: []Entry,
+    entry_bytes: [][]u8,
     path_index: CaseInsensitiveStringHashMap(usize),
 
     pub fn init(allocator: std.mem.Allocator, path: []const u8) !Archive {
@@ -43,7 +43,7 @@ pub const Archive = struct {
         errdefer allocator.free(source_path);
 
         const file_bytes = try std.Io.Dir.cwd().readFileAlloc(io, path, allocator, .limited(std.math.maxInt(usize)));
-        errdefer allocator.free(file_bytes);
+        defer allocator.free(file_bytes);
 
         if (file_bytes.len < 12) {
             return error.InvalidArchive;
@@ -67,6 +67,14 @@ pub const Archive = struct {
 
         const entries = try allocator.alloc(Entry, entry_count);
         errdefer allocator.free(entries);
+        const entry_bytes = try allocator.alloc([]u8, entry_count);
+        errdefer allocator.free(entry_bytes);
+        var decoded_entry_count: usize = 0;
+        errdefer {
+            for (entry_bytes[0..decoded_entry_count]) |decoded| {
+                allocator.free(decoded);
+            }
+        }
         var path_index = CaseInsensitiveStringHashMap(usize).init(allocator);
         errdefer path_index.deinit();
 
@@ -90,21 +98,32 @@ pub const Archive = struct {
             try path_index.put(entry.path, entry_index);
         }
 
+        for (entries, 0..) |entry, entry_index| {
+            const start = entry.data_offset;
+            const end = start + entry.size;
+            entry_bytes[entry_index] = try allocator.dupe(u8, file_bytes[start..end]);
+            xorDecodeInPlace(entry_bytes[entry_index], start);
+            decoded_entry_count += 1;
+        }
+
         return .{
             .allocator = allocator,
             .source_path = source_path,
-            .file_bytes = file_bytes,
             .index_blob = index_blob,
             .entries = entries,
+            .entry_bytes = entry_bytes,
             .path_index = path_index,
         };
     }
 
     pub fn deinit(self: *Archive) void {
         self.path_index.deinit();
+        for (self.entry_bytes) |decoded| {
+            self.allocator.free(decoded);
+        }
+        self.allocator.free(self.entry_bytes);
         self.allocator.free(self.entries);
         self.allocator.free(self.index_blob);
-        self.allocator.free(self.file_bytes);
         self.allocator.free(self.source_path);
     }
 
@@ -119,15 +138,8 @@ pub const Archive = struct {
     }
 
     pub fn readEntryAtAlloc(self: *const Archive, allocator: std.mem.Allocator, entry: Entry) ![]u8 {
-        const start = entry.data_offset;
-        const end = try std.math.add(usize, start, entry.size);
-        if (end > self.file_bytes.len) {
-            return error.TruncatedArchive;
-        }
-
-        const data = try allocator.dupe(u8, self.file_bytes[start..end]);
-        xorDecodeInPlace(data, start);
-        return data;
+        const entry_index = self.path_index.get(entry.path) orelse return error.EntryNotFound;
+        return allocator.dupe(u8, self.entry_bytes[entry_index]);
     }
 };
 
