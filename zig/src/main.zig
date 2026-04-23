@@ -458,8 +458,8 @@ const AppState = struct {
     challenge_setup_difficulty_display_value: f32 = 0.0,
     options_sound_display_value: f32 = 0.0,
     options_music_display_value: f32 = 0.0,
-    current_sound: ?assets.LoadedSound = null,
-    current_voice_sound: ?assets.LoadedSound = null,
+    current_sound: assets.SoundSlot = .{},
+    current_voice_sound: assets.SoundSlot = .{},
     current_music: ?assets.LoadedMusic = null,
     current_model: ?x2.Uploaded = null,
     current_animation: ?xanim.Player = null,
@@ -4845,22 +4845,17 @@ const AppState = struct {
 
     fn playSoundByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
-        if (self.current_sound) |*sound| {
-            sound.unload();
-            self.current_sound = null;
-        }
-
-        self.current_sound = try self.catalog.loadSoundByPath(self.allocator, path);
+        const sound = try self.current_sound.loadPath(self.allocator, &self.catalog, path);
         self.applyAudioConfigVolumes();
-        rl.playSound(self.current_sound.?.sound);
+        rl.playSound(sound.sound);
     }
 
     fn playVoiceByPath(self: *AppState, path: []const u8) !void {
         if (!self.audio_ready) return;
         self.stopVoicePlayback();
-        self.current_voice_sound = try self.catalog.loadSoundByPath(self.allocator, path);
+        const sound = try self.current_voice_sound.loadPath(self.allocator, &self.catalog, path);
         self.applyAudioConfigVolumes();
-        rl.playSound(self.current_voice_sound.?.sound);
+        rl.playSound(sound.sound);
     }
 
     fn tryPlayNativeGameplayVoiceSet(self: *AppState, set_id: gameplay_voice.NativeSet, mode: gameplay_voice.NativeMode) !void {
@@ -4897,7 +4892,7 @@ const AppState = struct {
     }
 
     fn gameplayVoiceBusy(self: *const AppState) bool {
-        if (self.current_voice_sound) |sound| {
+        if (self.current_voice_sound.current) |sound| {
             return rl.isSoundPlaying(sound.sound);
         }
         return false;
@@ -5144,10 +5139,10 @@ const AppState = struct {
         const sound_volume = if (self.audio_muted) 0.0 else self.runtime_config.soundVolume();
         const music_volume = if (self.audio_muted) 0.0 else self.runtime_config.musicVolume();
 
-        if (self.current_sound) |sound| {
+        if (self.current_sound.current) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
-        if (self.current_voice_sound) |sound| {
+        if (self.current_voice_sound.current) |sound| {
             rl.setSoundVolume(sound.sound, sound_volume);
         }
         if (self.frontend_sound_fx.highlight) |sound| {
@@ -5344,10 +5339,7 @@ const AppState = struct {
     }
 
     pub fn stopAudioPreview(self: *AppState) void {
-        if (self.current_sound) |*sound| {
-            sound.unload();
-            self.current_sound = null;
-        }
+        self.current_sound.unload();
         if (self.current_music) |*music| {
             music.unload();
             self.current_music = null;
@@ -5355,10 +5347,7 @@ const AppState = struct {
     }
 
     fn stopVoicePlayback(self: *AppState) void {
-        if (self.current_voice_sound) |*sound| {
-            sound.unload();
-            self.current_voice_sound = null;
-        }
+        self.current_voice_sound.unload();
     }
 
     pub fn reloadLevel(self: *AppState) !void {

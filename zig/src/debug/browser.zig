@@ -347,10 +347,17 @@ fn stepLevelSegment(state: anytype, delta: isize) !void {
 
 fn previewSound(state: anytype) !void {
     if (!state.audio_ready or state.catalog.audio_entries.len == 0) return;
-    state.stopAudioPreview();
-    state.current_sound = try state.catalog.loadSound(state.allocator, state.catalog.audio_entries[state.audio_index]);
+    if (state.current_music) |*music| {
+        music.unload();
+        state.current_music = null;
+    }
+    const sound = try state.current_sound.loadPath(
+        state.allocator,
+        &state.catalog,
+        state.catalog.audio_entries[state.audio_index].path,
+    );
     state.applyAudioConfigVolumes();
-    rl.playSound(state.current_sound.?.sound);
+    rl.playSound(sound.sound);
 }
 
 fn previewMusic(state: anytype) !void {
@@ -561,7 +568,7 @@ fn drawAudioPanel(state: anytype) !void {
     const status_text: [:0]const u8 = blk: {
         if (!state.audio_ready) break :blk "Audio device unavailable";
         if (state.current_music != null) break :blk "Playing as music stream";
-        if (state.current_sound) |sound| {
+        if (state.current_sound.current) |sound| {
             if (rl.isSoundPlaying(sound.sound)) break :blk "Playing as one-shot sound";
         }
         break :blk "Stopped";

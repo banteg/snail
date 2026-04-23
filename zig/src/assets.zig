@@ -209,6 +209,32 @@ pub const LoadedSound = struct {
     }
 };
 
+pub const SoundSlot = struct {
+    current: ?LoadedSound = null,
+
+    pub fn unload(self: *SoundSlot) void {
+        if (self.current) |*sound| {
+            sound.unload();
+            self.current = null;
+        }
+    }
+
+    pub fn loadPath(
+        self: *SoundSlot,
+        allocator: std.mem.Allocator,
+        catalog: *const Catalog,
+        path: []const u8,
+    ) !*LoadedSound {
+        if (self.current) |*sound| {
+            if (std.ascii.eqlIgnoreCase(sound.path, path)) return sound;
+        }
+
+        self.unload();
+        self.current = try catalog.loadSoundByPath(allocator, path);
+        return &self.current.?;
+    }
+};
+
 pub const LoadedMusic = struct {
     allocator: std.mem.Allocator,
     path: []const u8,
