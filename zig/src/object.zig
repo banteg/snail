@@ -72,6 +72,13 @@ pub const LoadedObject = struct {
     bounds_max: rl.Vector3,
     center: rl.Vector3,
     radius: f32,
+    owns_handle: bool = true,
+
+    pub fn borrowed(self: LoadedObject) LoadedObject {
+        var copy = self;
+        copy.owns_handle = false;
+        return copy;
+    }
 
     pub fn loadFromArchive(
         allocator: std.mem.Allocator,
@@ -106,11 +113,13 @@ pub const LoadedObject = struct {
     }
 
     pub fn deinit(self: *LoadedObject) void {
+        if (!self.owns_handle) return;
         for (self.submeshes) |*submesh| {
             submesh.unload();
         }
         self.allocator.free(self.submeshes);
         self.parsed.deinit();
+        self.owns_handle = false;
     }
 
     pub fn previewCamera(self: *const LoadedObject, time_seconds: f32) rl.Camera3D {

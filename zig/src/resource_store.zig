@@ -2,6 +2,7 @@ const std = @import("std");
 
 const archive = @import("archive.zig");
 const assets = @import("assets.zig");
+const object_mod = @import("object.zig");
 const x2 = @import("x2.zig");
 
 pub const ModelOptions = struct {
@@ -16,6 +17,7 @@ pub const Store = struct {
     texture_cache: archive.CaseInsensitiveStringHashMap(assets.LoadedTexture),
     sound_cache: archive.CaseInsensitiveStringHashMap(assets.LoadedSound),
     model_cache: [2]archive.CaseInsensitiveStringHashMap(x2.Uploaded),
+    object_cache: [2]archive.CaseInsensitiveStringHashMap(object_mod.LoadedObject),
 
     pub fn init(allocator: std.mem.Allocator, archive_path: []const u8, audio_ready: bool) !Store {
         var catalog = try assets.Catalog.init(allocator, archive_path);
@@ -31,10 +33,22 @@ pub const Store = struct {
                 archive.CaseInsensitiveStringHashMap(x2.Uploaded).init(allocator),
                 archive.CaseInsensitiveStringHashMap(x2.Uploaded).init(allocator),
             },
+            .object_cache = .{
+                archive.CaseInsensitiveStringHashMap(object_mod.LoadedObject).init(allocator),
+                archive.CaseInsensitiveStringHashMap(object_mod.LoadedObject).init(allocator),
+            },
         };
     }
 
     pub fn deinit(self: *Store) void {
+        for (&self.object_cache) |*cache| {
+            var object_values = cache.valueIterator();
+            while (object_values.next()) |loaded_object| {
+                loaded_object.deinit();
+            }
+            cache.deinit();
+        }
+
         for (&self.model_cache) |*cache| {
             var model_values = cache.valueIterator();
             while (model_values.next()) |loaded_model| {
@@ -104,6 +118,24 @@ pub const Store = struct {
         );
         errdefer loaded.deinit();
         if (options.toon_outline) try loaded.enableToonOutline();
+        try cache.put(entry.path, loaded);
+        return cache.getPtr(entry.path).?.borrowed();
+    }
+
+    pub fn object(self: *Store, path: []const u8, options: ModelOptions) !object_mod.LoadedObject {
+        const entry_index = self.catalog.findObjectIndex(path) orelse return error.EntryNotFound;
+        const entry = self.catalog.object_entries[entry_index];
+        const cache = &self.object_cache[@intFromBool(options.flip_v)];
+
+        if (cache.getPtr(entry.path)) |loaded| return loaded.borrowed();
+
+        var loaded = try object_mod.LoadedObject.loadFromArchive(
+            self.allocator,
+            &self.catalog,
+            entry,
+            options.flip_v,
+        );
+        errdefer loaded.deinit();
         try cache.put(entry.path, loaded);
         return cache.getPtr(entry.path).?.borrowed();
     }

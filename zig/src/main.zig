@@ -973,35 +973,20 @@ const AppState = struct {
     fn reloadGameplayBarrier(self: *AppState) !void {
         self.unloadGameplayBarrier();
 
-        const entry_index = self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) orelse return;
-        const entry = self.resources.catalog.object_entries[entry_index];
-        self.current_gameplay_barrier_object = try object.LoadedObject.loadFromArchive(
-            self.allocator,
-            &self.resources.catalog,
-            entry,
-            true,
-        );
+        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_barrier_object_path) != null) {
+            self.current_gameplay_barrier_object = try self.resources.object(gameplay_assets.gameplay_barrier_object_path, .{});
+        }
     }
 
     fn reloadGameplayLazer(self: *AppState) !void {
         self.unloadGameplayLazer();
 
-        const entry_index = self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) orelse return;
-        const entry = self.resources.catalog.object_entries[entry_index];
-        self.current_gameplay_lazer_object = try object.LoadedObject.loadFromArchive(
-            self.allocator,
-            &self.resources.catalog,
-            entry,
-            true,
-        );
+        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_lazer_object_path) != null) {
+            self.current_gameplay_lazer_object = try self.resources.object(gameplay_assets.gameplay_lazer_object_path, .{});
+        }
 
-        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path)) |vapour_index| {
-            self.current_gameplay_vapour_lazer_object = try object.LoadedObject.loadFromArchive(
-                self.allocator,
-                &self.resources.catalog,
-                self.resources.catalog.object_entries[vapour_index],
-                true,
-            );
+        if (self.resources.catalog.findObjectIndex(gameplay_assets.gameplay_vapour_lazer_object_path) != null) {
+            self.current_gameplay_vapour_lazer_object = try self.resources.object(gameplay_assets.gameplay_vapour_lazer_object_path, .{});
         }
     }
 
