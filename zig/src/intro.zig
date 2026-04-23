@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const assets = @import("assets.zig");
 const archive = @import("archive.zig");
+const resource_store = @import("resource_store.zig");
 const game_font = @import("game_font.zig");
 
 const text_line_advance_world: f32 = 1.0;
@@ -114,42 +115,42 @@ pub const LoadOptions = struct {
 
 pub fn loadFromArchive(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     entry: archive.Entry,
 ) !Loaded {
-    return loadFromArchiveWithOptions(allocator, catalog, entry, .{});
+    return loadFromArchiveWithOptions(allocator, store, entry, .{});
 }
 
 pub fn loadFromArchiveWithOptions(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     entry: archive.Entry,
     load_options: LoadOptions,
 ) !Loaded {
-    const decoded = try catalog.readEntryAlloc(allocator, entry);
+    const decoded = try store.catalog.readEntryAlloc(allocator, entry);
     defer allocator.free(decoded);
 
     var definition = try parseTextWithOptions(allocator, decoded, entry.path, load_options);
     errdefer definition.deinit();
-    return loadResolvedEntries(allocator, catalog, definition);
+    return loadResolvedEntries(allocator, store, definition);
 }
 
 pub fn loadByPath(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     path: []const u8,
 ) !Loaded {
-    return loadByPathWithOptions(allocator, catalog, path, .{});
+    return loadByPathWithOptions(allocator, store, path, .{});
 }
 
 pub fn loadByPathWithOptions(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     path: []const u8,
     load_options: LoadOptions,
 ) !Loaded {
-    const entry = catalog.dat.entryByPath(path) orelse return error.EntryNotFound;
-    return loadFromArchiveWithOptions(allocator, catalog, entry, load_options);
+    const entry = store.catalog.dat.entryByPath(path) orelse return error.EntryNotFound;
+    return loadFromArchiveWithOptions(allocator, store, entry, load_options);
 }
 
 pub fn parseText(
@@ -207,7 +208,7 @@ fn parseTextWithOptions(
 
 fn loadResolvedEntries(
     allocator: std.mem.Allocator,
-    catalog: *const assets.Catalog,
+    store: *resource_store.Store,
     definition: Definition,
 ) !Loaded {
     const resolved_entries = try allocator.alloc(LoadedEntry, definition.entries.len);
@@ -230,7 +231,7 @@ fn loadResolvedEntries(
                     .archive_path = image.archive_path,
                     .width = image.width,
                     .height = image.height,
-                    .texture = try catalog.loadTextureByPath(allocator, image.archive_path),
+                    .texture = try store.texture(image.archive_path),
                 },
             },
         };

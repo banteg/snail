@@ -5031,12 +5031,12 @@ const AppState = struct {
         if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
             return try intro.loadByPathWithOptions(
                 self.allocator,
-                &self.resources.catalog,
+                &self.resources,
                 path,
                 .{ .add_remake_credit = self.credits_with_remake },
             );
         }
-        return try intro.loadByPath(self.allocator, &self.resources.catalog, path);
+        return try intro.loadByPath(self.allocator, &self.resources, path);
     }
 
     fn unloadTextScript(self: *AppState) void {
