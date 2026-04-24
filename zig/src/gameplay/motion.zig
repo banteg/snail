@@ -37,6 +37,111 @@ pub fn stepReplayMovementFlagProgress(
     return replayMovementFlagSeedProgress(rate_scalar, replay.raw_flag_bits) orelse progress;
 }
 
+pub const TrackPosition = struct {
+    runtime_track_index: usize = 0,
+    row_progress: f32 = 0.0,
+    row_position: f32 = 0.0,
+};
+
+pub fn syncTrackPosition(
+    preview: *const track.LoadedLevelPreview,
+    runtime_track_index: usize,
+    row_progress: f32,
+) TrackPosition {
+    if (preview.total_rows == 0) return .{};
+
+    const last_row = preview.total_rows - 1;
+    var synced_index = runtime_track_index;
+    var synced_progress = row_progress;
+    if (synced_index > last_row) {
+        synced_index = last_row;
+        synced_progress = 0.999;
+    }
+
+    return .{
+        .runtime_track_index = synced_index,
+        .row_progress = synced_progress,
+        .row_position = @as(f32, @floatFromInt(synced_index)) + synced_progress,
+    };
+}
+
+pub fn advanceTrackPosition(
+    preview: *const track.LoadedLevelPreview,
+    runtime_track_index: usize,
+    row_progress: f32,
+    step_rows: f32,
+) TrackPosition {
+    if (preview.total_rows == 0) return .{};
+
+    const last_row = preview.total_rows - 1;
+    const max_progress: f32 = 0.999;
+    var advanced_index = runtime_track_index;
+    var advanced_progress = row_progress;
+    var remaining = step_rows;
+
+    if (remaining >= 0.0) {
+        while (remaining > 0.0) {
+            const progress_limit: f32 = if (advanced_index >= last_row) max_progress else 1.0;
+            const available_progress = progress_limit - advanced_progress;
+            if (available_progress <= 0.0) break;
+
+            if (remaining < available_progress) {
+                advanced_progress += remaining;
+                remaining = 0.0;
+                break;
+            }
+
+            remaining -= available_progress;
+            if (advanced_index >= last_row) {
+                advanced_progress = max_progress;
+                remaining = 0.0;
+                break;
+            }
+
+            advanced_index += 1;
+            advanced_progress = 0.0;
+        }
+    } else {
+        while (remaining < 0.0) {
+            const available_progress = advanced_progress;
+            if (-remaining <= available_progress) {
+                advanced_progress += remaining;
+                remaining = 0.0;
+                break;
+            }
+
+            remaining += available_progress;
+            if (advanced_index == 0) {
+                advanced_progress = 0.0;
+                remaining = 0.0;
+                break;
+            }
+
+            advanced_index -= 1;
+            advanced_progress = 1.0;
+        }
+    }
+
+    return syncTrackPosition(preview, advanced_index, advanced_progress);
+}
+
+pub fn trackPositionFromWorldZ(preview: *const track.LoadedLevelPreview, world_z: f32) TrackPosition {
+    if (preview.total_rows == 0) return .{};
+
+    const max_row = @max(@as(f32, @floatFromInt(preview.total_rows)) - 0.001, 0.0);
+    const clamped_row_position = std.math.clamp(world_z, 0.0, max_row);
+    const runtime_track_index = preview.rowIndexAtWorldZ(clamped_row_position);
+    return .{
+        .runtime_track_index = runtime_track_index,
+        .row_progress = std.math.clamp(
+            clamped_row_position - @as(f32, @floatFromInt(runtime_track_index)),
+            0.0,
+            0.999,
+        ),
+        .row_position = clamped_row_position,
+    };
+}
+
 test "replay movement flags seed native movement flag progress" {
     try std.testing.expectApproxEqAbs(
         @as(f32, 0.5),

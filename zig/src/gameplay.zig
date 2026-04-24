@@ -1334,70 +1334,26 @@ pub const Runner = struct {
         if (preview.total_rows == 0 or self.finished) return;
         if (self.movement_mode != .track) return;
 
-        const last_row = preview.total_rows - 1;
-        const max_progress: f32 = 0.999;
-        var remaining = step_rows;
-
-        if (remaining >= 0.0) {
-            while (remaining > 0.0) {
-                const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
-                const available_progress = progress_limit - self.track_row_progress;
-                if (available_progress <= 0.0) {
-                    break;
-                }
-
-                if (remaining < available_progress) {
-                    self.track_row_progress += remaining;
-                    remaining = 0.0;
-                    break;
-                }
-
-                remaining -= available_progress;
-                if (self.runtime_track_index >= last_row) {
-                    self.track_row_progress = max_progress;
-                    remaining = 0.0;
-                    break;
-                }
-
-                self.runtime_track_index += 1;
-                self.track_row_progress = 0.0;
-            }
-        } else {
-            while (remaining < 0.0) {
-                const available_progress = self.track_row_progress;
-                if (-remaining <= available_progress) {
-                    self.track_row_progress += remaining;
-                    remaining = 0.0;
-                    break;
-                }
-
-                remaining += available_progress;
-                if (self.runtime_track_index == 0) {
-                    self.track_row_progress = 0.0;
-                    remaining = 0.0;
-                    break;
-                }
-
-                self.runtime_track_index -= 1;
-                self.track_row_progress = 1.0;
-            }
-        }
-
-        self.syncRowPosition(preview);
+        self.applyTrackPosition(motion_module.advanceTrackPosition(
+            preview,
+            self.runtime_track_index,
+            self.track_row_progress,
+            step_rows,
+        ));
     }
 
     fn syncRowPosition(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (preview.total_rows == 0) {
-            self.row_position = 0.0;
-            return;
-        }
+        self.applyTrackPosition(motion_module.syncTrackPosition(
+            preview,
+            self.runtime_track_index,
+            self.track_row_progress,
+        ));
+    }
 
-        const last_row = preview.total_rows - 1;
-        if (self.runtime_track_index > last_row) {
-            self.runtime_track_index = last_row;
-            self.track_row_progress = 0.999;
-        }
-        self.row_position = @as(f32, @floatFromInt(self.runtime_track_index)) + self.track_row_progress;
+    fn applyTrackPosition(self: *Runner, position: motion_module.TrackPosition) void {
+        self.runtime_track_index = position.runtime_track_index;
+        self.track_row_progress = position.row_progress;
+        self.row_position = position.row_position;
     }
 
     fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
@@ -3880,16 +3836,7 @@ pub const Runner = struct {
     fn syncTrackPositionFromWorld(self: *Runner, preview: *const track.LoadedLevelPreview, world_x: f32, world_z: f32) void {
         if (preview.total_rows == 0) return;
 
-        const max_row = @max(@as(f32, @floatFromInt(preview.total_rows)) - 0.001, 0.0);
-        const clamped_row_position = std.math.clamp(world_z, 0.0, max_row);
-        const runtime_track_index = preview.rowIndexAtWorldZ(clamped_row_position);
-        self.runtime_track_index = runtime_track_index;
-        self.track_row_progress = std.math.clamp(
-            clamped_row_position - @as(f32, @floatFromInt(runtime_track_index)),
-            0.0,
-            0.999,
-        );
-        self.row_position = clamped_row_position;
+        self.applyTrackPosition(motion_module.trackPositionFromWorldZ(preview, world_z));
         self.lane_center = laneCenterFromWorldX(preview, world_x);
         self.lane_index = preview.laneIndexAtWorldX(world_x);
         self.resolved_lane_index = self.lane_index;
