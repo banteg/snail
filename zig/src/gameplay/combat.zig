@@ -11,13 +11,30 @@
 //! state.
 
 const gameplay_runtime_entities = @import("runtime_entities.zig");
-const runner_state = @import("runner_state.zig");
 
-const Projectile = runner_state.Projectile;
 const TurretState = gameplay_runtime_entities.TurretState;
 
 pub const max_active_projectiles: usize = 16;
 pub const max_active_turret_states: usize = 64;
+
+pub const Projectile = struct {
+    pub const Kind = enum {
+        turbo,
+        laser,
+        rocket,
+        enemy_laser,
+    };
+
+    active: bool = false,
+    kind: Kind = .turbo,
+    world_x: f32 = 0.0,
+    world_y: f32 = 0.0,
+    world_z: f32 = 0.0,
+    dir_x: f32 = 0.0,
+    dir_y: f32 = 0.0,
+    dir_z: f32 = 1.0,
+    speed_rows_per_second: f32 = 0.0,
+};
 
 pub const ProjectilePool = struct {
     slots: [max_active_projectiles]Projectile = [_]Projectile{.{}} ** max_active_projectiles,

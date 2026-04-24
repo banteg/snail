@@ -50,7 +50,7 @@ pub const RunnerHandoff = runner_state.RunnerHandoff;
 
 const FallState = runner_state.FallState;
 
-pub const Projectile = runner_state.Projectile;
+pub const Projectile = combat_module.Projectile;
 
 const RunnerPhase = runner_state.RunnerPhase;
 

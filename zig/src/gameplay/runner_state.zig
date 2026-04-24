@@ -96,25 +96,6 @@ pub const RunnerHandoff = union(enum) {
     final_loss: DeathCause,
 };
 
-pub const Projectile = struct {
-    pub const Kind = enum {
-        turbo,
-        laser,
-        rocket,
-        enemy_laser,
-    };
-
-    active: bool = false,
-    kind: Kind = .turbo,
-    world_x: f32 = 0.0,
-    world_y: f32 = 0.0,
-    world_z: f32 = 0.0,
-    dir_x: f32 = 0.0,
-    dir_y: f32 = 0.0,
-    dir_z: f32 = 1.0,
-    speed_rows_per_second: f32 = 0.0,
-};
-
 pub const RecentEvent = union(enum) {
     none,
     attachment_probe,
