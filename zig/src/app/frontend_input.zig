@@ -327,8 +327,7 @@ pub fn snapWidgetStates(state: anytype) void {
 }
 
 fn activeRouteMenuHotAction(state: anytype) frontend.RouteMenuAction {
-    const actions = frontend_flow.activeRouteMenuActions(state);
-    return actions[@min(state.route_menu_action_index, actions.len - 1)];
+    return frontend_flow.activeRouteMenuHotAction(state);
 }
 
 fn stepSliderDisplay(current: f32, target: f32) f32 {

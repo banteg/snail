@@ -1144,7 +1144,7 @@ const AppState = struct {
             self.route_map_hover_state = .none;
             self.route_map_hovered_index = null;
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.back));
-            if (self.routeMenuActionIndexForAction(.back)) |index| {
+            if (frontend_flow.routeMenuActionIndexForAction(self, .back)) |index| {
                 self.route_menu_action_index = index;
             }
             if (rl.isMouseButtonPressed(.left)) {
@@ -1180,7 +1180,7 @@ const AppState = struct {
                     self.route_map_hover_state = .card;
                     self.route_map_hovered_index = null;
                     self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.play));
-                    if (self.routeMenuActionIndexForAction(.play)) |index| {
+                    if (frontend_flow.routeMenuActionIndexForAction(self, .play)) |index| {
                         self.route_menu_action_index = index;
                     }
                     if (rl.isMouseButtonPressed(.left)) {
@@ -1194,7 +1194,7 @@ const AppState = struct {
                         self.route_map_hover_state = .card;
                         self.route_map_hovered_index = null;
                         self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial));
-                        if (self.routeMenuActionIndexForAction(.watch_best_trial)) |index| {
+                        if (frontend_flow.routeMenuActionIndexForAction(self, .watch_best_trial)) |index| {
                             self.route_menu_action_index = index;
                         }
                         if (rl.isMouseButtonPressed(.left)) {
@@ -1674,7 +1674,7 @@ const AppState = struct {
             },
             .route_map_menu => {
                 try self.updateRouteMapMouseSelection();
-                const route_actions = self.activeRouteMenuActions();
+                const route_actions = frontend_flow.activeRouteMenuActions(self);
                 if (rl.isKeyPressed(.up)) {
                     self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, -1);
                     self.noteFrontendKeyboardNavigation();
@@ -2206,7 +2206,7 @@ const AppState = struct {
         self.frontend_route_index = route_index;
         self.syncRouteMapHighlightTargets();
         try self.reloadFrontendRouteLevel();
-        if (self.routeMenuActionIndexForAction(.play)) |index| {
+        if (frontend_flow.routeMenuActionIndexForAction(self, .play)) |index| {
             self.route_menu_action_index = index;
         } else {
             self.route_menu_action_index = 0;
@@ -2247,25 +2247,6 @@ const AppState = struct {
             const target = self.route_map_route_highlight_target[route_index];
             self.route_map_route_highlight_alpha[route_index] = current + (target - current) * 0.1;
         }
-    }
-
-    // PORT(verified): `update_galaxy` and `close_galaxy_route` gate the Star Map card actions
-    // on the route-open flag at `this + 8`. When the card is closed, only the absolute Back
-    // control remains actionable; Play and Watch Best Trial are hidden until `open_galaxy_route`.
-    fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
-        return frontend_flow.activeRouteMenuActions(self);
-    }
-
-    fn activeRouteMenuHotAction(self: *const AppState) RouteMenuAction {
-        const actions = self.activeRouteMenuActions();
-        return actions[@min(self.route_menu_action_index, actions.len - 1)];
-    }
-
-    fn routeMenuActionIndexForAction(self: *const AppState, action: RouteMenuAction) ?usize {
-        for (self.activeRouteMenuActions(), 0..) |candidate, index| {
-            if (candidate == action) return index;
-        }
-        return null;
     }
 
     fn clearLevelPromptQueue(self: *AppState) void {
@@ -3138,12 +3119,6 @@ const AppState = struct {
             },
             .play, .watch_replay, .back => {},
         }
-    }
-
-    fn stepOptionsSliderDisplay(current: f32, target: f32) f32 {
-        const next = current + (target - current) * frontend_options_menu.slider_display_lerp;
-        if (@abs(target - next) < 0.001) return target;
-        return next;
     }
 
     fn currentTextScriptProgress(self: *const AppState) ?f32 {

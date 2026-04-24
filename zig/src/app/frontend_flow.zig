@@ -516,6 +516,18 @@ pub fn activeRouteMenuActions(state: anytype) []const RouteMenuAction {
         &frontend_route_map.actions_without_replay;
 }
 
+pub fn activeRouteMenuHotAction(state: anytype) RouteMenuAction {
+    const actions = activeRouteMenuActions(state);
+    return actions[@min(state.route_menu_action_index, actions.len - 1)];
+}
+
+pub fn routeMenuActionIndexForAction(state: anytype, action: RouteMenuAction) ?usize {
+    for (activeRouteMenuActions(state), 0..) |candidate, index| {
+        if (candidate == action) return index;
+    }
+    return null;
+}
+
 fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
     if (count == 0) return 0;
     const count_signed: isize = @intCast(count);
