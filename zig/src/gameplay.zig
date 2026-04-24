@@ -5166,7 +5166,7 @@ test "cameraman cached-target pitch matches the recovered register formula" {
     try std.testing.expectApproxEqAbs(@as(f32, -1.22149992), cameramanPitchRadiansFromCachedTarget(48.0), 0.0001);
 }
 
-test "cameraman deadzone clamps previous desired z around the anchor" {
+test "cameraman deadzone clamps previous desired z around the desired camera z" {
     try std.testing.expectApproxEqAbs(@as(f32, 9.0), clampedPreviousDesiredCameraZ(12.0, 2.0), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 10.29999995), clampedPreviousDesiredCameraZ(12.0, 11.5), 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 10.0), clampedPreviousDesiredCameraZ(12.0, 10.0), 0.0001);
@@ -8955,7 +8955,7 @@ test "cached camera target defaults to the player world position without jetpack
     );
 }
 
-test "cached camera target uses the jetpack local offset lanes" {
+test "cached camera target uses the native jetpack wobble axes" {
     var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer fixture.deinit();
 
@@ -8965,10 +8965,11 @@ test "cached camera target uses the jetpack local offset lanes" {
     runner.jetpack.wobble_alpha = -0.125;
 
     const base_position = runner.playerWorldPosition(&fixture.preview);
+    const frame = orthonormalFrameFromForwardUp(runner.worldForward(&fixture.preview), runner.worldUp(&fixture.preview));
     const expected = rl.Vector3{
-        .x = base_position.x + 0.25,
-        .y = base_position.y + 0.5,
-        .z = base_position.z - 0.125,
+        .x = base_position.x + (frame.right.x * runner.jetpack.wobble_alpha) + (frame.up.x * runner.jetpack.wobble_x) + (frame.forward.x * runner.jetpack.wobble_y),
+        .y = base_position.y + (frame.right.y * runner.jetpack.wobble_alpha) + (frame.up.y * runner.jetpack.wobble_x) + (frame.forward.y * runner.jetpack.wobble_y),
+        .z = base_position.z + (frame.right.z * runner.jetpack.wobble_alpha) + (frame.up.z * runner.jetpack.wobble_x) + (frame.forward.z * runner.jetpack.wobble_y),
     };
 
     runner.refreshCachedCameraTarget(&fixture.preview);
@@ -9018,6 +9019,33 @@ test "cameraman ignores speed when cached camera target is fixed" {
     const speed_transform = cameraTransformFromMatrix(speed_runner.cameramanMatrix());
 
     try std.testing.expectApproxEqAbs(low_transform.forward.y, speed_transform.forward.y, 0.0001);
+}
+
+test "cameraman lateral follow uses native one-third cached target x" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.cached_camera_target_world = .{ .x = 3.0, .y = 0.49, .z = 100.0 };
+
+    runner.updateCameraman(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 2.2), runner.cameraman.desired_matrix.m12, 0.0001);
+}
+
+test "cameraman z deadzone follows the desired camera position after base offset" {
+    var fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
+    defer fixture.deinit();
+
+    var runner = Runner.init(&fixture.preview);
+    runner.tick_count = 1;
+    runner.track_step_rows = 1.0;
+    runner.cached_camera_target_world = .{ .x = 0.0, .y = 0.49, .z = 100.0 };
+
+    runner.updateCameraman(&fixture.preview);
+
+    try std.testing.expectApproxEqAbs(@as(f32, 99.9), runner.cameraman.desired_matrix.m14, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 97.8), runner.cameraman.live_matrix.m14, 0.0001);
 }
 
 test "jetpack gauge ramps warning intensity during the startup tenth" {

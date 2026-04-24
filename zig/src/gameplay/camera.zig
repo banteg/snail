@@ -17,8 +17,8 @@ pub const death_cutscene_x_offset: f32 = 2.0;
 pub const death_cutscene_y_floor: f32 = 0.0;
 
 pub const cameraman_base_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
-pub const cameraman_base_up = rl.Vector3{ .x = 0.0, .y = 0.946145, .z = 0.323752 };
-pub const cameraman_base_forward = rl.Vector3{ .x = 0.0, .y = -0.323752, .z = 0.946145 };
+pub const cameraman_base_up = rl.Vector3{ .x = 0.0, .y = 0.946000993, .z = 0.324162006 };
+pub const cameraman_base_forward = rl.Vector3{ .x = 0.0, .y = -0.324162006, .z = 0.946000993 };
 pub const cameraman_identity_matrix = rl.Matrix{
     .m0 = 1.0,
     .m4 = 0.0,
@@ -39,7 +39,7 @@ pub const cameraman_identity_matrix = rl.Matrix{
 };
 pub const cameraman_base_translation_y: f32 = 1.8;
 pub const cameraman_base_translation_z: f32 = -0.5;
-pub const cameraman_forward_distance: f32 = 3.3;
+pub const cameraman_lateral_follow_scale: f32 = 0.333333343;
 pub const cameraman_vertical_lift_early_weight: f32 = 1.15;
 pub const cameraman_vertical_lift_late_weight: f32 = 0.35;
 pub const cameraman_deadzone_min_z_delta: f32 = 1.70000005;
@@ -416,13 +416,13 @@ pub fn cameramanPitchRadiansFromCachedTarget(anchor_y: f32) f32 {
     );
 }
 
-pub fn clampedPreviousDesiredCameraZ(anchor_z: f32, previous_z: f32) f32 {
-    const previous_delta_z = anchor_z - previous_z;
+pub fn clampedPreviousDesiredCameraZ(desired_camera_z: f32, previous_z: f32) f32 {
+    const previous_delta_z = desired_camera_z - previous_z;
     if (previous_delta_z > cameraman_deadzone_max_z_delta) {
-        return anchor_z - cameraman_deadzone_max_z_delta;
+        return desired_camera_z - cameraman_deadzone_max_z_delta;
     }
     if (previous_delta_z < cameraman_deadzone_min_z_delta) {
-        return anchor_z - cameraman_deadzone_min_z_delta;
+        return desired_camera_z - cameraman_deadzone_min_z_delta;
     }
     return previous_z;
 }
@@ -458,10 +458,12 @@ pub fn refreshRunnerCachedCameraTarget(runner: anytype, preview: *const track.Lo
 
     const base_position = playerWorldPosition(runner, preview);
     const frame = orthonormalFrameFromForwardUp(runner.worldForward(preview), runner.worldUp(preview));
+    // PORT(verified): `update_subgoldy` @ 0x43cb50 applies the jetpack warning
+    // wobble as alpha/right, x/up, y/forward before storing the cached camera target.
     const local_offset = rl.Vector3{
-        .x = runner.jetpack.wobble_x,
-        .y = runner.jetpack.wobble_y,
-        .z = runner.jetpack.wobble_alpha,
+        .x = runner.jetpack.wobble_alpha,
+        .y = runner.jetpack.wobble_x,
+        .z = runner.jetpack.wobble_y,
     };
     runner.cached_camera_target_world = .{
         .x = base_position.x + (frame.right.x * local_offset.x) + (frame.up.x * local_offset.y) + (frame.forward.x * local_offset.z),
@@ -782,7 +784,7 @@ pub fn updateRunnerCameraman(runner: anytype, preview: *const track.LoadedLevelP
         anchor_pitch_radians,
     );
     desired_transform.position.y += vertical_lift + (runner.cameraman.smoothed_attachment_lift_envelope * anchor_y);
-    desired_transform.position.x += anchor_x / cameraman_forward_distance;
+    desired_transform.position.x += anchor_x * cameraman_lateral_follow_scale;
     desired_transform.position.z += anchor_z + 0.4;
     desired_transform = rotateCameraTransformWorldZ(desired_transform, lane_lean_roll_radians + lateral_roll_radians);
     if (runner.attachment.follow.active) {
@@ -812,7 +814,7 @@ pub fn updateRunnerCameraman(runner: anytype, preview: *const track.LoadedLevelP
     }
 
     var previous_desired_matrix = runner.cameraman.previous_desired_matrix;
-    previous_desired_matrix.m14 = clampedPreviousDesiredCameraZ(anchor_z, previous_desired_matrix.m14);
+    previous_desired_matrix.m14 = clampedPreviousDesiredCameraZ(desired_matrix.m14, previous_desired_matrix.m14);
 
     runner.cameraman.live_matrix = linearInterpolateCameraMatrices(
         previous_desired_matrix,
