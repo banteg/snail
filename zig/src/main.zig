@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const audio_volume = @import("app/audio_volume.zig");
+const boot_assets = @import("app/boot_assets.zig");
 const frontend_audio = @import("app/frontend_audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
@@ -103,8 +104,6 @@ const WindowSize = app.WindowSize;
 const parseArgs = app.parseArgs;
 const defaultWindowSizeForCommand = app.defaultWindowSizeForCommand;
 
-const BootTask = frontend.BootTask;
-const boot_tasks = frontend.boot_tasks;
 const GamePhase = frontend.GamePhase;
 const FrontendTransition = frontend.FrontendTransition;
 const MainMenuItem = frontend.MainMenuItem;
@@ -499,7 +498,7 @@ const AppState = struct {
         music_audio.stopPreview(music_audio.context(self));
         self.unloadLoadingScreen();
         self.unloadGameBackground();
-        self.unloadPreloadedBootAssets();
+        boot_assets.unload(boot_assets.context(self));
         self.clearSelectedReplayCache();
         if (self.current_background_light_streak_texture) |*texture| {
             texture.unload();
@@ -626,83 +625,6 @@ const AppState = struct {
     // PORT(partial): the original loading screen advances from real archive reads
     // and startup initialization loops. The port now advances from actual front-end
     // startup loads instead of a timer, but it still does not cover the full world-init pass.
-    fn advanceBootTask(self: *AppState) !bool {
-        if (self.boot_task_index >= boot_tasks.len) return true;
-
-        switch (boot_tasks[self.boot_task_index]) {
-            .load_high_scores => try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path),
-            .load_intro_background => {
-                self.unloadPreloadedBackground(&self.preloaded_intro_background);
-                self.preloaded_intro_background = try background.Loaded.loadByPath(self.allocator, &self.resources, intro_background_path);
-            },
-            .load_main_menu_background => {
-                self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
-                self.preloaded_main_menu_background = try background.Loaded.loadByPath(self.allocator, &self.resources, main_menu_background_path);
-            },
-            .load_route_map_background => {
-                self.unloadPreloadedBackground(&self.preloaded_route_map_background);
-                self.preloaded_route_map_background = try background.Loaded.loadByPath(self.allocator, &self.resources, route_map_background_path);
-            },
-            .load_help_background => {
-                self.unloadPreloadedBackground(&self.preloaded_help_background);
-                self.preloaded_help_background = try background.Loaded.loadByPath(self.allocator, &self.resources, help_background_path);
-            },
-            .load_intro_script => {
-                self.unloadPreloadedTextScript(&self.preloaded_intro_script);
-                self.preloaded_intro_script = try self.loadConfiguredTextScriptEntry(intro_script_path);
-            },
-            .load_credits_script => {
-                self.unloadPreloadedTextScript(&self.preloaded_credits_script);
-                self.preloaded_credits_script = try self.loadConfiguredTextScriptEntry(credits_script_path);
-            },
-            .load_intro_music => {
-                self.unloadPreloadedMusic(&self.preloaded_intro_music);
-                self.preloaded_intro_music = try self.resources.catalog.loadMusicByPath(self.allocator, intro_music_path);
-            },
-            .load_menu_music => {
-                self.unloadPreloadedMusic(&self.preloaded_menu_music);
-                self.preloaded_menu_music = try self.resources.catalog.loadMusicByPath(self.allocator, default_audio_path);
-            },
-        }
-
-        self.boot_task_index += 1;
-        return self.boot_task_index >= boot_tasks.len;
-    }
-
-    fn unloadPreloadedBootAssets(self: *AppState) void {
-        self.unloadPreloadedBackground(&self.preloaded_intro_background);
-        self.unloadPreloadedBackground(&self.preloaded_main_menu_background);
-        self.unloadPreloadedBackground(&self.preloaded_route_map_background);
-        self.unloadPreloadedBackground(&self.preloaded_help_background);
-        self.unloadPreloadedTextScript(&self.preloaded_intro_script);
-        self.unloadPreloadedTextScript(&self.preloaded_credits_script);
-        self.unloadPreloadedMusic(&self.preloaded_intro_music);
-        self.unloadPreloadedMusic(&self.preloaded_menu_music);
-    }
-
-    fn unloadPreloadedBackground(self: *AppState, slot: *?background.Loaded) void {
-        _ = self;
-        if (slot.*) |*loaded| {
-            loaded.deinit();
-            slot.* = null;
-        }
-    }
-
-    fn unloadPreloadedTextScript(self: *AppState, slot: *?intro.Loaded) void {
-        if (slot.*) |*loaded| {
-            loaded.deinit(self.allocator);
-            slot.* = null;
-        }
-    }
-
-    fn unloadPreloadedMusic(self: *AppState, slot: *?assets.LoadedMusic) void {
-        _ = self;
-        if (slot.*) |*loaded| {
-            loaded.unload();
-            slot.* = null;
-        }
-    }
-
     pub fn saveRuntimeConfig(self: *const AppState) !void {
         try self.runtime_config.saveToRuntimeRoot(self.runtime_root_path);
     }
@@ -897,7 +819,7 @@ const AppState = struct {
         }
 
         if (self.game_phase == .boot) {
-            if (try self.advanceBootTask()) {
+            if (try boot_assets.advance(boot_assets.context(self))) {
                 try self.enterGamePhase(.intro);
                 self.frontend_transition.beginFadeIn();
             }
@@ -2163,7 +2085,7 @@ const AppState = struct {
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.boot_task_index = 0;
-                self.unloadPreloadedBootAssets();
+                boot_assets.unload(boot_assets.context(self));
                 self.unloadTextScript();
                 self.unloadGameBackground();
                 try self.loadLoadingScreen();
@@ -2324,7 +2246,7 @@ const AppState = struct {
 
     fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
         self.unloadGameBackground();
-        var loaded = if (self.takePreloadedBackground(script_path)) |loaded|
+        var loaded = if (boot_assets.takeBackground(boot_assets.context(self), script_path)) |loaded|
             loaded
         else
             try background.Loaded.loadByPath(self.allocator, &self.resources, script_path);
@@ -2339,22 +2261,14 @@ const AppState = struct {
 
     fn loadTextScript(self: *AppState, path: []const u8) !void {
         self.unloadTextScript();
-        self.current_text_script = if (self.takePreloadedTextScript(path)) |loaded|
+        self.current_text_script = if (boot_assets.takeTextScript(boot_assets.context(self), path)) |loaded|
             loaded
         else
             try self.loadConfiguredTextScriptEntry(path);
     }
 
     fn loadConfiguredTextScriptEntry(self: *AppState, path: []const u8) !intro.Loaded {
-        if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
-            return try intro.loadByPathWithOptions(
-                self.allocator,
-                &self.resources,
-                path,
-                .{ .add_remake_credit = self.credits_with_remake },
-            );
-        }
-        return try intro.loadByPath(self.allocator, &self.resources, path);
+        return boot_assets.loadConfiguredTextScriptEntry(boot_assets.context(self), path);
     }
 
     fn unloadTextScript(self: *AppState) void {
@@ -2369,32 +2283,6 @@ const AppState = struct {
             loaded_screen.deinit();
             self.current_loading_screen = null;
         }
-    }
-
-    fn takePreloadedBackground(self: *AppState, script_path: []const u8) ?background.Loaded {
-        if (std.ascii.eqlIgnoreCase(script_path, intro_background_path)) {
-            return takeOptional(background.Loaded, &self.preloaded_intro_background);
-        }
-        if (std.ascii.eqlIgnoreCase(script_path, main_menu_background_path)) {
-            return takeOptional(background.Loaded, &self.preloaded_main_menu_background);
-        }
-        if (std.ascii.eqlIgnoreCase(script_path, route_map_background_path)) {
-            return takeOptional(background.Loaded, &self.preloaded_route_map_background);
-        }
-        if (std.ascii.eqlIgnoreCase(script_path, help_background_path)) {
-            return takeOptional(background.Loaded, &self.preloaded_help_background);
-        }
-        return null;
-    }
-
-    fn takePreloadedTextScript(self: *AppState, path: []const u8) ?intro.Loaded {
-        if (std.ascii.eqlIgnoreCase(path, intro_script_path)) {
-            return takeOptional(intro.Loaded, &self.preloaded_intro_script);
-        }
-        if (std.ascii.eqlIgnoreCase(path, credits_script_path)) {
-            return takeOptional(intro.Loaded, &self.preloaded_credits_script);
-        }
-        return null;
     }
 
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
@@ -2759,12 +2647,7 @@ fn formatElapsedMillis(buffer: []u8, elapsed_millis: u32) ![]const u8 {
 // Slug kills (+500), garbage-side score events (+10),
 // jetpack/speed-up scoring, and the rest of the original `cRSubGoldy::AI()` path remain unported.
 fn bootPhaseProgress(state: *const AppState) f32 {
-    if (boot_tasks.len == 0) return 1.0;
-    return std.math.clamp(
-        @as(f32, @floatFromInt(state.boot_task_index)) / @as(f32, @floatFromInt(boot_tasks.len)),
-        0.0,
-        1.0,
-    );
+    return boot_assets.progress(state.boot_task_index);
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -3452,14 +3335,6 @@ fn drawGameplayTurboAttachments(
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
     return level_loader.gameTrackSetIndexForLevel(level_track);
-}
-
-fn takeOptional(comptime T: type, slot: *?T) ?T {
-    if (slot.*) |value| {
-        slot.* = null;
-        return value;
-    }
-    return null;
 }
 
 fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
