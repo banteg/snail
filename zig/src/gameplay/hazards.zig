@@ -8,7 +8,7 @@
 //!
 //! Methods that only touch the pool itself live here (add / count / reset /
 //! find / consume). Methods that cross-read other Runner fields (damage,
-//! score, snail_skin, preview) still live on Runner and reach in through
+//! score, presentation.snail_skin, preview) still live on Runner and reach in through
 //! the pool fields.
 
 const std = @import("std");

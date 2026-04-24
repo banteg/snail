@@ -116,7 +116,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 10. Phase A8b — **done**. `gameplay/attachment.zig` owns composed `State { hint, path_name, follow, launch, exit, lane_lean, camera, ticks }`; `Runner` now exposes it as `runner.attachment`, and camera/tests reach through the grouped attachment lanes.
 11. Phase A9a — **done**. `gameplay/motion.zig` owns row/lane projection primitives (`currentRowIndex`, `laneCenterFromWorldX`, `laneIndexForLaneCenter`).
 12. Phase A9b — motion state (lane lean, row advance, replay, sample, runtime tile hint) → `gameplay/motion.zig`.
-13. Phase A10 — partially done. `gameplay/presentation.zig` owns snail-skin transition state and weapon channel decoding. Remaining presentation work: group movement timers, invincible/slow/shot cooldowns, and app-side visual tick latches into a composed presentation controller.
+13. Phase A10 — **done**. `gameplay/presentation.zig` owns `State { weapon_level, movement flags, barrier/startup timers, slow/invincible timers, fire cooldown, shot cooldown, snail_skin }` plus the weapon channel and skin helpers. App-side visual tick latches remain separate because they model renderer transition state rather than runner gameplay state.
 14. Phase A11 — score counters + defeated slugs + visible lives + recent events (~10 fields, 80+ external call sites) → expand `gameplay/score.zig`. Highest external-churn; defer until the more self-contained subsystems are done.
 15. Phase B0 — **done**. `gameplay/effects.zig` owns transient gameplay effect state and runner-driven effect emission. `AppState` now owns a `gameplay_effects.Controller`, and `main.zig` only renders the effect list with loaded sprite assets.
 16. Phase B1 — **done**. `frontend/art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. `gameplay/resources.zig` owns static gameplay resource lifetimes. The app audio modules own audio dispatch, music/voice slots, and volume policy, while `app/screenshots.zig` owns screenshot capture.
@@ -133,7 +133,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 
 For each subsystem:
 1. Create `gameplay/<subsystem>.zig` with a `Controller` or `Pool`/`Runtime` struct owning the subsystem's fields.
-2. Move subsystem-only methods onto the controller; inline-pass-through the few fields the Runner cross-reads (snail_skin, preview).
+2. Move subsystem-only methods onto the controller; inline-pass-through the few fields the Runner cross-reads (presentation.snail_skin, preview).
 3. Drop the 5–10 loose Runner fields and add a single composed field: `<subsystem>: <module>.Controller = .{}`.
 4. Bulk-rename internal accesses via a Python script: `self.damage_gauge → self.damage.gauge` etc.
 5. Rewrite the Runner wrappers (applyDamageGaugeDelta etc.) as 1–3 line delegates to the controller.

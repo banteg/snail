@@ -7,6 +7,20 @@ pub fn nativeJetpackVisualPresentationActive(thrust_visual_active: bool) bool {
     return thrust_visual_active;
 }
 
+pub const max_weapon_level: u8 = 2;
+pub const native_barrier_hold_step: f32 = 1.0 / 60.0;
+pub const native_startup_voice_step: f32 = 0.055555552;
+
+pub fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
+    return switch (movement_flag_selector) {
+        0, 1, 2 => 0.0740740746,
+        3, 4, 8 => 0.111111104,
+        5 => 0.0666666701,
+        6, 7 => 0.13333334,
+        else => 0.0666666701,
+    };
+}
+
 // PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
 // and `update_snail_skin_transition` @ 0x445f80. Slots: 0 = default, 1 = damage-red,
 // 2 = invincible. `progress_step = 1 / (duration_s * 60)` when duration > 0, else 0
@@ -48,6 +62,25 @@ pub const WeaponChannelStates = struct {
     left: u8 = 0,
     right: u8 = 0,
     center: u8 = 0,
+};
+
+pub const State = struct {
+    weapon_level: u8 = 0,
+    movement_flag_selector: u8 = 0,
+    movement_flags: u32 = 1,
+    barrier_hold_progress: f32 = 0.0,
+    barrier_hold_step: f32 = native_barrier_hold_step,
+    startup_voice_timer: f32 = native_startup_voice_step,
+    startup_voice_step: f32 = native_startup_voice_step,
+    slow_ticks: u16 = 0,
+    invincible_ticks: u16 = 0,
+    slow_commentary_timer: f32 = 0.0,
+    slow_commentary_step: f32 = gameplay_assets.native_gameplay_slow_voice_timer_step,
+    slow_commentary_voice_token: u32 = 0,
+    movement_fire_cooldown: f32 = 0.0,
+    movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
+    shot_cooldown_ticks: u8 = 0,
+    snail_skin: SnailSkinTransition = .{},
 };
 
 pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {

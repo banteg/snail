@@ -170,8 +170,8 @@ fn updateGameplayRunnerPresentation(state: anytype, previous: gameplay.Runner, c
         gameplay_presentation.nativeJetpackVisualPresentationActive(previous.jetpack.thrust_visual_active),
         gameplay_presentation.nativeJetpackVisualPresentationActive(current.jetpack.thrust_visual_active),
     );
-    state.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.movement_flags, current.movement_flags);
-    if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-        state.gameplay_weapon_visual_state.noteFire(current.movement_flags);
+    state.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.presentation.movement_flags, current.presentation.movement_flags);
+    if (previous.presentation.shot_cooldown_ticks == 0 and current.presentation.shot_cooldown_ticks > 0) {
+        state.gameplay_weapon_visual_state.noteFire(current.presentation.movement_flags);
     }
 }

@@ -455,7 +455,7 @@ fn drawGameplayTurboAttachments(
     runner: gameplay.Runner,
     camera: rl.Camera3D,
 ) void {
-    const channel_states = gameplay.nativeWeaponChannelStates(runner.movement_flags);
+    const channel_states = gameplay.nativeWeaponChannelStates(runner.presentation.movement_flags);
 
     const top_active = channel_states.center == 1 or
         render.weapon_visual_state.top_draw_ticks > 0 or
@@ -584,7 +584,7 @@ fn drawGameplayTurboAttachments(
         }
     }
 
-    if (runner.invincible_ticks > 0) {
+    if (runner.presentation.invincible_ticks > 0) {
         if (render.resources.invincible_models.currentModel(render.render_time_seconds)) |model| {
             gameplay_model_render.drawUploadedModel(
                 model.*,

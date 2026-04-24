@@ -253,7 +253,7 @@ const native_negative_ring_velocity_recovery_z_per_tick: f32 =
 const slow_ring_duration_ticks: u16 = 240;
 const turbo_projectile_spread_lateral: f32 = 0.1;
 const invincible_duration_ticks: u16 = 480;
-const max_weapon_level: u8 = 2;
+const max_weapon_level = presentation_module.max_weapon_level;
 const slug_projectile_kill_score: u32 = 100;
 const parcel_delivery_register_score: u32 = 10;
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
@@ -298,16 +298,7 @@ fn movementFlagsForSelector(selector: u8) u32 {
 
 pub const WeaponChannelStates = presentation_module.WeaponChannelStates;
 pub const nativeWeaponChannelStates = presentation_module.nativeWeaponChannelStates;
-
-fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
-    return switch (movement_flag_selector) {
-        0, 1, 2 => 0.0740740746,
-        3, 4, 8 => 0.111111104,
-        5 => 0.0666666701,
-        6, 7 => 0.13333334,
-        else => 0.0666666701,
-    };
-}
+const movementFireCooldownStepForSelector = presentation_module.movementFireCooldownStepForSelector;
 
 const MovementFireInputState = enum {
     none,
@@ -419,9 +410,6 @@ fn offsetPosition(
 
 const AttachmentCameraProgress = runner_state.AttachmentCameraProgress;
 
-const native_barrier_hold_step: f32 = 1.0 / 60.0;
-const native_startup_voice_step: f32 = 0.055555552;
-
 pub const Runner = struct {
     session_mode: SessionMode = .debug,
     base_subgame_rate: f32 = 1.1,
@@ -478,23 +466,8 @@ pub const Runner = struct {
     last_garbage_hit_position: ?rl.Vector3 = null,
     last_salt_hit_position: ?rl.Vector3 = null,
     visible_life_stock: u32 = starting_visible_life_stock,
-    weapon_level: u8 = 0,
-    movement_flag_selector: u8 = 0,
-    movement_flags: u32 = 1,
-    barrier_hold_progress: f32 = 0.0,
-    barrier_hold_step: f32 = native_barrier_hold_step,
-    startup_voice_timer: f32 = native_startup_voice_step,
-    startup_voice_step: f32 = native_startup_voice_step,
-    slow_ticks: u16 = 0,
-    invincible_ticks: u16 = 0,
-    slow_commentary_timer: f32 = 0.0,
-    slow_commentary_step: f32 = gameplay_assets.native_gameplay_slow_voice_timer_step,
-    slow_commentary_voice_token: u32 = 0,
-    movement_fire_cooldown: f32 = 0.0,
-    movement_fire_cooldown_step: f32 = movementFireCooldownStepForSelector(0),
-    shot_cooldown_ticks: u8 = 0,
+    presentation: presentation_module.State = .{},
     damage: DamageController = .{},
-    snail_skin: SnailSkinTransition = .{},
     last_processed_row: ?usize = null,
     runtime: hazards_module.Runtime = .{},
     combat: combat_module.Combat = .{},
@@ -615,11 +588,11 @@ pub const Runner = struct {
         if (!self.paused and self.acceptsGameplayInput()) {
             self.stepMovementFireCooldown();
             // PORT(verified): native `update_subgoldy` reseeds the movement-fire cooldown
-            // lane from `movement_fire_cooldown_step` for the first 10 gameplay ticks
+            // lane from `presentation.movement_fire_cooldown_step` for the first 10 gameplay ticks
             // before the fire gate runs, which suppresses all movement-state shots during
             // that startup window.
             if (self.tick_count < 10) {
-                self.movement_fire_cooldown = self.movement_fire_cooldown_step;
+                self.presentation.movement_fire_cooldown = self.presentation.movement_fire_cooldown_step;
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.updateNativeVelocityZOverride(delta_seconds);
@@ -701,14 +674,14 @@ pub const Runner = struct {
 
     fn updateSlowCommentaryTimer(self: *Runner) void {
         if (!self.inNativeSlowCommentaryBand()) {
-            self.slow_commentary_timer = 0.0;
+            self.presentation.slow_commentary_timer = 0.0;
             return;
         }
 
-        self.slow_commentary_timer += self.slow_commentary_step;
-        if (self.slow_commentary_timer > 1.0) {
-            self.slow_commentary_timer = 0.0;
-            self.slow_commentary_voice_token +%= 1;
+        self.presentation.slow_commentary_timer += self.presentation.slow_commentary_step;
+        if (self.presentation.slow_commentary_timer > 1.0) {
+            self.presentation.slow_commentary_timer = 0.0;
+            self.presentation.slow_commentary_voice_token +%= 1;
         }
     }
 
@@ -1567,7 +1540,7 @@ pub const Runner = struct {
             .salt => {},
             .slug => {
                 if (self.isSlugDefeated(global_row, sample.resolved_lane_index)) return;
-                if (self.invincible_ticks > 0) {
+                if (self.presentation.invincible_ticks > 0) {
                     // PORT(verified):
                     // `artifacts/ida/functions/00444cf0-handle_subgoldy_collisions.c:179-182`
                     // takes the invincible-path slug contact through `kill_slug_hazard`
@@ -1685,7 +1658,7 @@ pub const Runner = struct {
             },
             .slow => {
                 self.counters.ring_slow += 1;
-                self.slow_ticks = slow_ring_duration_ticks;
+                self.presentation.slow_ticks = slow_ring_duration_ticks;
             },
         }
         if (award_score) {
@@ -1988,7 +1961,7 @@ pub const Runner = struct {
         const delta_z_normalized = delta_z / distance;
         const speed_before = self.speed_rows_per_second;
 
-        if (self.invincible_ticks > 0) return;
+        if (self.presentation.invincible_ticks > 0) return;
 
         self.speed_rows_per_second = std.math.clamp(
             speed_before - (delta_z_normalized * speed_before * 0.10),
@@ -2013,7 +1986,7 @@ pub const Runner = struct {
     }
 
     fn applyDamageGaugeDelta(self: *Runner, delta: f32) void {
-        self.damage.applyDelta(delta, &self.snail_skin);
+        self.damage.applyDelta(delta, &self.presentation.snail_skin);
     }
 
     fn maybeAwardRowEventCompletionBonus(self: *Runner) void {
@@ -2037,11 +2010,11 @@ pub const Runner = struct {
     }
 
     fn updateDamageGaugeController(self: *Runner) void {
-        self.damage.updateController(&self.snail_skin);
+        self.damage.updateController(&self.presentation.snail_skin);
     }
 
     fn updateDamageWarning(self: *Runner) void {
-        self.damage.update(&self.snail_skin);
+        self.damage.update(&self.presentation.snail_skin);
     }
 
     pub fn damageGaugeWarningOverlayAlpha(self: *const Runner) f32 {
@@ -2060,7 +2033,7 @@ pub const Runner = struct {
         if (self.native_velocity_z_override_per_tick) |velocity_z| {
             return velocity_z * native_ticks_per_second;
         }
-        if (self.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
+        if (self.presentation.slow_ticks > 0) return self.speed_rows_per_second * 0.5;
         return self.speed_rows_per_second;
     }
 
@@ -2210,41 +2183,41 @@ pub const Runner = struct {
     }
 
     fn stepTemporaryStates(self: *Runner) void {
-        if (self.slow_ticks > 0) self.slow_ticks -= 1;
-        if (self.invincible_ticks > 0) {
-            self.invincible_ticks -= 1;
+        if (self.presentation.slow_ticks > 0) self.presentation.slow_ticks -= 1;
+        if (self.presentation.invincible_ticks > 0) {
+            self.presentation.invincible_ticks -= 1;
             // PORT(verified): native `update_invincible_shell` @ 0x444b70 re-selects
             // `change_snail_skin(..+0x434038, 2, 0f)` every active tick (instant swap to
             // the invincible material slot). The transition snaps to slot 0 on the
             // frame the shell expires.
-            self.snail_skin.change(.invincible, 0.0);
-            if (self.invincible_ticks == 0) {
-                self.snail_skin.change(.default, 0.0);
+            self.presentation.snail_skin.change(.invincible, 0.0);
+            if (self.presentation.invincible_ticks == 0) {
+                self.presentation.snail_skin.change(.default, 0.0);
             }
         }
-        if (self.shot_cooldown_ticks > 0) self.shot_cooldown_ticks -= 1;
+        if (self.presentation.shot_cooldown_ticks > 0) self.presentation.shot_cooldown_ticks -= 1;
         if (self.recent_score_award_ticks > 0) self.recent_score_award_ticks -= 1;
         if (self.damage.runtime.skin_hold_ticks > 0) self.damage.runtime.skin_hold_ticks -= 1;
-        self.snail_skin.tick();
+        self.presentation.snail_skin.tick();
     }
 
     fn recordPowerupRing(self: *Runner) void {
         self.advanceMovementFlagSelector();
-        if (self.weapon_level < max_weapon_level) {
-            self.weapon_level += 1;
+        if (self.presentation.weapon_level < max_weapon_level) {
+            self.presentation.weapon_level += 1;
             return;
         }
-        self.invincible_ticks = invincible_duration_ticks;
+        self.presentation.invincible_ticks = invincible_duration_ticks;
     }
 
     fn advanceMovementFlagSelector(self: *Runner) void {
-        if (self.movement_flag_selector < 8) {
-            self.movement_flag_selector += 1;
-        } else if (self.movement_flag_selector == 8) {
-            self.movement_flag_selector = 7;
+        if (self.presentation.movement_flag_selector < 8) {
+            self.presentation.movement_flag_selector += 1;
+        } else if (self.presentation.movement_flag_selector == 8) {
+            self.presentation.movement_flag_selector = 7;
         }
-        self.movement_flags = movementFlagsForSelector(self.movement_flag_selector);
-        self.movement_fire_cooldown_step = movementFireCooldownStepForSelector(self.movement_flag_selector);
+        self.presentation.movement_flags = movementFlagsForSelector(self.presentation.movement_flag_selector);
+        self.presentation.movement_fire_cooldown_step = movementFireCooldownStepForSelector(self.presentation.movement_flag_selector);
     }
 
     fn triggerExplodeRing(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2276,10 +2249,10 @@ pub const Runner = struct {
     }
 
     fn stepMovementFireCooldown(self: *Runner) void {
-        if (self.movement_fire_cooldown <= 0.0) return;
-        self.movement_fire_cooldown += self.movement_fire_cooldown_step;
-        if (self.movement_fire_cooldown > 1.0) {
-            self.movement_fire_cooldown = 0.0;
+        if (self.presentation.movement_fire_cooldown <= 0.0) return;
+        self.presentation.movement_fire_cooldown += self.presentation.movement_fire_cooldown_step;
+        if (self.presentation.movement_fire_cooldown > 1.0) {
+            self.presentation.movement_fire_cooldown = 0.0;
         }
     }
 
@@ -2301,13 +2274,13 @@ pub const Runner = struct {
         fire_input_state: MovementFireInputState,
     ) void {
         if ((preview.runtime_build_flags & track.runtime_build_flag_movement_fire) == 0) return;
-        if (fire_input_state == .none or self.attachment.exit.pending or self.movement_fire_cooldown > 0.0) return;
+        if (fire_input_state == .none or self.attachment.exit.pending or self.presentation.movement_fire_cooldown > 0.0) return;
         self.spawnProjectiles(preview);
-        self.shot_cooldown_ticks = 2;
-        self.movement_fire_cooldown = if (fire_input_state == .fresh)
-            @min(1.0, self.movement_fire_cooldown_step + 0.30000001)
+        self.presentation.shot_cooldown_ticks = 2;
+        self.presentation.movement_fire_cooldown = if (fire_input_state == .fresh)
+            @min(1.0, self.presentation.movement_fire_cooldown_step + 0.30000001)
         else
-            self.movement_fire_cooldown_step;
+            self.presentation.movement_fire_cooldown_step;
     }
 
     fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -2321,7 +2294,7 @@ pub const Runner = struct {
         } else {
             right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
         }
-        switch (self.movement_flags) {
+        switch (self.presentation.movement_flags) {
             1, 129 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, 0.0, 0.23, 0.12, 0.0),
             2 => {
                 self.spawnWeaponChannelProjectile(origin, right, up, forward, .turbo, -0.24, 0.11, 0.08, 0.0);
@@ -2339,7 +2312,7 @@ pub const Runner = struct {
             },
             32, 64, 192 => self.spawnWeaponChannelProjectile(origin, right, up, forward, .rocket, 0.0, 0.23, 0.12, 0.0),
             else => {
-                const channel_states = nativeWeaponChannelStates(self.movement_flags);
+                const channel_states = nativeWeaponChannelStates(self.presentation.movement_flags);
                 if (channelKindForState(channel_states.left)) |kind| {
                     self.spawnWeaponChannelProjectile(origin, right, up, forward, kind, -0.24, 0.11, 0.08, 0.0);
                 }
@@ -2472,7 +2445,7 @@ pub const Runner = struct {
 
         if (self.gameplayCellAt(preview, global_row, lane_index)) |kind| switch (kind) {
             .slug => {
-                if (!self.isSlugDefeated(global_row, lane_index) and self.weapon_level > 0) {
+                if (!self.isSlugDefeated(global_row, lane_index) and self.presentation.weapon_level > 0) {
                     self.defeatSlug(global_row, lane_index);
                     return true;
                 }
@@ -3330,7 +3303,7 @@ pub const Runner = struct {
             .world_position = world_position,
             .presentation_position = world_position,
             .presentation_scale = 1.0,
-            .movement_flag_selector_snapshot = self.movement_flag_selector,
+            .movement_flag_selector_snapshot = self.presentation.movement_flag_selector,
             .active_phase = active_phase,
             .active_phase_step = active_phase_step,
         };
@@ -3464,7 +3437,7 @@ pub const Runner = struct {
 
                 const player_position = self.playerWorldPosition(preview);
                 if (effect.world_position.z >= player_position.z) {
-                    if (self.movement_flag_selector < effect.movement_flag_selector_snapshot) {
+                    if (self.presentation.movement_flag_selector < effect.movement_flag_selector_snapshot) {
                         effect.state = .miss_setup;
                     }
                     return true;
@@ -3548,7 +3521,7 @@ pub const Runner = struct {
                 const cycle_seconds = (2.0 - (self.base_subgame_rate * 0.3)) * native_ticks_per_second;
                 if (cycle_seconds > 0.0) {
                     return (1.0 / cycle_seconds) *
-                        (@as(f32, @floatFromInt(self.movement_flag_selector)) * 0.125) *
+                        (@as(f32, @floatFromInt(self.presentation.movement_flag_selector)) * 0.125) *
                         native_track_center_x *
                         std.math.tau;
                 }
@@ -5909,7 +5882,7 @@ test "invincible garbage collisions skip native motion writes but still resolve 
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.8;
     runner.runtime_track_index = garbage.row - 1;
     runner.movement_progress = 0.6;
-    runner.invincible_ticks = 30;
+    runner.presentation.invincible_ticks = 30;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
@@ -6008,22 +5981,22 @@ test "powerup rings upgrade weapon level then grant invincible state" {
     var runner = Runner{};
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 1), runner.weapon_level);
-    try std.testing.expectEqual(@as(u8, 1), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
-    try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
+    try std.testing.expectEqual(@as(u8, 1), runner.presentation.weapon_level);
+    try std.testing.expectEqual(@as(u8, 1), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 2), runner.presentation.movement_flags);
+    try std.testing.expectEqual(@as(u16, 0), runner.presentation.invincible_ticks);
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
-    try std.testing.expectEqual(@as(u8, 2), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 4), runner.movement_flags);
-    try std.testing.expectEqual(@as(u16, 0), runner.invincible_ticks);
+    try std.testing.expectEqual(@as(u8, 2), runner.presentation.weapon_level);
+    try std.testing.expectEqual(@as(u8, 2), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 4), runner.presentation.movement_flags);
+    try std.testing.expectEqual(@as(u16, 0), runner.presentation.invincible_ticks);
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 2), runner.weapon_level);
-    try std.testing.expectEqual(@as(u8, 3), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 8), runner.movement_flags);
-    try std.testing.expectEqual(invincible_duration_ticks, runner.invincible_ticks);
+    try std.testing.expectEqual(@as(u8, 2), runner.presentation.weapon_level);
+    try std.testing.expectEqual(@as(u8, 3), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 8), runner.presentation.movement_flags);
+    try std.testing.expectEqual(invincible_duration_ticks, runner.presentation.invincible_ticks);
 }
 
 test "powerup ladder bounces between native top selector states" {
@@ -6034,12 +6007,12 @@ test "powerup ladder bounces between native top selector states" {
     for (0..8) |_| {
         runner.recordRing(&fixture.preview, .powerup);
     }
-    try std.testing.expectEqual(@as(u8, 8), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 144), runner.movement_flags);
+    try std.testing.expectEqual(@as(u8, 8), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 144), runner.presentation.movement_flags);
 
     runner.recordRing(&fixture.preview, .powerup);
-    try std.testing.expectEqual(@as(u8, 7), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 192), runner.movement_flags);
+    try std.testing.expectEqual(@as(u8, 7), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 192), runner.presentation.movement_flags);
 }
 
 test "slow rings reduce effective speed while active" {
@@ -6050,13 +6023,13 @@ test "slow rings reduce effective speed while active" {
     runner.speed_rows_per_second = 18.0;
 
     runner.recordRing(&fixture.preview, .slow);
-    try std.testing.expectEqual(slow_ring_duration_ticks, runner.slow_ticks);
+    try std.testing.expectEqual(slow_ring_duration_ticks, runner.presentation.slow_ticks);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
     try std.testing.expectEqual(@as(u32, 0), runner.score.ring_collect);
     try std.testing.expectApproxEqAbs(@as(f32, 9.0), runner.effectiveSpeedRowsPerSecond(), 0.0001);
 
     runner.stepTemporaryStates();
-    try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.slow_ticks);
+    try std.testing.expectEqual(@as(u16, slow_ring_duration_ticks - 1), runner.presentation.slow_ticks);
 }
 
 test "native ring kind 3 seeds the recovered negative-velocity shove" {
@@ -6068,7 +6041,7 @@ test "native ring kind 3 seeds the recovered negative-velocity shove" {
 
     runner.recordNativeRingEffect(&fixture.preview, 3);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_slow);
-    try std.testing.expectEqual(@as(u16, 0), runner.slow_ticks);
+    try std.testing.expectEqual(@as(u16, 0), runner.presentation.slow_ticks);
     try std.testing.expectApproxEqAbs(
         native_negative_ring_velocity_z_per_tick * native_ticks_per_second,
         runner.effectiveSpeedRowsPerSecond(),
@@ -6119,8 +6092,8 @@ test "tutorial powerup ramps consume the recovered forward runtime ring event" {
     runner.row_position = 13.0;
     runner.processRuntimeRingEffectCollisions(&fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.ring_powerup);
-    try std.testing.expectEqual(@as(u8, 1), runner.movement_flag_selector);
-    try std.testing.expectEqual(@as(u32, 2), runner.movement_flags);
+    try std.testing.expectEqual(@as(u8, 1), runner.presentation.movement_flag_selector);
+    try std.testing.expectEqual(@as(u32, 2), runner.presentation.movement_flags);
     try std.testing.expectEqual(@as(u32, 0), runner.score.total);
     try std.testing.expectEqualStrings("ring_powerup", runner.recentEventLabel());
     try std.testing.expectEqual(@as(usize, 1), runner.activeRuntimeRingEffects().len);
@@ -6150,7 +6123,7 @@ test "explicit tutorial ring rows still consume their native same-row effects" {
     slow_runner.refreshLiveRuntimeRingEffects(&slow_fixture.preview);
     slow_runner.processRuntimeRingEffectCollisions(&slow_fixture.preview);
     try std.testing.expectEqual(@as(u32, 1), slow_runner.counters.ring_slow);
-    try std.testing.expectEqual(@as(u16, 0), slow_runner.slow_ticks);
+    try std.testing.expectEqual(@as(u16, 0), slow_runner.presentation.slow_ticks);
     try std.testing.expectApproxEqAbs(
         native_negative_ring_velocity_z_per_tick * native_ticks_per_second,
         slow_runner.effectiveSpeedRowsPerSecond(),
@@ -6296,7 +6269,7 @@ test "default ramp ring seeds native phase step from base subgame rate" {
     var runner = Runner.init(&preview);
     runner.math_random_state = 0;
     runner.configureBaseSubgameRate(0.56);
-    runner.movement_flag_selector = 4;
+    runner.presentation.movement_flag_selector = 4;
     runner.lane_index = 1;
     runner.lane_center = 1.5;
     runner.row_position = 22.0;
@@ -6306,7 +6279,7 @@ test "default ramp ring seeds native phase step from base subgame rate" {
         if (effect.row == 39 and effect.lane == 1 and effect.kind == 2) {
             const expected =
                 (1.0 / ((2.0 - (runner.base_subgame_rate * 0.3)) * native_ticks_per_second)) *
-                (@as(f32, @floatFromInt(runner.movement_flag_selector)) * 0.125) *
+                (@as(f32, @floatFromInt(runner.presentation.movement_flag_selector)) * 0.125) *
                 native_track_center_x *
                 std.math.tau;
             try std.testing.expectApproxEqAbs(expected, @abs(effect.active_phase_step), 0.0001);
@@ -6414,7 +6387,7 @@ test "projectile fire defeats slug after powerup" {
     var runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
-    runner.weapon_level = 1;
+    runner.presentation.weapon_level = 1;
     const lane_center = @as(f32, @floatFromInt(slug.lane)) + 0.5;
     var projectile: Projectile = .{
         .active = true,
@@ -6444,14 +6417,14 @@ test "movement flags spawn the recovered projectile channel layouts" {
     runner.configureSessionMode(.tutorial);
     runner.reset(&fixture.preview);
 
-    runner.movement_flags = 1;
+    runner.presentation.movement_flags = 1;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 2;
+    runner.presentation.movement_flags = 2;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
@@ -6459,7 +6432,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 4;
+    runner.presentation.movement_flags = 4;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 3), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.turbo, runner.combat.projectiles.slots[0].kind);
@@ -6469,7 +6442,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 8;
+    runner.presentation.movement_flags = 8;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
@@ -6481,7 +6454,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 16;
+    runner.presentation.movement_flags = 16;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
@@ -6489,7 +6462,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 144;
+    runner.presentation.movement_flags = 144;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.laser, runner.combat.projectiles.slots[0].kind);
@@ -6497,7 +6470,7 @@ test "movement flags spawn the recovered projectile channel layouts" {
 
     runner.combat.projectiles.count = 0;
     for (&runner.combat.projectiles.slots) |*projectile| projectile.active = false;
-    runner.movement_flags = 32;
+    runner.presentation.movement_flags = 32;
     runner.spawnProjectiles(&fixture.preview);
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
     try std.testing.expectEqual(Projectile.Kind.rocket, runner.combat.projectiles.slots[0].kind);
@@ -6518,17 +6491,17 @@ test "movement fire cadence follows the native selector-owned cooldown lane" {
 
     runner.handleFireInput(&fixture.preview, .fresh);
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
-    try std.testing.expectEqual(@as(u8, 2), runner.shot_cooldown_ticks);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectEqual(@as(u8, 2), runner.presentation.shot_cooldown_ticks);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.presentation.movement_fire_cooldown, 0.0001);
 
-    while (runner.movement_fire_cooldown > 0.0) {
+    while (runner.presentation.movement_fire_cooldown > 0.0) {
         runner.stepMovementFireCooldown();
     }
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.presentation.movement_fire_cooldown, 0.0001);
 
     runner.handleFireInput(&fixture.preview, .repeat);
     try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
 test "live fire input keeps native press and held lanes separate" {
@@ -6556,7 +6529,7 @@ test "movement fire is suppressed while attachment exit is pending" {
 
     runner.handleFireInput(&fixture.preview, .fresh);
     try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
 test "movement fire respects the native runtime fire feature flag" {
@@ -6571,7 +6544,7 @@ test "movement fire respects the native runtime fire feature flag" {
 
     runner.handleFireInput(&fixture.preview, .fresh);
     try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
 test "replay fire bits drive the native movement fire gate" {
@@ -6593,9 +6566,9 @@ test "replay fire bits drive the native movement fire gate" {
         1.0 / 60.0,
     );
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.presentation.movement_fire_cooldown, 0.0001);
 
-    while (runner.movement_fire_cooldown > 0.0) {
+    while (runner.presentation.movement_fire_cooldown > 0.0) {
         runner.stepMovementFireCooldown();
     }
 
@@ -6609,7 +6582,7 @@ test "replay fire bits drive the native movement fire gate" {
         1.0 / 60.0,
     );
     try std.testing.expectEqual(@as(usize, 2), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
 test "movement fire stays suppressed for the first ten gameplay ticks" {
@@ -6631,7 +6604,7 @@ test "movement fire stays suppressed for the first ten gameplay ticks" {
             1.0 / 60.0,
         );
         try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
-        try std.testing.expectApproxEqAbs(runner.movement_fire_cooldown_step, runner.movement_fire_cooldown, 0.0001);
+        try std.testing.expectApproxEqAbs(runner.presentation.movement_fire_cooldown_step, runner.presentation.movement_fire_cooldown, 0.0001);
     }
 
     var held_ticks: usize = 0;
@@ -6646,7 +6619,7 @@ test "movement fire stays suppressed for the first ten gameplay ticks" {
     }
     try std.testing.expect(held_ticks > 0);
     try std.testing.expectEqual(@as(usize, 1), runner.combat.projectiles.count);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_fire_cooldown, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
 }
 
 test "projectiles stop on salt without consuming the hazard" {
@@ -6868,7 +6841,7 @@ test "invincible slug contact defeats slug without score award" {
     var runner = Runner.init(&fixture.preview);
     const slug = findFirstGameplayCell(&fixture.preview, .slug).?;
     primeRunnerBeforeRow(&runner, &fixture.preview, slug);
-    runner.invincible_ticks = 30;
+    runner.presentation.invincible_ticks = 30;
 
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expect(runner.isSlugDefeated(slug.row, slug.lane));

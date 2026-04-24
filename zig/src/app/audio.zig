@@ -124,7 +124,7 @@ pub fn playGameplayRunnerAudio(
         playGameplayEffect(state, state.gameplay_resources.sound_fx.postal_warning);
     }
 
-    if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
+    if (previous.presentation.shot_cooldown_ticks == 0 and current.presentation.shot_cooldown_ticks > 0) {
         const fired_sound = switch (gameplay_audio_cues.nativeMovementStateSoundFamily(current)) {
             .turbo => pickNativeMovementSoundVariant(
                 state,
@@ -166,7 +166,7 @@ pub fn playGameplayRunnerAudio(
     if (current.counters.health_pickups > previous.counters.health_pickups) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.heart);
     }
-    if (current.invincible_ticks > previous.invincible_ticks) {
+    if (current.presentation.invincible_ticks > previous.presentation.invincible_ticks) {
         playGameplayEffect(state, state.gameplay_resources.sound_fx.invincible);
     }
     if (gameplay_audio_cues.nativeSlowRingSoundTriggered(previous, current)) {

@@ -82,7 +82,7 @@ pub fn nativeRingPickupSoundIndex(previous: gameplay.Runner, current: gameplay.R
             1 => 0,
             4, 5, 8 => @min(
                 gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1,
-                @as(usize, @intCast(@max(current.movement_flag_selector, 1) - 1)),
+                @as(usize, @intCast(@max(current.presentation.movement_flag_selector, 1) - 1)),
             ),
             else => null,
         };
@@ -99,7 +99,7 @@ pub fn nativeSlowRingSoundTriggered(previous: gameplay.Runner, current: gameplay
     if (nativeRingEffectKindTriggered(previous, current)) |effect_kind| {
         return effect_kind == 3 or effect_kind == 7;
     }
-    return current.slow_ticks > previous.slow_ticks;
+    return current.presentation.slow_ticks > previous.presentation.slow_ticks;
 }
 
 pub fn nativeExplodeRingSoundTriggered(previous: gameplay.Runner, current: gameplay.Runner) bool {
@@ -110,13 +110,13 @@ pub fn nativeExplodeRingSoundTriggered(previous: gameplay.Runner, current: gamep
 }
 
 pub fn nativeWeaponPresentationChanged(previous: gameplay.Runner, current: gameplay.Runner) bool {
-    return current.movement_flags != previous.movement_flags;
+    return current.presentation.movement_flags != previous.presentation.movement_flags;
 }
 
 pub fn nativeMovementStateSoundFamily(current: gameplay.Runner) NativeMovementStateSoundFamily {
-    if ((current.movement_flags & 0x7) != 0) return .turbo;
-    if ((current.movement_flags & 0x18) != 0) return .laser;
-    if ((current.movement_flags & 0x60) != 0) return .rocket;
+    if ((current.presentation.movement_flags & 0x7) != 0) return .turbo;
+    if ((current.presentation.movement_flags & 0x18) != 0) return .laser;
+    if ((current.presentation.movement_flags & 0x60) != 0) return .rocket;
     return .turbo;
 }
 
@@ -155,7 +155,7 @@ fn nativeGameplayWeaponUpgradeVoiceCue(
             (runtime_build_flags & 0x10) != 0 and
             current.session_mode != .time_trial;
     }
-    return current.weapon_level > previous.weapon_level;
+    return current.presentation.weapon_level > previous.presentation.weapon_level;
 }
 
 pub fn nativeGameplayVoiceCues(
@@ -166,7 +166,7 @@ pub fn nativeGameplayVoiceCues(
     return .{
         .start = previous.tick_count < gameplay_assets.native_gameplay_start_voice_tick and
             current.tick_count >= gameplay_assets.native_gameplay_start_voice_tick,
-        .slow = previous.slow_commentary_voice_token != current.slow_commentary_voice_token,
+        .slow = previous.presentation.slow_commentary_voice_token != current.presentation.slow_commentary_voice_token,
         .package_pickup = current.counters.parcels > previous.counters.parcels,
         .weapon_upgrade = nativeGameplayWeaponUpgradeVoiceCue(previous, current, runtime_build_flags),
         .damage_entry = previous.damage.gauge <= 0.0 and current.damage.gauge > 0.0,
@@ -266,7 +266,7 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     previous = current;
     current.last_native_ring_effect_kind = 8;
     current.native_ring_effect_token +%= 1;
-    current.movement_flag_selector = 8;
+    current.presentation.movement_flag_selector = 8;
     try std.testing.expectEqual(
         @as(?usize, gameplay_assets.gameplay_powerup_pickup_sound_paths.len - 1),
         nativeRingPickupSoundIndex(previous, current),
@@ -321,19 +321,19 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expectEqual(@as(usize, 2), nativeMovementSoundVariantIndexForSample(32767, 3));
     previous = gameplay.Runner{};
     current = previous;
-    current.movement_flags = 8;
+    current.presentation.movement_flags = 8;
     try std.testing.expectEqualDeep(
         gameplay.WeaponChannelStates{ .right = 2 },
-        gameplay.nativeWeaponChannelStates(current.movement_flags),
+        gameplay.nativeWeaponChannelStates(current.presentation.movement_flags),
     );
     try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
 
     previous = gameplay.Runner{};
     current = previous;
-    current.movement_flags = 2;
+    current.presentation.movement_flags = 2;
     try std.testing.expectEqualDeep(
         gameplay.WeaponChannelStates{ .left = 1, .right = 1 },
-        gameplay.nativeWeaponChannelStates(current.movement_flags),
+        gameplay.nativeWeaponChannelStates(current.presentation.movement_flags),
     );
     try std.testing.expect(nativeWeaponPresentationChanged(previous, current));
 
@@ -342,11 +342,11 @@ test "native gameplay sound cues fire for completion-arm and score-bucket life g
     try std.testing.expect(!nativeWeaponPresentationChanged(previous, current));
     try std.testing.expectEqual(NativeMovementStateSoundFamily.turbo, nativeMovementStateSoundFamily(current));
 
-    current.weapon_level = 2;
-    current.movement_flags = 144;
+    current.presentation.weapon_level = 2;
+    current.presentation.movement_flags = 144;
     try std.testing.expectEqual(NativeMovementStateSoundFamily.laser, nativeMovementStateSoundFamily(current));
 
-    current.movement_flags = 192;
+    current.presentation.movement_flags = 192;
     try std.testing.expectEqual(NativeMovementStateSoundFamily.rocket, nativeMovementStateSoundFamily(current));
 
     previous = gameplay.Runner{};
@@ -393,7 +393,7 @@ test "native gameplay voice cues fire on the recovered startup timer" {
 
     previous = gameplay.Runner{};
     current = previous;
-    current.slow_commentary_voice_token = 1;
+    current.presentation.slow_commentary_voice_token = 1;
     try std.testing.expect(nativeGameplayVoiceCues(previous, current, runtime_build_flags).slow);
 
     previous = gameplay.Runner{};
