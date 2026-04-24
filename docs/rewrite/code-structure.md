@@ -70,6 +70,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/run_tuning.zig` | Run tuning and mode policy: replay speed/difficulty scalars, challenge parcel target math, runtime build flags, session mode/completion bonus policy, high-score entry projection, and runtime parcel trimming. |
 | `app/track_build_seed.zig` | Runtime track-build seed policy: selected-record seed replay, cached per-level/mode seed reuse, frontend RNG advancement for postal/challenge runs, and seed cache invalidation. |
 | `app/math_random.zig` | Shared Windows-style math RNG step used by runtime track-build seeds and native movement/audio variant selection. |
+| `app/frontend_audio.zig` | Frontend hover/select sound playback with a small typed context over frontend sound effects and audio readiness. |
 | `app/audio.zig` | Audio helpers: `playMusicByPath`, `playGameplayEffect`, `stopAudioPreview`, `stopVoicePlayback`, `applyAudioConfigVolumes`, `playGameplayRunnerAudio`, `playLevelSegmentSample`, `updateGameplayAmbientVoices`, plus private native/gameplay voice routing helpers. |
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. `main.zig` keeps texture selection and billboard drawing because it owns loaded Raylib resources. |
 | `gameplay/hud.zig` | Gameplay HUD renderer with explicit render context: score/best/parcel widgets, progress bar, lives, damage gauge, warning icon, and row-event world widget. |

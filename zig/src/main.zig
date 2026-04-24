@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
+const frontend_audio = @import("app/frontend_audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
@@ -1811,7 +1812,7 @@ const AppState = struct {
         // PORT(verified): `update_thanks_for_playing_screen` plays `sfx 8`, starts the
         // front-end fade, and `uninit_thanks_screen` then writes state `0xe`, which the
         // frontend state machine immediately routes into `initialize_intro_screen(...Credits)`.
-        audio.playFrontendSelectSound(self);
+        frontend_audio.playSelectSound(frontend_audio.context(self));
         self.frontend_transition.beginFadeOut(.credits);
     }
 

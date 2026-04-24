@@ -17,22 +17,6 @@ const default_audio_path = app.default_audio_path;
 const intro_music_path = app.intro_music_path;
 const GameplaySoundFx = gameplay_art.SoundFx;
 
-pub fn playFrontendHoverSound(state: anytype) void {
-    if (!state.audio_ready) return;
-    if (state.frontend_sound_fx.highlight) |sound| {
-        rl.stopSound(sound.sound);
-        rl.playSound(sound.sound);
-    }
-}
-
-pub fn playFrontendSelectSound(state: anytype) void {
-    if (!state.audio_ready) return;
-    if (state.frontend_sound_fx.select) |sound| {
-        rl.stopSound(sound.sound);
-        rl.playSound(sound.sound);
-    }
-}
-
 pub fn playGameplayRunnerAudio(
     state: anytype,
     previous: gameplay.Runner,

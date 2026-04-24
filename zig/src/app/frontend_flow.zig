@@ -1,7 +1,7 @@
 const std = @import("std");
 
 const app = @import("../app.zig");
-const audio = @import("audio.zig");
+const frontend_audio = @import("frontend_audio.zig");
 const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
 const frontend_bridge = @import("../frontend/bridge.zig");
@@ -125,7 +125,7 @@ pub fn performMainMenuItem(state: anytype, item: MainMenuItem) !void {
 }
 
 pub fn activateMainMenuItem(state: anytype, item: MainMenuItem) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performMainMenuItem(state, item);
 }
 
@@ -179,7 +179,7 @@ pub fn performNewGameMenuItem(state: anytype, item: NewGameMenuItem) !void {
 }
 
 pub fn activateNewGameMenuItem(state: anytype, item: NewGameMenuItem) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performNewGameMenuItem(state, item);
 }
 
@@ -276,7 +276,7 @@ pub fn performHelpMenuItem(state: anytype, item: frontend_help.Action) !void {
 }
 
 pub fn activateOptionsMenuItem(state: anytype, item: OptionsMenuItem) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performOptionsMenuItem(state, item);
 }
 
@@ -313,7 +313,7 @@ pub fn performExitPromptChoice(state: anytype, choice: frontend_exit_prompt.Choi
 }
 
 pub fn activateExitPromptChoice(state: anytype, choice: frontend_exit_prompt.Choice) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performExitPromptChoice(state, choice);
 }
 
@@ -346,7 +346,7 @@ pub fn performPostLevelHighScoreAction(state: anytype, action: frontend_high_sco
 }
 
 pub fn activatePostLevelHighScoreAction(state: anytype, action: frontend_high_score_screen.PostLevelAction) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performPostLevelHighScoreAction(state, action);
 }
 
@@ -385,7 +385,7 @@ pub fn performHighScoreReplay(state: anytype, entry_index: usize) !void {
 }
 
 pub fn activateHighScoreMenuAction(state: anytype, action: frontend_high_score_screen.MenuAction) !void {
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     try performHighScoreMenuAction(state, action);
 }
 

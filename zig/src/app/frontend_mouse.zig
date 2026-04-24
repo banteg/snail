@@ -1,6 +1,6 @@
 const rl = @import("raylib");
 
-const audio = @import("audio.zig");
+const frontend_audio = @import("frontend_audio.zig");
 const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
 const frontend_bridge = @import("../frontend/bridge.zig");
@@ -349,14 +349,14 @@ pub fn updateRouteMapSelection(state: anytype) !void {
         frontend_input.setHoverTarget(state, null);
         if (rl.isMouseButtonPressed(.left) and route_map_state.currentOpenIndex(state) != route_index) {
             try route_map_state.openCard(state, route_index);
-            audio.playFrontendSelectSound(state);
+            frontend_audio.playSelectSound(frontend_audio.context(state));
         }
         return;
     }
 
     if (route_map_state.canCloseCard(state) and rl.isMouseButtonPressed(.left)) {
         route_map_state.closeCard(state);
-        audio.playFrontendSelectSound(state);
+        frontend_audio.playSelectSound(frontend_audio.context(state));
         frontend_input.setHoverTarget(state, null);
         return;
     }

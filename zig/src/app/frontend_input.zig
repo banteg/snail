@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 
 const audio = @import("audio.zig");
+const frontend_audio = @import("frontend_audio.zig");
 const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
 const frontend_bridge = @import("../frontend/bridge.zig");
@@ -21,7 +22,7 @@ pub fn setHoverTarget(state: anytype, target: ?frontend_activation.HoverTarget) 
     state.hovered_frontend_target = target;
     if (target != null) {
         state.keyboard_frontend_focus_visible = false;
-        audio.playFrontendHoverSound(state);
+        frontend_audio.playHoverSound(frontend_audio.context(state));
     }
 }
 
@@ -45,7 +46,7 @@ pub fn buttonHot(state: anytype, target: frontend_activation.HoverTarget, fallba
 
 pub fn queueActivation(state: anytype, action: frontend_activation.QueuedAction) void {
     if (state.pending_frontend_activation != null) return;
-    audio.playFrontendSelectSound(state);
+    frontend_audio.playSelectSound(frontend_audio.context(state));
     const requires_fade = frontend_activation.queuedActivationRequiresFade(action);
     if (requires_fade) {
         state.frontend_transition.beginOverlayFadeOut();
@@ -135,7 +136,7 @@ pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delt
     switch (item) {
         .fullscreen => {
             if (delta != 0.0) {
-                audio.playFrontendSelectSound(state);
+                frontend_audio.playSelectSound(frontend_audio.context(state));
                 state.toggleFullscreenPreference();
             }
         },
@@ -144,7 +145,7 @@ pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delt
             state.runtime_config.setSoundVolume(state.runtime_config.soundVolume() + delta);
             audio.applyAudioConfigVolumes(state);
             if (state.runtime_config.soundVolume() != previous) {
-                audio.playFrontendSelectSound(state);
+                frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .music_volume => {
@@ -152,7 +153,7 @@ pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delt
             audio.applyAudioConfigVolumes(state);
         },
         .back => if (delta != 0.0) {
-            audio.playFrontendSelectSound(state);
+            frontend_audio.playSelectSound(frontend_audio.context(state));
             try frontend_flow.leaveOptionsMenu(state);
         },
     }
@@ -171,7 +172,7 @@ pub fn stepChallengeSetupMenuValue(state: anytype, item: frontend_challenge_setu
             );
             state.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
             if (state.runtime_config.challengeReplayDifficultyValue() != previous) {
-                audio.playFrontendSelectSound(state);
+                frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .speed => {
@@ -183,7 +184,7 @@ pub fn stepChallengeSetupMenuValue(state: anytype, item: frontend_challenge_setu
             );
             state.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
             if (state.runtime_config.challengeReplaySpeedValue() != previous) {
-                audio.playFrontendSelectSound(state);
+                frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .play, .watch_replay, .back => {},
