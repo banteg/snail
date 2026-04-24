@@ -3,7 +3,7 @@ const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const level_loader = @import("app/level_loader.zig");
-const outer_bridge = @import("app/outer_bridge.zig");
+const return_flow = @import("app/return_flow.zig");
 const run_result = @import("app/run_result.zig");
 const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
@@ -2208,7 +2208,7 @@ const AppState = struct {
         self.current_outer_owner = frontend_bridge.outerOwnerStateHighScores(mode);
     }
 
-    fn enterHighScoreBrowseScreen(self: *AppState, mode: high_score.Mode) !void {
+    pub fn enterHighScoreBrowseScreen(self: *AppState, mode: high_score.Mode) !void {
         self.setHighScoreBrowseOwner(mode);
         try self.enterGamePhase(.high_scores_menu);
     }
@@ -2299,7 +2299,7 @@ const AppState = struct {
         self.challenge_setup_index = items.len - 1;
     }
 
-    fn enterChallengeSetupMenu(self: *AppState) !void {
+    pub fn enterChallengeSetupMenu(self: *AppState) !void {
         try self.setSelectedLevelRecordContext(null, null);
         self.challenge_setup_index = 0;
         self.current_outer_owner = frontend_bridge.outerOwnerStateChallengeSetupMenu();
@@ -2473,14 +2473,14 @@ const AppState = struct {
         self: *const AppState,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) frontend_bridge.OuterOwnerState {
-        return outer_bridge.ownerForAbandonActiveRun(self, opcode);
+        return return_flow.ownerForAbandonActiveRun(self, opcode);
     }
 
     fn outerOwnerForRespawnActiveRun(
         self: *AppState,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) ?frontend_bridge.OuterOwnerState {
-        return outer_bridge.ownerForRespawnActiveRun(self, opcode);
+        return return_flow.ownerForRespawnActiveRun(self, opcode);
     }
 
     fn outerOwnerForPendingRunResult(
@@ -2488,15 +2488,7 @@ const AppState = struct {
         result: PendingRunResult,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) frontend_bridge.OuterOwnerState {
-        return outer_bridge.ownerForPendingRunResult(self, result, opcode);
-    }
-
-    fn outerBridgeTransitionClearsSelectedReplayContext(
-        self: *const AppState,
-        opcode: frontend_bridge.OuterBridgeOpcode,
-        next_owner: frontend_bridge.OuterOwnerState,
-    ) bool {
-        return outer_bridge.transitionClearsSelectedReplayContext(self, opcode, next_owner);
+        return return_flow.ownerForPendingRunResult(self, result, opcode);
     }
 
     fn applyOuterBridgeTeardown(
@@ -2504,28 +2496,11 @@ const AppState = struct {
         opcode: frontend_bridge.OuterBridgeOpcode,
         next_owner: frontend_bridge.OuterOwnerState,
     ) !void {
-        self.active_frontend_mode = null;
-        self.active_frontend_level_index = 0;
-        if (self.outerBridgeTransitionClearsSelectedReplayContext(opcode, next_owner)) {
-            try self.setSelectedLevelRecordContext(null, null);
-        }
+        try return_flow.applyOuterBridgeTeardown(self, opcode, next_owner);
     }
 
     fn resumeActiveRunAfterRespawnBridge(self: *AppState) !void {
-        const bridge_state = self.pending_respawn_bridge_state orelse return;
-        self.pending_respawn_bridge_state = null;
-
-        self.active_frontend_mode = bridge_state.frontend_mode;
-        self.active_frontend_level_index = bridge_state.frontend_level_index;
-        try self.reloadLevel();
-        if (self.current_track_preview) |*loaded_track_preview| {
-            if (self.level_runner) |*runner| {
-                runner.* = bridge_state.runner;
-                runner.applyRespawn(loaded_track_preview);
-            }
-        }
-        self.clearLevelPromptQueue();
-        try self.syncActiveLevelSegment();
+        try return_flow.resumeActiveRunAfterRespawnBridge(self);
     }
 
     fn runOuterBridgeTransition(
@@ -2533,33 +2508,7 @@ const AppState = struct {
         opcode: frontend_bridge.OuterBridgeOpcode,
         next_owner: frontend_bridge.OuterOwnerState,
     ) !void {
-        self.subgame_rebuild_selector = @intFromEnum(opcode);
-        try self.applyOuterBridgeTeardown(opcode, next_owner);
-        self.current_outer_owner = next_owner;
-
-        switch (next_owner.owner) {
-            .main_menu => try self.enterGamePhase(.main_menu),
-            .new_game_menu => {
-                self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(next_owner.new_game_menu_item);
-                try self.enterGamePhase(.new_game_menu);
-            },
-            .challenge_setup_menu => try self.enterChallengeSetupMenu(),
-            .route_map => {
-                self.start_route_index_override = next_owner.route_map.start_route_override;
-                try self.enterRouteMapMenuWithScreenMode(next_owner.route_map.mode, next_owner.route_map.screen_mode);
-            },
-            .high_scores_menu => try self.enterHighScoreBrowseScreen(next_owner.high_score_mode),
-            .replay_current_level => {
-                try self.beginFrontendLevelPath(
-                    next_owner.replay.mode,
-                    next_owner.replay.level_index,
-                    next_owner.replay.selected_level_record_override,
-                    next_owner.replay.selected_level_record_launch,
-                );
-            },
-            .thanks_screen => try self.enterGamePhase(.thanks_screen),
-            .resume_active_run => try self.resumeActiveRunAfterRespawnBridge(),
-        }
+        try return_flow.runOuterBridgeTransition(self, opcode, next_owner);
     }
 
     fn currentFailedRunResult(self: *AppState) ?PendingRunResult {
@@ -2647,7 +2596,7 @@ const AppState = struct {
         try self.beginFrontendLevelPath(record.mode, record.level_index, record, launch);
     }
 
-    fn beginFrontendLevelPath(
+    pub fn beginFrontendLevelPath(
         self: *AppState,
         mode: FrontendLevelMode,
         level_index: usize,
@@ -2703,7 +2652,7 @@ const AppState = struct {
         try self.enterRouteMapMenuWithScreenMode(mode, frontend_bridge.defaultRouteMapScreenMode(mode));
     }
 
-    fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: frontend_bridge.RouteMapScreenMode) !void {
+    pub fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: frontend_bridge.RouteMapScreenMode) !void {
         try self.setSelectedLevelRecordContext(null, null);
         self.frontend_route_mode = mode;
         self.route_map_screen_mode = screen_mode;
@@ -3262,7 +3211,7 @@ const AppState = struct {
         }
     }
 
-    fn setSelectedLevelRecordContext(
+    pub fn setSelectedLevelRecordContext(
         self: *AppState,
         selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride,
         selected_level_record_launch: ?frontend_bridge.SelectedLevelRecordLaunch,
