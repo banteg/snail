@@ -77,6 +77,61 @@ pub fn outerReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_
     };
 }
 
+pub fn completionFlowOwnerForOutcome(outcome: Outcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
+    if (outcome == .failed) {
+        return switch (mode orelse .postal) {
+            .postal => .postal_failure,
+            .challenge => .challenge_failure,
+            .time_trial => .time_trial_failure,
+            .tutorial => .tutorial_failure,
+        };
+    }
+    return switch (mode orelse .postal) {
+        .postal => .postal_route_map,
+        .challenge => .challenge_completion,
+        .time_trial => .time_trial_completion,
+        .tutorial => .tutorial_completion,
+    };
+}
+
+pub fn outerReturnTargetForOutcome(outcome: Outcome, mode: ?FrontendLevelMode) frontend_bridge.OuterReturnTarget {
+    return outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
+}
+
+pub fn postalCompletionOwner(current_index: usize, highest_available: usize) CompletionFlowOwner {
+    return if (postalCompletionCommitsHighScore(current_index, highest_available))
+        .postal_final
+    else
+        .postal_route_map;
+}
+
+pub fn postalCompletionReturnTarget(current_index: usize, highest_available: usize) frontend_bridge.OuterReturnTarget {
+    return outerReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
+}
+
+pub fn postalCompletionCommitsHighScore(current_index: usize, highest_available: usize) bool {
+    if (highest_available == 0) return false;
+    return current_index >= highest_available;
+}
+
+pub fn previewPostalRouteUnlock(current_index: usize, highest_available: usize, saved_limit: usize) bool {
+    if (highest_available == 0) return false;
+    const clamped_saved = clampUsize(saved_limit, 1, highest_available);
+    const clamped_current = clampUsize(current_index, 1, highest_available);
+    const next_unlock_limit = nextPostalUnlockLimit(clamped_current, highest_available, clamped_saved);
+    return clamped_current < highest_available and next_unlock_limit > clamped_saved;
+}
+
+pub fn nextPostalUnlockLimit(current_index: usize, highest_available: usize, saved_limit: usize) usize {
+    if (highest_available == 0) return 0;
+    const clamped_saved = clampUsize(saved_limit, 1, highest_available);
+    const clamped_current = clampUsize(current_index, 1, highest_available);
+    if (clamped_current < highest_available) {
+        return @max(clamped_saved, clamped_current + 1);
+    }
+    return clamped_saved;
+}
+
 pub fn summary(result: Result) frontend_completion_screen.Summary {
     return .{
         .outcome = switch (result.outcome) {
@@ -105,4 +160,8 @@ pub fn previewDescendingHighScoreRank(entries: []const high_score.Entry, score: 
     while (rank < visible and score <= entries[rank].score and entries[rank].isActive()) : (rank += 1) {}
     if (rank >= visible) return null;
     return rank;
+}
+
+fn clampUsize(value: usize, low: usize, high: usize) usize {
+    return @min(@max(value, low), high);
 }

@@ -3882,8 +3882,7 @@ const AppState = struct {
     }
 
     fn postalCompletionCommitsHighScore(current_index: usize, highest_available: usize) bool {
-        if (highest_available == 0) return false;
-        return current_index >= highest_available;
+        return run_result.postalCompletionCommitsHighScore(current_index, highest_available);
     }
 
     fn previewDescendingHighScoreRank(entries: []const high_score.Entry, score: u32) ?usize {
@@ -3891,11 +3890,7 @@ const AppState = struct {
     }
 
     fn previewPostalRouteUnlock(current_index: usize, highest_available: usize, saved_limit: usize) bool {
-        if (highest_available == 0) return false;
-        const clamped_saved = std.math.clamp(saved_limit, @as(usize, 1), highest_available);
-        const clamped_current = std.math.clamp(current_index, @as(usize, 1), highest_available);
-        const next_unlock_limit = nextPostalUnlockLimit(clamped_current, highest_available, clamped_saved);
-        return clamped_current < highest_available and next_unlock_limit > clamped_saved;
+        return run_result.previewPostalRouteUnlock(current_index, highest_available, saved_limit);
     }
 
     fn previewTimeTrialRecordImproved(self: *const AppState, route_index: usize, elapsed_millis: u32) bool {
@@ -3905,13 +3900,7 @@ const AppState = struct {
     }
 
     fn nextPostalUnlockLimit(current_index: usize, highest_available: usize, saved_limit: usize) usize {
-        if (highest_available == 0) return 0;
-        const clamped_saved = std.math.clamp(saved_limit, @as(usize, 1), highest_available);
-        const clamped_current = std.math.clamp(current_index, @as(usize, 1), highest_available);
-        if (clamped_current < highest_available) {
-            return @max(clamped_saved, clamped_current + 1);
-        }
-        return clamped_saved;
+        return run_result.nextPostalUnlockLimit(current_index, highest_available, saved_limit);
     }
 
     fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
@@ -5013,38 +5002,22 @@ fn drawFrontendNoticeBlock(
 }
 
 fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
-    if (outcome == .failed) {
-        return switch (mode orelse .postal) {
-            .postal => .postal_failure,
-            .challenge => .challenge_failure,
-            .time_trial => .time_trial_failure,
-            .tutorial => .tutorial_failure,
-        };
-    }
-    return switch (mode orelse .postal) {
-        .postal => .postal_route_map,
-        .challenge => .challenge_completion,
-        .time_trial => .time_trial_completion,
-        .tutorial => .tutorial_completion,
-    };
+    return run_result.completionFlowOwnerForOutcome(outcome, mode);
 }
 
 fn outerReturnTargetForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) frontend_bridge.OuterReturnTarget {
     // PORT(verified): the ordinary postal completion path still returns through the
     // post-completion Star Map owner. Only the final shipped route upgrades to the
     // thanks-screen path.
-    return outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(outcome, mode));
+    return run_result.outerReturnTargetForOutcome(outcome, mode);
 }
 
 fn postalCompletionOuterReturnTarget(current_index: usize, highest_available: usize) frontend_bridge.OuterReturnTarget {
-    return outerReturnTargetForCompletionOwner(postalCompletionOwner(current_index, highest_available));
+    return run_result.postalCompletionReturnTarget(current_index, highest_available);
 }
 
 fn postalCompletionOwner(current_index: usize, highest_available: usize) CompletionFlowOwner {
-    return if (AppState.postalCompletionCommitsHighScore(current_index, highest_available))
-        .postal_final
-    else
-        .postal_route_map;
+    return run_result.postalCompletionOwner(current_index, highest_available);
 }
 
 // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
