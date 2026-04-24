@@ -10,6 +10,7 @@ const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
 const run_result = @import("app/run_result.zig");
+const run_tuning = @import("app/run_tuning.zig");
 const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
 const subgame_camera = @import("app/subgame_camera.zig");
@@ -1580,6 +1581,26 @@ const AppState = struct {
         };
     }
 
+    fn runTuningContext(self: *const AppState) run_tuning.Context {
+        const loaded_level = if (self.current_level) |*current_level|
+            current_level
+        else
+            null;
+        const loaded_track_preview = if (self.current_track_preview) |*current_track_preview|
+            current_track_preview
+        else
+            null;
+        return .{
+            .active_frontend_mode = self.active_frontend_mode,
+            .selected_level_record_override = self.selected_level_record_override,
+            .runtime_config = &self.runtime_config,
+            .current_level = loaded_level,
+            .current_track_preview = loaded_track_preview,
+            .active_frontend_level_index = self.active_frontend_level_index,
+            .current_runtime_build_seed = self.current_runtime_build_seed,
+        };
+    }
+
     fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
         if (!self.isTutorialGameplay()) return false;
         const prompt = self.level_prompt_queue.active() orelse return false;
@@ -1658,55 +1679,55 @@ const AppState = struct {
     }
 
     fn replaySpeedScalarForSliderValue(value: u32) f32 {
-        return level_loader.replaySpeedScalarForSliderValue(value);
+        return run_tuning.replaySpeedScalarForSliderValue(value);
     }
 
     fn currentRunReplaySpeedScalar(self: *const AppState) f32 {
-        return level_loader.currentRunReplaySpeedScalar(self);
+        return run_tuning.currentRunReplaySpeedScalar(self.runTuningContext());
     }
 
     fn currentRunChallengeDifficultyValue(self: *const AppState) u32 {
-        return level_loader.currentRunChallengeDifficultyValue(self);
+        return run_tuning.currentRunChallengeDifficultyValue(self.runTuningContext());
     }
 
     fn currentRunChallengeDifficultyScalar(self: *const AppState) f32 {
-        return level_loader.currentRunChallengeDifficultyScalar(self);
+        return run_tuning.currentRunChallengeDifficultyScalar(self.runTuningContext());
     }
 
     fn currentRunChallengeSpeedValue(self: *const AppState) u32 {
-        return level_loader.currentRunChallengeSpeedValue(self);
+        return run_tuning.currentRunChallengeSpeedValue(self.runTuningContext());
     }
 
     fn challengeParcelTargetCount(speed_value: u32, difficulty_scalar: f32) usize {
-        return level_loader.challengeParcelTargetCount(speed_value, difficulty_scalar);
+        return run_tuning.challengeParcelTargetCount(speed_value, difficulty_scalar);
     }
 
     fn challengeRuntimeHazardScalar(value: u32) f32 {
-        return level_loader.challengeRuntimeHazardScalar(value);
+        return run_tuning.challengeRuntimeHazardScalar(value);
     }
 
     fn currentRunGarbageScalar(self: *const AppState) f32 {
-        return level_loader.currentRunGarbageScalar(self);
+        return run_tuning.currentRunGarbageScalar(self.runTuningContext());
     }
 
     fn currentRunSaltScalar(self: *const AppState) f32 {
-        return level_loader.currentRunSaltScalar(self);
+        return run_tuning.currentRunSaltScalar(self.runTuningContext());
     }
 
     pub fn currentParcelTarget(self: *const AppState) usize {
-        return level_loader.currentParcelTarget(self);
+        return run_tuning.currentParcelTarget(self.runTuningContext());
     }
 
     fn configureRuntimeParcels(self: *AppState, loaded_track_preview: *track.LoadedLevelPreview) !void {
-        try level_loader.configureRuntimeParcels(self, loaded_track_preview);
+        try run_tuning.configureRuntimeParcels(self.runTuningContext(), &self.math_random_state, loaded_track_preview);
     }
 
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
-        return level_loader.currentRunRuntimeBuildFlags(self);
+        return run_tuning.currentRunRuntimeBuildFlags(self.runTuningContext());
     }
 
     pub fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
-        return level_loader.currentRunHighScoreEntry(self, score);
+        return run_tuning.currentRunHighScoreEntry(self.runTuningContext(), score);
     }
 
     pub fn saveHighScoreTables(self: *AppState) !void {
@@ -2667,18 +2688,18 @@ fn postalCompletionOwner(current_index: usize, highest_available: usize) Complet
 // `build_subgame_level`. Keep the mode helpers literal and local instead of routing
 // them through an intermediate config struct.
 fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
-    return level_loader.runtimeBuildFlagsForFrontendMode(mode);
+    return run_tuning.runtimeBuildFlagsForFrontendMode(mode);
 }
 
 fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
-    return level_loader.runnerSessionModeForFrontendMode(mode);
+    return run_tuning.runnerSessionModeForFrontendMode(mode);
 }
 
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
     // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
     // mode differences through a small mode-to-config lane in `set_subgame_features` and
     // `build_subgame_level`. Postal is the only mode that keeps the completion bonus lane.
-    return level_loader.completionBonusAppliesForMode(mode);
+    return run_tuning.completionBonusAppliesForMode(mode);
 }
 
 fn routeMapHasReplayEntry(

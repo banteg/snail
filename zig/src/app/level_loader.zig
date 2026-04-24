@@ -1,17 +1,14 @@
 const std = @import("std");
 
 const audio = @import("audio.zig");
-const frontend = @import("../frontend.zig");
+const run_tuning = @import("run_tuning.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_resources = @import("../gameplay/resources.zig");
-const high_score = @import("../high_score.zig");
 const level = @import("../level.zig");
 const level_prompt = @import("../level_prompt.zig");
 const segment = @import("../segment.zig");
 const track = @import("../track.zig");
 const track_render = @import("../track_render.zig");
-
-const FrontendLevelMode = frontend.FrontendLevelMode;
 
 pub fn isTutorialGameplay(state: anytype) bool {
     if (isTutorialFlow(state)) return true;
@@ -78,130 +75,6 @@ pub fn dispatchCurrentRunnerRowMessage(
     if (segment_changed or token_changed or replay_sample_on_match) {
         try audio.playLevelSegmentSample(state, segment_entry);
     }
-}
-
-pub fn replaySpeedScalarForSliderValue(value: u32) f32 {
-    const normalized = @as(f32, @floatFromInt(value)) * 0.01;
-    return if (normalized >= 1.0)
-        1.1
-    else
-        (normalized * 0.9) + 0.2;
-}
-
-pub fn currentRunReplaySpeedScalar(state: anytype) f32 {
-    if (state.selected_level_record_override) |record| return record.replay_speed_scalar;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => replaySpeedScalarForSliderValue(state.runtime_config.challengeReplaySpeedValue()),
-        .postal, .time_trial, .tutorial => replaySpeedScalarForSliderValue(if (state.current_level) |loaded_level|
-            @as(u32, @intCast(loaded_level.speed orelse 0))
-        else
-            0),
-    };
-}
-
-pub fn currentRunChallengeDifficultyValue(state: anytype) u32 {
-    if (state.selected_level_record_override) |record| return record.challenge_difficulty_value;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => state.runtime_config.challengeReplayDifficultyValue(),
-        .postal, .time_trial, .tutorial => 0,
-    };
-}
-
-pub fn currentRunChallengeDifficultyScalar(state: anytype) f32 {
-    if (state.selected_level_record_override) |record| return record.challenge_difficulty_scalar;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => @as(f32, @floatFromInt(currentRunChallengeDifficultyValue(state))) * 0.01,
-        .postal, .time_trial, .tutorial => 0.0,
-    };
-}
-
-pub fn currentRunChallengeSpeedValue(state: anytype) u32 {
-    if (state.selected_level_record_override) |record| return record.challenge_speed_value;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => state.runtime_config.challengeReplaySpeedValue(),
-        .postal, .time_trial, .tutorial => 0,
-    };
-}
-
-pub fn challengeParcelTargetCount(speed_value: u32, difficulty_scalar: f32) usize {
-    const scaled_target = (@as(f32, @floatFromInt(speed_value)) * 50.0 * 0.01) +
-        (difficulty_scalar * 50.0);
-    return @as(usize, @intFromFloat(@floor(@max(scaled_target, 0.0)))) + 1;
-}
-
-pub fn challengeRuntimeHazardScalar(value: u32) f32 {
-    return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
-}
-
-pub fn currentRunGarbageScalar(state: anytype) f32 {
-    if (state.selected_level_record_override) |record| return record.garbage_scalar;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => challengeRuntimeHazardScalar(currentRunChallengeDifficultyValue(state)),
-        .postal, .time_trial, .tutorial => if (state.current_level) |loaded_level|
-            loaded_level.normalizedGarbageScalar() orelse 0.0
-        else
-            0.0,
-    };
-}
-
-pub fn currentRunSaltScalar(state: anytype) f32 {
-    if (state.selected_level_record_override) |record| return record.salt_scalar;
-    return switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => challengeRuntimeHazardScalar(currentRunChallengeDifficultyValue(state)),
-        .postal, .time_trial, .tutorial => if (state.current_level) |loaded_level|
-            loaded_level.normalizedSaltScalar() orelse 0.0
-        else
-            0.0,
-    };
-}
-
-pub fn currentParcelTarget(state: anytype) usize {
-    if (state.current_track_preview) |preview| return preview.parcel_target_count;
-    return if (state.current_level) |loaded_level|
-        loaded_level.parcels orelse 0
-    else
-        0;
-}
-
-pub fn configureRuntimeParcels(state: anytype, loaded_track_preview: *track.LoadedLevelPreview) !void {
-    switch (state.active_frontend_mode orelse .tutorial) {
-        .challenge => {
-            const target_count = challengeParcelTargetCount(
-                currentRunChallengeSpeedValue(state),
-                currentRunChallengeDifficultyScalar(state),
-            );
-            _ = try loaded_track_preview.trimParcelAnnotationsToTarget(&state.math_random_state, target_count);
-        },
-        .postal, .time_trial, .tutorial => {},
-    }
-}
-
-pub fn currentRunRuntimeBuildFlags(state: anytype) u32 {
-    return if (state.current_track_preview) |preview|
-        preview.runtime_build_flags
-    else if (state.selected_level_record_override) |record|
-        record.runtime_build_flags
-    else
-        runtimeBuildFlagsForFrontendMode(state.active_frontend_mode);
-}
-
-pub fn currentRunHighScoreEntry(state: anytype, score: u32) high_score.Entry {
-    return .{
-        .score = score,
-        .replay_level_index = @intCast(state.active_frontend_level_index),
-        .replay_mode_id = if (state.active_frontend_mode) |mode|
-            @as(u32, @intCast(@intFromEnum(mode)))
-        else
-            0,
-        .challenge_speed_value = currentRunChallengeSpeedValue(state),
-        .runtime_build_flags = currentRunRuntimeBuildFlags(state),
-        .replay_speed_scalar = currentRunReplaySpeedScalar(state),
-        .challenge_difficulty_value = currentRunChallengeDifficultyValue(state),
-        .challenge_difficulty_scalar = currentRunChallengeDifficultyScalar(state),
-        .runtime_build_seed = state.current_runtime_build_seed,
-        .garbage_scalar = currentRunGarbageScalar(state),
-        .salt_scalar = currentRunSaltScalar(state),
-    };
 }
 
 fn startupGameplayBlockActive(state: anytype) bool {
@@ -283,19 +156,19 @@ pub fn reloadLevel(state: anytype) !void {
             &state.resources.catalog,
             loaded_level,
             .{
-                .runtime_build_flags = currentRunRuntimeBuildFlags(state),
+                .runtime_build_flags = run_tuning.currentRunRuntimeBuildFlags(runTuningContext(state)),
                 .runtime_build_seed = runtime_build_seed,
                 .random_length_scalar_override = switch (state.active_frontend_mode orelse .tutorial) {
-                    .challenge => currentRunChallengeDifficultyScalar(state),
+                    .challenge => run_tuning.currentRunChallengeDifficultyScalar(runTuningContext(state)),
                     .postal, .time_trial, .tutorial => null,
                 },
-                .garbage_scalar_override = currentRunGarbageScalar(state),
-                .salt_scalar_override = currentRunSaltScalar(state),
+                .garbage_scalar_override = run_tuning.currentRunGarbageScalar(runTuningContext(state)),
+                .salt_scalar_override = run_tuning.currentRunSaltScalar(runTuningContext(state)),
             },
         );
         if (state.current_track_preview) |*loaded_track_preview| {
             state.math_random_state = loaded_track_preview.runtime_build_final_random_state;
-            try configureRuntimeParcels(state, loaded_track_preview);
+            try run_tuning.configureRuntimeParcels(runTuningContext(state), &state.math_random_state, loaded_track_preview);
             if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
                 state.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
                     state.allocator,
@@ -314,11 +187,11 @@ pub fn reloadLevel(state: anytype) !void {
             }
             state.level_runner = gameplay.Runner.init(loaded_track_preview);
             state.level_runner.?.configureCompletionBonus(
-                currentParcelTarget(state),
-                completionBonusAppliesForMode(state.active_frontend_mode),
+                run_tuning.currentParcelTarget(runTuningContext(state)),
+                run_tuning.completionBonusAppliesForMode(state.active_frontend_mode),
             );
-            state.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(state.active_frontend_mode));
-            state.level_runner.?.configureBaseSubgameRate(currentRunReplaySpeedScalar(state));
+            state.level_runner.?.configureSessionMode(run_tuning.runnerSessionModeForFrontendMode(state.active_frontend_mode));
+            state.level_runner.?.configureBaseSubgameRate(run_tuning.currentRunReplaySpeedScalar(runTuningContext(state)));
             state.gameplay_click_start_active = seed_intro_cutscene and isTutorialFlow(state);
             if (seed_intro_cutscene) {
                 state.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
@@ -392,30 +265,6 @@ pub fn reloadLevelSegment(state: anytype) !void {
     state.current_segment = try segment.loadFromArchive(state.allocator, &state.resources.catalog, entry);
 }
 
-pub fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
-    return switch (mode orelse .postal) {
-        .postal, .challenge => track.postalChallengeRuntimeBuildFlags,
-        .time_trial => track.timeTrialRuntimeBuildFlags,
-        .tutorial => track.tutorialRuntimeBuildFlags,
-    };
-}
-
-pub fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
-    return switch (mode orelse .postal) {
-        .postal => .postal,
-        .challenge => .challenge,
-        .time_trial => .time_trial,
-        .tutorial => .tutorial,
-    };
-}
-
-pub fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
-    return switch (mode orelse .postal) {
-        .postal => true,
-        .challenge, .time_trial, .tutorial => false,
-    };
-}
-
 pub fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
     return switch (level_track) {
         .index => |index| switch (index) {
@@ -423,5 +272,25 @@ pub fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
             else => null,
         },
         .random => null,
+    };
+}
+
+fn runTuningContext(state: anytype) run_tuning.Context {
+    const loaded_level = if (state.current_level) |*current_level|
+        current_level
+    else
+        null;
+    const loaded_track_preview = if (state.current_track_preview) |*current_track_preview|
+        current_track_preview
+    else
+        null;
+    return .{
+        .active_frontend_mode = state.active_frontend_mode,
+        .selected_level_record_override = state.selected_level_record_override,
+        .runtime_config = &state.runtime_config,
+        .current_level = loaded_level,
+        .current_track_preview = loaded_track_preview,
+        .active_frontend_level_index = state.active_frontend_level_index,
+        .current_runtime_build_seed = state.current_runtime_build_seed,
     };
 }

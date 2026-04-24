@@ -4,7 +4,7 @@ const frontend_completion_screen = @import("../frontend/completion_screen.zig");
 const frontend_high_score_screen = @import("../frontend/high_score_screen.zig");
 const gameplay = @import("../gameplay.zig");
 const high_score = @import("../high_score.zig");
-const level_loader = @import("level_loader.zig");
+const run_tuning = @import("run_tuning.zig");
 const selected_replay = @import("selected_replay.zig");
 
 const FrontendLevelMode = frontend.FrontendLevelMode;
@@ -247,7 +247,7 @@ pub fn beginCompletedOverlay(state: anytype) !void {
     const active_mode = state.active_frontend_mode;
     const parcel_target = state.currentParcelTarget();
     if (state.level_runner) |*runner| {
-        if (level_loader.completionBonusAppliesForMode(active_mode)) {
+        if (run_tuning.completionBonusAppliesForMode(active_mode)) {
             runner.applyCompletionBonus(parcel_target);
         }
         runner.flushPendingParcelDeliveries();
