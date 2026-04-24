@@ -11,6 +11,7 @@ const frontend_mouse = @import("app/frontend_mouse.zig");
 const level_loader = @import("app/level_loader.zig");
 const math_random = @import("app/math_random.zig");
 const music_audio = @import("app/music_audio.zig");
+const phase_resources = @import("app/phase_resources.zig");
 const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
@@ -1445,7 +1446,7 @@ const AppState = struct {
         route_map_state.stepHighlightAnimations(self);
     }
 
-    fn clearLevelPromptQueue(self: *AppState) void {
+    pub fn clearLevelPromptQueue(self: *AppState) void {
         self.level_prompt_queue.clear();
     }
 
@@ -1606,7 +1607,7 @@ const AppState = struct {
         return level_loader.currentRunnerRowMessageSegmentIndex(self);
     }
 
-    fn dispatchCurrentRunnerRowMessage(
+    pub fn dispatchCurrentRunnerRowMessage(
         self: *AppState,
         previous_segment_index: ?usize,
         previous_token: ?u32,
@@ -1698,7 +1699,7 @@ const AppState = struct {
         try self.runOuterBridgeTransition(opcode, owner);
     }
 
-    fn resetCompletionScreenReveal(self: *AppState) void {
+    pub fn resetCompletionScreenReveal(self: *AppState) void {
         run_result.resetCompletionScreenReveal(self);
     }
 
@@ -2061,162 +2062,18 @@ const AppState = struct {
     }
 
     pub fn syncGamePhaseResources(self: *AppState) !void {
-        switch (self.game_phase) {
-            .level, .pause_menu => {},
-            else => voice_audio.stopPlayback(voice_audio.context(self)),
-        }
-        switch (self.game_phase) {
-            .boot => {
-                music_audio.stopPreview(music_audio.context(self));
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.boot_task_index = 0;
-                boot_assets.unload(boot_assets.context(self));
-                self.unloadTextScript();
-                self.unloadGameBackground();
-                try self.loadLoadingScreen();
-            },
-            .intro => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(intro_background_path);
-                try music_audio.playByPath(music_audio.context(self), intro_music_path);
-                try self.loadTextScript(intro_script_path);
-            },
-            .main_menu, .new_game_menu, .high_scores_menu => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(main_menu_background_path);
-                try music_audio.playByPath(music_audio.context(self), default_audio_path);
-            },
-            .challenge_setup_menu => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.challenge_setup_speed_display_value = @as(f32, @floatFromInt(self.runtime_config.challengeReplaySpeedValue())) * 0.01;
-                self.challenge_setup_difficulty_display_value = @as(f32, @floatFromInt(self.runtime_config.challengeReplayDifficultyValue())) * 0.01;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(main_menu_background_path);
-                try music_audio.playByPath(music_audio.context(self), default_audio_path);
-            },
-            .options_menu => {
-                self.options_sound_display_value = self.runtime_config.soundVolume();
-                self.options_music_display_value = self.runtime_config.musicVolume();
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                if (self.options_return_phase == .pause_menu) {
-                    try self.loadCurrentLevelBackground();
-                } else {
-                    self.active_level_segment_index = null;
-                    self.clearLevelPromptQueue();
-                    self.mouse_level_lane_target = null;
-                    try self.loadGameBackground(main_menu_background_path);
-                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
-                }
-            },
-            .pause_menu => {
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadCurrentLevelBackground();
-            },
-            .route_map_menu => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(route_map_background_path);
-                try music_audio.playByPath(music_audio.context(self), default_audio_path);
-            },
-            .credits => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(intro_background_path);
-                try music_audio.playByPath(music_audio.context(self), intro_music_path);
-                try self.loadTextScript(credits_script_path);
-            },
-            .help => {
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(help_background_path);
-                try music_audio.playByPath(music_audio.context(self), default_audio_path);
-            },
-            .exit_prompt => {
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                if (self.exit_prompt_return_phase == .pause_menu) {
-                    try self.loadCurrentLevelBackground();
-                } else if (self.exit_prompt_return_phase == .route_map_menu) {
-                    self.active_level_segment_index = null;
-                    self.clearLevelPromptQueue();
-                    self.mouse_level_lane_target = null;
-                    try self.loadGameBackground(route_map_background_path);
-                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
-                } else {
-                    self.active_level_segment_index = null;
-                    self.clearLevelPromptQueue();
-                    self.mouse_level_lane_target = null;
-                    try self.loadGameBackground(main_menu_background_path);
-                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
-                }
-            },
-            .completion_screen => {
-                if (self.preserve_completion_screen_reveal_on_enter) {
-                    self.preserve_completion_screen_reveal_on_enter = false;
-                } else {
-                    self.resetCompletionScreenReveal();
-                }
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadCurrentLevelBackground();
-            },
-            .thanks_screen => {
-                self.thanks_screen_controller.reset();
-                self.active_level_segment_index = null;
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadGameBackground(thanks_screen_background_path);
-                try music_audio.playByPath(music_audio.context(self), intro_music_path);
-            },
-            .level => {
-                music_audio.stopPreview(music_audio.context(self));
-                self.clearLevelPromptQueue();
-                self.mouse_level_lane_target = null;
-                self.unloadTextScript();
-                self.unloadLoadingScreen();
-                try self.loadCurrentLevelBackground();
-                const previous_active_level_segment_index = self.active_level_segment_index;
-                try self.syncActiveLevelSegment();
-                try self.dispatchCurrentRunnerRowMessage(previous_active_level_segment_index, null, true);
-            },
-        }
+        try phase_resources.sync(self);
     }
 
     fn loadGameLevel(self: *AppState, level_path: []const u8) !void {
         try level_loader.loadGameLevel(self, level_path);
     }
 
-    fn syncActiveLevelSegment(self: *AppState) !void {
+    pub fn syncActiveLevelSegment(self: *AppState) !void {
         try level_loader.syncActiveLevelSegment(self);
     }
 
-    fn loadCurrentLevelBackground(self: *AppState) !void {
+    pub fn loadCurrentLevelBackground(self: *AppState) !void {
         const loaded_level = self.current_level orelse {
             self.unloadGameBackground();
             return;
@@ -2231,15 +2088,15 @@ const AppState = struct {
         try self.loadGameBackground(script_path);
     }
 
-    fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
+    pub fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
         try screen_assets.loadGameBackground(screen_assets.context(self), script_path);
     }
 
-    fn loadLoadingScreen(self: *AppState) !void {
+    pub fn loadLoadingScreen(self: *AppState) !void {
         try screen_assets.loadLoadingScreen(screen_assets.context(self));
     }
 
-    fn loadTextScript(self: *AppState, path: []const u8) !void {
+    pub fn loadTextScript(self: *AppState, path: []const u8) !void {
         try screen_assets.loadTextScript(screen_assets.context(self), path);
     }
 
@@ -2247,11 +2104,11 @@ const AppState = struct {
         return screen_assets.loadConfiguredTextScriptEntry(screen_assets.context(self), path);
     }
 
-    fn unloadTextScript(self: *AppState) void {
+    pub fn unloadTextScript(self: *AppState) void {
         screen_assets.unloadTextScript(screen_assets.context(self));
     }
 
-    fn unloadLoadingScreen(self: *AppState) void {
+    pub fn unloadLoadingScreen(self: *AppState) void {
         screen_assets.unloadLoadingScreen(screen_assets.context(self));
     }
 
@@ -2287,7 +2144,7 @@ const AppState = struct {
         try screenshots.flushQueued(self);
     }
 
-    fn unloadGameBackground(self: *AppState) void {
+    pub fn unloadGameBackground(self: *AppState) void {
         screen_assets.unloadGameBackground(screen_assets.context(self));
     }
 
