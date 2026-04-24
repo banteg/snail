@@ -561,7 +561,7 @@ fn drawGameplayTurboAttachments(
         }
     }
 
-    const jetpack_visual_active = gameplay_presentation.nativeJetpackVisualPresentationActive(runner);
+    const jetpack_visual_active = gameplay_presentation.nativeJetpackVisualPresentationActive(runner.jetpack.thrust_visual_active);
     const jetpack_visible = jetpack_visual_active or
         render.jetpack_visual_state.draw_ticks > 0 or
         render.jetpack_visual_state.hide_ticks > 0;

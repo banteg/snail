@@ -13,6 +13,7 @@ const jetpack_module = @import("gameplay/jetpack.zig");
 const motion_module = @import("gameplay/motion.zig");
 const parcel_module = @import("gameplay/parcel.zig");
 const phase_module = @import("gameplay/phase.zig");
+const presentation_module = @import("gameplay/presentation.zig");
 const row_event_module = @import("gameplay/row_event.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const score_module = @import("gameplay/score.zig");
@@ -77,8 +78,8 @@ pub const DamageWarningActorState = damage_module.WarningActorState;
 pub const DamageGaugeRuntime = damage_module.Runtime;
 pub const DamageWarningActor = damage_module.WarningActor;
 pub const DamageController = damage_module.Controller;
-pub const SnailSkinSlot = runner_state.SnailSkinSlot;
-pub const SnailSkinTransition = runner_state.SnailSkinTransition;
+pub const SnailSkinSlot = presentation_module.SnailSkinSlot;
+pub const SnailSkinTransition = presentation_module.SnailSkinTransition;
 pub const AnimClipId = runner_state.AnimClipId;
 pub const AnimDispatchState = runner_state.AnimDispatchState;
 pub const JetpackWarningBand = jetpack_module.WarningBand;
@@ -297,8 +298,8 @@ fn movementFlagsForSelector(selector: u8) u32 {
     };
 }
 
-pub const WeaponChannelStates = runner_state.WeaponChannelStates;
-pub const nativeWeaponChannelStates = runner_state.nativeWeaponChannelStates;
+pub const WeaponChannelStates = presentation_module.WeaponChannelStates;
+pub const nativeWeaponChannelStates = presentation_module.nativeWeaponChannelStates;
 
 fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
     return switch (movement_flag_selector) {

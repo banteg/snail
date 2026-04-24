@@ -1,10 +1,65 @@
 const std = @import("std");
 
-const gameplay = @import("../gameplay.zig");
 const gameplay_assets = @import("assets.zig");
+const jetpack = @import("jetpack.zig");
 
-pub fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
-    return runner.jetpack.thrust_visual_active;
+pub fn nativeJetpackVisualPresentationActive(thrust_visual_active: bool) bool {
+    return thrust_visual_active;
+}
+
+// PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
+// and `update_snail_skin_transition` @ 0x445f80. Slots: 0 = default, 1 = damage-red,
+// 2 = invincible. `progress_step = 1 / (duration_s * 60)` when duration > 0, else 0
+// (instant swap). When active and progress crosses 1.0, the native transition resets to
+// slot 0 (default).
+pub const SnailSkinSlot = enum(u8) {
+    default = 0,
+    damage = 1,
+    invincible = 2,
+};
+
+pub const SnailSkinTransition = struct {
+    selected_slot: SnailSkinSlot = .default,
+    active: bool = false,
+    progress: f32 = 0.0,
+    progress_step: f32 = 0.0,
+
+    pub fn change(self: *SnailSkinTransition, slot: SnailSkinSlot, duration_seconds: f32) void {
+        self.active = true;
+        self.progress = 0.0;
+        self.selected_slot = slot;
+        self.progress_step = if (duration_seconds > 0.0)
+            1.0 / (duration_seconds * 60.0)
+        else
+            0.0;
+    }
+
+    pub fn tick(self: *SnailSkinTransition) void {
+        if (!self.active) return;
+        self.progress += self.progress_step;
+        if (self.progress <= 1.0) return;
+        self.progress = 0.0;
+        self.active = false;
+        self.selected_slot = .default;
+    }
+};
+
+pub const WeaponChannelStates = struct {
+    left: u8 = 0,
+    right: u8 = 0,
+    center: u8 = 0,
+};
+
+pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
+    return switch (movement_flags) {
+        1, 129 => .{ .center = 1 },
+        2 => .{ .left = 1, .right = 1 },
+        4 => .{ .left = 1, .right = 1, .center = 1 },
+        8 => .{ .right = 2 },
+        16, 144 => .{ .left = 2, .right = 2 },
+        32, 64, 192 => .{ .center = 3 },
+        else => .{ .center = 1 },
+    };
 }
 
 pub const JetpackVisualState = struct {
@@ -51,8 +106,8 @@ pub const WeaponVisualState = struct {
     }
 
     pub fn noteWeaponChannelChange(self: *WeaponVisualState, previous_flags: u32, current_flags: u32) void {
-        const previous = gameplay.nativeWeaponChannelStates(previous_flags);
-        const current = gameplay.nativeWeaponChannelStates(current_flags);
+        const previous = nativeWeaponChannelStates(previous_flags);
+        const current = nativeWeaponChannelStates(current_flags);
         self.noteSideChannelChange(previous.left, current.left, true);
         self.noteSideChannelChange(previous.right, current.right, false);
         self.noteCenterChannelChange(previous.center, current.center);
@@ -89,7 +144,7 @@ pub const WeaponVisualState = struct {
     }
 
     pub fn noteFire(self: *WeaponVisualState, movement_flags: u32) void {
-        const channel_states = gameplay.nativeWeaponChannelStates(movement_flags);
+        const channel_states = nativeWeaponChannelStates(movement_flags);
         if (channel_states.left != 0 and self.left_draw_ticks == 0) self.left_draw_ticks = 1;
         if (channel_states.right != 0 and self.right_draw_ticks == 0) self.right_draw_ticks = 1;
         switch (channel_states.center) {
@@ -153,22 +208,22 @@ test "weapon visual state keeps native side blaster and laser families distinct"
 }
 
 test "native jetpack visual presentation follows the recovered 0.94 shutoff edge" {
-    var runner = gameplay.Runner{};
-    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+    var gauge = jetpack.Gauge{};
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
 
-    runner.jetpack.arm();
-    runner.jetpack.progress = 0.25;
-    try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
+    gauge.arm();
+    gauge.progress = 0.25;
+    try std.testing.expect(nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
 
-    runner.jetpack.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
-    try std.testing.expect(nativeJetpackVisualPresentationActive(runner));
+    gauge.progress = gameplay_assets.native_jetpack_visual_shutoff_threshold;
+    try std.testing.expect(nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
 
-    runner.jetpack.update(false, false);
-    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
-    try std.testing.expect(runner.jetpack.active);
+    gauge.update(false, false);
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
+    try std.testing.expect(gauge.active);
 
-    runner.jetpack.disarm();
-    try std.testing.expect(!nativeJetpackVisualPresentationActive(runner));
+    gauge.disarm();
+    try std.testing.expect(!nativeJetpackVisualPresentationActive(gauge.thrust_visual_active));
 }
 
 test "jetpack visual state keeps native draw and hide legs around the shutoff edge" {

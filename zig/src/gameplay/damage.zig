@@ -10,9 +10,9 @@
 //! `SnailSkinTransition` which the hit-flash / state-2 drain branches poke.
 
 const std = @import("std");
-const runner_state = @import("runner_state.zig");
+const presentation = @import("presentation.zig");
 
-const SnailSkinTransition = runner_state.SnailSkinTransition;
+const SnailSkinTransition = presentation.SnailSkinTransition;
 
 pub const gauge_pulse_step: f32 = 0.020833334;
 pub const gauge_hit_flash_step: f32 = 0.033333335;

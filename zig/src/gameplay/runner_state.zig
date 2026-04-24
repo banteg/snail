@@ -211,43 +211,7 @@ pub const Stopwatch = struct {
 };
 
 // Damage gauge / warning-actor types live in `gameplay/damage.zig`.
-
-// PORT(verified): native `SnailSkinTransitionState` from `change_snail_skin` @ 0x445fd0
-// and `update_snail_skin_transition` @ 0x445f80. Slots: 0 = default, 1 = damage-red,
-// 2 = invincible. `progress_step = 1 / (duration_s * 60)` when duration > 0, else 0
-// (instant swap). When active and progress crosses 1.0, the native transition resets to
-// slot 0 (default).
-pub const SnailSkinSlot = enum(u8) {
-    default = 0,
-    damage = 1,
-    invincible = 2,
-};
-
-pub const SnailSkinTransition = struct {
-    selected_slot: SnailSkinSlot = .default,
-    active: bool = false,
-    progress: f32 = 0.0,
-    progress_step: f32 = 0.0,
-
-    pub fn change(self: *SnailSkinTransition, slot: SnailSkinSlot, duration_seconds: f32) void {
-        self.active = true;
-        self.progress = 0.0;
-        self.selected_slot = slot;
-        self.progress_step = if (duration_seconds > 0.0)
-            1.0 / (duration_seconds * 60.0)
-        else
-            0.0;
-    }
-
-    pub fn tick(self: *SnailSkinTransition) void {
-        if (!self.active) return;
-        self.progress += self.progress_step;
-        if (self.progress <= 1.0) return;
-        self.progress = 0.0;
-        self.active = false;
-        self.selected_slot = .default;
-    }
-};
+// Snail skin and weapon-presentation types live in `gameplay/presentation.zig`.
 
 // PORT(verified): native cutscene/presentation animation ids consumed by
 // `dispatch_cutscene_animation`
@@ -362,24 +326,6 @@ pub const AnimDispatchState = struct {
 };
 
 // `JetpackWarningBand` and `JetpackGauge` live in `gameplay/jetpack.zig`.
-
-pub const WeaponChannelStates = struct {
-    left: u8 = 0,
-    right: u8 = 0,
-    center: u8 = 0,
-};
-
-pub fn nativeWeaponChannelStates(movement_flags: u32) WeaponChannelStates {
-    return switch (movement_flags) {
-        1, 129 => .{ .center = 1 },
-        2 => .{ .left = 1, .right = 1 },
-        4 => .{ .left = 1, .right = 1, .center = 1 },
-        8 => .{ .right = 2 },
-        16, 144 => .{ .left = 2, .right = 2 },
-        32, 64, 192 => .{ .center = 3 },
-        else => .{ .center = 1 },
-    };
-}
 
 pub const FallState = struct {
     cause: DeathCause,
