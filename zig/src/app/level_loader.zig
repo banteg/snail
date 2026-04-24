@@ -260,8 +260,9 @@ pub fn reloadLevel(state: anytype) !void {
         scene.deinit();
         state.current_game_track_scene = null;
     }
-    gameplay_resources.unloadTurbo(state);
-    gameplay_resources.resetPresentationState(state);
+    gameplay_resources.unloadTurbo(&state.gameplay_resources);
+    state.gameplay_jetpack_visual_state = .{};
+    state.gameplay_weapon_visual_state = .{};
     state.gameplay_effects.clear();
     audio.stopVoicePlayback(state);
     state.gameplay_voice_manager.clear();
@@ -303,7 +304,12 @@ pub fn reloadLevel(state: anytype) !void {
                 );
             }
             if (state.command == .game) {
-                try gameplay_resources.reloadTurbo(state);
+                try gameplay_resources.reloadTurbo(
+                    &state.gameplay_resources,
+                    state.allocator,
+                    &state.resources,
+                    &state.animation_catalog,
+                );
                 audio.applyAudioConfigVolumes(state);
             }
             state.level_runner = gameplay.Runner.init(loaded_track_preview);

@@ -107,7 +107,7 @@ pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.R
     const total_rows = @max(preview.total_rows, 1);
     const progress = std.math.clamp(runner.row_position / @as(f32, @floatFromInt(total_rows)), 0.0, 1.0);
     const remaining_height = (1.0 - progress) * 232.0 + 12.0;
-    if (state.current_gameplay_sprites.progress_bar) |loaded_texture| {
+    if (state.gameplay_resources.sprites.progress_bar) |loaded_texture| {
         drawTextureLocalRectSource(
             layout,
             loaded_texture,
@@ -124,7 +124,7 @@ pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.R
             .white,
         );
     }
-    if (state.current_gameplay_sprites.progress_bar_lit) |loaded_texture| {
+    if (state.gameplay_resources.sprites.progress_bar_lit) |loaded_texture| {
         drawTextureLocalRectSource(
             layout,
             loaded_texture,
@@ -141,7 +141,7 @@ pub fn drawProgressBar(state: anytype, layout: VirtualLayout, runner: gameplay.R
             .white,
         );
     }
-    if (state.current_gameplay_sprites.progress_cursor) |loaded_texture| {
+    if (state.gameplay_resources.sprites.progress_cursor) |loaded_texture| {
         drawTextureLocalRect(layout, loaded_texture, 12.0, remaining_height + 111.0, 64.0, 64.0, .white);
     }
 }
@@ -152,7 +152,7 @@ pub fn drawTutorialLives(state: anytype, layout: VirtualLayout, visible_life_sto
     // x=13 + i*24, y=430, ...)` and `show_subgoldy_lives` (0x43af10) toggles the
     // hidden bit on the first `visible_life_stock` slots. See docs/re/hud-pipeline.md.
     const count = @min(visible_life_stock, 9);
-    const loaded_texture = state.current_gameplay_sprites.life orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.life orelse return;
     for (0..count) |slot_index| {
         drawTextureLocalRect(
             layout,
@@ -250,9 +250,9 @@ const damage_gauge_w: f32 = 64.0;
 const damage_gauge_h: f32 = 396.0;
 
 pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.Runner) void {
-    const empty_texture = state.current_gameplay_sprites.damage_gauge orelse return;
-    const full_texture = state.current_gameplay_sprites.damage_gauge_full orelse return;
-    const bright_texture = state.current_gameplay_sprites.damage_gauge_bright orelse return;
+    const empty_texture = state.gameplay_resources.sprites.damage_gauge orelse return;
+    const full_texture = state.gameplay_resources.sprites.damage_gauge_full orelse return;
+    const bright_texture = state.gameplay_resources.sprites.damage_gauge_bright orelse return;
     const fill_ratio = runner.damageGaugeDisplayFill();
     const bright_overlay_alpha = runner.damageGaugeWarningOverlayAlpha();
     const warning_actor_alpha = runner.damageWarningActorAlpha();
@@ -318,7 +318,7 @@ pub fn drawDamageGauge(state: anytype, layout: VirtualLayout, runner: gameplay.R
     // `Sprites/Warning.tga` at authored (288, 64, 64, 64); `update_warning`
     // (0x446f80) modulates alpha.
     if (warning_alpha > 0) {
-        if (state.current_gameplay_sprites.warning) |loaded_texture| {
+        if (state.gameplay_resources.sprites.warning) |loaded_texture| {
             drawTextureLocalRect(layout, loaded_texture, 288.0, 64.0, 64.0, 64.0, .{ .r = 255, .g = 255, .b = 255, .a = warning_alpha });
         }
     }

@@ -45,37 +45,37 @@ pub fn playGameplayRunnerAudio(
     const native_voice_cues = gameplay_audio_cues.nativeGameplayVoiceCues(previous, current, preview.runtime_build_flags);
 
     if (native_sound_cues.completion_arm_cheers) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.cheers);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.cheers);
     }
     if (native_sound_cues.extra_life) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.extra_life);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.extra_life);
     }
     if (native_sound_cues.trampoline_bounce) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.boing);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.boing);
     }
     if (native_sound_cues.wall_barrier_hit) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.wall_hit);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.wall_hit);
     }
     if (native_sound_cues.parcel_pickup) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.place_package);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.place_package);
     }
     if (native_sound_cues.parcel_delivery) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.package_count);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.package_count);
     }
     if (native_sound_cues.parcel_bonus) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.perfect);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.perfect);
     }
     if (native_sound_cues.row_event_confirm) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.row_event_confirm);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.row_event_confirm);
     }
     if (native_jetpack_sound_cues.activate) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.jetpack);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.jetpack);
     }
     if (native_jetpack_sound_cues.deactivate) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.jetpack_shutoff);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.jetpack_shutoff);
     }
     if (gameplay_audio_cues.nativeRingPickupSoundIndex(previous, current)) |sound_index| {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.powerup_pickup[sound_index]);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.powerup_pickup[sound_index]);
     }
     if (native_voice_cues.start) {
         tryPlayNativeGameplayVoiceSet(state, .start, .interrupt_current) catch {};
@@ -142,7 +142,7 @@ pub fn playGameplayRunnerAudio(
     }
 
     if (gameplay_audio_cues.nativeGameplayWarningLoopTriggered(previous, current)) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.postal_warning);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.postal_warning);
     }
 
     if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
@@ -150,17 +150,17 @@ pub fn playGameplayRunnerAudio(
             .turbo => pickNativeMovementSoundVariant(
                 state,
                 gameplay_assets.gameplay_turbo_fire_sound_paths.len,
-                state.current_gameplay_sound_fx.turbo_fire,
+                state.gameplay_resources.sound_fx.turbo_fire,
             ),
             .laser => pickNativeMovementSoundVariant(
                 state,
                 gameplay_assets.gameplay_laser_sound_paths.len,
-                state.current_gameplay_sound_fx.laser,
+                state.gameplay_resources.sound_fx.laser,
             ),
             .rocket => pickNativeMovementSoundVariant(
                 state,
                 gameplay_assets.gameplay_rocket_sound_paths.len,
-                state.current_gameplay_sound_fx.rocket,
+                state.gameplay_resources.sound_fx.rocket,
             ),
         };
         const camera_position = rl.Vector3{
@@ -179,39 +179,39 @@ pub fn playGameplayRunnerAudio(
         }
     }
     if (countGameplayProjectiles(previous, .enemy_laser) < countGameplayProjectiles(current, .enemy_laser)) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.enemy_fire);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.enemy_fire);
     }
     if (gameplay_audio_cues.nativeWeaponPresentationChanged(previous, current)) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.weapon_change);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.weapon_change);
     }
     if (current.counters.health_pickups > previous.counters.health_pickups) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.heart);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.heart);
     }
     if (current.invincible_ticks > previous.invincible_ticks) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.invincible);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.invincible);
     }
     if (gameplay_audio_cues.nativeSlowRingSoundTriggered(previous, current)) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.slow_ring);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.slow_ring);
     }
     if (gameplay_audio_cues.nativeExplodeRingSoundTriggered(previous, current)) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.explode_ring);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.explode_ring);
     }
     if (current.counters.garbage_hits > previous.counters.garbage_hits) {
         playGameplayEffect(state, pickGameplaySoundVariant(
             state,
             gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.current_gameplay_sound_fx.asteroid_impact,
+            state.gameplay_resources.sound_fx.asteroid_impact,
         ));
     }
     if (current.counters.salt_hits > previous.counters.salt_hits) {
         playGameplayEffect(state, pickGameplaySoundVariant(
             state,
             gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.current_gameplay_sound_fx.asteroid_impact,
+            state.gameplay_resources.sound_fx.asteroid_impact,
         ));
     }
     if (current.counters.turret_hits > previous.counters.turret_hits) {
-        playGameplayEffect(state, state.current_gameplay_sound_fx.wall_hit);
+        playGameplayEffect(state, state.gameplay_resources.sound_fx.wall_hit);
     }
     if (current.counters.slug_hits > previous.counters.slug_hits) {
         tryPlayGameplayVoiceVariant(
@@ -224,7 +224,7 @@ pub fn playGameplayRunnerAudio(
         playGameplayEffect(state, pickGameplaySoundVariant(
             state,
             gameplay_assets.gameplay_asteroid_impact_sound_paths.len,
-            state.current_gameplay_sound_fx.asteroid_impact,
+            state.gameplay_resources.sound_fx.asteroid_impact,
         ));
         tryPlayGameplayVoiceVariant(
             state,
@@ -420,7 +420,7 @@ pub fn applyAudioConfigVolumes(state: anytype) void {
         rl.setSoundVolume(sound.sound, sound_volume);
     }
     inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
-        const field = &@field(state.current_gameplay_sound_fx, field_name);
+        const field = &@field(state.gameplay_resources.sound_fx, field_name);
         switch (@typeInfo(@TypeOf(field.*))) {
             .array => {
                 for (field) |entry| {

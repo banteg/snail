@@ -72,6 +72,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
 | `frontend/art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
 | `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
+| `gameplay/resources.zig` | Gameplay resource state and static gameplay asset lifetime helpers: Turbo animation/model selection, barrier/lazer/salt/actor model loading, sprite/sound-fx ownership, and explicit tutorial animation sync context. |
 | `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `gameplay/barrier_render.zig` | Gameplay barrier renderer: recovered tutorial/NoFall visibility, native additive blend state, depth-mask/culling policy, and object-space barrier placement. |

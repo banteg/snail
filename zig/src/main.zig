@@ -120,12 +120,6 @@ const FrontendSoundFx = frontend_art.FrontendSoundFx;
 const FrontendWidgetArt = frontend_art.FrontendWidgetArt;
 const RouteMapArt = frontend_art.RouteMapArt;
 const SliderArt = frontend_art.SliderArt;
-const GameplayInvincibleModelSet = gameplay_art.InvincibleModelSet;
-const GameplayJetpackModelSet = gameplay_art.JetpackModelSet;
-const GameplaySoundFx = gameplay_art.SoundFx;
-const GameplaySpriteArt = gameplay_art.SpriteArt;
-const GameplayWeaponModelSet = gameplay_art.WeaponModelSet;
-
 const ScreenshotRequest = screenshots.Request;
 
 const GameplayJetpackVisualState = gameplay_presentation.JetpackVisualState;
@@ -363,28 +357,10 @@ const AppState = struct {
     current_segment: ?segment.Definition = null,
     current_track_preview: ?track.LoadedLevelPreview = null,
     current_game_track_scene: ?track_render.Scene = null,
-    current_gameplay_turbo_model: ?x2.Uploaded = null,
-    current_gameplay_turbo_animation: ?xanim.Player = null,
-    current_gameplay_turbo_model_path: ?[]const u8 = null,
-    current_gameplay_barrier_object: ?object.LoadedObject = null,
-    current_gameplay_lazer_object: ?object.LoadedObject = null,
-    current_gameplay_vapour_lazer_object: ?object.LoadedObject = null,
-    current_gameplay_salt_model: ?x2.Uploaded = null,
-    current_gameplay_turret_model: ?x2.Uploaded = null,
-    current_gameplay_blaster_top_models: GameplayWeaponModelSet = .{},
-    current_gameplay_blaster_left_models: GameplayWeaponModelSet = .{},
-    current_gameplay_blaster_right_models: GameplayWeaponModelSet = .{},
-    current_gameplay_laser_left_models: GameplayWeaponModelSet = .{},
-    current_gameplay_laser_right_models: GameplayWeaponModelSet = .{},
-    current_gameplay_rocket_launcher_models: GameplayWeaponModelSet = .{},
-    current_gameplay_jetpack_thrust_models: GameplayJetpackModelSet = .{},
-    current_gameplay_rocket_model: ?x2.Uploaded = null,
-    current_gameplay_invincible_models: GameplayInvincibleModelSet = .{},
+    gameplay_resources: gameplay_resources.State = .{},
     gameplay_jetpack_visual_state: GameplayJetpackVisualState = .{},
     gameplay_weapon_visual_state: GameplayWeaponVisualState = .{},
-    current_gameplay_sprites: GameplaySpriteArt = .{},
     gameplay_billboard_shader: ?rl.Shader = null,
-    current_gameplay_sound_fx: GameplaySoundFx = .{},
     gameplay_effects: gameplay_effects.Controller = .{},
     current_standalone_segment_preview: ?track.LoadedLevelPreview = null,
     current_standalone_segment_scene: ?track_render.Scene = null,
@@ -483,8 +459,10 @@ const AppState = struct {
             .frontend_cursor_texture = frontend_cursor_texture,
             .frontend_widget_art = frontend_widget_art,
             .frontend_sound_fx = frontend_sound_fx,
-            .current_gameplay_sound_fx = gameplay_sound_fx,
-            .current_gameplay_sprites = gameplay_sprites,
+            .gameplay_resources = .{
+                .sound_fx = gameplay_sound_fx,
+                .sprites = gameplay_sprites,
+            },
             .slider_art = slider_art,
             .route_map_art = route_map_art,
             .current_background_light_streak_texture = background_light_streak_texture,
@@ -495,7 +473,7 @@ const AppState = struct {
         galaxy_names = null;
         audio.applyAudioConfigVolumes(&state);
         if (options.command == .game) {
-            try gameplay_resources.loadStaticResources(&state);
+            try gameplay_resources.loadStaticResources(&state.gameplay_resources, &state.resources);
         }
 
         switch (options.command) {
@@ -557,13 +535,7 @@ const AppState = struct {
             scene.deinit();
             self.current_game_track_scene = null;
         }
-        gameplay_resources.unloadTurbo(self);
-        gameplay_resources.unloadBarrier(self);
-        gameplay_resources.unloadLazer(self);
-        gameplay_resources.unloadSalt(self);
-        gameplay_resources.unloadActorModels(self);
-        gameplay_resources.unloadSprites(self);
-        gameplay_resources.unloadSoundFx(self);
+        gameplay_resources.unloadStaticResources(&self.gameplay_resources);
         if (self.current_standalone_segment_preview) |*loaded_track_preview| {
             loaded_track_preview.deinit();
             self.current_standalone_segment_preview = null;
@@ -893,7 +865,11 @@ const AppState = struct {
                 // `AnimClipId` through `dispatchCutsceneAnimation`, keeping
                 // the renderer's model-swap purely a consumer of the anim
                 // slot.
-                gameplay_resources.syncCutsceneAnimFromPromptQueue(self, runner);
+                gameplay_resources.syncCutsceneAnimFromPromptQueue(.{
+                    .tutorial = self.gameplayTutorialContext(),
+                    .prompt_active = self.level_prompt_queue.active() != null,
+                    .click_start_active = self.gameplay_click_start_active,
+                }, runner);
             }
         }
 
@@ -931,7 +907,16 @@ const AppState = struct {
 
         if (self.game_phase == .level) {
             if (try self.handleSelectedReplayFadeExit()) return;
-            try gameplay_resources.syncTurboAnimation(self);
+            try gameplay_resources.syncTurboAnimation(
+                &self.gameplay_resources,
+                self.allocator,
+                &self.resources,
+                &self.animation_catalog,
+                .{
+                    .game_phase = self.game_phase,
+                    .tutorial = self.gameplayTutorialContext(),
+                },
+            );
             if (self.current_track_preview) |*loaded_track_preview| {
                 if (self.level_runner) |*runner| {
                     const previous_runner = runner.*;
@@ -972,14 +957,14 @@ const AppState = struct {
                 }
             }
             self.gameplay_effects.update();
-            if (self.current_gameplay_turbo_animation) |*animation| {
+            if (self.gameplay_resources.turbo_animation) |*animation| {
                 try animation.step(self.simulation_clock.step_seconds);
             }
             if (self.level_runner) |*runner| {
                 switch (runner.consumeHandoff()) {
                     .none => {},
                     .completion_screen_init => {
-                        audio.playGameplayEffect(self, self.current_gameplay_sound_fx.completion_init);
+                        audio.playGameplayEffect(self, self.gameplay_resources.sound_fx.completion_init);
                         try self.beginCompletedRunOverlay();
                         return;
                     },
@@ -1558,6 +1543,22 @@ const AppState = struct {
 
     fn isTutorialLevel(self: *const AppState) bool {
         return level_loader.isTutorialLevel(self);
+    }
+
+    fn gameplayTutorialContext(self: *const AppState) gameplay_resources.TutorialContext {
+        const runner = if (self.level_runner) |*level_runner|
+            level_runner
+        else
+            null;
+        const loaded_level = if (self.current_level) |*current_level|
+            current_level
+        else
+            null;
+        return .{
+            .active_frontend_mode = self.active_frontend_mode,
+            .runner = runner,
+            .current_level = loaded_level,
+        };
     }
 
     fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
@@ -2927,7 +2928,7 @@ fn drawGameplaySlugActor(
     // Native `spawn_slug_hazard` allocates the live sprite with texture ref 118 (`SLUG000`), and
     // `update_slug_hazard_ai` only switches to 119/120 during non-default state-machine branches.
     // So authored live slugs should not free-run a local blink in the port.
-    const loaded_texture = state.current_gameplay_sprites.slug_frames[0] orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.slug_frames[0] orelse return;
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
     gameplay_billboard.drawTextureRect(
         loaded_texture.texture,
@@ -2950,7 +2951,7 @@ fn drawGameplayGarbageActor(
     _ = preview;
     if (hazard.state == .inactive) return;
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
-    const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.garbage_variants[variant_index] orelse return;
     gameplay_billboard.drawTextureRectRolled(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
@@ -2980,7 +2981,7 @@ fn drawGameplaySaltVisual(
     yaw_radians: f32,
 ) void {
     const presentation_alpha: u8 = 232;
-    if (state.current_gameplay_salt_model) |*model| {
+    if (state.gameplay_resources.salt_model) |*model| {
         const yaw_sin = std.math.sin(yaw_radians);
         const yaw_cos = std.math.cos(yaw_radians);
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
@@ -3029,9 +3030,9 @@ fn drawGameplayTurretActor(
     const flash_ticks = runner.turretFlashTicksAt(global_row, lane_index);
     const model = blk: {
         if (flash_ticks > 0) {
-            if (state.current_gameplay_blaster_top_models.fire) |*fire_model| break :blk fire_model.*;
+            if (state.gameplay_resources.blaster_top_models.fire) |*fire_model| break :blk fire_model.*;
         }
-        break :blk state.current_gameplay_turret_model orelse return;
+        break :blk state.gameplay_resources.turret_model orelse return;
     };
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     const position = preview.worldPositionForLane(
@@ -3055,7 +3056,7 @@ fn drawGameplayHealthPickupActor(
     camera: rl.Camera3D,
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
-    const loaded_texture = state.current_gameplay_sprites.health orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.health orelse return;
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, state.gameplay_billboard_shader, .white);
 }
 
@@ -3065,7 +3066,7 @@ fn drawGameplayJetpackPickupActor(
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_assets.gameplay_jetpack_sprite_paths.len))));
-    const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.jetpack_frames[frame_index] orelse return;
     gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, state.gameplay_billboard_shader, .white);
 }
 
@@ -3086,16 +3087,16 @@ fn drawGameplayStaticRingActor(
     const position = gameplayLaneWorldPosition(preview, row_location.global_row, lane_index, 0.72);
     switch (ring_kind) {
         .none => {},
-        .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
+        .normal => if (state.gameplay_resources.sprites.ring) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46, 0.46, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
         },
-        .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
+        .powerup => if (state.gameplay_resources.sprites.powerup) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64, 0.64, camera, state.gameplay_billboard_shader, .white);
         },
-        .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
+        .explode => if (state.gameplay_resources.sprites.ring_big) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72, 0.72, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
         },
-        .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
+        .slow => if (state.gameplay_resources.sprites.slow_ring) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5, 0.5, camera, state.gameplay_billboard_shader, .white);
         },
     }
@@ -3111,16 +3112,16 @@ fn drawGameplayRuntimeRingEffectActor(
     const scale = effect.presentation_scale;
     switch (ring_kind) {
         .none => {},
-        .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
+        .normal => if (state.gameplay_resources.sprites.ring) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46 * scale, 0.46 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
         },
-        .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
+        .powerup => if (state.gameplay_resources.sprites.powerup) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, state.gameplay_billboard_shader, .white);
         },
-        .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
+        .explode => if (state.gameplay_resources.sprites.ring_big) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72 * scale, 0.72 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
         },
-        .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
+        .slow => if (state.gameplay_resources.sprites.slow_ring) |loaded_texture| {
             gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, state.gameplay_billboard_shader, .white);
         },
     }
@@ -3131,7 +3132,7 @@ fn drawGameplayTrackParcelActor(
     camera: rl.Camera3D,
     parcel: gameplay_runtime_entities.TrackParcel,
 ) void {
-    const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
+    const loaded_texture = state.gameplay_resources.sprites.parcel orelse return;
     const position = parcel.presentationPosition();
     const scale = parcel.presentationScale();
     gameplay_billboard.drawTexture(
@@ -3154,7 +3155,7 @@ fn gameplayLaneWorldPosition(preview: *const track.LoadedLevelPreview, global_ro
 }
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
-    const loaded_object = if (state.current_gameplay_barrier_object) |*loaded_object|
+    const loaded_object = if (state.gameplay_resources.barrier_object) |*loaded_object|
         loaded_object
     else
         null;
@@ -3167,15 +3168,15 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
-    const lazer_object = if (state.current_gameplay_lazer_object) |*loaded_object|
+    const lazer_object = if (state.gameplay_resources.lazer_object) |*loaded_object|
         loaded_object
     else
         null;
-    const vapour_lazer_object = if (state.current_gameplay_vapour_lazer_object) |*loaded_object|
+    const vapour_lazer_object = if (state.gameplay_resources.vapour_lazer_object) |*loaded_object|
         loaded_object
     else
         null;
-    const rocket_model = if (state.current_gameplay_rocket_model) |*model|
+    const rocket_model = if (state.gameplay_resources.rocket_model) |*model|
         model
     else
         null;
@@ -3191,10 +3192,10 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
         const effect = state.gameplay_effects.items[index];
         if (!effect.active or effect.ticks_remaining == 0) continue;
         const loaded_texture = switch (effect.kind) {
-            .explode_big => state.current_gameplay_sprites.explode_big,
-            .explode_small => state.current_gameplay_sprites.explode_small,
-            .slug_goo => state.current_gameplay_sprites.slug_goo,
-            .smoke => state.current_gameplay_sprites.smoke,
+            .explode_big => state.gameplay_resources.sprites.explode_big,
+            .explode_small => state.gameplay_resources.sprites.explode_small,
+            .slug_goo => state.gameplay_resources.sprites.slug_goo,
+            .smoke => state.gameplay_resources.sprites.smoke,
         } orelse continue;
         gameplay_billboard.drawTexture(
             loaded_texture.texture,
@@ -3214,7 +3215,7 @@ fn drawGameplayTurbo(
     runner: gameplay.Runner,
     camera: rl.Camera3D,
 ) void {
-    const model = gameplay_resources.activeTurbo(state) orelse return;
+    const model = gameplay_resources.activeTurbo(&state.gameplay_resources) orelse return;
     const click_start_active = state.gameplay_click_start_active;
     const pose = if (click_start_active and state.tutorialClickStartCutsceneActive())
         gameplay_model_render.tutorialClickStartTurboPose(model, loaded_track_preview, runner)
@@ -3242,7 +3243,7 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.top_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.top_hide_ticks > 0;
     if (top_active) {
-        if (state.current_gameplay_blaster_top_models.currentModel(
+        if (state.gameplay_resources.blaster_top_models.currentModel(
             state.gameplay_weapon_visual_state.top_draw_ticks,
             state.gameplay_weapon_visual_state.top_fire_ticks,
             state.gameplay_weapon_visual_state.top_hide_ticks,
@@ -3265,12 +3266,12 @@ fn drawGameplayTurboAttachments(
     if (left_active) {
         const left_selected_state = state.gameplay_weapon_visual_state.sideSelectedState(channel_states.left, true);
         const left_model = switch (left_selected_state) {
-            1 => state.current_gameplay_blaster_left_models.currentModel(
+            1 => state.gameplay_resources.blaster_left_models.currentModel(
                 state.gameplay_weapon_visual_state.left_draw_ticks,
                 0,
                 state.gameplay_weapon_visual_state.left_hide_ticks,
             ),
-            2 => state.current_gameplay_laser_left_models.currentModel(
+            2 => state.gameplay_resources.laser_left_models.currentModel(
                 state.gameplay_weapon_visual_state.left_draw_ticks,
                 0,
                 state.gameplay_weapon_visual_state.left_hide_ticks,
@@ -3296,12 +3297,12 @@ fn drawGameplayTurboAttachments(
     if (right_active) {
         const right_selected_state = state.gameplay_weapon_visual_state.sideSelectedState(channel_states.right, false);
         const right_model = switch (right_selected_state) {
-            1 => state.current_gameplay_blaster_right_models.currentModel(
+            1 => state.gameplay_resources.blaster_right_models.currentModel(
                 state.gameplay_weapon_visual_state.right_draw_ticks,
                 0,
                 state.gameplay_weapon_visual_state.right_hide_ticks,
             ),
-            2 => state.current_gameplay_laser_right_models.currentModel(
+            2 => state.gameplay_resources.laser_right_models.currentModel(
                 state.gameplay_weapon_visual_state.right_draw_ticks,
                 0,
                 state.gameplay_weapon_visual_state.right_hide_ticks,
@@ -3325,7 +3326,7 @@ fn drawGameplayTurboAttachments(
         state.gameplay_weapon_visual_state.rocket_draw_ticks > 0 or
         state.gameplay_weapon_visual_state.rocket_hide_ticks > 0;
     if (rocket_active) {
-        if (state.current_gameplay_rocket_launcher_models.currentModel(
+        if (state.gameplay_resources.rocket_launcher_models.currentModel(
             state.gameplay_weapon_visual_state.rocket_draw_ticks,
             0,
             state.gameplay_weapon_visual_state.rocket_hide_ticks,
@@ -3347,7 +3348,7 @@ fn drawGameplayTurboAttachments(
         state.gameplay_jetpack_visual_state.draw_ticks > 0 or
         state.gameplay_jetpack_visual_state.hide_ticks > 0;
     if (jetpack_visible) {
-        if (state.current_gameplay_jetpack_thrust_models.currentModel(
+        if (state.gameplay_resources.jetpack_thrust_models.currentModel(
             state.gameplay_jetpack_visual_state.draw_ticks,
             jetpack_visual_active,
             state.gameplay_jetpack_visual_state.hide_ticks,
@@ -3366,7 +3367,7 @@ fn drawGameplayTurboAttachments(
     }
 
     if (runner.invincible_ticks > 0) {
-        if (state.current_gameplay_invincible_models.currentModel(state.render_time_seconds)) |model| {
+        if (state.gameplay_resources.invincible_models.currentModel(state.render_time_seconds)) |model| {
             gameplay_model_render.drawUploadedModel(
                 model.*,
                 gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.02, 0.0),
