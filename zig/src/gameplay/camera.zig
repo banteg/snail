@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
 const track = @import("../track.zig");
+const attachment = @import("attachment.zig");
 
 pub const intro_cutscene_duration_ticks: u16 = 240;
 pub const completion_cutscene_duration_ticks: u16 = 72;
@@ -56,7 +57,7 @@ pub const hotspot_camera_skid_stop_local = rl.Vector3{ .x = -0.54505, .y = 0.0, 
 pub const hotspot_camera_slug_death_local = rl.Vector3{ .x = -0.0088, .y = 0.7189, .z = -5.4915 };
 pub const hotspot_camera_intro_talk_local = rl.Vector3{ .x = 0.862, .y = -0.13765, .z = 1.87215 };
 
-pub const attachment_entry_rider_height: f32 = 0.49;
+pub const attachment_entry_rider_height: f32 = attachment.entry_rider_height;
 
 pub const CameraHotspotWorldState = struct {
     camera_skid_stop: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },

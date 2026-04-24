@@ -180,10 +180,10 @@ const fall_gravity: f32 = 10.0;
 // for the `attachment_exit_gate_b` latch.
 const fall_world_y_threshold: f32 = native_position_y_death_threshold;
 const attachment_exit_progress_step_default = attachment_module.exit_progress_step_default;
-const attachment_side_exit_margin: f32 = 0.3;
-const attachment_entry_start_y_tolerance: f32 = -0.2;
-const attachment_entry_end_y_tolerance: f32 = 0.001;
-const attachment_entry_rider_height: f32 = gameplay_camera.attachment_entry_rider_height;
+const attachment_side_exit_margin = attachment_module.side_exit_margin;
+const attachment_entry_start_y_tolerance = attachment_module.entry_start_y_tolerance;
+const attachment_entry_end_y_tolerance = attachment_module.entry_end_y_tolerance;
+const attachment_entry_rider_height = attachment_module.entry_rider_height;
 const supertramp_launch_velocity_scale: f32 = 12.0;
 const supertramp_launch_gravity: f32 = 18.0;
 const launch_camera_progress_step_default: f32 = 1.0 / 72.0;
@@ -4146,53 +4146,22 @@ pub const Runner = struct {
     }
 
     fn trackEntryWorldPosition(preview: *const track.LoadedLevelPreview, row_position: f32, lane_center: f32) attachment_builders.Vec3 {
-        const lane_index = laneIndexForLaneCenter(preview, lane_center);
-        const global_row = currentRowIndex(preview, row_position);
-        const floor_y = preview.sampleFloorHeightAtGridPosition(global_row, lane_index, row_position) orelse 0.0;
-        const world_position = preview.worldPositionForLane(lane_center, row_position, floor_y + attachment_entry_rider_height);
-        return .{
-            .x = world_position.x,
-            .y = world_position.y,
-            .z = world_position.z,
-        };
+        return attachment_module.trackEntryWorldPosition(preview, row_position, lane_center);
     }
 
     fn attachmentWorldPositionFromLocal(
         pose: attachment_builders.WorldPose,
         local_position: attachment_builders.Vec3,
     ) attachment_builders.Vec3 {
-        return .{
-            .x = pose.position.x +
-                (pose.basis_right.x * local_position.x) +
-                (pose.basis_up.x * local_position.y) +
-                (pose.basis_forward.x * local_position.z),
-            .y = pose.position.y +
-                (pose.basis_right.y * local_position.x) +
-                (pose.basis_up.y * local_position.y) +
-                (pose.basis_forward.y * local_position.z),
-            .z = pose.position.z +
-                (pose.basis_right.z * local_position.x) +
-                (pose.basis_up.z * local_position.y) +
-                (pose.basis_forward.z * local_position.z),
-        };
+        return attachment_module.worldPositionFromLocal(pose, local_position);
     }
 
     fn attachmentLocalPosition(pose: attachment_builders.WorldPose, world_position: attachment_builders.Vec3) attachment_builders.Vec3 {
-        const delta = attachment_builders.Vec3.sub(world_position, pose.position);
-        return .{
-            .x = (delta.x * pose.basis_right.x) + (delta.y * pose.basis_right.y) + (delta.z * pose.basis_right.z),
-            .y = (delta.x * pose.basis_up.x) + (delta.y * pose.basis_up.y) + (delta.z * pose.basis_up.z),
-            .z = (delta.x * pose.basis_forward.x) + (delta.y * pose.basis_forward.y) + (delta.z * pose.basis_forward.z),
-        };
+        return attachment_module.localPosition(pose, world_position);
     }
 
     fn attachmentEntryVerticalOffset(family: attachment_builders.BuilderFamily, local_y: f32) f32 {
-        return switch (family) {
-            // Windows seeds nonlinear kind-42 follow height from the raw local rider offset.
-            // That path legitimately reaches `-0.49` once Goldy is riding the trough floor.
-            .nonlinear_42 => local_y,
-            else => @max(0.0, local_y - attachment_entry_rider_height),
-        };
+        return attachment_module.entryVerticalOffset(family, local_y);
     }
 
     fn commitAttachmentNaturalExit(
@@ -4270,27 +4239,18 @@ pub const Runner = struct {
     }
 
     fn attachmentShouldSideExit(self: *const Runner, built: *const attachment_builders.BuiltAttachment) bool {
-        if (self.jetpack.active) return false;
-        if (self.attachment_follow.vertical_offset > 0.0) return false;
-
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, self.attachment_follow.template_progress);
-        const world_pose = attachment_builders.worldPoseForTemplate(
-            &built.template,
+        return attachment_module.shouldSideExit(
+            built,
+            self.jetpack.active,
+            self.attachment_follow.vertical_offset,
             self.attachment_follow.template_progress,
             self.attachment_follow.source_cell_row,
             self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
         );
-        const world_delta_x = @abs(world_pose.position.x - pose.center_x);
-        return world_delta_x > attachmentTemplateHalfSpan(built) + attachment_side_exit_margin;
     }
 
     fn attachmentTemplateHalfSpan(built: *const attachment_builders.BuiltAttachment) f32 {
-        // PORT(verified): native entry and side-exit checks use template `+0x54`, which
-        // constructor traces show is the wide template span lane (`WORM`: 16), not the
-        // narrower Zig-side builder width (`WORM`: 4).
-        const span_cells = built.template.spec.subdivision_count orelse built.template.width_cells;
-        return @as(f32, @floatFromInt(span_cells)) * 0.5;
+        return attachment_module.templateHalfSpan(built);
     }
 
     fn commitAttachmentSideExit(
@@ -4783,11 +4743,7 @@ pub const Runner = struct {
         progress: f32,
         local_x: f32,
     ) f32 {
-        const pose = attachment_builders.samplePoseAtProgress(built_template, progress);
-        return if (@abs(pose.lateral_scale) > 0.0001)
-            local_x / pose.lateral_scale
-        else
-            local_x;
+        return attachment_module.lateralOffsetFromLocalX(built_template, progress, local_x);
     }
 
     pub fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
