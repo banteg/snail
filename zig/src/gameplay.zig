@@ -15,6 +15,7 @@ const parcel_module = @import("gameplay/parcel.zig");
 const phase_module = @import("gameplay/phase.zig");
 const row_event_module = @import("gameplay/row_event.zig");
 const runner_state = @import("gameplay/runner_state.zig");
+const score_module = @import("gameplay/score.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
 const track = @import("track.zig");
@@ -67,7 +68,7 @@ const row_event_widget_local_z = row_event_module.widget_local_z;
 
 pub const RecentEvent = runner_state.RecentEvent;
 pub const EncounterCounters = runner_state.EncounterCounters;
-pub const ScoreTotals = runner_state.ScoreTotals;
+pub const ScoreTotals = score_module.Totals;
 const RowEventDisplayState = row_event_module.DisplayState;
 const RowEventDisplayController = row_event_module.DisplayController;
 pub const Stopwatch = runner_state.Stopwatch;
@@ -161,11 +162,9 @@ const max_active_runtime_ring_effects = hazards_module.max_active_runtime_ring_e
 const max_active_projectiles = combat_module.max_active_projectiles;
 const max_defeated_slug_cells: usize = 64;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
-const score_life_threshold: u32 = 50_000;
 const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
-const starting_visible_life_stock: u32 = 3;
+const starting_visible_life_stock = score_module.starting_visible_life_stock;
 const starting_runtime_track_index: usize = 4;
-const maximum_visible_life_stock: u32 = 9;
 pub const intro_cutscene_duration_ticks: u16 = gameplay_camera.intro_cutscene_duration_ticks;
 pub const completion_cutscene_duration_ticks: u16 = gameplay_camera.completion_cutscene_duration_ticks;
 pub const death_cutscene_duration_ticks: u16 = gameplay_camera.death_cutscene_duration_ticks;
@@ -1765,8 +1764,7 @@ pub const Runner = struct {
 
     fn recordScore(self: *Runner, slot: *u32, points: u32) void {
         const previous_total = self.score.total;
-        slot.* = std.math.add(u32, slot.*, points) catch std.math.maxInt(u32);
-        self.score.total = std.math.add(u32, self.score.total, points) catch std.math.maxInt(u32);
+        score_module.add(&self.score, slot, points);
         self.recent_score_award = points;
         self.recent_score_award_ticks = 45;
         self.updateVisibleLifeStockFromScore(previous_total, self.score.total);
@@ -3928,17 +3926,12 @@ pub const Runner = struct {
         }
     }
 
-    // PORT(partial): Windows `populate_runtime_track_cells_from_segments` seeds Goldy's
-    // visible life stock to 3, and `cRSubGoldy::ScoreAdd` awards one more whenever total
-    // score crosses another 50,000-point bucket, capped at 9. Postal respawn consumption is
-    // now committed by the runner's death/resurrect handoff, not the app reload path.
     fn updateVisibleLifeStockFromScore(self: *Runner, previous_total: u32, current_total: u32) void {
-        const previous_bucket = @divTrunc(previous_total, score_life_threshold);
-        const current_bucket = @divTrunc(current_total, score_life_threshold);
-        if (current_bucket <= previous_bucket) return;
-        const crossed_buckets = current_bucket - previous_bucket;
-        const updated_lives = std.math.add(u32, self.visible_life_stock, crossed_buckets) catch std.math.maxInt(u32);
-        self.visible_life_stock = @min(maximum_visible_life_stock, updated_lives);
+        self.visible_life_stock = score_module.visibleLifeStockAfterScore(
+            self.visible_life_stock,
+            previous_total,
+            current_total,
+        );
     }
 
     fn beginCompletionCutscene(self: *Runner) void {

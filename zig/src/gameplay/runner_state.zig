@@ -178,16 +178,6 @@ pub const EncounterCounters = struct {
     ring_slow: u32 = 0,
 };
 
-pub const ScoreTotals = struct {
-    total: u32 = 0,
-    ring_collect: u32 = 0,
-    garbage_collision: u32 = 0,
-    health_collect: u32 = 0,
-    parcel_pickup: u32 = 0,
-    parcel_register: u32 = 0,
-    completion_bonus: u32 = 0,
-};
-
 pub const Stopwatch = struct {
     total_seconds: f32 = 0.0,
     minutes: u32 = 0,
