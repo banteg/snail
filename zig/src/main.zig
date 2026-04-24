@@ -17,6 +17,7 @@ const route_map_state = @import("app/route_map_state.zig");
 const run_result = @import("app/run_result.zig");
 const run_tuning = @import("app/run_tuning.zig");
 const screenshots = @import("app/screenshots.zig");
+const screen_assets = @import("app/screen_assets.zig");
 const selected_replay = @import("app/selected_replay.zig");
 const subgame_camera = @import("app/subgame_camera.zig");
 const track_build_seed = @import("app/track_build_seed.zig");
@@ -2242,49 +2243,31 @@ const AppState = struct {
     }
 
     fn loadGameBackground(self: *AppState, script_path: []const u8) !void {
-        self.unloadGameBackground();
-        var loaded = if (boot_assets.takeBackground(boot_assets.context(self), script_path)) |loaded|
-            loaded
-        else
-            try background.Loaded.loadByPath(self.allocator, &self.resources, script_path);
-        self.current_game_background_runtime = background.Runtime.init(&loaded);
-        self.current_game_background = loaded;
+        try screen_assets.loadGameBackground(screen_assets.context(self), script_path);
     }
 
     fn loadLoadingScreen(self: *AppState) !void {
-        self.unloadLoadingScreen();
-        self.current_loading_screen = try loading_screen.Loaded.load(&self.resources);
+        try screen_assets.loadLoadingScreen(screen_assets.context(self));
     }
 
     fn loadTextScript(self: *AppState, path: []const u8) !void {
-        self.unloadTextScript();
-        self.current_text_script = if (boot_assets.takeTextScript(boot_assets.context(self), path)) |loaded|
-            loaded
-        else
-            try self.loadConfiguredTextScriptEntry(path);
+        try screen_assets.loadTextScript(screen_assets.context(self), path);
     }
 
     fn loadConfiguredTextScriptEntry(self: *AppState, path: []const u8) !intro.Loaded {
-        return boot_assets.loadConfiguredTextScriptEntry(boot_assets.context(self), path);
+        return screen_assets.loadConfiguredTextScriptEntry(screen_assets.context(self), path);
     }
 
     fn unloadTextScript(self: *AppState) void {
-        if (self.current_text_script) |*script| {
-            script.deinit(self.allocator);
-            self.current_text_script = null;
-        }
+        screen_assets.unloadTextScript(screen_assets.context(self));
     }
 
     fn unloadLoadingScreen(self: *AppState) void {
-        if (self.current_loading_screen) |*loaded_screen| {
-            loaded_screen.deinit();
-            self.current_loading_screen = null;
-        }
+        screen_assets.unloadLoadingScreen(screen_assets.context(self));
     }
 
     fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
-        const script = self.current_text_script orelse return null;
-        return script.durationTicks();
+        return screen_assets.currentTextScriptDurationTicks(screen_assets.viewContext(self));
     }
 
     pub fn toggleFullscreenPreference(self: *AppState) void {
@@ -2304,15 +2287,11 @@ const AppState = struct {
     }
 
     pub fn currentTextScriptProgress(self: *const AppState) ?f32 {
-        const script = self.currentTextScript() orelse return null;
-        return script.progressForTicks(self.game_phase_ticks);
+        return screen_assets.currentTextScriptProgress(screen_assets.viewContext(self));
     }
 
     pub fn currentTextScript(self: *const AppState) ?*const intro.Loaded {
-        if (self.current_text_script) |*script| {
-            return script;
-        }
-        return null;
+        return screen_assets.currentTextScript(screen_assets.viewContext(self));
     }
 
     fn maybeQueueAutoScreenshot(self: *AppState) !void {
@@ -2328,11 +2307,7 @@ const AppState = struct {
     }
 
     fn unloadGameBackground(self: *AppState) void {
-        if (self.current_game_background) |*loaded_background| {
-            loaded_background.deinit();
-            self.current_game_background = null;
-        }
-        self.current_game_background_runtime = null;
+        screen_assets.unloadGameBackground(screen_assets.context(self));
     }
 
     fn setGameStatusMessage(self: *AppState, message: []const u8) void {
