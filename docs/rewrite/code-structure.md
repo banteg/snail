@@ -75,6 +75,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `gameplay/billboard.zig` | Gameplay billboard quad renderer: camera-facing textured quads, optional roll, alpha-cutout shader scope, depth-mask handling, and texture UV mapping. |
+| `gameplay/model_render.zig` | Gameplay model render helpers: model-space offsets, basis transforms, tint/outline draw wrappers, Turbo pose construction, and local attachment positioning. |
 | `gameplay/render_policy.zig` | Gameplay renderer policy helpers: visible row/window gates for static actors, runtime hazards, pickups, ring effects, salt slots, and static-ring ownership. |
 | `frontend/render.zig` | Shared frontend render primitives: app-font text measurement/drawing, aligned headings, status/notice overlays, and the custom frontend cursor overlay. |
 | `frontend/screens.zig` | Frontend screen composition: boot/title crawl wrappers, menu draw dispatch, challenge setup labels, high-score draft text, route-map notices, exit prompt heading, help, and thanks screen. |

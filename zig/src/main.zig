@@ -44,6 +44,7 @@ const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_billboard = @import("gameplay/billboard.zig");
 const gameplay_hud = @import("gameplay/hud.zig");
+const gameplay_model_render = @import("gameplay/model_render.zig");
 const gameplay_presentation = @import("gameplay/presentation.zig");
 const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
 const gameplay_render_policy = @import("gameplay/render_policy.zig");
@@ -2983,7 +2984,7 @@ fn drawGameplaySaltVisual(
         const right: rl.Vector3 = .{ .x = yaw_cos, .y = 0.0, .z = -yaw_sin };
         const up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
         const forward: rl.Vector3 = .{ .x = yaw_sin, .y = 0.0, .z = yaw_cos };
-        const world_transform = modelTransformFromBasis(world_position, right, up, forward);
+        const world_transform = gameplay_model_render.transformFromBasis(world_position, right, up, forward);
         const local_offset = rl.Matrix.translate(
             -model.bounds.center.x,
             -model.bounds.center.y,
@@ -3036,7 +3037,7 @@ fn drawGameplayTurretActor(
         @as(f32, @floatFromInt(global_row)),
         floor_height + 0.18,
     );
-    drawGameplayUploadedModel(
+    gameplay_model_render.drawUploadedModel(
         model,
         position,
         .{ .x = 1.0, .y = 0.0, .z = 0.0 },
@@ -3210,29 +3211,29 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
-    const forward = normalizeVector3(.{
+    const forward = gameplay_model_render.normalizeVector3(.{
         .x = projectile.dir_x,
         .y = projectile.dir_y,
         .z = projectile.dir_z,
     });
     var up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    if (@abs(dotVector3(forward, up)) > 0.95) {
+    if (@abs(gameplay_model_render.dotVector3(forward, up)) > 0.95) {
         up = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
     }
 
-    var right = crossVector3(up, forward);
-    if (vectorLength(right) <= 0.0001) {
+    var right = gameplay_model_render.crossVector3(up, forward);
+    if (gameplay_model_render.vectorLength(right) <= 0.0001) {
         right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
     } else {
-        right = normalizeVector3(right);
+        right = gameplay_model_render.normalizeVector3(right);
     }
-    const corrected_up = normalizeVector3(crossVector3(forward, right));
+    const corrected_up = gameplay_model_render.normalizeVector3(gameplay_model_render.crossVector3(forward, right));
     const position: rl.Vector3 = .{
         .x = projectile.world_x,
         .y = projectile.world_y,
         .z = projectile.world_z,
     };
-    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
+    const world_transform = gameplay_model_render.transformFromBasis(position, right, corrected_up, forward);
     const local_offset = rl.Matrix.translate(
         0.0,
         0.0,
@@ -3295,7 +3296,7 @@ fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Proj
                 );
                 return;
             };
-            drawGameplayUploadedModel(
+            gameplay_model_render.drawUploadedModel(
                 model,
                 position,
                 right,
@@ -3339,9 +3340,9 @@ fn drawGameplayTurbo(
     const model = gameplay_resources.activeTurbo(state) orelse return;
     const click_start_active = state.gameplay_click_start_active;
     const pose = if (click_start_active and state.tutorialClickStartCutsceneActive())
-        tutorialClickStartTurboPose(model, loaded_track_preview, runner)
+        gameplay_model_render.tutorialClickStartTurboPose(model, loaded_track_preview, runner)
     else
-        gameplayTurboPose(model, loaded_track_preview, runner);
+        gameplay_model_render.turboPose(model, loaded_track_preview, runner);
     model.drawEx(pose.transform);
     model.drawToonOutlineEx(pose.transform, camera, .black);
 
@@ -3369,9 +3370,9 @@ fn drawGameplayTurboAttachments(
             state.gameplay_weapon_visual_state.top_fire_ticks,
             state.gameplay_weapon_visual_state.top_hide_ticks,
         )) |model| {
-            drawGameplayUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutline(
                 model,
-                offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
+                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
                 right,
                 up,
                 forward,
@@ -3400,9 +3401,9 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (left_model) |model| {
-            drawGameplayUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutline(
                 model,
-                offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
+                gameplay_model_render.offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
                 right,
                 up,
                 forward,
@@ -3431,9 +3432,9 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (right_model) |model| {
-            drawGameplayUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutline(
                 model,
-                offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
+                gameplay_model_render.offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
                 right,
                 up,
                 forward,
@@ -3452,9 +3453,9 @@ fn drawGameplayTurboAttachments(
             0,
             state.gameplay_weapon_visual_state.rocket_hide_ticks,
         )) |model| {
-            drawGameplayUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutline(
                 model,
-                offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
+                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
                 right,
                 up,
                 forward,
@@ -3475,9 +3476,9 @@ fn drawGameplayTurboAttachments(
             state.gameplay_jetpack_visual_state.hide_ticks,
             state.render_time_seconds,
         )) |model| {
-            drawGameplayUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutline(
                 model,
-                offsetPosition(position, right, up, forward, 0.0, 0.10, -0.18),
+                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.10, -0.18),
                 right,
                 up,
                 forward,
@@ -3489,9 +3490,9 @@ fn drawGameplayTurboAttachments(
 
     if (runner.invincible_ticks > 0) {
         if (state.current_gameplay_invincible_models.currentModel(state.render_time_seconds)) |model| {
-            drawGameplayUploadedModel(
+            gameplay_model_render.drawUploadedModel(
                 model.*,
-                offsetPosition(position, right, up, forward, 0.0, 0.02, 0.0),
+                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.02, 0.0),
                 right,
                 up,
                 forward,
@@ -3500,213 +3501,6 @@ fn drawGameplayTurboAttachments(
             );
         }
     }
-}
-
-fn drawGameplayUploadedModel(
-    model: x2.Uploaded,
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-    scale: rl.Vector3,
-    tint: ?rl.Color,
-) void {
-    const transform = gameplayUploadedModelTransform(&model, position, right, up, forward, scale);
-    if (tint) |tint_color| {
-        drawGameplayUploadedModelTinted(&model, transform, tint_color);
-    } else {
-        model.drawEx(transform);
-    }
-}
-
-fn drawGameplayUploadedModelWithToonOutline(
-    model: *const x2.Uploaded,
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-    scale: rl.Vector3,
-    camera: rl.Camera3D,
-) void {
-    const transform = gameplayUploadedModelTransform(model, position, right, up, forward, scale);
-    model.drawEx(transform);
-    model.drawToonOutlineEx(transform, camera, .black);
-}
-
-fn gameplayUploadedModelTransform(
-    model: *const x2.Uploaded,
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-    scale: rl.Vector3,
-) rl.Matrix {
-    const world_transform = modelTransformFromBasis(position, right, up, forward);
-    const local_offset = rl.Matrix.translate(
-        -model.bounds.center.x,
-        -model.bounds.center.y,
-        -model.bounds.center.z,
-    );
-    const model_scale = rl.Matrix.scale(scale.x, scale.y, scale.z);
-    return world_transform.multiply(local_offset).multiply(model_scale);
-}
-
-fn drawGameplayUploadedModelTinted(model: *const x2.Uploaded, transform: rl.Matrix, tint: rl.Color) void {
-    for (model.submeshes) |submesh| {
-        var material = submesh.material;
-        material.maps[@intFromEnum(rl.MaterialMapIndex.albedo)].color = tint;
-        rl.drawMesh(submesh.mesh, material, transform);
-    }
-}
-
-const GameplayTurboPose = struct {
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-    transform: rl.Matrix,
-};
-
-const gameplay_turbo_body_height: f32 = 0.02;
-const tutorial_click_start_body_height: f32 = 0.08;
-
-fn gameplayTurboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) GameplayTurboPose {
-    const forward = normalizeVector3(runner.worldForward(loaded_track_preview));
-    const up = normalizeVector3(runner.worldUp(loaded_track_preview));
-    var right = crossVector3(up, forward);
-    if (vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = normalizeVector3(right);
-    }
-    const corrected_up = normalizeVector3(crossVector3(forward, right));
-    const position = runner.worldPosition(loaded_track_preview, gameplay_turbo_body_height);
-    const world_transform = modelTransformFromBasis(position, right, corrected_up, forward);
-    const local_offset = groundedCharacterModelOffset(model);
-    return .{
-        .position = position,
-        .right = right,
-        .up = corrected_up,
-        .forward = forward,
-        .transform = world_transform.multiply(local_offset),
-    };
-}
-
-fn tutorialClickStartTurboPose(model: *const x2.Uploaded, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) GameplayTurboPose {
-    const base_pose = gameplayTurboPose(model, loaded_track_preview, runner);
-    const position = runner.worldPosition(loaded_track_preview, tutorial_click_start_body_height);
-    const world_transform = modelTransformFromBasis(position, base_pose.right, base_pose.up, base_pose.forward);
-    const local_offset = groundedCharacterModelOffset(model);
-    return .{
-        .position = position,
-        .right = base_pose.right,
-        .up = base_pose.up,
-        .forward = base_pose.forward,
-        .transform = world_transform.multiply(local_offset),
-    };
-}
-
-fn groundedCharacterModelOffset(model: *const x2.Uploaded) rl.Matrix {
-    return rl.Matrix.translate(
-        -model.bounds.center.x,
-        -model.bounds.min.y,
-        -model.bounds.center.z,
-    );
-}
-
-fn centeredModelOffset(model: *const x2.Uploaded) rl.Matrix {
-    return rl.Matrix.translate(
-        -model.bounds.center.x,
-        -model.bounds.center.y,
-        -model.bounds.center.z,
-    );
-}
-
-fn offsetPosition(
-    origin: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-    local_x: f32,
-    local_y: f32,
-    local_z: f32,
-) rl.Vector3 {
-    return .{
-        .x = origin.x + (right.x * local_x) + (up.x * local_y) + (forward.x * local_z),
-        .y = origin.y + (right.y * local_x) + (up.y * local_y) + (forward.y * local_z),
-        .z = origin.z + (right.z * local_x) + (up.z * local_y) + (forward.z * local_z),
-    };
-}
-
-fn vectorLength(v: rl.Vector3) f32 {
-    return std.math.sqrt((v.x * v.x) + (v.y * v.y) + (v.z * v.z));
-}
-
-fn addVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = a.x + b.x,
-        .y = a.y + b.y,
-        .z = a.z + b.z,
-    };
-}
-
-fn scaleVector3(v: rl.Vector3, scalar: f32) rl.Vector3 {
-    return .{
-        .x = v.x * scalar,
-        .y = v.y * scalar,
-        .z = v.z * scalar,
-    };
-}
-
-fn normalizeVector3(v: rl.Vector3) rl.Vector3 {
-    const len = vectorLength(v);
-    if (len <= 0.0001) return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
-    return .{
-        .x = v.x / len,
-        .y = v.y / len,
-        .z = v.z / len,
-    };
-}
-
-fn crossVector3(a: rl.Vector3, b: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = (a.y * b.z) - (a.z * b.y),
-        .y = (a.z * b.x) - (a.x * b.z),
-        .z = (a.x * b.y) - (a.y * b.x),
-    };
-}
-
-fn lerpVector3(a: rl.Vector3, b: rl.Vector3, t: f32) rl.Vector3 {
-    return .{
-        .x = std.math.lerp(a.x, b.x, t),
-        .y = std.math.lerp(a.y, b.y, t),
-        .z = std.math.lerp(a.z, b.z, t),
-    };
-}
-
-fn dotVector3(a: rl.Vector3, b: rl.Vector3) f32 {
-    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
-}
-
-fn modelTransformFromBasis(position: rl.Vector3, right: rl.Vector3, up: rl.Vector3, forward: rl.Vector3) rl.Matrix {
-    return .{
-        .m0 = right.x,
-        .m4 = up.x,
-        .m8 = forward.x,
-        .m12 = position.x,
-        .m1 = right.y,
-        .m5 = up.y,
-        .m9 = forward.y,
-        .m13 = position.y,
-        .m2 = right.z,
-        .m6 = up.z,
-        .m10 = forward.z,
-        .m14 = position.z,
-        .m3 = 0.0,
-        .m7 = 0.0,
-        .m11 = 0.0,
-        .m15 = 1.0,
-    };
 }
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
@@ -5174,9 +4968,9 @@ test "shared subgame camera honors snap flags and otherwise blends across source
     const basis_right = rl.Vector3{ .x = 1.0, .y = 0.0, .z = 0.0 };
     const basis_up = rl.Vector3{ .x = 0.0, .y = 1.0, .z = 0.0 };
     const basis_forward = rl.Vector3{ .x = 0.0, .y = 0.0, .z = 1.0 };
-    const live_matrix = modelTransformFromBasis(.{ .x = 1.0, .y = 2.0, .z = 3.0 }, basis_right, basis_up, basis_forward);
-    const override_matrix = modelTransformFromBasis(.{ .x = 5.0, .y = 6.0, .z = 7.0 }, basis_right, basis_up, basis_forward);
-    const next_live_matrix = modelTransformFromBasis(.{ .x = 9.0, .y = 10.0, .z = 11.0 }, basis_right, basis_up, basis_forward);
+    const live_matrix = gameplay_model_render.transformFromBasis(.{ .x = 1.0, .y = 2.0, .z = 3.0 }, basis_right, basis_up, basis_forward);
+    const override_matrix = gameplay_model_render.transformFromBasis(.{ .x = 5.0, .y = 6.0, .z = 7.0 }, basis_right, basis_up, basis_forward);
+    const next_live_matrix = gameplay_model_render.transformFromBasis(.{ .x = 9.0, .y = 10.0, .z = 11.0 }, basis_right, basis_up, basis_forward);
     var state = SubgameCameraState{};
 
     subgame_camera.updateState(&state, .{
