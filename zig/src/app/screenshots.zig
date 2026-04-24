@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const render_phase = @import("render_phase.zig");
 
 pub const Request = struct {
     relative_path_z: [:0]u8,
@@ -51,7 +52,7 @@ pub fn flushQueued(state: anytype) !void {
     state.pending_screenshot = null;
     defer request.deinit(state.allocator);
 
-    const use_frontend_canvas = state.command == .game and frontendPhaseUsesCanvas(state) and state.frontend_canvas != null;
+    const use_frontend_canvas = state.command == .game and render_phase.frontendUsesCanvas(state) and state.frontend_canvas != null;
     var screenshot = if (use_frontend_canvas)
         try rl.loadImageFromTexture(state.frontend_canvas.?.texture)
     else
@@ -68,31 +69,4 @@ pub fn flushQueued(state: anytype) !void {
     if (request.exit_after_capture) {
         state.should_exit = true;
     }
-}
-
-fn frontendPhaseUsesCanvas(state: anytype) bool {
-    if (phaseUsesGameplayBackdrop(state)) return false;
-    return switch (state.game_phase) {
-        .main_menu,
-        .new_game_menu,
-        .challenge_setup_menu,
-        .options_menu,
-        .route_map_menu,
-        .high_scores_menu,
-        .exit_prompt,
-        .completion_screen,
-        .thanks_screen,
-        .help,
-        => true,
-        .boot, .intro, .credits, .pause_menu, .level => false,
-    };
-}
-
-fn phaseUsesGameplayBackdrop(state: anytype) bool {
-    return switch (state.game_phase) {
-        .pause_menu => true,
-        .options_menu => state.options_return_phase == .pause_menu,
-        .exit_prompt => state.exit_prompt_return_phase == .pause_menu,
-        else => false,
-    };
 }

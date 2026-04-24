@@ -6,6 +6,7 @@ const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
 const level_loader = @import("app/level_loader.zig");
+const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
 const run_result = @import("app/run_result.zig");
@@ -860,8 +861,8 @@ const AppState = struct {
             runtime.update();
         }
         self.background_light_streaks.update(
-            backgroundLightStreakCamera(self),
-            backgroundLightStreaksVisible(self),
+            render_phase.lightStreakCamera(self),
+            render_phase.lightStreaksVisible(self),
         );
         if (self.game_status_ticks > 0) {
             self.game_status_ticks -= 1;
@@ -2501,65 +2502,8 @@ fn drawUi(state: *const AppState, archive_path: []const u8) !void {
     }
 }
 
-fn phaseUsesGameplayBackdrop(state: *const AppState) bool {
-    return switch (state.game_phase) {
-        .pause_menu => true,
-        .options_menu => state.options_return_phase == .pause_menu,
-        .exit_prompt => state.exit_prompt_return_phase == .pause_menu,
-        else => false,
-    };
-}
-
-const default_light_streak_camera = background.LightStreakCamera{
-    .position = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
-    .right = .{ .x = 1.0, .y = 0.0, .z = 0.0 },
-    .up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
-    .forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
-    .fov_degrees = 38.0,
-};
-
-fn backgroundLightStreaksVisible(state: *const AppState) bool {
-    if (phaseUsesGameplayBackdrop(state)) return true;
-    return switch (state.game_phase) {
-        .intro, .credits, .level => true,
-        else => false,
-    };
-}
-
-fn backgroundLightStreakCamera(state: *const AppState) background.LightStreakCamera {
-    if (backgroundLightStreaksVisible(state) and state.subgame_camera.source != .identity) {
-        const transform = subgame_camera.normalizeTransform(subgame_camera.transformFromMatrix(state.subgame_camera.shared_matrix));
-        return .{
-            .position = transform.position,
-            .right = transform.right,
-            .up = transform.up,
-            .forward = transform.forward,
-            .fov_degrees = default_light_streak_camera.fov_degrees,
-        };
-    }
-    return default_light_streak_camera;
-}
-
-fn frontendPhaseUsesCanvas(state: *const AppState) bool {
-    if (phaseUsesGameplayBackdrop(state)) return false;
-    return switch (state.game_phase) {
-        .main_menu,
-        .new_game_menu,
-        .challenge_setup_menu,
-        .options_menu,
-        .route_map_menu,
-        .high_scores_menu,
-        .exit_prompt,
-        .completion_screen,
-        .thanks_screen,
-        .help,
-        => true,
-        .boot, .intro, .credits, .pause_menu, .level => false,
-    };
-}
-
 fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout: VirtualLayout) !void {
-    if (phaseUsesGameplayBackdrop(state)) {
+    if (render_phase.usesGameplayBackdrop(state)) {
         if (state.current_game_background) |loaded_background| {
             if (state.current_game_background_runtime) |runtime| {
                 _ = runtime.draw(&loaded_background, bounds);
@@ -2568,7 +2512,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
             }
             state.background_light_streaks.draw(
                 bounds,
-                backgroundLightStreakCamera(state),
+                render_phase.lightStreakCamera(state),
                 if (state.current_background_light_streak_texture) |loaded| loaded.texture else null,
             );
         } else {
@@ -2586,7 +2530,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         }
         state.background_light_streaks.draw(
             bounds,
-            backgroundLightStreakCamera(state),
+            render_phase.lightStreakCamera(state),
             if (state.current_background_light_streak_texture) |loaded| loaded.texture else null,
         );
     } else {
@@ -2630,7 +2574,7 @@ fn drawGameUi(state: *const AppState) !void {
         return drawGameBootUi(state, ui_layout);
     }
 
-    if (frontendPhaseUsesCanvas(state)) {
+    if (render_phase.frontendUsesCanvas(state)) {
         if (state.frontend_canvas) |canvas| {
             const authored_bounds: rl.Rectangle = .{
                 .x = 0.0,
@@ -5813,14 +5757,14 @@ test "intro light streak camera falls back to the default star-field camera" {
     state.game_phase = .intro;
     state.subgame_camera = .{};
 
-    const camera = backgroundLightStreakCamera(&state);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.x, camera.position.x, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.y, camera.position.y, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.position.z, camera.position.z, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.fov_degrees, camera.fov_degrees, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.x, camera.forward.x, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.y, camera.forward.y, 0.001);
-    try std.testing.expectApproxEqAbs(default_light_streak_camera.forward.z, camera.forward.z, 0.001);
+    const camera = render_phase.lightStreakCamera(&state);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.position.x, camera.position.x, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.position.y, camera.position.y, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.position.z, camera.position.z, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.fov_degrees, camera.fov_degrees, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.forward.x, camera.forward.x, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.forward.y, camera.forward.y, 0.001);
+    try std.testing.expectApproxEqAbs(render_phase.default_light_streak_camera.forward.z, camera.forward.z, 0.001);
 }
 
 test "credits phase keeps the native star-field visibility" {
@@ -5829,7 +5773,7 @@ test "credits phase keeps the native star-field visibility" {
     state.options_return_phase = .main_menu;
     state.exit_prompt_return_phase = .main_menu;
 
-    try std.testing.expect(backgroundLightStreaksVisible(&state));
+    try std.testing.expect(render_phase.lightStreaksVisible(&state));
 }
 
 test "shared subgame camera honors snap flags and otherwise blends across source changes" {
