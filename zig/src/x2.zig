@@ -5,6 +5,9 @@ const archive = @import("archive.zig");
 
 const io = std.Options.debug_io;
 
+const native_toon_reference_screen_width = 640.0;
+const toon_outline_antialias_fringe_pixels = 1.0;
+
 // Custom text X2 loader for the small legacy mesh subset used by Snail Mail.
 //
 // The shipped corpus uses:
@@ -263,13 +266,20 @@ pub const Uploaded = struct {
         const world_radius = transformedBoundsRadius(self.bounds.radius, transform);
         const camera_local = vec3FromVector3(transformPointByMatrix(inverse_transform, camera.position));
         const bias_distance = outlineDepthBiasDistance(world_radius);
+        const core_width_pixels = toonOutlineCoreWidthPixelsForScreenWidth(rl.getScreenWidth());
 
-        // Native G0RenderToon submits selected silhouette edges as a line list; it does not
-        // inflate them into camera-facing ribbons.
+        // Native G0RenderToon chooses the silhouette edges. The port rasterizes those
+        // selected edges as soft camera-facing bands so the 640px-authored art keeps its
+        // intended line weight in larger windows.
+        rl.beginBlendMode(.alpha);
+        defer rl.endBlendMode();
+        rl.gl.rlDisableDepthMask();
+        defer rl.gl.rlEnableDepthMask();
+        rl.gl.rlDisableBackfaceCulling();
+        defer rl.gl.rlEnableBackfaceCulling();
         rl.gl.rlSetTexture(0);
-        rl.gl.rlBegin(rl.gl.rl_lines);
+        rl.gl.rlBegin(rl.gl.rl_quads);
         defer rl.gl.rlEnd();
-        rl.gl.rlColor4ub(color.r, color.g, color.b, color.a);
 
         for (toon_outline.edges) |edge| {
             if (!toonOutlineEdgeVisible(self.doc.vertices, toon_outline.faces, edge, camera_local)) continue;
@@ -281,8 +291,7 @@ pub const Uploaded = struct {
             world_a = applyCameraFacingBias(world_a, camera.position, bias_distance);
             world_b = applyCameraFacingBias(world_b, camera.position, bias_distance);
 
-            rl.gl.rlVertex3f(world_a.x, world_a.y, world_a.z);
-            rl.gl.rlVertex3f(world_b.x, world_b.y, world_b.z);
+            drawToonOutlineSegment(world_a, world_b, camera, color, core_width_pixels);
         }
     }
 
@@ -1276,6 +1285,83 @@ fn vec3FromVector3(value: rl.Vector3) Vec3 {
     return .{ .x = value.x, .y = value.y, .z = value.z };
 }
 
+fn drawToonOutlineSegment(
+    world_a: rl.Vector3,
+    world_b: rl.Vector3,
+    camera: rl.Camera3D,
+    color: rl.Color,
+    core_width_pixels: f32,
+) void {
+    const side = toonOutlineSegmentSide(world_a, world_b, camera) orelse return;
+    const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
+    const world_units_per_pixel = worldUnitsPerPixelAtPoint(camera, midpoint);
+    const core_half_width = core_width_pixels * 0.5 * world_units_per_pixel;
+    const outer_half_width = core_half_width + toon_outline_antialias_fringe_pixels * world_units_per_pixel;
+    const transparent = rl.Color{ .r = color.r, .g = color.g, .b = color.b, .a = 0 };
+
+    emitToonOutlineBand(world_a, world_b, side, -outer_half_width, -core_half_width, transparent, color);
+    emitToonOutlineBand(world_a, world_b, side, core_half_width, outer_half_width, color, transparent);
+    emitToonOutlineBand(world_a, world_b, side, -core_half_width, core_half_width, color, color);
+}
+
+fn emitToonOutlineBand(
+    world_a: rl.Vector3,
+    world_b: rl.Vector3,
+    side: rl.Vector3,
+    start_offset: f32,
+    end_offset: f32,
+    start_color: rl.Color,
+    end_color: rl.Color,
+) void {
+    const a0 = addScaledVector3(world_a, side, start_offset);
+    const b0 = addScaledVector3(world_b, side, start_offset);
+    const b1 = addScaledVector3(world_b, side, end_offset);
+    const a1 = addScaledVector3(world_a, side, end_offset);
+
+    rl.gl.rlColor4ub(start_color.r, start_color.g, start_color.b, start_color.a);
+    rl.gl.rlVertex3f(a0.x, a0.y, a0.z);
+    rl.gl.rlVertex3f(b0.x, b0.y, b0.z);
+    rl.gl.rlColor4ub(end_color.r, end_color.g, end_color.b, end_color.a);
+    rl.gl.rlVertex3f(b1.x, b1.y, b1.z);
+    rl.gl.rlVertex3f(a1.x, a1.y, a1.z);
+}
+
+fn toonOutlineSegmentSide(world_a: rl.Vector3, world_b: rl.Vector3, camera: rl.Camera3D) ?rl.Vector3 {
+    const line_direction = normalizeVector3Safe(subtractVector3(world_b, world_a));
+    if (vectorLength3(line_direction) <= 0.0001) return null;
+
+    const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
+    const view_direction = normalizeVector3Safe(subtractVector3(camera.position, midpoint));
+    var side = normalizeVector3Safe(crossVector3(line_direction, view_direction));
+    if (vectorLength3(side) > 0.0001) return side;
+
+    const camera_forward = normalizeVector3Safe(subtractVector3(camera.target, camera.position));
+    side = normalizeVector3Safe(crossVector3(line_direction, camera_forward));
+    if (vectorLength3(side) > 0.0001) return side;
+
+    side = normalizeVector3Safe(crossVector3(line_direction, camera.up));
+    if (vectorLength3(side) > 0.0001) return side;
+    return null;
+}
+
+fn worldUnitsPerPixelAtPoint(camera: rl.Camera3D, point: rl.Vector3) f32 {
+    const screen_height = @max(rl.getScreenHeight(), 1);
+    const screen_height_float: f32 = @floatFromInt(screen_height);
+
+    if (camera.projection == .orthographic) {
+        return camera.fovy / screen_height_float;
+    }
+
+    const distance = @max(vectorLength3(subtractVector3(camera.position, point)), 0.001);
+    const fovy_radians = camera.fovy * std.math.pi / 180.0;
+    return (2.0 * distance * @tan(fovy_radians * 0.5)) / screen_height_float;
+}
+
+fn toonOutlineCoreWidthPixelsForScreenWidth(screen_width: i32) f32 {
+    const positive_width = @max(screen_width, 1);
+    return @max(@as(f32, @floatFromInt(positive_width)) / native_toon_reference_screen_width, 1.0);
+}
+
 fn transformPointByMatrix(matrix: rl.Matrix, point: rl.Vector3) rl.Vector3 {
     return .{
         .x = matrix.m12 + (matrix.m0 * point.x) + (matrix.m4 * point.y) + (matrix.m8 * point.z),
@@ -1288,11 +1374,43 @@ fn vectorLength3(value: rl.Vector3) f32 {
     return std.math.sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
 }
 
+fn addVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.x + rhs.x,
+        .y = lhs.y + rhs.y,
+        .z = lhs.z + rhs.z,
+    };
+}
+
+fn scaleVector3(value: rl.Vector3, scale: f32) rl.Vector3 {
+    return .{
+        .x = value.x * scale,
+        .y = value.y * scale,
+        .z = value.z * scale,
+    };
+}
+
+fn addScaledVector3(lhs: rl.Vector3, rhs: rl.Vector3, scale: f32) rl.Vector3 {
+    return .{
+        .x = lhs.x + rhs.x * scale,
+        .y = lhs.y + rhs.y * scale,
+        .z = lhs.z + rhs.z * scale,
+    };
+}
+
 fn subtractVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
     return .{
         .x = lhs.x - rhs.x,
         .y = lhs.y - rhs.y,
         .z = lhs.z - rhs.z,
+    };
+}
+
+fn crossVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
+    return .{
+        .x = lhs.y * rhs.z - lhs.z * rhs.y,
+        .y = lhs.z * rhs.x - lhs.x * rhs.z,
+        .z = lhs.x * rhs.y - lhs.y * rhs.x,
     };
 }
 
@@ -1537,6 +1655,13 @@ test "toon outlines drop native smooth shared edges" {
     for (outline.edges) |edge| {
         try std.testing.expect(edge.face_b == null);
     }
+}
+
+test "toon outline line weight scales from the 640px native canvas" {
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), toonOutlineCoreWidthPixelsForScreenWidth(640), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.6), toonOutlineCoreWidthPixelsForScreenWidth(1024), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.0), toonOutlineCoreWidthPixelsForScreenWidth(1280), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), toonOutlineCoreWidthPixelsForScreenWidth(320), 0.001);
 }
 
 test "parse signstop model" {
