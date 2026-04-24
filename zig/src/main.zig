@@ -6,6 +6,7 @@ const level_loader = @import("app/level_loader.zig");
 const outer_bridge = @import("app/outer_bridge.zig");
 const run_result = @import("app/run_result.zig");
 const screenshots = @import("app/screenshots.zig");
+const selected_replay = @import("app/selected_replay.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -1717,7 +1718,7 @@ const AppState = struct {
                         runner.stepWithReplay(
                             loaded_track_preview,
                             effective_runner_input,
-                            self.selectedReplayDirectiveForRunner(runner),
+                            selected_replay.directiveForRunner(self, runner),
                             @floatCast(self.simulation_clock.step_seconds),
                         );
                         if (runner.consumeReplayFadeRequest()) {
@@ -2043,7 +2044,7 @@ const AppState = struct {
                 }
                 if (self.completionScreenOverlayActive()) return;
                 const accepts_runner_input = if (self.level_runner) |runner| runner.acceptsGameplayInput() else false;
-                const accepts_live_replay_controls = accepts_runner_input and !self.selectedReplayPlaybackActive();
+                const accepts_live_replay_controls = accepts_runner_input and !selected_replay.playbackActive(self);
                 self.mouse_level_lane_target = null;
                 if (accepts_live_replay_controls and (rl.isKeyPressed(.left) or rl.isKeyPressed(.a))) {
                     self.mouse_level_lane_target = null;
@@ -2603,7 +2604,7 @@ const AppState = struct {
         self.clearPostLevelHighScoreEntry();
         var return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
         const return_owner = self.outerOwnerForAbandonActiveRun(&return_opcode);
-        if (!self.selectedReplayPlaybackActive()) {
+        if (!selected_replay.playbackActive(self)) {
             if (self.currentFailedRunResult()) |result| {
                 if (try self.standalonePostLevelHighScoreEntry(result)) |entry| {
                     try self.enterPostLevelHighScoreScreenWithReturn(entry.context, entry.return_owner, entry.return_opcode);
@@ -2633,7 +2634,7 @@ const AppState = struct {
             frontend_bridge.SelectedLevelRecordLaunch{
                 .source = source,
                 .persistent = self.selected_level_record_persistent,
-                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
+                .outer_return_target = selected_replay.launchOuterReturnTarget(self) orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
             }
         else
             null;
@@ -2641,7 +2642,7 @@ const AppState = struct {
     }
 
     fn enterSelectedLevelRecordSource(self: *AppState, launch: frontend_bridge.SelectedLevelRecordLaunch) !void {
-        const entry = self.selectedReplayEntryForSource(launch.source) orelse return;
+        const entry = selected_replay.entryForSource(self, launch.source) orelse return;
         const record = frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
         try self.beginFrontendLevelPath(record.mode, record.level_index, record, launch);
     }
@@ -3254,134 +3255,6 @@ const AppState = struct {
         return &self.high_score_tables.completion[completion_index];
     }
 
-    fn selectedReplayEntryForSource(self: *const AppState, source: frontend_bridge.SelectedLevelRecordSource) ?*const high_score.Entry {
-        return switch (source) {
-            .postal => |index| if (index < self.high_score_tables.postal.len) &self.high_score_tables.postal[index] else null,
-            .challenge => |index| if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
-            .challenge_setup => |index| if (index < self.high_score_tables.challenge.len) &self.high_score_tables.challenge[index] else null,
-            .completion => |index| if (index < self.high_score_tables.completion.len) &self.high_score_tables.completion[index] else null,
-        };
-    }
-
-    fn selectedReplayEntry(self: *const AppState) ?*const high_score.Entry {
-        const source = self.selected_level_record_source orelse return null;
-        return self.selectedReplayEntryForSource(source);
-    }
-
-    pub fn selectedReplayPlaybackActive(self: *const AppState) bool {
-        if (self.selected_replay_cache) |replay| return replay.samples.len != 0;
-        const entry = self.selectedReplayEntry() orelse return false;
-        return entry.replaySampleCount() != 0;
-    }
-
-    pub fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) frontend_bridge.OuterBridgeOpcode {
-        const source = self.selected_level_record_source orelse return .destroy_return;
-        if (self.selected_level_record_persistent) return .destroy_return;
-
-        return switch (source) {
-            // PORT(verified): `update_galaxy` / `update_challenge_setup_screen` seed the active
-            // selected-level-record lane without touching the separate persistent bit, and the
-            // corresponding `update_subgoldy` post-run completion path uses state `0x1b` for
-            // those transient returns. BN plus IDA now also show `complete_subgame` only arms
-            // app byte `+0x30d` while `selected_level_record_active == 0`, so transient postal
-            // replay final loss keeps the native `0x1a -> owner 2` destroy-return override
-            // instead of reusing the postal high-score continuation lane.
-            .completion, .challenge, .challenge_setup => .rebuild_return,
-            .postal => switch (outcome) {
-                .completed => .rebuild_return,
-                .failed => .destroy_return,
-            },
-        };
-    }
-
-    fn replayMathType16To32(value: i16, scale: f32) f32 {
-        return @as(f32, @floatFromInt(value)) * scale * (1.0 / 65536.0);
-    }
-
-    fn selectedReplayDirectiveForDecodedReplay(replay: *const high_score.DecodedReplay, runtime_track_index: usize) gameplay.ReplayDirective {
-        if (replay.samples.len == 0) return .{};
-        const sample = replay.sampleAt(runtime_track_index) orelse return .{ .active = true };
-        return .{
-            .active = true,
-            .lateral_world_x = replayMathType16To32(sample.lateral, 16.0),
-            .secondary_lane = sample.secondary_lane,
-            .raw_flag_bits = sample.flags,
-        };
-    }
-
-    fn selectedReplayDirectiveForRunner(self: *const AppState, runner: *const gameplay.Runner) gameplay.ReplayDirective {
-        const replay = self.selected_replay_cache orelse return .{};
-        return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
-    }
-
-    pub fn selectedReplayLaunchOuterReturnTarget(self: *const AppState) ?frontend_bridge.OuterReturnTarget {
-        if (self.saved_replay_return_outer_owner) |state| {
-            return frontend_bridge.outerReturnTargetForSavedReplayReturnOuterOwner(state);
-        }
-        if (self.selected_level_record_outer_return_target) |target| return target;
-        const source = self.selected_level_record_source orelse return null;
-        return frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source);
-    }
-
-    fn selectedReplayLaunchMode(self: *const AppState) ?FrontendLevelMode {
-        if (self.selected_level_record_override) |record| return record.mode;
-        if (self.active_frontend_mode) |mode| return mode;
-        const source = self.selected_level_record_source orelse return null;
-        return switch (source) {
-            .postal => .postal,
-            .challenge, .challenge_setup => .challenge,
-            .completion => .time_trial,
-        };
-    }
-
-    pub fn selectedReplayLaunchOwnerState(self: *const AppState) ?frontend_bridge.OuterOwnerState {
-        const source = self.selected_level_record_source orelse return null;
-        const mode = self.selectedReplayLaunchMode() orelse return null;
-        if (self.saved_replay_return_outer_owner) |return_state| {
-            return switch (return_state) {
-                .new_game_menu => frontend_bridge.outerOwnerStateNewGameMenu(frontend_bridge.newGameMenuItemForBridgeMode(mode)),
-                .high_scores_menu => frontend_bridge.outerOwnerStateHighScores(switch (source) {
-                    .challenge => .challenge,
-                    else => .postal,
-                }),
-            };
-        }
-        const outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse return null;
-        return frontend_bridge.outerOwnerStateForSelectedReplayLaunch(mode, source, outer_return_target, self.active_frontend_level_index);
-    }
-
-    fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
-        run_result.applySelectedReplayResultOverrides(self, result);
-    }
-
-    fn outerOwnerForSelectedReplayMarker(
-        self: *const AppState,
-        opcode: *frontend_bridge.OuterBridgeOpcode,
-    ) ?frontend_bridge.OuterOwnerState {
-        const source = self.selected_level_record_source orelse return null;
-        const record = self.selected_level_record_override orelse blk: {
-            const entry = self.selectedReplayEntryForSource(source) orelse return null;
-            break :blk frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return null;
-        };
-        // PORT(verified): `update_subgoldy` consumes selected-record replay flag bit `0x8`
-        // directly. When it hits, Windows writes `app + 0x1b8 = 0x1a`,
-        // `app + 0x1bc = 10`, sets app byte `+0x30c = 1`, and starts the
-        // front-end fade. State `10` is the front-end subgame-init owner, so
-        // this marker loops back into the current replay rather than returning
-        // to the launch surface.
-        opcode.* = .destroy_return;
-        return frontend_bridge.outerOwnerStateReplay(.{
-            .mode = record.mode,
-            .level_index = record.level_index,
-            .selected_level_record_override = record,
-            .selected_level_record_launch = .{
-                .source = source,
-                .persistent = self.selected_level_record_persistent,
-                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
-            },
-        });
-    }
-
     fn clearSelectedReplayCache(self: *AppState) void {
         if (self.selected_replay_cache) |*replay| {
             replay.deinit();
@@ -3415,7 +3288,7 @@ const AppState = struct {
         self.selected_replay_fade_exit_pending = false;
 
         const source = self.selected_level_record_source orelse return;
-        const entry = self.selectedReplayEntryForSource(source) orelse return;
+        const entry = selected_replay.entryForSource(self, source) orelse return;
         if (entry.replaySampleCount() == 0) return;
         self.selected_replay_cache = try entry.decodeReplay(self.allocator);
     }
@@ -3428,7 +3301,7 @@ const AppState = struct {
             .black_idle => {
                 self.selected_replay_fade_exit_pending = false;
                 var opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
-                const owner = self.outerOwnerForSelectedReplayMarker(&opcode) orelse return false;
+                const owner = selected_replay.outerOwnerForMarker(self, &opcode) orelse return false;
                 try self.runOuterBridgeTransition(opcode, owner);
                 self.frontend_transition.completeHandoff();
             },
@@ -7092,13 +6965,13 @@ test "selected replay directive decodes compact lateral x and the secondary lane
     var replay = try tables.completion[0].decodeReplay(std.testing.allocator);
     defer replay.deinit();
 
-    const first = AppState.selectedReplayDirectiveForDecodedReplay(&replay, 0);
+    const first = selected_replay.directiveForDecodedReplay(&replay, 0);
     try std.testing.expect(first.active);
     try std.testing.expectApproxEqAbs(@as(f32, 1.5), first.lateral_world_x.?, 0.0001);
     try std.testing.expectEqual(@as(?i32, 0), first.secondary_lane);
     try std.testing.expectEqual(@as(u8, 0x0c), first.raw_flag_bits);
 
-    const tail = AppState.selectedReplayDirectiveForDecodedReplay(&replay, 1);
+    const tail = selected_replay.directiveForDecodedReplay(&replay, 1);
     try std.testing.expect(tail.active);
     try std.testing.expect(tail.lateral_world_x == null);
     try std.testing.expectEqual(@as(u8, 0), tail.raw_flag_bits);
@@ -7139,7 +7012,7 @@ test "selected replay results skip persistence and score-table awards" {
         .persistence = .completed,
         .outer_return_target = .main_menu,
     };
-    state.applySelectedReplayResultOverrides(&result);
+    run_result.applySelectedReplayResultOverrides(&state, &result);
 
     try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
     try std.testing.expect(result.high_score_mode == null);
@@ -7181,7 +7054,7 @@ test "transient postal replay failure stays off the post-level high-score lane" 
         .persistence = .failed,
         .outer_return_target = .main_menu,
     };
-    state.applySelectedReplayResultOverrides(&result);
+    run_result.applySelectedReplayResultOverrides(&state, &result);
 
     try std.testing.expectEqual(PendingRunPersistence.none, result.persistence);
     try std.testing.expect(result.high_score_mode == null);

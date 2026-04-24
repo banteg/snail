@@ -5,6 +5,7 @@ const frontend_high_score_screen = @import("../frontend/high_score_screen.zig");
 const gameplay = @import("../gameplay.zig");
 const high_score = @import("../high_score.zig");
 const level_loader = @import("level_loader.zig");
+const selected_replay = @import("selected_replay.zig");
 
 const FrontendLevelMode = frontend.FrontendLevelMode;
 
@@ -429,13 +430,13 @@ pub fn completionContinueVisible(state: anytype) bool {
 }
 
 pub fn applySelectedReplayResultOverrides(state: anytype, result: *Result) void {
-    if (!selectedReplayPlaybackActive(state)) return;
+    if (!selected_replay.playbackActive(state)) return;
     result.persistence = .none;
     result.high_score_mode = null;
     result.high_score_rank = null;
     result.time_trial_record_improved = false;
     result.unlocked_next_route = false;
-    if (selectedReplayLaunchOuterReturnTarget(state)) |outer_return_target| {
+    if (selected_replay.launchOuterReturnTarget(state)) |outer_return_target| {
         result.outer_return_target = outer_return_target;
     }
 }
@@ -446,33 +447,4 @@ fn clampUsize(value: usize, low: usize, high: usize) usize {
 
 fn clampF32(value: f32, low: f32, high: f32) f32 {
     return @min(@max(value, low), high);
-}
-
-fn selectedReplayPlaybackActive(state: anytype) bool {
-    if (state.selected_replay_cache) |replay| return replay.samples.len != 0;
-    const entry = selectedReplayEntry(state) orelse return false;
-    return entry.replaySampleCount() != 0;
-}
-
-fn selectedReplayEntry(state: anytype) ?*const high_score.Entry {
-    const source = state.selected_level_record_source orelse return null;
-    return selectedReplayEntryForSource(state, source);
-}
-
-fn selectedReplayEntryForSource(state: anytype, source: frontend_bridge.SelectedLevelRecordSource) ?*const high_score.Entry {
-    return switch (source) {
-        .postal => |index| if (index < state.high_score_tables.postal.len) &state.high_score_tables.postal[index] else null,
-        .challenge => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
-        .challenge_setup => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
-        .completion => |index| if (index < state.high_score_tables.completion.len) &state.high_score_tables.completion[index] else null,
-    };
-}
-
-fn selectedReplayLaunchOuterReturnTarget(state: anytype) ?frontend_bridge.OuterReturnTarget {
-    if (state.saved_replay_return_outer_owner) |saved_state| {
-        return frontend_bridge.outerReturnTargetForSavedReplayReturnOuterOwner(saved_state);
-    }
-    if (state.selected_level_record_outer_return_target) |target| return target;
-    const source = state.selected_level_record_source orelse return null;
-    return frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source);
 }

@@ -1,5 +1,6 @@
 const frontend_bridge = @import("../frontend/bridge.zig");
 const run_result = @import("run_result.zig");
+const selected_replay = @import("selected_replay.zig");
 
 const PendingRunResult = run_result.Result;
 
@@ -8,13 +9,13 @@ pub fn ownerForAbandonActiveRun(
     opcode: *frontend_bridge.OuterBridgeOpcode,
 ) frontend_bridge.OuterOwnerState {
     if (state.selected_level_record_persistent) {
-        const owner = state.selectedReplayLaunchOwnerState() orelse state.saved_outer_owner;
+        const owner = selected_replay.launchOwnerState(state) orelse state.saved_outer_owner;
         opcode.* = .destroy_return;
         return owner;
     }
 
-    if (state.selectedReplayPlaybackActive()) {
-        const owner = state.selectedReplayLaunchOwnerState() orelse frontend_bridge.outerOwnerStateMainMenu();
+    if (selected_replay.playbackActive(state)) {
+        const owner = selected_replay.launchOwnerState(state) orelse frontend_bridge.outerOwnerStateMainMenu();
         // PORT(verified): when `app + 0x1066be9` is clear, BN `update_pause_menu` falls
         // through to completion state `2`. BN plus IDA then show `update_completion_screen`
         // state `2` destroying subgame, and on the Time Trial replay path
@@ -59,7 +60,7 @@ pub fn ownerForPendingRunResult(
     result: PendingRunResult,
     opcode: *frontend_bridge.OuterBridgeOpcode,
 ) frontend_bridge.OuterOwnerState {
-    const selected_level_record_result_opcode = state.postRunSelectedLevelRecordOpcode(result.outcome);
+    const selected_level_record_result_opcode = selected_replay.postRunOpcode(state, result.outcome);
     const selected_level_record_return = state.selected_level_record_source != null;
     const outer_return_target = postRunSelectedLevelRecordOuterReturnTargetOverride(state, result) orelse result.outer_return_target;
     return switch (outer_return_target) {
@@ -123,7 +124,7 @@ pub fn ownerForPendingRunResult(
                         .{
                             .source = source,
                             .persistent = state.selected_level_record_persistent,
-                            .outer_return_target = state.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
+                            .outer_return_target = selected_replay.launchOuterReturnTarget(state) orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
                         }
                     else
                         null,
