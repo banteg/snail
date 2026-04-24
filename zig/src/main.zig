@@ -3788,7 +3788,7 @@ test "startup block after click-start dismissal resumes the live runner under in
     try std.testing.expectEqual(gameplay.MovementMode.attachment, state.level_runner.?.movement_mode);
     try std.testing.expect(state.level_runner.?.attachment.follow.active);
     try std.testing.expect(state.level_runner.?.cutsceneCameraActive());
-    try std.testing.expect(state.level_runner.?.movement_rate_scalar > 0.0);
+    try std.testing.expect(state.level_runner.?.track_step_rows > 0.0);
     try std.testing.expect(state.level_runner.?.row_position > starting_row_position);
 }
 

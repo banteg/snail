@@ -478,7 +478,7 @@ pub fn cameramanProgressBlend(runner: anytype, preview: *const track.LoadedLevel
 }
 
 pub fn cameramanMatrixBlendFactor(runner: anytype) f32 {
-    return std.math.clamp(runner.movement_rate_scalar * cameraman_matrix_blend_scale, 0.0, 1.0);
+    return std.math.clamp(runner.track_step_rows * cameraman_matrix_blend_scale, 0.0, 1.0);
 }
 
 pub fn cameramanAttachmentLiftEnvelope(runner: anytype, preview: *const track.LoadedLevelPreview) f32 {

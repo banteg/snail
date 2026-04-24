@@ -13,28 +13,28 @@ pub const ReplayState = struct {
 const movement_flag_startup_ticks: u64 = 10;
 const fresh_replay_movement_flag_offset: f32 = 0.30000001;
 
-pub fn replayMovementFlagSeedProgress(rate_scalar: f32, raw_flag_bits: u8) ?f32 {
-    if ((raw_flag_bits & 0x01) != 0) return rate_scalar + fresh_replay_movement_flag_offset;
-    if ((raw_flag_bits & 0x02) != 0) return rate_scalar;
+pub fn replayMovementFlagSeedProgress(progress_step: f32, raw_flag_bits: u8) ?f32 {
+    if ((raw_flag_bits & 0x01) != 0) return progress_step + fresh_replay_movement_flag_offset;
+    if ((raw_flag_bits & 0x02) != 0) return progress_step;
     return null;
 }
 
 pub fn stepReplayMovementFlagProgress(
     current_progress: f32,
-    rate_scalar: f32,
+    progress_step: f32,
     tick_count: u64,
     replay: ReplayState,
 ) f32 {
     var progress = current_progress;
     if (tick_count < movement_flag_startup_ticks) {
-        progress = rate_scalar;
+        progress = progress_step;
     }
     if (progress > 0.0) {
-        const advanced = progress + rate_scalar;
+        const advanced = progress + progress_step;
         return if (advanced > 1.0) 0.0 else advanced;
     }
     if (!replay.track_state_latch) return progress;
-    return replayMovementFlagSeedProgress(rate_scalar, replay.raw_flag_bits) orelse progress;
+    return replayMovementFlagSeedProgress(progress_step, replay.raw_flag_bits) orelse progress;
 }
 
 pub const TrackPosition = struct {

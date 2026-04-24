@@ -11,6 +11,21 @@ pub const max_weapon_level: u8 = 2;
 pub const native_barrier_hold_step: f32 = 1.0 / 60.0;
 pub const native_startup_voice_step: f32 = 0.055555552;
 
+pub fn movementFlagsForSelector(movement_flag_selector: u8) u32 {
+    return switch (movement_flag_selector) {
+        0 => 1,
+        1 => 2,
+        2 => 4,
+        3 => 8,
+        4 => 16,
+        5 => 32,
+        6 => 64,
+        7 => 192,
+        8 => 144,
+        else => 129,
+    };
+}
+
 pub fn movementFireCooldownStepForSelector(movement_flag_selector: u8) f32 {
     return switch (movement_flag_selector) {
         0, 1, 2 => 0.0740740746,

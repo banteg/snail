@@ -281,23 +281,9 @@ const cameramanVerticalLiftFromCachedTarget = gameplay_camera.cameramanVerticalL
 const cameramanPitchRadiansFromCachedTarget = gameplay_camera.cameramanPitchRadiansFromCachedTarget;
 const clampedPreviousDesiredCameraZ = gameplay_camera.clampedPreviousDesiredCameraZ;
 
-fn movementFlagsForSelector(selector: u8) u32 {
-    return switch (selector) {
-        0 => 1,
-        1 => 2,
-        2 => 4,
-        3 => 8,
-        4 => 16,
-        5 => 32,
-        6 => 64,
-        7 => 192,
-        8 => 144,
-        else => 129,
-    };
-}
-
 pub const WeaponChannelStates = presentation_module.WeaponChannelStates;
 pub const nativeWeaponChannelStates = presentation_module.nativeWeaponChannelStates;
+const movementFlagsForSelector = presentation_module.movementFlagsForSelector;
 const movementFireCooldownStepForSelector = presentation_module.movementFireCooldownStepForSelector;
 
 const MovementFireInputState = enum {
@@ -418,7 +404,7 @@ pub const Runner = struct {
     lane_center: f32 = 0.5,
     runtime_track_index: usize = 0,
     track_row_progress: f32 = 0.0,
-    movement_rate_scalar: f32 = 0.0,
+    track_step_rows: f32 = 0.0,
     movement_flag_progress: f32 = 0.0,
     row_position: f32 = 0.0,
     previous_row_position: f32 = 0.0,
@@ -593,7 +579,7 @@ pub const Runner = struct {
             }
             self.handleFireInput(preview, self.movementFireInputState(input, replay));
             self.updateNativeVelocityZOverride(delta_seconds);
-            self.movement_rate_scalar = self.effectiveSpeedRowsPerSecond() * delta_seconds;
+            self.track_step_rows = self.effectiveSpeedRowsPerSecond() * delta_seconds;
             self.advanceMovement(preview);
             self.stepNativeVelocityX(preview);
             if (replay.active) {
@@ -661,11 +647,11 @@ pub const Runner = struct {
         if (self.phase != .active) return false;
         if (self.movement_mode != .track) return false;
         if (self.attachment.exit.pending) return false;
-        if (self.movement_rate_scalar <= 0.0001) return false;
+        if (self.track_step_rows <= 0.0001) return false;
 
         const actual_forward_step = @max(0.0, self.row_position - self.previous_row_position);
-        const lower_bound = self.movement_rate_scalar * 0.17;
-        const upper_bound = lower_bound + ((self.movement_rate_scalar * 0.5) - lower_bound) * 0.1;
+        const lower_bound = self.track_step_rows * 0.17;
+        const upper_bound = lower_bound + ((self.track_step_rows * 0.5) - lower_bound) * 0.1;
         return actual_forward_step > lower_bound and actual_forward_step < upper_bound;
     }
 
@@ -893,7 +879,7 @@ pub const Runner = struct {
     // zero-progress state. Once click-start is dismissed, Windows returns to the normal
     // runner step even while the intro cutscene still owns the shared camera.
     pub fn refreshBlockedStartupState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.movement_rate_scalar = 0.0;
+        self.track_step_rows = 0.0;
         if (!self.paused) {
             self.tryPrimeCurrentRowAttachmentEntry(preview);
             if (self.movement_mode == .attachment and self.attachment.follow.active) {
@@ -1149,12 +1135,12 @@ pub const Runner = struct {
 
         self.attachment.lane_lean.amplitude = direction;
         self.attachment.lane_lean.progress = 0.0;
-        self.attachment.lane_lean.progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
+        self.attachment.lane_lean.progress_step = self.track_step_rows * lane_lean_progress_step_scale;
     }
 
     fn stepLaneLean(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.maybeArmLaneLean(preview);
-        self.attachment.lane_lean.progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
+        self.attachment.lane_lean.progress_step = self.track_step_rows * lane_lean_progress_step_scale;
         if (@abs(self.attachment.lane_lean.amplitude) <= 0.0001) return;
 
         self.attachment.lane_lean.progress += self.attachment.lane_lean.progress_step;
@@ -1303,10 +1289,11 @@ pub const Runner = struct {
         // PORT(verified): `update_subgoldy` treats Player+0x2730 as a native
         // movement-flag pulse timer. When it is non-zero, 0x43d0d2-0x43d0f5
         // advances and wraps it; only a zero timer reaches the replay/live flag
-        // seed paths at 0x43d143 and 0x43d198.
+        // seed paths at 0x43d143 and 0x43d198. The step is the selector-owned
+        // lane from `update_player_movement_flags` (0x43a1a0), not track speed.
         self.movement_flag_progress = motion_module.stepReplayMovementFlagProgress(
             self.movement_flag_progress,
-            self.movement_rate_scalar,
+            self.presentation.movement_fire_cooldown_step,
             self.tick_count,
             self.replay_state,
         );
@@ -1327,7 +1314,7 @@ pub const Runner = struct {
             return;
         }
 
-        self.advanceTrackMovementByRows(preview, self.movement_rate_scalar);
+        self.advanceTrackMovementByRows(preview, self.track_step_rows);
     }
 
     fn advanceTrackMovementByRows(self: *Runner, preview: *const track.LoadedLevelPreview, step_rows: f32) void {
@@ -4042,7 +4029,7 @@ pub const Runner = struct {
             self.attachment.follow.vertical_offset,
         );
         const last_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, final_progress);
-        const launch_factor = std.math.clamp(self.movement_rate_scalar * last_delta_length, 0.0, 1.0);
+        const launch_factor = std.math.clamp(self.track_step_rows * last_delta_length, 0.0, 1.0);
         const exit_world_x = self.attachment.follow.cached_output_position.x;
         const exit_lane = preview.laneIndexAtWorldX(exit_world_x);
         const exit_floor_y = preview.sampleFloorHeightAtGridPosition(
@@ -4318,14 +4305,14 @@ pub const Runner = struct {
     }
 
     fn advanceAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.stepAttachmentFollowAtRate(preview, self.movement_rate_scalar);
+        self.stepAttachmentFollowAtRate(preview, self.track_step_rows);
     }
 
     fn finalizeAttachmentBegin(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         // PORT(verified): both the direct begin path and the swept installed-entry path
         // immediately run one follow update in the same tick after seeding the live state.
         if (self.currentAttachmentBuilt(preview) != null) {
-            self.stepAttachmentFollowAtRate(preview, self.movement_rate_scalar);
+            self.stepAttachmentFollowAtRate(preview, self.track_step_rows);
         } else {
             self.updateAttachmentFollowPosition(preview);
         }
@@ -5378,7 +5365,7 @@ test "attachment follow advances template progress by path factor" {
     const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, 5.0);
     try std.testing.expect(@abs(delta_length - 1.0) > 0.0001);
 
-    runner.movement_rate_scalar = 0.25;
+    runner.track_step_rows = 0.25;
     runner.advanceAttachmentFollow(&fixture.preview);
 
     try std.testing.expectApproxEqAbs(@as(f32, 5.25), runner.attachment.follow.template_progress, 0.0001);
@@ -5392,7 +5379,7 @@ test "installed attachment begin preserves raw local progress and advances once 
     const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
     var runner = Runner.init(&fixture.preview);
     primeRunnerBeforeRow(&runner, &fixture.preview, target);
-    runner.movement_rate_scalar = 0.25;
+    runner.track_step_rows = 0.25;
 
     const entry = runner.currentRowInstalledAttachmentEntry(&fixture.preview, built, target.row).?;
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), entry.local_progress, 0.0001);
@@ -5549,7 +5536,7 @@ test "runner advances deterministically over fixed time" {
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 24.0, runner.row_position, 0.001);
     try std.testing.expectEqual(start_row + 24, runner.runtime_track_index);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_step_rows, 0.0001);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
 }
 
@@ -8120,7 +8107,7 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
 
     const expected_top_height = ((@as(f32, @floatFromInt(@as(usize, @intFromFloat(@floor(4.0 * std.math.pi))))) / std.math.pi) * 2.0) + attachment_entry_rider_height;
 
-    try std.testing.expectEqual(@as(f32, 0.0), runner.movement_rate_scalar);
+    try std.testing.expectEqual(@as(f32, 0.0), runner.track_step_rows);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment.follow.active);
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(starting_row)), runner.row_position, 0.001);
@@ -9022,10 +9009,10 @@ test "cameraman matrix blend factor follows the live subgame rate" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.movement_rate_scalar = 0.2;
+    runner.track_step_rows = 0.2;
     try std.testing.expectApproxEqAbs(@as(f32, 0.06), runner.cameramanMatrixBlendFactor(), 0.0001);
 
-    runner.movement_rate_scalar = 8.0;
+    runner.track_step_rows = 8.0;
     try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.cameramanMatrixBlendFactor(), 0.0001);
 }
 
@@ -9222,7 +9209,7 @@ test "replay flag bit 0x1 seeds native movement flag progress" {
     );
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.movement_flag_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_flag_progress, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
@@ -9230,7 +9217,7 @@ test "replay flag bit 0x1 seeds native movement flag progress" {
     );
 }
 
-test "replay flag bit 0x2 seeds native movement flag progress from the rate scalar" {
+test "replay flag bit 0x2 seeds native movement flag progress from the selector step" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -9250,9 +9237,9 @@ test "replay flag bit 0x2 seeds native movement flag progress from the rate scal
         1.0 / 60.0,
     );
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_step_rows, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.8), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_flag_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_flag_progress, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
