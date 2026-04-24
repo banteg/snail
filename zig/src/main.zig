@@ -1107,7 +1107,7 @@ const AppState = struct {
                         self.level_prompt_queue.dismissActive();
                     } else if (rl.isMouseButtonPressed(.left)) {
                         if (self.currentUiMouseLocal()) |mouse| {
-                            if (gameplay_prompt_overlay.activeOkHitRect(self, &self.level_prompt_queue, true)) |ok_button| {
+                            if (gameplay_prompt_overlay.activeOkHitRect(self.gameplayPromptContext(), &self.level_prompt_queue, true)) |ok_button| {
                                 if (ok_button.contains(mouse)) {
                                     self.level_prompt_queue.dismissActive();
                                 }
@@ -1579,6 +1579,14 @@ const AppState = struct {
             .current_track_preview = loaded_track_preview,
             .current_level = loaded_level,
             .tutorial_reference_score = self.tutorial_reference_score,
+        };
+    }
+
+    fn gameplayPromptContext(self: *const AppState) gameplay_prompt_overlay.Context {
+        return .{
+            .font = &self.ui_font,
+            .widget_art = &self.frontend_widget_art,
+            .mouse_local = self.currentUiMouseLocal(),
         };
     }
 
@@ -2769,7 +2777,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
                 const camera = subgame_camera.levelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
                 try gameplay_hud.drawRowEventWidget(hud_context, layout, runner, camera);
             }
-            try gameplay_prompt_overlay.drawGameplayStack(state, layout, &state.level_prompt_queue);
+            try gameplay_prompt_overlay.drawGameplayStack(state.gameplayPromptContext(), layout, &state.level_prompt_queue);
         }
     }
 
@@ -2785,11 +2793,11 @@ fn drawTutorialGameplayUi(state: *const AppState, hud_context: gameplay_hud.Cont
     gameplay_hud.drawDamageGauge(hud_context, layout, runner);
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
-            gameplay_prompt_overlay.drawStaticWidget(state, layout, "Click to Start", true);
+            gameplay_prompt_overlay.drawStaticWidget(state.gameplayPromptContext(), layout, "Click to Start", true);
         }
         return;
     }
-    try gameplay_prompt_overlay.drawTutorialStack(state, layout, &state.level_prompt_queue);
+    try gameplay_prompt_overlay.drawTutorialStack(state.gameplayPromptContext(), layout, &state.level_prompt_queue);
 }
 
 fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {

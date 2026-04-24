@@ -1,6 +1,8 @@
 const rl = @import("raylib");
 const ui = @import("../ui.zig");
+const frontend_art = @import("../frontend/art.zig");
 const frontend_widget = @import("../frontend/widget.zig");
+const game_font = @import("../game_font.zig");
 const level_prompt = @import("../level_prompt.zig");
 
 const VirtualLayout = ui.VirtualLayout;
@@ -15,27 +17,33 @@ const ActiveLayout = struct {
     widget_layout: frontend_widget.MultilinePromptLayout = .{},
 };
 
-pub fn activeOkHitRect(state: anytype, queue: *const level_prompt.Queue, tutorial: bool) ?frontend_widget.Rect {
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: *const frontend_art.FrontendWidgetArt,
+    mouse_local: ?rl.Vector2,
+};
+
+pub fn activeOkHitRect(context: Context, queue: *const level_prompt.Queue, tutorial: bool) ?frontend_widget.Rect {
     const prompt = queue.active() orelse return null;
     if (!prompt.interactive) return null;
-    const prompt_layout = activeLayout(state, prompt, tutorial);
+    const prompt_layout = activeLayout(context, prompt, tutorial);
     const ok_text_rect = prompt_layout.widget_layout.ok_text_rect orelse return null;
     var idle_state = frontend_widget.TextButtonState{};
     idle_state.snapFor(.menu_button, false);
     return frontend_widget.hitRect(ok_text_rect, idle_state);
 }
 
-pub fn drawGameplayStack(state: anytype, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    try drawWidget(state, layout, queue, false);
+pub fn drawGameplayStack(context: Context, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
+    try drawWidget(context, layout, queue, false);
 }
 
-pub fn drawStaticWidget(state: anytype, layout: VirtualLayout, text: []const u8, tutorial: bool) void {
-    const prompt_layout = layoutForText(state, text, tutorial, false);
-    drawMessageLines(state, layout, prompt_layout);
+pub fn drawStaticWidget(context: Context, layout: VirtualLayout, text: []const u8, tutorial: bool) void {
+    const prompt_layout = layoutForText(context, text, tutorial, false);
+    drawMessageLines(context, layout, prompt_layout);
 }
 
-pub fn drawTutorialStack(state: anytype, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
-    try drawWidget(state, layout, queue, true);
+pub fn drawTutorialStack(context: Context, layout: VirtualLayout, queue: *const level_prompt.Queue) !void {
+    try drawWidget(context, layout, queue, true);
 }
 
 fn promptLines(text: []const u8, lines: *[frontend_widget.multiline_prompt_max_lines][]const u8) []const []const u8 {
@@ -61,16 +69,16 @@ fn anchorY(tutorial: bool, interactive: bool) f32 {
     return if (interactive) tutorial_prompt_interactive_anchor_y else tutorial_prompt_anchor_y;
 }
 
-fn activeLayout(state: anytype, prompt: level_prompt.Entry, tutorial: bool) ActiveLayout {
-    return layoutForText(state, prompt.message, tutorial, prompt.interactive);
+fn activeLayout(context: Context, prompt: level_prompt.Entry, tutorial: bool) ActiveLayout {
+    return layoutForText(context, prompt.message, tutorial, prompt.interactive);
 }
 
-fn layoutForText(state: anytype, text: []const u8, tutorial: bool, interactive: bool) ActiveLayout {
+fn layoutForText(context: Context, text: []const u8, tutorial: bool, interactive: bool) ActiveLayout {
     var prompt_layout = ActiveLayout{};
     const lines = promptLines(text, &prompt_layout.lines);
     prompt_layout.line_count = lines.len;
     prompt_layout.widget_layout = frontend_widget.menuPromptLayout(
-        &state.ui_font,
+        context.font,
         lines,
         anchorY(tutorial, interactive),
         interactive,
@@ -78,9 +86,9 @@ fn layoutForText(state: anytype, text: []const u8, tutorial: bool, interactive: 
     return prompt_layout;
 }
 
-fn drawMessageLines(state: anytype, layout: VirtualLayout, prompt_layout: ActiveLayout) void {
+fn drawMessageLines(context: Context, layout: VirtualLayout, prompt_layout: ActiveLayout) void {
     const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
+        .border = context.widget_art.border.?.texture,
     };
     for (0..prompt_layout.line_count) |index| {
         const line = prompt_layout.lines[index];
@@ -89,7 +97,7 @@ fn drawMessageLines(state: anytype, layout: VirtualLayout, prompt_layout: Active
         frontend_widget.drawTextButtonWithOptions(
             layout,
             widget_art,
-            &state.ui_font,
+            context.font,
             .menu_button,
             line,
             prompt_layout.widget_layout.line_rects[index],
@@ -100,27 +108,27 @@ fn drawMessageLines(state: anytype, layout: VirtualLayout, prompt_layout: Active
     }
 }
 
-fn drawWidget(state: anytype, layout: VirtualLayout, queue: *const level_prompt.Queue, tutorial: bool) !void {
+fn drawWidget(context: Context, layout: VirtualLayout, queue: *const level_prompt.Queue, tutorial: bool) !void {
     const prompt = queue.active() orelse return;
-    const prompt_layout = activeLayout(state, prompt, tutorial);
+    const prompt_layout = activeLayout(context, prompt, tutorial);
     var frame_state = frontend_widget.TextButtonState{};
     frame_state.snapFor(.menu_button, false);
     const colors = frontend_widget.colorsForState(frame_state, false);
     frontend_widget.drawNineSliceFrame(
         layout,
-        state.frontend_widget_art.border.?.texture,
+        context.widget_art.border.?.texture,
         prompt_layout.widget_layout.frame_rect,
         frontend_widget.menu_button_border_edge,
         frontend_widget.menu_button_border_edge / 128.0,
         colors.fill,
     );
-    drawMessageLines(state, layout, prompt_layout);
+    drawMessageLines(context, layout, prompt_layout);
 
     if (prompt_layout.widget_layout.ok_text_rect) |ok_text_rect| {
         var idle_state = frontend_widget.TextButtonState{};
         idle_state.snapFor(.menu_button, false);
         const hit_rect = frontend_widget.hitRect(ok_text_rect, idle_state);
-        const hovered = if (state.currentUiMouseLocal()) |mouse|
+        const hovered = if (context.mouse_local) |mouse|
             hit_rect.contains(mouse)
         else
             false;
@@ -128,8 +136,8 @@ fn drawWidget(state: anytype, layout: VirtualLayout, queue: *const level_prompt.
         ok_state.snapFor(.menu_button, hovered);
         frontend_widget.drawTextButton(
             layout,
-            .{ .border = state.frontend_widget_art.border.?.texture },
-            &state.ui_font,
+            .{ .border = context.widget_art.border.?.texture },
+            context.font,
             .menu_button,
             "OK",
             ok_text_rect,
