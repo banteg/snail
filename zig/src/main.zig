@@ -28,12 +28,11 @@ const frontend_completion_screen = @import("frontend/completion_screen.zig");
 const frontend_exit_prompt = @import("frontend/exit_prompt.zig");
 const frontend_help = @import("frontend/help.zig");
 const frontend_high_score_screen = @import("frontend/high_score_screen.zig");
-const frontend_main_menu = @import("frontend/main_menu.zig");
-const frontend_new_game_menu = @import("frontend/new_game_menu.zig");
 const frontend_options_menu = @import("frontend/options_menu.zig");
 const frontend_pause_menu = @import("frontend/pause_menu.zig");
 const frontend_route_map = @import("frontend/route_map.zig");
 const frontend_render = @import("frontend/render.zig");
+const frontend_screens = @import("frontend/screens.zig");
 const frontend_thanks = @import("frontend/thanks.zig");
 const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
@@ -801,7 +800,7 @@ const AppState = struct {
         frontend_input.noteKeyboardNavigation(self);
     }
 
-    fn activeFrontendButtonTarget(self: *const AppState) ?frontend_activation.HoverTarget {
+    pub fn activeFrontendButtonTarget(self: *const AppState) ?frontend_activation.HoverTarget {
         return frontend_input.activeButtonTarget(self);
     }
 
@@ -841,7 +840,7 @@ const AppState = struct {
         frontend_input.snapWidgetStates(self);
     }
 
-    fn optionsMenuLayoutState(self: *const AppState) frontend_options_menu.LayoutState {
+    pub fn optionsMenuLayoutState(self: *const AppState) frontend_options_menu.LayoutState {
         return frontend_mouse.optionsMenuLayoutState(self);
     }
 
@@ -1192,7 +1191,7 @@ const AppState = struct {
         try frontend_flow.activateMainMenuItem(self, item);
     }
 
-    fn activeHighScoreScreenMode(self: *const AppState) high_score.Mode {
+    pub fn activeHighScoreScreenMode(self: *const AppState) high_score.Mode {
         return frontend_flow.activeHighScoreScreenMode(self);
     }
 
@@ -1225,7 +1224,7 @@ const AppState = struct {
         try frontend_flow.activateNewGameMenuItem(self, item);
     }
 
-    fn newGameMenuItemVisible(self: *const AppState, item: NewGameMenuItem) bool {
+    pub fn newGameMenuItemVisible(self: *const AppState, item: NewGameMenuItem) bool {
         return frontend_flow.newGameMenuItemVisible(self, item);
     }
 
@@ -1241,7 +1240,7 @@ const AppState = struct {
         frontend_flow.stepNewGameMenuSelection(self, delta);
     }
 
-    fn challengeSetupReplayAvailable(self: *const AppState) bool {
+    pub fn challengeSetupReplayAvailable(self: *const AppState) bool {
         return frontend_flow.challengeSetupReplayAvailable(self);
     }
 
@@ -1853,7 +1852,7 @@ const AppState = struct {
         };
     }
 
-    fn postLevelHighScoreContext(self: *const AppState) ?frontend_high_score_screen.PendingEntry {
+    pub fn postLevelHighScoreContext(self: *const AppState) ?frontend_high_score_screen.PendingEntry {
         return switch (self.high_score_screen_owner) {
             .post_level_entry => |context| context,
             .main_menu_browse => null,
@@ -1879,7 +1878,7 @@ const AppState = struct {
         self.post_level_high_score_action_index = 1;
     }
 
-    fn postLevelHighScoreDraft(self: *const AppState) []const u8 {
+    pub fn postLevelHighScoreDraft(self: *const AppState) []const u8 {
         return self.post_level_high_score_name_buf[0..self.post_level_high_score_name_len];
     }
 
@@ -2345,12 +2344,12 @@ const AppState = struct {
         }
     }
 
-    fn currentTextScriptProgress(self: *const AppState) ?f32 {
+    pub fn currentTextScriptProgress(self: *const AppState) ?f32 {
         const script = self.currentTextScript() orelse return null;
         return script.progressForTicks(self.game_phase_ticks);
     }
 
-    fn currentTextScript(self: *const AppState) ?*const intro.Loaded {
+    pub fn currentTextScript(self: *const AppState) ?*const intro.Loaded {
         if (self.current_text_script) |*script| {
             return script;
         }
@@ -2540,19 +2539,19 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
 
     switch (state.game_phase) {
         .boot => unreachable,
-        .intro => drawCurrentTextScript(state, ui_layout),
-        .main_menu => try drawMainMenuUi(state, ui_layout),
-        .new_game_menu => try drawNewGameMenuUi(state, ui_layout),
-        .challenge_setup_menu => try drawChallengeSetupMenuUi(state, ui_layout),
-        .options_menu => try drawOptionsMenuUi(state, ui_layout),
-        .pause_menu => try drawPauseMenuUi(state, ui_layout),
-        .route_map_menu => try drawRouteMapMenuUi(state, ui_layout),
-        .high_scores_menu => try drawHighScoresMenuUi(state, ui_layout),
-        .exit_prompt => try drawExitPromptUi(state, ui_layout),
+        .intro => frontend_screens.drawTextScript(state, ui_layout),
+        .main_menu => try frontend_screens.drawMainMenu(state, ui_layout),
+        .new_game_menu => try frontend_screens.drawNewGameMenu(state, ui_layout),
+        .challenge_setup_menu => try frontend_screens.drawChallengeSetupMenu(state, ui_layout),
+        .options_menu => try frontend_screens.drawOptionsMenu(state, ui_layout),
+        .pause_menu => frontend_screens.drawPauseMenu(state, ui_layout),
+        .route_map_menu => try frontend_screens.drawRouteMapMenu(state, ui_layout),
+        .high_scores_menu => try frontend_screens.drawHighScoresMenu(state, ui_layout),
+        .exit_prompt => frontend_screens.drawExitPrompt(state, ui_layout),
         .completion_screen => try drawCompletionScreenUi(state, ui_layout),
-        .thanks_screen => drawThanksScreenUi(state, ui_layout),
-        .credits => drawCurrentTextScript(state, ui_layout),
-        .help => drawHelpUi(state, ui_layout),
+        .thanks_screen => frontend_screens.drawThanks(state, ui_layout),
+        .credits => frontend_screens.drawTextScript(state, ui_layout),
+        .help => frontend_screens.drawHelp(state, ui_layout),
         .level => try drawGameplayLevelUi(state, ui_layout),
     }
 }
@@ -2572,7 +2571,8 @@ fn drawGameUi(state: *const AppState) !void {
         } else {
             rl.drawRectangleRec(full_bounds, .black);
         }
-        return drawGameBootUi(state, ui_layout);
+        frontend_screens.drawBoot(state, ui_layout);
+        return;
     }
 
     if (render_phase.frontendUsesCanvas(state)) {
@@ -2616,128 +2616,6 @@ fn drawGameUi(state: *const AppState) !void {
     }
 
     state.frontend_transition.draw(full_bounds);
-}
-
-fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
-    if (state.current_loading_screen != null) return;
-
-    const font_size = layout.fontSize(30);
-    const title_width = frontend_render.measureText(state, "Loading...", font_size);
-    const title_point = layout.mapPoint(320.0, 240.0);
-    const title_x: i32 = @intFromFloat(title_point.x);
-    const title_y: i32 = @intFromFloat(title_point.y);
-    frontend_render.drawText(
-        state,
-        "Loading...",
-        title_x - @divTrunc(title_width, 2),
-        title_y - layout.scaleInt(18),
-        font_size,
-        .ray_white,
-    );
-}
-
-fn challengeSetupLayoutState(
-    self: *const AppState,
-    difficulty_buffer: []u8,
-    speed_buffer: []u8,
-) frontend_challenge_setup_menu.LayoutState {
-    return .{
-        .replay_available = self.challengeSetupReplayAvailable(),
-        .difficulty_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplayDifficultyValue())) * 0.01, difficulty_buffer),
-        .speed_value_text = frontend_options_menu.sliderValueText(@as(f32, @floatFromInt(self.runtime_config.challengeReplaySpeedValue())) * 0.01, speed_buffer),
-        .difficulty_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
-        .speed_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
-    };
-}
-
-fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    frontend_main_menu.drawMenuUi(state, layout);
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawStatusMessage(state, layout, message);
-    }
-}
-
-fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    frontend_new_game_menu.drawMenuUi(state, layout, .{
-        state.newGameMenuItemVisible(.tutorial),
-        state.newGameMenuItemVisible(.postal_mode),
-        state.newGameMenuItemVisible(.time_trial),
-        state.newGameMenuItemVisible(.challenge_mode),
-    });
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawStatusMessage(state, layout, message);
-    }
-}
-
-fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const active_target = state.activeFrontendButtonTarget();
-    var difficulty_buffer: [16]u8 = undefined;
-    var speed_buffer: [16]u8 = undefined;
-    frontend_challenge_setup_menu.drawMenuUi(
-        state,
-        layout,
-        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
-        active_target,
-        state.slider_art.textures(),
-    );
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawStatusMessage(state, layout, message);
-    }
-}
-
-fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const menu_layout = state.optionsMenuLayoutState();
-    const active_target = state.activeFrontendButtonTarget();
-    frontend_options_menu.drawMenuUi(state, layout, menu_layout, active_target, state.slider_art.textures());
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawStatusMessage(state, layout, message);
-    }
-}
-
-fn drawPauseMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    frontend_pause_menu.drawMenuUi(state, layout);
-}
-
-fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    frontend_route_map.drawMenuUi(state, layout);
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawNoticeBlock(state, layout, 320.0, 438.0, message, .ray_white);
-    }
-}
-
-fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
-    const pending_entry = state.postLevelHighScoreContext();
-    const selected_mode = state.activeHighScoreScreenMode();
-    var draft_buffer: [high_score.name_capacity + 1]u8 = undefined;
-    const pending_draft_name = if (pending_entry != null)
-        if (state.postLevelHighScoreDraft().len == 0)
-            "_"
-        else
-            try std.fmt.bufPrint(&draft_buffer, "{s}_", .{state.postLevelHighScoreDraft()})
-    else
-        null;
-    try frontend_high_score_screen.drawMenuUi(
-        state,
-        layout,
-        state.high_score_screen_owner,
-        selected_mode,
-        pending_entry,
-        pending_draft_name,
-    );
-
-    if (state.game_status_message) |message| {
-        try frontend_render.drawStatusMessage(state, layout, message);
-    }
-}
-
-fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    frontend_render.drawHeading(state, layout, 320.0, frontend_exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
-    frontend_exit_prompt.drawMenuUi(state, layout);
 }
 
 fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
@@ -2813,21 +2691,6 @@ fn bootPhaseProgress(state: *const AppState) f32 {
         0.0,
         1.0,
     );
-}
-
-fn drawCurrentTextScript(state: *const AppState, layout: VirtualLayout) void {
-    const script = state.currentTextScript() orelse return;
-    const progress = state.currentTextScriptProgress() orelse 0.0;
-    script.drawCrawl(&state.ui_font, progress, .{
-        .x = layout.x,
-        .y = layout.y,
-        .width = layout.width,
-        .height = layout.height,
-    });
-}
-
-fn drawHelpUi(state: *const AppState, layout: VirtualLayout) void {
-    frontend_help.drawMenuUi(state, layout);
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
@@ -2909,10 +2772,6 @@ fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
             state.completion_continue_button_state,
         );
     }
-}
-
-fn drawThanksScreenUi(state: *const AppState, layout: VirtualLayout) void {
-    frontend_thanks.drawMenuUi(state, layout);
 }
 
 fn drawSubgameViewport(state: *const AppState) void {

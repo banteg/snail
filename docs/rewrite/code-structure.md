@@ -75,6 +75,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `frontend/render.zig` | Shared frontend render primitives: app-font text measurement/drawing, aligned headings, status/notice overlays, and the custom frontend cursor overlay. |
+| `frontend/screens.zig` | Frontend screen composition: boot/title crawl wrappers, menu draw dispatch, challenge setup labels, high-score draft text, route-map notices, exit prompt heading, help, and thanks screen. |
 | `main.zig` (remaining) | `pub fn main`, CLI parsing, render loop, top-level init/teardown, `AppState` struct definition with field declarations plus a thin dispatch layer that delegates to the above modules. |
 
 ## Execution order
