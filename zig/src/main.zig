@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const level_loader = @import("app/level_loader.zig");
+const run_result = @import("app/run_result.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -186,97 +187,21 @@ test "native global audio sample ids resolve from shipped paths" {
 
 const max_announced_slug_voice_cells: usize = 64;
 
-const RespawnBridgeState = struct {
-    frontend_mode: ?FrontendLevelMode,
-    frontend_level_index: usize,
-    runner: gameplay.Runner,
-};
-
-const RunOutcome = enum {
-    completed,
-    failed,
-};
+const RespawnBridgeState = run_result.RespawnBridgeState;
+const RunOutcome = run_result.Outcome;
 
 fn outerReturnTargetForCompletionOwner(owner: CompletionFlowOwner) frontend_bridge.OuterReturnTarget {
-    return switch (owner) {
-        .postal_route_map => .postal_route_map,
-        .postal_final => .thanks_screen,
-        .postal_failure => .new_game_menu,
-        .challenge_completion => .challenge_setup_menu,
-        .challenge_failure => .challenge_setup_menu,
-        .time_trial_completion => .time_trial_route_map,
-        .time_trial_failure => .time_trial_route_map,
-        .tutorial_completion => .new_game_menu,
-        .tutorial_failure => .main_menu,
-    };
+    return run_result.outerReturnTargetForCompletionOwner(owner);
 }
 
 fn completionSummary(result: PendingRunResult) frontend_completion_screen.Summary {
-    return .{
-        .outcome = switch (result.outcome) {
-            .completed => .completed,
-            .failed => .failed,
-        },
-        .level_name = result.level_name,
-        .mode = result.mode,
-        .elapsed_millis = result.elapsed_millis,
-        .parcel_count = result.parcel_count,
-        .parcel_target = result.parcel_target,
-        .score = result.score,
-        .score_is_partial = result.score_is_partial,
-        .score_totals = result.score_totals,
-        .visible_life_stock = result.visible_life_stock,
-        .damage_gauge = result.damage_gauge,
-        .high_score_rank = result.high_score_rank,
-        .time_trial_record_improved = result.time_trial_record_improved,
-        .unlocked_next_route = result.unlocked_next_route,
-    };
+    return run_result.summary(result);
 }
 
-const PendingRunPersistence = enum {
-    none,
-    completed,
-    failed,
-};
-
-const PendingRunResult = struct {
-    outcome: RunOutcome = .completed,
-    level_name: []const u8,
-    mode: ?FrontendLevelMode,
-    elapsed_millis: u32,
-    parcel_count: u32,
-    parcel_target: usize,
-    score: u32,
-    score_is_partial: bool,
-    score_totals: gameplay.ScoreTotals = .{},
-    visible_life_stock: u32 = 0,
-    damage_gauge: f32 = 0.0,
-    high_score_mode: ?high_score.Mode = null,
-    high_score_rank: ?usize = null,
-    time_trial_record_improved: bool = false,
-    unlocked_next_route: bool = false,
-    completion_owner: CompletionFlowOwner = .tutorial_completion,
-    persistence: PendingRunPersistence = .none,
-    outer_return_target: frontend_bridge.OuterReturnTarget,
-};
-
-const StandalonePostLevelHighScoreEntry = struct {
-    context: frontend_high_score_screen.PendingEntry,
-    return_owner: frontend_bridge.OuterOwnerState,
-    return_opcode: frontend_bridge.OuterBridgeOpcode,
-};
-
-const CompletionFlowOwner = enum {
-    postal_route_map,
-    postal_final,
-    postal_failure,
-    challenge_completion,
-    challenge_failure,
-    time_trial_completion,
-    time_trial_failure,
-    tutorial_completion,
-    tutorial_failure,
-};
+const PendingRunPersistence = run_result.Persistence;
+const PendingRunResult = run_result.Result;
+const StandalonePostLevelHighScoreEntry = run_result.StandalonePostLevelHighScoreEntry;
+const CompletionFlowOwner = run_result.CompletionFlowOwner;
 
 const pause_menu_button_count = frontend_pause_menu.items.len;
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
@@ -3968,11 +3893,7 @@ const AppState = struct {
     }
 
     fn previewDescendingHighScoreRank(entries: []const high_score.Entry, score: u32) ?usize {
-        const visible = @min(high_score.visible_entry_count, entries.len);
-        var rank: usize = 0;
-        while (rank < visible and score <= entries[rank].score and entries[rank].isActive()) : (rank += 1) {}
-        if (rank >= visible) return null;
-        return rank;
+        return run_result.previewDescendingHighScoreRank(entries, score);
     }
 
     fn previewPostalRouteUnlock(current_index: usize, highest_available: usize, saved_limit: usize) bool {
