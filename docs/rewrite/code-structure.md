@@ -82,6 +82,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/audio.zig` | Gameplay sound cue dispatcher and effect helpers: `playGameplayRunnerAudio`, `playGameplayEffect`, and scaled effect playback. |
 | `gameplay/effects.zig` | Transient gameplay effect controller: `Controller`, `Effect`, `Kind`, update/clear/spawn helpers, and runner-driven smoke/explosion/slug goo emission. |
 | `gameplay/actor_render.zig` | Gameplay actor renderer with explicit resource context: live runtime actors, pickups, rings, projectiles, transient effects, barrier object, Turbo model, weapons, jetpack, invincible overlay, and lane-position helpers. |
+| `gameplay/viewport_render.zig` | Gameplay 3D viewport renderer: active segment selection, live/preview camera selection, track scene drawing, and actor renderer dispatch. |
 | `gameplay/hud.zig` | Gameplay HUD renderer with explicit render context: score/best/parcel widgets, progress bar, lives, damage gauge, warning icon, and row-event world widget. |
 | `gameplay/prompt_overlay.zig` | Gameplay/tutorial prompt overlay renderer with explicit render context: multiline prompt layout, row-message frame drawing, click-to-start widget drawing, and tutorial OK hit rectangles. |
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
@@ -123,6 +124,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 18. Phase B6 — **done**. `app/window_state.zig` owns window/UI projection and fullscreen preference sync.
 19. Phase B7 — **done**. `app/phase_resources.zig` owns phase resource synchronization instead of leaving the broad phase switch in `main.zig`.
 20. Phase B8 — **done**. `app/game_tick.zig` owns per-tick app orchestration; `main.zig` delegates simulation ticks instead of carrying the frame update switch inline.
+21. Phase B9 — **done**. `gameplay/viewport_render.zig` owns gameplay 3D viewport drawing, and `gameplay/billboard.zig` owns its alpha-cutout shader factory.
 
 ## Refactor pattern that worked
 

@@ -1,6 +1,25 @@
 const std = @import("std");
 const rl = @import("raylib");
 
+const alpha_cutout_fragment_shader: [:0]const u8 =
+    \\#version 330
+    \\in vec2 fragTexCoord;
+    \\in vec4 fragColor;
+    \\uniform sampler2D texture0;
+    \\uniform vec4 colDiffuse;
+    \\out vec4 finalColor;
+    \\
+    \\void main() {
+    \\    vec4 color = texture(texture0, fragTexCoord) * colDiffuse * fragColor;
+    \\    if (color.a <= 0.05) discard;
+    \\    finalColor = color;
+    \\}
+;
+
+pub fn loadAlphaCutoutShader() !rl.Shader {
+    return try rl.loadShaderFromMemory(null, alpha_cutout_fragment_shader);
+}
+
 const Uv = struct {
     left: f32,
     top: f32,

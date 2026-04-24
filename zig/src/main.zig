@@ -50,8 +50,8 @@ const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
 const game_font = @import("game_font.zig");
 const gameplay_art = @import("gameplay_art.zig");
-const gameplay_actor_render = @import("gameplay/actor_render.zig");
 const gameplay_audio_catalog = @import("gameplay/audio_catalog.zig");
+const gameplay_billboard = @import("gameplay/billboard.zig");
 const gameplay_effects = @import("gameplay/effects.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
@@ -60,6 +60,7 @@ const gameplay_model_render = @import("gameplay/model_render.zig");
 const gameplay_presentation = @import("gameplay/presentation.zig");
 const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
 const gameplay_render_policy = @import("gameplay/render_policy.zig");
+const gameplay_viewport_render = @import("gameplay/viewport_render.zig");
 const gameplay_voice = @import("gameplay/voice.zig");
 const high_score = @import("high_score.zig");
 const intro = @import("intro.zig");
@@ -417,7 +418,7 @@ const AppState = struct {
         var background_light_streak_texture = try resources.texture(gameplay_assets.background_light_streak_sprite_path);
         rl.setTextureFilter(background_light_streak_texture.texture, .point);
         errdefer background_light_streak_texture.unload();
-        const gameplay_billboard_shader = try loadGameplayBillboardCutoutShader();
+        const gameplay_billboard_shader = try gameplay_billboard.loadAlphaCutoutShader();
         errdefer rl.unloadShader(gameplay_billboard_shader);
         var galaxy_names: ?galaxy.Definition = try galaxy.loadByPath(allocator, &resources.catalog, galaxy_names_path);
         errdefer if (galaxy_names) |*names| names.deinit();
@@ -2121,7 +2122,7 @@ fn drawGamePhaseContents(state: *const AppState, bounds: rl.Rectangle, ui_layout
         } else {
             rl.drawRectangleRec(bounds, .black);
         }
-        drawSubgameViewport(state);
+        gameplay_viewport_render.draw(state);
     } else if (state.current_game_background) |loaded_background| {
         if (state.current_game_background_runtime) |runtime| {
             switch (state.game_phase) {
@@ -2292,7 +2293,7 @@ fn bootPhaseProgress(state: *const AppState) f32 {
 }
 
 fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawSubgameViewport(state);
+    gameplay_viewport_render.draw(state);
 
     if (state.level_runner) |runner| {
         const hud_context = state.gameplayHudContext();
@@ -2351,7 +2352,7 @@ fn formatScoreWithCommas(buffer: []u8, score: u32) ![:0]const u8 {
 }
 
 fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawSubgameViewport(state);
+    gameplay_viewport_render.draw(state);
     const result = state.pending_run_result orelse return;
     const summary = completionSummary(result);
     if (result.outcome == .completed) {
@@ -2371,59 +2372,6 @@ fn drawCompletionScreenUi(state: *const AppState, layout: VirtualLayout) !void {
             state.completion_continue_button_state,
         );
     }
-}
-
-fn drawSubgameViewport(state: *const AppState) void {
-    const loaded_track_preview = state.current_track_preview orelse return;
-    const runner = state.level_runner;
-    const selected_segment_index = if (runner) |live_runner|
-        if (loaded_track_preview.locateRow(live_runner.current_global_row)) |row_location|
-            row_location.segment_index
-        else
-            0
-    else if (loaded_track_preview.segments.len != 0 and state.level_segment_index < loaded_track_preview.segments.len)
-        state.level_segment_index
-    else
-        0;
-    const camera = if (runner != null)
-        subgame_camera.levelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees)
-    else
-        loaded_track_preview.previewCamera(@floatCast(state.render_time_seconds), selected_segment_index);
-    camera.begin();
-    defer rl.endMode3D();
-
-    if (state.current_game_track_scene) |*scene| {
-        scene.drawGameplay(&loaded_track_preview, selected_segment_index);
-    } else {
-        loaded_track_preview.draw(selected_segment_index);
-    }
-    const live_runner = runner orelse return;
-    const actor_render_context = gameplay_actor_render.context(state);
-    if (state.gameplay_click_start_active) {
-        gameplay_actor_render.drawTurbo(actor_render_context, &loaded_track_preview, live_runner, camera);
-        return;
-    }
-    gameplay_actor_render.drawRuntimeActors(actor_render_context, &loaded_track_preview, live_runner, camera);
-    gameplay_actor_render.drawBarrier(actor_render_context, &loaded_track_preview, live_runner);
-    gameplay_actor_render.drawTurbo(actor_render_context, &loaded_track_preview, live_runner, camera);
-}
-const gameplay_billboard_alpha_cutout_fragment_shader: [:0]const u8 =
-    \\#version 330
-    \\in vec2 fragTexCoord;
-    \\in vec4 fragColor;
-    \\uniform sampler2D texture0;
-    \\uniform vec4 colDiffuse;
-    \\out vec4 finalColor;
-    \\
-    \\void main() {
-    \\    vec4 color = texture(texture0, fragTexCoord) * colDiffuse * fragColor;
-    \\    if (color.a <= 0.05) discard;
-    \\    finalColor = color;
-    \\}
-;
-
-fn loadGameplayBillboardCutoutShader() !rl.Shader {
-    return try rl.loadShaderFromMemory(null, gameplay_billboard_alpha_cutout_fragment_shader);
 }
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
