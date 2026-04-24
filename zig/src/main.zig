@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
+const frontend_flow = @import("app/frontend_flow.zig");
 const level_loader = @import("app/level_loader.zig");
 const return_flow = @import("app/return_flow.zig");
 const run_result = @import("app/run_result.zig");
@@ -752,7 +753,7 @@ const AppState = struct {
         }
     }
 
-    fn saveRuntimeConfig(self: *const AppState) !void {
+    pub fn saveRuntimeConfig(self: *const AppState) !void {
         try self.runtime_config.saveToRuntimeRoot(self.runtime_root_path);
     }
 
@@ -1047,7 +1048,7 @@ const AppState = struct {
         }
     }
 
-    fn snapFrontendWidgetStates(self: *AppState) void {
+    pub fn snapFrontendWidgetStates(self: *AppState) void {
         for (&self.main_menu_button_states, 0..) |*state, index| {
             state.snapFor(.menu_button, self.game_phase == .main_menu and self.frontendButtonHot(frontend_activation.hoverTargetForMainMenu(index), self.menu_index == index));
         }
@@ -1505,7 +1506,7 @@ const AppState = struct {
         self.setFrontendHoverTarget(null);
     }
 
-    fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
+    pub fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
         const selected_mode = self.activeHighScoreScreenMode();
         if (!frontend_high_score_screen.rowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
         const entries = self.high_score_tables.visibleEntries(selected_mode);
@@ -2093,128 +2094,35 @@ const AppState = struct {
     }
 
     pub fn enterGamePhase(self: *AppState, phase: GamePhase) !void {
-        self.game_phase = phase;
-        self.game_phase_ticks = 0;
-        self.hovered_frontend_target = null;
-        self.keyboard_frontend_focus_visible = false;
-        self.pending_frontend_activation = null;
-        if (phase == .new_game_menu) {
-            self.normalizeNewGameMenuSelection();
-        }
-        switch (phase) {
-            .main_menu => self.current_outer_owner = frontend_bridge.outerOwnerStateMainMenu(),
-            .new_game_menu => self.current_outer_owner = frontend_bridge.outerOwnerStateNewGameMenu(new_game_menu_items[self.new_game_menu_index]),
-            .thanks_screen => self.current_outer_owner = frontend_bridge.outerOwnerStateThanksScreen(),
-            else => {},
-        }
-        try self.syncGamePhaseResources();
-        self.snapFrontendWidgetStates();
+        try frontend_flow.enterGamePhase(self, phase);
     }
 
     fn enterStartPhase(self: *AppState, phase: GamePhase) !void {
-        try self.high_score_tables.loadFromRuntimeRoot(self.allocator, self.runtime_root_path);
-
-        switch (phase) {
-            .boot => try self.enterGamePhase(.boot),
-            .intro,
-            .main_menu,
-            .new_game_menu,
-            .challenge_setup_menu,
-            .help,
-            .credits,
-            .thanks_screen,
-            => try self.enterGamePhase(phase),
-            .high_scores_menu => try self.enterHighScoreBrowseScreen(.postal),
-            .options_menu => {
-                if (self.start_pause_context) {
-                    try self.loadGameLevel(default_level_path);
-                    self.options_return_phase = .pause_menu;
-                } else {
-                    self.options_return_phase = .main_menu;
-                }
-                try self.enterGamePhase(.options_menu);
-            },
-            .pause_menu => {
-                try self.enterGameplayShell(default_level_path);
-                try self.enterPauseMenu();
-            },
-            .exit_prompt => {
-                if (self.start_pause_context) {
-                    try self.loadGameLevel(default_level_path);
-                    try self.beginEndGamePrompt(.pause_menu);
-                } else {
-                    try self.beginExitPrompt(.main_menu);
-                }
-            },
-            .route_map_menu => try self.enterRouteMapMenu(.postal),
-            .level => try self.enterGameplayShell(default_level_path),
-            .completion_screen => {
-                try self.loadGameLevel(default_level_path);
-                self.active_frontend_mode = .postal;
-                self.active_frontend_level_index = 1;
-                self.pending_run_result = .{
-                    .outcome = .completed,
-                    .level_name = "Snail Mail 101",
-                    .mode = .postal,
-                    .elapsed_millis = 62_340,
-                    .parcel_count = 1,
-                    .parcel_target = 1,
-                    .score = 50_210,
-                    .score_is_partial = true,
-                    .score_totals = .{
-                        .parcel_pickup = 100,
-                        .parcel_register = 10,
-                        .completion_bonus = 50_000,
-                        .total = 50_210,
-                    },
-                    .visible_life_stock = 3,
-                    .completion_owner = .postal_route_map,
-                    .outer_return_target = .postal_route_map,
-                };
-                try self.enterGamePhase(.completion_screen);
-            },
-        }
+        try frontend_flow.enterStartPhase(self, phase);
     }
 
     fn performMainMenuItem(self: *AppState, item: MainMenuItem) !void {
-        switch (item) {
-            .new_game => try self.enterGamePhase(.new_game_menu),
-            .high_scores => {
-                self.high_scores_action_index = 1;
-                try self.enterHighScoreBrowseScreen(.postal);
-            },
-            .options => {
-                self.options_return_phase = .main_menu;
-                try self.enterGamePhase(.options_menu);
-            },
-            .credits => try self.enterGamePhase(.credits),
-            .exit => try self.beginExitPrompt(.main_menu),
-        }
+        try frontend_flow.performMainMenuItem(self, item);
     }
 
     fn activateMainMenuItem(self: *AppState, item: MainMenuItem) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performMainMenuItem(item);
+        try frontend_flow.activateMainMenuItem(self, item);
     }
 
     fn activeHighScoreScreenMode(self: *const AppState) high_score.Mode {
-        return self.high_score_screen_owner.activeMode();
+        return frontend_flow.activeHighScoreScreenMode(self);
     }
 
     fn setHighScoreBrowseOwner(self: *AppState, mode: high_score.Mode) void {
-        self.high_scores_menu_index = frontend_high_score_screen.modeIndex(mode);
-        self.high_score_screen_owner = .{ .main_menu_browse = mode };
-        self.clearPostLevelHighScoreEntry();
-        self.current_outer_owner = frontend_bridge.outerOwnerStateHighScores(mode);
+        frontend_flow.setHighScoreBrowseOwner(self, mode);
     }
 
     pub fn enterHighScoreBrowseScreen(self: *AppState, mode: high_score.Mode) !void {
-        self.setHighScoreBrowseOwner(mode);
-        try self.enterGamePhase(.high_scores_menu);
+        try frontend_flow.enterHighScoreBrowseScreen(self, mode);
     }
 
     fn enterPostLevelHighScoreScreen(self: *AppState, context: frontend_high_score_screen.PendingEntry) !void {
-        try self.enterPostLevelHighScoreScreenWithReturn(context, null, null);
+        try frontend_flow.enterPostLevelHighScoreScreen(self, context);
     }
 
     fn enterPostLevelHighScoreScreenWithReturn(
@@ -2223,250 +2131,130 @@ const AppState = struct {
         return_owner: ?frontend_bridge.OuterOwnerState,
         return_opcode: ?frontend_bridge.OuterBridgeOpcode,
     ) !void {
-        self.high_score_screen_owner = .{ .post_level_entry = context };
-        self.high_scores_menu_index = frontend_high_score_screen.modeIndex(context.mode);
-        self.preparePostLevelHighScoreEntry(context);
-        self.post_level_high_score_return_owner = return_owner;
-        self.post_level_high_score_return_opcode = return_opcode orelse .destroy_return;
-        self.current_outer_owner = frontend_bridge.outerOwnerStateHighScores(context.mode);
-        try self.enterGamePhase(.high_scores_menu);
+        try frontend_flow.enterPostLevelHighScoreScreenWithReturn(self, context, return_owner, return_opcode);
     }
 
     fn performNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
-        switch (item) {
-            .tutorial => {
-                self.runtime_config.setNewGameExtraModesVisible(true);
-                try self.enterFrontendLevelMode(.tutorial);
-            },
-            .postal_mode => try self.enterFrontendLevelMode(.postal),
-            .time_trial => try self.enterFrontendLevelMode(.time_trial),
-            .challenge_mode => try self.enterChallengeSetupMenu(),
-            .help => try self.enterGamePhase(.help),
-            .back => try self.enterGamePhase(.main_menu),
-        }
+        try frontend_flow.performNewGameMenuItem(self, item);
     }
 
     fn activateNewGameMenuItem(self: *AppState, item: NewGameMenuItem) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performNewGameMenuItem(item);
+        try frontend_flow.activateNewGameMenuItem(self, item);
     }
 
     fn newGameMenuItemVisible(self: *const AppState, item: NewGameMenuItem) bool {
-        return switch (item) {
-            .postal_mode, .time_trial, .challenge_mode => self.runtime_config.newGameExtraModesVisible(),
-            .tutorial, .help, .back => true,
-        };
+        return frontend_flow.newGameMenuItemVisible(self, item);
     }
 
     fn newGameMenuIndexVisible(self: *const AppState, index: usize) bool {
-        if (index >= new_game_menu_items.len) return false;
-        return self.newGameMenuItemVisible(new_game_menu_items[index]);
+        return frontend_flow.newGameMenuIndexVisible(self, index);
     }
 
     fn normalizeNewGameMenuSelection(self: *AppState) void {
-        if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
-        self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.tutorial);
+        frontend_flow.normalizeNewGameMenuSelection(self);
     }
 
     fn stepNewGameMenuSelection(self: *AppState, delta: isize) void {
-        var remaining = new_game_menu_items.len;
-        while (remaining > 0) : (remaining -= 1) {
-            self.new_game_menu_index = wrappedIndex(new_game_menu_items.len, self.new_game_menu_index, delta);
-            if (self.newGameMenuIndexVisible(self.new_game_menu_index)) return;
-        }
-        self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.tutorial);
+        frontend_flow.stepNewGameMenuSelection(self, delta);
     }
 
     fn challengeSetupReplayAvailable(self: *const AppState) bool {
-        return self.high_score_tables.challenge[0].has_replay;
+        return frontend_flow.challengeSetupReplayAvailable(self);
     }
 
     fn challengeSetupVisibleItems(self: *const AppState) []const frontend_challenge_setup_menu.Item {
-        return if (self.challengeSetupReplayAvailable())
-            frontend_challenge_setup_menu.items[0..]
-        else
-            frontend_challenge_setup_menu.items_without_replay[0..];
+        return frontend_flow.challengeSetupVisibleItems(self);
     }
 
     fn currentChallengeSetupSelectedItem(self: *const AppState) frontend_challenge_setup_menu.Item {
-        const items = self.challengeSetupVisibleItems();
-        return items[@min(self.challenge_setup_index, items.len - 1)];
+        return frontend_flow.currentChallengeSetupSelectedItem(self);
     }
 
     fn normalizeChallengeSetupSelection(self: *AppState) void {
-        const items = self.challengeSetupVisibleItems();
-        if (self.challenge_setup_index < items.len) return;
-        self.challenge_setup_index = items.len - 1;
+        frontend_flow.normalizeChallengeSetupSelection(self);
     }
 
     pub fn enterChallengeSetupMenu(self: *AppState) !void {
-        try self.setSelectedLevelRecordContext(null, null);
-        self.challenge_setup_index = 0;
-        self.current_outer_owner = frontend_bridge.outerOwnerStateChallengeSetupMenu();
-        try self.enterGamePhase(.challenge_setup_menu);
+        try frontend_flow.enterChallengeSetupMenu(self);
     }
 
     fn performChallengeSetupMenuItem(self: *AppState, item: frontend_challenge_setup_menu.Item) !void {
-        switch (item) {
-            .difficulty, .speed => {},
-            .play => try self.enterFrontendLevelPath(.challenge, 0),
-            .watch_replay => {
-                if (!self.challengeSetupReplayAvailable()) return;
-                try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(.{ .challenge_setup = 0 }));
-            },
-            .back => try self.returnToNewGameMenu(.challenge_setup_menu),
-        }
+        try frontend_flow.performChallengeSetupMenuItem(self, item);
     }
 
     fn performOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
-        switch (item) {
-            .fullscreen => self.toggleFullscreenPreference(),
-            .sound_volume, .music_volume => {},
-            .back => try self.leaveOptionsMenu(),
-        }
+        try frontend_flow.performOptionsMenuItem(self, item);
     }
 
     fn performPauseMenuItem(self: *AppState, item: PauseMenuItem) !void {
-        switch (item) {
-            .end_game => try self.beginEndGamePrompt(.pause_menu),
-            .options => {
-                self.options_return_phase = .pause_menu;
-                try self.enterGamePhase(.options_menu);
-            },
-            .@"resume" => try self.resumeFromPauseMenu(),
-        }
+        try frontend_flow.performPauseMenuItem(self, item);
     }
 
     fn performHelpMenuItem(self: *AppState, item: frontend_help.Action) !void {
-        switch (item) {
-            .back => try self.returnToNewGameMenu(.help),
-        }
+        try frontend_flow.performHelpMenuItem(self, item);
     }
 
     fn activateOptionsMenuItem(self: *AppState, item: OptionsMenuItem) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performOptionsMenuItem(item);
+        try frontend_flow.activateOptionsMenuItem(self, item);
     }
 
     fn beginExitPrompt(self: *AppState, return_phase: GamePhase) !void {
-        self.exit_prompt_choice_index = 1;
-        self.exit_prompt_return_phase = return_phase;
-        self.exit_prompt_mode = .quit_app;
-        try self.enterGamePhase(.exit_prompt);
+        try frontend_flow.beginExitPrompt(self, return_phase);
     }
 
     fn beginEndGamePrompt(self: *AppState, return_phase: GamePhase) !void {
-        self.exit_prompt_choice_index = 1;
-        self.exit_prompt_return_phase = return_phase;
-        self.exit_prompt_mode = .abandon_run;
-        try self.enterGamePhase(.exit_prompt);
+        try frontend_flow.beginEndGamePrompt(self, return_phase);
     }
 
     // PORT(verified): the special postal-return Star Map mode (`initialize_galaxy` with
     // `this + 4 == 1`) routes its bottom `Exit` control through the shared exit-prompt
     // controller before returning to the outer front-end flow.
     fn beginRouteMapExitPrompt(self: *AppState) !void {
-        self.exit_prompt_choice_index = 1;
-        self.exit_prompt_return_phase = .route_map_menu;
-        self.exit_prompt_mode = .leave_route_map;
-        try self.enterGamePhase(.exit_prompt);
+        try frontend_flow.beginRouteMapExitPrompt(self);
     }
 
     fn performExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
-        switch (choice) {
-            .no => try self.enterGamePhase(self.exit_prompt_return_phase),
-            .yes => switch (self.exit_prompt_mode) {
-                .quit_app => self.should_exit = true,
-                .abandon_run => try self.abandonActiveRun(),
-                .leave_route_map => try self.returnToNewGameMenu(.route_map_menu),
-            },
-        }
+        try frontend_flow.performExitPromptChoice(self, choice);
     }
 
     fn activateExitPromptChoice(self: *AppState, choice: frontend_exit_prompt.Choice) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performExitPromptChoice(choice);
+        try frontend_flow.activateExitPromptChoice(self, choice);
     }
 
     fn performRouteMenuAction(self: *AppState, action: RouteMenuAction) !void {
-        switch (action) {
-            .play => try self.enterSelectedFrontendRoute(),
-            .watch_best_trial => {
-                const route_index = self.currentRouteMapOpenIndex() orelse return;
-                const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return;
-                try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(.{ .completion = completion_index }));
-            },
-            .back => if (self.route_map_screen_mode == .post_completion_exit)
-                try self.beginRouteMapExitPrompt()
-            else
-                try self.returnToNewGameMenu(.route_map_menu),
-        }
+        try frontend_flow.performRouteMenuAction(self, action);
     }
 
     fn performCompletionAction(self: *AppState, action: frontend_completion_screen.Action) !void {
-        switch (action) {
-            .continue_flow => try self.continueCompletionScreen(),
-        }
+        try frontend_flow.performCompletionAction(self, action);
     }
 
     fn performPostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
-        switch (action) {
-            .cancel => try self.cancelPostLevelHighScoreEntry(),
-            .submit => try self.submitPostLevelHighScore(),
-        }
+        try frontend_flow.performPostLevelHighScoreAction(self, action);
     }
 
     fn activatePostLevelHighScoreAction(self: *AppState, action: frontend_high_score_screen.PostLevelAction) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performPostLevelHighScoreAction(action);
+        try frontend_flow.activatePostLevelHighScoreAction(self, action);
     }
 
     fn performHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
-        switch (action) {
-            .back => switch (self.high_score_screen_owner) {
-                .main_menu_browse => |mode| {
-                    const owner = frontend_bridge.highScoreBrowseBackOwner(mode);
-                    // PORT(verified): `exit_high_score_screen` restores owner `2` for postal
-                    // browse and owner `10` for challenge browse. In the port, those map to
-                    // the New Game controller with the Postal item selected and the literal
-                    // challenge-setup controller respectively.
-                    switch (owner.owner) {
-                        .new_game_menu => {
-                            self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(owner.new_game_menu_item);
-                            try self.enterGamePhase(.new_game_menu);
-                        },
-                        .challenge_setup_menu => try self.enterChallengeSetupMenu(),
-                        else => unreachable,
-                    }
-                },
-                .post_level_entry => try self.cancelPostLevelHighScoreEntry(),
-            },
-            .switch_table => switch (self.high_score_screen_owner) {
-                .main_menu_browse, .post_level_entry => if (frontend_high_score_screen.nextBrowseMode(self.high_score_screen_owner)) |next_mode| {
-                    self.setHighScoreBrowseOwner(next_mode);
-                },
-            },
-        }
+        try frontend_flow.performHighScoreMenuAction(self, action);
     }
 
     fn performHighScoreReplay(self: *AppState, entry_index: usize) !void {
-        const source = frontend_high_score_screen.replaySource(self.high_score_screen_owner, entry_index) orelse return;
-        if (!self.highScoreReplayAvailable(entry_index)) return;
-        try self.enterSelectedLevelRecordSource(frontend_bridge.SelectedLevelRecordLaunch.defaultForSource(source));
+        try frontend_flow.performHighScoreReplay(self, entry_index);
     }
 
     fn activateHighScoreMenuAction(self: *AppState, action: frontend_high_score_screen.MenuAction) !void {
-        audio.playFrontendSelectSound(self);
-        try self.performHighScoreMenuAction(action);
+        try frontend_flow.activateHighScoreMenuAction(self, action);
     }
 
     fn enterPauseMenu(self: *AppState) !void {
-        self.pause_menu_index = 0;
-        try self.enterGamePhase(.pause_menu);
+        try frontend_flow.enterPauseMenu(self);
     }
 
     fn resumeFromPauseMenu(self: *AppState) !void {
-        try self.enterGamePhase(.level);
+        try frontend_flow.resumeFromPauseMenu(self);
     }
 
     fn outerOwnerForAbandonActiveRun(
@@ -2548,7 +2336,7 @@ const AppState = struct {
         };
     }
 
-    fn abandonActiveRun(self: *AppState) !void {
+    pub fn abandonActiveRun(self: *AppState) !void {
         self.pending_run_result = null;
         self.clearPostLevelHighScoreEntry();
         var return_opcode: frontend_bridge.OuterBridgeOpcode = .destroy_return;
@@ -2565,35 +2353,19 @@ const AppState = struct {
     }
 
     fn enterGameplayShell(self: *AppState, level_path: []const u8) !void {
-        self.active_frontend_mode = null;
-        self.active_frontend_level_index = 0;
-        self.current_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
-        self.saved_outer_owner = frontend_bridge.outerOwnerStateMainMenu();
-        try self.setSelectedLevelRecordContext(null, null);
-        try self.loadGameLevel(level_path);
-        try self.enterGamePhase(.level);
+        try frontend_flow.enterGameplayShell(self, level_path);
     }
 
     fn enterFrontendLevelPath(self: *AppState, mode: FrontendLevelMode, level_index: usize) !void {
-        try self.beginFrontendLevelPath(mode, level_index, null, null);
+        try frontend_flow.enterFrontendLevelPath(self, mode, level_index);
     }
 
     fn enterSelectedLevelRecordPath(self: *AppState, record: frontend_bridge.SelectedLevelRecordOverride) !void {
-        const selected_level_record_launch = if (self.selected_level_record_source) |source|
-            frontend_bridge.SelectedLevelRecordLaunch{
-                .source = source,
-                .persistent = self.selected_level_record_persistent,
-                .outer_return_target = selected_replay.launchOuterReturnTarget(self) orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
-            }
-        else
-            null;
-        try self.beginFrontendLevelPath(record.mode, record.level_index, record, selected_level_record_launch);
+        try frontend_flow.enterSelectedLevelRecordPath(self, record);
     }
 
     fn enterSelectedLevelRecordSource(self: *AppState, launch: frontend_bridge.SelectedLevelRecordLaunch) !void {
-        const entry = selected_replay.entryForSource(self, launch.source) orelse return;
-        const record = frontend_bridge.SelectedLevelRecordOverride.fromHighScoreEntry(entry) orelse return;
-        try self.beginFrontendLevelPath(record.mode, record.level_index, record, launch);
+        try frontend_flow.enterSelectedLevelRecordSource(self, launch);
     }
 
     pub fn beginFrontendLevelPath(
@@ -2603,21 +2375,11 @@ const AppState = struct {
         selected_level_record_override: ?frontend_bridge.SelectedLevelRecordOverride,
         selected_level_record_launch: ?frontend_bridge.SelectedLevelRecordLaunch,
     ) !void {
-        var path_buffer: [64]u8 = undefined;
-        const level_path = try frontendLevelPath(mode, level_index, &path_buffer);
-        try self.setSelectedLevelRecordContext(selected_level_record_override, selected_level_record_launch);
-        self.active_frontend_mode = mode;
-        self.active_frontend_level_index = level_index;
-        self.saved_outer_owner = frontend_bridge.savedOuterOwnerForLevelLaunch(mode, level_index, selected_level_record_launch);
-        self.current_outer_owner = self.saved_outer_owner;
-        self.seed_level_intro_cutscene = true;
-        try self.loadGameLevel(level_path);
-        try self.enterGamePhase(.level);
+        try frontend_flow.beginFrontendLevelPath(self, mode, level_index, selected_level_record_override, selected_level_record_launch);
     }
 
     fn leaveOptionsMenu(self: *AppState) !void {
-        try self.saveRuntimeConfig();
-        try self.enterGamePhase(self.options_return_phase);
+        try frontend_flow.leaveOptionsMenu(self);
     }
 
     // PORT(verified): `update_help_screen` writes frontend state `2` on Back, and the frontend
@@ -2627,52 +2389,19 @@ const AppState = struct {
     // flow. Preserve that return target in the port instead of routing Help/Star Map Back to
     // the main menu.
     fn returnToNewGameMenu(self: *AppState, from_phase: GamePhase) !void {
-        switch (from_phase) {
-            .help => self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.help),
-            .challenge_setup_menu => self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(.challenge_mode),
-            .route_map_menu => {
-                if (self.frontend_route_mode) |mode| {
-                    self.new_game_menu_index = frontend_activation.newGameMenuIndexForItem(frontend_activation.newGameMenuItemForFrontendMode(mode));
-                }
-            },
-            else => {},
-        }
-        try self.enterGamePhase(.new_game_menu);
+        try frontend_flow.returnToNewGameMenu(self, from_phase);
     }
 
     fn enterFrontendLevelMode(self: *AppState, mode: FrontendLevelMode) !void {
-        switch (mode) {
-            .postal, .time_trial => try self.enterRouteMapMenu(mode),
-            .challenge => try self.enterChallengeSetupMenu(),
-            .tutorial => try self.enterFrontendLevelPath(mode, 0),
-        }
+        try frontend_flow.enterFrontendLevelMode(self, mode);
     }
 
     fn enterRouteMapMenu(self: *AppState, mode: FrontendLevelMode) !void {
-        try self.enterRouteMapMenuWithScreenMode(mode, frontend_bridge.defaultRouteMapScreenMode(mode));
+        try frontend_flow.enterRouteMapMenu(self, mode);
     }
 
     pub fn enterRouteMapMenuWithScreenMode(self: *AppState, mode: FrontendLevelMode, screen_mode: frontend_bridge.RouteMapScreenMode) !void {
-        try self.setSelectedLevelRecordContext(null, null);
-        self.frontend_route_mode = mode;
-        self.route_map_screen_mode = screen_mode;
-        self.current_outer_owner = frontend_bridge.outerOwnerStateRouteMap(.{
-            .mode = mode,
-            .screen_mode = screen_mode,
-            .start_route_override = self.start_route_index_override,
-        });
-        self.frontend_route_index = self.initialFrontendRouteIndex(mode);
-        if (self.start_route_index_override) |override| {
-            const highest_available = self.highestAvailableFrontendRouteIndex(mode);
-            if (highest_available > 0) {
-                self.frontend_route_index = std.math.clamp(override, @as(usize, 1), highest_available);
-            }
-            self.start_route_index_override = null;
-        }
-        try self.openFrontendRouteCard(self.frontend_route_index);
-        self.resetRouteMapHighlightAnimations();
-        self.syncRouteMapHighlightTargets();
-        try self.enterGamePhase(.route_map_menu);
+        try frontend_flow.enterRouteMapMenuWithScreenMode(self, mode, screen_mode);
     }
 
     fn unloadFrontendRouteLevel(self: *AppState) void {
@@ -2704,7 +2433,7 @@ const AppState = struct {
         return routeMapHasReplayEntry(self.frontend_route_mode, route_index, &self.high_score_tables);
     }
 
-    fn routeMapCardIsOpen(self: *const AppState) bool {
+    pub fn routeMapCardIsOpen(self: *const AppState) bool {
         return self.route_map_open_index != null;
     }
 
@@ -2726,7 +2455,7 @@ const AppState = struct {
         return self.availableFrontendRouteLimit(mode) > 1;
     }
 
-    fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
+    pub fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
         self.route_map_open_index = route_index;
         self.route_map_hover_state = .none;
         self.route_map_hovered_index = null;
@@ -2748,7 +2477,7 @@ const AppState = struct {
         self.syncRouteMapHighlightTargets();
     }
 
-    fn resetRouteMapHighlightAnimations(self: *AppState) void {
+    pub fn resetRouteMapHighlightAnimations(self: *AppState) void {
         @memset(&self.route_map_route_highlight_alpha, 0.0);
         @memset(&self.route_map_route_highlight_target, 0.0);
     }
@@ -2757,7 +2486,7 @@ const AppState = struct {
     // eases the current highlight alpha at `+40` toward the target at `+44` with a `0.1`
     // step. The target is `1.0` for the hovered route in hover state `2`, otherwise for the
     // open route while the card is up.
-    fn syncRouteMapHighlightTargets(self: *AppState) void {
+    pub fn syncRouteMapHighlightTargets(self: *AppState) void {
         @memset(&self.route_map_route_highlight_target, 0.0);
         const highlighted_route_index = switch (self.route_map_hover_state) {
             .route => self.route_map_hovered_index,
@@ -2780,11 +2509,7 @@ const AppState = struct {
     // on the route-open flag at `this + 8`. When the card is closed, only the absolute Back
     // control remains actionable; Play and Watch Best Trial are hidden until `open_galaxy_route`.
     fn activeRouteMenuActions(self: *const AppState) []const RouteMenuAction {
-        if (!self.routeMapCardIsOpen()) return &frontend_route_map.actions_closed;
-        return if (self.routeMapShowsReplay())
-            &frontend_route_map.actions_with_replay
-        else
-            &frontend_route_map.actions_without_replay;
+        return frontend_flow.activeRouteMenuActions(self);
     }
 
     fn activeRouteMenuHotAction(self: *const AppState) RouteMenuAction {
@@ -2890,11 +2615,6 @@ const AppState = struct {
         replay_sample_on_match: bool,
     ) !void {
         try level_loader.dispatchCurrentRunnerRowMessage(self, previous_segment_index, previous_token, replay_sample_on_match);
-    }
-
-    fn enterSelectedFrontendRoute(self: *AppState) !void {
-        const mode = self.frontend_route_mode orelse return;
-        try self.enterFrontendLevelPath(mode, self.currentRouteMapOpenIndex() orelse self.frontend_route_index);
     }
 
     fn replaySpeedScalarForSliderValue(value: u32) f32 {
@@ -3070,7 +2790,7 @@ const AppState = struct {
         };
     }
 
-    fn continueCompletionScreen(self: *AppState) !void {
+    pub fn continueCompletionScreen(self: *AppState) !void {
         try self.commitPendingRunResultIfNeeded();
         if (self.failedResultPostLevelHighScoreEntry()) |entry| {
             try self.enterPostLevelHighScoreScreenWithReturn(entry.context, entry.return_owner, entry.return_opcode);
@@ -3086,7 +2806,7 @@ const AppState = struct {
         try self.finishPendingRunReturn();
     }
 
-    fn cancelPostLevelHighScoreEntry(self: *AppState) !void {
+    pub fn cancelPostLevelHighScoreEntry(self: *AppState) !void {
         try self.finishPostLevelHighScoreReturn();
     }
 
@@ -3124,7 +2844,7 @@ const AppState = struct {
         };
     }
 
-    fn preparePostLevelHighScoreEntry(self: *AppState, context: frontend_high_score_screen.PendingEntry) void {
+    pub fn preparePostLevelHighScoreEntry(self: *AppState, context: frontend_high_score_screen.PendingEntry) void {
         self.clearPostLevelHighScoreEntry();
         self.post_level_high_score_action_index = 1;
 
@@ -3135,7 +2855,7 @@ const AppState = struct {
         self.post_level_high_score_name_len = clipped.len;
     }
 
-    fn clearPostLevelHighScoreEntry(self: *AppState) void {
+    pub fn clearPostLevelHighScoreEntry(self: *AppState) void {
         self.post_level_high_score_return_owner = null;
         self.post_level_high_score_return_opcode = .destroy_return;
         @memset(&self.post_level_high_score_name_buf, 0);
@@ -3165,7 +2885,7 @@ const AppState = struct {
         }
     }
 
-    fn submitPostLevelHighScore(self: *AppState) !void {
+    pub fn submitPostLevelHighScore(self: *AppState) !void {
         const context = self.postLevelHighScoreContext() orelse {
             if (self.pending_run_result == null and self.post_level_high_score_return_owner == null) {
                 try self.enterGamePhase(.main_menu);
@@ -3307,7 +3027,7 @@ const AppState = struct {
         return run_result.nextPostalUnlockLimit(current_index, highest_available, saved_limit);
     }
 
-    fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
+    pub fn initialFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
         const available_limit = self.availableFrontendRouteLimit(mode);
         if (available_limit == 0) return 0;
         const saved_index: usize = @intCast(self.runtime_config.routeSelectionIndex());
@@ -3350,7 +3070,7 @@ const AppState = struct {
         try self.openFrontendRouteCard(next_route_index);
     }
 
-    fn syncGamePhaseResources(self: *AppState) !void {
+    pub fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .level, .pause_menu => {},
             else => audio.stopVoicePlayback(self),
@@ -3601,7 +3321,7 @@ const AppState = struct {
         return script.durationTicks();
     }
 
-    fn toggleFullscreenPreference(self: *AppState) void {
+    pub fn toggleFullscreenPreference(self: *AppState) void {
         self.runtime_config.setFullscreenEnabled(!self.runtime_config.fullscreenEnabled());
         self.syncWindowFullscreenPreference();
     }
