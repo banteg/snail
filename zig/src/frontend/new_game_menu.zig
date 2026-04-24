@@ -38,41 +38,41 @@ pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
     );
 }
 
-pub fn drawMenuUi(state: anytype, layout: VirtualLayout, visible_items: [4]bool) void {
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: frontend_widget.Art,
+    button_states: *const [frontend.new_game_menu_items.len]frontend_widget.TextButtonState,
+};
+
+pub fn drawMenuUi(context: Context, layout: VirtualLayout, visible_items: [4]bool) void {
     for (frontend.new_game_menu_items[0..4], 0..) |item, index| {
         if (!visible_items[index]) continue;
         frontend_widget.drawMenuButton(
             layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
+            context.widget_art,
+            context.font,
             item.label(),
-            textRect(&state.ui_font, item),
-            state.new_game_button_states[index],
+            textRect(context.font, item),
+            context.button_states[index],
             false,
         );
     }
     frontend_widget.drawMenuButton(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         "Help",
-        helpTextRect(&state.ui_font),
-        state.new_game_button_states[4],
+        helpTextRect(context.font),
+        context.button_states[4],
         false,
     );
     frontend_widget.drawMenuButton(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         "Back",
-        backTextRect(&state.ui_font),
-        state.new_game_button_states[5],
+        backTextRect(context.font),
+        context.button_states[5],
         false,
     );
 }

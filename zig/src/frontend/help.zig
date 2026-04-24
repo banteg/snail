@@ -15,16 +15,20 @@ pub fn backTextRect(font: *const game_font.Loaded) frontend_widget.Rect {
     return frontend_widget.menuButtonTextRect(font, "Back", back_anchor_y, 0.0);
 }
 
-pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: frontend_widget.Art,
+    button_states: *const [button_count]frontend_widget.TextButtonState,
+};
+
+pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
     frontend_widget.drawMenuButton(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         "Back",
-        backTextRect(&state.ui_font),
-        state.help_button_states[0],
+        backTextRect(context.font),
+        context.button_states[0],
         false,
     );
 }

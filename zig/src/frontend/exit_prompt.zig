@@ -54,27 +54,29 @@ pub fn textRect(font: *const game_font.Loaded, text: []const u8, center_offset_x
     );
 }
 
-pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: frontend_widget.Art,
+    button_states: *const [button_count]frontend_widget.TextButtonState,
+};
+
+pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
     frontend_widget.drawMenuButton(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         choices[0].label(),
-        textRect(&state.ui_font, choices[0].label(), yes_x),
-        state.exit_prompt_button_states[0],
+        textRect(context.font, choices[0].label(), yes_x),
+        context.button_states[0],
         false,
     );
     frontend_widget.drawMenuButton(
         layout,
-        .{
-            .border = state.frontend_widget_art.border.?.texture,
-        },
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         choices[1].label(),
-        textRect(&state.ui_font, choices[1].label(), no_x),
-        state.exit_prompt_button_states[1],
+        textRect(context.font, choices[1].label(), no_x),
+        context.button_states[1],
         false,
     );
 }

@@ -1,4 +1,5 @@
 const ui = @import("../ui.zig");
+const game_font = @import("../game_font.zig");
 const frontend_widget = @import("widget.zig");
 
 const VirtualLayout = ui.VirtualLayout;
@@ -85,20 +86,23 @@ pub const Controller = struct {
     }
 };
 
-pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
-    const text = state.thanks_screen_controller.currentText() orelse return;
-    const widget_art: frontend_widget.Art = .{
-        .border = state.frontend_widget_art.border.?.texture,
-    };
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: frontend_widget.Art,
+    current_text: ?[]const u8,
+};
+
+pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
+    const text = context.current_text orelse return;
     var idle_state = frontend_widget.TextButtonState{};
     idle_state.snapFor(.menu_button, false);
     frontend_widget.drawTextButtonWithOptions(
         layout,
-        widget_art,
-        &state.ui_font,
+        context.widget_art,
+        context.font,
         .menu_button,
         text,
-        frontend_widget.menuButtonTextRect(&state.ui_font, text, message_y, 0.0),
+        frontend_widget.menuButtonTextRect(context.font, text, message_y, 0.0),
         idle_state,
         false,
         .{ .flags = 0x20400002 },

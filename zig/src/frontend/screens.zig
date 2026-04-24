@@ -3,6 +3,7 @@ const std = @import("std");
 const high_score = @import("../high_score.zig");
 const challenge_setup_menu = @import("challenge_setup_menu.zig");
 const exit_prompt = @import("exit_prompt.zig");
+const frontend_widget = @import("widget.zig");
 const help = @import("help.zig");
 const high_score_screen = @import("high_score_screen.zig");
 const main_menu = @import("main_menu.zig");
@@ -12,6 +13,12 @@ const pause_menu = @import("pause_menu.zig");
 const render = @import("render.zig");
 const route_map = @import("route_map.zig");
 const thanks = @import("thanks.zig");
+
+fn widgetArt(state: anytype) frontend_widget.Art {
+    return .{
+        .border = state.frontend_widget_art.border.?.texture,
+    };
+}
 
 pub fn drawBoot(state: anytype, layout: anytype) void {
     if (state.current_loading_screen != null) return;
@@ -43,7 +50,11 @@ pub fn drawTextScript(state: anytype, layout: anytype) void {
 }
 
 pub fn drawMainMenu(state: anytype, layout: anytype) !void {
-    main_menu.drawMenuUi(state, layout);
+    main_menu.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .button_states = &state.main_menu_button_states,
+    }, layout);
 
     if (state.game_status_message) |message| {
         try render.drawStatusMessage(state, layout, message);
@@ -51,7 +62,11 @@ pub fn drawMainMenu(state: anytype, layout: anytype) !void {
 }
 
 pub fn drawNewGameMenu(state: anytype, layout: anytype) !void {
-    new_game_menu.drawMenuUi(state, layout, .{
+    new_game_menu.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .button_states = &state.new_game_button_states,
+    }, layout, .{
         state.newGameMenuItemVisible(.tutorial),
         state.newGameMenuItemVisible(.postal_mode),
         state.newGameMenuItemVisible(.time_trial),
@@ -105,7 +120,11 @@ pub fn drawOptionsMenu(state: anytype, layout: anytype) !void {
 }
 
 pub fn drawPauseMenu(state: anytype, layout: anytype) void {
-    pause_menu.drawMenuUi(state, layout);
+    pause_menu.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .button_states = &state.pause_menu_button_states,
+    }, layout);
 }
 
 pub fn drawRouteMapMenu(state: anytype, layout: anytype) !void {
@@ -143,13 +162,25 @@ pub fn drawHighScoresMenu(state: anytype, layout: anytype) !void {
 
 pub fn drawExitPrompt(state: anytype, layout: anytype) void {
     render.drawHeading(state, layout, 320.0, exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
-    exit_prompt.drawMenuUi(state, layout);
+    exit_prompt.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .button_states = &state.exit_prompt_button_states,
+    }, layout);
 }
 
 pub fn drawHelp(state: anytype, layout: anytype) void {
-    help.drawMenuUi(state, layout);
+    help.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .button_states = &state.help_button_states,
+    }, layout);
 }
 
 pub fn drawThanks(state: anytype, layout: anytype) void {
-    thanks.drawMenuUi(state, layout);
+    thanks.drawMenuUi(.{
+        .font = &state.ui_font,
+        .widget_art = widgetArt(state),
+        .current_text = state.thanks_screen_controller.currentText(),
+    }, layout);
 }

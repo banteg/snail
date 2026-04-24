@@ -20,17 +20,21 @@ pub fn textRect(font: *const game_font.Loaded, item: frontend.MainMenuItem) fron
     };
 }
 
-pub fn drawMenuUi(state: anytype, layout: VirtualLayout) void {
+pub const Context = struct {
+    font: *const game_font.Loaded,
+    widget_art: frontend_widget.Art,
+    button_states: *const [frontend.main_menu_items.len]frontend_widget.TextButtonState,
+};
+
+pub fn drawMenuUi(context: Context, layout: VirtualLayout) void {
     for (frontend.main_menu_items, 0..) |item, index| {
         frontend_widget.drawMenuButton(
             layout,
-            .{
-                .border = state.frontend_widget_art.border.?.texture,
-            },
-            &state.ui_font,
+            context.widget_art,
+            context.font,
             item.label(),
-            textRect(&state.ui_font, item),
-            state.main_menu_button_states[index],
+            textRect(context.font, item),
+            context.button_states[index],
             false,
         );
     }
