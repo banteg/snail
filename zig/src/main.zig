@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const level_loader = @import("app/level_loader.zig");
+const outer_bridge = @import("app/outer_bridge.zig");
 const run_result = @import("app/run_result.zig");
 const screenshots = @import("app/screenshots.zig");
 const frontend_art = @import("frontend/art.zig");
@@ -2471,71 +2472,14 @@ const AppState = struct {
         self: *const AppState,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) frontend_bridge.OuterOwnerState {
-        if (self.selected_level_record_persistent) {
-            const owner = self.selectedReplayLaunchOwnerState() orelse self.saved_outer_owner;
-            opcode.* = .destroy_return;
-            return owner;
-        }
-
-        if (self.selectedReplayPlaybackActive()) {
-            const owner = self.selectedReplayLaunchOwnerState() orelse frontend_bridge.outerOwnerStateMainMenu();
-            // PORT(verified): when `app + 0x1066be9` is clear, BN `update_pause_menu` falls
-            // through to completion state `2`. BN plus IDA then show `update_completion_screen`
-            // state `2` destroying subgame, and on the Time Trial replay path
-            // (`level_mode == FrontendLevelMode.time_trial`) reinitializing subgame without
-            // using bridge state `0x1c`. `initialize_subgame` then rebuilds the route-map owner
-            // from the preserved nonzero continuation selector, so transient route-map replay
-            // abandon matches opcode `27`, not respawn-only `28`.
-            opcode.* = .rebuild_return;
-            return owner;
-        }
-
-        if (self.saved_outer_owner.owner == .challenge_setup_menu) {
-            opcode.* = .rebuild_return;
-            return frontend_bridge.outerOwnerStateChallengeSetupMenu();
-        }
-
-        opcode.* = .destroy_return;
-        return self.saved_outer_owner;
+        return outer_bridge.ownerForAbandonActiveRun(self, opcode);
     }
 
     fn outerOwnerForRespawnActiveRun(
         self: *AppState,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) ?frontend_bridge.OuterOwnerState {
-        var previous_runner = self.level_runner orelse return null;
-        previous_runner.flushPendingParcelDeliveries();
-        self.pending_respawn_bridge_state = .{
-            .frontend_mode = self.active_frontend_mode,
-            .frontend_level_index = self.active_frontend_level_index,
-            .runner = previous_runner,
-        };
-        // PORT(verified): ordinary respawn rebuild uses direct owner `0x1c`, not the
-        // `0x1a/0x1b` saved-owner bridge family. Keep the existing effect endpoint but store
-        // the direct selector as authoritative bridge state.
-        opcode.* = .rebuild_clear_replay_return;
-        self.subgame_rebuild_selector = 0x1c;
-        return frontend_bridge.outerOwnerStateResumeActiveRun();
-    }
-
-    fn postRunSelectedLevelRecordOuterReturnTargetOverride(self: *const AppState, result: PendingRunResult) ?frontend_bridge.OuterReturnTarget {
-        const source = self.selected_level_record_source orelse return null;
-        if (self.selected_level_record_persistent) return null;
-
-        return switch (source) {
-            .postal => switch (result.outcome) {
-                // PORT(verified): `update_subgoldy_resurrect` only takes the postal
-                // `0x1b` branch when app byte `+0x30d` is set, and `complete_subgame`
-                // only seeds that high-score continuation flag when
-                // `selected_level_record_active == 0`. Transient selected-record
-                // postal failures therefore keep the native `0x1a -> owner 2`
-                // New Game return instead of jumping back to the postal high-score
-                // browser.
-                .failed => .new_game_menu,
-                .completed => null,
-            },
-            .challenge, .challenge_setup, .completion => null,
-        };
+        return outer_bridge.ownerForRespawnActiveRun(self, opcode);
     }
 
     fn outerOwnerForPendingRunResult(
@@ -2543,91 +2487,7 @@ const AppState = struct {
         result: PendingRunResult,
         opcode: *frontend_bridge.OuterBridgeOpcode,
     ) frontend_bridge.OuterOwnerState {
-        const selected_level_record_result_opcode = self.postRunSelectedLevelRecordOpcode(result.outcome);
-        const selected_level_record_return = self.selected_level_record_source != null;
-        const outer_return_target = self.postRunSelectedLevelRecordOuterReturnTargetOverride(result) orelse result.outer_return_target;
-        return switch (outer_return_target) {
-            .main_menu => blk: {
-                opcode.* = .destroy_return;
-                break :blk frontend_bridge.outerOwnerStateMainMenu();
-            },
-            .new_game_menu => blk: {
-                opcode.* = .destroy_return;
-                break :blk frontend_bridge.outerOwnerStateNewGameMenu(frontend_bridge.newGameMenuItemForBridgeMode(result.mode));
-            },
-            .challenge_setup_menu => blk: {
-                opcode.* = if (selected_level_record_return)
-                    selected_level_record_result_opcode
-                else
-                    .rebuild_return;
-                break :blk frontend_bridge.outerOwnerStateChallengeSetupMenu();
-            },
-            .postal_route_map => blk: {
-                opcode.* = .destroy_return;
-                break :blk frontend_bridge.outerOwnerStateRouteMap(.{
-                    .mode = .postal,
-                    .screen_mode = .post_completion_exit,
-                });
-            },
-            .time_trial_route_map => blk: {
-                // PORT(verified): `update_galaxy` only seeds `selected_level_record_active`,
-                // while `update_subgoldy` uses state `0x1b` unless the separate persistent lane
-                // is armed. The current Zig selected-level launch path is therefore transient
-                // until the native persistent writer is recovered.
-                opcode.* = selected_level_record_result_opcode;
-                break :blk frontend_bridge.outerOwnerStateRouteMap(.{
-                    .mode = .time_trial,
-                    .screen_mode = frontend_bridge.defaultRouteMapScreenMode(.time_trial),
-                    .start_route_override = if (selected_level_record_return)
-                        self.active_frontend_level_index
-                    else
-                        null,
-                });
-            },
-            .high_scores_menu => blk: {
-                opcode.* = selected_level_record_result_opcode;
-                break :blk frontend_bridge.outerOwnerStateHighScores(if (self.selected_level_record_source) |source|
-                    switch (source) {
-                        .postal => .postal,
-                        .challenge => .challenge,
-                        .challenge_setup => result.high_score_mode orelse .challenge,
-                        .completion => result.high_score_mode orelse .postal,
-                    }
-                else
-                    result.high_score_mode orelse .postal);
-            },
-            .replay_current_level => blk: {
-                if (self.selected_level_record_override) |record| {
-                    opcode.* = .rebuild_return;
-                    break :blk frontend_bridge.outerOwnerStateReplay(.{
-                        .mode = record.mode,
-                        .level_index = record.level_index,
-                        .selected_level_record_override = record,
-                        .selected_level_record_launch = if (self.selected_level_record_source) |source|
-                            .{
-                                .source = source,
-                                .persistent = self.selected_level_record_persistent,
-                                .outer_return_target = self.selectedReplayLaunchOuterReturnTarget() orelse frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source),
-                            }
-                        else
-                            null,
-                    });
-                }
-                if (result.mode) |mode| {
-                    opcode.* = .rebuild_return;
-                    break :blk frontend_bridge.outerOwnerStateReplay(.{
-                        .mode = mode,
-                        .level_index = self.active_frontend_level_index,
-                    });
-                }
-                opcode.* = .destroy_return;
-                break :blk frontend_bridge.outerOwnerStateMainMenu();
-            },
-            .thanks_screen => blk: {
-                opcode.* = .init_thanks_screen;
-                break :blk frontend_bridge.outerOwnerStateThanksScreen();
-            },
-        };
+        return outer_bridge.ownerForPendingRunResult(self, result, opcode);
     }
 
     fn outerBridgeTransitionClearsSelectedReplayContext(
@@ -2635,12 +2495,7 @@ const AppState = struct {
         opcode: frontend_bridge.OuterBridgeOpcode,
         next_owner: frontend_bridge.OuterOwnerState,
     ) bool {
-        if (opcode == .rebuild_clear_replay_return) return true;
-        if (self.selected_level_record_source == null) return false;
-        return switch (next_owner.owner) {
-            .route_map, .high_scores_menu => true,
-            else => false,
-        };
+        return outer_bridge.transitionClearsSelectedReplayContext(self, opcode, next_owner);
     }
 
     fn applyOuterBridgeTeardown(
@@ -3413,13 +3268,13 @@ const AppState = struct {
         return self.selectedReplayEntryForSource(source);
     }
 
-    fn selectedReplayPlaybackActive(self: *const AppState) bool {
+    pub fn selectedReplayPlaybackActive(self: *const AppState) bool {
         if (self.selected_replay_cache) |replay| return replay.samples.len != 0;
         const entry = self.selectedReplayEntry() orelse return false;
         return entry.replaySampleCount() != 0;
     }
 
-    fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) frontend_bridge.OuterBridgeOpcode {
+    pub fn postRunSelectedLevelRecordOpcode(self: *const AppState, outcome: RunOutcome) frontend_bridge.OuterBridgeOpcode {
         const source = self.selected_level_record_source orelse return .destroy_return;
         if (self.selected_level_record_persistent) return .destroy_return;
 
@@ -3459,7 +3314,7 @@ const AppState = struct {
         return selectedReplayDirectiveForDecodedReplay(&replay, runner.runtime_track_index);
     }
 
-    fn selectedReplayLaunchOuterReturnTarget(self: *const AppState) ?frontend_bridge.OuterReturnTarget {
+    pub fn selectedReplayLaunchOuterReturnTarget(self: *const AppState) ?frontend_bridge.OuterReturnTarget {
         if (self.saved_replay_return_outer_owner) |state| {
             return frontend_bridge.outerReturnTargetForSavedReplayReturnOuterOwner(state);
         }
@@ -3479,7 +3334,7 @@ const AppState = struct {
         };
     }
 
-    fn selectedReplayLaunchOwnerState(self: *const AppState) ?frontend_bridge.OuterOwnerState {
+    pub fn selectedReplayLaunchOwnerState(self: *const AppState) ?frontend_bridge.OuterOwnerState {
         const source = self.selected_level_record_source orelse return null;
         const mode = self.selectedReplayLaunchMode() orelse return null;
         if (self.saved_replay_return_outer_owner) |return_state| {
