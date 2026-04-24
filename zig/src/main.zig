@@ -42,6 +42,7 @@ const gameplay_audio_catalog = @import("gameplay/audio_catalog.zig");
 const gameplay_effects = @import("gameplay/effects.zig");
 const gameplay = @import("gameplay.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
+const gameplay_billboard = @import("gameplay/billboard.zig");
 const gameplay_hud = @import("gameplay/hud.zig");
 const gameplay_presentation = @import("gameplay/presentation.zig");
 const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
@@ -2808,13 +2809,6 @@ fn drawSubgameViewport(state: *const AppState) void {
     drawGameplayBarrier(state, &loaded_track_preview, live_runner);
     drawGameplayTurbo(state, &loaded_track_preview, live_runner, camera);
 }
-const BillboardUv = struct {
-    left: f32,
-    top: f32,
-    right: f32,
-    bottom: f32,
-};
-
 const gameplay_billboard_alpha_cutout_fragment_shader: [:0]const u8 =
     \\#version 330
     \\in vec2 fragTexCoord;
@@ -2932,7 +2926,7 @@ fn drawGameplaySlugActor(
     // So authored live slugs should not free-run a local blink in the port.
     const loaded_texture = state.current_gameplay_sprites.slug_frames[0] orelse return;
     const position = gameplayLaneWorldPosition(preview, global_row, lane_index, slug_sprite_y_offset);
-    drawGameplayBillboardTextureRect(
+    gameplay_billboard.drawTextureRect(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         position,
@@ -2954,7 +2948,7 @@ fn drawGameplayGarbageActor(
     if (hazard.state == .inactive) return;
     const variant_index = @as(usize, @intCast((hazard.row + hazard.lane * 3) % gameplay_assets.gameplay_garbage_sprite_paths.len));
     const loaded_texture = state.current_gameplay_sprites.garbage_variants[variant_index] orelse return;
-    drawGameplayBillboardTextureRectRolled(
+    gameplay_billboard.drawTextureRectRolled(
         loaded_texture.texture,
         .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(loaded_texture.texture.width), .height = @floatFromInt(loaded_texture.texture.height) },
         hazard.world_position,
@@ -3005,7 +2999,7 @@ fn drawGameplaySaltVisual(
     }
 
     const icon = state.ui_font.slots[game_font.IconGlyph.salt.slotIndex()];
-    drawGameplayBillboardTextureRect(
+    gameplay_billboard.drawTextureRect(
         state.ui_font.texture,
         .{
             .x = icon.source_x,
@@ -3059,7 +3053,7 @@ fn drawGameplayHealthPickupActor(
     pickup: gameplay_runtime_entities.Pickup,
 ) void {
     const loaded_texture = state.current_gameplay_sprites.health orelse return;
-    drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, state.gameplay_billboard_shader, .white);
+    gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.52, 0.52, camera, state.gameplay_billboard_shader, .white);
 }
 
 fn drawGameplayJetpackPickupActor(
@@ -3069,7 +3063,7 @@ fn drawGameplayJetpackPickupActor(
 ) void {
     const frame_index: usize = @intFromFloat(@mod(@floor(state.render_time_seconds * 8.0), @as(f64, @floatFromInt(gameplay_assets.gameplay_jetpack_sprite_paths.len))));
     const loaded_texture = state.current_gameplay_sprites.jetpack_frames[frame_index] orelse return;
-    drawGameplayBillboardTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, state.gameplay_billboard_shader, .white);
+    gameplay_billboard.drawTexture(loaded_texture.texture, pickup.presentation_position, 0.64, 0.88, camera, state.gameplay_billboard_shader, .white);
 }
 
 fn drawGameplayStaticRingActor(
@@ -3090,16 +3084,16 @@ fn drawGameplayStaticRingActor(
     switch (ring_kind) {
         .none => {},
         .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46, 0.46, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46, 0.46, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
         },
         .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64, 0.64, camera, state.gameplay_billboard_shader, .white);
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64, 0.64, camera, state.gameplay_billboard_shader, .white);
         },
         .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72, 0.72, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72, 0.72, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
         },
         .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5, 0.5, camera, state.gameplay_billboard_shader, .white);
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5, 0.5, camera, state.gameplay_billboard_shader, .white);
         },
     }
 }
@@ -3115,16 +3109,16 @@ fn drawGameplayRuntimeRingEffectActor(
     switch (ring_kind) {
         .none => {},
         .normal => if (state.current_gameplay_sprites.ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.46 * scale, 0.46 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.46 * scale, 0.46 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 246, .b = 180, .a = 232 });
         },
         .powerup => if (state.current_gameplay_sprites.powerup) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, state.gameplay_billboard_shader, .white);
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.64 * scale, 0.64 * scale, camera, state.gameplay_billboard_shader, .white);
         },
         .explode => if (state.current_gameplay_sprites.ring_big) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.72 * scale, 0.72 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.72 * scale, 0.72 * scale, camera, state.gameplay_billboard_shader, .{ .r = 255, .g = 220, .b = 120, .a = 232 });
         },
         .slow => if (state.current_gameplay_sprites.slow_ring) |loaded_texture| {
-            drawGameplayBillboardTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, state.gameplay_billboard_shader, .white);
+            gameplay_billboard.drawTexture(loaded_texture.texture, position, 0.5 * scale, 0.5 * scale, camera, state.gameplay_billboard_shader, .white);
         },
     }
 }
@@ -3137,7 +3131,7 @@ fn drawGameplayTrackParcelActor(
     const loaded_texture = state.current_gameplay_sprites.parcel orelse return;
     const position = parcel.presentationPosition();
     const scale = parcel.presentationScale();
-    drawGameplayBillboardTexture(
+    gameplay_billboard.drawTexture(
         loaded_texture.texture,
         position,
         0.56 * scale,
@@ -3154,150 +3148,6 @@ fn drawGameplayTrackParcelActor(
 fn gameplayLaneWorldPosition(preview: *const track.LoadedLevelPreview, global_row: usize, lane_index: usize, y_offset: f32) rl.Vector3 {
     const floor_height = preview.floorHeightAtCellCenter(global_row, lane_index) orelse 0.0;
     return preview.worldPositionForLane(@as(f32, @floatFromInt(lane_index)) + 0.5, @as(f32, @floatFromInt(global_row)), floor_height + y_offset);
-}
-
-fn drawGameplayBillboardTexture(
-    texture: rl.Texture2D,
-    position: rl.Vector3,
-    width: f32,
-    height: f32,
-    camera: rl.Camera3D,
-    shader: ?rl.Shader,
-    tint: rl.Color,
-) void {
-    drawGameplayBillboardTextureRect(
-        texture,
-        .{ .x = 0.0, .y = 0.0, .width = @floatFromInt(texture.width), .height = @floatFromInt(texture.height) },
-        position,
-        width,
-        height,
-        camera,
-        shader,
-        tint,
-    );
-}
-
-fn drawGameplayBillboardTextureRectRolled(
-    texture: rl.Texture2D,
-    source: rl.Rectangle,
-    position: rl.Vector3,
-    width: f32,
-    height: f32,
-    camera: rl.Camera3D,
-    shader: ?rl.Shader,
-    roll_radians: f32,
-    tint: rl.Color,
-) void {
-    const forward = normalizeVector3(.{
-        .x = camera.target.x - camera.position.x,
-        .y = camera.target.y - camera.position.y,
-        .z = camera.target.z - camera.position.z,
-    });
-    var right = crossVector3(forward, camera.up);
-    if (vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = normalizeVector3(right);
-    }
-    var up = crossVector3(right, forward);
-    if (vectorLength(up) <= 0.0001) {
-        up = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    } else {
-        up = normalizeVector3(up);
-    }
-
-    if (@abs(roll_radians) > 0.0001) {
-        const roll_cos = std.math.cos(roll_radians);
-        const roll_sin = std.math.sin(roll_radians);
-        const rotated_right: rl.Vector3 = .{
-            .x = (right.x * roll_cos) - (up.x * roll_sin),
-            .y = (right.y * roll_cos) - (up.y * roll_sin),
-            .z = (right.z * roll_cos) - (up.z * roll_sin),
-        };
-        const rotated_up: rl.Vector3 = .{
-            .x = (right.x * roll_sin) + (up.x * roll_cos),
-            .y = (right.y * roll_sin) + (up.y * roll_cos),
-            .z = (right.z * roll_sin) + (up.z * roll_cos),
-        };
-        right = rotated_right;
-        up = rotated_up;
-    }
-
-    const half_width = width * 0.5;
-    const half_height = height * 0.5;
-    const top_left: rl.Vector3 = .{
-        .x = position.x - (right.x * half_width) + (up.x * half_height),
-        .y = position.y - (right.y * half_width) + (up.y * half_height),
-        .z = position.z - (right.z * half_width) + (up.z * half_height),
-    };
-    const bottom_left: rl.Vector3 = .{
-        .x = position.x - (right.x * half_width) - (up.x * half_height),
-        .y = position.y - (right.y * half_width) - (up.y * half_height),
-        .z = position.z - (right.z * half_width) - (up.z * half_height),
-    };
-    const bottom_right: rl.Vector3 = .{
-        .x = position.x + (right.x * half_width) - (up.x * half_height),
-        .y = position.y + (right.y * half_width) - (up.y * half_height),
-        .z = position.z + (right.z * half_width) - (up.z * half_height),
-    };
-    const top_right: rl.Vector3 = .{
-        .x = position.x + (right.x * half_width) + (up.x * half_height),
-        .y = position.y + (right.y * half_width) + (up.y * half_height),
-        .z = position.z + (right.z * half_width) + (up.z * half_height),
-    };
-    const uv = BillboardUv{
-        .left = source.x / @as(f32, @floatFromInt(texture.width)),
-        .top = source.y / @as(f32, @floatFromInt(texture.height)),
-        .right = (source.x + source.width) / @as(f32, @floatFromInt(texture.width)),
-        .bottom = (source.y + source.height) / @as(f32, @floatFromInt(texture.height)),
-    };
-    drawGameplayBillboardQuad(texture, top_left, bottom_left, bottom_right, top_right, uv, shader, tint);
-}
-
-fn drawGameplayBillboardTextureRect(
-    texture: rl.Texture2D,
-    source: rl.Rectangle,
-    position: rl.Vector3,
-    width: f32,
-    height: f32,
-    camera: rl.Camera3D,
-    shader: ?rl.Shader,
-    tint: rl.Color,
-) void {
-    drawGameplayBillboardTextureRectRolled(texture, source, position, width, height, camera, shader, 0.0, tint);
-}
-
-fn drawGameplayBillboardQuad(
-    texture: rl.Texture2D,
-    top_left: rl.Vector3,
-    bottom_left: rl.Vector3,
-    bottom_right: rl.Vector3,
-    top_right: rl.Vector3,
-    uv: BillboardUv,
-    shader: ?rl.Shader,
-    tint: rl.Color,
-) void {
-    if (shader) |cutout_shader| {
-        rl.beginShaderMode(cutout_shader);
-        defer rl.endShaderMode();
-    }
-    rl.gl.rlDisableDepthMask();
-    defer rl.gl.rlEnableDepthMask();
-    rl.gl.rlSetTexture(texture.id);
-    defer rl.gl.rlSetTexture(0);
-
-    rl.gl.rlBegin(rl.gl.rl_quads);
-    defer rl.gl.rlEnd();
-    rl.gl.rlColor4ub(tint.r, tint.g, tint.b, tint.a);
-
-    rl.gl.rlTexCoord2f(uv.left, uv.top);
-    rl.gl.rlVertex3f(top_left.x, top_left.y, top_left.z);
-    rl.gl.rlTexCoord2f(uv.left, uv.bottom);
-    rl.gl.rlVertex3f(bottom_left.x, bottom_left.y, bottom_left.z);
-    rl.gl.rlTexCoord2f(uv.right, uv.bottom);
-    rl.gl.rlVertex3f(bottom_right.x, bottom_right.y, bottom_right.z);
-    rl.gl.rlTexCoord2f(uv.right, uv.top);
-    rl.gl.rlVertex3f(top_right.x, top_right.y, top_right.z);
 }
 
 fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const track.LoadedLevelPreview, runner: gameplay.Runner) void {
@@ -3468,7 +3318,7 @@ fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
             .slug_goo => state.current_gameplay_sprites.slug_goo,
             .smoke => state.current_gameplay_sprites.smoke,
         } orelse continue;
-        drawGameplayBillboardTexture(
+        gameplay_billboard.drawTexture(
             loaded_texture.texture,
             effect.position,
             effect.width,
