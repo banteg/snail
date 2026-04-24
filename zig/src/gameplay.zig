@@ -10,6 +10,7 @@ const combat_module = @import("gameplay/combat.zig");
 const damage_module = @import("gameplay/damage.zig");
 const hazards_module = @import("gameplay/hazards.zig");
 const jetpack_module = @import("gameplay/jetpack.zig");
+const motion_module = @import("gameplay/motion.zig");
 const parcel_module = @import("gameplay/parcel.zig");
 const phase_module = @import("gameplay/phase.zig");
 const runner_state = @import("gameplay/runner_state.zig");
@@ -4137,21 +4138,11 @@ pub const Runner = struct {
     }
 
     fn laneCenterFromWorldX(preview: *const track.LoadedLevelPreview, world_x: f32) f32 {
-        const width_offset = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
-        return world_x + width_offset;
+        return motion_module.laneCenterFromWorldX(preview, world_x);
     }
 
     fn laneIndexForLaneCenter(preview: *const track.LoadedLevelPreview, lane_center: f32) usize {
-        if (preview.max_width == 0) return 0;
-        const centered_lane = std.math.clamp(
-            lane_center,
-            0.5,
-            @as(f32, @floatFromInt(preview.max_width)) - 0.5,
-        );
-        return @min(
-            preview.max_width - 1,
-            @as(usize, @intFromFloat(@floor(centered_lane - 0.5))),
-        );
+        return motion_module.laneIndexForLaneCenter(preview, lane_center);
     }
 
     fn trackEntryWorldPosition(preview: *const track.LoadedLevelPreview, row_position: f32, lane_center: f32) attachment_builders.Vec3 {
@@ -4931,11 +4922,7 @@ pub const Runner = struct {
 };
 
 fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) usize {
-    return @intFromFloat(@floor(std.math.clamp(
-        row_position,
-        0.0,
-        @as(f32, @floatFromInt(preview.total_rows - 1)),
-    )));
+    return motion_module.currentRowIndex(preview, row_position);
 }
 
 fn trackParcelWorldPosition(
