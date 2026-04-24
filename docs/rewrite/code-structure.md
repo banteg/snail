@@ -74,6 +74,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
 | `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
+| `frontend/render.zig` | Shared frontend render primitives: app-font text measurement/drawing, aligned headings, status/notice overlays, and the custom frontend cursor overlay. |
 | `main.zig` (remaining) | `pub fn main`, CLI parsing, render loop, top-level init/teardown, `AppState` struct definition with field declarations plus a thin dispatch layer that delegates to the above modules. |
 
 ## Execution order

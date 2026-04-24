@@ -33,6 +33,7 @@ const frontend_new_game_menu = @import("frontend/new_game_menu.zig");
 const frontend_options_menu = @import("frontend/options_menu.zig");
 const frontend_pause_menu = @import("frontend/pause_menu.zig");
 const frontend_route_map = @import("frontend/route_map.zig");
+const frontend_render = @import("frontend/render.zig");
 const frontend_thanks = @import("frontend/thanks.zig");
 const frontend_widget = @import("frontend/widget.zig");
 const galaxy = @import("galaxy.zig");
@@ -777,7 +778,7 @@ const AppState = struct {
         });
     }
 
-    fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
+    pub fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
         return self.currentUiMouseLocal();
     }
 
@@ -2589,7 +2590,7 @@ fn drawGameUi(state: *const AppState) !void {
                 defer canvas.end();
                 rl.clearBackground(.black);
                 try drawGamePhaseContents(state, authored_bounds, authored_layout);
-                drawFrontendCursorOverlay(state, authored_layout);
+                frontend_render.drawCursorOverlay(state, authored_layout);
             }
 
             rl.drawTexturePro(
@@ -2607,11 +2608,11 @@ fn drawGameUi(state: *const AppState) !void {
             );
         } else {
             try drawGamePhaseContents(state, full_bounds, ui_layout);
-            drawFrontendCursorOverlay(state, ui_layout);
+            frontend_render.drawCursorOverlay(state, ui_layout);
         }
     } else {
         try drawGamePhaseContents(state, full_bounds, ui_layout);
-        drawFrontendCursorOverlay(state, ui_layout);
+        frontend_render.drawCursorOverlay(state, ui_layout);
     }
 
     state.frontend_transition.draw(full_bounds);
@@ -2621,11 +2622,11 @@ fn drawGameBootUi(state: *const AppState, layout: VirtualLayout) !void {
     if (state.current_loading_screen != null) return;
 
     const font_size = layout.fontSize(30);
-    const title_width = measureAppText(state, "Loading...", font_size);
+    const title_width = frontend_render.measureText(state, "Loading...", font_size);
     const title_point = layout.mapPoint(320.0, 240.0);
     const title_x: i32 = @intFromFloat(title_point.x);
     const title_y: i32 = @intFromFloat(title_point.y);
-    drawAppText(
+    frontend_render.drawText(
         state,
         "Loading...",
         title_x - @divTrunc(title_width, 2),
@@ -2653,7 +2654,7 @@ fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     frontend_main_menu.drawMenuUi(state, layout);
 
     if (state.game_status_message) |message| {
-        try drawFrontendStatusMessage(state, layout, message);
+        try frontend_render.drawStatusMessage(state, layout, message);
     }
 }
 
@@ -2666,7 +2667,7 @@ fn drawNewGameMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     });
 
     if (state.game_status_message) |message| {
-        try drawFrontendStatusMessage(state, layout, message);
+        try frontend_render.drawStatusMessage(state, layout, message);
     }
 }
 
@@ -2683,7 +2684,7 @@ fn drawChallengeSetupMenuUi(state: *const AppState, layout: VirtualLayout) !void
     );
 
     if (state.game_status_message) |message| {
-        try drawFrontendStatusMessage(state, layout, message);
+        try frontend_render.drawStatusMessage(state, layout, message);
     }
 }
 
@@ -2693,7 +2694,7 @@ fn drawOptionsMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     frontend_options_menu.drawMenuUi(state, layout, menu_layout, active_target, state.slider_art.textures());
 
     if (state.game_status_message) |message| {
-        try drawFrontendStatusMessage(state, layout, message);
+        try frontend_render.drawStatusMessage(state, layout, message);
     }
 }
 
@@ -2705,7 +2706,7 @@ fn drawRouteMapMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     frontend_route_map.drawMenuUi(state, layout);
 
     if (state.game_status_message) |message| {
-        try drawFrontendNoticeBlock(state, layout, 320.0, 438.0, message, .ray_white);
+        try frontend_render.drawNoticeBlock(state, layout, 320.0, 438.0, message, .ray_white);
     }
 }
 
@@ -2730,264 +2731,13 @@ fn drawHighScoresMenuUi(state: *const AppState, layout: VirtualLayout) !void {
     );
 
     if (state.game_status_message) |message| {
-        try drawFrontendStatusMessage(state, layout, message);
+        try frontend_render.drawStatusMessage(state, layout, message);
     }
 }
 
 fn drawExitPromptUi(state: *const AppState, layout: VirtualLayout) !void {
-    drawFrontendHeading(state, layout, 320.0, frontend_exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
+    frontend_render.drawHeading(state, layout, 320.0, frontend_exit_prompt.title_y, "Do you really want to quit?", 26, .center, .ray_white);
     frontend_exit_prompt.drawMenuUi(state, layout);
-}
-
-fn drawFooterMessage(state: *const AppState, layout: VirtualLayout, footer_panel: rl.Rectangle, message: []const u8) !void {
-    rl.drawRectangleRounded(footer_panel, 0.2, 8, .{ .r = 0, .g = 0, .b = 0, .a = 172 });
-    try drawWrappedText(
-        state,
-        message,
-        @intFromFloat(footer_panel.x + layout.scaleFloat(20.0)),
-        @intFromFloat(footer_panel.y + layout.scaleFloat(11.0)),
-        @intFromFloat(footer_panel.width - layout.scaleFloat(32.0)),
-        layout.fontSize(20),
-        .ray_white,
-    );
-}
-
-const FrontendTextAlign = enum {
-    left,
-    center,
-    right,
-};
-
-fn drawFrontendTextAligned(
-    state: *const AppState,
-    layout: VirtualLayout,
-    local_x: f32,
-    local_y: f32,
-    text: []const u8,
-    authored_size: i32,
-    color: rl.Color,
-    alignment: FrontendTextAlign,
-) void {
-    const point = layout.mapPoint(local_x, local_y);
-    const font_size = layout.fontSize(authored_size);
-    const width = measureAppText(state, text, font_size);
-    const draw_x = switch (alignment) {
-        .left => @as(i32, @intFromFloat(point.x)),
-        .center => @as(i32, @intFromFloat(point.x)) - @divTrunc(width, 2),
-        .right => @as(i32, @intFromFloat(point.x)) - width,
-    };
-    drawAppText(state, text, draw_x, @intFromFloat(point.y), font_size, color);
-}
-
-fn drawFrontendCursorRocket(state: *const AppState, layout: VirtualLayout, local_x: f32, local_y: f32) void {
-    const loaded_texture = state.frontend_cursor_texture orelse return;
-    const destination = layout.mapRect(
-        local_x - frontend_widget.cursor_hotspot_x,
-        local_y - frontend_widget.cursor_hotspot_y,
-        frontend_widget.cursor_size,
-        frontend_widget.cursor_size,
-    );
-    rl.drawTexturePro(
-        loaded_texture.texture,
-        .{
-            .x = 0.0,
-            .y = 0.0,
-            .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
-            .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
-        },
-        destination,
-        .{ .x = 0.0, .y = 0.0 },
-        0.0,
-        .white,
-    );
-}
-
-fn drawFrontendCursorOverlay(state: *const AppState, layout: VirtualLayout) void {
-    if (state.command != .game) return;
-    if (!frontendPhaseShowsCursor(state.game_phase)) return;
-    const local_mouse = state.currentFrontendMouseLocal() orelse return;
-    drawFrontendCursorRocket(state, layout, local_mouse.x, local_mouse.y);
-}
-
-fn frontendPhaseShowsCursor(phase: GamePhase) bool {
-    return switch (phase) {
-        .main_menu,
-        .new_game_menu,
-        .challenge_setup_menu,
-        .options_menu,
-        .pause_menu,
-        .route_map_menu,
-        .high_scores_menu,
-        .exit_prompt,
-        .completion_screen,
-        .thanks_screen,
-        .help,
-        => true,
-        .boot, .intro, .credits, .level => false,
-    };
-}
-
-fn drawFrontendHeading(
-    state: *const AppState,
-    layout: VirtualLayout,
-    local_x: f32,
-    local_y: f32,
-    text: []const u8,
-    authored_size: i32,
-    alignment: FrontendTextAlign,
-    color: rl.Color,
-) void {
-    drawFrontendTextAligned(state, layout, local_x + 2.0, local_y + 2.0, text, authored_size, .{ .r = 30, .g = 10, .b = 28, .a = 224 }, alignment);
-    drawFrontendTextAligned(state, layout, local_x, local_y, text, authored_size, color, alignment);
-}
-
-fn scaledUiFontSize(font: *const game_font.Loaded, text_scale: f32) f32 {
-    return font.nominal_height * text_scale;
-}
-
-fn multilineUiTextHeight(font: *const game_font.Loaded, text: []const u8, text_scale: f32) f32 {
-    if (text.len == 0) return 0.0;
-    var line_count: usize = 1;
-    for (text) |byte| {
-        if (byte == '\n') line_count += 1;
-    }
-    return @as(f32, @floatFromInt(line_count)) * scaledUiFontSize(font, text_scale);
-}
-
-fn uiFontTextRectAbsolute(font: *const game_font.Loaded, text: []const u8, left: f32, top: f32, text_scale: f32) frontend_widget.Rect {
-    const font_size = scaledUiFontSize(font, text_scale);
-    return .{
-        .left = left,
-        .top = top,
-        .width = font.measureText(text, font_size),
-        .height = multilineUiTextHeight(font, text, text_scale),
-    };
-}
-
-fn drawUiFontTextAbsolute(
-    state: *const AppState,
-    layout: VirtualLayout,
-    text: []const u8,
-    left: f32,
-    top: f32,
-    text_scale: f32,
-    color: rl.Color,
-) void {
-    const point = layout.mapPoint(left, top);
-    state.ui_font.drawText(text, point.x, point.y, layout.scaleFloat(scaledUiFontSize(&state.ui_font, text_scale)), color);
-}
-
-fn drawUiFontTextRect(
-    state: *const AppState,
-    layout: VirtualLayout,
-    text: []const u8,
-    rect: frontend_widget.Rect,
-    text_scale: f32,
-    color: rl.Color,
-) void {
-    drawUiFontTextAbsolute(state, layout, text, rect.left, rect.top, text_scale, color);
-}
-
-fn drawTextureLocalRectSource(
-    layout: VirtualLayout,
-    loaded_texture: assets.LoadedTexture,
-    source: rl.Rectangle,
-    local_x: f32,
-    local_y: f32,
-    local_width: f32,
-    local_height: f32,
-    tint: rl.Color,
-) void {
-    if (local_width <= 0.0 or local_height <= 0.0) return;
-    rl.drawTexturePro(
-        loaded_texture.texture,
-        source,
-        layout.mapRect(local_x, local_y, local_width, local_height),
-        .{ .x = 0.0, .y = 0.0 },
-        0.0,
-        tint,
-    );
-}
-
-fn drawTextureLocalRect(
-    layout: VirtualLayout,
-    loaded_texture: assets.LoadedTexture,
-    local_x: f32,
-    local_y: f32,
-    local_width: f32,
-    local_height: f32,
-    tint: rl.Color,
-) void {
-    drawTextureLocalRectSource(
-        layout,
-        loaded_texture,
-        .{
-            .x = 0.0,
-            .y = 0.0,
-            .width = @as(f32, @floatFromInt(loaded_texture.texture.width)),
-            .height = @as(f32, @floatFromInt(loaded_texture.texture.height)),
-        },
-        local_x,
-        local_y,
-        local_width,
-        local_height,
-        tint,
-    );
-}
-
-fn drawTextureCenteredLocal(
-    layout: VirtualLayout,
-    loaded_texture: assets.LoadedTexture,
-    center_x: f32,
-    center_y: f32,
-    local_width: f32,
-    local_height: f32,
-    tint: rl.Color,
-) void {
-    drawTextureLocalRect(
-        layout,
-        loaded_texture,
-        center_x - local_width * 0.5,
-        center_y - local_height * 0.5,
-        local_width,
-        local_height,
-        tint,
-    );
-}
-
-fn drawFrontendStatusMessage(state: *const AppState, layout: VirtualLayout, message: []const u8) !void {
-    try drawFrontendNoticeBlock(state, layout, ui.authored_width * 0.5, 438.0, message, .ray_white);
-}
-
-fn drawFrontendNoticeBlock(
-    state: *const AppState,
-    layout: VirtualLayout,
-    center_x: f32,
-    local_y: f32,
-    message: []const u8,
-    color: rl.Color,
-) !void {
-    var line_buffer: [512]u8 = undefined;
-    var line_index: i32 = 0;
-    var parts = std.mem.tokenizeAny(u8, message, ">\n");
-    while (parts.next()) |part| {
-        const trimmed = std.mem.trim(u8, part, " \t\r");
-        if (trimmed.len == 0) continue;
-        const clipped = if (trimmed.len > line_buffer.len - 1) trimmed[0 .. line_buffer.len - 1] else trimmed;
-        @memcpy(line_buffer[0..clipped.len], clipped);
-        line_buffer[clipped.len] = 0;
-        drawFrontendTextAligned(
-            state,
-            layout,
-            center_x,
-            local_y + @as(f32, @floatFromInt(line_index * 20)),
-            line_buffer[0..clipped.len],
-            20,
-            color,
-            .center,
-        );
-        line_index += 1;
-    }
 }
 
 fn completionFlowOwnerForOutcome(outcome: RunOutcome, mode: ?FrontendLevelMode) CompletionFlowOwner {
@@ -4301,22 +4051,6 @@ fn modelTransformFromBasis(position: rl.Vector3, right: rl.Vector3, up: rl.Vecto
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
     return level_loader.gameTrackSetIndexForLevel(level_track);
-}
-
-fn uiContext(state: *const AppState) ui.Context {
-    return .{ .font = &state.ui_font };
-}
-
-fn drawAppText(state: *const AppState, text: []const u8, x: i32, y: i32, font_size: i32, color: rl.Color) void {
-    ui.drawText(uiContext(state), text, x, y, font_size, color);
-}
-
-fn measureAppText(state: *const AppState, text: []const u8, font_size: i32) i32 {
-    return ui.measureText(uiContext(state), text, font_size);
-}
-
-fn drawWrappedText(state: *const AppState, text: []const u8, x: i32, y: i32, max_width: i32, line_height: i32, color: rl.Color) !void {
-    return ui.drawWrappedText(uiContext(state), text, x, y, max_width, line_height, color);
 }
 
 fn takeOptional(comptime T: type, slot: *?T) ?T {
