@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
+const level_loader = @import("app/level_loader.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -3127,21 +3128,15 @@ const AppState = struct {
     }
 
     fn isTutorialGameplay(self: *const AppState) bool {
-        if (self.isTutorialFlow()) return true;
-        return self.isTutorialLevel();
+        return level_loader.isTutorialGameplay(self);
     }
 
     fn isTutorialFlow(self: *const AppState) bool {
-        if (self.active_frontend_mode == .tutorial) return true;
-        if (self.level_runner) |runner| {
-            if (runner.session_mode == .tutorial) return true;
-        }
-        return false;
+        return level_loader.isTutorialFlow(self);
     }
 
     fn isTutorialLevel(self: *const AppState) bool {
-        const loaded_level = self.current_level orelse return false;
-        return std.mem.eql(u8, loaded_level.source_path, "LEVELS/TUTORIAL.TXT");
+        return level_loader.isTutorialLevel(self);
     }
 
     fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
@@ -3180,22 +3175,16 @@ const AppState = struct {
     }
 
     fn resetSubgameCamera(self: *AppState) void {
-        self.subgame_camera = .{};
+        level_loader.resetSubgameCamera(self);
     }
 
-    fn updateSubgameCamera(self: *AppState, runner: *gameplay.Runner) void {
+    pub fn updateSubgameCamera(self: *AppState, runner: *gameplay.Runner) void {
         const selection = subgameCameraSelectionForRunner(runner);
         updateSubgameCameraState(&self.subgame_camera, selection);
     }
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
-        const message = segment_entry.message orelse return;
-        const duration_ticks = level_prompt.durationTicks(segment_entry.duration);
-        if (self.isTutorialGameplay()) {
-            self.level_prompt_queue.replaceSingle(message, duration_ticks);
-            return;
-        }
-        self.level_prompt_queue.enqueue(message, duration_ticks);
+        level_loader.queueLevelSegmentPrompt(self, segment_entry);
     }
 
     fn activateGameplayClickStart(self: *AppState) !void {
@@ -3215,11 +3204,7 @@ const AppState = struct {
     }
 
     fn currentRunnerRowMessageSegmentIndex(self: *const AppState) ?usize {
-        const loaded_level = self.current_level orelse return null;
-        const runner = self.level_runner orelse return null;
-        const logical_segment_index = runner.currentRowMessageLogicalSegmentIndex() orelse return null;
-        if (logical_segment_index >= loaded_level.segments.len) return null;
-        return logical_segment_index;
+        return level_loader.currentRunnerRowMessageSegmentIndex(self);
     }
 
     fn dispatchCurrentRunnerRowMessage(
@@ -3228,25 +3213,7 @@ const AppState = struct {
         previous_token: ?u32,
         replay_sample_on_match: bool,
     ) !void {
-        const logical_segment_index = self.currentRunnerRowMessageSegmentIndex() orelse return;
-        if (self.startupGameplayBlockActive()) return;
-
-        const loaded_level = self.current_level orelse return;
-        const runner = self.level_runner orelse return;
-        const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
-        const token_changed = if (previous_token) |token|
-            runner.currentRowMessageToken() != token
-        else
-            false;
-        if (!segment_changed and !token_changed and !replay_sample_on_match) return;
-
-        const segment_entry = &loaded_level.segments[logical_segment_index];
-        if (segment_changed or token_changed) {
-            self.queueLevelSegmentPrompt(segment_entry);
-        }
-        if (segment_changed or token_changed or replay_sample_on_match) {
-            try audio.playLevelSegmentSample(self, segment_entry);
-        }
+        try level_loader.dispatchCurrentRunnerRowMessage(self, previous_segment_index, previous_token, replay_sample_on_match);
     }
 
     fn enterSelectedFrontendRoute(self: *AppState) !void {
@@ -3255,127 +3222,55 @@ const AppState = struct {
     }
 
     fn replaySpeedScalarForSliderValue(value: u32) f32 {
-        const normalized = @as(f32, @floatFromInt(value)) * 0.01;
-        return if (normalized >= 1.0)
-            1.1
-        else
-            (normalized * 0.9) + 0.2;
+        return level_loader.replaySpeedScalarForSliderValue(value);
     }
 
     fn currentRunReplaySpeedScalar(self: *const AppState) f32 {
-        if (self.selected_level_record_override) |record| return record.replay_speed_scalar;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => replaySpeedScalarForSliderValue(self.runtime_config.challengeReplaySpeedValue()),
-            .postal, .time_trial, .tutorial => replaySpeedScalarForSliderValue(if (self.current_level) |loaded_level|
-                @as(u32, @intCast(loaded_level.speed orelse 0))
-            else
-                0),
-        };
+        return level_loader.currentRunReplaySpeedScalar(self);
     }
 
     fn currentRunChallengeDifficultyValue(self: *const AppState) u32 {
-        if (self.selected_level_record_override) |record| return record.challenge_difficulty_value;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => self.runtime_config.challengeReplayDifficultyValue(),
-            .postal, .time_trial, .tutorial => 0,
-        };
+        return level_loader.currentRunChallengeDifficultyValue(self);
     }
 
     fn currentRunChallengeDifficultyScalar(self: *const AppState) f32 {
-        if (self.selected_level_record_override) |record| return record.challenge_difficulty_scalar;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => @as(f32, @floatFromInt(self.currentRunChallengeDifficultyValue())) * 0.01,
-            .postal, .time_trial, .tutorial => 0.0,
-        };
+        return level_loader.currentRunChallengeDifficultyScalar(self);
     }
 
     fn currentRunChallengeSpeedValue(self: *const AppState) u32 {
-        if (self.selected_level_record_override) |record| return record.challenge_speed_value;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => self.runtime_config.challengeReplaySpeedValue(),
-            .postal, .time_trial, .tutorial => 0,
-        };
+        return level_loader.currentRunChallengeSpeedValue(self);
     }
 
     fn challengeParcelTargetCount(speed_value: u32, difficulty_scalar: f32) usize {
-        const scaled_target = (@as(f32, @floatFromInt(speed_value)) * 50.0 * 0.01) +
-            (difficulty_scalar * 50.0);
-        return @as(usize, @intFromFloat(@floor(@max(scaled_target, 0.0)))) + 1;
+        return level_loader.challengeParcelTargetCount(speed_value, difficulty_scalar);
     }
 
     fn challengeRuntimeHazardScalar(value: u32) f32 {
-        return @as(f32, @floatFromInt(value)) * 0.01 * 0.8;
+        return level_loader.challengeRuntimeHazardScalar(value);
     }
 
     fn currentRunGarbageScalar(self: *const AppState) f32 {
-        if (self.selected_level_record_override) |record| return record.garbage_scalar;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
-            .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
-                loaded_level.normalizedGarbageScalar() orelse 0.0
-            else
-                0.0,
-        };
+        return level_loader.currentRunGarbageScalar(self);
     }
 
     fn currentRunSaltScalar(self: *const AppState) f32 {
-        if (self.selected_level_record_override) |record| return record.salt_scalar;
-        return switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => challengeRuntimeHazardScalar(self.currentRunChallengeDifficultyValue()),
-            .postal, .time_trial, .tutorial => if (self.current_level) |loaded_level|
-                loaded_level.normalizedSaltScalar() orelse 0.0
-            else
-                0.0,
-        };
+        return level_loader.currentRunSaltScalar(self);
     }
 
     fn currentParcelTarget(self: *const AppState) usize {
-        if (self.current_track_preview) |preview| return preview.parcel_target_count;
-        return if (self.current_level) |loaded_level|
-            loaded_level.parcels orelse 0
-        else
-            0;
+        return level_loader.currentParcelTarget(self);
     }
 
     fn configureRuntimeParcels(self: *AppState, loaded_track_preview: *track.LoadedLevelPreview) !void {
-        switch (self.active_frontend_mode orelse .tutorial) {
-            .challenge => {
-                const target_count = challengeParcelTargetCount(
-                    self.currentRunChallengeSpeedValue(),
-                    self.currentRunChallengeDifficultyScalar(),
-                );
-                _ = try loaded_track_preview.trimParcelAnnotationsToTarget(&self.math_random_state, target_count);
-            },
-            .postal, .time_trial, .tutorial => {},
-        }
+        try level_loader.configureRuntimeParcels(self, loaded_track_preview);
     }
 
     fn currentRunRuntimeBuildFlags(self: *const AppState) u32 {
-        return if (self.current_track_preview) |preview|
-            preview.runtime_build_flags
-        else if (self.selected_level_record_override) |record|
-            record.runtime_build_flags
-        else
-            runtimeBuildFlagsForFrontendMode(self.active_frontend_mode);
+        return level_loader.currentRunRuntimeBuildFlags(self);
     }
 
     fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
-        return .{
-            .score = score,
-            .replay_level_index = @intCast(self.active_frontend_level_index),
-            .replay_mode_id = if (self.active_frontend_mode) |mode|
-                @as(u32, @intCast(@intFromEnum(mode)))
-            else
-                0,
-            .challenge_speed_value = self.currentRunChallengeSpeedValue(),
-            .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
-            .replay_speed_scalar = self.currentRunReplaySpeedScalar(),
-            .challenge_difficulty_value = self.currentRunChallengeDifficultyValue(),
-            .challenge_difficulty_scalar = self.currentRunChallengeDifficultyScalar(),
-            .runtime_build_seed = self.current_runtime_build_seed,
-            .garbage_scalar = self.currentRunGarbageScalar(),
-            .salt_scalar = self.currentRunSaltScalar(),
-        };
+        return level_loader.currentRunHighScoreEntry(self, score);
     }
 
     fn saveHighScoreTables(self: *AppState) !void {
@@ -4296,34 +4191,11 @@ const AppState = struct {
     }
 
     fn loadGameLevel(self: *AppState, level_path: []const u8) !void {
-        self.level_index = self.resources.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
-        self.invalidateTrackBuildSeed();
-        try self.reloadLevel();
+        try level_loader.loadGameLevel(self, level_path);
     }
 
     fn syncActiveLevelSegment(self: *AppState) !void {
-        _ = self.current_level orelse {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        };
-        const logical_segment_index = self.currentRunnerRowMessageSegmentIndex() orelse {
-            self.active_level_segment_index = null;
-            self.clearLevelPromptQueue();
-            return;
-        };
-
-        self.level_segment_index = logical_segment_index;
-        const previous_segment_index = self.active_level_segment_index;
-        const segment_changed = previous_segment_index == null or previous_segment_index.? != logical_segment_index;
-        self.active_level_segment_index = logical_segment_index;
-        if (segment_changed) {
-            if (previous_segment_index) |previous_index| {
-                if (logical_segment_index < previous_index) {
-                    self.clearLevelPromptQueue();
-                }
-            }
-        }
+        try level_loader.syncActiveLevelSegment(self);
     }
 
     fn loadCurrentLevelBackground(self: *AppState) !void {
@@ -4587,148 +4459,23 @@ const AppState = struct {
     }
 
     pub fn reloadLevel(self: *AppState) !void {
-        const seed_intro_cutscene = self.command == .game and self.seed_level_intro_cutscene;
-        self.seed_level_intro_cutscene = false;
-        if (self.current_level) |*loaded_level| {
-            loaded_level.deinit();
-            self.current_level = null;
-        }
-        if (self.current_segment) |*loaded_segment| {
-            loaded_segment.deinit();
-            self.current_segment = null;
-        }
-        if (self.current_track_preview) |*loaded_track_preview| {
-            loaded_track_preview.deinit();
-            self.current_track_preview = null;
-        }
-        if (self.current_game_track_scene) |*scene| {
-            scene.deinit();
-            self.current_game_track_scene = null;
-        }
-        gameplay_resources.unloadTurbo(self);
-        gameplay_resources.resetPresentationState(self);
-        self.gameplay_effects.clear();
-        audio.stopVoicePlayback(self);
-        self.gameplay_voice_manager.clear();
-        self.native_gameplay_voice_manager.clear();
-        self.announced_slug_voice_cell_count = 0;
-        self.level_runner = null;
-        self.gameplay_click_start_active = false;
-        self.resetSubgameCamera();
-        self.tutorial_reference_score = 0;
-        if (self.resources.catalog.level_entries.len == 0) return;
-
-        const entry = self.resources.catalog.level_entries[self.level_index];
-        self.current_level = try level.loadFromArchive(self.allocator, &self.resources.catalog, entry);
-        if (self.current_level) |*loaded_level| {
-            const runtime_build_seed = self.trackBuildSeedForCurrentLoad();
-            self.current_track_preview = try track.LoadedLevelPreview.loadWithOptions(
-                self.allocator,
-                &self.resources.catalog,
-                loaded_level,
-                .{
-                    .runtime_build_flags = self.currentRunRuntimeBuildFlags(),
-                    .runtime_build_seed = runtime_build_seed,
-                    .random_length_scalar_override = switch (self.active_frontend_mode orelse .tutorial) {
-                        .challenge => self.currentRunChallengeDifficultyScalar(),
-                        .postal, .time_trial, .tutorial => null,
-                    },
-                    .garbage_scalar_override = self.currentRunGarbageScalar(),
-                    .salt_scalar_override = self.currentRunSaltScalar(),
-                },
-            );
-            if (self.current_track_preview) |*loaded_track_preview| {
-                self.math_random_state = loaded_track_preview.runtime_build_final_random_state;
-                try self.configureRuntimeParcels(loaded_track_preview);
-                if (gameTrackSetIndexForLevel(loaded_level.track)) |track_set_index| {
-                    self.current_game_track_scene = try track_render.Scene.buildStandaloneSegmentScene(
-                        self.allocator,
-                        &self.resources,
-                        track_set_index,
-                    );
-                }
-                if (self.command == .game) {
-                    try gameplay_resources.reloadTurbo(self);
-                    audio.applyAudioConfigVolumes(self);
-                }
-                self.level_runner = gameplay.Runner.init(loaded_track_preview);
-                self.level_runner.?.configureCompletionBonus(
-                    self.currentParcelTarget(),
-                    completionBonusAppliesForMode(self.active_frontend_mode),
-                );
-                self.level_runner.?.configureSessionMode(runnerSessionModeForFrontendMode(self.active_frontend_mode));
-                self.level_runner.?.configureBaseSubgameRate(self.currentRunReplaySpeedScalar());
-                self.gameplay_click_start_active = seed_intro_cutscene and self.isTutorialFlow();
-                if (seed_intro_cutscene) {
-                    self.level_runner.?.setCutscene(gameplay.cutscene_intro_id);
-                } else {
-                    self.level_runner.?.clearCutscene();
-                }
-                if (self.level_runner) |*runner| {
-                    self.updateSubgameCamera(runner);
-                }
-                if (self.isTutorialGameplay()) {
-                    self.tutorial_reference_score = self.high_score_tables.postal[0].score;
-                }
-            }
-        }
-        self.level_segment_index = 0;
-        try self.reloadLevelSegment();
-        try self.syncActiveLevelSegment();
+        try level_loader.reloadLevel(self);
     }
 
     fn nextMathRandomInt15(self: *AppState) u32 {
-        self.math_random_state = (self.math_random_state *% 0x343fd) +% 0x269ec3;
-        return (self.math_random_state >> 16) & 0x7fff;
+        return level_loader.nextMathRandomInt15(self);
     }
 
     fn trackBuildSeedForCurrentLoad(self: *AppState) u32 {
-        if (self.command != .game) return 0;
-
-        const mode = self.active_frontend_mode;
-        if (self.selected_level_record_override) |record| {
-            if (mode == record.mode and self.active_frontend_level_index == record.level_index) {
-                self.current_runtime_build_seed = record.runtime_build_seed;
-                self.current_runtime_build_seed_level_index = self.level_index;
-                self.current_runtime_build_seed_mode = mode;
-                return record.runtime_build_seed;
-            }
-        }
-        if (self.current_runtime_build_seed_level_index == self.level_index and self.current_runtime_build_seed_mode == mode) {
-            return self.current_runtime_build_seed;
-        }
-
-        const seed: u32 = switch (mode orelse return 0) {
-            .tutorial, .time_trial => 0,
-            .postal, .challenge => self.nextMathRandomInt15(),
-        };
-        self.current_runtime_build_seed = seed;
-        self.current_runtime_build_seed_level_index = self.level_index;
-        self.current_runtime_build_seed_mode = mode;
-        return seed;
+        return level_loader.trackBuildSeedForCurrentLoad(self);
     }
 
     fn invalidateTrackBuildSeed(self: *AppState) void {
-        self.current_runtime_build_seed_level_index = null;
-        self.current_runtime_build_seed_mode = null;
+        level_loader.invalidateTrackBuildSeed(self);
     }
 
     pub fn reloadLevelSegment(self: *AppState) !void {
-        if (self.current_segment) |*loaded_segment| {
-            loaded_segment.deinit();
-            self.current_segment = null;
-        }
-
-        const loaded_level = self.current_level orelse return;
-        if (loaded_level.segments.len == 0) return;
-        if (self.level_segment_index >= loaded_level.segments.len) {
-            self.level_segment_index = loaded_level.segments.len - 1;
-        }
-
-        var path_buffer: [512]u8 = undefined;
-        const archive_path = try std.fmt.bufPrint(&path_buffer, "SEGMENTS/{s}", .{loaded_level.segments[self.level_segment_index].path});
-        const entry = self.resources.catalog.dat.entryByPath(archive_path) orelse return;
-        self.current_segment = try segment.loadFromArchive(self.allocator, &self.resources.catalog, entry);
+        try level_loader.reloadLevelSegment(self);
     }
 
     pub fn activeModel(self: *const AppState) ?*const x2.Uploaded {
@@ -5437,30 +5184,18 @@ fn postalCompletionOwner(current_index: usize, highest_available: usize) Complet
 // `build_subgame_level`. Keep the mode helpers literal and local instead of routing
 // them through an intermediate config struct.
 fn runtimeBuildFlagsForFrontendMode(mode: ?FrontendLevelMode) u32 {
-    return switch (mode orelse .postal) {
-        .postal, .challenge => track.postalChallengeRuntimeBuildFlags,
-        .time_trial => track.timeTrialRuntimeBuildFlags,
-        .tutorial => track.tutorialRuntimeBuildFlags,
-    };
+    return level_loader.runtimeBuildFlagsForFrontendMode(mode);
 }
 
 fn runnerSessionModeForFrontendMode(mode: ?FrontendLevelMode) gameplay.SessionMode {
-    return switch (mode orelse .postal) {
-        .postal => .postal,
-        .challenge => .challenge,
-        .time_trial => .time_trial,
-        .tutorial => .tutorial,
-    };
+    return level_loader.runnerSessionModeForFrontendMode(mode);
 }
 
 fn completionBonusAppliesForMode(mode: ?FrontendLevelMode) bool {
     // PORT(verified): the native subgame keeps one shared gameplay sim and dispatches most
     // mode differences through a small mode-to-config lane in `set_subgame_features` and
     // `build_subgame_level`. Postal is the only mode that keeps the completion bonus lane.
-    return switch (mode orelse .postal) {
-        .postal => true,
-        .challenge, .time_trial, .tutorial => false,
-    };
+    return level_loader.completionBonusAppliesForMode(mode);
 }
 
 fn routeMapHasReplayEntry(
@@ -6824,13 +6559,7 @@ fn camera3DFromCameraWorldMatrix(matrix: rl.Matrix, fov_degrees: f32) rl.Camera3
 }
 
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
-    return switch (level_track) {
-        .index => |index| switch (index) {
-            0, 1, 2, 3 => @intCast(index),
-            else => null,
-        },
-        .random => null,
-    };
+    return level_loader.gameTrackSetIndexForLevel(level_track);
 }
 
 fn gameplayLevelCamera(subgame_camera: *const SubgameCameraState, loaded_track_preview: *const track.LoadedLevelPreview, fov_degrees: f32) rl.Camera3D {
