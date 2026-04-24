@@ -6,6 +6,7 @@ const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const level_loader = @import("app/level_loader.zig");
 const return_flow = @import("app/return_flow.zig");
+const route_map_state = @import("app/route_map_state.zig");
 const run_result = @import("app/run_result.zig");
 const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
@@ -1222,8 +1223,8 @@ const AppState = struct {
             return;
         }
 
-        if (self.routeMapCanCloseCard() and rl.isMouseButtonPressed(.left)) {
-            self.closeFrontendRouteCard();
+        if (route_map_state.canCloseCard(self) and rl.isMouseButtonPressed(.left)) {
+            route_map_state.closeCard(self);
             audio.playFrontendSelectSound(self);
             self.setFrontendHoverTarget(null);
             return;
@@ -2019,7 +2020,7 @@ const AppState = struct {
         }
     }
 
-    fn reloadFrontendRouteLevel(self: *AppState) !void {
+    pub fn reloadFrontendRouteLevel(self: *AppState) !void {
         self.unloadFrontendRouteLevel();
         const mode = self.frontend_route_mode orelse return;
         var path_buffer: [64]u8 = undefined;
@@ -2042,75 +2043,27 @@ const AppState = struct {
     }
 
     pub fn routeMapCardIsOpen(self: *const AppState) bool {
-        return self.route_map_open_index != null;
+        return route_map_state.cardIsOpen(self);
     }
 
-    // PORT(verified): `open_galaxy_route` stores the active route index at `this + 69504`,
-    // while `close_galaxy_route` clears that slot back to `-1`. Model the open-card route
-    // separately instead of assuming the saved/default route is always the open one.
     pub fn currentRouteMapOpenIndex(self: *const AppState) ?usize {
-        return self.route_map_open_index;
-    }
-
-    // PORT(verified): the late `update_galaxy` close-card branch only fires when the
-    // open-route flag is set and the authored route count is greater than `1`
-    // (`dword_4DF9B8 > 1`). Preserve that gate so the first available route stays pinned
-    // open instead of letting the user dismiss the card into an empty Star Map.
-    fn routeMapCanCloseCard(self: *const AppState) bool {
-        if (!self.routeMapCardIsOpen()) return false;
-        if (!frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode)) return false;
-        const mode = self.frontend_route_mode orelse return false;
-        return self.availableFrontendRouteLimit(mode) > 1;
+        return route_map_state.currentOpenIndex(self);
     }
 
     pub fn openFrontendRouteCard(self: *AppState, route_index: usize) !void {
-        self.route_map_open_index = route_index;
-        self.route_map_hover_state = .none;
-        self.route_map_hovered_index = null;
-        self.frontend_route_index = route_index;
-        self.syncRouteMapHighlightTargets();
-        try self.reloadFrontendRouteLevel();
-        if (frontend_flow.routeMenuActionIndexForAction(self, .play)) |index| {
-            self.route_menu_action_index = index;
-        } else {
-            self.route_menu_action_index = 0;
-        }
-    }
-
-    fn closeFrontendRouteCard(self: *AppState) void {
-        self.route_map_open_index = null;
-        self.route_map_hover_state = .none;
-        self.route_map_hovered_index = null;
-        self.route_menu_action_index = 0;
-        self.syncRouteMapHighlightTargets();
+        try route_map_state.openCard(self, route_index);
     }
 
     pub fn resetRouteMapHighlightAnimations(self: *AppState) void {
-        @memset(&self.route_map_route_highlight_alpha, 0.0);
-        @memset(&self.route_map_route_highlight_target, 0.0);
+        route_map_state.resetHighlightAnimations(self);
     }
 
-    // PORT(verified): `update_galaxy` ticks each route entry through `sub_409BD0`, which
-    // eases the current highlight alpha at `+40` toward the target at `+44` with a `0.1`
-    // step. The target is `1.0` for the hovered route in hover state `2`, otherwise for the
-    // open route while the card is up.
     pub fn syncRouteMapHighlightTargets(self: *AppState) void {
-        @memset(&self.route_map_route_highlight_target, 0.0);
-        const highlighted_route_index = switch (self.route_map_hover_state) {
-            .route => self.route_map_hovered_index,
-            .card, .none => self.currentRouteMapOpenIndex(),
-        } orelse return;
-        if (highlighted_route_index < self.route_map_route_highlight_target.len) {
-            self.route_map_route_highlight_target[highlighted_route_index] = 1.0;
-        }
+        route_map_state.syncHighlightTargets(self);
     }
 
     fn stepRouteMapHighlightAnimations(self: *AppState) void {
-        for (1..self.route_map_route_highlight_alpha.len) |route_index| {
-            const current = self.route_map_route_highlight_alpha[route_index];
-            const target = self.route_map_route_highlight_target[route_index];
-            self.route_map_route_highlight_alpha[route_index] = current + (target - current) * 0.1;
-        }
+        route_map_state.stepHighlightAnimations(self);
     }
 
     fn clearLevelPromptQueue(self: *AppState) void {
