@@ -69,6 +69,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/level_loader.zig` | Level + segment loaders: `loadGameLevel`, `reloadLevel`, `reloadLevelSegment`, `syncActiveLevelSegment`, and row-message prompt dispatch. |
 | `app/boot_assets.zig` | Boot preload lifecycle with explicit slots: high-score loading, intro/menu/route/help background preloads, intro/credits script preloads, menu music preloads, and take/unload helpers. |
 | `app/screen_assets.zig` | Screen asset lifecycle with explicit slots: current background/runtime, loading screen, text scripts, configured credits loading, preload handoff, unload, and text progress helpers. |
+| `app/window_state.zig` | Window/UI projection policy: Raylib screen dimensions, virtual UI layout, mouse-local mapping, and fullscreen preference sync. |
 | `app/run_tuning.zig` | Run tuning and mode policy: replay speed/difficulty scalars, challenge parcel target math, runtime build flags, session mode/completion bonus policy, high-score entry projection, and runtime parcel trimming. |
 | `app/track_build_seed.zig` | Runtime track-build seed policy: selected-record seed replay, cached per-level/mode seed reuse, frontend RNG advancement for postal/challenge runs, and seed cache invalidation. |
 | `app/math_random.zig` | Shared Windows-style math RNG step used by runtime track-build seeds and native movement/audio variant selection. |
@@ -117,6 +118,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 15. Phase B3 — **done**. `app/frontend_flow.zig` owns frontend phase entry, start-phase setup, menu action dispatch, high-score screen entry, exit prompt routing, frontend level launch, selected-record launch, route-map entry, and route-map action/route stepping helpers. `app/frontend_input.zig` owns hover/activation queue state, widget shortcut dispatch, frontend keyboard navigation/value stepping, and widget animation/snap state. `app/frontend_mouse.zig` owns frontend mouse hit-testing. `app/route_map_state.zig` owns route-map card open/close and highlight state.
 16. Phase B4 — **done**. `gameplay/actor_render.zig` owns gameplay actor/resource rendering. `main.zig` now orchestrates viewport setup and passes an explicit render context instead of carrying the live actor drawing helpers itself.
 17. Phase B5 — **done**. `app/screen_assets.zig` owns current screen/background/loading/text-script resource lifecycle and boot-preload handoff.
+18. Phase B6 — **done**. `app/window_state.zig` owns window/UI projection and fullscreen preference sync.
 
 ## Refactor pattern that worked
 

@@ -22,6 +22,7 @@ const selected_replay = @import("app/selected_replay.zig");
 const subgame_camera = @import("app/subgame_camera.zig");
 const track_build_seed = @import("app/track_build_seed.zig");
 const voice_audio = @import("app/voice_audio.zig");
+const window_state = @import("app/window_state.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -673,12 +674,7 @@ const AppState = struct {
 
     fn currentUiLayout(self: *const AppState) VirtualLayout {
         _ = self;
-        return ui.virtualLayout(.{
-            .x = 0.0,
-            .y = 0.0,
-            .width = @floatFromInt(screenWidth()),
-            .height = @floatFromInt(screenHeight()),
-        });
+        return window_state.currentUiLayout();
     }
 
     pub fn currentFrontendMouseLocal(self: *const AppState) ?rl.Vector2 {
@@ -686,14 +682,7 @@ const AppState = struct {
     }
 
     pub fn currentUiMouseLocal(self: *const AppState) ?rl.Vector2 {
-        if (self.mouse_local_override) |mouse| {
-            return .{ .x = mouse.x, .y = mouse.y };
-        }
-        const layout = self.currentUiLayout();
-        const mouse_x = @as(f32, @floatFromInt(rl.getMouseX()));
-        const mouse_y = @as(f32, @floatFromInt(rl.getMouseY()));
-        if (!layout.containsScreenPoint(mouse_x, mouse_y)) return null;
-        return layout.unmapPoint(mouse_x, mouse_y);
+        return window_state.currentMouseLocal(window_state.viewContext(self));
     }
 
     fn setFrontendHoverTarget(self: *AppState, target: ?frontend_activation.HoverTarget) void {
@@ -1080,7 +1069,7 @@ const AppState = struct {
                                 loaded_track_preview,
                                 runner,
                                 @floatFromInt(rl.getMouseX()),
-                                @floatFromInt(screenWidth()),
+                                @floatFromInt(window_state.screenWidth()),
                             );
                             if (self.mouse_level_lane_target) |lane_target| {
                                 self.pending_level_input.target_lane_center = lane_target;
@@ -2271,19 +2260,11 @@ const AppState = struct {
     }
 
     pub fn toggleFullscreenPreference(self: *AppState) void {
-        self.runtime_config.setFullscreenEnabled(!self.runtime_config.fullscreenEnabled());
-        self.syncWindowFullscreenPreference();
+        window_state.toggleFullscreenPreference(window_state.context(self));
     }
 
     fn syncWindowFullscreenPreference(self: *AppState) void {
-        const want_fullscreen = self.runtime_config.fullscreenEnabled();
-        const is_fullscreen = rl.isWindowFullscreen();
-        if (want_fullscreen == is_fullscreen) return;
-
-        rl.toggleFullscreen();
-        if (!want_fullscreen) {
-            rl.setWindowSize(self.window_size.width, self.window_size.height);
-        }
+        window_state.syncFullscreenPreference(window_state.context(self));
     }
 
     pub fn currentTextScriptProgress(self: *const AppState) ?f32 {
@@ -2494,8 +2475,8 @@ fn drawGameUi(state: *const AppState) !void {
     const full_bounds: rl.Rectangle = .{
         .x = 0.0,
         .y = 0.0,
-        .width = @floatFromInt(screenWidth()),
-        .height = @floatFromInt(screenHeight()),
+        .width = @floatFromInt(window_state.screenWidth()),
+        .height = @floatFromInt(window_state.screenHeight()),
     };
     const ui_layout = ui.virtualLayout(full_bounds);
 
@@ -2771,17 +2752,6 @@ fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
         next += count_isize;
     }
     return @intCast(next);
-}
-
-// PORT(verified): the original window bootstrap falls back to a 640x480 client area
-// in windowed mode, while its fullscreen presets are also all 4:3.
-// Evidence: sub_4119d0.
-fn screenWidth() i32 {
-    return rl.getScreenWidth();
-}
-
-fn screenHeight() i32 {
-    return rl.getScreenHeight();
 }
 
 test "wrapped index handles negative deltas" {
