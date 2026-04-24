@@ -7,7 +7,22 @@ const io = std.Options.debug_io;
 
 const native_toon_reference_screen_width = 640.0;
 const toon_outline_antialias_fringe_pixels = 1.0;
-const toon_outline_soft_sample_alpha = 120;
+
+const toon_outline_fragment_shader: [:0]const u8 =
+    \\#version 330
+    \\in vec2 fragTexCoord;
+    \\in vec4 fragColor;
+    \\out vec4 finalColor;
+    \\
+    \\void main() {
+    \\    float coreHalfPixels = fragTexCoord.x;
+    \\    float distancePixels = abs(fragTexCoord.y);
+    \\    float alpha = 1.0 - smoothstep(coreHalfPixels, coreHalfPixels + 1.0, distancePixels);
+    \\    finalColor = vec4(fragColor.rgb, fragColor.a * alpha);
+    \\}
+;
+
+var shared_toon_outline_shader: ?rl.Shader = null;
 
 // Custom text X2 loader for the small legacy mesh subset used by Snail Mail.
 //
@@ -268,16 +283,21 @@ pub const Uploaded = struct {
         const camera_local = vec3FromVector3(transformPointByMatrix(inverse_transform, camera.position));
         const bias_distance = outlineDepthBiasDistance(world_radius);
         const core_width_pixels = toonOutlineCoreWidthPixelsForScreenWidth(rl.getScreenWidth());
+        const toon_shader = ensureToonOutlineShader() orelse return;
 
-        // Native G0RenderToon chooses the silhouette edges. The port keeps those selected
-        // edges on the native-shaped line-list path and adds offset soft samples so the
-        // 640px-authored art keeps its intended line weight in larger windows.
+        // Native G0RenderToon chooses the silhouette edges. The port draws those selected
+        // edges as shader-softened strips so the 640px-authored art keeps its intended
+        // line weight in larger windows without stacking aliased GL line samples.
         rl.beginBlendMode(.alpha);
         defer rl.endBlendMode();
+        rl.beginShaderMode(toon_shader);
+        defer rl.endShaderMode();
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
+        rl.gl.rlDisableBackfaceCulling();
+        defer rl.gl.rlEnableBackfaceCulling();
         rl.gl.rlSetTexture(0);
-        rl.gl.rlBegin(rl.gl.rl_lines);
+        rl.gl.rlBegin(rl.gl.rl_quads);
         defer rl.gl.rlEnd();
 
         for (toon_outline.edges) |edge| {
@@ -1284,6 +1304,14 @@ fn vec3FromVector3(value: rl.Vector3) Vec3 {
     return .{ .x = value.x, .y = value.y, .z = value.z };
 }
 
+fn ensureToonOutlineShader() ?rl.Shader {
+    if (shared_toon_outline_shader) |shader| return shader;
+
+    const shader = rl.loadShaderFromMemory(null, toon_outline_fragment_shader) catch return null;
+    shared_toon_outline_shader = shader;
+    return shader;
+}
+
 fn drawToonOutlineSegment(
     world_a: rl.Vector3,
     world_b: rl.Vector3,
@@ -1294,37 +1322,48 @@ fn drawToonOutlineSegment(
     const side = toonOutlineSegmentSide(world_a, world_b, camera) orelse return;
     const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
     const world_units_per_pixel = worldUnitsPerPixelAtPoint(camera, midpoint);
-    const core_half_width = core_width_pixels * 0.5 * world_units_per_pixel;
-    const fringe_offset = core_half_width + toon_outline_antialias_fringe_pixels * 0.5 * world_units_per_pixel;
-    const soft_color = rl.Color{
-        .r = color.r,
-        .g = color.g,
-        .b = color.b,
-        .a = @intCast((@as(u16, color.a) * toon_outline_soft_sample_alpha) / 255),
-    };
+    const core_half_pixels = core_width_pixels * 0.5;
+    const outer_half_pixels = core_half_pixels + toon_outline_antialias_fringe_pixels;
+    const outer_half_world = outer_half_pixels * world_units_per_pixel;
 
-    emitToonOutlineLine(world_a, world_b, side, 0.0, color);
-    if (core_half_width > world_units_per_pixel * 0.35) {
-        emitToonOutlineLine(world_a, world_b, side, -core_half_width, color);
-        emitToonOutlineLine(world_a, world_b, side, core_half_width, color);
-    }
-    emitToonOutlineLine(world_a, world_b, side, -fringe_offset, soft_color);
-    emitToonOutlineLine(world_a, world_b, side, fringe_offset, soft_color);
+    emitToonOutlineStrip(
+        world_a,
+        world_b,
+        side,
+        -outer_half_world,
+        outer_half_world,
+        -outer_half_pixels,
+        outer_half_pixels,
+        core_half_pixels,
+        color,
+    );
 }
 
-fn emitToonOutlineLine(
+fn emitToonOutlineStrip(
     world_a: rl.Vector3,
     world_b: rl.Vector3,
     side: rl.Vector3,
-    offset: f32,
+    start_offset_world: f32,
+    end_offset_world: f32,
+    start_distance_pixels: f32,
+    end_distance_pixels: f32,
+    core_half_pixels: f32,
     color: rl.Color,
 ) void {
-    const a = addScaledVector3(world_a, side, offset);
-    const b = addScaledVector3(world_b, side, offset);
+    const a0 = addScaledVector3(world_a, side, start_offset_world);
+    const b0 = addScaledVector3(world_b, side, start_offset_world);
+    const b1 = addScaledVector3(world_b, side, end_offset_world);
+    const a1 = addScaledVector3(world_a, side, end_offset_world);
 
     rl.gl.rlColor4ub(color.r, color.g, color.b, color.a);
-    rl.gl.rlVertex3f(a.x, a.y, a.z);
-    rl.gl.rlVertex3f(b.x, b.y, b.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, start_distance_pixels);
+    rl.gl.rlVertex3f(a0.x, a0.y, a0.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, start_distance_pixels);
+    rl.gl.rlVertex3f(b0.x, b0.y, b0.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, end_distance_pixels);
+    rl.gl.rlVertex3f(b1.x, b1.y, b1.z);
+    rl.gl.rlTexCoord2f(core_half_pixels, end_distance_pixels);
+    rl.gl.rlVertex3f(a1.x, a1.y, a1.z);
 }
 
 fn toonOutlineSegmentSide(world_a: rl.Vector3, world_b: rl.Vector3, camera: rl.Camera3D) ?rl.Vector3 {
