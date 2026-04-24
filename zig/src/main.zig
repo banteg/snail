@@ -3188,11 +3188,11 @@ const AppState = struct {
         return level_loader.currentRunRuntimeBuildFlags(self);
     }
 
-    fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
+    pub fn currentRunHighScoreEntry(self: *const AppState, score: u32) high_score.Entry {
         return level_loader.currentRunHighScoreEntry(self, score);
     }
 
-    fn saveHighScoreTables(self: *AppState) !void {
+    pub fn saveHighScoreTables(self: *AppState) !void {
         try self.high_score_tables.saveToRuntimeRoot(self.allocator, self.runtime_root_path);
     }
 
@@ -3411,79 +3411,11 @@ const AppState = struct {
     }
 
     fn commitRunResultIfNeeded(self: *AppState, result: PendingRunResult) !PendingRunResult {
-        if (result.persistence == .none) return result;
-        var updated = result;
-        switch (result.persistence) {
-            .none => return result,
-            .completed => switch (result.completion_owner) {
-                .postal_route_map => {
-                    updated.unlocked_next_route = try self.commitPostalRouteProgress();
-                },
-                .postal_final => {
-                    const entry = self.currentRunHighScoreEntry(result.score);
-                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
-                    updated.high_score_mode = .postal;
-                    updated.high_score_rank = insert.rank;
-                    updated.unlocked_next_route = try self.commitPostalRouteProgress();
-                    try self.saveHighScoreTables();
-                },
-                .postal_failure,
-                .challenge_failure,
-                .time_trial_failure,
-                .tutorial_failure,
-                => unreachable,
-                .challenge_completion => {
-                    const entry = self.currentRunHighScoreEntry(result.score);
-                    const insert = self.high_score_tables.addSurvival(self.allocator, entry);
-                    updated.high_score_mode = .challenge;
-                    updated.high_score_rank = insert.rank;
-                    try self.saveHighScoreTables();
-                },
-                .time_trial_completion => {
-                    const entry = self.currentRunHighScoreEntry(result.score);
-                    const insert = self.high_score_tables.addTimeTrial(
-                        self.allocator,
-                        self.active_frontend_level_index,
-                        entry,
-                        true,
-                    );
-                    updated.time_trial_record_improved = insert.improved;
-                    try self.saveHighScoreTables();
-                },
-                .tutorial_completion => {},
-            },
-            .failed => switch (result.completion_owner) {
-                .postal_failure => {
-                    const entry = self.currentRunHighScoreEntry(result.score);
-                    const insert = self.high_score_tables.addArcade(self.allocator, entry);
-                    updated.high_score_mode = .postal;
-                    updated.high_score_rank = insert.rank;
-                    try self.saveHighScoreTables();
-                },
-                .challenge_failure => {
-                    const entry = self.currentRunHighScoreEntry(result.score);
-                    const insert = self.high_score_tables.addSurvival(self.allocator, entry);
-                    updated.high_score_mode = .challenge;
-                    updated.high_score_rank = insert.rank;
-                    try self.saveHighScoreTables();
-                },
-                .postal_route_map,
-                .postal_final,
-                .challenge_completion,
-                .time_trial_completion,
-                .tutorial_completion,
-                => unreachable,
-                .time_trial_failure, .tutorial_failure => {},
-            },
-        }
-        updated.persistence = .none;
-        return updated;
+        return run_result.commitIfNeeded(self, result);
     }
 
     fn commitPendingRunResultIfNeeded(self: *AppState) !void {
-        const result = self.pending_run_result orelse return;
-        if (result.persistence == .none) return;
-        self.pending_run_result = try self.commitRunResultIfNeeded(result);
+        try run_result.commitPendingIfNeeded(self);
     }
 
     fn finishPostLevelHighScoreReturn(self: *AppState) !void {
@@ -3861,7 +3793,7 @@ const AppState = struct {
         return self.highScoreEntry(selected_mode, entry_index);
     }
 
-    fn commitPostalRouteProgress(self: *AppState) !bool {
+    pub fn commitPostalRouteProgress(self: *AppState) !bool {
         const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
         if (highest_available == 0) return false;
 

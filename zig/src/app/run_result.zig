@@ -162,6 +162,82 @@ pub fn previewDescendingHighScoreRank(entries: []const high_score.Entry, score: 
     return rank;
 }
 
+pub fn commitIfNeeded(state: anytype, result: Result) !Result {
+    if (result.persistence == .none) return result;
+    var updated = result;
+    switch (result.persistence) {
+        .none => return result,
+        .completed => switch (result.completion_owner) {
+            .postal_route_map => {
+                updated.unlocked_next_route = try state.commitPostalRouteProgress();
+            },
+            .postal_final => {
+                const entry = state.currentRunHighScoreEntry(result.score);
+                const insert = state.high_score_tables.addArcade(state.allocator, entry);
+                updated.high_score_mode = .postal;
+                updated.high_score_rank = insert.rank;
+                updated.unlocked_next_route = try state.commitPostalRouteProgress();
+                try state.saveHighScoreTables();
+            },
+            .postal_failure,
+            .challenge_failure,
+            .time_trial_failure,
+            .tutorial_failure,
+            => unreachable,
+            .challenge_completion => {
+                const entry = state.currentRunHighScoreEntry(result.score);
+                const insert = state.high_score_tables.addSurvival(state.allocator, entry);
+                updated.high_score_mode = .challenge;
+                updated.high_score_rank = insert.rank;
+                try state.saveHighScoreTables();
+            },
+            .time_trial_completion => {
+                const entry = state.currentRunHighScoreEntry(result.score);
+                const insert = state.high_score_tables.addTimeTrial(
+                    state.allocator,
+                    state.active_frontend_level_index,
+                    entry,
+                    true,
+                );
+                updated.time_trial_record_improved = insert.improved;
+                try state.saveHighScoreTables();
+            },
+            .tutorial_completion => {},
+        },
+        .failed => switch (result.completion_owner) {
+            .postal_failure => {
+                const entry = state.currentRunHighScoreEntry(result.score);
+                const insert = state.high_score_tables.addArcade(state.allocator, entry);
+                updated.high_score_mode = .postal;
+                updated.high_score_rank = insert.rank;
+                try state.saveHighScoreTables();
+            },
+            .challenge_failure => {
+                const entry = state.currentRunHighScoreEntry(result.score);
+                const insert = state.high_score_tables.addSurvival(state.allocator, entry);
+                updated.high_score_mode = .challenge;
+                updated.high_score_rank = insert.rank;
+                try state.saveHighScoreTables();
+            },
+            .postal_route_map,
+            .postal_final,
+            .challenge_completion,
+            .time_trial_completion,
+            .tutorial_completion,
+            => unreachable,
+            .time_trial_failure, .tutorial_failure => {},
+        },
+    }
+    updated.persistence = .none;
+    return updated;
+}
+
+pub fn commitPendingIfNeeded(state: anytype) !void {
+    const result = state.pending_run_result orelse return;
+    if (result.persistence == .none) return;
+    state.pending_run_result = try commitIfNeeded(state, result);
+}
+
 fn clampUsize(value: usize, low: usize, high: usize) usize {
     return @min(@max(value, low), high);
 }
