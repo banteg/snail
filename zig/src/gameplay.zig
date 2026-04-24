@@ -2310,6 +2310,7 @@ pub const Runner = struct {
             .dir_z = dir_z,
             .speed_rows_per_second = projectileSpeedForKind(kind),
         };
+        self.combat.projectiles.slots[index].resetTrail();
         if (index >= self.combat.projectiles.count) {
             self.combat.projectiles.count = index + 1;
         }
@@ -2327,6 +2328,7 @@ pub const Runner = struct {
             if (projectile.kind == .enemy_laser) {
                 if (projectile.world_z < self.row_position - 8.0) continue;
             } else if (projectile.world_z > @as(f32, @floatFromInt(preview.total_rows + 8))) continue;
+            projectile.appendTrailPoint();
             self.combat.projectiles.slots[write_index] = projectile;
             write_index += 1;
         }

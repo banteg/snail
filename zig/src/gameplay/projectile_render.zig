@@ -7,6 +7,7 @@ const x2 = @import("../x2.zig");
 const model_render = @import("model_render.zig");
 
 const io = std.Options.debug_io;
+const native_vapour_trail_width = 0.16;
 
 pub const Resources = struct {
     lazer_object: ?*const object.LoadedObject,
@@ -50,7 +51,8 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
             );
         },
         .laser => {
-            const loaded_object = activeLaserProjectileObject(resources) orelse return;
+            if (drawVapourTrail(resources, projectile, right)) return;
+            const loaded_object = resources.lazer_object orelse return;
             drawObjectProjectile(
                 loaded_object,
                 world_transform,
@@ -59,7 +61,8 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
             );
         },
         .enemy_laser => {
-            const loaded_object = activeLaserProjectileObject(resources) orelse return;
+            if (drawVapourTrail(resources, projectile, right)) return;
+            const loaded_object = resources.lazer_object orelse return;
             drawObjectProjectile(
                 loaded_object,
                 world_transform,
@@ -92,7 +95,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
 }
 
 fn activeLaserProjectileObject(resources: Resources) ?*const object.LoadedObject {
-    return resources.lazer_object orelse resources.vapour_lazer_object;
+    return resources.vapour_lazer_object orelse resources.lazer_object;
 }
 
 fn drawObjectProjectile(
@@ -110,7 +113,77 @@ fn drawObjectProjectile(
     loaded_object.drawTintedEx(world_transform.multiply(offset).multiply(scale), tint);
 }
 
-test "laser projectile rendering prefers the drawable lazer object" {
+fn drawVapourTrail(resources: Resources, projectile: gameplay.Projectile, right: rl.Vector3) bool {
+    if (projectile.trail_count < 2) return false;
+    const texture = vapourTrailTexture(resources) orelse return false;
+
+    rl.beginBlendMode(.alpha);
+    defer rl.endBlendMode();
+    rl.gl.rlDisableDepthMask();
+    defer rl.gl.rlEnableDepthMask();
+    rl.gl.rlDisableBackfaceCulling();
+    defer rl.gl.rlEnableBackfaceCulling();
+    rl.gl.rlSetTexture(texture.id);
+    defer rl.gl.rlSetTexture(0);
+
+    rl.gl.rlBegin(rl.gl.rl_quads);
+    defer rl.gl.rlEnd();
+
+    const segment_count: usize = @intCast(projectile.trail_count - 1);
+    for (0..segment_count) |index| {
+        const start = pointToVector(projectile.trail_points[index]);
+        const end = pointToVector(projectile.trail_points[index + 1]);
+        const start_v, const end_v = nativeTrailVRange(index, segment_count);
+        emitTrailSegment(start, end, right, native_vapour_trail_width, start_v, end_v);
+    }
+    return true;
+}
+
+fn vapourTrailTexture(resources: Resources) ?rl.Texture2D {
+    const loaded_object = activeLaserProjectileObject(resources) orelse return null;
+    for (loaded_object.submeshes) |submesh| {
+        if (submesh.texture) |loaded_texture| return loaded_texture.texture;
+    }
+    return null;
+}
+
+fn pointToVector(point: gameplay.Projectile.TrailPoint) rl.Vector3 {
+    return .{ .x = point.x, .y = point.y, .z = point.z };
+}
+
+fn nativeTrailVRange(segment_index: usize, segment_count: usize) struct { f32, f32 } {
+    if (segment_count <= 1) return .{ 0.0, 1.0 };
+    if (segment_index == 0) return .{ 0.0, 0.5 };
+    if (segment_index + 1 == segment_count) return .{ 0.5, 1.0 };
+    return .{ 0.5, 0.5 };
+}
+
+fn emitTrailSegment(
+    start: rl.Vector3,
+    end: rl.Vector3,
+    right: rl.Vector3,
+    half_width: f32,
+    start_v: f32,
+    end_v: f32,
+) void {
+    const offset = model_render.scaleVector3(right, half_width);
+    const start_left = model_render.addVector3(start, offset);
+    const start_right = model_render.addVector3(start, model_render.scaleVector3(offset, -1.0));
+    const end_left = model_render.addVector3(end, offset);
+    const end_right = model_render.addVector3(end, model_render.scaleVector3(offset, -1.0));
+
+    rl.gl.rlColor4ub(255, 255, 255, 252);
+    rl.gl.rlTexCoord2f(0.0, start_v);
+    rl.gl.rlVertex3f(start_left.x, start_left.y, start_left.z);
+    rl.gl.rlTexCoord2f(1.0, start_v);
+    rl.gl.rlVertex3f(start_right.x, start_right.y, start_right.z);
+    rl.gl.rlTexCoord2f(1.0, end_v);
+    rl.gl.rlVertex3f(end_right.x, end_right.y, end_right.z);
+    rl.gl.rlTexCoord2f(0.0, end_v);
+    rl.gl.rlVertex3f(end_left.x, end_left.y, end_left.z);
+}
+
+test "laser projectile rendering prefers the dynamic vapour object" {
     var lazer_object: object.LoadedObject = undefined;
     var vapour_lazer_object: object.LoadedObject = undefined;
 
@@ -118,7 +191,7 @@ test "laser projectile rendering prefers the drawable lazer object" {
         .lazer_object = &lazer_object,
         .vapour_lazer_object = &vapour_lazer_object,
         .rocket_model = null,
-    }) == &lazer_object);
+    }) == &vapour_lazer_object);
     try std.testing.expect(activeLaserProjectileObject(.{
         .lazer_object = null,
         .vapour_lazer_object = &vapour_lazer_object,
@@ -126,7 +199,14 @@ test "laser projectile rendering prefers the drawable lazer object" {
     }) == &vapour_lazer_object);
 }
 
-test "shipped projectile lazer object is the drawable laser mesh" {
+test "vapour trail keeps native endpoint texture ranges" {
+    try std.testing.expectEqualDeep(@as(struct { f32, f32 }, .{ 0.0, 1.0 }), nativeTrailVRange(0, 1));
+    try std.testing.expectEqualDeep(@as(struct { f32, f32 }, .{ 0.0, 0.5 }), nativeTrailVRange(0, 3));
+    try std.testing.expectEqualDeep(@as(struct { f32, f32 }, .{ 0.5, 0.5 }), nativeTrailVRange(1, 3));
+    try std.testing.expectEqualDeep(@as(struct { f32, f32 }, .{ 0.5, 1.0 }), nativeTrailVRange(2, 3));
+}
+
+test "shipped projectile lazer objects split static and dynamic trail geometry" {
     const lazer_data = try std.Io.Dir.cwd().readFileAlloc(
         io,
         "artifacts/extracted/SnailMail.dat/OBJECTS/LAZER/_OBJECT.TXT",
@@ -149,6 +229,7 @@ test "shipped projectile lazer object is the drawable laser mesh" {
 
     try std.testing.expect(objectMaxExtent(&lazer) > 1.0);
     try std.testing.expect(objectMaxExtent(&vapour) <= 0.0001);
+    try std.testing.expectEqual(@as(usize, 3), vapour.faces.len);
 }
 
 fn objectMaxExtent(parsed: *const object.ParsedObject) f32 {
