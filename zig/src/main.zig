@@ -1561,6 +1561,25 @@ const AppState = struct {
         };
     }
 
+    fn gameplayHudContext(self: *const AppState) gameplay_hud.Context {
+        const loaded_track_preview = if (self.current_track_preview) |*current_track_preview|
+            current_track_preview
+        else
+            null;
+        const loaded_level = if (self.current_level) |*current_level|
+            current_level
+        else
+            null;
+        return .{
+            .font = &self.ui_font,
+            .frontend_widget_art = &self.frontend_widget_art,
+            .sprites = &self.gameplay_resources.sprites,
+            .current_track_preview = loaded_track_preview,
+            .current_level = loaded_level,
+            .tutorial_reference_score = self.tutorial_reference_score,
+        };
+    }
+
     fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
         if (!self.isTutorialGameplay()) return false;
         const prompt = self.level_prompt_queue.active() orelse return false;
@@ -2703,15 +2722,16 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     drawSubgameViewport(state);
 
     if (state.level_runner) |runner| {
+        const hud_context = state.gameplayHudContext();
         if (state.isTutorialGameplay()) {
-            try drawTutorialGameplayUi(state, layout, runner);
+            try drawTutorialGameplayUi(state, hud_context, layout, runner);
         } else {
-            try gameplay_hud.drawStandardHud(state, layout, runner);
-            gameplay_hud.drawProgressBar(state, layout, runner);
-            gameplay_hud.drawStatusWidgets(state, layout, runner);
+            try gameplay_hud.drawStandardHud(hud_context, layout, runner);
+            gameplay_hud.drawProgressBar(hud_context, layout, runner);
+            gameplay_hud.drawStatusWidgets(hud_context, layout, runner);
             if (state.current_track_preview) |loaded_track_preview| {
                 const camera = subgame_camera.levelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
-                try gameplay_hud.drawRowEventWidget(state, layout, runner, camera);
+                try gameplay_hud.drawRowEventWidget(hud_context, layout, runner, camera);
             }
             try gameplay_prompt_overlay.drawGameplayStack(state, layout, &state.level_prompt_queue);
         }
@@ -2722,11 +2742,11 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
     }
 }
 
-fn drawTutorialGameplayUi(state: *const AppState, layout: VirtualLayout, runner: gameplay.Runner) !void {
-    try gameplay_hud.drawTutorialHud(state, layout, runner);
-    gameplay_hud.drawProgressBar(state, layout, runner);
-    gameplay_hud.drawTutorialLives(state, layout, runner.visible_life_stock);
-    gameplay_hud.drawDamageGauge(state, layout, runner);
+fn drawTutorialGameplayUi(state: *const AppState, hud_context: gameplay_hud.Context, layout: VirtualLayout, runner: gameplay.Runner) !void {
+    try gameplay_hud.drawTutorialHud(hud_context, layout, runner);
+    gameplay_hud.drawProgressBar(hud_context, layout, runner);
+    gameplay_hud.drawTutorialLives(hud_context, layout, runner.visible_life_stock);
+    gameplay_hud.drawDamageGauge(hud_context, layout, runner);
     if (state.gameplay_click_start_active) {
         if (!state.tutorialClickStartCutsceneActive()) {
             gameplay_prompt_overlay.drawStaticWidget(state, layout, "Click to Start", true);
