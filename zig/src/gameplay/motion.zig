@@ -2,6 +2,14 @@ const std = @import("std");
 
 const track = @import("../track.zig");
 
+pub const ReplayState = struct {
+    world_x_override: ?f32 = null,
+    secondary_lane: ?i32 = null,
+    raw_flag_bits: u8 = 0,
+    track_state_latch: bool = false,
+    fade_requested: bool = false,
+};
+
 pub fn currentRowIndex(preview: *const track.LoadedLevelPreview, row_position: f32) usize {
     return @intFromFloat(@floor(std.math.clamp(
         row_position,

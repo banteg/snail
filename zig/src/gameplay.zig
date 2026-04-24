@@ -438,11 +438,7 @@ pub const Runner = struct {
     current_gameplay_cell: ?track.GameplayCellKind = null,
     current_runtime_tile_hint: ?u8 = null,
     current_path_name: ?[]const u8 = null,
-    replay_world_x_override: ?f32 = null,
-    replay_secondary_lane: ?i32 = null,
-    replay_raw_flag_bits: u8 = 0,
-    replay_track_state_latch: bool = false,
-    replay_fade_requested: bool = false,
+    replay_state: motion_module.ReplayState = .{},
     attachment: attachment_module.State = .{},
     camera_hotspots_world: CameraHotspotWorldState = .{},
     cached_camera_target_world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
@@ -834,24 +830,24 @@ pub const Runner = struct {
     }
 
     pub fn replayTrackStateLatched(self: *const Runner) bool {
-        return self.replay_track_state_latch;
+        return self.replay_state.track_state_latch;
     }
 
     pub fn replayRawFlagBits(self: *const Runner) u8 {
-        return self.replay_raw_flag_bits;
+        return self.replay_state.raw_flag_bits;
     }
 
     pub fn replaySecondaryLane(self: *const Runner) ?i32 {
-        return self.replay_secondary_lane;
+        return self.replay_state.secondary_lane;
     }
 
     pub fn replayFadeRequested(self: *const Runner) bool {
-        return self.replay_fade_requested;
+        return self.replay_state.fade_requested;
     }
 
     pub fn consumeReplayFadeRequest(self: *Runner) bool {
-        const requested = self.replay_fade_requested;
-        self.replay_fade_requested = false;
+        const requested = self.replay_state.fade_requested;
+        self.replay_state.fade_requested = false;
         return requested;
     }
 
@@ -1265,7 +1261,7 @@ pub const Runner = struct {
             self.lane_center = self.attachment.follow.cached_output_lane_center;
             self.attachment.follow.cached_output_lane_center = self.lane_center;
             self.lane_index = sample.resolved_lane_index;
-        } else if (self.replay_world_x_override) |world_x| {
+        } else if (self.replay_state.world_x_override) |world_x| {
             self.lane_center = laneCenterFromWorldX(preview, world_x);
             self.lane_index = sample.resolved_lane_index;
             self.resolved_lane_index = sample.resolved_lane_index;
@@ -1287,27 +1283,27 @@ pub const Runner = struct {
         if (replay.lateral_world_x) |raw_world_x| {
             if (self.phase != .active or self.movement_mode != .track or self.attachment.launch.active) return;
             const world_x = std.math.clamp(raw_world_x, replay_world_x_min, replay_world_x_max);
-            self.replay_world_x_override = world_x;
+            self.replay_state.world_x_override = world_x;
             self.lane_center = laneCenterFromWorldX(preview, world_x);
             const lane_index = preview.laneIndexAtWorldX(world_x);
             self.lane_index = lane_index;
             self.resolved_lane_index = lane_index;
         }
 
-        self.replay_secondary_lane = replay.secondary_lane;
-        self.replay_raw_flag_bits = replay.raw_flag_bits;
-        self.replay_track_state_latch = (replay.raw_flag_bits & 0x04) != 0;
+        self.replay_state.secondary_lane = replay.secondary_lane;
+        self.replay_state.raw_flag_bits = replay.raw_flag_bits;
+        self.replay_state.track_state_latch = (replay.raw_flag_bits & 0x04) != 0;
         if ((replay.raw_flag_bits & 0x08) != 0) {
-            self.replay_fade_requested = true;
+            self.replay_state.fade_requested = true;
         }
     }
 
     fn applyReplayMovementFlagProgress(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (!self.replay_track_state_latch) return;
-        if ((self.replay_raw_flag_bits & 0x01) != 0) {
+        if (!self.replay_state.track_state_latch) return;
+        if ((self.replay_state.raw_flag_bits & 0x01) != 0) {
             self.advanceTrackMovementByRows(preview, 0.3);
         }
-        if ((self.replay_raw_flag_bits & 0x02) != 0) {
+        if ((self.replay_state.raw_flag_bits & 0x02) != 0) {
             self.movement_progress = std.math.clamp(self.movement_rate_scalar, 0.0, 0.999);
             self.syncRowPosition(preview);
         }
@@ -1317,7 +1313,7 @@ pub const Runner = struct {
         if (self.phase != .active) return null;
         if (self.movement_mode != .track) return null;
         if (self.attachment.launch.active) return null;
-        return self.replay_world_x_override;
+        return self.replay_state.world_x_override;
     }
 
     fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
