@@ -10,31 +10,16 @@ pub const ReplayState = struct {
     fade_requested: bool = false,
 };
 
-const movement_flag_startup_ticks: u64 = 10;
 const fresh_replay_movement_flag_offset: f32 = 0.30000001;
 
-pub fn replayMovementFlagSeedProgress(progress_step: f32, raw_flag_bits: u8) ?f32 {
-    if ((raw_flag_bits & 0x01) != 0) return progress_step + fresh_replay_movement_flag_offset;
-    if ((raw_flag_bits & 0x02) != 0) return progress_step;
-    return null;
+pub fn movementFlagFireStartProgress(progress_step: f32, fresh: bool) f32 {
+    return if (fresh) progress_step + fresh_replay_movement_flag_offset else progress_step;
 }
 
-pub fn stepReplayMovementFlagProgress(
-    current_progress: f32,
-    progress_step: f32,
-    tick_count: u64,
-    replay: ReplayState,
-) f32 {
-    var progress = current_progress;
-    if (tick_count < movement_flag_startup_ticks) {
-        progress = progress_step;
-    }
-    if (progress > 0.0) {
-        const advanced = progress + progress_step;
-        return if (advanced > 1.0) 0.0 else advanced;
-    }
-    if (!replay.track_state_latch) return progress;
-    return replayMovementFlagSeedProgress(progress_step, replay.raw_flag_bits) orelse progress;
+pub fn replayMovementFlagStartProgress(progress_step: f32, raw_flag_bits: u8) ?f32 {
+    if ((raw_flag_bits & 0x01) != 0) return movementFlagFireStartProgress(progress_step, true);
+    if ((raw_flag_bits & 0x02) != 0) return progress_step;
+    return null;
 }
 
 pub const TrackPosition = struct {
@@ -142,34 +127,29 @@ pub fn trackPositionFromWorldZ(preview: *const track.LoadedLevelPreview, world_z
     };
 }
 
-test "replay movement flags seed native movement flag progress" {
+test "replay movement flags seed native movement fire progress" {
     try std.testing.expectApproxEqAbs(
         @as(f32, 0.5),
-        replayMovementFlagSeedProgress(0.2, 0x01).?,
+        replayMovementFlagStartProgress(0.2, 0x01).?,
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
         @as(f32, 0.2),
-        replayMovementFlagSeedProgress(0.2, 0x02).?,
+        replayMovementFlagStartProgress(0.2, 0x02).?,
         0.0001,
     );
-    try std.testing.expectEqual(@as(?f32, null), replayMovementFlagSeedProgress(0.2, 0x00));
+    try std.testing.expectEqual(@as(?f32, null), replayMovementFlagStartProgress(0.2, 0x00));
 }
 
-test "native movement flag progress advances before replay flags are consulted" {
-    const replay = ReplayState{
-        .raw_flag_bits = 0x01,
-        .track_state_latch = true,
-    };
-
+test "fresh movement fire starts ahead of repeat fire" {
     try std.testing.expectApproxEqAbs(
-        @as(f32, 0.5),
-        stepReplayMovementFlagProgress(0.3, 0.2, 10, replay),
+        @as(f32, 0.37407407),
+        movementFlagFireStartProgress(0.0740740746, true),
         0.0001,
     );
     try std.testing.expectApproxEqAbs(
-        @as(f32, 0.0),
-        stepReplayMovementFlagProgress(0.9, 0.2, 10, replay),
+        @as(f32, 0.074074075),
+        movementFlagFireStartProgress(0.0740740746, false),
         0.0001,
     );
 }

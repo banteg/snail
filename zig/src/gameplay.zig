@@ -405,7 +405,6 @@ pub const Runner = struct {
     runtime_track_index: usize = 0,
     track_row_progress: f32 = 0.0,
     track_step_rows: f32 = 0.0,
-    movement_flag_progress: f32 = 0.0,
     row_position: f32 = 0.0,
     previous_row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
@@ -584,7 +583,6 @@ pub const Runner = struct {
             self.stepNativeVelocityX(preview);
             if (replay.active) {
                 self.applyReplayDirective(preview, replay);
-                self.applyReplayMovementFlagProgress();
             }
             self.tick_count += 1;
             self.stopwatch.advance(1.0);
@@ -1283,20 +1281,6 @@ pub const Runner = struct {
         if ((replay.raw_flag_bits & 0x08) != 0) {
             self.replay_state.fade_requested = true;
         }
-    }
-
-    fn applyReplayMovementFlagProgress(self: *Runner) void {
-        // PORT(verified): `update_subgoldy` treats Player+0x2730 as a native
-        // movement-flag pulse timer. When it is non-zero, 0x43d0d2-0x43d0f5
-        // advances and wraps it; only a zero timer reaches the replay/live flag
-        // seed paths at 0x43d143 and 0x43d198. The step is the selector-owned
-        // lane from `update_player_movement_flags` (0x43a1a0), not track speed.
-        self.movement_flag_progress = motion_module.stepReplayMovementFlagProgress(
-            self.movement_flag_progress,
-            self.presentation.movement_fire_cooldown_step,
-            self.tick_count,
-            self.replay_state,
-        );
     }
 
     fn currentReplayWorldX(self: *const Runner) ?f32 {
@@ -2219,10 +2203,10 @@ pub const Runner = struct {
         if (fire_input_state == .none or self.attachment.exit.pending or self.presentation.movement_fire_cooldown > 0.0) return;
         self.spawnProjectiles(preview);
         self.presentation.shot_cooldown_ticks = 2;
-        self.presentation.movement_fire_cooldown = if (fire_input_state == .fresh)
-            @min(1.0, self.presentation.movement_fire_cooldown_step + 0.30000001)
-        else
-            self.presentation.movement_fire_cooldown_step;
+        self.presentation.movement_fire_cooldown = motion_module.movementFlagFireStartProgress(
+            self.presentation.movement_fire_cooldown_step,
+            fire_input_state == .fresh,
+        );
     }
 
     fn spawnProjectiles(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -9191,7 +9175,7 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expect(!runner.consumeReplayFadeRequest());
 }
 
-test "replay flag bit 0x1 seeds native movement flag progress" {
+test "replay flag bit 0x1 seeds native movement fire progress" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
@@ -9209,7 +9193,7 @@ test "replay flag bit 0x1 seeds native movement flag progress" {
     );
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.movement_flag_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.37407407), runner.presentation.movement_fire_cooldown, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
@@ -9217,7 +9201,7 @@ test "replay flag bit 0x1 seeds native movement flag progress" {
     );
 }
 
-test "replay flag bit 0x2 seeds native movement flag progress from the selector step" {
+test "replay flag bit 0x2 seeds native movement fire progress from the selector step" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
@@ -9239,7 +9223,7 @@ test "replay flag bit 0x2 seeds native movement flag progress from the selector 
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_step_rows, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.8), runner.track_row_progress, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.movement_flag_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.074074075), runner.presentation.movement_fire_cooldown, 0.0001);
     try std.testing.expectApproxEqAbs(
         @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
