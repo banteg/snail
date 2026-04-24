@@ -1,8 +1,12 @@
 const rl = @import("raylib");
 
 const audio = @import("audio.zig");
+const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
+const frontend_challenge_setup_menu = @import("../frontend/challenge_setup_menu.zig");
 const frontend_flow = @import("frontend_flow.zig");
+const frontend_route_map = @import("../frontend/route_map.zig");
+const run_result = @import("run_result.zig");
 
 const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 
@@ -119,4 +123,214 @@ pub fn handleWidgetShortcutInput(state: anytype) !bool {
     noteKeyboardNavigation(state);
     queueActivation(state, action);
     return true;
+}
+
+pub fn updateWidgetAnimations(state: anytype) void {
+    const main_menu_active = state.game_phase == .main_menu and !state.frontend_transition.blocksInput();
+    for (&state.main_menu_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(.menu_button, main_menu_active and buttonHot(state, frontend_activation.hoverTargetForMainMenu(index), state.menu_index == index));
+    }
+
+    const new_game_active = state.game_phase == .new_game_menu and !state.frontend_transition.blocksInput();
+    for (&state.new_game_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(
+            .menu_button,
+            new_game_active and
+                frontend_flow.newGameMenuIndexVisible(state, index) and
+                buttonHot(state, frontend_activation.hoverTargetForNewGame(index), state.new_game_menu_index == index),
+        );
+    }
+
+    const challenge_setup_active = state.game_phase == .challenge_setup_menu and !state.frontend_transition.blocksInput();
+    const selected_challenge_item = frontend_flow.currentChallengeSetupSelectedItem(state);
+    for (&state.challenge_setup_button_states, 0..) |*button_state, index| {
+        const item = frontend_challenge_setup_menu.items[index];
+        const hot = switch (item) {
+            .difficulty, .speed => blk: {
+                const active_target = activeButtonTarget(state);
+                break :blk challenge_setup_active and
+                    ((active_target != null and frontend_activation.sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
+                        (state.keyboard_frontend_focus_visible and selected_challenge_item == item));
+            },
+            .watch_replay => challenge_setup_active and frontend_flow.challengeSetupReplayAvailable(state) and buttonHot(
+                state,
+                frontend_activation.hoverTargetForChallengeSetupItem(item),
+                selected_challenge_item == item,
+            ),
+            .play, .back => challenge_setup_active and buttonHot(
+                state,
+                frontend_activation.hoverTargetForChallengeSetupItem(item),
+                selected_challenge_item == item,
+            ),
+        };
+        button_state.stepFor(.menu_button, hot);
+    }
+    state.challenge_setup_speed_display_value = stepSliderDisplay(
+        state.challenge_setup_speed_display_value,
+        @as(f32, @floatFromInt(state.runtime_config.challengeReplaySpeedValue())) * 0.01,
+    );
+    state.challenge_setup_difficulty_display_value = stepSliderDisplay(
+        state.challenge_setup_difficulty_display_value,
+        @as(f32, @floatFromInt(state.runtime_config.challengeReplayDifficultyValue())) * 0.01,
+    );
+
+    const options_active = state.game_phase == .options_menu and !state.frontend_transition.blocksInput();
+    for (&state.options_button_states, 0..) |*button_state, index| {
+        const item = frontend.options_menu_items[index];
+        const hot = switch (item) {
+            .sound_volume, .music_volume => blk: {
+                const active_target = activeButtonTarget(state);
+                break :blk options_active and ((active_target != null and frontend_activation.sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (state.keyboard_frontend_focus_visible and state.options_menu_index == index));
+            },
+            else => options_active and buttonHot(state, frontend_activation.hoverTargetForOptions(index), state.options_menu_index == index),
+        };
+        button_state.stepFor(.menu_button, hot);
+    }
+    state.options_sound_display_value = stepSliderDisplay(state.options_sound_display_value, state.runtime_config.soundVolume());
+    state.options_music_display_value = stepSliderDisplay(state.options_music_display_value, state.runtime_config.musicVolume());
+
+    const pause_menu_active = state.game_phase == .pause_menu and !state.frontend_transition.blocksInput();
+    for (&state.pause_menu_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(.menu_button, pause_menu_active and buttonHot(state, frontend_activation.hoverTargetForPauseMenu(index), state.pause_menu_index == index));
+    }
+
+    const route_map_active = state.game_phase == .route_map_menu and !state.frontend_transition.blocksInput();
+    const route_map_card_open = state.routeMapCardIsOpen();
+    state.route_map_button_states[frontend_route_map.primary_button_index].stepFor(
+        .menu_button,
+        route_map_active and route_map_card_open and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.play), activeRouteMenuHotAction(state) == .play),
+    );
+    state.route_map_button_states[frontend_route_map.replay_button_index].stepFor(
+        .route_map_secondary_action,
+        route_map_active and route_map_card_open and state.routeMapShowsReplay() and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial), activeRouteMenuHotAction(state) == .watch_best_trial),
+    );
+    state.route_map_button_states[frontend_route_map.back_button_index].stepFor(
+        .menu_button,
+        route_map_active and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.back), activeRouteMenuHotAction(state) == .back),
+    );
+
+    const help_active = state.game_phase == .help and !state.frontend_transition.blocksInput();
+    state.help_button_states[0].stepFor(.menu_button, help_active and buttonHot(state, .help_back, true));
+
+    const high_scores_active = state.game_phase == .high_scores_menu and !state.frontend_transition.blocksInput();
+    const post_level_active = state.high_score_screen_owner == .post_level_entry;
+    for (&state.high_score_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(.footer_button, high_scores_active and !post_level_active and buttonHot(state, frontend_activation.hoverTargetForHighScores(index), state.high_scores_action_index == index));
+    }
+    for (&state.high_score_replay_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(
+            .compact_score_row,
+            high_scores_active and !post_level_active and state.highScoreReplayAvailable(index) and buttonHot(state, frontend_activation.hoverTargetForHighScoreReplay(index), false),
+        );
+    }
+    for (&state.post_level_high_score_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(.footer_button, high_scores_active and post_level_active and buttonHot(state, frontend_activation.hoverTargetForPostLevelHighScores(index), state.post_level_high_score_action_index == index));
+    }
+
+    const completion_active = run_result.completionScreenInteractive(state);
+    state.completion_continue_button_state.stepFor(
+        .menu_button,
+        completion_active and run_result.completionContinueVisible(state) and buttonHot(state, .completion_continue, true),
+    );
+
+    const exit_prompt_active = state.game_phase == .exit_prompt and !state.frontend_transition.blocksInput();
+    for (&state.exit_prompt_button_states, 0..) |*button_state, index| {
+        button_state.stepFor(.menu_button, exit_prompt_active and buttonHot(state, frontend_activation.hoverTargetForExitPrompt(index), state.exit_prompt_choice_index == index));
+    }
+}
+
+pub fn snapWidgetStates(state: anytype) void {
+    for (&state.main_menu_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(.menu_button, state.game_phase == .main_menu and buttonHot(state, frontend_activation.hoverTargetForMainMenu(index), state.menu_index == index));
+    }
+    for (&state.new_game_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(
+            .menu_button,
+            state.game_phase == .new_game_menu and
+                frontend_flow.newGameMenuIndexVisible(state, index) and
+                buttonHot(state, frontend_activation.hoverTargetForNewGame(index), state.new_game_menu_index == index),
+        );
+    }
+    const selected_challenge_item = frontend_flow.currentChallengeSetupSelectedItem(state);
+    for (&state.challenge_setup_button_states, 0..) |*button_state, index| {
+        const item = frontend_challenge_setup_menu.items[index];
+        const hot = switch (item) {
+            .difficulty, .speed => blk: {
+                const active_target = activeButtonTarget(state);
+                break :blk state.game_phase == .challenge_setup_menu and
+                    ((active_target != null and frontend_activation.sliderHoverTargetBelongsToChallengeSetupRow(active_target.?, item)) or
+                        (state.keyboard_frontend_focus_visible and selected_challenge_item == item));
+            },
+            .watch_replay => state.game_phase == .challenge_setup_menu and frontend_flow.challengeSetupReplayAvailable(state) and buttonHot(
+                state,
+                frontend_activation.hoverTargetForChallengeSetupItem(item),
+                selected_challenge_item == item,
+            ),
+            .play, .back => state.game_phase == .challenge_setup_menu and buttonHot(
+                state,
+                frontend_activation.hoverTargetForChallengeSetupItem(item),
+                selected_challenge_item == item,
+            ),
+        };
+        button_state.snapFor(.menu_button, hot);
+    }
+    for (&state.options_button_states, 0..) |*button_state, index| {
+        const item = frontend.options_menu_items[index];
+        const hot = switch (item) {
+            .sound_volume, .music_volume => blk: {
+                const active_target = activeButtonTarget(state);
+                break :blk state.game_phase == .options_menu and ((active_target != null and frontend_activation.sliderHoverTargetBelongsToOptionsRow(active_target.?, item)) or (state.keyboard_frontend_focus_visible and state.options_menu_index == index));
+            },
+            else => state.game_phase == .options_menu and buttonHot(state, frontend_activation.hoverTargetForOptions(index), state.options_menu_index == index),
+        };
+        button_state.snapFor(.menu_button, hot);
+    }
+    for (&state.pause_menu_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(.menu_button, state.game_phase == .pause_menu and buttonHot(state, frontend_activation.hoverTargetForPauseMenu(index), state.pause_menu_index == index));
+    }
+
+    const route_map_card_open = state.routeMapCardIsOpen();
+    state.route_map_button_states[frontend_route_map.primary_button_index].snapFor(
+        .menu_button,
+        state.game_phase == .route_map_menu and route_map_card_open and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.play), activeRouteMenuHotAction(state) == .play),
+    );
+    state.route_map_button_states[frontend_route_map.replay_button_index].snapFor(
+        .route_map_secondary_action,
+        state.game_phase == .route_map_menu and route_map_card_open and state.routeMapShowsReplay() and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial), activeRouteMenuHotAction(state) == .watch_best_trial),
+    );
+    state.route_map_button_states[frontend_route_map.back_button_index].snapFor(
+        .menu_button,
+        state.game_phase == .route_map_menu and buttonHot(state, frontend_activation.hoverTargetForRouteMenuAction(.back), activeRouteMenuHotAction(state) == .back),
+    );
+    state.help_button_states[0].snapFor(.menu_button, state.game_phase == .help and buttonHot(state, .help_back, true));
+
+    const post_level_active = state.high_score_screen_owner == .post_level_entry;
+    for (&state.high_score_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(.footer_button, state.game_phase == .high_scores_menu and !post_level_active and buttonHot(state, frontend_activation.hoverTargetForHighScores(index), state.high_scores_action_index == index));
+    }
+    for (&state.high_score_replay_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(
+            .compact_score_row,
+            state.game_phase == .high_scores_menu and !post_level_active and state.highScoreReplayAvailable(index) and buttonHot(state, frontend_activation.hoverTargetForHighScoreReplay(index), false),
+        );
+    }
+    for (&state.post_level_high_score_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(.footer_button, state.game_phase == .high_scores_menu and post_level_active and buttonHot(state, frontend_activation.hoverTargetForPostLevelHighScores(index), state.post_level_high_score_action_index == index));
+    }
+    state.completion_continue_button_state.snapFor(
+        .menu_button,
+        run_result.completionScreenInteractive(state) and run_result.completionContinueVisible(state) and buttonHot(state, .completion_continue, true),
+    );
+    for (&state.exit_prompt_button_states, 0..) |*button_state, index| {
+        button_state.snapFor(.menu_button, state.game_phase == .exit_prompt and buttonHot(state, frontend_activation.hoverTargetForExitPrompt(index), state.exit_prompt_choice_index == index));
+    }
+}
+
+fn activeRouteMenuHotAction(state: anytype) frontend.RouteMenuAction {
+    const actions = frontend_flow.activeRouteMenuActions(state);
+    return actions[@min(state.route_menu_action_index, actions.len - 1)];
+}
+
+fn stepSliderDisplay(current: f32, target: f32) f32 {
+    return current + (target - current) * 0.35;
 }
