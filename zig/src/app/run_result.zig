@@ -323,13 +323,23 @@ pub fn beginFailedRun(state: anytype, cause: gameplay.DeathCause) !void {
     _ = cause;
     if (state.pending_run_result != null) return;
 
-    const loaded_level = state.current_level orelse return;
+    var result = currentFailedRunResult(state) orelse return;
+    applySelectedReplayResultOverrides(state, &result);
+
+    state.pending_run_result = result;
+    state.completion_overlay_active = false;
+    state.preserve_completion_screen_reveal_on_enter = false;
+    try state.enterGamePhase(.completion_screen);
+}
+
+pub fn currentFailedRunResult(state: anytype) ?Result {
+    const loaded_level = state.current_level orelse return null;
     const active_mode = state.active_frontend_mode;
     const parcel_target = state.currentParcelTarget();
     if (state.level_runner) |*runner| {
         runner.flushPendingParcelDeliveries();
     }
-    const runner = state.level_runner orelse return;
+    const runner = state.level_runner orelse return null;
     const elapsed_millis = runner.stopwatch.elapsedMillis();
     var result = Result{
         .outcome = .failed,
@@ -347,7 +357,6 @@ pub fn beginFailedRun(state: anytype, cause: gameplay.DeathCause) !void {
         .persistence = .failed,
         .outer_return_target = outerReturnTargetForOutcome(.failed, active_mode),
     };
-
     switch (active_mode orelse .tutorial) {
         .postal => {
             result.score = runner.score.total;
@@ -371,12 +380,7 @@ pub fn beginFailedRun(state: anytype, cause: gameplay.DeathCause) !void {
         },
     }
 
-    applySelectedReplayResultOverrides(state, &result);
-
-    state.pending_run_result = result;
-    state.completion_overlay_active = false;
-    state.preserve_completion_screen_reveal_on_enter = false;
-    try state.enterGamePhase(.completion_screen);
+    return result;
 }
 
 pub fn resetCompletionScreenReveal(state: anytype) void {

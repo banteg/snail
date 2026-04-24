@@ -2707,55 +2707,7 @@ const AppState = struct {
     }
 
     fn currentFailedRunResult(self: *AppState) ?PendingRunResult {
-        const loaded_level = self.current_level orelse return null;
-        const active_mode = self.active_frontend_mode;
-        const parcel_target = self.currentParcelTarget();
-        if (self.level_runner) |*runner| {
-            runner.flushPendingParcelDeliveries();
-        }
-        const runner = self.level_runner orelse return null;
-        const elapsed_millis = runner.stopwatch.elapsedMillis();
-        var result = PendingRunResult{
-            .outcome = .failed,
-            .level_name = loaded_level.name,
-            .mode = active_mode,
-            .elapsed_millis = elapsed_millis,
-            .parcel_count = runner.counters.parcels,
-            .parcel_target = parcel_target,
-            .score = 0,
-            .score_is_partial = true,
-            .score_totals = runner.score,
-            .visible_life_stock = runner.visible_life_stock,
-            .damage_gauge = runner.damage.gauge,
-            .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
-            .persistence = .failed,
-            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
-        };
-
-        switch (active_mode orelse .tutorial) {
-            .postal => {
-                result.score = runner.score.total;
-                result.high_score_mode = .postal;
-                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
-            },
-            .challenge => {
-                result.score = runner.score.total;
-                result.high_score_mode = .challenge;
-                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
-            },
-            .time_trial => {
-                // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
-                // failed runs into scratch memory. It does not replace the persistent ScoreC
-                // route record unless the run completed successfully.
-                result.score = elapsed_millis;
-            },
-            .tutorial => {
-                result.score = runner.score.total;
-                result.persistence = .none;
-            },
-        }
-
-        return result;
+        return run_result.currentFailedRunResult(self);
     }
 
     fn standalonePostLevelHighScoreEntry(
