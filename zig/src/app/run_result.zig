@@ -238,6 +238,55 @@ pub fn commitPendingIfNeeded(state: anytype) !void {
     state.pending_run_result = try commitIfNeeded(state, result);
 }
 
+pub fn resetCompletionScreenReveal(state: anytype) void {
+    const result = state.pending_run_result orelse {
+        state.completion_screen_reveal_progress = 0.0;
+        return;
+    };
+    const result_summary = summary(result);
+    state.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else frontend_completion_screen.revealTarget(result_summary);
+}
+
+pub fn completionScreenActive(state: anytype) bool {
+    return state.pending_run_result != null and
+        (state.game_phase == .completion_screen or completionScreenOverlayActive(state));
+}
+
+pub fn completionScreenOverlayActive(state: anytype) bool {
+    return state.game_phase == .level and state.completion_overlay_active and state.pending_run_result != null;
+}
+
+pub fn completionScreenInteractive(state: anytype) bool {
+    return state.game_phase == .completion_screen and
+        state.pending_run_result != null and
+        !state.frontend_transition.blocksInput();
+}
+
+pub fn stepCompletionScreenReveal(state: anytype) void {
+    if (!completionScreenActive(state)) return;
+    const result = state.pending_run_result orelse return;
+    const target = frontend_completion_screen.revealTarget(summary(result));
+    if (state.completion_screen_reveal_progress >= target) return;
+    state.completion_screen_reveal_progress = clampF32(
+        state.completion_screen_reveal_progress + frontend_completion_screen.reveal_step,
+        0.0,
+        target,
+    );
+}
+
+pub fn completionBonusVisible(state: anytype, result: Result) bool {
+    return frontend_completion_screen.bonusVisibleAtProgress(summary(result), state.completion_screen_reveal_progress);
+}
+
+pub fn completionContinueVisible(state: anytype) bool {
+    const result = state.pending_run_result orelse return false;
+    return frontend_completion_screen.continueVisibleAtProgress(summary(result), state.completion_screen_reveal_progress);
+}
+
 fn clampUsize(value: usize, low: usize, high: usize) usize {
+    return @min(@max(value, low), high);
+}
+
+fn clampF32(value: f32, low: f32, high: f32) f32 {
     return @min(@max(value, low), high);
 }

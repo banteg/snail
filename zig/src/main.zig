@@ -3356,39 +3356,23 @@ const AppState = struct {
     }
 
     fn resetCompletionScreenReveal(self: *AppState) void {
-        const result = self.pending_run_result orelse {
-            self.completion_screen_reveal_progress = 0.0;
-            return;
-        };
-        const summary = completionSummary(result);
-        self.completion_screen_reveal_progress = if (result.outcome == .completed) 0.0 else frontend_completion_screen.revealTarget(summary);
+        run_result.resetCompletionScreenReveal(self);
     }
 
     fn completionScreenActive(self: *const AppState) bool {
-        return self.pending_run_result != null and
-            (self.game_phase == .completion_screen or self.completionScreenOverlayActive());
+        return run_result.completionScreenActive(self);
     }
 
     fn completionScreenOverlayActive(self: *const AppState) bool {
-        return self.game_phase == .level and self.completion_overlay_active and self.pending_run_result != null;
+        return run_result.completionScreenOverlayActive(self);
     }
 
     fn completionScreenInteractive(self: *const AppState) bool {
-        return self.game_phase == .completion_screen and
-            self.pending_run_result != null and
-            !self.frontend_transition.blocksInput();
+        return run_result.completionScreenInteractive(self);
     }
 
     fn stepCompletionScreenReveal(self: *AppState) void {
-        if (!self.completionScreenActive()) return;
-        const result = self.pending_run_result orelse return;
-        const target = frontend_completion_screen.revealTarget(completionSummary(result));
-        if (self.completion_screen_reveal_progress >= target) return;
-        self.completion_screen_reveal_progress = std.math.clamp(
-            self.completion_screen_reveal_progress + frontend_completion_screen.reveal_step,
-            0.0,
-            target,
-        );
+        run_result.stepCompletionScreenReveal(self);
     }
 
     fn beginThanksScreenExit(self: *AppState) void {
@@ -3402,12 +3386,11 @@ const AppState = struct {
     }
 
     fn completionBonusVisible(self: *const AppState, result: PendingRunResult) bool {
-        return frontend_completion_screen.bonusVisibleAtProgress(completionSummary(result), self.completion_screen_reveal_progress);
+        return run_result.completionBonusVisible(self, result);
     }
 
     fn completionContinueVisible(self: *const AppState) bool {
-        const result = self.pending_run_result orelse return false;
-        return frontend_completion_screen.continueVisibleAtProgress(completionSummary(result), self.completion_screen_reveal_progress);
+        return run_result.completionContinueVisible(self);
     }
 
     fn commitRunResultIfNeeded(self: *AppState, result: PendingRunResult) !PendingRunResult {
