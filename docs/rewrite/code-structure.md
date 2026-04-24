@@ -65,7 +65,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `gameplay/presentation.zig` | Gameplay presentation latches that are driven by runner state but do not own loaded models: `JetpackVisualState`, `WeaponVisualState`, and `nativeJetpackVisualPresentationActive`. |
 | `frontend/art.zig` | Frontend and route-map resource holders/loaders: `SliderArt`, `FrontendWidgetArt`, `FrontendSoundFx`, `RouteMapArt`. |
 | `gameplay_art.zig` | Gameplay art, sound-fx, and model holders/loaders: `SpriteArt`, `SoundFx`, `WeaponModelSet`, `InvincibleModelSet`, `JetpackModelSet`, plus their load/unload helpers. |
-| `app/screenshots.zig` | Screenshot request + capture path: `ScreenshotRequest`, `BillboardUv`, related capture bookkeeping. |
+| `app/screenshots.zig` | Screenshot request + capture path: `Request`, auto-screenshot queueing, capture/export, and frontend-canvas flip handling. |
 | `app/runtime_config.zig` | Runtime config (`SnailMail.cfg`), high-score overlays, score persistence, `applyConfig*` / `loadConfig*` / `saveConfig*`. |
 | `main.zig` (remaining) | `pub fn main`, CLI parsing, render loop, top-level init/teardown, `AppState` struct definition with field declarations plus a thin dispatch layer that delegates to the above modules. |
 
@@ -85,7 +85,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 10. Phase A10 — presentation (snail_skin, weapon flags, movement timers, invincible/slow/shot cooldowns) → `gameplay/presentation.zig`.
 11. Phase A11 — score + counters + defeated slugs + visible lives + recent events (~10 fields, 80+ external call sites) → `gameplay/scoring.zig`. Highest external-churn; defer until the more self-contained subsystems are done.
 12. Phase B0 — **done**. `gameplay/effects.zig` owns transient gameplay effect state and runner-driven effect emission. `AppState` now owns a `gameplay_effects.Controller`, and `main.zig` only renders the effect list with loaded sprite assets.
-13. Phase B1 — **partial**. `frontend/art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. `gameplay/resources.zig` owns static gameplay resource lifetimes. Remaining B1 work: screenshots.
+13. Phase B1 — **done**. `frontend/art.zig` owns frontend/route-map art and sound holders/loaders. `gameplay_art.zig` owns gameplay art/model/sound holders/loaders. `gameplay/resources.zig` owns static gameplay resource lifetimes. `app/audio.zig` owns audio dispatch and `app/screenshots.zig` owns screenshot capture.
 14. Phase B2 — **partial**. `app/level_loader.zig` owns level/segment loading, active segment sync, row-message prompt dispatch, run-tuning helpers, track-build seeds, and mode-to-runtime helpers. `app/run_result.zig` owns run-result data and pure summary/ranking helpers. Remaining B2 work: stateful run-result accounting and outer bridge.
 15. Phase B3 — main.zig frontend flow.
 

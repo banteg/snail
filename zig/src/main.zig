@@ -4,6 +4,7 @@ const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const level_loader = @import("app/level_loader.zig");
 const run_result = @import("app/run_result.zig");
+const screenshots = @import("app/screenshots.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -112,14 +113,7 @@ const GameplaySoundFx = gameplay_art.SoundFx;
 const GameplaySpriteArt = gameplay_art.SpriteArt;
 const GameplayWeaponModelSet = gameplay_art.WeaponModelSet;
 
-const ScreenshotRequest = struct {
-    relative_path_z: [:0]u8,
-    exit_after_capture: bool,
-
-    fn deinit(self: *ScreenshotRequest, allocator: std.mem.Allocator) void {
-        allocator.free(self.relative_path_z);
-    }
-};
+const ScreenshotRequest = screenshots.Request;
 
 const GameplayJetpackVisualState = gameplay_presentation.JetpackVisualState;
 const GameplayWeaponVisualState = gameplay_presentation.WeaponVisualState;
@@ -4308,62 +4302,15 @@ const AppState = struct {
     }
 
     fn maybeQueueAutoScreenshot(self: *AppState) !void {
-        const auto_screenshot = self.auto_screenshot orelse return;
-        if (self.auto_screenshot_taken) return;
-        if (self.game_phase != auto_screenshot.phase) return;
-        if (self.game_phase_ticks < auto_screenshot.tick) return;
-
-        self.auto_screenshot_taken = true;
-        try self.queueScreenshot(true);
+        try screenshots.maybeQueueAuto(self);
     }
 
     fn queueScreenshot(self: *AppState, exit_after_capture: bool) !void {
-        if (self.pending_screenshot != null) return;
-
-        self.frame_capture_index += 1;
-        const relative_path = try std.fmt.allocPrint(
-            self.allocator,
-            "{s}/snail-{s}-{s}-{d:0>6}-{d:0>3}.png",
-            .{
-                self.screenshot_dir,
-                @tagName(self.command),
-                @tagName(self.game_phase),
-                self.game_phase_ticks,
-                self.frame_capture_index,
-            },
-        );
-        errdefer self.allocator.free(relative_path);
-        const relative_path_z = try self.allocator.dupeZ(u8, relative_path);
-        defer self.allocator.free(relative_path);
-        errdefer self.allocator.free(relative_path_z);
-
-        self.pending_screenshot = .{
-            .relative_path_z = relative_path_z,
-            .exit_after_capture = exit_after_capture,
-        };
+        try screenshots.queue(self, exit_after_capture);
     }
 
     fn flushQueuedScreenshot(self: *AppState) !void {
-        var request = self.pending_screenshot orelse return;
-        self.pending_screenshot = null;
-        defer request.deinit(self.allocator);
-
-        var screenshot = if (self.command == .game and frontendPhaseUsesCanvas(self) and self.frontend_canvas != null)
-            try rl.loadImageFromTexture(self.frontend_canvas.?.texture)
-        else
-            try rl.loadImageFromScreen();
-        defer screenshot.unload();
-        if (self.command == .game and frontendPhaseUsesCanvas(self) and self.frontend_canvas != null) {
-            screenshot.flipVertical();
-        }
-        if (!rl.exportImage(screenshot, request.relative_path_z)) {
-            return error.ScreenshotExportFailed;
-        }
-        std.log.info("captured screenshot {s}", .{request.relative_path_z});
-
-        if (request.exit_after_capture) {
-            self.should_exit = true;
-        }
+        try screenshots.flushQueued(self);
     }
 
     fn unloadGameBackground(self: *AppState) void {
