@@ -417,8 +417,9 @@ pub const Runner = struct {
     resolved_lane_index: usize = 0,
     lane_center: f32 = 0.5,
     runtime_track_index: usize = 0,
-    movement_progress: f32 = 0.0,
+    track_row_progress: f32 = 0.0,
     movement_rate_scalar: f32 = 0.0,
+    movement_flag_progress: f32 = 0.0,
     row_position: f32 = 0.0,
     previous_row_position: f32 = 0.0,
     speed_rows_per_second: f32 = 12.0,
@@ -519,7 +520,7 @@ pub const Runner = struct {
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
-            self.movement_progress = 0.0;
+            self.track_row_progress = 0.0;
         }
         self.syncRowPosition(preview);
         self.refreshSample(preview);
@@ -597,7 +598,7 @@ pub const Runner = struct {
             self.stepNativeVelocityX(preview);
             if (replay.active) {
                 self.applyReplayDirective(preview, replay);
-                self.applyReplayMovementFlagProgress(preview);
+                self.applyReplayMovementFlagProgress();
             }
             self.tick_count += 1;
             self.stopwatch.advance(1.0);
@@ -1222,7 +1223,7 @@ pub const Runner = struct {
             self.resolved_lane_index = 0;
             self.lane_center = 0.5;
             self.runtime_track_index = 0;
-            self.movement_progress = 0.0;
+            self.track_row_progress = 0.0;
             self.row_position = 0.0;
             return;
         }
@@ -1298,15 +1299,17 @@ pub const Runner = struct {
         }
     }
 
-    fn applyReplayMovementFlagProgress(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (!self.replay_state.track_state_latch) return;
-        if ((self.replay_state.raw_flag_bits & 0x01) != 0) {
-            self.advanceTrackMovementByRows(preview, 0.3);
-        }
-        if ((self.replay_state.raw_flag_bits & 0x02) != 0) {
-            self.movement_progress = std.math.clamp(self.movement_rate_scalar, 0.0, 0.999);
-            self.syncRowPosition(preview);
-        }
+    fn applyReplayMovementFlagProgress(self: *Runner) void {
+        // PORT(verified): `update_subgoldy` treats Player+0x2730 as a native
+        // movement-flag pulse timer. When it is non-zero, 0x43d0d2-0x43d0f5
+        // advances and wraps it; only a zero timer reaches the replay/live flag
+        // seed paths at 0x43d143 and 0x43d198.
+        self.movement_flag_progress = motion_module.stepReplayMovementFlagProgress(
+            self.movement_flag_progress,
+            self.movement_rate_scalar,
+            self.tick_count,
+            self.replay_state,
+        );
     }
 
     fn currentReplayWorldX(self: *const Runner) ?f32 {
@@ -1338,45 +1341,45 @@ pub const Runner = struct {
         if (remaining >= 0.0) {
             while (remaining > 0.0) {
                 const progress_limit: f32 = if (self.runtime_track_index >= last_row) max_progress else 1.0;
-                const available_progress = progress_limit - self.movement_progress;
+                const available_progress = progress_limit - self.track_row_progress;
                 if (available_progress <= 0.0) {
                     break;
                 }
 
                 if (remaining < available_progress) {
-                    self.movement_progress += remaining;
+                    self.track_row_progress += remaining;
                     remaining = 0.0;
                     break;
                 }
 
                 remaining -= available_progress;
                 if (self.runtime_track_index >= last_row) {
-                    self.movement_progress = max_progress;
+                    self.track_row_progress = max_progress;
                     remaining = 0.0;
                     break;
                 }
 
                 self.runtime_track_index += 1;
-                self.movement_progress = 0.0;
+                self.track_row_progress = 0.0;
             }
         } else {
             while (remaining < 0.0) {
-                const available_progress = self.movement_progress;
+                const available_progress = self.track_row_progress;
                 if (-remaining <= available_progress) {
-                    self.movement_progress += remaining;
+                    self.track_row_progress += remaining;
                     remaining = 0.0;
                     break;
                 }
 
                 remaining += available_progress;
                 if (self.runtime_track_index == 0) {
-                    self.movement_progress = 0.0;
+                    self.track_row_progress = 0.0;
                     remaining = 0.0;
                     break;
                 }
 
                 self.runtime_track_index -= 1;
-                self.movement_progress = 1.0;
+                self.track_row_progress = 1.0;
             }
         }
 
@@ -1392,9 +1395,9 @@ pub const Runner = struct {
         const last_row = preview.total_rows - 1;
         if (self.runtime_track_index > last_row) {
             self.runtime_track_index = last_row;
-            self.movement_progress = 0.999;
+            self.track_row_progress = 0.999;
         }
-        self.row_position = @as(f32, @floatFromInt(self.runtime_track_index)) + self.movement_progress;
+        self.row_position = @as(f32, @floatFromInt(self.runtime_track_index)) + self.track_row_progress;
     }
 
     fn sampleRow(self: *const Runner, preview: *const track.LoadedLevelPreview, global_row: usize) ?RowSample {
@@ -3881,7 +3884,7 @@ pub const Runner = struct {
         const clamped_row_position = std.math.clamp(world_z, 0.0, max_row);
         const runtime_track_index = preview.rowIndexAtWorldZ(clamped_row_position);
         self.runtime_track_index = runtime_track_index;
-        self.movement_progress = std.math.clamp(
+        self.track_row_progress = std.math.clamp(
             clamped_row_position - @as(f32, @floatFromInt(runtime_track_index)),
             0.0,
             0.999,
@@ -4064,7 +4067,7 @@ pub const Runner = struct {
         self.row_position = exit_world_position.z + built.template.exit_tail_extra;
         self.row_position += self.attachment.follow.exit_overshoot;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
-        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.track_row_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
         self.resolved_lane_index = self.lane_index;
         self.lane_center = laneCenterFromWorldX(preview, exit_world_position.x);
@@ -4103,7 +4106,7 @@ pub const Runner = struct {
 
         self.row_position = end_position.z + built.template.exit_tail_extra + self.attachment.follow.exit_overshoot;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
-        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.track_row_progress = self.row_position - @floor(self.row_position);
         self.lane_index = exit_lane;
         self.resolved_lane_index = exit_lane;
         self.lane_center = laneCenterFromWorldX(preview, exit_world_x);
@@ -4149,7 +4152,7 @@ pub const Runner = struct {
         const clamped_world_x = std.math.clamp(world_pose.position.x, -4.0, 4.0);
         self.row_position = world_pose.position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
-        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.track_row_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(clamped_world_x);
         self.resolved_lane_index = self.lane_index;
         self.lane_center = laneCenterFromWorldX(preview, clamped_world_x);
@@ -4183,7 +4186,7 @@ pub const Runner = struct {
         self.attachment.follow.cached_output_position = position;
         self.row_position = position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
-        self.movement_progress = self.row_position - @floor(self.row_position);
+        self.track_row_progress = self.row_position - @floor(self.row_position);
         self.attachment.follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
         self.lane_center = self.attachment.follow.cached_output_lane_center;
         self.resolved_lane_index = preview.laneIndexAtWorldX(position.x);
@@ -5112,7 +5115,7 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
         const entry_row = built.row.global_row;
         if (entry_row > 0 and target.row > entry_row) {
             runner.runtime_track_index = entry_row - 1;
-            runner.movement_progress = 0.99;
+            runner.track_row_progress = 0.99;
             runner.syncRowPosition(preview);
             runner.refreshSample(preview);
             runner.last_processed_row = entry_row - 1;
@@ -5132,7 +5135,7 @@ fn primeRunnerBeforeRow(runner: *Runner, preview: *const track.LoadedLevelPrevie
     runner.lane_index = target.lane;
     runner.lane_center = @as(f32, @floatFromInt(target.lane)) + 0.5;
     runner.runtime_track_index = target.row - 1;
-    runner.movement_progress = 0.99;
+    runner.track_row_progress = 0.99;
     runner.syncRowPosition(preview);
     runner.refreshSample(preview);
     runner.last_processed_row = target.row - 1;
@@ -5145,7 +5148,7 @@ fn primeRunnerAfterFirstInstalledAttachment(runner: *Runner, preview: *const tra
 
     runner.reset(preview);
     runner.runtime_track_index = start_row;
-    runner.movement_progress = 0.0;
+    runner.track_row_progress = 0.0;
     runner.syncRowPosition(preview);
     runner.refreshSample(preview);
     runner.last_processed_row = start_row;
@@ -5598,7 +5601,7 @@ test "runner advances deterministically over fixed time" {
 
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 24.0, runner.row_position, 0.001);
     try std.testing.expectEqual(start_row + 24, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
     try std.testing.expectEqual(@as(u64, 120), runner.tick_count);
 }
@@ -5612,7 +5615,7 @@ test "runner keeps discrete track cursor and fractional movement progress" {
     const start_row = runner.runtime_track_index;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(start_row, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row)) + 0.2, runner.row_position, 0.0001);
 
     for (0..4) |_| {
@@ -5620,7 +5623,7 @@ test "runner keeps discrete track cursor and fractional movement progress" {
     }
 
     try std.testing.expectEqual(start_row + 1, runner.runtime_track_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.track_row_progress, 0.0001);
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(start_row + 1)), runner.row_position, 0.0001);
 }
 
@@ -5711,7 +5714,7 @@ test "runtime health pickup collides by distance before exact row crossing" {
     runner.lane_index = health.lane;
     runner.lane_center = @as(f32, @floatFromInt(health.lane)) + 0.5;
     runner.runtime_track_index = health.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimePickup(&fixture.preview, health.row, health.lane, .health);
@@ -5774,7 +5777,7 @@ test "runtime jetpack pickup collides by distance before exact row crossing" {
     runner.lane_index = jetpack.lane;
     runner.lane_center = @as(f32, @floatFromInt(jetpack.lane)) + 0.5;
     runner.runtime_track_index = jetpack.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimePickup(&fixture.preview, jetpack.row, jetpack.lane, .jetpack);
@@ -5797,7 +5800,7 @@ test "runtime garbage hazards collide by distance before exact row crossing" {
     runner.lane_index = garbage.lane;
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.5;
     runner.runtime_track_index = garbage.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
@@ -5820,7 +5823,7 @@ test "oblique garbage collisions push the runner sideways" {
     runner.lane_index = garbage.lane;
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.8;
     runner.runtime_track_index = garbage.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
@@ -5877,7 +5880,7 @@ test "invincible garbage collisions skip native motion writes but still resolve 
     runner.lane_index = garbage.lane;
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.8;
     runner.runtime_track_index = garbage.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.presentation.invincible_ticks = 30;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
@@ -5903,7 +5906,7 @@ test "garbage burst hazards keep live world motion after contact" {
     runner.lane_index = garbage.lane;
     runner.lane_center = @as(f32, @floatFromInt(garbage.lane)) + 0.5;
     runner.runtime_track_index = garbage.row - 1;
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.addRuntimeHazard(&fixture.preview, garbage.row, garbage.lane, .garbage);
@@ -6054,7 +6057,7 @@ test "native negative-velocity ring recovery moves backward before handing back 
     var runner = Runner.init(&fixture.preview);
     runner.speed_rows_per_second = 12.0;
     runner.runtime_track_index = 20;
-    runner.movement_progress = 0.0;
+    runner.track_row_progress = 0.0;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
 
@@ -7446,7 +7449,7 @@ test "postal death hands off respawn after the death controller finishes with ru
     runner.configureSessionMode(.postal);
     runner.recordScore(&runner.score.ring_collect, 200);
     runner.runtime_track_index = 24;
-    runner.movement_progress = 0.5;
+    runner.track_row_progress = 0.5;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
@@ -7470,7 +7473,7 @@ test "hazard death keeps on-track height until the selector handoff" {
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.postal);
     runner.runtime_track_index = 24;
-    runner.movement_progress = 0.5;
+    runner.track_row_progress = 0.5;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.beginFallState(&fixture.preview, .hazard, cutscene_death_id);
@@ -7493,7 +7496,7 @@ test "applyRespawn preserves score timer and remaining lives while resetting mov
     runner.tick_count = 90;
     runner.stopwatch.advance(90.0);
     runner.runtime_track_index = 24;
-    runner.movement_progress = 0.5;
+    runner.track_row_progress = 0.5;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
 
@@ -7662,7 +7665,7 @@ test "runner completion enters the delayed handoff controller" {
 
     var runner = Runner.init(&fixture.preview);
     runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.95;
+    runner.track_row_progress = 0.95;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.beginCompletionCutscene();
@@ -7679,7 +7682,7 @@ test "completion handoff arms at the final row threshold" {
 
     var runner = Runner.init(&fixture.preview);
     runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.01;
+    runner.track_row_progress = 0.01;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
 
@@ -7700,14 +7703,14 @@ test "completion handoff uses the preview course-end threshold" {
     var runner = Runner.init(&fixture.preview);
     runner.row_position = 12.49;
     runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
-    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.track_row_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("active", runner.phaseLabel());
 
     runner.row_position = 12.5;
     runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
-    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.track_row_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.maybeBeginCompletionCutscene(&fixture.preview);
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
@@ -7742,7 +7745,7 @@ test "route-end completion can start while parcel delivery registration is still
 
     var runner = Runner.init(&fixture.preview);
     runner.runtime_track_index = fixture.preview.total_rows - 1;
-    runner.movement_progress = 0.01;
+    runner.track_row_progress = 0.01;
     runner.syncRowPosition(&fixture.preview);
     runner.refreshSample(&fixture.preview);
     runner.counters.parcels = 1;
@@ -9010,7 +9013,7 @@ test "jetpack gauge enters near-empty warning and skips warning math near route 
     fixture.preview.course_end_threshold = 40.0;
     runner.row_position = 35.1;
     runner.runtime_track_index = currentRowIndex(&fixture.preview, runner.row_position);
-    runner.movement_progress = runner.row_position - @floor(runner.row_position);
+    runner.track_row_progress = runner.row_position - @floor(runner.row_position);
     runner.refreshSample(&fixture.preview);
     runner.updateJetpackGauge(&fixture.preview);
     try std.testing.expect(runner.jetpack.active);
@@ -9254,12 +9257,13 @@ test "replay directive overrides world x and latches replay flags" {
     try std.testing.expect(!runner.consumeReplayFadeRequest());
 }
 
-test "replay flag bit 0x1 advances movement through the replay latch" {
+test "replay flag bit 0x1 seeds native movement flag progress" {
     var fixture = try TestFixture.load("LEVELS/TUTORIAL.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
+    runner.tick_count = 10;
     runner.stepWithReplay(
         &fixture.preview,
         .{},
@@ -9270,22 +9274,24 @@ test "replay flag bit 0x1 advances movement through the replay latch" {
         1.0 / 60.0,
     );
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.track_row_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.movement_flag_progress, 0.0001);
     try std.testing.expectApproxEqAbs(
-        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.movement_progress,
+        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
         0.0001,
     );
 }
 
-test "replay flag bit 0x2 snaps movement progress to the movement rate scalar" {
+test "replay flag bit 0x2 seeds native movement flag progress from the rate scalar" {
     var fixture = try TestFixture.loadSegment("SEGMENTS/START.TXT");
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
     primeRunnerAfterFirstInstalledAttachment(&runner, &fixture.preview);
-    runner.movement_progress = 0.6;
+    runner.track_row_progress = 0.6;
     runner.syncRowPosition(&fixture.preview);
+    runner.tick_count = 10;
 
     runner.stepWithReplay(
         &fixture.preview,
@@ -9298,9 +9304,10 @@ test "replay flag bit 0x2 snaps movement progress to the movement rate scalar" {
     );
 
     try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_rate_scalar, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.8), runner.track_row_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.2), runner.movement_flag_progress, 0.0001);
     try std.testing.expectApproxEqAbs(
-        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.movement_progress,
+        @as(f32, @floatFromInt(runner.runtime_track_index)) + runner.track_row_progress,
         runner.row_position,
         0.0001,
     );

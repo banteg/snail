@@ -148,7 +148,7 @@ pub fn drawLevelPanel(state: anytype) !void {
                 runner.row_position,
                 loaded_track_preview.total_rows,
                 runner.runtime_track_index,
-                runner.movement_progress,
+                runner.track_row_progress,
                 runner.lane_index,
                 runner.resolved_lane_index,
             },
