@@ -74,8 +74,8 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "movement_flag_selector": 2,
             "movement_flags": 5,
             "previous_movement_flags": 1,
-            "movement_progress": 0.33,
-            "movement_rate_scalar": 0.074,
+            "movement_fire_progress": 0.33,
+            "movement_fire_progress_step": 0.074,
             "track_z_offset": 0.12,
             "track_z_anchor": 118.0,
             "movement_mode_selector": 0,
@@ -300,7 +300,7 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
             "movement_flag_selector": 8,
             "movement_flags": 5,
             "previous_movement_flags": 5,
-            "movement_rate_scalar": 0.11,
+            "movement_fire_progress_step": 0.11,
             "movement_mode_selector": 0,
             "attachment_exit_pending": True,
             "attachment_exit_anchor_z": 120.0,
@@ -571,8 +571,8 @@ def test_summarize_runtime_trace_file(tmp_path: Path) -> None:
     assert events[4].cell.row_scalar_b == 0.6
     assert events[4].movement_flag_selector == 2
     assert events[4].movement_flags == 5
-    assert events[4].movement_progress == 0.33
-    assert events[4].movement_rate_scalar == 0.074
+    assert events[4].movement_fire_progress == 0.33
+    assert events[4].movement_fire_progress_step == 0.074
     assert events[4].track_state_latch == 1
     assert events[4].row_event_id == 12
     assert events[4].attachment_exit_pending is False

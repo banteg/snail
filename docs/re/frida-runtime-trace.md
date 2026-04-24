@@ -91,7 +91,7 @@ Current hooks in the script:
     - `movement_flag_selector`
     - `movement_flags`
     - `previous_movement_flags`
-    - `movement_rate_scalar`
+    - `movement_fire_progress_step`
     - `movement_mode_selector`
     - `attachment_exit_pending`
     - `attachment_exit_anchor_z`
@@ -108,7 +108,7 @@ Current hooks in the script:
     - `track_state_latch`
     - `replay_active`
     - `replay_track_index`
-    - `movement_progress`
+    - `movement_fire_progress`
     - `track_z_offset`
     - `track_z_anchor`
     - `row_event_id`
@@ -144,9 +144,9 @@ Current hooks in the script:
   - currently disabled by default in the stable Windows pack
 - `0x43a1a0` `update_player_movement_flags`
   - emits sampled selector-to-flag transitions for the `movement_flag_selector -> movement_flags` switch
-  - includes the live movement integrator fields:
-    - `movement_progress`
-    - `movement_rate_scalar`
+  - includes the live movement-fire and track cursor fields:
+    - `movement_fire_progress`
+    - `movement_fire_progress_step`
     - `track_z_offset`
     - `track_z_anchor`
 - `0x43d3d0` `mark_current_track_pair_with_payload`
@@ -291,8 +291,8 @@ Important payload details:
   - `death_select_respawn` with `final_loss = 0`, `lives = 3`, `app.owner = 0xb`
   - repeated `respawn_enter` ticks advancing `respawn_progress` from `0.0` to `1.008`
   - a follow-on `level_start` plus `attachment_begin`, which makes the current best read a level-start rebuild after ordinary respawn
-- `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the movement integrator and row-event state:
-  - `movement_progress`
+- `player_update`, `movement_flags_update`, and `track_pair_payload` now also expose the movement-fire progress, track cursor, and row-event state:
+  - `movement_fire_progress`
   - `track_z_offset`
   - `track_z_anchor`
   - `track_state_latch`
@@ -341,7 +341,7 @@ For the next capture, the new high-value questions are narrower:
 - attachment exit:
   - whether the exit row or floor slot differs systematically by template kind
 - movement-state integration:
-  - how `movement_progress`, `track_z_offset`, `track_z_anchor`, and `track_state_latch` evolve around row events and attachment exit
+  - how `movement_fire_progress`, `track_z_offset`, `track_z_anchor`, and `track_state_latch` evolve around row events and attachment exit
 
 ## Latest March 8 Read
 

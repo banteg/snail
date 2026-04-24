@@ -1690,7 +1690,7 @@
     {
       "address": "0x43a1a0",
       "name": "update_player_movement_flags",
-      "description": "Maps the player movement-flag selector at +0x308 onto movement_flags and a per-state rate scalar at +0x2734, then refreshes the 0x2984 state machine when the mask changes."
+      "description": "Maps the player movement-flag selector at +0x308 onto movement_flags and the movement-fire progress step at +0x2734, then refreshes the 0x2984 state machine when the mask changes."
     },
     {
       "address": "0x43a300",

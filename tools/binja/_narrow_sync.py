@@ -55,8 +55,54 @@ def types_declare(repo_root: Path, *, target: str, header_path: Path) -> dict[st
     }
 
 
+def struct_exists(repo_root: Path, *, target: str, struct_name: str) -> bool:
+    try:
+        result = run_bn(
+            repo_root,
+            "struct",
+            "show",
+            struct_name,
+            "--target",
+            target,
+            "--format",
+            "json",
+        )
+    except RuntimeError:
+        return False
+    return isinstance(result, dict) and isinstance(result.get("layout"), str)
+
+
+def types_declare_if_missing(
+    repo_root: Path,
+    *,
+    target: str,
+    header_path: Path,
+    required_structs: Iterable[str],
+) -> dict[str, object]:
+    missing = [
+        struct_name
+        for struct_name in required_structs
+        if not struct_exists(repo_root, target=target, struct_name=struct_name)
+    ]
+    if not missing:
+        return {
+            "op": "types_declare",
+            "status": "skipped",
+            "reason": "required structs already present",
+            "header": str(header_path),
+            "required_structs": tuple(required_structs),
+        }
+    return {
+        "op": "types_declare",
+        "missing_structs": tuple(missing),
+        "result": run_bn(repo_root, "types", "declare", "--target", target, "--file", str(header_path)),
+    }
+
+
 def normalize_type_name(type_name: str) -> str:
-    return re.sub(r"\b(?:struct|enum)\s+", "", type_name).replace(" ", "")
+    normalized = re.sub(r"\b(?:struct|enum)\s+", "", type_name)
+    normalized = re.sub(r"\b([A-Za-z_][A-Za-z0-9_:]*)\s+const\s*\*", r"const \1*", normalized)
+    return normalized.replace(" ", "")
 
 
 def normalize_prototype(prototype: str, *, identifier: str) -> str:

@@ -124,7 +124,7 @@ Important payload notes for the current script:
   - `movement_flag_selector`
   - `movement_flags`
   - `previous_movement_flags`
-  - `movement_rate_scalar`
+  - `movement_fire_progress_step`
   - `movement_mode_selector`
   - `attachment_exit_pending`
   - `attachment_exit_anchor_z`
@@ -143,7 +143,7 @@ Important payload notes for the current script:
   - `track_state_latch`
   - `replay_active`
   - `replay_track_index`
-  - `movement_progress`
+  - `movement_fire_progress`
   - `track_z_offset`
   - `track_z_anchor`
   - `row_event_id`

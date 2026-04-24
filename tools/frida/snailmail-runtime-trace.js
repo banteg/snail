@@ -1055,8 +1055,8 @@ function summarizePlayer(playerPtr, getTrackCellRowIndex) {
     movement_flag_selector: safeReadU32(player, 0x308),
     movement_flags: safeReadU32(player, 0x338),
     previous_movement_flags: safeReadU32(player, 0x33c),
-    movement_progress: safeReadFloat(player, 0x2730),
-    movement_rate_scalar: safeReadFloat(player, 0x2734),
+    movement_fire_progress: safeReadFloat(player, 0x2730),
+    movement_fire_progress_step: safeReadFloat(player, 0x2734),
     track_z_offset: safeReadFloat(player, 0x273c),
     track_z_anchor: safeReadFloat(player, 0x2740),
     movement_mode_selector: safeReadU32(player, 0x40c),
@@ -1316,7 +1316,7 @@ function installHooks(module) {
           selector: after.movement_flag_selector,
           flags: after.movement_flags,
           previous: after.previous_movement_flags,
-          rate: after.movement_rate_scalar,
+          fire_step: after.movement_fire_progress_step,
         });
 
         maybeEmitSampled('movement_flags_update', after.ptr || 'player', digest, 8, {
@@ -1334,8 +1334,8 @@ function installHooks(module) {
           movement_flag_selector: after.movement_flag_selector,
           movement_flags: after.movement_flags,
           previous_movement_flags: after.previous_movement_flags,
-          movement_progress: after.movement_progress,
-          movement_rate_scalar: after.movement_rate_scalar,
+          movement_fire_progress: after.movement_fire_progress,
+          movement_fire_progress_step: after.movement_fire_progress_step,
           track_z_offset: after.track_z_offset,
           track_z_anchor: after.track_z_anchor,
           movement_mode_selector: after.movement_mode_selector,
@@ -1410,8 +1410,8 @@ function installHooks(module) {
           movement_flag_selector: after.movement_flag_selector,
           movement_flags: after.movement_flags,
           previous_movement_flags: after.previous_movement_flags,
-          movement_progress: after.movement_progress,
-          movement_rate_scalar: after.movement_rate_scalar,
+          movement_fire_progress: after.movement_fire_progress,
+          movement_fire_progress_step: after.movement_fire_progress_step,
           track_z_offset: after.track_z_offset,
           track_z_anchor: after.track_z_anchor,
           movement_mode_selector: after.movement_mode_selector,
@@ -1823,7 +1823,7 @@ function installHooks(module) {
           movement_state: playerSummary !== null ? playerSummary.movement_state : null,
           movement_flag_selector: playerSummary !== null ? playerSummary.movement_flag_selector : null,
           movement_flags: playerSummary !== null ? playerSummary.movement_flags : null,
-          movement_progress: playerSummary !== null ? playerSummary.movement_progress : null,
+          movement_fire_progress: playerSummary !== null ? playerSummary.movement_fire_progress : null,
           track_z_offset: playerSummary !== null ? playerSummary.track_z_offset : null,
           track_z_anchor: playerSummary !== null ? playerSummary.track_z_anchor : null,
           track_state_latch: playerSummary !== null ? playerSummary.track_state_latch : null,
@@ -1862,7 +1862,7 @@ function installHooks(module) {
             follow_effect_gate_a: playerSummary !== null ? playerSummary.follow_effect_gate_a : null,
             follow_effect_gate_b: playerSummary !== null ? playerSummary.follow_effect_gate_b : null,
             movement_flags: playerSummary !== null ? playerSummary.movement_flags : null,
-            movement_progress: playerSummary !== null ? playerSummary.movement_progress : null,
+            movement_fire_progress: playerSummary !== null ? playerSummary.movement_fire_progress : null,
           };
 
           rememberAttachmentProbe(player, {
@@ -2047,8 +2047,10 @@ function installHooks(module) {
           movement_flag_selector: after !== null ? after.movement_flag_selector : this.before !== null ? this.before.movement_flag_selector : null,
           movement_flags: after !== null ? after.movement_flags : this.before !== null ? this.before.movement_flags : null,
           previous_movement_flags: after !== null ? after.previous_movement_flags : this.before !== null ? this.before.previous_movement_flags : null,
-          movement_progress: after !== null ? after.movement_progress : this.before !== null ? this.before.movement_progress : null,
-          movement_rate_scalar: after !== null ? after.movement_rate_scalar : this.before !== null ? this.before.movement_rate_scalar : null,
+          movement_fire_progress:
+            after !== null ? after.movement_fire_progress : this.before !== null ? this.before.movement_fire_progress : null,
+          movement_fire_progress_step:
+            after !== null ? after.movement_fire_progress_step : this.before !== null ? this.before.movement_fire_progress_step : null,
           track_z_offset: after !== null ? after.track_z_offset : this.before !== null ? this.before.track_z_offset : null,
           track_z_anchor: after !== null ? after.track_z_anchor : this.before !== null ? this.before.track_z_anchor : null,
           movement_mode_selector: after !== null ? after.movement_mode_selector : this.before !== null ? this.before.movement_mode_selector : null,

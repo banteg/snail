@@ -812,8 +812,8 @@ typedef struct Player {
     uint8_t _pad_44f[0x22dd];
     float slow_commentary_timer;
     float slow_commentary_step;
-    float movement_progress;
-    float movement_rate_scalar;
+    float movement_fire_progress;
+    float movement_fire_progress_step;
     uint8_t _pad_2738[0x4];
     float track_z_offset;
     float track_z_anchor;

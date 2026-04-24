@@ -6,10 +6,17 @@ import argparse
 from pathlib import Path
 import sys
 
-from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare
+from _narrow_sync import apply_proto_updates, apply_struct_field_updates, emit_summary, types_declare_if_missing
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_HEADER_PATH = REPO_ROOT / "analysis/headers/bn_player_presentation_types.h"
+REQUIRED_HEADER_STRUCTS = (
+    "Game",
+    "SnailVisual",
+    "TrackRowCell",
+    "PathTemplate",
+    "Player",
+)
 
 PLAYER_FIELD_UPDATES = (
     ("0x38", "live_matrix", "TransformMatrix"),
@@ -68,8 +75,8 @@ PLAYER_FIELD_UPDATES = (
     ("0x44e", "completion_handoff_voice_gate", "uint8_t"),
     ("0x435c", "slow_commentary_timer", "float"),
     ("0x4360", "slow_commentary_step", "float"),
-    ("0x2730", "movement_progress", "float"),
-    ("0x2734", "movement_rate_scalar", "float"),
+    ("0x2730", "movement_fire_progress", "float"),
+    ("0x2734", "movement_fire_progress_step", "float"),
     ("0x273c", "track_z_offset", "float"),
     ("0x2740", "track_z_anchor", "float"),
     ("0x2744", "completion_handoff_cycle_progress", "float"),
@@ -302,7 +309,14 @@ def main() -> int:
         raise FileNotFoundError(f"Binary Ninja type header not found: {header_path}")
 
     operations: list[dict[str, object]] = []
-    operations.append(types_declare(REPO_ROOT, target=args.target, header_path=header_path))
+    operations.append(
+        types_declare_if_missing(
+            REPO_ROOT,
+            target=args.target,
+            header_path=header_path,
+            required_structs=REQUIRED_HEADER_STRUCTS,
+        )
+    )
     operations.extend(
         apply_struct_field_updates(
             REPO_ROOT,

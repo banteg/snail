@@ -88,7 +88,7 @@ The Zig runtime currently reads [`SnailMail.dat`](artifacts/bin/SnailMail.dat) d
 - `OBJECTS/*/_OBJECT.TXT` 3D previews with archive-backed textures
 - `LEVELS/*.TXT` and `SEGMENTS/*.TXT` parsing plus sequential 3D track previews with typed row semantics, hazard or pickup markers, and instanced segment `3DModel=` meshes where matching `.X2` assets exist
 - a fixed-step level runner in level mode, so track stepping now happens on a deterministic simulation clock instead of render time
-- a more original-shaped movement integrator in level mode, with a discrete `runtime_track_index` cursor plus fractional `movement_progress` and per-tick `movement_rate_scalar` instead of only a free-running row float
+- a more original-shaped movement integrator in level mode, with a discrete `runtime_track_index` cursor plus fractional `track_row_progress` and per-tick `track_step_rows` instead of only a free-running row float; the native `Player+0x2730/+0x2734` lane is now treated separately as movement-fire progress
 - a stricter gameplay-cell vocabulary in the Zig runtime, so the runner now distinguishes authored attachment tiles, trampoline rows, health, jetpack, garbage, salt, slug, ring, and parcel semantics instead of treating them as generic preview markers
 - a preview path that now uses recovered runtime floor heights for cell slabs and gameplay markers, so ramp families and trampoline tile `0x16` no longer render as fully flat track
 - a build-flags-aware runtime tile layer using the currently confirmed gameplay preset `0x00f5cfff`, so slug tiles respect their recovered gate and ambient garbage or salt fallback candidates on runtime tiles `0x01`, `0x0f`, and `0x15` are visible in the level preview and HUD

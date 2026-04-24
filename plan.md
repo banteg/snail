@@ -59,7 +59,7 @@ MVP slice unlocks plan §1 lanes 1 & 2 (0x43bcb3 slide/floor-cache + 0x43bf6f sw
 - [ ] Track `follow_active` as a derived bool from the existing attachment-follow state machine (expose a getter).
 
 ### D.2 Minimum step functions (in the active-phase tick)
-- [ ] `applyGravityCoupledY(self)` — mirror of `update_subgoldy` @ 0x43c316: `velocity_y += -0.01 * v_z²`. For the MVP, v_z = `movement_rate_scalar` (or a fixed proxy constant) until full `velocity.z` is modelled.
+- [ ] `applyGravityCoupledY(self)` — mirror of `update_subgoldy` @ 0x43c316: `velocity_y += -0.01 * v_z^2`. For the MVP, derive `v_z` from the runner track-step/velocity lane; native `Player+0x2734` is the movement-fire progress step, not track speed.
 - [ ] `positionYIntegrate(self)` — mirror of 0x43bac4: `position_y += velocity_y`.
 - [ ] `beginPostFollowCarryover(self)` — already partially modelled in `gameplay.zig`. Stashes `row_position` (proxy for Player+0x424 / attachment_exit_anchor_z), sets the pending+progress+gate_a/b fields. Audit whether existing implementation matches `begin_post_follow_carryover` @ 0x43af60.
 

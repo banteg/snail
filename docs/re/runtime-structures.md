@@ -57,8 +57,8 @@ The current high-confidence `Player` fields are:
 - `+0x44c`: `attachment_exit_gate_a`
 - `+0x44d`: `attachment_exit_gate_b`
 - `+0x44e`: `completion_handoff_voice_gate`
-- `+0x2730`: `movement_progress`
-- `+0x2734`: `movement_rate_scalar`
+- `+0x2730`: `movement_fire_progress`
+- `+0x2734`: `movement_fire_progress_step`
 - `+0x273c`: `track_z_offset`
 - `+0x2740`: `track_z_anchor`
 - `+0x2744`: `completion_handoff_cycle_progress`

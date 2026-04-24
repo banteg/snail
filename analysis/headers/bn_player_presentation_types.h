@@ -410,8 +410,8 @@ typedef struct Player {
     uint8_t attachment_exit_gate_b;
     uint8_t completion_handoff_voice_gate;
     uint8_t _pad_44f[0x22e1];
-    float movement_progress;
-    float movement_rate_scalar;
+    float movement_fire_progress;
+    float movement_fire_progress_step;
     uint8_t _pad_2738[0x4];
     float track_z_offset;
     float track_z_anchor;
