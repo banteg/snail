@@ -1,10 +1,16 @@
+const std = @import("std");
 const rl = @import("raylib");
 
 const audio = @import("audio.zig");
 const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
+const frontend_bridge = @import("../frontend/bridge.zig");
 const frontend_challenge_setup_menu = @import("../frontend/challenge_setup_menu.zig");
+const frontend_exit_prompt = @import("../frontend/exit_prompt.zig");
 const frontend_flow = @import("frontend_flow.zig");
+const frontend_high_score_screen = @import("../frontend/high_score_screen.zig");
+const frontend_options_menu = @import("../frontend/options_menu.zig");
+const frontend_pause_menu = @import("../frontend/pause_menu.zig");
 const frontend_route_map = @import("../frontend/route_map.zig");
 const run_result = @import("run_result.zig");
 
@@ -123,6 +129,245 @@ pub fn handleWidgetShortcutInput(state: anytype) !bool {
     noteKeyboardNavigation(state);
     queueActivation(state, action);
     return true;
+}
+
+pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delta: f32) !void {
+    switch (item) {
+        .fullscreen => {
+            if (delta != 0.0) {
+                audio.playFrontendSelectSound(state);
+                state.toggleFullscreenPreference();
+            }
+        },
+        .sound_volume => {
+            const previous = state.runtime_config.soundVolume();
+            state.runtime_config.setSoundVolume(state.runtime_config.soundVolume() + delta);
+            audio.applyAudioConfigVolumes(state);
+            if (state.runtime_config.soundVolume() != previous) {
+                audio.playFrontendSelectSound(state);
+            }
+        },
+        .music_volume => {
+            state.runtime_config.setMusicVolume(state.runtime_config.musicVolume() + delta);
+            audio.applyAudioConfigVolumes(state);
+        },
+        .back => if (delta != 0.0) {
+            audio.playFrontendSelectSound(state);
+            try frontend_flow.leaveOptionsMenu(state);
+        },
+    }
+}
+
+pub fn stepChallengeSetupMenuValue(state: anytype, item: frontend_challenge_setup_menu.Item, delta_raw: i32) void {
+    if (delta_raw == 0) return;
+
+    switch (item) {
+        .difficulty => {
+            const previous = state.runtime_config.challengeReplayDifficultyValue();
+            const next = std.math.clamp(
+                @as(i32, @intCast(previous)) + delta_raw,
+                0,
+                100,
+            );
+            state.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
+            if (state.runtime_config.challengeReplayDifficultyValue() != previous) {
+                audio.playFrontendSelectSound(state);
+            }
+        },
+        .speed => {
+            const previous = state.runtime_config.challengeReplaySpeedValue();
+            const next = std.math.clamp(
+                @as(i32, @intCast(previous)) + delta_raw,
+                0,
+                100,
+            );
+            state.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
+            if (state.runtime_config.challengeReplaySpeedValue() != previous) {
+                audio.playFrontendSelectSound(state);
+            }
+        },
+        .play, .watch_replay, .back => {},
+    }
+}
+
+pub fn handleMainMenuKeyboard(state: anytype) void {
+    if (rl.isKeyPressed(.up)) {
+        state.menu_index = wrappedIndex(frontend.main_menu_items.len, state.menu_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        state.menu_index = wrappedIndex(frontend.main_menu_items.len, state.menu_index, 1);
+        noteKeyboardNavigation(state);
+    }
+    if (confirmPressed()) {
+        queueActivation(state, .{ .main_menu = frontend.main_menu_items[state.menu_index] });
+    }
+}
+
+pub fn handleNewGameKeyboard(state: anytype) void {
+    frontend_flow.normalizeNewGameMenuSelection(state);
+    if (rl.isKeyPressed(.up)) {
+        frontend_flow.stepNewGameMenuSelection(state, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        frontend_flow.stepNewGameMenuSelection(state, 1);
+        noteKeyboardNavigation(state);
+    }
+    if (confirmPressed()) {
+        const item = frontend.new_game_menu_items[state.new_game_menu_index];
+        if (frontend_flow.newGameMenuItemVisible(state, item)) {
+            queueActivation(state, .{ .new_game_menu = item });
+        }
+    }
+}
+
+pub fn handleChallengeSetupKeyboard(state: anytype) void {
+    frontend_flow.normalizeChallengeSetupSelection(state);
+    const visible_items = frontend_flow.challengeSetupVisibleItems(state);
+    if (rl.isKeyPressed(.up)) {
+        state.challenge_setup_index = wrappedIndex(visible_items.len, state.challenge_setup_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        state.challenge_setup_index = wrappedIndex(visible_items.len, state.challenge_setup_index, 1);
+        noteKeyboardNavigation(state);
+    }
+
+    const selected = frontend_flow.currentChallengeSetupSelectedItem(state);
+    if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+        noteKeyboardNavigation(state);
+        stepChallengeSetupMenuValue(state, selected, -frontend_challenge_setup_menu.slider_adjust_step);
+    }
+    if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+        noteKeyboardNavigation(state);
+        stepChallengeSetupMenuValue(state, selected, frontend_challenge_setup_menu.slider_adjust_step);
+    }
+    if (confirmPressed()) {
+        switch (selected) {
+            .play, .watch_replay, .back => queueActivation(state, .{ .challenge_setup_menu = selected }),
+            .difficulty, .speed => {},
+        }
+    }
+}
+
+pub fn handleOptionsKeyboard(state: anytype) !void {
+    if (rl.isKeyPressed(.up)) {
+        state.options_menu_index = wrappedIndex(frontend.options_menu_items.len, state.options_menu_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        state.options_menu_index = wrappedIndex(frontend.options_menu_items.len, state.options_menu_index, 1);
+        noteKeyboardNavigation(state);
+    }
+
+    const selected = frontend.options_menu_items[state.options_menu_index];
+    if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
+        noteKeyboardNavigation(state);
+        try stepOptionsMenuValue(state, selected, -frontend_options_menu.slider_adjust_step);
+    }
+    if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
+        noteKeyboardNavigation(state);
+        try stepOptionsMenuValue(state, selected, frontend_options_menu.slider_adjust_step);
+    }
+    if (confirmPressed()) {
+        switch (selected) {
+            .fullscreen, .back => queueActivation(state, .{ .options_menu = selected }),
+            .sound_volume, .music_volume => {},
+        }
+    }
+}
+
+pub fn handlePauseKeyboard(state: anytype) void {
+    if (rl.isKeyPressed(.up)) {
+        state.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, state.pause_menu_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        state.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, state.pause_menu_index, 1);
+        noteKeyboardNavigation(state);
+    }
+    if (confirmPressed()) {
+        queueActivation(state, .{ .pause_menu = frontend_pause_menu.items[state.pause_menu_index] });
+    }
+}
+
+pub fn handleRouteMapKeyboard(state: anytype) !void {
+    const route_actions = frontend_flow.activeRouteMenuActions(state);
+    if (rl.isKeyPressed(.up)) {
+        state.route_menu_action_index = wrappedIndex(route_actions.len, state.route_menu_action_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down)) {
+        state.route_menu_action_index = wrappedIndex(route_actions.len, state.route_menu_action_index, 1);
+        noteKeyboardNavigation(state);
+    }
+    if (frontend_bridge.routeMapAllowsRouteSwitching(state.route_map_screen_mode) and rl.isKeyPressed(.left)) {
+        noteKeyboardNavigation(state);
+        try frontend_flow.stepFrontendRouteSelection(state, -1);
+    }
+    if (frontend_bridge.routeMapAllowsRouteSwitching(state.route_map_screen_mode) and rl.isKeyPressed(.right)) {
+        noteKeyboardNavigation(state);
+        try frontend_flow.stepFrontendRouteSelection(state, 1);
+    }
+    if (confirmPressed()) {
+        queueActivation(state, .{ .route_map_menu = route_actions[state.route_menu_action_index] });
+    }
+}
+
+pub fn handleHighScoresKeyboard(state: anytype) void {
+    if (state.high_score_screen_owner == .post_level_entry) {
+        if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+            state.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, state.post_level_high_score_action_index, -1);
+            noteKeyboardNavigation(state);
+        }
+        if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+            state.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, state.post_level_high_score_action_index, 1);
+            noteKeyboardNavigation(state);
+        }
+        if (confirmPressed()) {
+            queueActivation(state, .{ .post_level_high_scores = frontend_high_score_screen.post_level_actions[state.post_level_high_score_action_index] });
+        }
+    } else {
+        if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+            state.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, state.high_scores_action_index, -1);
+            noteKeyboardNavigation(state);
+        }
+        if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+            state.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, state.high_scores_action_index, 1);
+            noteKeyboardNavigation(state);
+        }
+        if (confirmPressed()) {
+            queueActivation(state, .{ .high_scores_menu = frontend_high_score_screen.menu_actions[state.high_scores_action_index] });
+        }
+    }
+}
+
+pub fn handleExitPromptKeyboard(state: anytype) void {
+    if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
+        state.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, state.exit_prompt_choice_index, -1);
+        noteKeyboardNavigation(state);
+    }
+    if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
+        state.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, state.exit_prompt_choice_index, 1);
+        noteKeyboardNavigation(state);
+    }
+    if (confirmPressed()) {
+        queueActivation(state, .{ .exit_prompt = frontend_exit_prompt.choices[state.exit_prompt_choice_index] });
+    }
+}
+
+pub fn handleCompletionKeyboard(state: anytype) void {
+    if (run_result.completionContinueVisible(state) and confirmPressed()) {
+        noteKeyboardNavigation(state);
+        queueActivation(state, .{ .completion_screen = .continue_flow });
+    }
+}
+
+pub fn handleHelpKeyboard(state: anytype) void {
+    if (confirmPressed()) {
+        queueActivation(state, .{ .help_menu = .back });
+    }
 }
 
 pub fn updateWidgetAnimations(state: anytype) void {
@@ -328,6 +573,18 @@ pub fn snapWidgetStates(state: anytype) void {
 
 fn activeRouteMenuHotAction(state: anytype) frontend.RouteMenuAction {
     return frontend_flow.activeRouteMenuHotAction(state);
+}
+
+fn confirmPressed() bool {
+    return rl.isKeyPressed(.enter) or rl.isKeyPressed(.space);
+}
+
+fn wrappedIndex(count: usize, current: usize, delta: isize) usize {
+    if (count == 0) return 0;
+    const count_signed: isize = @intCast(count);
+    var next = @as(isize, @intCast(current)) + delta;
+    next = @mod(next, count_signed);
+    return @intCast(next);
 }
 
 fn stepSliderDisplay(current: f32, target: f32) f32 {

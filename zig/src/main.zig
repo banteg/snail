@@ -946,7 +946,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.difficulty, -frontend_challenge_setup_menu.slider_adjust_step);
+                frontend_input.stepChallengeSetupMenuValue(self, .difficulty, -frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -954,7 +954,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
             self.challenge_setup_index = 0;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.difficulty, frontend_challenge_setup_menu.slider_adjust_step);
+                frontend_input.stepChallengeSetupMenuValue(self, .difficulty, frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -969,7 +969,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .less));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.speed, -frontend_challenge_setup_menu.slider_adjust_step);
+                frontend_input.stepChallengeSetupMenuValue(self, .speed, -frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -977,7 +977,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .more));
             self.challenge_setup_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                self.stepChallengeSetupMenuValue(.speed, frontend_challenge_setup_menu.slider_adjust_step);
+                frontend_input.stepChallengeSetupMenuValue(self, .speed, frontend_challenge_setup_menu.slider_adjust_step);
             }
             return;
         }
@@ -1036,7 +1036,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .less));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.sound_volume, -frontend_options_menu.slider_adjust_step);
+                try frontend_input.stepOptionsMenuValue(self, .sound_volume, -frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -1044,7 +1044,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .more));
             self.options_menu_index = 1;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.sound_volume, frontend_options_menu.slider_adjust_step);
+                try frontend_input.stepOptionsMenuValue(self, .sound_volume, frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -1059,7 +1059,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .less));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.music_volume, -frontend_options_menu.slider_adjust_step);
+                try frontend_input.stepOptionsMenuValue(self, .music_volume, -frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -1067,7 +1067,7 @@ const AppState = struct {
             self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .more));
             self.options_menu_index = 2;
             if (rl.isMouseButtonPressed(.left)) {
-                try self.stepOptionsMenuValue(.music_volume, frontend_options_menu.slider_adjust_step);
+                try frontend_input.stepOptionsMenuValue(self, .music_volume, frontend_options_menu.slider_adjust_step);
             }
             return;
         }
@@ -1572,128 +1572,29 @@ const AppState = struct {
             },
             .main_menu => {
                 try self.updateMainMenuMouseSelection();
-                if (rl.isKeyPressed(.up)) {
-                    self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.menu_index = wrappedIndex(main_menu_items.len, self.menu_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .main_menu = main_menu_items[self.menu_index] });
-                }
+                frontend_input.handleMainMenuKeyboard(self);
             },
             .new_game_menu => {
                 self.normalizeNewGameMenuSelection();
                 try self.updateNewGameMenuMouseSelection();
-                if (rl.isKeyPressed(.up)) {
-                    self.stepNewGameMenuSelection(-1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.stepNewGameMenuSelection(1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    const item = new_game_menu_items[self.new_game_menu_index];
-                    if (self.newGameMenuItemVisible(item)) {
-                        self.queueFrontendActivation(.{ .new_game_menu = item });
-                    }
-                }
+                frontend_input.handleNewGameKeyboard(self);
             },
             .challenge_setup_menu => {
                 self.normalizeChallengeSetupSelection();
                 self.updateChallengeSetupMouseSelection();
-                const visible_items = self.challengeSetupVisibleItems();
-                if (rl.isKeyPressed(.up)) {
-                    self.challenge_setup_index = wrappedIndex(visible_items.len, self.challenge_setup_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.challenge_setup_index = wrappedIndex(visible_items.len, self.challenge_setup_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-
-                const selected = self.currentChallengeSetupSelectedItem();
-                if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
-                    self.noteFrontendKeyboardNavigation();
-                    self.stepChallengeSetupMenuValue(selected, -frontend_challenge_setup_menu.slider_adjust_step);
-                }
-                if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
-                    self.noteFrontendKeyboardNavigation();
-                    self.stepChallengeSetupMenuValue(selected, frontend_challenge_setup_menu.slider_adjust_step);
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    switch (selected) {
-                        .play, .watch_replay, .back => self.queueFrontendActivation(.{ .challenge_setup_menu = selected }),
-                        .difficulty, .speed => {},
-                    }
-                }
+                frontend_input.handleChallengeSetupKeyboard(self);
             },
             .options_menu => {
                 try self.updateOptionsMouseSelection();
-                if (rl.isKeyPressed(.up)) {
-                    self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.options_menu_index = wrappedIndex(options_menu_items.len, self.options_menu_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-
-                const selected = options_menu_items[self.options_menu_index];
-                if (rl.isKeyPressed(.left) or rl.isKeyPressed(.a)) {
-                    self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, -frontend_options_menu.slider_adjust_step);
-                }
-                if (rl.isKeyPressed(.right) or rl.isKeyPressed(.d)) {
-                    self.noteFrontendKeyboardNavigation();
-                    try self.stepOptionsMenuValue(selected, frontend_options_menu.slider_adjust_step);
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    switch (selected) {
-                        .fullscreen, .back => self.queueFrontendActivation(.{ .options_menu = selected }),
-                        .sound_volume, .music_volume => {},
-                    }
-                }
+                try frontend_input.handleOptionsKeyboard(self);
             },
             .pause_menu => {
                 self.updatePauseMenuMouseSelection();
-                if (rl.isKeyPressed(.up)) {
-                    self.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, self.pause_menu_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.pause_menu_index = wrappedIndex(frontend_pause_menu.items.len, self.pause_menu_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .pause_menu = frontend_pause_menu.items[self.pause_menu_index] });
-                }
+                frontend_input.handlePauseKeyboard(self);
             },
             .route_map_menu => {
                 try self.updateRouteMapMouseSelection();
-                const route_actions = frontend_flow.activeRouteMenuActions(self);
-                if (rl.isKeyPressed(.up)) {
-                    self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down)) {
-                    self.route_menu_action_index = wrappedIndex(route_actions.len, self.route_menu_action_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.left)) {
-                    self.noteFrontendKeyboardNavigation();
-                    try self.stepFrontendRouteSelection(-1);
-                }
-                if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode) and rl.isKeyPressed(.right)) {
-                    self.noteFrontendKeyboardNavigation();
-                    try self.stepFrontendRouteSelection(1);
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .route_map_menu = route_actions[self.route_menu_action_index] });
-                }
+                try frontend_input.handleRouteMapKeyboard(self);
                 self.syncRouteMapHighlightTargets();
                 self.stepRouteMapHighlightAnimations();
             },
@@ -1701,51 +1602,16 @@ const AppState = struct {
                 try self.updateHighScoresMouseSelection();
                 if (self.postLevelHighScoreContext() != null) {
                     self.collectPostLevelHighScoreTextInput();
-                    if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                        self.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, self.post_level_high_score_action_index, -1);
-                        self.noteFrontendKeyboardNavigation();
-                    }
-                    if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                        self.post_level_high_score_action_index = wrappedIndex(frontend_high_score_screen.post_level_actions.len, self.post_level_high_score_action_index, 1);
-                        self.noteFrontendKeyboardNavigation();
-                    }
-                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        self.queueFrontendActivation(.{ .post_level_high_scores = frontend_high_score_screen.post_level_actions[self.post_level_high_score_action_index] });
-                    }
-                } else {
-                    if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                        self.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, self.high_scores_action_index, -1);
-                        self.noteFrontendKeyboardNavigation();
-                    }
-                    if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                        self.high_scores_action_index = wrappedIndex(frontend_high_score_screen.menu_actions.len, self.high_scores_action_index, 1);
-                        self.noteFrontendKeyboardNavigation();
-                    }
-                    if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                        self.queueFrontendActivation(.{ .high_scores_menu = frontend_high_score_screen.menu_actions[self.high_scores_action_index] });
-                    }
                 }
+                frontend_input.handleHighScoresKeyboard(self);
             },
             .exit_prompt => {
                 try self.updateExitPromptMouseSelection();
-                if (rl.isKeyPressed(.up) or rl.isKeyPressed(.left)) {
-                    self.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, self.exit_prompt_choice_index, -1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.down) or rl.isKeyPressed(.right)) {
-                    self.exit_prompt_choice_index = wrappedIndex(frontend_exit_prompt.choices.len, self.exit_prompt_choice_index, 1);
-                    self.noteFrontendKeyboardNavigation();
-                }
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .exit_prompt = frontend_exit_prompt.choices[self.exit_prompt_choice_index] });
-                }
+                frontend_input.handleExitPromptKeyboard(self);
             },
             .completion_screen => {
                 self.updateCompletionScreenMouseSelection();
-                if (self.completionContinueVisible() and (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space))) {
-                    self.noteFrontendKeyboardNavigation();
-                    self.queueFrontendActivation(.{ .completion_screen = .continue_flow });
-                }
+                frontend_input.handleCompletionKeyboard(self);
             },
             .thanks_screen => {
                 if (rl.isMouseButtonPressed(.left) or rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
@@ -1759,9 +1625,7 @@ const AppState = struct {
             },
             .help => {
                 self.updateHelpMouseSelection();
-                if (rl.isKeyPressed(.enter) or rl.isKeyPressed(.space)) {
-                    self.queueFrontendActivation(.{ .help_menu = .back });
-                }
+                frontend_input.handleHelpKeyboard(self);
             },
             .level => {
                 if (self.gameplay_click_start_active) {
@@ -2787,14 +2651,6 @@ const AppState = struct {
         }
     }
 
-    fn stepFrontendRouteSelection(self: *AppState, delta: isize) !void {
-        const mode = self.frontend_route_mode orelse return;
-        const route_count = self.availableFrontendRouteLimit(mode);
-        if (route_count == 0) return;
-        const next_route_index = wrappedIndex(route_count, self.frontend_route_index - 1, delta) + 1;
-        try self.openFrontendRouteCard(next_route_index);
-    }
-
     pub fn syncGamePhaseResources(self: *AppState) !void {
         switch (self.game_phase) {
             .level, .pause_menu => {},
@@ -3059,65 +2915,6 @@ const AppState = struct {
         rl.toggleFullscreen();
         if (!want_fullscreen) {
             rl.setWindowSize(self.window_size.width, self.window_size.height);
-        }
-    }
-
-    fn stepOptionsMenuValue(self: *AppState, item: OptionsMenuItem, delta: f32) !void {
-        switch (item) {
-            .fullscreen => {
-                if (delta != 0.0) {
-                    audio.playFrontendSelectSound(self);
-                    self.toggleFullscreenPreference();
-                }
-            },
-            .sound_volume => {
-                const previous = self.runtime_config.soundVolume();
-                self.runtime_config.setSoundVolume(self.runtime_config.soundVolume() + delta);
-                audio.applyAudioConfigVolumes(self);
-                if (self.runtime_config.soundVolume() != previous) {
-                    audio.playFrontendSelectSound(self);
-                }
-            },
-            .music_volume => {
-                self.runtime_config.setMusicVolume(self.runtime_config.musicVolume() + delta);
-                audio.applyAudioConfigVolumes(self);
-            },
-            .back => if (delta != 0.0) {
-                audio.playFrontendSelectSound(self);
-                try self.leaveOptionsMenu();
-            },
-        }
-    }
-
-    fn stepChallengeSetupMenuValue(self: *AppState, item: frontend_challenge_setup_menu.Item, delta_raw: i32) void {
-        if (delta_raw == 0) return;
-
-        switch (item) {
-            .difficulty => {
-                const previous = self.runtime_config.challengeReplayDifficultyValue();
-                const next = std.math.clamp(
-                    @as(i32, @intCast(previous)) + delta_raw,
-                    0,
-                    100,
-                );
-                self.runtime_config.setChallengeReplayDifficultyValue(@intCast(next));
-                if (self.runtime_config.challengeReplayDifficultyValue() != previous) {
-                    audio.playFrontendSelectSound(self);
-                }
-            },
-            .speed => {
-                const previous = self.runtime_config.challengeReplaySpeedValue();
-                const next = std.math.clamp(
-                    @as(i32, @intCast(previous)) + delta_raw,
-                    0,
-                    100,
-                );
-                self.runtime_config.setChallengeReplaySpeedValue(@intCast(next));
-                if (self.runtime_config.challengeReplaySpeedValue() != previous) {
-                    audio.playFrontendSelectSound(self);
-                }
-            },
-            .play, .watch_replay, .back => {},
         }
     }
 

@@ -508,6 +508,14 @@ pub fn enterSelectedFrontendRoute(state: anytype) !void {
     try enterFrontendLevelPath(state, mode, state.currentRouteMapOpenIndex() orelse state.frontend_route_index);
 }
 
+pub fn stepFrontendRouteSelection(state: anytype, delta: isize) !void {
+    const mode = state.frontend_route_mode orelse return;
+    const route_count = state.availableFrontendRouteLimit(mode);
+    if (route_count == 0) return;
+    const next_route_index = wrappedIndex(route_count, state.frontend_route_index - 1, delta) + 1;
+    try state.openFrontendRouteCard(next_route_index);
+}
+
 pub fn activeRouteMenuActions(state: anytype) []const RouteMenuAction {
     if (!state.routeMapCardIsOpen()) return &frontend_route_map.actions_closed;
     return if (state.routeMapShowsReplay())
