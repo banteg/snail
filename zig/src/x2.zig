@@ -102,9 +102,15 @@ const PendingToonOutlineEdge = struct {
     face_b: ?usize = null,
 };
 
+const VertexPositionKey = struct {
+    x_bits: u32,
+    y_bits: u32,
+    z_bits: u32,
+};
+
 const EdgeKey = struct {
-    low: u16,
-    high: u16,
+    from: VertexPositionKey,
+    to: VertexPositionKey,
 };
 
 pub const UploadOptions = struct {
@@ -406,9 +412,9 @@ fn buildToonOutlineData(allocator: std.mem.Allocator, doc: *const Document) !Too
             const face_index = faces.items.len;
             try faces.append(allocator, face);
 
-            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[0], face.vertex_indices[1], face_index);
-            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[1], face.vertex_indices[2], face_index);
-            try addPendingToonOutlineEdge(allocator, &pending_edges, &edge_map, face.vertex_indices[2], face.vertex_indices[0], face_index);
+            try addPendingToonOutlineEdge(allocator, doc.vertices, &pending_edges, &edge_map, face.vertex_indices[0], face.vertex_indices[1], face_index);
+            try addPendingToonOutlineEdge(allocator, doc.vertices, &pending_edges, &edge_map, face.vertex_indices[1], face.vertex_indices[2], face_index);
+            try addPendingToonOutlineEdge(allocator, doc.vertices, &pending_edges, &edge_map, face.vertex_indices[2], face.vertex_indices[0], face_index);
         }
     }
 
@@ -425,10 +431,8 @@ fn buildToonOutlineData(allocator: std.mem.Allocator, doc: *const Document) !Too
     defer final_edges.deinit(allocator);
 
     for (pending_edges.items) |pending_edge| {
-        if (pending_edge.face_b) |face_b| {
-            if (outlineFacesNearlyCoplanar(bind_pose_normals[pending_edge.face_a], bind_pose_normals[face_b])) {
-                continue;
-            }
+        if (!nativeKeepsSharedToonEdge(doc.vertices, pending_edge, bind_pose_normals)) {
+            continue;
         }
         try final_edges.append(allocator, .{
             .vertex_indices = pending_edge.vertex_indices,
@@ -446,18 +450,20 @@ fn buildToonOutlineData(allocator: std.mem.Allocator, doc: *const Document) !Too
 
 fn addPendingToonOutlineEdge(
     allocator: std.mem.Allocator,
+    vertices: []const Vec3,
     pending_edges: *std.ArrayList(PendingToonOutlineEdge),
     edge_map: *std.AutoHashMapUnmanaged(EdgeKey, usize),
     index_a: u16,
     index_b: u16,
     face_index: usize,
 ) !void {
-    const key = EdgeKey{
-        .low = @min(index_a, index_b),
-        .high = @max(index_a, index_b),
-    };
+    const key = try edgeKeyForVertices(vertices, index_a, index_b);
+    const reverse_key = try edgeKeyForVertices(vertices, index_b, index_a);
 
-    if (edge_map.get(key)) |existing_index| {
+    // Native add_object_edge merges only reversed edges, and compares endpoints by
+    // position rather than vertex index. That matters for X2 UV seams, where the same
+    // model-space point is intentionally duplicated.
+    if (edge_map.get(reverse_key)) |existing_index| {
         if (pending_edges.items[existing_index].face_b == null) {
             pending_edges.items[existing_index].face_b = face_index;
         }
@@ -471,6 +477,42 @@ fn addPendingToonOutlineEdge(
         .face_b = null,
     });
     try edge_map.put(allocator, key, edge_index);
+}
+
+fn edgeKeyForVertices(vertices: []const Vec3, index_a: u16, index_b: u16) !EdgeKey {
+    return .{
+        .from = vertexPositionKey(try vertexAt(vertices, index_a)),
+        .to = vertexPositionKey(try vertexAt(vertices, index_b)),
+    };
+}
+
+fn vertexPositionKey(vertex: Vec3) VertexPositionKey {
+    return .{
+        .x_bits = floatKeyBits(vertex.x),
+        .y_bits = floatKeyBits(vertex.y),
+        .z_bits = floatKeyBits(vertex.z),
+    };
+}
+
+fn floatKeyBits(value: f32) u32 {
+    if (value == 0.0) return 0;
+    return @bitCast(value);
+}
+
+fn nativeKeepsSharedToonEdge(
+    vertices: []const Vec3,
+    edge: PendingToonOutlineEdge,
+    bind_pose_normals: []const Vec3,
+) bool {
+    const face_b = edge.face_b orelse return true;
+
+    const from = vertexAt(vertices, edge.vertex_indices[0]) catch return false;
+    const to = vertexAt(vertices, edge.vertex_indices[1]) catch return false;
+    const edge_direction = normalizeVec3(subtractVec3(to, from));
+
+    const hinge_axis = crossVec3(bind_pose_normals[edge.face_a], bind_pose_normals[face_b]);
+    if (lengthVec3(hinge_axis) <= 0.05) return false;
+    return dotVec3(hinge_axis, edge_direction) > 0.002;
 }
 
 fn toonOutlineEdgeVisible(
@@ -487,10 +529,6 @@ fn toonOutlineEdgeVisible(
     const view = subtractVec3(camera_local, reference);
 
     return dotVec3(view, normal_a) * dotVec3(view, normal_b) < 0.01;
-}
-
-fn outlineFacesNearlyCoplanar(lhs: Vec3, rhs: Vec3) bool {
-    return @abs(dotVec3(lhs, rhs)) >= 0.99875;
 }
 
 pub fn parseAndUpload(
@@ -1200,6 +1238,28 @@ fn dotVec3(lhs: Vec3, rhs: Vec3) f32 {
     return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
 }
 
+fn crossVec3(lhs: Vec3, rhs: Vec3) Vec3 {
+    return .{
+        .x = lhs.y * rhs.z - lhs.z * rhs.y,
+        .y = lhs.z * rhs.x - lhs.x * rhs.z,
+        .z = lhs.x * rhs.y - lhs.y * rhs.x,
+    };
+}
+
+fn lengthVec3(value: Vec3) f32 {
+    return std.math.sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
+}
+
+fn normalizeVec3(value: Vec3) Vec3 {
+    const length = lengthVec3(value);
+    if (length <= 0.0001) return .{ .x = 0.0, .y = 0.0, .z = 0.0 };
+    return .{
+        .x = value.x / length,
+        .y = value.y / length,
+        .z = value.z / length,
+    };
+}
+
 fn subtractVec3(lhs: Vec3, rhs: Vec3) Vec3 {
     return .{
         .x = lhs.x - rhs.x,
@@ -1412,6 +1472,71 @@ test "topology matches across same mesh with different positions" {
     defer b.deinit();
 
     try std.testing.expect(sameTopology(&a, &b));
+}
+
+test "toon outlines merge duplicated seam vertices by position" {
+    const source =
+        \\Frame MeshMaterialList { 1; 2; 0,0; Material m { TextureFilename { "a.tga"; } } }
+        \\MeshTextureCoords { 6; 0;0;, 1;0;, 0;1;, 1;0;, 0;0;, 1;1;; }
+        \\Mesh shape {
+        \\  6;
+        \\  0;0;0;,
+        \\  1;0;0;,
+        \\  0;1;0;,
+        \\  1;0;0;,
+        \\  0;0;0;,
+        \\  1;0;-1;;
+        \\  2;
+        \\  3;0,1,2;,
+        \\  3;3,4,5;;
+        \\}
+    ;
+
+    var doc = try parse(std.testing.allocator, source);
+    defer doc.deinit();
+
+    var outline = try buildToonOutlineData(std.testing.allocator, &doc);
+    defer outline.deinit(std.testing.allocator);
+
+    var shared_count: usize = 0;
+    for (outline.edges) |edge| {
+        if (edge.face_b != null) {
+            shared_count += 1;
+            try std.testing.expectEqual(@as(u16, 0), edge.vertex_indices[0]);
+            try std.testing.expectEqual(@as(u16, 1), edge.vertex_indices[1]);
+        }
+    }
+
+    try std.testing.expectEqual(@as(usize, 1), shared_count);
+}
+
+test "toon outlines drop native smooth shared edges" {
+    const source =
+        \\Frame MeshMaterialList { 1; 2; 0,0; Material m { TextureFilename { "a.tga"; } } }
+        \\MeshTextureCoords { 6; 0;0;, 1;0;, 0;1;, 1;0;, 0;0;, 1;1;; }
+        \\Mesh shape {
+        \\  6;
+        \\  0;0;0;,
+        \\  1;0;0;,
+        \\  0;1;0;,
+        \\  1;0;0;,
+        \\  0;0;0;,
+        \\  1;0;1;;
+        \\  2;
+        \\  3;0,1,2;,
+        \\  3;3,4,5;;
+        \\}
+    ;
+
+    var doc = try parse(std.testing.allocator, source);
+    defer doc.deinit();
+
+    var outline = try buildToonOutlineData(std.testing.allocator, &doc);
+    defer outline.deinit(std.testing.allocator);
+
+    for (outline.edges) |edge| {
+        try std.testing.expect(edge.face_b == null);
+    }
 }
 
 test "parse signstop model" {
