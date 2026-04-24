@@ -13,6 +13,7 @@ const jetpack_module = @import("gameplay/jetpack.zig");
 const motion_module = @import("gameplay/motion.zig");
 const parcel_module = @import("gameplay/parcel.zig");
 const phase_module = @import("gameplay/phase.zig");
+const row_event_module = @import("gameplay/row_event.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -57,18 +58,18 @@ const completion_handoff_release_seconds = phase_module.completion_handoff_relea
 const completion_handoff_release_force_seconds = phase_module.completion_handoff_release_force_seconds;
 const replay_world_x_min: f32 = -4.0;
 const replay_world_x_max: f32 = 4.0;
-const row_event_display_stage_progress_step: f32 = 1.0 / 24.0;
-const row_event_display_hold_progress_step: f32 = 1.0 / 60.0;
-const row_event_display_final_delay_progress_step: f32 = 1.0 / 60.0;
-const row_event_widget_local_x: f32 = 7.30000019;
-const row_event_widget_local_y: f32 = 2.0;
-const row_event_widget_local_z: f32 = 6.0;
+const row_event_display_stage_progress_step = row_event_module.display_stage_progress_step;
+const row_event_display_hold_progress_step = row_event_module.display_hold_progress_step;
+const row_event_display_final_delay_progress_step = row_event_module.display_final_delay_progress_step;
+const row_event_widget_local_x = row_event_module.widget_local_x;
+const row_event_widget_local_y = row_event_module.widget_local_y;
+const row_event_widget_local_z = row_event_module.widget_local_z;
 
 pub const RecentEvent = runner_state.RecentEvent;
 pub const EncounterCounters = runner_state.EncounterCounters;
 pub const ScoreTotals = runner_state.ScoreTotals;
-const RowEventDisplayState = runner_state.RowEventDisplayState;
-const RowEventDisplayController = runner_state.RowEventDisplayController;
+const RowEventDisplayState = row_event_module.DisplayState;
+const RowEventDisplayController = row_event_module.DisplayController;
 pub const Stopwatch = runner_state.Stopwatch;
 pub const DamageWarningState = damage_module.WarningState;
 pub const DamageWarningActorState = damage_module.WarningActorState;
@@ -161,7 +162,7 @@ const max_active_projectiles = combat_module.max_active_projectiles;
 const max_defeated_slug_cells: usize = 64;
 const max_collected_parcel_rows = parcel_module.max_collected_parcel_rows;
 const score_life_threshold: u32 = 50_000;
-const postal_completion_bonus_score: u32 = 50_000;
+const postal_completion_bonus_score = row_event_module.postal_completion_bonus_score;
 const starting_visible_life_stock: u32 = 3;
 const starting_runtime_track_index: usize = 4;
 const maximum_visible_life_stock: u32 = 9;
@@ -1130,11 +1131,11 @@ pub const Runner = struct {
     }
 
     pub fn registeredParcelCount(self: *const Runner) u32 {
-        return self.row_event_display.delivered_parcel_count;
+        return self.row_event_display.registeredParcelCount();
     }
 
     pub fn rowEventCounterVisible(self: *const Runner) bool {
-        return self.row_event_display.parcel_target_count != 0 and self.session_mode != .tutorial;
+        return self.row_event_display.counterVisible(self.session_mode == .tutorial);
     }
 
     pub fn rowEventParcelTargetCount(self: *const Runner) u32 {
@@ -1142,25 +1143,15 @@ pub const Runner = struct {
     }
 
     pub fn rowEventWidgetWorldPosition(self: *const Runner) rl.Vector3 {
-        return .{
-            .x = self.row_event_display.widget_world_x,
-            .y = self.row_event_display.widget_world_y,
-            .z = self.row_event_display.widget_world_z,
-        };
+        return self.row_event_display.widgetWorldPosition();
     }
 
     pub fn rowEventBonusVisible(self: *const Runner) bool {
-        if (!self.row_event_display.bonus_enabled) return false;
-        return switch (self.row_event_display.state) {
-            .final_delivery, .bonus_prompt, .complete => true,
-            else => false,
-        };
+        return self.row_event_display.bonusVisible();
     }
 
     pub fn rowEventBonusBlinkAlpha(self: *const Runner) f32 {
-        if (!self.rowEventBonusVisible()) return 0.0;
-        const pulse = (@sin(self.row_event_display.bonus_blink_progress * std.math.tau) + 1.0) * 0.5;
-        return 0.35 + (pulse * 0.65);
+        return self.row_event_display.bonusBlinkAlpha();
     }
 
     pub fn rowEventBonusScore(self: *const Runner) u32 {
@@ -1768,12 +1759,7 @@ pub const Runner = struct {
         while (self.row_event_display.delivered_parcel_count < self.counters.parcels) {
             self.registerParcelDelivery();
         }
-        self.row_event_display.state = .inactive;
-        self.row_event_display.progress = 0.0;
-        self.row_event_display.progress_step = 0.0;
-        self.row_event_display.gate_18 = 0;
-        self.row_event_display.display_token = 0;
-        self.row_event_display.bonus_blink_progress = 0.0;
+        self.row_event_display.resetTransient();
         self.parcel.home_anchor = .{};
     }
 
@@ -1850,16 +1836,10 @@ pub const Runner = struct {
     }
 
     fn armRowEventStagingIfNeeded(self: *Runner) void {
-        if (!self.hasPendingRowEventParcelStage()) return;
-        if (self.hasActiveRowEventDeliveryParcel()) return;
-        switch (self.row_event_display.state) {
-            .inactive => {
-                self.row_event_display.state = .staging;
-                self.row_event_display.progress = 0.0;
-                self.row_event_display.progress_step = row_event_display_stage_progress_step;
-            },
-            .staging, .hold, .final_delivery, .bonus_prompt, .complete, .final_delivery_delay => {},
-        }
+        self.row_event_display.armStagingIfNeeded(
+            self.hasPendingRowEventParcelStage(),
+            self.hasActiveRowEventDeliveryParcel(),
+        );
     }
 
     fn spawnRowEventDeliveryParcel(self: *Runner) bool {
@@ -2866,27 +2846,15 @@ pub const Runner = struct {
     // completion bit instead of the older authored `'_'` proxy, but it still omits the
     // unresolved widget owner and staged parcel visuals.
     fn stepRowEventBonusPrompt(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        self.row_event_display.bonus_blink_progress += self.row_event_display.bonus_blink_step;
-        if (self.row_event_display.bonus_blink_progress > 1.0) {
-            self.row_event_display.bonus_blink_progress = 0.0;
-        }
-        if (self.currentRowEventCompletionCellActive(preview)) {
-            self.row_event_display.state = .complete;
-        }
+        self.row_event_display.stepBonusPrompt(self.currentRowEventCompletionCellActive(preview));
     }
 
     fn armRowEventPromptGate(self: *Runner, accept_pressed: bool) void {
-        if (!accept_pressed) return;
-        self.row_event_display.gate_18 = 1;
+        self.row_event_display.armPromptGate(accept_pressed);
     }
 
     fn stepRowEventProgress(self: *Runner) bool {
-        self.row_event_display.progress = std.math.clamp(
-            self.row_event_display.progress + self.row_event_display.progress_step,
-            0.0,
-            1.0,
-        );
-        return self.row_event_display.progress >= 1.0;
+        return self.row_event_display.stepProgress();
     }
 
     fn updateRowEventDisplay(self: *Runner, preview: *const track.LoadedLevelPreview, accept_pressed: bool) void {

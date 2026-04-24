@@ -4,12 +4,9 @@
 //! No function here may reference `gameplay.Runner` or any runtime entity
 //! module. Moving pure types only.
 
-const std = @import("std");
 const rl = @import("raylib");
 const attachment_builders = @import("../attachment_builders.zig");
 const segment = @import("../segment.zig");
-
-pub const postal_completion_bonus_score: u32 = 50_000;
 
 pub const RunnerInput = struct {
     lane_delta: i8 = 0,
@@ -189,53 +186,6 @@ pub const ScoreTotals = struct {
     parcel_pickup: u32 = 0,
     parcel_register: u32 = 0,
     completion_bonus: u32 = 0,
-};
-
-pub const RowEventDisplayState = enum(u32) {
-    inactive = 0,
-    staging = 1,
-    hold = 2,
-    final_delivery = 3,
-    bonus_prompt = 4,
-    complete = 5,
-    final_delivery_delay = 6,
-};
-
-pub const RowEventDisplayController = struct {
-    state: RowEventDisplayState = .inactive,
-    gate_18: u8 = 0,
-    parcel_target_count: u32 = 0,
-    bonus_enabled: bool = false,
-    staged_parcel_count: u32 = 0,
-    delivered_parcel_count: u32 = 0,
-    progress: f32 = 0.0,
-    progress_step: f32 = 0.0,
-    widget_world_x: f32 = 0.0,
-    widget_world_y: f32 = 0.0,
-    widget_world_z: f32 = 0.0,
-    bonus_blink_progress: f32 = 0.0,
-    bonus_blink_step: f32 = 0.0,
-    bonus_score: u32 = postal_completion_bonus_score,
-    display_token: u32 = 0,
-
-    pub fn configureForRun(self: *RowEventDisplayController, parcel_target: usize, bonus_enabled: bool) void {
-        const delivered_parcel_count = self.delivered_parcel_count;
-        const staged_parcel_count = self.staged_parcel_count;
-        self.* = .{
-            .parcel_target_count = @intCast(parcel_target),
-            .bonus_enabled = bonus_enabled,
-            .staged_parcel_count = staged_parcel_count,
-            .delivered_parcel_count = delivered_parcel_count,
-            .bonus_score = postal_completion_bonus_score,
-            .bonus_blink_step = 1.0,
-        };
-    }
-
-    pub fn reconfigureCompletion(self: *RowEventDisplayController, parcel_target: usize, bonus_enabled: bool) void {
-        self.parcel_target_count = @intCast(parcel_target);
-        self.bonus_enabled = bonus_enabled;
-        self.bonus_score = postal_completion_bonus_score;
-    }
 };
 
 pub const Stopwatch = struct {
