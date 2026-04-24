@@ -45,6 +45,7 @@ const gameplay_assets = @import("gameplay/assets.zig");
 const gameplay_hud = @import("gameplay/hud.zig");
 const gameplay_presentation = @import("gameplay/presentation.zig");
 const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
+const gameplay_render_policy = @import("gameplay/render_policy.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const gameplay_voice = @import("gameplay/voice.zig");
 const high_score = @import("high_score.zig");
@@ -2848,14 +2849,14 @@ fn drawGameplayRuntimeActors(
     var global_row = end_row;
     while (global_row > start_row) {
         global_row -= 1;
-        if (!shouldRenderGameplayActorRow(runner, global_row)) continue;
+        if (!gameplay_render_policy.actorRowVisible(runner, global_row)) continue;
         const row_location = loaded_track_preview.locateRow(global_row) orelse continue;
         for (0..row_location.row.cells.len) |lane_index| {
             const sample = loaded_track_preview.gameplayCellSampleAt(global_row, lane_index) orelse continue;
             switch (sample.kind) {
                 .slug => drawGameplaySlugActor(state, loaded_track_preview, runner, camera, global_row, lane_index),
                 .ring => {
-                    if (shouldRenderStaticGameplayRing(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
+                    if (gameplay_render_policy.staticRingVisible(loaded_track_preview, row_location, loaded_track_preview.runtimeTileAt(global_row, lane_index))) {
                         drawGameplayStaticRingActor(state, loaded_track_preview, camera, row_location, lane_index);
                     }
                 },
@@ -2869,12 +2870,12 @@ fn drawGameplayRuntimeActors(
 
     for (runner.activeTrackParcels()) |parcel| {
         if (!parcel.active()) continue;
-        if (!shouldRenderGameplayActorRow(runner, parcel.row)) continue;
+        if (!gameplay_render_policy.actorRowVisible(runner, parcel.row)) continue;
         drawGameplayTrackParcelActor(state, camera, parcel);
     }
 
     for (runner.activeRuntimeHazards()) |hazard| {
-        if (!shouldRenderGameplayHazard(runner, hazard)) continue;
+        if (!gameplay_render_policy.hazardVisible(runner, hazard)) continue;
         switch (hazard.kind) {
             .garbage => {
                 drawGameplayGarbageActor(state, loaded_track_preview, camera, hazard);
@@ -2887,12 +2888,12 @@ fn drawGameplayRuntimeActors(
     // `drawGameplaySaltSlotActor` helper that reads the same salt mesh path
     // as the legacy branch.
     for (runner.activeRuntimeSalts()) |slot| {
-        if (!shouldRenderGameplaySaltSlot(runner, slot)) continue;
+        if (!gameplay_render_policy.saltSlotVisible(runner, slot)) continue;
         drawGameplaySaltSlotActor(state, camera, slot);
     }
 
     for (runner.activeRuntimePickups()) |pickup| {
-        if (!shouldRenderGameplayPickup(runner, pickup)) continue;
+        if (!gameplay_render_policy.pickupVisible(runner, pickup)) continue;
         switch (pickup.kind) {
             .health => drawGameplayHealthPickupActor(state, camera, pickup),
             .jetpack => drawGameplayJetpackPickupActor(state, camera, pickup),
@@ -2900,7 +2901,7 @@ fn drawGameplayRuntimeActors(
     }
 
     for (runner.activeRuntimeRingEffects()) |effect| {
-        if (!shouldRenderGameplayRingEffect(runner, effect)) continue;
+        if (!gameplay_render_policy.ringEffectVisible(runner, effect)) continue;
         drawGameplayRuntimeRingEffectActor(state, camera, effect);
     }
 
@@ -2909,47 +2910,6 @@ fn drawGameplayRuntimeActors(
     }
 
     drawGameplayEffects(state, camera);
-}
-
-fn shouldRenderGameplayActorRow(runner: gameplay.Runner, global_row: usize) bool {
-    return @as(f32, @floatFromInt(global_row)) + 0.25 >= runner.row_position;
-}
-
-fn shouldRenderGameplayHazard(runner: gameplay.Runner, hazard: gameplay_runtime_entities.Hazard) bool {
-    const trailing_rows: f32 = switch (hazard.kind) {
-        .garbage => switch (hazard.state) {
-            .active => @as(f32, 0.25),
-            else => @as(f32, 8.0),
-        },
-    };
-    return hazard.world_position.z + trailing_rows >= runner.row_position and
-        hazard.world_position.z <= runner.row_position + 72.0;
-}
-
-fn shouldRenderGameplayPickup(runner: gameplay.Runner, pickup: gameplay_runtime_entities.Pickup) bool {
-    return pickup.world_position.z + 0.25 >= runner.row_position and
-        pickup.world_position.z <= runner.row_position + 72.0;
-}
-
-fn shouldRenderGameplayRingEffect(runner: gameplay.Runner, effect: gameplay_runtime_entities.RingEffect) bool {
-    return effect.world_position.z + 0.25 >= runner.row_position and
-        effect.world_position.z <= runner.row_position + 72.0;
-}
-
-fn shouldRenderStaticGameplayRing(
-    preview: *const track.LoadedLevelPreview,
-    row_location: track.RowLocation,
-    runtime_tile_hint: ?u8,
-) bool {
-    return !gameplay.runtimeHandledRingAnnotation(runtime_tile_hint, preview.runtimeRowFlagsAt(row_location.global_row));
-}
-
-fn deterministicGameplayActorYaw(global_row: usize, lane_index: usize) f32 {
-    var seed: u64 = 0x9e3779b97f4a7c15;
-    seed ^= @as(u64, @intCast(global_row)) *% 0xbf58476d1ce4e5b9;
-    seed ^= @as(u64, @intCast(lane_index + 1)) *% 0x94d049bb133111eb;
-    const angle_fraction = @as(f32, @floatFromInt(@as(u16, @truncate(seed >> 16)))) / 65535.0;
-    return (angle_fraction * std.math.tau) - std.math.pi;
 }
 
 fn drawGameplaySlugActor(
@@ -3060,15 +3020,6 @@ fn drawGameplaySaltVisual(
         state.gameplay_billboard_shader,
         .{ .r = 144, .g = 198, .b = 255, .a = presentation_alpha },
     );
-}
-
-fn shouldRenderGameplaySaltSlot(runner: gameplay.Runner, slot: gameplay_runtime_entities.SaltSlot) bool {
-    // Match the legacy salt trailing-rows window so visible behavior is
-    // unchanged when rendering migrates from the shared pool to the
-    // dedicated salt pool.
-    const trailing_rows: f32 = 48.0;
-    return slot.world_position.z + trailing_rows >= runner.row_position and
-        slot.world_position.z <= runner.row_position + 72.0;
 }
 
 fn drawGameplayTurretActor(
