@@ -174,6 +174,7 @@ Work this top-down unless a new runtime capture invalidates the order.
 ### Phase 4. Recover the missing gameplay owners exposed by audio
 
 - [ ] Recover the deeper movement-state emitter owner and literal input-device source behind `play_movement_state_sound`
+- [ ] Add a projectile-specific visual smoke path for the movement-fire VAPOURLAZER trail. The current laser-shot render fix is grounded in `create_golb` / `initialize_vapour` / `update_vapour`, but the CLI smoke path still cannot script a fired shot and capture the generated trail for visual regression review.
 - [ ] Finish the remaining payload-table and tip-actor semantics behind `voice 13`
 - [x] Recover the real warning actor/controller behind `update_warning`
 - [ ] Finish the remaining collision/powerup owner recovery beyond the now-ported native ring runtime owner, ring-kind ladder (`1`, `2/6`, `3/7`, `4/5/8`), runtime pickup collision slots, health bob lane, jetpack ramp-bias spawn lane, jetpack `JETPACKTHRUST` pre-warning visual lane, ring post-hit `2 -> 3` effect lane, and the recovered `health_collect_particles` burst packet, especially parcel, garbage-impact, the exact dedicated health-particle bod owner, the original pre-hit ring bod anchor/layout fields, the dedicated jet-particle/nozzle owner, and the remaining deeper weapon presentation owners
