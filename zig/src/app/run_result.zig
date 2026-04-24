@@ -4,6 +4,7 @@ const frontend_completion_screen = @import("../frontend/completion_screen.zig");
 const frontend_high_score_screen = @import("../frontend/high_score_screen.zig");
 const gameplay = @import("../gameplay.zig");
 const high_score = @import("../high_score.zig");
+const level_loader = @import("level_loader.zig");
 
 const FrontendLevelMode = frontend.FrontendLevelMode;
 
@@ -238,6 +239,86 @@ pub fn commitPendingIfNeeded(state: anytype) !void {
     state.pending_run_result = try commitIfNeeded(state, result);
 }
 
+pub fn beginCompletedOverlay(state: anytype) !void {
+    if (state.pending_run_result != null) return;
+
+    const loaded_level = state.current_level orelse return;
+    const active_mode = state.active_frontend_mode;
+    const parcel_target = state.currentParcelTarget();
+    if (state.level_runner) |*runner| {
+        if (level_loader.completionBonusAppliesForMode(active_mode)) {
+            runner.applyCompletionBonus(parcel_target);
+        }
+        runner.flushPendingParcelDeliveries();
+    }
+    const runner = state.level_runner orelse return;
+    const parcel_count = runner.counters.parcels;
+    const elapsed_millis = runner.stopwatch.elapsedMillis();
+    var result = Result{
+        .outcome = .completed,
+        .level_name = loaded_level.name,
+        .mode = active_mode,
+        .elapsed_millis = elapsed_millis,
+        .parcel_count = parcel_count,
+        .parcel_target = parcel_target,
+        .score = 0,
+        .score_is_partial = false,
+        .score_totals = runner.score,
+        .visible_life_stock = runner.visible_life_stock,
+        .damage_gauge = runner.damage.gauge,
+        .completion_owner = completionFlowOwnerForOutcome(.completed, active_mode),
+        .persistence = .completed,
+        .outer_return_target = outerReturnTargetForOutcome(.completed, active_mode),
+    };
+
+    switch (active_mode orelse .tutorial) {
+        .postal => {
+            result.score = runner.score.total;
+            result.score_is_partial = true;
+            const highest_available = state.highestAvailableFrontendRouteIndex(.postal);
+            result.completion_owner = postalCompletionOwner(
+                state.active_frontend_level_index,
+                highest_available,
+            );
+            result.outer_return_target = outerReturnTargetForCompletionOwner(result.completion_owner);
+            // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
+            // not the arcade-high-score commit path. Only the last postal route upgrades
+            // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
+            // final shipped route instead of every completed delivery.
+            if (postalCompletionCommitsHighScore(state.active_frontend_level_index, highest_available)) {
+                result.high_score_mode = .postal;
+                result.high_score_rank = previewDescendingHighScoreRank(state.high_score_tables.postal[0..], result.score);
+            }
+            result.unlocked_next_route = previewPostalRouteUnlock(
+                state.active_frontend_level_index,
+                highest_available,
+                @intCast(state.runtime_config.routeUnlockLimit()),
+            );
+        },
+        .challenge => {
+            result.score = runner.score.total;
+            result.score_is_partial = true;
+            result.high_score_mode = .challenge;
+            result.high_score_rank = previewDescendingHighScoreRank(state.high_score_tables.challenge[0..], result.score);
+        },
+        .time_trial => {
+            result.score = elapsed_millis;
+            result.time_trial_record_improved = state.previewTimeTrialRecordImproved(
+                state.active_frontend_level_index,
+                elapsed_millis,
+            );
+        },
+        .tutorial => result.persistence = .none,
+    }
+
+    applySelectedReplayResultOverrides(state, &result);
+
+    state.pending_run_result = result;
+    state.completion_overlay_active = true;
+    state.preserve_completion_screen_reveal_on_enter = false;
+    resetCompletionScreenReveal(state);
+}
+
 pub fn resetCompletionScreenReveal(state: anytype) void {
     const result = state.pending_run_result orelse {
         state.completion_screen_reveal_progress = 0.0;
@@ -283,10 +364,51 @@ pub fn completionContinueVisible(state: anytype) bool {
     return frontend_completion_screen.continueVisibleAtProgress(summary(result), state.completion_screen_reveal_progress);
 }
 
+pub fn applySelectedReplayResultOverrides(state: anytype, result: *Result) void {
+    if (!selectedReplayPlaybackActive(state)) return;
+    result.persistence = .none;
+    result.high_score_mode = null;
+    result.high_score_rank = null;
+    result.time_trial_record_improved = false;
+    result.unlocked_next_route = false;
+    if (selectedReplayLaunchOuterReturnTarget(state)) |outer_return_target| {
+        result.outer_return_target = outer_return_target;
+    }
+}
+
 fn clampUsize(value: usize, low: usize, high: usize) usize {
     return @min(@max(value, low), high);
 }
 
 fn clampF32(value: f32, low: f32, high: f32) f32 {
     return @min(@max(value, low), high);
+}
+
+fn selectedReplayPlaybackActive(state: anytype) bool {
+    if (state.selected_replay_cache) |replay| return replay.samples.len != 0;
+    const entry = selectedReplayEntry(state) orelse return false;
+    return entry.replaySampleCount() != 0;
+}
+
+fn selectedReplayEntry(state: anytype) ?*const high_score.Entry {
+    const source = state.selected_level_record_source orelse return null;
+    return selectedReplayEntryForSource(state, source);
+}
+
+fn selectedReplayEntryForSource(state: anytype, source: frontend_bridge.SelectedLevelRecordSource) ?*const high_score.Entry {
+    return switch (source) {
+        .postal => |index| if (index < state.high_score_tables.postal.len) &state.high_score_tables.postal[index] else null,
+        .challenge => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
+        .challenge_setup => |index| if (index < state.high_score_tables.challenge.len) &state.high_score_tables.challenge[index] else null,
+        .completion => |index| if (index < state.high_score_tables.completion.len) &state.high_score_tables.completion[index] else null,
+    };
+}
+
+fn selectedReplayLaunchOuterReturnTarget(state: anytype) ?frontend_bridge.OuterReturnTarget {
+    if (state.saved_replay_return_outer_owner) |saved_state| {
+        return frontend_bridge.outerReturnTargetForSavedReplayReturnOuterOwner(saved_state);
+    }
+    if (state.selected_level_record_outer_return_target) |target| return target;
+    const source = state.selected_level_record_source orelse return null;
+    return frontend_bridge.defaultSelectedLevelRecordLaunchOuterReturnTarget(source);
 }

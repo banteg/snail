@@ -3176,7 +3176,7 @@ const AppState = struct {
         return level_loader.currentRunSaltScalar(self);
     }
 
-    fn currentParcelTarget(self: *const AppState) usize {
+    pub fn currentParcelTarget(self: *const AppState) usize {
         return level_loader.currentParcelTarget(self);
     }
 
@@ -3197,83 +3197,7 @@ const AppState = struct {
     }
 
     fn beginCompletedRunOverlay(self: *AppState) !void {
-        if (self.pending_run_result != null) return;
-
-        const loaded_level = self.current_level orelse return;
-        const active_mode = self.active_frontend_mode;
-        const parcel_target = self.currentParcelTarget();
-        if (self.level_runner) |*runner| {
-            if (completionBonusAppliesForMode(active_mode)) {
-                runner.applyCompletionBonus(parcel_target);
-            }
-            runner.flushPendingParcelDeliveries();
-        }
-        const runner = self.level_runner orelse return;
-        const parcel_count = runner.counters.parcels;
-        const elapsed_millis = runner.stopwatch.elapsedMillis();
-        var result = PendingRunResult{
-            .outcome = .completed,
-            .level_name = loaded_level.name,
-            .mode = active_mode,
-            .elapsed_millis = elapsed_millis,
-            .parcel_count = parcel_count,
-            .parcel_target = parcel_target,
-            .score = 0,
-            .score_is_partial = false,
-            .score_totals = runner.score,
-            .visible_life_stock = runner.visible_life_stock,
-            .damage_gauge = runner.damage.gauge,
-            .completion_owner = completionFlowOwnerForOutcome(.completed, active_mode),
-            .persistence = .completed,
-            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.completed, active_mode)),
-        };
-
-        switch (active_mode orelse .tutorial) {
-            .postal => {
-                result.score = runner.score.total;
-                result.score_is_partial = true;
-                const highest_available = self.highestAvailableFrontendRouteIndex(.postal);
-                result.completion_owner = postalCompletionOwner(
-                    self.active_frontend_level_index,
-                    highest_available,
-                );
-                result.outer_return_target = outerReturnTargetForCompletionOwner(result.completion_owner);
-                // PORT(verified): normal postal completion uses `complete_subgame(..., 0)`,
-                // not the arcade-high-score commit path. Only the last postal route upgrades
-                // to `complete_subgame(..., 1)`, so keep postal score insertion gated on the
-                // final shipped route instead of every completed delivery.
-                if (postalCompletionCommitsHighScore(self.active_frontend_level_index, highest_available)) {
-                    result.high_score_mode = .postal;
-                    result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
-                }
-                result.unlocked_next_route = previewPostalRouteUnlock(
-                    self.active_frontend_level_index,
-                    highest_available,
-                    @intCast(self.runtime_config.routeUnlockLimit()),
-                );
-            },
-            .challenge => {
-                result.score = runner.score.total;
-                result.score_is_partial = true;
-                result.high_score_mode = .challenge;
-                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
-            },
-            .time_trial => {
-                result.score = elapsed_millis;
-                result.time_trial_record_improved = self.previewTimeTrialRecordImproved(
-                    self.active_frontend_level_index,
-                    elapsed_millis,
-                );
-            },
-            .tutorial => result.persistence = .none,
-        }
-
-        self.applySelectedReplayResultOverrides(&result);
-
-        self.pending_run_result = result;
-        self.completion_overlay_active = true;
-        self.preserve_completion_screen_reveal_on_enter = false;
-        self.resetCompletionScreenReveal();
+        try run_result.beginCompletedOverlay(self);
     }
 
     fn finalizeCompletedRunScreen(self: *AppState) !void {
@@ -3339,7 +3263,7 @@ const AppState = struct {
             },
         }
 
-        self.applySelectedReplayResultOverrides(&result);
+        run_result.applySelectedReplayResultOverrides(self, &result);
 
         self.pending_run_result = result;
         self.completion_overlay_active = false;
@@ -3676,15 +3600,7 @@ const AppState = struct {
     }
 
     fn applySelectedReplayResultOverrides(self: *const AppState, result: *PendingRunResult) void {
-        if (!self.selectedReplayPlaybackActive()) return;
-        result.persistence = .none;
-        result.high_score_mode = null;
-        result.high_score_rank = null;
-        result.time_trial_record_improved = false;
-        result.unlocked_next_route = false;
-        if (self.selectedReplayLaunchOuterReturnTarget()) |outer_return_target| {
-            result.outer_return_target = outer_return_target;
-        }
+        run_result.applySelectedReplayResultOverrides(self, result);
     }
 
     fn outerOwnerForSelectedReplayMarker(
@@ -3808,7 +3724,7 @@ const AppState = struct {
         return run_result.previewPostalRouteUnlock(current_index, highest_available, saved_limit);
     }
 
-    fn previewTimeTrialRecordImproved(self: *const AppState, route_index: usize, elapsed_millis: u32) bool {
+    pub fn previewTimeTrialRecordImproved(self: *const AppState, route_index: usize, elapsed_millis: u32) bool {
         const completion_index = high_score.completionIndexForRouteIndex(route_index) orelse return false;
         const current = &self.high_score_tables.completion[completion_index];
         return !current.isActive() or elapsed_millis < current.score;
@@ -3832,7 +3748,7 @@ const AppState = struct {
         return std.math.clamp(saved_limit, @as(usize, 1), highest_available);
     }
 
-    fn highestAvailableFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
+    pub fn highestAvailableFrontendRouteIndex(self: *const AppState, mode: FrontendLevelMode) usize {
         switch (mode) {
             .postal => {
                 if (self.resources.catalog.findLevelIndex("LEVELS/ARCADEEXTRA000.TXT") != null) return 0x33;
