@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("../app.zig");
 const assets = @import("../assets.zig");
 const attachment_builders = @import("../attachment_builders.zig");
+const audio_volume = @import("audio_volume.zig");
 const math_random = @import("math_random.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_assets = @import("../gameplay/assets.zig");
@@ -15,7 +16,6 @@ const track = @import("../track.zig");
 
 const default_audio_path = app.default_audio_path;
 const intro_music_path = app.intro_music_path;
-const GameplaySoundFx = gameplay_art.SoundFx;
 
 pub fn playGameplayRunnerAudio(
     state: anytype,
@@ -236,7 +236,7 @@ pub fn playMusicByPath(state: anytype, path: []const u8) !void {
     if (!state.audio_ready) return;
     if (state.current_music) |music| {
         if (std.ascii.eqlIgnoreCase(music.path, path)) {
-            applyAudioConfigVolumes(state);
+            audio_volume.applyConfigVolumes(audio_volume.context(state));
             if (!rl.isMusicStreamPlaying(music.music)) {
                 rl.playMusicStream(music.music);
             }
@@ -249,14 +249,14 @@ pub fn playMusicByPath(state: anytype, path: []const u8) !void {
         music
     else
         try state.resources.catalog.loadMusicByPath(state.allocator, path);
-    applyAudioConfigVolumes(state);
+    audio_volume.applyConfigVolumes(audio_volume.context(state));
     rl.playMusicStream(state.current_music.?.music);
 }
 
 fn playSoundByPath(state: anytype, path: []const u8) !void {
     if (!state.audio_ready) return;
     const sound = (try state.current_sound.loadPath(&state.resources, path)) orelse return;
-    applyAudioConfigVolumes(state);
+    audio_volume.applyConfigVolumes(audio_volume.context(state));
     rl.playSound(sound.sound);
 }
 
@@ -264,7 +264,7 @@ fn playVoiceByPath(state: anytype, path: []const u8) !void {
     if (!state.audio_ready) return;
     stopVoicePlayback(state);
     const sound = (try state.current_voice_sound.loadPath(&state.resources, path)) orelse return;
-    applyAudioConfigVolumes(state);
+    audio_volume.applyConfigVolumes(audio_volume.context(state));
     rl.playSound(sound.sound);
 }
 
@@ -363,7 +363,7 @@ pub fn playGameplayEffect(state: anytype, sound: ?assets.LoadedSound) void {
 pub fn playGameplayEffectScaled(state: anytype, sound: ?assets.LoadedSound, gain: f32) void {
     if (!state.audio_ready) return;
     const loaded = sound orelse return;
-    const base_volume = gameplaySoundBaseVolume(state);
+    const base_volume = audio_volume.soundVolume(audio_volume.context(state));
     const scaled_volume = std.math.clamp(base_volume * gain, 0.0, 1.0);
     rl.setSoundVolume(loaded.sound, scaled_volume);
     rl.playSound(loaded.sound);
@@ -384,46 +384,6 @@ fn pickGameplaySoundVariant(state: anytype, comptime count: usize, variants: [co
         start = (start + 1) % count;
     }
     return null;
-}
-
-pub fn applyAudioConfigVolumes(state: anytype) void {
-    if (!state.audio_ready) return;
-
-    const sound_volume = gameplaySoundBaseVolume(state);
-    const music_volume = if (state.audio_muted) 0.0 else state.runtime_config.musicVolume();
-
-    if (state.current_sound.current) |sound| {
-        rl.setSoundVolume(sound.sound, sound_volume);
-    }
-    if (state.current_voice_sound.current) |sound| {
-        rl.setSoundVolume(sound.sound, sound_volume);
-    }
-    if (state.frontend_sound_fx.highlight) |sound| {
-        rl.setSoundVolume(sound.sound, sound_volume);
-    }
-    if (state.frontend_sound_fx.select) |sound| {
-        rl.setSoundVolume(sound.sound, sound_volume);
-    }
-    inline for (comptime std.meta.fieldNames(GameplaySoundFx)) |field_name| {
-        const field = &@field(state.gameplay_resources.sound_fx, field_name);
-        switch (@typeInfo(@TypeOf(field.*))) {
-            .array => {
-                for (field) |entry| {
-                    if (entry) |sound| {
-                        rl.setSoundVolume(sound.sound, sound_volume);
-                    }
-                }
-            },
-            else => {
-                if (field.*) |sound| {
-                    rl.setSoundVolume(sound.sound, sound_volume);
-                }
-            },
-        }
-    }
-    if (state.current_music) |music| {
-        rl.setMusicVolume(music.music, music_volume);
-    }
 }
 
 pub fn stopAudioPreview(state: anytype) void {
@@ -459,10 +419,6 @@ fn noteGameplaySlugVoiceCell(state: anytype, row: usize, lane: usize) void {
     if (state.announced_slug_voice_cell_count >= state.announced_slug_voice_cells.len) return;
     state.announced_slug_voice_cells[state.announced_slug_voice_cell_count] = .{ .row = row, .lane = lane };
     state.announced_slug_voice_cell_count += 1;
-}
-
-fn gameplaySoundBaseVolume(state: anytype) f32 {
-    return if (state.audio_muted) 0.0 else state.runtime_config.soundVolume();
 }
 
 fn nextNativeMovementSoundVariantIndex(state: anytype, comptime count: usize) usize {

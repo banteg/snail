@@ -2,6 +2,7 @@ const std = @import("std");
 const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
+const audio_volume = @import("app/audio_volume.zig");
 const frontend_audio = @import("app/frontend_audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
@@ -475,7 +476,7 @@ const AppState = struct {
         };
         errdefer state.deinit();
         galaxy_names = null;
-        audio.applyAudioConfigVolumes(&state);
+        audio_volume.applyConfigVolumes(audio_volume.context(&state));
         if (options.command == .game) {
             try gameplay_resources.loadStaticResources(&state.gameplay_resources, &state.resources);
         }

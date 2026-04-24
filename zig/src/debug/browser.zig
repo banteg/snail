@@ -1,6 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 const audio = @import("../app/audio.zig");
+const audio_volume = @import("../app/audio_volume.zig");
 const ui = @import("../ui.zig");
 const background = @import("../background.zig");
 const debug_levels = @import("levels.zig");
@@ -356,7 +357,7 @@ fn previewSound(state: anytype) !void {
         &state.resources,
         state.resources.catalog.audio_entries[state.audio_index].path,
     )) orelse return;
-    audio.applyAudioConfigVolumes(state);
+    audio_volume.applyConfigVolumes(audio_volume.context(state));
     rl.playSound(sound.sound);
 }
 
@@ -364,7 +365,7 @@ fn previewMusic(state: anytype) !void {
     if (!state.audio_ready or state.resources.catalog.audio_entries.len == 0) return;
     audio.stopAudioPreview(state);
     state.current_music = try state.resources.catalog.loadMusic(state.allocator, state.resources.catalog.audio_entries[state.audio_index]);
-    audio.applyAudioConfigVolumes(state);
+    audio_volume.applyConfigVolumes(audio_volume.context(state));
     rl.playMusicStream(state.current_music.?.music);
 }
 

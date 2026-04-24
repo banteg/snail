@@ -1,6 +1,7 @@
 const std = @import("std");
 
 const audio = @import("audio.zig");
+const audio_volume = @import("audio_volume.zig");
 const run_tuning = @import("run_tuning.zig");
 const track_build_seed = @import("track_build_seed.zig");
 const gameplay = @import("../gameplay.zig");
@@ -184,7 +185,7 @@ pub fn reloadLevel(state: anytype) !void {
                     &state.resources,
                     &state.animation_catalog,
                 );
-                audio.applyAudioConfigVolumes(state);
+                audio_volume.applyConfigVolumes(audio_volume.context(state));
             }
             state.level_runner = gameplay.Runner.init(loaded_track_preview);
             state.level_runner.?.configureCompletionBonus(

@@ -1,7 +1,7 @@
 const std = @import("std");
 const rl = @import("raylib");
 
-const audio = @import("audio.zig");
+const audio_volume = @import("audio_volume.zig");
 const frontend_audio = @import("frontend_audio.zig");
 const frontend = @import("../frontend.zig");
 const frontend_activation = @import("../frontend/activation.zig");
@@ -143,14 +143,14 @@ pub fn stepOptionsMenuValue(state: anytype, item: frontend.OptionsMenuItem, delt
         .sound_volume => {
             const previous = state.runtime_config.soundVolume();
             state.runtime_config.setSoundVolume(state.runtime_config.soundVolume() + delta);
-            audio.applyAudioConfigVolumes(state);
+            audio_volume.applyConfigVolumes(audio_volume.context(state));
             if (state.runtime_config.soundVolume() != previous) {
                 frontend_audio.playSelectSound(frontend_audio.context(state));
             }
         },
         .music_volume => {
             state.runtime_config.setMusicVolume(state.runtime_config.musicVolume() + delta);
-            audio.applyAudioConfigVolumes(state);
+            audio_volume.applyConfigVolumes(audio_volume.context(state));
         },
         .back => if (delta != 0.0) {
             frontend_audio.playSelectSound(frontend_audio.context(state));
