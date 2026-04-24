@@ -14,6 +14,7 @@ const run_tuning = @import("app/run_tuning.zig");
 const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
 const subgame_camera = @import("app/subgame_camera.zig");
+const track_build_seed = @import("app/track_build_seed.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -1601,6 +1602,20 @@ const AppState = struct {
         };
     }
 
+    fn trackBuildSeedContext(self: *AppState) track_build_seed.Context {
+        return .{
+            .command = self.command,
+            .active_frontend_mode = self.active_frontend_mode,
+            .active_frontend_level_index = self.active_frontend_level_index,
+            .level_index = self.level_index,
+            .selected_level_record_override = self.selected_level_record_override,
+            .math_random_state = &self.math_random_state,
+            .current_runtime_build_seed = &self.current_runtime_build_seed,
+            .current_runtime_build_seed_level_index = &self.current_runtime_build_seed_level_index,
+            .current_runtime_build_seed_mode = &self.current_runtime_build_seed_mode,
+        };
+    }
+
     fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
         if (!self.isTutorialGameplay()) return false;
         const prompt = self.level_prompt_queue.active() orelse return false;
@@ -2432,15 +2447,15 @@ const AppState = struct {
     }
 
     fn nextMathRandomInt15(self: *AppState) u32 {
-        return level_loader.nextMathRandomInt15(self);
+        return track_build_seed.nextInt15(&self.math_random_state);
     }
 
     fn trackBuildSeedForCurrentLoad(self: *AppState) u32 {
-        return level_loader.trackBuildSeedForCurrentLoad(self);
+        return track_build_seed.seedForCurrentLoad(self.trackBuildSeedContext());
     }
 
     fn invalidateTrackBuildSeed(self: *AppState) void {
-        level_loader.invalidateTrackBuildSeed(self);
+        track_build_seed.invalidate(self.trackBuildSeedContext());
     }
 
     pub fn reloadLevelSegment(self: *AppState) !void {

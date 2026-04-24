@@ -2,6 +2,7 @@ const std = @import("std");
 
 const audio = @import("audio.zig");
 const run_tuning = @import("run_tuning.zig");
+const track_build_seed = @import("track_build_seed.zig");
 const gameplay = @import("../gameplay.zig");
 const gameplay_resources = @import("../gameplay/resources.zig");
 const level = @import("../level.zig");
@@ -85,7 +86,7 @@ fn startupGameplayBlockActive(state: anytype) bool {
 
 pub fn loadGameLevel(state: anytype, level_path: []const u8) !void {
     state.level_index = state.resources.catalog.findLevelIndex(level_path) orelse return error.EntryNotFound;
-    invalidateTrackBuildSeed(state);
+    track_build_seed.invalidate(trackBuildSeedContext(state));
     try reloadLevel(state);
 }
 
@@ -150,7 +151,7 @@ pub fn reloadLevel(state: anytype) !void {
     const entry = state.resources.catalog.level_entries[state.level_index];
     state.current_level = try level.loadFromArchive(state.allocator, &state.resources.catalog, entry);
     if (state.current_level) |*loaded_level| {
-        const runtime_build_seed = trackBuildSeedForCurrentLoad(state);
+        const runtime_build_seed = track_build_seed.seedForCurrentLoad(trackBuildSeedContext(state));
         state.current_track_preview = try track.LoadedLevelPreview.loadWithOptions(
             state.allocator,
             &state.resources.catalog,
@@ -211,42 +212,6 @@ pub fn reloadLevel(state: anytype) !void {
     try syncActiveLevelSegment(state);
 }
 
-pub fn nextMathRandomInt15(state: anytype) u32 {
-    state.math_random_state = (state.math_random_state *% 0x343fd) +% 0x269ec3;
-    return (state.math_random_state >> 16) & 0x7fff;
-}
-
-pub fn trackBuildSeedForCurrentLoad(state: anytype) u32 {
-    if (state.command != .game) return 0;
-
-    const mode = state.active_frontend_mode;
-    if (state.selected_level_record_override) |record| {
-        if (mode == record.mode and state.active_frontend_level_index == record.level_index) {
-            state.current_runtime_build_seed = record.runtime_build_seed;
-            state.current_runtime_build_seed_level_index = state.level_index;
-            state.current_runtime_build_seed_mode = mode;
-            return record.runtime_build_seed;
-        }
-    }
-    if (state.current_runtime_build_seed_level_index == state.level_index and state.current_runtime_build_seed_mode == mode) {
-        return state.current_runtime_build_seed;
-    }
-
-    const seed: u32 = switch (mode orelse return 0) {
-        .tutorial, .time_trial => 0,
-        .postal, .challenge => nextMathRandomInt15(state),
-    };
-    state.current_runtime_build_seed = seed;
-    state.current_runtime_build_seed_level_index = state.level_index;
-    state.current_runtime_build_seed_mode = mode;
-    return seed;
-}
-
-pub fn invalidateTrackBuildSeed(state: anytype) void {
-    state.current_runtime_build_seed_level_index = null;
-    state.current_runtime_build_seed_mode = null;
-}
-
 pub fn reloadLevelSegment(state: anytype) !void {
     if (state.current_segment) |*loaded_segment| {
         loaded_segment.deinit();
@@ -292,5 +257,19 @@ fn runTuningContext(state: anytype) run_tuning.Context {
         .current_track_preview = loaded_track_preview,
         .active_frontend_level_index = state.active_frontend_level_index,
         .current_runtime_build_seed = state.current_runtime_build_seed,
+    };
+}
+
+fn trackBuildSeedContext(state: anytype) track_build_seed.Context {
+    return .{
+        .command = state.command,
+        .active_frontend_mode = state.active_frontend_mode,
+        .active_frontend_level_index = state.active_frontend_level_index,
+        .level_index = state.level_index,
+        .selected_level_record_override = state.selected_level_record_override,
+        .math_random_state = &state.math_random_state,
+        .current_runtime_build_seed = &state.current_runtime_build_seed,
+        .current_runtime_build_seed_level_index = &state.current_runtime_build_seed_level_index,
+        .current_runtime_build_seed_mode = &state.current_runtime_build_seed_mode,
     };
 }
