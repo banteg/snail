@@ -10,6 +10,7 @@ const damage_module = @import("gameplay/damage.zig");
 const hazards_module = @import("gameplay/hazards.zig");
 const jetpack_module = @import("gameplay/jetpack.zig");
 const parcel_module = @import("gameplay/parcel.zig");
+const phase_module = @import("gameplay/phase.zig");
 const runner_state = @import("gameplay/runner_state.zig");
 const level = @import("level.zig");
 const segment = @import("segment.zig");
@@ -48,10 +49,10 @@ pub const Projectile = runner_state.Projectile;
 
 const RunnerPhase = runner_state.RunnerPhase;
 
-const completion_handoff_timer_step: f32 = 1.0 / 60.0;
-const completion_handoff_voice_delay_seconds: f32 = 2.0;
-const completion_handoff_release_seconds: f32 = 5.0;
-const completion_handoff_release_force_seconds: f32 = 5.1;
+const completion_handoff_timer_step = phase_module.completion_handoff_timer_step;
+const completion_handoff_voice_delay_seconds = phase_module.completion_handoff_voice_delay_seconds;
+const completion_handoff_release_seconds = phase_module.completion_handoff_release_seconds;
+const completion_handoff_release_force_seconds = phase_module.completion_handoff_release_force_seconds;
 const replay_world_x_min: f32 = -4.0;
 const replay_world_x_max: f32 = 4.0;
 const row_event_display_stage_progress_step: f32 = 1.0 / 24.0;
@@ -2859,7 +2860,7 @@ pub const Runner = struct {
         parcel.state = 0;
     }
 
-    fn currentRowEventCompletionCellActive(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
+    pub fn currentRowEventCompletionCellActive(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
         const current_sample = self.currentRuntimeSample(preview) orelse return false;
         return preview.runtimeFlagB40At(current_sample.global_row, current_sample.resolved_lane_index);
     }
@@ -3978,37 +3979,15 @@ pub const Runner = struct {
     }
 
     fn beginCompletionCutscene(self: *Runner) void {
-        if (self.phase != .active) return;
-        self.finished = true;
-        self.phase = .completion_handoff;
-        self.completion_handoff_timer = 0.0;
-        self.completion_handoff_timer_step = completion_handoff_timer_step;
-        self.completion_handoff_voice_gate = false;
-        self.completion_screen_init_sent = false;
-        self.setCutscene(cutscene_completion_id);
+        phase_module.beginCompletionCutscene(self);
     }
 
     fn routeEndReached(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
-        if (preview.total_rows == 0) return false;
-        return self.row_position >= preview.course_end_threshold;
+        return phase_module.routeEndReached(self, preview);
     }
 
     fn maybeBeginCompletionCutscene(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (self.attachment_exit_pending) return;
-        if (self.movement_mode == .attachment and self.attachment_follow.active) return;
-        if (!self.routeEndReached(preview)) return;
-        self.beginCompletionCutscene();
-    }
-
-    fn completionHandoffRequiresRowEventResolution(self: *const Runner) bool {
-        return switch (self.session_mode) {
-            // PORT(verified): native `update_subgoldy` only keeps the late completion
-            // handoff pinned behind the row-event controller when `game + 64 <= 1`
-            // (postal and challenge). Time trial and tutorial skip that wait even if the
-            // row-event controller still has pending work.
-            .postal, .challenge => self.row_event_display.parcel_target_count != 0,
-            .time_trial, .tutorial, .debug => false,
-        };
+        phase_module.maybeBeginCompletionCutscene(self, preview);
     }
 
     fn captureWorldFrame(self: *const Runner, preview: *const track.LoadedLevelPreview) WorldFrame {
@@ -4098,46 +4077,7 @@ pub const Runner = struct {
         switch (self.phase) {
             .active => {},
             .completion_handoff => {
-                _ = self.advanceCutsceneTicks();
-                self.completion_handoff_timer += self.completion_handoff_timer_step;
-                if (!self.completion_handoff_voice_gate and
-                    self.completion_handoff_timer >= completion_handoff_voice_delay_seconds)
-                {
-                    self.completion_handoff_voice_gate = true;
-                }
-                if (!self.completion_screen_init_sent and
-                    (self.cutscene_camera.state == .completion_arm or self.cutscene_camera.state == .completion_blend) and
-                    self.completion_handoff_timer >= completion_handoff_timer_step)
-                {
-                    self.completion_screen_init_sent = true;
-                    self.pending_handoff = .completion_screen_init;
-                }
-                if (self.row_event_display.gate_18 != 0 and
-                    self.currentRowEventCompletionCellActive(preview))
-                {
-                    self.completion_handoff_timer = @max(
-                        self.completion_handoff_timer,
-                        completion_handoff_release_force_seconds,
-                    );
-                }
-                if (self.row_event_display.state == .complete) {
-                    self.completion_handoff_timer = @max(
-                        self.completion_handoff_timer,
-                        completion_handoff_release_force_seconds,
-                    );
-                }
-                if (self.completion_handoff_timer < completion_handoff_release_seconds) return;
-                if (self.completionHandoffRequiresRowEventResolution() and
-                    self.row_event_display.state != .complete)
-                {
-                    self.completion_handoff_timer = @max(
-                        0.0,
-                        self.completion_handoff_timer - self.completion_handoff_timer_step,
-                    );
-                    return;
-                }
-                if (self.pending_handoff != .none) return;
-                self.pending_handoff = .completion_finalize;
+                phase_module.updateCompletionHandoff(self, preview);
             },
             .fall => |state| {
                 var next_state = state;
@@ -4173,13 +4113,7 @@ pub const Runner = struct {
     }
 
     fn advanceCutsceneTicks(self: *Runner) bool {
-        const duration_ticks = cutsceneDurationTicks(self.cutscene_id) orelse return false;
-        if (self.cutscene_ticks >= duration_ticks) return true;
-        self.cutscene_ticks +|= 1;
-        if (self.cutscene_ticks > duration_ticks) {
-            self.cutscene_ticks = duration_ticks;
-        }
-        return self.cutscene_ticks >= duration_ticks;
+        return phase_module.advanceCutsceneTicks(self);
     }
 
     fn stepAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -5077,15 +5011,6 @@ fn progressForTicks(ticks: u16, total_ticks: u16) f32 {
         0.0,
         1.0,
     );
-}
-
-fn cutsceneDurationTicks(cutscene_id: u8) ?u16 {
-    return switch (cutscene_id) {
-        cutscene_intro_id => intro_cutscene_duration_ticks,
-        cutscene_completion_id => completion_cutscene_duration_ticks,
-        cutscene_death_id => death_cutscene_duration_ticks,
-        else => null,
-    };
 }
 
 fn vector3ToAttachmentVec3(vector: rl.Vector3) attachment_builders.Vec3 {
