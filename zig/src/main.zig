@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
+const frontend_input = @import("app/frontend_input.zig");
 const level_loader = @import("app/level_loader.zig");
 const return_flow = @import("app/return_flow.zig");
 const run_result = @import("app/run_result.zig");
@@ -201,7 +202,6 @@ const StandalonePostLevelHighScoreEntry = run_result.StandalonePostLevelHighScor
 const CompletionFlowOwner = run_result.CompletionFlowOwner;
 
 const pause_menu_button_count = frontend_pause_menu.items.len;
-const frontend_activation_delay_step: f32 = 1.0 / 12.0;
 const frontend_canvas_width: i32 = 640;
 const frontend_canvas_height: i32 = 480;
 
@@ -827,118 +827,43 @@ const AppState = struct {
     }
 
     fn setFrontendHoverTarget(self: *AppState, target: ?frontend_activation.HoverTarget) void {
-        if (self.hovered_frontend_target == target) return;
-        self.hovered_frontend_target = target;
-        if (target != null) {
-            self.keyboard_frontend_focus_visible = false;
-            audio.playFrontendHoverSound(self);
-        }
+        frontend_input.setHoverTarget(self, target);
     }
 
     fn noteFrontendKeyboardNavigation(self: *AppState) void {
-        self.keyboard_frontend_focus_visible = true;
+        frontend_input.noteKeyboardNavigation(self);
     }
 
     fn activeFrontendButtonTarget(self: *const AppState) ?frontend_activation.HoverTarget {
-        if (self.pending_frontend_activation) |pending| {
-            return pending.target;
-        }
-        return self.hovered_frontend_target;
+        return frontend_input.activeButtonTarget(self);
     }
 
     fn frontendButtonHot(self: *const AppState, target: frontend_activation.HoverTarget, fallback_selected: bool) bool {
-        if (self.activeFrontendButtonTarget()) |active_target| {
-            return active_target == target;
-        }
-        return self.keyboard_frontend_focus_visible and fallback_selected;
+        return frontend_input.buttonHot(self, target, fallback_selected);
     }
 
     fn queueFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) void {
-        if (self.pending_frontend_activation != null) return;
-        audio.playFrontendSelectSound(self);
-        const requires_fade = frontend_activation.queuedActivationRequiresFade(action);
-        if (requires_fade) {
-            self.frontend_transition.beginOverlayFadeOut();
-        }
-        self.pending_frontend_activation = .{
-            .action = action,
-            .target = frontend_activation.queuedActivationTarget(action),
-            .requires_fade = requires_fade,
-        };
+        frontend_input.queueActivation(self, action);
     }
 
     fn dispatchFrontendActivation(self: *AppState, action: frontend_activation.QueuedAction) !void {
-        switch (action) {
-            .main_menu => |item| try self.performMainMenuItem(item),
-            .new_game_menu => |item| try self.performNewGameMenuItem(item),
-            .challenge_setup_menu => |item| try self.performChallengeSetupMenuItem(item),
-            .options_menu => |item| try self.performOptionsMenuItem(item),
-            .pause_menu => |item| try self.performPauseMenuItem(item),
-            .route_map_menu => |item| try self.performRouteMenuAction(item),
-            .help_menu => |item| try self.performHelpMenuItem(item),
-            .high_scores_menu => |item| try self.performHighScoreMenuAction(item),
-            .high_score_replay => |index| try self.performHighScoreReplay(index),
-            .post_level_high_scores => |item| try self.performPostLevelHighScoreAction(item),
-            .completion_screen => |item| try self.performCompletionAction(item),
-            .exit_prompt => |choice| try self.performExitPromptChoice(choice),
-        }
+        try frontend_input.dispatchActivation(self, action);
     }
 
     fn updatePendingFrontendActivation(self: *AppState) !bool {
-        if (self.pending_frontend_activation) |*pending| {
-            pending.progress = @min(pending.progress + frontend_activation_delay_step, 1.0);
-            const fade_ready = !pending.requires_fade or self.frontend_transition.state == .black_idle;
-            if (pending.progress >= 0.999 and fade_ready) {
-                const action = pending.action;
-                const should_fade_in = pending.requires_fade and self.frontend_transition.state == .black_idle;
-                self.pending_frontend_activation = null;
-                try self.dispatchFrontendActivation(action);
-                if (should_fade_in) {
-                    self.frontend_transition.completeHandoff();
-                }
-                return true;
-            }
-        }
-        return false;
+        return frontend_input.updatePendingActivation(self);
     }
 
     fn readPressedFrontendWidgetShortcutCode(_: *const AppState) ?u8 {
-        // PORT(partial): this currently implements only the native text-input codes that
-        // recovered widget shortcuts actually use in the shipped front-end: Escape (`11`),
-        // Enter (`5` / `6`), and lowercase `o` (`111`).
-        if (rl.isKeyPressed(.escape)) return 11;
-        if (rl.isKeyPressed(.enter)) {
-            return if (rl.isKeyDown(.left_control) or rl.isKeyDown(.right_control)) 6 else 5;
-        }
-        if (rl.isKeyPressed(.o)) return 111;
-        return null;
+        return frontend_input.readPressedWidgetShortcutCode();
     }
 
     fn frontendShortcutActivationForCode(self: *const AppState, code: u8) ?frontend_activation.QueuedAction {
-        return switch (self.game_phase) {
-            .pause_menu => switch (code) {
-                11 => .{ .pause_menu = .end_game },
-                111 => .{ .pause_menu = .options },
-                5, 6 => .{ .pause_menu = .@"resume" },
-                else => null,
-            },
-            .high_scores_menu => if (self.postLevelHighScoreContext() != null) switch (code) {
-                11 => .{ .post_level_high_scores = .cancel },
-                5, 6 => .{ .post_level_high_scores = .submit },
-                else => null,
-            } else null,
-            else => null,
-        };
+        return frontend_input.shortcutActivationForCode(self, code);
     }
 
     fn handleFrontendWidgetShortcutInput(self: *AppState) !bool {
-        if (self.frontend_transition.blocksInput()) return false;
-        if (self.pending_frontend_activation != null) return false;
-        const code = self.readPressedFrontendWidgetShortcutCode() orelse return false;
-        const action = self.frontendShortcutActivationForCode(code) orelse return false;
-        self.noteFrontendKeyboardNavigation();
-        self.queueFrontendActivation(action);
-        return true;
+        return frontend_input.handleWidgetShortcutInput(self);
     }
 
     fn updateFrontendWidgetAnimations(self: *AppState) void {
