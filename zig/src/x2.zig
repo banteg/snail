@@ -258,12 +258,10 @@ pub const Uploaded = struct {
         const camera_local = vec3FromVector3(transformPointByMatrix(inverse_transform, camera.position));
         const bias_distance = outlineDepthBiasDistance(world_radius);
 
-        rl.gl.rlDisableDepthMask();
-        defer rl.gl.rlEnableDepthMask();
-        rl.gl.rlDisableBackfaceCulling();
-        defer rl.gl.rlEnableBackfaceCulling();
+        // Native G0RenderToon submits selected silhouette edges as a line list; it does not
+        // inflate them into camera-facing ribbons.
         rl.gl.rlSetTexture(0);
-        rl.gl.rlBegin(rl.gl.rl_triangles);
+        rl.gl.rlBegin(rl.gl.rl_lines);
         defer rl.gl.rlEnd();
         rl.gl.rlColor4ub(color.r, color.g, color.b, color.a);
 
@@ -276,9 +274,9 @@ pub const Uploaded = struct {
             var world_b = transformPointByMatrix(transform, vector3FromVec3(local_b));
             world_a = applyCameraFacingBias(world_a, camera.position, bias_distance);
             world_b = applyCameraFacingBias(world_b, camera.position, bias_distance);
-            const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
-            const half_width = outlineHalfWidth(world_radius, camera, midpoint);
-            emitOutlineEdgeStrip(world_a, world_b, camera.position, half_width);
+
+            rl.gl.rlVertex3f(world_a.x, world_a.y, world_a.z);
+            rl.gl.rlVertex3f(world_b.x, world_b.y, world_b.z);
         }
     }
 
@@ -1230,35 +1228,11 @@ fn vectorLength3(value: rl.Vector3) f32 {
     return std.math.sqrt(value.x * value.x + value.y * value.y + value.z * value.z);
 }
 
-fn addVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = lhs.x + rhs.x,
-        .y = lhs.y + rhs.y,
-        .z = lhs.z + rhs.z,
-    };
-}
-
 fn subtractVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
     return .{
         .x = lhs.x - rhs.x,
         .y = lhs.y - rhs.y,
         .z = lhs.z - rhs.z,
-    };
-}
-
-fn scaleVector3(value: rl.Vector3, scale: f32) rl.Vector3 {
-    return .{
-        .x = value.x * scale,
-        .y = value.y * scale,
-        .z = value.z * scale,
-    };
-}
-
-fn crossVector3(lhs: rl.Vector3, rhs: rl.Vector3) rl.Vector3 {
-    return .{
-        .x = lhs.y * rhs.z - lhs.z * rhs.y,
-        .y = lhs.z * rhs.x - lhs.x * rhs.z,
-        .z = lhs.x * rhs.y - lhs.y * rhs.x,
     };
 }
 
@@ -1291,69 +1265,6 @@ fn transformedBoundsRadius(bounds_radius: f32, transform: rl.Matrix) f32 {
 
 fn outlineDepthBiasDistance(world_radius: f32) f32 {
     return @max(world_radius * 0.004, 0.002);
-}
-
-fn outlineHalfWidth(world_radius: f32, camera: rl.Camera3D, world_midpoint: rl.Vector3) f32 {
-    const units_per_pixel = worldUnitsPerPixelAtPoint(camera, world_midpoint);
-    if (units_per_pixel <= 0.0) return @max(world_radius * 0.022, 0.0045);
-
-    const projected_radius_px = world_radius / units_per_pixel;
-    const width_pixels = std.math.clamp(projected_radius_px * 0.10, 2.75, 6.5);
-    return width_pixels * 0.5 * units_per_pixel;
-}
-
-fn worldUnitsPerPixelAtPoint(camera: rl.Camera3D, world_point: rl.Vector3) f32 {
-    const screen_height = @as(f32, @floatFromInt(rl.getScreenHeight()));
-    if (screen_height <= 0.0) return 0.0;
-
-    return switch (camera.projection) {
-        .perspective => blk: {
-            const forward = normalizeVector3Safe(subtractVector3(camera.target, camera.position));
-            const depth = dotVector3(subtractVector3(world_point, camera.position), forward);
-            if (depth <= 0.0001) break :blk 0.0;
-
-            const fovy_radians = std.math.degreesToRadians(camera.fovy);
-            const frustum_height = 2.0 * depth * std.math.tan(fovy_radians * 0.5);
-            break :blk frustum_height / screen_height;
-        },
-        .orthographic => camera.fovy / screen_height,
-    };
-}
-
-fn dotVector3(lhs: rl.Vector3, rhs: rl.Vector3) f32 {
-    return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
-}
-
-fn emitOutlineEdgeStrip(
-    start: rl.Vector3,
-    finish: rl.Vector3,
-    camera_position: rl.Vector3,
-    half_width: f32,
-) void {
-    const edge_direction = normalizeVector3Safe(subtractVector3(finish, start));
-    if (vectorLength3(edge_direction) <= 0.0001) return;
-
-    const midpoint = scaleVector3(addVector3(start, finish), 0.5);
-    const toward_camera = normalizeVector3Safe(subtractVector3(camera_position, midpoint));
-    var side = normalizeVector3Safe(crossVector3(toward_camera, edge_direction));
-    if (vectorLength3(side) <= 0.0001) {
-        side = normalizeVector3Safe(crossVector3(.{ .x = 0.0, .y = 1.0, .z = 0.0 }, edge_direction));
-        if (vectorLength3(side) <= 0.0001) return;
-    }
-
-    const offset = scaleVector3(side, half_width);
-    const start_left = addVector3(start, offset);
-    const start_right = subtractVector3(start, offset);
-    const finish_left = addVector3(finish, offset);
-    const finish_right = subtractVector3(finish, offset);
-
-    rl.gl.rlVertex3f(start_left.x, start_left.y, start_left.z);
-    rl.gl.rlVertex3f(start_right.x, start_right.y, start_right.z);
-    rl.gl.rlVertex3f(finish_right.x, finish_right.y, finish_right.z);
-
-    rl.gl.rlVertex3f(start_left.x, start_left.y, start_left.z);
-    rl.gl.rlVertex3f(finish_right.x, finish_right.y, finish_right.z);
-    rl.gl.rlVertex3f(finish_left.x, finish_left.y, finish_left.z);
 }
 
 fn writeVec3(buffer: []f32, at: *usize, v: Vec3) void {
