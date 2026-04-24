@@ -186,13 +186,13 @@ pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_atta
 }
 
 pub fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeDeathCutsceneVoiceCues {
-    const death_cutscene_active = current.cutscene_id == gameplay.cutscene_death_id and current.deathCause() == .hazard;
+    const death_cutscene_active = current.cutscene.id == gameplay.cutscene_death_id and current.deathCause() == .hazard;
     if (!death_cutscene_active) return .{};
 
     return .{
-        .entry = previous.cutscene_camera.state != .death_blend and current.cutscene_camera.state == .death_blend,
-        .fallback = previous.cutscene_camera.state != .death_hold and
-            current.cutscene_camera.state == .death_hold and
+        .entry = previous.cutscene.camera.state != .death_blend and current.cutscene.camera.state == .death_blend,
+        .fallback = previous.cutscene.camera.state != .death_hold and
+            current.cutscene.camera.state == .death_hold and
             !current.attachment_exit_gate_b,
     };
 }
@@ -467,7 +467,7 @@ test "native supertramp exit voice keys from the launch handoff" {
 test "native death cutscene voice cues key from states 11 and 12" {
     var previous = gameplay.Runner{};
     var current = previous;
-    current.cutscene_id = gameplay.cutscene_death_id;
+    current.cutscene.id = gameplay.cutscene_death_id;
     current.phase = .{ .fall = .{
         .cause = .hazard,
         .world_x = 0.0,
@@ -477,12 +477,12 @@ test "native death cutscene voice cues key from states 11 and 12" {
         .basis_forward = .{ .x = 0.0, .y = 0.0, .z = 1.0 },
         .basis_up = .{ .x = 0.0, .y = 1.0, .z = 0.0 },
     } };
-    current.cutscene_camera.state = .death_blend;
+    current.cutscene.camera.state = .death_blend;
     try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).entry);
     try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
 
     previous = current;
-    current.cutscene_camera.state = .death_hold;
+    current.cutscene.camera.state = .death_hold;
     try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).fallback);
 
     current.attachment_exit_gate_b = true;

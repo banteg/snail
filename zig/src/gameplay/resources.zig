@@ -179,14 +179,14 @@ pub fn syncTurboAnimation(
     // PORT(verified): native `dispatch_cutscene_animation`
     // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`)
     // stores the active clip id on the player-side presentation
-    // controller. The Zig port folds that onto `Runner.cutscene_anim`,
+    // controller. The Zig port folds that onto `Runner.cutscene.anim`,
     // so the renderer maps the active `AnimClipId` to the shipped
     // `X/TURBO-*-000.X2` first frame. The tutorial tip overlay still
     // wins the dispatch implicitly: the tip prompt callsite dispatches
     // `.talk` so the clip latches without the renderer keeping its
     // own separate "is tip active" check.
     const runner = context.tutorial.runner orelse return;
-    const desired_family = runner.cutscene_anim.active.familyKey() orelse return;
+    const desired_family = runner.cutscene.anim.active.familyKey() orelse return;
     const desired_model_path = firstClipModelPathFromFamily(store, animation_catalog, desired_family) orelse return;
 
     if (state.turbo_model_path) |current_path| {
@@ -201,7 +201,7 @@ pub fn syncCutsceneAnimFromPromptQueue(context: PromptCutsceneContext, runner: *
         .talk
     else
         .move;
-    if (runner.cutscene_anim.active == desired) return;
+    if (runner.cutscene.anim.active == desired) return;
     runner.dispatchCutsceneAnimation(desired, true, null);
 }
 

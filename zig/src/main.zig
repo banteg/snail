@@ -3690,7 +3690,7 @@ test "intro cutscene override seeds the shared camera and later clears back to l
         subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
     }
 
-    try std.testing.expectEqual(gameplay.cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(gameplay.cutscene_none_id, runner.cutscene.id);
     try std.testing.expectEqual(subgame_camera.Source.live, camera_state.source);
 }
 

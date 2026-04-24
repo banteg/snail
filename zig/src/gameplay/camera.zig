@@ -661,87 +661,87 @@ fn progressForTicks(ticks: u16, total_ticks: u16) f32 {
 }
 
 pub fn updateRunnerCutsceneCamera(runner: anytype, preview: *const track.LoadedLevelPreview) void {
-    if (preview.total_rows == 0 or runner.cutscene_camera.state == .none) return;
+    if (preview.total_rows == 0 or runner.cutscene.camera.state == .none) return;
 
     while (true) {
-        switch (runner.cutscene_camera.state) {
+        switch (runner.cutscene.camera.state) {
             .intro_arm => {
-                runner.cutscene_camera.snap_next = true;
-                runner.cutscene_camera.ticks = 0;
-                runner.cutscene_ticks = 0;
-                runner.cutscene_camera.state = .intro_hold;
+                runner.cutscene.camera.snap_next = true;
+                runner.cutscene.camera.ticks = 0;
+                runner.cutscene.ticks = 0;
+                runner.cutscene.camera.state = .intro_hold;
                 continue;
             },
             .intro_hold => {
-                runner.cutscene_camera.matrix = introCutsceneHoldMatrix(runner, preview);
-                runner.cutscene_camera.ticks +|= 1;
-                runner.cutscene_ticks = @min(runner.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                if (runner.cutscene_camera.ticks >= intro_cutscene_hold_ticks) {
-                    runner.cutscene_camera.state = .intro_blend;
-                    runner.cutscene_camera.ticks = 0;
+                runner.cutscene.camera.matrix = introCutsceneHoldMatrix(runner, preview);
+                runner.cutscene.camera.ticks +|= 1;
+                runner.cutscene.ticks = @min(runner.cutscene.ticks +| 1, intro_cutscene_duration_ticks);
+                if (runner.cutscene.camera.ticks >= intro_cutscene_hold_ticks) {
+                    runner.cutscene.camera.state = .intro_blend;
+                    runner.cutscene.camera.ticks = 0;
                 }
                 break;
             },
             .intro_blend => {
-                const progress = progressForTicks(runner.cutscene_camera.ticks, intro_cutscene_blend_ticks);
-                runner.cutscene_camera.matrix = introCutsceneBlendMatrix(runner, preview, progress);
-                runner.cutscene_camera.ticks +|= 1;
-                runner.cutscene_ticks = @min(runner.cutscene_ticks +| 1, intro_cutscene_duration_ticks);
-                if (runner.cutscene_camera.ticks >= intro_cutscene_blend_ticks) {
-                    runner.cutscene_camera.state = .intro_release;
-                    runner.cutscene_camera.ticks = 0;
+                const progress = progressForTicks(runner.cutscene.camera.ticks, intro_cutscene_blend_ticks);
+                runner.cutscene.camera.matrix = introCutsceneBlendMatrix(runner, preview, progress);
+                runner.cutscene.camera.ticks +|= 1;
+                runner.cutscene.ticks = @min(runner.cutscene.ticks +| 1, intro_cutscene_duration_ticks);
+                if (runner.cutscene.camera.ticks >= intro_cutscene_blend_ticks) {
+                    runner.cutscene.camera.state = .intro_release;
+                    runner.cutscene.camera.ticks = 0;
                 }
                 break;
             },
             .intro_release => {
-                if (runner.cutscene_camera.ticks == 0) {
-                    runner.cutscene_camera.matrix = runner.cameraman.live_matrix;
-                    runner.cutscene_camera.ticks = 1;
+                if (runner.cutscene.camera.ticks == 0) {
+                    runner.cutscene.camera.matrix = runner.cameraman.live_matrix;
+                    runner.cutscene.camera.ticks = 1;
                 } else {
                     runner.clearCutscene();
                 }
                 break;
             },
             .completion_arm => {
-                runner.cutscene_camera.snap_next = true;
-                runner.cutscene_camera.ticks = 0;
-                runner.cutscene_camera.state = .completion_blend;
+                runner.cutscene.camera.snap_next = true;
+                runner.cutscene.camera.ticks = 0;
+                runner.cutscene.camera.state = .completion_blend;
                 continue;
             },
             .completion_blend => {
-                const progress = progressForTicks(runner.cutscene_camera.ticks, completion_cutscene_blend_ticks);
-                runner.cutscene_camera.matrix = completionCutsceneBlendMatrix(runner, preview, progress);
-                runner.cutscene_camera.ticks +|= 1;
-                if (runner.cutscene_camera.ticks >= completion_cutscene_blend_ticks) {
-                    runner.cutscene_camera.state = .completion_hold;
+                const progress = progressForTicks(runner.cutscene.camera.ticks, completion_cutscene_blend_ticks);
+                runner.cutscene.camera.matrix = completionCutsceneBlendMatrix(runner, preview, progress);
+                runner.cutscene.camera.ticks +|= 1;
+                if (runner.cutscene.camera.ticks >= completion_cutscene_blend_ticks) {
+                    runner.cutscene.camera.state = .completion_hold;
                 }
                 break;
             },
             .completion_hold => {
-                runner.cutscene_camera.matrix = completionCutsceneFixedMatrix(runner, preview);
+                runner.cutscene.camera.matrix = completionCutsceneFixedMatrix(runner, preview);
                 break;
             },
             .death_arm => {
-                runner.cutscene_camera.snap_next = true;
-                runner.cutscene_camera.ticks = 0;
-                runner.cutscene_camera.state = .death_blend;
+                runner.cutscene.camera.snap_next = true;
+                runner.cutscene.camera.ticks = 0;
+                runner.cutscene.camera.state = .death_blend;
                 continue;
             },
             .death_blend => {
-                const progress = progressForTicks(runner.cutscene_camera.ticks, death_cutscene_blend_ticks);
-                runner.cutscene_camera.matrix = deathCutsceneBlendMatrix(runner, preview, progress);
-                runner.cutscene_camera.ticks +|= 1;
-                if (runner.cutscene_camera.ticks >= death_cutscene_blend_ticks) {
-                    runner.cutscene_camera.state = .death_hold;
+                const progress = progressForTicks(runner.cutscene.camera.ticks, death_cutscene_blend_ticks);
+                runner.cutscene.camera.matrix = deathCutsceneBlendMatrix(runner, preview, progress);
+                runner.cutscene.camera.ticks +|= 1;
+                if (runner.cutscene.camera.ticks >= death_cutscene_blend_ticks) {
+                    runner.cutscene.camera.state = .death_hold;
                 }
                 break;
             },
             .death_hold => {
-                runner.cutscene_camera.matrix = deathCutsceneFixedMatrix(runner, preview);
+                runner.cutscene.camera.matrix = deathCutsceneFixedMatrix(runner, preview);
                 break;
             },
             else => {
-                runner.cutscene_camera.state = .none;
+                runner.cutscene.camera.state = .none;
                 break;
             },
         }

@@ -110,7 +110,7 @@ pub fn playGameplayRunnerAudio(
     if (gameplay_audio_cues.nativeGameplaySupertrampExitVoice(current, previous_attachment_template_kind)) {
         voice_audio.tryPlayNativeSet(voices, .supertramp, .wait_for_idle) catch {};
     }
-    if (!previous.completion_handoff_voice_gate and current.completion_handoff_voice_gate) {
+    if (!previous.handoff.completion_voice_gate and current.handoff.completion_voice_gate) {
         voice_audio.tryPlayNativeSet(voices, .victory, .interrupt_current) catch {};
     }
     if (!previous.attachment_exit_gate_a and current.attachment_exit_gate_a) {

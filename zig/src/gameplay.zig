@@ -54,7 +54,6 @@ pub const Projectile = combat_module.Projectile;
 
 const RunnerPhase = runner_state.RunnerPhase;
 
-const completion_handoff_timer_step = phase_module.completion_handoff_timer_step;
 const completion_handoff_voice_delay_seconds = phase_module.completion_handoff_voice_delay_seconds;
 const completion_handoff_release_seconds = phase_module.completion_handoff_release_seconds;
 const completion_handoff_release_force_seconds = phase_module.completion_handoff_release_force_seconds;
@@ -260,7 +259,6 @@ const parcel_delivery_register_score: u32 = 10;
 const cameraman_identity_matrix = gameplay_camera.cameraman_identity_matrix;
 const CameraHotspotWorldState = gameplay_camera.CameraHotspotWorldState;
 const CutsceneCameraState = gameplay_camera.CutsceneCameraState;
-const CutsceneCameraController = gameplay_camera.CutsceneCameraController;
 const CameramanState = gameplay_camera.CameramanState;
 const CameraTransform = gameplay_camera.CameraTransform;
 const lerpVector3 = gameplay_camera.lerpVector3;
@@ -443,14 +441,8 @@ pub const Runner = struct {
     paused: bool = false,
     finished: bool = false,
     phase: RunnerPhase = .active,
-    cutscene_id: u8 = cutscene_none_id,
-    cutscene_ticks: u16 = 0,
-    cutscene_camera: CutsceneCameraController = .{},
-    pending_handoff: RunnerHandoff = .none,
-    completion_handoff_timer: f32 = 0.0,
-    completion_handoff_timer_step: f32 = completion_handoff_timer_step,
-    completion_handoff_voice_gate: bool = false,
-    completion_screen_init_sent: bool = false,
+    cutscene: phase_module.CutsceneState = .{},
+    handoff: phase_module.HandoffState = .{},
     tick_count: u64 = 0,
     stopwatch: Stopwatch = .{},
     movement_mode: MovementMode = .track,
@@ -545,13 +537,6 @@ pub const Runner = struct {
     // While `true`, native skips the `velocity.z` damping at line 388 to preserve
     // forward speed immediately after a bounce.
     post_trampoline_airborne: bool = false,
-    // PORT(verified): presentation-controller animation dispatch slot. Native
-    // keeps this on the player-side `PlayerPresentationController` that
-    // `dispatch_cutscene_animation` writes (`+0x108..+0x140`). The port folds
-    // the active id + queue onto the Runner so the renderer can pick the
-    // right turbo-* clip without reaching back through an app-side controller.
-    cutscene_anim: AnimDispatchState = .{},
-
     pub fn init(preview: *const track.LoadedLevelPreview) Runner {
         var runner = Runner{};
         runner.reset(preview);
@@ -585,7 +570,6 @@ pub const Runner = struct {
             .position_y = native_grounded_rider_height,
             .velocity_y = 0.0,
             .post_trampoline_airborne = false,
-            .cutscene_anim = .{},
         };
         if (preview.total_rows > 0) {
             self.runtime_track_index = @min(starting_runtime_track_index, preview.total_rows - 1);
@@ -638,7 +622,7 @@ pub const Runner = struct {
 
         if (preview.total_rows == 0) {
             self.finished = true;
-            self.pending_handoff = .completion_finalize;
+            self.handoff.pending = .completion_finalize;
             return;
         }
 
@@ -886,16 +870,16 @@ pub const Runner = struct {
     }
 
     pub fn cutsceneCameraActive(self: *const Runner) bool {
-        return self.cutscene_camera.state != .none;
+        return self.cutscene.camera.state != .none;
     }
 
     pub fn cutsceneCameraMatrix(self: *const Runner) rl.Matrix {
-        return self.cutscene_camera.matrix;
+        return self.cutscene.camera.matrix;
     }
 
     pub fn takeCutsceneCameraSnap(self: *Runner) bool {
-        const snap_next = self.cutscene_camera.snap_next;
-        self.cutscene_camera.snap_next = false;
+        const snap_next = self.cutscene.camera.snap_next;
+        self.cutscene.camera.snap_next = false;
         return snap_next;
     }
 
@@ -922,7 +906,7 @@ pub const Runner = struct {
     }
 
     pub fn introCutsceneBlocksGameplay(self: *const Runner) bool {
-        return self.cutscene_id == cutscene_intro_id and self.cutsceneCameraActive();
+        return self.cutscene.id == cutscene_intro_id and self.cutsceneCameraActive();
     }
 
     fn tryPrimeCurrentRowAttachmentEntry(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -1058,7 +1042,7 @@ pub const Runner = struct {
     // PORT(verified): mirror of `dispatch_cutscene_animation`
     // (`artifacts/ida/functions/00444600-dispatch_cutscene_animation.c:6`).
     // Native passes `(presentation, anim_id, immediate, initial_frame)`; the
-    // port folds the presentation-controller state onto the `Runner.cutscene_anim`
+    // port folds the presentation-controller state onto the `Runner.cutscene.anim`
     // slot and lets the renderer pick the active clip from `AnimClipId.familyKey`.
     pub fn dispatchCutsceneAnimation(
         self: *Runner,
@@ -1066,11 +1050,11 @@ pub const Runner = struct {
         immediate: bool,
         initial_frame: ?u16,
     ) void {
-        self.cutscene_anim.dispatch(anim_id, immediate, initial_frame);
+        self.cutscene.anim.dispatch(anim_id, immediate, initial_frame);
     }
 
     pub fn cutsceneAnimClipLabel(self: *const Runner) []const u8 {
-        return self.cutscene_anim.active.label();
+        return self.cutscene.anim.active.label();
     }
 
     pub fn activePathName(self: *const Runner) ?[]const u8 {
@@ -1113,8 +1097,8 @@ pub const Runner = struct {
     }
 
     pub fn consumeHandoff(self: *Runner) RunnerHandoff {
-        const handoff = self.pending_handoff;
-        self.pending_handoff = .none;
+        const handoff = self.handoff.pending;
+        self.handoff.pending = .none;
         return handoff;
     }
 
@@ -1167,22 +1151,11 @@ pub const Runner = struct {
     }
 
     pub fn setCutscene(self: *Runner, cutscene_id: u8) void {
-        self.cutscene_id = cutscene_id;
-        self.cutscene_ticks = 0;
-        self.cutscene_camera.ticks = 0;
-        self.cutscene_camera.snap_next = cutscene_id != cutscene_none_id;
-        self.cutscene_camera.state = switch (cutscene_id) {
-            cutscene_intro_id => .intro_arm,
-            cutscene_completion_id => .completion_arm,
-            cutscene_death_id => .death_arm,
-            else => .none,
-        };
+        self.cutscene.set(cutscene_id);
     }
 
     pub fn clearCutscene(self: *Runner) void {
-        self.cutscene_id = cutscene_none_id;
-        self.cutscene_ticks = 0;
-        self.cutscene_camera = .{};
+        self.cutscene.clear();
     }
 
     fn laneLeanDirectionForRuntimeTile(tile_type: u8) f32 {
@@ -3916,8 +3889,8 @@ pub const Runner = struct {
                 const lane_mid = @as(f32, @floatFromInt(preview.max_width)) * 0.5;
                 const world_x_signed = self.lane_center - lane_mid;
                 const lookback: AnimClipId = if (world_x_signed <= 0.0) .lookback_l else .lookback_r;
-                self.cutscene_anim.dispatch(lookback, true, null);
-                self.cutscene_anim.dispatch(.base, false, null);
+                self.cutscene.anim.dispatch(lookback, true, null);
+                self.cutscene.anim.dispatch(.base, false, null);
             },
             0x00, 0x23, 0x16 => {},
             else => {
@@ -4001,8 +3974,8 @@ pub const Runner = struct {
         //   - `.damage` cause (state-2 drain death) reuses the
         //     `turbo-damaged` clip that the hit-flash already dispatched.
         switch (cause) {
-            .fall => self.cutscene_anim.dispatch(.fall, true, null),
-            .hazard => self.cutscene_anim.dispatch(.intoshell, true, null),
+            .fall => self.cutscene.anim.dispatch(.fall, true, null),
+            .hazard => self.cutscene.anim.dispatch(.intoshell, true, null),
             .damage => {},
         }
         if (self.movement_mode == .attachment) {
@@ -4058,13 +4031,13 @@ pub const Runner = struct {
                 }
 
                 if (self.deathUsesFinalLoss()) {
-                    self.pending_handoff = .{ .final_loss = next_state.cause };
+                    self.handoff.pending = .{ .final_loss = next_state.cause };
                     return;
                 }
                 if (self.session_mode == .postal and self.visible_life_stock > 0) {
                     self.visible_life_stock -= 1;
                 }
-                self.pending_handoff = .{ .respawn = next_state.cause };
+                self.handoff.pending = .{ .respawn = next_state.cause };
             },
         }
     }
@@ -5240,7 +5213,7 @@ fn setRunnerLiveRowTarget(runner: *Runner, target: RowTarget) void {
 
 fn stepUntilHandoff(runner: *Runner, preview: *const track.LoadedLevelPreview, max_steps: usize) usize {
     var steps: usize = 0;
-    while (steps < max_steps and runner.pending_handoff == .none) : (steps += 1) {
+    while (steps < max_steps and runner.handoff.pending == .none) : (steps += 1) {
         runner.step(preview, .{}, 1.0 / 60.0);
     }
     return steps;
@@ -5766,7 +5739,7 @@ test "runner records pickup and hazard encounters from shipped tutorial" {
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage.gauge, 0.0001);
     try std.testing.expectEqualStrings("slug_hit", runner.recentEventLabel());
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
 
     runner = Runner.init(&fixture.preview);
     const garbage = findFirstGameplayCell(&fixture.preview, .garbage).?;
@@ -6008,7 +5981,7 @@ test "slug hit latches the shared fall path" {
 
     runner.processRow(&fixture.preview, slug.row);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.damage.gauge, 0.0001);
     try std.testing.expect(runner.damage.slug_hit_active);
     // PORT(verified): first-hit velocity triplet from
@@ -6788,7 +6761,7 @@ test "turret contact enters the shared fall state with the hazard cutscene id" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
     try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
 }
 
 test "turret rows spawn enemy laser projectiles" {
@@ -6852,7 +6825,7 @@ test "enemy laser projectile hits player and enters the shared fall state" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.turret_hits);
     try std.testing.expectEqualStrings("turret_hit", runner.recentEventLabel());
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
 }
 
 test "runtime hazards preserve recovered presentation scalars" {
@@ -7537,7 +7510,7 @@ test "postal death hands off respawn after the death controller finishes with ru
 
     const handoff = runner.consumeHandoff();
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
     try std.testing.expectEqual(DeathCause.hazard, handoff.respawn);
     try std.testing.expectEqual(@as(u32, 2), runner.visible_life_stock);
     try std.testing.expectEqual(@as(u32, 200), runner.score.total);
@@ -7632,7 +7605,7 @@ test "challenge death hands off final loss" {
 
     const handoff = runner.consumeHandoff();
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_death_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_death_id, runner.cutscene.id);
     try std.testing.expectEqual(DeathCause.hazard, handoff.final_loss);
 }
 
@@ -7749,9 +7722,9 @@ test "runner completion enters the delayed handoff controller" {
     runner.beginCompletionCutscene();
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene.id);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
-    try std.testing.expectEqual(@as(f32, 0.0), runner.completion_handoff_timer);
+    try std.testing.expectEqual(@as(f32, 0.0), runner.handoff.completion_timer);
 }
 
 test "completion handoff arms at the final row threshold" {
@@ -7768,7 +7741,7 @@ test "completion handoff arms at the final row threshold" {
 
     try std.testing.expect(runner.row_position > @as(f32, @floatFromInt(fixture.preview.total_rows - 1)));
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene.id);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
@@ -7832,7 +7805,7 @@ test "route-end completion can start while parcel delivery registration is still
     runner.maybeBeginCompletionCutscene(&fixture.preview);
 
     try std.testing.expectEqualStrings("completion_handoff", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_completion_id, runner.cutscene.id);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
 }
 
@@ -7894,8 +7867,8 @@ test "tutorial completion screen init handoff fires before the late finalize han
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
-    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_seconds);
-    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
+    try std.testing.expect(runner.handoff.completion_timer < completion_handoff_release_seconds);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene.camera.state);
 }
 
 test "tutorial completion finalize releases after the recovered timer" {
@@ -7912,7 +7885,7 @@ test "tutorial completion finalize releases after the recovered timer" {
     const finalize_steps = stepUntilHandoff(&runner, &fixture.preview, 360);
 
     try std.testing.expect(finalize_steps < 360);
-    try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_release_seconds);
+    try std.testing.expect(runner.handoff.completion_timer >= completion_handoff_release_seconds);
     try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
 }
 
@@ -7923,13 +7896,13 @@ test "completion voice gate trips at the native 2.0 second delay" {
     var runner = Runner.init(&fixture.preview);
     runner.beginCompletionCutscene();
 
-    while (runner.completion_handoff_timer < completion_handoff_voice_delay_seconds and !runner.completion_handoff_voice_gate) {
+    while (runner.handoff.completion_timer < completion_handoff_voice_delay_seconds and !runner.handoff.completion_voice_gate) {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
         _ = runner.consumeHandoff();
     }
 
-    try std.testing.expect(runner.completion_handoff_voice_gate);
-    try std.testing.expect(runner.completion_handoff_timer >= completion_handoff_voice_delay_seconds);
+    try std.testing.expect(runner.handoff.completion_voice_gate);
+    try std.testing.expect(runner.handoff.completion_timer >= completion_handoff_voice_delay_seconds);
 }
 
 test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
@@ -7940,15 +7913,15 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     runner.setCutscene(cutscene_intro_id);
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(CutsceneCameraState.intro_hold, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_hold, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(
         runner.introCutsceneHoldMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),
         0.0001,
     );
 
-    runner.cutscene_camera.state = .intro_blend;
-    runner.cutscene_camera.ticks = intro_cutscene_blend_ticks / 2;
+    runner.cutscene.camera.state = .intro_blend;
+    runner.cutscene.camera.ticks = intro_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
     const progress = progressForTicks(intro_cutscene_blend_ticks / 2, intro_cutscene_blend_ticks);
@@ -7957,7 +7930,7 @@ test "intro cutscene uses hotspot 18 hold and look-at-to-cameraman blend" {
     const look_at = normalizeCameraTransform(cameraTransformFromMatrix(runner.introCutsceneHoldMatrix(&fixture.preview)));
     const cameraman = normalizeCameraTransform(cameraTransformFromMatrix(runner.cameraman.live_matrix));
 
-    try std.testing.expectEqual(CutsceneCameraState.intro_blend, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_blend, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(expected, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(
         vector3DistanceSquared(actual.position, cameraman.position) <
@@ -7971,18 +7944,18 @@ test "intro cutscene keeps the override lane for one terminal live-camera tick" 
 
     var runner = Runner.init(&fixture.preview);
     runner.setCutscene(cutscene_intro_id);
-    runner.cutscene_camera.state = .intro_release;
-    runner.cutscene_camera.ticks = 0;
+    runner.cutscene.camera.state = .intro_release;
+    runner.cutscene.camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     try std.testing.expect(runner.cutsceneCameraActive());
-    try std.testing.expectEqual(CutsceneCameraState.intro_release, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.intro_release, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(runner.cameramanMatrix(), runner.cutsceneCameraMatrix(), 0.0001);
 
     runner.refreshCameraState(&fixture.preview);
 
     try std.testing.expect(!runner.cutsceneCameraActive());
-    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
 }
 
 test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 18" {
@@ -7993,10 +7966,10 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
     runner.setCutscene(cutscene_completion_id);
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene.camera.state);
 
-    runner.cutscene_camera.state = .completion_blend;
-    runner.cutscene_camera.ticks = completion_cutscene_blend_ticks / 2;
+    runner.cutscene.camera.state = .completion_blend;
+    runner.cutscene.camera.ticks = completion_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
     const progress = progressForTicks(completion_cutscene_blend_ticks / 2, completion_cutscene_blend_ticks);
@@ -8008,16 +7981,16 @@ test "completion cutscene blends hotspot 12 toward hotspot 18 before fixing on 1
         progress,
     );
 
-    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_blend, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(actual_blend.position.x < hotspot_lerp.x);
 
-    runner.cutscene_camera.state = .completion_hold;
-    runner.cutscene_camera.ticks = 0;
+    runner.cutscene.camera.state = .completion_hold;
+    runner.cutscene.camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
-    try std.testing.expectEqual(CutsceneCameraState.completion_hold, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.completion_hold, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(
         runner.completionCutsceneFixedMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),
@@ -8035,11 +8008,11 @@ test "postal completion handoff waits for the row event controller to complete" 
     runner.row_event_display.parcel_target_count = 1;
     runner.row_event_display.state = .bonus_prompt;
     runner.beginCompletionCutscene();
-    runner.completion_handoff_timer = completion_handoff_release_seconds;
+    runner.handoff.completion_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
-    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
+    try std.testing.expect(runner.handoff.completion_timer < completion_handoff_release_force_seconds);
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
     setRunnerLiveRowTarget(&runner, target);
@@ -8058,13 +8031,13 @@ test "challenge completion handoff waits for the row event controller to complet
     runner.row_event_display.parcel_target_count = 1;
     runner.row_event_display.state = .bonus_prompt;
     runner.beginCompletionCutscene();
-    runner.completion_screen_init_sent = true;
-    runner.cutscene_camera.state = .completion_hold;
-    runner.completion_handoff_timer = completion_handoff_release_seconds;
+    runner.handoff.completion_screen_init_sent = true;
+    runner.cutscene.camera.state = .completion_hold;
+    runner.handoff.completion_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RunnerHandoff.none, runner.consumeHandoff());
-    try std.testing.expect(runner.completion_handoff_timer < completion_handoff_release_force_seconds);
+    try std.testing.expect(runner.handoff.completion_timer < completion_handoff_release_force_seconds);
 
     runner.row_event_display.state = .complete;
     runner.updatePhaseController(&fixture.preview, 0.0);
@@ -8080,9 +8053,9 @@ test "time-trial completion handoff does not wait for the row event controller" 
     runner.row_event_display.parcel_target_count = 1;
     runner.row_event_display.state = .bonus_prompt;
     runner.beginCompletionCutscene();
-    runner.completion_screen_init_sent = true;
-    runner.cutscene_camera.state = .completion_hold;
-    runner.completion_handoff_timer = completion_handoff_release_seconds;
+    runner.handoff.completion_screen_init_sent = true;
+    runner.cutscene.camera.state = .completion_hold;
+    runner.handoff.completion_timer = completion_handoff_release_seconds;
 
     runner.updatePhaseController(&fixture.preview, 0.0);
     try std.testing.expectEqual(RunnerHandoff.completion_finalize, runner.consumeHandoff());
@@ -8098,14 +8071,14 @@ test "completion gate fast-forwards the late handoff timer on the live completio
     runner.row_event_display.state = .bonus_prompt;
     runner.row_event_display.gate_18 = 1;
     runner.beginCompletionCutscene();
-    runner.completion_handoff_timer = 1.0;
+    runner.handoff.completion_timer = 1.0;
 
     const target = findFirstRuntimeFlagB40Cell(&fixture.preview, true).?;
     setRunnerLiveRowTarget(&runner, target);
     runner.updatePhaseController(&fixture.preview, 0.0);
 
     try std.testing.expectEqual(RunnerHandoff.completion_screen_init, runner.consumeHandoff());
-    try std.testing.expect(runner.completion_handoff_timer > completion_handoff_release_seconds);
+    try std.testing.expect(runner.handoff.completion_timer > completion_handoff_release_seconds);
 }
 
 test "runner records attachment entry and jetpack pickup from shipped levels" {
@@ -8324,27 +8297,27 @@ test "death cutscene keeps converging on hotspot 18 instead of switching to hots
     runner.phase.fall.world_y = -0.75;
     runner.refreshCameraState(&fixture.preview);
 
-    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene.camera.state);
 
-    runner.cutscene_camera.state = .death_blend;
-    runner.cutscene_camera.ticks = death_cutscene_blend_ticks / 2;
+    runner.cutscene.camera.state = .death_blend;
+    runner.cutscene.camera.ticks = death_cutscene_blend_ticks / 2;
     runner.refreshCameraState(&fixture.preview);
 
     const progress = progressForTicks(death_cutscene_blend_ticks / 2, death_cutscene_blend_ticks);
     const expected_blend = runner.deathCutsceneBlendMatrix(&fixture.preview, progress);
     const actual_blend = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
 
-    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_blend, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(expected_blend, runner.cutsceneCameraMatrix(), 0.0001);
     try std.testing.expect(actual_blend.position.x > runner.camera_hotspots_world.camera_intro_talk.x);
     try std.testing.expect(actual_blend.position.y >= death_cutscene_y_floor);
 
-    runner.cutscene_camera.state = .death_hold;
-    runner.cutscene_camera.ticks = 0;
+    runner.cutscene.camera.state = .death_hold;
+    runner.cutscene.camera.ticks = 0;
     runner.refreshCameraState(&fixture.preview);
 
     const fixed = normalizeCameraTransform(cameraTransformFromMatrix(runner.cutsceneCameraMatrix()));
-    try std.testing.expectEqual(CutsceneCameraState.death_hold, runner.cutscene_camera.state);
+    try std.testing.expectEqual(CutsceneCameraState.death_hold, runner.cutscene.camera.state);
     try expectCameraMatrixApproxEq(
         runner.deathCutsceneFixedMatrix(&fixture.preview),
         runner.cutsceneCameraMatrix(),
@@ -8732,7 +8705,7 @@ test "attachment follow side threshold enters the shared fall state" {
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expect(!runner.attachment_follow.active);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
@@ -8833,7 +8806,7 @@ test "loop side threshold preserves airborne fall height" {
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
-    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
     try std.testing.expect(runner.attachment_exit_pending);
     try std.testing.expect(!runner.launch.active);
 
@@ -9214,7 +9187,7 @@ test "fatal floor gaps enter the shared fall state without a cutscene override" 
 
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(DeathCause.fall, runner.deathCause().?);
-    try std.testing.expectEqual(cutscene_none_id, runner.cutscene_id);
+    try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
 }
 
 test "runner descends through an authored gap row instead of halting at the edge" {
