@@ -8967,9 +8967,9 @@ test "cached camera target uses the native jetpack wobble axes" {
     const base_position = runner.playerWorldPosition(&fixture.preview);
     const frame = orthonormalFrameFromForwardUp(runner.worldForward(&fixture.preview), runner.worldUp(&fixture.preview));
     const expected = rl.Vector3{
-        .x = base_position.x + (frame.right.x * runner.jetpack.wobble_alpha) + (frame.up.x * runner.jetpack.wobble_x) + (frame.forward.x * runner.jetpack.wobble_y),
-        .y = base_position.y + (frame.right.y * runner.jetpack.wobble_alpha) + (frame.up.y * runner.jetpack.wobble_x) + (frame.forward.y * runner.jetpack.wobble_y),
-        .z = base_position.z + (frame.right.z * runner.jetpack.wobble_alpha) + (frame.up.z * runner.jetpack.wobble_x) + (frame.forward.z * runner.jetpack.wobble_y),
+        .x = base_position.x + (frame.right.x * runner.jetpack.wobble_x) + (frame.up.x * runner.jetpack.wobble_y) + (frame.forward.x * runner.jetpack.wobble_alpha),
+        .y = base_position.y + (frame.right.y * runner.jetpack.wobble_x) + (frame.up.y * runner.jetpack.wobble_y) + (frame.forward.y * runner.jetpack.wobble_alpha),
+        .z = base_position.z + (frame.right.z * runner.jetpack.wobble_x) + (frame.up.z * runner.jetpack.wobble_y) + (frame.forward.z * runner.jetpack.wobble_alpha),
     };
 
     runner.refreshCachedCameraTarget(&fixture.preview);

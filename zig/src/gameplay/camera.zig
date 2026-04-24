@@ -458,12 +458,13 @@ pub fn refreshRunnerCachedCameraTarget(runner: anytype, preview: *const track.Lo
 
     const base_position = playerWorldPosition(runner, preview);
     const frame = orthonormalFrameFromForwardUp(runner.worldForward(preview), runner.worldUp(preview));
-    // PORT(verified): `update_subgoldy` @ 0x43cb50 applies the jetpack warning
-    // wobble as alpha/right, x/up, y/forward before storing the cached camera target.
+    // PORT(verified): raw `update_subgoldy` disassembly @ 0x43cb50 applies the
+    // jetpack warning wobble as x/right, y/up, alpha/forward. IDA's temporary
+    // labels around this block are misleading because the FPU stack is reused.
     const local_offset = rl.Vector3{
-        .x = runner.jetpack.wobble_alpha,
-        .y = runner.jetpack.wobble_x,
-        .z = runner.jetpack.wobble_y,
+        .x = runner.jetpack.wobble_x,
+        .y = runner.jetpack.wobble_y,
+        .z = runner.jetpack.wobble_alpha,
     };
     runner.cached_camera_target_world = .{
         .x = base_position.x + (frame.right.x * local_offset.x) + (frame.up.x * local_offset.y) + (frame.forward.x * local_offset.z),
