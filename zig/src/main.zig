@@ -2090,7 +2090,7 @@ const AppState = struct {
         }
     }
 
-    fn enterGamePhase(self: *AppState, phase: GamePhase) !void {
+    pub fn enterGamePhase(self: *AppState, phase: GamePhase) !void {
         self.game_phase = phase;
         self.game_phase_ticks = 0;
         self.hovered_frontend_target = null;
@@ -3212,63 +3212,7 @@ const AppState = struct {
     }
 
     fn beginFailedRun(self: *AppState, cause: gameplay.DeathCause) !void {
-        _ = cause;
-        if (self.pending_run_result != null) return;
-
-        const loaded_level = self.current_level orelse return;
-        const active_mode = self.active_frontend_mode;
-        const parcel_target = self.currentParcelTarget();
-        if (self.level_runner) |*runner| {
-            runner.flushPendingParcelDeliveries();
-        }
-        const runner = self.level_runner orelse return;
-        const elapsed_millis = runner.stopwatch.elapsedMillis();
-        var result = PendingRunResult{
-            .outcome = .failed,
-            .level_name = loaded_level.name,
-            .mode = active_mode,
-            .elapsed_millis = elapsed_millis,
-            .parcel_count = runner.counters.parcels,
-            .parcel_target = parcel_target,
-            .score = 0,
-            .score_is_partial = true,
-            .score_totals = runner.score,
-            .visible_life_stock = runner.visible_life_stock,
-            .damage_gauge = runner.damage.gauge,
-            .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
-            .persistence = .failed,
-            .outer_return_target = outerReturnTargetForCompletionOwner(completionFlowOwnerForOutcome(.failed, active_mode)),
-        };
-
-        switch (active_mode orelse .tutorial) {
-            .postal => {
-                result.score = runner.score.total;
-                result.high_score_mode = .postal;
-                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.postal[0..], result.score);
-            },
-            .challenge => {
-                result.score = runner.score.total;
-                result.high_score_mode = .challenge;
-                result.high_score_rank = previewDescendingHighScoreRank(self.high_score_tables.challenge[0..], result.score);
-            },
-            .time_trial => {
-                // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
-                // failed runs into scratch memory. It does not replace the persistent ScoreC
-                // route record unless the run completed successfully.
-                result.score = elapsed_millis;
-            },
-            .tutorial => {
-                result.score = runner.score.total;
-                result.persistence = .none;
-            },
-        }
-
-        run_result.applySelectedReplayResultOverrides(self, &result);
-
-        self.pending_run_result = result;
-        self.completion_overlay_active = false;
-        self.preserve_completion_screen_reveal_on_enter = false;
-        try self.enterGamePhase(.completion_screen);
+        try run_result.beginFailedRun(self, cause);
     }
 
     fn beginRespawnRun(self: *AppState) !void {

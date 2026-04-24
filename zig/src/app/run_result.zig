@@ -319,6 +319,66 @@ pub fn beginCompletedOverlay(state: anytype) !void {
     resetCompletionScreenReveal(state);
 }
 
+pub fn beginFailedRun(state: anytype, cause: gameplay.DeathCause) !void {
+    _ = cause;
+    if (state.pending_run_result != null) return;
+
+    const loaded_level = state.current_level orelse return;
+    const active_mode = state.active_frontend_mode;
+    const parcel_target = state.currentParcelTarget();
+    if (state.level_runner) |*runner| {
+        runner.flushPendingParcelDeliveries();
+    }
+    const runner = state.level_runner orelse return;
+    const elapsed_millis = runner.stopwatch.elapsedMillis();
+    var result = Result{
+        .outcome = .failed,
+        .level_name = loaded_level.name,
+        .mode = active_mode,
+        .elapsed_millis = elapsed_millis,
+        .parcel_count = runner.counters.parcels,
+        .parcel_target = parcel_target,
+        .score = 0,
+        .score_is_partial = true,
+        .score_totals = runner.score,
+        .visible_life_stock = runner.visible_life_stock,
+        .damage_gauge = runner.damage.gauge,
+        .completion_owner = completionFlowOwnerForOutcome(.failed, active_mode),
+        .persistence = .failed,
+        .outer_return_target = outerReturnTargetForOutcome(.failed, active_mode),
+    };
+
+    switch (active_mode orelse .tutorial) {
+        .postal => {
+            result.score = runner.score.total;
+            result.high_score_mode = .postal;
+            result.high_score_rank = previewDescendingHighScoreRank(state.high_score_tables.postal[0..], result.score);
+        },
+        .challenge => {
+            result.score = runner.score.total;
+            result.high_score_mode = .challenge;
+            result.high_score_rank = previewDescendingHighScoreRank(state.high_score_tables.challenge[0..], result.score);
+        },
+        .time_trial => {
+            // PORT(verified): `add_time_trial_high_score(..., success_flag)` only copies
+            // failed runs into scratch memory. It does not replace the persistent ScoreC
+            // route record unless the run completed successfully.
+            result.score = elapsed_millis;
+        },
+        .tutorial => {
+            result.score = runner.score.total;
+            result.persistence = .none;
+        },
+    }
+
+    applySelectedReplayResultOverrides(state, &result);
+
+    state.pending_run_result = result;
+    state.completion_overlay_active = false;
+    state.preserve_completion_screen_reveal_on_enter = false;
+    try state.enterGamePhase(.completion_screen);
+}
+
 pub fn resetCompletionScreenReveal(state: anytype) void {
     const result = state.pending_run_result orelse {
         state.completion_screen_reveal_progress = 0.0;
