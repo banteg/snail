@@ -443,11 +443,12 @@ pub fn drawTurbo(
     model.drawToonOutlineEx(pose.transform, camera, .black);
 
     if (click_start_active) return;
-    drawGameplayTurboAttachments(render, pose.position, pose.right, pose.up, pose.forward, runner, camera);
+    drawGameplayTurboAttachments(render, pose.transform, pose.position, pose.right, pose.up, pose.forward, runner, camera);
 }
 
 fn drawGameplayTurboAttachments(
     render: Context,
+    turbo_transform: rl.Matrix,
     position: rl.Vector3,
     right: rl.Vector3,
     up: rl.Vector3,
@@ -457,6 +458,8 @@ fn drawGameplayTurboAttachments(
 ) void {
     const channel_states = gameplay.nativeWeaponChannelStates(runner.presentation.movement_flags);
 
+    // Weapon X2s are already authored in Turbo-local coordinates; reuse the same pose
+    // transform instead of re-centering them like standalone pickup models.
     const top_active = channel_states.center == 1 or
         render.weapon_visual_state.top_draw_ticks > 0 or
         render.weapon_visual_state.top_hide_ticks > 0;
@@ -466,13 +469,9 @@ fn drawGameplayTurboAttachments(
             render.weapon_visual_state.top_fire_ticks,
             render.weapon_visual_state.top_hide_ticks,
         )) |model| {
-            gameplay_model_render.drawUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutlineEx(
                 model,
-                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.22, 0.10),
-                right,
-                up,
-                forward,
-                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                turbo_transform,
                 camera,
             );
         }
@@ -497,13 +496,9 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (left_model) |model| {
-            gameplay_model_render.drawUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutlineEx(
                 model,
-                gameplay_model_render.offsetPosition(position, right, up, forward, -0.24, 0.11, 0.08),
-                right,
-                up,
-                forward,
-                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                turbo_transform,
                 camera,
             );
         }
@@ -528,13 +523,9 @@ fn drawGameplayTurboAttachments(
             else => null,
         };
         if (right_model) |model| {
-            gameplay_model_render.drawUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutlineEx(
                 model,
-                gameplay_model_render.offsetPosition(position, right, up, forward, 0.24, 0.11, 0.08),
-                right,
-                up,
-                forward,
-                .{ .x = 0.22, .y = 0.22, .z = 0.22 },
+                turbo_transform,
                 camera,
             );
         }
@@ -549,13 +540,9 @@ fn drawGameplayTurboAttachments(
             0,
             render.weapon_visual_state.rocket_hide_ticks,
         )) |model| {
-            gameplay_model_render.drawUploadedModelWithToonOutline(
+            gameplay_model_render.drawUploadedModelWithToonOutlineEx(
                 model,
-                gameplay_model_render.offsetPosition(position, right, up, forward, 0.0, 0.23, 0.12),
-                right,
-                up,
-                forward,
-                .{ .x = 0.24, .y = 0.24, .z = 0.24 },
+                turbo_transform,
                 camera,
             );
         }

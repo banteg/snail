@@ -47,6 +47,15 @@ pub fn drawUploadedModelWithToonOutline(
     model.drawToonOutlineEx(transform, camera, .black);
 }
 
+pub fn drawUploadedModelWithToonOutlineEx(
+    model: *const x2.Uploaded,
+    transform: rl.Matrix,
+    camera: rl.Camera3D,
+) void {
+    model.drawEx(transform);
+    model.drawToonOutlineEx(transform, camera, .black);
+}
+
 pub fn uploadedModelTransform(
     model: *const x2.Uploaded,
     position: rl.Vector3,
