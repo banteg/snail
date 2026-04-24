@@ -4,6 +4,7 @@ const app = @import("app.zig");
 const audio = @import("app/audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
+const frontend_mouse = @import("app/frontend_mouse.zig");
 const level_loader = @import("app/level_loader.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
@@ -875,380 +876,8 @@ const AppState = struct {
         frontend_input.snapWidgetStates(self);
     }
 
-    fn updateMainMenuMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        var hovered_index: ?usize = null;
-
-        for (main_menu_items, 0..) |item, index| {
-            const text_rect = frontend_main_menu.textRect(&self.ui_font, item);
-            if (frontend_widget.hitRect(text_rect, self.main_menu_button_states[index]).contains(local_mouse)) {
-                hovered_index = index;
-            }
-        }
-
-        if (hovered_index) |index| {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForMainMenu(index));
-            self.menu_index = index;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .main_menu = main_menu_items[index] });
-            }
-        } else {
-            self.setFrontendHoverTarget(null);
-        }
-    }
-
-    fn updateNewGameMenuMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        var hovered_index: ?usize = null;
-
-        for (new_game_menu_items[0..4], 0..) |item, index| {
-            if (!self.newGameMenuItemVisible(item)) continue;
-            const text_rect = frontend_new_game_menu.textRect(&self.ui_font, item);
-            if (frontend_widget.hitRect(text_rect, self.new_game_button_states[index]).contains(local_mouse)) {
-                hovered_index = index;
-            }
-        }
-
-        const help_rect = frontend_new_game_menu.helpTextRect(&self.ui_font);
-        if (frontend_widget.hitRect(help_rect, self.new_game_button_states[4]).contains(local_mouse)) {
-            hovered_index = 4;
-        }
-
-        const back_rect = frontend_new_game_menu.backTextRect(&self.ui_font);
-        if (frontend_widget.hitRect(back_rect, self.new_game_button_states[5]).contains(local_mouse)) {
-            hovered_index = 5;
-        }
-
-        if (hovered_index) |index| {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForNewGame(index));
-            self.new_game_menu_index = index;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .new_game_menu = new_game_menu_items[index] });
-            }
-        } else {
-            self.setFrontendHoverTarget(null);
-        }
-    }
-
-    fn updateChallengeSetupMouseSelection(self: *AppState) void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        const difficulty_slider = challengeSetupSliderLayout(self, .difficulty);
-        if (difficulty_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .less));
-            self.challenge_setup_index = 0;
-            if (rl.isMouseButtonPressed(.left)) {
-                frontend_input.stepChallengeSetupMenuValue(self, .difficulty, -frontend_challenge_setup_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (difficulty_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.difficulty, .more));
-            self.challenge_setup_index = 0;
-            if (rl.isMouseButtonPressed(.left)) {
-                frontend_input.stepChallengeSetupMenuValue(self, .difficulty, frontend_challenge_setup_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (difficulty_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(.challenge_setup_difficulty);
-            self.challenge_setup_index = 0;
-            return;
-        }
-
-        const speed_slider = challengeSetupSliderLayout(self, .speed);
-        if (speed_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .less));
-            self.challenge_setup_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                frontend_input.stepChallengeSetupMenuValue(self, .speed, -frontend_challenge_setup_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (speed_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupSliderArrow(.speed, .more));
-            self.challenge_setup_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                frontend_input.stepChallengeSetupMenuValue(self, .speed, frontend_challenge_setup_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (speed_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(.challenge_setup_speed);
-            self.challenge_setup_index = 1;
-            return;
-        }
-
-        const visible_items = self.challengeSetupVisibleItems();
-        for (visible_items, 0..) |item, visible_index| {
-            switch (item) {
-                .difficulty, .speed => continue,
-                .play, .watch_replay, .back => {
-                    const text_rect = challengeSetupTextRect(self, item);
-                    const button_index = switch (item) {
-                        .play => frontend_challenge_setup_menu.play_button_index,
-                        .watch_replay => frontend_challenge_setup_menu.watch_replay_button_index,
-                        .back => frontend_challenge_setup_menu.back_button_index,
-                        .difficulty, .speed => unreachable,
-                    };
-                    if (frontend_widget.hitRect(text_rect, self.challenge_setup_button_states[button_index]).contains(local_mouse)) {
-                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForChallengeSetupItem(item));
-                        self.challenge_setup_index = visible_index;
-                        if (rl.isMouseButtonPressed(.left)) {
-                            self.queueFrontendActivation(.{ .challenge_setup_menu = item });
-                        }
-                        return;
-                    }
-                },
-            }
-        }
-
-        self.setFrontendHoverTarget(null);
-    }
-
-    fn updateOptionsMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        const layout_state = self.optionsMenuLayoutState();
-        const fullscreen_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .fullscreen);
-        if (frontend_widget.hitRect(fullscreen_rect, self.options_button_states[frontend_options_menu.fullscreen_button_index]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(0));
-            self.options_menu_index = 0;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .options_menu = .fullscreen });
-            }
-            return;
-        }
-
-        const sound_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .sound_volume);
-        if (sound_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .less));
-            self.options_menu_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                try frontend_input.stepOptionsMenuValue(self, .sound_volume, -frontend_options_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (sound_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.sound_volume, .more));
-            self.options_menu_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                try frontend_input.stepOptionsMenuValue(self, .sound_volume, frontend_options_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (sound_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(1));
-            self.options_menu_index = 1;
-            return;
-        }
-
-        const music_slider = frontend_options_menu.sliderLayout(&self.ui_font, layout_state, .music_volume);
-        if (music_slider.less_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .less));
-            self.options_menu_index = 2;
-            if (rl.isMouseButtonPressed(.left)) {
-                try frontend_input.stepOptionsMenuValue(self, .music_volume, -frontend_options_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (music_slider.more_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptionsSliderArrow(.music_volume, .more));
-            self.options_menu_index = 2;
-            if (rl.isMouseButtonPressed(.left)) {
-                try frontend_input.stepOptionsMenuValue(self, .music_volume, frontend_options_menu.slider_adjust_step);
-            }
-            return;
-        }
-        if (music_slider.frame_rect.contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(2));
-            self.options_menu_index = 2;
-            return;
-        }
-
-        const back_rect = frontend_options_menu.textRect(&self.ui_font, layout_state, .back);
-        if (frontend_widget.hitRect(back_rect, self.options_button_states[frontend_options_menu.back_button_index]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForOptions(3));
-            self.options_menu_index = 3;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .options_menu = .back });
-            }
-            return;
-        }
-
-        self.setFrontendHoverTarget(null);
-    }
-
     fn optionsMenuLayoutState(self: *const AppState) frontend_options_menu.LayoutState {
-        return .{
-            .fullscreen_enabled = self.runtime_config.fullscreenEnabled(),
-            .sound_value = self.runtime_config.soundVolume(),
-            .music_value = self.runtime_config.musicVolume(),
-            .sound_row_state = self.options_button_states[frontend_options_menu.sound_button_index],
-            .music_row_state = self.options_button_states[frontend_options_menu.music_button_index],
-        };
-    }
-
-    fn updatePauseMenuMouseSelection(self: *AppState) void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        var hovered_index: ?usize = null;
-
-        for (frontend_pause_menu.items, 0..) |item, index| {
-            const text_rect = frontend_pause_menu.textRect(&self.ui_font, item);
-            if (frontend_widget.hitRect(text_rect, self.pause_menu_button_states[index]).contains(local_mouse)) {
-                hovered_index = index;
-            }
-        }
-
-        if (hovered_index) |index| {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForPauseMenu(index));
-            self.pause_menu_index = index;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .pause_menu = frontend_pause_menu.items[index] });
-            }
-        } else {
-            self.setFrontendHoverTarget(null);
-        }
-    }
-
-    fn updateRouteMapMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.route_map_hover_state = .none;
-            self.route_map_hovered_index = null;
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        const mode = self.frontend_route_mode orelse {
-            self.route_map_hover_state = .none;
-            self.route_map_hovered_index = null;
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        const back_rect = frontend_route_map.backTextRect(&self.ui_font, self.route_map_screen_mode);
-        if (frontend_widget.hitRect(back_rect, self.route_map_button_states[frontend_route_map.back_button_index]).contains(local_mouse)) {
-            self.route_map_hover_state = .none;
-            self.route_map_hovered_index = null;
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.back));
-            if (frontend_flow.routeMenuActionIndexForAction(self, .back)) |index| {
-                self.route_menu_action_index = index;
-            }
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .route_map_menu = .back });
-            }
-            return;
-        }
-
-        const maybe_names = if (self.galaxy_names) |*names| names else null;
-        const hovered_route_index = if (frontend_bridge.routeMapAllowsRouteSwitching(self.route_map_screen_mode))
-            frontend_route_map.hoveredRouteIndex(maybe_names, local_mouse, self.availableFrontendRouteLimit(mode))
-        else
-            null;
-        self.route_map_hover_state = if (hovered_route_index != null) .route else .none;
-        self.route_map_hovered_index = hovered_route_index;
-
-        if (self.currentRouteMapOpenIndex()) |route_index| {
-            const route_galaxy_name = self.currentFrontendGalaxyName() orelse frontendRouteModeLabel(mode);
-            const route_level_name = if (self.frontend_route_level) |loaded_level| loaded_level.name else "Route";
-            const route_body = frontend_route_map.bodyText(if (self.frontend_route_level) |loaded_level| loaded_level.galaxy_text else null);
-            if (frontend_route_map.pointForRouteIndex(maybe_names, route_index)) |route_point| {
-                const card_layout = frontend_route_map.cardLayout(
-                    &self.ui_font,
-                    route_point,
-                    route_galaxy_name,
-                    route_level_name,
-                    route_body,
-                    routeMenuActionLabel(mode, .play),
-                    if (self.routeMapShowsReplay()) routeMenuActionLabel(mode, .watch_best_trial) else null,
-                );
-
-                if (frontend_widget.hitRect(card_layout.primary_text_rect, self.route_map_button_states[frontend_route_map.primary_button_index]).contains(local_mouse)) {
-                    self.route_map_hover_state = .card;
-                    self.route_map_hovered_index = null;
-                    self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.play));
-                    if (frontend_flow.routeMenuActionIndexForAction(self, .play)) |index| {
-                        self.route_menu_action_index = index;
-                    }
-                    if (rl.isMouseButtonPressed(.left)) {
-                        self.queueFrontendActivation(.{ .route_map_menu = .play });
-                    }
-                    return;
-                }
-
-                if (card_layout.replay_text_rect) |replay_rect| {
-                    if (frontend_widget.hitRect(replay_rect, self.route_map_button_states[frontend_route_map.replay_button_index]).contains(local_mouse)) {
-                        self.route_map_hover_state = .card;
-                        self.route_map_hovered_index = null;
-                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForRouteMenuAction(.watch_best_trial));
-                        if (frontend_flow.routeMenuActionIndexForAction(self, .watch_best_trial)) |index| {
-                            self.route_menu_action_index = index;
-                        }
-                        if (rl.isMouseButtonPressed(.left)) {
-                            self.queueFrontendActivation(.{ .route_map_menu = .watch_best_trial });
-                        }
-                        return;
-                    }
-                }
-
-                if (card_layout.card_rect.contains(local_mouse)) {
-                    self.route_map_hover_state = .card;
-                    self.route_map_hovered_index = null;
-                    self.setFrontendHoverTarget(null);
-                    return;
-                }
-            }
-        }
-
-        if (hovered_route_index) |route_index| {
-            self.setFrontendHoverTarget(null);
-            if (rl.isMouseButtonPressed(.left) and self.currentRouteMapOpenIndex() != route_index) {
-                try self.openFrontendRouteCard(route_index);
-                audio.playFrontendSelectSound(self);
-            }
-            return;
-        }
-
-        if (route_map_state.canCloseCard(self) and rl.isMouseButtonPressed(.left)) {
-            route_map_state.closeCard(self);
-            audio.playFrontendSelectSound(self);
-            self.setFrontendHoverTarget(null);
-            return;
-        }
-
-        self.setFrontendHoverTarget(null);
-    }
-
-    fn updateHelpMouseSelection(self: *AppState) void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        const back_rect = frontend_help.backTextRect(&self.ui_font);
-        if (frontend_widget.hitRect(back_rect, self.help_button_states[0]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(.help_back);
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .help_menu = .back });
-            }
-            return;
-        }
-
-        self.setFrontendHoverTarget(null);
+        return frontend_mouse.optionsMenuLayoutState(self);
     }
 
     pub fn highScoreReplayAvailable(self: *const AppState, entry_index: usize) bool {
@@ -1256,127 +885,6 @@ const AppState = struct {
         if (!frontend_high_score_screen.rowsShowReplay(selected_mode, self.postLevelHighScoreContext() != null)) return false;
         const entries = self.high_score_tables.visibleEntries(selected_mode);
         return entry_index < entries.len and entries[entry_index].has_replay;
-    }
-
-    fn updateHighScoresMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        if (self.postLevelHighScoreContext() != null) {
-            const cancel_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[0].label(), frontend_high_score_screen.entry_cancel_x);
-            if (frontend_widget.hitRect(cancel_rect, self.post_level_high_score_button_states[0]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(frontend_activation.hoverTargetForPostLevelHighScores(0));
-                self.post_level_high_score_action_index = 0;
-                if (rl.isMouseButtonPressed(.left)) {
-                    self.queueFrontendActivation(.{ .post_level_high_scores = .cancel });
-                }
-                return;
-            }
-
-            const submit_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, frontend_high_score_screen.post_level_actions[1].label(), frontend_high_score_screen.entry_submit_x);
-            if (frontend_widget.hitRect(submit_rect, self.post_level_high_score_button_states[1]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(frontend_activation.hoverTargetForPostLevelHighScores(1));
-                self.post_level_high_score_action_index = 1;
-                if (rl.isMouseButtonPressed(.left)) {
-                    self.queueFrontendActivation(.{ .post_level_high_scores = .submit });
-                }
-                return;
-            }
-        } else {
-            const selected_mode = self.activeHighScoreScreenMode();
-            const entries = self.high_score_tables.visibleEntries(selected_mode);
-            if (frontend_high_score_screen.rowsShowReplay(selected_mode, false)) {
-                for (entries, 0..) |entry, entry_index| {
-                    if (!entry.has_replay) continue;
-                    const replay_rect = frontend_high_score_screen.replayTextRect(&self.ui_font, selected_mode, frontend_high_score_screen.row_start_y + @as(f32, @floatFromInt(entry_index)) * frontend_high_score_screen.row_pitch);
-                    if (frontend_widget.hitRect(replay_rect, self.high_score_replay_button_states[entry_index]).contains(local_mouse)) {
-                        self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScoreReplay(entry_index));
-                        if (rl.isMouseButtonPressed(.left)) {
-                            self.queueFrontendActivation(.{ .high_score_replay = entry_index });
-                        }
-                        return;
-                    }
-                }
-            }
-
-            const back_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, "Back", frontend_high_score_screen.back_x);
-            if (frontend_widget.hitRect(back_rect, self.high_score_button_states[0]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScores(0));
-                self.high_scores_action_index = 0;
-                if (rl.isMouseButtonPressed(.left)) {
-                    self.queueFrontendActivation(.{ .high_scores_menu = .back });
-                }
-                return;
-            }
-
-            const toggle_label = frontend_high_score_screen.tableToggleLabel(self.activeHighScoreScreenMode());
-            const toggle_rect = frontend_high_score_screen.footerTextRect(&self.ui_font, toggle_label, frontend_high_score_screen.toggle_x);
-            if (frontend_widget.hitRect(toggle_rect, self.high_score_button_states[1]).contains(local_mouse)) {
-                self.setFrontendHoverTarget(frontend_activation.hoverTargetForHighScores(1));
-                self.high_scores_action_index = 1;
-                if (rl.isMouseButtonPressed(.left)) {
-                    self.queueFrontendActivation(.{ .high_scores_menu = .switch_table });
-                }
-                return;
-            }
-        }
-
-        self.setFrontendHoverTarget(null);
-    }
-
-    fn updateCompletionScreenMouseSelection(self: *AppState) void {
-        const result = self.pending_run_result orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        if (!self.completionContinueVisible()) {
-            self.setFrontendHoverTarget(null);
-            return;
-        }
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-        const continue_rect = frontend_completion_screen.continueTextRect(&self.ui_font, completionSummary(result));
-        if (frontend_widget.hitRect(continue_rect, self.completion_continue_button_state).contains(local_mouse)) {
-            self.setFrontendHoverTarget(.completion_continue);
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .completion_screen = .continue_flow });
-            }
-            return;
-        }
-        self.setFrontendHoverTarget(null);
-    }
-
-    fn updateExitPromptMouseSelection(self: *AppState) !void {
-        const local_mouse = self.currentFrontendMouseLocal() orelse {
-            self.setFrontendHoverTarget(null);
-            return;
-        };
-
-        const yes_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[0].label(), frontend_exit_prompt.yes_x);
-        if (frontend_widget.hitRect(yes_rect, self.exit_prompt_button_states[0]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForExitPrompt(0));
-            self.exit_prompt_choice_index = 0;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .exit_prompt = .yes });
-            }
-            return;
-        }
-
-        const no_rect = frontend_exit_prompt.textRect(&self.ui_font, frontend_exit_prompt.choices[1].label(), frontend_exit_prompt.no_x);
-        if (frontend_widget.hitRect(no_rect, self.exit_prompt_button_states[1]).contains(local_mouse)) {
-            self.setFrontendHoverTarget(frontend_activation.hoverTargetForExitPrompt(1));
-            self.exit_prompt_choice_index = 1;
-            if (rl.isMouseButtonPressed(.left)) {
-                self.queueFrontendActivation(.{ .exit_prompt = .no });
-            }
-            return;
-        }
-
-        self.setFrontendHoverTarget(null);
     }
 
     fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
@@ -1572,46 +1080,46 @@ const AppState = struct {
                 }
             },
             .main_menu => {
-                try self.updateMainMenuMouseSelection();
+                try frontend_mouse.updateMainMenuSelection(self);
                 frontend_input.handleMainMenuKeyboard(self);
             },
             .new_game_menu => {
                 self.normalizeNewGameMenuSelection();
-                try self.updateNewGameMenuMouseSelection();
+                try frontend_mouse.updateNewGameSelection(self);
                 frontend_input.handleNewGameKeyboard(self);
             },
             .challenge_setup_menu => {
                 self.normalizeChallengeSetupSelection();
-                self.updateChallengeSetupMouseSelection();
+                frontend_mouse.updateChallengeSetupSelection(self);
                 frontend_input.handleChallengeSetupKeyboard(self);
             },
             .options_menu => {
-                try self.updateOptionsMouseSelection();
+                try frontend_mouse.updateOptionsSelection(self);
                 try frontend_input.handleOptionsKeyboard(self);
             },
             .pause_menu => {
-                self.updatePauseMenuMouseSelection();
+                frontend_mouse.updatePauseSelection(self);
                 frontend_input.handlePauseKeyboard(self);
             },
             .route_map_menu => {
-                try self.updateRouteMapMouseSelection();
+                try frontend_mouse.updateRouteMapSelection(self);
                 try frontend_input.handleRouteMapKeyboard(self);
                 self.syncRouteMapHighlightTargets();
                 self.stepRouteMapHighlightAnimations();
             },
             .high_scores_menu => {
-                try self.updateHighScoresMouseSelection();
+                try frontend_mouse.updateHighScoresSelection(self);
                 if (self.postLevelHighScoreContext() != null) {
                     self.collectPostLevelHighScoreTextInput();
                 }
                 frontend_input.handleHighScoresKeyboard(self);
             },
             .exit_prompt => {
-                try self.updateExitPromptMouseSelection();
+                try frontend_mouse.updateExitPromptSelection(self);
                 frontend_input.handleExitPromptKeyboard(self);
             },
             .completion_screen => {
-                self.updateCompletionScreenMouseSelection();
+                frontend_mouse.updateCompletionSelection(self);
                 frontend_input.handleCompletionKeyboard(self);
             },
             .thanks_screen => {
@@ -1625,7 +1133,7 @@ const AppState = struct {
                 }
             },
             .help => {
-                self.updateHelpMouseSelection();
+                frontend_mouse.updateHelpSelection(self);
                 frontend_input.handleHelpKeyboard(self);
             },
             .level => {
@@ -3231,26 +2739,6 @@ fn challengeSetupLayoutState(
         .difficulty_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.difficulty_button_index],
         .speed_row_state = self.challenge_setup_button_states[frontend_challenge_setup_menu.speed_button_index],
     };
-}
-
-fn challengeSetupSliderLayout(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.SliderLayout {
-    var difficulty_buffer: [16]u8 = undefined;
-    var speed_buffer: [16]u8 = undefined;
-    return frontend_challenge_setup_menu.sliderLayout(
-        &state.ui_font,
-        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
-        item,
-    );
-}
-
-fn challengeSetupTextRect(state: *const AppState, item: frontend_challenge_setup_menu.Item) frontend_widget.Rect {
-    var difficulty_buffer: [16]u8 = undefined;
-    var speed_buffer: [16]u8 = undefined;
-    return frontend_challenge_setup_menu.textRect(
-        &state.ui_font,
-        challengeSetupLayoutState(state, &difficulty_buffer, &speed_buffer),
-        item,
-    );
 }
 
 fn drawMainMenuUi(state: *const AppState, layout: VirtualLayout) !void {
