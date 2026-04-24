@@ -1,9 +1,12 @@
+const std = @import("std");
 const rl = @import("raylib");
 
 const gameplay = @import("../gameplay.zig");
 const object = @import("../object.zig");
 const x2 = @import("../x2.zig");
 const model_render = @import("model_render.zig");
+
+const io = std.Options.debug_io;
 
 pub const Resources = struct {
     lazer_object: ?*const object.LoadedObject,
@@ -47,7 +50,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
             );
         },
         .laser => {
-            const loaded_object = resources.vapour_lazer_object orelse resources.lazer_object orelse return;
+            const loaded_object = activeLaserProjectileObject(resources) orelse return;
             drawObjectProjectile(
                 loaded_object,
                 world_transform,
@@ -56,7 +59,7 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
             );
         },
         .enemy_laser => {
-            const loaded_object = resources.vapour_lazer_object orelse resources.lazer_object orelse return;
+            const loaded_object = activeLaserProjectileObject(resources) orelse return;
             drawObjectProjectile(
                 loaded_object,
                 world_transform,
@@ -88,6 +91,10 @@ pub fn draw(resources: Resources, projectile: gameplay.Projectile) void {
     }
 }
 
+fn activeLaserProjectileObject(resources: Resources) ?*const object.LoadedObject {
+    return resources.lazer_object orelse resources.vapour_lazer_object;
+}
+
 fn drawObjectProjectile(
     loaded_object: *const object.LoadedObject,
     world_transform: rl.Matrix,
@@ -101,4 +108,60 @@ fn drawObjectProjectile(
     );
     const scale = rl.Matrix.scale(scale_factor, scale_factor, scale_factor);
     loaded_object.drawTintedEx(world_transform.multiply(offset).multiply(scale), tint);
+}
+
+test "laser projectile rendering prefers the drawable lazer object" {
+    var lazer_object: object.LoadedObject = undefined;
+    var vapour_lazer_object: object.LoadedObject = undefined;
+
+    try std.testing.expect(activeLaserProjectileObject(.{
+        .lazer_object = &lazer_object,
+        .vapour_lazer_object = &vapour_lazer_object,
+        .rocket_model = null,
+    }) == &lazer_object);
+    try std.testing.expect(activeLaserProjectileObject(.{
+        .lazer_object = null,
+        .vapour_lazer_object = &vapour_lazer_object,
+        .rocket_model = null,
+    }) == &vapour_lazer_object);
+}
+
+test "shipped projectile lazer object is the drawable laser mesh" {
+    const lazer_data = try std.Io.Dir.cwd().readFileAlloc(
+        io,
+        "artifacts/extracted/SnailMail.dat/OBJECTS/LAZER/_OBJECT.TXT",
+        std.testing.allocator,
+        .limited(1 << 14),
+    );
+    defer std.testing.allocator.free(lazer_data);
+    const vapour_data = try std.Io.Dir.cwd().readFileAlloc(
+        io,
+        "artifacts/extracted/SnailMail.dat/OBJECTS/VAPOURLAZER/_OBJECT.TXT",
+        std.testing.allocator,
+        .limited(1 << 14),
+    );
+    defer std.testing.allocator.free(vapour_data);
+
+    var lazer = try object.parseObject(std.testing.allocator, lazer_data, "OBJECTS/LAZER/_OBJECT.TXT");
+    defer lazer.deinit();
+    var vapour = try object.parseObject(std.testing.allocator, vapour_data, "OBJECTS/VAPOURLAZER/_OBJECT.TXT");
+    defer vapour.deinit();
+
+    try std.testing.expect(objectMaxExtent(&lazer) > 1.0);
+    try std.testing.expect(objectMaxExtent(&vapour) <= 0.0001);
+}
+
+fn objectMaxExtent(parsed: *const object.ParsedObject) f32 {
+    if (parsed.vertices.len == 0) return 0.0;
+    var min = parsed.vertices[0].position;
+    var max = min;
+    for (parsed.vertices[1..]) |vertex| {
+        min.x = @min(min.x, vertex.position.x);
+        min.y = @min(min.y, vertex.position.y);
+        min.z = @min(min.z, vertex.position.z);
+        max.x = @max(max.x, vertex.position.x);
+        max.y = @max(max.y, vertex.position.y);
+        max.z = @max(max.z, vertex.position.z);
+    }
+    return @max(max.x - min.x, @max(max.y - min.y, max.z - min.z));
 }
