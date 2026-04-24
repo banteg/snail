@@ -9,6 +9,7 @@ const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
 const level_loader = @import("app/level_loader.zig");
 const math_random = @import("app/math_random.zig");
+const music_audio = @import("app/music_audio.zig");
 const render_phase = @import("app/render_phase.zig");
 const return_flow = @import("app/return_flow.zig");
 const route_map_state = @import("app/route_map_state.zig");
@@ -494,7 +495,7 @@ const AppState = struct {
     }
 
     fn deinit(self: *AppState) void {
-        audio.stopAudioPreview(self);
+        music_audio.stopPreview(music_audio.context(self));
         self.unloadLoadingScreen();
         self.unloadGameBackground();
         self.unloadPreloadedBootAssets();
@@ -2156,7 +2157,7 @@ const AppState = struct {
         }
         switch (self.game_phase) {
             .boot => {
-                audio.stopAudioPreview(self);
+                music_audio.stopPreview(music_audio.context(self));
                 self.active_level_segment_index = null;
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
@@ -2172,7 +2173,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try audio.playMusicByPath(self, intro_music_path);
+                try music_audio.playByPath(music_audio.context(self), intro_music_path);
                 try self.loadTextScript(intro_script_path);
             },
             .main_menu, .new_game_menu, .high_scores_menu => {
@@ -2182,7 +2183,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try audio.playMusicByPath(self, default_audio_path);
+                try music_audio.playByPath(music_audio.context(self), default_audio_path);
             },
             .challenge_setup_menu => {
                 self.active_level_segment_index = null;
@@ -2193,7 +2194,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(main_menu_background_path);
-                try audio.playMusicByPath(self, default_audio_path);
+                try music_audio.playByPath(music_audio.context(self), default_audio_path);
             },
             .options_menu => {
                 self.options_sound_display_value = self.runtime_config.soundVolume();
@@ -2207,7 +2208,7 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try audio.playMusicByPath(self, default_audio_path);
+                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
                 }
             },
             .pause_menu => {
@@ -2222,7 +2223,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(route_map_background_path);
-                try audio.playMusicByPath(self, default_audio_path);
+                try music_audio.playByPath(music_audio.context(self), default_audio_path);
             },
             .credits => {
                 self.active_level_segment_index = null;
@@ -2230,7 +2231,7 @@ const AppState = struct {
                 self.mouse_level_lane_target = null;
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(intro_background_path);
-                try audio.playMusicByPath(self, intro_music_path);
+                try music_audio.playByPath(music_audio.context(self), intro_music_path);
                 try self.loadTextScript(credits_script_path);
             },
             .help => {
@@ -2240,7 +2241,7 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(help_background_path);
-                try audio.playMusicByPath(self, default_audio_path);
+                try music_audio.playByPath(music_audio.context(self), default_audio_path);
             },
             .exit_prompt => {
                 self.unloadTextScript();
@@ -2252,13 +2253,13 @@ const AppState = struct {
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(route_map_background_path);
-                    try audio.playMusicByPath(self, default_audio_path);
+                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
                 } else {
                     self.active_level_segment_index = null;
                     self.clearLevelPromptQueue();
                     self.mouse_level_lane_target = null;
                     try self.loadGameBackground(main_menu_background_path);
-                    try audio.playMusicByPath(self, default_audio_path);
+                    try music_audio.playByPath(music_audio.context(self), default_audio_path);
                 }
             },
             .completion_screen => {
@@ -2281,10 +2282,10 @@ const AppState = struct {
                 self.unloadTextScript();
                 self.unloadLoadingScreen();
                 try self.loadGameBackground(thanks_screen_background_path);
-                try audio.playMusicByPath(self, intro_music_path);
+                try music_audio.playByPath(music_audio.context(self), intro_music_path);
             },
             .level => {
-                audio.stopAudioPreview(self);
+                music_audio.stopPreview(music_audio.context(self));
                 self.clearLevelPromptQueue();
                 self.mouse_level_lane_target = null;
                 self.unloadTextScript();

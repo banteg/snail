@@ -1,6 +1,5 @@
 const std = @import("std");
 const rl = @import("raylib");
-const app = @import("../app.zig");
 const assets = @import("../assets.zig");
 const attachment_builders = @import("../attachment_builders.zig");
 const audio_volume = @import("audio_volume.zig");
@@ -13,9 +12,6 @@ const gameplay_art = @import("../gameplay_art.zig");
 const gameplay_voice = @import("../gameplay/voice.zig");
 const level = @import("../level.zig");
 const track = @import("../track.zig");
-
-const default_audio_path = app.default_audio_path;
-const intro_music_path = app.intro_music_path;
 
 pub fn playGameplayRunnerAudio(
     state: anytype,
@@ -232,27 +228,6 @@ pub fn playLevelSegmentSample(state: anytype, segment_entry: *const level.Segmen
     }
 }
 
-pub fn playMusicByPath(state: anytype, path: []const u8) !void {
-    if (!state.audio_ready) return;
-    if (state.current_music) |music| {
-        if (std.ascii.eqlIgnoreCase(music.path, path)) {
-            audio_volume.applyConfigVolumes(audio_volume.context(state));
-            if (!rl.isMusicStreamPlaying(music.music)) {
-                rl.playMusicStream(music.music);
-            }
-            return;
-        }
-    }
-
-    stopAudioPreview(state);
-    state.current_music = if (takePreloadedMusic(state, path)) |music|
-        music
-    else
-        try state.resources.catalog.loadMusicByPath(state.allocator, path);
-    audio_volume.applyConfigVolumes(audio_volume.context(state));
-    rl.playMusicStream(state.current_music.?.music);
-}
-
 fn playSoundByPath(state: anytype, path: []const u8) !void {
     if (!state.audio_ready) return;
     const sound = (try state.current_sound.loadPath(&state.resources, path)) orelse return;
@@ -386,14 +361,6 @@ fn pickGameplaySoundVariant(state: anytype, comptime count: usize, variants: [co
     return null;
 }
 
-pub fn stopAudioPreview(state: anytype) void {
-    state.current_sound.unload();
-    if (state.current_music) |*music| {
-        music.unload();
-        state.current_music = null;
-    }
-}
-
 pub fn stopVoicePlayback(state: anytype) void {
     state.current_voice_sound.unload();
 }
@@ -439,16 +406,6 @@ fn nextMathRandomInt15(state: anytype) u32 {
     return math_random.nextInt15(&state.math_random_state);
 }
 
-fn takePreloadedMusic(state: anytype, path: []const u8) ?assets.LoadedMusic {
-    if (std.ascii.eqlIgnoreCase(path, intro_music_path)) {
-        return takeOptional(assets.LoadedMusic, &state.preloaded_intro_music);
-    }
-    if (std.ascii.eqlIgnoreCase(path, default_audio_path)) {
-        return takeOptional(assets.LoadedMusic, &state.preloaded_menu_music);
-    }
-    return null;
-}
-
 fn isTutorialGameplay(state: anytype) bool {
     if (state.active_frontend_mode == .tutorial) return true;
     if (state.level_runner) |runner| {
@@ -462,12 +419,4 @@ fn deterministicGameplayAmbientSlugRoll(row: usize, lane: usize) f32 {
     const mixed = (@as(u64, row) *% 0x9e3779b97f4a7c15) ^ (@as(u64, lane) *% 0xc2b2ae3d27d4eb4f);
     const normalized = @as(f64, @floatFromInt(mixed & 0xffff)) / 65535.0;
     return @floatCast(normalized);
-}
-
-fn takeOptional(comptime T: type, slot: *?T) ?T {
-    if (slot.*) |value| {
-        slot.* = null;
-        return value;
-    }
-    return null;
 }
