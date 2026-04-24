@@ -7,6 +7,7 @@ const io = std.Options.debug_io;
 
 const native_toon_reference_screen_width = 640.0;
 const toon_outline_antialias_fringe_pixels = 1.0;
+const toon_outline_soft_sample_alpha = 120;
 
 // Custom text X2 loader for the small legacy mesh subset used by Snail Mail.
 //
@@ -268,17 +269,15 @@ pub const Uploaded = struct {
         const bias_distance = outlineDepthBiasDistance(world_radius);
         const core_width_pixels = toonOutlineCoreWidthPixelsForScreenWidth(rl.getScreenWidth());
 
-        // Native G0RenderToon chooses the silhouette edges. The port rasterizes those
-        // selected edges as soft camera-facing bands so the 640px-authored art keeps its
-        // intended line weight in larger windows.
+        // Native G0RenderToon chooses the silhouette edges. The port keeps those selected
+        // edges on the native-shaped line-list path and adds offset soft samples so the
+        // 640px-authored art keeps its intended line weight in larger windows.
         rl.beginBlendMode(.alpha);
         defer rl.endBlendMode();
         rl.gl.rlDisableDepthMask();
         defer rl.gl.rlEnableDepthMask();
-        rl.gl.rlDisableBackfaceCulling();
-        defer rl.gl.rlEnableBackfaceCulling();
         rl.gl.rlSetTexture(0);
-        rl.gl.rlBegin(rl.gl.rl_quads);
+        rl.gl.rlBegin(rl.gl.rl_lines);
         defer rl.gl.rlEnd();
 
         for (toon_outline.edges) |edge| {
@@ -1296,34 +1295,36 @@ fn drawToonOutlineSegment(
     const midpoint = scaleVector3(addVector3(world_a, world_b), 0.5);
     const world_units_per_pixel = worldUnitsPerPixelAtPoint(camera, midpoint);
     const core_half_width = core_width_pixels * 0.5 * world_units_per_pixel;
-    const outer_half_width = core_half_width + toon_outline_antialias_fringe_pixels * world_units_per_pixel;
-    const transparent = rl.Color{ .r = color.r, .g = color.g, .b = color.b, .a = 0 };
+    const fringe_offset = core_half_width + toon_outline_antialias_fringe_pixels * 0.5 * world_units_per_pixel;
+    const soft_color = rl.Color{
+        .r = color.r,
+        .g = color.g,
+        .b = color.b,
+        .a = @intCast((@as(u16, color.a) * toon_outline_soft_sample_alpha) / 255),
+    };
 
-    emitToonOutlineBand(world_a, world_b, side, -outer_half_width, -core_half_width, transparent, color);
-    emitToonOutlineBand(world_a, world_b, side, core_half_width, outer_half_width, color, transparent);
-    emitToonOutlineBand(world_a, world_b, side, -core_half_width, core_half_width, color, color);
+    emitToonOutlineLine(world_a, world_b, side, 0.0, color);
+    if (core_half_width > world_units_per_pixel * 0.35) {
+        emitToonOutlineLine(world_a, world_b, side, -core_half_width, color);
+        emitToonOutlineLine(world_a, world_b, side, core_half_width, color);
+    }
+    emitToonOutlineLine(world_a, world_b, side, -fringe_offset, soft_color);
+    emitToonOutlineLine(world_a, world_b, side, fringe_offset, soft_color);
 }
 
-fn emitToonOutlineBand(
+fn emitToonOutlineLine(
     world_a: rl.Vector3,
     world_b: rl.Vector3,
     side: rl.Vector3,
-    start_offset: f32,
-    end_offset: f32,
-    start_color: rl.Color,
-    end_color: rl.Color,
+    offset: f32,
+    color: rl.Color,
 ) void {
-    const a0 = addScaledVector3(world_a, side, start_offset);
-    const b0 = addScaledVector3(world_b, side, start_offset);
-    const b1 = addScaledVector3(world_b, side, end_offset);
-    const a1 = addScaledVector3(world_a, side, end_offset);
+    const a = addScaledVector3(world_a, side, offset);
+    const b = addScaledVector3(world_b, side, offset);
 
-    rl.gl.rlColor4ub(start_color.r, start_color.g, start_color.b, start_color.a);
-    rl.gl.rlVertex3f(a0.x, a0.y, a0.z);
-    rl.gl.rlVertex3f(b0.x, b0.y, b0.z);
-    rl.gl.rlColor4ub(end_color.r, end_color.g, end_color.b, end_color.a);
-    rl.gl.rlVertex3f(b1.x, b1.y, b1.z);
-    rl.gl.rlVertex3f(a1.x, a1.y, a1.z);
+    rl.gl.rlColor4ub(color.r, color.g, color.b, color.a);
+    rl.gl.rlVertex3f(a.x, a.y, a.z);
+    rl.gl.rlVertex3f(b.x, b.y, b.z);
 }
 
 fn toonOutlineSegmentSide(world_a: rl.Vector3, world_b: rl.Vector3, camera: rl.Camera3D) ?rl.Vector3 {
