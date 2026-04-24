@@ -3,6 +3,7 @@ const rl = @import("raylib");
 const attachment_builders = @import("attachment_builders.zig");
 const assets = @import("assets.zig");
 const gameplay_assets = @import("gameplay/assets.zig");
+const attachment_module = @import("gameplay/attachment.zig");
 const gameplay_camera = @import("gameplay/camera.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
 const combat_module = @import("gameplay/combat.zig");
@@ -177,8 +178,7 @@ const fall_gravity: f32 = 10.0;
 // fall phase (used by the post-death cutscene camera) keeps the same threshold
 // for the `attachment_exit_gate_b` latch.
 const fall_world_y_threshold: f32 = native_position_y_death_threshold;
-const attachment_exit_progress_step_default: f32 = 1.0 / 60.0;
-const attachment_exit_gate_a_progress_threshold: f32 = 0.7;
+const attachment_exit_progress_step_default = attachment_module.exit_progress_step_default;
 const attachment_side_exit_margin: f32 = 0.3;
 const attachment_entry_start_y_tolerance: f32 = -0.2;
 const attachment_entry_end_y_tolerance: f32 = 0.001;
@@ -246,12 +246,6 @@ const native_position_y_death_threshold: f32 = -7.0;
 const native_grounded_snap_position_y_upper: f32 = 0.49000001;
 const native_grounded_snap_position_y_lower: f32 = -0.16333334;
 const native_grounded_snap_velocity_y_squidge_threshold: f32 = -0.029999999;
-// PORT(verified): native jetpack late clear lane `0x43ce75` in
-// `artifacts/ida/functions/0043b120-update_subgoldy.c` only retires
-// `attachment_exit_pending` when `jetpack_gauge.state == 1 AND
-// live_matrix.position.y < 1.0` (IDA 0x43ce47). Above `1.0`, active jetpack
-// flight keeps the gate armed so the airborne progress/gate-A lanes run.
-const native_jetpack_altitude_cap: f32 = 1.0;
 const native_negative_ring_velocity_z_per_tick: f32 = -0.1;
 const native_negative_ring_velocity_recovery_z_per_tick: f32 =
     native_track_center_x * native_track_center_x * 0.00400000019 * 0.25;
@@ -4118,37 +4112,7 @@ pub const Runner = struct {
 
     fn stepAttachmentExitState(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         _ = preview;
-        if (!self.attachment_exit_pending) return;
-        if (self.phase == .active and self.jetpack.active and self.position_y < native_jetpack_altitude_cap) {
-            // PORT(verified): `artifacts/ida/functions/0043b120-update_subgoldy.c`
-            // checks `player + 0x275c` (`jetpack_gauge.state`) at `0x43ce23` and
-            // then gates the `0x43ce34/0x43ce75` late clear on
-            // `live_matrix.position.y < 1.0` at `0x43ce47`, so active-jetpack
-            // flight only retires pending once the rider has dropped below the
-            // altitude cap. Above that cap (post-launch, still airborne), the
-            // gate stays armed and the progress/gate-A book-keeping below takes
-            // over instead.
-            self.attachment_exit_pending = false;
-            return;
-        }
-        // PORT(verified): `attachment_exit_progress` advances in frame-sized
-        // increments each pending tick at
-        // `artifacts/ida/functions/0043b120-update_subgoldy.c:43ce96` (the `else`
-        // of the five clear lanes). The grounded-snap (`0x43bf6f`) and trampoline
-        // (`0x43c3ea`) clears now fire from `stepActivePhaseVerticalMotion`
-        // directly, so this path only runs the progress/gate-A book-keeping;
-        // retirement lanes keyed on `_pad_41c[0]` (`0x43bcb3`) or the
-        // tile-flags re-snap (`0x43c06d`) land when their flag writers are
-        // surfaced in the port.
-        const progress_step = self.attachment_exit_progress_step;
-        self.attachment_exit_progress = std.math.clamp(
-            self.attachment_exit_progress + progress_step,
-            0.0,
-            1.0,
-        );
-        if (!self.attachment_exit_gate_a and self.attachment_exit_progress > attachment_exit_gate_a_progress_threshold) {
-            self.attachment_exit_gate_a = true;
-        }
+        attachment_module.stepExitState(self);
         // The common pending-exit path only has a confirmed direct consumer for
         // `post_follow_value_a`. Preserve the carryover angle here instead of synthesizing a
         // shared `post_follow_value_b`-driven update that static RE has not closed yet.
@@ -4874,12 +4838,7 @@ pub const Runner = struct {
     }
 
     fn beginAttachmentExitState(self: *Runner, anchor_z: f32) void {
-        self.attachment_exit_pending = true;
-        self.attachment_exit_anchor_z = anchor_z;
-        self.attachment_exit_progress = 0.0;
-        self.attachment_exit_progress_step = attachment_exit_progress_step_default;
-        self.attachment_exit_gate_a = false;
-        self.attachment_exit_gate_b = false;
+        attachment_module.beginExitState(self, anchor_z);
     }
 
     fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
@@ -4899,17 +4858,11 @@ pub const Runner = struct {
     }
 
     fn seedAttachmentExitStateFromCurrentExit(self: *Runner, anchor_z: f32) void {
-        const post_follow_value_a = self.post_follow_value_a;
-        const post_follow_value_b = self.post_follow_value_b;
-        self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = post_follow_value_a;
-        self.post_follow_value_b = post_follow_value_b;
+        attachment_module.seedExitStateFromCurrentExit(self, anchor_z);
     }
 
     fn seedAttachmentExitStateZeroed(self: *Runner, anchor_z: f32) void {
-        self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = 0.0;
-        self.post_follow_value_b = 0.0;
+        attachment_module.seedExitStateZeroed(self, anchor_z);
     }
 
     fn shouldRetireAttachmentDirectlyForCompletion(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
