@@ -164,7 +164,7 @@ pub fn drawLevelPanel(state: anytype) !void {
             .{
                 runner.current_cell,
                 optionalHexU8ToText(&tile_value_buffer, runner.runtimeTileHint()),
-                runner.attachment_hint.label(),
+                runner.attachment.hint.label(),
                 optionalTextToText(&path_value_buffer, runner.activePathName()),
             },
         );
@@ -226,12 +226,12 @@ pub fn drawLevelViewport(state: anytype) void {
         const position = runner.worldPosition(&loaded_track_preview, 0.58);
         const color: rl.Color = if (runner.movement_mode == .attachment)
             .gold
-        else switch (runner.attachment_hint) {
+        else switch (runner.attachment.hint) {
             .none => .lime,
             .probe => .orange,
             .entry => .yellow,
         };
-        rl.drawSphere(position, if (runner.attachment_hint == .none) 0.18 else 0.22, color);
+        rl.drawSphere(position, if (runner.attachment.hint == .none) 0.18 else 0.22, color);
         rl.drawLine3D(
             .{ .x = position.x, .y = 0.04, .z = position.z },
             position,

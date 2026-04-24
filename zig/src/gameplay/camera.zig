@@ -488,8 +488,8 @@ pub fn cameramanAttachmentLiftEnvelope(runner: anytype, preview: *const track.Lo
             envelope += attachmentCameraEnvelope(attachment_camera.template_progress) * cameraman_attachment_lift_scale;
         }
     }
-    if (runner.launch.active and runner.launch.camera_progress > 0.0) {
-        envelope += launchCameraEnvelope(runner.launch.camera_progress) * cameraman_launch_lift_scale;
+    if (runner.attachment.launch.active and runner.attachment.launch.camera_progress > 0.0) {
+        envelope += launchCameraEnvelope(runner.attachment.launch.camera_progress) * cameraman_launch_lift_scale;
     }
     return envelope;
 }
@@ -501,37 +501,37 @@ pub fn cameramanDesiredFovDegrees(runner: anytype, preview: *const track.LoadedL
 }
 
 pub fn refreshRunnerCameraRollState(runner: anytype, preview: *const track.LoadedLevelPreview) void {
-    runner.attachment_camera_orientation_a = 0.0;
-    runner.attachment_camera_orientation_b = 0.0;
-    runner.attachment_follow.exit_carryover_a = 0.0;
-    runner.attachment_follow.exit_carryover_b = 0.0;
+    runner.attachment.camera.orientation_a = 0.0;
+    runner.attachment.camera.orientation_b = 0.0;
+    runner.attachment.follow.exit_carryover_a = 0.0;
+    runner.attachment.follow.exit_carryover_b = 0.0;
 
-    if (runner.movement_mode == .attachment and runner.attachment_follow.active) {
-        runner.attachment_camera_orientation_a = runner.attachment_follow.camera_orientation_a;
-        runner.attachment_camera_orientation_b = runner.attachment_follow.camera_orientation_b;
+    if (runner.movement_mode == .attachment and runner.attachment.follow.active) {
+        runner.attachment.camera.orientation_a = runner.attachment.follow.camera_orientation_a;
+        runner.attachment.camera.orientation_b = runner.attachment.follow.camera_orientation_b;
         const exit_carryover = runner.attachmentExitCarryoverFromFollow(preview);
-        runner.attachment_follow.exit_carryover_a = exit_carryover.carryover_a;
-        runner.attachment_follow.exit_carryover_b = exit_carryover.carryover_b;
-        runner.attachment_exit_carryover_a = exit_carryover.carryover_a;
-        runner.attachment_exit_carryover_b = exit_carryover.carryover_b;
+        runner.attachment.follow.exit_carryover_a = exit_carryover.carryover_a;
+        runner.attachment.follow.exit_carryover_b = exit_carryover.carryover_b;
+        runner.attachment.exit.carryover_a = exit_carryover.carryover_a;
+        runner.attachment.exit.carryover_b = exit_carryover.carryover_b;
         return;
     }
 
-    if (runner.launch.active) {
-        runner.previous_heading_roll_sample = rollRadiansFromForwardUp(runner.worldForward(preview), runner.worldUp(preview));
+    if (runner.attachment.launch.active) {
+        runner.attachment.camera.previous_heading_roll_sample = rollRadiansFromForwardUp(runner.worldForward(preview), runner.worldUp(preview));
         return;
     }
 
     if (runner.phase == .fall) return;
-    runner.previous_heading_roll_sample = 0.0;
+    runner.attachment.camera.previous_heading_roll_sample = 0.0;
 }
 
 pub fn playerWorldPosition(runner: anytype, preview: *const track.LoadedLevelPreview) rl.Vector3 {
     if (runner.phase == .fall) return runner.worldPosition(preview, 0.0);
-    if (runner.movement_mode == .attachment and runner.attachment_follow.active) {
+    if (runner.movement_mode == .attachment and runner.attachment.follow.active) {
         return runner.worldPosition(preview, 0.0);
     }
-    if (runner.launch.active) return runner.worldPosition(preview, 0.0);
+    if (runner.attachment.launch.active) return runner.worldPosition(preview, 0.0);
     return runner.worldPosition(preview, attachment_entry_rider_height);
 }
 
@@ -767,8 +767,8 @@ pub fn updateRunnerCameraman(runner: anytype, preview: *const track.LoadedLevelP
     const intro_pitch_radians = (1.0 - progress_blend) * 0.8725;
     const lateral_roll_radians = anchor_x * (-8.0 * 0.0174499992 * 0.170000002);
     const lane_lean_roll_radians =
-        (0.5 - (std.math.cos(runner.lane_lean_progress * std.math.pi) * 0.5)) *
-        runner.lane_lean_amplitude *
+        (0.5 - (std.math.cos(runner.attachment.lane_lean.progress * std.math.pi) * 0.5)) *
+        runner.attachment.lane_lean.amplitude *
         std.math.tau;
     runner.cameraman.attachment_lift_envelope = cameramanAttachmentLiftEnvelope(runner, preview);
     runner.cameraman.smoothed_attachment_lift_envelope +=
@@ -785,14 +785,14 @@ pub fn updateRunnerCameraman(runner: anytype, preview: *const track.LoadedLevelP
     desired_transform.position.x += anchor_x / cameraman_forward_distance;
     desired_transform.position.z += anchor_z + 0.4;
     desired_transform = rotateCameraTransformWorldZ(desired_transform, lane_lean_roll_radians + lateral_roll_radians);
-    if (runner.attachment_follow.active) {
-        desired_transform = rotateCameraTransformLocalZ(desired_transform, runner.attachment_camera_orientation_a);
-        desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.attachment_camera_orientation_b);
+    if (runner.attachment.follow.active) {
+        desired_transform = rotateCameraTransformLocalZ(desired_transform, runner.attachment.camera.orientation_a);
+        desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.attachment.camera.orientation_b);
     }
-    if (runner.attachment_exit_pending) {
-        desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.post_follow_value_a);
+    if (runner.attachment.exit.pending) {
+        desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.attachment.exit.post_follow_value_a);
     }
-    desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.heading_roll);
+    desired_transform = rotateCameraTransformWorldZ(desired_transform, runner.attachment.camera.heading_roll);
 
     const desired_matrix = cameraMatrixFromTransform(desired_transform);
     if (runner.cameraman.desired_matrix.m15 == 1.0 and

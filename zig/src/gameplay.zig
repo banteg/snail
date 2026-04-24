@@ -177,7 +177,7 @@ const fall_gravity: f32 = 10.0;
 // `update_subgoldy` at `artifacts/ida/functions/0043b120-update_subgoldy.c:504`
 // calls `initialize_subgoldy_death` once `live_matrix.position.y < -7.0`; the
 // fall phase (used by the post-death cutscene camera) keeps the same threshold
-// for the `attachment_exit_gate_b` latch.
+// for the `attachment.exit.gate_b` latch.
 const fall_world_y_threshold: f32 = native_position_y_death_threshold;
 const attachment_exit_progress_step_default = attachment_module.exit_progress_step_default;
 const attachment_side_exit_margin = attachment_module.side_exit_margin;
@@ -396,11 +396,9 @@ fn runtimeRingDefaultKind4Eligible(tile_type: u8, runtime_build_flags: u32) bool
     return tile_type == 0x02 or tile_type == 0x03 or tile_type == 0x04;
 }
 
-const AttachmentFollowState = runner_state.AttachmentFollowState;
 const AttachmentExitCarryover = runner_state.AttachmentExitCarryover;
 const InstalledAttachmentEntry = runner_state.InstalledAttachmentEntry;
 const InstalledAttachmentSlot = runner_state.InstalledAttachmentSlot;
-const LaunchState = runner_state.LaunchState;
 const WorldFrame = runner_state.WorldFrame;
 
 fn offsetPosition(
@@ -457,31 +455,10 @@ pub const Runner = struct {
     replay_raw_flag_bits: u8 = 0,
     replay_track_state_latch: bool = false,
     replay_fade_requested: bool = false,
-    attachment_hint: AttachmentHint = .none,
-    attachment_path_name: ?[]const u8 = null,
-    attachment_follow: AttachmentFollowState = .{},
-    launch: LaunchState = .{},
-    attachment_exit_pending: bool = false,
-    attachment_exit_anchor_z: f32 = 0.0,
-    post_follow_value_a: f32 = 0.0,
-    post_follow_value_b: f32 = 0.0,
-    attachment_exit_carryover_a: f32 = 0.0,
-    attachment_exit_carryover_b: f32 = 0.0,
-    attachment_exit_progress: f32 = 0.0,
-    attachment_exit_progress_step: f32 = 0.0,
-    attachment_exit_gate_a: bool = false,
-    attachment_exit_gate_b: bool = false,
-    lane_lean_amplitude: f32 = 0.0,
-    lane_lean_progress: f32 = 0.0,
-    lane_lean_progress_step: f32 = 0.0,
-    attachment_camera_orientation_a: f32 = 0.0,
-    attachment_camera_orientation_b: f32 = 0.0,
-    heading_roll: f32 = 0.0,
-    previous_heading_roll_sample: f32 = 0.0,
+    attachment: attachment_module.State = .{},
     camera_hotspots_world: CameraHotspotWorldState = .{},
     cached_camera_target_world: rl.Vector3 = .{ .x = 0.0, .y = 0.0, .z = 0.0 },
     cameraman: CameramanState = .{},
-    attachment_ticks: u64 = 0,
     jetpack: JetpackGauge = .{},
     parcel: parcel_module.Pool = .{},
     path_center_lane: ?f32 = null,
@@ -704,7 +681,7 @@ pub const Runner = struct {
             self.stepActivePhaseVerticalMotion(preview);
         }
         if (self.movement_mode == .attachment and self.phase == .active) {
-            self.attachment_ticks += 1;
+            self.attachment.ticks += 1;
         }
         self.syncCurrentRowMessageSegment(preview, true);
         self.refreshCameraState(preview);
@@ -713,7 +690,7 @@ pub const Runner = struct {
     fn inNativeSlowCommentaryBand(self: *const Runner) bool {
         if (self.phase != .active) return false;
         if (self.movement_mode != .track) return false;
-        if (self.attachment_exit_pending) return false;
+        if (self.attachment.exit.pending) return false;
         if (self.movement_rate_scalar <= 0.0001) return false;
 
         const actual_forward_step = @max(0.0, self.row_position - self.previous_row_position);
@@ -744,15 +721,15 @@ pub const Runner = struct {
                 .z = state.world_z,
             };
         }
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const position = self.attachmentFollowOutputPosition(built);
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.template_progress,
-                    self.attachment_follow.source_cell_row,
-                    self.attachment_follow.lateral_offset,
-                    self.attachment_follow.vertical_offset,
+                    self.attachment.follow.template_progress,
+                    self.attachment.follow.source_cell_row,
+                    self.attachment.follow.lateral_offset,
+                    self.attachment.follow.vertical_offset,
                 );
                 return .{
                     .x = position.x + (pose.basis_up.x * y),
@@ -761,15 +738,15 @@ pub const Runner = struct {
                 };
             }
         }
-        if (self.launch.active) {
+        if (self.attachment.launch.active) {
             const floor_y = preview.sampleFloorHeightAtGridPosition(
                 self.current_global_row,
                 self.resolved_lane_index,
                 self.row_position,
             ) orelse 0.0;
             return .{
-                .x = self.launch.world_x,
-                .y = floor_y + self.launch.height + y,
+                .x = self.attachment.launch.world_x,
+                .y = floor_y + self.attachment.launch.height + y,
                 .z = self.row_position,
             };
         }
@@ -794,14 +771,14 @@ pub const Runner = struct {
                 .z = state.basis_forward.z,
             };
         }
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.template_progress,
-                    self.attachment_follow.source_cell_row,
-                    self.attachment_follow.lateral_offset,
-                    self.attachment_follow.vertical_offset,
+                    self.attachment.follow.template_progress,
+                    self.attachment.follow.source_cell_row,
+                    self.attachment.follow.lateral_offset,
+                    self.attachment.follow.vertical_offset,
                 );
                 return .{
                     .x = pose.basis_forward.x,
@@ -810,11 +787,11 @@ pub const Runner = struct {
                 };
             }
         }
-        if (self.launch.active) {
+        if (self.attachment.launch.active) {
             return .{
-                .x = self.launch.basis_forward.x,
-                .y = self.launch.basis_forward.y,
-                .z = self.launch.basis_forward.z,
+                .x = self.attachment.launch.basis_forward.x,
+                .y = self.attachment.launch.basis_forward.y,
+                .z = self.attachment.launch.basis_forward.z,
             };
         }
         return .{ .x = 0.0, .y = 0.0, .z = 1.0 };
@@ -829,14 +806,14 @@ pub const Runner = struct {
                 .z = state.basis_up.z,
             };
         }
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.template_progress,
-                    self.attachment_follow.source_cell_row,
-                    self.attachment_follow.lateral_offset,
-                    self.attachment_follow.vertical_offset,
+                    self.attachment.follow.template_progress,
+                    self.attachment.follow.source_cell_row,
+                    self.attachment.follow.lateral_offset,
+                    self.attachment.follow.vertical_offset,
                 );
                 return .{
                     .x = pose.basis_up.x,
@@ -845,11 +822,11 @@ pub const Runner = struct {
                 };
             }
         }
-        if (self.launch.active) {
+        if (self.attachment.launch.active) {
             return .{
-                .x = self.launch.basis_up.x,
-                .y = self.launch.basis_up.y,
-                .z = self.launch.basis_up.z,
+                .x = self.attachment.launch.basis_up.x,
+                .y = self.attachment.launch.basis_up.y,
+                .z = self.attachment.launch.basis_up.z,
             };
         }
         return .{ .x = 0.0, .y = 1.0, .z = 0.0 };
@@ -913,24 +890,24 @@ pub const Runner = struct {
         if (preview.total_rows == 0) return;
         if (self.phase != .active) return;
         if (self.movement_mode != .track) return;
-        if (self.launch.active) return;
+        if (self.attachment.launch.active) return;
 
         const current_row = currentRowIndex(preview, self.row_position);
         const sample = self.sampleRow(preview, current_row) orelse return;
-        if (self.attachment_exit_pending) {
+        if (self.attachment.exit.pending) {
             // PORT(verified): native `update_subgoldy` only reaches
             // `try_enter_track_attachment_from_swept_motion` from the live current cell
-            // while `attachment_exit_pending` is still armed; it does not reuse the later
+            // while `attachment.exit.pending` is still armed; it does not reuse the later
             // visited-row event pass as a broader installed-entry trigger. BN/IDA also show
             // those swept probes are keyed from the live row's `flags_b & 0x40` slot first,
             // then `flags_b & 0x80` only if the first call leaves the gate armed. Raw
             // disassembly does not show a direct helper-side clear before that second
-            // gate check, so keep `attachment_exit_pending` live across a successful
+            // gate check, so keep `attachment.exit.pending` live across a successful
             // primary re-entry attempt.
             if (preview.runtimeFlagB40At(current_row, sample.resolved_lane_index)) {
                 _ = self.tryBeginInstalledAttachmentFollowForSlot(preview, current_row, sample, .primary);
             }
-            if (self.attachment_exit_pending and preview.runtimeFlagB80At(current_row, sample.resolved_lane_index)) {
+            if (self.attachment.exit.pending and preview.runtimeFlagB80At(current_row, sample.resolved_lane_index)) {
                 _ = self.tryBeginInstalledAttachmentFollowForSlot(preview, current_row, sample, .secondary);
             }
             return;
@@ -949,7 +926,7 @@ pub const Runner = struct {
         self.movement_rate_scalar = 0.0;
         if (!self.paused) {
             self.tryPrimeCurrentRowAttachmentEntry(preview);
-            if (self.movement_mode == .attachment and self.attachment_follow.active) {
+            if (self.movement_mode == .attachment and self.attachment.follow.active) {
                 self.stepAttachmentFollowAtRate(preview, 0.0);
             }
             self.refreshSample(preview);
@@ -1058,7 +1035,7 @@ pub const Runner = struct {
     }
 
     pub fn activePathName(self: *const Runner) ?[]const u8 {
-        return self.attachment_path_name orelse self.current_path_name;
+        return self.attachment.path_name orelse self.current_path_name;
     }
 
     pub fn runtimeTileHint(self: *const Runner) ?u8 {
@@ -1188,8 +1165,8 @@ pub const Runner = struct {
 
     fn maybeArmLaneLean(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0) return;
-        if (@abs(self.lane_lean_amplitude) > 0.0001) return;
-        if (self.attachment_exit_pending) return;
+        if (@abs(self.attachment.lane_lean.amplitude) > 0.0001) return;
+        if (self.attachment.exit.pending) return;
 
         const world_position = self.worldPosition(preview, 0.0);
         if (world_position.y > lane_lean_grounded_max_y) return;
@@ -1200,29 +1177,29 @@ pub const Runner = struct {
         const direction = laneLeanDirectionForRuntimeTile(tile_type);
         if (direction == 0.0) return;
 
-        self.lane_lean_amplitude = direction;
-        self.lane_lean_progress = 0.0;
-        self.lane_lean_progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
+        self.attachment.lane_lean.amplitude = direction;
+        self.attachment.lane_lean.progress = 0.0;
+        self.attachment.lane_lean.progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
     }
 
     fn stepLaneLean(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         self.maybeArmLaneLean(preview);
-        self.lane_lean_progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
-        if (@abs(self.lane_lean_amplitude) <= 0.0001) return;
+        self.attachment.lane_lean.progress_step = self.movement_rate_scalar * lane_lean_progress_step_scale;
+        if (@abs(self.attachment.lane_lean.amplitude) <= 0.0001) return;
 
-        self.lane_lean_progress += self.lane_lean_progress_step;
-        if (self.lane_lean_progress > 1.0) {
-            self.lane_lean_amplitude = 0.0;
-            self.lane_lean_progress = 0.0;
-            self.lane_lean_progress_step = 0.0;
+        self.attachment.lane_lean.progress += self.attachment.lane_lean.progress_step;
+        if (self.attachment.lane_lean.progress > 1.0) {
+            self.attachment.lane_lean.amplitude = 0.0;
+            self.attachment.lane_lean.progress = 0.0;
+            self.attachment.lane_lean.progress_step = 0.0;
         }
     }
 
     fn applyLaneDelta(self: *Runner, lane_delta: i8) void {
         if (lane_delta == 0) return;
-        if (self.launch.active) return;
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.attachment_follow.lateral_offset += @floatFromInt(lane_delta);
+        if (self.attachment.launch.active) return;
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
+            self.attachment.follow.lateral_offset += @floatFromInt(lane_delta);
             return;
         }
         self.lane_center += @floatFromInt(lane_delta);
@@ -1230,30 +1207,30 @@ pub const Runner = struct {
     }
 
     fn applyTargetLaneCenter(self: *Runner, preview: *const track.LoadedLevelPreview, raw_target_lane_center: f32, delta_seconds: f32) void {
-        if (preview.total_rows == 0 or self.launch.active) return;
+        if (preview.total_rows == 0 or self.attachment.launch.active) return;
 
         const alpha = std.math.clamp(delta_seconds * mouse_steer_lerp_scale, 0.0, 1.0);
         const min_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.min)) + 0.5;
         const max_lane_center = @as(f32, @floatFromInt(self.traversable_bounds.max)) + 0.5;
         const target_lane_center = std.math.clamp(raw_target_lane_center, min_lane_center, max_lane_center);
 
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             if (self.currentAttachmentBuilt(preview)) |built| {
                 const target_world_position = trackEntryWorldPosition(preview, self.row_position, target_lane_center);
                 const centered_pose = attachment_builders.worldPoseForTemplate(
                     &built.template,
-                    self.attachment_follow.template_progress,
-                    self.attachment_follow.source_cell_row,
+                    self.attachment.follow.template_progress,
+                    self.attachment.follow.source_cell_row,
                     0.0,
-                    self.attachment_follow.vertical_offset,
+                    self.attachment.follow.vertical_offset,
                 );
                 const target_local = attachmentLocalPosition(centered_pose, target_world_position);
                 const target_lateral_offset = attachmentLateralOffsetFromLocalX(
                     &built.template,
-                    self.attachment_follow.template_progress,
+                    self.attachment.follow.template_progress,
                     target_local.x,
                 );
-                self.attachment_follow.lateral_offset += (target_lateral_offset - self.attachment_follow.lateral_offset) * alpha;
+                self.attachment.follow.lateral_offset += (target_lateral_offset - self.attachment.follow.lateral_offset) * alpha;
                 return;
             }
         }
@@ -1270,7 +1247,7 @@ pub const Runner = struct {
             self.current_gameplay_cell = null;
             self.current_runtime_tile_hint = null;
             self.current_path_name = null;
-            self.attachment_hint = .none;
+            self.attachment.hint = .none;
             self.path_center_lane = null;
             self.traversable_bounds = .{ .min = 0, .max = 0 };
             self.resolved_lane_index = 0;
@@ -1288,7 +1265,7 @@ pub const Runner = struct {
             self.current_gameplay_cell = null;
             self.current_runtime_tile_hint = null;
             self.current_path_name = null;
-            self.attachment_hint = .none;
+            self.attachment.hint = .none;
             self.path_center_lane = null;
             self.resolved_lane_index = 0;
             return;
@@ -1303,7 +1280,7 @@ pub const Runner = struct {
         self.current_runtime_tile_hint = sample.runtime_tile_hint;
         self.current_path_name = sample.path_name;
         self.path_center_lane = sample.path_center_lane;
-        self.attachment_hint = if (sample.gameplay_cell) |kind|
+        self.attachment.hint = if (sample.gameplay_cell) |kind|
             switch (kind) {
                 .attachment_entry => .entry,
                 .attachment_probe => .probe,
@@ -1311,9 +1288,9 @@ pub const Runner = struct {
             }
         else
             returnAttachmentHint(sample.path_center_lane);
-        if (self.attachment_follow.active and self.movement_mode == .attachment) {
-            self.lane_center = self.attachment_follow.cached_output_lane_center;
-            self.attachment_follow.cached_output_lane_center = self.lane_center;
+        if (self.attachment.follow.active and self.movement_mode == .attachment) {
+            self.lane_center = self.attachment.follow.cached_output_lane_center;
+            self.attachment.follow.cached_output_lane_center = self.lane_center;
             self.lane_index = sample.resolved_lane_index;
         } else if (self.replay_world_x_override) |world_x| {
             self.lane_center = laneCenterFromWorldX(preview, world_x);
@@ -1335,7 +1312,7 @@ pub const Runner = struct {
     fn applyReplayDirective(self: *Runner, preview: *const track.LoadedLevelPreview, replay: ReplayDirective) void {
         if (!replay.active) return;
         if (replay.lateral_world_x) |raw_world_x| {
-            if (self.phase != .active or self.movement_mode != .track or self.launch.active) return;
+            if (self.phase != .active or self.movement_mode != .track or self.attachment.launch.active) return;
             const world_x = std.math.clamp(raw_world_x, replay_world_x_min, replay_world_x_max);
             self.replay_world_x_override = world_x;
             self.lane_center = laneCenterFromWorldX(preview, world_x);
@@ -1366,14 +1343,14 @@ pub const Runner = struct {
     fn currentReplayWorldX(self: *const Runner) ?f32 {
         if (self.phase != .active) return null;
         if (self.movement_mode != .track) return null;
-        if (self.launch.active) return null;
+        if (self.attachment.launch.active) return null;
         return self.replay_world_x_override;
     }
 
     fn advanceMovement(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (preview.total_rows == 0 or self.finished) return;
 
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             self.advanceAttachmentFollow(preview);
             return;
         }
@@ -1472,9 +1449,9 @@ pub const Runner = struct {
             path_center_lane = (@as(f32, @floatFromInt(bounds.min + bounds.max)) * 0.5) + 0.5;
         }
 
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
             const target_lane_center = std.math.clamp(
-                self.attachment_follow.cached_output_lane_center,
+                self.attachment.follow.cached_output_lane_center,
                 @as(f32, @floatFromInt(traversable.min)) + 0.5,
                 @as(f32, @floatFromInt(traversable.max)) + 0.5,
             );
@@ -1535,7 +1512,7 @@ pub const Runner = struct {
             switch (annotation) {
                 .path => |path_name| {
                     if (self.movement_mode == .attachment) {
-                        self.attachment_path_name = path_name;
+                        self.attachment.path_name = path_name;
                     }
                 },
                 .ring => |ring_kind| {
@@ -1562,7 +1539,7 @@ pub const Runner = struct {
         // built attachment surface, not the original installed collision volumes. Until the
         // remaining local-frame collision ownership is ported, do not consume floor-level
         // gameplay cells beneath the rider while attached or airborne off an attachment.
-        if (self.movement_mode == .attachment or self.launch.active) return;
+        if (self.movement_mode == .attachment or self.attachment.launch.active) return;
 
         if (sample.cell == '=') {
             self.counters.turret_hits += 1;
@@ -1639,13 +1616,13 @@ pub const Runner = struct {
     }
 
     fn endAttachmentIfNeeded(self: *Runner, preview: *const track.LoadedLevelPreview) void {
-        if (self.movement_mode != .attachment or !self.attachment_follow.active or preview.total_rows == 0) return;
+        if (self.movement_mode != .attachment or !self.attachment.follow.active or preview.total_rows == 0) return;
         if (self.currentAttachmentBuilt(preview)) |built| {
             if (self.attachmentShouldSideExit(built)) {
                 self.beginFallState(preview, .fall, cutscene_none_id);
                 return;
             }
-            if (self.attachment_follow.sample_index >= built.template.sample_count) {
+            if (self.attachment.follow.sample_index >= built.template.sample_count) {
                 self.commitAttachmentNaturalExit(preview, built);
                 if (self.shouldRetireAttachmentDirectlyForCompletion(preview)) {
                     self.finishAttachmentFollowDirect();
@@ -2019,8 +1996,8 @@ pub const Runner = struct {
             48.0,
         );
 
-        if (self.movement_mode == .attachment and self.attachment_follow.active) {
-            self.attachment_follow.lateral_offset -= delta_x_normalized * speed_before * 0.18;
+        if (self.movement_mode == .attachment and self.attachment.follow.active) {
+            self.attachment.follow.lateral_offset -= delta_x_normalized * speed_before * 0.18;
             return;
         }
 
@@ -2109,7 +2086,7 @@ pub const Runner = struct {
             return;
         }
 
-        if (self.phase == .active and self.movement_mode == .track and !self.launch.active and preview.max_width != 0) {
+        if (self.phase == .active and self.movement_mode == .track and !self.attachment.launch.active and preview.max_width != 0) {
             const unclamped_lane_center = self.lane_center + self.native_velocity_x_per_tick;
             self.lane_center = std.math.clamp(
                 unclamped_lane_center,
@@ -2136,7 +2113,7 @@ pub const Runner = struct {
     // PORT(partial): Windows drives the attachment-side camera lift/FOV envelopes from the
     // player's overall attachment progress, `((player.z - source_cell_row_z) / sample_count_f32)`.
     pub fn currentAttachmentCameraProgress(self: *const Runner, preview: *const track.LoadedLevelPreview) ?AttachmentCameraProgress {
-        if (self.movement_mode != .attachment or !self.attachment_follow.active) return null;
+        if (self.movement_mode != .attachment or !self.attachment.follow.active) return null;
 
         const built = self.currentAttachmentBuilt(preview) orelse return null;
         const template_kind = built.template.spec.template_kind orelse return null;
@@ -2145,7 +2122,7 @@ pub const Runner = struct {
             0.0
         else
             std.math.clamp(
-                (self.playerWorldPosition(preview).z - @as(f32, @floatFromInt(self.attachment_follow.source_cell_row))) / sample_count,
+                (self.playerWorldPosition(preview).z - @as(f32, @floatFromInt(self.attachment.follow.source_cell_row))) / sample_count,
                 0.0,
                 1.0,
             );
@@ -2324,7 +2301,7 @@ pub const Runner = struct {
         fire_input_state: MovementFireInputState,
     ) void {
         if ((preview.runtime_build_flags & track.runtime_build_flag_movement_fire) == 0) return;
-        if (fire_input_state == .none or self.attachment_exit_pending or self.movement_fire_cooldown > 0.0) return;
+        if (fire_input_state == .none or self.attachment.exit.pending or self.movement_fire_cooldown > 0.0) return;
         self.spawnProjectiles(preview);
         self.shot_cooldown_ticks = 2;
         self.movement_fire_cooldown = if (fire_input_state == .fresh)
@@ -3727,7 +3704,7 @@ pub const Runner = struct {
     fn stepActivePhaseVerticalMotion(self: *Runner, preview: *const track.LoadedLevelPreview) void {
         if (self.phase != .active) return;
         if (self.movement_mode == .attachment) return;
-        if (self.launch.active) return;
+        if (self.attachment.launch.active) return;
 
         // Integrate (`0043b120-update_subgoldy.c:352`). Runs unconditionally in the
         // non-follow branch.
@@ -3746,9 +3723,9 @@ pub const Runner = struct {
         // `[-0.163, 0.49)` band over a tile that is neither open-neighbor family
         // (`{0x00, 0x0e, 0x1c, 0x1d, 0x23}`) nor the trampoline tile (`0x16`), native
         // snaps the rider back up to `0.49` when the velocity is non-positive, zeroes
-        // the post-trampoline-airborne flag, and clears `attachment_exit_pending`.
+        // the post-trampoline-airborne flag, and clears `attachment.exit.pending`.
         // The squidge burst at line 468 lands when the squidge controller is ported.
-        if (!self.attachment_follow.active and
+        if (!self.attachment.follow.active and
             self.position_y < native_grounded_snap_position_y_upper and
             self.position_y > native_grounded_snap_position_y_lower)
         {
@@ -3762,7 +3739,7 @@ pub const Runner = struct {
                     self.position_y = native_grounded_rider_height;
                     self.velocity_y = 0.0;
                 }
-                self.attachment_exit_pending = false;
+                self.attachment.exit.pending = false;
             }
         }
 
@@ -3775,7 +3752,7 @@ pub const Runner = struct {
             return;
         }
 
-        if (self.attachment_exit_pending) {
+        if (self.attachment.exit.pending) {
             // Pending-exit airborne branch (`0043b120-update_subgoldy.c:515-532`).
             // Native applies gravity once each tick while pending, then lets the
             // trampoline envelope bounce the rider off tile `0x16` when the
@@ -3793,7 +3770,7 @@ pub const Runner = struct {
                         {
                             self.velocity_y = native_track_center_x * 0.30000001;
                             self.position_y = cell_y + native_grounded_rider_height;
-                            self.attachment_exit_pending = false;
+                            self.attachment.exit.pending = false;
                             self.post_trampoline_airborne = true;
                             // Trampoline landing cue (`sfx 41`, `BOING`) and the
                             // squidge burst at `0043b120-update_subgoldy.c:525`
@@ -3843,12 +3820,12 @@ pub const Runner = struct {
         // Post-follow carryover arm at the tail of the else branch
         // (`artifacts/ida/functions/0043b120-update_subgoldy.c:581-583`): once
         // `position.y` has dipped below `0.0` with non-positive velocity, native
-        // calls `begin_post_follow_carryover` which arms `attachment_exit_pending`,
-        // latches `attachment_exit_anchor_z`, and resets the exit progress/gate
+        // calls `begin_post_follow_carryover` which arms `attachment.exit.pending`,
+        // latches `attachment.exit.anchor_z`, and resets the exit progress/gate
         // bytes. The next tick then flows through the pending-branch gravity +
         // trampoline envelope path above until the rider either dies at `y<-7`
         // or lands on a trampoline.
-        if (!self.attachment_exit_pending and
+        if (!self.attachment.exit.pending and
             self.position_y < 0.0 and
             self.velocity_y <= 0.0)
         {
@@ -3956,8 +3933,8 @@ pub const Runner = struct {
         // vertical velocity so the rider's knockback arc picks up the hit
         // impulse instead of starting from rest. The launch branch still wins
         // when a launch is in progress.
-        const initial_vertical_velocity = if (self.launch.active)
-            self.launch.vertical_velocity
+        const initial_vertical_velocity = if (self.attachment.launch.active)
+            self.attachment.launch.vertical_velocity
         else
             self.velocity_y;
 
@@ -3980,13 +3957,13 @@ pub const Runner = struct {
         }
         if (self.movement_mode == .attachment) {
             self.seedAttachmentExitStateFromCarryover(preview, frame.position.z);
-        } else if (self.attachment_exit_pending) {
+        } else if (self.attachment.exit.pending) {
             self.seedAttachmentExitStateFromCurrentExit(frame.position.z);
         } else if (cause == .fall) {
             self.seedAttachmentExitStateZeroed(frame.position.z);
         }
         self.paused = false;
-        self.launch = .{};
+        self.attachment.launch = .{};
         self.clearAttachmentFollow();
         self.syncTrackPositionFromWorld(preview, frame.position.x, frame.position.z);
         self.setCutscene(cutscene_id);
@@ -4011,7 +3988,7 @@ pub const Runner = struct {
             },
             .fall => |state| {
                 var next_state = state;
-                next_state.world_z = self.attachment_exit_anchor_z;
+                next_state.world_z = self.attachment.exit.anchor_z;
                 self.phase = .{ .fall = next_state };
                 const cutscene_finished = self.advanceCutsceneTicks();
                 self.stepAttachmentExitState(preview);
@@ -4020,8 +3997,8 @@ pub const Runner = struct {
                         next_state.world_y += next_state.vertical_velocity * delta_seconds;
                         next_state.vertical_velocity -= fall_gravity * delta_seconds;
                         self.phase = .{ .fall = next_state };
-                        if (!self.attachment_exit_gate_b and next_state.world_y < fall_world_y_threshold) {
-                            self.attachment_exit_gate_b = true;
+                        if (!self.attachment.exit.gate_b and next_state.world_y < fall_world_y_threshold) {
+                            self.attachment.exit.gate_b = true;
                         }
                         if (next_state.world_y > fall_world_y_threshold) return;
                     },
@@ -4050,8 +4027,8 @@ pub const Runner = struct {
         _ = preview;
         attachment_module.stepExitState(self);
         // The common pending-exit path only has a confirmed direct consumer for
-        // `post_follow_value_a`. Preserve the carryover angle here instead of synthesizing a
-        // shared `post_follow_value_b`-driven update that static RE has not closed yet.
+        // `attachment.exit.post_follow_value_a`. Preserve the carryover angle here instead of synthesizing a
+        // shared `attachment.exit.post_follow_value_b`-driven update that static RE has not closed yet.
     }
 
     fn deathUsesFinalLoss(self: *const Runner) bool {
@@ -4063,8 +4040,8 @@ pub const Runner = struct {
     }
 
     fn currentAttachmentBuilt(self: *const Runner, preview: *const track.LoadedLevelPreview) ?*const attachment_builders.BuiltAttachment {
-        if (!self.attachment_follow.active) return null;
-        return preview.builtAttachmentForSourceRow(self.attachment_follow.source_cell_row);
+        if (!self.attachment.follow.active) return null;
+        return preview.builtAttachmentForSourceRow(self.attachment.follow.source_cell_row);
     }
 
     pub fn currentAttachmentTemplateKind(self: *const Runner, preview: *const track.LoadedLevelPreview) ?u8 {
@@ -4111,12 +4088,12 @@ pub const Runner = struct {
         const exit_world_position = attachment_builders.worldPositionForTemplate(
             &built.template,
             @floatFromInt(built.template.sample_count),
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
         );
         self.row_position = exit_world_position.z + built.template.exit_tail_extra;
-        self.row_position += self.attachment_follow.exit_overshoot;
+        self.row_position += self.attachment.follow.exit_overshoot;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = preview.laneIndexAtWorldX(exit_world_position.x);
@@ -4134,20 +4111,20 @@ pub const Runner = struct {
         const end_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
             final_progress,
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
         );
         const end_position = attachment_builders.worldPositionForTemplate(
             &built.template,
             sample_count_f,
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
         );
         const last_delta_length = attachment_builders.deltaLengthAtProgress(&built.template, final_progress);
         const launch_factor = std.math.clamp(self.movement_rate_scalar * last_delta_length, 0.0, 1.0);
-        const exit_world_x = self.attachment_follow.cached_output_position.x;
+        const exit_world_x = self.attachment.follow.cached_output_position.x;
         const exit_lane = preview.laneIndexAtWorldX(exit_world_x);
         const exit_floor_y = preview.sampleFloorHeightAtGridPosition(
             currentRowIndex(preview, end_position.z),
@@ -4155,13 +4132,13 @@ pub const Runner = struct {
             end_position.z,
         ) orelse 0.0;
 
-        self.row_position = end_position.z + built.template.exit_tail_extra + self.attachment_follow.exit_overshoot;
+        self.row_position = end_position.z + built.template.exit_tail_extra + self.attachment.follow.exit_overshoot;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.movement_progress = self.row_position - @floor(self.row_position);
         self.lane_index = exit_lane;
         self.resolved_lane_index = exit_lane;
         self.lane_center = laneCenterFromWorldX(preview, exit_world_x);
-        self.launch = .{
+        self.attachment.launch = .{
             .active = true,
             .world_x = exit_world_x,
             .height = @max(0.6, end_position.y - exit_floor_y),
@@ -4177,10 +4154,10 @@ pub const Runner = struct {
         return attachment_module.shouldSideExit(
             built,
             self.jetpack.active,
-            self.attachment_follow.vertical_offset,
-            self.attachment_follow.template_progress,
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
+            self.attachment.follow.template_progress,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
         );
     }
 
@@ -4195,10 +4172,10 @@ pub const Runner = struct {
     ) void {
         const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            self.attachment_follow.template_progress,
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
+            self.attachment.follow.template_progress,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
         );
         const clamped_world_x = std.math.clamp(world_pose.position.x, -4.0, 4.0);
         self.row_position = world_pose.position.z;
@@ -4215,7 +4192,7 @@ pub const Runner = struct {
         ) orelse 0.0;
         const exit_height = @max(0.0, world_pose.position.y - floor_y);
         if (exit_height > 0.001) {
-            self.launch = .{
+            self.attachment.launch = .{
                 .active = true,
                 .world_x = clamped_world_x,
                 .height = exit_height,
@@ -4234,12 +4211,12 @@ pub const Runner = struct {
         self.syncAttachmentFollowTemplateProgress(built);
         const position = self.attachmentFollowOutputPosition(built);
         self.updateAttachmentFollowCameraOrientations(built);
-        self.attachment_follow.cached_output_position = position;
+        self.attachment.follow.cached_output_position = position;
         self.row_position = position.z;
         self.runtime_track_index = currentRowIndex(preview, self.row_position);
         self.movement_progress = self.row_position - @floor(self.row_position);
-        self.attachment_follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
-        self.lane_center = self.attachment_follow.cached_output_lane_center;
+        self.attachment.follow.cached_output_lane_center = laneCenterFromWorldX(preview, position.x);
+        self.lane_center = self.attachment.follow.cached_output_lane_center;
         self.resolved_lane_index = preview.laneIndexAtWorldX(position.x);
     }
 
@@ -4247,26 +4224,26 @@ pub const Runner = struct {
         self: *Runner,
         built: *const attachment_builders.BuiltAttachment,
     ) void {
-        if (self.attachment_follow.sample_index != 0 or self.attachment_follow.local_progress != 0.0) return;
-        if (self.attachment_follow.template_progress <= 0.0) return;
+        if (self.attachment.follow.sample_index != 0 or self.attachment.follow.local_progress != 0.0) return;
+        if (self.attachment.follow.template_progress <= 0.0) return;
 
         const sample_count = built.template.sample_count;
         const sample_count_f: f32 = @floatFromInt(sample_count);
-        const clamped_progress = std.math.clamp(self.attachment_follow.template_progress, 0.0, sample_count_f);
+        const clamped_progress = std.math.clamp(self.attachment.follow.template_progress, 0.0, sample_count_f);
         if (clamped_progress >= sample_count_f) {
-            self.attachment_follow.sample_index = sample_count;
-            self.attachment_follow.local_progress = 0.0;
-            self.attachment_follow.progress = 0.0;
-            self.attachment_follow.template_progress = sample_count_f;
+            self.attachment.follow.sample_index = sample_count;
+            self.attachment.follow.local_progress = 0.0;
+            self.attachment.follow.progress = 0.0;
+            self.attachment.follow.template_progress = sample_count_f;
             return;
         }
 
         const sample_index = @as(usize, @intFromFloat(@floor(clamped_progress)));
         const sample_index_f: f32 = @floatFromInt(sample_index);
         const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
-        self.attachment_follow.sample_index = sample_index;
-        self.attachment_follow.local_progress = (clamped_progress - sample_index_f) * delta_length;
-        self.attachment_follow.progress = self.attachment_follow.local_progress;
+        self.attachment.follow.sample_index = sample_index;
+        self.attachment.follow.local_progress = (clamped_progress - sample_index_f) * delta_length;
+        self.attachment.follow.progress = self.attachment.follow.local_progress;
     }
 
     fn syncAttachmentFollowTemplateProgress(
@@ -4275,20 +4252,20 @@ pub const Runner = struct {
     ) void {
         const sample_count = built.template.sample_count;
         const sample_count_f: f32 = @floatFromInt(sample_count);
-        if (self.attachment_follow.sample_index >= sample_count) {
-            self.attachment_follow.progress = self.attachment_follow.local_progress;
-            self.attachment_follow.template_progress = sample_count_f;
+        if (self.attachment.follow.sample_index >= sample_count) {
+            self.attachment.follow.progress = self.attachment.follow.local_progress;
+            self.attachment.follow.template_progress = sample_count_f;
             return;
         }
 
-        const sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+        const sample_index_f: f32 = @floatFromInt(self.attachment.follow.sample_index);
         const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
         const normalized_local_progress = if (delta_length <= 0.0001)
             0.0
         else
-            self.attachment_follow.local_progress / delta_length;
-        self.attachment_follow.progress = self.attachment_follow.local_progress;
-        self.attachment_follow.template_progress = sample_index_f + normalized_local_progress;
+            self.attachment.follow.local_progress / delta_length;
+        self.attachment.follow.progress = self.attachment.follow.local_progress;
+        self.attachment.follow.template_progress = sample_index_f + normalized_local_progress;
     }
 
     fn stepAttachmentFollowAtRate(
@@ -4307,20 +4284,20 @@ pub const Runner = struct {
         self.syncAttachmentFollowNativeProgressFromTemplateProgress(built);
 
         const sample_count = built.template.sample_count;
-        self.attachment_follow.exit_overshoot = 0.0;
-        if (sample_count > 0 and self.attachment_follow.sample_index < sample_count) {
-            const current_sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+        self.attachment.follow.exit_overshoot = 0.0;
+        if (sample_count > 0 and self.attachment.follow.sample_index < sample_count) {
+            const current_sample_index_f: f32 = @floatFromInt(self.attachment.follow.sample_index);
             var remaining_local_progress =
                 @max(path_factor, 0.0) *
                 attachment_builders.deltaLengthAtProgress(&built.template, current_sample_index_f);
 
-            while (remaining_local_progress > 0.0 and self.attachment_follow.sample_index < sample_count) {
-                const sample_index_f: f32 = @floatFromInt(self.attachment_follow.sample_index);
+            while (remaining_local_progress > 0.0 and self.attachment.follow.sample_index < sample_count) {
+                const sample_index_f: f32 = @floatFromInt(self.attachment.follow.sample_index);
                 const delta_length = attachment_builders.deltaLengthAtProgress(&built.template, sample_index_f);
-                const segment_remaining = @max(0.0, delta_length - self.attachment_follow.local_progress);
+                const segment_remaining = @max(0.0, delta_length - self.attachment.follow.local_progress);
                 if (remaining_local_progress <= segment_remaining) {
-                    self.attachment_follow.local_progress = std.math.clamp(
-                        self.attachment_follow.local_progress + remaining_local_progress,
+                    self.attachment.follow.local_progress = std.math.clamp(
+                        self.attachment.follow.local_progress + remaining_local_progress,
                         0.0,
                         delta_length,
                     );
@@ -4329,20 +4306,20 @@ pub const Runner = struct {
                 }
 
                 remaining_local_progress -= segment_remaining;
-                self.attachment_follow.sample_index += 1;
-                self.attachment_follow.local_progress = 0.0;
+                self.attachment.follow.sample_index += 1;
+                self.attachment.follow.local_progress = 0.0;
             }
 
-            if (self.attachment_follow.sample_index >= sample_count) {
-                self.attachment_follow.exit_overshoot = std.math.clamp(remaining_local_progress, 0.0, 0.999000013);
+            if (self.attachment.follow.sample_index >= sample_count) {
+                self.attachment.follow.exit_overshoot = std.math.clamp(remaining_local_progress, 0.0, 0.999000013);
             }
         }
 
-        self.heading_roll += self.attachment_follow.installed_heading_delta;
+        self.attachment.camera.heading_roll += self.attachment.follow.installed_heading_delta;
         self.syncAttachmentFollowTemplateProgress(built);
         self.updateAttachmentFollowPosition(preview);
-        if (self.attachment_follow.vertical_offset < 0.0) {
-            self.attachment_follow.vertical_offset = 0.0;
+        if (self.attachment.follow.vertical_offset < 0.0) {
+            self.attachment.follow.vertical_offset = 0.0;
         }
     }
 
@@ -4360,12 +4337,12 @@ pub const Runner = struct {
         // wrapped interpolation.
         const sample_count: f32 = @floatFromInt(built.template.sample_count);
         if (sample_count <= 0.0 or built.template.samples.len == 0) {
-            self.attachment_follow.camera_orientation_a = 0.0;
-            self.attachment_follow.camera_orientation_b = 0.0;
+            self.attachment.follow.camera_orientation_a = 0.0;
+            self.attachment.follow.camera_orientation_b = 0.0;
             return;
         }
 
-        const clamped_progress = std.math.clamp(self.attachment_follow.template_progress, 0.0, sample_count);
+        const clamped_progress = std.math.clamp(self.attachment.follow.template_progress, 0.0, sample_count);
         const segment_base_index = @min(
             @as(usize, @intFromFloat(@floor(clamped_progress))),
             @as(usize, built.template.sample_count - 1),
@@ -4380,19 +4357,19 @@ pub const Runner = struct {
 
         const sample_orientation_a = attachmentSampleOrientationA(&built.template.samples[segment_base_index]);
         if (segment_base_index + 1 >= built.template.samples.len or segment_base_index + 1 >= built.template.sample_count) {
-            self.attachment_follow.camera_orientation_a = sample_orientation_a;
+            self.attachment.follow.camera_orientation_a = sample_orientation_a;
         } else {
             const next_sample_orientation_a = attachmentSampleOrientationA(&built.template.samples[segment_base_index + 1]);
-            self.attachment_follow.camera_orientation_a =
+            self.attachment.follow.camera_orientation_a =
                 interpolateWrappedRadians(sample_orientation_a, next_sample_orientation_a, normalized_segment_progress);
         }
 
-        if (self.attachment_follow.installed_heading_delta == 0.0) {
-            self.attachment_follow.camera_orientation_b = 0.0;
+        if (self.attachment.follow.installed_heading_delta == 0.0) {
+            self.attachment.follow.camera_orientation_b = 0.0;
             return;
         }
-        self.attachment_follow.camera_orientation_b =
-            ((segment_base_progress + normalized_segment_progress) * self.attachment_follow.installed_heading_delta) / sample_count;
+        self.attachment.follow.camera_orientation_b =
+            ((segment_base_progress + normalized_segment_progress) * self.attachment.follow.installed_heading_delta) / sample_count;
     }
 
     fn attachmentFollowOutputPosition(
@@ -4401,10 +4378,10 @@ pub const Runner = struct {
     ) attachment_builders.Vec3 {
         const raw_position = attachment_builders.worldPositionForTemplate(
             &built.template,
-            self.attachment_follow.template_progress,
-            self.attachment_follow.source_cell_row,
-            self.attachment_follow.lateral_offset,
-            self.attachment_follow.vertical_offset,
+            self.attachment.follow.template_progress,
+            self.attachment.follow.source_cell_row,
+            self.attachment.follow.lateral_offset,
+            self.attachment.follow.vertical_offset,
         );
         const position: attachment_builders.Vec3 = switch (built.template.spec.family) {
             .nonlinear_42 => raw_position,
@@ -4461,15 +4438,15 @@ pub const Runner = struct {
                 }).x,
             );
         }
-        self.launch = .{};
+        self.attachment.launch = .{};
         self.movement_mode = .attachment;
-        self.attachment_path_name = sample.path_name;
+        self.attachment.path_name = sample.path_name;
         const installed_heading_delta = if (preview.builtAttachmentForSourceRow(sample.global_row)) |built|
             built.template.installed_heading_delta
         else
             0.0;
         const local_progress = self.row_position - source_cell_row;
-        self.attachment_follow = .{
+        self.attachment.follow = .{
             .active = true,
             .source_cell_row = sample.global_row,
             .sample_index = 0,
@@ -4489,11 +4466,11 @@ pub const Runner = struct {
     }
 
     fn beginInstalledAttachmentFollow(self: *Runner, preview: *const track.LoadedLevelPreview, built: *const attachment_builders.BuiltAttachment, entry: InstalledAttachmentEntry) void {
-        self.launch = .{};
+        self.attachment.launch = .{};
         self.movement_mode = .attachment;
-        self.attachment_path_name = built.row.raw_name;
+        self.attachment.path_name = built.row.raw_name;
 
-        self.attachment_follow = .{
+        self.attachment.follow = .{
             .active = true,
             .source_cell_row = built.row.global_row,
             .sample_index = entry.sample_index,
@@ -4564,7 +4541,7 @@ pub const Runner = struct {
         global_row: usize,
     ) ?InstalledAttachmentEntry {
         // PORT(verified): `update_subgoldy` calls `begin_track_attachment_follow_state`
-        // directly from the current runtime attachment cell when `attachment_exit_pending`
+        // directly from the current runtime attachment cell when `attachment.exit.pending`
         // is clear. That begin path seeds progress from the current row cell, not only from
         // the attachment source row, so use the current installed row span here.
         const sample_index = global_row - built.row.global_row;
@@ -4669,8 +4646,8 @@ pub const Runner = struct {
 
     fn clearAttachmentFollow(self: *Runner) void {
         self.movement_mode = .track;
-        self.attachment_path_name = null;
-        self.attachment_follow = .{};
+        self.attachment.path_name = null;
+        self.attachment.follow = .{};
     }
 
     fn attachmentLateralOffsetFromLocalX(
@@ -4684,7 +4661,7 @@ pub const Runner = struct {
     pub fn attachmentExitCarryoverFromFollow(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
         _ = self.currentAttachmentBuilt(preview) orelse {
             return .{
-                .carryover_a = self.attachment_camera_orientation_b,
+                .carryover_a = self.attachment.camera.orientation_b,
                 .carryover_b = 0.0,
             };
         };
@@ -4692,30 +4669,30 @@ pub const Runner = struct {
         return .{
             // Native fall-state init copies `follow_state.orientation_b`, which is the
             // attachment phase lane rather than a sampled roll proxy.
-            .carryover_a = self.attachment_follow.camera_orientation_b,
+            .carryover_a = self.attachment.follow.camera_orientation_b,
             // Native fall-state init copies the live follow record's install-time scalar into
-            // `post_follow_value_b`, including zero. Keep that carryover value, but do not
+            // `attachment.exit.post_follow_value_b`, including zero. Keep that carryover value, but do not
             // assign a common runtime consumer beyond the write itself until RE closes one.
-            .carryover_b = self.attachment_follow.installed_heading_delta,
+            .carryover_b = self.attachment.follow.installed_heading_delta,
         };
     }
 
     fn currentAttachmentExitCarryover(self: *const Runner, preview: *const track.LoadedLevelPreview) AttachmentExitCarryover {
-        if (self.attachment_follow.active) {
-            if (self.attachment_follow.exit_carryover_a != 0.0 or
-                self.attachment_follow.exit_carryover_b != 0.0)
+        if (self.attachment.follow.active) {
+            if (self.attachment.follow.exit_carryover_a != 0.0 or
+                self.attachment.follow.exit_carryover_b != 0.0)
             {
                 return .{
-                    .carryover_a = self.attachment_follow.exit_carryover_a,
-                    .carryover_b = self.attachment_follow.exit_carryover_b,
+                    .carryover_a = self.attachment.follow.exit_carryover_a,
+                    .carryover_b = self.attachment.follow.exit_carryover_b,
                 };
             }
             return self.attachmentExitCarryoverFromFollow(preview);
         }
 
         return .{
-            .carryover_a = self.attachment_exit_carryover_a,
-            .carryover_b = self.attachment_exit_carryover_b,
+            .carryover_a = self.attachment.exit.carryover_a,
+            .carryover_b = self.attachment.exit.carryover_b,
         };
     }
 
@@ -4724,19 +4701,19 @@ pub const Runner = struct {
     }
 
     fn seedAttachmentExitStateFromCarryover(self: *Runner, preview: *const track.LoadedLevelPreview, anchor_z: f32) void {
-        const exit_carryover = if (self.movement_mode == .attachment and self.attachment_follow.active)
+        const exit_carryover = if (self.movement_mode == .attachment and self.attachment.follow.active)
             self.currentAttachmentExitCarryover(preview)
         else
             AttachmentExitCarryover{
-                .carryover_a = self.attachment_exit_carryover_a,
-                .carryover_b = self.attachment_exit_carryover_b,
+                .carryover_a = self.attachment.exit.carryover_a,
+                .carryover_b = self.attachment.exit.carryover_b,
             };
         self.beginAttachmentExitState(anchor_z);
-        self.post_follow_value_a = exit_carryover.carryover_a;
-        self.post_follow_value_b = exit_carryover.carryover_b;
-        self.attachment_exit_carryover_a = exit_carryover.carryover_a;
-        self.attachment_exit_carryover_b = exit_carryover.carryover_b;
-        self.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
+        self.attachment.exit.post_follow_value_a = exit_carryover.carryover_a;
+        self.attachment.exit.post_follow_value_b = exit_carryover.carryover_b;
+        self.attachment.exit.carryover_a = exit_carryover.carryover_a;
+        self.attachment.exit.carryover_b = exit_carryover.carryover_b;
+        self.attachment.camera.previous_heading_roll_sample = rollRadiansFromForwardUp(self.worldForward(preview), self.worldUp(preview));
     }
 
     fn seedAttachmentExitStateFromCurrentExit(self: *Runner, anchor_z: f32) void {
@@ -4748,7 +4725,7 @@ pub const Runner = struct {
     }
 
     fn shouldRetireAttachmentDirectlyForCompletion(self: *const Runner, preview: *const track.LoadedLevelPreview) bool {
-        if (self.launch.active) return false;
+        if (self.attachment.launch.active) return false;
         return self.routeEndReached(preview);
     }
 
@@ -4764,23 +4741,23 @@ pub const Runner = struct {
     }
 
     fn updateLaunch(self: *Runner, preview: *const track.LoadedLevelPreview, delta_seconds: f32) void {
-        if (!self.launch.active) return;
+        if (!self.attachment.launch.active) return;
 
-        if (self.launch.camera_progress_step > 0.0) {
-            self.launch.camera_progress = std.math.clamp(
-                self.launch.camera_progress + self.launch.camera_progress_step,
+        if (self.attachment.launch.camera_progress_step > 0.0) {
+            self.attachment.launch.camera_progress = std.math.clamp(
+                self.attachment.launch.camera_progress + self.attachment.launch.camera_progress_step,
                 0.0,
                 1.0,
             );
         }
-        self.launch.height = @max(0.0, self.launch.height + (self.launch.vertical_velocity * delta_seconds));
-        self.launch.vertical_velocity -= supertramp_launch_gravity * delta_seconds;
-        self.lane_center = laneCenterFromWorldX(preview, self.launch.world_x);
-        self.lane_index = preview.laneIndexAtWorldX(self.launch.world_x);
+        self.attachment.launch.height = @max(0.0, self.attachment.launch.height + (self.attachment.launch.vertical_velocity * delta_seconds));
+        self.attachment.launch.vertical_velocity -= supertramp_launch_gravity * delta_seconds;
+        self.lane_center = laneCenterFromWorldX(preview, self.attachment.launch.world_x);
+        self.lane_index = preview.laneIndexAtWorldX(self.attachment.launch.world_x);
         self.resolved_lane_index = self.lane_index;
 
-        if (self.launch.height > 0.0 or self.launch.vertical_velocity > 0.0) return;
-        self.launch = .{};
+        if (self.attachment.launch.height > 0.0 or self.attachment.launch.vertical_velocity > 0.0) return;
+        self.attachment.launch = .{};
     }
 
     pub fn applyRespawn(self: *Runner, preview: *const track.LoadedLevelPreview) void {
@@ -5347,8 +5324,8 @@ test "rolled attachments publish camera orientation a from sample roll" {
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "INVERT";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "INVERT";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 8.5,
@@ -5358,7 +5335,7 @@ test "rolled attachments publish camera orientation a from sample roll" {
 
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     const clamped_progress = std.math.clamp(
-        runner.attachment_follow.template_progress,
+        runner.attachment.follow.template_progress,
         0.0,
         @as(f32, @floatFromInt(built.template.sample_count)),
     );
@@ -5379,8 +5356,8 @@ test "rolled attachments publish camera orientation a from sample roll" {
     );
 
     try std.testing.expect(@abs(expected) > 0.0001);
-    try std.testing.expectApproxEqAbs(expected, runner.attachment_follow.camera_orientation_a, 0.0001);
-    try std.testing.expectApproxEqAbs(expected, runner.attachment_camera_orientation_a, 0.0001);
+    try std.testing.expectApproxEqAbs(expected, runner.attachment.follow.camera_orientation_a, 0.0001);
+    try std.testing.expectApproxEqAbs(expected, runner.attachment.camera.orientation_a, 0.0001);
 }
 
 test "rolled attachments use world x for side-exit threshold" {
@@ -5409,8 +5386,8 @@ test "rolled attachments use world x for side-exit threshold" {
 
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "INVERT";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "INVERT";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = template_progress,
@@ -5451,8 +5428,8 @@ test "attachment side exit uses subdivision count rather than template width" {
 
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "WORM";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "WORM";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 12.0,
@@ -5470,8 +5447,8 @@ test "attachment follow advances template progress by path factor" {
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "WORM";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "WORM";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.0,
@@ -5485,7 +5462,7 @@ test "attachment follow advances template progress by path factor" {
     runner.movement_rate_scalar = 0.25;
     runner.advanceAttachmentFollow(&fixture.preview);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 5.25), runner.attachment_follow.template_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.25), runner.attachment.follow.template_progress, 0.0001);
 }
 
 test "installed attachment begin preserves raw local progress and advances once immediately" {
@@ -5504,9 +5481,9 @@ test "installed attachment begin preserves raw local progress and advances once 
     runner.beginInstalledAttachmentFollow(&fixture.preview, built, entry);
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectEqual(@as(usize, 0), runner.attachment_follow.sample_index);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment_follow.template_progress, 0.0001);
+    try std.testing.expect(runner.attachment.follow.active);
+    try std.testing.expectEqual(@as(usize, 0), runner.attachment.follow.sample_index);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment.follow.template_progress, 0.0001);
 }
 
 test "attachment follow updates heading roll from the live phase scalar" {
@@ -5517,8 +5494,8 @@ test "attachment follow updates heading roll from the live phase scalar" {
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "WORM";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "WORM";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.0,
@@ -5528,8 +5505,8 @@ test "attachment follow updates heading roll from the live phase scalar" {
 
     runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
 
-    try std.testing.expectApproxEqAbs(built.template.installed_heading_delta, runner.heading_roll, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment_follow.template_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(built.template.installed_heading_delta, runner.attachment.camera.heading_roll, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.attachment.follow.template_progress, 0.0001);
 }
 
 test "attachment follow keeps zero phase scalar on position refresh" {
@@ -5539,8 +5516,8 @@ test "attachment follow keeps zero phase scalar on position refresh" {
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "WORM";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "WORM";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.0,
@@ -5549,8 +5526,8 @@ test "attachment follow keeps zero phase scalar on position refresh" {
 
     runner.updateAttachmentFollowPosition(&fixture.preview);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.installed_heading_delta, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.camera_orientation_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.follow.installed_heading_delta, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.follow.camera_orientation_b, 0.0001);
 }
 
 test "attachment follow clamps negative vertical offset after live update" {
@@ -5562,8 +5539,8 @@ test "attachment follow clamps negative vertical offset after live update" {
 
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "START";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "START";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.0,
@@ -5571,17 +5548,17 @@ test "attachment follow clamps negative vertical offset after live update" {
     };
 
     runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_follow.vertical_offset, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.follow.vertical_offset, 0.0001);
 
     runner.stepAttachmentFollowAtRate(&fixture.preview, 0.0);
     const expected_world = attachment_builders.worldPositionForTemplate(
         &built.template,
-        runner.attachment_follow.template_progress,
+        runner.attachment.follow.template_progress,
         target.row,
-        runner.attachment_follow.lateral_offset,
+        runner.attachment.follow.lateral_offset,
         0.0,
     );
-    try std.testing.expectApproxEqAbs(expected_world.y + attachment_entry_rider_height, runner.attachment_follow.cached_output_position.y, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_world.y + attachment_entry_rider_height, runner.attachment.follow.cached_output_position.y, 0.0001);
 }
 
 test "attachment follow clamps output x to gameplay bounds" {
@@ -5602,8 +5579,8 @@ test "attachment follow clamps output x to gameplay bounds" {
 
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "START";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "START";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.0,
@@ -5611,7 +5588,7 @@ test "attachment follow clamps output x to gameplay bounds" {
     };
     runner.updateAttachmentFollowPosition(&fixture.preview);
 
-    try std.testing.expectApproxEqAbs(expected_clamped_x, runner.attachment_follow.cached_output_position.x, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_clamped_x, runner.attachment.follow.cached_output_position.x, 0.0001);
     try std.testing.expectApproxEqAbs(expected_clamped_x, runner.worldPosition(&fixture.preview, 0.0).x, 0.0001);
 }
 
@@ -5622,8 +5599,8 @@ test "attachment camera lift uses overall attachment progress" {
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "START";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "START";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = 5.5,
@@ -5693,7 +5670,7 @@ test "runner discovers attachment hint rows in shipped corpus" {
     var found_attachment_hint = false;
     for (0..1024) |_| {
         runner.step(&preview, .{}, 1.0 / 60.0);
-        if (runner.attachment_hint != .none) {
+        if (runner.attachment.hint != .none) {
             found_attachment_hint = true;
             break;
         }
@@ -6575,7 +6552,7 @@ test "movement fire is suppressed while attachment exit is pending" {
     var runner = Runner.init(&fixture.preview);
     runner.configureSessionMode(.tutorial);
     runner.reset(&fixture.preview);
-    runner.attachment_exit_pending = true;
+    runner.attachment.exit.pending = true;
 
     runner.handleFireInput(&fixture.preview, .fresh);
     try std.testing.expectEqual(@as(usize, 0), runner.combat.projectiles.count);
@@ -7196,8 +7173,8 @@ test "parcel home flight lifts presentation along the live basis up" {
     const target = findFirstGameplayCell(&fixture.preview, .attachment_entry).?;
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "LOOPBOW";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "LOOPBOW";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = @as(f32, @floatFromInt(built.template.sample_count)) * 0.25,
@@ -7641,8 +7618,8 @@ test "runtime lane-roll tile families arm cameraman roll without input steering"
     }
     const leaned = cameraTransformFromMatrix(runner.cameramanMatrix());
 
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.lane_lean_amplitude, 0.0001);
-    try std.testing.expect(runner.lane_lean_progress > 0.0);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.attachment.lane_lean.amplitude, 0.0001);
+    try std.testing.expect(runner.attachment.lane_lean.progress > 0.0);
     try std.testing.expect(@abs(leaned.right.y - baseline.right.y) > 0.005);
 }
 
@@ -7659,8 +7636,8 @@ test "lane input alone no longer arms cameraman roll on neutral tiles" {
 
     runner.step(&fixture.preview, .{ .lane_delta = 1 }, 1.0 / 60.0);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.lane_lean_amplitude, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.lane_lean_progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.lane_lean.amplitude, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.lane_lean.progress, 0.0001);
 }
 
 test "fall state keeps Z anchored and preserves carried follow roll" {
@@ -7669,14 +7646,14 @@ test "fall state keeps Z anchored and preserves carried follow roll" {
 
     var runner = Runner.init(&fixture.preview);
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.post_follow_value_a = 0.25;
-    runner.post_follow_value_b = 0.5;
-    const anchor_z = runner.attachment_exit_anchor_z;
+    runner.attachment.exit.post_follow_value_a = 0.25;
+    runner.attachment.exit.post_follow_value_b = 0.5;
+    const anchor_z = runner.attachment.exit.anchor_z;
 
     runner.updatePhaseController(&fixture.preview, 1.0 / 60.0);
 
     try std.testing.expectApproxEqAbs(anchor_z, runner.phase.fall.world_z, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.post_follow_value_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.25), runner.attachment.exit.post_follow_value_a, 0.0001);
 }
 
 test "active jetpack retires attachment exit before the late progress gates" {
@@ -7684,15 +7661,15 @@ test "active jetpack retires attachment exit before the late progress gates" {
     defer fixture.deinit();
 
     var runner = Runner.init(&fixture.preview);
-    runner.attachment_exit_pending = true;
-    runner.attachment_exit_progress = 0.5;
+    runner.attachment.exit.pending = true;
+    runner.attachment.exit.progress = 0.5;
     runner.armJetpackGauge();
 
     runner.stepAttachmentExitState(&fixture.preview);
 
-    try std.testing.expect(!runner.attachment_exit_pending);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment_exit_progress, 0.0001);
-    try std.testing.expect(!runner.attachment_exit_gate_a);
+    try std.testing.expect(!runner.attachment.exit.pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.5), runner.attachment.exit.progress, 0.0001);
+    try std.testing.expect(!runner.attachment.exit.gate_a);
 }
 
 test "fall-phase attachment exit progress no longer clears pending at one second" {
@@ -7701,13 +7678,13 @@ test "fall-phase attachment exit progress no longer clears pending at one second
 
     var runner = Runner.init(&fixture.preview);
     runner.beginFallState(&fixture.preview, .fall, cutscene_none_id);
-    runner.attachment_exit_progress = 0.99;
-    runner.attachment_exit_progress_step = attachment_exit_progress_step_default;
+    runner.attachment.exit.progress = 0.99;
+    runner.attachment.exit.progress_step = attachment_exit_progress_step_default;
 
     runner.stepAttachmentExitState(&fixture.preview);
 
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.attachment_exit_progress, 0.0001);
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.0), runner.attachment.exit.progress, 0.0001);
 }
 
 test "runner completion enters the delayed handoff controller" {
@@ -7777,8 +7754,8 @@ test "completion does not arm while attachment follow is still active at route e
 
     var runner = Runner.init(&fixture.preview);
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "START";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "START";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = @as(f32, @floatFromInt(built.template.sample_count)) - 0.5,
@@ -8095,7 +8072,7 @@ test "runner records attachment entry and jetpack pickup from shipped levels" {
     try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
     try std.testing.expectEqualStrings("attachment_begin", runner.recentEventLabel());
     try std.testing.expect(runner.activePathName() != null);
-    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expect(runner.attachment.follow.active);
 
     var jetpack_fixture = try TestFixture.load("LEVELS/ARCADE007.TXT");
     defer jetpack_fixture.deinit();
@@ -8144,14 +8121,14 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expect(runner.attachment.follow.active);
     const built = fixture.preview.installedBuiltAttachmentAtRow(target.row).?;
     const centered_pose = attachment_builders.worldPoseForTemplate(
         &built.template,
-        runner.attachment_follow.template_progress,
+        runner.attachment.follow.template_progress,
         built.row.global_row,
         0.0,
-        runner.attachment_follow.vertical_offset,
+        runner.attachment.follow.vertical_offset,
     );
     const entry_world_position = Runner.trackEntryWorldPosition(
         &fixture.preview,
@@ -8161,9 +8138,9 @@ test "attachment follow preserves lateral offset instead of snapping to the path
     const centered_lane_center = Runner.laneCenterFromWorldX(&fixture.preview, centered_pose.position.x);
     try std.testing.expectApproxEqAbs(target.path_center_lane, runner.path_center_lane.?, 0.001);
     try std.testing.expect(@abs(runner.lane_center - target.path_center_lane) > 0.1);
-    try std.testing.expect(@abs(runner.attachment_follow.lateral_offset) > 0.1);
-    try std.testing.expect(runner.attachment_follow.lateral_offset * entry_lateral_sign > 0.0);
-    try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment_follow.lateral_offset > 0.0);
+    try std.testing.expect(@abs(runner.attachment.follow.lateral_offset) > 0.1);
+    try std.testing.expect(runner.attachment.follow.lateral_offset * entry_lateral_sign > 0.0);
+    try std.testing.expect((runner.lane_center - centered_lane_center) * runner.attachment.follow.lateral_offset > 0.0);
     try std.testing.expect(@abs(Runner.attachmentLocalPosition(centered_pose, entry_world_position).x) > 0.1);
 }
 
@@ -8181,9 +8158,9 @@ test "standalone start segment attachment follow seeds generic entry from player
     runner.beginAttachmentFollow(&fixture.preview, sample);
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectApproxEqAbs(expected_progress, runner.attachment_follow.progress, 0.0001);
-    try std.testing.expectApproxEqAbs(expected_vertical_offset, runner.attachment_follow.vertical_offset, 0.0001);
+    try std.testing.expect(runner.attachment.follow.active);
+    try std.testing.expectApproxEqAbs(expected_progress, runner.attachment.follow.progress, 0.0001);
+    try std.testing.expectApproxEqAbs(expected_vertical_offset, runner.attachment.follow.vertical_offset, 0.0001);
 
     const world_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
@@ -8207,7 +8184,7 @@ test "generic attachment begin preserves the raw row-relative progress seed" {
 
     runner.beginAttachmentFollow(&fixture.preview, sample);
 
-    try std.testing.expectApproxEqAbs(@as(f32, 1.25), runner.attachment_follow.progress, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 1.25), runner.attachment.follow.progress, 0.0001);
 }
 
 test "blocked startup refresh primes the current-row start attachment at zero rate" {
@@ -8226,7 +8203,7 @@ test "blocked startup refresh primes the current-row start attachment at zero ra
 
     try std.testing.expectEqual(@as(f32, 0.0), runner.movement_rate_scalar);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expect(runner.attachment.follow.active);
     try std.testing.expectApproxEqAbs(@as(f32, @floatFromInt(starting_row)), runner.row_position, 0.001);
     try std.testing.expectApproxEqAbs(expected_top_height, runner.worldPosition(&fixture.preview, 0.0).y, 0.001);
     try expectVector3ApproxEq(
@@ -8248,10 +8225,10 @@ test "blocked startup start attachment keeps the live cameraman basis unmirrored
 
     const cameraman = cameraTransformFromMatrix(runner.cameramanMatrix());
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_camera_orientation_a, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment_camera_orientation_b, 0.0001);
-    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.heading_roll, 0.0001);
+    try std.testing.expect(runner.attachment.follow.active);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.orientation_a, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.orientation_b, 0.0001);
+    try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.attachment.camera.heading_roll, 0.0001);
     try std.testing.expect(cameraman.right.x > 0.0);
 }
 
@@ -8273,7 +8250,7 @@ test "tutorial intro startup exits the start attachment on the authored track ce
     }
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(!runner.attachment_follow.active);
+    try std.testing.expect(!runner.attachment.follow.active);
     try std.testing.expectApproxEqAbs(@as(f32, 5.0), runner.lane_center, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 0.0), runner.worldPosition(&fixture.preview, 0.0).x, 0.001);
 }
@@ -8498,12 +8475,12 @@ test "swept installed re-entry stays on the current-row prime path and leaves ex
     runner.processRow(&fixture.preview, setup.row);
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
 
-    runner.attachment_exit_pending = true;
+    runner.attachment.exit.pending = true;
     runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expectEqual(@as(u32, 1), runner.counters.attachments_begun);
     try std.testing.expectEqual(RecentEvent.attachment_begin, runner.recent_event);
-    try std.testing.expect(runner.attachment_exit_pending);
+    try std.testing.expect(runner.attachment.exit.pending);
 }
 
 test "swept installed re-entry ignores rows without live attachment-owner flags" {
@@ -8525,7 +8502,7 @@ test "swept installed re-entry ignores rows without live attachment-owner flags"
     runner.resolved_lane_index = lane_index;
     runner.previous_row_position = setup.previous_row_position;
     runner.row_position = setup.row_position;
-    runner.attachment_exit_pending = true;
+    runner.attachment.exit.pending = true;
 
     runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
@@ -8556,7 +8533,7 @@ test "swept installed re-entry uses the live secondary owner slot only through B
     b40_runner.resolved_lane_index = lane_index;
     b40_runner.previous_row_position = setup.previous_row_position;
     b40_runner.row_position = setup.row_position;
-    b40_runner.attachment_exit_pending = true;
+    b40_runner.attachment.exit.pending = true;
     fixture.preview.render_cache.flag_b40_grid[grid_index] = true;
     fixture.preview.runtime_flag_b80_grid[grid_index] = false;
     b40_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
@@ -8570,7 +8547,7 @@ test "swept installed re-entry uses the live secondary owner slot only through B
     b80_runner.resolved_lane_index = lane_index;
     b80_runner.previous_row_position = setup.previous_row_position;
     b80_runner.row_position = setup.row_position;
-    b80_runner.attachment_exit_pending = true;
+    b80_runner.attachment.exit.pending = true;
     fixture.preview.render_cache.flag_b40_grid[grid_index] = false;
     fixture.preview.runtime_flag_b80_grid[grid_index] = true;
     b80_runner.tryPrimeCurrentRowAttachmentEntry(&fixture.preview);
@@ -8591,7 +8568,7 @@ test "standalone start segment attachment exits from the template end pose" {
 
     const built = fixture.preview.builtAttachmentForSourceRow(target.row).?;
     const exit_progress: f32 = @floatFromInt(built.template.sample_count);
-    while (runner.movement_mode == .attachment and runner.attachment_follow.template_progress < exit_progress) {
+    while (runner.movement_mode == .attachment and runner.attachment.follow.template_progress < exit_progress) {
         runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     }
 
@@ -8613,10 +8590,10 @@ test "attachment natural exit carries overshoot past the template end" {
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
     const sample_count: f32 = @floatFromInt(built.template.sample_count);
-    runner.attachment_follow.sample_index = 0;
-    runner.attachment_follow.local_progress = 0.0;
-    runner.attachment_follow.progress = 0.0;
-    runner.attachment_follow.template_progress = sample_count - 0.1;
+    runner.attachment.follow.sample_index = 0;
+    runner.attachment.follow.local_progress = 0.0;
+    runner.attachment.follow.progress = 0.0;
+    runner.attachment.follow.template_progress = sample_count - 0.1;
     runner.speed_rows_per_second = 48.0;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
@@ -8648,16 +8625,16 @@ test "supertramp natural exit enters a launch state above the floor" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     const sample_count: f32 = @floatFromInt(built.template.sample_count);
-    runner.attachment_follow.sample_index = 0;
-    runner.attachment_follow.local_progress = 0.0;
-    runner.attachment_follow.progress = 0.0;
-    runner.attachment_follow.template_progress = sample_count - 0.1;
+    runner.attachment.follow.sample_index = 0;
+    runner.attachment.follow.local_progress = 0.0;
+    runner.attachment.follow.progress = 0.0;
+    runner.attachment.follow.template_progress = sample_count - 0.1;
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.speed_rows_per_second = 48.0;
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
-    try std.testing.expect(runner.launch.active);
+    try std.testing.expect(runner.attachment.launch.active);
 
     const launched_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
@@ -8685,29 +8662,29 @@ test "attachment follow side threshold enters the shared fall state" {
 
     const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
     const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
-    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
-    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    const lateral_sign: f32 = if (runner.attachment.follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment.follow.lateral_offset;
     while (true) {
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment.follow.template_progress);
         const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            runner.attachment_follow.template_progress,
+            runner.attachment.follow.template_progress,
             target.row,
             side_exit_lateral,
-            runner.attachment_follow.vertical_offset,
+            runner.attachment.follow.vertical_offset,
         );
         if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
         side_exit_lateral += 0.25 * lateral_sign;
     }
-    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.attachment.follow.lateral_offset = side_exit_lateral;
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expect(!runner.attachment_follow.active);
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expect(!runner.attachment.follow.active);
     try std.testing.expect(runner.row_position >= @as(f32, @floatFromInt(target.row)));
 }
 
@@ -8725,21 +8702,21 @@ test "attachment side threshold is suppressed while jetpack is active" {
 
     const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
     const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
-    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
-    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    const lateral_sign: f32 = if (runner.attachment.follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment.follow.lateral_offset;
     while (true) {
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment.follow.template_progress);
         const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            runner.attachment_follow.template_progress,
+            runner.attachment.follow.template_progress,
             target.row,
             side_exit_lateral,
-            runner.attachment_follow.vertical_offset,
+            runner.attachment.follow.vertical_offset,
         );
         if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
         side_exit_lateral += 0.25 * lateral_sign;
     }
-    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.attachment.follow.lateral_offset = side_exit_lateral;
     runner.jetpack.active = true;
 
     try std.testing.expect(!runner.attachmentShouldSideExit(built));
@@ -8776,8 +8753,8 @@ test "loop side threshold preserves airborne fall height" {
     try std.testing.expect(airborne_progress != null);
 
     runner.movement_mode = .attachment;
-    runner.attachment_path_name = "LOOPBOW";
-    runner.attachment_follow = .{
+    runner.attachment.path_name = "LOOPBOW";
+    runner.attachment.follow = .{
         .active = true,
         .source_cell_row = target.row,
         .template_progress = airborne_progress.?,
@@ -8786,29 +8763,29 @@ test "loop side threshold preserves airborne fall height" {
 
     const subdivision_count = built.template.spec.subdivision_count orelse built.template.width_cells;
     const threshold = (@as(f32, @floatFromInt(subdivision_count)) * 0.5) + attachment_side_exit_margin + 0.2;
-    const lateral_sign: f32 = if (runner.attachment_follow.lateral_offset < 0.0) -1.0 else 1.0;
-    var side_exit_lateral = runner.attachment_follow.lateral_offset;
+    const lateral_sign: f32 = if (runner.attachment.follow.lateral_offset < 0.0) -1.0 else 1.0;
+    var side_exit_lateral = runner.attachment.follow.lateral_offset;
     while (true) {
-        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment_follow.template_progress);
+        const pose = attachment_builders.samplePoseAtProgress(&built.template, runner.attachment.follow.template_progress);
         const world_pose = attachment_builders.worldPoseForTemplate(
             &built.template,
-            runner.attachment_follow.template_progress,
+            runner.attachment.follow.template_progress,
             target.row,
             side_exit_lateral,
-            runner.attachment_follow.vertical_offset,
+            runner.attachment.follow.vertical_offset,
         );
         if (@abs(world_pose.position.x - pose.center_x) > threshold) break;
         side_exit_lateral += 0.25 * lateral_sign;
     }
-    runner.attachment_follow.lateral_offset = side_exit_lateral;
+    runner.attachment.follow.lateral_offset = side_exit_lateral;
     runner.updateAttachmentFollowPosition(&fixture.preview);
     runner.endAttachmentIfNeeded(&fixture.preview);
 
     try std.testing.expectEqual(MovementMode.track, runner.movement_mode);
     try std.testing.expectEqualStrings("fall", runner.phaseLabel());
     try std.testing.expectEqual(cutscene_none_id, runner.cutscene.id);
-    try std.testing.expect(runner.attachment_exit_pending);
-    try std.testing.expect(!runner.launch.active);
+    try std.testing.expect(runner.attachment.exit.pending);
+    try std.testing.expect(!runner.attachment.launch.active);
 
     const fallen_position = runner.worldPosition(&fixture.preview, 0.0);
     const floor_height = fixture.preview.sampleFloorHeightAtGridPosition(
@@ -8951,7 +8928,7 @@ test "continuous target lane center steers attachment lateral offset" {
     runner.step(&fixture.preview, .{}, 1.0 / 60.0);
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
 
-    const before_offset = runner.attachment_follow.lateral_offset;
+    const before_offset = runner.attachment.follow.lateral_offset;
     const raw_target_lane_center = runner.lane_center + 1.5;
     const built = runner.currentAttachmentBuilt(&fixture.preview).?;
     const target_world_position = Runner.trackEntryWorldPosition(
@@ -8961,24 +8938,24 @@ test "continuous target lane center steers attachment lateral offset" {
     );
     const centered_pose = attachment_builders.worldPoseForTemplate(
         &built.template,
-        runner.attachment_follow.template_progress,
-        runner.attachment_follow.source_cell_row,
+        runner.attachment.follow.template_progress,
+        runner.attachment.follow.source_cell_row,
         0.0,
-        runner.attachment_follow.vertical_offset,
+        runner.attachment.follow.vertical_offset,
     );
     const target_lateral_offset = Runner.attachmentLateralOffsetFromLocalX(
         &built.template,
-        runner.attachment_follow.template_progress,
+        runner.attachment.follow.template_progress,
         Runner.attachmentLocalPosition(centered_pose, target_world_position).x,
     );
     runner.step(&fixture.preview, .{ .target_lane_center = raw_target_lane_center }, 1.0 / 60.0);
 
     try std.testing.expectEqual(MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(
-        @abs(runner.attachment_follow.lateral_offset - target_lateral_offset) <
+        @abs(runner.attachment.follow.lateral_offset - target_lateral_offset) <
             @abs(before_offset - target_lateral_offset),
     );
-    try std.testing.expect(@abs(runner.attachment_follow.lateral_offset - @round(runner.attachment_follow.lateral_offset)) > 0.05);
+    try std.testing.expect(@abs(runner.attachment.follow.lateral_offset - @round(runner.attachment.follow.lateral_offset)) > 0.05);
 }
 
 test "installed attachment probe tiles still allow installed begins" {

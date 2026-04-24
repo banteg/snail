@@ -3749,7 +3749,7 @@ test "intro cutscene click-start path still primes the tutorial start attachment
     subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
 
     try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
-    try std.testing.expect(runner.attachment_follow.active);
+    try std.testing.expect(runner.attachment.follow.active);
     try std.testing.expectEqual(subgame_camera.Source.override, camera_state.source);
     try std.testing.expect(runner.cutsceneCameraActive());
 }
@@ -3786,7 +3786,7 @@ test "startup block after click-start dismissal resumes the live runner under in
     );
 
     try std.testing.expectEqual(gameplay.MovementMode.attachment, state.level_runner.?.movement_mode);
-    try std.testing.expect(state.level_runner.?.attachment_follow.active);
+    try std.testing.expect(state.level_runner.?.attachment.follow.active);
     try std.testing.expect(state.level_runner.?.cutsceneCameraActive());
     try std.testing.expect(state.level_runner.?.movement_rate_scalar > 0.0);
     try std.testing.expect(state.level_runner.?.row_position > starting_row_position);

@@ -65,8 +65,8 @@ pub fn beginCompletionCutscene(runner: anytype) void {
 }
 
 pub fn maybeBeginCompletionCutscene(runner: anytype, preview: *const track.LoadedLevelPreview) void {
-    if (runner.attachment_exit_pending) return;
-    if (runner.movement_mode == .attachment and runner.attachment_follow.active) return;
+    if (runner.attachment.exit.pending) return;
+    if (runner.movement_mode == .attachment and runner.attachment.follow.active) return;
     if (!routeEndReached(runner, preview)) return;
     beginCompletionCutscene(runner);
 }

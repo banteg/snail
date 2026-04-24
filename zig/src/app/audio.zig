@@ -98,7 +98,7 @@ pub fn playGameplayRunnerAudio(
     }
 
     const previous_attachment_template_kind = previous.currentAttachmentTemplateKind(preview);
-    if (!previous.attachment_follow.active and current.attachment_follow.active and
+    if (!previous.attachment.follow.active and current.attachment.follow.active and
         current.movement_mode == .attachment)
     {
         if (current.currentAttachmentTemplateKind(preview)) |template_kind| {
@@ -113,10 +113,10 @@ pub fn playGameplayRunnerAudio(
     if (!previous.handoff.completion_voice_gate and current.handoff.completion_voice_gate) {
         voice_audio.tryPlayNativeSet(voices, .victory, .interrupt_current) catch {};
     }
-    if (!previous.attachment_exit_gate_a and current.attachment_exit_gate_a) {
+    if (!previous.attachment.exit.gate_a and current.attachment.exit.gate_a) {
         voice_audio.tryPlayNativeSet(voices, .fall, .wait_for_idle) catch {};
     }
-    if (!previous.attachment_exit_gate_b and current.attachment_exit_gate_b) {
+    if (!previous.attachment.exit.gate_b and current.attachment.exit.gate_b) {
         voice_audio.tryPlayNativeSet(voices, .dying, .interrupt_current) catch {};
     }
 
@@ -150,7 +150,7 @@ pub fn playGameplayRunnerAudio(
         if (gameplay_audio_cues.nativeMovementStateAttachmentExitGain(
             camera_position,
             current.worldPosition(preview, 0.0),
-            current.attachment_exit_pending,
+            current.attachment.exit.pending,
         )) |gain| {
             playGameplayEffectScaled(state, fired_sound, gain);
         } else {

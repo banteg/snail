@@ -181,8 +181,8 @@ pub fn nativeGameplayWarningLoopTriggered(previous: gameplay.Runner, current: ga
 
 pub fn nativeGameplaySupertrampExitVoice(current: gameplay.Runner, previous_attachment_template_kind: ?u8) bool {
     if (previous_attachment_template_kind != attachment_builders.template_kind_supertramp) return false;
-    if (current.movement_mode == .attachment or current.attachment_follow.active) return false;
-    return current.launch.active and current.launch.vertical_velocity > 0.0;
+    if (current.movement_mode == .attachment or current.attachment.follow.active) return false;
+    return current.attachment.launch.active and current.attachment.launch.vertical_velocity > 0.0;
 }
 
 pub fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay.Runner) NativeDeathCutsceneVoiceCues {
@@ -193,7 +193,7 @@ pub fn nativeDeathCutsceneVoiceCues(previous: gameplay.Runner, current: gameplay
         .entry = previous.cutscene.camera.state != .death_blend and current.cutscene.camera.state == .death_blend,
         .fallback = previous.cutscene.camera.state != .death_hold and
             current.cutscene.camera.state == .death_hold and
-            !current.attachment_exit_gate_b,
+            !current.attachment.exit.gate_b,
     };
 }
 
@@ -438,30 +438,28 @@ test "native gameplay warning loop keys from the warning actor cadence" {
 }
 
 test "native supertramp exit voice keys from the launch handoff" {
-    const launched = gameplay.Runner{
-        .movement_mode = .track,
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 1.0,
-        },
+    var launched = gameplay.Runner{ .movement_mode = .track };
+    launched.attachment.launch = .{
+        .active = true,
+        .vertical_velocity = 1.0,
     };
     try std.testing.expect(nativeGameplaySupertrampExitVoice(launched, 31));
     try std.testing.expect(!nativeGameplaySupertrampExitVoice(launched, 24));
-    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
-        .movement_mode = .track,
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 0.0,
-        },
-    }, 31));
-    try std.testing.expect(!nativeGameplaySupertrampExitVoice(gameplay.Runner{
-        .movement_mode = .attachment,
-        .attachment_follow = .{ .active = true },
-        .launch = .{
-            .active = true,
-            .vertical_velocity = 1.0,
-        },
-    }, 31));
+
+    var settled = gameplay.Runner{ .movement_mode = .track };
+    settled.attachment.launch = .{
+        .active = true,
+        .vertical_velocity = 0.0,
+    };
+    try std.testing.expect(!nativeGameplaySupertrampExitVoice(settled, 31));
+
+    var attached = gameplay.Runner{ .movement_mode = .attachment };
+    attached.attachment.follow = .{ .active = true };
+    attached.attachment.launch = .{
+        .active = true,
+        .vertical_velocity = 1.0,
+    };
+    try std.testing.expect(!nativeGameplaySupertrampExitVoice(attached, 31));
 }
 
 test "native death cutscene voice cues key from states 11 and 12" {
@@ -485,6 +483,6 @@ test "native death cutscene voice cues key from states 11 and 12" {
     current.cutscene.camera.state = .death_hold;
     try std.testing.expect(nativeDeathCutsceneVoiceCues(previous, current).fallback);
 
-    current.attachment_exit_gate_b = true;
+    current.attachment.exit.gate_b = true;
     try std.testing.expect(!nativeDeathCutsceneVoiceCues(previous, current).fallback);
 }
