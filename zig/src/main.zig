@@ -11,6 +11,7 @@ const route_map_state = @import("app/route_map_state.zig");
 const run_result = @import("app/run_result.zig");
 const screenshots = @import("app/screenshots.zig");
 const selected_replay = @import("app/selected_replay.zig");
+const subgame_camera = @import("app/subgame_camera.zig");
 const frontend_art = @import("frontend/art.zig");
 const gameplay_resources = @import("gameplay/resources.zig");
 const ui = @import("ui.zig");
@@ -207,45 +208,7 @@ const pause_menu_button_count = frontend_pause_menu.items.len;
 const frontend_canvas_width: i32 = 640;
 const frontend_canvas_height: i32 = 480;
 
-const identity_subgame_camera_matrix = rl.Matrix{
-    .m0 = 1.0,
-    .m4 = 0.0,
-    .m8 = 0.0,
-    .m12 = 0.0,
-    .m1 = 0.0,
-    .m5 = 1.0,
-    .m9 = 0.0,
-    .m13 = 3.0,
-    .m2 = 0.0,
-    .m6 = 0.0,
-    .m10 = 1.0,
-    .m14 = 0.0,
-    .m3 = 0.0,
-    .m7 = 0.0,
-    .m11 = 0.0,
-    .m15 = 1.0,
-};
-const subgame_camera_blend_factor: f32 = 0.9;
-
-const SubgameCameraSource = enum {
-    live,
-    override,
-    identity,
-};
-
-const SubgameCameraState = struct {
-    shared_matrix: rl.Matrix = identity_subgame_camera_matrix,
-    fov_degrees: f32 = 110.0,
-    source: SubgameCameraSource = .identity,
-    snap_next: bool = true,
-};
-
-const SubgameCameraSelection = struct {
-    source: SubgameCameraSource,
-    matrix: rl.Matrix,
-    fov_degrees: f32,
-    snap_next: bool,
-};
+const SubgameCameraState = subgame_camera.State;
 
 const AppState = struct {
     allocator: std.mem.Allocator,
@@ -1195,10 +1158,11 @@ const AppState = struct {
                 if (accepts_live_replay_controls) {
                     if (self.current_track_preview) |loaded_track_preview| {
                         if (self.level_runner) |runner| {
-                            self.mouse_level_lane_target = laneCenterTargetForRunnerMouse(
+                            self.mouse_level_lane_target = subgame_camera.laneCenterTargetForRunnerMouse(
                                 loaded_track_preview,
                                 runner,
                                 @floatFromInt(rl.getMouseX()),
+                                @floatFromInt(screenWidth()),
                             );
                             if (self.mouse_level_lane_target) |lane_target| {
                                 self.pending_level_input.target_lane_center = lane_target;
@@ -1630,8 +1594,8 @@ const AppState = struct {
     }
 
     pub fn updateSubgameCamera(self: *AppState, runner: *gameplay.Runner) void {
-        const selection = subgameCameraSelectionForRunner(runner);
-        updateSubgameCameraState(&self.subgame_camera, selection);
+        const selection = subgame_camera.selectionForRunner(runner);
+        subgame_camera.updateState(&self.subgame_camera, selection);
     }
 
     fn queueLevelSegmentPrompt(self: *AppState, segment_entry: *const level.SegmentEntry) void {
@@ -2564,7 +2528,7 @@ fn backgroundLightStreaksVisible(state: *const AppState) bool {
 
 fn backgroundLightStreakCamera(state: *const AppState) background.LightStreakCamera {
     if (backgroundLightStreaksVisible(state) and state.subgame_camera.source != .identity) {
-        const transform = normalizeCameraWorldTransform(cameraWorldTransformFromMatrix(state.subgame_camera.shared_matrix));
+        const transform = subgame_camera.normalizeTransform(subgame_camera.transformFromMatrix(state.subgame_camera.shared_matrix));
         return .{
             .position = transform.position,
             .right = transform.right,
@@ -3183,7 +3147,7 @@ fn drawGameplayLevelUi(state: *const AppState, layout: VirtualLayout) !void {
             gameplay_hud.drawProgressBar(state, layout, runner);
             gameplay_hud.drawStatusWidgets(state, layout, runner);
             if (state.current_track_preview) |loaded_track_preview| {
-                const camera = gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
+                const camera = subgame_camera.levelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees);
                 try gameplay_hud.drawRowEventWidget(state, layout, runner, camera);
             }
             try gameplay_prompt_overlay.drawGameplayStack(state, layout, &state.level_prompt_queue);
@@ -3270,7 +3234,7 @@ fn drawSubgameViewport(state: *const AppState) void {
     else
         0;
     const camera = if (runner != null)
-        gameplayLevelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees)
+        subgame_camera.levelCamera(&state.subgame_camera, &loaded_track_preview, state.subgame_camera.fov_degrees)
     else
         loaded_track_preview.previewCamera(@floatCast(state.render_time_seconds), selected_segment_index);
     camera.begin();
@@ -4391,147 +4355,8 @@ fn modelTransformFromBasis(position: rl.Vector3, right: rl.Vector3, up: rl.Vecto
     };
 }
 
-const CameraWorldTransform = struct {
-    position: rl.Vector3,
-    right: rl.Vector3,
-    up: rl.Vector3,
-    forward: rl.Vector3,
-};
-
-fn cameraWorldTransformFromMatrix(matrix: rl.Matrix) CameraWorldTransform {
-    return .{
-        .position = .{ .x = matrix.m12, .y = matrix.m13, .z = matrix.m14 },
-        .right = .{ .x = matrix.m0, .y = matrix.m1, .z = matrix.m2 },
-        .up = .{ .x = matrix.m4, .y = matrix.m5, .z = matrix.m6 },
-        .forward = .{ .x = matrix.m8, .y = matrix.m9, .z = matrix.m10 },
-    };
-}
-
-fn normalizeCameraWorldTransform(transform: CameraWorldTransform) CameraWorldTransform {
-    const forward = normalizeVector3(transform.forward);
-    var right = crossVector3(transform.up, forward);
-    if (vectorLength(right) <= 0.0001) {
-        right = normalizeVector3(transform.right);
-    } else {
-        right = normalizeVector3(right);
-    }
-    const up = normalizeVector3(crossVector3(forward, right));
-    return .{
-        .position = transform.position,
-        .right = right,
-        .up = up,
-        .forward = forward,
-    };
-}
-
-fn blendCameraWorldMatrices(lhs: rl.Matrix, rhs: rl.Matrix, t: f32) rl.Matrix {
-    return gameplay.linearInterpolateCameraMatrices(lhs, rhs, t);
-}
-
-fn fovDegreesForSubgameCameraSource(source: SubgameCameraSource, live_fov_degrees: f32) f32 {
-    return switch (source) {
-        .live => live_fov_degrees,
-        .override, .identity => 110.0,
-    };
-}
-
-fn subgameCameraSelectionForRunner(runner: *gameplay.Runner) SubgameCameraSelection {
-    if (runner.cutsceneCameraActive()) {
-        return .{
-            .source = .override,
-            .matrix = runner.cutsceneCameraMatrix(),
-            .fov_degrees = fovDegreesForSubgameCameraSource(.override, runner.cameramanFovDegrees()),
-            .snap_next = runner.takeCutsceneCameraSnap(),
-        };
-    }
-    return .{
-        .source = .live,
-        .matrix = runner.cameramanMatrix(),
-        .fov_degrees = fovDegreesForSubgameCameraSource(.live, runner.cameramanFovDegrees()),
-        .snap_next = runner.takeCameramanSnap(),
-    };
-}
-
-fn updateSubgameCameraState(state: *SubgameCameraState, selection: SubgameCameraSelection) void {
-    if (state.snap_next or selection.snap_next) {
-        state.shared_matrix = selection.matrix;
-        state.fov_degrees = selection.fov_degrees;
-        state.source = selection.source;
-        state.snap_next = false;
-        return;
-    }
-    state.shared_matrix = blendCameraWorldMatrices(state.shared_matrix, selection.matrix, subgame_camera_blend_factor);
-    state.fov_degrees = selection.fov_degrees;
-    state.source = selection.source;
-}
-
-fn camera3DFromCameraWorldMatrix(matrix: rl.Matrix, fov_degrees: f32) rl.Camera3D {
-    const transform = cameraWorldTransformFromMatrix(matrix);
-    return .{
-        .position = transform.position,
-        .target = .{
-            .x = transform.position.x + transform.forward.x,
-            .y = transform.position.y + transform.forward.y,
-            .z = transform.position.z + transform.forward.z,
-        },
-        .up = transform.up,
-        .fovy = fov_degrees,
-        .projection = .perspective,
-    };
-}
-
 fn gameTrackSetIndexForLevel(level_track: level.Track) ?u8 {
     return level_loader.gameTrackSetIndexForLevel(level_track);
-}
-
-fn gameplayLevelCamera(subgame_camera: *const SubgameCameraState, loaded_track_preview: *const track.LoadedLevelPreview, fov_degrees: f32) rl.Camera3D {
-    if (loaded_track_preview.total_rows == 0) {
-        return loaded_track_preview.previewCamera(0.0, 0);
-    }
-    return camera3DFromCameraWorldMatrix(subgame_camera.shared_matrix, fov_degrees);
-}
-
-fn laneCenterTargetForRunnerMouse(
-    loaded_track_preview: track.LoadedLevelPreview,
-    runner: gameplay.Runner,
-    mouse_x: f32,
-) ?f32 {
-    const probe_row_position = std.math.clamp(
-        runner.row_position + 6.0,
-        0.0,
-        @max(@as(f32, @floatFromInt(loaded_track_preview.total_rows)) - 0.001, 0.0),
-    );
-    const probe_global_row = loaded_track_preview.rowIndexAtWorldZ(probe_row_position);
-    const row_location = loaded_track_preview.locateRow(probe_global_row) orelse return null;
-    const bounds = loaded_track_preview.laneBoundsForRow(row_location);
-    return laneCenterTargetForMouseX(
-        loaded_track_preview,
-        mouse_x,
-        @floatFromInt(screenWidth()),
-        bounds,
-    );
-}
-
-fn laneCenterTargetForMouseX(
-    loaded_track_preview: track.LoadedLevelPreview,
-    mouse_x: f32,
-    screen_width: f32,
-    bounds: track.LaneBounds,
-) f32 {
-    const width_offset = @as(f32, @floatFromInt(loaded_track_preview.max_width)) * 0.5;
-    const authored_mouse_x = if (screen_width <= 1.0)
-        320.0
-    else
-        (std.math.clamp(mouse_x, 0.0, screen_width - 1.0) / (screen_width - 1.0)) * 639.0;
-    // PORT(verified): native `update_subgoldy` steers toward
-    // `clamp((320.0 - mouse_x) * 0.0125, -3.7, 3.7)` in authored mouse space.
-    const target_world_x = std.math.clamp((320.0 - authored_mouse_x) * (8.0 / 640.0), -3.7, 3.7);
-    const lane_center = width_offset + target_world_x;
-    return std.math.clamp(
-        lane_center,
-        @as(f32, @floatFromInt(bounds.min)) + 0.5,
-        @as(f32, @floatFromInt(bounds.max)) + 0.5,
-    );
 }
 
 fn uiContext(state: *const AppState) ui.Context {
@@ -5751,9 +5576,9 @@ test "selected level record override seeds track rebuilds without frontend rng" 
 
 fn seededLiveSubgameCamera(runner_input: gameplay.Runner) SubgameCameraState {
     var runner = runner_input;
-    var subgame_camera = SubgameCameraState{};
-    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
-    return subgame_camera;
+    var camera_state = SubgameCameraState{};
+    subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
+    return camera_state;
 }
 
 test "gameplay camera looks ahead of the runner" {
@@ -5774,10 +5599,10 @@ test "gameplay camera looks ahead of the runner" {
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
-    const subgame_camera = seededLiveSubgameCamera(runner);
+    const camera_state = seededLiveSubgameCamera(runner);
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
-    const transform = cameraWorldTransformFromMatrix(subgame_camera.shared_matrix);
+    const camera = subgame_camera.levelCamera(&camera_state, &loaded_track_preview, camera_state.fov_degrees);
+    const transform = subgame_camera.transformFromMatrix(camera_state.shared_matrix);
     const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
     try std.testing.expect(camera.target.z > camera.position.z);
     try std.testing.expect(camera.position.z < player_position.z);
@@ -5809,9 +5634,9 @@ test "gameplay camera keeps lateral steering mostly behind turbo" {
     runner.lane_index = 6;
     runner.resolved_lane_index = 6;
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
-    const subgame_camera = seededLiveSubgameCamera(runner);
+    const camera_state = seededLiveSubgameCamera(runner);
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
+    const camera = subgame_camera.levelCamera(&camera_state, &loaded_track_preview, camera_state.fov_degrees);
     const player_position = runner.worldPosition(&loaded_track_preview, 0.82);
 
     try std.testing.expect(player_position.x > 0.0);
@@ -5839,9 +5664,9 @@ test "shared gameplay camera derives target and up from the shared matrix" {
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
     runner.step(&loaded_track_preview, .{}, @floatCast(simulation_step_seconds));
-    const subgame_camera = seededLiveSubgameCamera(runner);
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
-    const transform = cameraWorldTransformFromMatrix(subgame_camera.shared_matrix);
+    const camera_state = seededLiveSubgameCamera(runner);
+    const camera = subgame_camera.levelCamera(&camera_state, &loaded_track_preview, camera_state.fov_degrees);
+    const transform = subgame_camera.transformFromMatrix(camera_state.shared_matrix);
     try std.testing.expectApproxEqAbs(transform.position.x, camera.position.x, 0.001);
     try std.testing.expectApproxEqAbs(transform.position.y, camera.position.y, 0.001);
     try std.testing.expectApproxEqAbs(transform.position.z, camera.position.z, 0.001);
@@ -5868,21 +5693,21 @@ test "intro cutscene override seeds the shared camera and later clears back to l
     defer loaded_track_preview.deinit();
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
-    var subgame_camera = SubgameCameraState{};
+    var camera_state = SubgameCameraState{};
     runner.setCutscene(gameplay.cutscene_intro_id);
     runner.refreshCameraState(&loaded_track_preview);
-    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+    subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
 
-    try std.testing.expectEqual(SubgameCameraSource.override, subgame_camera.source);
-    try std.testing.expectApproxEqAbs(@as(f32, 110.0), subgame_camera.fov_degrees, 0.001);
+    try std.testing.expectEqual(subgame_camera.Source.override, camera_state.source);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), camera_state.fov_degrees, 0.001);
 
     for (0..gameplay.intro_cutscene_duration_ticks + 2) |_| {
         runner.refreshCameraState(&loaded_track_preview);
-        updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+        subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
     }
 
     try std.testing.expectEqual(gameplay.cutscene_none_id, runner.cutscene_id);
-    try std.testing.expectEqual(SubgameCameraSource.live, subgame_camera.source);
+    try std.testing.expectEqual(subgame_camera.Source.live, camera_state.source);
 }
 
 test "blocked click-start refresh path primes the tutorial start attachment camera" {
@@ -5902,18 +5727,18 @@ test "blocked click-start refresh path primes the tutorial start attachment came
     defer loaded_track_preview.deinit();
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
-    var subgame_camera = SubgameCameraState{};
+    var camera_state = SubgameCameraState{};
 
     runner.refreshBlockedStartupState(&loaded_track_preview);
-    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+    subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
 
-    const camera = gameplayLevelCamera(&subgame_camera, &loaded_track_preview, subgame_camera.fov_degrees);
+    const camera = subgame_camera.levelCamera(&camera_state, &loaded_track_preview, camera_state.fov_degrees);
     try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.worldPosition(&loaded_track_preview, 0.0).y >= 7.9);
     try std.testing.expect(camera.position.y > 0.0);
     try std.testing.expect(camera.target.z > camera.position.z);
-    try std.testing.expect(subgame_camera.source == .live);
-    try std.testing.expect(!subgame_camera.snap_next);
+    try std.testing.expect(camera_state.source == .live);
+    try std.testing.expect(!camera_state.snap_next);
 }
 
 test "intro cutscene click-start path still primes the tutorial start attachment under override camera" {
@@ -5933,15 +5758,15 @@ test "intro cutscene click-start path still primes the tutorial start attachment
     defer loaded_track_preview.deinit();
 
     var runner = gameplay.Runner.init(&loaded_track_preview);
-    var subgame_camera = SubgameCameraState{};
+    var camera_state = SubgameCameraState{};
     runner.setCutscene(gameplay.cutscene_intro_id);
 
     runner.refreshBlockedStartupState(&loaded_track_preview);
-    updateSubgameCameraState(&subgame_camera, subgameCameraSelectionForRunner(&runner));
+    subgame_camera.updateState(&camera_state, subgame_camera.selectionForRunner(&runner));
 
     try std.testing.expectEqual(gameplay.MovementMode.attachment, runner.movement_mode);
     try std.testing.expect(runner.attachment_follow.active);
-    try std.testing.expectEqual(SubgameCameraSource.override, subgame_camera.source);
+    try std.testing.expectEqual(subgame_camera.Source.override, camera_state.source);
     try std.testing.expect(runner.cutsceneCameraActive());
 }
 
@@ -6016,7 +5841,7 @@ test "shared subgame camera honors snap flags and otherwise blends across source
     const next_live_matrix = modelTransformFromBasis(.{ .x = 9.0, .y = 10.0, .z = 11.0 }, basis_right, basis_up, basis_forward);
     var state = SubgameCameraState{};
 
-    updateSubgameCameraState(&state, .{
+    subgame_camera.updateState(&state, .{
         .source = .live,
         .matrix = live_matrix,
         .fov_degrees = 110.0,
@@ -6026,7 +5851,7 @@ test "shared subgame camera honors snap flags and otherwise blends across source
     try std.testing.expectApproxEqAbs(@as(f32, 2.0), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 3.0), state.shared_matrix.m14, 0.001);
 
-    updateSubgameCameraState(&state, .{
+    subgame_camera.updateState(&state, .{
         .source = .override,
         .matrix = override_matrix,
         .fov_degrees = 110.0,
@@ -6036,18 +5861,18 @@ test "shared subgame camera honors snap flags and otherwise blends across source
     try std.testing.expectApproxEqAbs(@as(f32, 6.0), state.shared_matrix.m13, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 7.0), state.shared_matrix.m14, 0.001);
 
-    updateSubgameCameraState(&state, .{
+    subgame_camera.updateState(&state, .{
         .source = .live,
         .matrix = live_matrix,
         .fov_degrees = 120.0,
         .snap_next = false,
     });
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera_blend_factor), state.shared_matrix.m12, 0.001);
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera_blend_factor), state.shared_matrix.m13, 0.001);
-    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera_blend_factor), state.shared_matrix.m14, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera.blend_factor), state.shared_matrix.m12, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera.blend_factor), state.shared_matrix.m13, 0.001);
+    try std.testing.expectApproxEqAbs(std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera.blend_factor), state.shared_matrix.m14, 0.001);
     try std.testing.expectApproxEqAbs(@as(f32, 120.0), state.fov_degrees, 0.001);
 
-    updateSubgameCameraState(&state, .{
+    subgame_camera.updateState(&state, .{
         .source = .live,
         .matrix = next_live_matrix,
         .fov_degrees = 130.0,
@@ -6055,27 +5880,27 @@ test "shared subgame camera honors snap flags and otherwise blends across source
     });
     try std.testing.expectApproxEqAbs(
         std.math.lerp(
-            std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera_blend_factor),
+            std.math.lerp(@as(f32, 5.0), @as(f32, 1.0), subgame_camera.blend_factor),
             @as(f32, 9.0),
-            subgame_camera_blend_factor,
+            subgame_camera.blend_factor,
         ),
         state.shared_matrix.m12,
         0.001,
     );
     try std.testing.expectApproxEqAbs(
         std.math.lerp(
-            std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera_blend_factor),
+            std.math.lerp(@as(f32, 6.0), @as(f32, 2.0), subgame_camera.blend_factor),
             @as(f32, 10.0),
-            subgame_camera_blend_factor,
+            subgame_camera.blend_factor,
         ),
         state.shared_matrix.m13,
         0.001,
     );
     try std.testing.expectApproxEqAbs(
         std.math.lerp(
-            std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera_blend_factor),
+            std.math.lerp(@as(f32, 7.0), @as(f32, 3.0), subgame_camera.blend_factor),
             @as(f32, 11.0),
-            subgame_camera_blend_factor,
+            subgame_camera.blend_factor,
         ),
         state.shared_matrix.m14,
         0.001,
@@ -6084,9 +5909,9 @@ test "shared subgame camera honors snap flags and otherwise blends across source
 }
 
 test "non-live subgame camera sources force the recovered 110-degree FOV" {
-    try std.testing.expectApproxEqAbs(@as(f32, 160.0), fovDegreesForSubgameCameraSource(.live, 160.0), 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 110.0), fovDegreesForSubgameCameraSource(.override, 160.0), 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 110.0), fovDegreesForSubgameCameraSource(.identity, 160.0), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 160.0), subgame_camera.fovDegreesForSource(.live, 160.0), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), subgame_camera.fovDegreesForSource(.override, 160.0), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 110.0), subgame_camera.fovDegreesForSource(.identity, 160.0), 0.001);
 }
 
 test "mouse lane-center target mapping respects bounds" {
@@ -6106,9 +5931,9 @@ test "mouse lane-center target mapping respects bounds" {
     );
     defer loaded_track_preview.deinit();
 
-    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
-    try std.testing.expectApproxEqAbs(@as(f32, 4.5), laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
-    try std.testing.expectApproxEqAbs(@as(f32, 2.5), laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.5), subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds), 0.001);
+    try std.testing.expectApproxEqAbs(@as(f32, 4.5), subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds), 0.01);
+    try std.testing.expectApproxEqAbs(@as(f32, 2.5), subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds), 0.001);
 }
 
 test "tutorial startup mouse steering matches the native mirrored authored x axis" {
@@ -6138,8 +5963,8 @@ test "tutorial startup mouse steering matches the native mirrored authored x axi
     const probe_global_row = loaded_track_preview.rowIndexAtWorldZ(probe_row_position);
     const row_location = loaded_track_preview.locateRow(probe_global_row) orelse return error.TestUnexpectedResult;
     const bounds = loaded_track_preview.laneBoundsForRow(row_location);
-    const left_target = laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds);
-    const right_target = laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds);
+    const left_target = subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 0.0, 1280.0, bounds);
+    const right_target = subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 1279.0, 1280.0, bounds);
 
     try std.testing.expect(left_target > right_target);
 }
@@ -6164,7 +5989,7 @@ test "tutorial mouse center maps to the authored track center after startup" {
     const bounds = loaded_track_preview.laneBoundsForRow(row_location);
     try std.testing.expectApproxEqAbs(
         @as(f32, 5.0),
-        laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds),
+        subgame_camera.laneCenterTargetForMouseX(loaded_track_preview, 640.0, 1280.0, bounds),
         0.01,
     );
 }
