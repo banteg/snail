@@ -8,6 +8,7 @@ const frontend_audio = @import("app/frontend_audio.zig");
 const frontend_flow = @import("app/frontend_flow.zig");
 const frontend_input = @import("app/frontend_input.zig");
 const frontend_mouse = @import("app/frontend_mouse.zig");
+const game_tick = @import("app/game_tick.zig");
 const level_loader = @import("app/level_loader.zig");
 const math_random = @import("app/math_random.zig");
 const music_audio = @import("app/music_audio.zig");
@@ -137,10 +138,6 @@ fn trimRight(comptime T: type, slice: []const T, values_to_strip: []const T) []c
         if (std.mem.indexOfScalar(T, values_to_strip, slice[end - 1]) == null) break;
     }
     return slice[0..end];
-}
-
-fn nativeJetpackVisualPresentationActive(runner: gameplay.Runner) bool {
-    return gameplay_presentation.nativeJetpackVisualPresentationActive(runner);
 }
 
 test "native gameplay voice manager enforces native mode gates" {
@@ -710,7 +707,7 @@ const AppState = struct {
         try frontend_input.dispatchActivation(self, action);
     }
 
-    fn updatePendingFrontendActivation(self: *AppState) !bool {
+    pub fn updatePendingFrontendActivation(self: *AppState) !bool {
         return frontend_input.updatePendingActivation(self);
     }
 
@@ -726,7 +723,7 @@ const AppState = struct {
         return frontend_input.handleWidgetShortcutInput(self);
     }
 
-    fn updateFrontendWidgetAnimations(self: *AppState) void {
+    pub fn updateFrontendWidgetAnimations(self: *AppState) void {
         frontend_input.updateWidgetAnimations(self);
     }
 
@@ -746,173 +743,7 @@ const AppState = struct {
     }
 
     fn simulateGameTick(self: *AppState, runner_input: gameplay.RunnerInput) !void {
-        const effective_runner_input = if (self.completionScreenOverlayActive())
-            gameplay.RunnerInput{}
-        else
-            runner_input;
-        self.game_phase_ticks += 1;
-        if (self.current_game_background_runtime) |*runtime| {
-            runtime.update();
-        }
-        self.background_light_streaks.update(
-            render_phase.lightStreakCamera(self),
-            render_phase.lightStreaksVisible(self),
-        );
-        if (self.game_status_ticks > 0) {
-            self.game_status_ticks -= 1;
-            if (self.game_status_ticks == 0) {
-                self.game_status_message = null;
-            }
-        }
-        self.gameplay_voice_manager.tick();
-        self.native_gameplay_voice_manager.tick();
-        if (self.game_phase == .level and !self.frontend_transition.blocksInput()) {
-            if (self.level_runner) |*runner| {
-                if (!runner.paused and !self.startupGameplayBlockActive()) {
-                    self.level_prompt_queue.tick();
-                }
-                if (self.isTutorialGameplay() and runner.score.total > self.tutorial_reference_score) {
-                    self.tutorial_reference_score = runner.score.total;
-                }
-                // PORT(verified): native `update_tip_manager` drives the active
-                // `turbo-talk` clip while a tip card is up; when the tip
-                // clears, the presentation controller falls back to its
-                // baseline clip. The port mirrors that by diffing the
-                // prompt-queue state and dispatching the correct
-                // `AnimClipId` through `dispatchCutsceneAnimation`, keeping
-                // the renderer's model-swap purely a consumer of the anim
-                // slot.
-                gameplay_resources.syncCutsceneAnimFromPromptQueue(.{
-                    .tutorial = self.gameplayTutorialContext(),
-                    .prompt_active = self.level_prompt_queue.active() != null,
-                    .click_start_active = self.gameplay_click_start_active,
-                }, runner);
-            }
-        }
-
-        if (self.frontend_transition.update()) |next_phase| {
-            try self.enterGamePhase(next_phase);
-            self.frontend_transition.completeHandoff();
-            return;
-        }
-
-        if (try self.updatePendingFrontendActivation()) {
-            return;
-        }
-
-        self.updateFrontendWidgetAnimations();
-        self.stepCompletionScreenReveal();
-        if (self.game_phase == .thanks_screen) {
-            self.thanks_screen_controller.step();
-        }
-
-        if (self.game_phase == .boot) {
-            if (try boot_assets.advance(boot_assets.context(self))) {
-                try self.enterGamePhase(.intro);
-                self.frontend_transition.beginFadeIn();
-            }
-            return;
-        }
-
-        if (self.game_phase == .intro or self.game_phase == .credits) {
-            if (self.currentTextScriptDurationTicks()) |duration_ticks| {
-                if (self.game_phase_ticks >= duration_ticks and !self.frontend_transition.blocksInput()) {
-                    self.frontend_transition.beginFadeOut(.main_menu);
-                }
-            }
-        }
-
-        if (self.game_phase == .level) {
-            if (try self.handleSelectedReplayFadeExit()) return;
-            try gameplay_resources.syncTurboAnimation(
-                &self.gameplay_resources,
-                self.allocator,
-                &self.resources,
-                &self.animation_catalog,
-                .{
-                    .game_phase = self.game_phase,
-                    .tutorial = self.gameplayTutorialContext(),
-                },
-            );
-            if (self.current_track_preview) |*loaded_track_preview| {
-                if (self.level_runner) |*runner| {
-                    const previous_runner = runner.*;
-                    const previous_active_level_segment_index = self.active_level_segment_index;
-                    const startup_block_active = self.startupGameplayBlockActive();
-                    if (!startup_block_active and !self.tutorialPromptBlocksGameplay()) {
-                        runner.stepWithReplay(
-                            loaded_track_preview,
-                            effective_runner_input,
-                            selected_replay.directiveForRunner(self, runner),
-                            @floatCast(self.simulation_clock.step_seconds),
-                        );
-                        if (runner.consumeReplayFadeRequest()) {
-                            self.selected_replay_fade_exit_pending = true;
-                            if (self.frontend_transition.state == .idle) {
-                                self.frontend_transition.beginOverlayFadeOut();
-                            }
-                            return;
-                        }
-                        self.updateGameplayRunnerPresentation(previous_runner, runner.*, effective_runner_input);
-                        audio.playGameplayRunnerAudio(self, previous_runner, runner.*, loaded_track_preview, effective_runner_input);
-                        voice_audio.updateAmbient(voice_audio.context(self), runner.*, loaded_track_preview);
-                        self.gameplay_effects.spawnRunnerEffects(previous_runner, runner.*, loaded_track_preview);
-                    } else {
-                        self.refreshRunnerForStartupBlock(
-                            runner,
-                            loaded_track_preview,
-                            @floatCast(self.simulation_clock.step_seconds),
-                        );
-                    }
-                    self.updateSubgameCamera(runner);
-                    try self.syncActiveLevelSegment();
-                    try self.dispatchCurrentRunnerRowMessage(
-                        previous_active_level_segment_index,
-                        previous_runner.currentRowMessageToken(),
-                        false,
-                    );
-                }
-            }
-            self.gameplay_effects.update();
-            if (self.gameplay_resources.turbo_animation) |*animation| {
-                try animation.step(self.simulation_clock.step_seconds);
-            }
-            if (self.level_runner) |*runner| {
-                switch (runner.consumeHandoff()) {
-                    .none => {},
-                    .completion_screen_init => {
-                        audio.playGameplayEffect(self, self.gameplay_resources.sound_fx.completion_init);
-                        try self.beginCompletedRunOverlay();
-                        return;
-                    },
-                    .completion_finalize => {
-                        try self.finalizeCompletedRunScreen();
-                        return;
-                    },
-                    .respawn => {
-                        try self.beginRespawnRun();
-                        return;
-                    },
-                    .final_loss => |cause| {
-                        try self.beginFailedRun(cause);
-                        return;
-                    },
-                }
-            }
-        }
-    }
-
-    fn updateGameplayRunnerPresentation(self: *AppState, previous: gameplay.Runner, current: gameplay.Runner, _: gameplay.RunnerInput) void {
-        self.gameplay_jetpack_visual_state.tick();
-        self.gameplay_weapon_visual_state.tick();
-        self.gameplay_jetpack_visual_state.noteActiveChange(
-            nativeJetpackVisualPresentationActive(previous),
-            nativeJetpackVisualPresentationActive(current),
-        );
-        self.gameplay_weapon_visual_state.noteWeaponChannelChange(previous.movement_flags, current.movement_flags);
-        if (previous.shot_cooldown_ticks == 0 and current.shot_cooldown_ticks > 0) {
-            self.gameplay_weapon_visual_state.noteFire(current.movement_flags);
-        }
+        try game_tick.simulate(self, runner_input);
     }
 
     fn handleGameInput(self: *AppState) !void {
@@ -1450,7 +1281,7 @@ const AppState = struct {
         self.level_prompt_queue.clear();
     }
 
-    fn isTutorialGameplay(self: *const AppState) bool {
+    pub fn isTutorialGameplay(self: *const AppState) bool {
         return level_loader.isTutorialGameplay(self);
     }
 
@@ -1462,7 +1293,7 @@ const AppState = struct {
         return level_loader.isTutorialLevel(self);
     }
 
-    fn gameplayTutorialContext(self: *const AppState) gameplay_resources.TutorialContext {
+    pub fn gameplayTutorialContext(self: *const AppState) gameplay_resources.TutorialContext {
         const runner = if (self.level_runner) |*level_runner|
             level_runner
         else
@@ -1539,7 +1370,7 @@ const AppState = struct {
         };
     }
 
-    fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
+    pub fn tutorialPromptBlocksGameplay(self: *const AppState) bool {
         if (!self.isTutorialGameplay()) return false;
         const prompt = self.level_prompt_queue.active() orelse return false;
         return prompt.interactive;
@@ -1551,13 +1382,13 @@ const AppState = struct {
         return runner.introCutsceneBlocksGameplay();
     }
 
-    fn startupGameplayBlockActive(self: *const AppState) bool {
+    pub fn startupGameplayBlockActive(self: *const AppState) bool {
         if (self.gameplay_click_start_active) return true;
         const runner = self.level_runner orelse return false;
         return runner.introCutsceneBlocksGameplay();
     }
 
-    fn refreshRunnerForStartupBlock(
+    pub fn refreshRunnerForStartupBlock(
         self: *const AppState,
         runner: *gameplay.Runner,
         loaded_track_preview: *const track.LoadedLevelPreview,
@@ -1672,11 +1503,11 @@ const AppState = struct {
         try self.high_score_tables.saveToRuntimeRoot(self.allocator, self.runtime_root_path);
     }
 
-    fn beginCompletedRunOverlay(self: *AppState) !void {
+    pub fn beginCompletedRunOverlay(self: *AppState) !void {
         try run_result.beginCompletedOverlay(self);
     }
 
-    fn finalizeCompletedRunScreen(self: *AppState) !void {
+    pub fn finalizeCompletedRunScreen(self: *AppState) !void {
         if (self.pending_run_result == null) {
             try self.beginCompletedRunOverlay();
         }
@@ -1687,11 +1518,11 @@ const AppState = struct {
         try self.enterGamePhase(.completion_screen);
     }
 
-    fn beginFailedRun(self: *AppState, cause: gameplay.DeathCause) !void {
+    pub fn beginFailedRun(self: *AppState, cause: gameplay.DeathCause) !void {
         try run_result.beginFailedRun(self, cause);
     }
 
-    fn beginRespawnRun(self: *AppState) !void {
+    pub fn beginRespawnRun(self: *AppState) !void {
         self.completion_overlay_active = false;
         self.preserve_completion_screen_reveal_on_enter = false;
         var opcode: frontend_bridge.OuterBridgeOpcode = .rebuild_clear_replay_return;
@@ -1707,7 +1538,7 @@ const AppState = struct {
         return run_result.completionScreenActive(self);
     }
 
-    fn completionScreenOverlayActive(self: *const AppState) bool {
+    pub fn completionScreenOverlayActive(self: *const AppState) bool {
         return run_result.completionScreenOverlayActive(self);
     }
 
@@ -1715,7 +1546,7 @@ const AppState = struct {
         return run_result.completionScreenInteractive(self);
     }
 
-    fn stepCompletionScreenReveal(self: *AppState) void {
+    pub fn stepCompletionScreenReveal(self: *AppState) void {
         run_result.stepCompletionScreenReveal(self);
     }
 
@@ -1961,7 +1792,7 @@ const AppState = struct {
         self.selected_replay_cache = try entry.decodeReplay(self.allocator);
     }
 
-    fn handleSelectedReplayFadeExit(self: *AppState) !bool {
+    pub fn handleSelectedReplayFadeExit(self: *AppState) !bool {
         if (!self.selected_replay_fade_exit_pending) return false;
 
         switch (self.frontend_transition.state) {
@@ -2112,7 +1943,7 @@ const AppState = struct {
         screen_assets.unloadLoadingScreen(screen_assets.context(self));
     }
 
-    fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
+    pub fn currentTextScriptDurationTicks(self: *const AppState) ?u64 {
         return screen_assets.currentTextScriptDurationTicks(screen_assets.viewContext(self));
     }
 

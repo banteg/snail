@@ -71,6 +71,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `app/screen_assets.zig` | Screen asset lifecycle with explicit slots: current background/runtime, loading screen, text scripts, configured credits loading, preload handoff, unload, and text progress helpers. |
 | `app/phase_resources.zig` | Game-phase resource synchronization: screen/background/music/text-script handoff, prompt clearing, boot asset teardown, and phase-specific UI slider refresh. |
 | `app/window_state.zig` | Window/UI projection policy: Raylib screen dimensions, virtual UI layout, mouse-local mapping, and fullscreen preference sync. |
+| `app/game_tick.zig` | Per-simulation-tick app orchestration: background runtime updates, status/voice ticking, frontend transition handoff, boot/text-script advancement, runner stepping, gameplay effects, Turbo animation, and runner handoff handling. |
 | `app/run_tuning.zig` | Run tuning and mode policy: replay speed/difficulty scalars, challenge parcel target math, runtime build flags, session mode/completion bonus policy, high-score entry projection, and runtime parcel trimming. |
 | `app/track_build_seed.zig` | Runtime track-build seed policy: selected-record seed replay, cached per-level/mode seed reuse, frontend RNG advancement for postal/challenge runs, and seed cache invalidation. |
 | `app/math_random.zig` | Shared Windows-style math RNG step used by runtime track-build seeds and native movement/audio variant selection. |
@@ -121,6 +122,7 @@ One commit per phase; each ends green (zig build test + health checks + no user-
 17. Phase B5 — **done**. `app/screen_assets.zig` owns current screen/background/loading/text-script resource lifecycle and boot-preload handoff.
 18. Phase B6 — **done**. `app/window_state.zig` owns window/UI projection and fullscreen preference sync.
 19. Phase B7 — **done**. `app/phase_resources.zig` owns phase resource synchronization instead of leaving the broad phase switch in `main.zig`.
+20. Phase B8 — **done**. `app/game_tick.zig` owns per-tick app orchestration; `main.zig` delegates simulation ticks instead of carrying the frame update switch inline.
 
 ## Refactor pattern that worked
 
