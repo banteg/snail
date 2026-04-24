@@ -77,6 +77,7 @@ Proposed end-state: `main.zig` stays the program entry point. The `AppState` str
 | `gameplay/barrier_render.zig` | Gameplay barrier renderer: recovered tutorial/NoFall visibility, native additive blend state, depth-mask/culling policy, and object-space barrier placement. |
 | `gameplay/billboard.zig` | Gameplay billboard quad renderer: camera-facing textured quads, optional roll, alpha-cutout shader scope, depth-mask handling, and texture UV mapping. |
 | `gameplay/model_render.zig` | Gameplay model render helpers: model-space offsets, basis transforms, tint/outline draw wrappers, Turbo pose construction, and local attachment positioning. |
+| `gameplay/projectile_render.zig` | Gameplay projectile renderer: projectile basis construction, laser/vapour fallback object drawing, rocket model drawing, and projectile tint/scale policy. |
 | `gameplay/render_policy.zig` | Gameplay renderer policy helpers: visible row/window gates for static actors, runtime hazards, pickups, ring effects, salt slots, and static-ring ownership. |
 | `frontend/render.zig` | Shared frontend render primitives: app-font text measurement/drawing, aligned headings, status/notice overlays, and the custom frontend cursor overlay. |
 | `frontend/screens.zig` | Frontend screen composition: boot/title crawl wrappers, menu draw dispatch, challenge setup labels, high-score draft text, route-map notices, exit prompt heading, help, and thanks screen. |

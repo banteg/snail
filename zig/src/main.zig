@@ -47,6 +47,7 @@ const gameplay_billboard = @import("gameplay/billboard.zig");
 const gameplay_hud = @import("gameplay/hud.zig");
 const gameplay_model_render = @import("gameplay/model_render.zig");
 const gameplay_presentation = @import("gameplay/presentation.zig");
+const gameplay_projectile_render = @import("gameplay/projectile_render.zig");
 const gameplay_prompt_overlay = @import("gameplay/prompt_overlay.zig");
 const gameplay_render_policy = @import("gameplay/render_policy.zig");
 const gameplay_runtime_entities = @import("gameplay/runtime_entities.zig");
@@ -3166,102 +3167,23 @@ fn drawGameplayBarrier(state: *const AppState, loaded_track_preview: *const trac
 }
 
 fn drawGameplayProjectileActor(state: *const AppState, projectile: gameplay.Projectile) void {
-    const forward = gameplay_model_render.normalizeVector3(.{
-        .x = projectile.dir_x,
-        .y = projectile.dir_y,
-        .z = projectile.dir_z,
-    });
-    var up: rl.Vector3 = .{ .x = 0.0, .y = 1.0, .z = 0.0 };
-    if (@abs(gameplay_model_render.dotVector3(forward, up)) > 0.95) {
-        up = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    }
-
-    var right = gameplay_model_render.crossVector3(up, forward);
-    if (gameplay_model_render.vectorLength(right) <= 0.0001) {
-        right = .{ .x = 1.0, .y = 0.0, .z = 0.0 };
-    } else {
-        right = gameplay_model_render.normalizeVector3(right);
-    }
-    const corrected_up = gameplay_model_render.normalizeVector3(gameplay_model_render.crossVector3(forward, right));
-    const position: rl.Vector3 = .{
-        .x = projectile.world_x,
-        .y = projectile.world_y,
-        .z = projectile.world_z,
-    };
-    const world_transform = gameplay_model_render.transformFromBasis(position, right, corrected_up, forward);
-    const local_offset = rl.Matrix.translate(
-        0.0,
-        0.0,
-        0.0,
-    );
-    _ = local_offset;
-
-    switch (projectile.kind) {
-        .turbo => {
-            const loaded_object = state.current_gameplay_lazer_object orelse return;
-            const offset = rl.Matrix.translate(
-                -loaded_object.center.x,
-                -loaded_object.center.y,
-                -loaded_object.center.z,
-            );
-            const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
-            loaded_object.drawTintedEx(
-                world_transform.multiply(offset).multiply(scale),
-                .{ .r = 170, .g = 220, .b = 255, .a = 232 },
-            );
-        },
-        .laser => {
-            const loaded_object = state.current_gameplay_vapour_lazer_object orelse state.current_gameplay_lazer_object orelse return;
-            const offset = rl.Matrix.translate(
-                -loaded_object.center.x,
-                -loaded_object.center.y,
-                -loaded_object.center.z,
-            );
-            const scale = rl.Matrix.scale(0.22, 0.22, 0.22);
-            loaded_object.drawTintedEx(
-                world_transform.multiply(offset).multiply(scale),
-                .{ .r = 180, .g = 255, .b = 255, .a = 236 },
-            );
-        },
-        .enemy_laser => {
-            const loaded_object = state.current_gameplay_vapour_lazer_object orelse state.current_gameplay_lazer_object orelse return;
-            const offset = rl.Matrix.translate(
-                -loaded_object.center.x,
-                -loaded_object.center.y,
-                -loaded_object.center.z,
-            );
-            const scale = rl.Matrix.scale(0.18, 0.18, 0.18);
-            loaded_object.drawTintedEx(
-                world_transform.multiply(offset).multiply(scale),
-                .{ .r = 255, .g = 136, .b = 96, .a = 236 },
-            );
-        },
-        .rocket => {
-            const model = state.current_gameplay_rocket_model orelse {
-                const loaded_object = state.current_gameplay_lazer_object orelse return;
-                const offset = rl.Matrix.translate(
-                    -loaded_object.center.x,
-                    -loaded_object.center.y,
-                    -loaded_object.center.z,
-                );
-                const scale = rl.Matrix.scale(0.22, 0.22, 0.22);
-                loaded_object.drawTintedEx(
-                    world_transform.multiply(offset).multiply(scale),
-                    .{ .r = 255, .g = 224, .b = 164, .a = 236 },
-                );
-                return;
-            };
-            gameplay_model_render.drawUploadedModel(
-                model,
-                position,
-                right,
-                corrected_up,
-                forward,
-                .{ .x = 0.16, .y = 0.16, .z = 0.16 },
-                null,
-            );
-        },
-    }
+    const lazer_object = if (state.current_gameplay_lazer_object) |*loaded_object|
+        loaded_object
+    else
+        null;
+    const vapour_lazer_object = if (state.current_gameplay_vapour_lazer_object) |*loaded_object|
+        loaded_object
+    else
+        null;
+    const rocket_model = if (state.current_gameplay_rocket_model) |*model|
+        model
+    else
+        null;
+    gameplay_projectile_render.draw(.{
+        .lazer_object = lazer_object,
+        .vapour_lazer_object = vapour_lazer_object,
+        .rocket_model = rocket_model,
+    }, projectile);
 }
 
 fn drawGameplayEffects(state: *const AppState, camera: rl.Camera3D) void {
